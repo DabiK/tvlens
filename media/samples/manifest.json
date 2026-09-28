@@ -1,0 +1,44 @@
+[
+  {
+    "file": "spring.mp4",
+    "sha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 536
+      },
+      {
+        "codec_name": "aac",
+        "sample_rate": "44100"
+      }
+    ],
+    "format": {
+      "duration": "464.166893",
+      "size": "62548137"
+    }
+  },
+  {
+    "file": "kennedy-rice-7min.mp4",
+    "sha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "sample_rate": "44100"
+      }
+    ],
+    "format": {
+      "duration": "420.000000",
+      "size": "92433328"
+    }
+  }
+]

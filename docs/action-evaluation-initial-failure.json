@@ -1,0 +1,65 @@
+{
+  "date": "2026-09-28T20:50:43.131Z",
+  "corpus": "10 synthetic geometric action clips, fixed before inference; no speech; baseline frames at 0 and 5 s",
+  "limitations": [
+    "Synthetic clips, not a measurement of film or human-action accuracy.",
+    "Automated keyword checks supplemented by recorded full answers for review.",
+    "Timing references are sampled evidence intervals, not frame-exact causal ground truth."
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "expected": "Un carré rouge traverse de gauche à droite.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.0001402
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790628646319,
+        "status": "done",
+        "message": "La recherche continue · arrêt au plus tard à 60 secondes.",
+        "result": {
+          "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+          "kind": "insufficient",
+          "citations": [],
+          "observations": [],
+          "hypotheses": [],
+          "limits": [
+            "Le fond est blanc, il n'y a pas d'autres éléments visibles que le carré rouge.",
+            "Aucune observation horodatée valide issue du réexamen.",
+            "Le mouvement du carré n'est pas visible entre 1100 ms et 3900 ms, il reste statique.",
+            "Le carré n'est pas visible avant 1100 ms et après 4100 ms.",
+            "Aucune observation horodatée valide issue du réexamen.",
+            "Résultat limité aux observations déjà obtenues."
+          ]
+        },
+        "finishedAt": 1790628677955
+      },
+      "deepPass": false,
+      "elapsedMs": 31636
+    }
+  ],
+  "budgetBefore": {
+    "limitUsd": 1,
+    "spentUsd": 0,
+    "heldUsd": 0,
+    "calls": 0
+  },
+  "budgetAfter": {
+    "limitUsd": 1,
+    "spentUsd": 0.0020917,
+    "heldUsd": 0,
+    "calls": 6
+  }
+}

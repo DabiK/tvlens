@@ -1,0 +1,206 @@
+{
+  "date": "2026-09-28T22:34:03.997Z",
+  "deep": {
+    "jobs": [
+      {
+        "id": "deep-1",
+        "question": "Que voit-on maintenant ?",
+        "mode": "chat",
+        "createdAt": 1790634817667,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634817667
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634817668
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634820109
+          }
+        ],
+        "preview": "D’après le dernier résumé, on voit un cercle se déplacer sur un fond bleu.",
+        "result": {
+          "answer": "D’après le dernier résumé, on voit un cercle se déplacer sur un fond bleu.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-3",
+              "startMs": 3639.979084017881,
+              "endMs": 5450.67908400596
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Description issue d’un résumé automatique, sans réexamen des images."
+          ],
+          "audit": [],
+          "threadId": "01a0ea26-e2d7-76e3-b95d-5350bc1f6028",
+          "model": "default",
+          "elapsedMs": 4884,
+          "observations": [],
+          "hypotheses": []
+        },
+        "sessionId": "d35d42a7-6399-4e65-ae46-f0515501dc7e",
+        "validation": {
+          "evidenceCount": 3,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [],
+        "finishedAt": 1790634822553
+      },
+      {
+        "id": "deep-2",
+        "question": "Que voit-on maintenant ?",
+        "mode": "chat",
+        "createdAt": 1790634825363,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634825363
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634825363
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634826862
+          }
+        ],
+        "preview": "Le dernier résumé montre toujours un cercle qui se déplace sur un fond bleu.",
+        "result": {
+          "answer": "Le dernier résumé montre toujours un cercle qui se déplace sur un fond bleu.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-7",
+              "startMs": 10891.57908401192,
+              "endMs": 12704.879084023842
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Résumé automatique, sans réexamen des images."
+          ],
+          "audit": [],
+          "threadId": "01a0ea26-e2d7-76e3-b95d-5350bc1f6028",
+          "model": "default",
+          "elapsedMs": 3790,
+          "observations": [],
+          "hypotheses": []
+        },
+        "sessionId": "d35d42a7-6399-4e65-ae46-f0515501dc7e",
+        "validation": {
+          "evidenceCount": 9,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [],
+        "finishedAt": 1790634829153
+      },
+      {
+        "id": "deep-3",
+        "question": "Comment le cercle se déplace-t-il ?",
+        "mode": "chat",
+        "createdAt": 1790634832081,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634832081
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634832082
+          },
+          {
+            "message": "Réexamen des images et du son…",
+            "at": 1790634835374
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634836703
+          }
+        ],
+        "preview": "Le cercle change de position par un bref saut entre deux images, plutôt que par un déplacement visiblement continu.",
+        "result": {
+          "answer": "Le cercle change de position par un bref saut entre deux images, plutôt que par un déplacement visiblement continu.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-11",
+              "startMs": 18144.179084005962,
+              "endMs": 19955.879084023843
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Les images examinées ne permettent pas de préciser sa direction ni sa trajectoire."
+          ],
+          "audit": [
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "threadId": "01a0ea26-e2d7-76e3-b95d-5350bc1f6028",
+          "model": "default",
+          "elapsedMs": 7227,
+          "observations": [
+            {
+              "id": "moment-8",
+              "startMs": 12705.57908401192,
+              "endMs": 14519.879084023842,
+              "text": "Le cercle effectue un bref saut entre deux images."
+            },
+            {
+              "id": "moment-9",
+              "startMs": 14520.279084,
+              "endMs": 16332.879084023842,
+              "text": "Le cercle effectue un bref saut entre deux images."
+            },
+            {
+              "id": "moment-10",
+              "startMs": 16333.279084,
+              "endMs": 18143.579084011923,
+              "text": "Le cercle effectue un bref saut entre deux images."
+            },
+            {
+              "id": "moment-11",
+              "startMs": 18144.179084005962,
+              "endMs": 19955.879084023843,
+              "text": "Le cercle effectue un bref saut entre deux images."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "d35d42a7-6399-4e65-ae46-f0515501dc7e",
+        "validation": {
+          "evidenceCount": 19,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [
+          {
+            "tool": "inspect_clip",
+            "status": "completed"
+          }
+        ],
+        "finishedAt": 1790634839309
+      }
+    ]
+  },
+  "captureContinued": true,
+  "newQuestionCancelledPrevious": true,
+  "deepReplay": true,
+  "note": "Real Codex/MCP, synthetic capture and deterministic inspection adapter; no OpenRouter calls."
+}

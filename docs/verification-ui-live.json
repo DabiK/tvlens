@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-28T20:15:21.315Z",
+  "result": {
+    "normalizedClaim": "Le premier atterrissage sur la Lune avec un équipage humain a eu lieu en 1972.",
+    "assessment": "contradicted",
+    "conclusion": "Les archives de la NASA contredisent cette affirmation : le premier alunissage habité a eu lieu le 20 juillet 1969, avec Neil Armstrong et Buzz Aldrin à bord du module Eagle d’Apollo 11. L’année 1972 correspond à la dernière mission d’alunissage du programme Apollo, Apollo 17.",
+    "sources": [
+      {
+        "url": "https://www.nasa.gov/history/apollo-11-mission-overview/",
+        "title": "Apollo 11 Mission Overview",
+        "publisher": "NASA",
+        "publishedAt": "2015-04-17",
+        "evidence": "Le récit de mission décrit la descente et l’alunissage d’Eagle dans la mer de la Tranquillité le 20 juillet 1969, avec Armstrong et Aldrin à bord.",
+        "relation": "contradicts"
+      },
+      {
+        "url": "https://www.nasa.gov/mission/apollo-11/",
+        "title": "Apollo 11",
+        "publisher": "NASA",
+        "publishedAt": null,
+        "evidence": "La page identifie Apollo 11 comme la mission du premier alunissage humain, en juillet 1969, et Armstrong et Aldrin comme les deux premiers humains à marcher sur la Lune.",
+        "relation": "contradicts"
+      },
+      {
+        "url": "https://www.nasa.gov/mission/apollo-17/",
+        "title": "Apollo 17",
+        "publisher": "NASA",
+        "publishedAt": null,
+        "evidence": "La NASA présente Apollo 17 comme la dernière mission d’alunissage du programme Apollo et situe son déroulement en décembre 1972.",
+        "relation": "context"
+      }
+    ],
+    "limitations": [],
+    "research": {
+      "provider": "codex-cli",
+      "webSearches": 4,
+      "openedUrls": [
+        "https://www.nasa.gov/mission/apollo-11/",
+        "https://www.nasa.gov/history/apollo-11-mission-overview/"
+      ],
+      "elapsedMs": 38815,
+      "usage": {
+        "input_tokens": 129005,
+        "cached_input_tokens": 90240,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 673,
+        "reasoning_output_tokens": 0
+      },
+      "isolation": "temporary-cwd / read-only / local-tools-disabled / sanitized-environment"
+    },
+    "claim": "Le premier alunissage habité a eu lieu en 1972."
+  },
+  "captureContinued": true,
+  "askContinued": true
+}

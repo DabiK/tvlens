@@ -1,0 +1,204 @@
+{
+  "date": "2026-09-28T22:35:30.496Z",
+  "deep": {
+    "jobs": [
+      {
+        "id": "deep-1",
+        "question": "Que voit-on maintenant ?",
+        "mode": "chat",
+        "createdAt": 1790634894731,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634894731
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634894732
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634896347
+          }
+        ],
+        "preview": "D’après le dernier résumé, on voit un cercle se déplacer sur un fond bleu.",
+        "result": {
+          "answer": "D’après le dernier résumé, on voit un cercle se déplacer sur un fond bleu.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-3",
+              "startMs": 3754.0026659821187,
+              "endMs": 5568.102665976158
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Description issue d’un résumé automatique, sans réexamen des images."
+          ],
+          "audit": [],
+          "threadId": "01a0ea28-0f6e-73b0-b4cc-9d4f5c7dcc65",
+          "model": "default",
+          "elapsedMs": 4060,
+          "observations": [],
+          "hypotheses": []
+        },
+        "sessionId": "f4c9d2ca-3dce-4b4a-8f8d-93294b056a13",
+        "validation": {
+          "evidenceCount": 3,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [],
+        "finishedAt": 1790634898793
+      },
+      {
+        "id": "deep-2",
+        "question": "Que voit-on maintenant ?",
+        "mode": "chat",
+        "createdAt": 1790634902586,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634902586
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634902586
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634903986
+          }
+        ],
+        "preview": "D’après le dernier résumé, on voit toujours un cercle se déplacer sur un fond bleu.",
+        "result": {
+          "answer": "D’après le dernier résumé, on voit toujours un cercle se déplacer sur un fond bleu.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-7",
+              "startMs": 11021.702666000001,
+              "endMs": 12841.40266598808
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Résumé automatique, sans réexamen des images."
+          ],
+          "audit": [],
+          "threadId": "01a0ea28-0f6e-73b0-b4cc-9d4f5c7dcc65",
+          "model": "default",
+          "elapsedMs": 3822,
+          "observations": [],
+          "hypotheses": []
+        },
+        "sessionId": "f4c9d2ca-3dce-4b4a-8f8d-93294b056a13",
+        "validation": {
+          "evidenceCount": 9,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [],
+        "finishedAt": 1790634906408
+      },
+      {
+        "id": "deep-3",
+        "question": "Comment le cercle se déplace-t-il ?",
+        "mode": "inspect",
+        "createdAt": 1790634909035,
+        "status": "done",
+        "message": "Rédaction de la réponse…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790634909035
+          },
+          {
+            "message": "Lecture du contexte de la session…",
+            "at": 1790634909035
+          },
+          {
+            "message": "Recherche dans la mémoire…",
+            "at": 1790634912398
+          },
+          {
+            "message": "Recherche des passages…",
+            "at": 1790634912399
+          },
+          {
+            "message": "Réexamen des images et du son…",
+            "at": 1790634916941
+          },
+          {
+            "message": "Rédaction de la réponse…",
+            "at": 1790634923025
+          }
+        ],
+        "preview": "Au réexamen, le cercle reste pratiquement au même endroit : aucun déplacement directionnel ni changement de sens n’est discernable.",
+        "result": {
+          "answer": "Au réexamen, le cercle reste pratiquement au même endroit : aucun déplacement directionnel ni changement de sens n’est discernable.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-10",
+              "startMs": 16531,
+              "endMs": 18156
+            }
+          ],
+          "sources": [],
+          "limits": [
+            "Observation limitée au bref extrait réexaminé."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "threadId": "01a0ea28-0f6e-73b0-b4cc-9d4f5c7dcc65",
+          "model": "default",
+          "elapsedMs": 16317,
+          "observations": [
+            {
+              "id": "moment-10",
+              "startMs": 16531,
+              "endMs": 18156,
+              "text": "Le cercle reste pratiquement au même endroit dans chaque image ; aucun déplacement directionnel ni changement de sens n’est discernable."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "f4c9d2ca-3dce-4b4a-8f8d-93294b056a13",
+        "validation": {
+          "evidenceCount": 1,
+          "proposedCitations": 1,
+          "acceptedCitations": 1
+        },
+        "audit": [
+          {
+            "tool": "search_moments",
+            "status": "completed"
+          },
+          {
+            "tool": "inspect_clip",
+            "status": "completed"
+          }
+        ],
+        "finishedAt": 1790634925353
+      }
+    ]
+  },
+  "captureContinued": true,
+  "newQuestionCancelledPrevious": true,
+  "deepReplay": true,
+  "note": "Real persistent Codex, dynamic video tools, OpenRouter embeddings, Luna image inspection and local Whisper; synthetic capture and background observation."
+}

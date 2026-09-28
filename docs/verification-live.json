@@ -1,0 +1,41 @@
+{
+  "normalizedClaim": "Le premier alunissage avec des humains à bord a eu lieu en 1972.",
+  "assessment": "contradicted",
+  "conclusion": "Les archives de la NASA contredisent cette affirmation : le premier alunissage habité a eu lieu le 20 juillet 1969, lors d’Apollo 11, avec Neil Armstrong et Buzz Aldrin. L’année 1972 correspond notamment à Apollo 17, dernière mission d’alunissage du programme Apollo.",
+  "sources": [
+    {
+      "url": "https://www.nasa.gov/mission/apollo-11/",
+      "title": "Apollo 11",
+      "publisher": "NASA",
+      "publishedAt": null,
+      "evidence": "La NASA situe Apollo 11 en juillet 1969, identifie Armstrong et Aldrin comme les deux premiers humains sur la Lune et documente leur présence à sa surface le 20 juillet 1969.",
+      "relation": "contradicts"
+    },
+    {
+      "url": "https://www.nasa.gov/mission/apollo-17/",
+      "title": "Apollo 17",
+      "publisher": "NASA",
+      "publishedAt": null,
+      "evidence": "La NASA présente Apollo 17 comme la dernière mission d’alunissage du programme Apollo, effectuée du 7 au 19 décembre 1972.",
+      "relation": "context"
+    }
+  ],
+  "limitations": [],
+  "research": {
+    "provider": "codex-cli",
+    "webSearches": 3,
+    "openedUrls": [
+      "https://www.nasa.gov/mission/apollo-11/"
+    ],
+    "elapsedMs": 29138,
+    "usage": {
+      "input_tokens": 80270,
+      "cached_input_tokens": 52096,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 513,
+      "reasoning_output_tokens": 0
+    },
+    "isolation": "temporary-cwd / read-only / local-tools-disabled / sanitized-environment"
+  },
+  "claim": "Le premier alunissage habité a eu lieu en 1972."
+}

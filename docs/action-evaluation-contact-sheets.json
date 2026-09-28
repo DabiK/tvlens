@@ -1,0 +1,1027 @@
+{
+  "date": "2026-09-28T20:59:38.536Z",
+  "models": {
+    "baseline": "google/gemini-2.5-flash-lite",
+    "inspection": "google/gemini-2.5-flash",
+    "embeddings": "openai/text-embedding-3-small"
+  },
+  "corpus": "10 synthetic geometric action clips, fixed before inference; no speech; baseline frames at 0 and 5 s",
+  "limitations": [
+    "Synthetic clips, not a measurement of film or human-action accuracy.",
+    "Automated keyword checks supplemented by recorded full answers for review.",
+    "Timing references are sampled evidence intervals, not frame-exact causal ground truth."
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "expected": "Un carré rouge traverse de gauche à droite.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement bref n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.0001294
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629180506,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un carré rouge apparaît au centre entre 900 et 1 100 ms, reste immobile jusqu’à 3 900 ms, puis disparaît entre 3 900 et 4 100 ms.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100,
+              "text": "Un carré rouge apparaît au centre de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 3900,
+              "text": "Le carré rouge reste immobile au centre de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100,
+              "text": "Le carré rouge disparaît de l'image."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-1",
+        "finishedAt": 1790629206396
+      },
+      "deepPass": false,
+      "elapsedMs": 25891
+    },
+    {
+      "id": 2,
+      "expected": "Un cercle bleu descend du haut vers le bas.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence de contenu visuel rend impossible toute description de changement ou de mouvement."
+        ],
+        "cost": 0.0001283
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629208529,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un cercle bleu apparaît au centre de l’image, puis se déplace vers la droite et poursuit ce mouvement dans les instants suivants.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500,
+              "text": "Un cercle bleu apparaît au centre de l'image et se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300,
+              "text": "Le cercle bleu continue de se déplacer vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100,
+              "text": "Le cercle bleu continue de se déplacer vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900,
+              "text": "Le cercle bleu continue de se déplacer vers la droite."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-2",
+        "finishedAt": 1790629230313
+      },
+      "deepPass": false,
+      "elapsedMs": 21784
+    },
+    {
+      "id": 3,
+      "expected": "Un rectangle vert s’élargit.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.000129
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629232621,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un rectangle vert apparaît au centre et s’élargit progressivement à l’horizontale entre 900 et 3 900 ms, puis disparaît entre 3 900 et 4 100 ms.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500,
+              "text": "Un rectangle vert apparaît au centre de l'image et sa largeur augmente progressivement."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 3900,
+              "text": "Le rectangle vert continue d'augmenter sa largeur, s'étendant horizontalement au centre de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100,
+              "text": "Le rectangle vert disparaît de l'image."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-3",
+        "finishedAt": 1790629255445
+      },
+      "deepPass": true,
+      "elapsedMs": 22824
+    },
+    {
+      "id": 4,
+      "expected": "Un cercle jaune apparaît deux fois.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence de contenu visuel ou audio rend impossible toute analyse de changement ou de mouvement."
+        ],
+        "cost": 0.0001297
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629258788,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Sur fond blanc, un cercle jaune apparaît au centre, se déplace vers la gauche puis disparaît. Cette séquence se produit deux fois, puis l’écran reste blanc.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 1900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1900,
+              "endMs": 2500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 2700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2700,
+              "endMs": 3300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3700,
+              "endMs": 5900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900,
+              "text": "L'écran est blanc."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500,
+              "text": "Un cercle jaune apparaît au centre de l'écran et y reste."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 1900,
+              "text": "Le cercle jaune se déplace vers la gauche de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1900,
+              "endMs": 2500,
+              "text": "Le cercle jaune disparaît, l'écran redevient blanc."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 2700,
+              "text": "Un cercle jaune apparaît au centre de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2700,
+              "endMs": 3300,
+              "text": "Le cercle jaune se déplace vers la gauche de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3700,
+              "text": "Le cercle jaune disparaît, l'écran redevient blanc."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3700,
+              "endMs": 5900,
+              "text": "L'écran reste blanc."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-4",
+        "finishedAt": 1790629283040
+      },
+      "deepPass": true,
+      "elapsedMs": 24252
+    },
+    {
+      "id": 5,
+      "expected": "Le carré rouge devient bleu puis redevient rouge.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image montre un carré rouge statique sur un fond blanc cassé.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'image est statique et le son est absent."
+        ],
+        "cost": 0.0001281
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629285069,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Le carré passe du rouge au bleu entre 900 et 1 100 ms, puis du bleu au rouge entre 4 100 et 4 300 ms : deux changements de couleur.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4300
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900,
+              "text": "Un carré rouge est visible au centre de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100,
+              "text": "Le carré rouge devient un carré bleu."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 4100,
+              "text": "Un carré bleu est visible au centre de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4300,
+              "text": "Le carré bleu devient un carré rouge."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4300,
+              "endMs": 5900,
+              "text": "Un carré rouge est visible au centre de l'écran."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-5",
+        "finishedAt": 1790629308895
+      },
+      "deepPass": true,
+      "elapsedMs": 23826
+    },
+    {
+      "id": 6,
+      "expected": "Le cercle rouge et le carré bleu échangent leurs positions.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. Les deux images montrent un cercle rouge à gauche et un carré bleu à droite sur un fond blanc.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "Les images sont statiques, donc aucun mouvement n'est observable."
+        ],
+        "cost": 0.0001307
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629311528,
+        "status": "done",
+        "message": "La recherche continue · arrêt au plus tard à 60 secondes.",
+        "result": {
+          "answer": "Le cercle rouge, en haut, va de gauche à droite puis revient à gauche. Le carré bleu, en bas, fait le mouvement inverse : de droite à gauche puis retour à droite. Ces allers-retours se répètent quatre fois.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 1500,
+              "text": "Un cercle rouge se déplace de gauche à droite, puis de droite à gauche, en haut de l'image. Un carré bleu se déplace de droite à gauche, puis de gauche à droite, en bas de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100,
+              "text": "Le cercle rouge se déplace de gauche à droite, puis de droite à gauche, en haut de l'image. Le carré bleu se déplace de droite à gauche, puis de gauche à droite, en bas de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "Le cercle rouge se déplace de gauche à droite, puis de droite à gauche, en haut de l'image. Le carré bleu se déplace de droite à gauche, puis de gauche à droite, en bas de l'image."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900,
+              "text": "Le cercle rouge se déplace de gauche à droite, puis de droite à gauche, en haut de l'image. Le carré bleu se déplace de droite à gauche, puis de gauche à droite, en bas de l'image."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-6",
+        "finishedAt": 1790629342621
+      },
+      "deepPass": true,
+      "elapsedMs": 31094
+    },
+    {
+      "id": 7,
+      "expected": "Un triangle orange apparaît brièvement.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.000129
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629344629,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Sur fond blanc, un triangle orange apparaît au centre entre 1,1 et 3,9 secondes et reste immobile. Il disparaît ensuite : entre 4,1 et 5,9 secondes, l’écran est de nouveau entièrement blanc.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 5900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900,
+              "text": "L'écran est uniformément blanc."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 3900,
+              "text": "Un triangle orange apparaît au centre de l'écran et y reste immobile."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 5900,
+              "text": "Le triangle orange disparaît et l'écran redevient uniformément blanc."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-7",
+        "finishedAt": 1790629365707
+      },
+      "deepPass": true,
+      "elapsedMs": 21078
+    },
+    {
+      "id": 8,
+      "expected": "Un cercle violet rétrécit.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.000129
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629367851,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un cercle violet apparaît au centre et grossit légèrement entre 900 et 1700 ms. Il reste centré, puis rétrécit légèrement jusqu’à 2500 ms, et fortement jusqu’à 3900 ms. Il disparaît entre 3900 et 4100 ms.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3100,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1700,
+              "text": "Un cercle violet apparaît au centre de l'image et sa taille augmente légèrement."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2500,
+              "text": "Le cercle violet reste au centre de l'image et sa taille diminue légèrement."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100,
+              "text": "Le cercle violet reste au centre de l'image et sa taille diminue de manière significative."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3100,
+              "endMs": 3900,
+              "text": "Le cercle violet reste au centre de l'image et sa taille diminue de manière significative."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100,
+              "text": "Le cercle violet disparaît de l'image."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-8",
+        "finishedAt": 1790629390793
+      },
+      "deepPass": true,
+      "elapsedMs": 22943
+    },
+    {
+      "id": 9,
+      "expected": "Une barre verte tourne de l’horizontale à la verticale.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'image est d'un blanc uni, sans aucun détail ou objet discernable. L'audio est indisponible. Aucune information visuelle ou auditive n'est disponible pour une analyse plus poussée."
+        ],
+        "cost": 0.0001394
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629393634,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un rectangle vert apparaît au centre, pivote dans le sens antihoraire depuis une position horizontale, en s’inclinant vers le bas à gauche jusqu’à devenir vertical, puis disparaît.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4300
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100,
+              "text": "Un rectangle vert apparaît au centre de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1700,
+              "text": "Le rectangle vert pivote dans le sens antihoraire, passant d'une orientation horizontale à une inclinaison vers le bas à gauche."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2500,
+              "text": "Le rectangle vert continue de pivoter dans le sens antihoraire, son inclinaison augmentant vers le bas à gauche."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3300,
+              "text": "Le rectangle vert continue de pivoter dans le sens antihoraire, son inclinaison devenant presque verticale."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4100,
+              "text": "Le rectangle vert continue de pivoter dans le sens antihoraire, son inclinaison devenant verticale."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4300,
+              "text": "Le rectangle vert disparaît de l'écran."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-9",
+        "finishedAt": 1790629419093
+      },
+      "deepPass": true,
+      "elapsedMs": 25460
+    },
+    {
+      "id": 10,
+      "expected": "Deux cercles cyan se rapprochent.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale de contenu visuel et audio rend toute interprétation impossible."
+        ],
+        "cost": 0.0001279
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629421368,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Sur fond blanc, un cercle cyan apparaît au centre gauche, puis se déplace vers la droite. Un deuxième cercle cyan apparaît au centre droit tandis que le premier repart vers la gauche. Les deux restent ensuite immobiles, puis disparaissent.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1300,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 1700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 900,
+              "text": "L'écran est blanc uni."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1100,
+              "text": "Un cercle cyan apparaît au centre gauche de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1300,
+              "text": "Le cercle cyan se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1300,
+              "endMs": 1500,
+              "text": "Le cercle cyan se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1500,
+              "endMs": 1700,
+              "text": "Un deuxième cercle cyan apparaît au centre droit de l'écran, tandis que le premier cercle cyan se déplace vers la gauche."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3900,
+              "text": "Deux cercles cyan sont visibles, l'un au centre gauche et l'autre au centre droit, sans mouvement visible."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3900,
+              "endMs": 4100,
+              "text": "Les deux cercles cyan disparaissent de l'écran."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 5900,
+              "text": "L'écran est blanc uni."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-10",
+        "finishedAt": 1790629447727
+      },
+      "deepPass": false,
+      "elapsedMs": 26359
+    }
+  ],
+  "budgetBefore": {
+    "limitUsd": 1,
+    "spentUsd": 0.01436574,
+    "heldUsd": 0,
+    "calls": 59
+  },
+  "summary": {
+    "baselineCorrect": 0,
+    "deepCorrect": 7,
+    "total": 10
+  },
+  "budgetAfter": {
+    "limitUsd": 1,
+    "spentUsd": 0.031208420000000014,
+    "heldUsd": 0,
+    "calls": 109
+  }
+}

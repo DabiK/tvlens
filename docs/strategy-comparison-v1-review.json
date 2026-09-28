@@ -1,0 +1,379 @@
+{
+  "date": "2026-09-28T21:35:49.826Z",
+  "source": "docs/strategy-comparison-v1-failures.json",
+  "sha256": "4e499f442f5b7b47e13a57529c4cf7d654365d3754660f86337b4f8584132e1a",
+  "reviewer": "Codex: qualitative reading of every full observation against the fixed generator; not an independent human or held-out evaluation.",
+  "rubric": "docs/action-evaluation-rubric.md",
+  "cases": [
+    {
+      "id": 1,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Inverse la direction réelle."
+    },
+    {
+      "id": 1,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Allers-retours inventés."
+    },
+    {
+      "id": 1,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Allers-retours inventés."
+    },
+    {
+      "id": 1,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Traversée gauche→droite, intervalle 979–4021 ms cohérent."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Mouvement latéral ajouté à la descente."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Trois objets et déplacements latéraux inventés."
+    },
+    {
+      "id": 2,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Descente verticale continue, apparition/disparition dans les tolérances."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Remplace la descente par un mouvement vers la gauche."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Sélection de rectangle invalide ; aucun résultat final."
+    },
+    {
+      "id": 3,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Élargissement horizontal, intervalle 958–3875 ms."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Décrit un élargissement uniquement vers la gauche et situe à tort l’objet en bas à droite."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Transforme une croissance en déplacement diagonal."
+    },
+    {
+      "id": 4,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Deux apparitions et deux disparitions, références couvrant les deux épisodes."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Multiplie les cercles et invente leurs déplacements."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Déplacements inventés, répétitions réelles non décrites."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Multiplication des objets et déplacements inventés."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": true,
+      "note": "Changement de couleur correct mais place le carré à droite alors qu’il reste au centre."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": true,
+      "note": "Couleur correcte mais position fausse ; références de transition trop larges (début à 62 ms)."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Trois carrés et transitions en cascade inventés."
+    },
+    {
+      "id": 5,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Rouge→bleu→rouge et intervalles des états corrects."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Cinq apparitions/croisements inventés, au lieu d’un échange."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Trois cercles/carrés et mouvements verticaux inventés."
+    },
+    {
+      "id": 6,
+      "strategy": "native-slow",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Invente des déplacements verticaux et immobilise à tort le carré bleu."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Inventé : trois traversées, carré immobile et superposition."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Trois triangles et mauvaises périodes de disparition."
+    },
+    {
+      "id": 7,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Apparition du triangle immobile sur 958–4125 ms ; disparition non décrite, sans mouvement ajouté."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Déplacement vers la gauche inexistant."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Trois triangles au lieu d’un."
+    },
+    {
+      "id": 8,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Diminution continue de taille, intervalle proche de 1–4 s."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Ajoute des allers-retours horizontaux au rétrécissement."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Déplacement horizontal au lieu du rétrécissement."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Déplacement vers la gauche au lieu du rétrécissement."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Mouvement du centre et rotation antihoraire inexistants."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Rotation antihoraire et translations inventées."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Sens de rotation erroné."
+    },
+    {
+      "id": 9,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "coreColorChangeOnly": false,
+      "note": "Rotation horaire horizontale→verticale correcte."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Six objets au lieu de deux."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Six objets au lieu de deux."
+    },
+    {
+      "id": 10,
+      "strategy": "native-slow",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Ajoute un contact inexistant entre les cercles : pénalisé malgré la convergence correcte."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "coreColorChangeOnly": false,
+      "note": "Multiplie les deux cercles en six objets."
+    }
+  ],
+  "summary": [
+    {
+      "strategy": "native-slow",
+      "actionsCorrect": 8,
+      "groundedCitationsCorrect": 8,
+      "total": 10,
+      "returnedCostUsd": 0.02371,
+      "providerCalls": 10,
+      "meanMs": 3267,
+      "medianMs": 3272,
+      "maxMs": 3625,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets",
+      "actionsCorrect": 0,
+      "groundedCitationsCorrect": 0,
+      "total": 10,
+      "returnedCostUsd": 0.016234,
+      "providerCalls": 10,
+      "meanMs": 2654.2,
+      "medianMs": 2752.5,
+      "maxMs": 3364,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets-diverse",
+      "actionsCorrect": 0,
+      "groundedCitationsCorrect": 0,
+      "total": 10,
+      "returnedCostUsd": 0.0170174,
+      "providerCalls": 10,
+      "meanMs": 2791.1,
+      "medianMs": 2994.5,
+      "maxMs": 3376,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets-crop",
+      "actionsCorrect": 0,
+      "groundedCitationsCorrect": 0,
+      "total": 10,
+      "returnedCostUsd": 0.0228377,
+      "providerCalls": 19,
+      "meanMs": 3968,
+      "medianMs": 4112.5,
+      "maxMs": 4893,
+      "errors": 1
+    }
+  ]
+}

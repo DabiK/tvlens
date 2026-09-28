@@ -1,0 +1,97 @@
+{
+  "fixture": "Synthetic transcript provided; real Codex MCP and web; no OpenRouter calls",
+  "job": {
+    "id": "deep-1",
+    "question": "Tu peux chercher ?",
+    "mode": "chat",
+    "createdAt": 1790635761394,
+    "status": "done",
+    "message": "Rédaction de la réponse…",
+    "activity": [
+      {
+        "message": "Question reçue…",
+        "at": 1790635761394
+      },
+      {
+        "message": "Connexion à Codex…",
+        "at": 1790635761395
+      },
+      {
+        "message": "Recherche sur Internet…",
+        "at": 1790635765579
+      },
+      {
+        "message": "Rédaction de la réponse…",
+        "at": 1790635773332
+      }
+    ],
+    "preview": "Oui : ce discours date du 12 septembre 1962, à l’université Rice, à Houston. La transcription publiée par Rice confirme la date et reprend la phrase sur le choix d’aller sur la Lune entendue dans l’extrait.",
+    "result": {
+      "answer": "Oui : ce discours date du 12 septembre 1962, à l’université Rice, à Houston. La transcription publiée par Rice confirme la date et reprend la phrase sur le choix d’aller sur la Lune entendue dans l’extrait.",
+      "kind": "external",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 0,
+          "endMs": 15000
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://www.rice.edu/jfk-speech",
+          "title": "John F. Kennedy Speech — Rice University",
+          "evidence": "La page date le discours du 12 septembre 1962 et reproduit le passage « We choose to go to the moon »."
+        }
+      ],
+      "limits": [],
+      "sourceValidation": {
+        "proposed": 1,
+        "accepted": 1,
+        "rejected": []
+      },
+      "audit": [
+        {
+          "action": "search",
+          "tool": "web_search",
+          "status": "completed"
+        },
+        {
+          "action": "openPage",
+          "tool": "web_search",
+          "url": "https://www.rice.edu/jfk-speech",
+          "status": "completed"
+        }
+      ],
+      "threadId": "01a0ea35-5f30-73d2-b35a-0c0ec7b033b2",
+      "model": "default",
+      "elapsedMs": 16246,
+      "observations": [],
+      "hypotheses": []
+    },
+    "sessionId": "kennedy-fixture",
+    "validation": {
+      "evidenceCount": 1,
+      "proposedCitations": 1,
+      "acceptedCitations": 1,
+      "sourceValidation": {
+        "proposed": 1,
+        "accepted": 1,
+        "rejected": []
+      }
+    },
+    "audit": [
+      {
+        "action": "search",
+        "tool": "web_search",
+        "status": "completed"
+      },
+      {
+        "action": "openPage",
+        "tool": "web_search",
+        "url": "https://www.rice.edu/jfk-speech",
+        "status": "completed"
+      }
+    ],
+    "finishedAt": 1790635777642
+  }
+}

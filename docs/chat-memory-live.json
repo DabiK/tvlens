@@ -1,0 +1,45 @@
+{
+  "fixture": "Synthetic populated memory with one failed segment and prior empty response; real Codex; no OpenRouter calls",
+  "job": {
+    "id": "deep-1",
+    "question": "ça parle de quoi ?",
+    "mode": "chat",
+    "createdAt": 1790634416205,
+    "status": "done",
+    "message": "Recherche des passages…",
+    "result": {
+      "answer": "La vidéo traite d’une polémique politique : elle présente un article de Mediapart et évoque des accusations de propos antisémites visant Jordan Bardella, puis un présentateur les commente. Ce sont des accusations rapportées par la vidéo, pas des faits vérifiés ici.",
+      "kind": "observation",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 0.998,
+          "endMs": 15026.098
+        },
+        {
+          "id": "moment-3",
+          "startMs": 30046.498,
+          "endMs": 45065.898
+        }
+      ],
+      "sources": [],
+      "limits": [
+        "Réponse fondée sur des résumés automatiques potentiellement imprécis ; un segment est en erreur."
+      ],
+      "audit": [],
+      "threadId": "01a0ea20-d896-79c2-bac7-fad1442120fb",
+      "model": "default",
+      "elapsedMs": 7719,
+      "observations": [],
+      "hypotheses": []
+    },
+    "sessionId": "topic-memory-fixture",
+    "validation": {
+      "evidenceCount": 2,
+      "proposedCitations": 2,
+      "acceptedCitations": 2
+    },
+    "audit": [],
+    "finishedAt": 1790634423926
+  }
+}

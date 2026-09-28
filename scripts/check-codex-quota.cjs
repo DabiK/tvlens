@@ -1,0 +1,2 @@
+const {CodexSessionAgent}=require('../adapters/codex-session-agent.cjs');const {CodexQuota}=require('../adapters/codex-quota.cjs');
+(async()=>{const agent=new CodexSessionAgent();try{await agent.prepare('quota-read-only');const quota=new CodexQuota();await quota.read(agent.rpc);console.log(JSON.stringify(quota.snapshot(),null,2));}finally{await agent.close();}})().catch(e=>{console.error(e.message);process.exitCode=1});

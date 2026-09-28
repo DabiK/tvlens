@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-28T22:31:58.766Z",
+  "chat": [
+    {
+      "question": "Ça parle de quoi ?",
+      "elapsedMs": 5934,
+      "firstPreviewMs": 3631,
+      "threadId": "01a0ea25-9955-7dc1-b5c7-9b70f07ef4c3",
+      "answer": "Le passage est un appel à l’engagement citoyen : il invite les Américains à se demander ce qu’ils peuvent faire pour leur pays, plutôt que ce que leur pays peut faire pour eux.",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790634727673
+        },
+        {
+          "message": "Connexion à Codex…",
+          "at": 1790634727675
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790634731220
+        }
+      ]
+    },
+    {
+      "question": "Et quelle est la couleur du cercle ?",
+      "elapsedMs": 3590,
+      "firstPreviewMs": 1987,
+      "threadId": "01a0ea25-9955-7dc1-b5c7-9b70f07ef4c3",
+      "answer": "Le cercle est jaune, sur fond bleu foncé, d’après le résumé observé.",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790634733606
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790634733606
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790634735592
+        }
+      ]
+    },
+    {
+      "question": "Rappelle-moi sa couleur en un mot.",
+      "elapsedMs": 2935,
+      "firstPreviewMs": 1737,
+      "threadId": "01a0ea25-9955-7dc1-b5c7-9b70f07ef4c3",
+      "answer": "Jaune",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790634737196
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790634737197
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790634738823
+        }
+      ]
+    }
+  ],
+  "perception": [
+    {
+      "elapsedMs": 5932,
+      "observation": {
+        "summary": "La transcription rapporte un appel aux Américains à se demander ce qu’ils peuvent faire pour leur pays, plutôt que l’inverse. À l’image, un cercle jaune apparaît sur un fond bleu foncé.",
+        "visual": "Un cercle jaune sur fond bleu foncé.",
+        "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "audio": "Paroles transcrites localement.",
+        "uncertainty": "La transcription est potentiellement imprécise et l’image seule ne permet pas de confirmer qui parle ni le contexte. Transcription automatique locale ; elle peut contenir des erreurs."
+      },
+      "cost": 0
+    },
+    {
+      "elapsedMs": 2887,
+      "observation": {
+        "summary": "La transcription rapporte un appel aux Américains à se demander ce qu’ils peuvent faire pour leur pays, plutôt que l’inverse. L’image montre un cercle jaune sur fond bleu foncé.",
+        "visual": "Cercle jaune sur fond bleu foncé.",
+        "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "audio": "Paroles transcrites localement.",
+        "uncertainty": "La transcription peut être imprécise ; l’image ne permet pas de vérifier qui parle ni le contexte. Transcription automatique locale ; elle peut contenir des erreurs."
+      },
+      "cost": 0
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "date": "2026-09-28T21:00:21.841Z",
+  "query": "Le véhicule qui évite de percuter un passant",
+  "result": {
+    "mode": "hybrid",
+    "moments": [
+      {
+        "id": "moment-1",
+        "startMs": 0,
+        "endMs": 15000,
+        "text": "Une automobile freine brusquement pour laisser traverser un piéton.",
+        "available": true,
+        "score": 0.2695313058206762
+      },
+      {
+        "id": "moment-3",
+        "startMs": 30000,
+        "endMs": 45000,
+        "text": "Une personne applaudit après un spectacle musical.",
+        "available": true,
+        "score": 0.10205888973977756
+      },
+      {
+        "id": "moment-2",
+        "startMs": 15000,
+        "endMs": 30000,
+        "text": "Un cuisinier découpe des carottes et les verse dans une casserole.",
+        "available": true,
+        "score": 0.08457395045367595
+      }
+    ],
+    "warnings": []
+  },
+  "temporal": {
+    "mode": "time",
+    "moments": [
+      {
+        "id": "moment-2",
+        "startMs": 15000,
+        "endMs": 30000,
+        "text": "Un cuisinier découpe des carottes et les verse dans une casserole.",
+        "available": true,
+        "score": 1
+      }
+    ],
+    "warnings": []
+  },
+  "budgetBefore": {
+    "limitUsd": 1,
+    "spentUsd": 0.015846480000000003,
+    "heldUsd": 0,
+    "calls": 68
+  },
+  "budgetAfter": {
+    "limitUsd": 1,
+    "spentUsd": 0.015847660000000003,
+    "heldUsd": 0.45,
+    "calls": 73
+  }
+}

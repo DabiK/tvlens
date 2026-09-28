@@ -1,0 +1,109 @@
+{
+  "date": "2026-09-28T19:52:14.022Z",
+  "model": "google/gemini-2.5-flash-lite",
+  "sample": "Spring, source video 60–75s and 120–135s",
+  "note": "Prepared segments; app capture tested separately with synthetic media.",
+  "timings": [
+    {
+      "operation": "observe",
+      "id": "moment-1",
+      "ms": 4086
+    },
+    {
+      "operation": "observe",
+      "id": "moment-2",
+      "ms": 4033
+    },
+    {
+      "operation": "ask",
+      "ms": 2915
+    },
+    {
+      "operation": "ask",
+      "ms": 2544
+    },
+    {
+      "operation": "ask",
+      "ms": 1475
+    }
+  ],
+  "observations": [
+    {
+      "id": "moment-1",
+      "observation": {
+        "summary": "Une jeune fille et un petit animal se tiennent au bord d'une falaise surplombant une mer de nuages. La fille tient un bâton noueux et regarde le paysage.",
+        "visual": "La scène montre une jeune fille aux cheveux sombres tressés, vêtue d'une tunique rouge et d'une écharpe brune, tenant un bâton en bois noueux. Elle se tient sur une crête rocheuse, avec un petit animal gris à ses côtés. Derrière eux, un vaste paysage montagneux est enveloppé d'une épaisse couche de nuages sombres, créant une atmosphère mystérieuse.",
+        "audio": "Sons de vent, musique orchestrale dramatique, et des bruits d'animaux.",
+        "transcript": "",
+        "uncertainty": "L'expression du visage de la fille suggère une certaine inquiétude ou contemplation, mais son intention n'est pas claire."
+      }
+    },
+    {
+      "id": "moment-2",
+      "observation": {
+        "summary": "Une petite fille se tient dans une forêt sombre et étrange, tenant un bâton. Elle semble explorer cet environnement mystérieux, où des créatures étranges et des formations rocheuses inhabituelles sont visibles.",
+        "visual": "La scène se déroule dans une forêt sombre et brumeuse, avec des arbres aux formes torturées et des racines apparentes. Des rochers aux formes étranges parsèment le sol. Une petite silhouette humaine, une jeune fille avec un manteau rouge, un bâton et des bottes, est visible au centre de l'image. Une autre image montre une créature ressemblant à un amas de chair et de racines, près d'une grosse pierre.",
+        "audio": "Des sons de pas, des grognements et des cris d'animaux sont audibles.",
+        "transcript": "",
+        "uncertainty": "La nature exacte des créatures et des formations rocheuses n'est pas claire. L'intention de la jeune fille n'est pas déterminée."
+      }
+    }
+  ],
+  "answers": [
+    {
+      "question": "Qu’est-ce qui vient de se passer ?",
+      "answer": "Une jeune fille se tient dans une forêt sombre et étrange, tenant un bâton. Elle semble explorer cet environnement mystérieux, où des créatures étranges et des formations rocheuses inhabituelles sont visibles.",
+      "kind": "observation",
+      "limits": [
+        "La nature exacte des créatures et des formations rocheuses n'est pas claire. L'intention de la jeune fille n'est pas déterminée."
+      ],
+      "citations": [
+        {
+          "id": "moment-2",
+          "startMs": 15000,
+          "endMs": 30000,
+          "available": true
+        }
+      ],
+      "atMs": 30000
+    },
+    {
+      "question": "Que voyait-on il y a vingt secondes, dans le premier passage ?",
+      "answer": "Il y a vingt secondes, une jeune fille et un petit animal se tenaient au bord d'une falaise surplombant une mer de nuages. La fille tenait un bâton noueux et regardait le paysage.",
+      "kind": "observation",
+      "limits": [
+        "L'expression du visage de la fille suggère une certaine inquiétude ou contemplation, mais son intention n'est pas claire."
+      ],
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 0,
+          "endMs": 15000,
+          "available": true
+        }
+      ],
+      "atMs": 30000
+    },
+    {
+      "question": "Quel est le nom exact du village où le personnage est né ?",
+      "answer": "Le nom du village où le personnage est né n'est pas mentionné dans les passages fournis.",
+      "kind": "insufficient",
+      "limits": [
+        "Les informations fournies ne contiennent pas le nom du village de naissance du personnage."
+      ],
+      "citations": [],
+      "atMs": 30000
+    }
+  ],
+  "totalCalls": 5,
+  "reportedCost": 0.001646,
+  "retention": {
+    "remainingRawSegments": 0,
+    "preservedSummaries": 2
+  },
+  "checks": {
+    "recentCitesSecond": true,
+    "pastCitesFirst": true,
+    "absentContextAbstains": true
+  }
+}

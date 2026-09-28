@@ -1,0 +1,340 @@
+{
+  "date": "2026-09-28T21:46:15.663Z",
+  "source": "docs/strategy-comparison-live.json",
+  "sha256": "68b23884d5958bf6e429ee0861fa7f9eb551f56560767b7cfbaa7287efd4ab2c",
+  "model": "google/gemini-3.8-flash",
+  "reviewer": "Codex qualitative full-answer review against fixed generator; no independent human judge, no held-out claim.",
+  "rubric": "docs/action-evaluation-rubric.md",
+  "cases": [
+    {
+      "id": 1,
+      "strategy": "sheets",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Traversée gauche→droite. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 1,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Traversée gauche→droite. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 1,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Traversée gauche→droite. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 1,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Traversée gauche→droite. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Va-et-vient diagonal/elliptique inventé au lieu de la descente."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Sélection de région : sortie non structurée, aucun réexamen final. Coût conservé."
+    },
+    {
+      "id": 2,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Descente verticale. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 2,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Oscillations et déplacement vers la gauche inventés au lieu de la descente verticale."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Élargissement horizontal sans déplacement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 3,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Élargissement horizontal sans déplacement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Recentrage inventé avant l’élargissement."
+    },
+    {
+      "id": 3,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Élargissement horizontal sans déplacement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 4,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Deux apparitions au même endroit. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Déplacement depuis le bas à droite inventé lors de la première apparition."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Deux apparitions au même endroit. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 4,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Deux apparitions au même endroit. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rouge→bleu→rouge. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rouge→bleu→rouge. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 5,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rouge→bleu→rouge. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 5,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rouge→bleu→rouge. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets-diverse",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Ondulation verticale inventée pendant le croisement."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Ondulation verticale inventée pendant le croisement."
+    },
+    {
+      "id": 6,
+      "strategy": "native-slow",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Ajoute une descente inexistante du disque rouge ; début du mouvement également trop tardif."
+    },
+    {
+      "id": 6,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Trajectoire descendante puis ascendante inventée."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Triangle immobile présent brièvement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 7,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Triangle immobile présent brièvement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Décalage/recentrage inventé pour un triangle toujours centré."
+    },
+    {
+      "id": 7,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Triangle immobile présent brièvement. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 8,
+      "strategy": "native-slow",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Invente une phase de taille constante et laisse 7000/15000 ms internes dans le texte, incompatibles avec le clip de 6 s."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Déplacement vers le centre inventé pendant le rétrécissement."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rétrécissement continu au centre. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 8,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rétrécissement continu au centre. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rotation horaire horizontale→verticale. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rotation horaire horizontale→verticale. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 9,
+      "strategy": "sheets-crop",
+      "actionCorrect": false,
+      "groundedCitationsCorrect": false,
+      "note": "Sélection de région : sortie non structurée, aucun réexamen final. Coût conservé."
+    },
+    {
+      "id": 9,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Rotation horaire horizontale→verticale. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets-diverse",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Convergence sans contact. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets-crop",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Convergence sans contact. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 10,
+      "strategy": "native-slow",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Convergence sans contact. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    },
+    {
+      "id": 10,
+      "strategy": "sheets",
+      "actionCorrect": true,
+      "groundedCitationsCorrect": true,
+      "note": "Convergence sans contact. Intervalles cohérents à la tolérance de 500 ms ; pas de mouvement ou répétition ajouté."
+    }
+  ],
+  "summary": [
+    {
+      "strategy": "native-slow",
+      "actionsCorrect": 8,
+      "groundedCitationsCorrect": 8,
+      "total": 10,
+      "returnedCostUsd": 0.019721250000000003,
+      "providerCalls": 10,
+      "meanMs": 2096.2,
+      "medianMs": 1936.5,
+      "maxMs": 2729,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets",
+      "actionsCorrect": 4,
+      "groundedCitationsCorrect": 4,
+      "total": 10,
+      "returnedCostUsd": 0.050295,
+      "providerCalls": 10,
+      "meanMs": 2505.5,
+      "medianMs": 2446.5,
+      "maxMs": 3239,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets-diverse",
+      "actionsCorrect": 8,
+      "groundedCitationsCorrect": 8,
+      "total": 10,
+      "returnedCostUsd": 0.0501285,
+      "providerCalls": 10,
+      "meanMs": 2337.8,
+      "medianMs": 2294,
+      "maxMs": 3128,
+      "errors": 0
+    },
+    {
+      "strategy": "sheets-crop",
+      "actionsCorrect": 7,
+      "groundedCitationsCorrect": 7,
+      "total": 10,
+      "returnedCostUsd": 0.11286525,
+      "providerCalls": 18,
+      "meanMs": 4206.1,
+      "medianMs": 4164,
+      "maxMs": 5191,
+      "errors": 2
+    }
+  ]
+}

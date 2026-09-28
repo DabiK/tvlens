@@ -1,0 +1,37 @@
+{
+  "name": "tvlens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TVLens — prototype de capture macOS",
+  "main": "app/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "package:mac": "node scripts/package.mjs",
+    "open:mac": "node scripts/open-mac.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:electron": "node scripts/smoke-electron.mjs",
+    "test:electron:verify-live": "node scripts/smoke-electron.mjs --live-verifier",
+    "test:live": "node --env-file=.env.local scripts/probe-live.cjs",
+    "test:verify": "node scripts/probe-verify.cjs",
+    "test:electron:deep-live": "node scripts/smoke-electron.mjs --live-video-agent",
+    "mcp": "node mcp/server.cjs",
+    "setup:codex": "node scripts/setup-codex.cjs",
+    "test:electron:full-live": "node scripts/smoke-electron.mjs --live-video-agent --live-inspection",
+    "test:actions:live": "node --env-file=.env.local scripts/evaluate-actions.cjs",
+    "test:retrieval:live": "node --env-file=.env.local scripts/probe-retrieval.cjs",
+    "test:strategies:live": "node --env-file=.env.local scripts/compare-inspection-strategies.cjs",
+    "test:electron:sheets": "node scripts/smoke-electron.mjs --local-inspection --inspection-strategy=sheets-crop",
+    "setup:speech": "node scripts/setup-speech.mjs",
+    "test:codex:speed": "node scripts/probe-codex-speed.cjs"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^44.4.5",
+    "playwright-core": "^1.63.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "sharp": "^0.35.5",
+    "zod": "^3.25.76"
+  }
+}

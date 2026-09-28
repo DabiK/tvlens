@@ -1,0 +1,80 @@
+{
+  "source": "docs/action-evaluation-live.json",
+  "sha256": "16991cbeacfed8868a1de5124866874ac8473c28a8e9fb2df86c3cea68cade57",
+  "reviewer": "Codex full-answer review, development corpus.",
+  "models": {
+    "baseline": "google/gemini-2.5-flash-lite",
+    "inspection": "google/gemini-2.5-flash",
+    "embeddings": "openai/text-embedding-3-small"
+  },
+  "cases": [
+    {
+      "id": 1,
+      "baselineCorrect": false,
+      "deepCorrect": false,
+      "note": "Déplacement vertical ajouté à tort."
+    },
+    {
+      "id": 2,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 3,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 4,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 5,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 6,
+      "baselineCorrect": false,
+      "deepCorrect": false,
+      "note": "Mouvements verticaux inventés et carré déclaré immobile."
+    },
+    {
+      "id": 7,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 8,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 9,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    },
+    {
+      "id": 10,
+      "baselineCorrect": false,
+      "deepCorrect": true,
+      "note": "Action centrale correcte, citations dans le passage attendu."
+    }
+  ],
+  "summary": {
+    "baselineCorrect": 0,
+    "deepCorrect": 8,
+    "total": 10,
+    "minMs": 20083,
+    "medianMs": 22517,
+    "maxMs": 26377
+  }
+}

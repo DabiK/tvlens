@@ -1,0 +1,9 @@
+{
+  "date": "2026-09-28T21:33:40.889Z",
+  "reason": "HTTP 402 rejection. Provider key usage exactly matches all known settled costs, confirming no additional charge.",
+  "reportedKeyUsageUsd": 0.2065228,
+  "knownResearchUsd": 0.19812320000000003,
+  "knownOriginalUsd": 0.008399599999999998,
+  "reservation": "df89fc34-a981-4d6b-bbec-c73f30fcfd20",
+  "confirmedChargeUsd": 0
+}

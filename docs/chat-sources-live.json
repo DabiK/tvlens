@@ -1,0 +1,219 @@
+{
+  "fixture": "Synthetic JFK transcript, real Codex and web. Date question without explicit search instruction, then two link follow-ups. No OpenRouter calls.",
+  "jobs": [
+    {
+      "id": "deep-1",
+      "question": "Ça date de quand ce discours ?",
+      "mode": "chat",
+      "createdAt": 1790635822291,
+      "status": "done",
+      "message": "Rédaction de la réponse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790635822291
+        },
+        {
+          "message": "Connexion à Codex…",
+          "at": 1790635822292
+        },
+        {
+          "message": "Recherche sur Internet…",
+          "at": 1790635826372
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790635836379
+        }
+      ],
+      "preview": "Il date du 12 septembre 1962. C’est le célèbre discours de John F. Kennedy « We choose to go to the Moon », prononcé à l’université Rice, à Houston.",
+      "result": {
+        "answer": "Il date du 12 septembre 1962. C’est le célèbre discours de John F. Kennedy « We choose to go to the Moon », prononcé à l’université Rice, à Houston.",
+        "kind": "external",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 15000
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.rice.edu/jfk-speech",
+            "title": "John F. Kennedy Speech — Rice University",
+            "evidence": "L’université date le discours du 12 septembre 1962 et reproduit le passage signalé dans l’extrait."
+          }
+        ],
+        "limits": [],
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        },
+        "audit": [
+          {
+            "action": "search",
+            "tool": "web_search",
+            "status": "completed"
+          },
+          {
+            "action": "openPage",
+            "tool": "web_search",
+            "url": "https://www.rice.edu/jfk-speech",
+            "status": "completed"
+          }
+        ],
+        "threadId": "01a0ea36-4d1b-7dc1-97b4-e3ed2b36b830",
+        "model": "default",
+        "elapsedMs": 18031,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "kennedy-fixture",
+      "validation": {
+        "evidenceCount": 1,
+        "proposedCitations": 1,
+        "acceptedCitations": 1,
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        }
+      },
+      "audit": [
+        {
+          "action": "search",
+          "tool": "web_search",
+          "status": "completed"
+        },
+        {
+          "action": "openPage",
+          "tool": "web_search",
+          "url": "https://www.rice.edu/jfk-speech",
+          "status": "completed"
+        }
+      ],
+      "finishedAt": 1790635840324
+    },
+    {
+      "id": "deep-2",
+      "question": "lien de l’article stp",
+      "mode": "chat",
+      "createdAt": 1790635840324,
+      "status": "done",
+      "message": "Rédaction de la réponse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790635840324
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790635840325
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790635843922
+        }
+      ],
+      "preview": "Voici la page de l’université Rice utilisée : elle contient le texte du discours et confirme sa date, le 12 septembre 1962.",
+      "result": {
+        "answer": "Voici la page de l’université Rice utilisée : elle contient le texte du discours et confirme sa date, le 12 septembre 1962.",
+        "kind": "external",
+        "citations": [],
+        "sources": [
+          {
+            "url": "https://www.rice.edu/jfk-speech",
+            "title": "John F. Kennedy Speech — Rice University",
+            "evidence": "Texte du discours et date du 12 septembre 1962."
+          }
+        ],
+        "limits": [],
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        },
+        "audit": [],
+        "threadId": "01a0ea36-4d1b-7dc1-97b4-e3ed2b36b830",
+        "model": "default",
+        "elapsedMs": 6406,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "kennedy-fixture",
+      "validation": {
+        "evidenceCount": 2,
+        "proposedCitations": 0,
+        "acceptedCitations": 0,
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        }
+      },
+      "audit": [],
+      "finishedAt": 1790635846731
+    },
+    {
+      "id": "deep-3",
+      "question": "lien de l’arcitle ?",
+      "mode": "chat",
+      "createdAt": 1790635846732,
+      "status": "done",
+      "message": "Rédaction de la réponse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790635846732
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790635846732
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790635848213
+        }
+      ],
+      "preview": "Voici le lien vers le discours sur le site de l’université Rice.",
+      "result": {
+        "answer": "Voici le lien vers le discours sur le site de l’université Rice.",
+        "kind": "external",
+        "citations": [],
+        "sources": [
+          {
+            "url": "https://www.rice.edu/jfk-speech",
+            "title": "Discours de Kennedy — Université Rice",
+            "evidence": "Transcription du discours, daté du 12 septembre 1962."
+          }
+        ],
+        "limits": [],
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        },
+        "audit": [],
+        "threadId": "01a0ea36-4d1b-7dc1-97b4-e3ed2b36b830",
+        "model": "default",
+        "elapsedMs": 3881,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "kennedy-fixture",
+      "validation": {
+        "evidenceCount": 3,
+        "proposedCitations": 0,
+        "acceptedCitations": 0,
+        "sourceValidation": {
+          "proposed": 1,
+          "accepted": 1,
+          "rejected": []
+        }
+      },
+      "audit": [],
+      "finishedAt": 1790635850613
+    }
+  ]
+}

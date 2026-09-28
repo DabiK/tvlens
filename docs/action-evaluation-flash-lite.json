@@ -1,0 +1,816 @@
+{
+  "date": "2026-09-28T20:55:07.179Z",
+  "corpus": "10 synthetic geometric action clips, fixed before inference; no speech; baseline frames at 0 and 5 s",
+  "limitations": [
+    "Synthetic clips, not a measurement of film or human-action accuracy.",
+    "Automated keyword checks supplemented by recorded full answers for review.",
+    "Timing references are sampled evidence intervals, not frame-exact causal ground truth."
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "expected": "Un carré rouge traverse de gauche à droite.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.0001402
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790628910289,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un rectangle rouge apparaît et se déplace vers la droite à travers trois vignettes successives : d’abord sur la deuxième ligne entre 1,7 et 3,1 secondes, puis sur la première ligne entre 3,3 et 4,7 secondes.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            }
+          ],
+          "limits": [
+            "Les images ne montrent pas de changements de couleur ou de taille du rectangle rouge.",
+            "Les images ne montrent pas de répétitions d'actions brèves.",
+            "Les images ne montrent pas d'objets autres que le rectangle rouge.",
+            "Les images ne montrent pas de mouvements verticaux ou diagonaux."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100,
+              "text": "Un rectangle rouge apparaît dans la première vignette de la deuxième ligne et se déplace vers la droite à travers les trois vignettes suivantes de la deuxième ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "Un rectangle rouge apparaît dans la première vignette de la première ligne et se déplace vers la droite à travers les trois vignettes suivantes de la première ligne."
+            }
+          ],
+          "hypotheses": [
+            "Le rectangle rouge se déplace horizontalement de gauche à droite."
+          ]
+        },
+        "sessionId": "case-1",
+        "finishedAt": 1790628930322
+      },
+      "deepPass": false,
+      "elapsedMs": 20034
+    },
+    {
+      "id": 2,
+      "expected": "Un cercle bleu descend du haut vers le bas.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.000129
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790628932430,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Une petite sphère bleue apparaît entre 1,3 et 1,5 seconde, puis se déplace vers la droite, jusqu’au dernier mouvement observé entre 4,1 et 4,7 secondes.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1300,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4700
+            }
+          ],
+          "limits": [
+            "Les images sont des vignettes représentant des instants différents du même plan.",
+            "Les horodatages sont donnés en millisecondes.",
+            "Il faut comparer les positions des objets entre les vignettes."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1300,
+              "endMs": 1500,
+              "text": "Une petite sphère bleue apparaît dans la deuxième vignette de la deuxième ligne et se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300,
+              "text": "La sphère bleue se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100,
+              "text": "La sphère bleue continue de se déplacer vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900,
+              "text": "La sphère bleue se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4700,
+              "text": "La sphère bleue se déplace vers la droite."
+            }
+          ],
+          "hypotheses": [
+            "La sphère bleue se déplace de gauche à droite sur une ligne horizontale."
+          ]
+        },
+        "sessionId": "case-2",
+        "finishedAt": 1790628953361
+      },
+      "deepPass": false,
+      "elapsedMs": 20932
+    },
+    {
+      "id": 3,
+      "expected": "Un rectangle vert s’élargit.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.0001402
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790628955399,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un rectangle vert apparaît et grandit vers la droite à trois reprises : de 900 à 1 500 ms, de 1 700 à 3 100 ms et de 3 300 à 4 700 ms.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            }
+          ],
+          "limits": [
+            "Les images ne montrent pas de changement de couleur.",
+            "Les images ne montrent pas de direction autre que la croissance vers la droite.",
+            "Les images ne montrent pas de répétitions au-delà de trois occurrences."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "failed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 900,
+              "endMs": 1500,
+              "text": "Un rectangle vert apparaît et grandit vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100,
+              "text": "Un rectangle vert apparaît et grandit vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "Un rectangle vert apparaît et grandit vers la droite."
+            }
+          ],
+          "hypotheses": [
+            "Le mouvement est une croissance vers la droite.",
+            "Le mouvement est répété trois fois."
+          ]
+        },
+        "sessionId": "case-3",
+        "finishedAt": 1790628982097
+      },
+      "deepPass": true,
+      "elapsedMs": 26698
+    },
+    {
+      "id": 4,
+      "expected": "Un cercle jaune apparaît deux fois.",
+      "error": "Réponse du modèle non structurée. Passage conservé, analyse indisponible.",
+      "baselinePass": false,
+      "deepPass": false
+    },
+    {
+      "id": 5,
+      "expected": "Le carré rouge devient bleu puis redevient rouge.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image montre un carré rouge statique sur un fond blanc cassé.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'extrait ne contient que des images statiques, il n'y a donc pas de mouvement ou de changement à décrire."
+        ],
+        "cost": 0.0001333
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790628986163,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Le rectangle est d’abord rouge, puis bleu. Ensuite, deux rectangles apparaissent : bleu en haut et rouge en bas. Enfin, seul un rectangle rouge est visible. Aucun déplacement n’est observé.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 1500,
+              "text": "Un rectangle rouge est visible. Il ne bouge pas."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100,
+              "text": "Un rectangle bleu est visible. Il ne bouge pas."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "Un rectangle bleu est visible en haut. Un rectangle rouge est visible en bas. Ils ne bougent pas."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900,
+              "text": "Un rectangle rouge est visible. Il ne bouge pas."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-5",
+        "finishedAt": 1790629008063
+      },
+      "deepPass": true,
+      "elapsedMs": 21900
+    },
+    {
+      "id": 6,
+      "expected": "Le cercle rouge et le carré bleu échangent leurs positions.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. Les deux images montrent un cercle rouge à gauche et un carré bleu à droite sur un fond blanc.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "Les images fournies sont statiques et identiques, ne permettant pas de détecter de mouvement."
+        ],
+        "cost": 0.0001322
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629010059,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Le cercle rouge effectue deux allers-retours : de gauche à droite, puis de droite à gauche. Le carré bleu reste immobile.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 5900
+            }
+          ],
+          "limits": [],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 100,
+              "endMs": 3100,
+              "text": "Un cercle rouge se déplace de la gauche vers la droite, puis de la droite vers la gauche. Un carré bleu reste immobile."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 5900,
+              "text": "Un cercle rouge se déplace de la gauche vers la droite, puis de la droite vers la gauche. Un carré bleu reste immobile."
+            }
+          ],
+          "hypotheses": []
+        },
+        "sessionId": "case-6",
+        "finishedAt": 1790629031134
+      },
+      "deepPass": false,
+      "elapsedMs": 21075
+    },
+    {
+      "id": 7,
+      "expected": "Un triangle orange apparaît brièvement.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale d'éléments visuels et sonores rend toute interprétation impossible."
+        ],
+        "cost": 0.0001293
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629033829,
+        "status": "done",
+        "message": "La recherche continue · arrêt au plus tard à 60 secondes.",
+        "result": {
+          "answer": "Un triangle orange apparaît entre 1,1 et 1,5 s, reste visible et immobile dans les images observées entre 1,7 et 4,7 s, puis disparaît entre 4,9 et 5,9 s.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900
+            }
+          ],
+          "limits": [
+            "La direction exacte d’un éventuel mouvement ne peut pas être déterminée.",
+            "Les images ne permettent pas de déterminer la taille exacte des objets.",
+            "Les images ne permettent pas de déterminer la direction exacte du mouvement.",
+            "Les images ne permettent pas de déterminer la couleur exacte des objets au-delà de l'orange."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "failed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500,
+              "text": "Un triangle orange apparaît dans la deuxième vignette de la deuxième ligne, puis reste visible dans les deux vignettes suivantes de la même ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 3100,
+              "text": "Le triangle orange reste visible et immobile dans la première vignette de la première ligne, puis dans la première vignette de la deuxième ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "Le triangle orange reste visible et immobile dans la première vignette de la première ligne, puis dans la première vignette de la deuxième ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900,
+              "text": "Le triangle orange disparaît."
+            }
+          ],
+          "hypotheses": [
+            "Le triangle orange se déplace de la deuxième ligne vers la première ligne entre 1500 ms et 1700 ms."
+          ]
+        },
+        "sessionId": "case-7",
+        "finishedAt": 1790629066333
+      },
+      "deepPass": true,
+      "elapsedMs": 32504
+    },
+    {
+      "id": 8,
+      "expected": "Un cercle violet rétrécit.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale de contenu visuel et audio rend toute interprétation impossible."
+        ],
+        "cost": 0.000128
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629068538,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+          "kind": "insufficient",
+          "citations": [],
+          "observations": [],
+          "hypotheses": [],
+          "limits": [
+            "Résultat limité aux observations déjà obtenues."
+          ]
+        },
+        "sessionId": "case-8",
+        "finishedAt": 1790629097646
+      },
+      "deepPass": false,
+      "elapsedMs": 29108
+    },
+    {
+      "id": 9,
+      "expected": "Une barre verte tourne de l’horizontale à la verticale.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'image est entièrement blanche, ne permettant aucune observation de couleur, direction ou répétition."
+        ],
+        "cost": 0.0001298
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629099729,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Un objet rectangulaire vert apparaît et tourne légèrement vers la droite, puis poursuit cette rotation en devenant de plus en plus vertical.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700
+            }
+          ],
+          "limits": [
+            "Les images ne montrent pas la totalité de l'objet, seulement une partie.",
+            "La couleur de l'objet reste constante.",
+            "La taille de l'objet semble constante.",
+            "La direction du mouvement est une rotation vers la droite.",
+            "Il n'y a pas de répétition observable du mouvement dans les images fournies."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500,
+              "text": "Un objet vert rectangulaire apparaît et tourne légèrement vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300,
+              "text": "L'objet vert tourne vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100,
+              "text": "L'objet vert continue de tourner vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 4700,
+              "text": "L'objet vert tourne vers la droite, devenant de plus en plus vertical."
+            }
+          ],
+          "hypotheses": [
+            "L'objet vert est en rotation continue vers la droite."
+          ]
+        },
+        "sessionId": "case-9",
+        "finishedAt": 1790629119780
+      },
+      "deepPass": true,
+      "elapsedMs": 20051
+    },
+    {
+      "id": 10,
+      "expected": "Deux cercles cyan se rapprochent.",
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "baseline": {
+        "answer": "Aucun changement ou mouvement n'a été observé. L'image est restée uniformément blanche pendant toute la durée du passage.",
+        "kind": "observation",
+        "citations": [
+          "moment-1"
+        ],
+        "limits": [
+          "L'absence totale de contenu visuel et audio rend toute interprétation impossible."
+        ],
+        "cost": 0.000128
+      },
+      "baselinePass": false,
+      "deep": {
+        "id": "deep-1",
+        "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+        "createdAt": 1790629121828,
+        "status": "done",
+        "message": "Réexamen des images et du son…",
+        "result": {
+          "answer": "Une sphère cyan apparaît et se déplace vers la droite. Plus tard, deux sphères cyan se déplacent vers la droite en restant côte à côte.",
+          "kind": "observation",
+          "citations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900
+            }
+          ],
+          "limits": [
+            "Les premières vignettes des deux premières planches sont vides, il est donc impossible de déterminer si un objet était présent avant son apparition.",
+            "Les dernières vignettes des deux dernières planches sont vides, il est donc impossible de déterminer si un objet a disparu ou s'est déplacé hors champ."
+          ],
+          "audit": [
+            {
+              "tool": "search_moments",
+              "status": "completed"
+            },
+            {
+              "tool": "inspect_clip",
+              "status": "completed"
+            }
+          ],
+          "observations": [
+            {
+              "id": "moment-1",
+              "startMs": 1100,
+              "endMs": 1500,
+              "text": "Une sphère cyan apparaît dans la deuxième vignette de la deuxième ligne et se déplace vers la droite."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 1700,
+              "endMs": 2300,
+              "text": "La sphère cyan continue son mouvement vers la droite, traversant la troisième et la quatrième vignette de la deuxième ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 2500,
+              "endMs": 3100,
+              "text": "La sphère cyan se déplace vers la droite, apparaissant dans la première vignette de la deuxième ligne, puis dans la deuxième."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 3300,
+              "endMs": 3900,
+              "text": "Deux sphères cyan apparaissent dans la première vignette de la première ligne et se déplacent vers la droite, restant côte à côte."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4100,
+              "endMs": 4700,
+              "text": "Les deux sphères cyan continuent leur mouvement vers la droite, traversant la deuxième, la troisième et la quatrième vignette de la première ligne."
+            },
+            {
+              "id": "moment-1",
+              "startMs": 4900,
+              "endMs": 5900,
+              "text": "Les deux sphères cyan sont présentes dans les deux premières vignettes de la deuxième ligne, se déplaçant vers la droite."
+            }
+          ],
+          "hypotheses": [
+            "Les sphères cyan se déplacent de gauche à droite.",
+            "Il y a une seule sphère cyan dans la première partie de la séquence, puis deux sphères cyan dans la seconde partie."
+          ]
+        },
+        "sessionId": "case-10",
+        "finishedAt": 1790629147537
+      },
+      "deepPass": false,
+      "elapsedMs": 25709
+    }
+  ],
+  "budgetBefore": {
+    "limitUsd": 1,
+    "spentUsd": 0.0045473,
+    "heldUsd": 0,
+    "calls": 12
+  },
+  "summary": {
+    "baselineCorrect": 0,
+    "deepCorrect": 4,
+    "total": 10
+  },
+  "budgetAfter": {
+    "limitUsd": 1,
+    "spentUsd": 0.01436574,
+    "heldUsd": 0,
+    "calls": 59
+  }
+}

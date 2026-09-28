@@ -1,0 +1,5315 @@
+{
+  "date": "2026-09-28T21:27:17.561Z",
+  "model": "google/gemini-2.5-flash",
+  "strategies": [
+    "native-slow",
+    "sheets",
+    "sheets-diverse",
+    "sheets-crop"
+  ],
+  "protocol": "Paired inspection port test: identical six-second clips, exact question and [0,6000] interval. No retrieval or Codex synthesis, to avoid changing inspected intervals. Full observations are the answers evaluated. End-to-end Codex tested separately.",
+  "budgetBefore": {
+    "limitUsd": 1,
+    "spentUsd": 0.10002009999999997,
+    "heldUsd": 0,
+    "calls": 214
+  },
+  "cases": [
+    {
+      "id": 1,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "6dd0616b37f69046ea9bb45447402fae5a0f98182c2bdb7c3785eb95eda6ac5d",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 3014,
+              "httpStatus": 200,
+              "costUsd": 0.0018069,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 486,
+                "total_tokens": 2459,
+                "cost": 0.0018069,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018069,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.001215
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Un carré rouge apparaît dans la partie inférieure droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1100,
+                "endMs": 1300,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1500,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1500,
+                "endMs": 1700,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 1900,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1900,
+                "endMs": 2100,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2100,
+                "endMs": 2300,
+                "text": "Le carré rouge se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2300,
+                "endMs": 4700,
+                "text": "Le carré rouge continue de se déplacer vers la gauche, puis disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3364,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0018069
+          },
+          "reportedCostUsd": 0.0018069
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2814,
+              "httpStatus": 200,
+              "costUsd": 0.0018805,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 508,
+                "total_tokens": 2543,
+                "cost": 0.0018805,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018805,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.00127
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62,
+                "endMs": 937,
+                "text": "Un carré rouge apparaît au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1187,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312,
+                "endMs": 1437,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562,
+                "endMs": 1687,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1812,
+                "endMs": 1937,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2062,
+                "endMs": 2187,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2312,
+                "endMs": 2437,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2562,
+                "endMs": 2687,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3000,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0018805
+          },
+          "reportedCostUsd": 0.0018805
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1231,
+              "httpStatus": 200,
+              "costUsd": 0.0005176,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 25,
+                "total_tokens": 1542,
+                "cost": 0.0005176,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0005176,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0000625
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2978,
+              "httpStatus": 200,
+              "costUsd": 0.00141205,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 508,
+                "total_tokens": 2543,
+                "cost": 0.00141205,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1735,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00141205,
+                  "upstream_inference_prompt_cost": 0.00014205,
+                  "upstream_inference_completions_cost": 0.00127
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62,
+                "endMs": 937,
+                "text": "Un carré rouge apparaît au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1187,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312,
+                "endMs": 1437,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562,
+                "endMs": 1687,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1812,
+                "endMs": 1937,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2062,
+                "endMs": 2187,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2312,
+                "endMs": 2437,
+                "text": "Le carré rouge se déplace vers le centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2562,
+                "endMs": 2687,
+                "text": "Le carré rouge se déplace vers le centre gauche de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 4399,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": null,
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 5,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.00192965
+          },
+          "reportedCostUsd": 0.00192965
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3196,
+              "httpStatus": 200,
+              "costUsd": 0.0022025,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 95,
+                "total_tokens": 6645,
+                "cost": 0.0022025,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0022025,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.0002375
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 979,
+                "endMs": 4020.75,
+                "text": "Un carré rouge apparaît à gauche de l'écran, se déplace vers la droite, puis disparaît."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3292,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.0022025
+          },
+          "reportedCostUsd": 0.0022025
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "1b5c1540f954ea8930b8d4b333e8b06ce067acc8265bb2c8615e69952a3e5c80",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 3139,
+              "httpStatus": 200,
+              "costUsd": 0.001853,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 497,
+                "total_tokens": 2532,
+                "cost": 0.001853,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.001853,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.0012425
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 937,
+                "endMs": 1063,
+                "text": "Un point bleu apparaît en haut à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1063,
+                "endMs": 1188,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1188,
+                "endMs": 1313,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1313,
+                "endMs": 1438,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1438,
+                "endMs": 1563,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1563,
+                "endMs": 1688,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1688,
+                "endMs": 1813,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1813,
+                "endMs": 1938,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3350,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.001853
+          },
+          "reportedCostUsd": 0.001853
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1091,
+              "httpStatus": 200,
+              "costUsd": 0.0005176,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 25,
+                "total_tokens": 1542,
+                "cost": 0.0005176,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0005176,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0000625
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2998,
+              "httpStatus": 200,
+              "costUsd": 0.00146205,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 528,
+                "total_tokens": 2563,
+                "cost": 0.00146205,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1735,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00146205,
+                  "upstream_inference_prompt_cost": 0.00014205,
+                  "upstream_inference_completions_cost": 0.00132
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 937,
+                "endMs": 1063,
+                "text": "Un point bleu apparaît en haut à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1063,
+                "endMs": 1188,
+                "text": "Le point bleu se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1188,
+                "endMs": 1313,
+                "text": "Le point bleu se déplace vers le bas et la gauche, et un deuxième point bleu apparaît à sa droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1313,
+                "endMs": 1438,
+                "text": "Le premier point bleu se déplace vers le bas et la gauche, le deuxième point bleu se déplace vers le bas et la gauche, et un troisième point bleu apparaît à la droite du deuxième."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1438,
+                "endMs": 1563,
+                "text": "Les trois points bleus se déplacent vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1563,
+                "endMs": 4063,
+                "text": "Les trois points bleus se déplacent ensemble vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4063,
+                "endMs": 4563,
+                "text": "Le point bleu le plus à droite disparaît."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4563,
+                "endMs": 5188,
+                "text": "Le point bleu du milieu disparaît."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 4275,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": null,
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 5,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.00197965
+          },
+          "reportedCostUsd": 0.00197965
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3459,
+              "httpStatus": 200,
+              "costUsd": 0.0026325,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 267,
+                "total_tokens": 6817,
+                "cost": 0.0026325,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0026325,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.0006675
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 875,
+                "endMs": 1000,
+                "text": "Un cercle bleu apparaît en haut de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1000,
+                "endMs": 2500,
+                "text": "Le cercle bleu se déplace vers le bas de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2500,
+                "endMs": 3875,
+                "text": "Le cercle bleu continue de se déplacer vers le bas de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3875,
+                "endMs": 4000,
+                "text": "Le cercle bleu disparaît du bas de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3576,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.0026325
+          },
+          "reportedCostUsd": 0.0026325
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2699,
+              "httpStatus": 200,
+              "costUsd": 0.0017844,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 477,
+                "total_tokens": 2450,
+                "cost": 0.0017844,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0017844,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0011925
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Un cercle bleu apparaît dans le coin inférieur droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1100,
+                "endMs": 1300,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1500,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1500,
+                "endMs": 1700,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 1900,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1900,
+                "endMs": 2100,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2100,
+                "endMs": 2300,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2300,
+                "endMs": 2500,
+                "text": "Le cercle bleu se déplace vers la gauche."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2850,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0017844
+          },
+          "reportedCostUsd": 0.0017844
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "db20caf918844f4a31528ec3c12928333cab376b6ea1cfb09e72fca2795a8215",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1389,
+              "httpStatus": 200,
+              "costUsd": 0.0006876,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 93,
+                "total_tokens": 1610,
+                "cost": 0.0006876,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006876,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0002325
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "status": "error",
+          "error": "Rectangle de recadrage invalide.",
+          "elapsedMs": 1594,
+          "reportedCostUsd": 0.0006876
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3020,
+              "httpStatus": 200,
+              "costUsd": 0.002195,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 92,
+                "total_tokens": 6642,
+                "cost": 0.002195,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.002195,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.00023
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 958.25,
+                "endMs": 3875,
+                "text": "Un rectangle vert apparaît au centre de l'écran et s'élargit horizontalement."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3125,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.002195
+          },
+          "reportedCostUsd": 0.002195
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2856,
+              "httpStatus": 200,
+              "costUsd": 0.0018819,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 516,
+                "total_tokens": 2489,
+                "cost": 0.0018819,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018819,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.00129
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1300,
+                "text": "Un rectangle vert apparaît en bas à droite de l'écran, puis sa largeur augmente vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1700,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 2100,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2100,
+                "endMs": 2500,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2500,
+                "endMs": 2900,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2900,
+                "endMs": 3300,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3300,
+                "endMs": 3700,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3700,
+                "endMs": 4100,
+                "text": "Le rectangle vert continue d'augmenter sa largeur vers la gauche, puis disparaît."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3030,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0018819
+          },
+          "reportedCostUsd": 0.0018819
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 3180,
+              "httpStatus": 200,
+              "costUsd": 0.0019255,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 526,
+                "total_tokens": 2561,
+                "cost": 0.0019255,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0019255,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.001315
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1187,
+                "text": "Un rectangle vert apparaît en haut à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187,
+                "endMs": 1312,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312,
+                "endMs": 1437,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437,
+                "endMs": 1562,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562,
+                "endMs": 1687,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1687,
+                "endMs": 1812,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1812,
+                "endMs": 1937,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1937,
+                "endMs": 2062,
+                "text": "Le rectangle vert se déplace vers le bas et la gauche de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3376,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0019255
+          },
+          "reportedCostUsd": 0.0019255
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "4bb1f59f4b03b51eee29799123cc39706f60de2b59a2a85bd99878c4a68310ed",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3520,
+              "httpStatus": 200,
+              "costUsd": 0.002605,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 256,
+                "total_tokens": 6806,
+                "cost": 0.002605,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.002605,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.00064
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 958.25,
+                "endMs": 1125,
+                "text": "Un cercle jaune apparaît au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1708.25,
+                "endMs": 1875,
+                "text": "Le cercle jaune disparaît de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2541.5,
+                "endMs": 2708.25,
+                "text": "Un cercle jaune apparaît au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3291.5,
+                "endMs": 3458.25,
+                "text": "Le cercle jaune disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3625,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.002605
+          },
+          "reportedCostUsd": 0.002605
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2613,
+              "httpStatus": 200,
+              "costUsd": 0.0016119,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 408,
+                "total_tokens": 2381,
+                "cost": 0.0016119,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0016119,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.00102
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1300,
+                "text": "Un cercle jaune apparaît en bas à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1700,
+                "text": "Le cercle jaune se déplace vers la gauche, puis un deuxième cercle jaune apparaît à droite du premier, et un troisième cercle jaune apparaît à droite du deuxième."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 2100,
+                "text": "Les trois cercles jaunes disparaissent de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2500,
+                "endMs": 2900,
+                "text": "Deux cercles jaunes apparaissent au centre et à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2900,
+                "endMs": 3300,
+                "text": "Les deux cercles jaunes se déplacent vers la gauche, et un troisième cercle jaune apparaît à gauche du deuxième."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3300,
+                "endMs": 3700,
+                "text": "Les trois cercles jaunes disparaissent de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2768,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0016119
+          },
+          "reportedCostUsd": 0.0016119
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2838,
+              "httpStatus": 200,
+              "costUsd": 0.0018512,
+              "usage": {
+                "prompt_tokens": 2029,
+                "completion_tokens": 497,
+                "total_tokens": 2526,
+                "cost": 0.0018512,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018512,
+                  "upstream_inference_prompt_cost": 0.0006087,
+                  "upstream_inference_completions_cost": 0.0012425
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 937,
+                "endMs": 1063,
+                "text": "Un cercle jaune apparaît en haut à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1188,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187,
+                "endMs": 1313,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312,
+                "endMs": 1438,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437,
+                "endMs": 1563,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562,
+                "endMs": 1688,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1687,
+                "endMs": 1813,
+                "text": "Le cercle jaune se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1812,
+                "endMs": 2563,
+                "text": "Le cercle jaune se déplace vers le bas et la droite."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3026,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    2062.5,
+                    2437.5,
+                    2562.5,
+                    2812.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3562.5,
+                    3937.5,
+                    4187.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0018512
+          },
+          "reportedCostUsd": 0.0018512
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1136,
+              "httpStatus": 200,
+              "costUsd": 0.0006201,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 66,
+                "total_tokens": 1583,
+                "cost": 0.0006201,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006201,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.000165
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 10,
+              "video": false,
+              "elapsedMs": 2136,
+              "httpStatus": 200,
+              "costUsd": 0.0019058,
+              "usage": {
+                "prompt_tokens": 3761,
+                "completion_tokens": 311,
+                "total_tokens": 4072,
+                "cost": 0.0019058,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0019058,
+                  "upstream_inference_prompt_cost": 0.0011283,
+                  "upstream_inference_completions_cost": 0.0007775
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1437.5,
+                "text": "Un cercle jaune apparaît en haut à droite, puis se déplace vers le bas à gauche, puis vers le centre gauche, puis vers le bas à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562.5,
+                "endMs": 1812.5,
+                "text": "Un cercle jaune apparaît en bas à gauche, puis se déplace vers le centre droit."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2437.5,
+                "endMs": 2562.5,
+                "text": "Un cercle jaune apparaît en bas à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2812.5,
+                "endMs": 3187.5,
+                "text": "Trois cercles jaunes apparaissent simultanément : un en bas à gauche, un au centre, et un en bas à droite."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3593,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": {
+                "x": 0,
+                "y": 0,
+                "width": 1,
+                "height": 1
+              },
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 10,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    2062.5,
+                    2437.5,
+                    2562.5,
+                    2812.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3562.5,
+                    3937.5,
+                    4187.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0025259
+          },
+          "reportedCostUsd": 0.0025259
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "4de2139d8e22d7d1f83bf32e54cc6c99f360b35380bd07d49a6ccef095b09b31",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1341,
+              "httpStatus": 200,
+              "costUsd": 0.0009244,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 133,
+                "total_tokens": 2106,
+                "cost": 0.0009244,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0009244,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0003325
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Le carré rouge à droite devient bleu."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3900,
+                "endMs": 4100,
+                "text": "Le carré bleu à droite devient rouge."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 1490,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0009244
+          },
+          "reportedCostUsd": 0.0009244
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1353,
+              "httpStatus": 200,
+              "costUsd": 0.0009387,
+              "usage": {
+                "prompt_tokens": 2029,
+                "completion_tokens": 132,
+                "total_tokens": 2161,
+                "cost": 0.0009387,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0009387,
+                  "upstream_inference_prompt_cost": 0.0006087,
+                  "upstream_inference_completions_cost": 0.00033
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62,
+                "endMs": 1062,
+                "text": "Le carré rouge à droite devient bleu."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3437,
+                "endMs": 4062,
+                "text": "Le carré bleu à droite devient rouge."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 1539,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2312.5,
+                    2687.5,
+                    3062.5,
+                    3437.5,
+                    3687.5,
+                    3937.5,
+                    4062.5,
+                    4312.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0009387
+          },
+          "reportedCostUsd": 0.0009387
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1506,
+              "httpStatus": 200,
+              "costUsd": 0.0006976,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 97,
+                "total_tokens": 1614,
+                "cost": 0.0006976,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006976,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0002425
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 10,
+              "video": false,
+              "elapsedMs": 2810,
+              "httpStatus": 200,
+              "costUsd": 0.0023453,
+              "usage": {
+                "prompt_tokens": 3801,
+                "completion_tokens": 482,
+                "total_tokens": 4283,
+                "cost": 0.0023453,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0023453,
+                  "upstream_inference_prompt_cost": 0.0011403,
+                  "upstream_inference_completions_cost": 0.001205
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62.5,
+                "endMs": 687.5,
+                "text": "Trois carrés rouges sont visibles, alignés horizontalement au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 812.5,
+                "endMs": 1062.5,
+                "text": "Le carré rouge le plus à droite devient bleu."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1437.5,
+                "text": "Les deux carrés rouges restants deviennent bleus, de gauche à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437.5,
+                "endMs": 2312.5,
+                "text": "Trois carrés bleus sont visibles, alignés horizontalement au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2687.5,
+                "endMs": 4062.5,
+                "text": "Le carré bleu le plus à droite devient rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4062.5,
+                "endMs": 4562.5,
+                "text": "Les deux carrés bleus restants deviennent rouges, de gauche à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4562.5,
+                "endMs": 5937.5,
+                "text": "Trois carrés rouges sont visibles, alignés horizontalement au centre de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 4626,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": {
+                "x": 0.666,
+                "y": 0,
+                "width": 0.334,
+                "height": 1
+              },
+              "regionReason": "La couleur du carré en haut à droite change de rouge à bleu, puis de bleu à rouge. La zone sélectionnée couvre la colonne de droite pour montrer ce changement de couleur.",
+              "sheets": 10,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2312.5,
+                    2687.5,
+                    3062.5,
+                    3437.5,
+                    3687.5,
+                    3937.5,
+                    4062.5,
+                    4312.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0030429
+          },
+          "reportedCostUsd": 0.0030429
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 2863,
+              "httpStatus": 200,
+              "costUsd": 0.0024725,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 203,
+                "total_tokens": 6753,
+                "cost": 0.0024725,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0024725,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.0005075
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 0,
+                "endMs": 999.75,
+                "text": "Un rectangle rouge est visible au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1000,
+                "endMs": 3999.75,
+                "text": "Le rectangle rouge change de couleur pour devenir bleu et reste bleu."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4000,
+                "endMs": 5999.75,
+                "text": "Le rectangle bleu change de couleur pour redevenir rouge et reste rouge."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2974,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.0024725
+          },
+          "reportedCostUsd": 0.0024725
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "7129790ebf82f3651154e0ec9563156f8d5feb18ccec061f758bc23973c2e6d0",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2306,
+              "httpStatus": 200,
+              "costUsd": 0.0016458,
+              "usage": {
+                "prompt_tokens": 2036,
+                "completion_tokens": 414,
+                "total_tokens": 2450,
+                "cost": 0.0016458,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0016458,
+                  "upstream_inference_prompt_cost": 0.0006108,
+                  "upstream_inference_completions_cost": 0.001035
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62.5,
+                "endMs": 1562.5,
+                "text": "Un carré bleu apparaît à droite d'un cercle rouge, puis se déplace vers la gauche pour se positionner sous le cercle rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1687.5,
+                "endMs": 2312.5,
+                "text": "Un carré bleu apparaît à droite d'un cercle rouge, puis se déplace vers la gauche pour se positionner sous le cercle rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2437.5,
+                "endMs": 3062.5,
+                "text": "Un carré bleu apparaît à droite d'un cercle rouge, puis se déplace vers la gauche pour se positionner sous le cercle rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3187.5,
+                "endMs": 3812.5,
+                "text": "Un carré bleu apparaît à droite d'un cercle rouge, puis se déplace vers la gauche pour se positionner sous le cercle rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3937.5,
+                "endMs": 4562.5,
+                "text": "Un carré bleu apparaît à droite d'un cercle rouge, puis se déplace vers la gauche pour se positionner sous le cercle rouge."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 2503,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4437.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0016458
+          },
+          "reportedCostUsd": 0.0016458
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1265,
+              "httpStatus": 200,
+              "costUsd": 0.0005176,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 25,
+                "total_tokens": 1542,
+                "cost": 0.0005176,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0005176,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0000625
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2489,
+              "httpStatus": 200,
+              "costUsd": 0.00121735,
+              "usage": {
+                "prompt_tokens": 2036,
+                "completion_tokens": 430,
+                "total_tokens": 2466,
+                "cost": 0.00121735,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1735,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00121735,
+                  "upstream_inference_prompt_cost": 0.00014235,
+                  "upstream_inference_completions_cost": 0.001075
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 62.5,
+                "endMs": 1562.5,
+                "text": "Un carré bleu apparaît à droite du premier cercle rouge, puis un autre carré bleu apparaît à droite du second cercle rouge."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1687.5,
+                "endMs": 2312.5,
+                "text": "Les trois cercles rouges se déplacent vers le bas et la droite, tandis que les trois carrés bleus se déplacent vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2437.5,
+                "endMs": 3062.5,
+                "text": "Les trois cercles rouges se déplacent vers le bas et la gauche, tandis que les trois carrés bleus se déplacent vers le bas et la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3187.5,
+                "endMs": 3812.5,
+                "text": "Les trois cercles rouges se déplacent vers le haut et la droite, tandis que les trois carrés bleus se déplacent vers le haut et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3937.5,
+                "endMs": 4562.5,
+                "text": "Les trois cercles rouges se déplacent vers le haut et la gauche, tandis que les trois carrés bleus se déplacent vers le haut et la droite."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3950,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": null,
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 5,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4437.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.00173495
+          },
+          "reportedCostUsd": 0.00173495
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3365,
+              "httpStatus": 200,
+              "costUsd": 0.00266,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 278,
+                "total_tokens": 6828,
+                "cost": 0.00266,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00266,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.000695
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1750,
+                "endMs": 2500,
+                "text": "Le carré bleu se déplace vers le haut et la gauche, tandis que le cercle rouge se déplace vers le bas et la droite, jusqu'à ce que le cercle rouge soit directement au-dessus du carré bleu."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2500,
+                "endMs": 3750,
+                "text": "Le cercle rouge se déplace vers le haut et la droite, tandis que le carré bleu reste immobile."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4250,
+                "endMs": 4500,
+                "text": "Le cercle rouge se déplace vers le bas et la gauche, tandis que le carré bleu se déplace vers le haut et la droite, jusqu'à ce qu'ils reviennent à leurs positions initiales."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3476,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.00266
+          },
+          "reportedCostUsd": 0.00266
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2417,
+              "httpStatus": 200,
+              "costUsd": 0.0016119,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 408,
+                "total_tokens": 2381,
+                "cost": 0.0016119,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0016119,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.00102
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 100,
+                "endMs": 2300,
+                "text": "Un cercle rouge se déplace de gauche à droite, passant devant un carré bleu qui reste fixe. Le cercle rouge apparaît à gauche du carré bleu à 100 ms, puis se déplace vers la droite, se superposant au carré bleu à 1300 ms, et continue vers la droite, se positionnant à droite du carré bleu à 2300 ms."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2500,
+                "endMs": 4700,
+                "text": "Un cercle rouge se déplace de gauche à droite, passant devant un carré bleu qui reste fixe. Le cercle rouge apparaît à gauche du carré bleu à 2500 ms, puis se déplace vers la droite, se superposant au carré bleu à 3700 ms, et continue vers la droite, se positionnant à droite du carré bleu à 4700 ms."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4900,
+                "endMs": 5900,
+                "text": "Un cercle rouge se déplace de gauche à droite, passant devant un carré bleu qui reste fixe. Le cercle rouge apparaît à gauche du carré bleu à 4900 ms, puis se déplace vers la droite, se superposant au carré bleu à 5500 ms, et continue vers la droite, se positionnant à droite du carré bleu à 5900 ms."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2567,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0016119
+          },
+          "reportedCostUsd": 0.0016119
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "946738ccb1e1c74833506fb4c83fe5a90e709cebcb9f68a228935c0086f668e6",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1152,
+              "httpStatus": 200,
+              "costUsd": 0.0006201,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 66,
+                "total_tokens": 1583,
+                "cost": 0.0006201,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006201,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.000165
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 10,
+              "video": false,
+              "elapsedMs": 2209,
+              "httpStatus": 200,
+              "costUsd": 0.0020958,
+              "usage": {
+                "prompt_tokens": 3761,
+                "completion_tokens": 387,
+                "total_tokens": 4148,
+                "cost": 0.0020958,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0020958,
+                  "upstream_inference_prompt_cost": 0.0011283,
+                  "upstream_inference_completions_cost": 0.0009675
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1187.5,
+                "text": "Un triangle orange apparaît au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187.5,
+                "endMs": 1312.5,
+                "text": "Un triangle orange apparaît au centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312.5,
+                "endMs": 1437.5,
+                "text": "Un triangle orange apparaît au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4312.5,
+                "endMs": 4562.5,
+                "text": "Le triangle orange au centre droit disparaît."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4562.5,
+                "endMs": 4812.5,
+                "text": "Le triangle orange au centre gauche disparaît."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4812.5,
+                "endMs": 5187.5,
+                "text": "Le triangle orange au centre disparaît."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3674,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": {
+                "x": 0,
+                "y": 0,
+                "width": 1,
+                "height": 1
+              },
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 10,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2312.5,
+                    2687.5,
+                    3062.5,
+                    3437.5,
+                    3687.5,
+                    3937.5,
+                    4062.5,
+                    4312.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0027159000000000003
+          },
+          "reportedCostUsd": 0.0027159000000000003
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3159,
+              "httpStatus": 200,
+              "costUsd": 0.002185,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 88,
+                "total_tokens": 6638,
+                "cost": 0.002185,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.002185,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.00022
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 958.25,
+                "endMs": 4125,
+                "text": "Un triangle orange apparaît au centre de l'écran, puis reste immobile."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3268,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.002185
+          },
+          "reportedCostUsd": 0.002185
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2585,
+              "httpStatus": 200,
+              "costUsd": 0.0018044,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 485,
+                "total_tokens": 2458,
+                "cost": 0.0018044,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018044,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0012125
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Un triangle orange apparaît dans le coin inférieur droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1100,
+                "endMs": 1300,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1500,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1500,
+                "endMs": 1700,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 1900,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1900,
+                "endMs": 2100,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2100,
+                "endMs": 2300,
+                "text": "Le triangle orange se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2300,
+                "endMs": 4100,
+                "text": "Le triangle orange se déplace vers la gauche, puis disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2737,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0018044
+          },
+          "reportedCostUsd": 0.0018044
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2116,
+              "httpStatus": 200,
+              "costUsd": 0.0012512,
+              "usage": {
+                "prompt_tokens": 2029,
+                "completion_tokens": 257,
+                "total_tokens": 2286,
+                "cost": 0.0012512,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0012512,
+                  "upstream_inference_prompt_cost": 0.0006087,
+                  "upstream_inference_completions_cost": 0.0006425
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 937,
+                "endMs": 1063,
+                "text": "Un triangle orange apparaît au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1188,
+                "text": "Un triangle orange apparaît au centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187,
+                "endMs": 1313,
+                "text": "Un triangle orange apparaît au centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4062,
+                "endMs": 4313,
+                "text": "Les trois triangles oranges disparaissent simultanément de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 2306,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    187.5,
+                    312.5,
+                    437.5,
+                    562.5,
+                    687.5,
+                    812.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2312.5,
+                    2687.5,
+                    3062.5,
+                    3437.5,
+                    3687.5,
+                    3937.5,
+                    4062.5,
+                    4312.5,
+                    4562.5,
+                    4812.5,
+                    5187.5,
+                    5562.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0012512
+          },
+          "reportedCostUsd": 0.0012512
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "e94c9c309e367e0b2c64adfd932da7509079e5f840e8085dd7cc2b5bc0a2aba7",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 3143,
+              "httpStatus": 200,
+              "costUsd": 0.0022025,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 95,
+                "total_tokens": 6645,
+                "cost": 0.0022025,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0022025,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.0002375
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 875,
+                "endMs": 3875,
+                "text": "Un cercle violet apparaît au centre de l'écran, puis sa taille diminue progressivement jusqu'à disparaître."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3276,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.0022025
+          },
+          "reportedCostUsd": 0.0022025
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2368,
+              "httpStatus": 200,
+              "costUsd": 0.0014944,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 361,
+                "total_tokens": 2334,
+                "cost": 0.0014944,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0014944,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0009025
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1300,
+                "text": "Un cercle violet apparaît en bas à droite de l'écran et se déplace vers le centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 2300,
+                "text": "Le cercle violet se déplace horizontalement vers la droite, puis vers la gauche, tout en diminuant de taille."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2300,
+                "endMs": 3500,
+                "text": "Le cercle violet se déplace horizontalement vers la droite, puis vers la gauche, tout en diminuant de taille."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3500,
+                "endMs": 4100,
+                "text": "Le cercle violet se déplace horizontalement vers la droite, puis vers la gauche, tout en diminuant de taille."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4100,
+                "endMs": 4300,
+                "text": "Le cercle violet disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2524,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0014944
+          },
+          "reportedCostUsd": 0.0014944
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2612,
+              "httpStatus": 200,
+              "costUsd": 0.0018605,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 500,
+                "total_tokens": 2535,
+                "cost": 0.0018605,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018605,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.00125
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1438,
+                "text": "Un cercle violet apparaît en haut à droite de l'écran, puis se déplace vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1438,
+                "endMs": 1938,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1938,
+                "endMs": 2438,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2438,
+                "endMs": 2938,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2938,
+                "endMs": 3438,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3438,
+                "endMs": 3938,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3938,
+                "endMs": 4062,
+                "text": "Le cercle violet se déplace horizontalement vers la droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4062,
+                "endMs": 5937,
+                "text": "Le cercle violet disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 2808,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0018605
+          },
+          "reportedCostUsd": 0.0018605
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1344,
+              "httpStatus": 200,
+              "costUsd": 0.0006751,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 88,
+                "total_tokens": 1605,
+                "cost": 0.0006751,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006751,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.00022
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 10,
+              "video": false,
+              "elapsedMs": 3025,
+              "httpStatus": 200,
+              "costUsd": 0.0024194,
+              "usage": {
+                "prompt_tokens": 3823,
+                "completion_tokens": 509,
+                "total_tokens": 4332,
+                "cost": 0.0024194,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0024194,
+                  "upstream_inference_prompt_cost": 0.0011469,
+                  "upstream_inference_completions_cost": 0.0012725
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 937.5,
+                "endMs": 1062.5,
+                "text": "Un cercle violet apparaît dans la partie supérieure droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1187.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187.5,
+                "endMs": 1312.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312.5,
+                "endMs": 1437.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437.5,
+                "endMs": 1562.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562.5,
+                "endMs": 1687.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1687.5,
+                "endMs": 1812.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1812.5,
+                "endMs": 1937.5,
+                "text": "Le cercle violet se déplace vers la gauche."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 4726,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": {
+                "x": 0.25,
+                "y": 0.25,
+                "width": 0.5,
+                "height": 0.5
+              },
+              "regionReason": "La zone utile est le cercle violet qui apparaît et disparaît. Un rectangle fixe couvrant la zone pertinente pendant toute la séquence est approprié.",
+              "sheets": 10,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0030945
+          },
+          "reportedCostUsd": 0.0030945
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "d61f4c6ea846aa609bd71aef9365300a99c1b27dcf017a1278d7f7fd69f3d69b",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2252,
+              "httpStatus": 200,
+              "costUsd": 0.0014794,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 355,
+                "total_tokens": 2328,
+                "cost": 0.0014794,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0014794,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0008875
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Une barre verte apparaît en bas à droite de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1100,
+                "endMs": 2300,
+                "text": "La barre verte se déplace vers le haut et la gauche, tout en pivotant dans le sens anti-horaire."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2300,
+                "endMs": 3500,
+                "text": "La barre verte continue de se déplacer vers le haut et la gauche, tout en pivotant dans le sens anti-horaire."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3500,
+                "endMs": 4100,
+                "text": "La barre verte continue de se déplacer vers le haut et la gauche, tout en pivotant dans le sens anti-horaire."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4100,
+                "endMs": 4300,
+                "text": "La barre verte disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2412,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0014794
+          },
+          "reportedCostUsd": 0.0014794
+        },
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2835,
+              "httpStatus": 200,
+              "costUsd": 0.001883,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 509,
+                "total_tokens": 2544,
+                "cost": 0.001883,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.001883,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.0012725
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062,
+                "endMs": 1188,
+                "text": "Une barre verte apparaît au centre droit de l'écran, orientée horizontalement."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187,
+                "endMs": 1438,
+                "text": "La barre verte pivote légèrement dans le sens anti-horaire, se déplaçant vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437,
+                "endMs": 2188,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, se déplaçant vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2187,
+                "endMs": 2938,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, se déplaçant vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2937,
+                "endMs": 3688,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, se déplaçant vers le bas et la gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3687,
+                "endMs": 4063,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, se déplaçant vers le bas et la gauche, pour finir presque verticale."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4062,
+                "endMs": 5938,
+                "text": "La barre verte disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3014,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.001883
+          },
+          "reportedCostUsd": 0.001883
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1590,
+              "httpStatus": 200,
+              "costUsd": 0.0006801,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 90,
+                "total_tokens": 1607,
+                "cost": 0.0006801,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0006801,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.000225
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 10,
+              "video": false,
+              "elapsedMs": 2997,
+              "httpStatus": 200,
+              "costUsd": 0.0024694,
+              "usage": {
+                "prompt_tokens": 3823,
+                "completion_tokens": 529,
+                "total_tokens": 4352,
+                "cost": 0.0024694,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0024694,
+                  "upstream_inference_prompt_cost": 0.0011469,
+                  "upstream_inference_completions_cost": 0.0013225
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1187.5,
+                "text": "Une barre verte apparaît au centre droit de l'écran, orientée horizontalement."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187.5,
+                "endMs": 1437.5,
+                "text": "La barre verte pivote dans le sens anti-horaire, passant d'une orientation horizontale à une légère inclinaison vers le bas à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437.5,
+                "endMs": 2187.5,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, augmentant son inclinaison vers le bas à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2187.5,
+                "endMs": 2937.5,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, s'approchant d'une orientation verticale."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 2937.5,
+                "endMs": 3687.5,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, atteignant une orientation presque verticale."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3687.5,
+                "endMs": 4062.5,
+                "text": "La barre verte continue de pivoter dans le sens anti-horaire, atteignant une orientation verticale."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4062.5,
+                "endMs": 5937.5,
+                "text": "La barre verte disparaît de l'écran."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 4893,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": {
+                "x": 0.25,
+                "y": 0.25,
+                "width": 0.5,
+                "height": 0.5
+              },
+              "regionReason": "La barre verte apparaît, se déplace et tourne dans cette zone. Un cadrage plus serré risquerait de masquer une partie de son mouvement.",
+              "sheets": 10,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.0031495
+          },
+          "reportedCostUsd": 0.0031495
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 2901,
+              "httpStatus": 200,
+              "costUsd": 0.00224,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 110,
+                "total_tokens": 6660,
+                "cost": 0.00224,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00224,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.000275
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 875,
+                "endMs": 3875,
+                "text": "Une barre rectangulaire verte apparaît au centre de l'écran et tourne dans le sens des aiguilles d'une montre, passant d'une orientation horizontale à une orientation verticale."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3021,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.00224
+          },
+          "reportedCostUsd": 0.00224
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "question": "Décris précisément le changement ou mouvement bref observé dans ce passage, avec sa couleur, sa direction ou son nombre de répétitions si pertinent.",
+      "inputSha256": "d28114cf16c40152cd3da07aec68f6b57b6143fe463b169772645af172e2f343",
+      "interval": [
+        0,
+        6000
+      ],
+      "results": [
+        {
+          "strategy": "sheets-diverse",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2803,
+              "httpStatus": 200,
+              "costUsd": 0.001928,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 527,
+                "total_tokens": 2562,
+                "cost": 0.001928,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.001928,
+                  "upstream_inference_prompt_cost": 0.0006105,
+                  "upstream_inference_completions_cost": 0.0013175
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1187.5,
+                "text": "Deux points cyan apparaissent au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187.5,
+                "endMs": 1312.5,
+                "text": "Un troisième point cyan apparaît au centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312.5,
+                "endMs": 1437.5,
+                "text": "Un quatrième point cyan apparaît à gauche du centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437.5,
+                "endMs": 1562.5,
+                "text": "Un cinquième point cyan apparaît à droite du centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562.5,
+                "endMs": 1687.5,
+                "text": "Un sixième point cyan apparaît à l'extrême gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3062.5,
+                "endMs": 3187.5,
+                "text": "Les deux points cyan les plus à droite disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3187.5,
+                "endMs": 3312.5,
+                "text": "Les deux points cyan du centre disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3812.5,
+                "endMs": 3937.5,
+                "text": "Les deux points cyan les plus à gauche disparaissent."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 2989,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.001928
+          },
+          "reportedCostUsd": 0.001928
+        },
+        {
+          "strategy": "sheets-crop",
+          "calls": [
+            {
+              "kind": "region-selection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 1115,
+              "httpStatus": 200,
+              "costUsd": 0.0005176,
+              "usage": {
+                "prompt_tokens": 1517,
+                "completion_tokens": 25,
+                "total_tokens": 1542,
+                "cost": 0.0005176,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0005176,
+                  "upstream_inference_prompt_cost": 0.0004551,
+                  "upstream_inference_completions_cost": 0.0000625
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2647,
+              "httpStatus": 200,
+              "costUsd": 0.00145955,
+              "usage": {
+                "prompt_tokens": 2035,
+                "completion_tokens": 527,
+                "total_tokens": 2562,
+                "cost": 0.00145955,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 1735,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.00145955,
+                  "upstream_inference_prompt_cost": 0.00014205,
+                  "upstream_inference_completions_cost": 0.0013175
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 1062.5,
+                "endMs": 1187.5,
+                "text": "Deux points cyan apparaissent au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1187.5,
+                "endMs": 1312.5,
+                "text": "Un troisième point cyan apparaît au centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1312.5,
+                "endMs": 1437.5,
+                "text": "Un quatrième point cyan apparaît à gauche du centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1437.5,
+                "endMs": 1562.5,
+                "text": "Un cinquième point cyan apparaît à droite du centre de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1562.5,
+                "endMs": 1687.5,
+                "text": "Un sixième point cyan apparaît à l'extrême gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3062.5,
+                "endMs": 3187.5,
+                "text": "Les deux points cyan les plus à droite disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3187.5,
+                "endMs": 3312.5,
+                "text": "Les deux points cyan du centre disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3812.5,
+                "endMs": 3937.5,
+                "text": "Les deux points cyan les plus à gauche disparaissent."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 48
+          },
+          "status": "done",
+          "elapsedMs": 3950,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 1,
+              "region": null,
+              "regionReason": "La zone utile occupe presque tout le cadre.",
+              "sheets": 5,
+              "maxSheets": 10,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "pixel-delta + temporal anchors",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    62.5,
+                    937.5,
+                    1062.5,
+                    1187.5,
+                    1312.5,
+                    1437.5,
+                    1562.5,
+                    1687.5,
+                    1812.5,
+                    1937.5,
+                    2062.5,
+                    2187.5,
+                    2312.5,
+                    2437.5,
+                    2562.5,
+                    2687.5,
+                    2812.5,
+                    2937.5,
+                    3062.5,
+                    3187.5,
+                    3312.5,
+                    3437.5,
+                    3562.5,
+                    3687.5,
+                    3812.5,
+                    3937.5,
+                    4062.5,
+                    4562.5,
+                    5187.5,
+                    5937.5
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 48,
+            "cost": 0.00197715
+          },
+          "reportedCostUsd": 0.00197715
+        },
+        {
+          "strategy": "native-slow",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 0,
+              "video": true,
+              "elapsedMs": 2917,
+              "httpStatus": 200,
+              "costUsd": 0.002315,
+              "usage": {
+                "prompt_tokens": 6550,
+                "completion_tokens": 140,
+                "total_tokens": 6690,
+                "cost": 0.002315,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 6192
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.002315,
+                  "upstream_inference_prompt_cost": 0.001965,
+                  "upstream_inference_completions_cost": 0.00035
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 958.25,
+                "endMs": 4083.25,
+                "text": "Deux cercles cyan apparaissent simultanément, l'un à gauche et l'autre à droite de l'écran. Ils se déplacent ensuite horizontalement vers le centre de l'écran, se rapprochant l'un de l'autre. Ils se touchent au centre de l'écran, puis disparaissent simultanément."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 3037,
+          "diagnostics": {
+            "preparation": {
+              "timeScale": 4,
+              "selectionCalls": 0
+            },
+            "sampledFrames": 30,
+            "cost": 0.002315
+          },
+          "reportedCostUsd": 0.002315
+        },
+        {
+          "strategy": "sheets",
+          "calls": [
+            {
+              "kind": "inspection",
+              "model": "google/gemini-2.5-flash",
+              "images": 5,
+              "video": false,
+              "elapsedMs": 2650,
+              "httpStatus": 200,
+              "costUsd": 0.0018344,
+              "usage": {
+                "prompt_tokens": 1973,
+                "completion_tokens": 497,
+                "total_tokens": 2470,
+                "cost": 0.0018344,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "audio_tokens": 0,
+                  "video_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0.0018344,
+                  "upstream_inference_prompt_cost": 0.0005919,
+                  "upstream_inference_completions_cost": 0.0012425
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "image_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            }
+          ],
+          "response": {
+            "observations": [
+              {
+                "id": "moment-1",
+                "startMs": 900,
+                "endMs": 1100,
+                "text": "Deux points cyan apparaissent au centre droit de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1100,
+                "endMs": 1300,
+                "text": "Un point cyan apparaît au centre gauche de l'écran."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1300,
+                "endMs": 1500,
+                "text": "Un point cyan apparaît entre le point le plus à gauche et le point central gauche."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1500,
+                "endMs": 1700,
+                "text": "Un point cyan apparaît entre le point central gauche et le point central droit."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 1700,
+                "endMs": 1900,
+                "text": "Un point cyan apparaît entre le point central droit et le point le plus à droite."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3500,
+                "endMs": 3700,
+                "text": "Les deux points cyan les plus à droite disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 3900,
+                "endMs": 4100,
+                "text": "Les deux points cyan centraux disparaissent."
+              },
+              {
+                "id": "moment-1",
+                "startMs": 4100,
+                "endMs": 4300,
+                "text": "Les deux points cyan les plus à gauche disparaissent."
+              }
+            ],
+            "hypotheses": [],
+            "limits": [],
+            "inspected": {
+              "startMs": 0,
+              "endMs": 6000
+            },
+            "sampledFrames": 30
+          },
+          "status": "done",
+          "elapsedMs": 2800,
+          "diagnostics": {
+            "preparation": {
+              "selectionCalls": 0,
+              "region": null,
+              "regionReason": null,
+              "sheets": 5,
+              "maxSheets": 5,
+              "cell": 384,
+              "order": "left-to-right, top-to-bottom",
+              "audioTimeScale": 1,
+              "selection": "uniform",
+              "selectedTimes": [
+                {
+                  "id": "moment-1",
+                  "times": [
+                    100,
+                    300,
+                    500,
+                    700,
+                    900,
+                    1100,
+                    1300,
+                    1500,
+                    1700,
+                    1900,
+                    2100,
+                    2300,
+                    2500,
+                    2700,
+                    2900,
+                    3100,
+                    3300,
+                    3500,
+                    3700,
+                    3900,
+                    4100,
+                    4300,
+                    4500,
+                    4700,
+                    4900,
+                    5100,
+                    5300,
+                    5500,
+                    5700,
+                    5900
+                  ]
+                }
+              ]
+            },
+            "sampledFrames": 30,
+            "cost": 0.0018344
+          },
+          "reportedCostUsd": 0.0018344
+        }
+      ]
+    }
+  ],
+  "budgetAfter": {
+    "limitUsd": 1,
+    "spentUsd": 0.1798192,
+    "heldUsd": 0,
+    "calls": 263
+  },
+  "status": "pending_full_answer_review"
+}
