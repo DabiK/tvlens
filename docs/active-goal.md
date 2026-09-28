@@ -1,6 +1,6 @@
-# Goal actif — Fiabilité, outils de visionnage et optimisation
+# Goal livré — Fiabilité, outils de visionnage et optimisation
 
-Extension demandée le 29 septembre 2026. Le goal reste actif jusqu'à implémentation et validation ; ce fichier en suit le périmètre étendu.
+Extension demandée le 29 septembre 2026. Ce fichier conserve le périmètre étendu et le bilan de livraison.
 
 ## Inventaire et priorité
 
@@ -14,7 +14,7 @@ Extension demandée le 29 septembre 2026. Le goal reste actif jusqu'à implémen
 - [x] P1 : Auto ciblé, activation prospective, fréquence/dédoublonnage, priorité manuelle, preuves.
 - [x] P2 : réemploi du port de recherche, cache transcription/source ; cache de réexamen borné ; sélection adaptative de fond.
 - [x] P2 : métriques avant/après, retard et coût facturé ; suivi quota Codex.
-- [ ] Validation complète réelle et régressions, documentation, packaging/relance.
+- [x] Validation complète réelle et régressions, documentation, packaging/relance.
 
 ## Existant réutilisé
 
@@ -31,5 +31,14 @@ Livraison supplémentaire autorisée : créer un dépôt GitHub privé avec `gh`
 
 Avancement : 61 tests Node passent ; test Electron synthétique et test vidéo réel
 P0/P1 passent. Enregistrement/remplacement du raccourci macOS vérifiés. Dernière
-validation Auto avec recherche externe réussie. Packaging/relance et push privé en cours.
+validation Auto avec recherche externe réussie. Packaging et relance effectués ; dépôt privé créé et poussé.
 Rapport courant : `docs/viewing-upgrade.md`. Le quota reste à 63 % disponibles.
+
+
+Livraison terminée : https://github.com/DabiK/tvlens (privé), branche `main`.
+61 tests Node, Electron synthétique, deux validations vidéo réelles incluant Auto
+sans web puis avec web, et enregistrement réel du raccourci. Application relancée.
+Budget cumulé OpenRouter : 0,50271496 / 5 USD. Quota Codex : 63 % restants.
+Limites de qualité et de couverture explicitement conservées dans le rapport ;
+la frappe physique du raccourci entre applications n’est pas automatisée.
+Embeddings multimodaux toujours uniquement dans la roadmap.
