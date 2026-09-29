@@ -82,6 +82,7 @@ Gemini : leur score ne constitue pas une mesure de qualité de Luna.
 
 Fonctions de visionnage : moments gardés sur disque avec suppression explicite,
 recherche de passages avec aperçu, et Auto sur consigne à partir de l’activation.
-Le raccourci « Garde ce moment » se configure dans la bibliothèque. La réserve
-Codex est fixée à 55 % disponibles par fenêtre de quota exposée. Voir
+Le raccourci « Garde ce moment » se configure dans la bibliothèque. Le quota
+Codex est affiché à titre informatif, sans seuil de réserve local. OpenRouter
+conserve le suivi des dépenses, sans plafond local. Voir
 [comportements et validation](docs/viewing-upgrade.md).

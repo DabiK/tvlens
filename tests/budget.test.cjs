@@ -26,3 +26,6 @@ test('research limit upgrades preserve spent costs and never silently raise an e
   assert.deepEqual(research.snapshot(),{limitUsd:5,spentUsd:0.2,heldUsd:0,calls:1});
   assert.equal(new TrialBudget(path.join(dir,'original.json')).snapshot().limitUsd,1);
 });
+test('tracking-only ledger removes an existing ceiling without resetting spending or pending calls',()=>{
+ const {UsageLedger}=require('../adapters/trial-budget.cjs');const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tvlens-unlimited-'));try{const file=path.join(dir,'budget.json');const old=new ResearchBudget(file);old.transaction(d=>{d.spentUsd=5.5;d.calls=10;d.reservations={old:{amountUsd:0.1}};});const usage=new UsageLedger(file);const id=usage.reserve('openai/text-embedding-3-small');usage.settle(id,0.0001);assert.equal(usage.snapshot().limitUsd,null);assert.equal(usage.snapshot().spentUsd,5.5001);assert.equal(usage.snapshot().calls,11);assert.equal(usage.snapshot().heldUsd,0.1);assert.equal(new ResearchBudget(file).snapshot().limitUsd,null);}finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

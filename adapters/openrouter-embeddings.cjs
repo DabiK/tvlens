@@ -9,8 +9,8 @@ class OpenRouterEmbeddings {
     const response = await this.fetchImpl('https://openrouter.ai/api/v1/embeddings', { method:'POST', headers:{ Authorization:`Bearer ${this.apiKey}`, 'Content-Type':'application/json' }, signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(8000)]) : AbortSignal.timeout(8000), body:JSON.stringify({ model:MODEL, input:text, encoding_format:'float', provider:{ max_price:{ prompt:0.02 } } }) });
     if (!response.ok) throw new Error(`Embeddings indisponibles (HTTP ${response.status}).`);
     const data = await response.json();
-    // If cost is absent, keep a conservative accounted upper bound, not a fabricated exact charge.
-    this.budget.settle(id, Number.isFinite(data.usage?.cost) ? data.usage.cost : 0.001);
+    // Missing cost stays pending/unknown; never label an estimate as a billed charge.
+    this.budget.settle(id, data.usage?.cost);
     const vector = data.data?.[0]?.embedding;
     if (!Array.isArray(vector) || vector.length < 8 || vector.length > 4096 || vector.some(x => !Number.isFinite(x))) throw new Error('Embedding invalide.');
     this.cache.set(text, vector); if (this.cache.size > 256) this.cache.delete(this.cache.keys().next().value);

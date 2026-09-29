@@ -17,10 +17,16 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', msg => { if (msg.type() === 'error') console.log('Renderer error:', msg.text()); });
   await page.waitForFunction(() => document.querySelector('#source').value === 'test-source');
-  assert.equal(await page.locator('h1').textContent(), 'Le film continue.Le contexte reste.');
+  assert.equal(await page.locator('.preview-empty h1').textContent(), 'Qu’est-ce qu’on regarde ?');
   assert.equal(await page.locator('#mode').textContent(), 'PRÊT À REGARDER');
-  assert.equal(await page.locator('#float-conversation h2').textContent(), 'Demander à TVLens');
+  assert.equal(await page.locator('#float-conversation h2').textContent(), 'Conversation');
   assert.equal(await page.locator('#nav-memory').isVisible(), true);
+  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1000,720));
+  await page.waitForTimeout(150);
+  assert.equal(await page.locator('#ask-form').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight),true,'Composer remains visible at minimum window size');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Minimum full window has no horizontal overflow');
+  await page.screenshot({path:'/tmp/tvlens-minimum.png'});
+  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1340,920));
   await page.screenshot({path:'/tmp/tvlens-home.png',fullPage:true});
   await page.evaluate(() => {
     navigator.mediaDevices.getDisplayMedia = async () => {
@@ -49,27 +55,35 @@ try {
   await page.locator('#close-models').click();
   const launchAt=Date.now();
   await page.locator('#observe').click();
-  await page.waitForFunction(()=>document.body.classList.contains('floating') && document.querySelector('#float-record').textContent==='Pause');
+  await page.waitForFunction(()=>document.querySelector('#float-record').getAttribute('aria-label')==='Mettre TVLens en pause');
+  assert.equal(await page.evaluate(()=>document.body.classList.contains('floating')),false,'Starting observation preserves the selected full mode');
+  await page.locator('#float-mode').click();
+  await page.waitForFunction(()=>document.body.classList.contains('floating'));
   assert.equal(await page.locator('#float-source-dialog').evaluate(el=>el.open),false,'Chosen source starts without a second confirmation');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'Compact mode fits its window');
   assert.equal(await page.locator('#float-bar').evaluate(el=>el.getBoundingClientRect().bottom<=window.innerHeight),true,'Compact toolbar stays inside the visible window');
   await page.waitForFunction(() => document.querySelector('#preview').videoWidth > 0 && document.querySelector('#meter').value > 0);
   await page.waitForFunction(()=>document.querySelectorAll('.moment').length>0);
   const firstCaptureMs=Date.now()-launchAt;
-  assert.match(await page.locator('#float-record').textContent(),/Pause/);
+  assert.match(await page.locator('#float-record').getAttribute('aria-label'),/pause/);
   assert.equal(await page.locator('#float-status').textContent(), 'En direct');
   await page.screenshot({path:'/tmp/tvlens-floating-record.png'});
-  await page.locator('#float-full').click();
+  await menuClick(page,'float-full');
   await page.waitForFunction(() => document.querySelectorAll('.moment').length >= 2, { timeout: 15000 });
   await page.waitForFunction(()=>document.querySelector('.moment-image')?.getAttribute('src')?.startsWith('data:image/jpeg'));
   assert.equal(await page.locator('.moment-image').first().getAttribute('src')?.then(src=>src.startsWith('data:image/jpeg')),true,'Recent moments show captured thumbnails');
   assert.equal(await page.locator('#timeline').evaluate(el=>getComputedStyle(el).display),'flex','Recent moments use a horizontal rail');
   await page.locator('#keep-moment').click();
+  await page.locator('#nav-memory').click();
+  assert.equal(await page.locator('.hero').isVisible(),false,'Memory is a separate view');
+  assert.equal(await page.locator('#nav-memory').getAttribute('aria-current'),'page');
   await page.waitForSelector('#saved-rail .saved-tile');
   assert.match(await page.locator('#saved-rail .saved-tile').first().textContent(),/00:/);
   await page.locator('#saved-rail .saved-tile').first().click();
   assert.equal(await page.locator('#library-dialog').evaluate(el=>el.open),true);
   await page.locator('#close-library').click();
+  await page.locator('#nav-live').click();
+  assert.equal(await page.locator('#memory-section').isVisible(),false);
   const beforeFloating=(await page.evaluate(()=>window.tvlens.state())).segments.length;
   await page.locator('#float-mode').click();
   await page.waitForFunction(()=>document.body.classList.contains('floating'));
@@ -77,16 +91,24 @@ try {
   await page.locator('#float-chat').click();
   await page.waitForFunction(()=>document.body.classList.contains('floating-expanded'));
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'Expanded compact mode fits its window');
-  assert.equal(await page.locator('#float-conversation h2').textContent(),'Demander à TVLens');
+  assert.equal(await page.locator('#float-conversation h2').textContent(),'Conversation');
   await page.waitForFunction(count=>document.querySelectorAll('.moment').length>count,beforeFloating);
+  const heights=await page.locator('#float-bar button').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));
+  assert.equal(new Set(heights).size,1,'All floating actions have the same height');
+  await page.locator('#question').fill('Brouillon conservé');
+  await page.locator('#close-chat').click();
+  await page.locator('#float-chat').click();
+  assert.equal(await page.locator('#question').inputValue(),'Brouillon conservé');
+  assert.equal(await page.locator('#question').evaluate(n=>n===document.activeElement),true);
+  await page.locator('#question').fill('');
   await page.screenshot({path:'/tmp/tvlens-floating.png'});
   await waitState(page,async()=>Boolean((await window.tvlens.recapState()).overview));
-  await page.locator('#open-recap').click();
+  await menuClick(page,'open-recap');
   assert.equal(await page.locator('#recap-dialog').evaluate(el=>el.open),true);
   assert.equal(await page.locator('#recap-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true,'Compact recap fits its dialog');
   await page.screenshot({path:'/tmp/tvlens-recap-small.png'});
   await page.locator('#close-recap').click();
-  await page.locator('#float-full').click();
+  await menuClick(page,'float-full');
   await page.waitForFunction(()=>!document.body.classList.contains('floating'));
   assert.equal(await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isAlwaysOnTop()),false);
   let state = await page.evaluate(() => window.tvlens.state());
@@ -95,6 +117,7 @@ try {
   assert.equal(living.sessionId,state.id);
   assert.ok(living.chapters.length>0);
   for(const chapter of living.chapters)for(const source of chapter.sources)assert.ok(state.segments.some(s=>s.id===source.id),'Recap citations refer to actual source passages');
+  await page.locator('#nav-memory').click();
   await page.locator('#recap-panel .recap-source:not([disabled])').first().click();
   await page.waitForFunction(()=>document.querySelector('#replay').readyState>=2);
   await page.locator('#close-replay').click();
@@ -103,6 +126,7 @@ try {
   assert.ok(archive.sourcePassages.length>0);
   await page.waitForFunction(()=>[...document.querySelectorAll('.moment-image')].filter(img=>img.complete&&img.naturalWidth>0).length>=2);
   await page.screenshot({path:'/tmp/tvlens-recap.png',fullPage:true});
+  await page.locator('#nav-live').click();
   const metadata = JSON.parse(await fs.readFile(path.join(userData, 'sessions', state.id, 'moment-1.json'), 'utf8'));
   assert.ok(metadata.frames.length >= 2);
   const wav = Buffer.from(metadata.audio, 'base64');
@@ -110,7 +134,7 @@ try {
   await page.locator('#question').fill('Que voit-on maintenant ?');
   await page.locator('#send').click();
   await page.waitForFunction(() => document.querySelector('.chat-answer')?.textContent.includes('cercle'));
-  await page.locator('.reference').first().click();
+  await page.locator('#messages .reference').first().click();
   await page.waitForFunction(() => document.querySelector('#replay').readyState >= 2);
   assert.equal(await page.locator('#replay-dialog').evaluate(el => el.open), true);
   await page.locator('#close-replay').click();
@@ -177,17 +201,14 @@ try {
   await page.waitForTimeout(500);
   assert.equal((await page.evaluate(()=>window.tvlens.state())).elapsedMs,pausedTime);
   await page.locator('#float-record').click();
-  await page.waitForFunction(()=>document.querySelector('#float-record').textContent==='Pause');
+  await page.waitForFunction(()=>document.querySelector('#float-record').getAttribute('aria-label')==='Mettre TVLens en pause');
   assert.equal(await page.locator('#float-source-dialog').evaluate(el=>el.open),false,'Resume reuses the verified source');
   const resumed=await page.evaluate(()=>window.tvlens.state());assert.equal(resumed.id,pausedId);assert.ok(resumed.segments.length>=pausedCount);
   assert.ok((await page.evaluate(()=>window.tvlens.deepState())).jobs.length>0);
   await page.waitForFunction(count=>document.querySelectorAll('.moment').length>count,pausedCount);
   if(!liveVideoAgent){
-    await page.locator('#float-explain').click();
-    await page.waitForFunction(()=>document.querySelector('#moment-dialog').open);
-    assert.match(await page.locator('#moment-anchor').textContent(),/Instant retenu/);
-    await page.screenshot({path:'/tmp/tvlens-moment.png'});
-    await page.locator('#moment-summarize').click();
+    await menuClick(page,'float-explain');
+    assert.equal(await page.locator('#moment-dialog').evaluate(el=>el.open),false,'Explain runs directly without a second confirmation');
     await waitState(page,async()=> (await window.tvlens.deepState()).jobs.at(-1)?.intent==='explain-moment' && (await window.tvlens.deepState()).jobs.at(-1)?.status==='done');
     const explained=(await page.evaluate(()=>window.tvlens.deepState())).jobs.at(-1);
     assert.ok(explained.result.citations.length,'Explain remains linked to video evidence');
@@ -202,7 +223,7 @@ try {
     assert.ok(recap.memoryPreview?.passages.length,'Catch-up immediately shows available summaries');
     assert.ok(recap.metrics.firstUsefulMs < recap.metrics.totalMs,'Memory appears before final synthesis');
     assert.ok(await page.locator('.deep-message').last().locator('.preview-passage').count(),'Completed catch-up retains clickable passages');
-    await page.locator('#mark-attention').click();
+    await menuClick(page,'mark-attention');
     await page.waitForFunction(()=>document.querySelector('#attention-status').textContent.startsWith('Tu reprends ici'));
     const frozen=await page.evaluate(()=>window.tvlens.freezeMoment({kind:'catch-up'}));
     assert.ok(frozen.startMs>0,'Explicit attention marker bounds the next catch-up');
@@ -212,7 +233,8 @@ try {
     await page.screenshot({path:'/tmp/tvlens-catch-up.png'});
   }
   await page.locator('#float-record').click();
-  await page.locator('#float-full').click();
+  await menuClick(page,'float-full');
+  await page.locator('#nav-memory').click();
   await page.locator('#new-session').click();
   await waitState(page,async()=>await window.tvlens.state()===null);
   assert.equal(await page.evaluate(()=>window.tvlens.state()),null);
@@ -225,6 +247,7 @@ try {
   await page.locator('#nav-search').click();
   assert.equal(await page.locator('#moment-query').evaluate(el=>document.activeElement===el),true);
   await page.locator('#close-library').click();
+  await page.locator('#models').click();
   await page.locator('.status-details summary').click();
   assert.equal(await page.locator('#cloud-note').isVisible(),true);
   assert.deepEqual(errors, []);
@@ -236,3 +259,5 @@ try {
 }
 
 async function waitState(page,fn){const end=Date.now()+65000;while(Date.now()<end){if(await page.evaluate(fn))return;await page.waitForTimeout(150);}throw Error('State timeout');}
+
+async function menuClick(page,id){await page.locator('#float-menu-toggle').click();await page.locator('#'+id).click();}

@@ -1,5 +1,7 @@
+import { ViewingShell } from './ui/shell.js';
 import { RollingRecorder } from './recording.js';
 const $ = id => document.getElementById(id);
+const shell = new ViewingShell();
 let stream, context, worklet, recorder, configuration, currentState, stopping = false, pendingQuestion = '', lastChatSignature = '';
 let verificationState = { busy: false, jobs: [] }, sessionEpoch = Date.now(), pendingQuestionAt = 0;
 let deepState = { jobs: [] };
@@ -37,14 +39,14 @@ function setConfig(value) {
   updateButtons();
 }
 function updateButtons() {
-  $('float-record').textContent = recorder ? 'Pause' : currentState?.id ? 'Reprendre' : 'Regarder';
+  shell.observation(currentState, Boolean(recorder));
   $('float-status').textContent = recorder ? 'En direct' : currentState?.id ? 'En pause' : 'Prêt';
   $('new-session').disabled=Boolean(stream)||Boolean(currentState?.analyzing)||stopping;
   $('float-record').disabled = floatingCaptureBusy || stopping;
   $('float-record').classList.toggle('recording',Boolean(recorder));
   $('float-record').title = recorder ? 'Mettre en pause ; mémoire et fil Codex conservés' : 'Choisir une source puis lancer la capture et l’analyse';
   $('observe').disabled = !configuration?.canObserve || !$('source').value || Boolean(recorder) || floatingCaptureBusy || stopping;
-  $('observe').textContent = recorder ? 'Analyse en cours' : currentState?.id ? 'Reprendre l’analyse' : 'Regarder avec TVLens';
+  $('observe').textContent = recorder ? 'Analyse en cours' : currentState?.id ? 'Reprendre l’analyse' : 'Lancer l’observation';
   const canAsk = Boolean(currentState?.segments.length || currentState?.history.length);
   for (const id of ['float-explain', 'explain-moment', 'catch-up', 'mark-attention']) $(id).disabled = !currentState?.id || stopping || quickBusy;
   for (const id of ['moment-summarize', 'moment-explain', 'moment-send']) $(id).disabled = quickBusy;
@@ -209,8 +211,9 @@ function renderChat() {
 function renderDeep(job) {
   const node = el('article', 'verification-message deep-message');
   node.dataset.status = job.status;
-  node.append(el('div', 'chat-question', job.question), el('div', 'answer-kind', job.mode==='chat'?'CODEX · CONTEXTE & WEB':'RÉEXAMEN DU PASSAGE'));
-  node.append(el('small','hint',`Question ancrée à ${formatTime(job.anchorMs||0)}${job.startedAt ? ` · Attente ${((job.startedAt-job.createdAt)/1000).toFixed(1)} s` : ''}`));
+  node.append(el('div', 'chat-question', job.question));
+  const metadata = el('details', 'response-details');
+  metadata.append(el('summary', 'hint', 'Détails du traitement'), el('small','hint',`Question ancrée à ${formatTime(job.anchorMs||0)}${job.startedAt ? ` · Attente ${((job.startedAt-job.createdAt)/1000).toFixed(1)} s` : ''}`));
   if(job.status==='queued'){
     node.append(el('p','pending',`En attente · position ${deepState.jobs.filter(j=>j.status==='queued').findIndex(j=>j.id===job.id)+1} dans la file.`));
     const cancel=el('button','secondary cancel-deep','Retirer cette question');cancel.onclick=()=>window.tvlens.cancelDeep(job.id).catch(error=>notice(error.message));node.append(cancel);
@@ -235,7 +238,7 @@ function renderDeep(job) {
     const cancel = el('button', 'secondary cancel-deep', 'Annuler la recherche');
     cancel.onclick = () => window.tvlens.cancelDeep(job.id).catch(error => notice(error.message)); node.append(cancel);
   } else {
-    if(job.finishedAt){const details=el('details','activity-history');details.append(el('summary','hint',`${((job.finishedAt-(job.startedAt||job.createdAt))/1000).toFixed(1)} s · Étapes de la réponse`));const list=el('ol','activity-list');for(const step of job.activity||[])list.append(el('li','',step.message));details.append(list);node.append(details);}
+    if(job.finishedAt){const details=el('details','activity-history');details.append(el('summary','hint',`${((job.finishedAt-(job.startedAt||job.createdAt))/1000).toFixed(1)} s · Étapes de la réponse`));const list=el('ol','activity-list');for(const step of job.activity||[])list.append(el('li','',step.message));details.append(list);metadata.append(details);}
     if (job.status !== 'done') node.append(el('p', 'answer-limits', job.message));
     const result = job.result;
     if (result) {
@@ -260,7 +263,7 @@ function renderDeep(job) {
         }
         node.append(rail);
       }
-      if(job.metrics){const timing=el('details','activity-history');timing.append(el('summary','hint','Temps de réponse'),el('p','hint',`Première information : ${job.metrics.firstUsefulMs===null?'indisponible':(job.metrics.firstUsefulMs/1000).toFixed(2)+' s'} · Attente : ${(job.metrics.waitMs/1000).toFixed(2)} s · Total : ${(job.metrics.endToEndMs/1000).toFixed(2)} s`));node.append(timing);}
+      if(job.metrics){const timing=el('details','activity-history');timing.append(el('summary','hint','Temps de réponse'),el('p','hint',`Première information : ${job.metrics.firstUsefulMs===null?'indisponible':(job.metrics.firstUsefulMs/1000).toFixed(2)+' s'} · Attente : ${(job.metrics.waitMs/1000).toFixed(2)} s · Total : ${(job.metrics.endToEndMs/1000).toFixed(2)} s`));metadata.append(timing);}
       if(result.sources?.length)node.append(el('div','answer-kind','SOURCES WEB'));
       for(const [index,source] of (result.sources||[]).entries()) {
         const link=el('button','source-link',source.title+' ↗');
@@ -269,6 +272,7 @@ function renderDeep(job) {
       }
     }
     if(result?.answer&&result.kind!=='insufficient'&&!job.intent){const more=el('button','secondary','Approfondir');more.onclick=()=>window.tvlens.ask('Approfondis cette réponse : '+result.answer.slice(0,1200)).catch(e=>notice(e.message));node.append(more);if(/\d/.test(result.answer)){const check=el('button','secondary','Vérifier un chiffre');check.onclick=()=>{$('claim').value=result.answer.slice(0,2000);$('verify-dialog').showModal();};node.append(check);}}
+    node.append(metadata);
     const retry = el('button', 'secondary deepen', 'Réexaminer le passage'); retry.onclick = () => (job.intent ? window.tvlens.reexamineMoment(job.id) : window.tvlens.deepen(job.question)).catch(error => notice(error.message)); node.append(retry);
   }
   return node;
@@ -322,7 +326,7 @@ $('verify-form').onsubmit = async event => {
   catch (error) { notice(error.message); }
 };
 window.tvlens.onVerificationState(state => { verificationState = state; renderChat(); updateButtons(); });
-function refreshResearchBudget() { window.tvlens.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés sur ${b.limitUsd} $${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
+function refreshResearchBudget() { window.tvlens.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
 window.tvlens.onDeepState(state => { deepState = state; renderChat(); updateButtons(); refreshResearchBudget(); });
 refreshResearchBudget();
 window.tvlens.deepState().then(state => { deepState = state; renderChat(); }).catch(error => notice(error.message));
@@ -363,13 +367,22 @@ $('models-form').onsubmit=async event=>{event.preventDefault();try{const result=
 let floatingMode=false, floatingExpanded=false;
 async function changeWindowMode(floating,expanded=false){
   const priorFloating=floatingMode, priorExpanded=floatingExpanded;
-  const paint=()=>{document.body.classList.toggle('floating',floatingMode);document.body.classList.toggle('floating-expanded',floatingExpanded);$('float-chat').setAttribute('aria-expanded',String(floatingExpanded));$('float-chat').textContent=floatingExpanded?'−':'…';$('float-chat').setAttribute('aria-label',floatingExpanded?'Réduire le chat':'Ouvrir le chat');};
+  const paint=()=>shell.windowMode(floatingMode,floatingExpanded);
   floatingMode=floating;floatingExpanded=expanded;paint();
   try{await window.tvlens.windowMode({floating,expanded});if(expanded)$('question').focus();}
   catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(e.message);}
 }
 $('float-mode').onclick=()=>changeWindowMode(true);
-$('float-full').onclick=()=>changeWindowMode(false);
+$('float-full').onclick=()=>{shell.show('direct');return changeWindowMode(false);};
+$('close-chat').onclick=()=>changeWindowMode(true,false);
+$('float-menu-toggle').onclick=async()=>{
+  if ($('float-menu').matches(':popover-open')) { $('float-menu').hidePopover(); return; }
+  if (!floatingExpanded) await changeWindowMode(true,true);
+  $('float-menu').showPopover();
+};
+$('float-auto').onclick=()=>$('open-auto').click();
+$('float-memory').onclick=()=>openLibrary();
+$('float-source-change').onclick=async()=>{await stop();shell.show('direct');await changeWindowMode(false);$('source').focus();};
 $('float-chat').onclick=()=>changeWindowMode(true,!floatingExpanded);
 async function watchWithSelectedSource() {
   if (floatingCaptureBusy || stopping || recorder) return;
@@ -378,7 +391,6 @@ async function watchWithSelectedSource() {
     if (!stream && !await startPreview()) throw Error($('state').textContent);
     await observe();
     if (!recorder) throw Error($('notice').textContent || 'L’analyse n’a pas démarré.');
-    await changeWindowMode(true, false);
   } catch (error) { notice(error.message); }
   finally { floatingCaptureBusy = false; updateButtons(); }
 }
@@ -434,7 +446,7 @@ $('new-session').onclick=async()=>{try{await window.tvlens.newSession();}catch(e
 window.tvlens.onReset(()=>{recapRevision++;recapState=null;currentState=null;$('recap-dialog').close();renderRecap();deepState={jobs:[]};selectedMoment=null;$('moment-dialog').close();$('attention-status').textContent='';notice('');momentPreviews.clear();lastChatSignature='';$('timeline').replaceChildren(el('p','placeholder','Les moments observés apparaîtront ici.'));$('messages').replaceChildren();$('elapsed').textContent='00:00';$('mode').textContent='PRÊT À REGARDER';$('memory-status').textContent='Les passages apparaîtront après quelques secondes de capture.';updateButtons();});
 setInterval(()=>{for(const node of document.querySelectorAll('.job-elapsed'))node.textContent=Math.floor((Date.now()-Number(node.dataset.started))/1000)+' s';},1000);
 
-async function keepRecent(){try{const saved=await window.tvlens.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);$('float-keep').textContent='Gardé';setTimeout(()=>$('float-keep').textContent='Garder',2000);await renderSavedRail();}catch(e){notice(e.message);}}
+async function keepRecent(){try{const saved=await window.tvlens.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);shell.bookmarkFeedback(true);setTimeout(()=>shell.bookmarkFeedback(false),2000);await renderSavedRail();}catch(e){notice(e.message);}}
 $('keep-moment').onclick=keepRecent;$('float-keep').onclick=keepRecent;
 let deleteSavedId;
 function momentCard(moment,{savedId}={}){
@@ -448,8 +460,6 @@ async function renderSavedRail(values){values ||= await window.tvlens.savedMomen
 async function openLibrary(){if(floatingMode)await changeWindowMode(true,true);$('library-dialog').showModal();await renderSaved();const settings=await window.tvlens.viewingSettings();$('bookmark-shortcut').value=settings.bookmarkShortcut;$('shortcut-status').textContent=settings.shortcutRegistered?'Raccourci actif.':'Raccourci indisponible : choisis une autre combinaison.';}
 $('open-library').onclick=()=>openLibrary().catch(e=>notice(e.message));$('close-library').onclick=()=>$('library-dialog').close();$('refresh-saved').onclick=()=>renderSaved().catch(e=>notice(e.message));
 $('saved-all').onclick=$('open-library').onclick;
-$('nav-live').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-$('nav-memory').onclick=()=>$('memory-section').scrollIntoView({behavior:'smooth',block:'start'});
 $('nav-saved').onclick=$('open-library').onclick;
 $('nav-search').onclick=async()=>{await openLibrary();$('moment-query').focus();};
 $('moment-search-form').onsubmit=async e=>{e.preventDefault();$('search-status').textContent='Recherche dans la session…';try{const found=await window.tvlens.searchMoments($('moment-query').value);$('search-results').replaceChildren(...found.moments.map(m=>momentCard(m)));$('search-status').textContent=`${found.moments.length} passage(s) · ${found.mode}. ${found.warnings.join(' ')}`;}catch(e){$('search-status').textContent=e.message;}};
@@ -493,7 +503,18 @@ async function submitMoment(intent, question) {
   } catch(error) { $('moment-error').textContent=error.message; }
   finally { quickBusy=false; updateButtons(); }
 }
-$('float-explain').onclick=$('explain-moment').onclick=()=>openMoment();
+async function explainNow() {
+  if (quickBusy || !currentState?.id) return;
+  quickBusy=true; updateButtons(); notice('');
+  try {
+    const frozen=await window.tvlens.freezeMoment({kind:'explain'});
+    if(floatingMode) await changeWindowMode(true,true);
+    await recorder?.checkpoint(frozen.anchorMs);
+    await window.tvlens.explainMoment({token:frozen.token,intent:'explain'});
+  } catch(error) { notice(error.message); }
+  finally { quickBusy=false;updateButtons(); }
+}
+$('float-explain').onclick=$('explain-moment').onclick=explainNow;
 $('close-moment').onclick=()=>$('moment-dialog').close();
 $('moment-summarize').onclick=()=>submitMoment('summarize');
 $('moment-explain').onclick=()=>submitMoment('explain');

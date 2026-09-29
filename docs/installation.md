@@ -149,9 +149,9 @@ Références : [Codex App Server](https://learn.chatgpt.com/docs/app-server),
   Le segment déjà commencé à l’activation est exclu pour ne pas relire le passé.
   Les questions manuelles interrompent Auto, qui reprend plus tard ; les questions
   manuelles entre elles restent en file FIFO. Désactiver Auto n’efface pas ses résultats.
-- Le quota Codex est lu avant l’inférence (cache de 60 secondes), avec réserve de
-  55 % sur chaque fenêtre exposée. Lecture inconnue : inférence suspendue. Les autres
-  applications utilisant le même compte peuvent modifier ce quota entre deux lectures.
+- Le quota Codex est lu à titre informatif (cache de 60 secondes). Aucun seuil
+  de réserve local ne suspend les appels, même si la lecture du quota échoue.
+  Les limites effectives du fournisseur restent appliquées par Codex.
 - Les marque-pages sont dans `~/Library/Application Support/TVLens/saved-moments`.
   Ils ne sont jamais inclus dans le dépôt Git. Les résumés de sessions restent dans `sessions`.
 
@@ -168,3 +168,5 @@ par Chromium : vidéo, son, transcription locale, perception et chat/web sont r�
 La rétention est accélérée à 45 secondes dans ce test ; production : 5 minutes.
 
 Référence du raccourci global : [API Electron globalShortcut](https://www.electronjs.org/docs/latest/api/global-shortcut).
+
+Les plafonds locaux Codex (réserve de 55 %) et OpenRouter (5 USD) ont été supprimés à la demande de l’utilisateur. Le quota Codex reste informatif ; le compteur OpenRouter conserve les dépenses antérieures et distingue les appels au coût inconnu. Les limites imposées par les fournisseurs restent applicables.

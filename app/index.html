@@ -6,14 +6,15 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob: tvlens-media: tvlens-saved:; connect-src 'self'">
   <title>TVLens</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="ui/shell.css">
 </head>
 <body>
   <header class="topbar">
     <strong class="brand">TV<span>Lens</span></strong>
     <nav class="main-nav" aria-label="Navigation principale">
-      <button id="nav-live" class="nav-item active" aria-current="page">● <span>En direct</span></button>
+      <button id="nav-live" class="nav-item active" aria-current="page"><span>Direct</span></button>
       <button id="nav-memory" class="nav-item">◷ <span>Mémoire</span></button>
-      <button id="nav-saved" class="nav-item">☆ <span>Moments gardés</span></button>
+
     </nav>
     <div class="top-actions">
       <button id="nav-search" class="icon-button" aria-label="Rechercher un passage" title="Rechercher un passage">⌕</button>
@@ -22,43 +23,44 @@
     </div>
   </header>
   <nav id="float-bar" aria-label="Actions du mode flottant">
-    <span class="float-grip" title="Déplacer la fenêtre">TV<span>Lens</span></span>
-    <span id="float-status" class="float-status">Prêt</span>
-    <button id="float-record" class="float-action primary" title="Choisir une source et lancer l’analyse">Regarder</button>
-    <button id="float-explain" class="float-action" title="Explique ce moment · Ctrl/Cmd + Maj + E">Explique</button>
-    <button id="float-keep" class="float-action" title="Garder les passages récents" aria-label="Garder ce moment">Garder</button>
-    <button id="float-chat" class="float-action" aria-expanded="false" aria-label="Ouvrir le chat" aria-controls="float-conversation">…</button>
-    <button id="float-full" class="float-action" title="Revenir à l’interface complète" aria-label="Mode complet">↗</button>
-
+    <span class="float-grip" title="Déplacer la fenêtre"><i class="small-dot"></i> TV<span>Lens</span></span>
+    <span id="float-status" class="sr-only">Prêt</span>
+    <button id="float-chat" class="float-action primary" aria-expanded="false" aria-controls="float-conversation">Demander</button>
+    <button id="float-keep" class="float-action square" title="Garder ce moment" aria-label="Garder ce moment">☆</button>
+    <button id="float-record" class="float-action square" title="Lancer l’observation" aria-label="Lancer l’observation">▶</button>
+    <button id="float-menu-toggle" class="float-action square" aria-label="Plus d’actions" aria-expanded="false" aria-controls="float-menu">⋯</button>
   </nav>
+  <div id="float-menu" class="floating-menu" popover>
+    <button id="float-full">Ouvrir la fenêtre complète ↗</button>
+    <button id="float-explain">Explique ce moment</button>
+    <button id="float-auto">Surveillance auto</button>
+    <button id="float-memory">Retrouver un passage</button>
+    <button id="float-source-change">Changer de source</button>
+    <button id="open-recap">Résumé de la session</button>
+    <button id="mark-attention" disabled>Je reprends ici</button>
+  </div>
   <main>
     <section class="workspace">
       <section class="hero" aria-label="Vidéo en cours">
-        <div class="monitor"><video id="preview" autoplay muted playsinline aria-label="Aperçu de la source choisie"></video></div>
-        <div class="hero-shade"></div>
-        <div class="hero-content">
-          <div class="hero-status"><span id="mode" class="badge">PRÊT À REGARDER</span><span id="elapsed" class="time">00:00</span></div>
-          <h1>Le film continue.<br>Le contexte reste.</h1>
-          <p class="hero-description">TVLens garde le fil de ce que tu regardes et retrouve les passages utiles à tes questions.</p>
-          <div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><select id="source"><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Actualiser les sources">↻</button><button id="start" hidden disabled>Aperçu</button></div>
-          <div class="session-controls"><button id="observe" disabled>Regarder avec TVLens</button><button id="stop" class="secondary" disabled>Pause</button><button id="new-session" class="link">Nouvelle session</button></div>
-          <div id="empty" class="sr-only"><span id="state" role="status" aria-live="polite">En attente d’autorisation</span></div>
-          <div id="notice" role="status" aria-live="polite"></div>
-        </div>
-        <div class="monitor-footer"><span id="live-state">Capture inactive</span><div class="sound"><label for="meter">AUDIO</label><meter id="meter" min="0" max="1" value="0">0</meter></div></div>
+        <div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><select id="source"><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Actualiser les sources">↻</button><button id="start" hidden disabled>Aperçu</button></div>
+        <div class="monitor"><video id="preview" autoplay muted playsinline aria-label="Aperçu de la source choisie"></video><div class="preview-empty"><span class="preview-icon">▣</span><h1>Qu’est-ce qu’on regarde ?</h1><p>Choisis une fenêtre et lance l’observation.</p></div></div>
+        <div class="monitor-footer"><details class="coverage-details"><summary id="coverage-summary">Prêt à observer</summary><div><span id="mode" class="badge">PRÊT À REGARDER</span> · <span id="elapsed" class="time">00:00</span><p id="live-state">Capture inactive</p><div class="sound"><label for="meter">Audio</label><meter id="meter" min="0" max="1" value="0">0</meter></div></div></details><div class="session-controls"><button id="observe" disabled>Lancer l’observation</button><button id="stop" class="secondary" disabled>Mettre en pause</button></div></div>
+        <div class="context-row"><div><p class="eyebrow">EN CE MOMENT</p><p id="current-context">Le contexte apparaîtra avec les premières observations.</p></div><button id="keep-moment" class="secondary">☆ Garder ce moment</button></div>
+        <div id="empty" class="sr-only"><span id="state" role="status" aria-live="polite">En attente d’autorisation</span></div>
+        <div id="notice" role="status" aria-live="polite"></div>
       </section>
-      <section id="memory-section" class="memory-section">
+      <section id="memory-section" class="memory-section" hidden><div class="section-heading memory-heading"><h1>Mémoire</h1><div><button id="nav-saved" class="secondary">☆ Moments gardés</button><button id="new-session" class="link">Nouvelle session</button></div></div>
         <section id="recap-panel" class="recap-panel" aria-labelledby="recap-title">
           <div class="section-heading"><div><p class="eyebrow">LE FIL DE TA VIDÉO</p><h2 id="recap-title">Jusqu’ici</h2></div><button id="open-recap-all" class="link">Tous les chapitres ↗</button></div>
           <div id="recap-content"><p class="hint">Le résumé se construit au fil des passages analysés.</p></div>
         </section>
-        <div class="section-heading"><div><p class="eyebrow">TON HISTOIRE EN COURS</p><h2>Moments récents</h2></div><button id="open-library" class="link">Tout voir ↗</button></div><p id="memory-status" class="hint">Les passages apparaîtront après quelques secondes de capture.</p><div id="timeline" class="moment-rail"><p class="placeholder">Les moments observés apparaîtront ici.</p></div><div class="memory-actions"><button id="keep-moment" class="secondary">☆ Garder ce moment</button><button id="open-auto" class="secondary">Surveillance auto</button></div><p id="auto-status" class="hint">Surveillance auto désactivée</p>
+        <div class="section-heading"><div><p class="eyebrow">TON HISTOIRE EN COURS</p><h2>Moments récents</h2></div><button id="open-library" class="link">Tout voir ↗</button></div><p id="memory-status" class="hint">Les passages apparaîtront après quelques secondes de capture.</p><div id="timeline" class="moment-rail"><p class="placeholder">Les moments observés apparaîtront ici.</p></div><div class="memory-actions"><button id="open-auto" class="secondary">Surveillance auto</button></div><p id="auto-status" class="hint">Surveillance auto désactivée</p>
         <div class="section-heading saved-heading"><h2>Moments gardés</h2><button id="saved-all" class="link">Tout voir ↗</button></div><div id="saved-rail" class="saved-rail"><p class="placeholder">Garde un moment pour le retrouver ici.</p></div>
       </section>
     </section>
-    <aside id="float-conversation" class="conversation"><div class="section-heading"><h2>Demander à TVLens</h2><span class="small-dot"></span></div><p id="chat-coverage" class="hint"></p><p id="queue-status" class="hint"></p><div class="quick-actions"><button id="explain-moment" class="secondary" disabled>Explique ce moment</button><button id="catch-up" class="secondary" disabled>J’ai décroché</button><button id="open-recap" class="secondary">Jusqu’ici</button><button id="mark-attention" class="link" disabled>Je reprends ici</button></div><p id="attention-status" class="hint"></p><div id="quick-notice" role="status" aria-live="polite"></div><div id="messages" aria-live="polite"><div class="chat-intro"><h3>Une question sur la vidéo ?</h3><p>TVLens relie ses réponses aux passages observés.</p><button class="suggestion" data-question="Qu’est-ce qui vient de se passer ?">Qu’est-ce qui vient de se passer ?</button><button class="suggestion" data-question="Que faisait le personnage il y a une minute ?">Que faisait le personnage il y a une minute ?</button></div></div><form id="ask-form"><label class="sr-only" for="question">Ta question</label><textarea id="question" rows="2" maxlength="2000" placeholder="Pose une question sur cette vidéo…" disabled></textarea><div class="composer-footer"><span id="ask-status">La réponse utilisera les passages observés.</span><button id="send" type="submit" disabled aria-label="Envoyer la question">↗</button></div><div class="verify-action"><button id="verify" type="button" class="link" disabled>Vérifier un fait ↗</button></div></form></aside>
+    <aside id="float-conversation" class="conversation"><div class="section-heading"><h2>Conversation</h2><button id="close-chat" class="icon-button" aria-label="Réduire le chat">×</button></div><details class="chat-health"><summary id="chat-health-summary">Prêt à observer</summary><p id="chat-coverage" class="hint"></p></details><p id="queue-status" class="hint"></p><div class="quick-actions"><button id="explain-moment" class="secondary" disabled>Explique ce moment</button><button id="catch-up" class="secondary" disabled>J’ai décroché</button></div><p id="attention-status" class="hint"></p><div id="quick-notice" role="status" aria-live="polite"></div><div id="messages" aria-live="polite"><div class="chat-intro"><h3>On garde le fil.</h3><p>Pose ta question. TVLens retrouve le passage et les sources utiles.</p></div></div><form id="ask-form"><label class="sr-only" for="question">Ta question</label><textarea id="question" rows="2" maxlength="2000" placeholder="Pose ta question…" disabled></textarea><div class="composer-footer"><span id="ask-status">La réponse utilisera les passages observés.</span><button id="send" type="submit" disabled aria-label="Envoyer la question">↗</button></div><div class="verify-action"><button id="verify" type="button" class="link" disabled>Vérifier un fait ↗</button></div></form></aside>
   </main>
-  <footer><button id="settings" class="link">Autorisations</button><button id="import" class="link">Charger .env.local</button><span id="provider">Configuration…</span><span id="usage">0 passage</span><details class="status-details"><summary>Détails techniques</summary><div><span id="cloud-note">Images et transcription envoyées à Codex. Audio transcrit localement.</span><span id="research-usage"></span><span id="quota-status"></span></div></details></footer>
+
   <dialog id="recap-dialog" aria-labelledby="recap-dialog-title"><div class="section-heading"><h2 id="recap-dialog-title">Jusqu’ici</h2><button id="close-recap" class="secondary">Fermer</button></div><p class="hint">Le fil de cette session, relié aux passages observés.</p><div id="recap-dialog-content"></div></dialog>
   <dialog id="moment-dialog" aria-labelledby="moment-title">
     <div class="section-heading"><h2 id="moment-title">Cet instant</h2><button id="close-moment" class="secondary">Fermer</button></div>
@@ -87,7 +89,7 @@
     <label for="inspection-model">Codex · réexamen des passages</label><input list="codex-models" id="inspection-model" maxlength="160" required autocomplete="off">
     <p class="hint">Luna est utilisé par défaut pour la vision. Les paroles sont transcrites localement avec Whisper. Ces choix s’appliquent à une nouvelle session. OpenRouter sert uniquement aux embeddings.</p>
     <div class="verify-submit"><span id="models-status" role="status"></span><button type="submit">Enregistrer</button></div>
-  </form></dialog>
+  </form>  <section class="technical-settings"><button id="settings" class="link">Autorisations</button><button id="import" class="link">Charger .env.local</button><span id="provider">Configuration…</span><span id="usage">0 passage</span><details class="status-details"><summary>Détails techniques</summary><div><span id="cloud-note">Images et transcription envoyées à Codex. Audio transcrit localement.</span><span id="research-usage"></span><span id="quota-status"></span></div></details></section></dialog>
   <dialog id="auto-dialog"><div class="section-heading"><h2>Surveillance auto</h2><button id="close-auto" class="secondary">Fermer</button></div><form id="auto-form"><label for="auto-instruction">Que veux-tu surveiller ?</label><textarea id="auto-instruction" rows="3" maxlength="1500" required placeholder="Surveille les chiffres sur l’économie et vérifie les affirmations précises."></textarea><label for="auto-frequency">Intervalle minimal (secondes de visionnage)</label><input id="auto-frequency" type="number" min="15" max="300" value="30" required><p class="hint">Commence à l’activation, sans relire le passé. Les questions manuelles sont prioritaires. Chaque recherche reste limitée à 60 secondes ; consommation du quota Codex.</p><button type="submit">Activer / mettre à jour</button><button id="stop-auto" type="button" class="secondary">Désactiver</button><p id="auto-detail" class="hint"></p></form><div id="auto-results" class="moment-cards"></div></dialog>
   <dialog id="library-dialog" aria-labelledby="library-title"><div class="section-heading"><h2 id="library-title">Retrouver un moment</h2><button id="close-library" class="secondary">Fermer</button></div>
     <form id="moment-search-form" class="source-row"><input id="moment-query" maxlength="2000" placeholder="Une phrase, un sujet, il y a deux minutes…" required><button type="submit">Chercher</button></form>

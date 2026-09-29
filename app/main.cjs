@@ -17,7 +17,7 @@ const { SessionClock } = require('../core/session-clock.cjs');
 const { LocalSessionStore, cleanupRawMedia } = require('../adapters/local-store.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
-const { TrialBudget, ResearchBudget } = require('../adapters/trial-budget.cjs');
+const { UsageLedger } = require('../adapters/trial-budget.cjs');
 const { VerificationService } = require('../core/verification.cjs');
 const { CodexVerifier } = require('../adapters/codex-verifier.cjs');
 const { VerificationArchive } = require('../adapters/verification-archive.cjs');
@@ -91,9 +91,10 @@ app.whenReady().then(async () => {
     if(!value || typeof value.floating!=='boolean' || typeof value.expanded!=='boolean')throw new Error('Mode de fenêtre invalide.');
     if(value.floating){
       if(!floating)fullBounds=window.getBounds();
-      window.setMinimumSize(360,80); window.setAlwaysOnTop(true,'floating');
+      window.setMinimumSize(420,96); window.setAlwaysOnTop(true,'floating');
       const area=screen.getDisplayMatching(window.getBounds()).workArea;
-      const height=value.expanded?Math.min(600,area.height):92;
+      const chromeHeight=window.getBounds().height-window.getContentBounds().height;
+      const height=value.expanded?Math.min(620+chromeHeight,area.height):64+chromeHeight;
       const old=window.getBounds();
       window.setBounds({x:Math.max(area.x,Math.min(floating?old.x:area.x+area.width-440,area.x+area.width-420)),y:Math.max(area.y,Math.min(floating?old.y:area.y+60,area.y+area.height-height)),width:420,height});
     }else{window.setAlwaysOnTop(false);window.setMinimumSize(1000,720);window.setBounds(fullBounds);}
@@ -145,7 +146,7 @@ app.whenReady().then(async () => {
   });
   handle('deep:state', () => deep.snapshot());
   handle('codex:quota',()=>quota.snapshot());
-  handle('deep:budget', () => new ResearchBudget(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json')).snapshot());
+  handle('deep:budget', () => new UsageLedger(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json')).snapshot());
   handle('deep:cancel', id => deep.cancel('Recherche annulée.',id));
   handle('deep:ask', question => {auto?.prioritizeManual();return deep.start(question);});
   verifierAdapter = smoke && !process.argv.includes('--live-verifier') ? {
@@ -222,7 +223,7 @@ app.whenReady().then(async () => {
       }]})
     } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
     store = new LocalSessionStore(path.join(sessionsRoot, id));
-    const researchBudget = new ResearchBudget(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json'));
+    const researchBudget = new UsageLedger(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json'));
     search = new MomentSearch({ embeddings: (smoke && !liveInspection)||!config.apiKey ? null : new OpenRouterEmbeddings({ apiKey: config.apiKey, budget: researchBudget }), cache: new EmbeddingStore(path.join(store.root, 'embeddings.json'), EMBEDDING_MODEL) });
     const transcriber=new LocalTranscriber({binary:config.whisperBinary,model:config.whisperModel||path.join(path.dirname(config.researchBudgetFile||path.join(process.cwd(),'.local','research-budget.json')),'models','ggml-base.bin')});
     saved.transcriber=transcriber;
