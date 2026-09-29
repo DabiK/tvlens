@@ -59,15 +59,16 @@ test('external bridge authenticates capability and real MCP stdio tool calls rea
 });
 test('real clip decoding spans a segment boundary, aligns PCM audio and constructs native-video evidence',async()=>{
  const {run,ClipInspector}=require('../adapters/clip-inspector.cjs');
+ const ffmpeg=process.env.TVLENS_FFMPEG||(process.platform==='darwin'?'/opt/homebrew/bin/ffmpeg':'ffmpeg');
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-decode-test-'));
  try{
   const media=new LocalSessionStore(dir);await fs.mkdir(dir,{recursive:true});
   for(const id of ['moment-1','moment-2']){
-   await run('/opt/homebrew/bin/ffmpeg',['-hide_banner','-loglevel','error','-f','lavfi','-i','color=c=red:s=160x90:r=10:d=2','-c:v','libvpx','-deadline','realtime',media.file(id,'webm')]);
+   await run(ffmpeg,['-hide_banner','-loglevel','error','-f','lavfi','-i','color=c=red:s=160x90:r=10:d=2','-c:v','libvpx','-deadline','realtime',media.file(id,'webm')]);
    const wav=Buffer.alloc(44+2*16000*2);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(16000,24);wav.writeUInt32LE(32000,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(wav.length-44,40);
    await fs.writeFile(media.file(id,'json'),JSON.stringify({frames:[],audio:wav.toString('base64')}));
   }
-  let evidence;const inspector=new ClipInspector({media,model:{inspect:async input=>{evidence=input.segments;return {observations:[],hypotheses:[],limits:[]}}}});
+  let evidence;const inspector=new ClipInspector({media,ffmpeg,model:{inspect:async input=>{evidence=input.segments;return {observations:[],hypotheses:[],limits:[]}}}});
   const result=await inspector.inspect({question:'Action ?',startMs:1000,endMs:3000,segments:[{id:'moment-1',startMs:0,endMs:2000},{id:'moment-2',startMs:2000,endMs:4000}],signal:AbortSignal.timeout(10000)});
   assert.equal(evidence.length,2);assert.ok(result.sampledFrames>=12&&result.sampledFrames<=32);
   for(const s of evidence){

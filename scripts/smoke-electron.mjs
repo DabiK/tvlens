@@ -17,6 +17,11 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', msg => { if (msg.type() === 'error') console.log('Renderer error:', msg.text()); });
   await page.waitForFunction(() => document.querySelector('#source').value === 'test-source');
+  assert.equal(await page.locator('h1').textContent(), 'Le film continue.Le contexte reste.');
+  assert.equal(await page.locator('#mode').textContent(), 'PRÊT À REGARDER');
+  assert.equal(await page.locator('#float-conversation h2').textContent(), 'Demander à TVLens');
+  assert.equal(await page.locator('#nav-memory').isVisible(), true);
+  await page.screenshot({path:'/tmp/tvlens-home.png',fullPage:true});
   await page.evaluate(() => {
     navigator.mediaDevices.getDisplayMedia = async () => {
       const canvas = document.createElement('canvas'); canvas.width = 640; canvas.height = 360;
@@ -43,6 +48,10 @@ try {
   await waitState(page,async()=>!(await window.tvlens.models()).codexModel);
   await page.locator('#close-models').click();
   await page.locator('#float-mode').click();
+  await page.waitForFunction(()=>document.body.classList.contains('floating'));
+  assert.equal(await page.locator('#float-status').textContent(), 'Prêt');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'Compact mode fits its window');
+  assert.equal(await page.locator('#float-bar').evaluate(el=>el.getBoundingClientRect().bottom<=window.innerHeight),true,'Compact toolbar stays inside the visible window');
   await page.locator('#float-record').click();
   await page.waitForFunction(()=>document.querySelector('#float-source').options.length>0);
   await page.locator('#float-source').selectOption('test-source');
@@ -50,15 +59,26 @@ try {
   await page.waitForFunction(()=>!document.querySelector('#float-source-dialog').open);
   await page.waitForFunction(() => document.querySelector('#preview').videoWidth > 0 && document.querySelector('#meter').value > 0);
   assert.match(await page.locator('#float-record').textContent(),/Pause/);
+  assert.equal(await page.locator('#float-status').textContent(), 'En direct');
   await page.screenshot({path:'/tmp/tvlens-floating-record.png'});
   await page.locator('#float-full').click();
   await page.waitForFunction(() => document.querySelectorAll('.moment').length >= 2, { timeout: 15000 });
+  assert.equal(await page.locator('.moment-image').first().getAttribute('src')?.then(src=>src.startsWith('data:image/jpeg')),true,'Recent moments show captured thumbnails');
+  assert.equal(await page.locator('#timeline').evaluate(el=>getComputedStyle(el).display),'flex','Recent moments use a horizontal rail');
+  await page.locator('#keep-moment').click();
+  await page.waitForSelector('#saved-rail .saved-tile');
+  assert.match(await page.locator('#saved-rail .saved-tile').first().textContent(),/00:/);
+  await page.locator('#saved-rail .saved-tile').first().click();
+  assert.equal(await page.locator('#library-dialog').evaluate(el=>el.open),true);
+  await page.locator('#close-library').click();
   const beforeFloating=(await page.evaluate(()=>window.tvlens.state())).segments.length;
   await page.locator('#float-mode').click();
   await page.waitForFunction(()=>document.body.classList.contains('floating'));
   assert.equal(await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isAlwaysOnTop()),true);
   await page.locator('#float-chat').click();
   await page.waitForFunction(()=>document.body.classList.contains('floating-expanded'));
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'Expanded compact mode fits its window');
+  assert.equal(await page.locator('#float-conversation h2').textContent(),'Demander à TVLens');
   await page.waitForFunction(count=>document.querySelectorAll('.moment').length>count,beforeFloating);
   await page.screenshot({path:'/tmp/tvlens-floating.png'});
   await page.locator('#float-full').click();
@@ -129,10 +149,11 @@ try {
   await page.waitForSelector('.deep-message[data-status="queued"]');
   await waitState(page,async () => (await window.tvlens.deepState()).jobs.at(-1)?.status === 'done');
   if (liveVideoAgent) await fs.writeFile(liveInspection ? 'docs/reexamen-ui-live.json' : 'docs/mcp-ui-live.json', JSON.stringify({ date:new Date().toISOString(), deep, captureContinued:true, newQuestionQueued:true, deepReplay:true, note:liveInspection ? 'Real persistent Codex, dynamic video tools, OpenRouter embeddings, Luna image inspection and local Whisper; synthetic capture and background observation.' : 'Real persistent Codex and dynamic video tools, synthetic capture and deterministic inspection adapter; no OpenRouter calls.' }, null, 2));
-  await page.screenshot({ path: '/tmp/tvlens-smoke.png' });
+  await page.screenshot({ path: '/tmp/tvlens-smoke.png',fullPage:true });
   await page.locator('#float-mode').click();
   await page.locator('#float-record').click();
-  await page.waitForFunction(() => document.querySelector('#mode').textContent === 'CAPTURE ARRÊTÉE');
+  await page.waitForFunction(() => document.querySelector('#mode').textContent === 'EN PAUSE');
+  assert.equal(await page.locator('#float-status').textContent(),'En pause');
   state = await page.evaluate(() => window.tvlens.state());
   assert.equal(state.accepting, false); assert.equal((await page.evaluate(()=>window.tvlens.deepState())).jobs.filter(j=>j.status==='done').length,5);
   const pausedId=state.id,pausedCount=state.segments.length,pausedTime=state.elapsedMs;
@@ -151,6 +172,14 @@ try {
   await waitState(page,async()=>await window.tvlens.state()===null);
   assert.equal(await page.evaluate(()=>window.tvlens.state()),null);
   assert.equal((await page.evaluate(()=>window.tvlens.deepState())).jobs.length,0);
+  await page.locator('#nav-saved').click();
+  assert.equal(await page.locator('#library-dialog').evaluate(el=>el.open),true);
+  await page.locator('#close-library').click();
+  await page.locator('#nav-search').click();
+  assert.equal(await page.locator('#moment-query').evaluate(el=>document.activeElement===el),true);
+  await page.locator('#close-library').click();
+  await page.locator('.status-details summary').click();
+  assert.equal(await page.locator('#cloud-note').isVisible(),true);
   assert.deepEqual(errors, []);
   console.log(JSON.stringify({ result: 'PASS', segments: state.segments.length, audio: '16kHz WAV', replay: 'WebM via range protocol', ask: 'cited answer', verification: liveVerifier ? 'real Codex web search' : 'fake success + error', screenshot: '/tmp/tvlens-smoke.png' }));
   await page.evaluate(() => window.__fixtureCleanup());

@@ -12,8 +12,8 @@ export function encodeWav(chunks, sampleRate) {
   return new Uint8Array(bytes);
 }
 export class RollingRecorder {
-  constructor({ stream, video, audioContext, flushAudio, session, onError }) {
-    Object.assign(this, { stream, video, audioContext, flushAudio, session, onError });
+  constructor({ stream, video, audioContext, flushAudio, session, onError, onSegment }) {
+    Object.assign(this, { stream, video, audioContext, flushAudio, session, onError, onSegment });
     this.origin = performance.now() - session.elapsedMs;
     this.canvas = document.createElement('canvas'); this.canvas.width = 768;
     this.deltaCanvas=document.createElement('canvas');this.deltaCanvas.width=64;this.deltaCanvas.height=36;this.deltaContext=this.deltaCanvas.getContext('2d',{willReadFrequently:true});
@@ -57,7 +57,8 @@ export class RollingRecorder {
     const submit = async () => {
       const clip = new Uint8Array(await new Blob(item.blobs, { type: 'video/webm' }).arrayBuffer());
       const audio = item.audio.length ? encodeWav(item.audio, this.audioContext.sampleRate) : null;
-      await window.tvlens.ingest({ sessionId: this.session.id, startMs: item.startMs, endMs, frames: item.frames, audio, clip });
+      const id = await window.tvlens.ingest({ sessionId: this.session.id, startMs: item.startMs, endMs, frames: item.frames, audio, clip });
+      this.onSegment?.(id, item.frames[0]?.dataUrl);
     };
     const task = submit().catch(error => this.onError(error.message));
     this.pending.add(task); task.finally(() => this.pending.delete(task));
