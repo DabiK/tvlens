@@ -1,0 +1,43 @@
+{
+  "scope": "Real Spring video, live Codex perception/chat/recap, local Whisper; isolated Electron profile and file capture, not OS desktop capture",
+  "media": "Spring, Blender Foundation (CC BY 4.0), input starts at 25 seconds",
+  "screenshots": [
+    "direct.png",
+    "memory.png",
+    "floating-bar.png",
+    "floating-chat.png"
+  ],
+  "rendererErrors": [],
+  "completedChat": "done",
+  "answer": "Le décor est un paysage de haute montagne : un lac bleu entre des sommets rocheux enneigés, des nuages bas et une crête rocheuse. Une minuscule silhouette sombre semble apparaître sur la crête, sans personnage clairement identifiable.",
+  "citations": [
+    {
+      "id": "moment-1",
+      "startMs": 1.436916999999994,
+      "endMs": 2034.8369170059605
+    },
+    {
+      "id": "moment-2",
+      "startMs": 2037.436917,
+      "endMs": 10057.73691701192
+    }
+  ],
+  "oneRunMetricsMs": {
+    "waitMs": 1,
+    "contextMs": 0,
+    "firstProgressMs": 0,
+    "firstUsefulMs": 2370,
+    "totalMs": 6697,
+    "endToEndMs": 6698,
+    "sourcesReused": 0,
+    "inspectionCacheHits": 0,
+    "tools": []
+  },
+  "recapAvailable": true,
+  "limits": [
+    "One short run, not a benchmark",
+    "No dialogue in Spring",
+    "Background analysis was behind playback; visible in screenshots",
+    "Initial capture script failed by polling before session existed; then async wait conditions returned early. Fixed with explicit awaited polling. Early captures were replaced."
+  ]
+}

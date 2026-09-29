@@ -23,6 +23,8 @@ Les actions de la barre font 36 px de haut. La hauteur de la fenêtre tient comp
 ## Organisation du code
 
 - `app/ui/shell.js` : adaptateur de présentation (navigation, état visuel, chrome de fenêtre), sans accès à Codex, au stockage ou aux API.
+- `app/ui/recap-view.js` : rendu du récapitulatif avec effets de relecture et notification injectés.
+- `app/ui/format.js` : helpers de création DOM et temps affichés.
 - `app/ui/icons.js` : pictogrammes locaux fixes, sans SVG externe ou contenu généré interprété.
 - `app/ui/shell.css` : composition des deux vues et du mode flottant.
 - `app/style.css` : fondations et composants existants (réponses, sources, dialogues, relecture).

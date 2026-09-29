@@ -1,88 +1,132 @@
+<div align="center">
+
 # TVLens
 
-Compagnon de visionnage macOS : capture, mémoire temporelle, chat contextuel et
-recherche web. [Architecture hexagonale](docs/architecture.md).
+### Le film continue. Le contexte reste.
 
-## Démarrer
+Un compagnon de visionnage qui voit, écoute et retrouve le passage dont tu parles.
+
+**macOS · Mémoire temporelle · Chat & sources · Architecture hexagonale**
+
+[Installer](docs/installation.md) · [Découvrir l’interface](docs/interface.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+
+</div>
+
+![TVLens : aperçu vidéo et conversation contextuelle](screenshots/current/direct.png)
+
+> « Qu’est-ce qui vient de se passer ? » — « Explique ce moment. » — « Tu as une source ? »
+>
+> TVLens rattache la question au moment où tu la poses, retrouve les passages utiles et peut consulter des sources externes. Tu continues à regarder.
+
+**Prototype fonctionnel sur Mac.** L’inférence visuelle et le chat utilisent aujourd’hui Codex ; l’audio est transcrit localement. L’exécution sur ASUS Ascent GX10 est une cible de développement, pas une capacité déjà validée.
+
+## Une interface qui laisse la place au contenu
+
+**Direct** réunit le flux, une courte description du contexte et la conversation. **Mémoire** rassemble les résumés, passages et moments conservés.
+
+Le **mode flottant** reste au-dessus du lecteur. Déplie le chat quand tu en as besoin, puis replie-le sans interrompre l’observation.
+
+<p align="center">
+  <img src="screenshots/current/floating-bar.png" width="420" alt="Barre flottante : Demander, Garder, Pause et menu">
+</p>
+<p align="center">
+  <img src="screenshots/current/floating-chat.png" width="420" alt="Conversation déployée dans le mode flottant">
+</p>
+
+<details>
+<summary>Voir la mémoire de session</summary>
+
+![Résumé et passages de la session](screenshots/current/memory.png)
+
+</details>
+
+*Captures de l’application avec un extrait réel de **Spring**. Leur protocole de production, les limites et les crédits figurent dans [la documentation des captures](screenshots/current/README.md).*
+
+## Ce que tu peux faire
+
+| Pendant le visionnage | TVLens |
+| --- | --- |
+| **Poser une question** | Utilise les observations récentes et le fil de conversation ; recherche sur le web lorsque nécessaire. |
+| **Expliquer un instant** | Ancre l’action au clic et permet de réexaminer un passage avec des images plus rapprochées. |
+| **Rattraper le fil** | « J’ai décroché » retrouve les passages depuis le dernier repère. |
+| **Revoir une preuve** | Les citations temporelles ouvrent le passage disponible ; les sources web ouvrent l’article associé. |
+| **Garder un moment** | Conserve le média et sa transcription sur le Mac jusqu’à suppression explicite. |
+| **Retrouver un passage** | Recherche temporelle, textuelle et, avec une clé OpenRouter, sémantique. |
+| **Activer Auto** | Surveille une consigne à partir de son activation, à une fréquence réglable. Les questions manuelles restent prioritaires. |
+
+Les questions sont traitées dans l’ordre, avec annulation individuelle. Pause/reprise conserve le contexte de la session. Les étapes affichées correspondent au traitement observé ; aucun raisonnement interne n’est exposé.
+
+## Essayer sur son Mac
+
+Prérequis : **Mac Apple Silicon, Node.js 24+, Homebrew et Codex CLI connecté**. Le guide détaille les autorisations d’écran et de son système.
 
 ```sh
-npm install
+npm ci
+brew install ffmpeg
 npm run setup:speech
 npm run setup:codex
 npm start
 ```
 
-Codex CLI doit être installé et connecté. FFmpeg et Whisper utilisent Homebrew sur
-Apple Silicon. La clé `OPENROUTER_API_KEY` dans `.env.local` est facultative pour le
-chat et la vision ; elle active les embeddings de recherche. Ne jamais committer
-ce fichier. [Installation complète](docs/installation.md).
+Choisis une fenêtre vidéo, puis **Lancer l’observation**. Le mode choisi reste ouvert. Une fois les premiers passages analysés, pose une question ou clique sur **Explique ce moment**.
 
-## Utiliser
+La clé OpenRouter est **facultative** : elle sert uniquement aux embeddings texte. Elle se configure dans `.env.local`, jamais dans le dépôt. Sans clé, la recherche temporelle et lexicale reste disponible.
 
-1. Choisir une fenêtre/écran et cliquer **Regarder avec TVLens** : capture et
-   analyse démarrent ensemble en mode flottant. La dernière source disponible est
-   proposée. Premier segment de 2 secondes, puis segments de 8 secondes.
-2. **Explique ce moment** (Cmd/Ctrl+Maj+E si disponible) fige l’instant pour le
-   résumer, l’expliquer ou poser une question. Le réexamen conserve cet instant.
-3. **J’ai décroché** résume depuis le dernier repère ; **Je reprends ici** pose
-   un nouveau repère. Le chat montre un aperçu sourcé pendant la réponse.
-4. **Jusqu’ici** construit un aperçu global et des chapitres horodatés, accessibles
-   aussi en petite fenêtre. Les mises à jour automatiques laissent la priorité
-   aux questions. Les textes restent disponibles après expiration des vidéos.
-5. **Pause / Reprendre** conserve la mémoire et la discussion. Le temps de capture
-   s’arrête pendant la pause. **Nouvelle session** repart de zéro après arrêt.
-6. **Réglages IA** choisit les modèles du chat et de la perception. Fermer l’app
-   termine le fil Codex en mémoire ; les archives textuelles restent sur disque.
-
-Détails : [actions et latence](docs/friction-latency.md),
-[résumé progressif](docs/living-recap.md).
-
-[![Jusqu’ici dans TVLens](screenshots/tvlens-jusqu-ici.png)](screenshots/tvlens-jusqu-ici.png)
-[Voir la version compacte](screenshots/tvlens-jusqu-ici-small.png).
-La capture illustrée utilise une vidéo et une synthèse de test.
-
-## Exécution actuelle
-
-- Chat : processus Codex App Server maintenu ouvert, un fil par session de visionnage.
-- Images/résumés et réexamen : **GPT-6 Luna via Codex** par défaut.
-- Paroles : **Whisper base multilingue en local**, puis texte envoyé à Codex.
-- Réexamen visuel : planches de six images horodatées avec sélection adaptative.
-- OpenRouter : uniquement les embeddings texte, avec cache des descriptions et
-  requêtes identiques. Les anciens essais d’inférence restent comptabilisés.
-- Capture indépendante, références limitées au préfixe observé, questions en file FIFO et
-  annulation ciblée, limite de 60 secondes de traitement hors attente. Cinq minutes de média en temps observé,
-  puis résumés conservés pour la session.
-
-Les images et les transcriptions vont à Codex. Ce POC ne fait donc pas encore
-l’inférence visuelle localement sur GX10. Les embeddings audio/image restent dans
-la roadmap. Les anciennes stratégies OpenRouter restent des adaptateurs historiques,
-mais ne sont plus utilisées par l’app.
-
-## Vérification
+Pour créer l’app macOS :
 
 ```sh
-npm test
-npm run test:electron
-npm run test:electron:full-live
-npm run test:codex:speed
 npm run package:mac
 npm run open:mac
 ```
 
-La dernière validation couvre **96 tests unitaires** et le parcours Electron avec
-modèles simulés : [rapport actuel](docs/validation.md). La qualité du récapitulatif
-avec le fournisseur réel reste à valider. Sous Linux sans affichage, lancer
-`xvfb-run -a npm run test:electron`.
+→ [Installation, modèles et dépannage](docs/installation.md)
 
-Les essais live consomment le quota Codex et éventuellement les embeddings OpenRouter.
-[Mesures et limites actuelles](docs/session-optimization.md).
-Les [comparaisons vidéo/planches historiques](docs/strategy-comparison.md) utilisaient
-Gemini : leur score ne constitue pas une mesure de qualité de Luna.
+## Un cœur portable, des adaptateurs remplaçables
 
+La capture produit des segments horodatés. Le cœur gère mémoire, ordre des questions, rétention et validation des références. Les fournisseurs d’IA et le stockage sont injectés derrière des ports.
 
-Fonctions de visionnage : moments gardés sur disque avec suppression explicite,
-recherche de passages avec aperçu, et Auto sur consigne à partir de l’activation.
-Le raccourci « Garde ce moment » se configure dans la bibliothèque. Le quota
-Codex est affiché à titre informatif, sans seuil de réserve local. OpenRouter
-conserve le suivi des dépenses, sans plafond local. Voir
-[comportements et validation](docs/viewing-upgrade.md).
+| Couche | Implémentation actuelle |
+| --- | --- |
+| Capture | Electron, MediaRecorder et AudioWorklet ; vidéo WebM, images et audio WAV |
+| Perception et réexamen | Codex, Luna par défaut ; planches d’images horodatées et sélection adaptative |
+| Paroles | Whisper multilingue exécuté sur le Mac |
+| Conversation | Codex App Server persistant, un fil par session ; outils vidéo et recherche web |
+| Mémoire | Médias récents sur disque, historique textuel et récapitulatif progressif |
+| Recherche sémantique | Embeddings texte OpenRouter, avec cache et repli lexical |
+| Interface | Vues Direct / Mémoire et chat flottant partageant le même état |
+
+→ [Architecture et frontières de dépendance](docs/architecture.md) · [Contribuer](CONTRIBUTING.md)
+
+## Données, preuves et limites
+
+- **Ce POC n’est pas entièrement local.** Les images et transcriptions sont envoyées à Codex. L’audio brut est transcrit localement ; OpenRouter reçoit le texte à vectoriser lorsque cette option est activée.
+- **Cinq minutes de média détaillé**, mesurées dans l’ordre de l’observation. Les textes restent disponibles après expiration ; un marque-page conserve explicitement le média.
+- **60 secondes de traitement par question**, hors attente dans la file. Les recherches longues et lacunes restent visibles.
+- Une observation, un OCR ou une accusation rapportée **ne constituent pas une preuve indépendante**. L’app distingue observations, explications, hypothèses et sources externes ; les modèles peuvent néanmoins se tromper.
+- Les contenus protégés peuvent empêcher la capture. Le prototype ne promet pas de capturer toutes les applications ou toutes les TV.
+- Fermer l’app termine le fil conversationnel actif. Les archives ne constituent pas encore une reprise complète de session après redémarrage.
+- Les quotas et dépenses restent visibles, **sans plafond local de consommation**. Les limites des fournisseurs s’appliquent.
+
+## Validation
+
+```sh
+npm test                 # Domaine et adaptateurs, sans inférence réelle
+npm run test:electron    # Parcours Electron avec vidéo synthétique et modèles simulés
+```
+
+La dernière passe comprend **97 tests Node** et un parcours Electron : capture, chat, références rejouables, sauvegarde, file, pause/reprise et navigation. Les essais réels sont documentés séparément ; ils ne constituent pas une garantie générale d’exactitude ou de latence.
+
+→ [Résultats et limites des tests](docs/validation.md) · [Reproduire les captures](screenshots/current/README.md)
+
+## La suite
+
+- Tester l’exécution continue sur **ASUS Ascent GX10**, en remplaçant les adaptateurs de modèle.
+- Valider une source **caméra + microphone** devant une télévision, sans modifier son système.
+- Mesurer les actions rapides et le retard d’analyse sur un corpus plus diversifié.
+- Explorer les **embeddings multimodaux** pour retrouver sons, images et texte. Ils restent dans la roadmap.
+
+La capture native LG via PicCap est une exploration distincte, non implémentée et exclue du POC sans modification système. [État de la piste TV](docs/lg-piccap-test-plan.md).
+
+---
+
+**Crédit vidéo :** *Spring* (2019), réalisé par Andy Goralczyk — © Blender Foundation | [cloud.blender.org/spring](https://cloud.blender.org/spring), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Extraits visibles dans des captures d’interface ; le film n’est pas distribué dans ce dépôt. [Provenance des médias](media/samples/README.md).

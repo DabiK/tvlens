@@ -1,5 +1,16 @@
 # Validation
 
+## État actuel — refonte et présentation du dépôt
+
+- **97 tests Node réussis** (`npm test`).
+- **Parcours Electron réussi sur Mac** (`npm run test:electron`) après extraction du rendu de récapitulatif dans `app/ui/recap-view.js`. Capture synthétique et modèles simulés pour cette suite.
+- **Essai réel de présentation réussi** sur Spring : perception, chat et récapitulatif Codex, transcription Whisper locale. Quatre captures de la vraie interface sont dans [screenshots/current](../screenshots/current/README.md). Détails : [showcase-validation.json](showcase-validation.json).
+- La vidéo est lue depuis un fichier et recapturée dans une instance isolée ; cet essai ne valide pas la capture système macOS ni les dialogues, absents du film.
+- Le retard de perception est visible. Le temps d’une réponse sur un court extrait ne constitue pas un benchmark.
+- Échecs conservés : premier script de capture interrogé avant création de session ; attentes asynchrones donnant des captures prématurées, remplacées après correction du polling. Un premier parcours Electron a expiré en attente de lecture du média ; le parcours complet suivant est passé sans modification de la relecture. Cette intermittence reste à surveiller.
+
+Les sections suivantes conservent les résultats historiques et ne décrivent pas nécessairement les modèles ou budgets actuels.
+
 ## Actions de visionnage et « Jusqu’ici » — 29 septembre 2026
 
 - **96 tests Node réussis** via `npm test`.

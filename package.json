@@ -2,7 +2,7 @@
   "name": "tvlens",
   "version": "0.1.0",
   "private": true,
-  "description": "TVLens — prototype de capture macOS",
+  "description": "TVLens — compagnon de visionnage avec mémoire temporelle, chat contextuel et sources",
   "main": "app/main.cjs",
   "scripts": {
     "start": "electron .",
@@ -22,7 +22,8 @@
     "test:strategies:live": "node --env-file=.env.local scripts/compare-inspection-strategies.cjs",
     "test:electron:sheets": "node scripts/smoke-electron.mjs --local-inspection --inspection-strategy=sheets-crop",
     "setup:speech": "node scripts/setup-speech.mjs",
-    "test:codex:speed": "node scripts/probe-codex-speed.cjs"
+    "test:codex:speed": "node scripts/probe-codex-speed.cjs",
+    "screenshots:live": "node scripts/capture-showcase.mjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

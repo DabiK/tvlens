@@ -8,7 +8,7 @@ FFmpeg (`brew install ffmpeg`). `codex login status` doit confirmer la connexion
 Depuis le répertoire du projet :
 
 ```sh
-npm install
+npm ci
 npm run setup:speech
 npm run setup:codex
 npm start
@@ -52,21 +52,22 @@ d'écran entière.
 
 ## Pause, reprise et mode flottant
 
-Depuis le mode complet, sélectionner une source et démarrer l'analyse. Ou cliquer
-**Mode flottant ↗**, puis **● Analyser**, choisir la fenêtre et lancer la capture.
-La zone **TVLens ⠿** permet de déplacer la barre. **Chat ＋/−** déplie le chat,
-**Résumer** pose une question sur les passages récents, **↗** revient au mode complet.
+Depuis **Direct**, sélectionner une source et cliquer **Lancer l’observation**.
+Le démarrage conserve le mode choisi. Le bouton de fenêtre en haut à droite ouvre
+la barre flottante : **Demander** déploie le chat, le marque-page garde un moment,
+et pause/reprise contrôle l’observation. Le menu **⋯** donne accès à la fenêtre
+complète, Auto, la recherche, au changement de source et au résumé.
 
-**■ Pause** arrête la capture mais conserve la session. **● Reprendre** permet de
-choisir une source et de poursuivre avec les anciens résumés, questions et le même
-fil Codex. Les identifiants de passages continuent leur numérotation ; la durée de
-pause n'est pas ajoutée à la chronologie observée. Le buffer garde cinq minutes de
-contenu observé et peut donc rester disponible pendant une pause prolongée.
+La pause conserve les résumés, questions et le fil Codex. La durée de pause n'est
+pas ajoutée à la chronologie observée. Les médias gardent une rétention de cinq
+minutes de contenu observé, y compris pendant une pause prolongée.
 
-**Nouvelle session**, dans le mode complet après arrêt de la capture et fin de son
-analyse, efface le contexte actif. Les archives restent sur disque ; le média brut
-est nettoyé. Fermer l'application termine les fils éphémères. La restauration d'un
-fil après fermeture complète de l'app n'est pas implémentée.
+**Nouvelle session**, dans **Mémoire**, devient disponible après l'arrêt et la fin
+d'analyse. Elle efface le contexte actif ; les archives textuelles restent sur
+disque et le média brut est nettoyé. Fermer l'application termine les fils actifs.
+Leur restauration après fermeture complète n'est pas implémentée.
+
+Voir [le guide d'interface](interface.md) pour les actions et les réglages.
 
 ## Modèles et confidentialité
 
