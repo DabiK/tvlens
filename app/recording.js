@@ -17,7 +17,7 @@ export class RollingRecorder {
     this.origin = performance.now() - session.elapsedMs;
     this.canvas = document.createElement('canvas'); this.canvas.width = 768;
     this.deltaCanvas=document.createElement('canvas');this.deltaCanvas.width=64;this.deltaCanvas.height=36;this.deltaContext=this.deltaCanvas.getContext('2d',{willReadFrequently:true});
-    this.active = false; this.pending = new Set(); this.rotating = null;
+    this.active = false; this.pending = new Set(); this.rotating = null; this.startedSegments = 0;
   }
   now() { return performance.now() - this.origin; }
   samples(samples) { if (this.current) this.current.audio.push(samples); }
@@ -32,7 +32,17 @@ export class RollingRecorder {
     recorder.onerror = () => { this.onError('L’enregistrement du passage a échoué.'); this.stop(); };
     recorder.start(); this.frame();
     this.framesTimer = setInterval(() => this.frame(), Math.min(400, this.session.segmentMs / 3));
-    this.segmentTimer = setTimeout(() => { this.rotating = this.finish().finally(() => { this.rotating = null; }); }, this.session.segmentMs);
+    const duration = this.startedSegments++ === 0 ? Math.min(2000, this.session.segmentMs) : this.session.segmentMs;
+    this.segmentTimer = setTimeout(() => { this.rotate().catch(error => this.onError(error.message)); }, duration);
+  }
+  rotate(anchorMs) {
+    if (!this.rotating && Number.isFinite(anchorMs) && this.current && anchorMs <= this.current.startMs) return Promise.resolve();
+    if (!this.rotating) this.rotating = this.finish(anchorMs).finally(() => { this.rotating = null; });
+    return this.rotating;
+  }
+  async checkpoint(anchorMs) {
+    await this.rotate(anchorMs);
+    await Promise.all([...this.pending]);
   }
   frame() {
     if (!this.current || this.current.candidates.length >= 64 || !this.video.videoWidth) return;
@@ -41,22 +51,27 @@ export class RollingRecorder {
     this.deltaContext.drawImage(this.video,0,0,64,36);const pixels=this.deltaContext.getImageData(0,0,64,36).data;const change=visualChange(this.current.previousPixels,pixels);this.current.previousPixels=pixels;
     this.current.candidates.push({atMs:this.now(),change,dataUrl:this.canvas.toDataURL('image/jpeg',0.7)});
   }
-  async finish() {
+  async finish(anchorMs) {
     clearInterval(this.framesTimer); clearTimeout(this.segmentTimer);
     const item = this.current;
     if (!item) return;
-    await this.flushAudio();
-    this.frame();item.frames=selectFrameCandidates(item.candidates).map(({atMs,dataUrl})=>({atMs,dataUrl}));
-    const endMs = this.now(); this.current = null;
+    if (!Number.isFinite(anchorMs)) await this.flushAudio();
+    this.frame();
+    const endMs = Number.isFinite(anchorMs) ? Math.min(this.now(), anchorMs) : this.now();
+    item.frames=selectFrameCandidates(item.candidates.filter(frame => frame.atMs <= endMs)).map(({atMs,dataUrl})=>({atMs,dataUrl}));
     const recorded = new Promise(resolve => { item.recorder.onstop = resolve; });
     if (item.recorder.state !== 'inactive') item.recorder.stop(); else return;
+    if (Number.isFinite(anchorMs)) await this.flushAudio();
+    this.current = null;
     await recorded;
     if (this.active) this.begin();
     if (endMs - item.startMs < 350 || !item.frames.length) return;
     if (this.pending.size >= 2) { this.onError('Stockage en retard : un passage n’a pas pu être conservé.'); return; }
     const submit = async () => {
       const clip = new Uint8Array(await new Blob(item.blobs, { type: 'video/webm' }).arrayBuffer());
-      const audio = item.audio.length ? encodeWav(item.audio, this.audioContext.sampleRate) : null;
+      let samplesLeft = Math.floor((endMs - item.startMs) * (this.audioContext?.sampleRate || 16000) / 1000);
+      const chunks = item.audio.map(chunk => { const trimmed = chunk.subarray(0, Math.max(0, samplesLeft)); samplesLeft -= trimmed.length; return trimmed; });
+      const audio = chunks.length ? encodeWav(chunks, this.audioContext.sampleRate) : null;
       const id = await window.tvlens.ingest({ sessionId: this.session.id, startMs: item.startMs, endMs, frames: item.frames, audio, clip });
       this.onSegment?.(id, item.frames[0]?.dataUrl);
     };
@@ -65,8 +80,6 @@ export class RollingRecorder {
   }
   async stop() {
     this.active = false;
-    if (this.rotating) await this.rotating;
-    else await this.finish();
-    await Promise.all(this.pending);
+    await this.checkpoint();
   }
 }

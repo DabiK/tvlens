@@ -3,12 +3,14 @@ const $ = id => document.getElementById(id);
 let stream, context, worklet, recorder, configuration, currentState, stopping = false, pendingQuestion = '', lastChatSignature = '';
 let verificationState = { busy: false, jobs: [] }, sessionEpoch = Date.now(), pendingQuestionAt = 0;
 let deepState = { jobs: [] };
+let recapState = null, recapRevision = 0;
 let floatingCaptureBusy = false, sourceReturnExpanded = false;
 const momentPreviews = new Map();
+let quickBusy = false, selectedMoment = null, momentCheckpoint = Promise.resolve();
 const verifyPrefix = /^(?:\/verify\b|v[ée]rifie(?:r)?\b(?:\s+(?:que|si))?|fact[- ]?check\b)\s*[:—-]?\s*/i;
 const flushes = new Map();
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
-const notice = text => { $('notice').textContent = text; };
+const notice = text => { $('notice').textContent = text; $('quick-notice').textContent = text; };
 const formatTime = ms => `${String(Math.floor(ms / 60000)).padStart(2, '0')}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
 const el = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; };
 
@@ -16,11 +18,17 @@ async function refresh() {
   $('refresh').disabled = true;
   try {
     const result = await window.capture.sources();
-    $('source').replaceChildren(...result.sources.map(s => new Option(s.name, s.id)));
+    setSources(result);
     $('start').disabled = !result.sources.length || Boolean(stream);
     if (!stream) status(result.permission === 'granted' ? 'Écran autorisé · Choisis une source' : `Autorisation écran : ${result.permission} · Vérifie les autorisations`);
   } catch (error) { status(`Capture indisponible : ${error.message}`); }
-  finally { $('refresh').disabled = Boolean(stream); }
+  finally { $('refresh').disabled = Boolean(stream); updateButtons(); }
+}
+function setSources(result) {
+  const previous = $('source').value;
+  const chosen = result.sources.some(source => source.id === previous) ? previous : result.preferredSourceId || (result.sources.length === 1 ? result.sources[0].id : '');
+  $('source').replaceChildren(new Option('Choisir une fenêtre ou un écran…', ''), ...result.sources.map(source => new Option(source.name, source.id)));
+  $('source').value = chosen;
 }
 function setConfig(value) {
   configuration = value;
@@ -29,19 +37,22 @@ function setConfig(value) {
   updateButtons();
 }
 function updateButtons() {
-  $('float-record').textContent = recorder ? 'Pause' : currentState?.id ? 'Reprendre' : 'Analyser';
+  $('float-record').textContent = recorder ? 'Pause' : currentState?.id ? 'Reprendre' : 'Regarder';
   $('float-status').textContent = recorder ? 'En direct' : currentState?.id ? 'En pause' : 'Prêt';
   $('new-session').disabled=Boolean(stream)||Boolean(currentState?.analyzing)||stopping;
   $('float-record').disabled = floatingCaptureBusy || stopping;
   $('float-record').classList.toggle('recording',Boolean(recorder));
   $('float-record').title = recorder ? 'Mettre en pause ; mémoire et fil Codex conservés' : 'Choisir une source puis lancer la capture et l’analyse';
-  $('observe').disabled = !stream || !configuration?.canObserve || Boolean(recorder) || Boolean(currentState?.analyzing) || Boolean(currentState?.asking) || stopping;
-  $('observe').textContent = recorder ? 'Analyse en cours' : currentState?.id ? 'Reprendre l’analyse' : 'Démarrer l’analyse';
+  $('observe').disabled = !configuration?.canObserve || !$('source').value || Boolean(recorder) || floatingCaptureBusy || stopping;
+  $('observe').textContent = recorder ? 'Analyse en cours' : currentState?.id ? 'Reprendre l’analyse' : 'Regarder avec TVLens';
   const canAsk = Boolean(currentState?.segments.length || currentState?.history.length);
+  for (const id of ['float-explain', 'explain-moment', 'catch-up', 'mark-attention']) $(id).disabled = !currentState?.id || stopping || quickBusy;
+  for (const id of ['moment-summarize', 'moment-explain', 'moment-send']) $(id).disabled = quickBusy;
+  $('keep-moment').disabled = $('float-keep').disabled = !currentState?.segments.some(segment => segment.available) || stopping;
   $('question').disabled = false;
   $('verify').disabled = !configuration?.verificationAvailable || verificationState.busy;
   $('send').disabled = !canAsk || Boolean(pendingQuestion);
-  $('ask-status').textContent = currentState?.asking ? 'Réponse en cours · Tu peux ajouter une question.' : canAsk ? 'Entrée pour envoyer · Maj+Entrée pour une ligne' : 'Les premiers passages arrivent bientôt.';
+  $('ask-status').textContent = currentState?.asking ? 'Réponse en cours · Tu peux ajouter une question.' : canAsk ? 'Entrée pour envoyer · Maj+Entrée pour une ligne' : currentState?.id ? 'Les premiers passages arrivent bientôt.' : 'Choisis une source et lance TVLens.';
 }
 async function startPreview() {
   $('start').disabled = true;
@@ -86,7 +97,7 @@ async function observe() {
     const session = await window.tvlens.start();
     renderState(await window.tvlens.state());
     recorder = new RollingRecorder({ stream, video: $('preview'), audioContext: context, flushAudio, session, onError: notice, onSegment: (id, preview) => {
-      if (preview) momentPreviews.set(id, preview);
+      if (preview && currentState?.id === session.id) momentPreviews.set(id, preview);
       if (currentState) renderState(currentState);
     } });
     recorder.start();
@@ -126,6 +137,8 @@ function replay(id, offset = 0) {
 function renderState(state) {
   if (currentState?.id !== state.id) { sessionEpoch = Date.now() - state.elapsedMs; lastChatSignature = ''; momentPreviews.clear(); }
   currentState = state;
+  if (recapState?.sessionId && recapState.sessionId !== state.id) recapState = null;
+  renderRecap();
   $('elapsed').textContent = formatTime(state.elapsedMs);
   $('chat-coverage').textContent=`Capturé ${formatTime(state.capturedThroughMs||0)} · Analysé ${formatTime(state.analyzedThroughMs||0)} · ${state.pending||0} en attente · ${(state.gaps||[]).length} lacune(s)`;
   $('usage').textContent = `Perception Codex : ${state.apiCalls} passage${state.apiCalls > 1 ? 's' : ''}`;
@@ -135,13 +148,14 @@ function renderState(state) {
   $('memory-status').textContent = `${available.length} passage${available.length > 1 ? 's' : ''} récent${available.length > 1 ? 's' : ''} · ${analyzed} analysé${analyzed > 1 ? 's' : ''}${state.pending ? ` · ${state.pending} en attente` : ''}${gaps ? ` · ${gaps} sans analyse` : ''} · Mémoire vidéo de 5 min, résumés conservés pour la session`;
   if (state.lastError) notice(state.lastError);
   const labels = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Média expiré' };
-  const liveIds = new Set(state.segments.map(segment => segment.id));
-  for (const id of momentPreviews.keys()) if (!liveIds.has(id)) momentPreviews.delete(id);
+  // Ingest completion can arrive before its state event: absence is not expiration.
+  for (const segment of state.history || []) momentPreviews.delete(segment.id);
   const moments = state.segments.slice().reverse().map(segment => {
     const row = el('article', 'moment');
-    const preview = el('img', 'moment-image');
-    preview.alt = `Aperçu du passage à ${formatTime(segment.startMs)}`;
-    if (momentPreviews.has(segment.id)) preview.src = momentPreviews.get(segment.id);
+    const imageUrl = momentPreviews.get(segment.id);
+    const preview = el(imageUrl ? 'img' : 'div', 'moment-image');
+    if (imageUrl) { preview.alt = `Aperçu du passage à ${formatTime(segment.startMs)}`; preview.src = imageUrl; }
+    else { preview.setAttribute('role', 'img'); preview.setAttribute('aria-label', 'Aperçu indisponible'); }
     const button = el('button', 'moment-time', formatTime(segment.startMs));
     button.disabled = !segment.available; button.title = 'Revoir ce passage'; button.onclick = () => replay(segment.id);
     const detail = el('div');
@@ -204,6 +218,18 @@ function renderDeep(job) {
     const elapsed=el('span','job-elapsed');elapsed.dataset.started=job.startedAt||job.createdAt;elapsed.textContent=Math.floor((Date.now()-(job.startedAt||job.createdAt))/1000)+' s';node.append(elapsed);
     const steps=el('ol','activity-list');for(const step of (job.activity||[]).slice(-5))steps.append(el('li','',step.message));node.append(steps);
     if(job.provisional)node.append(el('div','answer-kind','PROVISOIRE · OBSERVATIONS À CONFIRMER'),el('p','chat-provisional',job.provisional));
+    if(job.memoryPreview){
+      const rail=el('div','preview-passages');
+      for(const passage of job.memoryPreview.passages){
+        const button=el('button','preview-passage');
+        if(momentPreviews.has(passage.id)){const image=el('img');image.src=momentPreviews.get(passage.id);image.alt='Passage retrouvé';button.append(image);}
+        button.append(document.createTextNode(formatTime(passage.startMs)+' ↗'));
+        button.disabled=currentState?.id!==job.sessionId||!currentState?.segments.some(s=>s.id===passage.id&&s.available);
+        button.onclick=()=>replay(passage.id);rail.append(button);
+      }
+      node.append(rail);
+      if(job.memoryPreview.unanalyzedTailMs>0)node.append(el('p','hint','Les dernières secondes ne sont pas encore entièrement analysées.'));
+    }
     if(job.preview)node.append(el('p','hint','Réponse en cours · pas encore validée'),el('p','chat-preview',job.preview));
     node.append(el('p', 'pending', job.message), el('small', '', `${currentState?.accepting?'La capture continue':'Capture en pause'} · maximum 60 secondes. Les nouvelles questions restent en attente.`));
     const cancel = el('button', 'secondary cancel-deep', 'Annuler la recherche');
@@ -223,6 +249,18 @@ function renderDeep(job) {
         button.disabled = !segment; button.onclick = () => replay(c.id, Math.max(0, (c.startMs - segment.startMs) / 1000)); refs.append(button);
       }
       node.append(refs);
+      if(job.intent && result.citations?.length){
+        const rail=el('div','preview-passages');
+        for(const c of result.citations.slice(0,3)){
+          const button=el('button','preview-passage');
+          if(momentPreviews.has(c.id)){const image=el('img');image.src=momentPreviews.get(c.id);image.alt='Passage cité';button.append(image);}
+          button.append(document.createTextNode(formatTime(c.startMs)+' ↗'));
+          const segment=currentState?.id===job.sessionId&&currentState.segments.find(s=>s.id===c.id&&s.available);
+          button.disabled=!segment;button.onclick=()=>replay(c.id,Math.max(0,(c.startMs-segment.startMs)/1000));rail.append(button);
+        }
+        node.append(rail);
+      }
+      if(job.metrics){const timing=el('details','activity-history');timing.append(el('summary','hint','Temps de réponse'),el('p','hint',`Première information : ${job.metrics.firstUsefulMs===null?'indisponible':(job.metrics.firstUsefulMs/1000).toFixed(2)+' s'} · Attente : ${(job.metrics.waitMs/1000).toFixed(2)} s · Total : ${(job.metrics.endToEndMs/1000).toFixed(2)} s`));node.append(timing);}
       if(result.sources?.length)node.append(el('div','answer-kind','SOURCES WEB'));
       for(const [index,source] of (result.sources||[]).entries()) {
         const link=el('button','source-link',source.title+' ↗');
@@ -230,8 +268,8 @@ function renderDeep(job) {
         node.append(link,el('p','hint',source.evidence));
       }
     }
-    if(result?.answer&&result.kind!=='insufficient'){const more=el('button','secondary','Approfondir');more.onclick=()=>window.tvlens.ask('Approfondis cette réponse : '+result.answer.slice(0,1200)).catch(e=>notice(e.message));node.append(more);if(/\d/.test(result.answer)){const check=el('button','secondary','Vérifier un chiffre');check.onclick=()=>{$('claim').value=result.answer.slice(0,2000);$('verify-dialog').showModal();};node.append(check);}}
-    const retry = el('button', 'secondary deepen', 'Réexaminer le passage'); retry.onclick = () => window.tvlens.deepen(job.question).catch(error => notice(error.message)); node.append(retry);
+    if(result?.answer&&result.kind!=='insufficient'&&!job.intent){const more=el('button','secondary','Approfondir');more.onclick=()=>window.tvlens.ask('Approfondis cette réponse : '+result.answer.slice(0,1200)).catch(e=>notice(e.message));node.append(more);if(/\d/.test(result.answer)){const check=el('button','secondary','Vérifier un chiffre');check.onclick=()=>{$('claim').value=result.answer.slice(0,2000);$('verify-dialog').showModal();};node.append(check);}}
+    const retry = el('button', 'secondary deepen', 'Réexaminer le passage'); retry.onclick = () => (job.intent ? window.tvlens.reexamineMoment(job.id) : window.tvlens.deepen(job.question)).catch(error => notice(error.message)); node.append(retry);
   }
   return node;
 }
@@ -303,7 +341,8 @@ $('question').onkeydown = event => { if (event.key === 'Enter' && !event.shiftKe
 $('question').oninput = updateButtons;
 for (const button of document.querySelectorAll('.suggestion')) button.onclick = () => { $('question').value = button.dataset.question; $('question').focus(); };
 $('start').onclick = startPreview;
-$('observe').onclick = observe;
+$('observe').onclick = () => watchWithSelectedSource();
+$('source').onchange = updateButtons;
 $('refresh').onclick = refresh;
 $('stop').onclick = () => stop().catch(error => notice(error.message));
 $('settings').onclick = () => window.capture.settings().catch(error => notice(error.message));
@@ -324,7 +363,7 @@ $('models-form').onsubmit=async event=>{event.preventDefault();try{const result=
 let floatingMode=false, floatingExpanded=false;
 async function changeWindowMode(floating,expanded=false){
   const priorFloating=floatingMode, priorExpanded=floatingExpanded;
-  const paint=()=>{document.body.classList.toggle('floating',floatingMode);document.body.classList.toggle('floating-expanded',floatingExpanded);$('float-chat').setAttribute('aria-expanded',String(floatingExpanded));$('float-chat').textContent=floatingExpanded?'Chat −':'Chat ＋';};
+  const paint=()=>{document.body.classList.toggle('floating',floatingMode);document.body.classList.toggle('floating-expanded',floatingExpanded);$('float-chat').setAttribute('aria-expanded',String(floatingExpanded));$('float-chat').textContent=floatingExpanded?'−':'…';$('float-chat').setAttribute('aria-label',floatingExpanded?'Réduire le chat':'Ouvrir le chat');};
   floatingMode=floating;floatingExpanded=expanded;paint();
   try{await window.tvlens.windowMode({floating,expanded});if(expanded)$('question').focus();}
   catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(e.message);}
@@ -332,14 +371,25 @@ async function changeWindowMode(floating,expanded=false){
 $('float-mode').onclick=()=>changeWindowMode(true);
 $('float-full').onclick=()=>changeWindowMode(false);
 $('float-chat').onclick=()=>changeWindowMode(true,!floatingExpanded);
-$('float-recap').onclick=async()=>{await changeWindowMode(true,true);$('question').value='Résume ce que je viens de regarder.';if(!$('send').disabled)$('ask-form').requestSubmit();};
+async function watchWithSelectedSource() {
+  if (floatingCaptureBusy || stopping || recorder) return;
+  floatingCaptureBusy = true; updateButtons(); notice('');
+  try {
+    if (!stream && !await startPreview()) throw Error($('state').textContent);
+    await observe();
+    if (!recorder) throw Error($('notice').textContent || 'L’analyse n’a pas démarré.');
+    await changeWindowMode(true, false);
+  } catch (error) { notice(error.message); }
+  finally { floatingCaptureBusy = false; updateButtons(); }
+}
 
 async function refreshFloatingSources(){
   $('float-refresh').disabled=true; $('float-launch').disabled=true; $('float-source-error').textContent='';
   try{
     const result=await window.capture.sources();
     $('float-source').replaceChildren(...result.sources.map(s=>new Option(s.name,s.id)));
-    $('source').replaceChildren(...result.sources.map(s=>new Option(s.name,s.id)));
+    setSources(result);
+    if ($('source').value) $('float-source').value=$('source').value;
     if(!result.sources.length)$('float-source-error').textContent='Aucune source disponible. Vérifie les autorisations de capture dans le mode complet.';
     $('float-launch').disabled=!result.sources.length||!configuration?.canObserve;
     if(!configuration?.canObserve)$('float-source-error').textContent='Connecte ton compte Codex avant de lancer l’analyse.';
@@ -349,6 +399,11 @@ async function refreshFloatingSources(){
 $('float-record').onclick=async()=>{
   if(floatingCaptureBusy||stopping)return;
   if(recorder){floatingCaptureBusy=true;updateButtons();try{await stop();}catch(e){notice(e.message);}finally{floatingCaptureBusy=false;updateButtons();}return;}
+  const previousSource=$('source').value;
+  floatingCaptureBusy=true; updateButtons();
+  try { await refresh(); } finally { floatingCaptureBusy=false; updateButtons(); }
+  if (previousSource && !Array.from($('source').options).some(option=>option.value===previousSource)) $('source').value='';
+  if ($('source').value) { await watchWithSelectedSource(); return; }
   sourceReturnExpanded=floatingExpanded;
   await changeWindowMode(true,true);
   $('float-source-dialog').showModal();
@@ -376,10 +431,10 @@ $('float-source-form').onsubmit=async event=>{
 };
 
 $('new-session').onclick=async()=>{try{await window.tvlens.newSession();}catch(e){notice(e.message);}};
-window.tvlens.onReset(()=>{currentState=null;deepState={jobs:[]};momentPreviews.clear();lastChatSignature='';$('timeline').replaceChildren(el('p','placeholder','Les moments observés apparaîtront ici.'));$('messages').replaceChildren();$('elapsed').textContent='00:00';$('mode').textContent='PRÊT À REGARDER';$('memory-status').textContent='Les passages apparaîtront après quelques secondes de capture.';updateButtons();});
+window.tvlens.onReset(()=>{recapRevision++;recapState=null;currentState=null;$('recap-dialog').close();renderRecap();deepState={jobs:[]};selectedMoment=null;$('moment-dialog').close();$('attention-status').textContent='';notice('');momentPreviews.clear();lastChatSignature='';$('timeline').replaceChildren(el('p','placeholder','Les moments observés apparaîtront ici.'));$('messages').replaceChildren();$('elapsed').textContent='00:00';$('mode').textContent='PRÊT À REGARDER';$('memory-status').textContent='Les passages apparaîtront après quelques secondes de capture.';updateButtons();});
 setInterval(()=>{for(const node of document.querySelectorAll('.job-elapsed'))node.textContent=Math.floor((Date.now()-Number(node.dataset.started))/1000)+' s';},1000);
 
-async function keepRecent(){try{const saved=await window.tvlens.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);$('float-keep').textContent='★';setTimeout(()=>$('float-keep').textContent='☆',2000);await renderSavedRail();}catch(e){notice(e.message);}}
+async function keepRecent(){try{const saved=await window.tvlens.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);$('float-keep').textContent='Gardé';setTimeout(()=>$('float-keep').textContent='Garder',2000);await renderSavedRail();}catch(e){notice(e.message);}}
 $('keep-moment').onclick=keepRecent;$('float-keep').onclick=keepRecent;
 let deleteSavedId;
 function momentCard(moment,{savedId}={}){
@@ -391,7 +446,7 @@ function momentCard(moment,{savedId}={}){
 async function renderSaved(){const values=await window.tvlens.savedMoments();$('saved-results').replaceChildren(...values.map(value=>{const group=el('section','saved-group');group.append(el('small','hint',new Date(value.createdAt).toLocaleString()+' · Conservé'));for(const m of value.moments)group.append(momentCard(m,{savedId:value.id}));const remove=el('button','link','Supprimer ce moment');remove.onclick=()=>{deleteSavedId=value.id;$('delete-saved-dialog').showModal();};group.append(remove);return group;}));if(!values.length)$('saved-results').append(el('p','hint','Aucun moment gardé.'));renderSavedRail(values);}
 async function renderSavedRail(values){values ||= await window.tvlens.savedMoments();const tiles=values.slice(0,5).map(value=>{const moment=value.moments[0],tile=el('button','saved-tile'),preview=el('img');preview.alt='Aperçu du moment gardé';if(moment?.preview)preview.src=moment.preview;const copy=el('span');copy.append(el('strong','',formatTime(value.startMs)),document.createTextNode(moment?.observation?.summary||'Moment gardé'));tile.append(preview,copy);tile.onclick=()=>openLibrary().catch(e=>notice(e.message));return tile;});$('saved-rail').replaceChildren(...(tiles.length?tiles:[el('p','placeholder','Garde un moment pour le retrouver ici.')]));}
 async function openLibrary(){if(floatingMode)await changeWindowMode(true,true);$('library-dialog').showModal();await renderSaved();const settings=await window.tvlens.viewingSettings();$('bookmark-shortcut').value=settings.bookmarkShortcut;$('shortcut-status').textContent=settings.shortcutRegistered?'Raccourci actif.':'Raccourci indisponible : choisis une autre combinaison.';}
-$('open-library').onclick=()=>openLibrary().catch(e=>notice(e.message));$('float-library').onclick=$('open-library').onclick;$('close-library').onclick=()=>$('library-dialog').close();$('refresh-saved').onclick=()=>renderSaved().catch(e=>notice(e.message));
+$('open-library').onclick=()=>openLibrary().catch(e=>notice(e.message));$('close-library').onclick=()=>$('library-dialog').close();$('refresh-saved').onclick=()=>renderSaved().catch(e=>notice(e.message));
 $('saved-all').onclick=$('open-library').onclick;
 $('nav-live').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 $('nav-memory').onclick=()=>$('memory-section').scrollIntoView({behavior:'smooth',block:'start'});
@@ -406,3 +461,154 @@ setInterval(()=>window.tvlens.quota().then(q=>{$('quota-status').textContent=q.w
 
 function renderAuto(state){$('auto-status').textContent=state.enabled?`Surveillance auto · ${state.instruction} · dès ${formatTime(state.activationMs)} · toutes les ${state.frequencySeconds} s`:'Surveillance auto désactivée';$('auto-detail').textContent=state.message;$('auto-results').replaceChildren(...state.results.slice().reverse().map(item=>{const card=el('article','moment-card');const body=el('div');body.append(el('small','hint',`${formatTime(item.startMs)}–${formatTime(item.endMs)} · ${item.instruction}`),el('p','',item.result.answer));for(const c of item.result.citations||[]){const button=el('button','reference',`${formatTime(c.startMs)} ↗`);button.disabled=currentState?.id!==item.sessionId||!currentState?.segments.some(s=>s.id===c.id&&s.available);button.onclick=()=>replay(c.id,Math.max(0,(c.startMs-currentState.segments.find(s=>s.id===c.id).startMs)/1000));body.append(button);}for(const [index,source]of (item.result.sources||[]).entries()){const button=el('button','source-link',source.title+' ↗');button.onclick=()=>window.tvlens.openAutoSource(item.id,index).catch(e=>notice(e.message));body.append(button);}if(item.result.limits?.length)body.append(el('small','hint',item.result.limits.join(' ')));card.append(body);return card;}));}
 $('open-auto').onclick=async()=>{try{renderAuto(await window.tvlens.autoState());$('auto-dialog').showModal();}catch(e){notice(e.message);}};$('close-auto').onclick=()=>$('auto-dialog').close();$('auto-form').onsubmit=async e=>{e.preventDefault();try{renderAuto(await window.tvlens.startAuto({instruction:$('auto-instruction').value,frequencySeconds:Number($('auto-frequency').value)}));}catch(e){$('auto-detail').textContent=e.message;}};$('stop-auto').onclick=()=>window.tvlens.stopAuto().catch(e=>notice(e.message));window.tvlens.onAuto(renderAuto);
+
+async function openMoment(frozen) {
+  if (quickBusy || !currentState?.id) return;
+  quickBusy = true; updateButtons(); notice('');
+  try {
+    selectedMoment = frozen || await window.tvlens.freezeMoment({kind:'explain'});
+    const preview = $('moment-preview'); preview.hidden = true;
+    if ($('preview').videoWidth) {
+      const canvas = document.createElement('canvas'); canvas.width=320; canvas.height=180;
+      canvas.getContext('2d').drawImage($('preview'),0,0,320,180);
+      preview.src=canvas.toDataURL('image/jpeg',.7); preview.hidden=false;
+    }
+    if (floatingMode) await changeWindowMode(true,true);
+    $('moment-anchor').textContent = `Instant retenu à ${formatTime(selectedMoment.anchorMs)}. ${recorder ? 'La vidéo continue.' : 'La capture est en pause.'}`;
+    $('moment-error').textContent=''; $('moment-question').value='';
+    if (!$('moment-dialog').open) $('moment-dialog').showModal();
+    momentCheckpoint = recorder?.checkpoint(selectedMoment.anchorMs) || Promise.resolve();
+    await momentCheckpoint;
+  } catch(error) { notice(error.message); $('moment-error').textContent=error.message; }
+  finally { quickBusy=false; updateButtons(); }
+}
+async function submitMoment(intent, question) {
+  if (!selectedMoment || quickBusy) return;
+  quickBusy=true; updateButtons();
+  try {
+    await momentCheckpoint;
+    await window.tvlens.explainMoment({token:selectedMoment.token,intent,question});
+    $('moment-dialog').close();
+    if(floatingMode) await changeWindowMode(true,true);
+  } catch(error) { $('moment-error').textContent=error.message; }
+  finally { quickBusy=false; updateButtons(); }
+}
+$('float-explain').onclick=$('explain-moment').onclick=()=>openMoment();
+$('close-moment').onclick=()=>$('moment-dialog').close();
+$('moment-summarize').onclick=()=>submitMoment('summarize');
+$('moment-explain').onclick=()=>submitMoment('explain');
+$('moment-question-form').onsubmit=event=>{event.preventDefault();if($('moment-question').value.trim())submitMoment('explain',$('moment-question').value.trim());};
+window.tvlens.onExplainMoment(frozen=>openMoment(frozen));
+$('catch-up').onclick=async()=>{
+  if(quickBusy)return;
+  quickBusy=true; updateButtons(); notice('');
+  try {
+    const frozen=await window.tvlens.freezeMoment({kind:'catch-up'});
+    $('attention-status').textContent=`Je retrouve les passages de ${formatTime(frozen.startMs)} à ${formatTime(frozen.anchorMs)}…`;
+    await recorder?.checkpoint(frozen.anchorMs);
+    const result=await window.tvlens.catchUp({token:frozen.token});
+    $('attention-status').textContent=`Rattrapage demandé : ${formatTime(result.startMs)}–${formatTime(result.endMs)}. Le repère avance après une réponse réussie.`;
+  } catch(error){notice(error.message);}
+  finally{quickBusy=false;updateButtons();}
+};
+$('mark-attention').onclick=async()=>{
+  if(quickBusy)return;
+  quickBusy=true;updateButtons();
+  try{await recorder?.checkpoint();const marker=await window.tvlens.markAttention();$('attention-status').textContent=`Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;}
+  catch(error){notice(error.message);}finally{quickBusy=false;updateButtons();}
+};
+window.tvlens.momentShortcuts().then(value=>{
+  const title=value.explainShortcutRegistered ? 'Explique cet instant · Ctrl/Cmd + Maj + E' : 'Explique cet instant · raccourci global indisponible, utilise ce bouton';
+  $('float-explain').title=$('explain-moment').title=title;
+}).catch(()=>{});
+
+
+function receiveRecap(state) {
+  if (state?.sessionId && currentState?.id && state.sessionId !== currentState.id) return;
+  recapRevision++;
+  const sameSession = state?.sessionId && state.sessionId === recapState?.sessionId;
+  const keepPrevious = sameSession && ['updating', 'error'].includes(state.status);
+  recapState = state ? { ...state,
+    overview: state.overview || (keepPrevious ? recapState.overview : ''),
+    chapters: state.chapters?.length ? state.chapters : keepPrevious ? recapState.chapters : []
+  } : null;
+  renderRecap();
+}
+function recapSource(source) {
+  if (!recapState?.sessionId || recapState.sessionId !== currentState?.id || source.available === false) return null;
+  return currentState.segments.find(segment => segment.id === source.id && segment.available);
+}
+function renderRecap() {
+  const state = recapState;
+  const chapters = state?.chapters || [];
+  const hasContent = Boolean(state?.overview || chapters.length);
+  let statusText = !currentState?.id && !hasContent ? 'Lance une vidéo : son résumé et ses chapitres apparaîtront ici.' : 'Le résumé se construit au fil des passages analysés.';
+  if (state?.status === 'updating') statusText = hasContent ? 'Mise à jour en cours · Le résumé précédent reste disponible.' : 'Préparation du premier résumé…';
+  else if (state?.status === 'error') statusText = hasContent ? 'Mise à jour indisponible · Le dernier résumé reste disponible.' : 'Le résumé est momentanément indisponible.';
+  else if (hasContent) statusText = 'Résumé automatique des passages analysés.';
+  if (state?.pendingCount) statusText += ` ${state.pendingCount} passage${state.pendingCount > 1 ? 's' : ''} en attente d’intégration au résumé.`;
+  for (const [target, expanded] of [[$('recap-content'), false], [$('recap-dialog-content'), true]]) {
+    const expandedSources = new Set([...target.querySelectorAll('.recap-extra-sources[open]')].map(node => node.dataset.chapterId));
+    const statusNode = el('p', 'hint recap-status', statusText);
+    statusNode.setAttribute('role', 'status');
+    const nodes = [statusNode];
+    if (state?.error) nodes.push(el('p', 'recap-error', state.error));
+    if (state?.overview) nodes.push(el('p', 'recap-overview', state.overview));
+    const rail = el('div', 'recap-chapters');
+    for (const chapter of expanded ? chapters : chapters.slice(-3)) {
+      const card = el('article', 'recap-chapter');
+      const sources = chapter.sources || [];
+      const firstPlayable = sources.find(source => recapSource(source));
+      const title = `${formatTime(chapter.startMs)} · ${chapter.title || 'Chapitre'}`;
+      const heading = el('h3');
+      if (firstPlayable) {
+        const button = el('button', 'recap-chapter-link', title + (firstPlayable.startMs > chapter.startMs ? ` · Revoir dès ${formatTime(firstPlayable.startMs)} ↗` : ' ↗'));
+        button.title = `Revoir le premier passage disponible à ${formatTime(firstPlayable.startMs)}`;
+        button.onclick = () => {
+          const segment = recapSource(firstPlayable);
+          if (segment) replay(firstPlayable.id, Math.max(0, (firstPlayable.startMs - segment.startMs) / 1000));
+          else notice('La vidéo de ce passage a expiré. Son résumé reste disponible.');
+        };
+        heading.append(button);
+      } else heading.textContent = title;
+      card.append(heading, el('p', 'recap-summary', chapter.summary || ''));
+      const references = el('div', 'recap-sources');
+      const extraSources = el('details', 'recap-extra-sources');
+      extraSources.dataset.chapterId = chapter.id;
+      extraSources.open = expandedSources.has(chapter.id);
+      extraSources.append(el('summary', '', `${Math.max(0, sources.length - 3)} autres passages`));
+      const extraReferences = el('div', 'recap-sources');
+      for (const [sourceIndex, source] of sources.entries()) {
+        const available = Boolean(recapSource(source));
+        const button = el('button', 'reference recap-source', `${formatTime(source.startMs)}${available ? ' ↗' : ' · résumé'}`);
+        button.disabled = !available;
+        button.title = available ? `Revoir le passage de ${formatTime(source.startMs)} à ${formatTime(source.endMs)}` : 'Vidéo expirée · Résumé conservé';
+        button.onclick = () => {
+          const segment = recapSource(source);
+          if (segment) replay(source.id, Math.max(0, (source.startMs - segment.startMs) / 1000));
+          else notice('La vidéo de ce passage a expiré. Son résumé reste disponible.');
+        };
+        (sourceIndex < 3 ? references : extraReferences).append(button);
+      }
+      if (sources.length > 3) { extraSources.append(extraReferences); references.append(extraSources); }
+      if (!firstPlayable) card.append(el('small', 'hint recap-expired', 'Résumé conservé · Vidéo indisponible'));
+      card.append(references); rail.append(card);
+    }
+    if (chapters.length) nodes.push(rail);
+    if (state?.limits?.length) nodes.push(el('p', 'hint recap-limits', state.limits.join(' ')));
+    target.replaceChildren(...nodes);
+  }
+}
+async function openRecap() {
+  if (floatingMode) await changeWindowMode(true, true);
+  renderRecap();
+  if (!$('recap-dialog').open) $('recap-dialog').showModal();
+}
+$('open-recap').onclick = $('open-recap-all').onclick = () => openRecap().catch(error => notice(error.message));
+$('close-recap').onclick = () => $('recap-dialog').close();
+window.tvlens.onRecap(receiveRecap);
+const initialRecapRevision = recapRevision;
+window.tvlens.recapState().then(state => { if (recapRevision === initialRecapRevision) receiveRecap(state); }).catch(() => {
+  if (recapRevision === initialRecapRevision) receiveRecap({ sessionId: currentState?.id, status: 'error', chapters: [], overview: '' });
+});
+renderRecap();

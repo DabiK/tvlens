@@ -19,16 +19,27 @@ ce fichier. [Installation complète](docs/installation.md).
 
 ## Utiliser
 
-1. Choisir une fenêtre/écran et lancer l’analyse, ou utiliser **● Analyser** dans
-   le mode flottant. Capture par segments de huit secondes.
-2. Poser une question : Codex reçoit les résumés récents, peut chercher un passage,
-   le réexaminer ou chercher sur Internet. Les étapes et le début de réponse sont
-   visibles pendant l’attente.
-3. **■ Pause / ● Reprendre** conserve la mémoire, les passages et le même fil de
-   discussion. Le temps de capture s’arrête pendant la pause.
-4. **Nouvelle session** repart de zéro, après arrêt de la capture. Fermer l’app
-   termine aussi le fil Codex en mémoire ; les archives textuelles restent sur disque.
-5. **Réglages IA** choisit le modèle du chat et ceux de la perception.
+1. Choisir une fenêtre/écran et cliquer **Regarder avec TVLens** : capture et
+   analyse démarrent ensemble en mode flottant. La dernière source disponible est
+   proposée. Premier segment de 2 secondes, puis segments de 8 secondes.
+2. **Explique ce moment** (Cmd/Ctrl+Maj+E si disponible) fige l’instant pour le
+   résumer, l’expliquer ou poser une question. Le réexamen conserve cet instant.
+3. **J’ai décroché** résume depuis le dernier repère ; **Je reprends ici** pose
+   un nouveau repère. Le chat montre un aperçu sourcé pendant la réponse.
+4. **Jusqu’ici** construit un aperçu global et des chapitres horodatés, accessibles
+   aussi en petite fenêtre. Les mises à jour automatiques laissent la priorité
+   aux questions. Les textes restent disponibles après expiration des vidéos.
+5. **Pause / Reprendre** conserve la mémoire et la discussion. Le temps de capture
+   s’arrête pendant la pause. **Nouvelle session** repart de zéro après arrêt.
+6. **Réglages IA** choisit les modèles du chat et de la perception. Fermer l’app
+   termine le fil Codex en mémoire ; les archives textuelles restent sur disque.
+
+Détails : [actions et latence](docs/friction-latency.md),
+[résumé progressif](docs/living-recap.md).
+
+[![Jusqu’ici dans TVLens](screenshots/tvlens-jusqu-ici.png)](screenshots/tvlens-jusqu-ici.png)
+[Voir la version compacte](screenshots/tvlens-jusqu-ici-small.png).
+La capture illustrée utilise une vidéo et une synthèse de test.
 
 ## Exécution actuelle
 
@@ -57,6 +68,11 @@ npm run test:codex:speed
 npm run package:mac
 npm run open:mac
 ```
+
+La dernière validation couvre **96 tests unitaires** et le parcours Electron avec
+modèles simulés : [rapport actuel](docs/validation.md). La qualité du récapitulatif
+avec le fournisseur réel reste à valider. Sous Linux sans affichage, lancer
+`xvfb-run -a npm run test:electron`.
 
 Les essais live consomment le quota Codex et éventuellement les embeddings OpenRouter.
 [Mesures et limites actuelles](docs/session-optimization.md).

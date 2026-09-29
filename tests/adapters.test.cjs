@@ -16,8 +16,11 @@ test('local media supports byte-range replay; cleanup retains session archive on
   assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [2, 3, 4]);
   assert.equal((await store.response('moment-1', 'bytes=9-12')).status, 416);
   assert.throws(() => store.file('../../.env.local', 'json'), /invalide/);
+  const recap={sessionId:'session',overview:'Résumé conservé',sourcePassages:[{id:'moment-1',text:'Original'}]};
+  await store.saveRecap(recap);
   await cleanupRawMedia(root);
-  assert.deepEqual(await fs.readdir(path.join(root, 'session')), ['session.json']);
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(root,'session','living-recap.json'),'utf8')),recap);
+  assert.deepEqual(await fs.readdir(path.join(root, 'session')), ['living-recap.json','session.json']);
 });
 test('adapter validates JSON and never exposes raw provider errors containing secrets', async () => {
   const errorAdapter = new OpenRouterAdapter({ apiKey: 'secret', model: 'test', fetchImpl: async () => new Response(JSON.stringify({ error: { message: 'secret' } }), { status: 429 }) });

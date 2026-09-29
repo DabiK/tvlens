@@ -1,6 +1,6 @@
 # TVLens — Roadmap proposée
 
-**33 tickets de cadrage initial archivés.** Le POC dispose désormais de capture, chat sourcé, réexamen, MCP, overlay, file de questions, marque-pages, recherche et Auto. Voir [la livraison actuelle](docs/viewing-upgrade.md). Les archives ci-dessous ne sont pas un état de livraison.
+**33 tickets de cadrage initial archivés.** Le POC dispose désormais de capture, chat sourcé, réexamen, MCP, overlay, file de questions, marque-pages, recherche et Auto. Les actions **Explique ce moment**, **J’ai décroché** et le récapitulatif progressif **Jusqu’ici** sont aussi intégrés. Voir [les fonctions de visionnage](docs/viewing-upgrade.md), [les actions immédiates](docs/friction-latency.md) et [le récapitulatif](docs/living-recap.md). La qualité du récapitulatif avec le fournisseur réel reste à valider. Les archives ci-dessous ne sont pas un état de livraison.
 
 - [Roadmap complète, découpage numéroté et critères de chaque ticket](docs/roadmap-original.md)
 - [Brouillons structurés pour publication](docs/ticket-drafts-original.json)

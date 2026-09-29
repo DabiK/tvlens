@@ -5,6 +5,19 @@ contextBridge.exposeInMainWorld('capture', {
   settings: () => ipcRenderer.invoke('capture:settings')
 });
 contextBridge.exposeInMainWorld('tvlens', {
+  freezeMoment: value => ipcRenderer.invoke('moments:freeze', value),
+  explainMoment: value => ipcRenderer.invoke('moments:explain', value),
+  reexamineMoment: jobId => ipcRenderer.invoke('moments:reexamine', jobId),
+  catchUp: value => ipcRenderer.invoke('moments:catch-up', value),
+  markAttention: () => ipcRenderer.invoke('moments:mark'),
+  momentShortcuts: () => ipcRenderer.invoke('moments:shortcuts'),
+  onExplainMoment: listener => {
+    const callback = (_event, value) => listener(value);
+    ipcRenderer.on('moments:explain-requested', callback);
+    return () => ipcRenderer.removeListener('moments:explain-requested', callback);
+  },
+  recapState:()=>ipcRenderer.invoke('recap:state'),
+  onRecap:listener=>ipcRenderer.on('recap:state',(_event,state)=>listener(state)),
   autoState:()=>ipcRenderer.invoke('auto:state'),
   startAuto:value=>ipcRenderer.invoke('auto:start',value),
   stopAuto:()=>ipcRenderer.invoke('auto:stop'),

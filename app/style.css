@@ -178,3 +178,53 @@ body.floating #float-recap { display: none; }
   .monitor-footer { left: 24px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } button:not(:disabled), .moment { transition: none; } }
+/* Immediate viewing actions stay reachable in both window modes. */
+.quick-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.quick-actions .secondary { padding:7px 9px; font-size:11px; }
+.quick-actions .link { font-size:10px; padding:4px; }
+#attention-status { margin:5px 0 0; font-size:10px; }
+#attention-status:empty, #quick-notice:empty { display:none; }
+#quick-notice, #moment-error { color:var(--warning); font-size:11px; }
+#quick-notice { max-height:55px; overflow:auto; margin-top:7px; }
+#moment-dialog { max-width:500px; }
+#moment-preview { width:100%; max-height:180px; object-fit:contain; margin-top:12px; border-radius:10px; background:#030b10; }
+.moment-intents { display:flex; gap:8px; margin:14px 0; }
+#moment-question-form button { margin-top:10px; }
+.preview-passages { display:flex; gap:7px; overflow:auto; margin:8px 0; }
+.preview-passage { flex:0 0 90px; text-align:left; border-radius:8px; background:#17313f; padding:5px; color:var(--ink); font-size:10px; }
+.preview-passage img { width:80px; height:45px; object-fit:cover; border-radius:5px; display:block; }
+body.floating .float-status { display:none; }
+body.floating #float-keep { font-size:11px; padding:8px 9px; }
+body.floating .float-grip { min-width:55px; }
+body.floating .chat-intro { padding-top:8px; }
+body.floating #float-bar { gap:5px; }
+body.floating #moment-dialog { max-height:calc(100vh - 24px); padding:16px; }
+body.floating #moment-preview { max-height:130px; }
+
+/* A quiet, persistent recap above the short-lived video rail. */
+.recap-panel { padding: 18px 0 23px; margin-bottom: 21px; border-bottom: 1px solid var(--line); }
+.recap-status { margin: 10px 0; font-size: 11px; }
+.recap-overview { color: var(--ink); font-size: 13px; line-height: 1.7; max-width: 76ch; white-space: pre-line; overflow-wrap: anywhere; }
+.recap-chapters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 10px; margin-top: 16px; }
+.recap-chapter { min-width: 0; border-left: 2px solid #9cc4c640; padding: 3px 10px; }
+.recap-chapter h3 { margin: 0; font-size: 11px; font-weight: 650; line-height: 1.5; overflow-wrap: anywhere; }
+.recap-chapter-link { text-align: left; padding: 0; background: transparent; border: 0; color: #c5dedb; line-height: inherit; font: inherit; }
+.recap-chapter-link:hover { color: var(--lime); }
+.recap-summary { color: var(--muted); font-size: 11px; line-height: 1.6; margin: 7px 0; overflow-wrap: anywhere; }
+.recap-sources { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.recap-source { font-size: 10px; margin: 0; }
+.recap-source:disabled { opacity: .65; }
+.recap-expired { display: block; font-size: 10px; }
+.recap-limits { font-size: 10px; line-height: 1.5; margin-top: 13px; }
+#recap-dialog { max-width: 680px; }
+#recap-dialog .recap-chapters { grid-template-columns: 1fr; gap: 17px; }
+#recap-dialog .recap-chapter { padding-left: 14px; }
+#recap-dialog .recap-chapter h3 { font-size: 13px; }
+body.floating #recap-dialog { max-height: calc(100vh - 24px); padding: 17px; }
+body.floating #recap-dialog .recap-overview { font-size: 12px; }
+@media (max-width: 1100px) { .recap-panel .recap-chapters { grid-template-columns: 1fr; } }
+
+.recap-error { color: var(--warning); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.recap-extra-sources { width: 100%; color: var(--muted); font-size: 10px; }
+.recap-extra-sources > summary { cursor: pointer; padding: 4px 0; }

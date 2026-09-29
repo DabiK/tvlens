@@ -1,0 +1,48 @@
+{
+  "kind": "local synthetic capture, fake 2500 ms model",
+  "firstCapturedPassageMs": 2079,
+  "explain": {
+    "waitMs": 1,
+    "contextMs": 1,
+    "firstProgressMs": 1,
+    "firstUsefulMs": 1,
+    "totalMs": 2525,
+    "endToEndMs": 2526,
+    "sourcesReused": 0,
+    "inspectionCacheHits": 0,
+    "tools": [
+      {
+        "tool": "search_moments",
+        "durationMs": 1,
+        "status": "completed"
+      },
+      {
+        "tool": "inspect_clip",
+        "durationMs": 1,
+        "status": "completed"
+      }
+    ]
+  },
+  "recap": {
+    "waitMs": 1,
+    "contextMs": 0,
+    "firstProgressMs": 0,
+    "firstUsefulMs": 0,
+    "totalMs": 2505,
+    "endToEndMs": 2506,
+    "sourcesReused": 0,
+    "inspectionCacheHits": 0,
+    "tools": [
+      {
+        "tool": "search_moments",
+        "durationMs": 1,
+        "status": "completed"
+      },
+      {
+        "tool": "inspect_clip",
+        "durationMs": 2,
+        "status": "completed"
+      }
+    ]
+  }
+}

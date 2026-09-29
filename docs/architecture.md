@@ -32,7 +32,7 @@ interface web. Ces adaptateurs futurs ne sont pas encore implémentés.
 
 La fenêtre détaillée est configurée au constructeur (300 000 ms par défaut).
 Un passage qui chevauche la borne reste disponible jusqu’à expiration complète :
-la granularité de rétention est celle du segment (15 secondes). Le nettoyage est
+la granularité de rétention est celle du segment (2 secondes au démarrage, puis 8 secondes). Le nettoyage est
 effectué toutes les cinq secondes et avant les questions/ingestions.
 Les temps sont monotones depuis le début d’observation, indépendants des retours
 arrière du lecteur. Les segments, résumés et réponses restent attachés à leur session.
@@ -130,3 +130,25 @@ quel port de réexamen. `frame-policy.mjs` reçoit des deltas calculés par la c
 indépendamment d’Electron. `CodexQuota` contrôle la réserve avant les appels ;
 les services du domaine ne connaissent aucun SDK fournisseur. Les contrats de
 queue actuels remplacent l’ancienne annulation automatique à chaque question.
+
+## Actions immédiates et récapitulatif progressif
+
+`ViewingActions` fige l’intervalle des actions ciblées, conserve le repère de
+rattrapage et valide sa progression depuis les citations de la réponse.
+`RollingRecorder.checkpoint` scelle le passage en cours à cet instant ; le
+réexamen réutilise les bornes originales. `DeepAsk` expose un aperçu provisoire
+sourcé et les durées de préparation, attente et réponse.
+
+`LivingRecap` observe les passages analysés et leur historique. Il conserve les
+originaux, valide la couverture des IDs sources et calcule les horodatages des
+chapitres. Son port de synthèse est injecté ; `CodexRecap` le réalise avec un agent
+séparé, sans outils web ou vidéo. Chaque synthèse reçoit les originaux, les
+chapitres précédents et les nouveaux passages. La cadence normale est de 25 s,
+avec un délai de traitement de 45 s. Les questions et vérifications manuelles
+annulent la synthèse ; une génération protège contre les résultats tardifs.
+
+Le bootstrap relie les événements de session, la priorité manuelle et le cycle
+de vie du récapitulatif. `LocalSessionStore.saveRecap` sérialise atomiquement
+`living-recap.json` avec les textes sources. L’expiration du média désactive la
+relecture sans supprimer les textes. Le renderer partage le rendu entre panneau
+principal et dialogue flottant. Voir [les limites de capacité](living-recap.md).

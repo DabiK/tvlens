@@ -1,3 +1,6 @@
+const { LivingRecap } = require('../core/living-recap.cjs');
+const { CodexRecap } = require('../adapters/codex-recap.cjs');
+const { ViewingActions } = require('../core/viewing-actions.cjs');
 const {CachedInspector}=require('../core/cached-inspector.cjs');
 const {AutoMonitor}=require('../core/auto-monitor.cjs');
 const {SavedMoments}=require('../core/saved-moments.cjs');
@@ -32,9 +35,11 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 let verifierAdapter, verification;
 let auto,autoAgent,autoTimer;
+let recap, recapAdapter, recapTimer, recapTransition = false;
 let deep, bridge, search, inspector, videoAgent, perception, inspectorModel, sessionClock;
 let window, watch, store, pruneTimer, config, sessionsRoot, closing = false;
 let sources = [], selectedId;
+const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
 const liveInspection = smoke && process.argv.includes('--live-inspection');
 const localInspection = smoke && process.argv.includes('--local-inspection');
@@ -95,9 +100,9 @@ app.whenReady().then(async () => {
     floating=value.floating;return value;
   });
   const codexBinary = await findCodex();
-  const makeTools = (signal, onProgress) => {
+  const makeTools = (signal, onProgress, options = {}) => {
     if (!watch || !search || !inspector) throw new Error('Démarre une observation dans TVLens.');
-    return new VideoTools({ snapshot: watch.snapshot(), search, inspector, media: store, signal, onProgress });
+    return new VideoTools({ snapshot: options.snapshot || watch.snapshot(), search, inspector, media: store, signal, onProgress });
   };
   bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools }).start();
   const quota=new CodexQuota();
@@ -112,6 +117,7 @@ app.whenReady().then(async () => {
   } : new CodexSessionAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome, model:selectedModels.codexModel, bridge, quota });
   deep = new DeepAsk({ makeTools, agent: videoAgent, onChange: state => {
     if(watch){const busy=state.jobs.some(j=>j.sessionId===watch.id&&['running','queued'].includes(j.status));if(watch.asking!==busy){watch.asking=busy;watch.emit();if(!busy)queueMicrotask(()=>watch?.drain());}}
+    if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
     if (!window.isDestroyed()) window.webContents.send('deep:state', state);
     store?.saveResearch(state).catch(() => {});
   } });
@@ -121,6 +127,15 @@ app.whenReady().then(async () => {
    const abort=()=>runner.cancelAll('Auto suspendu : priorité manuelle.');signal.addEventListener('abort',abort,{once:true});
    try{if(signal.aborted)throw signal.reason;runner.start(instruction,{mode:'chat'});await runner.jobs[0].done;signal.throwIfAborted();return runner.jobs[0].result;}finally{signal.removeEventListener('abort',abort);}
   }});
+  recap = new LivingRecap({throttleMs:smoke?1000:25000,
+    summarize: input => recapAdapter.summarize(input),
+    onChange: state => {
+      if (!window.isDestroyed()) window.webContents.send('recap:state',state);
+      if (state.sessionId && state.sessionId===watch?.id) store?.saveRecap(state).catch(()=>{});
+    }
+  });
+  recapTimer=setInterval(()=>{if(watch&&!closing&&!recapTransition)recap.tick({busy:Boolean(verification?.busy)||deep.jobs.some(j=>['queued','running'].includes(j.status))}).catch(()=>{});},1000);
+  handle('recap:state',()=>recap.snapshot());
   autoTimer=setInterval(()=>auto.tick(watch?.snapshot(),deep.jobs.some(j=>['queued','running'].includes(j.status))).catch(()=>{}),1000);
   handle('auto:state',()=>auto.snapshot());handle('auto:start',async input=>{if(!watch)throw Error('Démarre une session.');auto.stop();if(autoAgent!==videoAgent)await autoAgent.close?.();auto.configure(input,watch.snapshot());return auto.snapshot();});handle('auto:stop',()=>auto.stop());
   handle('auto:open-source',({id,index})=>{const url=safeExternalUrl(auto.results.find(r=>r.id===id)?.result?.sources?.[index]?.url);if(!url)throw Error('Source indisponible.');return shell.openExternal(url);});
@@ -143,7 +158,7 @@ app.whenReady().then(async () => {
   } : new CodexVerifier({ binary: codexBinary || 'codex', authHome: config.codexAuthHome, model:selectedModels.codexModel });
   verification = new VerificationService({ verifier: {verify:async input=>{if(!smoke||process.argv.includes('--live-verifier')){await videoAgent.prepare(watch?.id||'verify-only');await quota.check(videoAgent.rpc);}return verifierAdapter.verify(input);}},
     archive: new VerificationArchive(path.join(app.getPath('userData'), 'verifications')),
-    onChange: state => { if (!window.isDestroyed()) window.webContents.send('verify:state', state); } });
+    onChange: state => { if(state.busy)recap?.tick({busy:true});if (!window.isDestroyed()) window.webContents.send('verify:state', state); } });
   handle('verify:run', input => {
     if (!input || typeof input.claim !== 'string') throw new Error('Écris l’affirmation à vérifier.');
     auto?.prioritizeManual();return verification.verify({ claim: input.claim, context: 'Affirmation saisie ou corrigée explicitement par le spectateur. Elle peut provenir d’une transcription ou d’une réponse IA non vérifiée; rechercher des preuves indépendantes.' });
@@ -173,15 +188,22 @@ app.whenReady().then(async () => {
     if (!result.canceled) { config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome; }
     return configuration();
   });
+  const sourcePreferenceFile = path.join(app.getPath('userData'), 'last-source.json');
+  let lastSource = await fs.readFile(sourcePreferenceFile, 'utf8').then(JSON.parse).catch(() => null);
   handle('capture:sources', async () => {
-    if (smoke) return { permission: 'granted', sources: [{ id: 'test-source', name: 'Synthetic test video' }] };
-    sources = await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
-    return { permission: systemPreferences.getMediaAccessStatus('screen'), sources: sources.filter(s => s.name !== 'TVLens').map(s => ({ id: s.id, name: s.name })) };
+    sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }] : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
+    const available = sources.filter(s => s.name !== 'TVLens').map(s => ({ id: s.id, name: s.name }));
+    // Window IDs can be recycled: only preselect when both ID and title still match.
+    const preferred = available.find(s => s.id === lastSource?.id && s.name === lastSource?.name);
+    return { permission: smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen'), sources: available, preferredSourceId: preferred?.id || null };
   });
-  handle('capture:select', id => {
-    if (smoke && id === 'test-source') return;
-    if (!sources.some(s => s.id === id && s.name !== 'TVLens')) throw new Error('Source indisponible');
+  handle('capture:select', async id => {
+    const source = sources.find(s => s.id === id && s.name !== 'TVLens');
+    if (!source) throw new Error('Source indisponible');
     selectedId = id;
+    lastSource = { id, name: source.name };
+    await fs.mkdir(path.dirname(sourcePreferenceFile), { recursive: true });
+    await fs.writeFile(sourcePreferenceFile, JSON.stringify(lastSource), { mode: 0o600 });
   });
   handle('capture:settings', () => shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'));
   handle('watch:start', async () => {
@@ -192,6 +214,13 @@ app.whenReady().then(async () => {
     deep.cancelAll('Changement de session.');
     if (store) await cleanupRawMedia(sessionsRoot);
     const id = randomUUID();
+    recap.reset(id);
+    recapAdapter = smoke && !process.argv.includes('--live-recap') ? {
+      summarize: async ({chapters,newPassages}) => ({overview:'Un cercle se déplace sur un fond bleu. Les passages observés montrent la continuité de cette animation.',chapters:[{
+        title:'Une animation en mouvement',summary:'Le cercle poursuit son déplacement sur un fond bleu.',
+        sourceIds:[...new Set([...chapters.flatMap(c=>c.sourceIds),...newPassages.map(p=>p.id)])]
+      }]})
+    } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
     store = new LocalSessionStore(path.join(sessionsRoot, id));
     const researchBudget = new ResearchBudget(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json'));
     search = new MomentSearch({ embeddings: (smoke && !liveInspection)||!config.apiKey ? null : new OpenRouterEmbeddings({ apiKey: config.apiKey, budget: researchBudget }), cache: new EmbeddingStore(path.join(store.root, 'embeddings.json'), EMBEDDING_MODEL) });
@@ -210,7 +239,7 @@ app.whenReady().then(async () => {
       ask: async input => ({ answer: 'Un cercle se déplace sur un fond bleu.', kind: 'observation', citations: [input.context.at(-1).id], limits: [], cost: 0 })
     } : new CodexPerception({binary:codexBinary,authHome:config.codexAuthHome,model:selectedModels.observationModel,transcriber,quota,sessionId:id+'-observe'});
     watch = new WatchSession({ id, retentionMs:smoke?Number(process.argv.find(x=>x.startsWith('--retention-ms='))?.split('=')[1]||300000):300000, now: () => sessionClock.now(), perception: adapter, answer: adapter, media: store, archive: store,
-      onChange: state => { if (!window.isDestroyed()) window.webContents.send('watch:state', state); } });
+      onChange: state => { if(!closing&&!recapTransition)recap.observe(state);if (!window.isDestroyed()) window.webContents.send('watch:state', state); } });
     pruneTimer = setInterval(() => watch.prune().catch(() => {}), 5000);
     watch.emit();
     videoAgent.prepare?.(id).catch(()=>{});
@@ -225,15 +254,64 @@ app.whenReady().then(async () => {
   handle('watch:stop', async () => {sessionClock?.pause();await watch?.stop();});
   handle('watch:new',async()=>{
     if(watch?.accepting||watch?.running)throw new Error('Arrête la capture et attends la fin de son analyse.');
+    recapTransition=true;
+    try {
+    clearInterval(pruneTimer);recap.reset();await recapAdapter?.close?.();
     auto?.stop();await autoAgent?.close?.();deep.cancelAll('Nouvelle session.');await videoAgent.close?.();await perception?.close?.();await inspectorModel?.close?.();
-    clearInterval(pruneTimer);await cleanupRawMedia(sessionsRoot);watch=null;store=null;search=null;inspector=null;deep.jobs=[];deep.emit();
+    clearInterval(pruneTimer);await cleanupRawMedia(sessionsRoot);watch=null;viewingActions.reset();store=null;search=null;inspector=null;deep.jobs=[];deep.emit();
+    recap.reset();
     window.webContents.send('watch:reset');return true;
+    } finally { recapTransition=false; }
   });
   handle('watch:ask', question => {
     if (!watch) throw new Error('Démarre une session avant de poser une question.');
     verifierAdapter.cancel?.();
     auto?.prioritizeManual();return deep.start(question, {mode:'chat'});
   });
+  handle('moments:freeze', value => viewingActions.freeze(watch?.snapshot(), value));
+  handle('moments:mark', () => viewingActions.mark(watch?.snapshot()));
+  const startMomentAction = (input, kind) => {
+    const snapshot = watch?.snapshot();
+    const frozen = viewingActions.resolve(snapshot, input?.token, kind);
+    const eligible = [...snapshot.history, ...snapshot.segments].filter(s => s.startMs >= frozen.startMs && s.endMs <= frozen.anchorMs);
+    if (!eligible.length) throw Error('Aucun nouveau passage capturé pour cet instant. Laisse tourner la vidéo quelques secondes.');
+    const endMs = Math.max(...eligible.map(s => s.endMs));
+    let question;
+    if (kind === 'catch-up') question = `J’ai décroché. Résume en quelques phrases ce que j’ai manqué entre ${Math.round(frozen.startMs / 1000)} et ${Math.round(endMs / 1000)} secondes. Mentionne les passages non analysés ou manquants. Appuie les points importants sur deux ou trois passages cités.`;
+    else {
+      if (input?.question !== undefined && (typeof input.question !== 'string' || input.question.length > 1600)) throw Error('Question invalide.');
+      if (input?.intent !== undefined && !['explain', 'summarize'].includes(input.intent)) throw Error('Action inconnue.');
+      question = input?.question?.trim() || (input?.intent === 'summarize' ? 'Résume ce moment en quelques phrases.' : 'Explique ce moment et ce qui aide à le comprendre.');
+      question += ` Instant sélectionné : ${Math.round(frozen.anchorMs / 1000)} secondes. Réponds uniquement sur les passages de cet intervalle, en signalant ce qui manque.`;
+    }
+    verifierAdapter.cancel?.(); auto?.prioritizeManual();
+    const result = deep.start(question, { mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', snapshot, startMs: frozen.startMs, anchorMs: frozen.anchorMs });
+    if (kind === 'catch-up') {
+      const job = deep.jobs.find(j => j.id === result.id);
+      job.done.then(() => viewingActions.acknowledgeResult(frozen, job, eligible));
+    }
+    return { ...result, ...frozen, endMs };
+  };
+  handle('moments:explain', input => startMomentAction(input, 'explain'));
+  handle('moments:catch-up', input => startMomentAction(input, 'catch-up'));
+  handle('moments:reexamine', jobId => {
+    const original = deep.jobs.find(job => job.id === jobId);
+    const { question, options } = viewingActions.reexamination(original, watch?.snapshot());
+    verifierAdapter.cancel?.(); auto?.prioritizeManual();
+    return deep.start(question, options);
+  });
+  const explainShortcut = 'CommandOrControl+Shift+E';
+  let explainShortcutRegistered = false;
+  if (!smoke || process.argv.includes('--live-shortcut')) {
+    explainShortcutRegistered = globalShortcut.register(explainShortcut, () => {
+      try {
+        const frozen = viewingActions.freeze(watch?.snapshot());
+        window.show();
+        window.webContents.send('moments:explain-requested', frozen);
+      } catch (error) { window.webContents.send('saved:error', error.message); }
+    });
+  }
+  handle('moments:shortcuts', () => ({ explainShortcut, explainShortcutRegistered }));
   handle('watch:state', () => watch?.snapshot() || null);
   protocol.handle('tvlens-media', request => {
     const url = new URL(request.url);
@@ -265,9 +343,9 @@ async function findCodex() {
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', event => {
   if (closing) return;
-  event.preventDefault(); closing = true; clearInterval(pruneTimer);clearInterval(autoTimer);auto?.stop();
+  event.preventDefault(); closing = true; clearInterval(pruneTimer);clearInterval(autoTimer);clearInterval(recapTimer);recap?.reset();auto?.stop();
   globalShortcut.unregisterAll();
   verifierAdapter?.cancel?.();
   deep?.cancelAll();
-  Promise.all([autoAgent?.close?.(),videoAgent?.close?.(),perception?.close?.(),inspectorModel?.close?.(),bridge?.close()]).then(() => watch?.stop()).then(() => sessionsRoot && cleanupRawMedia(sessionsRoot)).finally(() => app.quit());
+  Promise.all([recapAdapter?.close?.(),autoAgent?.close?.(),videoAgent?.close?.(),perception?.close?.(),inspectorModel?.close?.(),bridge?.close()]).then(() => watch?.stop()).then(() => sessionsRoot && cleanupRawMedia(sessionsRoot)).finally(() => app.quit());
 });

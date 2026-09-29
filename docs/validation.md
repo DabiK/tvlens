@@ -1,6 +1,32 @@
-# Validation du premier parcours — 28 septembre 2026
+# Validation
 
-Pour la tranche actuelle, voir [la validation du réexamen](reexamen-validation.md)
+## Actions de visionnage et « Jusqu’ici » — 29 septembre 2026
+
+- **96 tests Node réussis** via `npm test`.
+- **Parcours Electron réussi** via `xvfb-run -a npm run test:electron` : démarrage,
+  pause/reprise, chat, actions ciblées, réexamen borné, repère de rattrapage,
+  affichage du récapitulatif en grand/petit format, horodatages rejouables,
+  archive locale et remise à zéro lors d’une nouvelle session.
+- Tests du récapitulatif : provenance complète, originaux conservés, expiration,
+  priorité manuelle, annulation et résultats tardifs, erreurs, délai maximal,
+  limite d’entrée et absence de notifications redondantes.
+- Vérification visuelle : correction d’une course entre l’ingestion et l’affichage
+  des vignettes ; sources supplémentaires repliées pour limiter la densité.
+- Review par sous-agents terminée sans bloqueur restant.
+
+Ces tests utilisent une capture synthétique et des modèles simulés. Ils valident
+l’intégration, pas la qualité du résumé du fournisseur réel, sa latence ou la
+capture native macOS. Le récapitulatif réel reste à évaluer sur un visionnage
+connecté. Les mesures locales antérieures sont dans
+[latency-local.json](latency-local.json), avec leurs [limites](friction-latency.md).
+
+Captures : [grand écran](../screenshots/tvlens-jusqu-ici.png),
+[petite fenêtre](../screenshots/tvlens-jusqu-ici-small.png).
+
+## Archives : premier parcours — 28 septembre 2026
+
+
+Pour les essais antérieurs, voir [la validation du réexamen](reexamen-validation.md)
 et [la comparaison des stratégies](strategy-comparison.md). Les relevés ci-dessous
 documentent les étapes antérieures.
 

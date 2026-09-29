@@ -54,6 +54,15 @@ class LocalSessionStore {
     });
     return this.serial;
   }
+  saveRecap(snapshot) {
+    const data=JSON.stringify(snapshot,null,2);
+    this.serial=this.serial.catch(()=>{}).then(async()=>{
+      await fs.mkdir(this.root,{recursive:true,mode:0o700});
+      const file=path.join(this.root,'living-recap.json');
+      await fs.writeFile(file+'.tmp',data,{mode:0o600});await fs.rename(file+'.tmp',file);
+    });
+    return this.serial;
+  }
   saveAuto(snapshot){const data=JSON.stringify(snapshot,null,2);this.serial=this.serial.catch(()=>{}).then(async()=>{await fs.mkdir(this.root,{recursive:true});await fs.writeFile(path.join(this.root,'auto.json'),data,{mode:0o600});});return this.serial;}
   async response(id, range) {
     let bytes;
