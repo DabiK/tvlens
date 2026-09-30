@@ -1,5 +1,9 @@
 # Validation
 
+## Préparation à la publication
+
+114 tests Node réussis après ajout de deux régressions : résolution des exécutables via PATH/override et configuration facultative avec compteurs dans un dossier inscriptible. Les essais VPS ci-dessous restent les mesures de la version effectivement déployée ; la publication ne redéploie pas les appareils existants.
+
 ## État actuel — companion LG et VPS privé, 30 septembre 2026
 
 | Périmètre | Résultat et portée |

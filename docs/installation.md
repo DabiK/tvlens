@@ -2,7 +2,7 @@
 
 ## Choisir son parcours
 
-Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la même logique avec capture sur TV : voir [la frise et les commandes](lg-timeline.md). Pour héberger le moteur sur Linux sans Electron, suivre [le déploiement VPS privé Tailscale](vps-deployment.md). Les scripts Homebrew ci-dessous ne sont pas l’installation Linux.
+Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la même logique avec capture sur TV : voir [la frise et les commandes](lg-timeline.md). Pour héberger le moteur sur Linux sans Electron, suivre [le guide serveur Linux/Tailscale](server-installation.md). Les scripts Homebrew ci-dessous ne sont pas l’installation Linux.
 
 ## Prérequis
 

@@ -1,5 +1,6 @@
 # TVLens sur le VPS privé Tailscale
 
+> Les adresses 100.64.0.10 (serveur) et 100.64.0.20 (TV) sont des exemples anonymisés. Utiliser les adresses réelles de son propre tailnet.
 ## Installation
 
 Hôte Ubuntu 24.04 x86_64, Node 24.13.0, 8 Go de RAM. Application clonée par HTTPS avec le compte GitHub déjà configuré : `/opt/tvlens/app`, base `7015a64`. L’ancien clone `/root/tvlens` et les autres services ne sont pas modifiés.
@@ -18,9 +19,11 @@ Le script de sonde accepte désormais `TVLENS_CONFIG`, `TVLENS_CODEX_BINARY` et 
 
 ## Service et réseau
 
-Unité de référence : [deploy/tvlens.service](../deploy/tvlens.service), installée sous `/etc/systemd/system/tvlens.service`.
+Pour une nouvelle installation portable, suivre [le guide serveur](server-installation.md). Les chemins et mesures ci-dessous décrivent le déploiement de référence.
 
-Écoute **exclusivement sur 100.64.0.10:8787**, jamais 0.0.0.0. Aucun proxy public ou Tailscale Funnel ajouté. HTTP circule à l’intérieur du tunnel chiffré Tailscale ; ce déploiement n’ajoute pas de terminaison TLS distincte. Les routes applicatives exigent le jeton d’appairage. Les règles du tailnet restent celles du compte du propriétaire.
+Le modèle [deploy/tvlens.service](../deploy/tvlens.service) lit désormais une adresse locale dans /etc/tvlens/runtime.env et utilise loopback par défaut. Lors du premier essai, l’unité était installée sous `/etc/systemd/system/tvlens.service`.
+
+Le déploiement testé écoute **exclusivement sur son adresse Tailscale:8787**, jamais 0.0.0.0. Aucun proxy public ou Tailscale Funnel ajouté. HTTP circule à l’intérieur du tunnel chiffré Tailscale ; ce déploiement n’ajoute pas de terminaison TLS distincte. Les routes applicatives exigent le jeton d’appairage. Les règles du tailnet restent celles du compte du propriétaire.
 
 Démarrage automatique, relance sur erreur, arrêt du groupe de processus. Utilisateur non privilégié, filesystem système en lecture seule, home des autres utilisateurs masqué et fichiers temporaires privés. Écriture permise dans `/var/lib/tvlens`. Limites : deux CPU équivalents, mémoire haute 1500 Mio, maximum 2 Gio, 128 tâches. Le service réessaie si l’IP Tailscale n’est pas encore disponible au démarrage.
 

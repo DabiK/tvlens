@@ -1,3 +1,4 @@
+import systemPaths from '../adapters/system-paths.cjs';
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
 import { pathToFileURL } from "node:url";
@@ -6,7 +7,7 @@ import fs from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 const jpeg = "/tmp/tvlens-timeline-fixture.jpg";
-await promisify(execFile)("/opt/homebrew/bin/ffmpeg", [
+await promisify(execFile)(systemPaths.executable('ffmpeg', {override:process.env.TVLENS_FFMPEG}), [
   "-nostdin",
   "-y",
   "-v",

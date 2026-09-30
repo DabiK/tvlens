@@ -1,10 +1,11 @@
+const { executable } = require('./system-paths.cjs');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const os = require('node:os');
 const { run } = require('./ffmpeg.cjs');
 const { NativeVideoStrategy } = require('./inspection-strategies.cjs');
 class ClipInspector {
-  constructor({ media, model, ffmpeg = '/opt/homebrew/bin/ffmpeg', strategy = new NativeVideoStrategy() }) { Object.assign(this,{media,model,ffmpeg,strategy}); }
+  constructor({ media, model, ffmpeg = executable('ffmpeg'), strategy = new NativeVideoStrategy() }) { Object.assign(this,{media,model,ffmpeg,strategy}); }
   async inspect({ question,startMs,endMs,segments,signal,onProgress }) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-inspect-'));
     try {

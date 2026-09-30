@@ -1261,8 +1261,8 @@ Confirmer aussi la destination : tracker local proposé, ou lien du dépôt/proj
 
 ## Sources et décisions
 
-- Conversation et [synthèse du grill](../../challenge/synthese-produit.md), incluant ses corrections ultérieures : validation du cadrage, app Mac Electron et overlay.
-- [Champs de candidature fournis](../../challenge/champs-candidature.md).
+- Conversation et synthèse privée du grill (non distribuée), incluant ses corrections ultérieures : validation du cadrage, app Mac Electron et overlay.
+- Champs de candidature fournis en conversation (notes privées non distribuées).
 - [Skill to-tickets source](https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md), lu pour le découpage vertical et la revue avant publication.
 - [Capture Electron](https://www.electronjs.org/docs/latest/api/desktop-capturer) et [fenêtres Electron](https://www.electronjs.org/docs/latest/api/base-window) : sources techniques consultées ; les tickets exigent néanmoins des essais sur machine.
 - [Documentation audio OpenRouter](https://openrouter.ai/docs/guides/overview/multimodal/audio) et [recherche web](https://openrouter.ai/docs/guides/features/plugins/web-search) : modalités et fournisseur précis à valider, pas une garantie de disponibilité.

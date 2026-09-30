@@ -1,3 +1,4 @@
+const { executable } = require('../adapters/system-paths.cjs');
 // Isolated real-media/provider smoke: never connects to, opens or restarts the TV.
 const fs = require("node:fs/promises");
 const os = require("node:os");
@@ -31,7 +32,7 @@ const requireTimeline = process.argv.includes('--require-timeline');
     });
     // This regression probe exercises Codex/Whisper, not paid embedding generation.
     config.apiKey = "";
-    const ffmpeg = config.ffmpeg || "/opt/homebrew/bin/ffmpeg";
+    const ffmpeg = config.ffmpeg || executable('ffmpeg');
     const input = path.resolve(report.source);
     for (let i = 0; i < 4; i++) {
       await exec(ffmpeg, [
@@ -75,7 +76,7 @@ const requireTimeline = process.argv.includes('--require-timeline');
         observationModel: "gpt-6-luna",
         inspectionModel: "gpt-6-luna",
       },
-      codexBinary: process.env.TVLENS_CODEX_BINARY || path.join(os.homedir(), ".local/bin/codex"),
+      codexBinary: executable('codex', {override:process.env.TVLENS_CODEX_BINARY}),
       readClock: () => clock,
     });
     const token = require("node:crypto").randomBytes(32).toString("hex");

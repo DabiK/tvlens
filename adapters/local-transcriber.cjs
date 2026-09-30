@@ -1,6 +1,7 @@
+const { executable } = require('./system-paths.cjs');
 const fs=require('node:fs/promises');const path=require('node:path');const os=require('node:os');const {spawn}=require('node:child_process');const {createHash}=require('node:crypto');
 class LocalTranscriber {
- constructor({binary='/opt/homebrew/bin/whisper-cli',model}={}){Object.assign(this,{binary,model});this.cache=new Map();this.hits=0;this.misses=0;}
+ constructor({binary=executable('whisper-cli'),model}={}){Object.assign(this,{binary,model});this.cache=new Map();this.hits=0;this.misses=0;}
  async transcribe(audio,signal){
   if(!audio?.length)return {text:'',limits:['Aucune piste audio.']};signal?.throwIfAborted();
   const bytes=Buffer.from(audio),key=createHash('sha256').update(bytes).digest('hex');if(this.cache.has(key)){this.hits++;return {...this.cache.get(key),cacheHit:true};}this.misses++;

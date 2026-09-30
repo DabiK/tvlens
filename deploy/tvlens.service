@@ -14,7 +14,9 @@ Environment=CODEX_HOME=/var/lib/tvlens/.codex
 Environment=TVLENS_CONFIG=/etc/tvlens/server.env
 Environment=TVLENS_SERVER_DATA=/var/lib/tvlens/data
 Environment=TVLENS_CODEX_BINARY=/opt/tvlens/codex/node_modules/.bin/codex
-Environment=TVLENS_BIND=100.64.0.10
+Environment=TVLENS_BIND=127.0.0.1
+Environment=TVLENS_USAGE_DIR=/var/lib/tvlens/usage
+EnvironmentFile=/etc/tvlens/runtime.env
 Environment=TVLENS_PORT=8787
 Environment=PATH=/opt/tvlens/codex/node_modules/.bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=/usr/bin/node /opt/tvlens/app/server/main.cjs

@@ -1,5 +1,6 @@
 # Tailscale sur la LG — installation et coexistence réseau
 
+> Les adresses 100.64.0.10 (serveur) et 100.64.0.20 (TV) sont des exemples anonymisés. Utiliser les adresses réelles de son propre tailnet.
 ## État du 30 septembre 2026
 
 Binaire officiel Tailscale **1.102.4 ARM64** installé dans un répertoire isolé, sans modification des bibliothèques webOS. Après validation de la coexistence, un hook de démarrage indépendant a été ajouté. Archive récupérée sur `https://pkgs.tailscale.com/stable/tailscale_1.102.4_arm64.tgz`, SHA-256 comparé au fichier publié par le même serveur HTTPS : `9dd1e6a592a014bbaea0103167ffe299adeda4ba14e078ce9c2895364f6c4c3f`. Les empreintes des deux exécutables transférés correspondent aux copies locales. Ce contrôle vérifie l’intégrité, pas une signature indépendante.

@@ -10,7 +10,7 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 **App macOS · Companion LG · Frise de session · Chat & sources · Serveur privé Tailscale**
 
-[Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/vps-deployment.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+[Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
 
 </div>
 
@@ -82,7 +82,7 @@ Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentificati
 
 **Les interfaces n’ont pas encore toutes les mêmes commandes.** Le marque-page durable, l’interface Auto, la recherche dédiée et la relecture sont disponibles sur Mac. La TV dispose du chat et de la frise avec détail/paroles/question contextualisée ; sa frise n’ajoute pas de lecteur vidéo.
 
-→ [Déploiement Linux et retour au Mac](docs/vps-deployment.md) · [Tailscale sur la LG](docs/lg-tailscale.md)
+→ [Installer sur son serveur Linux](docs/server-installation.md) · [Mesures du VPS et retour au Mac](docs/vps-deployment.md) · [Tailscale sur la LG](docs/lg-tailscale.md)
 
 ## Essayer sur Mac
 
@@ -128,7 +128,7 @@ Le chat reçoit ses outils directement via l’App Server. Un adaptateur **MCP**
 
 ## Ce qui est prouvé, ce qui reste à mesurer
 
-- **112 tests Node** passent sur Mac et Linux ; **12 tests Python** et tests d’interface LG pour les contrôles, le réseau, la géométrie et la frise.
+- **114 tests Node** passent sur Mac et Linux ; **12 tests Python** et tests d’interface LG pour les contrôles, le réseau, la géométrie et la frise.
 - Essais réels avec Whisper, Luna et Codex : description, transcription, questions successives, outils temporels, pause/reprise et réexamen.
 - **TV → VPS : 24 secondes, 12 images et 3 segments reçus sans perte**, puis analyse et réponse. L’utilisateur a confirmé le panneau et la frise sur la TV.
 - Sur ce VPS partagé, les trois blocs de 8 secondes ont pris **15 à 22 secondes chacun à analyser** : le réseau fonctionne, mais l’analyse peut prendre du retard. Ce court essai ne valide pas un visionnage continu prolongé.

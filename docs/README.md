@@ -9,6 +9,7 @@
 | [Interface](interface.md) | Direct, Mémoire, mode flottant et companion LG |
 | [Frise LG](lg-timeline.md) | Navigation télécommande, sujets, miniatures, détail et questions attachées |
 | [Capture LG](lg-capture-control.md) | Démarrage manuel, pause/reprise, tampon et incidents réseau |
+| [Installer son serveur](server-installation.md) | Configuration portable Linux, outils, systemd et appairage |
 | [VPS privé](vps-deployment.md) | Runtime Linux, systemd, appairage, mesures et retour au Mac |
 | [Tailscale sur LG](lg-tailscale.md) | Installation, coexistence LAN/VPN, persistance et retrait |
 
@@ -18,6 +19,7 @@
 | --- | --- |
 | [Architecture](architecture.md) | Domaine, ports, adaptateurs et hôtes Mac/Linux |
 | [Rôles des agents](refactor-runtime.md) | Codex chat/perception, outils directs, MCP et indexation à la demande |
+| [Audit avant publication](publication-audit.md) | Périmètre, anonymisation de l’historique et contrôles |
 | [Validation](validation.md) | Résultats actuels, essais réels, échecs et limites |
 | [Contribuer](../CONTRIBUTING.md) | Organisation et vérifications à lancer |
 | [Résumé progressif](living-recap.md) | Chapitres, provenance et expiration |
