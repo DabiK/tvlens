@@ -17,7 +17,7 @@ const requireTimeline = process.argv.includes('--require-timeline');
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-refactor-live-"));
   const report = {
     date: new Date().toISOString(),
-    source: "media/samples/kennedy-rice-7min.mp4",
+    source: process.env.TVLENS_PROBE_VIDEO || "media/samples/kennedy-rice-7min.mp4",
     intervalSeconds: [30, 38],
     checks: [],
     failures: [],
@@ -25,7 +25,7 @@ const requireTimeline = process.argv.includes('--require-timeline');
   let runtime, server;
   try {
     const config = await loadConfig({
-      configPath: path.resolve(".env.local"),
+      configPath: process.env.TVLENS_CONFIG || path.resolve(".env.local"),
       userData: dir,
       safeStorage: { isEncryptionAvailable: () => false },
     });
@@ -75,7 +75,7 @@ const requireTimeline = process.argv.includes('--require-timeline');
         observationModel: "gpt-6-luna",
         inspectionModel: "gpt-6-luna",
       },
-      codexBinary: path.join(os.homedir(), ".local/bin/codex"),
+      codexBinary: process.env.TVLENS_CODEX_BINARY || path.join(os.homedir(), ".local/bin/codex"),
       readClock: () => clock,
     });
     const token = require("node:crypto").randomBytes(32).toString("hex");

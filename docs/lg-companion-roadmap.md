@@ -2,6 +2,26 @@
 
 Proposition de tickets · 30 septembre 2026 · **à relire avant publication**.
 
+## État actuel — après livraison du companion et du VPS
+
+Le parcours YouTube → capture LG → moteur Mac ou VPS → réponse dans le companion est implémenté et confirmé par l’utilisateur. Le domaine est partagé avec l’app Mac. La frise basse et le chat droit sont deux vues exclusives ; les détails et questions attachées à un moment sont livrés. Voir [frise](lg-timeline.md), [capture](lg-capture-control.md) et [VPS](vps-deployment.md).
+
+Deux choix ont évolué par rapport au contrat initial : la voix passe par le micro du clavier LG, pas par la récupération directe du bouton micro physique ; le VPS est servi en HTTP à l’intérieur de Tailscale, sans endpoint HTTPS public. L’ouverture se fait avec Rakuten sur la télécommande configurée. Ces écarts sont explicites : les anciens critères ne sont pas tous cochés par assimilation.
+
+| Ensemble | État actuel |
+| --- | --- |
+| LG-01 à LG-06 | Parcours fonctionnel livré avec voix via clavier ; tests longs, publicités, synchronisation calibrée et reboot restent partiels |
+| LG-07 à LG-10 | Parité Mac/TV incomplète : relecture/ouverture des sources, marque-pages durables, recherche dédiée et interface Auto à poursuivre |
+| LG-11 | Runtime Linux et fournisseurs réels validés ; débit continu insuffisant sur les premiers blocs VPS, optimisation/mesure longue à faire |
+| LG-12 | TV → VPS privé Tailscale livré ; transport différent du TLS public prévu initialement, retour au Mac documenté mais pas rejoué de bout en bout |
+| LG-13 | Non terminé : recette complète et parité de fonctionnalités encore ouvertes |
+
+Prochaines priorités : mesurer et réduire le retard d’analyse sur VPS, valider le redémarrage complet et les interruptions longues, puis compléter les fonctions TV. L’expérimentation GX10 vise l’inférence locale et le débit soutenu. Les brouillons de tickets ci-dessous conservent leurs critères originaux et ne sont pas des issues publiées.
+
+## Plan initial et journal historique
+
+Les sections suivantes conservent le raisonnement et les états intermédiaires. Les mentions « à prouver » ou « prochain incrément » décrivent ces étapes ; l’état courant ci-dessus prévaut.
+
 ## Contrat retenu
 
 Conserver l’application YouTube existante. TVLens est un companion indépendant : vidéo réduite à côté d’une sidebar, question par le bouton micro direct de la télécommande, lecture continue pendant la dictée. Première cible : la LG actuelle, une session personnelle, démarrage manuel. Tester TV → Mac puis TV → VPS Hostinger (8 Go). L’app Mac reste disponible ; les trois interfaces partagent le domaine et ses ports.

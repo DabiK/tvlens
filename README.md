@@ -2,63 +2,91 @@
 
 # TVLens
 
-### Le film continue. Le contexte reste.
+### La vidéo continue. Le contexte reste.
 
-Un compagnon de visionnage qui voit, écoute et retrouve le passage dont tu parles.
+**Pose une question sur ce que tu regardes. Retrouve le moment. Explore les preuves.**
 
-**macOS · Mémoire temporelle · Chat & sources · Architecture hexagonale**
+Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis directement à côté de YouTube sur une TV LG.
 
-[Installer](docs/installation.md) · [Découvrir l’interface](docs/interface.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+**App macOS · Companion LG · Frise de session · Chat & sources · Serveur privé Tailscale**
+
+[Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/vps-deployment.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
 
 </div>
 
-![TVLens : aperçu vidéo et conversation contextuelle](screenshots/current/direct.png)
+![TVLens sur Mac : vidéo et conversation contextuelle](screenshots/current/direct.png)
 
-> « Qu’est-ce qui vient de se passer ? » — « Explique ce moment. » — « Tu as une source ? »
+> **« Ça parle de quoi ? »** · **« Qu’est-ce qu’il disait tout à l’heure ? »** · **« Tu as une source ? »**
 >
-> TVLens rattache la question au moment où tu la poses, retrouve les passages utiles et peut consulter des sources externes. Tu continues à regarder.
+> Plus besoin de reconstruire tout le contexte dans un chatbot. TVLens observe le contenu, garde une mémoire de la session et rattache ta question au moment où tu la poses.
 
-**Prototype fonctionnel sur Mac.** L’inférence visuelle et le chat utilisent aujourd’hui Codex ; l’audio est transcrit localement. L’exécution sur ASUS Ascent GX10 est une cible de développement, pas une capacité déjà validée.
+**POC fonctionnel et testé sur Mac et sur une LG rootée, avec calcul sur Mac ou VPS personnel.** Le chat et la vision utilisent aujourd’hui Codex ; Whisper transcrit l’audio sur l’hôte de calcul. L’inférence entièrement locale sur **ASUS Ascent GX10** est la prochaine hypothèse à valider.
 
-## Une interface qui laisse la place au contenu
+## Une question, son contexte, ses preuves
 
-**Direct** réunit le flux, une courte description du contexte et la conversation. **Mémoire** rassemble les résumés, passages et moments conservés.
+TVLens ne se limite pas à décrire la dernière image. L’agent peut consulter la transcription, rechercher un moment passé, réexaminer les images disponibles et chercher des sources sur le web. Il réutilise la conversation et les preuves obtenues pour les questions suivantes.
 
-Le **mode flottant** reste au-dessus du lecteur. Déplie le chat quand tu en as besoin, puis replie-le sans interrompre l’observation.
+| Tu veux… | TVLens te permet de… |
+| --- | --- |
+| **Comprendre le présent** | Poser une question sur le contenu récent, avec des références aux passages observés. |
+| **Retrouver le passé** | Interroger la mémoire temporelle ; rechercher par texte et, avec OpenRouter, par similarité sémantique. |
+| **Examiner un détail** | Réanalyser un intervalle avec des planches d’images numérotées et horodatées. |
+| **Vérifier une information** | Consulter des sources externes et distinguer ce qu’affirme la vidéo de ce qu’elles étayent. |
+| **Suivre le fil** | Parcourir les sujets et événements de la session, leurs résumés et leurs paroles disponibles. |
+| **Poser plusieurs questions** | Utiliser une file visible, avec annulation individuelle et ancrage temporel conservé. |
+
+Les états de capture, d’analyse, d’attente et d’erreur sont distincts. La progression décrit les étapes réellement exécutées, sans exposer de raisonnement interne. Une réponse provisoire n’est pas présentée comme une preuve vérifiée.
+
+## Sur Mac : complet quand tu explores, discret quand tu regardes
+
+**Direct** réunit la vidéo, le contexte et le chat. **Mémoire** rassemble les passages, le résumé progressif, la recherche et les moments gardés. Le **mode flottant** laisse le lecteur au premier plan : une barre compacte, un chat qui se déplie quand tu en as besoin.
 
 <p align="center">
-  <img src="screenshots/current/floating-bar.png" width="420" alt="Barre flottante : Demander, Garder, Pause et menu">
+  <img src="screenshots/current/floating-bar.png" width="420" alt="Barre flottante TVLens : Demander, Garder et Pause">
+  <img src="screenshots/current/floating-chat.png" width="420" alt="Chat TVLens déplié au-dessus du lecteur">
 </p>
-<p align="center">
-  <img src="screenshots/current/floating-chat.png" width="420" alt="Conversation déployée dans le mode flottant">
-</p>
+
+Les actions Mac permettent aussi de **garder un moment**, **rattraper ce que tu as manqué**, relire une citation disponible ou activer **Auto** avec une consigne ciblée : « Surveille les chiffres sur l’économie ». Auto commence à son activation ; tes questions restent prioritaires.
 
 <details>
-<summary>Voir la mémoire de session</summary>
+<summary>Voir la mémoire de session sur Mac</summary>
 
-![Résumé et passages de la session](screenshots/current/memory.png)
+![TVLens : mémoire, résumé et passages](screenshots/current/memory.png)
 
 </details>
 
-*Captures de l’application avec un extrait réel de **Spring**. Leur protocole de production, les limites et les crédits figurent dans [la documentation des captures](screenshots/current/README.md).*
+*Captures de l’app avec un véritable extrait de **Spring**. [Protocole et crédits](screenshots/current/README.md).*
 
-## Ce que tu peux faire
+## Sur la TV : le programme reste à l’écran
 
-| Pendant le visionnage | TVLens |
-| --- | --- |
-| **Poser une question** | Utilise les observations récentes et le fil de conversation ; recherche sur le web lorsque nécessaire. |
-| **Expliquer un instant** | Ancre l’action au clic et permet de réexaminer un passage avec des images plus rapprochées. |
-| **Rattraper le fil** | « J’ai décroché » retrouve les passages depuis le dernier repère. |
-| **Revoir une preuve** | Les citations temporelles ouvrent le passage disponible ; les sources web ouvrent l’article associé. |
-| **Garder un moment** | Conserve le média et sa transcription sur le Mac jusqu’à suppression explicite. |
-| **Retrouver un passage** | Recherche temporelle, textuelle et, avec une clé OpenRouter, sémantique. |
-| **Activer Auto** | Surveille une consigne à partir de son activation, à une fréquence réglable. Les questions manuelles restent prioritaires. |
+Sur la **LG 75QNED87T rootée de test**, YouTube continue pendant que TVLens propose deux vues exclusives :
 
-Les questions sont traitées dans l’ordre, avec annulation individuelle. Pause/reprise conserve le contexte de la session. Les étapes affichées correspondent au traitement observé ; aucun raisonnement interne n’est exposé.
+- **Chat à droite** : question dictée via le micro du clavier LG, réponses et références temporelles.
+- **Frise en bas** : environ un tiers de l’écran, vidéo entière réduite au-dessus, cartes par sujet ou événement sur toute la session.
 
-## Essayer sur son Mac
+Les miniatures apparaissent dès réception ; titres et résumés arrivent avec l’analyse. Tu peux remonter le passé sans perdre ta position, ouvrir le détail, afficher les paroles ou **questionner ce moment** avec son intervalle attaché au chat. Les miniatures restent pendant la session, même après expiration du média détaillé.
 
-Prérequis : **Mac Apple Silicon, Node.js 24+, Homebrew et Codex CLI connecté**. Le guide détaille les autorisations d’écran et de son système.
+Le companion s’ouvre avec **Rakuten** sur la télécommande configurée. La capture démarre manuellement ; **Arrêter / Reprendre** conserve le contexte. Retour ferme le panneau. Le bouton micro physique direct reste une fonction LG : la dictée TVLens passe par le clavier.
+
+→ [Navigation et frise](docs/lg-timeline.md) · [Capture et reprise](docs/lg-capture-control.md)
+
+## Le même cœur, plusieurs lieux de calcul
+
+| Parcours livré | Capture | Calcul et interface |
+| --- | --- | --- |
+| **Mac autonome** | Fenêtre/écran et son système via Electron | Moteur sur le Mac ; interface complète ou flottante |
+| **LG → Mac** | Images et audio de YouTube sur la TV rootée | Moteur sur le Mac ; companion sur la TV |
+| **LG → VPS privé** | Même adaptateur TV | Moteur Linux sans Electron ; échanges via Tailscale ; companion sur la TV |
+
+Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentification par jeton. TVLens et Tailscale sont configurés pour démarrer automatiquement. La coexistence avec le LAN et CyberGhost Japon a été testée ; le VPN Internet reste indépendant du companion.
+
+**Les interfaces n’ont pas encore toutes les mêmes commandes.** Le marque-page durable, l’interface Auto, la recherche dédiée et la relecture sont disponibles sur Mac. La TV dispose du chat et de la frise avec détail/paroles/question contextualisée ; sa frise n’ajoute pas de lecteur vidéo.
+
+→ [Déploiement Linux et retour au Mac](docs/vps-deployment.md) · [Tailscale sur la LG](docs/lg-tailscale.md)
+
+## Essayer sur Mac
+
+Prérequis : **Mac Apple Silicon, Node.js 24+, Homebrew, Codex CLI connecté** et autorisations macOS pour l’écran et le son système.
 
 ```sh
 npm ci
@@ -68,65 +96,68 @@ npm run setup:codex
 npm start
 ```
 
-Choisis une fenêtre vidéo, puis **Lancer l’observation**. Le mode choisi reste ouvert. Une fois les premiers passages analysés, pose une question ou clique sur **Explique ce moment**.
-
-La clé OpenRouter est **facultative** : elle sert uniquement aux embeddings texte. Elle se configure dans `.env.local`, jamais dans le dépôt. Sans clé, la recherche temporelle et lexicale reste disponible.
-
-Pour créer l’app macOS :
+Choisis une fenêtre vidéo, lance l’observation, puis pose une question. Pour construire et ouvrir l’application :
 
 ```sh
 npm run package:mac
 npm run open:mac
 ```
 
+La clé OpenRouter est **facultative** et sert uniquement aux embeddings texte. Sans clé, la recherche temporelle et lexicale reste disponible. Les identifiants restent hors du dépôt.
+
 → [Installation, modèles et dépannage](docs/installation.md)
 
-## Un cœur portable, des adaptateurs remplaçables
+## Architecture : changer l’adaptateur, conserver le produit
 
-La capture produit des segments horodatés. Le cœur gère mémoire, ordre des questions, rétention et validation des références. Les fournisseurs d’IA et le stockage sont injectés derrière des ports.
+Les sources produisent des segments horodatés. Le domaine gère mémoire, rétention, file des questions, intervalles et validation des citations. Capture, modèles, transcription, stockage et réseau restent derrière des ports interchangeables.
 
-| Couche | Implémentation actuelle |
+| Brique | Implémentation actuelle |
 | --- | --- |
-| Capture | Electron, MediaRecorder et AudioWorklet ; vidéo WebM, images et audio WAV |
-| Perception et réexamen | Codex, Luna par défaut ; planches d’images horodatées et sélection adaptative |
-| Paroles | Whisper multilingue exécuté sur le Mac |
-| Conversation | Codex App Server persistant, un fil par session ; outils vidéo et recherche web |
-| Mémoire | Médias récents sur disque, historique textuel et récapitulatif progressif |
-| Recherche sémantique | Embeddings texte OpenRouter, avec cache et repli lexical |
-| Interface | Vues Direct / Mémoire et chat flottant partageant le même état |
+| Capture | Electron sur Mac ; adaptateur Python image/audio sur la LG rootée |
+| Perception et réexamen | Codex, Luna par défaut ; planches de six images horodatées, sélection adaptative |
+| Transcription | Whisper multilingue sur l’hôte Mac ou Linux |
+| Chat et preuves | Codex App Server, fil par session, outils de contexte et recherche web |
+| Mémoire | Médias récents, archives textuelles, miniatures de session ; résumé progressif sur Mac |
+| Recherche sémantique | Embeddings texte OpenRouter à la demande, index JSON local et repli lexical |
+| Interfaces | Electron complet/flottant ; companion webOS chat/frise |
+| Hébergement distant | Service systemd sous utilisateur dédié, accès privé Tailscale |
 
-→ [Architecture et frontières de dépendance](docs/architecture.md) · [Contribuer](CONTRIBUTING.md)
+Le chat reçoit ses outils directement via l’App Server. Un adaptateur **MCP** expose les mêmes capacités à des clients externes côté Mac ; il n’est pas nécessaire au fonctionnement du chat TV.
 
-## Données, preuves et limites
+→ [Architecture hexagonale](docs/architecture.md) · [Rôles des agents et outils](docs/refactor-runtime.md) · [Contribuer](CONTRIBUTING.md)
 
-- **Ce POC n’est pas entièrement local.** Les images et transcriptions sont envoyées à Codex. L’audio brut est transcrit localement ; OpenRouter reçoit le texte à vectoriser lorsque cette option est activée.
-- **Cinq minutes de média détaillé**, mesurées dans l’ordre de l’observation. Les textes restent disponibles après expiration ; un marque-page conserve explicitement le média.
-- **60 secondes de traitement par question**, hors attente dans la file. Les recherches longues et lacunes restent visibles.
-- Une observation, un OCR ou une accusation rapportée **ne constituent pas une preuve indépendante**. L’app distingue observations, explications, hypothèses et sources externes ; les modèles peuvent néanmoins se tromper.
-- Les contenus protégés peuvent empêcher la capture. Le prototype ne promet pas de capturer toutes les applications ou toutes les TV.
-- Fermer l’app termine le fil conversationnel actif. Les archives ne constituent pas encore une reprise complète de session après redémarrage.
-- Les quotas et dépenses restent visibles, **sans plafond local de consommation**. Les limites des fournisseurs s’appliquent.
+## Ce qui est prouvé, ce qui reste à mesurer
 
-## Validation
+- **112 tests Node** passent sur Mac et Linux ; **12 tests Python** et tests d’interface LG pour les contrôles, le réseau, la géométrie et la frise.
+- Essais réels avec Whisper, Luna et Codex : description, transcription, questions successives, outils temporels, pause/reprise et réexamen.
+- **TV → VPS : 24 secondes, 12 images et 3 segments reçus sans perte**, puis analyse et réponse. L’utilisateur a confirmé le panneau et la frise sur la TV.
+- Sur ce VPS partagé, les trois blocs de 8 secondes ont pris **15 à 22 secondes chacun à analyser** : le réseau fonctionne, mais l’analyse peut prendre du retard. Ce court essai ne valide pas un visionnage continu prolongé.
 
 ```sh
-npm test                 # Domaine et adaptateurs, sans inférence réelle
-npm run test:electron    # Parcours Electron avec vidéo synthétique et modèles simulés
+npm test
+npm run test:electron            # Capture synthétique, modèles simulés
+node scripts/smoke-lg-ui.mjs
+node scripts/smoke-tv-timeline.mjs
 ```
 
-La dernière passe comprend **97 tests Node** et un parcours Electron : capture, chat, références rejouables, sauvegarde, file, pause/reprise et navigation. Les essais réels sont documentés séparément ; ils ne constituent pas une garantie générale d’exactitude ou de latence.
+→ [Tests, mesures et échecs conservés](docs/validation.md)
 
-→ [Résultats et limites des tests](docs/validation.md) · [Reproduire les captures](screenshots/current/README.md)
+## Confidentialité et limites du POC
 
-## La suite
+- **Le POC n’est pas entièrement local** : Codex reçoit images et transcriptions. Avec le VPS, images et audio quittent aussi la TV vers cet hôte privé. Whisper y transcrit l’audio ; OpenRouter reçoit uniquement le texte à vectoriser.
+- **Cinq minutes de médias détaillés** par défaut, dans l’ordre observé. Les textes de session restent consultables après expiration. Sur Mac, garder un moment conserve explicitement son média jusqu’à suppression.
+- **60 secondes de traitement par question**, hors attente dans la file. Pause/reprise garde le contexte ; un redémarrage du moteur ne restaure pas la session en mémoire.
+- Une observation, un OCR ou une accusation rapportée **n’est pas une preuve indépendante**. Les erreurs des modèles, de transcription et d’identification restent possibles.
+- La source LG échantillonne des images : elle ne fournit pas une vidéo native continue. Un réexamen ne peut retrouver une action jamais capturée.
+- La validation TV porte sur **YouTube et une LG rootée précise**. Compatibilité universelle, capture DRM, Netflix et Prime ne sont pas promises.
+- Les quotas et dépenses sont suivis sans plafond local de consommation ; les limites des fournisseurs s’appliquent.
 
-- Tester l’exécution continue sur **ASUS Ascent GX10**, en remplaçant les adaptateurs de modèle.
-- Valider une source **caméra + microphone** devant une télévision, sans modifier son système.
-- Mesurer les actions rapides et le retard d’analyse sur un corpus plus diversifié.
-- Explorer les **embeddings multimodaux** pour retrouver sons, images et texte. Ils restent dans la roadmap.
+## Prochaine étape : mettre le moteur à l’épreuve du GX10
 
-La capture native LG via PicCap est une exploration distincte, non implémentée et exclue du POC sans modification système. [État de la piste TV](docs/lg-piccap-test-plan.md).
+L’usage et les interfaces existent. L’objectif du challenge **ASUS Ascent GX10** est de remplacer les adaptateurs cloud par des modèles locaux, puis de mesurer une hypothèse précise : **peut-on suivre un visionnage continu tout en répondant aux questions, sans envoyer les images et les paroles à un fournisseur d’inférence ?**
+
+À explorer ensuite : caméra + micro pour une TV non modifiée, analyse des actions rapides, embeddings multimodaux, fonctions mémoire/Auto supplémentaires sur TV et expérimentation d’un moteur embarqué webOS. Ces pistes restent des travaux futurs.
 
 ---
 
-**Crédit vidéo :** *Spring* (2019), réalisé par Andy Goralczyk — © Blender Foundation | [cloud.blender.org/spring](https://cloud.blender.org/spring), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Extraits visibles dans des captures d’interface ; le film n’est pas distribué dans ce dépôt. [Provenance des médias](media/samples/README.md).
+**Crédit vidéo :** *Spring* (2019), réalisé par Andy Goralczyk — © Blender Foundation | [cloud.blender.org/spring](https://cloud.blender.org/spring), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Extraits visibles dans les captures d’interface ; le film n’est pas distribué dans le dépôt. [Provenance des médias](media/samples/README.md).

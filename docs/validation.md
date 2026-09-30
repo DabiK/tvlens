@@ -1,6 +1,25 @@
 # Validation
 
-## État actuel — refonte et présentation du dépôt
+## État actuel — companion LG et VPS privé, 30 septembre 2026
+
+| Périmètre | Résultat et portée |
+| --- | --- |
+| Node | 112 tests réussis sur Mac et Linux : domaine, ports, file, mémoire, miniatures et routes authentifiées |
+| Python | 5 tests contrôleur/transport et 7 tests géométrie réussis ; inclut 24 demandes de disposition concurrentes |
+| UI LG | Smoke historique et frise réussis : focus, dictée simulée, détail, paroles, question attachée, suivi du direct et purge |
+| Fournisseurs réels | Whisper, Luna, chat Codex, outils, FIFO, fil partagé, pause/reprise et réexamen : [rapport Mac](tv-timeline-live-report.json), [rapport VPS](vps-live-report.json) |
+| TV réelle → VPS | 24 s, 12 images, 3 tranches reçues, aucun abandon/retry/erreur ; trois observations et une réponse avec citation |
+| Retour utilisateur | Frise confirmée sur la LG ; nouveau parcours via VPS également confirmé |
+| Accès réseau | Écoute uniquement sur IP Tailscale ; sans jeton : 401 ; port public inaccessible lors du test depuis le Mac |
+| Persistance | Services TVLens et Tailscale activés sur VPS ; démarrage Tailscale configuré sur TV. Reboot complet non testé |
+
+**Latence VPS :** 19,559 s, 21,778 s et 15,447 s pour trois blocs de 8 secondes. Le chemin fonctionne mais ce débit ne prouve pas la tenue d’un flux continu. Ne pas présenter les 24 secondes de capture sans perte comme 24 secondes d’analyse sans retard.
+
+Échecs et corrections : perte de suivi du direct lors d’un regroupement de cartes corrigée ; course entre demandes de disposition corrigée ; test concurrent initial mal isolé corrigé. Sur la TV, le groupe `wam` n’existe pas : l’appairage VPS a repris UID/GID de la sauvegarde. Les détails sont dans [la frise](lg-timeline.md) et [le déploiement](vps-deployment.md).
+
+Les tests UI utilisent des modèles simulés ; les tests fournisseurs sont séparés. Les questions du corpus historique d’actions ne prouvent pas automatiquement la qualité de Luna. Aucun résultat GX10, caméra externe, Netflix/Prime ou embeddings multimodaux n’est revendiqué.
+
+## Historique — refonte Mac et présentation du dépôt
 
 - **97 tests Node réussis** (`npm test`).
 - **Parcours Electron réussi sur Mac** (`npm run test:electron`) après extraction du rendu de récapitulatif dans `app/ui/recap-view.js`. Capture synthétique et modèles simulés pour cette suite.

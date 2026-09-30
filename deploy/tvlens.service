@@ -1,0 +1,37 @@
+[Unit]
+Description=TVLens private Tailscale companion server
+Wants=network-online.target
+After=network-online.target tailscaled.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=tvlens
+Group=tvlens
+WorkingDirectory=/opt/tvlens/app
+Environment=HOME=/var/lib/tvlens
+Environment=CODEX_HOME=/var/lib/tvlens/.codex
+Environment=TVLENS_CONFIG=/etc/tvlens/server.env
+Environment=TVLENS_SERVER_DATA=/var/lib/tvlens/data
+Environment=TVLENS_CODEX_BINARY=/opt/tvlens/codex/node_modules/.bin/codex
+Environment=TVLENS_BIND=100.64.0.10
+Environment=TVLENS_PORT=8787
+Environment=PATH=/opt/tvlens/codex/node_modules/.bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/node /opt/tvlens/app/server/main.cjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/tvlens
+MemoryHigh=1500M
+MemoryMax=2G
+CPUQuota=200%
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

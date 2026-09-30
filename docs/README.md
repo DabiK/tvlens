@@ -1,38 +1,43 @@
 # Documentation TVLens
 
-## Utiliser et développer la version actuelle
+## Découvrir et utiliser
 
 | Document | Contenu |
 | --- | --- |
-| [Installation](installation.md) | Prérequis Mac, configuration, permissions, modèles, MCP et diagnostic |
-| [Interface](interface.md) | Direct, Mémoire, overlay et actions de visionnage |
-| [Refactor des runtimes](refactor-runtime.md) | Rôles Codex, outils directs/MCP, indexation et validation |
-| [Architecture](architecture.md) | Domaine, ports, adaptateurs et cycle de vie |
-| [Validation](validation.md) | Tests actuels et résultats historiques, avec leurs limites |
-| [Contribuer](../CONTRIBUTING.md) | Organisation du dépôt et vérifications à lancer |
-| [Captures de présentation](../screenshots/current/README.md) | Reproduction, provenance et crédits |
-| [Résumé progressif](living-recap.md) | Provenance, chapitres, expiration et limites de capacité |
+| [Présentation du projet](../README.md) | Expérience, fonctionnalités Mac/TV, état livré et objectif GX10 |
+| [Installation Mac](installation.md) | Prérequis, configuration, autorisations, modèles et dépannage |
+| [Interface](interface.md) | Direct, Mémoire, mode flottant et companion LG |
+| [Frise LG](lg-timeline.md) | Navigation télécommande, sujets, miniatures, détail et questions attachées |
+| [Capture LG](lg-capture-control.md) | Démarrage manuel, pause/reprise, tampon et incidents réseau |
+| [VPS privé](vps-deployment.md) | Runtime Linux, systemd, appairage, mesures et retour au Mac |
+| [Tailscale sur LG](lg-tailscale.md) | Installation, coexistence LAN/VPN, persistance et retrait |
 
-- [Frise du companion LG](lg-timeline.md) — contrat, navigation, miniatures, tests et validation physique restante.
+## Comprendre, développer, vérifier
 
-## Prochaine tranche
+| Document | Contenu |
+| --- | --- |
+| [Architecture](architecture.md) | Domaine, ports, adaptateurs et hôtes Mac/Linux |
+| [Rôles des agents](refactor-runtime.md) | Codex chat/perception, outils directs, MCP et indexation à la demande |
+| [Validation](validation.md) | Résultats actuels, essais réels, échecs et limites |
+| [Contribuer](../CONTRIBUTING.md) | Organisation et vérifications à lancer |
+| [Résumé progressif](living-recap.md) | Chapitres, provenance et expiration |
+| [Captures du README](../screenshots/current/README.md) | Protocole, médias et crédits |
 
-- [Contrôle de capture LG et reprise réseau](lg-capture-control.md) — boutons TV, tampon, dédoublonnage et résultats des essais.
+## Candidature et prochaines expériences
 
-- [Runtime distant LG → Mac](lg-remote-runtime.md) — installation, transport réel testé, résultats et validation TV restante.
-
-- [Companion LG : roadmap et 13 tickets](lg-companion-roadmap.md) — tests TV → Mac, puis service VPS ; faisabilité sidebar et voix à établir.
-
-- [POC agent / LLM embarqué dans la TV](lg-on-device-exploration.md) — exploration future, distincte de l’inférence cloud.
+- [Roadmap companion LG](lg-companion-roadmap.md) : état livré, différences avec le contrat initial et critères restant ouverts.
+- [Exploration d’un moteur dans la TV](lg-on-device-exploration.md) : expérience future distincte du runtime Mac/VPS.
+- Inférence locale GX10, capture caméra/micro et embeddings multimodaux : pistes à valider, pas des fonctionnalités livrées.
 
 ## Recherche et historique
 
-Ces documents décrivent une étape du projet ; leurs choix de modèles, budgets et interfaces ne remplacent pas l’architecture actuelle.
+Ces documents décrivent des étapes antérieures. Leurs modèles, budgets et hypothèses peuvent différer de l’état actuel présenté ci-dessus.
 
+- [Premier runtime TV → Mac](lg-remote-runtime.md), [premiers essais de sidebar](lg-sidebar-validation.md).
 - [Optimisation de session](session-optimization.md), [actions et latence](friction-latency.md), [fonctions de visionnage](viewing-upgrade.md).
-- [Réexamen](reexamen-validation.md), [comparaison historique des stratégies](strategy-comparison.md), [grille d’évaluation](action-evaluation-rubric.md).
+- [Réexamen](reexamen-validation.md), [comparaison des stratégies](strategy-comparison.md), [grille d’évaluation](action-evaluation-rubric.md).
 - [Recherche temporelle](temporal-research.md), [recherche vidéo](video-temporal-research.md).
 - [Décisions initiales](product-decisions-original.md), [roadmap initiale](roadmap-original.md), [tickets initiaux](ticket-drafts-original.json).
-- [Exploration LG / PicCap](lg-piccap-exploration.md) et [plan TV tenant compte de la contrainte sans root](lg-piccap-test-plan.md).
+- [Exploration PicCap](lg-piccap-exploration.md), [ancien plan TV non rootée](lg-piccap-test-plan.md) et [VPN LG, composant indépendant](lg-openvpn.md).
 
-Les fichiers JSON de cette arborescence sont des relevés d’essais. Conserver les erreurs et essais interrompus ; ne pas interpréter un score ancien obtenu avec Gemini comme une validation du fournisseur Codex actuel.
+Les rapports JSON sont des relevés d’essais, pas des garanties générales de performance. Les échecs restent conservés ; un score historique Gemini n’est pas une validation automatique de Luna ou d’un futur modèle local.

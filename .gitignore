@@ -26,3 +26,6 @@ test-results/
 tv/app/connection.js
 __pycache__/
 *.pyc
+
+# Local application draft; never publish with project documentation.
+/docs/candidature-draft.md

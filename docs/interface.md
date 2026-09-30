@@ -37,3 +37,13 @@ Un seul arbre DOM de conversation est partagé entre les modes : aucune copie d�
 `npm test` couvre les services métier. `npm run test:electron` parcourt la vraie interface Electron avec capture audiovisuelle synthétique et adaptateurs IA déterministes : démarrage, navigation, sauvegarde, relecture, chat, vérification, file, pause/reprise, explication ancrée, rattrapage et remise à zéro. Il vérifie également la taille de la barre, l’uniformité des boutons, le focus et la conservation du brouillon après repli.
 
 Ces tests d’interface ne mesurent pas la qualité ou la latence réelle de Codex. La recherche web et les modèles n’ont pas été modifiés par cette refonte.
+
+## Companion LG : chat ou frise
+
+L’app Mac ci-dessus reste autonome. Sur la LG de test, Rakuten ouvre le companion à côté de YouTube ; la vidéo est réduite sans nouveau lecteur. Dicter ouvre le champ utilisant le clavier/micro LG, puis Envoyer ajoute la question à la file. Retour quitte d’abord le détail ou le mode de lecture ciblé, puis le panneau.
+
+La frise remplace le chat et occupe le tiers inférieur : cartes par sujet/événement sur toute la session, miniatures dès réception puis texte IA, détail et paroles à la demande. Questionner ce moment ouvre le chat avec un intervalle attaché. Une sélection dans le passé reste stable jusqu’au retour au direct. Les miniatures expirent en fin de session ; aucune relecture n’est ajoutée dans cette vue.
+
+Arrêter la capture conserve le contexte ; Terminer la session le clôt et purge les miniatures/médias de travail. Les marques-pages durables, l’interface Auto et la recherche dédiée Mac ne sont pas encore toutes portées dans le panneau TV.
+
+Le serveur actif peut être le Mac ou le VPS configuré. Après modification de l’appairage, fermer puis rouvrir le panneau. Le retour utilisateur a confirmé les deux chemins et la frise. Voir [navigation détaillée](lg-timeline.md) et [déploiement privé](vps-deployment.md).

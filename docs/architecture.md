@@ -10,16 +10,18 @@ TVLens suit une architecture hexagonale : les règles applicatives dépendent de
 | Cas d’usage | Recherche, moments gardés, Auto, rattrapage et résumé progressif | `core/moment-search.cjs`, `saved-moments.cjs`, `auto-monitor.cjs`, `viewing-actions.cjs`, `living-recap.cjs` |
 | Contrats | Perception, agent, transcription, média, archivage, embeddings, inspection | `core/ports.cjs` |
 | Adaptateurs sortants | Codex, Whisper, OpenRouter embeddings, fichiers locaux | `adapters/` |
-| Adaptateurs entrants | Capture navigateur, IPC Electron, serveur MCP | `app/recording.js`, `app/preload.cjs`, `mcp/server.cjs` |
-| Présentation | Commandes utilisateur, Direct/Mémoire, overlay, recap et citations | `app/renderer.js`, `app/ui/` |
+| Adaptateurs entrants | Capture navigateur/TV, IPC Electron, HTTP et serveur MCP | `app/recording.js`, `app/preload.cjs`, `tv/capture.py`, `server/http.cjs`, `mcp/server.cjs` |
+| Présentation | Commandes utilisateur, Direct/Mémoire, overlay, companion LG chat/frise | `app/renderer.js`, `app/ui/`, `tv/app/` |
 
 `tests/architecture.test.cjs` interdit les dépendances externes dans le cœur. Les vues reçoivent des données et des callbacks ; elles n'appellent pas directement un fournisseur ou le disque.
 
 ## De la capture à la réponse
 
+Deux adaptateurs alimentent le même domaine. Sur LG, `tv/capture.py` envoie quatre images espacées d’environ deux secondes et huit secondes d’audio par tranche. `server/http.cjs` authentifie et valide les requêtes ; `RemoteMedia` normalise les fichiers. Le WebM reconstruit avec les images fixes n’est pas une vidéo native. Sur Mac, le chemin Electron suit les étapes ci-dessous.
+
 1. `RollingRecorder` produit un premier segment de 2 secondes, puis des segments de 8 secondes : clip WebM, frames JPEG horodatées et audio WAV. `checkpoint` permet de terminer le segment à l'instant d'une action ciblée.
 2. Le processus principal valide les entrées IPC et les transmet à `WatchSession`. `LocalSessionStore` conserve les médias et sérialise les archives.
-3. `CodexPerception` décrit les images ; `LocalTranscriber` transcrit l'audio avec Whisper sur le Mac. Les images et le texte sont envoyés à Codex, pas le WAV brut.
+3. `CodexPerception` décrit les images ; `LocalTranscriber` transcrit l'audio avec Whisper sur l’hôte de calcul (Mac ou VPS). Les images et le texte sont envoyés à Codex, pas le WAV brut.
 4. `DeepAsk` ancre chaque question à l'envoi, gère la file FIFO, la progression réelle, l'annulation ciblée et le délai de 60 secondes hors attente.
 5. `CodexSessionAgent` gère la conversation et les preuves externes ; `CodexSessionClient` garde le transport App Server et le fil par session. Les outils dynamiques consultent `VideoTools`. L’adaptateur MCP expose les mêmes contrats à des clients externes ; son pont est lancé par Electron, pas par le serveur TV.
 6. Les résultats comprennent des citations validées. La relecture utilise les fichiers locaux avec prise en charge des plages d'octets ; les sources externes passent par les contrôles de liens.
@@ -64,12 +66,20 @@ Les stratégies vidéo native ralentie et autres variantes OpenRouter sont conse
 
 ## Données et consommation
 
-L'audio brut et les médias de session restent sur le Mac ; images et transcriptions vont à Codex. Les embeddings optionnels envoient du texte à OpenRouter. Les sources web sortent du périmètre local.
+En mode Mac, l’audio brut et les médias sont stockés sur le Mac. En mode TV → VPS, la TV envoie images et audio au VPS via Tailscale, et Whisper y transcrit les paroles. Dans les deux modes, images et transcriptions vont à Codex. Les embeddings optionnels envoient du texte à OpenRouter. Les sources web sortent du périmètre local.
 
 `CodexQuota` est informatif. `UsageLedger` conserve les dépenses OpenRouter connues et les montants encore inconnus, sans plafond local. Aucune réserve locale n'interdit les appels ; les limites des fournisseurs restent applicables.
 
-## Portabilité : ce qui reste à construire
+## Sources et hôtes portables
 
 Le GX10 nécessitera des adaptateurs de modèle locaux et une validation du débit continu. Une caméra + microphone doit produire le contrat `CapturedSegment` existant, avec un média rejouable et des horodatages cohérents.
 
-Le chemin LG → Mac dispose d’une ingestion HTTP authentifiée : images et WAV sont assemblés par `RemoteMedia` en passage compatible avec le domaine. Le lecteur reste sur la TV ; le calcul reste sur le Mac. La sidebar, la dictée via clavier LG et la pause/reprise ont été testées auparavant sur la TV ; ce refactor ne redéploie pas la TV. Voir [le runtime LG](lg-remote-runtime.md) et [les contrôles de capture](lg-capture-control.md). Le VPS, l’inférence embarquée sur TV et les embeddings multimodaux restent des travaux distincts.
+Les chemins LG → Mac et LG → VPS utilisent la même ingestion HTTP authentifiée. Le lecteur reste dans l’application YouTube native ; le companion webOS alterne chat droit et frise basse. Dictée via le clavier LG, pause/reprise, frise et réponses sur VPS ont été confirmées par l’utilisateur. Le bouton micro physique direct n’est pas détourné.
+
+`core/session-timeline.cjs` projette les passages en cartes contiguës par sujet. `SessionThumbnails` conserve des JPEG réduits pendant la session indépendamment de la rétention brute ; ils sont supprimés à sa fin. Les questions attachées à une carte gardent leurs bornes malgré de nouvelles captures.
+
+Le serveur Linux exécute `server/main.cjs` sans Electron, sous utilisateur dédié et systemd. Il écoute exclusivement sur l’adresse Tailscale du VPS. Les fournisseurs IA restent distants ; Tailscale protège le transport TV/hôte, pas une promesse d’inférence locale. Sur les premiers blocs TV, le VPS prend 15–22 s par tranche de 8 s : la tenue continue reste à optimiser et mesurer.
+
+La parité d’interface n’est pas complète : marque-pages durables, interface Auto, recherche dédiée et relecture restent côté Mac. Les outils de recherche du chat TV utilisent le runtime commun. La session active n’est pas migrée entre les hôtes et ne survit pas à leur redémarrage.
+
+Voir [runtime LG](lg-remote-runtime.md), [frise](lg-timeline.md), [déploiement VPS](vps-deployment.md) et [Tailscale](lg-tailscale.md). L’inférence GX10, le moteur embarqué TV et les embeddings multimodaux restent à explorer.

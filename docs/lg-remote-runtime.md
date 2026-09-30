@@ -1,5 +1,7 @@
 # Companion LG → Mac : premier branchement réel
 
+**État actuel :** le [companion avec frise](lg-timeline.md) et le [moteur sur VPS privé](vps-deployment.md) sont désormais livrés et confirmés sur la TV. Ce document conserve les détails de son étape d’implémentation.
+
 **Mise à jour suivante :** [contrôle depuis le panneau et reprise réseau](lg-capture-control.md). Les restrictions CLI/retry ci-dessous décrivent le premier essai et sont désormais dépassées par cet incrément.
 
 État au 30 septembre 2026 : transport image/son et chat testés avec le YouTube réellement regardé sur la LG. La nouvelle sidebar est validée dans un navigateur indépendant. Après disponibilité confirmée par l’utilisateur, ses fichiers ont été déployés dans l’app existante (avec sauvegarde du prototype) sans lancement automatique. L’utilisateur a ensuite confirmé que les boutons, la dictée et la réponse fonctionnent sur la TV. Les essais automatiques n’ont pas lancé de panneau, redimensionné la vidéo ni envoyé de touche à la TV.

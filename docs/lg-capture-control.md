@@ -1,5 +1,7 @@
 # LG : contrôle de capture et reprise réseau
 
+**État actuel :** le [companion avec frise](lg-timeline.md) et le [moteur sur VPS privé](vps-deployment.md) sont désormais livrés et confirmés sur la TV. Ce document conserve les détails de son étape d’implémentation.
+
 Livré le 30 septembre 2026 sur la LG déjà rootée. Complète le [premier branchement TV → Mac](lg-remote-runtime.md) ; ce document remplace ses limites historiques concernant la capture uniquement en CLI et l’absence de retry.
 
 ## Utilisation

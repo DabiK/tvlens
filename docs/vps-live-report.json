@@ -1,0 +1,233 @@
+{
+  "date": "2026-09-30T15:08:55.170Z",
+  "source": "/var/lib/tvlens/validation/kennedy.mp4",
+  "intervalSeconds": [
+    30,
+    38
+  ],
+  "checks": [
+    "Real topic generation and authenticated session thumbnail",
+    "HTTP ingest + real JPEG/audio assembly + local Whisper + Luna perception",
+    "Real dynamic tool dispatch, FIFO, two questions in the same Codex thread",
+    "Pause/resume retains session, analyzed passage and conversation",
+    "Real clip reinspection through the shared runtime and tool-free Luna adapter"
+  ],
+  "failures": [],
+  "observation": {
+    "topic": "Discours devant une foule",
+    "summary": "Un orateur s’exprime devant une foule depuis un pupitre portant le sceau présidentiel américain, avec un drapeau des États-Unis à ses côtés. La transcription évoque l’évolution des abris, mais son lien avec les images est incertain.",
+    "visual": "Un homme en costume se tient à un pupitre devant une foule assise; un drapeau américain est visible à côté.",
+    "transcript": "years ago, under this standard, man emerged from his caves to construct other kinds of shelter.",
+    "audio": "Paroles transcrites localement.",
+    "uncertainty": "La transcription peut être imprécise et ne semble pas correspondre clairement à la scène; l’identité de l’orateur n’est pas établie. Transcription automatique locale ; elle peut contenir des erreurs."
+  },
+  "jobs": [
+    {
+      "id": "deep-1",
+      "status": "done",
+      "result": {
+        "answer": "Selon la transcription, le passage évoque le moment où les humains ont quitté les cavernes pour construire d’autres types d’abris, mais le lien avec les images reste incertain.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [],
+        "audit": [
+          {
+            "tool": "get_transcript",
+            "status": "completed"
+          }
+        ],
+        "threadId": "01a0f2dc-9c95-70e2-bbdb-0a3d49499962",
+        "elapsedMs": 7878,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790780961726
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790780961728
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790780961728
+        },
+        {
+          "message": "Lecture des paroles observées…",
+          "at": 1790780965442
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790780967466
+        }
+      ]
+    },
+    {
+      "id": "deep-2",
+      "status": "done",
+      "result": {
+        "answer": "D’après la transcription, on parle des humains qui ont quitté les cavernes pour construire d’autres abris, mais le lien avec les images n’est pas clair.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [],
+        "audit": [],
+        "threadId": "01a0f2dc-9c95-70e2-bbdb-0a3d49499962",
+        "elapsedMs": 4481,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790780969607
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790780969607
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790780969608
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790780971910
+        }
+      ]
+    }
+  ],
+  "inspection": {
+    "status": "done",
+    "result": {
+      "answer": "Observations : une personne se tient derrière un pupitre, avec un drapeau à gauche de l’image et plusieurs rangées de personnes derrière. Elle apparaît penchée, puis plus redressée. Incertitudes : ces images seules ne permettent pas d’établir son identité ni le contexte ; les mouvements entre les images fixes restent imprécis.",
+      "kind": "observation",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 1938
+        },
+        {
+          "id": "moment-1",
+          "startMs": 4063,
+          "endMs": 5938
+        }
+      ],
+      "sources": [],
+      "limits": [
+        "Réexamen sans audio, à partir d’images fixes espacées dans le temps.",
+        "Aucune piste audio; le contenu ou le contexte de la scène ne peut être déduit des images seules.",
+        "Les planches sont des images fixes espacées dans le temps; elles ne permettent pas d’établir précisément les mouvements entre elles."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "threadId": "01a0f2dc-9c95-70e2-bbdb-0a3d49499962",
+      "elapsedMs": 35752,
+      "sourceValidation": {
+        "proposed": 0,
+        "accepted": 0,
+        "rejected": []
+      },
+      "sourcesReused": 0,
+      "model": "default",
+      "observations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 1938,
+          "text": "Dans les images 1 à 8, une personne se tient derrière un pupitre au centre, légèrement penchée vers celui-ci; un drapeau se dresse à sa gauche et plusieurs rangées de personnes sont visibles derrière. La scène et les positions générales restent semblables."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 2063,
+          "endMs": 3938,
+          "text": "Dans les images 9 à 16, la personne au pupitre demeure penchée et tournée vers le côté gauche de l’image; le pupitre, le drapeau et l’assemblée restent en place."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 4063,
+          "endMs": 5938,
+          "text": "Dans les images 17 à 24, la personne au pupitre est plus redressée et fait face vers l’avant. Le cadrage et les autres éléments restent globalement semblables."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 6063,
+          "endMs": 7938,
+          "text": "Dans les images 25 à 30, la personne se penche de nouveau vers le pupitre, puis paraît se redresser légèrement dans les dernières images; le drapeau et l’assemblée restent visibles."
+        }
+      ],
+      "hypotheses": []
+    },
+    "activity": [
+      {
+        "message": "Question reçue…",
+        "at": 1790780974105
+      },
+      {
+        "message": "Lecture de la mémoire disponible…",
+        "at": 1790780974105
+      },
+      {
+        "message": "Lecture du contexte de la session…",
+        "at": 1790780974105
+      },
+      {
+        "message": "Réexamen des images et du son…",
+        "at": 1790780980100
+      },
+      {
+        "message": "Réexamen 0–8 s…",
+        "at": 1790780980101
+      },
+      {
+        "message": "Transcription locale 0–8 s…",
+        "at": 1790780981536
+      },
+      {
+        "message": "Comparaison des images horodatées…",
+        "at": 1790780981536
+      },
+      {
+        "message": "Rédaction de la réponse…",
+        "at": 1790781005443
+      }
+    ]
+  },
+  "status": "passed"
+}
