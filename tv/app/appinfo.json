@@ -1,0 +1,17 @@
+{
+  "id": "org.tvlens.sidebarprobe",
+  "version": "0.0.3",
+  "vendor": "TVLens",
+  "type": "web",
+  "main": "index.html",
+  "title": "TVLens \u2014 Companion",
+  "icon": "icon.png",
+  "uiRevision": 2,
+  "resolution": "1920x1080",
+  "transparent": true,
+  "defaultWindowType": "overlay",
+  "noSplashOnLaunch": true,
+  "spinnerOnLaunch": false,
+  "disableBackHistoryAPI": true,
+  "enableKeyboard": true
+}

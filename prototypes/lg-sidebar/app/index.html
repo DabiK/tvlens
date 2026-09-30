@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>TVLens — test voix LG</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<aside>
+<header><small>TVLENS / TEST VOIX</small><span id="timer"></span></header>
+<h1>Pose ta question.</h1>
+<p id="instruction">Appuie d’abord sur le micro de la télécommande, sans sélectionner le champ.</p>
+<div class="status" id="status" role="status">En attente d’une action</div>
+<label for="question">Texte reçu par TVLens</label>
+<input id="question" type="text" maxlength="1000" autocomplete="off" placeholder="Ta phrase apparaîtra ici">
+<p id="received">Aucun texte reçu.</p>
+<button id="dictate">Activer le champ de dictée</button>
+<button id="reset">Recommencer le test direct</button>
+<button id="close">Fermer</button>
+<dl><dt>Mode</dt><dd id="mode">Bouton direct</dd><dt>Clavier LG</dt><dd id="keyboard">Non observé</dd><dt>Dernier événement</dt><dd id="event">Aucun</dd></dl>
+<footer>Test de réception uniquement · aucune question envoyée à l’IA. La reconnaissance système suit les réglages LG.</footer>
+</aside><script src="voice.js"></script></body></html>

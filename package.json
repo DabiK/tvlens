@@ -23,7 +23,8 @@
     "test:electron:sheets": "node scripts/smoke-electron.mjs --local-inspection --inspection-strategy=sheets-crop",
     "setup:speech": "node scripts/setup-speech.mjs",
     "test:codex:speed": "node scripts/probe-codex-speed.cjs",
-    "screenshots:live": "node scripts/capture-showcase.mjs"
+    "screenshots:live": "node scripts/capture-showcase.mjs",
+    "start:server": "node server/main.cjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

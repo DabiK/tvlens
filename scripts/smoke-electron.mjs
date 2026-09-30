@@ -119,7 +119,12 @@ try {
   for(const chapter of living.chapters)for(const source of chapter.sources)assert.ok(state.segments.some(s=>s.id===source.id),'Recap citations refer to actual source passages');
   await page.locator('#nav-memory').click();
   await page.locator('#recap-panel .recap-source:not([disabled])').first().click();
-  await page.waitForFunction(()=>document.querySelector('#replay').readyState>=2);
+  try {
+    await page.waitForFunction(()=>document.querySelector('#replay').readyState>=2);
+  } catch (error) {
+    console.error('Replay diagnostics:', await page.evaluate(()=>{const video=document.querySelector('#replay');return {src:video.currentSrc,readyState:video.readyState,networkState:video.networkState,error:video.error?{code:video.error.code,message:video.error.message}:null};}));
+    throw error;
+  }
   await page.locator('#close-replay').click();
   const archive=JSON.parse(await fs.readFile(path.join(userData,'sessions',state.id,'living-recap.json'),'utf8'));
   assert.equal(archive.sessionId,state.id);

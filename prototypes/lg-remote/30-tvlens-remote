@@ -1,0 +1,3 @@
+#!/bin/sh
+# Only the Rakuten -> TVLens mapping. Disable using the isolated controller.
+python3 /media/developer/tvlens-remote/control.py boot >/tmp/tvlens-remote-start.log 2>&1 &

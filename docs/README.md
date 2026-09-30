@@ -6,11 +6,22 @@
 | --- | --- |
 | [Installation](installation.md) | Prérequis Mac, configuration, permissions, modèles, MCP et diagnostic |
 | [Interface](interface.md) | Direct, Mémoire, overlay et actions de visionnage |
+| [Refactor des runtimes](refactor-runtime.md) | Rôles Codex, outils directs/MCP, indexation et validation |
 | [Architecture](architecture.md) | Domaine, ports, adaptateurs et cycle de vie |
 | [Validation](validation.md) | Tests actuels et résultats historiques, avec leurs limites |
 | [Contribuer](../CONTRIBUTING.md) | Organisation du dépôt et vérifications à lancer |
 | [Captures de présentation](../screenshots/current/README.md) | Reproduction, provenance et crédits |
 | [Résumé progressif](living-recap.md) | Provenance, chapitres, expiration et limites de capacité |
+
+## Prochaine tranche
+
+- [Contrôle de capture LG et reprise réseau](lg-capture-control.md) — boutons TV, tampon, dédoublonnage et résultats des essais.
+
+- [Runtime distant LG → Mac](lg-remote-runtime.md) — installation, transport réel testé, résultats et validation TV restante.
+
+- [Companion LG : roadmap et 13 tickets](lg-companion-roadmap.md) — tests TV → Mac, puis service VPS ; faisabilité sidebar et voix à établir.
+
+- [POC agent / LLM embarqué dans la TV](lg-on-device-exploration.md) — exploration future, distincte de l’inférence cloud.
 
 ## Recherche et historique
 

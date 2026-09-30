@@ -1,4 +1,4 @@
-const { passageText } = require('./moment-search.cjs');
+const { passageText } = require('./passage-text.cjs');
 // A capability scoped to one question and one immutable observed prefix.
 class VideoTools {
   constructor({ snapshot, search, inspector, media, signal, onProgress = () => {}, now = Date.now }) {

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>TVLens — Companion</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<aside>
+<header><span>TVLENS</span><small id="navigation-hint">Retour · fermer</small></header>
+<p id="destination">Companion · calcul distant</p>
+<p id="connection" role="status">Connexion…</p>
+<p id="coverage">Aucune capture reçue.</p>
+<section id="conversation" aria-live="polite" tabindex="0" aria-label="Conversation : OK pour activer le défilement"></section>
+<form id="ask"><label for="question">Ta question sur ce moment</label>
+<input id="question" maxlength="1000" autocomplete="off" placeholder="Sélectionne le champ pour dicter">
+<div class="actions"><button type="button" id="dictate">Dicter</button><button id="send">Envoyer</button></div>
+</form>
+<div class="capture-controls"><button id="capture" disabled>Démarrer l’analyse</button>
+<p id="capture-state" role="status">Contrôle de capture…</p></div>
+<p id="error" role="alert"></p>
+<footer>Micro du clavier LG · les images et le son sont traités sur l’hôte appairé. Fermer le panneau n’arrête pas la capture.</footer>
+</aside>
+<script src="connection.js"></script><script src="remote-client.js"></script><script src="capture-control.js"></script><script src="companion.js"></script>
+</body></html>

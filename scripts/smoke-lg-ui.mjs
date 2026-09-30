@@ -1,0 +1,100 @@
+import {chromium} from 'playwright-core';
+import {pathToFileURL} from 'node:url';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({executablePath:process.env.TVLENS_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+try {
+ const page=await browser.newPage({viewport:{width:1920,height:1080}});
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+ assert.match(await page.locator('#connection').textContent(),/Appairage requis/);
+ assert.equal(await page.locator('#send').isDisabled(),true);
+ assert.equal(await page.locator('#dictate').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('ArrowDown');
+ assert.equal(await page.locator('#dictate').evaluate(n=>n===document.activeElement),true,'Unavailable capture must not lose focus');
+ assert.equal(await page.locator('#close').count(),0);
+ await page.keyboard.press('ArrowLeft');
+ assert.equal(await page.locator('#conversation').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('ArrowRight');
+ assert.equal(await page.locator('#dictate').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('Enter');
+ assert.equal(await page.locator('#question').evaluate(n=>n===document.activeElement),true);
+ assert.deepEqual(errors,[]);
+ const controlled=await browser.newPage({viewport:{width:1920,height:1080}});
+ await controlled.addInitScript(()=>{window.TVLENS_REMOTE={url:'http://unavailable.test',token:'x'.repeat(64)};});
+ await controlled.route('http://unavailable.test/**',route=>route.abort());
+ let active=false, starts=0, stops=0;
+ await controlled.route('http://127.0.0.1:8788/**',async route=>{
+   const url=route.request().url();
+   if(url.endsWith('/start')){active=true;starts++;}
+   if(url.endsWith('/stop')){active=false;stops++;await new Promise(r=>setTimeout(r,150));}
+   await route.fulfill({json:{active,stopping:false,exitCode:0,report:{sent:active?1:0}}});
+ });
+ await controlled.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+ await controlled.waitForFunction(()=>!document.querySelector('#capture').disabled);
+ await controlled.locator('#capture').focus();
+ await controlled.keyboard.press('Enter');
+ await controlled.waitForFunction(()=>document.querySelector('#capture').textContent==='Arrêter la capture');
+ await controlled.keyboard.press('Enter');
+ await controlled.waitForFunction(()=>document.querySelector('#capture').textContent==='Démarrer l’analyse');
+ assert.equal(await controlled.locator('#capture').evaluate(n=>n===document.activeElement),true,'Keep remote focus across stop/start');
+ await controlled.keyboard.press('Enter');
+ await controlled.waitForFunction(()=>document.querySelector('#capture').textContent==='Arrêter la capture');
+ assert.equal(starts,2);assert.equal(stops,1);
+ const chat=await browser.newPage({viewport:{width:1920,height:1080}});
+ await chat.addInitScript(()=>{window.TVLENS_REMOTE={url:'http://chat.test',token:'x'.repeat(64)};window.__closed=0;window.close=()=>{window.__closed++;};});
+ await chat.route('http://127.0.0.1:8788/**',route=>route.fulfill({json:{active:false,stopping:false,report:{}}}));
+ const snapshot={session:{id:'test',elapsedMs:10000,accepting:true,capturedThroughMs:8000,analyzedThroughMs:8000,pending:0,gaps:[],segments:[]},chat:{jobs:[]}};
+ let release, didSubmit;
+ const held=new Promise(r=>release=r), submitted=new Promise(r=>didSubmit=r);
+ await chat.route('http://chat.test/**',async route=>{
+   if(route.request().method()==='POST'){didSubmit();await held;return route.fulfill({json:{id:'deep-1'}});}
+   return route.fulfill({json:snapshot});
+ });
+ try {
+  await chat.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+  await chat.waitForFunction(()=>!document.querySelector('#send').disabled);
+  await chat.locator('#question').fill('Que vient-il de dire ?');
+  await chat.keyboard.press('Enter');await submitted;
+  assert.notEqual(await chat.evaluate(()=>document.activeElement.id),'question','Submission must release input focus before network response');
+  await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
+  assert.equal(await chat.evaluate(()=>window.__closed),1,'Back must close even while submission is pending');
+  release();
+  await chat.waitForFunction(()=>document.querySelector('#question').value==='');
+  await chat.locator('#question').focus();
+  await chat.evaluate(()=>document.dispatchEvent(new CustomEvent('keyboardStateChange',{detail:{visibility:false}})));
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'question','Hiding LG keyboard during dictation must not abort input');
+  await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'dictate','Back escapes the input without trapping navigation');
+  assert.equal(await chat.evaluate(()=>window.__closed),1);
+  await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
+  assert.equal(await chat.evaluate(()=>window.__closed),2);
+  await chat.locator('#question').focus();await chat.keyboard.press('ArrowUp');
+  assert.notEqual(await chat.evaluate(()=>document.activeElement.id),'question','Arrows can leave input when LG keyboard is hidden');
+  await chat.keyboard.press('ArrowDown');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'capture','Down reaches capture directly from action row');
+  await chat.keyboard.press('ArrowUp');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'dictate');
+  await chat.waitForFunction(()=>!document.querySelector('#send').disabled);
+  await chat.keyboard.press('ArrowRight');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'send');
+  await chat.keyboard.press('ArrowDown');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'capture');
+  assert.ok(await chat.locator('#capture').evaluate(n=>n.getBoundingClientRect().top>=document.querySelector('#send').getBoundingClientRect().bottom && n.getBoundingClientRect().bottom<innerHeight));
+  await chat.evaluate(()=>{const feed=document.querySelector('#conversation');feed.textContent='Long message '.repeat(1000);feed.scrollTop=0;feed.focus();});
+  await chat.keyboard.press('ArrowDown');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'dictate','Feed must not scroll until OK');
+  assert.equal(await chat.locator('#conversation').evaluate(n=>n.scrollTop),0);
+  await chat.keyboard.press('ArrowUp');await chat.keyboard.press('Enter');await chat.keyboard.press('ArrowDown');
+  const scrolled=await chat.locator('#conversation').evaluate(n=>n.scrollTop);
+  assert.ok(scrolled>0,'OK enables scrolling');
+  await chat.waitForTimeout(1200);
+  assert.equal(await chat.locator('#conversation').evaluate(n=>n.scrollTop),scrolled,'Polling must not move a reader');
+  await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'dictate');
+  assert.equal(await chat.evaluate(()=>window.__closed),2,'Back exits reading without closing');
+  await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
+  assert.equal(await chat.evaluate(()=>window.__closed),3,'Next Back closes panel');
+ } finally {release();}
+ console.log('PASS: pairing, capture controls, focus, submission while pending, Back and dictation');
+} finally {await browser.close();}

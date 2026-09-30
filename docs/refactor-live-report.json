@@ -1,0 +1,236 @@
+{
+  "date": "2026-09-30T13:48:38.807Z",
+  "source": "media/samples/kennedy-rice-7min.mp4",
+  "intervalSeconds": [
+    30,
+    38
+  ],
+  "checks": [
+    "HTTP ingest + real JPEG/audio assembly + local Whisper + Luna perception",
+    "Real dynamic tool dispatch, FIFO, two questions in the same Codex thread",
+    "Pause/resume retains session, analyzed passage and conversation",
+    "Real clip reinspection through the shared runtime and tool-free Luna adapter"
+  ],
+  "failures": [],
+  "observation": {
+    "summary": "Un homme en costume se tient à une tribune portant un sceau, devant un drapeau américain et une assemblée dans un stade. La transcription évoque, avec une formulation possiblement imprécise, le passage des cavernes à la construction d’autres abris.",
+    "visual": "Les images montrent une scène de discours en plein air, avec des personnes assises derrière l’orateur et des gradins en arrière-plan.",
+    "transcript": "years ago, under this standard, man emerged from his caves to construct other kinds of shelter.",
+    "audio": "Paroles transcrites localement.",
+    "uncertainty": "La transcription est incertaine et ne correspond pas clairement à l’action visible; aucun titre ni propos précis n’est lisible. Transcription automatique locale ; elle peut contenir des erreurs."
+  },
+  "jobs": [
+    {
+      "id": "deep-1",
+      "status": "done",
+      "result": {
+        "answer": "Le passage évoque l’évolution des abris humains, des cavernes à la construction d’autres formes d’habitat.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [],
+        "audit": [
+          {
+            "tool": "get_transcript",
+            "status": "completed"
+          }
+        ],
+        "threadId": "01a0f293-10b1-7e92-98b8-3b0c5ad57016",
+        "elapsedMs": 6906,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790776127623
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790776127625
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790776127626
+        },
+        {
+          "message": "Lecture des paroles observées…",
+          "at": 1790776130980
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790776132762
+        }
+      ]
+    },
+    {
+      "id": "deep-2",
+      "status": "done",
+      "result": {
+        "answer": "Le passage parle des humains qui ont quitté les cavernes pour construire d’autres abris.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [],
+        "audit": [],
+        "threadId": "01a0f293-10b1-7e92-98b8-3b0c5ad57016",
+        "elapsedMs": 5705,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790776134532
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790776134533
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790776134533
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790776137807
+        }
+      ]
+    }
+  ],
+  "inspection": {
+    "status": "done",
+    "result": {
+      "answer": "On voit un homme en costume derrière un pupitre portant un emblème circulaire, avec un drapeau américain et un public dans les gradins. D’abord penché, il se redresse puis incline de nouveau la tête vers le pupitre. Les images seules ne permettent pas d’établir son identité ni la raison de ces mouvements.",
+      "kind": "observation",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 1438
+        },
+        {
+          "id": "moment-1",
+          "startMs": 1688,
+          "endMs": 4438
+        },
+        {
+          "id": "moment-1",
+          "startMs": 6063,
+          "endMs": 7938
+        }
+      ],
+      "sources": [],
+      "limits": [
+        "Réexamen visuel sans piste audio : les paroles ne sont pas vérifiées ici.",
+        "Aucune piste audio; les images ne permettent pas de déterminer ce qui est dit ni la raison des changements de posture.",
+        "Les images successives montrent des variations de posture au cours d'une même séquence; elles ne suffisent pas à établir des répétitions d'action."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "threadId": "01a0f293-10b1-7e92-98b8-3b0c5ad57016",
+      "elapsedMs": 28259,
+      "sourceValidation": {
+        "proposed": 0,
+        "accepted": 0,
+        "rejected": []
+      },
+      "sourcesReused": 0,
+      "model": "default",
+      "observations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 1438,
+          "text": "Dans les images 1 à 6, un homme en costume sombre se tient derrière un pupitre en bois portant un emblème circulaire; un drapeau américain est dressé à sa gauche. Il est penché vers le pupitre, la tête inclinée vers le bas."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 1688,
+          "endMs": 4438,
+          "text": "Dans les images 7 à 18, l'homme se redresse progressivement derrière le pupitre et finit par faire face vers l'avant. Les personnes assises autour de lui et les gradins remplis restent visibles."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 4688,
+          "endMs": 5938,
+          "text": "Dans les images 19 à 24, il demeure debout, face à l'avant, derrière le pupitre; le drapeau et le public restent dans le champ."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 6063,
+          "endMs": 7938,
+          "text": "Dans les images 25 à 30, il se penche de nouveau vers le pupitre et incline la tête; sa posture varie légèrement d'une image à l'autre. Le cadrage reste celui de la tribune et du public."
+        }
+      ],
+      "hypotheses": []
+    },
+    "activity": [
+      {
+        "message": "Question reçue…",
+        "at": 1790776140256
+      },
+      {
+        "message": "Lecture de la mémoire disponible…",
+        "at": 1790776140257
+      },
+      {
+        "message": "Lecture du contexte de la session…",
+        "at": 1790776140257
+      },
+      {
+        "message": "Réexamen des images et du son…",
+        "at": 1790776145856
+      },
+      {
+        "message": "Réexamen 0–8 s…",
+        "at": 1790776145857
+      },
+      {
+        "message": "Transcription locale 0–8 s…",
+        "at": 1790776146441
+      },
+      {
+        "message": "Comparaison des images horodatées…",
+        "at": 1790776146441
+      },
+      {
+        "message": "Rédaction de la réponse…",
+        "at": 1790776163684
+      }
+    ]
+  },
+  "status": "passed"
+}

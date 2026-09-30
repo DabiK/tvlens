@@ -1,7 +1,8 @@
+const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
-const {CachedInspector}=require('../core/cached-inspector.cjs');
 const {AutoMonitor}=require('../core/auto-monitor.cjs');
 const {SavedMoments}=require('../core/saved-moments.cjs');
 const {SavedMomentStore}=require('../adapters/saved-moment-store.cjs');
@@ -10,11 +11,7 @@ const {CodexQuota}=require('../adapters/codex-quota.cjs');
 const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, systemPreferences, shell, protocol, dialog, safeStorage, screen } = require('electron');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
-const { WatchSession } = require('../core/session.cjs');
-const { CodexPerception } = require('../adapters/codex-perception.cjs');
-const { LocalTranscriber } = require('../adapters/local-transcriber.cjs');
-const { SessionClock } = require('../core/session-clock.cjs');
-const { LocalSessionStore, cleanupRawMedia } = require('../adapters/local-store.cjs');
+const { cleanupRawMedia } = require('../adapters/local-store.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { UsageLedger } = require('../adapters/trial-budget.cjs');
@@ -22,13 +19,8 @@ const { VerificationService } = require('../core/verification.cjs');
 const { CodexVerifier } = require('../adapters/codex-verifier.cjs');
 const { VerificationArchive } = require('../adapters/verification-archive.cjs');
 const { safeExternalUrl } = require('../adapters/external-links.cjs');
-const { MomentSearch } = require('../core/moment-search.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { DeepAsk } = require('../core/deep-ask.cjs');
-const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
-const { OpenRouterEmbeddings, EMBEDDING_MODEL } = require('../adapters/openrouter-embeddings.cjs');
-const { ClipInspector } = require('../adapters/clip-inspector.cjs');
-const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
 const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const fs = require('node:fs/promises');
@@ -101,11 +93,6 @@ app.whenReady().then(async () => {
     floating=value.floating;return value;
   });
   const codexBinary = await findCodex();
-  const makeTools = (signal, onProgress, options = {}) => {
-    if (!watch || !search || !inspector) throw new Error('Démarre une observation dans TVLens.');
-    return new VideoTools({ snapshot: options.snapshot || watch.snapshot(), search, inspector, media: store, signal, onProgress });
-  };
-  bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools }).start();
   const quota=new CodexQuota();
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? {
     answer: async ({ question, tools, signal }) => {
@@ -115,13 +102,19 @@ app.whenReady().then(async () => {
       const result = await tools.call('inspect_clip', { startMs: moment.startMs, endMs: moment.endMs, question });
       return { answer: result.observations.map(o => o.text).join(' '), kind: 'observation', citations: result.observations.map(({ id, startMs, endMs }) => ({ id, startMs, endMs })), limits: [] };
     }
-  } : new CodexSessionAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome, model:selectedModels.codexModel, bridge, quota });
-  deep = new DeepAsk({ makeTools, agent: videoAgent, onChange: state => {
+  } : undefined;
+  const conversation = createConversationRuntime({
+    getSession: () => ({ watch, search, inspector, store }),
+    agent: videoAgent, codexBinary, config, selectedModels, quota,
+    onChange: state => {
     if(watch){const busy=state.jobs.some(j=>j.sessionId===watch.id&&['running','queued'].includes(j.status));if(watch.asking!==busy){watch.asking=busy;watch.emit();if(!busy)queueMicrotask(()=>watch?.drain());}}
     if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
     if (!window.isDestroyed()) window.webContents.send('deep:state', state);
     store?.saveResearch(state).catch(() => {});
   } });
+  videoAgent = conversation.agent;
+  deep = conversation.deep;
+  bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools: conversation.makeTools }).start();
   autoAgent=smoke&&!process.argv.includes('--live-video-agent')?videoAgent:new CodexSessionAgent({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.codexModel,quota});
   auto=new AutoMonitor({onChange:state=>{if(!window.isDestroyed())window.webContents.send('auto:state',state);store?.saveAuto?.(state).catch(()=>{});},evaluate:async({instruction,snapshot,signal,recent,onProgress})=>{
    const runner=new DeepAsk({agent:{answer:input=>autoAgent.answer({...input,question:`Surveillance Auto : ${input.question}. Seulement les nouveaux passages fournis ; aucun fait antérieur à l’activation. Relie toute alerte à ses citations vidéo. Si rien ne répond à la consigne, kind=insufficient. Évite les doublons avec ${JSON.stringify(recent)}. Vérifie sur le web si demandé, sans transformer une accusation en fait établi.`})},makeTools:(sig,progress)=>new VideoTools({snapshot,search,inspector,media:store,signal:sig,onProgress:progress}),onChange:state=>{const j=state.jobs.at(-1);if(j)onProgress(j.message);}});
@@ -222,25 +215,13 @@ app.whenReady().then(async () => {
         sourceIds:[...new Set([...chapters.flatMap(c=>c.sourceIds),...newPassages.map(p=>p.id)])]
       }]})
     } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
-    store = new LocalSessionStore(path.join(sessionsRoot, id));
-    const researchBudget = new UsageLedger(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json'));
-    search = new MomentSearch({ embeddings: (smoke && !liveInspection)||!config.apiKey ? null : new OpenRouterEmbeddings({ apiKey: config.apiKey, budget: researchBudget }), cache: new EmbeddingStore(path.join(store.root, 'embeddings.json'), EMBEDDING_MODEL) });
-    const transcriber=new LocalTranscriber({binary:config.whisperBinary,model:config.whisperModel||path.join(path.dirname(config.researchBudgetFile||path.join(process.cwd(),'.local','research-budget.json')),'models','ggml-base.bin')});
-    saved.transcriber=transcriber;
-    const inspectionModel = inspectorModel = localInspection ? {
-      inspect: async ({segments}) => ({observations:segments.map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,text:'Un cercle est visible dans les planches du test.'})),hypotheses:[],limits:['Modèle simulé pour le test local.'],cost:0}),
-      selectRegion: async () => ({region:{x:0.1,y:0.1,width:0.8,height:0.8},reason:'Rectangle de test, sans inférence.',cost:0})
-    } : new CodexPerception({binary:codexBinary,authHome:config.codexAuthHome,model:selectedModels.inspectionModel,transcriber,quota,sessionId:id+'-inspect'});
-    inspector = smoke && !liveInspection && !localInspection ? { inspect: async ({ segments, startMs, endMs }) => ({ observations: segments.map(s => ({ id: s.id, startMs: Math.max(startMs, s.startMs), endMs: Math.min(endMs, s.endMs), text: 'Le cercle effectue un bref saut entre deux images.' })), hypotheses: [], limits: [], sampledFrames: 12 }) }
-      : new ClipInspector({ media: store, model: inspectionModel, ffmpeg: config.ffmpeg, strategy: inspectionStrategy(smoke ? process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1] || 'sheets-diverse' : 'sheets-diverse') });
-    inspector=new CachedInspector(inspector);
-    sessionClock=new SessionClock(()=>performance.now());
-    const adapter = perception = smoke && !process.argv.includes('--live-observation') ? {
-      observe: async input => ({ observation: { summary: 'Un cercle se déplace sur un fond bleu.', visual: `${input.frames.length} images reçues.`, audio: input.audio ? 'Audio reçu.' : 'Pas d’audio.', transcript: '', uncertainty: '' }, cost: 0 }),
-      ask: async input => ({ answer: 'Un cercle se déplace sur un fond bleu.', kind: 'observation', citations: [input.context.at(-1).id], limits: [], cost: 0 })
-    } : new CodexPerception({binary:codexBinary,authHome:config.codexAuthHome,model:selectedModels.observationModel,transcriber,quota,sessionId:id+'-observe'});
-    watch = new WatchSession({ id, retentionMs:smoke?Number(process.argv.find(x=>x.startsWith('--retention-ms='))?.split('=')[1]||300000):300000, now: () => sessionClock.now(), perception: adapter, answer: adapter, media: store, archive: store,
-      onChange: state => { if(!closing&&!recapTransition)recap.observe(state);if (!window.isDestroyed()) window.webContents.send('watch:state', state); } });
+    const runtime = createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,
+      smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
+      strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
+      retentionMs:smoke?Number(process.argv.find(x=>x.startsWith('--retention-ms='))?.split('=')[1]||300000):300000,
+      onChange:state=>{if(!closing&&!recapTransition)recap.observe(state);if(!window.isDestroyed())window.webContents.send('watch:state',state);}});
+    ({store,search,inspector,inspectorModel,sessionClock,perception,watch}=runtime);
+    saved.transcriber=runtime.transcriber;
     pruneTimer = setInterval(() => watch.prune().catch(() => {}), 5000);
     watch.emit();
     videoAgent.prepare?.(id).catch(()=>{});
@@ -330,12 +311,6 @@ app.whenReady().then(async () => {
   window.webContents.on('will-navigate', event => event.preventDefault());
   await window.loadFile(path.join(__dirname, 'index.html'));
 });
-function validateSegment(input, now) {
-  if (!input || !Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.endMs > now + 3000) throw new Error('Horodatage de capture invalide.');
-  if (!(input.clip instanceof Uint8Array) || input.clip.byteLength < 1 || input.clip.byteLength > 20000000) throw new Error('Segment vidéo trop volumineux ou vide.');
-  if (input.audio && (!(input.audio instanceof Uint8Array) || input.audio.byteLength > 2100000)) throw new Error('Audio invalide.');
-  if (!Array.isArray(input.frames) || input.frames.length < 1 || input.frames.length > 8 || input.frames.some(f => typeof f.dataUrl !== 'string' || f.dataUrl.length > 1000000 || !/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(f.dataUrl) || !Number.isFinite(f.atMs) || f.atMs < input.startMs - 100 || f.atMs > input.endMs + 100)) throw new Error('Images de capture invalides.');
-}
 async function findCodex() {
   const candidates = [path.join(os.homedir(), '.local', 'bin', 'codex'), '/opt/homebrew/bin/codex', '/usr/local/bin/codex', ...(process.env.PATH || '').split(path.delimiter).filter(Boolean).map(dir => path.join(dir, 'codex'))];
   for (const candidate of candidates) { try { await fs.access(candidate, require('node:fs').constants.X_OK); return candidate; } catch {} }

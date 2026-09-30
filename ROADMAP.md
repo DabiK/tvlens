@@ -1,5 +1,11 @@
 # TVLens — Roadmap proposée
 
+## Nouvelle tranche : companion LG et calcul distant
+
+[13 tickets proposés et critères d’acceptation](docs/lg-companion-roadmap.md). Première étape recommandée : prouver la sidebar avec YouTube réduit, puis le bouton micro direct. Ces capacités restent à valider sur la TV. Brouillons non publiés ; aucune implémentation de cette tranche annoncée.
+
+## Historique et fonctions existantes
+
 **33 tickets de cadrage initial archivés.** Le POC dispose désormais de capture, chat sourcé, réexamen, MCP, overlay, file de questions, marque-pages, recherche et Auto. Les actions **Explique ce moment**, **J’ai décroché** et le récapitulatif progressif **Jusqu’ici** sont aussi intégrés. Voir [les fonctions de visionnage](docs/viewing-upgrade.md), [les actions immédiates](docs/friction-latency.md) et [le récapitulatif](docs/living-recap.md). La qualité du récapitulatif avec le fournisseur réel reste à valider. Les archives ci-dessous ne sont pas un état de livraison.
 
 - [Roadmap complète, découpage numéroté et critères de chaque ticket](docs/roadmap-original.md)
@@ -44,3 +50,10 @@ sonore autant que par sa transcription ou sa description visuelle.
 **Critère de livraison :** retrouver des passages identifiables par leur audio
 non verbal et fournir des timestamps vérifiables, avec comparaison mesurée au
 baseline textuel. Ne fait pas partie du réexamen vidéo/MCP actuellement en cours.
+
+## Exploration future — agent / LLM embarqué dans la TV
+
+[POC sans Mac ni VPS : hypothèses et protocole à explorer](docs/lg-on-device-exploration.md).
+Distinguer l’orchestrateur sur TV avec modèles OpenAI distants d’une véritable
+inférence locale. Compatibilité et performances non validées ; roadmap uniquement,
+après la première boucle complète TV → Mac → sidebar.

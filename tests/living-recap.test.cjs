@@ -60,7 +60,7 @@ test('Codex adapter uses a dedicated session, summaries-only instructions and de
  const {CodexRecap}=require('../adapters/codex-recap.cjs');let input,closed=false;
  const adapter=new CodexRecap({agent:{answer:async value=>{input=value;return {overview:'Résumé',chapters:[]};},close:async()=>{closed=true;}}});
  await adapter.summarize({sessionId:'s',chapters:[],newPassages:[{id:'a',startMs:0,endMs:100,text:'Texte source',available:true,secretMedia:'SHOULD_NOT_LEAK'}],limits:[],signal:new AbortController().signal});
- assert.equal(input.tools.sessionId,'s-living-recap');assert.match(input.instructions,/Texte source/);assert.doesNotMatch(input.instructions,/SHOULD_NOT_LEAK/);assert.equal(input.outputSchema.additionalProperties,false);await assert.rejects(input.tools.call(),/uniquement les textes/);await adapter.close();assert.equal(closed,true);
+ assert.equal(input.sessionId,'s-living-recap');assert.match(input.instructions,/Texte source/);assert.doesNotMatch(input.instructions,/SHOULD_NOT_LEAK/);assert.equal(input.outputSchema.additionalProperties,false);assert.equal(input.tools,undefined);await adapter.close();assert.equal(closed,true);
 });
 
 test('every synthesis receives historical originals as well as chapters to prevent cumulative summary drift',async()=>{

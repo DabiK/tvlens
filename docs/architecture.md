@@ -1,6 +1,6 @@
 # Architecture actuelle
 
-TVLens suit une architecture hexagonale : les règles applicatives dépendent de contrats injectés ; les choix de plateforme, de modèle et de stockage appartiennent aux adaptateurs. Le point de composition est `app/main.cjs`.
+TVLens suit une architecture hexagonale : les règles applicatives dépendent de contrats injectés ; les choix de plateforme, de modèle et de stockage appartiennent aux adaptateurs. Les hôtes `app/main.cjs` (Electron) et `runtime/headless-runtime.cjs` (serveur TV) utilisent les compositions partagées `runtime/session-runtime.cjs` et `runtime/conversation-runtime.cjs`.
 
 ## Organisation
 
@@ -21,7 +21,7 @@ TVLens suit une architecture hexagonale : les règles applicatives dépendent de
 2. Le processus principal valide les entrées IPC et les transmet à `WatchSession`. `LocalSessionStore` conserve les médias et sérialise les archives.
 3. `CodexPerception` décrit les images ; `LocalTranscriber` transcrit l'audio avec Whisper sur le Mac. Les images et le texte sont envoyés à Codex, pas le WAV brut.
 4. `DeepAsk` ancre chaque question à l'envoi, gère la file FIFO, la progression réelle, l'annulation ciblée et le délai de 60 secondes hors attente.
-5. `CodexSessionAgent` garde un transport App Server et un fil par session. Ses outils dynamiques consultent `VideoTools` pour retrouver et réexaminer les passages. Le même service est accessible via l'adaptateur MCP.
+5. `CodexSessionAgent` gère la conversation et les preuves externes ; `CodexSessionClient` garde le transport App Server et le fil par session. Les outils dynamiques consultent `VideoTools`. L’adaptateur MCP expose les mêmes contrats à des clients externes ; son pont est lancé par Electron, pas par le serveur TV.
 6. Les résultats comprennent des citations validées. La relecture utilise les fichiers locaux avec prise en charge des plages d'octets ; les sources externes passent par les contrôles de liens.
 
 La capture reste indépendante des recherches. La file de perception est bornée ; en surcharge, certains passages sont marqués comme non analysés plutôt que de prétendre à une couverture complète. Leur média reste disponible dans la rétention.
@@ -36,7 +36,11 @@ Pause/reprise conserve la session, ses résumés et la discussion ; la pause n'a
 
 ## Recherche et réexamen
 
-`MomentSearch` combine intervalle explicite, termes exacts et embeddings texte. `OpenRouterEmbeddings` et `EmbeddingStore` assurent vectorisation et cache ; sans clé ou en cas d'échec, le mode lexical reste disponible et signalé.
+`MomentSearch` sélectionne l’intervalle et classe les passages (55 % lexical, 45 % similarité). `MomentIndex` crée et réutilise les vecteurs via les ports embeddings/cache. `OpenRouterEmbeddings` appelle `text-embedding-3-small` ; `EmbeddingStore` persiste un index JSON local, pas une base vectorielle serveur.
+
+L’indexation reste **à la demande** : appel de `search_moments` par le chat ou un client MCP, ou recherche de passages dans l’interface Mac. Une référence temporelle reconnue contourne les embeddings. Sinon les textes manquants des passages éligibles sont indexés, puis la requête. Aucun appel OpenRouter n’est ajouté au démarrage de la capture. Sans clé, recherche lexicale ; en cas d’échec du fournisseur, repli lexical avec avertissement.
+
+La perception et le résumé vivant passent par `CodexAnalysisAgent` : aucun outil déclaré et web désactivé. Ils ne choisissent pas eux-mêmes de parcourir la mémoire. Voir [les responsabilités et la validation du refactor](refactor-runtime.md).
 
 `VideoTools` fige session et ancrage, borne les intervalles et le nombre d'appels/inspections, puis valide les citations. Les baux média empêchent l'effacement d'un passage utilisé par un réexamen en cours.
 
@@ -68,4 +72,4 @@ L'audio brut et les médias de session restent sur le Mac ; images et transcript
 
 Le GX10 nécessitera des adaptateurs de modèle locaux et une validation du débit continu. Une caméra + microphone doit produire le contrat `CapturedSegment` existant, avec un média rejouable et des horodatages cohérents.
 
-Une source LG réseau n'est pas prête à brancher : l'ingestion actuelle attend des clips, pas seulement des images. La piste PicCap requiert root et reste exclue du POC sur la TV de l'utilisateur sans modification système. Les embeddings multimodaux et l'interface webOS restent dans la roadmap.
+Le chemin LG → Mac dispose d’une ingestion HTTP authentifiée : images et WAV sont assemblés par `RemoteMedia` en passage compatible avec le domaine. Le lecteur reste sur la TV ; le calcul reste sur le Mac. La sidebar, la dictée via clavier LG et la pause/reprise ont été testées auparavant sur la TV ; ce refactor ne redéploie pas la TV. Voir [le runtime LG](lg-remote-runtime.md) et [les contrôles de capture](lg-capture-control.md). Le VPS, l’inférence embarquée sur TV et les embeddings multimodaux restent des travaux distincts.

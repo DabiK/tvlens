@@ -1,3 +1,4 @@
+const { videoToolNames } = require('../core/video-tool-contracts.cjs');
 const http=require('node:http');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -14,7 +15,7 @@ class VideoBridge {
       try {
         let raw=''; for await (const chunk of req){raw+=chunk;if(raw.length>12000)throw new Error('Requête trop volumineuse.');}
         const {name,args}=JSON.parse(raw);
-        if(!['search_moments','get_transcript','inspect_clip'].includes(name))throw new Error('Outil inconnu.');
+        if(!videoToolNames.includes(name))throw new Error('Outil inconnu.');
         if(!scope){
           const client=req.headers['x-tvlens-client'];if(typeof client!=='string'||!/^[-a-zA-Z0-9]{1,80}$/.test(client))throw new Error('Client MCP invalide.');
           scope=this.external.get(client);

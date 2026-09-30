@@ -42,3 +42,9 @@ module.exports = {};
  * AutoMonitor owns prospective activation, cadence, deduplication and manual priority.
  * CachedInspector wraps any ClipInspectionPort without provider knowledge.
  */
+
+/**
+ * @typedef {{ensure:(segments:object[],signal?:AbortSignal)=>Promise<void>,queryVector:(query:string,signal?:AbortSignal)=>Promise<number[]>,passageVector:(segment:object)=>Promise<number[]|null>}} MomentIndexPort
+ * Index creation/reuse is separate from ranking. Runtimes currently request it
+ * lazily from MomentSearch; capture never implicitly schedules embedding calls.
+ */

@@ -21,3 +21,8 @@ saved-moments/
 coverage/
 playwright-report/
 test-results/
+
+# Device pairing secrets are installed locally, never packaged in Git.
+tv/app/connection.js
+__pycache__/
+*.pyc
