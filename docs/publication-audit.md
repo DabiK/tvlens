@@ -22,9 +22,15 @@ Le serveur utilise une adresse configurée hors Git, loopback par défaut. Les e
 
 ## Vérification
 
-- 114 tests Node réussis, dont deux régressions de configuration portable.
+- 114 tests Node réussis sur Mac et sur Linux dans un checkout isolé, dont deux régressions de configuration portable. Un démarrage neuf Linux sans fichier env a également validé loopback, création du jeton et réponses 401/200.
 - Test UI de frise réussi après résolution portable de FFmpeg.
 - Test Electron : premier essai en échec sur la relecture WebM (timeout, média non chargé) ; second essai réussi avec 14 segments, audio, relecture, chat et vérification simulés. Cette intermittence préexistante n’est pas présentée comme corrigée.
 - Contrôle de syntaxe des scripts et liens locaux de documentation.
 
 La publication GitHub ne publie ni le service VPS ni l’accès à la TV ; leur configuration réseau n’a pas été modifiée par cette opération.
+
+## Particularité GitHub
+
+Une première réécriture a laissé un ancien commit accessible par URL directe après le changement de visibilité. Le dépôt a été remis en privé, puis conservé en archive privée. Un dépôt neuf au même nom contient uniquement l’historique anonymisé ; son clonage a été scanné à nouveau sans résultat de secret. L’API GitHub refuse les anciens identifiants de commits. Les anciennes URL brutes ont fait l’objet d’un contrôle séparé, car le cache CDN peut servir temporairement une réponse antérieure à une modification de visibilité. Aucun identifiant ni profil VPN n’était présent dans le fichier ainsi observé.
+
+La détection de secrets, la protection des pushes et le signalement privé de vulnérabilités sont activés sur le nouveau dépôt. L’historique original et les rapports détaillés restent privés.
