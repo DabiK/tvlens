@@ -13,6 +13,8 @@
 | [Captures de présentation](../screenshots/current/README.md) | Reproduction, provenance et crédits |
 | [Résumé progressif](living-recap.md) | Provenance, chapitres, expiration et limites de capacité |
 
+- [Frise du companion LG](lg-timeline.md) — contrat, navigation, miniatures, tests et validation physique restante.
+
 ## Prochaine tranche
 
 - [Contrôle de capture LG et reprise réseau](lg-capture-control.md) — boutons TV, tampon, dédoublonnage et résultats des essais.

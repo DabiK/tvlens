@@ -1,0 +1,242 @@
+{
+  "date": "2026-09-30T14:24:51.145Z",
+  "source": "media/samples/kennedy-rice-7min.mp4",
+  "intervalSeconds": [
+    30,
+    38
+  ],
+  "checks": [
+    "Real topic generation and authenticated session thumbnail",
+    "HTTP ingest + real JPEG/audio assembly + local Whisper + Luna perception",
+    "Real dynamic tool dispatch, FIFO, two questions in the same Codex thread",
+    "Pause/resume retains session, analyzed passage and conversation",
+    "Real clip reinspection through the shared runtime and tool-free Luna adapter"
+  ],
+  "failures": [],
+  "observation": {
+    "topic": "Discours dans un stade",
+    "summary": "Un orateur s’exprime à une tribune portant le sceau présidentiel, devant une foule dans un stade. La transcription évoque la construction d’autres abris après les grottes, mais les paroles sont incertaines.",
+    "visual": "Images d’archives montrant un homme à un pupitre, un drapeau américain et des personnes assises dans les gradins.",
+    "transcript": "years ago, under this standard, man emerged from his caves to construct other kinds of shelter.",
+    "audio": "Paroles transcrites localement.",
+    "uncertainty": "La transcription locale peut être imprécise ; le contenu exact du discours n’est pas confirmé par les images. Transcription automatique locale ; elle peut contenir des erreurs."
+  },
+  "jobs": [
+    {
+      "id": "deep-1",
+      "status": "done",
+      "result": {
+        "answer": "Selon la transcription incertaine, le passage évoque l’évolution des abris humains, des grottes à d’autres formes d’habitat.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les paroles transcrites sont incertaines."
+        ],
+        "audit": [
+          {
+            "tool": "get_transcript",
+            "status": "completed"
+          }
+        ],
+        "threadId": "01a0f2b4-3677-71b0-a293-c3096cbfba16",
+        "elapsedMs": 9376,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790778297520
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790778297522
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790778297523
+        },
+        {
+          "message": "Lecture des paroles observées…",
+          "at": 1790778301748
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790778304704
+        }
+      ]
+    },
+    {
+      "id": "deep-2",
+      "status": "done",
+      "result": {
+        "answer": "Le passage semble parler des humains qui ont quitté les grottes pour construire d’autres abris.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "La transcription est incertaine."
+        ],
+        "audit": [],
+        "threadId": "01a0f2b4-3677-71b0-a293-c3096cbfba16",
+        "elapsedMs": 4022,
+        "sourceValidation": {
+          "proposed": 0,
+          "accepted": 0,
+          "rejected": []
+        },
+        "sourcesReused": 0,
+        "model": "default",
+        "observations": [],
+        "hypotheses": []
+      },
+      "anchorMs": 8000,
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1790778306899
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1790778306900
+        },
+        {
+          "message": "Lecture du contexte de la session…",
+          "at": 1790778306900
+        },
+        {
+          "message": "Rédaction de la réponse…",
+          "at": 1790778308983
+        }
+      ]
+    }
+  ],
+  "inspection": {
+    "status": "done",
+    "result": {
+      "answer": "Observations : un homme en costume sombre se tient derrière un pupitre à emblème circulaire, avec un drapeau à bandes et étoiles à sa gauche et une foule assise derrière lui. Il se redresse, puis se penche de nouveau vers le pupitre.\nIncertitudes : ces images seules ne permettent pas d’établir son identité, le contexte ou ses paroles.",
+      "kind": "observation",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 2438
+        },
+        {
+          "id": "moment-1",
+          "startMs": 2688,
+          "endMs": 4438
+        },
+        {
+          "id": "moment-1",
+          "startMs": 6063,
+          "endMs": 7938
+        }
+      ],
+      "sources": [],
+      "limits": [
+        "Le réexamen ne comportait pas de piste audio.",
+        "Aucune piste audio; les images seules ne permettent pas de déterminer ce qui est dit ni le contexte de la scène.",
+        "Les planches montrent plusieurs instants d'une même action, pas nécessairement plusieurs répétitions."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "threadId": "01a0f2b4-3677-71b0-a293-c3096cbfba16",
+      "elapsedMs": 25676,
+      "sourceValidation": {
+        "proposed": 0,
+        "accepted": 0,
+        "rejected": []
+      },
+      "sourcesReused": 0,
+      "model": "default",
+      "observations": [
+        {
+          "id": "moment-1",
+          "startMs": 63,
+          "endMs": 2438,
+          "text": "Dans les images 1 à 10, un homme en costume sombre se tient derrière un pupitre portant un emblème circulaire; un grand drapeau à bandes et étoiles se trouve à sa gauche. Une foule est assise derrière lui."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 2688,
+          "endMs": 4438,
+          "text": "Dans les images 11 à 18, l'homme se redresse progressivement et fait face vers l'avant; le pupitre, le drapeau et la foule restent dans le cadre."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 4688,
+          "endMs": 5938,
+          "text": "Dans les images 19 à 24, il demeure debout derrière le pupitre, face à l'avant, avec peu de changement apparent de posture."
+        },
+        {
+          "id": "moment-1",
+          "startMs": 6063,
+          "endMs": 7938,
+          "text": "Dans les images 25 à 30, il se penche de nouveau vers le pupitre; le drapeau demeure à sa gauche et la foule derrière lui."
+        }
+      ],
+      "hypotheses": []
+    },
+    "activity": [
+      {
+        "message": "Question reçue…",
+        "at": 1790778310935
+      },
+      {
+        "message": "Lecture de la mémoire disponible…",
+        "at": 1790778310935
+      },
+      {
+        "message": "Lecture du contexte de la session…",
+        "at": 1790778310935
+      },
+      {
+        "message": "Réexamen des images et du son…",
+        "at": 1790778317488
+      },
+      {
+        "message": "Réexamen 0–8 s…",
+        "at": 1790778317489
+      },
+      {
+        "message": "Transcription locale 0–8 s…",
+        "at": 1790778318004
+      },
+      {
+        "message": "Comparaison des images horodatées…",
+        "at": 1790778318004
+      },
+      {
+        "message": "Rédaction de la réponse…",
+        "at": 1790778329918
+      }
+    ]
+  },
+  "status": "passed"
+}

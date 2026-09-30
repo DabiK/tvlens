@@ -64,6 +64,10 @@ class LocalSessionStore {
     return this.serial;
   }
   saveAuto(snapshot){const data=JSON.stringify(snapshot,null,2);this.serial=this.serial.catch(()=>{}).then(async()=>{await fs.mkdir(this.root,{recursive:true});await fs.writeFile(path.join(this.root,'auto.json'),data,{mode:0o600});});return this.serial;}
+  async clearRaw() {
+    const files = await fs.readdir(this.root).catch(() => []);
+    await Promise.all(files.filter(file => /^moment-\d+\.(?:webm|json)$/.test(file)).map(file => fs.rm(path.join(this.root, file), {force:true})));
+  }
   async response(id, range) {
     let bytes;
     try { bytes = await fs.readFile(this.file(id, 'webm')); }
@@ -85,6 +89,7 @@ async function cleanupRawMedia(sessionsRoot) {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const dir = path.join(sessionsRoot, entry.name);
+    await fs.rm(path.join(dir, "thumbnails"), { recursive: true, force: true });
     const files = await fs.readdir(dir);
     await Promise.all(files.filter(file => /^moment-\d+\.(?:webm|json)$/.test(file)).map(file => fs.rm(path.join(dir, file), { force: true })));
   }

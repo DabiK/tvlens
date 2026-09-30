@@ -1,7 +1,7 @@
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
-  constructor({ id, now, perception, answer, media, archive, onChange = () => {}, retentionMs = 300000, maxPending = 2 }) {
-    Object.assign(this, { id, now, perception, answer, media, archive, onChange, retentionMs, maxPending });
+  constructor({ id, now, perception, answer, media, archive, thumbnails, onChange = () => {}, retentionMs = 300000, maxPending = 2 }) {
+    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, onChange, retentionMs, maxPending });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.sequence = 0; this.accepting = true; this.running = false; this.asking = false;
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve();
@@ -14,6 +14,10 @@ class WatchSession {
     if (previous && input.startMs < previous.endMs - 100) throw new Error('Les segments doivent suivre l’ordre d’observation.');
     const segment = { id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs, status: 'queued', hasAudio: Boolean(input.audio?.byteLength), available: true, observation: null };
     await this.media.put(segment.id, input);
+    if (this.thumbnails) {
+      try { await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl); segment.thumbnailAvailable = true; }
+      catch { segment.thumbnailAvailable = false; }
+    }
     this.segments.push(segment);
     this.queue.push(segment);
     while (this.queue.length > this.maxPending) this.queue.shift().status = 'skipped';
@@ -36,7 +40,7 @@ class WatchSession {
       // Keep summaries for the session, but no raw media beyond the rolling window.
       while (this.segments.length && !this.segments[0].available && this.segments[0].status !== 'analyzing') {
         const item = this.segments.shift();
-        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, summary: item.observation?.summary || 'Passage non analysé.', observation: item.observation, status: item.status });
+        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, summary: item.observation?.summary || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable });
       }
       this.emit();
     });

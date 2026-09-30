@@ -11,7 +11,7 @@ def archive(entries):
    info=tarfile.TarInfo(name);info.mode=0o644;info.size=len(data);t.addfile(info,io.BytesIO(data))
  return b.getvalue()
 control=f'Package: {ident}\nVersion: {version}\nSection: misc\nPriority: optional\nArchitecture: all\nMaintainer: TVLens\nDescription: Reversible sidebar feasibility probe\nwebOS-Package-Format-Version: 2\n'
-files=[('usr/palm/applications/'+ident+'/'+p.name,p.read_bytes()) for p in sorted(app.iterdir()) if p.is_file()]
+files=[('usr/palm/applications/'+ident+'/'+p.name,p.read_bytes()) for p in sorted(app.iterdir()) if p.is_file() and p.name != "connection.js"]
 files.append(('usr/palm/packages/'+ident+'/packageinfo.json',json.dumps({'id':ident,'version':version,'app':ident}).encode()))
 result=bytearray(b'!<arch>\n')
 for name,data in [('debian-binary',b'2.0\n'),('control.tar.gz',archive([('control',control.encode())])),('data.tar.gz',archive(files))]:

@@ -1,3 +1,4 @@
+const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
 const { WatchSession } = require("../core/session.cjs");
@@ -38,6 +39,7 @@ function createSessionRuntime({
 }) {
   let store, search, inspector, inspectorModel, sessionClock, perception, watch;
   store = new LocalSessionStore(path.join(sessionsRoot, id));
+  const thumbnails = new SessionThumbnails(path.join(store.root, "thumbnails"));
   const researchBudget = new UsageLedger(
     config.researchBudgetFile || path.join(userData, "research-budget.json"),
   );
@@ -159,6 +161,7 @@ function createSessionRuntime({
     answer: adapter,
     media: store,
     archive: store,
+    thumbnails,
     onChange,
   });
 
@@ -172,6 +175,7 @@ function createSessionRuntime({
     sessionClock,
     perception,
     transcriber,
+    thumbnails,
     async pause() {
       sessionClock.pause();
       await watch.stop();
@@ -183,10 +187,12 @@ function createSessionRuntime({
     async close() {
       watch.asking = true;
       await watch.stop();
+      await thumbnails.clear();
       await Promise.allSettled([
         perception.close?.(),
         inspectorModel.close?.(),
       ]);
+      await store.clearRaw();
     },
   };
 }

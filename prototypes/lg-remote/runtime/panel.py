@@ -5,6 +5,24 @@ APP='org.tvlens.sidebarprobe'
 stop=False
 GENERATION=Path('/tmp/tvlens-panel-generation')
 WATCHDOG_TIMEOUT=20
+LAYOUT_REQUEST=Path('/tmp/tvlens-panel-layout-request.json')
+LAYOUT_STATE=Path('/tmp/tvlens-panel-layout-state.json')
+
+def layout_target(saved, mode):
+    if mode not in ('chat','timeline'):raise ValueError('Unknown panel layout')
+    area=(0,0,1440,1080) if mode=='chat' else (0,0,1920,720)
+    source=saved['sourceInput']; ratio=source['width']/source['height']
+    width=min(area[2],int(area[3]*ratio));height=int(width/ratio)
+    rect={'x':area[0]+(area[2]-width)//2,'y':area[1]+(area[3]-height)//2,'width':width,'height':height}
+    return dict(saved,fullScreen=False,displayOutput=rect,appOutput=rect)
+
+def physical_rect(target):
+    return {key:value*2 for key,value in target['displayOutput'].items()}
+
+def write_layout(value):
+    temporary=LAYOUT_STATE.with_suffix('.tmp')
+    temporary.write_text(json.dumps(value));temporary.replace(LAYOUT_STATE)
+
 
 def recovery_due(heartbeat, generation, now=None):
     if GENERATION.read_text()!=generation:return False
@@ -42,7 +60,7 @@ def rectangles(v):
              'displayOutput':{'x':0,'y':0,'width':1920,'height':1080},
              'appOutput':{'x':0,'y':0,'width':1920,'height':1080},
              'sourceInput':source,'originalInput':source}
-    target=dict(restore,fullScreen=False,displayOutput={'x':0,'y':135,'width':1440,'height':810},appOutput={'x':0,'y':135,'width':1440,'height':810})
+    target=layout_target(restore,'chat')
     return restore,target
 
 def on_stop(*_):
@@ -50,6 +68,7 @@ def on_stop(*_):
     stop=True
 
 def restore_original(saved):
+    write_layout({"active":False,"mode":"chat"})
     try:
         call('com.webos.surfacemanager/closeByAppId',{'id':APP})
     finally:
@@ -63,6 +82,8 @@ def main():
     except BlockingIOError:return
     signal.signal(signal.SIGTERM,on_stop);signal.signal(signal.SIGINT,on_stop)
     saved,target=rectangles(video())
+    mode="chat";request_id=None
+    LAYOUT_REQUEST.unlink(missing_ok=True)
     # Renew a private heartbeat instead of closing a healthy panel on a fixed timer.
     os.umask(0o077)
     generation=uuid.uuid4().hex;GENERATION.write_text(generation)
@@ -74,16 +95,26 @@ def main():
         if not result.get('returnValue'):raise RuntimeError(result)
         result=call('com.webos.applicationManager/launch',{'id':APP})
         if not result.get('returnValue'):raise RuntimeError(result)
+        write_layout({'active':True,'mode':mode,'requestId':request_id})
         time.sleep(1)
         while not stop:
             v=video()
-            if v.get('context')!=saved['context'] or v['displayOutput']!={'x':0,'y':270,'width':2880,'height':1620}:
+            if v.get('context')!=saved['context'] or v['displayOutput']!=physical_rect(target):
                 print('Media transition: closing panel',flush=True);break
             windows=call('com.webos.surfacemanager/getForegroundWindowInfo',{})
             if not any(w['appId']==APP for w in windows.get('windows',[])):break
+            try:requested=json.loads(LAYOUT_REQUEST.read_text())
+            except (OSError,ValueError):requested={}
+            if requested.get('id')!=request_id and requested.get('mode') in ('chat','timeline'):
+                next_target=layout_target(saved,requested['mode'])
+                result=call('com.webos.service.videooutput/display/setDisplayWindow',next_target)
+                if not result.get('returnValue'):raise RuntimeError(result)
+                target=next_target;mode=requested['mode'];request_id=requested['id']
+                write_layout({'active':True,'mode':mode,'requestId':request_id})
             heartbeat.touch()
             time.sleep(.7)
     finally:
+        write_layout({"active":False,"mode":"chat"})
         restore_original(saved)
         watchdog.terminate();watchdog.wait(timeout=3)
         heartbeat.unlink(missing_ok=True)

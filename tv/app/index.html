@@ -1,20 +1,108 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><title>TVLens — Companion</title>
-<link rel="stylesheet" href="style.css"></head><body>
-<aside>
-<header><span>TVLENS</span><small id="navigation-hint">Retour · fermer</small></header>
-<p id="destination">Companion · calcul distant</p>
-<p id="connection" role="status">Connexion…</p>
-<p id="coverage">Aucune capture reçue.</p>
-<section id="conversation" aria-live="polite" tabindex="0" aria-label="Conversation : OK pour activer le défilement"></section>
-<form id="ask"><label for="question">Ta question sur ce moment</label>
-<input id="question" maxlength="1000" autocomplete="off" placeholder="Sélectionne le champ pour dicter">
-<div class="actions"><button type="button" id="dictate">Dicter</button><button id="send">Envoyer</button></div>
-</form>
-<div class="capture-controls"><button id="capture" disabled>Démarrer l’analyse</button>
-<p id="capture-state" role="status">Contrôle de capture…</p></div>
-<p id="error" role="alert"></p>
-<footer>Micro du clavier LG · les images et le son sont traités sur l’hôte appairé. Fermer le panneau n’arrête pas la capture.</footer>
-</aside>
-<script src="connection.js"></script><script src="remote-client.js"></script><script src="capture-control.js"></script><script src="companion.js"></script>
-</body></html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>TVLens — Companion</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="timeline.css" />
+  </head>
+  <body>
+    <aside id="chat-panel">
+      <header>
+        <span>TVLENS</span
+        ><button id="show-timeline" aria-label="Afficher la frise">
+          Frise ↔</button
+        ><small id="navigation-hint">Retour · fermer</small>
+      </header>
+      <p id="destination">Companion · calcul distant</p>
+      <p id="connection" role="status">Connexion…</p>
+      <p id="coverage">Aucune capture reçue.</p>
+      <section
+        id="conversation"
+        aria-live="polite"
+        tabindex="0"
+        aria-label="Conversation : OK pour activer le défilement"
+      ></section>
+      <div id="moment-context" hidden>
+        <span></span><button type="button" id="clear-moment">Détacher</button>
+      </div>
+      <form id="ask">
+        <label for="question">Ta question sur ce moment</label>
+        <input
+          id="question"
+          maxlength="1000"
+          autocomplete="off"
+          placeholder="Sélectionne le champ pour dicter"
+        />
+        <div class="actions">
+          <button type="button" id="dictate">Dicter</button
+          ><button id="send">Envoyer</button>
+        </div>
+      </form>
+      <div class="capture-controls">
+        <button id="capture" disabled>Démarrer l’analyse</button>
+        <p id="capture-state" role="status">Contrôle de capture…</p>
+      </div>
+      <p id="error" role="alert"></p>
+      <footer>
+        Micro du clavier LG · les images et le son sont traités sur l’hôte
+        appairé. Fermer le panneau n’arrête pas la capture.
+      </footer>
+    </aside>
+    <section id="timeline-panel" hidden aria-label="Frise de la session">
+      <div class="timeline-toolbar">
+        <div>
+          <span class="eyebrow">TVLENS / MÉMOIRE</span>
+          <h1>Le fil du visionnage</h1>
+        </div>
+        <p id="timeline-status" role="status">En attente de captures</p>
+        <nav>
+          <button id="timeline-live">Retour au direct</button
+          ><button id="timeline-chat">Chat ↔</button
+          ><button id="timeline-end">Terminer la session</button>
+        </nav>
+      </div>
+      <div
+        id="timeline-rail"
+        tabindex="0"
+        aria-label="Moments : gauche droite pour parcourir, OK pour ouvrir"
+      ></div>
+      <section id="moment-detail" hidden aria-label="Détail du moment">
+        <img id="detail-image" alt="Image capturée du moment" />
+        <div class="detail-body">
+          <h2 id="detail-title"></h2>
+          <p id="detail-time"></p>
+          <div id="detail-scroll" tabindex="0">
+            <p id="detail-summary"></p>
+            <div id="detail-transcript" hidden></div>
+            <p id="detail-limits"></p>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button id="detail-words">Voir les paroles</button
+          ><button id="detail-ask">Questionner ce moment</button
+          ><button id="detail-back">Retour à la frise</button>
+        </div>
+      </section>
+      <p id="timeline-hint">
+        ← → Parcourir · OK Détail · Retour Fermer · Observations automatiques,
+        non vérifiées
+      </p>
+    </section>
+    <dialog id="end-session-dialog">
+      <h2>Terminer cette session ?</h2>
+      <p>
+        La capture sera arrêtée et les miniatures supprimées. Les résumés et
+        réponses restent archivés.
+      </p>
+      <button id="end-cancel">Garder la session</button
+      ><button id="end-confirm">Terminer et supprimer les miniatures</button>
+      <p id="end-error" role="alert"></p>
+    </dialog>
+    <script src="connection.js"></script>
+    <script src="remote-client.js"></script>
+    <script src="capture-control.js"></script>
+    <script src="timeline-view.js"></script>
+    <script src="companion.js"></script>
+  </body>
+</html>

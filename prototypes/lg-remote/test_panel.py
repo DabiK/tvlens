@@ -2,7 +2,7 @@ import sys,unittest,tempfile,os
 from unittest.mock import patch
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).parent/'runtime'))
-from panel import rectangles,parse_reply,recovery_due
+from panel import rectangles,parse_reply,recovery_due,layout_target,physical_rect
 import panel
 class Rectangles(unittest.TestCase):
  def source(self):
@@ -12,6 +12,13 @@ class Rectangles(unittest.TestCase):
   self.assertEqual(target['sourceInput'],v['sourceInput'])
   self.assertEqual(target['displayOutput']['width']/target['displayOutput']['height'],16/9)
   self.assertEqual(restore['displayOutput']['width'],1920)
+ def test_bottom_layout_preserves_video_above_lower_third(self):
+  restore,_=rectangles(self.source());target=layout_target(restore,'timeline')
+  self.assertEqual(target['sourceInput'],restore['sourceInput'])
+  self.assertEqual(target['displayOutput'],{'x':320,'y':0,'width':1280,'height':720})
+  self.assertEqual(physical_rect(target),{'x':640,'y':0,'width':2560,'height':1440})
+  self.assertEqual(layout_target(restore,'chat')['displayOutput'],{'x':0,'y':135,'width':1440,'height':810})
+  with self.assertRaises(ValueError):layout_target(restore,'arbitrary')
  def test_refuses_foreign_or_cropped_source(self):
   for key,value in [('appId','netflix'),('connected',False),('sourceInput',{'x':1}),('displayOutput',{'width':1920})]:
    v=self.source();v[key]=value

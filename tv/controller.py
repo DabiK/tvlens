@@ -1,4 +1,4 @@
-"""Loopback-only device adapter. Exactly start, stop and status; never arbitrary commands."""
+"""Loopback-only device adapter. Capture and named panel layouts; never arbitrary commands."""
 import argparse
 import hmac
 import fcntl
@@ -9,6 +9,7 @@ import signal
 import subprocess
 import sys
 import threading
+import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 class CaptureController:
@@ -85,11 +86,27 @@ class Handler(BaseHTTPRequestHandler):
         if not hmac.compare_digest(self.headers.get('Authorization', ''), 'Bearer '+self.server.token):
             self.reply(401, {'error': 'Appareil non authentifié.'}); return False
         return True
+    def panel_state(self):
+        try: return json.loads(Path('/tmp/tvlens-panel-layout-state.json').read_text())
+        except (OSError,ValueError): return {'active':False,'mode':'chat'}
     def do_GET(self):
         if self.authorized():
+            if self.path == '/panel':return self.reply(200,self.panel_state())
             self.reply(200, self.server.controller.status()) if self.path == '/capture' else self.reply(404, {})
     def do_POST(self):
         if not self.authorized(): return
+        if self.path in ('/panel/chat','/panel/timeline'):
+            if not self.panel_state().get('active'):return self.reply(409,{'error':'Ouvre le companion avec Rakuten.'})
+            request={'id':uuid.uuid4().hex,'mode':self.path.rsplit('/',1)[1]}
+            temporary=Path('/tmp/tvlens-panel-layout-request.'+request['id']+'.tmp')
+            try:
+                temporary.write_text(json.dumps(request))
+                temporary.replace(Path('/tmp/tvlens-panel-layout-request.json'))
+            except OSError:
+                return self.reply(500,{'error':'Impossible de changer la disposition.'})
+            finally:
+                temporary.unlink(missing_ok=True)
+            return self.reply(200,request)
         # No request body, URL, PID, shell argument or filename can influence the command.
         if self.path not in ('/capture/start', '/capture/stop'): return self.reply(404, {})
         try:

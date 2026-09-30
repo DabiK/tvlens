@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import patch
 import fcntl
 import json
 from pathlib import Path
@@ -14,6 +16,27 @@ from controller import CaptureController, DeviceServer
 from transport import Transport, SessionChanged
 
 class ControlTests(unittest.TestCase):
+ def test_concurrent_layout_requests_publish_complete_authenticated_messages(self):
+  with tempfile.TemporaryDirectory() as temp:
+   root=Path(temp)
+   (root/'tvlens-panel-layout-state.json').write_text('{"active":true,"mode":"chat"}')
+   controller=CaptureController(root/'config',root/'report')
+   server=DeviceServer(('127.0.0.1',0),controller,'x'*64)
+   thread=threading.Thread(target=server.serve_forever);thread.start()
+   url='http://127.0.0.1:'+str(server.server_port)
+   def request(index):
+    mode='chat' if index%2 else 'timeline'
+    req=urllib.request.Request(url+'/panel/'+mode,method='POST',headers={'Authorization':'Bearer '+'x'*64})
+    with urllib.request.urlopen(req,timeout=5) as r:return json.load(r)
+   try:
+    with patch('controller.Path',side_effect=lambda value:root/Path(value).name):
+     with ThreadPoolExecutor(max_workers=8) as pool:responses=list(pool.map(request,range(24)))
+    published=json.loads((root/'tvlens-panel-layout-request.json').read_text())
+    self.assertIn(published,responses)
+    self.assertEqual(len({r['id'] for r in responses}),24)
+    self.assertFalse(list(root.glob('*.tmp')))
+   finally:server.shutdown();server.server_close();thread.join()
+
  def test_authenticated_idempotent_start_stop(self):
   with tempfile.TemporaryDirectory() as temp:
    controller=CaptureController(Path(temp)/'config',Path(temp)/'report',

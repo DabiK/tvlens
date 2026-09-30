@@ -1,0 +1,219 @@
+#timeline-panel {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 33.333333%;
+  padding: 18px 36px 12px;
+  background: #101b24;
+  border-top: 2px solid #aac8b4;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.timeline-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.eyebrow {
+  font-size: 13px;
+  color: #bfe9d0;
+  letter-spacing: 3px;
+}
+h1 {
+  font-size: 26px;
+  font-weight: 500;
+  margin: 3px 0 0;
+}
+.timeline-toolbar nav {
+  display: flex;
+  gap: 10px;
+}
+.timeline-toolbar button {
+  font-size: 18px;
+}
+#timeline-status {
+  color: #bdcbc8;
+  font-size: 17px;
+}
+#timeline-hint {
+  font-size: 15px;
+  color: #a3b5af;
+  flex-shrink: 0;
+}
+#timeline-rail {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  min-height: 0;
+  padding: 5px 4px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #aac8b4 #17272b;
+  outline: none;
+}
+.timeline-card small {
+  font-size: 14px;
+  color: #9fb8ac;
+}
+.timeline-card[data-selected="true"] {
+  border-color: #c0f0cd;
+  background: #203a32;
+  box-shadow: inset 0 -3px #bfe9d0;
+}
+.timeline-card:focus {
+  outline: 3px solid #bfe9d0;
+  outline-offset: -3px;
+}
+.timeline-empty {
+  align-self: center;
+  color: #b6c3c5;
+  padding: 30px;
+}
+#moment-detail {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+#detail-image {
+  width: 250px;
+  object-fit: contain;
+  background: #0b151b;
+  border-radius: 8px;
+}
+.detail-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detail-body h2 {
+  font-size: 25px;
+  margin: 0;
+}
+#detail-time {
+  font-size: 16px;
+  color: #abcdbb;
+}
+#detail-scroll {
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+  padding: 3px 8px 8px 3px;
+}
+#detail-scroll:focus {
+  outline: 2px solid #bfe9d0;
+  outline-offset: -2px;
+}
+#detail-summary {
+  font-size: 21px;
+  line-height: 1.4;
+}
+#detail-limits {
+  font-size: 15px;
+  color: #b3c6ba;
+  margin-top: 8px;
+}
+#detail-transcript p {
+  font-size: 20px;
+  margin: 10px 0;
+}
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 250px;
+}
+.detail-actions button {
+  font-size: 18px;
+}
+dialog {
+  max-width: 650px;
+  background: #101b24;
+  color: #f7f3e8;
+  border: 2px solid #aac8b4;
+  border-radius: 14px;
+  padding: 30px;
+}
+dialog::backdrop {
+  background: #0008;
+}
+dialog p {
+  margin: 20px 0;
+}
+dialog button {
+  margin-right: 12px;
+}
+#end-error {
+  color: #ffd9ad;
+}
+/* Landscape filmstrip: show the image first, keep the copy readable at sofa distance. */
+.timeline-card {
+  flex: 0 0 326px;
+  height: 100%;
+  min-height: 0;
+  text-align: left;
+  overflow: hidden;
+  border: 1px solid #405951;
+  background: #17272b;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.timeline-card img {
+  width: 100%;
+  height: 112px;
+  flex: 0 0 112px;
+  max-height: none;
+  background: #0b151b;
+  border-radius: 5px;
+  object-fit: contain;
+}
+.timeline-card .card-copy {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 24px 22px 18px;
+  gap: 3px 6px;
+  width: 100%;
+}
+.timeline-card h2 {
+  margin: 0;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  grid-column: 1/3;
+  grid-row: 1;
+  font-size: 20px;
+  -webkit-line-clamp: 1;
+}
+.timeline-card p {
+  line-height: 1.3;
+  color: #d0d9d4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  grid-column: 1/3;
+  grid-row: 2;
+  font-size: 17px;
+  -webkit-line-clamp: 1;
+}
+.timeline-card small:first-child {
+  grid-column: 1;
+  grid-row: 3;
+  font-size: 13px;
+}
+.timeline-card .card-status {
+  grid-column: 2;
+  grid-row: 3;
+  font-size: 12px;
+}

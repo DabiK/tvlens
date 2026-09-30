@@ -1,3 +1,7 @@
+const {
+  sessionTimeline,
+  momentDetail,
+} = require("../core/session-timeline.cjs");
 const { randomUUID } = require("node:crypto");
 const {
   createSessionRuntime,
@@ -10,6 +14,7 @@ class HeadlessRuntime {
   constructor(options) {
     this.options = options;
     this.listeners = new Set();
+    this.ingestions = new Set();
     this.quota = new CodexQuota();
     const conversation = createConversationRuntime({
       ...options,
@@ -56,12 +61,14 @@ class HeadlessRuntime {
     }
     return {
       session,
+      timeline: sessionTimeline(session),
       chat: this.deep.snapshot(),
       captureGaps,
       quota: this.quota.snapshot(),
     };
   }
   async start() {
+    if (this.ending) await this.ending;
     if (!this.session) {
       this.session = createSessionRuntime({
         ...this.options,
@@ -86,9 +93,18 @@ class HeadlessRuntime {
     if (!this.session || input.sessionId !== this.session.id)
       throw Error("Session obsolète.");
     validateSegment(input, this.session.watch.now());
-    return this.session.watch.ingest(input);
+    if (this.ending || this.closing)
+      throw Error("Session en cours de fermeture.");
+    const work = this.session.watch.ingest(input);
+    this.ingestions.add(work);
+    try {
+      return await work;
+    } finally {
+      this.ingestions.delete(work);
+    }
   }
-  ask({ question, sessionId, anchorMs }) {
+  ask({ question, sessionId, anchorMs, moment }) {
+    if (this.ending) throw Error("Session en cours de fermeture.");
     if (!this.session || sessionId !== this.session.id)
       throw Error("Session obsolète.");
     if (
@@ -97,11 +113,39 @@ class HeadlessRuntime {
       anchorMs > this.session.watch.now() + 3000
     )
       throw Error("Ancrage invalide.");
+    const snapshot = this.session.watch.snapshot();
+    const selected = moment ? momentDetail(snapshot, moment.segmentIds || moment) : null;
     return this.deep.start(question, {
       mode: "chat",
-      anchorMs,
-      snapshot: this.session.watch.snapshot(),
+      anchorMs: selected ? selected.endMs : anchorMs,
+      ...(selected
+        ? { startMs: selected.startMs, intent: "explain-moment" }
+        : {}),
+      snapshot,
     });
+  }
+  detail({ sessionId, segmentIds, firstId, lastId }) {
+    if (!this.session || this.session.id !== sessionId)
+      throw Error("Session obsolète.");
+    return momentDetail(this.session.watch.snapshot(), segmentIds || { firstId, lastId });
+  }
+  async end() {
+    if (this.ending) return this.ending;
+    this.ending = (async () => {
+      await this.session?.pause();
+      await Promise.allSettled([...this.ingestions]);
+      this.deep.cancelAll("Session terminée.");
+      await this.agent.close?.();
+      await this.session?.close();
+      this.session = null;
+      this.deep.jobs = [];
+      this.emit();
+    })();
+    try {
+      await this.ending;
+    } finally {
+      this.ending = null;
+    }
   }
   cancel(id) {
     this.deep.cancel("Question annulée.", id);
@@ -110,6 +154,7 @@ class HeadlessRuntime {
     this.closing = true;
     clearInterval(this.timer);
     this.deep.cancelAll();
+    await Promise.allSettled([...this.ingestions]);
     await this.agent.close?.();
     await this.session?.close();
   }

@@ -10,6 +10,8 @@ const { RemoteMedia } = require("../adapters/remote-media.cjs");
 const { RemoteServer } = require("../server/http.cjs");
 const { loadConfig } = require("../adapters/config.cjs");
 const exec = promisify(execFile);
+const reportPath = process.argv.find(arg => arg.startsWith('--report='))?.slice(9) || 'docs/refactor-live-report.json';
+const requireTimeline = process.argv.includes('--require-timeline');
 
 (async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-refactor-live-"));
@@ -130,6 +132,16 @@ const exec = promisify(execFile);
       "Real local transcription required",
     );
     report.observation = observed.observation;
+    if (requireTimeline) {
+      assert.ok(observed.observation.topic, 'Perception must emit a topic');
+      const state = await request('/v1/state');
+      assert.equal(state.timeline.cards.length, 1);
+      assert.equal(state.timeline.cards[0].thumbnailId, observed.id);
+      const image = await fetch(server.url + '/v1/thumbnail/' + session.id + '/' + observed.id, {headers:{Authorization:'Bearer '+token}});
+      assert.equal(image.status, 200);
+      assert.match(image.headers.get('content-type'), /image\/jpeg/);
+      report.checks.push('Real topic generation and authenticated session thumbnail');
+    }
     report.checks.push(
       "HTTP ingest + real JPEG/audio assembly + local Whisper + Luna perception",
     );
@@ -200,7 +212,7 @@ const exec = promisify(execFile);
     await server?.close();
     await runtime?.close();
     await fs.writeFile(
-      "docs/refactor-live-report.json",
+      reportPath,
       JSON.stringify(report, null, 2) + "\n",
     );
     await fs.rm(dir, { recursive: true, force: true });
