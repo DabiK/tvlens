@@ -64,6 +64,16 @@ Sur la **LG 75QNED87T rootée de test**, YouTube continue pendant que TVLens pro
 - **Chat à droite** : question dictée via le micro du clavier LG, réponses et références temporelles.
 - **Frise en bas** : environ un tiers de l’écran, vidéo entière réduite au-dessus, cartes par sujet ou événement sur toute la session.
 
+**Une question à côté du programme**
+
+![Aperçu du compagnon LG : vidéo à gauche et conversation contextuelle à droite](screenshots/lg/chat.png)
+
+**Le fil du visionnage, directement sur la TV**
+
+![Aperçu du compagnon LG : vidéo au-dessus et frise des moments en bas](screenshots/lg/timeline.png)
+
+*Aperçus fournis pour la présentation du compagnon LG ; adresse réseau masquée sur la vue chat. Les descriptions visibles sont des observations automatiques, pas des faits vérifiés. [À propos des visuels](screenshots/lg/README.md).*
+
 Les miniatures apparaissent dès réception ; titres et résumés arrivent avec l’analyse. Tu peux remonter le passé sans perdre ta position, ouvrir le détail, afficher les paroles ou **questionner ce moment** avec son intervalle attaché au chat. Les miniatures restent pendant la session, même après expiration du média détaillé.
 
 Le companion s’ouvre avec **Rakuten** sur la télécommande configurée. La capture démarre manuellement ; **Arrêter / Reprendre** conserve le contexte. Retour ferme le panneau. Le bouton micro physique direct reste une fonction LG : la dictée TVLens passe par le clavier.

@@ -33,4 +33,6 @@ La publication GitHub ne publie ni le service VPS ni l’accès à la TV ; leur 
 
 Une première réécriture a laissé un ancien commit accessible par URL directe après le changement de visibilité. Le dépôt a été remis en privé, puis conservé en archive privée. Un dépôt neuf au même nom contient uniquement l’historique anonymisé ; son clonage a été scanné à nouveau sans résultat de secret. L’API GitHub refuse les anciens identifiants de commits. Les anciennes URL brutes ont fait l’objet d’un contrôle séparé, car le cache CDN peut servir temporairement une réponse antérieure à une modification de visibilité. Aucun identifiant ni profil VPN n’était présent dans le fichier ainsi observé.
 
+Le contrôle final du 30 septembre a confirmé une réponse HTTP 404 pour l’ancienne URL brute qui restait en cache.
+
 La détection de secrets, la protection des pushes et le signalement privé de vulnérabilités sont activés sur le nouveau dépôt. L’historique original et les rapports détaillés restent privés.
