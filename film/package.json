@@ -1,0 +1,24 @@
+{
+  "name": "tvlens-context-film",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "remotion studio src/index.ts --port=3100",
+    "check": "tsc --noEmit",
+    "render": "remotion render src/index.ts TVLens-Context out/tvlens-context.mp4",
+    "voice:plan": "node scripts/elevenlabs.mjs --dry-run",
+    "voice:voices": "node scripts/elevenlabs.mjs --list-voices",
+    "voice:generate": "node scripts/elevenlabs.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "@remotion/media": "4.0.530",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.530"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}

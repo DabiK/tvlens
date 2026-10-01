@@ -1,0 +1,101 @@
+[
+  {
+    "name": "ask",
+    "from": 98,
+    "durationInFrames": 102,
+    "text": "Tu veux vérifier ? Demande simplement.",
+    "sourceStart": 0.04,
+    "sourceEnd": 2.27,
+    "playbackRate": 1.0,
+    "duration": 2.23,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "context",
+    "from": 338,
+    "durationInFrames": 126,
+    "text": "TV Lens sait déjà de quoi tu parles.",
+    "sourceStart": 2.44,
+    "sourceEnd": 4.62,
+    "playbackRate": 1.0,
+    "duration": 2.18,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "answer",
+    "from": 486,
+    "durationInFrames": 225,
+    "text": "Il retrouve l’affirmation, cherche les sources, et te montre ce qu’elles permettent réellement de conclure.",
+    "sourceStart": 4.87,
+    "sourceEnd": 12.18,
+    "playbackRate": 1.0,
+    "duration": 7.31,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "followup",
+    "from": 849,
+    "durationInFrames": 156,
+    "text": "Et le contexte ne disparaît pas quand la vidéo avance.",
+    "sourceStart": 12.49,
+    "sourceEnd": 15.918,
+    "playbackRate": 1.0,
+    "duration": 3.428,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "memory",
+    "from": 1031,
+    "durationInFrames": 150,
+    "text": "TV Lens garde la mémoire du programme.",
+    "sourceStart": 15.918,
+    "sourceEnd": 18.15,
+    "playbackRate": 1.0,
+    "duration": 2.232,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "tv",
+    "from": 1208,
+    "durationInFrames": 120,
+    "text": "Directement sur la télévision.",
+    "sourceStart": 18.3,
+    "sourceEnd": 19.95,
+    "playbackRate": 1.0,
+    "duration": 1.65,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "mac",
+    "from": 1358,
+    "durationInFrames": 75,
+    "text": "Et sur Mac.",
+    "sourceStart": 20.07,
+    "sourceEnd": 20.785,
+    "playbackRate": 1.0,
+    "duration": 0.715,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "future",
+    "from": 1475,
+    "durationInFrames": 140,
+    "text": "Prochaine étape : tester la compréhension en local sur ASUS GX dix.",
+    "sourceStart": 20.785,
+    "sourceEnd": 25.96,
+    "playbackRate": 1.123372,
+    "duration": 4.606667,
+    "voice": "Yann · ElevenLabs website import"
+  },
+  {
+    "name": "end",
+    "from": 1623,
+    "durationInFrames": 113,
+    "text": "Tu regardes. Tu demandes. TV Lens cherche les preuves.",
+    "sourceStart": 26.1,
+    "sourceEnd": 29.67,
+    "playbackRate": 1.0,
+    "duration": 3.57,
+    "voice": "Yann · ElevenLabs website import"
+  }
+]

@@ -44,3 +44,22 @@ ssh tv-lg 'python3 /media/developer/tvlens-remote/control.py status'
 ```
 
 Disable/enable have been exercised on the actual TV. The controller verifies the exact process command before signalling it and serializes start/stop operations. Routine mapper stdout is discarded to avoid unbounded key logs; current status stays in `/tmp/tvlens-remote-state/status.json`. Startup failures go to `/tmp/tvlens-remote-start.log`. Existing SSH and VPN hooks are unchanged.
+
+## Adaptive YouTube resolution (local correction)
+
+A TV status captured on 2026-09-30 reported a 1280×720 decoded video with
+an origin-aligned 1920×1080 `sourceInput`. The previous equality check
+rejected it as a crop before launching the panel. The controller now keeps
+Luna's reported source coordinate space when its aspect ratio matches the
+decoded video, instead of requiring identical pixel dimensions. Both chat
+and timeline use that rectangle, and restoration keeps it unchanged.
+
+Offset crops, mismatched aspect ratios, invalid dimensions, foreign apps
+and untested output layouts remain rejected. This is a bounded adaptation,
+not support for arbitrary video geometry. Regression tests cover the observed
+720p/1080p mismatch and 1080p/4K variants. TV deployment and visual validation
+of this correction are still pending; no TV files were changed in this pass.
+
+### Démarrage Python sur webOS (1er octobre 2026)
+
+Un échec réel du service Rakuten a montré `PermissionError: [Errno 13] Permission denied: ''` lors du lancement du mapper. Certains environnements de boot ne renseignent pas `sys.executable`. Le hook emploie `/usr/bin/python3` explicitement ; le contrôleur et le lanceur du panneau utilisent ce chemin en repli. Le test `test_control.py` reproduit un exécutable vide. Relance du service et ouverture par Rakuten confirmées sur la TV ; reboot complet non effectué.

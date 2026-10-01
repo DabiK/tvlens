@@ -10,9 +10,15 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 **App macOS · Companion LG · Frise de session · Chat & sources · Serveur privé Tailscale**
 
-[Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+[Voir la démo vidéo](https://youtu.be/jOrcdLZsqT8) · [Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
 
 </div>
+
+## TVLens en 58 secondes
+
+[![Voir la présentation TVLens : « C’est vrai ? »](docs/images/tvlens-youtube.jpg)](https://youtu.be/jOrcdLZsqT8)
+
+**[Regarder la présentation sur YouTube](https://youtu.be/jOrcdLZsqT8)** — une question pendant le visionnage, le passage retrouvé, des sources consultables et la mémoire du programme, sur TV et Mac. Le film utilise des interfaces reconstituées et un extrait réel de débat ; la compréhension locale sur ASUS GX10 y est présentée comme une prochaine expérimentation.
 
 ![TVLens sur Mac : vidéo et conversation contextuelle](screenshots/current/direct.png)
 

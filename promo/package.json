@@ -1,0 +1,38 @@
+{
+  "name": "tvlens-promo",
+  "version": "1.0.0",
+  "description": "TVLens \u2014 teaser d\u00e9bat 34 s et pr\u00e9sentation 64 s, 1080p",
+  "repository": {},
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "@remotion/fonts": "4.0.530",
+    "@remotion/media": "4.0.530",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.530"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.530",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.39.5",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "assets": "node scripts/assets.mjs && node scripts/score.mjs",
+    "predev": "npm run assets",
+    "dev": "remotion studio",
+    "render": "npm run assets && remotion render src/index.ts TVLens out/tvlens-promo-1080p.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --concurrency=2",
+    "review": "npm run assets && remotion render src/index.ts TVLens out/review --frames=120,300,440,620,825,1010,1160,1370,1650,1830 --image-format=png --concurrency=2",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "validate": "node scripts/validate.mjs",
+    "assets:teaser": "node scripts/teaser-assets.mjs",
+    "render:teaser": "npm run assets:teaser && remotion render src/index.ts TVLens-Teaser out/tvlens-teaser-34s.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --concurrency=1",
+    "validate:teaser": "node scripts/validate.mjs --teaser"
+  }
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "ask",
+    "from": 98,
+    "durationInFrames": 102,
+    "text": "Tu veux vérifier ? Demande simplement."
+  },
+  {
+    "name": "context",
+    "from": 338,
+    "durationInFrames": 126,
+    "text": "TV Lens sait déjà de quoi tu parles."
+  },
+  {
+    "name": "answer",
+    "from": 486,
+    "durationInFrames": 225,
+    "text": "Il retrouve l’affirmation, cherche les sources, et te montre ce qu’elles permettent réellement de conclure."
+  },
+  {
+    "name": "followup",
+    "from": 849,
+    "durationInFrames": 156,
+    "text": "Et le contexte ne disparaît pas quand la vidéo avance."
+  },
+  {
+    "name": "memory",
+    "from": 1031,
+    "durationInFrames": 150,
+    "text": "TV Lens garde la mémoire du programme."
+  },
+  {
+    "name": "tv",
+    "from": 1208,
+    "durationInFrames": 120,
+    "text": "Directement sur la télévision."
+  },
+  {
+    "name": "mac",
+    "from": 1358,
+    "durationInFrames": 75,
+    "text": "Et sur Mac."
+  },
+  {
+    "name": "future",
+    "from": 1475,
+    "durationInFrames": 140,
+    "text": "Prochaine étape : tester la compréhension en local sur ASUS GX dix."
+  },
+  {
+    "name": "end",
+    "from": 1623,
+    "durationInFrames": 113,
+    "text": "Tu regardes. Tu demandes. TV Lens cherche les preuves."
+  }
+]

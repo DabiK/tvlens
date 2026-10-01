@@ -5,8 +5,8 @@
   width: 100%;
   height: 33.333333%;
   padding: 18px 36px 12px;
-  background: #101b24;
-  border-top: 2px solid #aac8b4;
+  background: var(--panel);
+  border-top: 2px solid var(--line);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -20,7 +20,7 @@
 }
 .eyebrow {
   font-size: 13px;
-  color: #bfe9d0;
+  color: var(--lime);
   letter-spacing: 3px;
 }
 h1 {
@@ -53,7 +53,7 @@ h1 {
   min-height: 0;
   padding: 5px 4px 8px;
   scrollbar-width: thin;
-  scrollbar-color: #aac8b4 #17272b;
+  scrollbar-color: var(--line) #17272b;
   outline: none;
 }
 .timeline-card small {
@@ -61,12 +61,12 @@ h1 {
   color: #9fb8ac;
 }
 .timeline-card[data-selected="true"] {
-  border-color: #c0f0cd;
+  border-color: var(--lime);
   background: #203a32;
-  box-shadow: inset 0 -3px #bfe9d0;
+  box-shadow: inset 0 -3px var(--lime);
 }
 .timeline-card:focus {
-  outline: 3px solid #bfe9d0;
+  outline: 3px solid var(--lime);
   outline-offset: -3px;
 }
 .timeline-empty {
@@ -109,7 +109,7 @@ h1 {
   padding: 3px 8px 8px 3px;
 }
 #detail-scroll:focus {
-  outline: 2px solid #bfe9d0;
+  outline: 2px solid var(--lime);
   outline-offset: -2px;
 }
 #detail-summary {
@@ -137,9 +137,9 @@ h1 {
 }
 dialog {
   max-width: 650px;
-  background: #101b24;
+  background: var(--panel);
   color: #f7f3e8;
-  border: 2px solid #aac8b4;
+  border: 2px solid var(--line);
   border-radius: 14px;
   padding: 30px;
 }

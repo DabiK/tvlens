@@ -1,0 +1,8 @@
+node_modules/
+out/
+review/
+.env.local
+.cache/
+*.swp
+*.swo
+public/audio/auditions/

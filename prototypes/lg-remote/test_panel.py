@@ -12,6 +12,25 @@ class Rectangles(unittest.TestCase):
   self.assertEqual(target['sourceInput'],v['sourceInput'])
   self.assertEqual(target['displayOutput']['width']/target['displayOutput']['height'],16/9)
   self.assertEqual(restore['displayOutput']['width'],1920)
+ def test_adaptive_resolution_keeps_reported_coordinate_space(self):
+  for decoded,reported in [((1280,720),(1920,1080)),((1920,1080),(1280,720)),((3840,2160),(1920,1080)),((1280,720),(1280,720))]:
+   with self.subTest(decoded=decoded,reported=reported):
+    v=self.source();v['width'],v['height']=decoded
+    v['sourceInput']={'x':0,'y':0,'width':reported[0],'height':reported[1]}
+    restore,target=rectangles(v)
+    self.assertEqual(restore['sourceInput'],v['sourceInput'])
+    self.assertEqual(target['sourceInput'],v['sourceInput'])
+    self.assertEqual(target['displayOutput'],{'x':0,'y':135,'width':1440,'height':810})
+    self.assertEqual(layout_target(restore,'timeline')['displayOutput'],{'x':320,'y':0,'width':1280,'height':720})
+    self.assertEqual(v['sourceInput']['width'],reported[0])
+ def test_rejects_crops_and_invalid_dimensions(self):
+  for source in [dict(x=1,y=0,width=1920,height=1080),dict(x=0,y=0,width=1440,height=1080),dict(x=0,y=0,width=0,height=1080),dict(x=0,y=0,width=-1920,height=1080),dict(x=0,y=0,width=True,height=1080),dict(x=0,y=0,width=1920,height='1080')]:
+   with self.subTest(source=source):
+    v=self.source();v['sourceInput']=source
+    with self.assertRaises(ValueError):rectangles(v)
+  for width in [0,-1,None,True,'1920']:
+   v=self.source();v['width']=width
+   with self.assertRaises(ValueError):rectangles(v)
  def test_bottom_layout_preserves_video_above_lower_third(self):
   restore,_=rectangles(self.source());target=layout_target(restore,'timeline')
   self.assertEqual(target['sourceInput'],restore['sourceInput'])

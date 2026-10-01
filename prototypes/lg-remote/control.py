@@ -28,7 +28,7 @@ def start():
     if owned_pid():print('already running');return
     STATE.mkdir(exist_ok=True)
     with open(os.devnull,'wb') as log:
-        child=subprocess.Popen([sys.executable,'-u',ENTRY,'--config',str(ROOT/'rakuten.json'),
+        child=subprocess.Popen([sys.executable or "/usr/bin/python3",'-u',ENTRY,'--config',str(ROOT/'rakuten.json'),
               '--state-dir',str(STATE),'--app-dir',str(ROOT),'--no-start-delay'],
               stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True)
     for _ in range(50):

@@ -49,13 +49,31 @@ def call(endpoint,payload):
 def video():
     return next(v for v in call('com.webos.service.videooutput/getStatus',{})['video'] if v['sink']=='MAIN')
 
+def reported_source(v):
+    """Keep Luna's source coordinate space across adaptive decoder resolutions.
+
+    A 720p decoder may still report a 1080p source rectangle. Accept only
+    positive, origin-aligned rectangles with the same aspect ratio; an
+    offset or aspect-changing crop still needs separate validation.
+    """
+    source=v.get('sourceInput')
+    if not isinstance(source,dict):raise ValueError('Missing source rectangle')
+    dimensions=[v.get('width'),v.get('height'),source.get('width'),source.get('height')]
+    if any(type(value) is not int or value<=0 for value in dimensions):
+        raise ValueError('Invalid video dimensions')
+    if source.get('x')!=0 or source.get('y')!=0:
+        raise ValueError('Cropped source not supported')
+    width,height,source_width,source_height=dimensions
+    if source_width*height!=source_height*width:
+        raise ValueError('Source aspect ratio differs from decoded video')
+    return {key:source[key] for key in ('x','y','width','height')}
+
 def rectangles(v):
     if v.get('appId')!='youtube.leanback.v4' or not v.get('connected'):
         raise ValueError('YouTube playback required')
     if v['displayOutput']!={'x':0,'y':0,'width':3840,'height':2160}:
         raise ValueError('Requires tested full-screen 4K layout')
-    source={'x':0,'y':0,'width':v['width'],'height':v['height']}
-    if v['sourceInput']!=source:raise ValueError('Cropped source not supported')
+    source=reported_source(v)
     restore={'sink':'MAIN','context':v['context'],'fullScreen':v['fullScreen'],
              'displayOutput':{'x':0,'y':0,'width':1920,'height':1080},
              'appOutput':{'x':0,'y':0,'width':1920,'height':1080},

@@ -1,0 +1,73 @@
+{
+  "composition": "TVLens-Context",
+  "durationSeconds": 58,
+  "fps": 30,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "preview": "npm run dev",
+  "exportWhenRequested": "npm run render",
+  "editorial": "UI reconstructed from screenshots, not screen recordings. Demonstration authored in Remotion; timings do not establish measured app performance. GX10 is a future experiment.",
+  "referenceScreenshots": [
+    "../screenshots/lg/chat.png",
+    "../screenshots/lg/timeline.png",
+    "../screenshots/current/direct.png",
+    "../screenshots/current/memory.png",
+    "../screenshots/current/floating-chat.png"
+  ],
+  "voice": "Yann · ElevenLabs website generation supplied by user. Complete take imported and split into 9 scene-aligned cues. Full-take normalization at -18 LUFS; GX10 line gently accelerated to fit its scene. Narration enabled.",
+  "sound": "Original instrumental stereo bed: warm sustained chords and soft plucks, target -32 LUFS, ducked under narration; quieter during source reading. Existing UI cues mixed at 0.45. Rebuild using python3 scripts/prepare-audio.py.",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=elgTG9oDiJY",
+    "publisher": "TF1 INFO",
+    "title": "Replay du débat d’Emmanuel Macron et Marine Le Pen, en intégrale",
+    "eventDate": "2022-04-20",
+    "file": "public/debate.mp4",
+    "sourceRangeSeconds": [
+      4050,
+      4180
+    ],
+    "claimAtSeconds": 4112.4,
+    "numberAtSeconds": 4113.659,
+    "openingLocalStartSeconds": 62.15,
+    "freezeLocalFrame": 66,
+    "freezeDurationFrames": 8,
+    "earlierContextSeconds": 4085.5,
+    "note": "Original voice heard in opening. Subsequent debate footage muted under narration. Reuse rights not obtained; source attribution retained."
+  },
+  "sources": [
+    {
+      "url": "https://www.insee.fr/fr/statistiques/6051733",
+      "publisher": "Insee",
+      "published": "2022-02-18",
+      "supports": "7.4% unemployment rate at Q4 2021, 9.6% at Q1 2017; active population, France excluding Mayotte; BIT definition."
+    },
+    {
+      "url": "https://blog.insee.fr/tout-demandeur-demploi-nest-pas-forcement-chomeur/",
+      "publisher": "Insee",
+      "supports": "Difference between registered jobseekers and unemployment under the BIT definition."
+    }
+  ],
+  "adaptations": [
+    "40% replaced by the actual 7.4% claim.",
+    "À nuancer replaced by Chiffre confirmé, with scope explained.",
+    "Timeline timestamps use the actual YouTube replay.",
+    "Final voiceover shortened to fit the supplied 58-second timeline."
+  ],
+  "elevenlabsDocs": [
+    "https://elevenlabs.io/docs/api-reference/text-to-speech/convert",
+    "https://elevenlabs.io/docs/api-reference/voices/search"
+  ],
+  "voiceWorkflow": {
+    "mode": "One complete narration generated in ElevenLabs website",
+    "voice": "Yann - Narrator",
+    "model": "Eleven Multilingual v2",
+    "script": "scripts/voiceover-complet.txt",
+    "expectedInput": "public/audio/imports/tvlens-voix-complete.mp3",
+    "timing": "Generate the entire script naturally. Do not attempt to match the 58-second film in the TTS app. Pauses and scene timing will be aligned after import.",
+    "reason": "Context7 official docs confirm Voice Library unavailable via API to Free users; website supports up to 2500 characters per generation on Free.",
+    "status": "Imported, aligned and enabled",
+    "sourceSha256": "f5a6762af71c3e2e2fcbb40e21b40bf981a51c5e078b117c3605b4ae649680c7"
+  }
+}

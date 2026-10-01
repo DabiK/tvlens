@@ -9,13 +9,13 @@
   <body>
     <aside id="chat-panel">
       <header>
-        <span>TVLENS</span
+        <strong class="brand" aria-label="TVLens">TV<span>Lens</span></strong
         ><button id="show-timeline" aria-label="Afficher la frise">
-          Frise ↔</button
+          Mémoire ↔</button
         ><small id="navigation-hint">Retour · fermer</small>
       </header>
-      <p id="destination">Companion · calcul distant</p>
-      <p id="connection" role="status">Connexion…</p>
+      <p id="destination" class="sr-only">Companion · calcul distant</p>
+      <div class="conversation-heading"><h1>Conversation</h1><p id="connection" role="status">Connexion…</p></div>
       <p id="coverage">Aucune capture reçue.</p>
       <section
         id="conversation"
@@ -27,12 +27,12 @@
         <span></span><button type="button" id="clear-moment">Détacher</button>
       </div>
       <form id="ask">
-        <label for="question">Ta question sur ce moment</label>
+        <label for="question">Pose ta question</label>
         <input
           id="question"
           maxlength="1000"
           autocomplete="off"
-          placeholder="Sélectionne le champ pour dicter"
+          placeholder="Un détail, un chiffre, un moment…"
         />
         <div class="actions">
           <button type="button" id="dictate">Dicter</button
@@ -45,8 +45,8 @@
       </div>
       <p id="error" role="alert"></p>
       <footer>
-        Micro du clavier LG · les images et le son sont traités sur l’hôte
-        appairé. Fermer le panneau n’arrête pas la capture.
+        Micro du clavier LG · traitement sur ton serveur.<br />
+        Fermer le panneau laisse la capture active.
       </footer>
     </aside>
     <section id="timeline-panel" hidden aria-label="Frise de la session">

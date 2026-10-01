@@ -200,6 +200,7 @@
     var node = document.createElement(tag);
     node.textContent = value;
     parent.appendChild(node);
+    return node;
   }
   function renderJob(job) {
     var serialized = JSON.stringify([
@@ -219,7 +220,7 @@
     var node = card.node,
       focused = node.contains(document.activeElement);
     node.replaceChildren();
-    text(node, "h2", job.question);
+    text(node, "h2", job.question).className = "chat-question";
     text(
       node,
       "small",
@@ -255,8 +256,8 @@
           explanation: "Explication générale",
           insufficient: "Contexte insuffisant",
         }[job.result.kind] || "Réponse",
-      );
-      text(node, "p", job.result.answer);
+      ).className = "answer-kind";
+      text(node, "p", job.result.answer).className = "chat-answer";
       (job.result.hypotheses || []).forEach(function (h) {
         text(node, "small", "Hypothèse : " + (h.text || h));
       });
@@ -276,7 +277,7 @@
         );
       });
       (job.result.sources || []).forEach(function (s) {
-        text(node, "p", (s.title || "Source") + "\n" + s.url);
+        text(node, "p", (s.title || "Source") + "\n" + s.url).className = "source-card";
       });
       (job.result.limits || []).forEach(function (v) {
         text(node, "small", v);

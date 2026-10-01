@@ -1,174 +1,67 @@
-* {
-  box-sizing: border-box;
+/* Companion presentation adapter. Palette and wordmark match the Mac app. */
+:root {
+  color-scheme: dark;
+  --ink: #f4f7f5;
+  --muted: #a5b5bc;
+  --lime: #c5ef8e;
+  --line: #ffffff24;
+  --panel: #0b2028;
+  --raised: #17323e;
 }
-html,
-body {
-  margin: 0;
-  height: 100%;
-  background: transparent;
-  color: #f7f3e8;
-  font-family: "Trebuchet MS", sans-serif;
-}
-aside {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 25%;
-  height: 100%;
-  padding: 24px;
-  background: #101b24;
-  border-left: 2px solid #aac8b4;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-header,
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-header > span {
-  letter-spacing: 3px;
-  color: #bfe9d0;
-  font-size: 24px;
-}
-p {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.4;
-}
-#coverage,
-#destination,
-footer {
-  font-size: 15px;
-  color: #b6c3c5;
-}
-#conversation {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-article {
-  margin: 0 0 20px;
-  padding: 14px;
-  border: 1px solid #38504c;
-  border-radius: 12px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-article h2 {
-  font-size: 20px;
-  margin: 0 0 10px;
-}
-article p {
-  font-size: 19px;
-  margin: 8px 0;
-}
-article small {
-  color: #abcdbb;
-  display: block;
-  font-size: 15px;
-}
-article button {
-  margin-top: 8px;
-}
-label {
-  display: block;
-  font-size: 19px;
-  margin-bottom: 10px;
-}
-input {
-  width: 100%;
-  font: inherit;
-  font-size: 22px;
-  color: #fff;
-  background: #0a121a;
-  border: 2px solid #899993;
-  border-radius: 8px;
-  padding: 14px;
-  margin-bottom: 12px;
-}
-button {
-  min-height: 48px;
-  padding: 10px 14px;
-  background: transparent;
-  border: 2px solid #899993;
-  color: inherit;
-  font: inherit;
-  font-size: 19px;
-  border-radius: 10px;
-}
-.actions button {
-  flex: 1;
-}
-button:focus,
-input:focus {
-  outline: 4px solid #bfe9d0;
-  background: #263d35;
-}
-button:disabled {
-  opacity: 0.45;
-}
-#error {
-  color: #ffd9ad;
-}
-footer {
-  line-height: 1.3;
-}
-
-header small {
-  font-size: 14px;
-  color: #b6c3c5;
-  text-align: right;
-  max-width: 240px;
-}
-#conversation:focus {
-  outline: 2px solid #aac8b4;
-  outline-offset: -2px;
-}
-#conversation[data-reading="true"]:focus {
-  outline: 3px solid #bfe9d0;
-  background: #14252c;
-}
-#ask,
-.capture-controls,
-header,
-footer {
-  flex-shrink: 0;
-}
-.capture-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-#capture-state {
-  font-size: 15px;
-  color: #b6c3c5;
-}
-
-[hidden] {
-  display: none !important;
-}
-#show-timeline {
-  font-size: 17px;
-  min-height: 42px;
-}
-header {
-  flex-wrap: wrap;
-}
-#moment-context {
-  background: #243d37;
-  padding: 8px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-#moment-context button {
-  font-size: 16px;
-  min-height: 38px;
-  padding: 5px 10px;
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: transparent; color: var(--ink); font-family: "Avenir Next", Avenir, "LG Smart UI", sans-serif; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+#chat-panel { position: absolute; right: 0; top: 0; width: 25%; height: 100%; padding: 26px 26px 18px; background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+header, .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+header { flex-wrap: wrap; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+.brand { font-size: 34px; font-weight: 800; letter-spacing: -.06em; white-space: nowrap; }
+.brand span { color: var(--lime); }
+header small { width: 100%; font-size: 15px; color: var(--muted); }
+p { margin: 0; font-size: 20px; line-height: 1.5; }
+.conversation-heading h1 { font-size: 29px; font-weight: 700; letter-spacing: -.035em; margin: 2px 0 10px; }
+#connection { color: var(--muted); font-size: 17px; }
+#connection::before { content: ""; display: inline-block; width: 7px; height: 7px; background: var(--muted); border-radius: 50%; margin: 0 9px 2px 0; }
+#coverage { font-size: 15px; color: var(--muted); padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+#conversation { flex: 1; min-height: 0; overflow: auto; padding: 8px 5px 12px; scrollbar-width: thin; scrollbar-color: #48616a transparent; border-radius: 10px; }
+#conversation:empty::before { content: "Un détail t’échappe ?\A Pose ta question sur ce que tu regardes."; white-space: pre-line; display: block; padding: 32px 10px; color: var(--muted); font-size: 22px; line-height: 1.6; }
+#conversation article { margin: 0 0 26px; padding: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-question { margin: 0 0 14px 22px; padding: 15px 17px; border-radius: 16px 16px 4px 16px; background: var(--raised); font-size: 21px; line-height: 1.45; font-weight: 500; }
+#conversation article p { margin: 14px 0; font-size: 22px; line-height: 1.6; }
+#conversation article small { display: block; font-size: 15px; line-height: 1.5; color: var(--muted); margin: 6px 0; }
+#conversation article .answer-kind { margin: 20px 0 8px; color: var(--lime); font: 700 14px/1.5 monospace; letter-spacing: .09em; text-transform: uppercase; }
+#conversation article .source-card { padding: 12px 14px; background: #112b35; border: 1px solid var(--line); border-radius: 12px; font-size: 17px; }
+#conversation article button { margin-top: 10px; }
+#ask { padding: 15px; border: 1px solid #7c9d63; border-radius: 18px; background: #102630; }
+#ask:focus-within { border-color: var(--lime); }
+label { display: block; font-size: 17px; color: var(--muted); margin-bottom: 8px; }
+input { width: 100%; font: inherit; font-size: 20px; color: var(--ink); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 8px 0 13px; margin-bottom: 10px; }
+input::placeholder { color: var(--muted); }
+button { min-height: 50px; padding: 10px 14px; background: #07192280; border: 1px solid var(--line); color: inherit; font: inherit; font-size: 19px; border-radius: 12px; }
+.actions button { flex: 1; }
+#send { background: var(--lime); color: #102020; border-color: var(--lime); font-weight: 700; }
+button:focus, input:focus { outline: 3px solid var(--lime); outline-offset: 3px; background: #243f37; }
+#send:focus { background: #e0ffb5; }
+button:disabled { opacity: .45; }
+#show-timeline { font-size: 18px; min-height: 46px; }
+#conversation:focus { outline: 2px solid #759085; outline-offset: -2px; }
+#conversation[data-reading="true"]:focus { outline: 3px solid var(--lime); background: #102a32; }
+#ask, .capture-controls, header, footer, .conversation-heading, #coverage { flex-shrink: 0; }
+.capture-controls { display: flex; flex-direction: column; gap: 7px; }
+#capture { min-height: 46px; font-size: 18px; }
+#capture-state, footer { font-size: 14px; line-height: 1.4; color: var(--muted); }
+#error { color: #f1ba9d; font-size: 17px; }
+#error:empty { display: none; }
+footer { border-top: 1px solid var(--line); padding-top: 10px; }
+#moment-context { background: #243d37; border-radius: 10px; padding: 10px; font-size: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#moment-context button { font-size: 16px; min-height: 38px; padding: 5px 10px; }
+@media (max-height: 800px) {
+  #chat-panel { padding: 16px; gap: 8px; }
+  header { padding-bottom: 10px; }
+  .brand { font-size: 28px; }
+  .conversation-heading h1 { font-size: 24px; margin-bottom: 6px; }
+  #coverage, #capture-state, footer { font-size: 12px; }
+  #ask { padding: 10px; }
+  #conversation article p, .chat-question { font-size: 18px; }
+  button { min-height: 42px; font-size: 16px; }
 }
