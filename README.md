@@ -78,7 +78,7 @@ Sur la **LG 75QNED87T rootée de test**, YouTube continue pendant que TVLens pro
 
 ![Aperçu du compagnon LG : vidéo au-dessus et frise des moments en bas](screenshots/lg/timeline.png)
 
-*Aperçus fournis pour la présentation du compagnon LG ; adresse réseau masquée sur la vue chat. Les descriptions visibles sont des observations automatiques, pas des faits vérifiés. [À propos des visuels](screenshots/lg/README.md).*
+*Captures réelles du compagnon LG prises le 2 octobre 2026 pendant un débat sur YouTube. Les descriptions visibles sont des observations automatiques, pas des faits vérifiés. [À propos des visuels](screenshots/lg/README.md).*
 
 Les miniatures apparaissent dès réception ; titres et résumés arrivent avec l’analyse. Tu peux remonter le passé sans perdre ta position, ouvrir le détail, afficher les paroles ou **questionner ce moment** avec son intervalle attaché au chat. Les miniatures restent pendant la session, même après expiration du média détaillé.
 
