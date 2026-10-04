@@ -1,6 +1,8 @@
 # TVLens sur le VPS privé Tailscale
 
 > Les adresses 100.64.0.10 (serveur) et 100.64.0.20 (TV) sont des exemples anonymisés. Utiliser les adresses réelles de son propre tailnet.
+> Relevé de déploiement, pas une garantie que le VPS suit automatiquement GitHub. Les sources sont partagées avec le Mac ; configuration privée, binaires Whisper/Codex et modèles sont installés séparément.
+
 ## Installation
 
 Hôte Ubuntu 24.04 x86_64, Node 24.13.0, 8 Go de RAM. Application clonée par HTTPS avec le compte GitHub déjà configuré : `/opt/tvlens/app`, base `7015a64`. L’ancien clone `/root/tvlens` et les autres services ne sont pas modifiés.
@@ -62,3 +64,37 @@ Les autres applications du VPS n’ont pas été redéployées. La limite mémoi
 ## Persistance vérifiée
 
 TVLens et tailscaled sont tous deux activés au démarrage et actifs. Le lien systemd vers multi-user.target est présent. TVLens démarre après tailscaled et réessaie toutes les cinq secondes sur erreur, sans plafond de tentatives, notamment si l’adresse Tailscale tarde à apparaître. Cette vérification n’a pas interrompu la session ; aucun reboot réel du VPS n’a été effectué. La reprise automatique du service ne restaure pas la session de visionnage en mémoire : redémarrer manuellement la capture depuis la TV après un reboot.
+
+## Modèles du serveur — 4 octobre 2026
+
+Le réglage privé `models.json` dans le dossier des données fixe désormais
+`codexModel`, `observationModel` et `inspectionModel` à `gpt-6-luna`.
+Le chat utilise l’effort `max`, confirmé comme disponible dans le catalogue du
+compte serveur. Le drop-in systemd `chat-reasoning.conf` définit
+`TVLENS_CHAT_REASONING_EFFORT=max`. Cette variable est lue par le point d’entrée
+serveur et transmise uniquement au client conversationnel ; vision et réexamen
+conservent `low`. Sans variable, le comportement reste `low`, notamment sur Mac.
+La limite de 60 secondes par question reste inchangée.
+
+Treize tests ciblés passent localement et sur le VPS, dont la vérification du
+champ `effort` transmis à `turn/start` et du défaut indépendant de perception.
+
+Un appel fournisseur réel sous l’utilisateur du service a confirmé l’acceptation
+de `model=gpt-6-luna`, `effort=max` et une sortie structurée valide. Deux essais de
+salutation sans aucun passage vidéo ont toutefois été remplacés par le garde-fou
+de citations (« Je n’ai pas pu relier cette réponse… »). Ils ne constituent pas
+une validation du chat conversationnel sans contexte ; ce comportement distinct
+n’a pas été modifié dans ce réglage de modèles.
+
+
+## Pipeline déployé — 4 octobre 2026
+
+L’audio et la vision ont des files distinctes ; les transcriptions deviennent interrogeables avant la fin de la description d’images. Le serveur utilise Luna pour chat, vision et réexamen ; seul le chat est configuré avec effort `max`. Whisper reste le moteur local CPU, en blocs, sans streaming.
+
+Le français est maintenant le défaut serveur, configurable depuis la sidebar TV (Français, Anglais, Auto). Les réglages modèles/langue sont privés, hors Git. Le Mac autonome partage l’implémentation mais conserve son hôte de transcription et ses réglages.
+
+- [Séparation audio/vision](split-perception-live.json) : essai réel, réponses partielles et pause/reprise ; pertes par surcharge encore possibles.
+- [Français sur neuf blocs](transcription-language-live.json) : moyenne 5,182 s de transcription pour environ 8 s de son ; neuf analyses complètes, aucune perte de capture. Hors délai de vision ; test court sans question simultanée.
+- [Streaming expérimental](audio-stream-probe-20261004.json) : 24 s audio, backend temporaire supprimé, aucun changement de production. Premier texte plus tôt mais stabilisation lente et CPU accru ; stratégie non retenue.
+
+Lors de l’audit avant publication, 52 des 54 fichiers `core/runtime/adapters/server` correspondent au dossier de travail. Le VPS part de `7015a64` avec correctifs déployés hors commit ; `adapters/config.cjs` et `adapters/clip-inspector.cjs` conservent une ancienne résolution de chemins. Les chemins explicites du déploiement restent fonctionnels. La publication Git ne redéploie pas le VPS : une mise à jour ultérieure vers une révision unique reste nécessaire, capture arrêtée et configuration privée préservée.

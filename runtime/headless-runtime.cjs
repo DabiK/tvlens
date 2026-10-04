@@ -44,6 +44,16 @@ class HeadlessRuntime {
     );
     this.timer.unref();
   }
+  async setTranscriptionLanguage(language) {
+    if (this.savingLanguage) throw Error("Réglage en cours, réessaie.");
+    this.savingLanguage = true;
+    try {
+      await this.options.transcriptionSettings.save(language);
+      this.options.config.transcriptionLanguage = language;
+      this.emit();
+      return { language };
+    } finally { this.savingLanguage = false; }
+  }
   emit() {
     for (const listener of this.listeners) listener(this.snapshot());
   }
@@ -61,6 +71,7 @@ class HeadlessRuntime {
     }
     return {
       session,
+      transcription: { language: this.options.config?.transcriptionLanguage || "fr" },
       timeline: sessionTimeline(session),
       chat: this.deep.snapshot(),
       captureGaps,

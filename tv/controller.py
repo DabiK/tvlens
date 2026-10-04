@@ -15,7 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 class CaptureController:
     def __init__(self, config, report, command=None, lock_file="/tmp/tvlens-capture.lock"):
         self.config, self.report = Path(config), Path(report)
-        self.command = command or [sys.executable, str(Path(__file__).with_name('capture.py')),
+        self.command = command or [sys.executable or "/usr/bin/python3", str(Path(__file__).with_name('capture.py')),
             '--config', str(self.config), '--seconds', '1800', '--report', str(self.report), '--parent-pid', str(os.getpid())]
         self.lock_file = lock_file
         self.start_error = None

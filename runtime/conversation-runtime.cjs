@@ -18,6 +18,7 @@ function createConversationRuntime({
       binary: codexBinary || "codex",
       authHome: config.codexAuthHome,
       model: selectedModels.codexModel,
+      reasoningEffort: config.chatReasoningEffort || "low",
       quota,
     });
   const makeTools = (signal, onProgress, scope = {}) => {

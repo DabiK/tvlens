@@ -9,13 +9,21 @@ Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la mê
 Mac Apple Silicon, Node.js 24+, Homebrew, Codex CLI installé et connecté à ton compte,
 FFmpeg (`brew install ffmpeg`). `codex login status` doit confirmer la connexion.
 
+Cloner le dépôt, puis entrer dans son répertoire :
+
+```sh
+git clone https://github.com/DabiK/tvlens.git
+cd tvlens
+```
+
 Depuis le répertoire du projet :
 
 ```sh
 npm ci
 npm run setup:speech
-npm run setup:codex
 npm start
+# Facultatif, pour les clients Codex externes uniquement :
+# npm run setup:codex
 ```
 
 `setup:speech` installe `whisper-cpp` si nécessaire et télécharge le modèle
@@ -53,6 +61,14 @@ système dans les réglages de confidentialité macOS. Relancer l'app après cha
 de permission si nécessaire. Les contenus protégés peuvent rester incapturables.
 Choisir une fenêtre vidéo pour éviter de capturer la barre flottante dans une capture
 d'écran entière.
+
+## Calcul partagé, exécution sur le Mac
+
+L’app Electron et le serveur Linux utilisent les mêmes `runtime/session-runtime.cjs`, `runtime/conversation-runtime.cjs` et domaine `core/`. La transcription s’exécute sur le Mac ; la vision et le chat utilisent Codex distant. Le Mac autonome ne transfère pas sa capture au VPS. La configuration Luna/max du serveur ne remplace pas les choix de modèles du Mac.
+
+L’analyse continue dispose de deux files bornées : une transcription, puis une description visuelle pour chaque passage. La transcription du passage suivant peut avancer pendant la vision du précédent. Le texte devient disponible avant la description complète, sous état partiel. La capture continue pendant les questions ; les files peuvent encore abandonner des tâches en surcharge, avec lacunes visibles.
+
+Sur Mac, Whisper conserve la détection automatique de langue. Le bouton Français/Anglais/Auto est actuellement dans le companion TV et configure son serveur. Une modification du code partagé exige de relancer `npm start` ou de reconstruire le package ; une ancienne `.app` n’est pas mise à jour automatiquement.
 
 ## Pause, reprise et mode flottant
 
@@ -110,7 +126,7 @@ Le dernier utilise maintenant Luna et Whisper, pas une inférence OpenRouter.
 ## Budget et tests
 
 Le compteur `.local/research-budget.json` conserve toutes les dépenses historiques,
-avec un plafond de **5 USD au total**, jamais remis à zéro. Les nouveaux appels sont
+sans plafond local, sans remise à zéro des dépenses antérieures. Les nouveaux appels sont
 uniquement des embeddings. Le coût/quotas Codex sont distincts : une valeur technique
 `cost: 0` dans un résultat de perception signifie zéro coût OpenRouter, pas que Codex
 est sans coût ni quota.

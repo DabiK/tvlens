@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-04",
+  "kind": "Real TV YouTube capture to private VPS; no synthetic provider responses",
+  "sessionElapsedSeconds": 173.72,
+  "received": 19,
+  "states": {
+    "ready": 14,
+    "skipped": 2,
+    "analyzing": 1,
+    "queued": 2
+  },
+  "metrics": {
+    "audioMs": {
+      "n": 14,
+      "meanSeconds": 11.315,
+      "minSeconds": 8.127,
+      "maxSeconds": 18.979
+    },
+    "visionMs": {
+      "n": 14,
+      "meanSeconds": 4.132,
+      "minSeconds": 3.077,
+      "maxSeconds": 6.905
+    }
+  },
+  "transcriptBeforeSummaryObservedCount": 14,
+  "capture": {
+    "sent": 19,
+    "dropped": 2,
+    "queued": 0,
+    "retries": 0,
+    "frames": 83,
+    "connection": "connected"
+  },
+  "maxObservedAnalysisLagSeconds": 40.44,
+  "partialQuestion": {
+    "status": "done",
+    "elapsedMs": 6839,
+    "citedPassageIds": [
+      "moment-7"
+    ],
+    "atSubmission": {
+      "status": "partial",
+      "audioStatus": "ready",
+      "visionStatus": "analyzing"
+    },
+    "responseDisclosedPendingVision": true
+  },
+  "tests": {
+    "localNode": 124,
+    "vpsTargetedNode": 36,
+    "lgUiSmoke": "pass",
+    "timelineSmoke": "pass",
+    "independentReview": "Astra favorable after 3 P2 fixes"
+  },
+  "limits": [
+    "Short sample; different programme and workload from baseline, not a controlled before/after benchmark",
+    "Two manual test questions occurred; panel was opened and layout changed during observation",
+    "Capture drops have no detailed reason; no causal attribution",
+    "Whisper decoding/model/language settings unchanged; audio remains slower than input",
+    "Background audio/vision concurrency bounded to one each; interactive inspection can still share transcriber",
+    "Auto and living recap synthesize ready passages only; partial exclusions now disclosed",
+    "No full TV/VPS reboot or physical remote navigation revalidation in this run",
+    "No provider USD amount returned for Codex subscription inference; no fabricated zero cost"
+  ],
+  "pauseResume": {
+    "stopConfirmed": true,
+    "sameSession": true,
+    "priorPassagesRetained": true,
+    "chatRetained": true,
+    "captureActive": true,
+    "newPassagesSent": 1,
+    "capturedAdvances": true
+  }
+}

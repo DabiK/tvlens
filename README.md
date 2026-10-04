@@ -102,12 +102,15 @@ Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentificati
 
 ## Essayer sur Mac
 
+Depuis un clone du dépôt (`git clone https://github.com/DabiK/tvlens.git`, puis `cd tvlens`) :
+
 Prérequis : **Mac Apple Silicon, Node.js 24+, Homebrew, Codex CLI connecté** et autorisations macOS pour l’écran et le son système.
 
 ```sh
 npm ci
 brew install ffmpeg
 npm run setup:speech
+# Facultatif : exposer les outils TVLens aux sessions Codex externes
 npm run setup:codex
 npm start
 ```
@@ -122,6 +125,20 @@ npm run open:mac
 La clé OpenRouter est **facultative** et sert uniquement aux embeddings texte. Sans clé, la recherche temporelle et lexicale reste disponible. Les identifiants restent hors du dépôt.
 
 → [Installation, modèles et dépannage](docs/installation.md)
+
+## Installer le companion sur une TV LG
+
+Le parcours TV est un **POC pour une LG déjà rootée et compatible**, testé avec YouTube. Il n’existe pas encore d’installateur universel ni de version dans le LG Content Store.
+
+1. **Préparer le moteur** : sur Mac, installer les dépendances ci-dessus puis lancer `npm run start:server` ; sur Linux, suivre [le guide serveur](docs/server-installation.md), qui couvre Codex, Whisper, FFmpeg et systemd.
+2. **Relier TV et hôte** : réseau privé accessible, ou Tailscale pour le VPS. L’adresse d’écoute doit être joignable depuis la TV ; le serveur reste authentifié par jeton.
+3. **Installer les composants LG** : interface `tv/app`, contrôleur/capture `tv/` et gestion du panneau/télécommande `prototypes/lg-remote`. Suivre [le parcours LG détaillé](docs/lg-installation.md) ; certaines étapes dépendent du modèle et des accès déjà configurés.
+4. **Appairer** le contrôleur et le panneau avec l’URL de l’hôte et son jeton, dans deux fichiers privés exclus de Git.
+5. **Tester sur YouTube** : ouvrir TVLens, démarrer l’analyse, choisir la langue audio, dicter via le clavier LG et envoyer une question. Arrêter puis reprendre conserve le contexte de la session.
+
+Le français est la langue audio par défaut du serveur ; le bouton **Audio** propose aussi Anglais et Auto. Le son est transcrit avec Whisper sur l’hôte, tandis que les images et transcriptions utiles sont envoyées à Codex. Le Mac autonome utilise le même cœur, avec Whisper sur le Mac : il ne dépend pas du VPS.
+
+→ [Installation LG, fichiers et validation](docs/lg-installation.md) · [Répartition du calcul](docs/architecture.md) · [État des tests](docs/validation.md)
 
 ## Architecture : changer l’adaptateur, conserver le produit
 
@@ -147,7 +164,7 @@ Le chat reçoit ses outils directement via l’App Server. Un adaptateur **MCP**
 - **114 tests Node** passent sur Mac et Linux ; **12 tests Python** et tests d’interface LG pour les contrôles, le réseau, la géométrie et la frise.
 - Essais réels avec Whisper, Luna et Codex : description, transcription, questions successives, outils temporels, pause/reprise et réexamen.
 - **TV → VPS : 24 secondes, 12 images et 3 segments reçus sans perte**, puis analyse et réponse. L’utilisateur a confirmé le panneau et la frise sur la TV.
-- Sur ce VPS partagé, les trois blocs de 8 secondes ont pris **15 à 22 secondes chacun à analyser** : le réseau fonctionne, mais l’analyse peut prendre du retard. Ce court essai ne valide pas un visionnage continu prolongé.
+- Lors du premier essai, avant séparation audio/vision, les trois blocs de 8 secondes ont pris **15 à 22 secondes chacun à analyser** : le réseau fonctionne, mais l’analyse peut prendre du retard. Ce court essai ne valide pas un visionnage continu prolongé.
 
 ```sh
 npm test

@@ -27,7 +27,7 @@ function sessionTimeline(snapshot) {
         endMs: passage.endMs,
         title: ready
           ? observation.topic || "Passage observé"
-          : "Analyse en attente",
+          : passage.status === "partial" ? "Analyse partielle" : "Analyse en attente",
         topicKey: topic,
         segmentIds: [],
         summaries: [],
@@ -45,12 +45,12 @@ function sessionTimeline(snapshot) {
     if (passage.thumbnailAvailable && !card.thumbnailId)
       card.thumbnailId = passage.id;
     if (
-      ready &&
-      observation.summary &&
+      (ready || passage.status === "partial") &&
+      (observation.summary || observation.transcript) &&
       !card.summaries.includes(observation.summary)
     )
-      card.summaries.push(observation.summary);
-    if (["queued", "analyzing"].includes(passage.status)) card.pending++;
+      card.summaries.push(observation.summary || observation.transcript);
+    if (["queued", "analyzing"].includes(passage.status) || ["queued", "analyzing"].includes(passage.visionStatus)) card.pending++;
     if (["error", "skipped", "expired"].includes(passage.status)) card.failed++;
     card.mediaAvailable ||= Boolean(passage.available);
   }
@@ -59,7 +59,7 @@ function sessionTimeline(snapshot) {
     cards: cards.map(({ topicKey, summaries, statuses, ...card }) => ({
       ...card,
       summary: summaries.slice(-2).join(" ").slice(0, 900),
-      status: card.failed ? "error" : card.pending ? "pending" : "ready",
+      status: card.failed ? "error" : card.pending ? "pending" : statuses.includes("partial") ? "partial" : "ready",
       title:
         card.failed && !summaries.length ? "Passage non analysé" : card.title,
     })),
@@ -102,6 +102,10 @@ function momentDetail(snapshot, selection) {
       startMs: p.startMs,
       endMs: p.endMs,
       status: p.status,
+      audioStatus: p.audioStatus,
+      visionStatus: p.visionStatus,
+      audioError: p.audioError,
+      visionError: p.visionError,
       transcript: p.observation?.transcript || "",
       summary: p.observation?.summary || "",
       uncertainty: p.observation?.uncertainty || "",

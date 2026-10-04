@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+skinparam backgroundColor #F5F7F8
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam ArrowColor #426875
+skinparam defaultFontName Arial
+title TVLens — actuel : la capture dépasse le débit d’analyse
+left to right direction
+component "TV LG / YouTube\n4 images + audio / bloc de 8 s" as tv
+package "Serveur privé via Tailscale" {
+ component "Port d’ingestion\nCapture indépendante du chat" as ingest
+ database "Médias : 5 min\nMiniatures : session" as media
+ queue "File : 2 passages en attente" as queue #FFE5DB
+ component "1 analyse à la fois\nWhisper puis Codex vision\nDélai maximal : 45 s" as worker #FFE5DB
+ database "Mémoire de session\nObservation publiée à la fin" as memory
+ component "Chat Codex\nQuestions + outils + web" as chat
+ component "Passage sauté\nPas de rattrapage automatique" as skip #FFC9C9
+}
+component "Compagnon LG\nChat / frise" as ui
+cloud "Codex distant" as codex
+tv --> ingest : blocs horodatés
+ingest --> media
+ingest --> queue
+queue --> worker
+queue -down-> skip : débordement : retire le plus ancien
+media ..> worker : audio et images
+worker --> codex : après transcription
+worker --> memory : résumé + paroles
+chat --> memory : contexte
+chat ..> worker : suspend les départs pendant une question
+memory --> ui
+skip --> ui : « Passage non analysé »
+ui --> chat : question ancrée
+note bottom of worker
+ Mesuré le 04/10/2026, session ~167 s :
+ 14,3 s / analyse pour ~8 s de contenu.
+ 19 reçus : 11 prêts, 6 sautés, 2 en traitement/attente.
+ Aucun échec d’analyse, aucun retry réseau.
+ Retard maximal observé : 40 s.
+end note
+note bottom of tv
+ 1 bloc abandonné côté TV : cause non instrumentée.
+end note
+@enduml

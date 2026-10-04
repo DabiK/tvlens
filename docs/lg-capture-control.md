@@ -84,3 +84,61 @@ Les boutons **Dicter / Envoyer** sont suivis de **Démarrer / Arrêter la captur
 Depuis les actions, Haut sélectionne le chat. **OK** active alors son mode lecture ; Haut/Bas font défiler les messages. Le rafraîchissement des réponses ne fait pas sauter la position pendant cette lecture. **Retour** quitte la lecture et rend le focus à Dicter, sans fermer le panneau. Un autre Retour ferme le panneau. Depuis le champ de saisie, Retour quitte d’abord l’édition.
 
 Régressions navigateur : position et visibilité du contrôle de capture, accès depuis les deux boutons de la rangée, absence de défilement avant OK, défilement après OK, stabilité au polling, Retour vers les actions puis fermeture. Déployé sur la TV pour la prochaine ouverture du panneau ; ce nouvel agencement n’a pas nécessité de changement de la lecture YouTube.
+
+## Correctif du démarrage de capture — 2 octobre 2026
+
+Le contrôleur répondait aux lectures d’état mais renvoyait HTTP 500 sur
+`/capture/start`, tandis que le VPS était accessible. Le lancement du processus
+utilise désormais `/usr/bin/python3` lorsque `sys.executable` est vide, comme le
+contrôleur Rakuten ; le hook de démarrage utilise aussi le chemin absolu.
+
+Validation : six tests de contrôle/transport passent, dont la régression avec
+un interpréteur vide. Après déploiement et redémarrage du contrôleur seul, un
+appel réel à la route de démarrage a produit un passage envoyé au VPS en environ
+12 secondes, sans erreur ni abandon. La lecture YouTube n’a pas été commandée.
+Le clic physique et un redémarrage complet de la TV restent à revalider.
+
+
+## Publication progressive des paroles — 4 octobre 2026
+
+Le port de perception Codex propose désormais `transcribe` et `observeVisual`.
+Une seule transcription et une seule analyse visuelle de fond peuvent fonctionner
+en parallèle, avec deux passages maximum en attente dans chaque file. La vision
+reçoit les paroles du même passage ; l’audio suivant peut être traité pendant cette
+vision. Les adaptateurs n’exposant que `observe` conservent le chemin séquentiel.
+
+Les paroles deviennent immédiatement consultables dans le chat et le détail de
+la frise. Le passage garde son identifiant et ses timestamps, passe en `partial`,
+puis est enrichi par la vision. `ready` indique les deux étapes terminées. Un échec
+ou un abandon de vision ne supprime pas une transcription déjà obtenue. Les champs
+`audioStatus`, `visionStatus`, `audioMs`, `visionMs` et `transcriptPublishedMs`
+permettent de distinguer les étapes ; `contextThroughMs` ne doit pas être confondu
+avec `analyzedThroughMs`. Ces bornes ne garantissent pas une couverture sans trous.
+
+Une question bloque les nouveaux départs de vision de fond, mais laisse la
+transcription avancer. Son contexte reste figé à la question et conserve les
+limites alors observées. La fermeture annule les traitements et empêche leurs
+publications tardives. La rétention des médias reste de cinq minutes. Le résumé
+vivant et Auto ne synthétisent encore que les passages `ready` ; le résumé vivant
+signale désormais les analyses partielles écartées.
+
+Validation : 124 tests locaux, revue Astra indépendante après trois corrections,
+36 tests ciblés sur VPS, smokes navigateur panneau/frise, puis capture réelle
+YouTube → TV → VPS et question sur un passage partiel. La réponse cite le passage
+et annonce que la vision attend encore. Arrêt/reprise : même session, passages et
+conversation conservés, nouvelle capture reçue. Aucun reboot ni nouvelle validation
+physique de la télécommande. Voir le [rapport live](split-perception-live.json),
+qui conserve les abandons et les limites de comparaison. Whisper reste inchangé :
+sa moyenne observée de 11,315 s pour des blocs d’environ 8 s reste un goulot.
+
+### Langue de transcription dans la sidebar
+
+Sous le contrôle de capture, le bouton **Audio · Français** change la langue avec OK : Français → Anglais → Détection automatique. Haut revient au contrôle de capture ; Retour ferme le panneau comme auparavant. Le réglage est enregistré sur le serveur personnel (`transcription.json`) et conservé après redémarrage. Le serveur utilise le français par défaut ; le comportement du Mac reste inchangé.
+
+Le réglage concerne les prochaines transcriptions, y compris les réexamens. Un appel Whisper déjà commencé termine dans sa langue initiale ; les textes déjà obtenus et les réexamens en cache ne sont pas automatiquement recalculés. Le cache de transcription distingue audio et langue. La détection automatique reste utile pour les programmes multilingues mais ajoute du travail. Un mauvais choix de langue peut dégrader les paroles reconnues.
+
+La TV utilise la route authentifiée `POST /v1/settings/transcription` avec `{ "language": "fr" }` (`en` et `auto` également acceptés). La langue effective est exposée dans `GET /v1/state`, indépendamment de la présence d’une session. La composition serveur transmet ce réglage à l’adaptateur Whisper partagé par la perception et le réexamen ; le domaine de visionnage reste indépendant de Whisper.
+
+La mesure `audioMs / (endMs - startMs)` est le facteur de traitement du passage, hors capture et attente dans la file. Un facteur inférieur à 1 signifie que la transcription finit plus vite que la durée audio ; il ne signifie pas que la réponse arrive avant la fin de capture du bloc. Aucun changement de modèle, nombre de threads ou décodage n’accompagne ce réglage.
+
+Validation réelle du 4 octobre : 9 passages YouTube d’environ 8 secondes, tous transcrits et analysés, aucun passage perdu par la capture. Transcription moyenne 5,182 s (4,833–5,682 s), facteur moyen 0,644, maximum 0,708. Voir [mesures détaillées](transcription-language-live.json). Test court sans question simultanée ; pas de comparaison auto/fr sur les mêmes extraits ni de notation mot à mot. Les 127 tests Node et les deux smoke tests UI passent ; le changement via l’API authentifiée et le rendu sur la TV sont vérifiés. Navigation physique à la télécommande à confirmer par l’utilisateur. Capture de test arrêtée, contexte conservé.

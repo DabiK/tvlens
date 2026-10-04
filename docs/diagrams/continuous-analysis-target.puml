@@ -1,0 +1,50 @@
+@startuml
+!theme plain
+skinparam backgroundColor #F5F7F8
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam ArrowColor #426875
+skinparam defaultFontName Arial
+title TVLens — cible proposée, à implémenter et mesurer
+left to right direction
+component "TV LG / YouTube\nCapture indépendante, blocs horodatés" as tv
+package "Cœur portable : ports interchangeables" {
+ component "Ingestion + rétention bornée" as ingest
+ database "Médias : 5 min\nMiniatures : session" as media
+ component "Ordonnanceur borné\nPriorité aux questions\nFusion des tâches visuelles en retard" as scheduler
+ component "Port transcription\nFile audio indépendante" as audio #DDF1E0
+ component "Port vision\nFenêtres regroupées, images bornées\nChangements + couverture minimale" as vision #DDF1E0
+ database "Mémoire incrémentale\nParoles puis description\nProvenance, intervalles, états séparés" as memory
+ component "Port chat + réexamen\nRéponse rapide puis compléments\nFile manuelle, 60 s / question" as chat
+ component "Mesures par étape\nAttente, durée, trous, coût connu" as metrics
+}
+component "Whisper local\nHôte de calcul" as whisper
+cloud "Codex distant\nVision / chat / outils web" as codex
+component "Compagnon LG\nChat + frise\nPartiel / en attente / échec explicites" as ui
+tv --> ingest
+ingest --> media
+ingest --> scheduler
+scheduler --> audio : conserver la couverture des paroles
+scheduler --> vision : réduire le travail, pas effacer les intervalles
+audio --> whisper
+vision --> codex
+audio --> memory : publier les paroles dès disponibilité
+vision --> memory : enrichir les intervalles correspondants
+memory --> chat
+media ..> chat : réexamen ciblé si nécessaire
+chat --> codex
+chat --> ui : observation / hypothèse / sources
+memory --> ui : résultats progressifs
+ui --> chat : question ancrée à l’envoi
+scheduler ..> metrics
+note bottom of scheduler
+ Concurrence limitée et équité à valider sur le VPS.
+ Si surcharge durable : lacune explicite, pas de promesse sans perte.
+ Rattrapage possible seulement avant expiration des médias.
+end note
+note bottom of memory
+ Fusion chronologique déterministe, pas d’invention entre les images.
+ OpenRouter reste réservé aux embeddings textuels (hors chemin montré).
+ Embeddings multimodaux : roadmap uniquement.
+end note
+@enduml

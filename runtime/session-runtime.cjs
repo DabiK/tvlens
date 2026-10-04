@@ -62,6 +62,7 @@ function createSessionRuntime({
   search = new MomentSearch({ index });
   const transcriber = new LocalTranscriber({
     binary: config.whisperBinary,
+    getLanguage: () => config.transcriptionLanguage || "auto",
     model:
       config.whisperModel ||
       path.join(
@@ -186,7 +187,7 @@ function createSessionRuntime({
     },
     async close() {
       watch.asking = true;
-      await watch.stop();
+      await watch.close();
       await thumbnails.clear();
       await Promise.allSettled([
         perception.close?.(),

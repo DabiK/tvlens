@@ -109,6 +109,8 @@ class RemoteServer {
       }
       const raw = Buffer.concat(chunks),
         body = JSON.parse(raw.toString());
+      if (req.url === "/v1/settings/transcription")
+        return send(200, await this.runtime.setTranscriptionLanguage(body.language));
       if (req.url === "/v1/session/start")
         return send(200, await this.runtime.start());
       if (req.url === "/v1/session/pause") {

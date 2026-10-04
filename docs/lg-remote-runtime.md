@@ -1,5 +1,7 @@
 # Companion LG → Mac : premier branchement réel
 
+> Historique du premier branchement. Pour une installation actuelle, suivre [le guide LG](lg-installation.md) et [le guide serveur](server-installation.md). Les hypothèses VPS non validées et versions de package ci-dessous correspondent à cette étape ancienne.
+
 **État actuel :** le [companion avec frise](lg-timeline.md) et le [moteur sur VPS privé](vps-deployment.md) sont désormais livrés et confirmés sur la TV. Ce document conserve les détails de son étape d’implémentation.
 
 **Mise à jour suivante :** [contrôle depuis le panneau et reprise réseau](lg-capture-control.md). Les restrictions CLI/retry ci-dessous décrivent le premier essai et sont désormais dépassées par cet incrément.

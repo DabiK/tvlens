@@ -45,3 +45,8 @@ L’index reste un fichier `embeddings.json` par session. Pas d’indexation aut
 - Première exécution du smoke Electron : délai dépassé lors de la relecture depuis une citation du résumé (`readyState >= 2`, ligne 122 avant instrumentation). Échec conservé ; instrumentation de diagnostic ajoutée, puis nouvelle exécution réussie (14 segments, audio WAV, relecture WebM, chat et vérification simulés). La cause de ce premier délai n’est pas établie : aucune correction de relecture n’est revendiquée.
 
 Ce refactor conserve les limites précédentes : cinq minutes de médias détaillés, pas de restauration complète du fil après fermeture, facturation Codex non mesurée par les adaptateurs, pas de preuve de robustesse sur plusieurs heures. L’indexation proactive et une politique de récupération plus systématique restent des évolutions fonctionnelles séparées.
+
+
+## Complément — analyse continue, 4 octobre 2026
+
+Les compositions partagées du Mac et du serveur utilisent désormais les files audio/vision de `WatchSession`. Le texte est publié en état partiel avant la description visuelle ; l’audio du passage suivant peut être traité pendant la vision du précédent. Ce changement ne déplace pas le calcul Mac vers le VPS et n’ajoute aucun serveur MCP au chemin de perception. Voir [architecture actuelle](architecture.md) et [validation](validation.md).

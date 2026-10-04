@@ -1,4 +1,4 @@
-const { passageText } = require('./passage-text.cjs');
+const { passageText, hasUsableObservation } = require('./passage-text.cjs');
 // A capability scoped to one question and one immutable observed prefix.
 class VideoTools {
   constructor({ snapshot, search, inspector, media, signal, onProgress = () => {}, now = Date.now }) {
@@ -9,7 +9,7 @@ class VideoTools {
     this.toolMetrics = []; this.startMs = 0; this.memoryEvidence = []; this.transcriptEvidence = []; this.calls = 0; this.inspections = 0; this.busy = false; this.observations = []; this.hypotheses = []; this.limits = [];
   }
   remember(segments) {
-    const evidence=segments.filter(s=>passageText(s).trim()&&(!s.status||s.status==='ready')).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,text:passageText(s),precision:'automatic-summary',available:Boolean(s.available)}));
+    const evidence=segments.filter(hasUsableObservation).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,text:passageText(s),precision:s.status==='partial'?'partial-observation':'automatic-summary',audioStatus:s.audioStatus,visionStatus:s.visionStatus,audioError:s.audioError,visionError:s.visionError,available:Boolean(s.available)}));
     for(const item of evidence)if(!this.memoryEvidence.some(e=>e.id===item.id))this.memoryEvidence.push(item);
     return evidence;
   }
@@ -20,7 +20,7 @@ class VideoTools {
     return this;
   }
   context({intent}={}) {
-    const usable=this.segments.filter(s=>passageText(s).trim()&&(!s.status||s.status==='ready'));
+    const usable=this.segments.filter(hasUsableObservation);
     const limit=intent==='recap'?120:6;
     // A checkpoint or an excluded boundary segment can leave an unobserved interval.
     // Ignore recorder timestamp jitter, but never imply continuous coverage across a real hole.
@@ -32,9 +32,9 @@ class VideoTools {
     if(this.anchorMs-coveredThrough>250)coverageGaps.push({startMs:coveredThrough,endMs:this.anchorMs});
     return {sessionId:this.sessionId,startMs:this.startMs,anchorMs:this.anchorMs,intent,
       coverageGaps,uncoveredMs:coverageGaps.reduce((sum,gap)=>sum+gap.endMs-gap.startMs,0),
-      capturedThroughMs:this.segments.at(-1)?.endMs||0,analyzedThroughMs:usable.at(-1)?.endMs||0,
-      unanalyzedTailMs:Math.max(0,this.anchorMs-(usable.at(-1)?.endMs??this.startMs)),
-      passages:this.remember(usable.slice(-limit)),omittedCount:Math.max(0,usable.length-limit),pendingCount:this.segments.filter(s=>['queued','analyzing'].includes(s.status)).length,
+      capturedThroughMs:this.segments.at(-1)?.endMs||0,analyzedThroughMs:this.segments.filter(s=>s.status==='ready').at(-1)?.endMs||0,contextThroughMs:usable.at(-1)?.endMs||0,
+      unanalyzedTailMs:Math.max(0,this.anchorMs-(this.segments.filter(s=>s.status==='ready').at(-1)?.endMs??this.startMs)),
+      passages:this.remember(usable.slice(-limit)),omittedCount:Math.max(0,usable.length-limit),pendingCount:this.segments.filter(s=>['queued','analyzing'].includes(s.status)||['queued','analyzing'].includes(s.visionStatus)).length,partialCount:this.segments.filter(s=>s.status==='partial').length,
       failedCount:this.segments.filter(s=>['error','skipped','expired'].includes(s.status)).length,
       precision:'Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes.'};
   }
@@ -59,8 +59,8 @@ class VideoTools {
     if (name === 'get_transcript') {
       if (endMs-startMs > 60000) throw new Error('Transcription limitée à 60 secondes par appel.');
       this.remember(segments);
-      this.transcriptEvidence.push(...segments.filter(s=>s.observation?.transcript||s.summary||s.observation?.summary).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs})));
-      return { passages:segments.map(s => ({ id:s.id,startMs:s.startMs,endMs:s.endMs, transcript:s.observation?.transcript || '', summary:s.summary || s.observation?.summary || '', precision:'segment', available:Boolean(s.available) })) };
+      this.transcriptEvidence.push(...segments.filter(hasUsableObservation).filter(s=>s.observation?.transcript||s.summary||s.observation?.summary).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs})));
+      return { passages:segments.map(s => ({ id:s.id,startMs:s.startMs,endMs:s.endMs, transcript:s.observation?.transcript || '', summary:s.summary || s.observation?.summary || '', precision:'segment', audioStatus:s.audioStatus, visionStatus:s.visionStatus, available:Boolean(s.available) })) };
     }
     if (name !== 'inspect_clip') throw new Error('Outil inconnu.');
     if (endMs-startMs > 20000 || segments.length > 4) throw new Error('Réexamen limité à 20 secondes et quatre segments.');

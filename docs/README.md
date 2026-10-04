@@ -7,6 +7,7 @@
 | [Présentation du projet](../README.md) | Expérience, fonctionnalités Mac/TV, état livré et objectif GX10 |
 | [Installation Mac](installation.md) | Prérequis, configuration, autorisations, modèles et dépannage |
 | [Interface](interface.md) | Direct, Mémoire, mode flottant et companion LG |
+| [Installation LG](lg-installation.md) | Parcours complet TV → Mac/VPS, composants, appairage et limites |
 | [Frise LG](lg-timeline.md) | Navigation télécommande, sujets, miniatures, détail et questions attachées |
 | [Capture LG](lg-capture-control.md) | Démarrage manuel, pause/reprise, tampon et incidents réseau |
 | [Installer son serveur](server-installation.md) | Configuration portable Linux, outils, systemd et appairage |

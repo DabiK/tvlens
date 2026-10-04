@@ -21,7 +21,7 @@ Deux adaptateurs alimentent le même domaine. Sur LG, `tv/capture.py` envoie qua
 
 1. `RollingRecorder` produit un premier segment de 2 secondes, puis des segments de 8 secondes : clip WebM, frames JPEG horodatées et audio WAV. `checkpoint` permet de terminer le segment à l'instant d'une action ciblée.
 2. Le processus principal valide les entrées IPC et les transmet à `WatchSession`. `LocalSessionStore` conserve les médias et sérialise les archives.
-3. `CodexPerception` décrit les images ; `LocalTranscriber` transcrit l'audio avec Whisper sur l’hôte de calcul (Mac ou VPS). Les images et le texte sont envoyés à Codex, pas le WAV brut.
+3. `WatchSession` orchestre deux files FIFO bornées (un travail actif et deux en attente chacune). `LocalTranscriber` transcrit d’abord l’audio du passage sur l’hôte Mac ou VPS et publie le texte immédiatement. `CodexPerception.observeVisual` reçoit ensuite les images et ce texte pour le même intervalle. L’audio du passage suivant peut avancer pendant cette vision. Codex reçoit images et transcription, pas le WAV brut. Les adaptateurs historiques `observe` restent compatibles.
 4. `DeepAsk` ancre chaque question à l'envoi, gère la file FIFO, la progression réelle, l'annulation ciblée et le délai de 60 secondes hors attente.
 5. `CodexSessionAgent` gère la conversation et les preuves externes ; `CodexSessionClient` garde le transport App Server et le fil par session. Les outils dynamiques consultent `VideoTools`. L’adaptateur MCP expose les mêmes contrats à des clients externes ; son pont est lancé par Electron, pas par le serveur TV.
 6. Les résultats comprennent des citations validées. La relecture utilise les fichiers locaux avec prise en charge des plages d'octets ; les sources externes passent par les contrôles de liens.
@@ -78,8 +78,17 @@ Les chemins LG → Mac et LG → VPS utilisent la même ingestion HTTP authentif
 
 `core/session-timeline.cjs` projette les passages en cartes contiguës par sujet. `SessionThumbnails` conserve des JPEG réduits pendant la session indépendamment de la rétention brute ; ils sont supprimés à sa fin. Les questions attachées à une carte gardent leurs bornes malgré de nouvelles captures.
 
-Le serveur Linux exécute `server/main.cjs` sans Electron, sous utilisateur dédié et systemd. Il écoute exclusivement sur l’adresse Tailscale du VPS. Les fournisseurs IA restent distants ; Tailscale protège le transport TV/hôte, pas une promesse d’inférence locale. Sur les premiers blocs TV, le VPS prend 15–22 s par tranche de 8 s : la tenue continue reste à optimiser et mesurer.
+Le serveur Linux exécute `server/main.cjs` sans Electron, sous utilisateur dédié et systemd. Il écoute exclusivement sur l’adresse Tailscale du VPS. Les fournisseurs IA restent distants ; Tailscale protège le transport TV/hôte, pas une promesse d’inférence locale. Les premiers essais séquentiels prenaient 15–22 s par tranche de 8 s. Après séparation et langue française, un essai court de neuf passages mesure 5,18 s de transcription moyenne pour environ 8 s de son, hors vision et attente. Cela ne valide pas un débit soutenu sur une longue session ; voir [validation](validation.md).
 
 La parité d’interface n’est pas complète : marque-pages durables, interface Auto, recherche dédiée et relecture restent côté Mac. Les outils de recherche du chat TV utilisent le runtime commun. La session active n’est pas migrée entre les hôtes et ne survit pas à leur redémarrage.
 
 Voir [runtime LG](lg-remote-runtime.md), [frise](lg-timeline.md), [déploiement VPS](vps-deployment.md) et [Tailscale](lg-tailscale.md). L’inférence GX10, le moteur embarqué TV et les embeddings multimodaux restent à explorer.
+
+
+## État partiel et configuration audio
+
+`audioStatus` et `visionStatus` distinguent les étapes ; `partial` expose une preuve réellement disponible sans inventer les éléments manquants. Les outils de contexte et la frise acceptent ces preuves partielles. `LivingRecap` et Auto attendent encore les observations complètes ; le récapitulatif signale les passages partiels exclus. Une question conserve son ancrage et son snapshot : un résultat tardif n’est pas injecté rétroactivement dans une question déjà partie.
+
+La transcription continue pendant les questions manuelles ; le démarrage des tâches visuelles de fond attend leur fin. `audioMs`, `visionMs`, `contextThroughMs` et `analyzedThroughMs` distinguent les mesures internes. L’interface affiche capture et analyse, sans prétendre que tous les indicateurs internes sont exposés séparément. La fermeture annule les travaux ; les appels interactifs de réexamen peuvent encore partager le transcripteur avec le fond.
+
+`TranscriptionSettings` persiste la langue du serveur (français par défaut). Le port de transcription reçoit son choix via la composition ; les appels en cours gardent leur langue, et le cache distingue langue + audio. Les observations et réexamens déjà mis en cache ne sont pas recalculés au changement. Le streaming audio n’est pas activé : [essai isolé et limites](audio-stream-probe-20261004.json).

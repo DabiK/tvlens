@@ -227,3 +227,20 @@ test("cancelled indexing does not cache a late embedding or continue to the next
   assert.equal(calls, 1);
   assert.equal(writes, 0);
 });
+
+
+test("chat reasoning effort is configurable without changing perception default", async () => {
+  const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
+  const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+  const runtime = createConversationRuntime({selectedModels:{codexModel:'gpt-6-luna'}, config:{chatReasoningEffort:'max'}});
+  assert.equal(runtime.agent.client.reasoningEffort, 'max');
+  for (const [options, expected] of [[{reasoningEffort:'max'}, 'max'], [{}, 'low']]) {
+    const fixture = rpcFixture(async () => ({summary:'OK'}));
+    const client = new CodexSessionClient({model:'gpt-6-luna',...options,rpcFactory:fixture.rpcFactory});
+    try {
+      await client.answer({sessionId:'effort',instructions:'Test',signal:AbortSignal.timeout(2000)});
+      const request=fixture.requests.find(r=>r.method==='turn/start').params;
+      assert.equal(request.model,'gpt-6-luna'); assert.equal(request.effort,expected);
+    } finally {await client.close();}
+  }
+});

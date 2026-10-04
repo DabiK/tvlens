@@ -61,7 +61,7 @@ Le premier rattachement nécessite d’ouvrir le lien retourné dans le navigate
 - Avec CyberGhost Japon, après accord utilisateur et minuterie de secours de 120 s : état CONNECTED, Internet via tvlens0, sortie Cloudflare JP, DNS 10.0.0.243 via tvlens0, Mac via eth0, VPS via tailscale0/table 52. ICMP VPS reçu (265 ms), ping Tailscale direct IPv4 (499 ms). Ces valeurs sont des échantillons, pas un benchmark.
 - Après arrêt CyberGhost : sortie FR, DNS webOS restauré, ICMP VPS reçu (8 ms), SSH local toujours accessible. Minuterie désarmée.
 - Arrêt propre du daemon : règles Tailscale retirées, routage Internet inchangé. Relance via service : ICMP VPS reçu (23 ms), même adresse/appairage. Hook de démarrage appelé avec daemon actif sans créer de second lancement.
-- Aucun redémarrage complet de TV effectué. Lecture Netflix/YouTube et autres profils VPN non évalués par ces tests réseau. Le service TVLens n’est pas encore déployé sur le VPS.
+- Aucun redémarrage complet de TV effectué. Lecture Netflix/YouTube et autres profils VPN non évalués par ces tests réseau. À la date de cet essai réseau, TVLens n’était pas encore déployé ; il l’est désormais, voir [déploiement VPS](vps-deployment.md).
 
 Sources : [installation Linux officielle](https://tailscale.com/docs/install/linux), [coexistence avec les autres VPN](https://tailscale.com/docs/reference/faq/other-vpns), [précédent communautaire webOS](https://gist.github.com/mariotaku/f7228c5459fc7ad2172a2b69dd51a4eb). Le script communautaire n’a pas été exécuté : il modifie le résolveur et le démarrage, ce qui ne convient pas à cet essai.
 

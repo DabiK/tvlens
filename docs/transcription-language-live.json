@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-04",
+  "mode": "TV YouTube → VPS, French, base, 4 threads, existing CPU quota",
+  "received": 9,
+  "audioCompleted": 9,
+  "fullyAnalyzed": 9,
+  "captureDropped": 0,
+  "audioMsMean": 5182,
+  "audioMsMin": 4833,
+  "audioMsMax": 5682,
+  "processingFactorMean": 0.644,
+  "processingFactorMax": 0.708,
+  "belowOne": 9,
+  "samples": [
+    {
+      "id": "moment-1",
+      "durationMs": 8049,
+      "audioMs": 5084,
+      "visionMs": 7135
+    },
+    {
+      "id": "moment-2",
+      "durationMs": 8052,
+      "audioMs": 4847,
+      "visionMs": 5520
+    },
+    {
+      "id": "moment-3",
+      "durationMs": 8052,
+      "audioMs": 5392,
+      "visionMs": 3923
+    },
+    {
+      "id": "moment-4",
+      "durationMs": 8037,
+      "audioMs": 5245,
+      "visionMs": 4254
+    },
+    {
+      "id": "moment-5",
+      "durationMs": 8026,
+      "audioMs": 5682,
+      "visionMs": 4735
+    },
+    {
+      "id": "moment-6",
+      "durationMs": 8063,
+      "audioMs": 5193,
+      "visionMs": 4748
+    },
+    {
+      "id": "moment-7",
+      "durationMs": 8049,
+      "audioMs": 4833,
+      "visionMs": 4182
+    },
+    {
+      "id": "moment-8",
+      "durationMs": 8058,
+      "audioMs": 5506,
+      "visionMs": 7117
+    },
+    {
+      "id": "moment-9",
+      "durationMs": 8031,
+      "audioMs": 4854,
+      "visionMs": 5220
+    }
+  ],
+  "limits": [
+    "Short live run, no simultaneous manual question.",
+    "No paired auto/French comparison on identical clips.",
+    "Factor denominator is captured interval duration (~8 seconds). Capture and queue wait excluded.",
+    "Nonempty transcriptions checked, no word-level quality scoring.",
+    "Physical remote navigation pending user confirmation."
+  ]
+}

@@ -1,10 +1,22 @@
 # Validation
 
-## Préparation à la publication
+## État actuel — 4 octobre 2026
+
+- **127 tests Node**, **6 tests contrôleur/capture Python** et **10 tests télécommande/géométrie Python** passent.
+- Les deux smoke tests UI LG passent, y compris langue, capture, focus, frise et détails.
+- L’intégration Electron complète passe à la relance : observation, chat, mémoire, relecture, mode flottant et reprise. Le premier essai a échoué sur la relecture (erreur média 4) ; intermittence conservée et non présentée comme corrigée.
+- Essai **Mac réel** sur un extrait vidéo Kennedy : Whisper local + perception Codex + réponse avec citation réussis. Le sélecteur macOS est remplacé par un flux Chromium décodant la vraie vidéo ; capture native et package reconstruit non revérifiés. Le premier script utilisait un ancien bouton masqué ; corrigé dans le harnais de test, puis réussi. [Rapport sans contenu privé](mac-shared-pipeline-validation.json).
+- Essai **TV → VPS** après séparation audio/vision : [mesures et limites](split-perception-live.json), incluant réponse sur transcription partielle et pause/reprise. Les pertes en surcharge restent possibles.
+- **Français explicite** sur neuf passages réels d’environ huit secondes : neuf observations complètes, transcription moyenne 5,182 s, facteur moyen 0,644, aucune perte de capture. Test court sans question simultanée, aucune mesure mot à mot de qualité. [Rapport](transcription-language-live.json).
+- **Streaming audio non adopté** : prototype isolé sur 24 secondes, premier texte à 9 s, premiers mots stabilisés à 13,6 s, calcul CPU 3,23 fois celui des blocs du même backend. Tampon croissant, pas une implémentation complète de WhisperLiveKit. Processus temporaire arrêté, aucun changement de production. [Rapport](audio-stream-probe-20261004.json).
+
+Les mesures transcription n’incluent pas l’attente ni la vision. Les corpus et charges diffèrent entre essais : aucune accélération globale précise n’est déduite de leur comparaison. Le réglage Audio est vérifié par API et rendu sur TV ; confirmation physique de navigation encore distincte. Aucun reboot ni essai longue durée supplémentaire n’est revendiqué.
+
+## Historique — préparation à la publication
 
 114 tests Node réussis après ajout de deux régressions : résolution des exécutables via PATH/override et configuration facultative avec compteurs dans un dossier inscriptible. Les essais VPS ci-dessous restent les mesures de la version effectivement déployée ; la publication ne redéploie pas les appareils existants.
 
-## État actuel — companion LG et VPS privé, 30 septembre 2026
+## Historique — companion LG et VPS privé, 30 septembre 2026
 
 | Périmètre | Résultat et portée |
 | --- | --- |

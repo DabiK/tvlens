@@ -36,11 +36,31 @@ class CodexPerception {
       instructions,
     });
   }
-  async observe(segment) {
-    const signal = AbortSignal.timeout(45000);
+  async transcribe(segment) {
     const started = Date.now();
+    const signal = segment.signal ? AbortSignal.any([segment.signal, AbortSignal.timeout(45000)]) : AbortSignal.timeout(45000);
     segment.onProgress?.("Transcription locale…");
     const audio = await this.transcriber.transcribe(segment.audio, signal);
+    return {
+      observation: {
+        transcript: audio.text,
+        audio: audio.text ? "Paroles transcrites localement." : "Paroles indisponibles.",
+        uncertainty: audio.limits.filter(Boolean).join(" "),
+      },
+      cost: 0,
+      metrics: { audioCacheHit: Boolean(audio.cacheHit) },
+      elapsedMs: Date.now() - started,
+    };
+  }
+  async observe(segment) {
+    const audio = await this.transcribe(segment);
+    const visual = await this.observeVisual({ ...segment, observation: audio.observation });
+    return { ...visual, metrics: { ...audio.metrics, ...visual.metrics }, elapsedMs: audio.elapsedMs + visual.elapsedMs };
+  }
+  async observeVisual(segment) {
+    const signal = segment.signal ? AbortSignal.any([segment.signal, AbortSignal.timeout(45000)]) : AbortSignal.timeout(45000);
+    const started = Date.now();
+    const audio = { text: segment.observation?.transcript || "", limits: [segment.observation?.uncertainty || ""] };
     segment.onProgress?.("Description des images…");
     const candidates = segment.frames.slice(0, 6);
     const frames =
@@ -85,7 +105,6 @@ class CodexPerception {
       },
       cost: 0,
       metrics: {
-        audioCacheHit: Boolean(audio.cacheHit),
         framesSent: frames.length,
         lightweight: Boolean(segment.lightweight),
         providerUsd: null,

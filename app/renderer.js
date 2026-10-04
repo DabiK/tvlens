@@ -149,7 +149,7 @@ function renderState(state) {
   const gaps = state.segments.filter(s => ['error', 'skipped', 'expired'].includes(s.status)).length;
   $('memory-status').textContent = `${available.length} passage${available.length > 1 ? 's' : ''} récent${available.length > 1 ? 's' : ''} · ${analyzed} analysé${analyzed > 1 ? 's' : ''}${state.pending ? ` · ${state.pending} en attente` : ''}${gaps ? ` · ${gaps} sans analyse` : ''} · Mémoire vidéo de 5 min, résumés conservés pour la session`;
   if (state.lastError) notice(state.lastError);
-  const labels = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Média expiré' };
+  const labels = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Média expiré' };
   // Ingest completion can arrive before its state event: absence is not expiration.
   for (const segment of state.history || []) momentPreviews.delete(segment.id);
   const moments = state.segments.slice().reverse().map(segment => {
@@ -161,7 +161,7 @@ function renderState(state) {
     const button = el('button', 'moment-time', formatTime(segment.startMs));
     button.disabled = !segment.available; button.title = 'Revoir ce passage'; button.onclick = () => replay(segment.id);
     const detail = el('div');
-    detail.append(el('p', '', segment.observation?.summary || labels[segment.status]));
+    detail.append(el('p', '', segment.observation?.summary || segment.observation?.transcript || labels[segment.status]));
     detail.append(el('small', segment.status === 'error' ? 'error' : '', `${formatTime(segment.startMs)}–${formatTime(segment.endMs)} · ${segment.error || segment.stage || labels[segment.status]}${segment.hasAudio ? '' : ' · Sans audio'}`));
     row.append(preview, button, detail); return row;
   });

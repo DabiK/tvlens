@@ -102,3 +102,20 @@ test('source observations and busy ticks preserve a synthesis error until the ne
  recap.observe(snapshot([source('a',0,100),source('b',100,200)]));await recap.tick({busy:true});assert.equal(recap.snapshot().status,'error');assert.equal(recap.snapshot().error,'Connexion perdue');
  fail=false;now=30000;await recap.tick();assert.equal(recap.snapshot().status,'ready');assert.equal(recap.snapshot().error,null);
 });
+
+test('partial observations stay outside synthesis but expose incomplete coverage and pending vision',async()=>{
+ let calls=0;const recap=new LivingRecap({summarize:async input=>{calls++;return synthesize(input);}});
+ const partial={...source('a',0,100),status:'partial',audioStatus:'ready',visionStatus:'analyzing',observation:{transcript:'Paroles déjà disponibles'}};
+ recap.observe(snapshot([partial]));await recap.tick();
+ assert.equal(calls,0);assert.equal(recap.snapshot().sourceCount,0);
+ assert.ok(recap.snapshot().limits.some(x=>x.includes('1 passage(s) encore en analyse')));
+ assert.ok(recap.snapshot().limits.some(x=>x.includes('1 passage(s) avec une analyse partielle')));
+ for(const visionStatus of ['error','skipped','expired']){
+  recap.observe(snapshot([{...partial,visionStatus}]));await recap.tick();
+  assert.ok(recap.snapshot().limits.some(x=>x.includes('non inclus dans le résumé')));
+  assert.ok(!recap.snapshot().limits.some(x=>x.includes('encore en analyse')));assert.equal(calls,0);
+ }
+ recap.observe(snapshot([source('a',0,100,'Images et paroles') ]));await recap.tick();
+ assert.equal(calls,1);assert.equal(recap.snapshot().sourceCount,1);
+ assert.ok(!recap.snapshot().limits.some(x=>x.includes('analyse partielle')));
+});

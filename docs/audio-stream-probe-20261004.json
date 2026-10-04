@@ -1,0 +1,126 @@
+{
+  "durationSeconds": 24,
+  "model": "Whisper base multilingual",
+  "language": "fr",
+  "threads": 2,
+  "cpuQuotaPercent": 200,
+  "decoder": {
+    "bestOf": 5,
+    "beamSize": 5
+  },
+  "transport": "TV → Mac relay (PCM conversion) → VPS via SSH; backend loopback only",
+  "policy": "Initial 4 seconds, minimum 2 new seconds between sequential decodes; growing context capped at 24 seconds; exact normalized common prefix across two hypotheses. No rolling-buffer trimming implemented.",
+  "firstProvisionalSecondsFromMacStart": 9.046,
+  "firstStableSecondsFromMacStart": 13.559,
+  "lastHypothesisSecondsFromMacStart": 49.943,
+  "stableWordsAtEnd": 49,
+  "inferenceCalls": 6,
+  "streamInferenceSeconds": 45.007,
+  "streamCpuSeconds": 70.864,
+  "baselineCpuSeconds": 21.956,
+  "cpuRatio": 3.23,
+  "streamPeakMemoryMiB": 308.3,
+  "baseline": [
+    {
+      "startSeconds": 0.0,
+      "endSeconds": 8.0,
+      "processingSeconds": 4.389,
+      "simulatedAvailableAt": 12.389
+    },
+    {
+      "startSeconds": 8.0,
+      "endSeconds": 16.0,
+      "processingSeconds": 3.839,
+      "simulatedAvailableAt": 19.839
+    },
+    {
+      "startSeconds": 16.0,
+      "endSeconds": 24.0,
+      "processingSeconds": 5.111,
+      "simulatedAvailableAt": 29.111
+    }
+  ],
+  "hypotheses": [
+    {
+      "kind": "hypothesis",
+      "audioThrough": 4.009625,
+      "availableAt": 8.022,
+      "processingSeconds": 4.124,
+      "stableWords": 0,
+      "previousHypothesisWords": 0,
+      "revisedTailWords": 0,
+      "stablePrefixConflict": false,
+      "streamStillArriving": true,
+      "macElapsedSeconds": 9.046
+    },
+    {
+      "kind": "hypothesis",
+      "audioThrough": 8.105625,
+      "availableAt": 12.537,
+      "processingSeconds": 4.514,
+      "stableWords": 14,
+      "previousHypothesisWords": 14,
+      "revisedTailWords": 0,
+      "stablePrefixConflict": false,
+      "streamStillArriving": true,
+      "macElapsedSeconds": 13.559
+    },
+    {
+      "kind": "hypothesis",
+      "audioThrough": 12.6283125,
+      "availableAt": 17.822,
+      "processingSeconds": 5.283,
+      "stableWords": 30,
+      "previousHypothesisWords": 30,
+      "revisedTailWords": 0,
+      "stablePrefixConflict": false,
+      "streamStillArriving": true,
+      "macElapsedSeconds": 18.849
+    },
+    {
+      "kind": "hypothesis",
+      "audioThrough": 17.833625,
+      "availableAt": 23.536,
+      "processingSeconds": 5.711,
+      "stableWords": 33,
+      "previousHypothesisWords": 47,
+      "revisedTailWords": 14,
+      "stablePrefixConflict": false,
+      "streamStillArriving": true,
+      "macElapsedSeconds": 24.565
+    },
+    {
+      "kind": "hypothesis",
+      "audioThrough": 23.551,
+      "availableAt": 36.501,
+      "processingSeconds": 12.962,
+      "stableWords": 33,
+      "previousHypothesisWords": 64,
+      "revisedTailWords": 31,
+      "stablePrefixConflict": false,
+      "streamStillArriving": false,
+      "macElapsedSeconds": 37.529
+    },
+    {
+      "kind": "hypothesis",
+      "audioThrough": 24.0,
+      "availableAt": 48.917,
+      "processingSeconds": 12.413,
+      "stableWords": 49,
+      "previousHypothesisWords": 93,
+      "revisedTailWords": 44,
+      "stablePrefixConflict": false,
+      "streamStillArriving": false,
+      "macElapsedSeconds": 49.943
+    }
+  ],
+  "limits": [
+    "Short feasibility prototype using existing whisper.cpp server, not WhisperLiveKit nor full Whisper-Streaming implementation.",
+    "Baseline replayed sequentially after capture using identical audio and backend; availability calculated as block end plus measured inference, excluding relay.",
+    "Live arrival clock starts with first byte on VPS; macElapsedSeconds includes SSH/capture/relay startup.",
+    "Normalized agreement is stability, not factual accuracy. No human word-level reference; malformed words remain in final transcription.",
+    "Growing prefix reprocessing and exact-prefix agreement cause tail delay/stalls; not a production rolling-window evaluation.",
+    "Production Whisper uses four threads; this isolated backend uses two. No simultaneous TVLens inference.",
+    "No input audio written to disk; received 24 seconds; all processes exited zero, temporary backend stopped and remote worker deleted."
+  ]
+}

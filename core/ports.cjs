@@ -48,3 +48,12 @@ module.exports = {};
  * Index creation/reuse is separate from ranking. Runtimes currently request it
  * lazily from MomentSearch; capture never implicitly schedules embedding calls.
  */
+
+/**
+ * PerceptionPort optionally exposes transcribe(segment) and observeVisual(segment).
+ * Both return {observation,cost?,metrics?,elapsedMs?}; visual receives the current
+ * observation (including transcript) and returns an observation patch. The core
+ * serializes each lane, bounds each backlog, and passes a close cancellation signal.
+ * Legacy observe-only adapters keep the serial behavior. Partial observations
+ * retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
+ */

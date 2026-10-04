@@ -20,10 +20,12 @@ class LivingRecap {
       if(segment.status!=='ready'||!passageText(segment).trim())continue;
       this.originals.set(segment.id,{id:segment.id,startMs:segment.startMs,endMs:segment.endMs,text:passageText(segment),available:Boolean(segment.available)});
     }
-    const pending=segments.filter(s=>['queued','analyzing'].includes(s.status)).length;
+    const pending=segments.filter(s=>['queued','analyzing'].includes(s.status)||['queued','analyzing'].includes(s.visionStatus)).length;
+    const partial=segments.filter(s=>s.status==='partial').length;
     const missing=segments.filter(s=>['error','skipped','expired'].includes(s.status)).length;
     this.limits=['Résumé issu d’analyses automatiques, susceptible d’imprécisions.'];
     if(pending)this.limits.push(`${pending} passage(s) encore en analyse.`);
+    if(partial)this.limits.push(`${partial} passage(s) avec une analyse partielle, non inclus dans le résumé.`);
     if(missing)this.limits.push(`${missing} passage(s) sans analyse exploitable.`);
     const sorted=[...segments].sort((a,b)=>a.startMs-b.startMs);let through=0,holes=0;
     for(const s of sorted){if(s.startMs-through>250)holes++;through=Math.max(through,s.endMs);}

@@ -1,5 +1,7 @@
 # Rakuten → TVLens (LG prototype)
 
+> The sections below retain the prototype history. Current installation: [LG guide](../../docs/lg-installation.md). The shipped companion now includes chat, timeline and manual capture; its former test lifetime is removed. Reboot validation remains separate.
+
 The selected binding is **Rakuten TV only**. Other input events are passed through by the upstream mapper. Tested target: rooted LG 75QNED87T, webOS 25 / internal 10.3.2-33. This is a prototype integration, not a general webOS remapper.
 
 ## Provenance

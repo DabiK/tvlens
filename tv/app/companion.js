@@ -96,7 +96,9 @@
     else if (active === el("clear-moment"))
       target = key === 40 ? el("dictate") : el("conversation");
     else if (active === el("capture"))
-      target = key === 38 ? el("dictate") : el("capture");
+      target = key === 38 ? el("dictate") : el("transcription-language");
+    else if (active === el("transcription-language"))
+      target = key === 38 ? el("capture") : el("transcription-language");
     else if (active === el("dictate") || active === el("send")) {
       if (key === 40) target = el("capture");
       else if (key === 38)
@@ -113,6 +115,26 @@
     return;
   }
   var client = new window.TVLensRemoteClient(config);
+  var languageBusy = false;
+  var languages = ["fr", "en", "auto"];
+  var languageLabels = {fr: "Français", en: "Anglais", auto: "Détection automatique"};
+  function renderLanguage() {
+    var language = state && state.transcription && state.transcription.language;
+    el("transcription-language").disabled = languageBusy || !language;
+    el("transcription-language").textContent = "Audio · " + (languageLabels[language] || "Français");
+  }
+  el("transcription-language").onclick = async function () {
+    if (languageBusy || !state || !state.transcription) return;
+    languageBusy = true;
+    renderLanguage();
+    try {
+      var current = state.transcription.language;
+      var value = await client.request("/v1/settings/transcription", {language: languages[(languages.indexOf(current) + 1) % languages.length]});
+      state.transcription = value;
+      el("language-state").textContent = "Enregistré · prochaines transcriptions. OK pour changer.";
+    } catch (error) { el("language-state").textContent = error.message; }
+    finally { languageBusy = false; renderLanguage(); el("transcription-language").focus(); }
+  };
   var control = new window.TVLensRemoteClient({
     url: config.controlUrl || "http://127.0.0.1:8788",
     token: config.token,
@@ -315,6 +337,7 @@
           "Le serveur a changé de session. Les anciennes questions ne sont pas renvoyées.";
       }
       state = next;
+      renderLanguage();
       receivedAt = performance.now();
       timeline.update(state);
       var s = state.session;

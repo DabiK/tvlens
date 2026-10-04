@@ -86,9 +86,31 @@ ss -ltn 'sport = :8787'
 
 Le service lit `runtime.env` pour l’écoute et `server.env` pour les fournisseurs. Les compteurs sont enregistrés dans `TVLENS_USAGE_DIR`, sans écriture dans `/etc`. L’unité limite les ressources et l’accès disque ; ajuster les limites après mesure sur sa propre machine. Aucun proxy public ni Tailscale Funnel n’est nécessaire.
 
+## Modèles et langue audio
+
+Dans `$TVLENS_SERVER_DATA/models.json`, définir les identifiants accessibles au compte du service. Exemple de configuration du déploiement de référence :
+
+```json
+{"codexModel":"gpt-6-luna","observationModel":"gpt-6-luna","inspectionModel":"gpt-6-luna"}
+```
+
+Créer ce fichier sous l’utilisateur du service, permissions `0600`. Sans fichier, chat = modèle par défaut du compte et vision/réexamen = Luna. Redémarrer le service pour charger les modèles ; cela termine la session en mémoire.
+
+`TVLENS_CHAT_REASONING_EFFORT=max` dans `runtime.env` configure l’effort du chat si le modèle le supporte. Sans variable, l’effort vaut `low`. Ce réglage n’accélère pas nécessairement les réponses et n’est pas appliqué à la vision/réexamen. La limite de traitement d’une question reste 60 secondes, hors file.
+
+La langue audio du serveur vaut `fr` au premier démarrage. Le bouton Audio de la TV enregistre `fr`, `en` ou `auto` dans `$TVLENS_SERVER_DATA/transcription.json`. Il concerne les prochains appels Whisper ; aucun redémarrage requis. L’app Mac autonome conserve sa propre configuration et la détection automatique.
+
+Whisper s’exécute sur l’hôte ; Codex effectue l’inférence distante des images et du chat. OpenRouter est optionnel, uniquement pour les embeddings texte. Ni l’authentification Codex, ni les jetons d’appairage, ni les fichiers de données ne sont versionnés.
+
+## Mise à jour reproductible
+
+Déployer une révision Git identifiée après validation. Avant de mettre à jour, arrêter manuellement la capture, sauvegarder la configuration privée et noter `git rev-parse HEAD`. Ne pas écraser des modifications non commitées sur l’hôte. Installer les dépendances correspondant au lockfile, redémarrer le service, puis vérifier l’état et une capture réelle. Un retour à une révision précédente ne restaure pas une session en mémoire.
+
+Les changements du serveur et ceux de `tv/app` se déploient séparément. Mettre à jour le panneau en préservant `connection.js`, puis le fermer et le rouvrir. L’installation Mac packagée doit également être reconstruite séparément.
+
 ## Appairage et validation
 
-La TV doit disposer de l’adaptateur compatible et de sa propre configuration privée `{ "url": "http://ADRESSE_TAILSCALE:8787", "token": "JETON_DU_SERVEUR" }`. Le panneau et le contrôleur utilisent la même configuration ; leur format et leurs propriétaires sont détaillés dans [le runtime LG](lg-remote-runtime.md). La compatibilité est testée seulement sur la LG rootée de référence : ce guide n’automatise pas le root d’un autre téléviseur.
+Suivre [le guide d’installation LG](lg-installation.md) pour la répartition des composants. La TV doit disposer de l’adaptateur compatible et de sa propre configuration privée `{ "url": "http://ADRESSE_TAILSCALE:8787", "token": "JETON_DU_SERVEUR" }`. Le panneau et le contrôleur utilisent la même configuration ; leur format et leurs propriétaires sont détaillés dans [le runtime LG](lg-remote-runtime.md). La compatibilité est testée seulement sur la LG rootée de référence : ce guide n’automatise pas le root d’un autre téléviseur.
 
 Vérifier l’écoute sur l’unique adresse choisie, le refus 401 sans jeton, puis un passage réel et une question. Pour lancer la sonde avec un extrait Kennedy acquis séparément :
 

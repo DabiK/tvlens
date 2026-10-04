@@ -16,6 +16,15 @@ from controller import CaptureController, DeviceServer
 from transport import Transport, SessionChanged
 
 class ControlTests(unittest.TestCase):
+ def test_boot_without_python_executable_uses_absolute_interpreter(self):
+  with tempfile.TemporaryDirectory() as temp:
+   with patch('controller.sys.executable', ''):
+    controller=CaptureController(Path(temp)/'config',Path(temp)/'report',lock_file=str(Path(temp)/'lock'))
+   with patch('controller.subprocess.Popen') as launch:
+    launch.return_value.poll.return_value=None
+    self.assertTrue(controller.start()['active'])
+    self.assertEqual(launch.call_args.args[0][0],'/usr/bin/python3')
+
  def test_concurrent_layout_requests_publish_complete_authenticated_messages(self):
   with tempfile.TemporaryDirectory() as temp:
    root=Path(temp)

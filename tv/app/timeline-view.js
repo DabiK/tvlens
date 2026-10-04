@@ -242,7 +242,7 @@
           ? "◌ Analyse en cours"
           : card.status === "error"
             ? "Analyse incomplète"
-            : "Observations automatiques";
+            : card.status === "partial" ? "Analyse partielle" : "Observations automatiques";
       self.loadThumbnail(node.querySelector("img"), card.thumbnailId);
     });
     var expected = visible.map((c) => c.id).join(",");

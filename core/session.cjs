@@ -1,8 +1,12 @@
+const { hasUsableObservation } = require('./passage-text.cjs');
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
   constructor({ id, now, perception, answer, media, archive, thumbnails, onChange = () => {}, retentionMs = 300000, maxPending = 2 }) {
     Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, onChange, retentionMs, maxPending });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
+    this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
+    this.closed = false; this.controller = new AbortController();
+    this.splitPerception = typeof perception.transcribe === 'function' && typeof perception.observeVisual === 'function';
     this.sequence = 0; this.accepting = true; this.running = false; this.asking = false;
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve();
   }
@@ -33,14 +37,19 @@ class WatchSession {
         if (segment.available && segment.endMs < cutoff) {
           segment.available = false;
           this.queue = this.queue.filter(item => item !== segment);
+          this.visionQueue = this.visionQueue.filter(item => item !== segment);
+          if (segment.visionStatus === 'queued') {
+            segment.visionStatus = 'expired';
+            segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
+          }
           if (segment.status === 'queued') segment.status = 'expired';
           await this.media.remove(segment.id);
         }
       }
       // Keep summaries for the session, but no raw media beyond the rolling window.
-      while (this.segments.length && !this.segments[0].available && this.segments[0].status !== 'analyzing') {
+      while (this.segments.length && !this.segments[0].available && this.segments[0].status !== 'analyzing' && this.segments[0].audioStatus !== 'analyzing' && this.segments[0].visionStatus !== 'analyzing') {
         const item = this.segments.shift();
-        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, summary: item.observation?.summary || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable });
+        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs });
       }
       this.emit();
     });
@@ -48,29 +57,115 @@ class WatchSession {
   }
 
   async drain() {
+    if (this.closed) return;
+    if (this.splitPerception) { this.drainAudio(); this.drainVision(); return; }
     if (this.running || this.asking || !this.queue.length) return;
     this.running = true;
     const segment = this.queue.shift();
     segment.status = 'analyzing'; this.emit();
     try {
       const evidence = await this.media.read(segment.id);
+      if (this.closed) return;
       this.apiCalls++;
-      const result = await this.perception.observe({ ...segment, ...evidence, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
+      const result = await this.perception.observe({ ...segment, ...evidence, signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
+      if (this.closed) return;
       segment.analysisMs=result.elapsedMs;segment.metrics=result.metrics;segment.stage=null;
       segment.observation = result.observation;
       segment.status = 'ready';
       this.apiCost += result.cost || 0;
       this.lastError = null;
     } catch (error) {
+      if (this.closed) return;
       segment.status = 'error';
       segment.error = error.message;
       this.lastError = error.message;
     } finally {
       this.running = false;
-      await this.persist();
-      this.emit();
-      this.drain();
+      if (!this.closed) { await this.persist(); this.emit(); this.drain(); }
     }
+  }
+
+  // Each lane owns one call and a bounded FIFO of segment references, never raw media.
+  async drainAudio() {
+    if (this.closed || this.audioRunning || !this.queue.length) return;
+    this.audioRunning = true; this.running = true;
+    const segment = this.queue.shift();
+    segment.status = 'analyzing'; segment.audioStatus = 'analyzing'; this.emit();
+    try {
+      const evidence = await this.media.read(segment.id);
+      if (this.closed) return;
+      const result = await this.perception.transcribe({ ...segment, ...evidence, signal: this.controller.signal });
+      if (this.closed) return;
+      segment.observation = result.observation;
+      segment.audioStatus = 'ready'; segment.analysisMs = result.elapsedMs;
+      segment.audioMs = result.elapsedMs; segment.transcriptPublishedMs = this.now();
+      segment.metrics = result.metrics; this.apiCost += result.cost || 0;
+    } catch (error) {
+      if (this.closed) return;
+      segment.audioStatus = 'error'; segment.audioError = error.message;
+      this.lastError = error.message;
+    } finally {
+      this.audioRunning = false; this.running = this.visionRunning;
+      if (!this.closed) {
+        segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
+        if (segment.available) {
+          segment.visionStatus = 'queued'; this.visionQueue.push(segment);
+          while (this.visionQueue.length > this.maxPending) {
+            const skipped = this.visionQueue.shift();
+            skipped.visionStatus = 'skipped';
+            skipped.status = hasUsableObservation(skipped) ? 'partial' : 'skipped';
+          }
+        } else {
+          segment.visionStatus = 'expired';
+          segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
+        }
+        // Publish speech before waiting for persistence or vision.
+        this.emit(); this.drain(); await this.persist();
+      }
+    }
+  }
+
+  async drainVision() {
+    if (this.closed || this.asking || this.visionRunning || !this.visionQueue.length) return;
+    this.visionRunning = true; this.running = true;
+    const segment = this.visionQueue.shift();
+    segment.visionStatus = 'analyzing'; this.emit();
+    try {
+      const evidence = await this.media.read(segment.id);
+      if (this.closed) return;
+      this.apiCalls++;
+      const result = await this.perception.observeVisual({ ...segment, ...evidence,
+        signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
+        onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
+      if (this.closed) return;
+      segment.observation = { ...segment.observation, ...result.observation };
+      segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
+      segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
+      segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
+      segment.metrics = { ...segment.metrics, ...result.metrics };
+      this.apiCost += result.cost || 0;
+      // A completed passage recovers older failures, but cannot clear a newer
+      // audio failure that arrived while this vision call was in flight.
+      const outstanding = this.segments.slice().reverse().find(s =>
+        s.endMs >= segment.endMs && (s.audioError || s.visionError));
+      this.lastError = outstanding?.visionError || outstanding?.audioError || null;
+    } catch (error) {
+      if (this.closed) return;
+      segment.visionStatus = 'error'; segment.visionError = error.message;
+      segment.status = hasUsableObservation(segment) ? 'partial' : 'error';
+      this.lastError = error.message;
+    } finally {
+      this.visionRunning = false; this.running = this.audioRunning;
+      segment.stage = null;
+      if (!this.closed) { this.emit(); this.drain(); await this.persist(); }
+    }
+  }
+
+  async close() {
+    this.closed = true; this.accepting = false;
+    this.controller.abort(new Error('Session fermée.'));
+    this.queue = []; this.visionQueue = [];
+    await this.persist();
   }
 
   async ask(question) {
@@ -94,7 +189,7 @@ class WatchSession {
       const result = await this.answer.ask({ question: question.trim(), anchorMs, targetMs, focusIds, context, history: this.history.slice(-120), evidence, conversation: this.questions.slice(-4) });
       this.apiCost += result.cost || 0;
       const examined = new Set(evidence.map(s => s.id));
-      const known = new Map([...context.filter(s => s.status === 'ready' || examined.has(s.id)), ...this.history.filter(s => s.status === 'ready')].map(s => [s.id, s]));
+      const known = new Map([...context.filter(s => hasUsableObservation(s) || examined.has(s.id)), ...this.history.filter(hasUsableObservation)].map(s => [s.id, s]));
       const citations = [...new Set(result.citations)].filter(id => known.has(id) && (!focusIds || focusIds.includes(id))).map(id => {
         const segment = known.get(id);
         return { id, startMs: segment.startMs, endMs: segment.endMs, available: Boolean(segment.available) && this.now() - segment.endMs <= this.retentionMs };
@@ -113,16 +208,16 @@ class WatchSession {
     }
   }
 
-  async resume() { this.accepting = true; await this.persist(); this.emit(); this.drain(); }
+  async resume() { if (this.closed) throw new Error('Session fermée.'); this.accepting = true; await this.persist(); this.emit(); this.drain(); }
   async stop() { this.accepting = false; await this.persist(); this.emit(); }
   snapshot() {
     const all=[...this.history,...this.segments],capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
     return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: this.running,
-      elapsedMs: this.now(), capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: this.retentionMs, apiCalls: this.apiCalls, apiCost: this.apiCost,
-      pending: this.queue.length, lastError: this.lastError, history: this.history, questions: this.questions,
+      elapsedMs: this.now(), capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: this.retentionMs, apiCalls: this.apiCalls, apiCost: this.apiCost,
+      pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length, lastError: this.lastError, history: this.history, questions: this.questions,
       segments: this.segments.map(s => ({ ...s })) };
   }
-  emit() { this.onChange(this.snapshot()); }
+  emit() { if (!this.closed) this.onChange(this.snapshot()); }
   async persist() {
     try { await this.archive.save(this.snapshot()); }
     catch { this.lastError = 'Impossible de sauvegarder le résumé de session.'; }

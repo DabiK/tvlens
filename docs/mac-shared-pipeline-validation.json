@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-04T18:37:41.779Z",
+  "result": "PASS",
+  "checks": {
+    "audioAndVision": true,
+    "groundedAnswer": true,
+    "host": "Mac, real Whisper and Codex; Chromium capture substituted"
+  },
+  "scope": "Real 24-second Kennedy video, decoded in Chromium and captured by Electron; local Whisper, Codex vision and cited chat. OS source picker substituted. No expected answer given to models.",
+  "observedPassages": 2,
+  "failuresRetained": [
+    "Initial Electron smoke replay timed out (media error code 4). Full rerun passed without code changes; intermittent replay remains a known limitation.",
+    "Initial isolated live script used an obsolete hidden Start button and timed out. Changed harness to current Observe button; real-provider rerun passed."
+  ],
+  "otherChecks": {
+    "nodePassed": 127,
+    "pythonCapturePassed": 6,
+    "pythonRemotePassed": 10,
+    "electronSmoke": "PASS on rerun",
+    "lgUiSmoke": "PASS",
+    "lgTimelineSmoke": "PASS"
+  },
+  "limits": [
+    "No new packaged-app rebuild or native macOS picker/permission validation.",
+    "Language button physical remote confirmation remains pending.",
+    "No VPS redeployment performed by this documentation/publication pass."
+  ]
+}

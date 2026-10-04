@@ -44,10 +44,11 @@ try {
  const chat=await browser.newPage({viewport:{width:1920,height:1080}});
  await chat.addInitScript(()=>{window.TVLENS_REMOTE={url:'http://chat.test',token:'x'.repeat(64)};window.__closed=0;window.close=()=>{window.__closed++;};});
  await chat.route('http://127.0.0.1:8788/**',route=>route.fulfill({json:{active:false,stopping:false,report:{}}}));
- const snapshot={session:{id:'test',elapsedMs:10000,accepting:true,capturedThroughMs:8000,analyzedThroughMs:8000,pending:0,gaps:[],segments:[]},chat:{jobs:[]}};
+ const snapshot={transcription:{language:'fr'},session:{id:'test',elapsedMs:10000,accepting:true,capturedThroughMs:8000,analyzedThroughMs:8000,pending:0,gaps:[],segments:[]},chat:{jobs:[]}};
  let release, didSubmit;
  const held=new Promise(r=>release=r), submitted=new Promise(r=>didSubmit=r);
  await chat.route('http://chat.test/**',async route=>{
+   if(route.request().url().endsWith('/v1/settings/transcription')){snapshot.transcription=route.request().postDataJSON();return route.fulfill({json:snapshot.transcription});}
    if(route.request().method()==='POST'){didSubmit();await held;return route.fulfill({json:{id:'deep-1'}});}
    return route.fulfill({json:snapshot});
  });
@@ -73,6 +74,13 @@ try {
   assert.notEqual(await chat.evaluate(()=>document.activeElement.id),'question','Arrows can leave input when LG keyboard is hidden');
   await chat.keyboard.press('ArrowDown');
   assert.equal(await chat.evaluate(()=>document.activeElement.id),'capture','Down reaches capture directly from action row');
+  await chat.keyboard.press('ArrowDown');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'transcription-language');
+  await chat.keyboard.press('Enter');
+  await chat.waitForFunction(()=>document.querySelector('#transcription-language').textContent==='Audio · Anglais');
+  assert.equal(snapshot.transcription.language,'en');
+  await chat.keyboard.press('ArrowUp');
+  assert.equal(await chat.evaluate(()=>document.activeElement.id),'capture');
   await chat.keyboard.press('ArrowUp');
   assert.equal(await chat.evaluate(()=>document.activeElement.id),'dictate');
   await chat.waitForFunction(()=>!document.querySelector('#send').disabled);
