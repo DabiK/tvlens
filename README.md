@@ -18,7 +18,7 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 [![Voir la présentation TVLens : « C’est vrai ? »](docs/images/tvlens-youtube.jpg)](https://youtu.be/jOrcdLZsqT8)
 
-**[Regarder la présentation sur YouTube](https://youtu.be/jOrcdLZsqT8)** — une question pendant le visionnage, le passage retrouvé, des sources consultables et la mémoire du programme, sur TV et Mac. Le film utilise des interfaces reconstituées et un extrait réel de débat ; la compréhension locale sur ASUS GX10 y est présentée comme une prochaine expérimentation.
+**[Regarder la présentation sur YouTube](https://youtu.be/jOrcdLZsqT8)** — une question pendant le visionnage, le passage retrouvé, des sources consultables et la mémoire du programme, sur TV et Mac. Le film utilise des interfaces reconstituées et un extrait réel de débat.
 
 ![TVLens sur Mac : vidéo et conversation contextuelle](screenshots/current/direct.png)
 
