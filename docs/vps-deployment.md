@@ -119,3 +119,16 @@ Le redémarrage du service a remplacé la session active ; capture relancée san
 interrompre YouTube. Revue indépendante favorable, 21 tests ciblés passent sur le
 VPS. Résultats et échecs du test réel : [rapport](topic-context-live.json) et
 [contrat de la frise](lg-timeline.md). Code, tests et rapports sont versionnés avec cette passe.
+
+### Résumé cumulatif des cartes — 4 octobre 2026
+
+Déployé sur le VPS et dans `tv/app/timeline-view.js` sur la TV. L'agrégat appartient
+au domaine et reste séparé des observations de passage. Le premier essai réel a
+révélé une fuite de contexte avant lacune ; l'adaptateur est maintenant isolé par
+sujet contigu et renouvelle son thread aux frontières. Sauvegarde serveur de la
+seconde passe : `/opt/tvlens/backups/cumulative-summary-1791142494/before.tar`.
+
+150 tests locaux, 32 ciblés sur le VPS ; deux essais réels et leurs limites dans
+[le rapport](cumulative-summary-live.json). Le dernier essai comprend pause/reprise
+de capture sans arrêter YouTube. La capture est laissée active. Code, tests et rapports sont versionnés avec cette passe ; configuration privée
+d'appairage inchangée.

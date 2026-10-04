@@ -1,3 +1,4 @@
+const { completeTopicSummary } = require('./topic-summary.cjs');
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
 // Portable application core: no Electron, filesystem or provider dependency.
@@ -50,7 +51,7 @@ class WatchSession {
       // Keep summaries for the session, but no raw media beyond the rolling window.
       while (this.segments.length && !this.segments[0].available && this.segments[0].status !== 'analyzing' && this.segments[0].audioStatus !== 'analyzing' && this.segments[0].visionStatus !== 'analyzing') {
         const item = this.segments.shift();
-        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs });
+        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, topicSummary: item.topicSummary, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs });
       }
       this.emit();
     });
@@ -68,10 +69,12 @@ class WatchSession {
       const evidence = await this.media.read(segment.id);
       if (this.closed) return;
       this.apiCalls++;
-      const result = await this.perception.observe({ ...segment, ...evidence, context: perceptionContext(this, segment), signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
+      const context = perceptionContext(this, segment);
+      const result = await this.perception.observe({ ...segment, ...evidence, context, signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
       if (this.closed) return;
       segment.analysisMs=result.elapsedMs;segment.metrics=result.metrics;segment.stage=null;
       segment.observation = result.observation;
+      segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.status = 'ready';
       this.apiCost += result.cost || 0;
       this.lastError = null;
@@ -135,11 +138,13 @@ class WatchSession {
       const evidence = await this.media.read(segment.id);
       if (this.closed) return;
       this.apiCalls++;
+      const context = perceptionContext(this, segment);
       const result = await this.perception.observeVisual({ ...segment, ...evidence,
-        context: perceptionContext(this, segment), signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
+        context, signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
         onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
       if (this.closed) return;
       segment.observation = { ...segment.observation, ...result.observation };
+      segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
       segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
       segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
@@ -176,7 +181,7 @@ class WatchSession {
     try {
       await this.prune();
       const anchorMs = this.segments.at(-1)?.endMs ?? this.history.at(-1)?.endMs ?? 0;
-      const context = this.segments.map(s => ({ ...s, observation: s.observation ? { ...s.observation } : null }));
+      const context = this.segments.map(({ topicSummary, ...s }) => ({ ...s, observation: s.observation ? { ...s.observation } : null }));
       if (!context.length && !this.history.length) return { answer: 'Je n’ai pas encore de passage enregistré. Laisse la vidéo jouer quelques secondes.', kind: 'insufficient', citations: [], limits: [] };
       const targetMs = resolveTemporalTarget(question, [...this.history, ...context], anchorMs);
       const focusIds = targetMs === undefined ? null : [...this.history, ...context].filter(s => targetMs >= s.startMs && targetMs <= s.endMs).map(s => s.id);
@@ -187,7 +192,7 @@ class WatchSession {
         catch { /* Retention can expire during a question: text context remains explicit. */ }
       }
       this.apiCalls++; this.emit();
-      const result = await this.answer.ask({ question: question.trim(), anchorMs, targetMs, focusIds, context, history: this.history.slice(-120), evidence, conversation: this.questions.slice(-4) });
+      const result = await this.answer.ask({ question: question.trim(), anchorMs, targetMs, focusIds, context, history: this.history.slice(-120).map(({ topicSummary, ...s }) => s), evidence, conversation: this.questions.slice(-4) });
       this.apiCost += result.cost || 0;
       const examined = new Set(evidence.map(s => s.id));
       const known = new Map([...context.filter(s => hasUsableObservation(s) || examined.has(s.id)), ...this.history.filter(hasUsableObservation)].map(s => [s.id, s]));

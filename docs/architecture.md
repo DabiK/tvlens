@@ -92,3 +92,13 @@ Voir [runtime LG](lg-remote-runtime.md), [frise](lg-timeline.md), [déploiement 
 La transcription continue pendant les questions manuelles ; le démarrage des tâches visuelles de fond attend leur fin. `audioMs`, `visionMs`, `contextThroughMs` et `analyzedThroughMs` distinguent les mesures internes. L’interface affiche capture et analyse, sans prétendre que tous les indicateurs internes sont exposés séparément. La fermeture annule les travaux ; les appels interactifs de réexamen peuvent encore partager le transcripteur avec le fond.
 
 `TranscriptionSettings` persiste la langue du serveur (français par défaut). Le port de transcription reçoit son choix via la composition ; les appels en cours gardent leur langue, et le cache distingue langue + audio. Les observations et réexamens déjà mis en cache ne sont pas recalculés au changement. Le streaming audio n’est pas activé : [essai isolé et limites](audio-stream-probe-20261004.json).
+
+Le résumé cumulatif de sujet vit dans `segment.topicSummary`, hors de
+`segment.observation` : il ne constitue pas une preuve du bloc courant.
+`core/topic-summary.cjs` possède les bornes du résumé et le choix d’une restitution
+compatible avec la sélection. `perceptionContext` fournit le résumé précédent au
+port de perception ; l’adaptateur Codex retourne le texte agrégé dans le même
+appel que la description actuelle. Le cœur vérifie les limites et assigne les
+IDs, conserve l’agrégat lors de l’archivage, et repart du passage actuel à chaque
+frontière. La frise et son détail utilisent la même projection, avec un repli
+explicitement limité aux extraits quand aucun agrégat ne couvre l’intervalle.

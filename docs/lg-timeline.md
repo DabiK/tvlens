@@ -57,19 +57,20 @@ la TV), avec leurs identifiants et horodatages d'origine. Une carte n'a **aucune
 limite de durée** : tant que le sujet continue, elle s'enrichit. Un changement de
 plan, de personne qui parle ou de formulation ne constitue pas à lui seul un
 changement de sujet. Le détail conserve les paroles de chaque segment, horodatées.
-Le résumé de la carte reste court (les deux dernières descriptions distinctes,
-900 caractères maximum) : ce n'est pas un résumé exhaustif d'un long débat.
+Le résumé de la carte est cumulatif et borné à 1 600 caractères. Sans agrégat
+valide, un repli explicitement nommé « Extraits récents » présente les deux
+dernières descriptions distinctes (900 caractères maximum).
 
-Avant chaque analyse visuelle, le domaine transmet au port de perception un
-contexte historique explicite : les trois passages précédents au maximum, leurs
-transcriptions/résumés/incertitudes tronqués, et un aperçu extractif des huit
-derniers sujets observés. Cet aperçu réutilise les descriptions existantes ; aucun
-appel supplémentaire de synthèse n'est effectué. Cet apport explicite par appel est borné et non exhaustif. Le thread Codex de
-perception reste réutilisé jusqu'à 20 appels avant renouvellement : son contexte
-fournisseur accumulé peut donc dépasser cet apport. Le contexte explicite
-n'inclut jamais les passages futurs déjà transcrits pendant l'attente de la vision.
-Il reste disponible après pause/reprise et après expiration du média brut, grâce
-aux observations archivées. Cette composition est commune au Mac et au serveur.
+Avant chaque analyse visuelle, le domaine prépare un contexte historique explicite.
+L'adaptateur n'envoie que les trois passages précédents au maximum appartenant au
+sujet contigu actif, avec leurs transcriptions/résumés/incertitudes tronqués, et
+le résumé cumulatif précédent. L'aperçu des autres sujets reste dans le domaine,
+sans être envoyé dans cet appel. Aucun appel supplémentaire de synthèse n'est
+effectué. Le thread de perception est renouvelé aux frontières du sujet, aux
+lacunes, lors d'un réexamen et au plus tard après vingt appels. Le contexte
+explicite n'inclut jamais les passages futurs déjà transcrits pendant l'attente.
+Il reste disponible après pause/reprise et expiration du média brut, grâce aux
+observations archivées. Cette composition est commune au Mac et au serveur.
 
 Luna distingue ce contexte historique des preuves du passage actuel et indique
 la continuité du sujet. En cas de continuation, l'adaptateur conserve le titre
@@ -107,3 +108,77 @@ comme un montant. Ces erreurs sont conservées dans le rapport. Le regroupement
 n'est pas une validation des affirmations. La rétention du thread sur vingt
 appels et les sessions longues restent à mesurer au-delà de cet essai. Aucun
 changement d'assets TV ni nouveau test physique de télécommande dans cette passe.
+
+### Résumé cumulatif d’une carte
+
+Une carte suit le même sujet sans durée maximale. L’appel visuel Luna existant
+produit deux textes distincts : `observation.summary` décrit exclusivement le
+passage actuel ; `topicSummary` enrichit le résumé antérieur avec ce nouveau
+passage. Le cœur attribue à ce résumé les bornes et IDs exacts du sujet. Il reste
+séparé des observations utilisées comme preuves et pour la recherche. Aucun appel
+supplémentaire, changement de modèle ou prompt Whisper n’est introduit.
+
+Le résumé cumulatif est borné à 1 600 caractères. Le modèle doit conserver les
+arguments importants du début, les réponses, désaccords, attributions et
+incertitudes, tout en condensant les répétitions. C’est une compression imparfaite,
+pas une transcription exhaustive ni une validation externe. Les blocs de huit
+secondes et leurs paroles horodatées restent inchangés. Un changement explicite,
+une continuité incertaine, une lacune d’analyse ou de capture démarre un nouveau
+résumé. Un simple changement de plan ou de locuteur ne suffit pas.
+
+Les miniatures et résumés survivent à l’expiration des médias et à pause/reprise
+dans la même session. Le détail utilise les bornes sélectionnées : il ne montre
+jamais le résumé plus récent d’une carte qui continue à grandir, ni un résumé
+incluant le début d’un sujet absent de la sélection. Sans agrégat valide couvrant
+exactement l’intervalle, la carte et le détail signalent **Extraits récents** : les
+deux dernières descriptions disponibles, sans prétendre résumer tout le sujet.
+Cela concerne les anciennes sessions, les sous-sélections et un champ cumulatif
+absent, vide ou trop long. Après un champ cumulatif rejeté, les trois derniers passages au plus peuvent être
+réintégrés au prochain appel à partir du dernier agrégat valide ; au-delà, le
+repli reste explicite. Une carte ancienne ne devient pas rétroactivement
+exhaustive : le résumé cumulatif complet reprend au prochain nouveau sujet.
+
+Les tests couvrent la conservation d’un argument initial après plusieurs mises à
+jour, la séparation des preuves actuelles, les frontières, les détails figés,
+l’archivage et les sorties invalides. Les tests avec réponses contrôlées vérifient
+le contrat logiciel ; ils ne mesurent pas à eux seuls la fidélité de Luna sur une
+vidéo réelle.
+
+Un essai réel a révélé une fuite de contexte : après une lacune de capture,
+Luna réintroduisait dans le nouveau résumé des faits observés avant cette lacune.
+Le premier correctif (consigne textuelle seule) ne suffisait donc pas. L’entrée
+visuelle est maintenant limitée au sujet contigu actif : ni extraits plus anciens
+ni aperçu global des autres sujets. Le thread d’analyse est réinitialisé aux
+frontières connues et lors d’un passage au réexamen ; le contexte explicite borné
+conserve la continuité utile. Cette isolation ne garantit pas la fidélité des
+résumés, mais retire les données hors intervalle qui causaient cette fuite. La
+reconnexion aux frontières peut ajouter de la latence, sans appel d’inférence
+supplémentaire. Les réponses anciennes incorrectes restent dans le rapport de test.
+
+### Validation du résumé cumulatif — 4 octobre 2026
+
+[Rapport des deux essais réels](cumulative-summary-live.json). Le premier essai a
+échoué : après une lacune de capture, le modèle réintroduisait des faits antérieurs
+à la nouvelle carte. L'isolation du contexte envoyé et le renouvellement du thread
+aux frontières corrigent cette voie de contamination ; l'échec est conservé.
+
+Second essai TV → VPS sur 165 secondes : 11 passages entièrement analysés, aucun
+passage reçu abandonné par l'analyse. La première carte conserve l'information
+initiale sur six passages ; après une pause volontaire de capture (YouTube non
+interrompu), quatre passages constituent un résumé distinct. Lecture manuelle des
+réponses complètes : pas de détails pré-lacune réintroduits dans ce deuxième résumé,
+et les formulations d'incertitude sont conservées. Cela ne constitue pas une mesure
+d'exactitude contre une transcription humaine. Les erreurs de transcription et
+l'attribution d'une histoire racontée au locuteur restent des limites observables.
+
+Vision, synthèse incluse : moyenne **7,335 s**, maximum **9,448 s** sur onze appels.
+Le relevé précédent sans synthèse cumulative était proche de 4,12 s sur un autre
+contenu : on ne peut pas en déduire un surcoût contrôlé, mais la nouvelle fonction
+n'est pas présentée comme gratuite en latence. Aucun appel supplémentaire par
+passage ; coût monétaire Codex non retourné, aucune nouvelle inférence OpenRouter.
+
+150 tests Node passent, dont 32 tests ciblés sur le VPS ; review indépendante,
+smokes Electron et TV favorables. Le contrôle visuel a rencontré une publicité et
+un panneau fermé (HTTP 409 lors d'une demande de frise). La navigation physique
+avec la télécommande n'est pas nouvellement validée. Le média, les descriptions
+et leurs incertitudes restent les références pour consulter les détails.

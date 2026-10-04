@@ -99,6 +99,13 @@ try {
       return route.fulfill({
         json: {
           sessionId: body.sessionId,
+          summary: body.firstId === "moment-1"
+            ? "Argument initial conservé. Réponse et désaccord non résolu."
+            : "Description du passage sélectionné.",
+          summaryKind: body.firstId === "moment-1" ? "cumulative" : "bounded-excerpts",
+          summaryLimits: body.firstId === "moment-1"
+            ? "Résumé cumulatif automatique, non vérifié."
+            : "Extraits récents uniquement.",
           passages: [body.firstId, body.lastId].map((id) => ({
             id,
             startMs: 0,
@@ -190,6 +197,15 @@ try {
   );
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.press("Enter");
+  await page.waitForFunction(() => document.querySelector("#detail-summary").textContent ===
+    "Argument initial conservé. Réponse et désaccord non résolu.");
+  assert.match(await page.locator("#detail-limits").textContent(), /Résumé cumulatif/);
+  const previousSummary = state.timeline.cards[0].summary;
+  state.timeline.cards[0].summary = "Un événement futur ne doit pas modifier le détail ouvert.";
+  await page.waitForTimeout(1200);
+  assert.equal(await page.locator("#detail-summary").textContent(),
+    "Argument initial conservé. Réponse et désaccord non résolu.");
+  state.timeline.cards[0].summary = previousSummary;
   await page.locator("#detail-ask").click();
   await page.waitForFunction(() => document.body.dataset.mode === "chat");
   assert.equal(await page.locator("#moment-context").isVisible(), true);
@@ -240,7 +256,7 @@ try {
   assert.equal(await page.locator(".timeline-card").count(), 0);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: bottom layout, real thumbnail rendering, focus through grouping, details/transcript, scoped question, live follow, session end",
+    "PASS: bottom layout, real thumbnail rendering, focus through grouping, details/transcript, cumulative frozen summary, scoped question, live follow, session end",
   );
 } finally {
   await browser.close();

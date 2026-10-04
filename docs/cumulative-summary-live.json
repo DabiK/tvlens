@@ -1,0 +1,111 @@
+{
+  "attempts": [
+    {
+      "date": "2026-10-04",
+      "stage": "Initial live version before scope-isolation correction",
+      "secondsObserved": 113.55,
+      "received": 12,
+      "captureDropped": 1,
+      "completed": 12,
+      "visionMeanMs": 7706,
+      "result": "FAIL: cumulative summary imported pre-gap content",
+      "failure": {
+        "gapMs": [
+          16151,
+          24214
+        ],
+        "newTopicFirstId": "moment-3",
+        "contaminatedSummaryAt": "moment-4",
+        "description": "Summary included facts from moments1–2 although its declared interval began at moment3. Older thread turns and global historical prompt remained accessible. No source transcript published."
+      },
+      "observedBenefit": "Earlier information persisted through successive model summaries, but interval isolation was not reliable.",
+      "nextAction": "Restrict actual perception prompt to active contiguous topic and reset Codex thread at scope boundaries."
+    },
+    {
+      "date": "2026-10-04",
+      "stage": "Scoped context and thread boundary reset",
+      "durationSeconds": 164.72,
+      "result": "PASS for tested cumulative retention and gap isolation; not a general accuracy guarantee",
+      "received": 11,
+      "complete": 11,
+      "analysisSkipped": 0,
+      "captureReportAfterResume": {
+        "sent": 5,
+        "dropped": 1,
+        "queued": 0,
+        "retries": 0,
+        "frames": 24,
+        "connection": "connected"
+      },
+      "gaps": [
+        {
+          "beforeId": "moment-6",
+          "afterId": "moment-7",
+          "durationMs": 30899
+        },
+        {
+          "beforeId": "moment-10",
+          "afterId": "moment-11",
+          "durationMs": 8081
+        }
+      ],
+      "vision": {
+        "meanMs": 7335,
+        "maxMs": 9448,
+        "samples": 11
+      },
+      "audio": {
+        "meanMs": 6211,
+        "maxMs": 10065
+      },
+      "cards": [
+        {
+          "firstId": "moment-1",
+          "segments": 6,
+          "summaryKind": "cumulative",
+          "summaryChars": 925
+        },
+        {
+          "firstId": "moment-7",
+          "segments": 4,
+          "summaryKind": "cumulative",
+          "summaryChars": 730
+        },
+        {
+          "firstId": "moment-11",
+          "segments": 1,
+          "summaryKind": "cumulative",
+          "summaryChars": 179
+        }
+      ],
+      "manualAssessment": {
+        "method": "Read full successive current observations and cumulative summaries from real provider responses. No expected answer sent to model. No published transcripts.",
+        "firstRunUpdates": 6,
+        "postGapUpdates": 4,
+        "earlyPointRetainedThroughSixPassages": true,
+        "postGapFirstPointRetainedThroughFourPassages": true,
+        "preGapDetailsObservedInNewAggregate": false,
+        "attributionAndUncertaintyPresent": true
+      },
+      "tests": {
+        "node": 150,
+        "serverTargeted": 32,
+        "electronSmoke": "pass",
+        "timelineUiSmoke": "pass",
+        "independentReview": "favorable after scope-isolation correction"
+      },
+      "limits": [
+        "Whisper transcripts remain imperfect; comparison is against observed text, not a human reference transcript or ground-truth fact check.",
+        "Current descriptions sometimes attribute a read or discussed story directly to a speaker. Attribution precision is not fully validated.",
+        "Two short live runs use different content; increased visual latency versus prior4.1s sample is not a controlled performance comparison.",
+        "Capture pause was deliberate, YouTube continued; later advertisement transition coincided with panel closure and capture drops. Per-drop cause is not logged.",
+        "No new physical remote navigation confirmation. First screenshot showed chat; later attempt to switch to timeline returnedHTTP409 because panel was closed during an advertisement. UI smoke covers cumulative rendering.",
+        "Cumulative summary is limited to1600characters and may omit details. Invalid-output recovery is bounded to3passages."
+      ],
+      "billing": {
+        "providerUsd": null,
+        "reason": "Codex subscription does not return a billed USD amount here. No extra model call per chunk and no OpenRouter inference introduced."
+      }
+    }
+  ]
+}

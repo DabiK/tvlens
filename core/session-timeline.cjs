@@ -1,3 +1,4 @@
+const { summaryForPassages } = require('./topic-summary.cjs');
 // Projection of observed passages, never an inference or provider call.
 const topicKey = (value) =>
   String(value || "")
@@ -32,6 +33,7 @@ function sessionTimeline(snapshot) {
         topicKey: topic,
         segmentIds: [],
         summaries: [],
+        passages: [],
         statuses: [],
         thumbnailId: null,
         pending: 0,
@@ -41,6 +43,7 @@ function sessionTimeline(snapshot) {
       cards.push(card);
     }
     card.segmentIds.push(passage.id);
+    card.passages.push(passage);
     card.endMs = passage.endMs;
     card.statuses.push(passage.status);
     if (passage.thumbnailAvailable && !card.thumbnailId)
@@ -57,9 +60,9 @@ function sessionTimeline(snapshot) {
   }
   return {
     sessionId: snapshot.id,
-    cards: cards.map(({ topicKey, summaries, statuses, ...card }) => ({
+    cards: cards.map(({ topicKey, summaries, statuses, passages, ...card }) => ({
       ...card,
-      summary: summaries.slice(-2).join(" ").slice(0, 900),
+      ...summaryForPassages(passages),
       status: card.failed ? "error" : card.pending ? "pending" : statuses.includes("partial") ? "partial" : "ready",
       title:
         card.failed && !summaries.length ? "Passage non analysé" : card.title,
@@ -96,6 +99,7 @@ function momentDetail(snapshot, selection) {
     throw Error("Intervalle discontinu.");
   return {
     sessionId: snapshot.id,
+    ...summaryForPassages(selected),
     startMs: selected[0].startMs,
     endMs: selected.at(-1).endMs,
     passages: selected.map((p) => ({

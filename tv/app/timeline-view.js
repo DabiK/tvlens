@@ -159,10 +159,12 @@
         ...(this.state?.session?.history || []),
         ...(this.state?.session?.segments || []),
       ].find((p) => p.id === pinned.id);
-      if (passage?.status === "ready")
+      if (passage?.status === "ready" && pinned.segmentIds.length === 1)
         Object.assign(pinned, {
           title: passage.observation?.topic || "Moment sélectionné",
           summary: passage.observation?.summary || "",
+          summaryKind: "bounded-excerpts",
+          summaryLimits: "Extrait du passage sélectionné uniquement.",
           status: "ready",
           pending: 0,
         });
@@ -233,7 +235,7 @@
       node.querySelector("small").textContent =
         time(card.startMs) + " — " + time(card.endMs);
       node.querySelector("p").textContent =
-        card.summary ||
+        (card.summary ? (card.summaryKind === "bounded-excerpts" ? "Extraits récents · " : "") + card.summary : "") ||
         (card.status === "error"
           ? "Image conservée · analyse indisponible"
           : "Image reçue · description à venir");
@@ -329,7 +331,7 @@
     el("detail-summary").textContent =
       card.summary || "Analyse encore indisponible.";
     el("detail-limits").textContent =
-      "Observations automatiques, non vérifiées. Aucune relecture dans cette vue.";
+      (card.summaryLimits || "Observations automatiques, non vérifiées.") + " Aucune relecture dans cette vue.";
     el("detail-transcript").replaceChildren();
     el("detail-transcript").hidden = true;
     el("detail-words").textContent = "Voir les paroles";
@@ -342,6 +344,7 @@
         card.segmentIds,
       );
       if (revision !== this.detailGeneration) return;
+      el("detail-summary").textContent = detail.summary || "Analyse encore indisponible.";
       detail.passages.forEach(function (p) {
         var text = document.createElement("p");
         text.textContent =
@@ -351,7 +354,7 @@
         el("detail-transcript").appendChild(text);
       });
       el("detail-limits").textContent =
-        "Observations et transcription automatiques, potentiellement imprécises. " +
+        (detail.summaryLimits || "") + " Observations et transcription automatiques, potentiellement imprécises. " +
         (detail.passages.some((p) => !p.available)
           ? "Média détaillé expiré ; miniature et textes conservés jusqu’à la fin de session. "
           : "") +
