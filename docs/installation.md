@@ -43,6 +43,7 @@ OPENROUTER_API_KEY=ta_cle
 # TVLENS_WHISPER_MODEL=/chemin/ggml-base.bin
 # TVLENS_WHISPER_BINARY=/opt/homebrew/bin/whisper-cli
 # TVLENS_FFMPEG=/opt/homebrew/bin/ffmpeg
+# TVLENS_WHISPER_THREADS=4
 ```
 
 La clé n'est jamais transmise à Codex ni exposée au renderer. Les paramètres importés

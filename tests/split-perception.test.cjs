@@ -125,3 +125,14 @@ test('empty successful audio and expired queued vision never turn the archived p
   await tools.call('get_transcript', { startMs: 0, endMs: 1000 });
   assert.deepEqual(tools.memoryEvidence, []); assert.deepEqual(tools.transcriptEvidence, []);
 });
+
+test('shared session supplies historical context at vision dispatch, after pause and without future audio leakage', async () => {
+  const seen=[];
+  const f=fixture({transcribe,observeVisual:async s=>{seen.push(s.context);return {observation:{summary:s.id,topic:'Débat'},elapsedMs:1};}});
+  await f.add(0); await f.watch.stop(); await f.watch.resume(); await f.add(1);
+  assert.equal(seen[0].recent.length,0);
+  assert.equal(seen[1].previousTopic,'Débat');
+  assert.deepEqual(seen[1].recent.map(p=>p.id),['moment-1']);
+  assert.equal(seen[1].recent[0].transcript,'Paroles moment-1');
+  await f.watch.close();
+});

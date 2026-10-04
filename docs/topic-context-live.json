@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-04T19:16:31.771113+00:00",
+  "source": "Real YouTube viewing on configured LG, capture to VPS, local Whisper and Codex Luna",
+  "durationSeconds": 124.47,
+  "capture": {
+    "sent": 12,
+    "dropped": 3,
+    "queued": 1,
+    "retries": 0,
+    "frames": 60,
+    "connection": "connected"
+  },
+  "counts": {
+    "partial": 1,
+    "ready": 11
+  },
+  "before": {
+    "description": "Last completed visual analyses around a pre-deploy sample; different content, not a paired benchmark",
+    "vision": {
+      "n": 10,
+      "meanMs": 4305,
+      "maxMs": 6479
+    },
+    "audio": {
+      "n": 10,
+      "meanMs": 7263,
+      "maxMs": 18252
+    }
+  },
+  "after": {
+    "vision": {
+      "n": 11,
+      "meanMs": 4118,
+      "maxMs": 5260
+    },
+    "audio": {
+      "n": 11,
+      "meanMs": 5654,
+      "maxMs": 13624
+    },
+    "lastAnalysisLagMs": 8098,
+    "maxRecentContextCount": 3,
+    "maxExplicitContextChars": 4805
+  },
+  "cards": [
+    {
+      "id": "moment-1",
+      "startMs": 7.3486030007097725,
+      "endMs": 24182.465589000632,
+      "segmentCount": 3,
+      "status": "ready"
+    },
+    {
+      "id": "moment-4",
+      "startMs": 32255.725991001957,
+      "endMs": 40294.05583799889,
+      "segmentCount": 1,
+      "status": "ready"
+    },
+    {
+      "id": "moment-5",
+      "startMs": 48380.90290700274,
+      "endMs": 80682.58051800438,
+      "segmentCount": 4,
+      "status": "ready"
+    },
+    {
+      "id": "moment-9",
+      "startMs": 88820.53351300345,
+      "endMs": 113011.3424610019,
+      "segmentCount": 3,
+      "status": "ready"
+    },
+    {
+      "id": "moment-12",
+      "startMs": 113037.34231299967,
+      "endMs": 121109.12030900289,
+      "segmentCount": 1,
+      "status": "pending"
+    }
+  ],
+  "validation": {
+    "nodeTests": 139,
+    "serverTargetedTests": 21,
+    "electronSmoke": "pass",
+    "timelineUiSmoke": "pass",
+    "independentReview": "favorable after outline-boundary fix",
+    "rawEightSecondSegmentsPreserved": true
+  },
+  "failuresAndLimits": [
+    "Three capture chunks were dropped; capture report has no detailed reason. No analysis skip in received chunks during this observation.",
+    "One title covers two advertisements because both occurred within the initial eight-second chunk; later continuation keeps that broad title.",
+    "An advertisement description rendered a size comparison to a two-euro coin as an impact of less than two euros. Contextualization does not ensure correct OCR/transcription interpretation.",
+    "Topic labels and descriptions are model outputs, not independently verified facts. No annotated semantic accuracy score or paired content comparison.",
+    "Per-call explicit context is bounded, but the Codex perception thread persists for up to twenty calls. This sample does not validate longer-term latency.",
+    "No new physical remote/navigation test; TV assets unchanged. A transient pending card remains until its analysis completes.",
+    "Card summary uses the latest two descriptions; it is not an exhaustive summary of the whole topic."
+  ],
+  "billing": {
+    "providerUsd": null,
+    "reason": "Codex subscription; no dollar charge returned by this perception path. No OpenRouter inference added."
+  }
+}

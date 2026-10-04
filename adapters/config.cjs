@@ -14,6 +14,7 @@ async function loadConfig({ configPath, userData, safeStorage, environment = pro
       audioInput: env.OPENROUTER_AUDIO_INPUT ? env.OPENROUTER_AUDIO_INPUT === 'true' : model !== FREE_MODEL_WITH_UNVALIDATED_AUDIO,
       codexAuthHome: env.TVLENS_CODEX_AUTH_HOME || env.CODEX_HOME || null,
       whisperModel: env.TVLENS_WHISPER_MODEL || null,
+      whisperThreads: env.TVLENS_WHISPER_THREADS ? Number(env.TVLENS_WHISPER_THREADS) : undefined,
       whisperBinary: executable('whisper-cli', {override:env.TVLENS_WHISPER_BINARY, environment}),
       ffmpeg: executable('ffmpeg', {override:env.TVLENS_FFMPEG, environment}),
       inspectionModel: env.TVLENS_INSPECTION_MODEL || 'google/gemini-3.8-flash',

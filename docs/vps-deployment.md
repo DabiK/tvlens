@@ -98,3 +98,24 @@ Le français est maintenant le défaut serveur, configurable depuis la sidebar T
 - [Streaming expérimental](audio-stream-probe-20261004.json) : 24 s audio, backend temporaire supprimé, aucun changement de production. Premier texte plus tôt mais stabilisation lente et CPU accru ; stratégie non retenue.
 
 Lors de l’audit avant publication, 52 des 54 fichiers `core/runtime/adapters/server` correspondent au dossier de travail. Le VPS part de `7015a64` avec correctifs déployés hors commit ; `adapters/config.cjs` et `adapters/clip-inspector.cjs` conservent une ancienne résolution de chemins. Les chemins explicites du déploiement restent fonctionnels. La publication Git ne redéploie pas le VPS : une mise à jour ultérieure vers une révision unique reste nécessaire, capture arrêtée et configuration privée préservée.
+
+## Réglage Whisper et diagnostics — 4 octobre, seconde passe
+
+Le VPS utilise maintenant deux threads Whisper (détection des deux CPU disponibles), modèle base et décodage inchangés. Le [benchmark apparié](whisper-threads-benchmark.json) mesure 4,83 s contre 5,55 s avec quatre threads sur deux clips réels, deux répétitions, textes identiques. Les premières pointes de 18 et 43 s n’ont pas été reproduites.
+
+Après redémarrage annoncé du service, [98 secondes de capture réelle](whisper-threads-live.json) : 11 passages reçus, 10 transcriptions terminées, 9 observations complètes, aucune perte de capture ni passage sauté au dernier relevé. Transcription moyenne 6,539 s ; maximum 10,318 s. Le test est court, le travail continue : absence de pertes sur cet intervalle ne garantit pas une session entière.
+
+`metrics.whisper` permet désormais de distinguer chargement, encodage, décodage et compteurs de fallback, sans archiver stderr brut. Le pic de 10,318 s comporte 7,580 s d’encodage et aucun fallback. D’autres appels ont déclenché des fallbacks ; ces événements sont conservés dans le rapport. Le goulot n’a donc pas une cause unique démontrée. Le délai maximum existant et la politique de file restent inchangés ; aucun rattrapage automatique n’est revendiqué.
+
+131 tests Node passent, dont 15 ciblés également exécutés sur le VPS ; intégration Electron réussie. Ces changements sont versionnés dans la passe suivante après `a120625`. La configuration portable de `adapters/config.cjs` est désormais déployée ; `clip-inspector.cjs` conserve encore son ancien défaut de chemin, neutralisé par la configuration explicite de FFmpeg.
+
+### Contexte des analyses et cartes par sujet — 4 octobre 2026
+
+Déploiement chirurgical du cœur partagé : contexte historique borné avant chaque
+analyse visuelle, continuité explicite du sujet, regroupement sans durée maximale.
+Whisper, capture, réseau et interface TV inchangés. Sauvegarde distante des fichiers
+remplacés sous `/opt/tvlens/backups/context-topic-1791141208/before.tar`.
+Le redémarrage du service a remplacé la session active ; capture relancée sans
+interrompre YouTube. Revue indépendante favorable, 21 tests ciblés passent sur le
+VPS. Résultats et échecs du test réel : [rapport](topic-context-live.json) et
+[contrat de la frise](lg-timeline.md). Code, tests et rapports sont versionnés avec cette passe.

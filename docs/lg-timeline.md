@@ -49,3 +49,61 @@ Mise à jour préparée dans l’application TV existante, sans ouverture automa
 Les dix fichiers de l’interface et des contrôleurs avaient été comparés par SHA-256 avec les sources testées lors du déploiement. Le serveur et l’interface ont ensuite été testés par l’utilisateur sur la TV. La correction de concurrence du contrôleur issue de la revue est couverte localement ; elle sera chargée au prochain redéploiement du contrôleur, sans interrompre la capture actuelle.
 
 Implémentation, tests automatisés, essai fournisseur réel et validation utilisateur sont effectués. Les essais de panne réseau, publicités et redémarrage complet restent hors de cette validation de la frise. Le déploiement VPS fait l’objet de l’étape suivante.
+
+### Continuité du sujet et contexte de perception
+
+Les segments de capture et de transcription restent indépendants (8 secondes sur
+la TV), avec leurs identifiants et horodatages d'origine. Une carte n'a **aucune
+limite de durée** : tant que le sujet continue, elle s'enrichit. Un changement de
+plan, de personne qui parle ou de formulation ne constitue pas à lui seul un
+changement de sujet. Le détail conserve les paroles de chaque segment, horodatées.
+Le résumé de la carte reste court (les deux dernières descriptions distinctes,
+900 caractères maximum) : ce n'est pas un résumé exhaustif d'un long débat.
+
+Avant chaque analyse visuelle, le domaine transmet au port de perception un
+contexte historique explicite : les trois passages précédents au maximum, leurs
+transcriptions/résumés/incertitudes tronqués, et un aperçu extractif des huit
+derniers sujets observés. Cet aperçu réutilise les descriptions existantes ; aucun
+appel supplémentaire de synthèse n'est effectué. Cet apport explicite par appel est borné et non exhaustif. Le thread Codex de
+perception reste réutilisé jusqu'à 20 appels avant renouvellement : son contexte
+fournisseur accumulé peut donc dépasser cet apport. Le contexte explicite
+n'inclut jamais les passages futurs déjà transcrits pendant l'attente de la vision.
+Il reste disponible après pause/reprise et après expiration du média brut, grâce
+aux observations archivées. Cette composition est commune au Mac et au serveur.
+
+Luna distingue ce contexte historique des preuves du passage actuel et indique
+la continuité du sujet. En cas de continuation, l'adaptateur conserve le titre
+précédent exactement, évitant une nouvelle carte pour une simple reformulation.
+Une analyse absente ou un trou de capture n'établit pas de continuité : ces
+passages restent visibles séparément. Une vision réussie peut conserver le sujet
+même si l'audio échoue, mais la carte garde son état partiel.
+
+Les descriptions, OCR et transcriptions restent non vérifiés : les accusations
+rapportées ne deviennent pas des faits parce qu'elles réapparaissent dans le
+contexte. Ce cadrage ne garantit pas l'absence d'erreur du modèle. Les métriques
+`recentContextCount` et `contextChars` permettent de contrôler le contexte envoyé
+sans journaliser les paroles. L'ajout de contexte peut augmenter la latence ; il
+ne change ni les files audio/vision, ni leur traitement des retards. Aucun prompt
+de contexte Whisper ni streaming audio n'est ajouté.
+
+### Validation réelle du contexte — 4 octobre 2026
+
+Déployé sur le VPS après revue indépendante et correction d'une frontière de
+sujet ignorée dans l'aperçu historique. **139 tests Node**, 21 tests ciblés sur le
+VPS, smoke Electron et smoke frise passent. Voir le
+[rapport du visionnage réel](topic-context-live.json).
+
+Sur 124 secondes de YouTube sur la LG : 12 passages reçus, 11 analysés et un encore
+partiel à la fin du relevé, sans abandon d'analyse sur les passages reçus. Des
+cartes regroupent trois ou quatre blocs. Le contexte explicite atteint trois
+passages et 4 805 caractères. Vision : moyenne 4,12 s, maximum 5,26 s, contre
+4,31 s sur dix analyses précédentes. Les contenus diffèrent : ce relevé ne prouve
+ni gain de vitesse ni amélioration chiffrée de précision. Trois blocs ont été
+écartés par la capture ; leur cause détaillée n'est pas disponible dans le rapport.
+
+Limites effectivement observées : un titre trop large après deux publicités dans
+un même bloc ; une comparaison de taille à une pièce de deux euros mal reformulée
+comme un montant. Ces erreurs sont conservées dans le rapport. Le regroupement
+n'est pas une validation des affirmations. La rétention du thread sur vingt
+appels et les sessions longues restent à mesurer au-delà de cet essai. Aucun
+changement d'assets TV ni nouveau test physique de télécommande dans cette passe.

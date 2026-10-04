@@ -1,0 +1,200 @@
+{
+  "durationObservedSeconds": 98.09,
+  "received": 11,
+  "completedTranscriptions": 10,
+  "fullyAnalyzed": 9,
+  "skipped": 0,
+  "captureDropped": 0,
+  "audioMsMean": 6539,
+  "audioMsMax": 10318,
+  "fallbacks": 2,
+  "analysisLagMsLast": 16152.555619999475,
+  "samples": [
+    {
+      "id": "moment-1",
+      "audioMs": 5387,
+      "whisper": {
+        "loadMs": 168.77,
+        "melMs": 20.28,
+        "sampleMs": 309.48,
+        "encodeMs": 2837.59,
+        "decodeMs": 0,
+        "batchdMs": 1907.68,
+        "promptMs": 0,
+        "totalMs": 5324.15,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 5384.516501999999
+      }
+    },
+    {
+      "id": "moment-2",
+      "audioMs": 10318,
+      "whisper": {
+        "loadMs": 158.36,
+        "melMs": 24.13,
+        "sampleMs": 367.45,
+        "encodeMs": 7579.97,
+        "decodeMs": 6,
+        "batchdMs": 1993.7,
+        "promptMs": 0,
+        "totalMs": 10226.67,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 10316.853603000003
+      }
+    },
+    {
+      "id": "moment-3",
+      "audioMs": 5781,
+      "whisper": {
+        "loadMs": 179.81,
+        "melMs": 17.98,
+        "sampleMs": 301.11,
+        "encodeMs": 3312.74,
+        "decodeMs": 12.68,
+        "batchdMs": 1799.8,
+        "promptMs": 0,
+        "totalMs": 5702.79,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 5779.418777000006
+      }
+    },
+    {
+      "id": "moment-4",
+      "audioMs": 6519,
+      "whisper": {
+        "loadMs": 189.62,
+        "melMs": 33.21,
+        "sampleMs": 356.7,
+        "encodeMs": 3293.66,
+        "decodeMs": 10.26,
+        "batchdMs": 2453.42,
+        "promptMs": 0,
+        "totalMs": 6422.76,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 6499.093371000003
+      }
+    },
+    {
+      "id": "moment-5",
+      "audioMs": 5591,
+      "whisper": {
+        "loadMs": 168.38,
+        "melMs": 25.5,
+        "sampleMs": 264.78,
+        "encodeMs": 3868.04,
+        "decodeMs": 5.38,
+        "batchdMs": 1094.27,
+        "promptMs": 0,
+        "totalMs": 5511.94,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 5587.453734999988
+      }
+    },
+    {
+      "id": "moment-6",
+      "audioMs": 4867,
+      "whisper": {
+        "loadMs": 159.73,
+        "melMs": 36.63,
+        "sampleMs": 258.31,
+        "encodeMs": 2883.16,
+        "decodeMs": 0,
+        "batchdMs": 1384.45,
+        "promptMs": 0,
+        "totalMs": 4803.29,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 4863.2516259999975
+      }
+    },
+    {
+      "id": "moment-7",
+      "audioMs": 6417,
+      "whisper": {
+        "loadMs": 164.86,
+        "melMs": 19.92,
+        "sampleMs": 393.7,
+        "encodeMs": 3699.56,
+        "decodeMs": 38.77,
+        "batchdMs": 1898.46,
+        "promptMs": 0,
+        "totalMs": 6309.26,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 6415.742262
+      }
+    },
+    {
+      "id": "moment-8",
+      "audioMs": 7253,
+      "whisper": {
+        "loadMs": 175.74,
+        "melMs": 28.78,
+        "sampleMs": 420.86,
+        "encodeMs": 3931.06,
+        "decodeMs": 76.05,
+        "batchdMs": 2459.88,
+        "promptMs": 0,
+        "totalMs": 7181.04,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 7251.801309999995
+      }
+    },
+    {
+      "id": "moment-9",
+      "audioMs": 6107,
+      "whisper": {
+        "loadMs": 181.62,
+        "melMs": 21.14,
+        "sampleMs": 349.35,
+        "encodeMs": 3467.56,
+        "decodeMs": 0,
+        "batchdMs": 1907,
+        "promptMs": 0,
+        "totalMs": 6006.13,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 0,
+        "threads": 2,
+        "elapsedMs": 6105.703848000005
+      }
+    },
+    {
+      "id": "moment-10",
+      "audioMs": 7147,
+      "whisper": {
+        "loadMs": 180.58,
+        "melMs": 34.19,
+        "sampleMs": 547.58,
+        "encodeMs": 3138.63,
+        "decodeMs": 81.01,
+        "batchdMs": 2867.02,
+        "promptMs": 0,
+        "totalMs": 6933.27,
+        "logprobFallbacks": 0,
+        "entropyFallbacks": 2,
+        "threads": 2,
+        "elapsedMs": 7144.473952999993
+      }
+    }
+  ],
+  "limits": [
+    "Short live sample; different video interval and workload from earlier tests.",
+    "No manual question during this sample; all incomplete work is still running, capture left active.",
+    "No human transcription scoring; 10.3-second outlier remains.",
+    "No automatic backfill or shorter timeout introduced."
+  ]
+}

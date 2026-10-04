@@ -62,6 +62,7 @@ function createSessionRuntime({
   search = new MomentSearch({ index });
   const transcriber = new LocalTranscriber({
     binary: config.whisperBinary,
+    threads: config.whisperThreads,
     getLanguage: () => config.transcriptionLanguage || "auto",
     model:
       config.whisperModel ||

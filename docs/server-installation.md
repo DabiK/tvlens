@@ -102,6 +102,14 @@ La langue audio du serveur vaut `fr` au premier démarrage. Le bouton Audio de l
 
 Whisper s’exécute sur l’hôte ; Codex effectue l’inférence distante des images et du chat. OpenRouter est optionnel, uniquement pour les embeddings texte. Ni l’authentification Codex, ni les jetons d’appairage, ni les fichiers de données ne sont versionnés.
 
+## Réglage CPU de Whisper
+
+Le transcripteur utilise `min(4, os.availableParallelism())` threads par défaut : deux sur le VPS de référence. `TVLENS_WHISPER_THREADS=2`, dans la configuration fournisseur ou l’environnement du service, permet de fixer explicitement une valeur entière entre 1 et 16. Redémarrer le service après modification. Les quotas cgroup d’un autre déploiement peuvent être inférieurs au nombre de CPU visibles : régler explicitement après mesure.
+
+Le modèle base et la stratégie de décodage restent inchangés. Les métriques par passage (`metrics.whisper`) conservent les temps numériques de chargement, encodage/décodage, total et compteurs de fallback disponibles, ainsi que le nombre de threads. Les logs bruts Whisper, susceptibles de contenir des paroles, ne sont ni journalisés ni archivés ; seul un tampon borné en mémoire est analysé. Un résultat en cache ne reprend pas les anciennes durées d’inférence.
+
+[Comparaison contrôlée 2/4 threads](whisper-threads-benchmark.json) : deux extraits réels, huit appels, textes identiques entre variantes, moyennes 4,83 s contre 5,55 s. Échantillon limité ; ce réglage ne garantit pas la disparition des pics ni le rattrapage des tâches sautées.
+
 ## Mise à jour reproductible
 
 Déployer une révision Git identifiée après validation. Avant de mettre à jour, arrêter manuellement la capture, sauvegarder la configuration privée et noter `git rev-parse HEAD`. Ne pas écraser des modifications non commitées sur l’hôte. Installer les dépendances correspondant au lockfile, redémarrer le service, puis vérifier l’état et une capture réelle. Un retour à une révision précédente ne restaure pas une session en mémoire.

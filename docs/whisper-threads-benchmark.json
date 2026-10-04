@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-04",
+  "method": "Two retained real TV audio clips of 8 seconds. Same Whisper binary/base model, French, decoding unchanged, CPU quota 200%; two repeats with alternating thread order; TVLens capture paused and production work drained. Eight measured subprocess runs including launch/load.",
+  "meansSeconds": {
+    "4": 5.546,
+    "2": 4.831
+  },
+  "identicalTranscriptsAcrossRuns": true,
+  "samples": [
+    {
+      "fixture": "moment-43",
+      "duration": 8.0,
+      "threads": 4,
+      "repeat": 0,
+      "wallSeconds": 6.426534399040975,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   162.71 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    25.39 ms\nwhisper_print_timings:   sample time =   118.56 ms /   132 runs (     0.90 ms per run)\nwhisper_print_timings:   encode time =  4809.21 ms /     1 runs (  4809.21 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  1141.67 ms /   130 runs (     8.78 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  6337.33 ms\nTVLENS_RESOURCE 7.15 0.54 6.38 291188"
+    },
+    {
+      "fixture": "moment-43",
+      "duration": 8.0,
+      "threads": 2,
+      "repeat": 0,
+      "wallSeconds": 4.45775720407255,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   186.07 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    20.00 ms\nwhisper_print_timings:   sample time =   128.58 ms /   132 runs (     0.97 ms per run)\nwhisper_print_timings:   encode time =  3328.04 ms /     1 runs (  3328.04 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =   630.65 ms /   130 runs (     4.85 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  4373.42 ms\nTVLENS_RESOURCE 6.94 0.33 4.42 289528"
+    },
+    {
+      "fixture": "moment-42",
+      "duration": 8.0,
+      "threads": 4,
+      "repeat": 0,
+      "wallSeconds": 5.655963655910455,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   181.51 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    18.34 ms\nwhisper_print_timings:   sample time =   236.60 ms /   313 runs (     0.76 ms per run)\nwhisper_print_timings:   encode time =  3235.91 ms /     1 runs (  3235.91 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  1809.47 ms /   311 runs (     5.82 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  5558.94 ms\nTVLENS_RESOURCE 7.74 0.61 5.61 291396"
+    },
+    {
+      "fixture": "moment-42",
+      "duration": 8.0,
+      "threads": 2,
+      "repeat": 0,
+      "wallSeconds": 5.198502346989699,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   163.35 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    17.67 ms\nwhisper_print_timings:   sample time =   300.32 ms /   313 runs (     0.96 ms per run)\nwhisper_print_timings:   encode time =  2871.78 ms /     1 runs (  2871.78 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  1681.47 ms /   311 runs (     5.41 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  5115.75 ms\nTVLENS_RESOURCE 8.30 0.31 5.16 289740"
+    },
+    {
+      "fixture": "moment-43",
+      "duration": 8.0,
+      "threads": 2,
+      "repeat": 1,
+      "wallSeconds": 4.447378266952001,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   185.93 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    20.24 ms\nwhisper_print_timings:   sample time =   140.35 ms /   132 runs (     1.06 ms per run)\nwhisper_print_timings:   encode time =  3053.35 ms /     1 runs (  3053.35 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =   860.75 ms /   130 runs (     6.62 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  4348.03 ms\nTVLENS_RESOURCE 6.99 0.32 4.40 289564"
+    },
+    {
+      "fixture": "moment-43",
+      "duration": 8.0,
+      "threads": 4,
+      "repeat": 1,
+      "wallSeconds": 4.448594999033958,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   177.86 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    25.29 ms\nwhisper_print_timings:   sample time =    94.60 ms /   132 runs (     0.72 ms per run)\nwhisper_print_timings:   encode time =  3145.57 ms /     1 runs (  3145.57 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =   821.37 ms /   130 runs (     6.32 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  4342.01 ms\nTVLENS_RESOURCE 6.49 0.44 4.40 291192"
+    },
+    {
+      "fixture": "moment-42",
+      "duration": 8.0,
+      "threads": 2,
+      "repeat": 1,
+      "wallSeconds": 5.2192430450813845,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   167.26 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    19.87 ms\nwhisper_print_timings:   sample time =   299.45 ms /   313 runs (     0.96 ms per run)\nwhisper_print_timings:   encode time =  3180.01 ms /     1 runs (  3180.01 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  1379.30 ms /   311 runs (     4.44 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  5126.66 ms\nTVLENS_RESOURCE 8.31 0.33 5.18 289840"
+    },
+    {
+      "fixture": "moment-42",
+      "duration": 8.0,
+      "threads": 4,
+      "repeat": 1,
+      "wallSeconds": 5.654536223970354,
+      "code": 0,
+      "diagnostic": "whisper_print_timings:     load time =   175.26 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    19.57 ms\nwhisper_print_timings:   sample time =   215.07 ms /   313 runs (     0.69 ms per run)\nwhisper_print_timings:   encode time =  3259.45 ms /     1 runs (  3259.45 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  1824.07 ms /   311 runs (     5.87 ms per run)\nwhisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:    total time =  5573.64 ms\nTVLENS_RESOURCE 8.05 0.61 5.62 291504"
+    }
+  ],
+  "limits": [
+    "Two short clips only, no human reference transcription. Equality is not a guarantee of accuracy.",
+    "Original 18/43-second outliers were not reproduced; their root cause remains unproven.",
+    "No decoding fallback occurred in these benchmark clips.",
+    "Thread-count improvement cannot guarantee latency under shared host load."
+  ],
+  "decision": "Use available CPU count capped at four (two on VPS); allow explicit TVLENS_WHISPER_THREADS. Keep decoding/model unchanged. Collect numeric Whisper timings and fallback counters, discard raw stderr."
+}

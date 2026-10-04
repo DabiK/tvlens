@@ -1,3 +1,4 @@
+const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
@@ -67,7 +68,7 @@ class WatchSession {
       const evidence = await this.media.read(segment.id);
       if (this.closed) return;
       this.apiCalls++;
-      const result = await this.perception.observe({ ...segment, ...evidence, signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
+      const result = await this.perception.observe({ ...segment, ...evidence, context: perceptionContext(this, segment), signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
       if (this.closed) return;
       segment.analysisMs=result.elapsedMs;segment.metrics=result.metrics;segment.stage=null;
       segment.observation = result.observation;
@@ -135,7 +136,7 @@ class WatchSession {
       if (this.closed) return;
       this.apiCalls++;
       const result = await this.perception.observeVisual({ ...segment, ...evidence,
-        signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
+        context: perceptionContext(this, segment), signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
         onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
       if (this.closed) return;
       segment.observation = { ...segment.observation, ...result.observation };
