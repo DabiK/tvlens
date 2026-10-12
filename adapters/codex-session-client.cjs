@@ -1,3 +1,4 @@
+const { trace, safeError, isAuthFailure } = require("./chat-trace.cjs");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
@@ -48,6 +49,9 @@ class CodexSessionClient {
     this.tail = Promise.resolve();
     this.opened = new Set();
   }
+  trace(event, fields = {}) {
+    if (this.webSearch) trace(event, {sessionId:this.sessionId,threadId:this.threadId,jobId:this.active?.jobId,turnId:this.active?.turnId,...fields});
+  }
   answer(input) {
     const pending = this.tail.catch(() => {}).then(() => this.run(input));
     this.tail = pending;
@@ -57,6 +61,7 @@ class CodexSessionClient {
     if (this.ready && this.sessionId === sessionId) return this.ready;
     if (this.ready || this.dir) await this.close();
     this.sessionId = sessionId;
+    this.trace("session.prepare");
     this.ready = this.connect().catch(async (e) => {
       await this.close();
       throw e;
@@ -140,6 +145,7 @@ class CodexSessionClient {
       config: { web_search: this.webSearch ? "live" : "disabled" },
     });
     this.threadId = result.thread.id;
+    this.trace("thread.start.ack", {model:this.model,webSearch:this.webSearch});
     this.opened.clear();
     return this.threadId;
   }
@@ -161,16 +167,19 @@ class CodexSessionClient {
         inspect_clip: "Réexamen des images et du son…",
       }[p.tool],
     });
+    this.trace("tool.started", {tool:p.tool});
     try {
       const value = await active.tools.call(p.tool, p.arguments);
       active.signal.throwIfAborted();
       active.audit.push({ tool: p.tool, status: "completed" });
+      this.trace("tool.completed", {tool:p.tool,status:"completed"});
       return {
         success: true,
         contentItems: [{ type: "inputText", text: JSON.stringify(value) }],
       };
     } catch (e) {
       active.audit.push({ tool: p.tool, status: "failed" });
+      this.trace("tool.completed", {tool:p.tool,status:"failed",error:safeError(e)});
       return {
         success: false,
         contentItems: [{ type: "inputText", text: e.message }],
@@ -179,6 +188,15 @@ class CodexSessionClient {
   }
   event(method, p) {
     const active = this.active;
+    if (["turn/started","turn/completed","error","connection/closed"].includes(method)) {
+      this.trace(method, {eventThreadId:p?.threadId,eventTurnId:p?.turn?.id || p?.turnId,
+        status:p?.turn?.status,error:safeError(p?.turn?.error || p?.error),willRetry:p?.willRetry,
+        active:Boolean(active),hadFinal:Boolean(active?.final),textChars:active?.text?.length || 0});
+    }
+    if (["item/started","item/completed"].includes(method) && p?.item?.type === "webSearch") {
+      this.trace(method,{eventThreadId:p.threadId,eventTurnId:p.turnId,itemId:p.item.id,
+        itemType:"webSearch",actionType:p.item.action?.type,status:p.item.status,error:safeError(p.item.error)});
+    }
     if (method === "connection/closed") {
       this.ready = null;
       active?.reject(
@@ -189,6 +207,9 @@ class CodexSessionClient {
     if (!active || p.threadId !== this.threadId) return;
     if (method === "turn/started" && !active.turnId) active.turnId = p.turn.id;
     if (p.turnId && active.turnId && p.turnId !== active.turnId) return;
+    // Codex reports failure detail (e.g. responseStreamDisconnected) in separate "error" notifications
+    // before turn/completed. Keep the last one, redacted, as fallback diagnostic for the turn outcome.
+    if (method === "error" && p.error) active.lastError = safeError(p.error);
     if (method === "item/started") {
       const item = p.item;
       if (item.type === "webSearch")
@@ -261,18 +282,27 @@ class CodexSessionClient {
       method === "turn/completed" &&
       (!active.turnId || p.turn.id === active.turnId)
     ) {
-      if (p.turn.status !== "completed")
-        active.reject(
-          Error(
-            p.turn.status === "interrupted"
-              ? "Recherche annulée."
+      if (p.turn.status !== "completed") {
+        // Keep the raw turn outcome, redacted, so the job can store a usable diagnostic.
+        const detail = safeError(p.turn.error) || active.lastError;
+        const authRequired =
+          p.turn.status !== "interrupted" && isAuthFailure(detail);
+        const error = Error(
+          p.turn.status === "interrupted"
+            ? "Recherche annulée."
+            : authRequired
+              ? "Codex n’a pas terminé la réponse : authentification refusée (401). Reconnexion Codex requise (codex login), puis repose la question."
               : "Codex n’a pas terminé la réponse.",
-          ),
         );
-      else active.resolve(active.final || active.text);
+        error.turnStatus = p.turn.status;
+        if (detail) error.turnError = detail;
+        if (authRequired) error.authRequired = true;
+        active.reject(error);
+      } else active.resolve(active.final || active.text);
     }
   }
   async run({
+    jobId,
     sessionId,
     instructions,
     tools,
@@ -299,6 +329,7 @@ class CodexSessionClient {
     });
     done.catch(() => {});
     const active = (this.active = {
+      jobId,
       tools,
       signal,
       onProgress,
@@ -313,6 +344,7 @@ class CodexSessionClient {
     let abortedAt = 0;
     const abort = () => {
       abortedAt ||= Date.now();
+      this.trace("abort.requested",{error:safeError(signal.reason)});
       onProgress?.({ message: "Annulation…" });
       if (active.turnId)
         this.rpc
@@ -325,6 +357,7 @@ class CodexSessionClient {
     signal.addEventListener("abort", abort, { once: true });
     let watchdog;
     try {
+      this.trace("turn.start.request",{model:this.model});
       const response = await this.rpc.request("turn/start", {
         threadId: this.threadId,
         input: [{ type: "text", text: instructions }, ...mediaInput],
@@ -334,11 +367,13 @@ class CodexSessionClient {
         outputSchema,
       });
       active.turnId = response.turn.id;
+      this.trace("turn.start.ack",{status:response.turn.status});
       if (signal.aborted) abort();
       const interrupted = new Promise((_, fail) => {
         const check = () => {
           watchdog = setTimeout(() => {
             if (signal.aborted && Date.now() - abortedAt >= 3000) {
+              this.trace("watchdog.close");
               this.rpc.close();
               fail(signal.reason);
             } else check();
@@ -355,7 +390,14 @@ class CodexSessionClient {
         threadId: this.threadId,
         elapsedMs: Date.now() - started,
       };
+    } catch (error) {
+      this.trace("turn.rejected",{error:safeError(error),auditCount:active.audit.length});
+      // A 401 means the cached auth is stale: drop this session so the next question reconnects
+      // with refreshed credentials. No automatic retry of the failed turn.
+      if (error?.authRequired) this.ready = null;
+      throw error;
     } finally {
+      this.trace("turn.finished",{aborted:signal.aborted});
       clearTimeout(watchdog);
       signal.removeEventListener("abort", abort);
       if (this.active === active) this.active = null;

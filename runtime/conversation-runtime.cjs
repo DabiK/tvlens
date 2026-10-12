@@ -1,6 +1,7 @@
 const { DeepAsk } = require("../core/deep-ask.cjs");
 const { VideoTools } = require("../core/video-tools.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
+const { trace, safeError } = require("../adapters/chat-trace.cjs");
 
 // Both hosts supply the current session; frozen question snapshots take precedence.
 function createConversationRuntime({
@@ -37,7 +38,13 @@ function createConversationRuntime({
   return {
     agent: conversationAgent,
     makeTools,
-    deep: new DeepAsk({ agent: conversationAgent, makeTools, onChange }),
+    deep: new DeepAsk({
+      agent: conversationAgent,
+      makeTools,
+      onChange,
+      onTrace: trace,
+      serializeError: safeError,
+    }),
   };
 }
 module.exports = { createConversationRuntime };

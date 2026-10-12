@@ -1,5 +1,90 @@
+// Pure view model for a chat job card. Technical failures (error, timeout, cancellation) are shown
+// as such, with the redacted Codex diagnostic; "Contexte insuffisant" is reserved for a completed
+// answer that abstains for lack of evidence. `preview` (streamed, unvalidated model answer) and
+// `provisional` (automatic memory summary) have distinct provenance and are never merged.
+// Exposed via CommonJS for tests; inert on webOS.
+var TVLENS_KIND_LABELS = {
+  observation: "Observations de la vidéo",
+  external: "Réponse avec sources",
+  explanation: "Explication générale",
+  insufficient: "Contexte insuffisant",
+};
+function describeJob(job) {
+  var result = job.result || null,
+    failed = ["error", "timeout", "cancelled"].indexOf(job.status) >= 0,
+    observed = !!(result && result.observations && result.observations.length),
+    preview = job.preview || null,
+    provisional = job.provisional || null,
+    detail = job.errorDetail || null,
+    view = {
+      error: null,
+      errorDetail: null,
+      authRequired: false,
+      kindLabel: null,
+      answer: null,
+      result: null,
+      previewLabel: null,
+      preview: null,
+      provisionalLabel: null,
+      provisional: null,
+      limits: [],
+      message: null,
+    };
+  if (failed) {
+    view.error =
+      job.message ||
+      { error: "Erreur technique.", timeout: "Délai atteint.", cancelled: "Recherche annulée." }[job.status];
+    if (detail) {
+      var inner = detail.turnError || null,
+        parts = [];
+      if (detail.turnStatus) parts.push("Codex · " + detail.turnStatus);
+      if (inner && inner.code) parts.push(inner.code);
+      if (inner && inner.message) parts.push(inner.message);
+      else if (inner && inner.codexErrorInfo) parts.push(inner.codexErrorInfo);
+      view.errorDetail = parts.length ? parts.join(" · ") : null;
+      view.authRequired = !!(detail.authRequired || (inner && inner.authRequired));
+      if (view.authRequired)
+        view.errorDetail = "Reconnexion Codex requise" + (view.errorDetail ? " · " + view.errorDetail : "");
+    }
+    // The fallback "insufficient" result is not an evidence verdict: only real observations are shown.
+    if (observed) {
+      view.kindLabel = "Observations partielles";
+      view.answer = result.answer;
+      view.result = result;
+      view.limits = result.limits || [];
+    }
+    if (preview) {
+      view.previewLabel = "Réponse provisoire interrompue (non validée)";
+      view.preview = preview;
+    }
+    if (provisional) {
+      view.provisionalLabel = "Résumé automatique partiel";
+      view.provisional = provisional;
+    }
+  } else if (result) {
+    view.kindLabel = TVLENS_KIND_LABELS[result.kind] || "Réponse";
+    view.answer = result.answer;
+    view.result = result;
+    view.limits = result.limits || [];
+  } else {
+    if (preview) {
+      view.previewLabel = "Réponse provisoire";
+      view.preview = preview;
+    }
+    if (provisional) {
+      view.provisionalLabel = "Résumé automatique partiel";
+      view.provisional = provisional;
+    }
+  }
+  if (!failed && job.status !== "done") view.message = job.message || "";
+  return view;
+}
 (function () {
   "use strict";
+  if (typeof module === "object" && module && module.exports) {
+    module.exports = { describeJob: describeJob };
+    return;
+  }
   function el(id) {
     return document.getElementById(id);
   }
@@ -268,22 +353,23 @@
           (job.metrics.totalMs / 1000).toFixed(1) +
           " s",
       );
-    if (job.result) {
+    var view = describeJob(job);
+    if (view.error) {
       text(
         node,
         "small",
-        {
-          observation: "Observations de la vidéo",
-          external: "Réponse avec sources",
-          explanation: "Explication générale",
-          insufficient: "Contexte insuffisant",
-        }[job.result.kind] || "Réponse",
+        view.authRequired ? "Reconnexion Codex requise" : "Erreur technique",
       ).className = "answer-kind";
-      text(node, "p", job.result.answer).className = "chat-answer";
-      (job.result.hypotheses || []).forEach(function (h) {
+      text(node, "p", view.error).className = "chat-answer";
+      if (view.errorDetail) text(node, "small", view.errorDetail);
+    }
+    if (view.answer !== null) {
+      text(node, "small", view.kindLabel).className = "answer-kind";
+      text(node, "p", view.answer).className = "chat-answer";
+      (view.result.hypotheses || []).forEach(function (h) {
         text(node, "small", "Hypothèse : " + (h.text || h));
       });
-      (job.result.citations || []).forEach(function (c) {
+      (view.result.citations || []).forEach(function (c) {
         var segment = state.session.segments.find(function (s) {
           return s.id === c.id;
         });
@@ -298,17 +384,22 @@
               : " · média expiré"),
         );
       });
-      (job.result.sources || []).forEach(function (s) {
+      (view.result.sources || []).forEach(function (s) {
         text(node, "p", (s.title || "Source") + "\n" + s.url).className = "source-card";
       });
-      (job.result.limits || []).forEach(function (v) {
+      view.limits.forEach(function (v) {
         text(node, "small", v);
       });
-    } else if (job.preview || job.provisional) {
-      text(node, "small", "Réponse provisoire");
-      text(node, "p", job.preview || job.provisional);
     }
-    if (job.status !== "done") text(node, "small", job.message || "");
+    if (view.preview) {
+      text(node, "small", view.previewLabel);
+      text(node, "p", view.preview);
+    }
+    if (view.provisional) {
+      text(node, "small", view.provisionalLabel);
+      text(node, "p", view.provisional);
+    }
+    if (view.message !== null) text(node, "small", view.message);
     if (["queued", "running"].includes(job.status)) {
       var cancel = document.createElement("button");
       cancel.textContent = "Annuler cette question";

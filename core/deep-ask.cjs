@@ -1,9 +1,14 @@
+// Core must not import adapters: tracing and error serialization are injected by the runtime.
 function needsInspection(question) {
   return /(?:pourquoi|comment|combien de fois|avant|apres|après|entre|tombe|tombé|chute|geste|action|mouvement|que fait|se passer|s.est passe|s’est passé|s'est passé|déplace|deplace|changement|bouge|revois|revoir|approfond|retrouve|cherche.*moment)/i.test(question);
 }
 class DeepAsk {
-  constructor({ makeTools, agent, onChange=()=>{}, now=Date.now, timeoutMs=60000, progressMs=30000 }) {
-    Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs}); this.jobs=[]; this.sequence=0; this.active=null;
+  constructor({ makeTools, agent, onChange=()=>{}, now=Date.now, timeoutMs=60000, progressMs=30000, onTrace=()=>{}, serializeError=()=>({}) }) {
+    Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs,onTrace,serializeError}); this.jobs=[]; this.sequence=0; this.active=null;
+  }
+  // Diagnostics can never fail a job: both hooks are guarded and default to noop / empty detail.
+  trace(event,fields={}){try{this.onTrace(event,fields);}catch{}}
+  describeError(error){try{const d=this.serializeError(error);return d&&typeof d==='object'?{...d}:{};}catch{return {};}
   }
   snapshot() { return { jobs:this.jobs.map(({controller,tools,done,_finish,...j})=>({...j})) }; }
   emit() { this.onChange(this.snapshot()); }
@@ -27,6 +32,7 @@ class DeepAsk {
     job.tools=this.makeTools(controller.signal,message=>this.progress(job,{message}),{snapshot,anchorMs,startMs});
     if(anchorMs!==undefined||startMs!==undefined)job.tools.scope?.({anchorMs,startMs});
     job.sessionId=job.tools.sessionId;job.anchorMs=job.tools.anchorMs;
+    if(mode==="chat")this.trace("job.accepted",{jobId:job.id,sessionId:job.sessionId,questionLength:question.length,mode,intent,anchorMs:job.anchorMs});
     job.done=new Promise(resolve=>{job._finish=resolve;});this.jobs.push(job);this.emit();this.drain();
     return {id:job.id};
   }
@@ -37,9 +43,11 @@ class DeepAsk {
   }
   async run(job) {
     let timer,progress,onAbort;
+    if(job.mode==="chat")this.trace("job.started",{jobId:job.id,sessionId:job.sessionId});
     const cancelled=new Promise(resolve=>{onAbort=resolve;job.controller.signal.addEventListener('abort',onAbort,{once:true});});
     const timeout=new Promise(resolve=>{timer=setTimeout(()=>{
       if(job.status!=='running') return;
+      if(job.mode==="chat")this.trace("job.timeout",{jobId:job.id,sessionId:job.sessionId});
       job.status='timeout';job.message='Limite de 60 secondes atteinte.';job.result=this.partial(job.tools,job.mode);job.finishedAt=this.now();
       job.controller.abort(new Error('Délai maximal atteint.')); this.emit();resolve();
     },this.timeoutMs);});
@@ -63,7 +71,7 @@ class DeepAsk {
             if(context.omittedCount)job.tools.limits.push(`${context.omittedCount} résumé(s) plus ancien(s) non inclus dans ce récapitulatif.`);
             if(context.unanalyzedTailMs>0)job.tools.limits.push('La fin de l’intervalle demandé n’est pas encore entièrement analysée.');
           }
-          const result=await this.agent.answer({context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,onProgress:value=>this.progress(job,value)});
+          const result=await this.agent.answer({jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,onProgress:value=>this.progress(job,value)});
           if(job.status!=='running')return;
           // Only observed, validated evidence issued by our tool can justify a video answer.
           const observations=job.tools.observations;
@@ -88,13 +96,16 @@ class DeepAsk {
           job.status='done';
         } catch(error) {
           if(job.status!=='running')return;
-          job.status='error';job.message=error.message;job.result=this.partial(job.tools,job.mode);
+          if(job.mode==="chat")this.trace("job.error",{jobId:job.id,sessionId:job.sessionId,error:this.describeError(error)});
+          // Redacted diagnostic kept on the job (sent in the snapshot): the fallback result is not an evidence verdict.
+          job.status='error';job.message=error.message;job.errorDetail=this.describeError(error);job.result=this.partial(job.tools,job.mode);
         }
         job.finishedAt=this.now();this.emit();
       })()]);
     } finally {clearTimeout(timer);clearTimeout(progress);job.controller.signal.removeEventListener('abort',onAbort);
       const end=job.finishedAt??this.now();
       job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])]};
+      if(job.mode==="chat")this.trace("job.finished",{jobId:job.id,sessionId:job.sessionId,status:job.status,totalMs:job.metrics.totalMs});
       this.emit();
     }
   }

@@ -57,6 +57,7 @@ class CodexSessionAgent {
   }
 
   async run({
+    jobId,
     question,
     tools,
     signal,
@@ -95,6 +96,7 @@ class CodexSessionAgent {
         "\nLa précédente proposition de sources n’a pas pu être validée par l’application. Termine la demande initiale : ouvre explicitement les URLs HTTPS pertinentes avec le web, puis fournis la réponse et les sources consultées. N’invente aucun lien. Si cela échoue, réponds kind=insufficient et explique brièvement que le lien/la source n’a pas pu être confirmé. Ne remplace pas cette demande par un résumé vidéo.";
     }
     const result = await this.client.answer({
+      jobId,
       sessionId: tools.sessionId,
       instructions,
       tools,
@@ -139,6 +141,7 @@ class CodexSessionAgent {
     ) {
       onProgress?.({ message: "Confirmation des liens sources…" });
       const repaired = await this.run({
+        jobId,
         question,
         tools,
         signal,
