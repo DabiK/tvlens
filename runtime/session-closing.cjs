@@ -42,12 +42,14 @@ async function settleQuestions(deep, reason, save) {
 // - The session is then archived. One its host finds `empty()` is sealed and erased from `library` instead,
 //   and so is one explicitly deleted (`remove`), whatever it holds. Nothing is erased unless the store is
 //   really sealed, so that no late write of this runtime can bring the deleted directory back.
-// - `letGo` leaves the host without this session whatever happened above, before any folder is erased.
+// - `letGo` leaves the host without this session whatever happened above, before any folder is erased. A
+//   host that fails to let go still holds the session: nothing of it is erased then.
 // - `log` is handed one line when anything failed.
 // Never rejects. Every failure is in `errors` and keeps nothing from going on: an archive the disk refused
-// leaves `archived` false, and its folder keeps what was last confirmed. `refused` is why an explicit
-// deletion did not happen, the very error of the seal or of the erasure: its host hands it back to whoever
-// asked. An empty session that cannot be discarded never holds its host back.
+// leaves `archived` false, and its folder keeps what was last confirmed. `refused` is why this end is not
+// to be said done, the very error its host hands back to whoever asked: an explicit deletion that did not
+// happen (the seal, or the erasure), or a host that could not let go of the session (`letGo`; the refusal
+// of a seal comes first). An empty session that cannot be discarded never holds its host back.
 async function closeSession({
   session,
   library,
@@ -99,12 +101,16 @@ async function closeSession({
     // What failed while the runtime itself was closing: kept by it for its host.
     errors.push(...(session.closeErrors || []));
   }
+  let held = false;
   try {
     letGo();
   } catch (error) {
+    // The host still holds the session: it is not said gone, and nothing is erased under it.
+    held = true;
     errors.push(said("hôte", error));
+    outcome.refused ??= error;
   }
-  if (sealed)
+  if (sealed && !held)
     try {
       // A session that never reached the disk has nothing to erase.
       const onDisk = await library.folder(session.id).then(

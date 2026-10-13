@@ -120,17 +120,31 @@ test('an explicit deletion erases nothing unless the store is really sealed: ref
   assert.deepEqual({ ended: { ...left, refused: null }, calls: stuck.calls, journal: stuck.journal }, { ended: outcome({ errors: ['effacement : EACCES: permission denied'] }), calls: ['begin', 'seal', 'letGo', 'folder session-1', 'remove session-1'], journal: [LINE(['effacement : EACCES: permission denied'])] });
 });
 
-test('a callback of the host that fails neither stops what follows nor replaces why a deletion was refused; a session whose host cannot say whether it is empty is kept; with no session loaded only the steps of the host are run', async () => {
-  const { closeSession } = protocol();
-  // The host fails to let go and its journal fails too, during a deletion the seal refuses.
+test('a host that fails to let go of a session still holds it: nothing of it is erased and that failure is handed back for whoever asked, after the refusal of a seal when there was one; what the runtime failed to close and the journal are still collected, and a journal that fails changes nothing', async () => {
+  const { closeSession } = protocol(), busy = new Error('hôte occupé');
+  const holding = s => ({ letGo: () => { s.calls.push('letGo'); throw busy; } });
+  // During a deletion the seal refuses: that refusal comes first. The journal of the host fails too.
   const sealing = new Error('scellement refusé'), a = stage({ seal: sealing });
-  const refused = await closeSession({ ...a.host, remove: true, letGo: () => { a.calls.push('letGo'); throw new Error('hôte occupé'); }, log: line => { a.journal.push(line); throw new Error('journal fermé'); } });
-  assert.equal(refused.refused, sealing);
-  assert.deepEqual({ errors: refused.errors, calls: a.calls, journal: a.journal }, { errors: ['scellement : scellement refusé', 'hôte : hôte occupé'], calls: ['begin', 'seal', 'letGo'], journal: [LINE(['scellement : scellement refusé', 'hôte : hôte occupé'])] });
-  // The host fails to let go of an empty session: sealed, its folder is erased all the same.
-  const b = stage();
-  assert.deepEqual({ ended: await closeSession({ ...b.host, empty: () => true, letGo: () => { throw new Error('hôte occupé'); } }), calls: b.calls }, { ended: outcome({ freedBytes: 42, errors: ['hôte : hôte occupé'] }), calls: ['begin', 'seal', 'folder session-1', 'remove session-1'] });
-  const c = stage();
+  const unsealed = await closeSession({ ...a.host, remove: true, ...holding(a), log: line => { a.journal.push(line); throw new Error('journal fermé'); } });
+  assert.equal(unsealed.refused, sealing);
+  assert.deepEqual({ errors: unsealed.errors, calls: a.calls, journal: a.journal }, { errors: ['scellement : scellement refusé', 'hôte : hôte occupé'], calls: ['begin', 'seal', 'letGo'], journal: [LINE(['scellement : scellement refusé', 'hôte : hôte occupé'])] });
+  // A deletion whose store is sealed: its folder is not erased under a host that still holds the session.
+  const b = stage({ closeErrors: ['perception : perception bloquée'] }), said = ['perception : perception bloquée', 'hôte : hôte occupé'];
+  const deleted = await closeSession({ ...b.host, remove: true, ...holding(b) });
+  assert.equal(deleted.refused, busy, 'the error itself, not a copy of it');
+  assert.deepEqual({ ended: { ...deleted, refused: null }, calls: b.calls, journal: b.journal }, { ended: outcome({ errors: said }), calls: ['begin', 'seal', 'letGo'], journal: [LINE(said)] });
+  // An empty session, sealed: not erased either.
+  const c = stage(), discarded = await closeSession({ ...c.host, empty: () => true, ...holding(c) });
+  assert.equal(discarded.refused, busy);
+  assert.deepEqual({ ended: { ...discarded, refused: null }, calls: c.calls }, { ended: outcome({ errors: ['hôte : hôte occupé'] }), calls: ['begin', 'seal', 'letGo'] });
+  // A session that is archived: its archive is on disk, and its end is not to be said done.
+  const d = stage(), archived = await closeSession({ ...d.host, ...holding(d) });
+  assert.equal(archived.refused, busy);
+  assert.deepEqual({ ended: { ...archived, refused: null }, calls: d.calls, journal: d.journal }, { ended: outcome({ archived: true, errors: ['hôte : hôte occupé'] }), calls: ['begin', 'archive', 'letGo'], journal: [LINE(['hôte : hôte occupé'])] });
+});
+
+test('a session whose host cannot say whether it is empty is kept; with no session loaded only the steps of the host are run', async () => {
+  const { closeSession } = protocol(), c = stage();
   assert.deepEqual({ ended: await closeSession({ ...c.host, empty: () => { throw new Error('état illisible'); } }), calls: c.calls }, { ended: outcome({ archived: true, errors: ['archive : état illisible'] }), calls: ['begin', 'archive', 'letGo'] });
   const d = stage();
   const none = await closeSession({ ...d.host, session: null, steps: [['agent de chat', () => { d.calls.push('agent de chat'); throw new Error('EBUSY'); }]] });
@@ -168,7 +182,9 @@ async function serverHost(t) {
     const res = await fetch(server.url + route, { method: body === undefined ? 'GET' : 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
     return { status: res.status, value: await res.json() };
   };
-  return { name: 'server', journal, order, chat, agent, folder: id => path.join(sessionsRoot, id), runtime: () => runtime.session, lastEnd: () => runtime.lastEnd,
+  return { name: 'server', journal, order, chat, agent, deep: runtime.deep, folder: id => path.join(sessionsRoot, id), runtime: () => runtime.session, lastEnd: () => runtime.lastEnd,
+    // Nothing of the questions still waits for its second, and the disk has taken what it was handed: read from the host itself.
+    settled: async () => { await until(() => !runtime.unsaved && !runtime.checkpointTimer, 'the questions are saved'); await runtime.session?.store.serial.catch(() => {}); },
     // The reason this adapter gives a session it ends, and the order this host keeps for its closing steps.
     reason: 'Session terminée.', closing: { paused: ['préparations', 'capture', 'questions', 'surveillance', 'agent de chat', 'archive'], capturing: ['préparations', 'capture', 'questions', 'surveillance', 'agent de chat', 'archive'] },
     start: async () => { const { value } = await req('/v1/session/start', {}); recorded(order, runtime.session, 'pause', 'capture'); recorded(order, runtime.session, 'archive', 'archive'); return value.id; },
@@ -265,7 +281,7 @@ async function macHost(t) {
   // Always quit before its directory is removed: a failed assertion must not leave a host writing into a deleted folder.
   t.after(async () => { chat.turn?.finish(); await quit().catch(() => {}); await fsp.rm(userData, { recursive: true, force: true }); });
   assert.equal(started, true, journal.join(' '));
-  return { name: 'Mac', journal, order, chat, host, folder: id => path.join(userData, 'sessions', id), runtime: () => runtimes.at(-1), get agent() { return built.conversation.agent; },
+  return { name: 'Mac', journal, order, chat, host, folder: id => path.join(userData, 'sessions', id), runtime: () => runtimes.at(-1), get agent() { return built.conversation.agent; }, get deep() { return built.conversation.deep; },
     // The reason this adapter gives a session it ends, and the order this host keeps for its closing steps.
     reason: 'Nouvelle session.', closing: { paused: ['contextes MCP', 'surveillance', 'questions', 'agent de chat', 'archive'], capturing: ['contextes MCP', 'surveillance', 'questions', 'agent de chat', 'capture', 'archive'] },
     start: async () => (await host.start()).id,
@@ -452,6 +468,82 @@ onBothHosts('the closing steps of a session are entered in the order this host k
   h.order.length = 0;
   await h.stopHost();
   assert.deepEqual({ paused, capturing: h.order, archived: [(await saved(h, id, 'manifest.json')).state, (await saved(h, next, 'manifest.json')).state] }, { ...h.closing, archived: ['archived', 'archived'] });
+});
+
+// ---- A host that could not let go of its session --------------------------------------------------------------------
+// On the server host the real chain: the cancellation of the questions fails, a question stays active, and that host
+// cannot let go of a session whose question is still running. On the Mac host nothing of the kind exists: letting go
+// is made to fail where it publishes the emptied questions.
+
+// What is left of a folder, or that it is gone.
+const kept = dir => tree(dir).catch(() => 'erased');
+// The removals of one session folder the system is asked for.
+function erasures(t, folder) {
+  const rm = fsp.rm, asked = [];
+  t.mock.method(fsp, 'rm', async (target, ...rest) => { if (String(target) === folder) asked.push('rm'); return rm(target, ...rest); });
+  return asked;
+}
+// A session with one passage and a question the agent holds, saved as running, then paused.
+async function withRunningQuestion(h) {
+  const id = await h.start();
+  await passage(h, id);
+  h.chat.hold = true;
+  await h.ask(id, 'Longue question ?');
+  await until(() => h.chat.turn, 'the question reached the agent');
+  await until(async () => (await saved(h, id, 'deep-answers.json').catch(() => null))?.jobs.at(-1)?.status === 'running', 'the running question is saved');
+  await h.pause();
+  return id;
+}
+const UNCANCELLED = ['questions : annulation impossible (simulé)', 'hôte : Une question est en cours.'];
+
+test('server host (HTTP) — a session its host could not let go of is not said deleted, and nothing of it is erased: whoever asked is told why, the journal says it, the question is still running and the host still shows the session it holds; once its questions can be cancelled the same deletion goes through, and a new session starts', async t => {
+  const h = await serverHost(t), id = await withRunningQuestion(h);
+  // The latest state of the running question has reached the disk: nothing of this session is left to write.
+  await h.settled();
+  const erased = erasures(t, h.folder(id)), cancelAll = h.deep.cancelAll, before = await tree(h.folder(id));
+  h.deep.cancelAll = () => { throw new Error('annulation impossible (simulé)'); };
+  const refused = await h.remove(id);
+  h.deep.cancelAll = cancelAll;
+  assert.deepEqual({ refused, folder: await kept(h.folder(id)), erased: [...erased], held: (await h.state())?.id, questions: (await h.jobs()).map(job => job.status), journal: h.journal, lastEnd: h.lastEnd() }, {
+    refused: 'Une question est en cours.', folder: before, erased: [], held: id, questions: ['running'], journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: false, errors: UNCANCELLED } });
+  // The questions can be cancelled again: the same deletion goes through, and the agent answering late changes nothing.
+  const removed = await h.remove(id);
+  h.chat.turn.finish(); await pause(60);
+  const next = await h.start();
+  assert.deepEqual({ removed, erased, folder: await there(h.folder(id)), next: [next !== id, await passage(h, next), (await h.jobs()).length], journal: h.journal.length }, {
+    removed: 'deleted', erased: ['rm'], folder: false, next: [true, 'moment-1', 0], journal: 1 });
+});
+
+test('server host (HTTP) — a session its host could not let go of is not said ended: its archive is on disk, whoever asked is told why, the journal says it, and the host still shows the session it holds; once its questions can be cancelled the same end goes through with the question given up and saved, and a new session starts', async t => {
+  const h = await serverHost(t), id = await withRunningQuestion(h), cancelAll = h.deep.cancelAll;
+  h.deep.cancelAll = () => { throw new Error('annulation impossible (simulé)'); };
+  const refused = await h.end();
+  h.deep.cancelAll = cancelAll;
+  assert.deepEqual({ refused, held: (await h.state())?.id, questions: (await h.jobs()).map(job => job.status), manifest: (await saved(h, id, 'manifest.json')).state, journal: h.journal, lastEnd: h.lastEnd() }, {
+    refused: { status: 400, value: { error: 'Une question est en cours.' } }, held: id, questions: ['running'], manifest: 'archived', journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: true, errors: UNCANCELLED } });
+  const ended = await h.end();
+  h.chat.turn.finish(); await pause(60);
+  const last = (await saved(h, id, 'deep-answers.json')).jobs.at(-1), rows = await h.rows(), next = await h.start();
+  assert.deepEqual({ ended, question: [last.status, last.message], rows, next: [next !== id, await passage(h, next)], journal: h.journal.length }, {
+    ended: h.endAnswer({ id, archived: true }), question: ['cancelled', 'Session terminée.'], rows: [[id, 'archived', 1, 1]], next: [true, 'moment-1'], journal: 1 });
+});
+
+test('Mac host (IPC) — a deletion whose host fails to let go of the session erases nothing and is not said done: whoever asked is told why, the journal says it, the window is still told that the session is gone, and the folder left behind can then be deleted', async t => {
+  const h = await macHost(t), events = [];
+  h.host.onReset(() => events.push('watch:reset')); h.host.onSessionsChanged(() => events.push('sessions:changed'));
+  const id = await h.start();
+  await passage(h, id);
+  await h.pause();
+  const erased = erasures(t, h.folder(id)), emit = h.deep.emit, before = await tree(h.folder(id));
+  events.length = 0;
+  h.deep.emit = () => { throw new Error('publication impossible (simulé)'); };
+  const refused = await h.remove(id);
+  h.deep.emit = emit;
+  assert.deepEqual({ refused, folder: await kept(h.folder(id)), erased: [...erased], told: [...new Set(events)].sort(), state: await h.state(), journal: h.journal }, {
+    refused: 'publication impossible (simulé)', folder: before, erased: [], told: ['sessions:changed', 'watch:reset'], state: null, journal: [LINE(['hôte : publication impossible (simulé)'], id)] });
+  // This host had already emptied its own state: the folder it left is deleted as any session that is not loaded.
+  const removed = await h.remove(id), next = await h.start();
+  assert.deepEqual({ removed, erased, folder: await there(h.folder(id)), next: [next !== id, await passage(h, next)] }, { removed: 'deleted', erased: ['rm'], folder: false, next: [true, 'moment-1'] });
 });
 
 // ---- What only the Mac host has --------------------------------------------------------------------------------------

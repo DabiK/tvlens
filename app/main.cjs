@@ -377,7 +377,8 @@ app.whenReady().then(async () => {
         },
         log: line => console.error(line),
       });
-      // An explicit deletion that fails is said to whoever asked for it; an empty session or an archive never blocks the host.
+      // An explicit deletion that did not happen, and an end this host could not let go of its session for, are said
+      // to whoever asked; an empty session or an archive the disk refused never blocks the host.
       if (refused) throw refused;
       return { freedBytes };
     } finally {

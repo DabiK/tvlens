@@ -891,11 +891,13 @@ class HeadlessRuntime {
       this.releasing = false;
     }
   }
-  // Ends the work on the session in memory and keeps it whole on disk: nothing is purged.
+  // Ends the work on the session in memory and keeps it whole on disk: nothing is purged. A session this
+  // host could not let go of is not said ended: whoever asked is told why, as the journal already is.
   async release(reason = "Session terminée.") {
     const session = this.session;
     if (!session) return { id: null, archived: false };
-    await this.leave(session, reason);
+    const { refused } = await this.leave(session, reason);
+    if (refused) throw refused;
     return this.lastEnd;
   }
   // "Terminer la session" archives: nothing is purged. Coalesced: a second request shares the outcome.
@@ -1063,8 +1065,8 @@ class HeadlessRuntime {
         "Session supprimée.",
         true,
       );
-      // Not erased "whatever happens": nothing is unless the store is really sealed. The host has let
-      // go of the session all the same, its folder keeps what it held, and whoever asked is told why.
+      // Not erased "whatever happens": nothing is unless the store is really sealed and this host has
+      // let go of the session. Otherwise its folder keeps what it held, and whoever asked is told why.
       if (refused) throw refused;
       this.emit();
       return { deleted: true, id, freedBytes };
