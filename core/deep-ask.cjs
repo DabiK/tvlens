@@ -28,8 +28,13 @@ class DeepAsk {
     const job=id?this.jobs.find(j=>j.id===id):this.active;if(!job||!['queued','running'].includes(job.status))return;
     const queued=job.status==='queued';job.status='cancelled';job.message=reason;job.finishedAt=this.now();
     if(job.tools.observations.length)job.result=this.partial(job.tools,job.mode);
-    job.controller.abort(new Error(reason));if(queued)job._finish();this.emit();
+    // A question cancelled in the queue never reached the agent: nothing can still be using its tools.
+    job.controller.abort(new Error(reason));if(queued){job._finish();this.release(job);}this.emit();
   }
+  // A finished question keeps its answer, not its working context. A moment action keeps the passages of its own
+  // interval, which the host reads to re-examine that moment. Housekeeping: tools that cannot be released (restored
+  // copies, test doubles) stay as they are, and a failure here never reaches the question nor the queue.
+  release(job){try{job.tools.release?.({keepPassages:Boolean(job.intent)});}catch{}}
   cancelAll(reason='Session terminée.') {
     for(const job of this.jobs.filter(j=>j.status==='queued'))this.cancel(reason,job.id);
     this.cancel(reason);
@@ -70,7 +75,7 @@ class DeepAsk {
     this.run(job).finally(()=>{if(this.active===job)this.active=null;job._finish();this.drain();});
   }
   async run(job) {
-    let timer,progress,onAbort;
+    let timer,progress,onAbort,work;
     if(job.mode==="chat")this.trace("job.started",{jobId:job.id,sessionId:job.sessionId});
     const cancelled=new Promise(resolve=>{onAbort=resolve;job.controller.signal.addEventListener('abort',onAbort,{once:true});});
     const timeout=new Promise(resolve=>{timer=setTimeout(()=>{
@@ -81,7 +86,9 @@ class DeepAsk {
     },job.timeoutMs);});
     progress=setTimeout(()=>{if(job.status==='running'){job.message=`La recherche continue · arrêt au plus tard à ${limitLabel(job.timeoutMs)}.`;this.emit();}},this.progressMs);
     try {
-      await Promise.race([timeout,cancelled,(async()=>{
+      // `work` is the agent's own use of the tools, apart from the race: a ceiling or a cancellation ends the
+      // question for the viewer while the agent may still be running.
+      await Promise.race([timeout,cancelled,work=(async()=>{
         try {
           const conversation=job.intent?[]:this.jobs.filter(j=>j!==job&&j.sessionId===job.sessionId&&j.result).slice(-6).map(j=>({question:j.question,answer:j.result.answer,sources:j.result.sources||[]}));
           const context=job.mode==='chat'?job.tools.context?.({intent:job.intent}):undefined;
@@ -144,6 +151,9 @@ class DeepAsk {
         evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};
       if(job.mode==="chat")this.trace("job.finished",{jobId:job.id,sessionId:job.sessionId,status:job.status,totalMs:job.metrics.totalMs});
       this.emit();
+      // After the last read and the last publication, and only once the agent has really returned: at once for an
+      // answer or an error, later after a ceiling or a cancellation, never if the agent never returns. No timer.
+      work.then(()=>this.release(job),()=>this.release(job));
     }
   }
   progress(job,value){

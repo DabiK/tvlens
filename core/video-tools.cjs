@@ -8,6 +8,8 @@ const MEDIA_GONE = {
 // Why a passage has no video to replay, said to the agent only where it changes what it can do: an unreadable video
 // is still re-examined, on the images kept at capture. An expired or missing one is not, and looks as it always did.
 const stills = s => s.mediaReason === 'unreadable' ? { mediaReason: 'unreadable' } : {};
+// A consultation asked of a context its question has given back: nothing is read, leased or recorded for it.
+const RELEASED = 'Question terminée : ses passages ne sont plus consultables.';
 // A capability scoped to one question and one immutable observed prefix: session, scope start,
 // anchor, passage ids and bounds never change. An optional `live` snapshot provider only lets
 // refresh() re-read newer versions of those same passages at consultation boundaries.
@@ -19,6 +21,8 @@ class VideoTools {
     this.frozenAtMs = this.evidenceAsOfMs = this.anchorMs; this.refreshes = 0; this.journal = []; this.journalDropped = 0; this.consultedAt = new Map();
     // Rank of each consultation. The session clock cannot order two reads: it stops while the session is paused.
     this.reads = 0;
+    // Tool calls still running: release() lets nothing go before the last of them has ended.
+    this.inFlight = 0;
     this.segments = JSON.parse(JSON.stringify([...snapshot.history.map(s => ({...s,available:false})), ...snapshot.segments])).filter(s => s.endMs <= this.anchorMs);
     this.toolMetrics = []; this.startMs = 0; this.memoryEvidence = []; this.transcriptEvidence = []; this.calls = 0; this.inspections = 0; this.busy = false; this.observations = []; this.hypotheses = []; this.limits = [];
   }
@@ -62,6 +66,7 @@ class VideoTools {
   // What this question may consult: fixed when the question froze, never widened afterwards.
   // A passage received later, or one that ends after the anchor, is not part of it.
   availability() {
+    if(this.reach)return this.reach;
     const first=this.segments[0],last=this.segments.at(-1);
     return {startMs:first?Math.max(this.startMs,first.startMs):this.startMs,throughMs:last?last.endMs:this.startMs,anchorMs:this.anchorMs,passages:this.segments.length,lastPassage:last?{id:last.id,startMs:last.startMs,endMs:last.endMs}:null};
   }
@@ -76,6 +81,21 @@ class VideoTools {
     this.anchorMs=Math.min(this.anchorMs,anchorMs);this.startMs=startMs;
     this.segments=this.segments.filter(s=>s.startMs>=startMs&&s.endMs<=this.anchorMs);
     return this;
+  }
+  // Called by the owner of the question once its agent has given these tools back. From then on every consultation
+  // is refused, and what only a question being answered needs is let go: the copied prefix, the session's search,
+  // inspector and media, the live provider and the progress callback. A tool call still running keeps all of it,
+  // its lease included, until it ends. What was consulted, the journal and the counters stay.
+  // `keepPassages` keeps the passages of the question's own interval, for a host that re-examines that moment later.
+  release({keepPassages=false}={}) {
+    if(this.released)return;
+    this.released=true;this.keepPassages=keepPassages;
+    if(!this.inFlight)this.letGo();
+  }
+  letGo() {
+    // A refusal goes on naming what the question could consult, not an empty memory.
+    if(!this.keepPassages){this.reach=this.availability();this.segments=[];}
+    this.search=this.inspector=this.media=this.live=undefined;this.onProgress=()=>{};
   }
   context({intent}={}) {
     this.refresh();
@@ -98,15 +118,16 @@ class VideoTools {
       precision:'Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes.'};
   }
   async call(name,args={}) {
-    const startedAt=this.now();let status='completed';const detail={};
+    const startedAt=this.now();let status='completed';const detail={};this.inFlight++;
     try{return await this.invoke(name,args,detail);}catch(error){status='failed';throw error;}
-    finally{this.toolMetrics.push({tool:name,durationMs:Math.max(0,this.now()-startedAt),status,...detail});}
+    finally{this.toolMetrics.push({tool:name,durationMs:Math.max(0,this.now()-startedAt),status,...detail});if(!--this.inFlight&&this.released)this.letGo();}
   }
   // `detail` receives counts for the tool metrics: never text.
   async invoke(name, args = {}, detail = {}) {
     this.signal?.throwIfAborted();
     if (++this.calls > 8) throw new Error('Limite de huit appels d’outils atteinte.');
     if (name === 'search_moments') {
+      if (this.released) throw new Error(RELEASED);
       this.onProgress('Recherche des passages…');
       // Keep the versions handed to the search and their date: a concurrent call may refresh this.segments meanwhile.
       this.refresh(); const segments=this.segments, asOfMs=this.evidenceAsOfMs, read=this.reads;
@@ -116,6 +137,7 @@ class VideoTools {
     }
     const { startMs, endMs } = args;
     if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs < this.startMs || endMs <= startMs || endMs > this.anchorMs) throw this.outOfReach('Intervalle invalide ou postérieur à la question.');
+    if (this.released) throw new Error(RELEASED);
     // Also re-reads availability before an inspection; the media lease stays the authority against a concurrent purge.
     this.refresh(); const asOfMs = this.evidenceAsOfMs, read = this.reads;
     const segments = this.segments.filter(s => s.endMs > startMs && s.startMs < endMs);
