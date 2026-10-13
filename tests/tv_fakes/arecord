@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+"""Fake arecord for tests: writes a short silent WAV where the capture expects its sound. Never opens a device.
+
+It waits the duration asked with -d, like the real tool, unless TVLENS_FAKE_ARECORD_SECONDS gives another one
+(tests of a few seconds). TVLENS_FAKE_ARECORD_FAIL=1 makes it fail, as when the audio device is busy.
+"""
+import os, struct, sys, time
+
+def main():
+    arguments = sys.argv[1:]
+    if os.environ.get('TVLENS_FAKE_ARECORD_FAIL'): return 1
+    seconds = float(arguments[arguments.index('-d') + 1]) if '-d' in arguments[:-1] else 0
+    seconds = float(os.environ.get('TVLENS_FAKE_ARECORD_SECONDS') or seconds)
+    samples = b'\0' * 1920   # 10 ms of 48 kHz stereo 16-bit silence
+    header = b'RIFF' + struct.pack('<I', 36 + len(samples)) + b'WAVEfmt ' + struct.pack('<IHHIIHH', 16, 1, 2, 48000, 192000, 4, 16) + b'data' + struct.pack('<I', len(samples))
+    time.sleep(seconds)
+    with open(arguments[-1], 'wb') as output: output.write(header + samples)
+    return 0
+
+if __name__ == '__main__': sys.exit(main())

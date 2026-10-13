@@ -25,7 +25,7 @@ async function main() {
   } };
   const store = new LocalSessionStore(path.join(root, 'session'));
   let now = 0;
-  const watch = new WatchSession({ id: 'live-validation', now: () => now, perception, answer: adapter, media: store, archive: store });
+  const watch = new WatchSession({ id: 'live-validation', now: () => now, perception, answer: adapter, media: store, archive: store, retentionMs: 300000 });
   try {
     for (const [index, offset] of [60, 120].entries()) {
       const dir = path.join(root, `input-${index}`); await fs.mkdir(dir);

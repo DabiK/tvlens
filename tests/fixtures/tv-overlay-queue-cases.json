@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "about": "Cas de file communs à tv/app/surveillance-overlay.js (panneau ouvert, JavaScript) et à la file du superviseur natif (panneau fermé, Python). Sémantique normative : tv-ambient-design.md §4.4, amendée par contracts.md §5.3 et §6 T7 (aucun signalement dans l’overlay). Fichier stable : un changement de sens se fait en ajoutant un cas, jamais en modifiant un cas existant.",
+  "protocol": [
+    "Une file par cas, construite avec defaults puis options. L’horloge locale part de 0 et n’avance que par pas de tickMs ; c’est l’horloge de la TV, sans rapport avec serverNowMs.",
+    "À chaque instant t = 0, tickMs, 2·tickMs … untilMs : appliquer d’abord, dans l’ordre du fichier, toutes les étapes dont atMs vaut t, puis exécuter un tour d’affichage avec le drapeau de pause courant.",
+    "Étapes : feed = une réponse de GET /v1/surveillance/overlay (sessionId, serverNowMs, elapsedMs, overlay, signals) ; pause = {value} ; seen = {seq}, l’autre écran déclare avoir montré les cartes jusqu’à seq.",
+    "Tour d’affichage : une carte dont la durée est écoulée disparaît ; si rien n’est affiché, que la pause est levée et que gapMs s’est écoulé depuis la dernière disparition, la plus ancienne carte en attente encore fraîche s’affiche aussitôt (latence de lancement nulle dans ce modèle). Une carte périmée rencontrée en tête est comptée et la suivante est essayée dans le même tour.",
+    "Âge d’une carte = (serverNowMs − finishedAt) à la réception, plus le temps local écoulé depuis cette réception. Périmée si l’âge dépasse strictement staleMs.",
+    "Première lecture d’une session (ou sessionId différent) : la file est vidée, le curseur part de overlay.seq, aucune carte de cette réponse n’entre en file.",
+    "expect.shown : chaque affichage dans l’ordre, avec l’identifiant, le premier instant affiché (fromMs) et le premier instant où la carte n’est plus affichée (toMs). counts : cumul sur la vie de la file. cursor : curseur overlay final. queue : cartes en attente à untilMs. checkpoints : carte affichée (ou null) et nombre de cartes en attente après le tour de l’instant atMs.",
+    "Une implémentation avec latence de lancement (superviseur natif) compare l’ordre des identifiants, counts, cursor et queue ; fromMs et toMs ne sont exacts que pour le modèle à latence nulle.",
+    "Volontairement hors de ces cas, car propre à chaque écran : le sort de la carte affichée au moment d’une pause, d’un seen ou d’un changement de session. Les cas évitent ces instants.",
+    "Ajout (déclaration liée à la session) : une étape seen vaut pour la session qu’elle nomme (sessionId de l’étape ; à défaut, dans les cas antérieurs, celle de la dernière réponse lue). Une déclaration qui nomme une autre session que celle en cours de lecture est ignorée : aucun curseur ne bouge, aucune carte n’est écartée.",
+    "Ajout (registre restauré) : une réponse lue pendant que le serveur restaure le registre enregistré (activity.state = restoring) ne porte pas de séquences définitives : aucune carte n’entre en file. La première réponse qui suit replace le curseur sur overlay.seq, comme une première lecture : l’historique restauré n’est pas une nouveauté."
+  ],
+  "defaults": {"tickMs":250,"displayMs":14000,"gapMs":1500,"maxQueue":4,"staleMs":180000},
+  "cases": [
+    {
+      "name": "unsourced-never-shown",
+      "rule": "§4.4 Défense, cas 1 : une carte de vérification sans source est refusée et comptée ; elle ne retarde pas la suivante.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[],"publishedAtMs":600500,"finishedAt":1790000000500},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":600800,"finishedAt":1790000000800}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 20000,
+      "expect": {
+        "shown": [{"id":"lot-2","fromMs":1000,"toMs":15000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":1},
+        "cursor": 2,
+        "queue": 0
+      }
+    },
+    {
+      "name": "fifo-display-then-gap",
+      "rule": "§4.4 Ordre, cas 2 : finishedAt croissant quel que soit l’ordre reçu, une carte à la fois, displayMs puis 1,5 s de pause.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 500, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000500, "elapsedMs": 600500,
+          "overlay": {"seq": 3, "cards": [
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":600300,"finishedAt":1790000000300},
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600100,"finishedAt":1790000000100},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":600200,"finishedAt":1790000000200}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 50000,
+      "checkpoints": [{"atMs":500,"card":"lot-1","queue":2},{"atMs":15000,"card":null,"queue":2},{"atMs":16000,"card":"lot-2","queue":1}],
+      "expect": {
+        "shown": [{"id":"lot-1","fromMs":500,"toMs":14500},{"id":"lot-2","fromMs":16000,"toMs":30000},{"id":"lot-3","fromMs":31500,"toMs":45500}],
+        "counts": {"shown":3,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 3,
+        "queue": 0
+      }
+    },
+    {
+      "name": "six-at-once-four-queued-two-counted",
+      "rule": "§4.4 File, cas 3 : six cartes d’un coup, quatre en file, les deux plus anciennes comptées et jamais affichées.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 6, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600500,"finishedAt":1790000000500},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":600700,"finishedAt":1790000000700},
+            {"id":"lot-4","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":600800,"finishedAt":1790000000800},
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":600900,"finishedAt":1790000000900},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":601000,"finishedAt":1790000001000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 65000,
+      "checkpoints": [{"atMs":1000,"card":"lot-3","queue":3}],
+      "expect": {
+        "shown": [{"id":"lot-3","fromMs":1000,"toMs":15000},{"id":"lot-4","fromMs":16500,"toMs":30500},{"id":"lot-5","fromMs":32000,"toMs":46000},{"id":"lot-6","fromMs":47500,"toMs":61500}],
+        "counts": {"shown":4,"skippedStale":0,"skippedOverflow":2,"skippedUnsourced":0},
+        "cursor": 6,
+        "queue": 0
+      }
+    },
+    {
+      "name": "first-read-replays-nothing",
+      "rule": "§4.4 Curseur, cas 4 : première lecture d’une session à seq = 7, rien n’est rejoué ; seule la carte 8, publiée ensuite, s’affiche.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq": 7, "cards": [
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":560000,"finishedAt":1789999960000},
+            {"id":"lot-4","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":570000,"finishedAt":1789999970000},
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":580000,"finishedAt":1789999980000},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":590000,"finishedAt":1789999990000},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":600000,"finishedAt":1790000000000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 5000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000005000, "elapsedMs": 605000,
+          "overlay": {"seq": 7, "cards": [
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":560000,"finishedAt":1789999960000},
+            {"id":"lot-4","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":570000,"finishedAt":1789999970000},
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":580000,"finishedAt":1789999980000},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":590000,"finishedAt":1789999990000},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":600000,"finishedAt":1790000000000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 10000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000010000, "elapsedMs": 610000,
+          "overlay": {"seq": 8, "cards": [
+            {"id":"lot-4","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":570000,"finishedAt":1789999970000},
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":580000,"finishedAt":1789999980000},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":590000,"finishedAt":1789999990000},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":600000,"finishedAt":1790000000000},
+            {"id":"lot-8","kind":"verification","label":"Sources consultées","seq":8,"text":"Résultat sourcé numéro 8.","claimIds":["claim-8"],"interval":{"startMs":480000,"endMs":488000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/8","title":"Insee, série 8","publisher":"Insee"}],"publishedAtMs":609500,"finishedAt":1790000009500}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 30000,
+      "checkpoints": [{"atMs":5000,"card":null,"queue":0}],
+      "expect": {
+        "shown": [{"id":"lot-8","fromMs":10000,"toMs":24000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 8,
+        "queue": 0
+      }
+    },
+    {
+      "name": "stale-181s-counted-179s-shown",
+      "rule": "§4.4 Fraîcheur, cas 5 : âge = serverNowMs − finishedAt ; 181 s comptée et jamais affichée, 179 s affichée. L’horloge de la TV (0) n’a aucun rapport avec celle du serveur.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":420000,"finishedAt":1789999820000},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":422000,"finishedAt":1789999822000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 20000,
+      "expect": {
+        "shown": [{"id":"lot-2","fromMs":1000,"toMs":15000}],
+        "counts": {"shown":1,"skippedStale":1,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 2,
+        "queue": 0
+      }
+    },
+    {
+      "name": "session-change-empties-queue",
+      "rule": "§4.4 Curseur, cas 6 : changement de session, la file est vidée sans rien compter et le curseur repart du seq courant de la nouvelle session.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 3, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":600700,"finishedAt":1790000000700},
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":600800,"finishedAt":1790000000800}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 15250, "op": "feed", "feed": {"sessionId": "s2", "enabled": true, "accepting": true, "serverNowMs": 1790000015250, "elapsedMs": 615250,
+          "overlay": {"seq": 4, "cards": [
+            {"id":"lot-21","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":614100,"finishedAt":1790000014100},
+            {"id":"lot-22","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":614200,"finishedAt":1790000014200},
+            {"id":"lot-23","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":614300,"finishedAt":1790000014300},
+            {"id":"lot-24","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":614400,"finishedAt":1790000014400}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 20000, "op": "feed", "feed": {"sessionId": "s2", "enabled": true, "accepting": true, "serverNowMs": 1790000020000, "elapsedMs": 620000,
+          "overlay": {"seq": 5, "cards": [
+            {"id":"lot-22","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":614200,"finishedAt":1790000014200},
+            {"id":"lot-23","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":614300,"finishedAt":1790000014300},
+            {"id":"lot-24","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":614400,"finishedAt":1790000014400},
+            {"id":"lot-25","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":619500,"finishedAt":1790000019500}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 40000,
+      "checkpoints": [{"atMs":15000,"card":null,"queue":2},{"atMs":15250,"card":null,"queue":0}],
+      "expect": {
+        "shown": [{"id":"lot-1","fromMs":1000,"toMs":15000},{"id":"lot-25","fromMs":20000,"toMs":34000}],
+        "counts": {"shown":2,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 5,
+        "queue": 0
+      }
+    },
+    {
+      "name": "signals-never-shown",
+      "rule": "contracts.md §5.3 et T7 (remplace le cas 7) : le bloc signals n’entre jamais dans la file ; une carte signal glissée dans overlay.cards est refusée et comptée comme non sourcée.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600700,"finishedAt":1790000000700},
+            {"id":"lot-9","kind":"signal","label":"Repéré dans la vidéo","seq":2,"text":"Repère vidéo numéro 2.","claimIds":["claim-s2"],"interval":{"startMs":60000,"endMs":68000},"sources":[],"publishedAtMs":600800,"finishedAt":1790000000800}
+          ]},
+          "signals": {"seq": 2, "cards": [
+            {"id":"lot-7","kind":"signal","label":"Repéré dans la vidéo","seq":1,"text":"Repère vidéo numéro 1.","claimIds":["claim-s1"],"interval":{"startMs":30000,"endMs":38000},"sources":[],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-8","kind":"signal","label":"Repéré dans la vidéo","seq":2,"text":"Repère vidéo numéro 2.","claimIds":["claim-s2"],"interval":{"startMs":60000,"endMs":68000},"sources":[],"publishedAtMs":600900,"finishedAt":1790000000900}
+          ]}}}
+      ],
+      "untilMs": 20000,
+      "expect": {
+        "shown": [{"id":"lot-1","fromMs":1000,"toMs":15000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":1},
+        "cursor": 2,
+        "queue": 0
+      }
+    },
+    {
+      "name": "seen-elsewhere-never-replayed",
+      "rule": "§4.4 cas 8 : l’autre écran déclare avoir montré jusqu’à 9 ; les cartes ≤ 9 ne sont ni affichées ni comptées, la carte 10 s’affiche.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq": 7, "cards": [
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":596000,"finishedAt":1789999996000},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":597000,"finishedAt":1789999997000},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":598000,"finishedAt":1789999998000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs":1000,"op":"seen","seq":9},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 10, "cards": [
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":596500,"finishedAt":1789999996500},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":597500,"finishedAt":1789999997500},
+            {"id":"lot-8","kind":"verification","label":"Sources consultées","seq":8,"text":"Résultat sourcé numéro 8.","claimIds":["claim-8"],"interval":{"startMs":480000,"endMs":488000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/8","title":"Insee, série 8","publisher":"Insee"}],"publishedAtMs":598500,"finishedAt":1789999998500},
+            {"id":"lot-9","kind":"verification","label":"Sources consultées","seq":9,"text":"Résultat sourcé numéro 9.","claimIds":["claim-9"],"interval":{"startMs":540000,"endMs":548000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/9","title":"Insee, série 9","publisher":"Insee"}],"publishedAtMs":599500,"finishedAt":1789999999500},
+            {"id":"lot-10","kind":"verification","label":"Sources consultées","seq":10,"text":"Résultat sourcé numéro 10.","claimIds":["claim-10"],"interval":{"startMs":600000,"endMs":608000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/10","title":"Insee, série 10","publisher":"Insee"}],"publishedAtMs":600500,"finishedAt":1790000000500}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 20000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000020000, "elapsedMs": 620000,
+          "overlay": {"seq": 10, "cards": [
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":596500,"finishedAt":1789999996500},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":597500,"finishedAt":1789999997500},
+            {"id":"lot-8","kind":"verification","label":"Sources consultées","seq":8,"text":"Résultat sourcé numéro 8.","claimIds":["claim-8"],"interval":{"startMs":480000,"endMs":488000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/8","title":"Insee, série 8","publisher":"Insee"}],"publishedAtMs":598500,"finishedAt":1789999998500},
+            {"id":"lot-9","kind":"verification","label":"Sources consultées","seq":9,"text":"Résultat sourcé numéro 9.","claimIds":["claim-9"],"interval":{"startMs":540000,"endMs":548000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/9","title":"Insee, série 9","publisher":"Insee"}],"publishedAtMs":599500,"finishedAt":1789999999500},
+            {"id":"lot-10","kind":"verification","label":"Sources consultées","seq":10,"text":"Résultat sourcé numéro 10.","claimIds":["claim-10"],"interval":{"startMs":600000,"endMs":608000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/10","title":"Insee, série 10","publisher":"Insee"}],"publishedAtMs":600500,"finishedAt":1790000000500}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 25000,
+      "expect": {
+        "shown": [{"id":"lot-10","fromMs":1000,"toMs":15000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 10,
+        "queue": 0
+      }
+    },
+    {
+      "name": "pause-holds-queue-freshness-runs",
+      "rule": "§4.4 cas 9 : en pause la file ne se consomme pas et la fraîcheur continue de courir ; la carte de 170 s à la réception a 189 s à la reprise, elle est comptée.",
+      "steps": [
+        {"atMs":0,"op":"pause","value":true},
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":431000,"finishedAt":1789999831000},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":591000,"finishedAt":1789999991000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs":20000,"op":"pause","value":false}
+      ],
+      "untilMs": 40000,
+      "checkpoints": [{"atMs":10000,"card":null,"queue":2}],
+      "expect": {
+        "shown": [{"id":"lot-2","fromMs":20000,"toMs":34000}],
+        "counts": {"shown":1,"skippedStale":1,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 2,
+        "queue": 0
+      }
+    },
+    {
+      "name": "sequence-hole-counted",
+      "rule": "§4.4 Trou de séquence : le serveur ne rend que les cinq dernières cartes ; les cartes 3 et 4, jamais reçues, sont comptées, puis la file de quatre écarte la carte 5.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":596000,"finishedAt":1789999996000},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":597000,"finishedAt":1789999997000}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 9, "cards": [
+            {"id":"lot-5","kind":"verification","label":"Sources consultées","seq":5,"text":"Résultat sourcé numéro 5.","claimIds":["claim-5"],"interval":{"startMs":300000,"endMs":308000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/5","title":"Insee, série 5","publisher":"Insee"}],"publishedAtMs":600500,"finishedAt":1790000000500},
+            {"id":"lot-6","kind":"verification","label":"Sources consultées","seq":6,"text":"Résultat sourcé numéro 6.","claimIds":["claim-6"],"interval":{"startMs":360000,"endMs":368000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/6","title":"Insee, série 6","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-7","kind":"verification","label":"Sources consultées","seq":7,"text":"Résultat sourcé numéro 7.","claimIds":["claim-7"],"interval":{"startMs":420000,"endMs":428000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/7","title":"Insee, série 7","publisher":"Insee"}],"publishedAtMs":600700,"finishedAt":1790000000700},
+            {"id":"lot-8","kind":"verification","label":"Sources consultées","seq":8,"text":"Résultat sourcé numéro 8.","claimIds":["claim-8"],"interval":{"startMs":480000,"endMs":488000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/8","title":"Insee, série 8","publisher":"Insee"}],"publishedAtMs":600800,"finishedAt":1790000000800},
+            {"id":"lot-9","kind":"verification","label":"Sources consultées","seq":9,"text":"Résultat sourcé numéro 9.","claimIds":["claim-9"],"interval":{"startMs":540000,"endMs":548000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/9","title":"Insee, série 9","publisher":"Insee"}],"publishedAtMs":600900,"finishedAt":1790000000900}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 65000,
+      "expect": {
+        "shown": [{"id":"lot-6","fromMs":1000,"toMs":15000},{"id":"lot-7","fromMs":16500,"toMs":30500},{"id":"lot-8","fromMs":32000,"toMs":46000},{"id":"lot-9","fromMs":47500,"toMs":61500}],
+        "counts": {"shown":4,"skippedStale":0,"skippedOverflow":3,"skippedUnsourced":0},
+        "cursor": 9,
+        "queue": 0
+      }
+    },
+    {
+      "name": "corrupt-duration-capped-20s",
+      "rule": "§4.4 Durée : plafond dur de 20 s, même avec un réglage corrompu.",
+      "options": {"displayMs":999999},
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 1, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600900,"finishedAt":1790000000900}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 25000,
+      "expect": {
+        "shown": [{"id":"lot-1","fromMs":1000,"toMs":21000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 1,
+        "queue": 0
+      }
+    },
+    {
+      "name": "duration-choice-8s",
+      "rule": "§4.4 Durée : choix local de 8 s ; la pause de 1,5 s ne change pas.",
+      "options": {"displayMs":8000},
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq":0,"cards":[]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 2, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":600800,"finishedAt":1790000000800},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":600900,"finishedAt":1790000000900}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 25000,
+      "expect": {
+        "shown": [{"id":"lot-1","fromMs":1000,"toMs":9000},{"id":"lot-2","fromMs":10500,"toMs":18500}],
+        "counts": {"shown":2,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 2,
+        "queue": 0
+      }
+    },
+    {
+      "name": "seen-then-new-session",
+      "rule": "Une déclaration vaut pour la session qu’elle nomme : vu jusqu’à 9 dans s1, puis s2 repart de 0 ; deux réponses tardives de l’écran de s1 arrivent pendant s2 (9, puis 2 que s2 atteint avant la lecture suivante) et sont ignorées. Les cartes 1 à 3 de s2 s’affichent toutes.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "overlay": {"seq": 7, "cards": []},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs":1000,"op":"seen","seq":9,"sessionId":"s1"},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "overlay": {"seq": 10, "cards": [
+            {"id":"lot-8","kind":"verification","label":"Sources consultées","seq":8,"text":"Résultat sourcé numéro 8.","claimIds":["claim-8"],"interval":{"startMs":480000,"endMs":488000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/8","title":"Insee, série 8","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-9","kind":"verification","label":"Sources consultées","seq":9,"text":"Résultat sourcé numéro 9.","claimIds":["claim-9"],"interval":{"startMs":540000,"endMs":548000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/9","title":"Insee, série 9","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600},
+            {"id":"lot-10","kind":"verification","label":"Sources consultées","seq":10,"text":"Résultat sourcé numéro 10.","claimIds":["claim-10"],"interval":{"startMs":600000,"endMs":608000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/10","title":"Insee, série 10","publisher":"Insee"}],"publishedAtMs":600600,"finishedAt":1790000000600}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 20000, "op": "feed", "feed": {"sessionId": "s2", "enabled": true, "accepting": true, "serverNowMs": 1790000020000, "elapsedMs": 620000,
+          "overlay": {"seq": 0, "cards": []},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs":20250,"op":"seen","seq":9,"sessionId":"s1"},
+        {"atMs":20500,"op":"seen","seq":2,"sessionId":"s1"},
+        {"atMs": 21000, "op": "feed", "feed": {"sessionId": "s2", "enabled": true, "accepting": true, "serverNowMs": 1790000021000, "elapsedMs": 621000,
+          "overlay": {"seq": 3, "cards": [
+            {"id":"lot-21","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":620600,"finishedAt":1790000020600},
+            {"id":"lot-22","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":620600,"finishedAt":1790000020600},
+            {"id":"lot-23","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":620600,"finishedAt":1790000020600}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 67000,
+      "expect": {
+        "shown": [{"id":"lot-10","fromMs":1000,"toMs":15000},{"id":"lot-21","fromMs":21000,"toMs":35000},{"id":"lot-22","fromMs":36500,"toMs":50500},{"id":"lot-23","fromMs":52000,"toMs":66000}],
+        "counts": {"shown":4,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 3,
+        "queue": 0
+      }
+    },
+    {
+      "name": "restored-history-is-not-news",
+      "rule": "Le serveur restaure le registre enregistré avec la session (activity.state restoring) : overlay.seq passe de 0 à 3 avec trois cartes encore fraîches. Ce sont des résultats d’avant : aucune ne s’affiche ni n’est comptée, le curseur se place sur 3 ; la carte 4, publiée ensuite, s’affiche.",
+      "steps": [
+        {"atMs": 0, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000000000, "elapsedMs": 600000,
+          "activity": {"state":"listening","label":"Surveillance active.","detecting":false,"running":0,"waiting":0,"late":false},
+          "overlay": {"seq": 0, "cards": []},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 1000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000001000, "elapsedMs": 601000,
+          "activity": {"state":"restoring","label":"Restauration du suivi enregistré…","detecting":false,"running":0,"waiting":0,"late":false},
+          "overlay": {"seq": 0, "cards": []},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 2000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000002000, "elapsedMs": 602000,
+          "activity": {"state":"listening","label":"Surveillance active.","detecting":false,"running":0,"waiting":0,"late":false},
+          "overlay": {"seq": 3, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":601600,"finishedAt":1790000001600},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":601600,"finishedAt":1790000001600},
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":601600,"finishedAt":1790000001600}
+          ]},
+          "signals": {"seq":0,"cards":[]}}},
+        {"atMs": 3000, "op": "feed", "feed": {"sessionId": "s1", "enabled": true, "accepting": true, "serverNowMs": 1790000003000, "elapsedMs": 603000,
+          "activity": {"state":"listening","label":"Surveillance active.","detecting":false,"running":0,"waiting":0,"late":false},
+          "overlay": {"seq": 4, "cards": [
+            {"id":"lot-1","kind":"verification","label":"Sources consultées","seq":1,"text":"Résultat sourcé numéro 1.","claimIds":["claim-1"],"interval":{"startMs":60000,"endMs":68000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/1","title":"Insee, série 1","publisher":"Insee"}],"publishedAtMs":602600,"finishedAt":1790000002600},
+            {"id":"lot-2","kind":"verification","label":"Sources consultées","seq":2,"text":"Résultat sourcé numéro 2.","claimIds":["claim-2"],"interval":{"startMs":120000,"endMs":128000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/2","title":"Insee, série 2","publisher":"Insee"}],"publishedAtMs":602600,"finishedAt":1790000002600},
+            {"id":"lot-3","kind":"verification","label":"Sources consultées","seq":3,"text":"Résultat sourcé numéro 3.","claimIds":["claim-3"],"interval":{"startMs":180000,"endMs":188000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/3","title":"Insee, série 3","publisher":"Insee"}],"publishedAtMs":602600,"finishedAt":1790000002600},
+            {"id":"lot-4","kind":"verification","label":"Sources consultées","seq":4,"text":"Résultat sourcé numéro 4.","claimIds":["claim-4"],"interval":{"startMs":240000,"endMs":248000},"sources":[{"url":"https://www.insee.fr/fr/statistiques/4","title":"Insee, série 4","publisher":"Insee"}],"publishedAtMs":602600,"finishedAt":1790000002600}
+          ]},
+          "signals": {"seq":0,"cards":[]}}}
+      ],
+      "untilMs": 18000,
+      "expect": {
+        "shown": [{"id":"lot-4","fromMs":3000,"toMs":17000}],
+        "counts": {"shown":1,"skippedStale":0,"skippedOverflow":0,"skippedUnsourced":0},
+        "cursor": 4,
+        "queue": 0
+      }
+    }
+  ]
+}

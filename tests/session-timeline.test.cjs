@@ -10,10 +10,7 @@ const {
 } = require("../core/session-timeline.cjs");
 const { WatchSession } = require("../core/session.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
-const {
-  LocalSessionStore,
-  cleanupRawMedia,
-} = require("../adapters/local-store.cjs");
+const { LocalSessionStore } = require("../adapters/local-store.cjs");
 const passage = (id, start, topic, status = "ready") => ({
   id: "moment-" + id,
   startMs: start,
@@ -68,7 +65,7 @@ test("selected moments resolve from archived observations without pretending raw
   );
   assert.throws(() => momentDetail(snapshot, ["moment-99"]), /absent/);
 });
-test("thumbnail exists before analysis, survives raw expiry and pause, and is removed at session cleanup", async () => {
+test("thumbnail exists before analysis, survives raw expiry, pause and the end of the session; only an explicit purge removes it", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-thumbnails-"));
   const dir = path.join(root, "session");
   const thumbnails = new SessionThumbnails(path.join(dir, "thumbnails"));
@@ -114,15 +111,20 @@ test("thumbnail exists before analysis, survives raw expiry and pause, and is re
     assert.equal(watch.history[0].thumbnailAvailable, true);
     await assert.rejects(media.read("moment-1"));
     assert.ok((await thumbnails.read("moment-1")).length);
-    await cleanupRawMedia(root);
-    await assert.rejects(thumbnails.read("moment-1"));
-    await thumbnails.clear();
+    // End of the session: no later write, and the image stays on disk for the archive.
+    await thumbnails.close();
     await assert.rejects(
       thumbnails.put(
         "moment-2",
         "data:image/jpeg;base64," + jpeg.toString("base64"),
       ),
       /terminée/,
+    );
+    const reopened = new SessionThumbnails(path.join(dir, "thumbnails"));
+    assert.ok((await reopened.read("moment-1")).length);
+    await reopened.clear();
+    await assert.rejects(
+      new SessionThumbnails(path.join(dir, "thumbnails")).read("moment-1"),
     );
   } finally {
     await fs.rm(root, { recursive: true, force: true });

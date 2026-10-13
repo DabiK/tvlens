@@ -1,72 +1,79 @@
 const { contextBridge, ipcRenderer } = require('electron');
+// Electron wraps every rejection of a handler in an English prefix followed by the error's class name:
+// the viewer only reads our own message. Only that exact prefix is removed; an "Error:" further in a
+// message stays as written.
+const invoke = (channel, ...args) => ipcRenderer.invoke(channel, ...args).catch(error => {
+  throw new Error(String(error?.message || error).replace(/^Error invoking remote method '[^']+': (?:\w*Error: )?/, ''));
+});
+// Every subscription hands back its own removal, and the listener receives the payload, never the IPC event.
+const on = channel => listener => {
+  const callback = (_event, value) => listener(value);
+  ipcRenderer.on(channel, callback);
+  return () => ipcRenderer.removeListener(channel, callback);
+};
 contextBridge.exposeInMainWorld('capture', {
-  sources: () => ipcRenderer.invoke('capture:sources'),
-  select: id => ipcRenderer.invoke('capture:select', id),
-  settings: () => ipcRenderer.invoke('capture:settings')
+  sources: () => invoke('capture:sources'),
+  select: id => invoke('capture:select', id),
+  settings: () => invoke('capture:settings')
 });
 contextBridge.exposeInMainWorld('tvlens', {
-  freezeMoment: value => ipcRenderer.invoke('moments:freeze', value),
-  explainMoment: value => ipcRenderer.invoke('moments:explain', value),
-  reexamineMoment: jobId => ipcRenderer.invoke('moments:reexamine', jobId),
-  catchUp: value => ipcRenderer.invoke('moments:catch-up', value),
-  markAttention: () => ipcRenderer.invoke('moments:mark'),
-  momentShortcuts: () => ipcRenderer.invoke('moments:shortcuts'),
-  onExplainMoment: listener => {
-    const callback = (_event, value) => listener(value);
-    ipcRenderer.on('moments:explain-requested', callback);
-    return () => ipcRenderer.removeListener('moments:explain-requested', callback);
-  },
-  recapState:()=>ipcRenderer.invoke('recap:state'),
-  onRecap:listener=>ipcRenderer.on('recap:state',(_event,state)=>listener(state)),
-  autoState:()=>ipcRenderer.invoke('auto:state'),
-  startAuto:value=>ipcRenderer.invoke('auto:start',value),
-  stopAuto:()=>ipcRenderer.invoke('auto:stop'),
-  openAutoSource:(id,index)=>ipcRenderer.invoke('auto:open-source',{id,index}),
-  onAuto:listener=>ipcRenderer.on('auto:state',(_e,state)=>listener(state)),
-  keepMoment:()=>ipcRenderer.invoke('saved:keep'),
-  savedMoments:()=>ipcRenderer.invoke('saved:list'),
-  removeSaved:id=>ipcRenderer.invoke('saved:remove',id),
-  searchMoments:query=>ipcRenderer.invoke('moments:search',query),
-  viewingSettings:()=>ipcRenderer.invoke('viewing:get'),
-  saveViewingSettings:value=>ipcRenderer.invoke('viewing:save',value),
-  quota:()=>ipcRenderer.invoke('codex:quota'),
-  onSaved:listener=>ipcRenderer.on('saved:changed',listener),
-  onSaveError:listener=>ipcRenderer.on('saved:error',(_e,message)=>listener(message)),
-  windowMode: value => ipcRenderer.invoke('window:mode',value),
-  modelChoices: () => ipcRenderer.invoke('models:choices'),
-  models: () => ipcRenderer.invoke('models:get'),
-  saveModels: value => ipcRenderer.invoke('models:save',value),
-  openChatSource: (jobId,index) => ipcRenderer.invoke('deep:open-source',{jobId,index}),
-  config: () => ipcRenderer.invoke('app:config'),
-  importConfig: () => ipcRenderer.invoke('app:import-config'),
-  newSession: () => ipcRenderer.invoke('watch:new'),
-  onReset: listener => ipcRenderer.on('watch:reset',listener),
-  start: () => ipcRenderer.invoke('watch:start'),
-  ingest: input => ipcRenderer.invoke('watch:ingest', input),
-  stop: () => ipcRenderer.invoke('watch:stop'),
-  ask: question => ipcRenderer.invoke('watch:ask', question),
-  deepen: question => ipcRenderer.invoke('deep:ask', question),
-  deepState: () => ipcRenderer.invoke('deep:state'),
-  researchBudget: () => ipcRenderer.invoke('deep:budget'),
-  cancelDeep: id => ipcRenderer.invoke('deep:cancel', id),
-  onDeepState: listener => {
-    const callback = (_event, state) => listener(state);
-    ipcRenderer.on('deep:state', callback);
-    return () => ipcRenderer.removeListener('deep:state', callback);
-  },
-  verify: claim => ipcRenderer.invoke('verify:run', { claim }),
-  verificationState: () => ipcRenderer.invoke('verify:state'),
-  cancelVerification: () => ipcRenderer.invoke('verify:cancel'),
-  openSource: (jobId, index) => ipcRenderer.invoke('verify:open-source', { jobId, index }),
-  onVerificationState: listener => {
-    const callback = (_event, state) => listener(state);
-    ipcRenderer.on('verify:state', callback);
-    return () => ipcRenderer.removeListener('verify:state', callback);
-  },
-  state: () => ipcRenderer.invoke('watch:state'),
-  onState: listener => {
-    const callback = (_event, state) => listener(state);
-    ipcRenderer.on('watch:state', callback);
-    return () => ipcRenderer.removeListener('watch:state', callback);
-  }
+  freezeMoment: value => invoke('moments:freeze', value),
+  explainMoment: value => invoke('moments:explain', value),
+  reexamineMoment: jobId => invoke('moments:reexamine', jobId),
+  catchUp: value => invoke('moments:catch-up', value),
+  markAttention: () => invoke('moments:mark'),
+  momentShortcuts: () => invoke('moments:shortcuts'),
+  onExplainMoment: on('moments:explain-requested'),
+  recapState: () => invoke('recap:state'),
+  onRecap: on('recap:state'),
+  // Free-instruction surveillance: runs alongside questions, never suspended by them.
+  surveillanceState: () => invoke('surveillance:state'),
+  surveillanceHistory: () => invoke('surveillance:history'),
+  startSurveillance: value => invoke('surveillance:start', { instruction: value?.instruction }),
+  stopSurveillance: () => invoke('surveillance:stop'),
+  retrySurveillanceClaim: claimId => invoke('surveillance:retry', claimId),
+  openSurveillanceSource: (lotId, index) => invoke('surveillance:open-source', { lotId, index }),
+  onSurveillance: on('surveillance:state'),
+  // Durable sessions: an archive opens read-only; capture only comes back through resumeSession().
+  sessions: () => invoke('sessions:list'),
+  openSession: id => invoke('sessions:open', id),
+  resumeSession: () => invoke('sessions:resume'),
+  deleteSession: id => invoke('sessions:delete', id),
+  storage: () => invoke('sessions:storage'),
+  onSessionsChanged: on('sessions:changed'),
+  onStorage: on('storage:state'),
+  keepMoment: () => invoke('saved:keep'),
+  savedMoments: () => invoke('saved:list'),
+  removeSaved: id => invoke('saved:remove', id),
+  searchMoments: query => invoke('moments:search', query),
+  viewingSettings: () => invoke('viewing:get'),
+  saveViewingSettings: value => invoke('viewing:save', value),
+  quota: () => invoke('codex:quota'),
+  onSaved: on('saved:changed'),
+  onSaveError: on('saved:error'),
+  windowMode: value => invoke('window:mode', value),
+  modelChoices: () => invoke('models:choices'),
+  models: () => invoke('models:get'),
+  saveModels: value => invoke('models:save', value),
+  openChatSource: (jobId, index) => invoke('deep:open-source', { jobId, index }),
+  config: () => invoke('app:config'),
+  importConfig: () => invoke('app:import-config'),
+  newSession: () => invoke('watch:new'),
+  onReset: on('watch:reset'),
+  start: () => invoke('watch:start'),
+  ingest: input => invoke('watch:ingest', input),
+  stop: () => invoke('watch:stop'),
+  ask: question => invoke('watch:ask', question),
+  deepen: question => invoke('deep:ask', question),
+  deepState: () => invoke('deep:state'),
+  researchBudget: () => invoke('deep:budget'),
+  cancelDeep: id => invoke('deep:cancel', id),
+  onDeepState: on('deep:state'),
+  verify: claim => invoke('verify:run', { claim }),
+  verificationState: () => invoke('verify:state'),
+  cancelVerification: () => invoke('verify:cancel'),
+  openSource: (jobId, index) => invoke('verify:open-source', { jobId, index }),
+  onVerificationState: on('verify:state'),
+  state: () => invoke('watch:state'),
+  onState: on('watch:state')
 });

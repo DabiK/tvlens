@@ -3,11 +3,15 @@
   var el = function (id) {
     return document.getElementById(id);
   };
+  // A film is longer than an hour: 1:32:15, not 92:15.
   var time = function (ms) {
+    var s = Math.max(0, Math.floor(ms / 1000)),
+      h = Math.floor(s / 3600),
+      m = Math.floor(s / 60) % 60;
     return (
-      Math.floor(ms / 60000) +
+      (h ? h + ":" + String(m).padStart(2, "0") : String(m)) +
       ":" +
-      String(Math.floor(ms / 1000) % 60).padStart(2, "0")
+      String(s % 60).padStart(2, "0")
     );
   };
   function TimelineView(options) {
@@ -77,10 +81,20 @@
       }
     };
   }
+  // The band shows one pane at a time: the rail, the detail of a moment, or the session list.
+  TimelineView.prototype.layoutPanes = function () {
+    var sessions = !!this.sessionsOpen;
+    el("sessions-panel").hidden = !sessions;
+    el("moment-detail").hidden = sessions || !this.detail;
+    el("timeline-rail").hidden = sessions || !!this.detail;
+  };
   TimelineView.prototype.switchMode = async function (mode) {
     if (this.switching) return false;
     this.switching = true;
     el("show-timeline").setAttribute("aria-busy", "true");
+    // The video rectangle moves during the switch: the bottom-left card is hidden until the new
+    // layout is confirmed, so that it never sits over the picture, even for a moment.
+    document.body.dataset.switching = "true";
     try {
       await this.options.changeLayout(mode);
       this.mode = mode;
@@ -91,7 +105,8 @@
         this.render();
         if (this.detail) el("detail-words").focus();
         else this.focusSelected();
-      } else el("dictate").focus();
+      } else if (this.options.focusChat) this.options.focusChat();
+      else el("dictate").focus();
       return true;
     } catch (error) {
       el("error").textContent = error.message;
@@ -100,6 +115,7 @@
     } finally {
       this.switching = false;
       el("show-timeline").removeAttribute("aria-busy");
+      delete document.body.dataset.switching;
     }
   };
   TimelineView.prototype.reset = function (sessionId) {
@@ -119,8 +135,7 @@
     this.detail = null;
     el("timeline-rail").replaceChildren();
     el("detail-image").removeAttribute("src");
-    el("moment-detail").hidden = true;
-    el("timeline-rail").hidden = false;
+    this.layoutPanes();
     this.render();
   };
   TimelineView.prototype.update = function (state) {
@@ -138,9 +153,13 @@
     }, 0);
     el("timeline-status").textContent =
       this.cards.length +
-      " moment(s)" +
+      (this.cards.length > 1 ? " moments" : " moment") +
       (pending ? " · " + pending + " en analyse" : "") +
-      (!this.follow ? " · consultation du passé" : " · au direct");
+      (state.session?.readOnly
+        ? " · archive en lecture seule"
+        : !this.follow
+          ? " · consultation du passé"
+          : " · au direct");
     this.render();
     if (this.follow && this.mode === "timeline" && !this.detail) {
       this.nodes[this.selected]?.scrollIntoView({
@@ -323,8 +342,7 @@
     this.pinned = structuredClone(card);
     this.detail = structuredClone(card);
     var revision = ++this.detailGeneration;
-    el("timeline-rail").hidden = true;
-    el("moment-detail").hidden = false;
+    this.layoutPanes();
     el("detail-title").textContent = card.title;
     el("detail-time").textContent =
       time(card.startMs) + "–" + time(card.endMs) + " · temps observé";
@@ -356,7 +374,7 @@
       el("detail-limits").textContent =
         (detail.summaryLimits || "") + " Observations et transcription automatiques, potentiellement imprécises. " +
         (detail.passages.some((p) => !p.available)
-          ? "Média détaillé expiré ; miniature et textes conservés jusqu’à la fin de session. "
+          ? "Vidéo indisponible pour une partie de ce moment ; miniature et textes conservés avec la session. "
           : "") +
         [...new Set(detail.passages.map((p) => p.uncertainty).filter(Boolean))]
           .slice(0, 2)
@@ -369,8 +387,7 @@
   TimelineView.prototype.closeDetail = function () {
     this.detailGeneration++;
     this.detail = null;
-    el("moment-detail").hidden = true;
-    el("timeline-rail").hidden = false;
+    this.layoutPanes();
     this.render(true);
   };
   TimelineView.prototype.handleKey = function (event) {
@@ -444,7 +461,12 @@
         }
       }
     } else {
-      var ids = ["timeline-live", "timeline-chat", "timeline-end"],
+      var ids = [
+          "timeline-live",
+          "timeline-chat",
+          "timeline-sessions",
+          "timeline-end",
+        ],
         at = ids.indexOf(active.id);
       if (key === 40) this.focusSelected();
       else
@@ -452,7 +474,10 @@
           ids[
             Math.max(
               0,
-              Math.min(2, at + (key === 39 ? 1 : key === 37 ? -1 : 0)),
+              Math.min(
+                ids.length - 1,
+                at + (key === 39 ? 1 : key === 37 ? -1 : 0),
+              ),
             )
           ],
         ).focus();

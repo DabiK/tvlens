@@ -1,0 +1,115 @@
+/* Panel additions: surveillance view, bottom-left card with the panel open, sessions, dialogs.
+   Own classes and identifiers only: the bare element selectors of style.css and timeline.css stay as they are. */
+
+/* ---- Chat column: one of two views under the header ---- */
+#chat-view, #surveillance-view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+#show-timeline, #show-surveillance { font-size: 16px; min-height: 46px; padding: 8px 10px; white-space: nowrap; }
+#archive-banner { flex-shrink: 0; padding: 8px 10px; font-size: 15px; line-height: 1.4; background: #112b35; border-left: 4px solid var(--lime); border-radius: 8px; }
+#cancel-question { flex-shrink: 0; min-height: 44px; font-size: 17px; border-color: #f1ba9d99; }
+#storage-state { font-size: 14px; line-height: 1.4; color: #f1ba9d; }
+#capture-state[data-ended]:not([data-ended=""]) { color: #f1ba9d; }
+#conversation article small.job-progress { color: var(--lime); font-weight: 700; }
+#conversation article[data-pending] small { font-style: italic; }
+/* An answer that is over keeps the short freshness label; the whole sentence takes its place while the
+   messages are being read (OK on the conversation), instead of being repeated above every answer. */
+#conversation article small.job-freshness .fresh-detail { display: none; }
+#conversation[data-reading="true"] article small.job-freshness .fresh-short { display: none; }
+#conversation[data-reading="true"] article small.job-freshness .fresh-detail { display: inline; }
+
+/* ---- Surveillance view ---- */
+#surv-status { color: var(--muted); font-size: 16px; line-height: 1.4; }
+#surv-counts { flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid var(--line); font-size: 15px; line-height: 1.4; color: var(--muted); }
+#surv-counts[data-late="true"] { color: #f1ba9d; }
+#surv-counts:empty { display: none; }
+#surv-commands { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+#surv-commands label { margin-bottom: 0; font-size: 15px; }
+#surv-instruction { margin-bottom: 0; padding: 8px 10px; font-size: 18px; border-color: var(--line); }
+#surv-instruction:disabled { color: var(--muted); }
+#surv-commands button { min-height: 46px; font-size: 17px; }
+#surv-commands .actions button, #surv-detail .actions button { padding: 8px; font-size: 15px; }
+#surv-toggle { background: var(--lime); color: #102020; border-color: var(--lime); font-weight: 700; }
+#surv-toggle:focus { background: #e0ffb5; }
+#surv-message { color: #f1ba9d; font-size: 15px; }
+#surv-message:empty { display: none; }
+#surv-ambient { font-size: 14px; line-height: 1.4; color: var(--muted); }
+#surv-list, #surv-detail { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+#surv-list-status { flex-shrink: 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+#surv-items { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 3px; outline: none; }
+/* A verification, a video signal and a claim without result never look alike. */
+.surv-item { flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; min-height: 0; padding: 9px 12px; text-align: left; font-size: 17px; border-left: 5px solid var(--lime); }
+.surv-item[data-accent="signal"] { border-left-color: #8fc7ff; }
+.surv-item[data-accent="open"] { border-left: 5px dashed #f1ba9d; }
+.surv-item[data-selected="true"] { background: #203a32; }
+.surv-kicker { font: 700 13px/1.4 monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--lime); }
+.surv-item[data-accent="signal"] .surv-kicker { color: #8fc7ff; }
+.surv-item[data-accent="open"] .surv-kicker { color: #f1ba9d; }
+.surv-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.35; }
+.surv-meta { font-size: 13px; line-height: 1.35; color: var(--muted); }
+#surv-detail h2 { margin: 0; font-size: 22px; color: var(--lime); }
+#surv-detail[data-accent="signal"] h2 { color: #8fc7ff; }
+#surv-detail[data-accent="open"] h2 { color: #f1ba9d; }
+#surv-detail-time { flex-shrink: 0; font-size: 15px; color: var(--muted); }
+#surv-detail-scroll { flex: 1; min-height: 0; overflow: auto; padding: 4px 8px 8px 4px; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-color: #48616a transparent; }
+#surv-detail-scroll:focus { outline: 2px solid var(--lime); outline-offset: -2px; }
+#surv-detail-scroll p { margin: 8px 0; font-size: 19px; line-height: 1.45; }
+#surv-detail-scroll small { display: block; margin: 4px 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+#surv-detail-scroll .surv-claim { margin: 10px 0; padding: 8px 10px; background: #112b35; border-radius: 10px; }
+#surv-detail-scroll .surv-claim p { margin: 0 0 4px; font-size: 18px; }
+#surv-detail-scroll .surv-state { color: var(--ink); font-weight: 700; }
+#surv-detail-scroll .surv-heading { margin-top: 14px; color: var(--lime); font: 700 13px/1.5 monospace; letter-spacing: .09em; text-transform: uppercase; }
+#surv-detail-scroll .surv-source { padding: 10px 12px; font-size: 16px; background: #112b35; border: 1px solid var(--line); border-radius: 10px; }
+#surv-detail-scroll .surv-note { font-size: 16px; color: #8fc7ff; }
+/* The list and the detail need the height of the column. */
+#chat-panel[data-level="list"] .capture-controls, #chat-panel[data-level="list"] footer,
+#chat-panel[data-level="detail"] .capture-controls, #chat-panel[data-level="detail"] footer { display: none; }
+
+/* ---- Bottom-left card, panel open ----
+   Drawn outside the video rectangle of the current layout, so that its text never enters a captured
+   frame: under the picture in the chat layout (video ends at y = 945, chat column starts at x = 1440),
+   left of the picture in the timeline layout (video starts at x = 320, band starts at y = 720). */
+#surveillance-overlay { position: fixed; left: 24px; bottom: 12px; width: 1392px; max-height: 111px; overflow: hidden; display: flex; align-items: flex-end; pointer-events: none; user-select: none; -webkit-user-select: none; }
+body[data-mode="timeline"] #surveillance-overlay { left: 12px; bottom: calc(33.333333% + 12px); width: 296px; max-height: 696px; }
+/* The picture moves during a layout switch: nothing is drawn until the new layout is confirmed. */
+body[data-switching="true"] #surveillance-overlay { visibility: hidden; }
+#overlay-card, #overlay-activity { min-width: 0; max-width: 100%; }
+#surveillance-overlay .tvl-card { display: grid; grid-template-columns: 290px minmax(0, 1fr); column-gap: 20px; align-items: center; max-height: 111px; overflow: hidden; padding: 8px 18px; background: rgba(11, 32, 40, .96); border: 1px solid var(--line); border-left: 6px solid var(--lime); border-radius: 14px; }
+#surveillance-overlay .tvl-card-kicker { grid-column: 1; grid-row: 1; color: var(--lime); font-size: 17px; font-weight: 700; line-height: 1.3; }
+#surveillance-overlay .tvl-card-foot { grid-column: 1; grid-row: 2; overflow: hidden; color: var(--muted); font-size: 15px; line-height: 1.3; }
+#surveillance-overlay .tvl-card-text { grid-column: 2; grid-row: 1 / span 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; max-height: 90px; font-size: 23px; line-height: 30px; overflow-wrap: anywhere; }
+body[data-mode="timeline"] #surveillance-overlay .tvl-card { display: block; max-height: 696px; padding: 12px 14px; }
+body[data-mode="timeline"] #surveillance-overlay .tvl-card-kicker { margin-bottom: 6px; }
+body[data-mode="timeline"] #surveillance-overlay .tvl-card-text { -webkit-line-clamp: 14; max-height: 392px; font-size: 21px; line-height: 28px; }
+body[data-mode="timeline"] #surveillance-overlay .tvl-card-foot { margin-top: 8px; }
+#surveillance-overlay .tvl-pill { display: flex; align-items: center; gap: 10px; max-width: 100%; min-height: 40px; overflow: hidden; padding: 6px 16px; background: rgba(11, 32, 40, .96); border: 1px solid var(--line); border-radius: 22px; }
+#surveillance-overlay .tvl-pill-dot { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; background: var(--lime); }
+#surveillance-overlay .tvl-pill[data-late="true"] .tvl-pill-dot { background: #f1ba9d; }
+#surveillance-overlay .tvl-pill-label { min-width: 0; overflow: hidden; font-size: 18px; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
+body[data-mode="timeline"] #surveillance-overlay .tvl-pill-label { white-space: normal; }
+
+/* ---- Sessions, in the timeline band ---- */
+#sessions-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+#sessions-rail { flex: 1; min-height: 0; display: flex; gap: 14px; overflow-x: auto; overflow-y: hidden; padding: 4px; scrollbar-width: thin; scrollbar-color: var(--line) #17272b; }
+.session-card { flex: 0 0 300px; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 4px; padding: 9px 12px; text-align: left; font-size: 17px; border: 1px solid #405951; background: #17272b; }
+.session-card strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 18px; line-height: 1.25; }
+.session-card span { font-size: 15px; color: #d0d9d4; }
+.session-card small { font-size: 13px; color: #9fb8ac; }
+.session-card .session-state { color: var(--lime); }
+.session-card[data-selected="true"] { border-color: var(--lime); background: #203a32; box-shadow: inset 0 -3px var(--lime); }
+.session-card:focus { outline: 3px solid var(--lime); outline-offset: -3px; }
+.sessions-bar { flex-shrink: 0; display: flex; align-items: center; gap: 14px; }
+.sessions-bar p { flex: 1; min-width: 0; font-size: 14px; line-height: 1.3; color: #bdcbc8; }
+#sessions-storage[data-state="low"], #sessions-storage[data-state="blocked"] { color: #f1ba9d; }
+.sessions-bar nav { flex-shrink: 0; display: flex; gap: 8px; }
+.sessions-bar button { min-height: 44px; padding: 6px 12px; font-size: 16px; }
+
+/* ---- Dialogs ----
+   Placed over the panel of the current layout, never over the picture, and without a veil: what the
+   capture photographs stays what is being watched. */
+dialog { margin: auto 20px auto auto; width: 440px; max-width: 440px; }
+dialog::backdrop { background: transparent; }
+dialog button { margin: 6px 12px 0 0; }
+dialog [role="alert"] { color: #ffd9ad; }
+dialog [role="alert"]:empty { display: none; }
+body[data-mode="timeline"] dialog { margin: auto auto 14px; width: 1240px; max-width: 1240px; padding: 16px 26px; }
+body[data-mode="timeline"] dialog h2 { margin: 0 0 6px; font-size: 22px; }
+body[data-mode="timeline"] dialog p { margin: 6px 0; font-size: 17px; line-height: 1.35; }

@@ -2,9 +2,21 @@
 function needsInspection(question) {
   return /(?:pourquoi|comment|combien de fois|avant|apres|après|entre|tombe|tombé|chute|geste|action|mouvement|que fait|se passer|s.est passe|s’est passé|s'est passé|déplace|deplace|changement|bouge|revois|revoir|approfond|retrouve|cherche.*moment)/i.test(question);
 }
+// An answer is plain text: its pages travel in `sources`, shown apart by every client. A model that still writes a
+// Markdown link keeps its words and loses the address; nothing else of the answer is touched.
+const plainAnswer=text=>typeof text==='string'?text.replace(/\[([^\]\n]{1,200})\]\(https?:\/\/[^\s)]+\)/g,'$1'):text;
+// Product decision 1: one processing ceiling for a question on every host. It runs from the moment the
+// question leaves the queue; the wait before that is measured apart and never counted against it.
+const QUESTION_TIMEOUT_MS=300000,QUESTION_PROGRESS_MS=30000;
+// Wording of a ceiling for the viewer, derived from the value really enforced: whole minutes when exact,
+// otherwise seconds rounded up so that the announced limit is never shorter than the real one.
+function limitLabel(ms){
+  if(ms>=60000&&ms%60000===0){const minutes=ms/60000;return `${minutes} minute${minutes>1?'s':''}`;}
+  const seconds=Math.max(1,Math.ceil(ms/1000));return `${seconds} seconde${seconds>1?'s':''}`;
+}
 class DeepAsk {
-  constructor({ makeTools, agent, onChange=()=>{}, now=Date.now, timeoutMs=60000, progressMs=30000, onTrace=()=>{}, serializeError=()=>({}) }) {
-    Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs,onTrace,serializeError}); this.jobs=[]; this.sequence=0; this.active=null;
+  constructor({ makeTools, agent, onChange=()=>{}, now=Date.now, timeoutMs=QUESTION_TIMEOUT_MS, progressMs=QUESTION_PROGRESS_MS, onTrace=()=>{}, serializeError=()=>({}), getInstruction=()=>undefined }) {
+    Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs,onTrace,serializeError,getInstruction}); this.jobs=[]; this.sequence=0; this.active=null;
   }
   // Diagnostics can never fail a job: both hooks are guarded and default to noop / empty detail.
   trace(event,fields={}){try{this.onTrace(event,fields);}catch{}}
@@ -22,16 +34,32 @@ class DeepAsk {
     for(const job of this.jobs.filter(j=>j.status==='queued'))this.cancel(reason,job.id);
     this.cancel(reason);
   }
+  // Reopened archive: the saved questions come back as finished copies. Work interrupted by the closing
+  // is settled as cancelled, never resumed; new ids continue after both the archive and this instance.
+  // Silent on purpose: an onChange here would make the host rewrite the archive it has just opened.
+  restore(jobs=[]) {
+    if(this.active||this.jobs.some(j=>['queued','running'].includes(j.status)))throw new Error('Une question est en cours.');
+    this.jobs=(Array.isArray(jobs)?jobs:[]).filter(j=>j&&typeof j.id==='string'&&typeof j.question==='string').map(saved=>{
+      const job={...JSON.parse(JSON.stringify(saved)),controller:new AbortController(),tools:{observations:[],hypotheses:[],limits:[],memoryEvidence:[]},done:Promise.resolve(),_finish(){}};
+      if(['queued','running'].includes(job.status)){job.status='cancelled';job.message='Interrompue à la fermeture de la session.';job.finishedAt??=job.startedAt??job.createdAt;}
+      return job;
+    });
+    this.sequence=Math.max(this.sequence,...this.jobs.map(j=>Number(/^deep-(\d+)$/.exec(j.id)?.[1])||0));
+    return this.snapshot();
+  }
   start(question, {mode='inspect',intent,snapshot,anchorMs,startMs} = {}) {
     if(typeof question!=='string'||!question.trim()||question.length>2000) throw new Error('Question invalide.');
     if(this.jobs.filter(j=>j.status==='queued').length>=5)throw new Error('Cinq questions sont déjà en attente. Attends une réponse ou annule une question.');
     if(intent!==undefined&&!['recap','explain-moment'].includes(intent))throw new Error('Action inconnue.');
     if(anchorMs!==undefined&&(!Number.isFinite(anchorMs)||anchorMs<0)||startMs!==undefined&&(!Number.isFinite(startMs)||startMs<0||anchorMs!==undefined&&startMs>anchorMs))throw new Error('Intervalle de question invalide.');
     const controller=new AbortController();
-    const job={id:`deep-${++this.sequence}`,question,mode,intent,createdAt:this.now(),status:'queued',message:'En attente de la réponse précédente…',activity:[],preview:'',controller,result:null};
+    // The ceiling travels with the job: clients show elapsed / ceiling from the published state, without a literal of their own.
+    const job={id:`deep-${++this.sequence}`,question,mode,intent,createdAt:this.now(),timeoutMs:this.timeoutMs,status:'queued',message:'En attente de la réponse précédente…',activity:[],preview:'',controller,result:null};
     job.tools=this.makeTools(controller.signal,message=>this.progress(job,{message}),{snapshot,anchorMs,startMs});
     if(anchorMs!==undefined||startMs!==undefined)job.tools.scope?.({anchorMs,startMs});
     job.sessionId=job.tools.sessionId;job.anchorMs=job.tools.anchorMs;
+    // Freshness shown to the viewer: what was consultable when the question froze. Times and counts only.
+    try{const available=job.tools.availability?.();if(available)job.availability={...available};}catch{}
     if(mode==="chat")this.trace("job.accepted",{jobId:job.id,sessionId:job.sessionId,questionLength:question.length,mode,intent,anchorMs:job.anchorMs});
     job.done=new Promise(resolve=>{job._finish=resolve;});this.jobs.push(job);this.emit();this.drain();
     return {id:job.id};
@@ -48,16 +76,18 @@ class DeepAsk {
     const timeout=new Promise(resolve=>{timer=setTimeout(()=>{
       if(job.status!=='running') return;
       if(job.mode==="chat")this.trace("job.timeout",{jobId:job.id,sessionId:job.sessionId});
-      job.status='timeout';job.message='Limite de 60 secondes atteinte.';job.result=this.partial(job.tools,job.mode);job.finishedAt=this.now();
+      job.status='timeout';job.message=`Limite de ${limitLabel(job.timeoutMs)} atteinte.`;job.result=this.partial(job.tools,job.mode);job.finishedAt=this.now();
       job.controller.abort(new Error('Délai maximal atteint.')); this.emit();resolve();
-    },this.timeoutMs);});
-    progress=setTimeout(()=>{if(job.status==='running'){job.message='La recherche continue · arrêt au plus tard à 60 secondes.';this.emit();}},this.progressMs);
+    },job.timeoutMs);});
+    progress=setTimeout(()=>{if(job.status==='running'){job.message=`La recherche continue · arrêt au plus tard à ${limitLabel(job.timeoutMs)}.`;this.emit();}},this.progressMs);
     try {
       await Promise.race([timeout,cancelled,(async()=>{
         try {
           const conversation=job.intent?[]:this.jobs.filter(j=>j!==job&&j.sessionId===job.sessionId&&j.result).slice(-6).map(j=>({question:j.question,answer:j.result.answer,sources:j.result.sources||[]}));
           const context=job.mode==='chat'?job.tools.context?.({intent:job.intent}):undefined;
           job.contextReadyAt=this.now();
+          // Evidence state at the effective start, after any wait in the queue: counts and times only.
+          if(context)job.evidenceAtStart={contextThroughMs:context.contextThroughMs,analyzedThroughMs:context.analyzedThroughMs,pendingCount:context.pendingCount,partialCount:context.partialCount,unanalyzedTailMs:context.unanalyzedTailMs};
           if(context?.passages?.length&&(job.intent||isRecentSummary(job.question))){
             const passages=context.passages.slice(-3);
             job.memoryPreview={passages,precision:context.precision,pendingCount:context.pendingCount,failedCount:context.failedCount,omittedCount:context.omittedCount,unanalyzedTailMs:context.unanalyzedTailMs,coverageGaps:context.coverageGaps,uncoveredMs:context.uncoveredMs};
@@ -71,7 +101,10 @@ class DeepAsk {
             if(context.omittedCount)job.tools.limits.push(`${context.omittedCount} résumé(s) plus ancien(s) non inclus dans ce récapitulatif.`);
             if(context.unanalyzedTailMs>0)job.tools.limits.push('La fin de l’intervalle demandé n’est pas encore entièrement analysée.');
           }
-          const result=await this.agent.answer({jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,onProgress:value=>this.progress(job,value)});
+          // The viewer's standing instruction (active surveillance) reaches the chat turn as a trusted field, apart from
+          // the untrusted data. A host that cannot say it, or a failing provider, changes nothing.
+          let instruction;if(job.mode==='chat'){try{const value=this.getInstruction(job);if(typeof value==='string'&&value.trim())instruction=value.trim().slice(0,1500);}catch{}}
+          const result=await this.agent.answer({jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,...(instruction&&{instruction}),onProgress:value=>{if(job.firstAgentAt===undefined)job.firstAgentAt=this.now();this.progress(job,value);}});
           if(job.status!=='running')return;
           // Only observed, validated evidence issued by our tool can justify a video answer.
           const observations=job.tools.observations;
@@ -90,7 +123,7 @@ class DeepAsk {
           const external=job.mode==='chat'&&result.kind==='external'&&result.sources?.length;
           const missingSources=result.sourceValidation?.proposed>0&&!result.sources?.length;
           const conversational=!missingSources&&job.mode==='chat'&&['insufficient','explanation'].includes(result.kind);
-          job.result=(!missingSources&&citations.length&&result.kind!=='external')||external||conversational ? {...result,citations,observations:[...observations],hypotheses:job.tools.hypotheses,limits:[...(result.limits||[]),...job.tools.limits]} : {...this.partial(job.tools,job.mode),answer:result.kind==='external'||missingSources ? 'Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.' : 'Je n’ai pas pu relier cette réponse aux passages consultés.',kind:'insufficient',citations:[],observations:[],hypotheses:[],sources:[],limits:['La réponse proposée n’a pas passé la validation des preuves.']};
+          job.result=(!missingSources&&citations.length&&result.kind!=='external')||external||conversational ? {...result,answer:plainAnswer(result.answer),citations,observations:[...observations],hypotheses:job.tools.hypotheses,limits:[...(result.limits||[]),...job.tools.limits]} : {...this.partial(job.tools,job.mode),answer:result.kind==='external'||missingSources ? 'Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.' : 'Je n’ai pas pu relier cette réponse aux passages consultés.',kind:'insufficient',citations:[],observations:[],hypotheses:[],sources:[],limits:['La réponse proposée n’a pas passé la validation des preuves.']};
           job.sourcesReused=result.sourcesReused||0;
           if(job.firstUsefulAt===undefined&&job.result.kind!=='insufficient')job.firstUsefulAt=this.now();
           job.status='done';
@@ -104,7 +137,11 @@ class DeepAsk {
       })()]);
     } finally {clearTimeout(timer);clearTimeout(progress);job.controller.signal.removeEventListener('abort',onAbort);
       const end=job.finishedAt??this.now();
-      job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])]};
+      // Freshness is a diagnostic: a tool set that cannot report it must not fail the job.
+      let fresh;try{fresh={...job.tools.freshness?.()};}catch{}
+      const lagAtStartMs=job.anchorMs-job.evidenceAtStart?.contextThroughMs;
+      job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,firstAgentMs:job.firstAgentAt===undefined?null:job.firstAgentAt-job.startedAt,firstTextMs:job.firstTextAt===undefined?null:job.firstTextAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])],
+        evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};
       if(job.mode==="chat")this.trace("job.finished",{jobId:job.id,sessionId:job.sessionId,status:job.status,totalMs:job.metrics.totalMs});
       this.emit();
     }
@@ -113,7 +150,7 @@ class DeepAsk {
     if(job.status!=='running')return;
     if(value.message){if(job.firstProgressAt===undefined)job.firstProgressAt=this.now();job.message=value.message;if(job.activity.at(-1)?.message!==value.message){job.activity.push({message:value.message,at:this.now()});job.activity=job.activity.slice(-12);}}
     if(typeof value.provisional==='string'&&value.provisional.trim()){job.provisional=value.provisional;if(job.firstUsefulAt===undefined)job.firstUsefulAt=this.now();}
-    if(typeof value.preview==='string'&&value.preview.trim()){job.preview=value.preview.slice(0,12000);if(job.firstUsefulAt===undefined)job.firstUsefulAt=this.now();}
+    if(typeof value.preview==='string'&&value.preview.trim()){job.preview=value.preview.slice(0,12000);if(job.firstTextAt===undefined)job.firstTextAt=this.now();if(job.firstUsefulAt===undefined)job.firstUsefulAt=this.now();}
     this.emit();
   }
   partial(tools,mode='inspect') {
@@ -124,4 +161,4 @@ function isRecentSummary(question){
   const q=question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return /(?:ca parle de quoi|qu.est.ce qui vient de se passer|j.ai decroche|^(?:resume|recapitule)(?:[.!? ]*$| (?:ce moment|cette scene|ce qui vient)))/.test(q)&&!/(?:vrai|verifi|source|exact|combien|pourquoi|il y a|premier|debut|[0-9])/.test(q);
 }
-module.exports={DeepAsk,needsInspection,isRecentSummary};
+module.exports={DeepAsk,needsInspection,isRecentSummary,QUESTION_TIMEOUT_MS,QUESTION_PROGRESS_MS,limitLabel};

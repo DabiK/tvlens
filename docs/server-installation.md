@@ -2,11 +2,13 @@
 
 Ce guide installe le moteur sans Electron. Il ne modifie aucune TV et ne donne accès à aucune installation existante. Le déploiement de référence est décrit séparément dans [le rapport VPS](vps-deployment.md).
 
+> **Code du 13 octobre 2026 : exécuté sous Linux depuis le 13 octobre au matin, par quelques essais courts seulement.** Les sessions conservées, la surveillance, le plafond de cinq minutes et le cloisonnement des agents décrits ci-dessous sont prouvés par tests hors ligne et, pour le cloisonnement, par des tours réels sur un Mac. Ils ont été installés sur le serveur de référence le 13 octobre 2026 par la supervision ; le service y a d’abord planté deux fois, faute d’une limite de tâches suffisante (voir « Limite de tâches » plus bas et le livrable, section 13). Avant de les mettre en service, lire [le livrable](night-features-delivery.md), section « Avant tout déploiement », et [SECURITY.md](../SECURITY.md).
+
 ## Prérequis
 
 - Linux x86_64 ou ARM64, Node.js 24+, npm, Git, Python 3, FFmpeg.
 - Whisper.cpp et son exécutable `whisper-cli`, compilés pour l’hôte ; modèle multilingue base.
-- Codex CLI compatible avec le client App Server du projet (version testée : 0.158.0), authentifié avec un compte ayant accès aux modèles sélectionnés.
+- Codex CLI compatible avec le client App Server du projet, authentifié avec un compte ayant accès aux modèles sélectionnés. La version 0.158.0 est celle du déploiement de référence, testée avec le code d’avant le 13 octobre 2026. Le cloisonnement du code actuel n’a été mesuré que sur `codex-cli 0.160.1`, sous macOS : sur toute autre version, suivre d’abord [SECURITY.md](../SECURITY.md), « Avant tout déploiement ».
 - Pour la TV distante : serveur et appareil dans le même réseau Tailscale. Aucun exit node requis.
 
 Le serveur partagé testé dispose de 8 Go de RAM. Ce chiffre n’est pas un minimum universel ni une garantie de débit continu ; voir les mesures de retard dans le rapport.
@@ -84,7 +86,14 @@ sudo systemctl status tvlens
 ss -ltn 'sport = :8787'
 ```
 
-Le service lit `runtime.env` pour l’écoute et `server.env` pour les fournisseurs. Les compteurs sont enregistrés dans `TVLENS_USAGE_DIR`, sans écriture dans `/etc`. L’unité limite les ressources et l’accès disque ; ajuster les limites après mesure sur sa propre machine. Aucun proxy public ni Tailscale Funnel n’est nécessaire.
+**Limite de tâches (`TasksMax`).** Chaque fil d’exécution de chaque processus du service compte, et chaque rôle Codex est un processus enfant : environ 38 tâches par rôle connecté (mesuré le 13 octobre 2026 sur un serveur à 2 vCPU, Codex 0.158.0, sans tour de modèle : cinq rôles connectés ensemble, 163 tâches ; neuf, 347). Le serveur garde au plus sept rôles vivants (chat, description des passages, réexamen, lecture de surveillance, un à trois postes de vérification ; cinq avec le poste unique par défaut), et un arrêt suivi d’un redémarrage de la surveillance fait coexister quelques secondes les rôles qui se ferment et les nouveaux : neuf arbres de processus au pire. Le modèle fixe donc `TasksMax=512`, qui couvre cette pointe. Avec l’ancienne valeur de 128, démarrer une surveillance suffisait à atteindre la limite : le noyau refusait un `fork`, puis, faute de tâche disponible, le traitement d’images du serveur faisait planter son processus (SIGSEGV, reproduit dans une unité isolée), qui redémarrait sans sa session — la TV affichait alors « Serveur redémarré ou session changée ». À 256, neuf connexions simultanées ne tiennent pas non plus (8 sur 9). Une unité installée avant cette date garde 128 tant qu’elle n’est pas réinstallée ou corrigée par un drop-in. Vérifier sur un service en marche :
+
+```sh
+systemctl show tvlens -p TasksCurrent -p TasksMax
+journalctl -k --since today | grep 'fork rejected by pids controller'   # aucune ligne attendue
+```
+
+Le service lit `runtime.env` pour l’écoute et `server.env` pour les fournisseurs. Les réglages d’hôte (plafond des questions, conservation, seuils disque, surveillance) et ceux du cloisonnement sont lus dans l’**environnement du service**, donc dans `runtime.env` : écrits dans `server.env`, ils sont ignorés sans message. Les compteurs sont enregistrés dans `TVLENS_USAGE_DIR`, sans écriture dans `/etc`. L’unité limite les ressources et l’accès disque ; ajuster les limites après mesure sur sa propre machine. Aucun proxy public ni Tailscale Funnel n’est nécessaire.
 
 ## Modèles et langue audio
 
@@ -94,13 +103,35 @@ Dans `$TVLENS_SERVER_DATA/models.json`, définir les identifiants accessibles au
 {"codexModel":"gpt-6-luna","observationModel":"gpt-6-luna","inspectionModel":"gpt-6-luna"}
 ```
 
-Créer ce fichier sous l’utilisateur du service, permissions `0600`. Sans fichier, chat = modèle par défaut du compte et vision/réexamen = Luna. Redémarrer le service pour charger les modèles ; cela termine la session en mémoire.
+Créer ce fichier sous l’utilisateur du service, permissions `0600`. Sans fichier, chat = modèle par défaut du compte et vision/réexamen = Luna. Redémarrer le service pour charger les modèles ; cela archive la session en cours, qui reste sur disque et se rouvre depuis la liste des sessions.
 
-`TVLENS_CHAT_REASONING_EFFORT=max` dans `runtime.env` configure l’effort du chat si le modèle le supporte. Sans variable, l’effort vaut `low`. Ce réglage n’accélère pas nécessairement les réponses et n’est pas appliqué à la vision/réexamen. La limite de traitement d’une question reste 60 secondes, hors file.
+`TVLENS_CHAT_REASONING_EFFORT=max` dans `runtime.env` configure l’effort du chat si le modèle le supporte. Sans variable, l’effort vaut `low`. Ce réglage n’accélère pas nécessairement les réponses et n’est pas appliqué à la vision/réexamen. Le traitement d’une question est plafonné à cinq minutes, hors file ; `TVLENS_QUESTION_TIMEOUT_MS` abaisse ce plafond.
 
 La langue audio du serveur vaut `fr` au premier démarrage. Le bouton Audio de la TV enregistre `fr`, `en` ou `auto` dans `$TVLENS_SERVER_DATA/transcription.json`. Il concerne les prochains appels Whisper ; aucun redémarrage requis. L’app Mac autonome conserve sa propre configuration et la détection automatique.
 
 Whisper s’exécute sur l’hôte ; Codex effectue l’inférence distante des images et du chat. OpenRouter est optionnel, uniquement pour les embeddings texte. Ni l’authentification Codex, ni les jetons d’appairage, ni les fichiers de données ne sont versionnés.
+
+## Sessions, stockage et réglages d’hôte
+
+Les médias d’une session sont gardés jusqu’à sa suppression explicite. Rien n’est nettoyé au démarrage ni à l’arrêt du service : un arrêt archive la session en cours, et le démarrage suivant la retrouve dans `$TVLENS_SERVER_DATA/sessions`. Chaque session a son dossier : `session.json`, `manifest.json`, `media/`, `thumbs/`, et selon l’usage `deep-answers.json`, `surveillance.json`, `embeddings.json`.
+
+Prévoir le disque. L’estimation hors ligne, non vérifiée sur une vraie capture, est d’environ 9,6 Mo par minute de capture TV, soit de l’ordre de 0,86 Go pour un film de 90 minutes. Sous le plancher d’espace libre, `/v1/segments` répond `507` avec `code: "storage-full"`, la session se met en pause et **rien n’est supprimé** : c’est au spectateur de supprimer une session. `ReadWritePaths` de l’unité doit couvrir le dossier des données, ce qui est le cas du modèle fourni.
+
+Réglages facultatifs, à écrire dans `/etc/tvlens/runtime.env`. Mal saisis, ils arrêtent le démarrage avec un message.
+
+| Variable | Défaut | Effet |
+| --- | --- | --- |
+| `TVLENS_QUESTION_TIMEOUT_MS` | `300000` | Plafond de traitement d’une question, de 1 à 300 000 ms |
+| `TVLENS_MEDIA_RETENTION_MS` | absent : jusqu’à suppression | Une durée positive rétablit la fenêtre glissante |
+| `TVLENS_DISK_MIN_FREE_MB` | `1024` | Plancher d’espace libre sous lequel la capture est refusée |
+| `TVLENS_DISK_WARN_FREE_MB` | `2048` | Seuil de l’état « espace faible » |
+| `TVLENS_SURVEILLANCE_WORKERS` | `1` | Vérifications de surveillance en parallèle, de 1 à 3 |
+
+`TVLENS_VISION_DURING_ASK` (défaut `1`) se lit, elle, dans `server.env` comme dans l’environnement : `0` retient la description visuelle pendant une question.
+
+Routes ajoutées, toutes authentifiées par le jeton : `GET /v1/sessions`, `POST /v1/sessions/<uuid>/open`, `/resume`, `/delete`, `POST /v1/sessions/close`, `GET /v1/storage`, `POST /v1/questions/<deep-N>/cancel`, `POST /v1/surveillance/start`, `/stop`, `/retry`, `/history`, `/detail`, `GET /v1/surveillance`, `GET /v1/surveillance/overlay`. `POST /v1/session/end` archive.
+
+L’état interrogé par le panneau existe en trois formes : `GET /v1/state` (complet, compatible avec un panneau ancien), `GET /v1/state?view=chat` et `GET /v1/state?view=panel` (vues légères). Chaque réponse porte un `ETag` ; une requête avec `If-None-Match` égal reçoit `304` sans corps. Un panneau non mis à jour continue de télécharger l’état complet, qui grossit avec la durée de la session.
 
 ## Réglage CPU de Whisper
 
@@ -116,6 +147,8 @@ Déployer une révision Git identifiée après validation. Avant de mettre à jo
 
 Les changements du serveur et ceux de `tv/app` se déploient séparément. Mettre à jour le panneau en préservant `connection.js`, puis le fermer et le rouvrir. L’installation Mac packagée doit également être reconstruite séparément.
 
+Pour le code du 13 octobre 2026, deux précautions de plus. Les sessions créées avant la mise à jour apparaissent ensuite « texte seul » : leurs médias n’avaient pas été gardés, et rien n’est migré ni effacé. Et le mode ambiant de la TV (alertes panneau fermé) se déploie à part et reste désactivé tant que le protocole de [LG : alertes panneau fermé](lg-ambient.md) n’est pas passé.
+
 ## Appairage et validation
 
 Suivre [le guide d’installation LG](lg-installation.md) pour la répartition des composants. La TV doit disposer de l’adaptateur compatible et de sa propre configuration privée `{ "url": "http://ADRESSE_TAILSCALE:8787", "token": "JETON_DU_SERVEUR" }`. Le panneau et le contrôleur utilisent la même configuration ; leur format et leurs propriétaires sont détaillés dans [le runtime LG](lg-remote-runtime.md). La compatibilité est testée seulement sur la LG rootée de référence : ce guide n’automatise pas le root d’un autre téléviseur.
@@ -129,4 +162,4 @@ TVLENS_PROBE_VIDEO=/chemin/kennedy-rice-7min.mp4 \
 node scripts/probe-refactor-live.cjs --require-timeline --report=/chemin/rapport-prive.json
 ```
 
-Cette sonde utilise les secondes 30 à 38 et les vrais fournisseurs ; elle consomme du quota. Les médias ne sont pas fournis dans Git. Un redémarrage du moteur met fin à la session en mémoire ; le lancement automatique du service ne relance pas automatiquement la capture TV.
+Cette sonde utilise les secondes 30 à 38 et les vrais fournisseurs ; elle consomme du quota. Les médias ne sont pas fournis dans Git. Un redémarrage du moteur archive la session en cours ; le lancement automatique du service ne relance pas la capture TV, et une session archivée ne reprend que sur une demande explicite.

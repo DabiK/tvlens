@@ -2,12 +2,15 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const sharp = require("sharp");
 
-// Reduced images have a session lifetime independent from the five-minute raw buffer.
+// Reduced images are kept with their session until it is deleted. They live in thumbs/: the cleanup
+// of a former version only knows thumbnails/, which is still read when a session comes from it.
 class SessionThumbnails {
-  constructor(root) {
+  constructor(root, { legacyRoot = null } = {}) {
     this.root = root;
+    this.legacyRoot = legacyRoot;
     this.pending = Promise.resolve();
     this.closed = false;
+    this.bytes = 0;
   }
   file(id) {
     if (!/^moment-\d+$/.test(id))
@@ -38,18 +41,30 @@ class SessionThumbnails {
         if (this.closed) throw Error("Session terminée.");
         await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
         await fs.writeFile(this.file(id), image, { mode: 0o600 });
+        this.bytes += image.length;
       });
     this.pending = operation;
     return operation;
   }
   read(id) {
     if (this.closed) throw Error("Session terminée.");
-    return fs.readFile(this.file(id));
+    const file = this.file(id);
+    return fs.readFile(file).catch((error) => {
+      if (!this.legacyRoot || error.code !== "ENOENT") throw error;
+      return fs.readFile(path.join(this.legacyRoot, path.basename(file)));
+    });
   }
-  async clear() {
+  // End of capture: no later write, and the images stay on disk with the session.
+  async close() {
     this.closed = true;
     await this.pending.catch(() => {});
-    await fs.rm(this.root, { recursive: true, force: true });
+  }
+  // Explicit purge of this session's images, at both locations.
+  async clear() {
+    await this.close();
+    for (const dir of [this.root, this.legacyRoot])
+      if (dir) await fs.rm(dir, { recursive: true, force: true });
+    this.bytes = 0;
   }
 }
 module.exports = { SessionThumbnails };

@@ -5,45 +5,93 @@
     <title>TVLens — Companion</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="timeline.css" />
+    <link rel="stylesheet" href="surveillance.css" />
   </head>
   <body>
-    <aside id="chat-panel">
+    <aside id="chat-panel" data-view="chat">
       <header>
         <strong class="brand" aria-label="TVLens">TV<span>Lens</span></strong
         ><button id="show-timeline" aria-label="Afficher la frise">
           Mémoire ↔</button
+        ><button id="show-surveillance" aria-label="Afficher la surveillance">
+          Surveillance</button
         ><small id="navigation-hint">Retour · fermer</small>
       </header>
       <p id="destination" class="sr-only">Companion · calcul distant</p>
-      <div class="conversation-heading"><h1>Conversation</h1><p id="connection" role="status">Connexion…</p></div>
-      <p id="coverage">Aucune capture reçue.</p>
-      <section
-        id="conversation"
-        aria-live="polite"
-        tabindex="0"
-        aria-label="Conversation : OK pour activer le défilement"
-      ></section>
-      <div id="moment-context" hidden>
-        <span></span><button type="button" id="clear-moment">Détacher</button>
-      </div>
-      <form id="ask">
-        <label for="question">Pose ta question</label>
-        <input
-          id="question"
-          maxlength="1000"
-          autocomplete="off"
-          placeholder="Un détail, un chiffre, un moment…"
-        />
-        <div class="actions">
-          <button type="button" id="dictate">Dicter</button
-          ><button id="send">Envoyer</button>
+      <p id="archive-banner" role="status" hidden></p>
+      <div id="chat-view">
+        <div class="conversation-heading"><h1>Conversation</h1><p id="connection" role="status">Connexion…</p></div>
+        <p id="coverage">Aucune capture reçue.</p>
+        <section
+          id="conversation"
+          aria-live="polite"
+          tabindex="0"
+          aria-label="Conversation : OK pour activer le défilement"
+        ></section>
+        <div id="moment-context" hidden>
+          <span></span><button type="button" id="clear-moment">Détacher</button>
         </div>
-      </form>
+        <form id="ask">
+          <label for="question">Pose ta question</label>
+          <input
+            id="question"
+            maxlength="1000"
+            autocomplete="off"
+            placeholder="Un détail, un chiffre, un moment…"
+          />
+          <div class="actions">
+            <button type="button" id="dictate">Dicter</button
+            ><button id="send">Envoyer</button>
+          </div>
+        </form>
+        <button type="button" id="cancel-question" hidden>
+          Annuler la question en cours
+        </button>
+      </div>
+      <div id="surveillance-view" hidden>
+        <div class="conversation-heading"><h1>Surveillance</h1><p id="surv-status" role="status"></p></div>
+        <p id="surv-counts" role="status"></p>
+        <div id="surv-commands">
+          <label for="surv-instruction">Consigne à suivre pendant la vidéo</label>
+          <input
+            id="surv-instruction"
+            maxlength="1500"
+            autocomplete="off"
+            placeholder="Vérifie les chiffres annoncés…"
+          />
+          <div class="actions">
+            <button type="button" id="surv-dictate">Dicter la consigne</button
+            ><button type="button" id="surv-example">Exemple</button>
+          </div>
+          <button type="button" id="surv-toggle">Activer la surveillance</button>
+          <div class="actions">
+            <button type="button" id="surv-duration">Durée des alertes · 14 s</button
+            ><button type="button" id="surv-alerts">Alertes à l’écran · oui</button>
+          </div>
+          <button type="button" id="surv-history-open">Historique</button>
+          <p id="surv-message" role="alert"></p>
+          <p id="surv-ambient" role="status"></p>
+        </div>
+        <div id="surv-list" hidden>
+          <p id="surv-list-status" role="status"></p>
+          <div id="surv-items" tabindex="-1" aria-label="Historique de la surveillance"></div>
+        </div>
+        <div id="surv-detail" hidden>
+          <h2 id="surv-detail-title"></h2>
+          <p id="surv-detail-time"></p>
+          <div id="surv-detail-scroll" tabindex="0" aria-label="Détail : haut et bas pour lire"></div>
+          <div class="actions">
+            <button type="button" id="surv-detail-ask">Questionner ce moment</button
+            ><button type="button" id="surv-detail-back">Retour à la liste</button>
+          </div>
+        </div>
+      </div>
       <div class="capture-controls">
         <button id="capture" disabled>Démarrer l’analyse</button>
         <button id="transcription-language" type="button" disabled>Audio · Français</button>
         <p id="language-state" role="status"></p>
         <p id="capture-state" role="status">Contrôle de capture…</p>
+        <p id="storage-state" role="status" hidden></p>
       </div>
       <p id="error" role="alert"></p>
       <footer>
@@ -61,6 +109,7 @@
         <nav>
           <button id="timeline-live">Retour au direct</button
           ><button id="timeline-chat">Chat ↔</button
+          ><button id="timeline-sessions">Sessions</button
           ><button id="timeline-end">Terminer la session</button>
         </nav>
       </div>
@@ -86,23 +135,64 @@
           ><button id="detail-back">Retour à la frise</button>
         </div>
       </section>
+      <section id="sessions-panel" hidden aria-label="Sessions enregistrées">
+        <div id="sessions-rail"></div>
+        <div class="sessions-bar">
+          <p id="sessions-storage" role="status"></p>
+          <p id="sessions-status" role="status"></p>
+          <nav>
+            <button id="session-open">Ouvrir en lecture seule</button
+            ><button id="session-resume">Reprendre la capture</button
+            ><button id="session-delete">Supprimer…</button
+            ><button id="session-new">Nouvelle session</button
+            ><button id="sessions-back">Retour à la frise</button>
+          </nav>
+        </div>
+      </section>
       <p id="timeline-hint">
         ← → Parcourir · OK Détail · Retour Fermer · Observations automatiques,
         non vérifiées
       </p>
     </section>
+    <!-- Sourced verification results only, outside the video rectangle of both layouts. No focusable
+         descendant: the remote never lands here. -->
+    <div id="surveillance-overlay" role="status" aria-live="polite" hidden>
+      <div id="overlay-card" hidden></div>
+      <div id="overlay-activity" hidden></div>
+    </div>
     <dialog id="end-session-dialog">
       <h2>Terminer cette session ?</h2>
       <p>
-        La capture sera arrêtée et les miniatures supprimées. Les résumés et
-        réponses restent archivés.
+        La capture sera arrêtée et la session archivée. Vidéos, miniatures,
+        résumés et réponses restent consultables dans « Sessions » jusqu’à
+        leur suppression.
       </p>
-      <button id="end-cancel">Garder la session</button
-      ><button id="end-confirm">Terminer et supprimer les miniatures</button>
+      <button id="end-cancel" data-cancel>Garder la session</button
+      ><button id="end-confirm">Terminer et archiver</button>
       <p id="end-error" role="alert"></p>
+    </dialog>
+    <dialog id="archive-capture-dialog">
+      <h2>Session ouverte en lecture seule</h2>
+      <p id="archive-capture-text"></p>
+      <button id="archive-cancel" data-cancel>Annuler</button
+      ><button id="archive-new">Nouvelle session</button
+      ><button id="archive-resume">Reprendre ici</button>
+      <p id="archive-error" role="alert"></p>
+    </dialog>
+    <dialog id="delete-session-dialog">
+      <h2>Supprimer cette session ?</h2>
+      <p id="delete-subject"></p>
+      <p id="delete-removed"></p>
+      <p id="delete-kept"></p>
+      <button id="delete-cancel" data-cancel>Annuler</button
+      ><button id="delete-confirm">Supprimer définitivement</button>
+      <p id="delete-error" role="alert"></p>
     </dialog>
     <script src="connection.js"></script>
     <script src="remote-client.js"></script>
+    <script src="surveillance-overlay.js"></script>
+    <script src="surveillance-view.js"></script>
+    <script src="sessions-view.js"></script>
     <script src="capture-control.js"></script>
     <script src="timeline-view.js"></script>
     <script src="companion.js"></script>

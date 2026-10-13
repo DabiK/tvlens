@@ -7,6 +7,18 @@ GENERATION=Path('/tmp/tvlens-panel-generation')
 WATCHDOG_TIMEOUT=20
 LAYOUT_REQUEST=Path('/tmp/tvlens-panel-layout-request.json')
 LAYOUT_STATE=Path('/tmp/tvlens-panel-layout-state.json')
+LOCK='/tmp/tvlens-panel.lock'
+HEARTBEAT_PREFIX='/tmp/tvlens-panel-'
+# Shared with the ambient display (tv/ambient.py): the panel and an ambient card are never on screen together.
+AMBIENT_RUN=Path(os.environ.get('TVLENS_AMBIENT_RUN') or '/tmp')
+SCREEN_LOCK=AMBIENT_RUN/'tvlens-screen.lock'
+AMBIENT_NOTICE=AMBIENT_RUN/'tvlens-ambient-dismiss-panel.json'
+AMBIENT_GATE=AMBIENT_RUN/'tvlens-ambient-gate.json'
+AMBIENT_APP='org.tvlens.ambient'
+SCREEN_WAIT=2
+RELAUNCH_WINDOW=8
+monotonic=time.monotonic
+pause=time.sleep
 
 def layout_target(saved, mode):
     if mode not in ('chat','timeline'):raise ValueError('Unknown panel layout')
@@ -94,18 +106,54 @@ def restore_original(saved):
             result=call('com.webos.service.videooutput/display/setDisplayWindow',saved)
             print('restore',json.dumps(result),flush=True)
 
+def screen_lock():
+    """The screen lock if it is free, else None. Never blocking: Rakuten must always open the panel.
+    A lock file that cannot be opened raises OSError: every caller swallows it."""
+    handle=open(SCREEN_LOCK,'a')
+    try:fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);return handle
+    except OSError:handle.close();return None
+
+def ambient_app():
+    try:
+        app=json.loads(AMBIENT_GATE.read_text()).get('app')
+        return app if isinstance(app,str) and app.startswith('org.tvlens.') and app!=APP else AMBIENT_APP
+    except (OSError,ValueError,AttributeError):return AMBIENT_APP
+
+def ambient_yield():
+    """Ask an ambient card to leave before the panel touches anything. Returns (screen lock or None, contended).
+
+    A notice first (a file, no Luna call): the ambient supervisor refuses any paint from now on. Then the screen
+    lock is awaited for two seconds at most. Without it the card is closed directly and the panel opens anyway.
+    Bounded, and every exception is swallowed: nothing here may keep Rakuten from opening the panel.
+    """
+    held=None;contended=False
+    try:
+        temporary=AMBIENT_NOTICE.with_name(AMBIENT_NOTICE.name+'.'+str(os.getpid())+'.tmp')
+        temporary.write_text(json.dumps({'atMono':monotonic(),'pid':os.getpid()}));temporary.replace(AMBIENT_NOTICE)
+        deadline=monotonic()+SCREEN_WAIT
+        held=screen_lock()
+        # A lock that is taken means a card is armed, shown or still in flight.
+        contended=held is None
+        while held is None and monotonic()<deadline:
+            pause(.1);held=screen_lock()
+        if held is None:call('com.webos.surfacemanager/closeByAppId',{'id':ambient_app()})
+    except Exception:pass
+    return held,contended
+
 def main():
-    lock=open('/tmp/tvlens-panel.lock','w')
+    lock=open(LOCK,'w')
     try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     except BlockingIOError:return
     signal.signal(signal.SIGTERM,on_stop);signal.signal(signal.SIGINT,on_stop)
+    # After the panel's own lock and before any mutation.
+    screen,contended=ambient_yield()
     saved,target=rectangles(video())
     mode="chat";request_id=None
     LAYOUT_REQUEST.unlink(missing_ok=True)
     # Renew a private heartbeat instead of closing a healthy panel on a fixed timer.
     os.umask(0o077)
     generation=uuid.uuid4().hex;GENERATION.write_text(generation)
-    heartbeat=Path('/tmp/tvlens-panel-'+generation);heartbeat.touch()
+    heartbeat=Path(HEARTBEAT_PREFIX+generation);heartbeat.touch()
     watchdog=subprocess.Popen(['/usr/bin/python3',__file__,'restore',json.dumps(saved),str(heartbeat),generation],
                               stdin=subprocess.DEVNULL,start_new_session=True)
     try:
@@ -113,14 +161,33 @@ def main():
         if not result.get('returnValue'):raise RuntimeError(result)
         result=call('com.webos.applicationManager/launch',{'id':APP})
         if not result.get('returnValue'):raise RuntimeError(result)
-        write_layout({'active':True,'mode':mode,'requestId':request_id})
-        time.sleep(1)
+        launched=monotonic();relaunched=False
+        # `video` is the logical rectangle the application must keep clear of its own overlay.
+        write_layout({'active':True,'mode':mode,'requestId':request_id,'video':target['displayOutput']})
+        pause(1)
         while not stop:
+            if screen is None:
+                # Asked for again at each turn. A lock file that cannot be opened (run directory absent) is no
+                # reason to close a panel the viewer just opened: it goes on without the lock.
+                try:screen=screen_lock()
+                except OSError:pass
             v=video()
             if v.get('context')!=saved['context'] or v['displayOutput']!=physical_rect(target):
                 print('Media transition: closing panel',flush=True);break
             windows=call('com.webos.surfacemanager/getForegroundWindowInfo',{})
-            if not any(w['appId']==APP for w in windows.get('windows',[])):break
+            listed=[w.get('appId') for w in windows.get('windows',[])]
+            if APP not in listed:
+                # An ambient window launched in flight may be born after the panel and, on a compositor that
+                # keeps one overlay surface, close it. Tolerated once, shortly after the launch, and only when
+                # a card was really in the way: close it, relaunch the panel, do not restore.
+                ambient=ambient_app()
+                if relaunched or monotonic()-launched>RELAUNCH_WINDOW or not (contended or ambient in listed):break
+                relaunched=True
+                try:call('com.webos.surfacemanager/closeByAppId',{'id':ambient})
+                except Exception:pass
+                result=call('com.webos.applicationManager/launch',{'id':APP})
+                if not result.get('returnValue'):raise RuntimeError(result)
+                heartbeat.touch();pause(1);continue
             try:requested=json.loads(LAYOUT_REQUEST.read_text())
             except (OSError,ValueError):requested={}
             if requested.get('id')!=request_id and requested.get('mode') in ('chat','timeline'):
@@ -128,14 +195,16 @@ def main():
                 result=call('com.webos.service.videooutput/display/setDisplayWindow',next_target)
                 if not result.get('returnValue'):raise RuntimeError(result)
                 target=next_target;mode=requested['mode'];request_id=requested['id']
-                write_layout({'active':True,'mode':mode,'requestId':request_id})
+                write_layout({'active':True,'mode':mode,'requestId':request_id,'video':target['displayOutput']})
             heartbeat.touch()
-            time.sleep(.7)
+            pause(.7)
     finally:
         write_layout({"active":False,"mode":"chat"})
         restore_original(saved)
         watchdog.terminate();watchdog.wait(timeout=3)
         heartbeat.unlink(missing_ok=True)
+        # The screen is given back only once the video is restored: the ambient display resumes after that.
+        if screen is not None:screen.close()
         lock.close()
 
 if __name__=='__main__':

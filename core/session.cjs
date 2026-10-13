@@ -1,57 +1,213 @@
 const { completeTopicSummary } = require('./topic-summary.cjs');
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
+const { latencySummary } = require('./latency-trace.cjs');
+const { holdsMedia } = require('./clip-container.cjs');
+const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
+const unfinished = status => status === 'queued' || status === 'analyzing';
+// The files of a passage are there, whether or not its video plays: a recorder that received no frame leaves a
+// container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
+// `available` only says that the video can be replayed.
+const UNREADABLE = 'unreadable', stored = segment => Boolean(segment.available) || segment.mediaReason === UNREADABLE;
+// A saved state restore() can read without guessing: a file that parses but has another shape is refused
+// in plain words instead of failing half-way on a TypeError.
+const passageLike = passage => Boolean(passage) && typeof passage === 'object' && typeof passage.id === 'string' && /^moment-\d+$/.test(passage.id) && Number.isFinite(passage.startMs) && Number.isFinite(passage.endMs);
+const listOf = (value, valid) => value == null || (Array.isArray(value) && value.every(valid));
+const restorable = saved => Boolean(saved) && typeof saved === 'object' && typeof saved.id === 'string' && Array.isArray(saved.segments) && saved.segments.every(passageLike)
+  && listOf(saved.history, passageLike) && listOf(saved.questions, question => Boolean(question) && typeof question === 'object');
+// A passage known only by its media on disk: its analysis never reached the saved state. It takes its
+// place on the session clock, replayable and unanalysed; nothing is analysed again.
+const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
+// Images of a block that the capture cropped or withheld because a TV Lens card was on screen, as it
+// declared them (0 to 5 each). Anything else, or nothing hidden, is no declaration: the passage is then
+// left exactly as it was.
+const hiddenCount = value => Number.isInteger(value) && value >= 0 && value <= 5;
+function declaredOverlay(ingest) {
+  const overlay = ingest && typeof ingest === 'object' && !Array.isArray(ingest) ? ingest.overlay : null;
+  if (!overlay || typeof overlay !== 'object' || !hiddenCount(overlay.cropped) || !hiddenCount(overlay.withheld) || !(overlay.cropped + overlay.withheld)) return null;
+  return { cropped: overlay.cropped, withheld: overlay.withheld };
+}
+// Said by the session itself, never left to the model: a scene whose bottom was hidden is not presented
+// as seen whole. `images` is what reached the passage; the withheld ones were sampled too. Added once,
+// ahead of whatever uncertainty the description already carries: where that text is later cut to a
+// length (context of the next passages, cards), the sentence is what stays.
+function withOverlayNote(observation, segment, images) {
+  const overlay = segment.ingest?.overlay;
+  if (!overlay || !observation) return observation;
+  const hidden = overlay.cropped + overlay.withheld, sampled = Math.max(hidden, (Number.isInteger(images) ? images : 0) + overlay.withheld);
+  const note = `Bas de l’image masqué par un affichage TV Lens sur ${hidden} image(s) sur ${sampled} : la scène n’a pas été vue en entier.`;
+  const said = typeof observation.uncertainty === 'string' ? observation.uncertainty.trim() : '';
+  return said.includes(note) ? observation : { ...observation, uncertainty: said ? `${note} ${said}` : note };
+}
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
-  constructor({ id, now, perception, answer, media, archive, thumbnails, onChange = () => {}, retentionMs = 300000, maxPending = 2 }) {
-    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, onChange, retentionMs, maxPending });
+  constructor({ id, now, perception, answer, media, archive, thumbnails, storage, onChange = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
+    // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
+    // carries null for "no expiry" (JSON has no Infinity): it is normalised here, never used in arithmetic.
+    retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
+    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, storage, onChange, retentionMs, maxPending, visionDuringAsk });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
     this.closed = false; this.controller = new AbortController();
+    // Raised by a host that is ending the session and still waits for a write under way: from then on no
+    // analysis is started, since close() would abandon it at once.
+    this.ending = false;
     this.splitPerception = typeof perception.transcribe === 'function' && typeof perception.observeVisual === 'function';
+    // Counted where the event happens, never recomputed from the passages.
+    this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
+    this.unremoved = new Set();
+    this.visionBlockedMs = 0; this.visionHeldSince = null;
     this.sequence = 0; this.accepting = true; this.running = false; this.asking = false;
-    this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve();
+    this.readOnly = false; this.storageError = null;
+    // Ingests under way, and media found on disk at reopening that no passage could be made of.
+    this.landing = new Set(); this.unplacedMedia = 0;
+    this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve(); this.ingestChain = Promise.resolve();
+  }
+
+  // Hosts assign `asking` directly: the end of a question also ends the time charged to its vision gate.
+  get asking() { return this.questionActive; }
+  set asking(value) { this.questionActive = value; if (!value) this.endVisionHold(); }
+  endVisionHold() {
+    if (this.visionHeldSince === null) return;
+    this.visionBlockedMs += Math.max(0, this.now() - this.visionHeldSince); this.visionHeldSince = null;
   }
 
   async ingest(input) {
     if (!this.accepting) throw new Error('La session est arrêtée.');
     if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 60000) throw new Error('Horodatage invalide.');
-    const previous = this.segments.at(-1);
-    if (previous && input.startMs < previous.endMs - 100) throw new Error('Les segments doivent suivre l’ordre d’observation.');
-    const segment = { id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs, status: 'queued', hasAudio: Boolean(input.audio?.byteLength), available: true, observation: null };
-    await this.media.put(segment.id, input);
+    // Tracked until it has landed whole (media, passage, thumbnail): a host ending the session waits on landed().
+    const landing = this.land(input, this.now());
+    this.landing.add(landing);
+    try { return await landing; } finally { this.landing.delete(landing); }
+  }
+  // Settles once every ingest already admitted has landed or failed. Never rejects.
+  landed() { return Promise.allSettled([...this.landing]); }
+  async land(input, receivedMs) {
+    // Overlapping calls are admitted in call order; a rejected one must not block the next.
+    const admitted = this.ingestChain = this.ingestChain.catch(() => {}).then(async () => {
+      if (this.closed) throw new Error('La session est arrêtée.');
+      // Against the last passage known, archived ones included: once a rolling window has emptied the list,
+      // a block replayed by its capture must still be refused, never stored a second time.
+      const previous = this.segments.at(-1) ?? this.history.at(-1);
+      if (previous && input.startMs < previous.endMs - 100) throw new Error('Les segments doivent suivre l’ordre d’observation.');
+      const segment = { id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs, status: 'queued', hasAudio: Boolean(input.audio?.byteLength), available: true, observation: null, receivedMs, revision: 0 };
+      // A container without a media block is kept as it came, analysed from its images and its sound, and never
+      // announced as a video that can be replayed. Reading the container must never cost the passage.
+      let empty = false;
+      try { empty = holdsMedia(input.clip) === false; } catch { /* nothing is claimed about this clip */ }
+      if (empty) { segment.available = false; segment.mediaReason = UNREADABLE; }
+      const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
+      if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
+      const overlay = declaredOverlay(input.ingest);
+      if (overlay) segment.ingest = { ...segment.ingest, overlay };
+      try { await this.media.put(segment.id, input); }
+      catch (error) {
+        // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
+        if (error?.code === STORAGE_FULL) { this.accepting = false; this.storageError = error.message; this.emit(); await this.persist(); }
+        throw error;
+      }
+      this.segments.push(segment);
+      // Counted once the passage exists: a refused write leaves no passage and no count.
+      if (empty) this.losses.videoUnreadable = (this.losses.videoUnreadable || 0) + 1;
+      // A write that was under way when the session closed still lands, but nothing is queued for analysis.
+      // Nor while its host is ending it: the passage is kept, replayable, and reopens as unanalysed.
+      if (!this.closed && !this.ending) { this.queue.push(segment); this.shed(); }
+      // The very first passage, and one landing after close(), are saved before their identifier is handed
+      // back: a session cut during its first analysis reopens, and closing never leaves media the saved
+      // state does not know. Queued ahead of the publication, without delaying the analysis.
+      const saving = this.closed || this.segments.length + this.history.length === 1 ? this.persist() : null;
+      this.emit(); this.drain();
+      if (saving) await saving;
+      return segment;
+    });
+    const segment = await admitted;
+    // Analysis is already running: the thumbnail and the retention sweep no longer delay it.
     if (this.thumbnails) {
       try { await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl); segment.thumbnailAvailable = true; }
       catch { segment.thumbnailAvailable = false; }
+      // The passage may already have been archived: its card must still find the thumbnail.
+      const archived = this.history.find(item => item.id === segment.id);
+      if (archived) archived.thumbnailAvailable = segment.thumbnailAvailable;
+      this.emit();
     }
-    this.segments.push(segment);
-    this.queue.push(segment);
-    while (this.queue.length > this.maxPending) this.queue.shift().status = 'skipped';
     await this.prune();
-    this.emit(); this.drain();
     return segment.id;
   }
 
+  // Overload sheds the transcription only: the passage keeps its place in the lane, so its images
+  // still reach vision in observation order. Past a bounded lane the oldest passage is dropped whole.
+  shed() {
+    if (this.splitPerception) {
+      const waiting = this.queue.filter(s => s.audioStatus !== 'skipped');
+      for (const s of waiting.slice(0, Math.max(0, waiting.length - this.maxPending))) { s.audioStatus = 'skipped'; this.losses.audioSkipped++; }
+      while (this.queue.length > this.maxPending * 3) {
+        const dropped = this.queue.shift();
+        Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped', visionSkipReason: 'backlog' }); this.losses.visionSkippedBacklog++;
+      }
+    } else while (this.queue.length > this.maxPending) { this.queue.shift().status = 'skipped'; this.losses.audioSkipped++; }
+  }
+
+  // A question is the cause of a skip only while it alone keeps the lane waiting.
+  skipVision(segment) {
+    const reason = this.asking && !this.visionDuringAsk && !this.visionRunning ? 'asking' : 'backlog';
+    segment.visionStatus = 'skipped'; segment.visionSkipReason = reason;
+    segment.status = hasUsableObservation(segment) ? 'partial' : 'skipped';
+    this.losses[reason === 'asking' ? 'visionSkippedAsking' : 'visionSkippedBacklog']++;
+  }
+
+  // Hands a passage over to the vision lane, or records why it will not be described.
+  toVision(segment) {
+    segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
+    if (stored(segment)) {
+      // A passage without speech only takes a free place: it never evicts a spoken one waiting for its images.
+      if (segment.audioStatus === 'skipped' && this.visionQueue.length >= this.maxPending) return this.skipVision(segment);
+      segment.visionStatus = 'queued'; segment.visionQueuedMs = this.now(); this.visionQueue.push(segment);
+      while (this.visionQueue.length > this.maxPending) this.skipVision(this.visionQueue.shift());
+    } else {
+      segment.visionStatus = 'expired'; this.losses.visionExpired++;
+      segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
+    }
+  }
+
   prune() {
-    this.pruneChain = this.pruneChain.then(async () => {
+    // A rejected step must not poison later sweeps or ingests.
+    this.pruneChain = this.pruneChain.catch(() => {}).then(async () => {
+      // A reopened archive is never swept: a host set to a rolling window must not erase it by opening it.
+      if (this.readOnly) return;
       const cutoff = this.now() - this.retentionMs;
       for (const segment of this.segments) {
-        if (segment.available && segment.endMs < cutoff) {
-          segment.available = false;
+        if (stored(segment) && segment.endMs < cutoff) {
+          segment.available = false; segment.mediaReason = 'expired';
+          // Still waiting for its transcription: neither lane will ever see it.
+          if (this.splitPerception && this.queue.includes(segment)) {
+            if (segment.audioStatus !== 'skipped') this.losses.audioExpired++;
+            segment.visionStatus = 'expired'; this.losses.visionExpired++;
+          }
           this.queue = this.queue.filter(item => item !== segment);
           this.visionQueue = this.visionQueue.filter(item => item !== segment);
+          if (!this.visionQueue.length) this.endVisionHold();
           if (segment.visionStatus === 'queued') {
-            segment.visionStatus = 'expired';
+            segment.visionStatus = 'expired'; this.losses.visionExpired++;
             segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
           }
           if (segment.status === 'queued') segment.status = 'expired';
-          await this.media.remove(segment.id);
+          // The passage stays unavailable: a failed removal must not stop the sweep or the archival.
+          this.unremoved.add(segment.id);
         }
       }
+      // A removal that failed is tried again at every sweep: no raw media beyond the rolling window.
+      for (const id of [...this.unremoved]) {
+        try { await this.media.remove(id); this.unremoved.delete(id); }
+        catch { this.lastError = 'Impossible de supprimer un média expiré.'; }
+      }
       // Keep summaries for the session, but no raw media beyond the rolling window.
-      while (this.segments.length && !this.segments[0].available && this.segments[0].status !== 'analyzing' && this.segments[0].audioStatus !== 'analyzing' && this.segments[0].visionStatus !== 'analyzing') {
+      while (this.segments.length && !stored(this.segments[0]) && this.segments[0].status !== 'analyzing' && this.segments[0].audioStatus !== 'analyzing' && this.segments[0].visionStatus !== 'analyzing') {
         const item = this.segments.shift();
-        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, topicSummary: item.topicSummary, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs });
+        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, topicSummary: item.topicSummary, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs,
+          // Stamps stay with the archived passage; bulky per-call metrics do not: the whole history is sent at every state poll.
+          receivedMs: item.receivedMs, audioStartedMs: item.audioStartedMs, visionQueuedMs: item.visionQueuedMs, visionStartedMs: item.visionStartedMs, visionPublishedMs: item.visionPublishedMs, revision: item.revision, ingest: item.ingest, visionSkipReason: item.visionSkipReason, audioFailed: item.audioFailed,
+          // Why the media cannot be replayed stays with the summary: expired, missing or never kept.
+          mediaReason: item.mediaReason });
       }
       this.emit();
     });
@@ -59,7 +215,7 @@ class WatchSession {
   }
 
   async drain() {
-    if (this.closed) return;
+    if (this.closed || this.ending) return;
     if (this.splitPerception) { this.drainAudio(); this.drainVision(); return; }
     if (this.running || this.asking || !this.queue.length) return;
     this.running = true;
@@ -73,7 +229,7 @@ class WatchSession {
       const result = await this.perception.observe({ ...segment, ...evidence, context, signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
       if (this.closed) return;
       segment.analysisMs=result.elapsedMs;segment.metrics=result.metrics;segment.stage=null;
-      segment.observation = result.observation;
+      segment.observation = withOverlayNote(result.observation, segment, evidence?.frames?.length); segment.revision++;
       segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.status = 'ready';
       this.apiCost += result.cost || 0;
@@ -91,49 +247,52 @@ class WatchSession {
 
   // Each lane owns one call and a bounded FIFO of segment references, never raw media.
   async drainAudio() {
-    if (this.closed || this.audioRunning || !this.queue.length) return;
+    if (this.closed || this.ending || this.audioRunning) return;
+    // A passage whose transcription was shed moves on as soon as the passages before it have.
+    if (this.queue[0]?.audioStatus === 'skipped') {
+      // One at a time, letting an idle vision lane take each before the next arrives.
+      while (this.queue[0]?.audioStatus === 'skipped') { this.toVision(this.queue.shift()); this.drainVision(); }
+      this.emit();
+    }
+    if (!this.queue.length) return;
     this.audioRunning = true; this.running = true;
     const segment = this.queue.shift();
-    segment.status = 'analyzing'; segment.audioStatus = 'analyzing'; this.emit();
+    segment.status = 'analyzing'; segment.audioStatus = 'analyzing'; segment.audioStartedMs = this.now(); this.emit();
     try {
       const evidence = await this.media.read(segment.id);
       if (this.closed) return;
       const result = await this.perception.transcribe({ ...segment, ...evidence, signal: this.controller.signal });
       if (this.closed) return;
-      segment.observation = result.observation;
-      segment.audioStatus = 'ready'; segment.analysisMs = result.elapsedMs;
-      segment.audioMs = result.elapsedMs; segment.transcriptPublishedMs = this.now();
+      segment.analysisMs = result.elapsedMs; segment.audioMs = result.elapsedMs;
       segment.metrics = result.metrics; this.apiCost += result.cost || 0;
+      // A transcriber that reports its own failure is counted and flagged, never hidden as plain silence.
+      // The passage keeps its statuses: a host without Whisper still gets complete visual passages.
+      if (result.failed === true) { segment.audioFailed = true; this.losses.audioError++; }
+      segment.observation = result.observation; segment.revision++;
+      segment.audioStatus = 'ready'; segment.transcriptPublishedMs = this.now();
     } catch (error) {
       if (this.closed) return;
       segment.audioStatus = 'error'; segment.audioError = error.message;
-      this.lastError = error.message;
+      this.lastError = error.message; this.losses.audioError++;
     } finally {
       this.audioRunning = false; this.running = this.visionRunning;
       if (!this.closed) {
-        segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
-        if (segment.available) {
-          segment.visionStatus = 'queued'; this.visionQueue.push(segment);
-          while (this.visionQueue.length > this.maxPending) {
-            const skipped = this.visionQueue.shift();
-            skipped.visionStatus = 'skipped';
-            skipped.status = hasUsableObservation(skipped) ? 'partial' : 'skipped';
-          }
-        } else {
-          segment.visionStatus = 'expired';
-          segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
-        }
-        // Publish speech before waiting for persistence or vision.
-        this.emit(); this.drain(); await this.persist();
+        this.toVision(segment);
+        // Publish speech before waiting for persistence or vision. An idle vision lane takes this
+        // passage before the passages shed behind it are handed over.
+        this.emit(); this.drainVision(); this.drain(); await this.persist();
       }
     }
   }
 
   async drainVision() {
-    if (this.closed || this.asking || this.visionRunning || !this.visionQueue.length) return;
+    if (this.closed || this.ending || this.visionRunning || !this.visionQueue.length) return;
+    // Only the time during which a question alone keeps queued vision waiting is charged to the gate.
+    if (this.asking && !this.visionDuringAsk) { this.visionHeldSince ??= this.now(); return; }
+    this.endVisionHold();
     this.visionRunning = true; this.running = true;
     const segment = this.visionQueue.shift();
-    segment.visionStatus = 'analyzing'; this.emit();
+    segment.visionStatus = 'analyzing'; segment.visionStartedMs = this.now(); this.emit();
     try {
       const evidence = await this.media.read(segment.id);
       if (this.closed) return;
@@ -143,9 +302,10 @@ class WatchSession {
         context, signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
         onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
       if (this.closed) return;
-      segment.observation = { ...segment.observation, ...result.observation };
+      segment.observation = withOverlayNote({ ...segment.observation, ...result.observation }, segment, evidence?.frames?.length);
       segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
+      segment.visionPublishedMs = this.now(); segment.revision++;
       segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
       segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
       segment.metrics = { ...segment.metrics, ...result.metrics };
@@ -159,7 +319,7 @@ class WatchSession {
       if (this.closed) return;
       segment.visionStatus = 'error'; segment.visionError = error.message;
       segment.status = hasUsableObservation(segment) ? 'partial' : 'error';
-      this.lastError = error.message;
+      this.lastError = error.message; this.losses.visionError++;
     } finally {
       this.visionRunning = false; this.running = this.audioRunning;
       segment.stage = null;
@@ -167,8 +327,10 @@ class WatchSession {
     }
   }
 
+  // Does not wait for a write still under way, which may never return: that passage is saved when it
+  // lands (see land). A host that wants one final saved state waits on landed() first, as the shared runtime does.
   async close() {
-    this.closed = true; this.accepting = false;
+    this.closed = true; this.accepting = false; this.endVisionHold();
     this.controller.abort(new Error('Session fermée.'));
     this.queue = []; this.visionQueue = [];
     await this.persist();
@@ -185,7 +347,7 @@ class WatchSession {
       if (!context.length && !this.history.length) return { answer: 'Je n’ai pas encore de passage enregistré. Laisse la vidéo jouer quelques secondes.', kind: 'insufficient', citations: [], limits: [] };
       const targetMs = resolveTemporalTarget(question, [...this.history, ...context], anchorMs);
       const focusIds = targetMs === undefined ? null : [...this.history, ...context].filter(s => targetMs >= s.startMs && targetMs <= s.endMs).map(s => s.id);
-      const chosen = selectEvidence(question, context.filter(s => s.available), anchorMs, targetMs);
+      const chosen = selectEvidence(question, context.filter(stored), anchorMs, targetMs);
       const evidence = [];
       for (const segment of chosen) {
         try { evidence.push({ ...segment, ...await this.media.read(segment.id) }); }
@@ -207,24 +369,86 @@ class WatchSession {
         response.answer = 'Je ne peux pas relier cette réponse à un passage observé. Reformule la question ou attends que le contexte soit analysé.';
       }
       this.questions.push(response);
-      await this.persist();
+      // An explicit question is saved even on a reopened archive.
+      await this.persist(true);
       return response;
     } finally {
       this.asking = false; this.emit(); this.drain();
     }
   }
 
-  async resume() { if (this.closed) throw new Error('Session fermée.'); this.accepting = true; await this.persist(); this.emit(); this.drain(); }
+  async resume() {
+    if (this.closed) throw new Error('Session fermée.');
+    // The only way out of a reopened archive, and of a capture stopped for lack of room.
+    this.readOnly = false; this.storageError = null;
+    this.accepting = true; await this.persist(); this.emit(); this.drain();
+  }
   async stop() { this.accepting = false; await this.persist(); this.emit(); }
+  // Reopens a saved session stopped, at its archived instant. Synchronous and silent: nothing is written,
+  // analysed or sent anywhere, and capture only comes back through an explicit resume().
+  restore(saved, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
+    if (this.closed || this.sequence || this.segments.length || this.history.length || this.questions.length) throw new Error('Session déjà commencée : restauration impossible.');
+    if (!saved || saved.id !== this.id) throw new Error('Archive incompatible avec cette session.');
+    if (!restorable(saved)) throw new Error('Archive illisible.');
+    // Saved before durable retention existed: its raw media were never meant to be kept.
+    const formerFormat = saved.retention === undefined;
+    const reopen = (source, kept) => {
+      const passage = { ...source };
+      // Availability is what the disk says now, not what the session believed when it stopped.
+      const present = kept && Boolean(hasMedia(passage.id));
+      // A container known to hold no image stays unreadable for as long as its files are there; once they are
+      // gone it is missing like any other.
+      const unreadable = source.mediaReason === UNREADABLE;
+      passage.available = present && !unreadable;
+      if (passage.available) delete passage.mediaReason;
+      else passage.mediaReason = unreadable ? (present ? UNREADABLE : 'missing') : source.mediaReason || (formerFormat ? 'not-kept' : source.available ? 'missing' : 'expired');
+      if (hasThumbnail) passage.thumbnailAvailable = Boolean(hasThumbnail(passage.id));
+      // No analysis is resumed: what was in flight is closed as partial evidence or as an explicit failure.
+      if (unfinished(passage.audioStatus)) { passage.audioStatus = 'error'; passage.audioError = INTERRUPTED; this.losses.audioError++; }
+      if (unfinished(passage.visionStatus)) { passage.visionStatus = 'error'; passage.visionError = INTERRUPTED; this.losses.visionError++; }
+      if (unfinished(passage.status)) {
+        passage.status = hasUsableObservation({ ...passage, status: 'partial' }) ? 'partial' : 'error';
+        if (passage.status === 'error') passage.error = INTERRUPTED;
+      }
+      if (passage.stage) passage.stage = null;
+      return passage;
+    };
+    for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
+    // Counted only where it happened: a session without such a passage keeps the counters it always had.
+    if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
+    if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.visionBlockedMs = saved.coverage.visionBlockedMs;
+    // A summary whose media is gone stays a summary: only passages still listed with their media can be replayed.
+    this.history = (saved.history || []).map(passage => { const { available, ...summary } = reopen(passage, false); return summary; });
+    this.segments = saved.segments.map(passage => reopen(passage, true));
+    this.questions = (saved.questions || []).map(question => ({ ...question }));
+    this.apiCalls = Number.isFinite(saved.apiCalls) ? saved.apiCalls : 0; this.apiCost = Number.isFinite(saved.apiCost) ? saved.apiCost : 0;
+    // Past every number already used, including media left on disk by an interrupted ingest: never overwritten.
+    this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id).concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
+    // Counted and reported, never shown as a passage: nothing says where they belong on the session clock.
+    this.unplacedMedia = orphans.length || 0;
+    // The retention contract belongs to the session, not to the host that reopens it: media promised
+    // until deletion stay so on a host set to a rolling window, after an explicit resume as well.
+    if (saved.retention === 'until-deleted') this.retentionMs = Infinity;
+    this.accepting = false; this.readOnly = true; this.lastError = null;
+  }
   snapshot() {
-    const all=[...this.history,...this.segments],capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
+    const all=[...this.history,...this.segments],now=this.now(),capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
     return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: this.running,
-      elapsedMs: this.now(), capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: this.retentionMs, apiCalls: this.apiCalls, apiCost: this.apiCost,
-      pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length, lastError: this.lastError, history: this.history, questions: this.questions,
+      elapsedMs: now, capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null, retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted', readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
+      pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length,
+      // A capture stopped for lack of room keeps saying so: a late analysis must not clear the reason.
+      lastError: this.storageError || this.lastError, history: this.history, questions: this.questions,
+      latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: this.visionBlockedMs + (this.visionHeldSince === null ? 0 : Math.max(0, now - this.visionHeldSince)) },
+      audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus })),
+      visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
+      // Cached figures supplied by the host (free space, volume of this session): never measured here.
+      storage: this.storage ? this.storage() : null,
       segments: this.segments.map(s => ({ ...s })) };
   }
   emit() { if (!this.closed) this.onChange(this.snapshot()); }
-  async persist() {
+  async persist(explicit = false) {
+    // Opening, pausing or closing a reopened archive leaves its files untouched.
+    if (this.readOnly && !explicit) return;
     try { await this.archive.save(this.snapshot()); }
     catch { this.lastError = 'Impossible de sauvegarder le résumé de session.'; }
   }
@@ -255,4 +479,4 @@ function selectEvidence(question, segments, anchorMs, targetMs) {
   return ranked.slice(0, 2).map(item => item.segment);
 }
 
-module.exports = { WatchSession, selectEvidence, resolveTemporalTarget };
+module.exports = { WatchSession, selectEvidence, resolveTemporalTarget, restorable, recoveredPassage };

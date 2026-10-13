@@ -10,6 +10,33 @@ class LivingRecap {
     this.generation++;this.active=null;this.sessionId=sessionId;this.originals=new Map();this.included=new Map();
     this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.status='idle';this.limits=[];this.emit();
   }
+  // Reopened archive: the saved recap comes back as it was shown, with no synthesis and no emission.
+  // Silent on purpose: an onChange here would make the host rewrite the archive it has just opened.
+  // Sources already covered by a chapter count as incorporated, so the first tick after an explicit
+  // resume sends what arrived since, not the whole session. A chapter is kept only with sources it can cite.
+  restore(saved) {
+    this.active?.controller.abort(new Error('Archive rouverte.'));
+    this.generation++;this.active=null;this.sessionId=typeof saved?.sessionId==='string'&&saved.sessionId?saved.sessionId:null;this.originals=new Map();this.included=new Map();
+    this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.limits=[];
+    const text=value=>typeof value==='string'&&value.trim().length>0,list=value=>Array.isArray(value)?value:[];
+    if(this.sessionId){
+      // Replay availability is what the disk says now, not what the session believed: the next observe() sets it.
+      for(const s of list(saved.sourcePassages))if(s&&typeof s.id==='string'&&text(s.text)&&Number.isFinite(s.startMs)&&Number.isFinite(s.endMs))this.originals.set(s.id,{id:s.id,startMs:s.startMs,endMs:s.endMs,text:s.text,available:false});
+      if(text(saved.overview))for(const chapter of list(saved.chapters)){
+        const evidence=[...new Set(list(chapter?.sourceIds))].filter(id=>this.originals.has(id)&&!this.included.has(id)).map(id=>this.originals.get(id)).sort((a,b)=>a.startMs-b.startMs);
+        if(!evidence.length||!text(chapter.title)||!text(chapter.summary))continue;
+        this.chapters.push({id:`chapter-${evidence[0].id}`,title:chapter.title.trim(),summary:chapter.summary.trim(),sourceIds:evidence.map(s=>s.id),startMs:evidence[0].startMs,endMs:Math.max(...evidence.map(s=>s.endMs))});
+        for(const source of evidence)this.included.set(source.id,this.fingerprint(source));
+      }
+      this.chapters.sort((a,b)=>a.startMs-b.startMs);
+      if(this.chapters.length){this.overview=saved.overview.trim();this.updatedAt=Number.isFinite(saved.updatedAt)?saved.updatedAt:null;}
+      // The saved limits end with a count that snapshot() derives again from what is still pending.
+      this.limits=list(saved.limits).filter(limit=>typeof limit==='string'&&!limit.endsWith('en attente d’intégration au résumé.'));
+    }
+    this.status=this.originals.size?(this.pending().length?'waiting':'ready'):'idle';
+    this.emitted=JSON.stringify(this.snapshot());
+    return this.snapshot();
+  }
   observe(snapshot) {
     if(!snapshot||!snapshot.id)return this.snapshot();
     if(this.sessionId!==snapshot.id)this.reset(snapshot.id);

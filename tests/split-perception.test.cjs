@@ -51,13 +51,17 @@ test('both lane backlogs are bounded and skipped vision keeps speech', async () 
   const f = fixture({ transcribe: async s => { maxAudio = Math.max(maxAudio, ++activeAudio); await audioGate.promise; activeAudio--; return transcribe(s); },
     observeVisual: async s => { maxVision = Math.max(maxVision, ++activeVision); await visionGate.promise; activeVision--; return visual(s); } });
   for (let i = 0; i < 5; i++) await f.add(i);
-  assert.equal(f.watch.queue.length, 2);
-  assert.equal(f.watch.segments.filter(s => s.status === 'skipped').length, 2);
+  // Overload sheds transcriptions only: two wait for Whisper, the two older ones wait to hand their images over.
+  assert.equal(f.watch.queue.filter(s => s.audioStatus !== 'skipped').length, 2);
+  assert.deepEqual(f.watch.segments.filter(s => s.audioStatus === 'skipped').map(s => s.id), ['moment-2', 'moment-3']);
+  assert.equal(f.watch.losses.audioSkipped, 2);
   audioGate.resolve(); await tick();
   for (let i = 5; i < 9; i++) await f.add(i);
   assert.equal(f.watch.visionQueue.length, 2);
   const skipped = f.watch.segments.filter(s => s.visionStatus === 'skipped');
-  assert.ok(skipped.length > 0); assert.ok(skipped.every(s => s.status === 'partial' && s.observation.transcript));
+  assert.ok(skipped.length > 0);
+  assert.ok(skipped.filter(s => s.audioStatus === 'ready').every(s => s.status === 'partial' && s.observation.transcript));
+  assert.ok(skipped.filter(s => s.audioStatus === 'skipped').every(s => s.status === 'skipped' && !s.observation));
   visionGate.resolve(); await tick();
   assert.equal(maxAudio, 1); assert.equal(maxVision, 1);
 });

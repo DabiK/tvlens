@@ -7,6 +7,8 @@ class CodexAnalysisAgent {
       client ||
       new CodexSessionClient({
         ...options,
+        // The role is a ceiling: this client can never be given the web or a tool, whatever is passed.
+        role: "analysis",
         webSearch: false,
         toolDefinitions: [],
         baseInstructions:
@@ -34,6 +36,11 @@ class CodexAnalysisAgent {
       outputSchema,
       onProgress,
     });
+  }
+
+  // Fresh model context on the live process: a new thread, not a new App Server.
+  reset() {
+    return this.client.rotateThread();
   }
 
   close() {

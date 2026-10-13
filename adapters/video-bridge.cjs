@@ -1,10 +1,12 @@
 const { videoToolNames } = require('../core/video-tool-contracts.cjs');
+const { QUESTION_TIMEOUT_MS, limitLabel } = require('../core/deep-ask.cjs');
 const http=require('node:http');
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const {randomBytes}=require('node:crypto');
 class VideoBridge {
-  constructor({descriptor,makeTools}){Object.assign(this,{descriptor,makeTools});this.scopes=new Map();this.external=new Map();this.master=randomBytes(32).toString('hex');}
+  // An external MCP context (frozen prefix and tool budgets) lives as long as one question may be processed.
+  constructor({descriptor,makeTools,contextMs=QUESTION_TIMEOUT_MS}){Object.assign(this,{descriptor,makeTools,contextMs});this.scopes=new Map();this.external=new Map();this.master=randomBytes(32).toString('hex');}
   async start(){
     this.server=http.createServer(async(req,res)=>{
       const send=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
@@ -20,10 +22,10 @@ class VideoBridge {
           const client=req.headers['x-tvlens-client'];if(typeof client!=='string'||!/^[-a-zA-Z0-9]{1,80}$/.test(client))throw new Error('Client MCP invalide.');
           scope=this.external.get(client);
           if(!scope||scope.signal.aborted){
-            if(name!=='search_moments')throw new Error('Commence par search_moments pour ouvrir un contexte de 60 secondes.');
+            if(name!=='search_moments')throw new Error(`Commence par search_moments pour ouvrir un contexte de ${limitLabel(this.contextMs)}.`);
             if(this.external.size>=4&&!scope)throw new Error('Trop de clients MCP.');
             const controller=new AbortController();scope={tools:this.makeTools(controller.signal),signal:controller.signal,controller};
-            scope.timer=setTimeout(()=>{controller.abort(new Error('Contexte MCP expiré.'));this.external.delete(client);},60000);scope.timer.unref();this.external.set(client,scope);
+            scope.timer=setTimeout(()=>{controller.abort(new Error('Contexte MCP expiré.'));this.external.delete(client);},this.contextMs);scope.timer.unref();this.external.set(client,scope);
           }
         }
         scope.signal.throwIfAborted();

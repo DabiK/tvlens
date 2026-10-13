@@ -50,3 +50,27 @@ Ce refactor conserve les limites précédentes : cinq minutes de médias détail
 ## Complément — analyse continue, 4 octobre 2026
 
 Les compositions partagées du Mac et du serveur utilisent désormais les files audio/vision de `WatchSession`. Le texte est publié en état partiel avant la description visuelle ; l’audio du passage suivant peut être traité pendant la vision du précédent. Ce changement ne déplace pas le calcul Mac vers le VPS et n’ajoute aucun serveur MCP au chemin de perception. Voir [architecture actuelle](architecture.md) et [validation](validation.md).
+
+## Complément — indexation en arrière-plan, 13 octobre 2026
+
+La ligne `MomentIndex` du tableau et la section « Quand les embeddings sont-ils créés ? » décrivent l’état du 30 septembre. Sur la branche `codex/tvlens-backend-latency-opus` :
+
+- `MomentIndex` planifie lui-même l’indexation. Avec une clé d’embeddings, chaque passage publié lui est remis (`observe`) et part par lots groupés, pendant la capture. Le texte des passages quitte donc la machine au fil de la session, et plus seulement à la première recherche. `TVLENS_BACKGROUND_INDEX=0` rétablit l’envoi à la recherche seulement.
+- `search_moments` n’appelle plus `MomentIndex.ensure`. Il demande les passages de son préfixe (`request`), attend au plus 1,5 s (`settle`), puis classe ce qui manque sur le texte et l’annonce dans `semantic` et `warnings`. `ensure` reste pour les scripts d’évaluation qui construisent leur propre index.
+- `embeddings.json` est un journal en ajout seul : une ligne d’en-tête, puis une ligne par vecteur.
+
+Le classement reste 55 % lexical / 45 % sémantique et l’index reste par session. Détail, mesures et limites : [latence et architecture du backend](backend-latency-optimization.md).
+
+## Complément — nuit du 13 octobre 2026
+
+Le tableau et le flux du début décrivent l’état du 30 septembre. Dans le code de la branche `codex/tvlens-night-features`, non commité, installé le 13 octobre 2026 au matin sur le VPS et la TV de test par la supervision :
+
+- **`DeepAsk`** : le plafond de traitement d’une question est de cinq minutes hors attente, et non plus de 60 secondes. Il est publié avec chaque question (`job.timeoutMs`) ; `TVLENS_QUESTION_TIMEOUT_MS` peut seulement l’abaisser. Le contexte d’un client MCP externe (`VideoBridge`) et le délai d’un appel d’outil MCP suivent le même plafond.
+- **Conservation** : la limite « cinq minutes de médias détaillés » ne vaut plus. Les médias restent jusqu’à la suppression de la session ; une archive se rouvre en lecture seule, avec ses questions. Le fil Codex, lui, n’est toujours pas restauré.
+- **`CodexSessionClient`** : les fils sont ouverts sans environnement d’exécution, la réponse de Codex est relue, les éléments publiés sont filtrés par une liste blanche par rôle, et la création de sous-agents est empêchée par configuration quand le binaire l’accepte. Détail et limites : [SECURITY.md](../SECURITY.md).
+- **Vérificateur manuel** : `CodexVerifier` ne lance plus `codex exec`. Il tourne sur `CodexSessionClient`, sous un rôle `verifier` : web seul, aucun outil. `CodexVideoAgent`, conservé pour les scripts d’évaluation, reste sur l’ancien lancement.
+- **Surveillance** : deux rôles de plus sur le même client, composés par `runtime/surveillance-runtime.cjs` pour les deux hôtes. Lecture des passages : ni web ni outil. Vérification : web seul, aucun outil. L’ancien mode Auto et `core/auto-monitor.cjs` sont retirés.
+- **`inspect_clip`** : option `exactSpeech` et champ `intervals`, qui sépare l’intervalle des images de celui des paroles. Ce changement vient d’une autre session : [réexamen](reinspection-transcript-reuse.md). Le catalogue reste de trois outils.
+- **Consigne** : `adapters/companion-prompt.cjs` envoie la demande et la consigne active du spectateur hors du bloc de données déclaré non fiable. Une consigne active arrive avec sa portée : la surveillance l’exécute de son côté, le tour de chat répond à la demande depuis la vidéo et n’ouvre le web que si la demande le réclame ou si la réponse dépend d’un fait que la vidéo ne donne pas ; un chiffre venu de la vidéo est dit annoncé, jamais confirmé.
+
+Preuves et limites : [livrable de la nuit](night-features-delivery.md).

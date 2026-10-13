@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Fake luna-send for tests and simulations. Never talks to a TV.
+
+Put this directory ahead in PATH and point TVLENS_FAKE_LUNA at a scenario directory:
+- calls.jsonl      every call is appended: {"endpoint", "payload", "mono", "n"} (n counts calls per endpoint, from 1)
+- replies.json     optional {"<endpoint>": reply | [reply for call 1, reply for call 2, ... last one repeats]}
+- oneshot.json     optional {"<n>": {"gate": {...}}}: during the n-th executeOneShot, the gate file named by
+                   TVLENS_FAKE_GATE (default <TVLENS_AMBIENT_RUN>/tvlens-ambient-gate.json) is replaced by that
+                   record, as if a card appeared or left while the frame was being taken
+- windows.json     optional list of application identifiers in the foreground; launch appends its id unless
+                   replies.json says the launch is refused, closeByAppId removes it
+The answer has the shape the TV really gives: on stderr, "timingServiceResponse: {json on several lines}" then
+"Timing: 2ms". Without TVLENS_FAKE_LUNA it answers a full-screen YouTube and records nothing.
+"""
+import base64, fcntl, json, os, sys, time
+
+# 1x1 PNG: enough for a transport test, never decoded by the capture.
+PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==')
+VIDEO = {'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'fake-context', 'fullScreen': True,
+         'width': 1920, 'height': 1080, 'sourceInput': {'x': 0, 'y': 0, 'width': 1920, 'height': 1080},
+         'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}}
+
+def load(path, default):
+    try:
+        with open(path) as handle: return json.load(handle)
+    except (OSError, ValueError): return default
+
+def store(path, value):
+    temporary = path + '.' + str(os.getpid()) + '.tmp'
+    with open(temporary, 'w') as handle: json.dump(value, handle)
+    os.replace(temporary, path)
+
+def main():
+    arguments = [a for a in sys.argv[1:] if a.startswith('luna://') or a.startswith('{')]
+    if len(arguments) != 2: sys.stderr.write('usage: luna-send -t 1 -w <ms> luna://endpoint json\n'); return 2
+    endpoint, payload = arguments[0][len('luna://'):], json.loads(arguments[1])
+    root = os.environ.get('TVLENS_FAKE_LUNA')
+    reply, count = None, 0
+    if root:
+        with open(os.path.join(root, 'lock'), 'a') as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            counts = load(os.path.join(root, 'counts.json'), {})
+            count = counts[endpoint] = counts.get(endpoint, 0) + 1
+            store(os.path.join(root, 'counts.json'), counts)
+            with open(os.path.join(root, 'calls.jsonl'), 'a') as log:
+                log.write(json.dumps({'endpoint': endpoint, 'payload': payload, 'mono': time.monotonic(), 'n': count}) + '\n')
+            scripted = load(os.path.join(root, 'replies.json'), {}).get(endpoint)
+            if isinstance(scripted, list) and scripted: reply = scripted[min(count, len(scripted)) - 1]
+            elif isinstance(scripted, dict): reply = scripted
+            windows_path = os.path.join(root, 'windows.json')
+            windows = load(windows_path, [])
+            if endpoint.endswith('/launch') and (reply or {}).get('returnValue', True) and payload.get('id') not in windows: store(windows_path, windows + [payload.get('id')])
+            if endpoint.endswith('/closeByAppId') and payload.get('id') in windows: store(windows_path, [w for w in windows if w != payload.get('id')])
+            if endpoint.endswith('/getForegroundWindowInfo') and reply is None: reply = {'returnValue': True, 'windows': [{'appId': w} for w in load(windows_path, [])]}
+            if endpoint.endswith('/executeOneShot'):
+                action = load(os.path.join(root, 'oneshot.json'), {}).get(str(count)) or {}
+                if 'gate' in action:
+                    store(os.environ.get('TVLENS_FAKE_GATE') or os.path.join(os.environ.get('TVLENS_AMBIENT_RUN') or '/tmp', 'tvlens-ambient-gate.json'), action['gate'])
+    if reply is None:
+        reply = {'returnValue': True, 'video': [VIDEO]} if endpoint.endswith('/getStatus') else {'returnValue': True}
+    if endpoint.endswith('/executeOneShot') and reply.get('returnValue') and payload.get('path'):
+        with open(payload['path'], 'wb') as image: image.write(PNG)
+    sys.stderr.write('timingServiceResponse: ' + json.dumps(reply, indent=1) + '\nTiming: 2ms\n')
+    return 0
+
+if __name__ == '__main__': sys.exit(main())

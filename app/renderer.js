@@ -1,20 +1,43 @@
 import { renderRecapView } from './ui/recap-view.js';
-import { element as el, formatTime } from './ui/format.js';
+import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { RollingRecorder } from './recording.js';
+import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
+import { clockLabel } from './ui/job-view.mjs';
+import { describeSurveillance, isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
+import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
+import { CardQueue, CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
+import { KeyedList, isNearBottom, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
+import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
+import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
+import { sessionEntry } from './ui/sessions-dom.js';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
-let stream, context, worklet, recorder, configuration, currentState, stopping = false, pendingQuestion = '', lastChatSignature = '';
-let verificationState = { busy: false, jobs: [] }, sessionEpoch = Date.now(), pendingQuestionAt = 0;
+const bridge = window.tvlens;
+// Reversible display bounds: a film is hundreds of passages, the window draws the recent ones.
+const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, STICK_PX = 80, HISTORY_STEP = 200, REGISTRY_EVERY_MS = 2000;
+let stream, context, worklet, recorder, configuration, currentState = null, stopping = false, pendingQuestion = '';
+let verificationState = { busy: false, jobs: [] }, pendingQuestionAt = 0;
 let deepState = { jobs: [] };
-let recapState = null, recapRevision = 0;
+let recapState = null, recapRevision = 0, recapKey = '';
 let floatingCaptureBusy = false, sourceReturnExpanded = false;
 const momentPreviews = new Map();
+// Passages of the loaded session by id, rebuilt once per state: cards and citations look them up, never scan.
+let passages = new Map(), shownError = '', forceBottom = false, settled = -1;
 let quickBusy = false, selectedMoment = null, momentCheckpoint = Promise.resolve();
+const cancelling = new Set();
 const verifyPrefix = /^(?:\/verify\b|v[ée]rifie(?:r)?\b(?:\s+(?:que|si))?|fact[- ]?check\b)\s*[:—-]?\s*/i;
 const flushes = new Map();
+const reason = error => cleanError(error);
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
-const notice = text => { $('notice').textContent = text; $('quick-notice').textContent = text; };
+// One notice, above every view: an error raised from Mémoire or Surveillance is no longer written off screen.
+const notice = text => { $('notice').textContent = text || ''; };
+// At most one drawing per frame, however many states arrive; the timer covers a window that is not painting.
+function batched(run) {
+  let queued = false, timer;
+  const fire = () => { if (!queued) return; queued = false; clearTimeout(timer); run(); };
+  return () => { if (queued) return; queued = true; timer = setTimeout(fire, 100); requestAnimationFrame(fire); };
+}
 
 async function refresh() {
   $('refresh').disabled = true;
@@ -23,7 +46,7 @@ async function refresh() {
     setSources(result);
     $('start').disabled = !result.sources.length || Boolean(stream);
     if (!stream) status(result.permission === 'granted' ? 'Écran autorisé · Choisis une source' : `Autorisation écran : ${result.permission} · Vérifie les autorisations`);
-  } catch (error) { status(`Capture indisponible : ${error.message}`); }
+  } catch (error) { status(`Capture indisponible : ${reason(error)}`); }
   finally { $('refresh').disabled = Boolean(stream); updateButtons(); }
 }
 function setSources(result) {
@@ -36,17 +59,20 @@ function setConfig(value) {
   configuration = value;
   $('provider').textContent = `Codex ${value.canObserve ? 'prêt' : 'indisponible'} · ${value.model.split('/').at(-1)}`;
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';
-  updateButtons();
+  scheduleState(); updateButtons();
 }
 function updateButtons() {
+  const archive = Boolean(currentState?.readOnly);
   shell.observation(currentState, Boolean(recorder));
-  $('float-status').textContent = recorder ? 'En direct' : currentState?.id ? 'En pause' : 'Prêt';
+  $('float-status').textContent = recorder ? 'En direct' : archive ? 'Archive en lecture seule' : currentState?.id ? 'En pause' : 'Prêt';
   $('new-session').disabled=Boolean(stream)||Boolean(currentState?.analyzing)||stopping;
   $('float-record').disabled = floatingCaptureBusy || stopping;
   $('float-record').classList.toggle('recording',Boolean(recorder));
-  $('float-record').title = recorder ? 'Mettre en pause ; mémoire et fil Codex conservés' : 'Choisir une source puis lancer la capture et l’analyse';
+  $('float-record').title = recorder ? 'Mettre en pause ; mémoire et fil Codex conservés' : archive ? 'Reprendre la capture dans cette archive' : 'Choisir une source puis lancer la capture et l’analyse';
   $('observe').disabled = !configuration?.canObserve || !$('source').value || Boolean(recorder) || floatingCaptureBusy || stopping;
-  $('observe').textContent = recorder ? 'Analyse en cours' : currentState?.id ? 'Reprendre l’analyse' : 'Lancer l’observation';
+  $('observe').textContent = recorder ? 'Observation en cours' : archive ? 'Reprendre la capture…' : currentState?.id ? 'Reprendre l’observation' : 'Lancer l’observation';
+  $('archive-resume').disabled = Boolean(recorder) || floatingCaptureBusy || stopping;
+  $('archive-new').disabled = $('new-session').disabled;
   const canAsk = Boolean(currentState?.segments.length || currentState?.history.length);
   for (const id of ['float-explain', 'explain-moment', 'catch-up', 'mark-attention']) $(id).disabled = !currentState?.id || stopping || quickBusy;
   for (const id of ['moment-summarize', 'moment-explain', 'moment-send']) $(id).disabled = quickBusy;
@@ -54,7 +80,7 @@ function updateButtons() {
   $('question').disabled = false;
   $('verify').disabled = !configuration?.verificationAvailable || verificationState.busy;
   $('send').disabled = !canAsk || Boolean(pendingQuestion);
-  $('ask-status').textContent = currentState?.asking ? 'Réponse en cours · Tu peux ajouter une question.' : canAsk ? 'Entrée pour envoyer · Maj+Entrée pour une ligne' : currentState?.id ? 'Les premiers passages arrivent bientôt.' : 'Choisis une source et lance TVLens.';
+  $('ask-status').textContent = currentState?.asking ? 'Réponse en cours · Tu peux ajouter une question.' : archive && canAsk ? 'Archive · Tu peux poser des questions sur ce qui a été enregistré.' : canAsk ? 'Entrée pour envoyer · Maj+Entrée pour une ligne' : currentState?.id ? 'Les premiers passages arrivent bientôt.' : 'Choisis une source et lance TVLens.';
 }
 async function startPreview() {
   $('start').disabled = true;
@@ -65,7 +91,7 @@ async function startPreview() {
     await $('preview').play();
     document.body.classList.add('has-preview');
     $('stop').disabled = false; $('source').disabled = true; $('refresh').disabled = true;
-    stream.getVideoTracks()[0].onended = () => stop().catch(error => notice(error.message));
+    stream.getVideoTracks()[0].onended = () => stop().catch(error => notice(reason(error)));
     const tracks = stream.getAudioTracks().filter(track => track.readyState === 'live');
     status(tracks.length ? 'Aperçu actif · Vérifie le son' : 'Aperçu actif · Sans piste audio');
     if (tracks.length) {
@@ -82,7 +108,7 @@ async function startPreview() {
     }
     updateButtons();
     return true;
-  } catch (error) { await stop(); status(`Capture interrompue : ${error.message}`); return false; }
+  } catch (error) { await stop(); status(`Capture interrompue : ${reason(error)}`); return false; }
 }
 function flushAudio() {
   if (!worklet) return Promise.resolve();
@@ -93,28 +119,36 @@ function flushAudio() {
     worklet.port.postMessage({ type: 'flush', id });
   });
 }
+// An archive is only written to again through the explicit resume of the bridge; a live session starts or resumes as before.
+async function openCapture() {
+  if (!currentState?.readOnly) return bridge.start();
+  const resumed = await bridge.resumeSession();
+  return (await bridge.state())?.accepting ? resumed : bridge.start();
+}
 async function observe() {
   $('observe').disabled = true; notice('');
   try {
-    const session = await window.tvlens.start();
-    renderState(await window.tvlens.state());
-    recorder = new RollingRecorder({ stream, video: $('preview'), audioContext: context, flushAudio, session, onError: notice, onSegment: (id, preview) => {
+    const session = await openCapture();
+    receiveState(await bridge.state());
+    recorder = new RollingRecorder({ stream, video: $('preview'), audioContext: context, flushAudio, session, onError: error => { if (!diskFull()) notice(reason(error)); }, onSegment: (id, preview) => {
       if (preview && currentState?.id === session.id) momentPreviews.set(id, preview);
-      if (currentState) renderState(currentState);
+      scheduleState();
     } });
     recorder.start();
     $('mode').textContent = 'EN DIRECT'; $('mode').classList.add('cloud');
     $('source').disabled = true;
     status('Capture + mémoire actives');
-    updateButtons();
-  } catch (error) { recorder = undefined; await window.tvlens.stop(); notice(error.message); updateButtons(); }
+    updateButtons(); drawSessions();
+  } catch (error) { recorder = undefined; await bridge.stop().catch(() => {}); notice(reason(error)); updateButtons(); }
 }
-async function stop() {
+// `quiet`: the session stopped accepting passages by itself (disk full): the last partial passage is not reported again.
+async function stop({ quiet = false } = {}) {
   if (stopping) return;
   stopping = true; $('stop').disabled = true; updateButtons();
   try {
+    if (quiet && recorder) recorder.onError = () => {};
     await recorder?.stop(); recorder = undefined;
-    await window.tvlens.stop();
+    await bridge.stop();
     const old = stream; stream = undefined;
     old?.getTracks().forEach(track => track.stop());
     await context?.close(); context = undefined; worklet = undefined;
@@ -123,11 +157,12 @@ async function stop() {
     $('start').disabled = !$('source').value; $('source').disabled = false; $('refresh').disabled = false;
     $('mode').textContent = currentState?.id ? 'EN PAUSE' : 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
     status(currentState?.id ? 'Capture en pause · Contexte et chat conservés' : 'Capture inactive');
-  } finally { stopping = false; updateButtons(); }
+  } finally { stopping = false; updateButtons(); drawBanners(); drawSessions(); }
 }
 function replay(id, offset = 0) {
-  const segment = currentState?.segments.find(s => s.id === id && s.available);
-  if (!segment) return notice('Le média de ce passage a expiré. Son résumé reste disponible.');
+  const segment = passages.get(id);
+  // Says why the video cannot be replayed (not kept, missing, expired) instead of always blaming expiry.
+  if (!segment?.available || !currentState?.segments.includes(segment)) return notice(mediaNote(segment).long);
   $('replay-title').textContent = `Passage ${formatTime(segment.startMs)} — ${formatTime(segment.endMs)}`;
   $('replay').muted = true;
   $('replay').src = `tvlens-media://${currentState.id}/${segment.id}`;
@@ -136,177 +171,113 @@ function replay(id, offset = 0) {
   $('replay-dialog').showModal();
   $('replay').play().catch(() => {});
 }
-function renderState(state) {
-  if (currentState?.id !== state.id) { sessionEpoch = Date.now() - state.elapsedMs; lastChatSignature = ''; momentPreviews.clear(); }
+// A citation or a surveillance origin starts inside its passage, at its own time code.
+function replayAt(id, startMs) {
+  const segment = passages.get(id);
+  replay(id, segment && Number.isFinite(startMs) ? Math.max(0, (startMs - segment.startMs) / 1000) : 0);
+}
+const thumbnail = id => `tvlens-media://${currentState.id}/thumb/${id}`;
+const previewOf = id => momentPreviews.get(id) || (passages.get(id)?.thumbnailAvailable ? thumbnail(id) : undefined);
+
+// ---- Loaded session --------------------------------------------------------------------------
+function receiveState(state) {
+  if (!state) return;
+  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; }
   currentState = state;
+  passages = new Map();
+  for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
+  if (state.storage) storageState = { ...storageState, ...state.storage };
+  // The session no longer accepts passages (disk full, pause decided by the host): the recorder stops with it.
+  if (recorder && !stopping && state.accepting === false) stop({ quiet: true }).catch(error => notice(reason(error)));
+  scheduleState();
+}
+const PASSAGE_LABELS = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Vidéo expirée avant l’analyse' };
+const timelineList = new KeyedList($('timeline'));
+function drawState() {
+  const state = currentState;
+  drawBanners();
+  if (!state) { drawTimeline(); drawChat(); drawSurveillance(); updateButtons(); return; }
   if (recapState?.sessionId && recapState.sessionId !== state.id) recapState = null;
   renderRecap();
   $('elapsed').textContent = formatTime(state.elapsedMs);
-  $('chat-coverage').textContent=`Capturé ${formatTime(state.capturedThroughMs||0)} · Analysé ${formatTime(state.analyzedThroughMs||0)} · ${state.pending||0} en attente · ${(state.gaps||[]).length} lacune(s)`;
-  $('usage').textContent = `Perception Codex : ${state.apiCalls} passage${state.apiCalls > 1 ? 's' : ''}`;
-  const available = state.segments.filter(s => s.available);
-  const analyzed = available.filter(s => s.status === 'ready').length;
-  const gaps = state.segments.filter(s => ['error', 'skipped', 'expired'].includes(s.status)).length;
-  $('memory-status').textContent = `${available.length} passage${available.length > 1 ? 's' : ''} récent${available.length > 1 ? 's' : ''} · ${analyzed} analysé${analyzed > 1 ? 's' : ''}${state.pending ? ` · ${state.pending} en attente` : ''}${gaps ? ` · ${gaps} sans analyse` : ''} · Mémoire vidéo de 5 min, résumés conservés pour la session`;
-  if (state.lastError) notice(state.lastError);
-  const labels = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Média expiré' };
-  // Ingest completion can arrive before its state event: absence is not expiration.
-  for (const segment of state.history || []) momentPreviews.delete(segment.id);
-  const moments = state.segments.slice().reverse().map(segment => {
-    const row = el('article', 'moment');
-    const imageUrl = momentPreviews.get(segment.id);
-    const preview = el(imageUrl ? 'img' : 'div', 'moment-image');
-    if (imageUrl) { preview.alt = `Aperçu du passage à ${formatTime(segment.startMs)}`; preview.src = imageUrl; }
-    else { preview.setAttribute('role', 'img'); preview.setAttribute('aria-label', 'Aperçu indisponible'); }
-    const button = el('button', 'moment-time', formatTime(segment.startMs));
-    button.disabled = !segment.available; button.title = 'Revoir ce passage'; button.onclick = () => replay(segment.id);
-    const detail = el('div');
-    detail.append(el('p', '', segment.observation?.summary || segment.observation?.transcript || labels[segment.status]));
-    detail.append(el('small', segment.status === 'error' ? 'error' : '', `${formatTime(segment.startMs)}–${formatTime(segment.endMs)} · ${segment.error || segment.stage || labels[segment.status]}${segment.hasAudio ? '' : ' · Sans audio'}`));
-    row.append(preview, button, detail); return row;
+  $('chat-coverage').textContent = describeCoverage(state);
+  $('usage').textContent = `Perception Codex : ${plural(state.apiCalls, 'passage')}`;
+  // The retention shown is the loaded session's own (its state, else its entry in the library), never the setting
+  // of this host: an archive kept until deletion says so wherever it is opened. No duration is written here.
+  $('memory-status').textContent = describeMemory(state, { library });
+  $('memory-status').title = $('memory-status').textContent;
+  // Said once per message: a state arrives several times a second and must not overwrite a newer notice.
+  if (state.lastError && state.lastError !== shownError && !diskFull()) notice(state.lastError);
+  shownError = state.lastError || '';
+  drawTimeline(); drawChat(); drawSurveillance(); updateButtons();
+}
+const scheduleState = batched(drawState);
+function drawTimeline() {
+  const state = currentState, { items, olderCount } = tail(state?.segments, RAIL_LIMIT);
+  const entries = items.slice().reverse().map(segment => {
+    const memory = momentPreviews.get(segment.id), image = memory || (segment.thumbnailAvailable ? thumbnail(segment.id) : '');
+    const text = segment.observation?.summary || segment.observation?.transcript || PASSAGE_LABELS[segment.status];
+    const detail = `${formatTime(segment.startMs)}–${formatTime(segment.endMs)} · ${segment.error || segment.stage || PASSAGE_LABELS[segment.status]}${segment.hasAudio ? '' : ' · Sans audio'}${segment.available ? '' : ` · ${mediaNote(segment).short}`}`;
+    return { id: segment.id, signature: [memory ? 'memory' : image, segment.available, segment.status, text, detail].join('|'), render: () => {
+      const row = el('article', 'moment'), placeholder = () => { const empty = el('div', 'moment-image'); empty.setAttribute('role', 'img'); empty.setAttribute('aria-label', 'Aperçu indisponible'); return empty; };
+      let preview = placeholder();
+      if (image) { preview = el('img', 'moment-image'); preview.alt = `Aperçu du passage à ${formatTime(segment.startMs)}`; preview.src = image; preview.onerror = () => preview.replaceWith(placeholder()); }
+      const button = action('moment-time', formatTime(segment.startMs), 'replay', { id: segment.id });
+      button.disabled = !segment.available; button.title = segment.available ? 'Revoir ce passage' : mediaNote(segment).long;
+      const body = el('div');
+      body.append(el('p', '', text), el('small', segment.status === 'error' ? 'error' : '', detail));
+      row.append(preview, button, body); return row;
+    } };
   });
-  $('timeline').replaceChildren(...(moments.length ? moments : [el('p', 'placeholder', 'Les moments observés apparaîtront ici.')]));
-  renderChat(); updateButtons();
+  timelineList.sync(entries.length ? entries : [{ id: 'empty', signature: '', render: () => el('p', 'placeholder', 'Les moments observés apparaîtront ici.') }]);
+  $('timeline-older').hidden = !olderCount; $('timeline-older').textContent = olderPassagesLabel(olderCount);
+  // In-memory previews only serve the passages on screen; older ones come from the session thumbnails.
+  trimMap(momentPreviews, PREVIEW_LIMIT, new Set(items.map(segment => segment.id)));
 }
-function renderChat() {
-  const waiting=deepState.jobs.filter(j=>j.status==='queued').length;$('queue-status').textContent=waiting?`${waiting} question(s) dans la file · traitement dans l’ordre`:'';
-  const questions = currentState?.questions || [];
-  const pending = pendingQuestion && questions.at(-1)?.question !== pendingQuestion;
-  const signature = JSON.stringify([questions, pending ? pendingQuestion : '', verificationState, deepState]);
-  if (signature === lastChatSignature || (!questions.length && !pendingQuestion && !verificationState.jobs.length && !deepState.jobs.length)) return;
-  lastChatSignature = signature;
-  const nodes = [];
+let storageState = null, storageView = describeStorage(null);
+// Out of room, the persistent banner says it all: the same reason is not repeated as a notice at every refused passage.
+const diskFull = () => storageView.blocked || currentState?.storage?.state === 'blocked';
+function drawBanners() {
+  const archive = describeArchive(currentState);
+  $('archive-banner').hidden = !archive;
+  if (archive) { $('archive-label').textContent = archive.label.toUpperCase(); $('archive-text').textContent = `${archive.text}.`; $('archive-hint').textContent = archive.hint; }
+  storageView = describeStorage(storageState, { capturing: Boolean(recorder) });
+  $('storage-banner').hidden = !storageView.banner;
+  if (storageView.banner) { $('storage-banner').dataset.state = storageView.banner.state; $('storage-banner-title').textContent = storageView.banner.title; $('storage-banner-text').textContent = storageView.banner.text; }
+  $('storage-line').textContent = storageView.line; $('storage-line').dataset.state = storageView.state;
+  // Out of room: capture stops and says so. Nothing is deleted, here or by the host.
+  if (storageView.blocked && recorder && !stopping) stop({ quiet: true }).catch(error => notice(reason(error)));
+}
+function receiveStorage(storage) { if (!storage) return; storageState = { ...storage }; drawBanners(); }
+
+// ---- Conversation: one card per question, only what changed is redrawn -----------------------
+const chatList = new KeyedList($('message-list'));
+function chatContext() {
+  return { now: Date.now(), timeoutMs: configuration?.questionTimeoutMs ?? null, queuedIds: deepState.jobs.filter(job => job.status === 'queued').map(job => job.id),
+    capturing: Boolean(currentState?.accepting), session: currentState, passage: id => passages.get(id), preview: previewOf, cancelling,
+    verifyAvailable: Boolean(configuration?.verificationAvailable), verifyBusy: verificationState.busy };
+}
+function drawChat() {
+  const context = chatContext(), waiting = context.queuedIds.length, limit = configuration?.questionQueueLimit;
+  $('queue-status').textContent = waiting ? `${plural(waiting, 'question')} en attente · ${agree(waiting, 'traitée')} dans l’ordre${limit ? `, ${limit} au plus` : ''}` : '';
+  // The echo covers the instant between sending and the host accepting the question.
+  const echo = pendingQuestion && !deepState.jobs.some(job => job.question === pendingQuestion && job.createdAt >= pendingQuestionAt - 1000);
   const entries = [
-    ...questions.map(response => ({ type: 'ask', at: sessionEpoch + response.atMs, response })),
-    ...verificationState.jobs.map(job => ({ type: 'verify', at: job.createdAt, job })),
-    ...deepState.jobs.map(job => ({ type: 'deep', at: job.createdAt, job })),
-    ...(pending ? [{ type: 'pending', at: pendingQuestionAt }] : [])
-  ].sort((a, b) => a.at - b.at);
-  for (const entry of entries) {
-    if (entry.type === 'verify') { nodes.push(renderVerification(entry.job)); continue; }
-    if (entry.type === 'deep') { nodes.push(renderDeep(entry.job)); continue; }
-    if (entry.type === 'pending') { nodes.push(el('div', 'chat-question', pendingQuestion), el('p', 'pending', 'Je retrouve les passages utiles…')); continue; }
-    const response = entry.response;
-    nodes.push(el('div', 'chat-question', response.question));
-    nodes.push(el('div', 'answer-kind', { observation: 'OBSERVATION', explanation: 'EXPLICATION', insufficient: 'CONTEXTE INSUFFISANT' }[response.kind]));
-    nodes.push(el('div', 'chat-answer', response.answer));
-    if (response.limits.length) nodes.push(el('p', 'answer-limits', response.limits.join(' ')));
-    const references = el('div', 'references');
-    for (const citation of response.citations) {
-      const available = currentState.segments.some(s => s.id === citation.id && s.available);
-      const button = el('button', 'reference', `${formatTime(citation.startMs)}–${formatTime(citation.endMs)}${available ? ' ↗' : ' · résumé seul'}`);
-      button.disabled = !available; button.onclick = () => replay(citation.id); references.append(button);
-    }
-    nodes.push(references);
-    const deepen = el('button', 'secondary deepen', 'Revoir le passage plus précisément');
-    deepen.onclick = () => window.tvlens.deepen(response.question).catch(error => notice(error.message));
-    nodes.push(deepen);
-    const verify = el('button', 'secondary verify-again', 'Vérifier une affirmation de cette réponse');
-    verify.disabled = verificationState.busy || !configuration?.verificationAvailable;
-    verify.onclick = () => openVerification(response.answer);
-    nodes.push(verify);
-  }
-  $('messages').replaceChildren(...nodes); $('messages').scrollTop = $('messages').scrollHeight;
+    ...verificationState.jobs.map(job => ({ at: job.createdAt, entry: verificationEntry(job, context) })),
+    ...deepState.jobs.map(job => ({ at: job.createdAt, entry: jobEntry(job, context) })),
+    ...(echo ? [{ at: pendingQuestionAt, entry: pendingEntry(pendingQuestion) }] : []),
+  ].sort((a, b) => a.at - b.at).map(item => item.entry);
+  // Follow the answer only if the reader was at the bottom: reading an earlier answer is never interrupted.
+  const box = $('messages'), stick = forceBottom || isNearBottom(box, STICK_PX);
+  const changes = chatList.sync(entries);
+  $('chat-intro').hidden = entries.length > 0;
+  if (stick && (forceBottom || changes.created || changes.updated || changes.removed)) box.scrollTop = box.scrollHeight;
+  forceBottom = false;
+  // The budget file is read again when a question finishes, not at each fragment of an answer.
+  const finished = settledCount(deepState.jobs);
+  if (finished !== settled) { settled = finished; refreshResearchBudget(); }
 }
-function renderDeep(job) {
-  const node = el('article', 'verification-message deep-message');
-  node.dataset.status = job.status;
-  node.append(el('div', 'chat-question', job.question));
-  const metadata = el('details', 'response-details');
-  metadata.append(el('summary', 'hint', 'Détails du traitement'), el('small','hint',`Question ancrée à ${formatTime(job.anchorMs||0)}${job.startedAt ? ` · Attente ${((job.startedAt-job.createdAt)/1000).toFixed(1)} s` : ''}`));
-  if(job.status==='queued'){
-    node.append(el('p','pending',`En attente · position ${deepState.jobs.filter(j=>j.status==='queued').findIndex(j=>j.id===job.id)+1} dans la file.`));
-    const cancel=el('button','secondary cancel-deep','Retirer cette question');cancel.onclick=()=>window.tvlens.cancelDeep(job.id).catch(error=>notice(error.message));node.append(cancel);
-  } else if (job.status === 'running') {
-    const elapsed=el('span','job-elapsed');elapsed.dataset.started=job.startedAt||job.createdAt;elapsed.textContent=Math.floor((Date.now()-(job.startedAt||job.createdAt))/1000)+' s';node.append(elapsed);
-    const steps=el('ol','activity-list');for(const step of (job.activity||[]).slice(-5))steps.append(el('li','',step.message));node.append(steps);
-    if(job.provisional)node.append(el('div','answer-kind','PROVISOIRE · OBSERVATIONS À CONFIRMER'),el('p','chat-provisional',job.provisional));
-    if(job.memoryPreview){
-      const rail=el('div','preview-passages');
-      for(const passage of job.memoryPreview.passages){
-        const button=el('button','preview-passage');
-        if(momentPreviews.has(passage.id)){const image=el('img');image.src=momentPreviews.get(passage.id);image.alt='Passage retrouvé';button.append(image);}
-        button.append(document.createTextNode(formatTime(passage.startMs)+' ↗'));
-        button.disabled=currentState?.id!==job.sessionId||!currentState?.segments.some(s=>s.id===passage.id&&s.available);
-        button.onclick=()=>replay(passage.id);rail.append(button);
-      }
-      node.append(rail);
-      if(job.memoryPreview.unanalyzedTailMs>0)node.append(el('p','hint','Les dernières secondes ne sont pas encore entièrement analysées.'));
-    }
-    if(job.preview)node.append(el('p','hint','Réponse en cours · pas encore validée'),el('p','chat-preview',job.preview));
-    node.append(el('p', 'pending', job.message), el('small', '', `${currentState?.accepting?'La capture continue':'Capture en pause'} · maximum 60 secondes. Les nouvelles questions restent en attente.`));
-    const cancel = el('button', 'secondary cancel-deep', 'Annuler la recherche');
-    cancel.onclick = () => window.tvlens.cancelDeep(job.id).catch(error => notice(error.message)); node.append(cancel);
-  } else {
-    if(job.finishedAt){const details=el('details','activity-history');details.append(el('summary','hint',`${((job.finishedAt-(job.startedAt||job.createdAt))/1000).toFixed(1)} s · Étapes de la réponse`));const list=el('ol','activity-list');for(const step of job.activity||[])list.append(el('li','',step.message));details.append(list);metadata.append(details);}
-    if (job.status !== 'done') node.append(el('p', 'answer-limits', job.message));
-    const result = job.result;
-    if (result) {
-      node.append(el('div','answer-kind',({observation:'OBSERVÉ DANS LA VIDÉO',external:'RÉPONSE AVEC SOURCES EXTERNES',explanation:'EXPLICATION GÉNÉRALE',insufficient:'PREUVES INSUFFISANTES'})[result.kind]||'RÉPONSE'),el('p', 'chat-answer', result.answer));
-      if (result.hypotheses?.length) node.append(el('div', 'answer-kind', 'HYPOTHÈSES · NON ÉTABLIES'), el('p', '', result.hypotheses.join(' ')));
-      if (result.limits?.length) node.append(el('p', 'answer-limits', result.limits.join(' ')));
-      const refs = el('div', 'references');
-      for (const c of result.citations || []) {
-        const segment = currentState?.id === job.sessionId && currentState.segments.find(s => s.id === c.id && s.available);
-        const button = el('button', 'reference', `${formatTime(c.startMs)}–${formatTime(c.endMs)}${segment ? ' ↗' : ' · média expiré'}`);
-        button.disabled = !segment; button.onclick = () => replay(c.id, Math.max(0, (c.startMs - segment.startMs) / 1000)); refs.append(button);
-      }
-      node.append(refs);
-      if(job.intent && result.citations?.length){
-        const rail=el('div','preview-passages');
-        for(const c of result.citations.slice(0,3)){
-          const button=el('button','preview-passage');
-          if(momentPreviews.has(c.id)){const image=el('img');image.src=momentPreviews.get(c.id);image.alt='Passage cité';button.append(image);}
-          button.append(document.createTextNode(formatTime(c.startMs)+' ↗'));
-          const segment=currentState?.id===job.sessionId&&currentState.segments.find(s=>s.id===c.id&&s.available);
-          button.disabled=!segment;button.onclick=()=>replay(c.id,Math.max(0,(c.startMs-segment.startMs)/1000));rail.append(button);
-        }
-        node.append(rail);
-      }
-      if(job.metrics){const timing=el('details','activity-history');timing.append(el('summary','hint','Temps de réponse'),el('p','hint',`Première information : ${job.metrics.firstUsefulMs===null?'indisponible':(job.metrics.firstUsefulMs/1000).toFixed(2)+' s'} · Attente : ${(job.metrics.waitMs/1000).toFixed(2)} s · Total : ${(job.metrics.endToEndMs/1000).toFixed(2)} s`));metadata.append(timing);}
-      if(result.sources?.length)node.append(el('div','answer-kind','SOURCES WEB'));
-      for(const [index,source] of (result.sources||[]).entries()) {
-        const link=el('button','source-link',source.title+' ↗');
-        link.onclick=()=>window.tvlens.openChatSource(job.id,index).catch(error=>notice(error.message));
-        node.append(link,el('p','hint',source.evidence));
-      }
-    }
-    if(result?.answer&&result.kind!=='insufficient'&&!job.intent){const more=el('button','secondary','Approfondir');more.onclick=()=>window.tvlens.ask('Approfondis cette réponse : '+result.answer.slice(0,1200)).catch(e=>notice(e.message));node.append(more);if(/\d/.test(result.answer)){const check=el('button','secondary','Vérifier un chiffre');check.onclick=()=>{$('claim').value=result.answer.slice(0,2000);$('verify-dialog').showModal();};node.append(check);}}
-    node.append(metadata);
-    const retry = el('button', 'secondary deepen', 'Réexaminer le passage'); retry.onclick = () => (job.intent ? window.tvlens.reexamineMoment(job.id) : window.tvlens.deepen(job.question)).catch(error => notice(error.message)); node.append(retry);
-  }
-  return node;
-}
-function renderVerification(job) {
-  const node = el('article', 'verification-message');
-  node.append(el('div', 'chat-question', job.claim), el('div', 'verification-label', 'VÉRIFICATION EXTERNE · CODEX'));
-  if (job.status === 'running') {
-    node.append(el('p', 'pending', 'Recherche de sources et comparaison des preuves…'), el('p', 'verification-status', 'Tu peux continuer à poser des questions sur la vidéo.'));
-    const cancel = el('button', 'secondary cancel-verification', 'Annuler la recherche');
-    cancel.onclick = () => { cancel.disabled = true; window.tvlens.cancelVerification().catch(error => notice(error.message)); };
-    node.append(cancel); return node;
-  }
-  if (job.status === 'error') {
-    node.append(el('p', 'verify-error', job.error));
-    const retry = el('button', 'secondary verify-again', 'Réessayer'); retry.disabled = verificationState.busy;
-    retry.onclick = () => openVerification(job.claim); node.append(retry); return node;
-  }
-  const result = job.result;
-  node.append(el('h4', '', { supported: 'Les sources concordent', contradicted: 'Les sources contredisent l’affirmation', mixed: 'Les preuves appellent des nuances', insufficient: 'Preuves insuffisantes' }[result.assessment]));
-  node.append(el('p', 'chat-answer', result.conclusion));
-  for (const [index, source] of result.sources.entries()) {
-    const card = el('div', 'source-card');
-    const link = el('button', 'source-link', `${source.title} ↗`);
-    link.onclick = () => window.tvlens.openSource(job.id, index).catch(error => notice(error.message));
-    card.append(link, el('small', '', [source.publisher, source.publishedAt].filter(Boolean).join(' · ')), el('p', '', source.evidence));
-    node.append(card);
-  }
-  if (result.limitations.length) node.append(el('p', 'answer-limits', result.limitations.join(' ')));
-  if (job.archiveError) node.append(el('p', 'verify-error', job.archiveError));
-  const seconds = Math.round((result.research?.elapsedMs || job.finishedAt - job.createdAt) / 1000);
-  node.append(el('p', 'verification-status', `${result.sources.length} source(s) · ${seconds} s · Compte Codex, séparé du budget OpenRouter`));
-  return node;
-}
+const scheduleChat = batched(drawChat);
 function openVerification(text = '') {
   if (verificationState.busy) return notice('Une vérification est déjà en cours. Tu peux toujours poser une question sur la vidéo.');
   if (!configuration?.verificationAvailable) return notice('Codex CLI est introuvable sur ce Mac.');
@@ -322,55 +293,94 @@ $('verify-form').onsubmit = async event => {
   if (!claim || verificationState.busy) return;
   $('verify-dialog').close(); notice('');
   if ($('question').value.trim().replace(verifyPrefix, '').trim() === claim) $('question').value = '';
-  try { await window.tvlens.verify(claim); }
-  catch (error) { notice(error.message); }
+  try { await bridge.verify(claim); }
+  catch (error) { notice(reason(error)); }
 };
-window.tvlens.onVerificationState(state => { verificationState = state; renderChat(); updateButtons(); });
-function refreshResearchBudget() { window.tvlens.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
-window.tvlens.onDeepState(state => { deepState = state; renderChat(); updateButtons(); refreshResearchBudget(); });
-refreshResearchBudget();
-window.tvlens.deepState().then(state => { deepState = state; renderChat(); }).catch(error => notice(error.message));
-window.tvlens.verificationState().then(state => { verificationState = state; renderChat(); updateButtons(); }).catch(error => notice(error.message));
+bridge.onVerificationState(state => { verificationState = state; scheduleChat(); updateButtons(); });
+function refreshResearchBudget() { bridge.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
+bridge.onDeepState(state => { deepState = state; scheduleChat(); updateButtons(); });
+bridge.deepState().then(state => { deepState = state; scheduleChat(); }).catch(error => notice(reason(error)));
+bridge.verificationState().then(state => { verificationState = state; scheduleChat(); updateButtons(); }).catch(error => notice(reason(error)));
 $('ask-form').onsubmit = async event => {
   event.preventDefault(); const question = $('question').value.trim();
-  if (!question || pendingQuestion) return;
-  pendingQuestion = question; pendingQuestionAt = Date.now(); $('question').value = ''; notice(''); renderChat(); updateButtons();
-  try {
-    const response = await window.tvlens.ask(question);
-    if (!currentState?.questions.length && response.kind === 'insufficient') notice(response.answer);
-  } catch (error) { notice(error.message); $('question').value = question; }
-  finally { pendingQuestion = ''; lastChatSignature = ''; renderChat(); updateButtons(); $('question').focus(); }
+  // Enter goes through the same gate as the button: no request the host can only refuse.
+  if (!question || pendingQuestion || $('send').disabled) return;
+  pendingQuestion = question; pendingQuestionAt = Date.now(); $('question').value = ''; notice(''); forceBottom = true; drawChat(); updateButtons();
+  try { await bridge.ask(question); }
+  catch (error) { notice(reason(error)); $('question').value = question; }
+  finally { pendingQuestion = ''; scheduleChat(); updateButtons(); $('question').focus(); }
 };
 $('question').onkeydown = event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); $('ask-form').requestSubmit(); } };
 $('question').oninput = updateButtons;
-for (const button of document.querySelectorAll('.suggestion')) button.onclick = () => { $('question').value = button.dataset.question; $('question').focus(); };
+for (const button of document.querySelectorAll('.suggestion[data-question]')) button.onclick = () => { $('question').value = button.dataset.question; $('question').focus(); updateButtons(); };
+// Elapsed / ceiling of running questions, once a second, from the attributes of their own card.
+setInterval(() => {
+  const now = Date.now();
+  for (const node of document.querySelectorAll('.job-clock')) {
+    const elapsed = now - Number(node.dataset.started), ceiling = Number(node.dataset.timeout) || null;
+    node.textContent = clockLabel(elapsed, ceiling);
+    if (ceiling && node.previousElementSibling) node.previousElementSibling.value = Math.min(1, elapsed / ceiling);
+  }
+}, 1000);
+
+// ---- One click handler for every card: a button keeps working when its card is redrawn -------
+const jobOf = id => deepState.jobs.find(job => job.id === id);
+const actions = {
+  replay: data => replayAt(data.id, data.start === undefined ? NaN : Number(data.start)),
+  'job-cancel': async data => { cancelling.add(data.id); drawChat(); try { await bridge.cancelDeep(data.id); } finally { cancelling.delete(data.id); scheduleChat(); } },
+  'job-reask': data => { const job = jobOf(data.id); if (job) { $('question').value = job.question; $('question').focus(); updateButtons(); } },
+  'job-more': data => { const job = jobOf(data.id); return job?.result && bridge.ask(`Approfondis cette réponse : ${job.result.answer.slice(0, 1200)}`); },
+  'job-verify': data => { const job = jobOf(data.id); if (job?.result) openVerification(job.result.answer); },
+  'job-reexamine': data => { const job = jobOf(data.id); return job && (job.intent ? bridge.reexamineMoment(job.id) : bridge.deepen(job.question)); },
+  'chat-source': data => bridge.openChatSource(data.job, Number(data.index)),
+  'verify-cancel': (data, target) => { target.disabled = true; return bridge.cancelVerification(); },
+  'verify-retry': data => { const job = verificationState.jobs.find(item => item.id === data.id); if (job) openVerification(job.claim); },
+  'verify-source': data => bridge.openSource(data.job, Number(data.index)),
+  'watch-source': data => bridge.openSurveillanceSource(data.lot, Number(data.index)),
+  'watch-dismiss': data => { cardQueue.dismiss(data.key); drawStack(); },
+  'watch-show-lot': data => showLot(data.lot),
+  'watch-retry': async data => receiveSurveillance(await bridge.retrySurveillanceClaim(data.id)),
+  'watch-filter': data => { watchFilter = data.filter; historyLimit = HISTORY_STEP; drawSurveillance(); },
+  'watch-example': data => { $('watch-instruction').value = data.instruction; $('watch-instruction').focus(); },
+  'session-open': data => openArchive(data.id),
+  'session-delete': data => askDeleteSession(data.id),
+  'session-resume': () => requestCapture(captureFromArchive),
+};
+document.addEventListener('click', event => {
+  const target = event.target.closest?.('[data-action]');
+  const run = target && !target.disabled && actions[target.dataset.action];
+  if (run) Promise.resolve().then(() => run(target.dataset, target)).catch(error => notice(reason(error)));
+});
+
 $('start').onclick = startPreview;
-$('observe').onclick = () => watchWithSelectedSource();
+$('observe').onclick = () => requestCapture(watchWithSelectedSource);
 $('source').onchange = updateButtons;
 $('refresh').onclick = refresh;
-$('stop').onclick = () => stop().catch(error => notice(error.message));
-$('settings').onclick = () => window.capture.settings().catch(error => notice(error.message));
-$('import').onclick = () => window.tvlens.importConfig().then(setConfig).catch(error => notice(error.message));
+$('stop').onclick = () => stop().catch(error => notice(reason(error)));
+$('settings').onclick = () => window.capture.settings().catch(error => notice(reason(error)));
+$('import').onclick = () => bridge.importConfig().then(setConfig).catch(error => notice(reason(error)));
 $('close-replay').onclick = () => $('replay-dialog').close();
 $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttribute('src'); $('replay').load(); };
 $('replay').onvolumechange = () => { if (currentState?.accepting) $('replay').muted = true; };
-$('replay').onerror = () => { $('replay-note').textContent = 'Ce passage a expiré ou ne peut pas être lu.'; };
+$('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
 window.addEventListener('beforeunload', () => stream?.getTracks().forEach(track => track.stop()));
-window.tvlens.onState(renderState);
-window.tvlens.config().then(setConfig).catch(error => notice(error.message));
+bridge.onState(receiveState);
+bridge.config().then(setConfig).catch(error => notice(reason(error)));
+// A reloaded window finds the session the host still holds.
+bridge.state().then(receiveState).catch(() => {});
 refresh();
 
-$('models').onclick=async()=>{try{const value=await window.tvlens.models();const choices=await window.tvlens.modelChoices();$('codex-models').replaceChildren(...choices.map(m=>new Option(m.name,m.id)));$('codex-model').value=value.codexModel;$('observation-model').value=value.observationModel;$('inspection-model').value=value.inspectionModel;$('models-status').textContent='';$('models-dialog').showModal();}catch(e){notice(e.message);}};
+$('models').onclick=async()=>{try{const value=await bridge.models();const choices=await bridge.modelChoices();$('codex-models').replaceChildren(...choices.map(m=>new Option(m.name,m.id)));$('codex-model').value=value.codexModel;$('observation-model').value=value.observationModel;$('inspection-model').value=value.inspectionModel;$('models-status').textContent='';$('models-dialog').showModal();}catch(e){notice(reason(e));}};
 $('close-models').onclick=()=>$('models-dialog').close();
-$('models-form').onsubmit=async event=>{event.preventDefault();try{const result=await window.tvlens.saveModels({codexModel:$('codex-model').value.trim(),observationModel:$('observation-model').value.trim(),inspectionModel:$('inspection-model').value.trim()});setConfig(result.configuration);$('models-status').textContent='Enregistré · Codex prêt pour la prochaine question.';}catch(e){$('models-status').textContent=e.message;}};
+$('models-form').onsubmit=async event=>{event.preventDefault();try{const result=await bridge.saveModels({codexModel:$('codex-model').value.trim(),observationModel:$('observation-model').value.trim(),inspectionModel:$('inspection-model').value.trim()});setConfig(result.configuration);$('models-status').textContent='Enregistré · Codex prêt pour la prochaine question.';}catch(e){$('models-status').textContent=reason(e);}};
 
 let floatingMode=false, floatingExpanded=false;
-async function changeWindowMode(floating,expanded=false){
+async function changeWindowMode(floating,expanded=false,{focus=true}={}){
   const priorFloating=floatingMode, priorExpanded=floatingExpanded;
-  const paint=()=>shell.windowMode(floatingMode,floatingExpanded);
+  const paint=()=>{shell.windowMode(floatingMode,floatingExpanded);drawStack();};
   floatingMode=floating;floatingExpanded=expanded;paint();
-  try{await window.tvlens.windowMode({floating,expanded});if(expanded)$('question').focus();}
-  catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(e.message);}
+  try{await bridge.windowMode({floating,expanded});if(expanded&&focus&&shell.view!=='watch')$('question').focus();}
+  catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(reason(e));}
 }
 $('float-mode').onclick=()=>changeWindowMode(true);
 $('float-full').onclick=()=>{shell.show('direct');return changeWindowMode(false);};
@@ -380,18 +390,19 @@ $('float-menu-toggle').onclick=async()=>{
   if (!floatingExpanded) await changeWindowMode(true,true);
   $('float-menu').showPopover();
 };
-$('float-auto').onclick=()=>$('open-auto').click();
+$('float-watch').onclick=()=>showWatch();
 $('float-memory').onclick=()=>openLibrary();
 $('float-source-change').onclick=async()=>{await stop();shell.show('direct');await changeWindowMode(false);$('source').focus();};
-$('float-chat').onclick=()=>changeWindowMode(true,!floatingExpanded);
+// In the floating window the surveillance takes the place of the chat: "Demander" brings the chat back.
+$('float-chat').onclick=()=>{if(floatingExpanded&&shell.view==='watch'){shell.show('direct');$('question').focus();return;}return changeWindowMode(true,!floatingExpanded);};
 async function watchWithSelectedSource() {
   if (floatingCaptureBusy || stopping || recorder) return;
   floatingCaptureBusy = true; updateButtons(); notice('');
   try {
     if (!stream && !await startPreview()) throw Error($('state').textContent);
     await observe();
-    if (!recorder) throw Error($('notice').textContent || 'L’analyse n’a pas démarré.');
-  } catch (error) { notice(error.message); }
+    if (!recorder) throw Error($('notice').textContent || 'L’observation n’a pas démarré.');
+  } catch (error) { notice(reason(error)); }
   finally { floatingCaptureBusy = false; updateButtons(); }
 }
 
@@ -405,12 +416,10 @@ async function refreshFloatingSources(){
     if(!result.sources.length)$('float-source-error').textContent='Aucune source disponible. Vérifie les autorisations de capture dans le mode complet.';
     $('float-launch').disabled=!result.sources.length||!configuration?.canObserve;
     if(!configuration?.canObserve)$('float-source-error').textContent='Connecte ton compte Codex avant de lancer l’analyse.';
-  }catch(e){$('float-source-error').textContent=e.message;}
+  }catch(e){$('float-source-error').textContent=reason(e);}
   finally{$('float-refresh').disabled=false;}
 }
-$('float-record').onclick=async()=>{
-  if(floatingCaptureBusy||stopping)return;
-  if(recorder){floatingCaptureBusy=true;updateButtons();try{await stop();}catch(e){notice(e.message);}finally{floatingCaptureBusy=false;updateButtons();}return;}
+async function captureFromFloatingBar(){
   const previousSource=$('source').value;
   floatingCaptureBusy=true; updateButtons();
   try { await refresh(); } finally { floatingCaptureBusy=false; updateButtons(); }
@@ -425,6 +434,11 @@ $('float-record').onclick=async()=>{
     $('float-launch').disabled=!configuration?.canObserve;
     $('float-source-error').textContent=configuration?.canObserve?'':'Connecte ton compte Codex dans le mode complet.';
   }else{$('float-source').disabled=false;$('float-refresh').hidden=false;await refreshFloatingSources();}
+}
+$('float-record').onclick=async()=>{
+  if(floatingCaptureBusy||stopping)return;
+  if(recorder){floatingCaptureBusy=true;updateButtons();try{await stop();}catch(e){notice(reason(e));}finally{floatingCaptureBusy=false;updateButtons();}return;}
+  await requestCapture(captureFromFloatingBar);
 };
 $('float-refresh').onclick=refreshFloatingSources;
 $('close-float-source').onclick=()=>$('float-source-dialog').close();
@@ -436,47 +450,278 @@ $('float-source-form').onsubmit=async event=>{
   try{
     if(!stream){$('source').value=$('float-source').value;if(!await startPreview())throw Error($('state').textContent);}
     await observe();
-    if(!recorder)throw Error($('notice').textContent||'L’analyse n’a pas démarré.');
+    if(!recorder)throw Error($('notice').textContent||'L’observation n’a pas démarré.');
     $('float-source-dialog').close();
-  }catch(e){$('float-source-error').textContent=e.message;}
+  }catch(e){$('float-source-error').textContent=reason(e);}
   finally{floatingCaptureBusy=false;$('float-launch').disabled=false;$('close-float-source').disabled=false;$('float-refresh').disabled=false;updateButtons();}
 };
 
-$('new-session').onclick=async()=>{try{await window.tvlens.newSession();}catch(e){notice(e.message);}};
-window.tvlens.onReset(()=>{recapRevision++;recapState=null;currentState=null;$('recap-dialog').close();renderRecap();deepState={jobs:[]};selectedMoment=null;$('moment-dialog').close();$('attention-status').textContent='';notice('');momentPreviews.clear();lastChatSignature='';$('timeline').replaceChildren(el('p','placeholder','Les moments observés apparaîtront ici.'));$('messages').replaceChildren();$('elapsed').textContent='00:00';$('mode').textContent='PRÊT À REGARDER';$('memory-status').textContent='Les passages apparaîtront après quelques secondes de capture.';updateButtons();});
-setInterval(()=>{for(const node of document.querySelectorAll('.job-elapsed'))node.textContent=Math.floor((Date.now()-Number(node.dataset.started))/1000)+' s';},1000);
+// ---- Sessions: archives, explicit resume, deletion, disk --------------------------------------
+let library = null, sessionsView = describeSessions(null), sessionsStale = true, deleteSessionId = null, pendingCapture = null;
+const sessionsList = new KeyedList($('sessions-list'));
+function drawSessions() {
+  sessionsView = describeSessions(library, { capturing: Boolean(recorder), readOnly: Boolean(currentState?.readOnly) });
+  sessionsList.sync(sessionsView.rows.map(sessionEntry));
+  $('sessions-empty').hidden = !sessionsView.empty; $('sessions-empty').textContent = sessionsView.empty || '';
+}
+async function refreshSessions() {
+  if (!bridge.sessions) return;
+  sessionsStale = false;
+  try { library = await bridge.sessions(); if (library?.storage) storageState = { ...library.storage }; }
+  catch (error) { sessionsStale = true; return notice(reason(error)); }
+  drawSessions(); drawBanners();
+}
+// Listing reads the disk: it is done when the panel is on screen, and otherwise remembered as due.
+const sessionsChanged = () => { if (shell.view === 'memory' && !document.body.classList.contains('floating')) refreshSessions(); else sessionsStale = true; };
+// Capture never restarts inside an archive by a plain click: the viewer confirms, then the bridge resumes it.
+async function requestCapture(run) {
+  if (!currentState?.readOnly) return run();
+  $('resume-session-text').textContent = describeArchive(currentState).resumeText; $('resume-session-error').textContent = '';
+  pendingCapture = run;
+  if (floatingMode && !floatingExpanded) await changeWindowMode(true, true, { focus: false });
+  if (!$('resume-session-dialog').open) $('resume-session-dialog').showModal();
+}
+async function captureFromArchive() {
+  if (floatingMode) return captureFromFloatingBar();
+  shell.show('direct');
+  if (!$('source').value) { notice('Choisis d’abord la fenêtre ou l’écran à regarder, puis reprends la capture.'); $('source').focus(); return; }
+  await watchWithSelectedSource();
+}
+$('archive-resume').onclick = () => requestCapture(captureFromArchive);
+$('cancel-resume-session').onclick = () => { pendingCapture = null; $('resume-session-dialog').close(); };
+$('confirm-resume-session').onclick = async () => { const run = pendingCapture; pendingCapture = null; $('resume-session-dialog').close(); try { await run?.(); } catch (error) { notice(reason(error)); } };
+async function pullSession() {
+  const state = await bridge.state();
+  if (!state) return clearSession();
+  receiveState(state);
+  const [deep, recap, surveillance] = await Promise.all([bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)]);
+  deepState = deep;
+  if (recap) receiveRecap(recap);
+  if (surveillance) receiveSurveillance(surveillance);
+  forceBottom = true; scheduleState();
+}
+async function openArchive(id) {
+  if (recorder || stream) return notice('Mets la capture en pause avant d’ouvrir une autre session.');
+  notice('');
+  await bridge.openSession(id);
+  await pullSession();
+  shell.show('direct');
+}
+function askDeleteSession(id) {
+  const row = sessionsView.rows.find(item => item.id === id);
+  if (!row) return;
+  if (!row.canDelete) return notice(row.deleteBlockedReason);
+  const text = describeDeletion(row);
+  deleteSessionId = id;
+  $('delete-session-title').textContent = text.title; $('delete-session-subject').textContent = text.subject;
+  $('delete-session-removed').textContent = text.removed; $('delete-session-kept').textContent = text.kept;
+  $('delete-session-warning').textContent = text.warning || ''; $('delete-session-error').textContent = '';
+  $('confirm-delete-session').textContent = text.confirmLabel;
+  $('delete-session-dialog').showModal();
+}
+$('cancel-delete-session').onclick = () => $('delete-session-dialog').close();
+$('confirm-delete-session').onclick = async () => {
+  $('confirm-delete-session').disabled = true;
+  try {
+    const result = await bridge.deleteSession(deleteSessionId);
+    $('delete-session-dialog').close();
+    notice(`Session supprimée${formatBytes(result?.freedBytes) ? ` · ${formatBytes(result.freedBytes)} libérés` : ''}. Les moments gardés sont conservés.`);
+    await refreshSessions();
+  } catch (error) { $('delete-session-error').textContent = reason(error); }
+  finally { $('confirm-delete-session').disabled = false; }
+};
+$('refresh-sessions').onclick = () => refreshSessions();
+$('storage-banner-open').onclick = async () => { if (floatingMode) await changeWindowMode(false); shell.show('memory'); $('sessions-panel').scrollIntoView({ block: 'start' }); };
+const startNewSession = async () => { try { await bridge.newSession(); } catch (e) { notice(reason(e)); } };
+$('new-session').onclick = $('archive-new').onclick = startNewSession;
+function clearSession() {
+  recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; selectedMoment = null; cancelling.clear();
+  surveillanceRegistry = null; registryKey = ''; shownError = '';
+  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear();
+  renderRecap();
+  $('elapsed').textContent = '00:00'; $('mode').textContent = 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
+  $('memory-status').textContent = 'Les passages apparaîtront après quelques secondes de capture.'; $('chat-coverage').textContent = '';
+  drawState();
+}
+bridge.onReset(clearSession);
+bridge.onSessionsChanged?.(sessionsChanged);
+bridge.onStorage?.(receiveStorage);
+bridge.storage?.().then(receiveStorage).catch(() => {});
 
-async function keepRecent(){try{const saved=await window.tvlens.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);shell.bookmarkFeedback(true);setTimeout(()=>shell.bookmarkFeedback(false),2000);await renderSavedRail();}catch(e){notice(e.message);}}
+async function keepRecent(){try{const saved=await bridge.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);shell.bookmarkFeedback(true);setTimeout(()=>shell.bookmarkFeedback(false),2000);await renderSavedRail();}catch(e){notice(reason(e));}}
 $('keep-moment').onclick=keepRecent;$('float-keep').onclick=keepRecent;
 let deleteSavedId;
 function momentCard(moment,{savedId}={}){
  const card=el('article','moment-card');if(moment.preview){const image=el('img');image.src=moment.preview;image.alt='Aperçu du passage';card.append(image);}
  const content=el('div');content.append(el('strong','',`${formatTime(moment.startMs)}–${formatTime(moment.endMs)}`));content.append(el('p','',moment.text||moment.observation?.transcript||moment.observation?.summary||'Transcription indisponible.'));
- const available=savedId||moment.available;const play=el('button','secondary',available?'Revoir ↗':'Média expiré · texte conservé');play.disabled=!available;
+ const available=savedId||moment.available;const play=el('button','secondary',available?'Revoir ↗':`Texte conservé · ${mediaNote(moment).short}`);play.disabled=!available;
  play.onclick=()=>{if(!savedId)return replay(moment.id);$('replay-title').textContent='Moment conservé';$('replay').src=`tvlens-saved://${savedId}/${moment.id}`;$('replay').onloadedmetadata=null;$('replay').muted=true;$('replay-note').textContent='Copie conservée sur ce Mac ; supprimer le moment efface aussi cette vidéo.';$('replay-dialog').showModal();$('replay').play().catch(()=>{});};content.append(play);card.append(content);return card;
 }
-async function renderSaved(){const values=await window.tvlens.savedMoments();$('saved-results').replaceChildren(...values.map(value=>{const group=el('section','saved-group');group.append(el('small','hint',new Date(value.createdAt).toLocaleString()+' · Conservé'));for(const m of value.moments)group.append(momentCard(m,{savedId:value.id}));const remove=el('button','link','Supprimer ce moment');remove.onclick=()=>{deleteSavedId=value.id;$('delete-saved-dialog').showModal();};group.append(remove);return group;}));if(!values.length)$('saved-results').append(el('p','hint','Aucun moment gardé.'));renderSavedRail(values);}
-async function renderSavedRail(values){values ||= await window.tvlens.savedMoments();const tiles=values.slice(0,5).map(value=>{const moment=value.moments[0],tile=el('button','saved-tile'),preview=el('img');preview.alt='Aperçu du moment gardé';if(moment?.preview)preview.src=moment.preview;const copy=el('span');copy.append(el('strong','',formatTime(value.startMs)),document.createTextNode(moment?.observation?.summary||'Moment gardé'));tile.append(preview,copy);tile.onclick=()=>openLibrary().catch(e=>notice(e.message));return tile;});$('saved-rail').replaceChildren(...(tiles.length?tiles:[el('p','placeholder','Garde un moment pour le retrouver ici.')]));}
-async function openLibrary(){if(floatingMode)await changeWindowMode(true,true);$('library-dialog').showModal();await renderSaved();const settings=await window.tvlens.viewingSettings();$('bookmark-shortcut').value=settings.bookmarkShortcut;$('shortcut-status').textContent=settings.shortcutRegistered?'Raccourci actif.':'Raccourci indisponible : choisis une autre combinaison.';}
-$('open-library').onclick=()=>openLibrary().catch(e=>notice(e.message));$('close-library').onclick=()=>$('library-dialog').close();$('refresh-saved').onclick=()=>renderSaved().catch(e=>notice(e.message));
+async function renderSaved(){const values=await bridge.savedMoments();$('saved-results').replaceChildren(...values.map(value=>{const group=el('section','saved-group');group.append(el('small','hint',new Date(value.createdAt).toLocaleString()+' · Conservé'));for(const m of value.moments)group.append(momentCard(m,{savedId:value.id}));const remove=el('button','link','Supprimer ce moment');remove.onclick=()=>{deleteSavedId=value.id;$('delete-saved-dialog').showModal();};group.append(remove);return group;}));if(!values.length)$('saved-results').append(el('p','hint','Aucun moment gardé.'));renderSavedRail(values);}
+async function renderSavedRail(values){values ||= await bridge.savedMoments();const tiles=values.slice(0,5).map(value=>{const moment=value.moments[0],tile=el('button','saved-tile'),preview=el('img');preview.alt='Aperçu du moment gardé';if(moment?.preview)preview.src=moment.preview;const copy=el('span');copy.append(el('strong','',formatTime(value.startMs)),document.createTextNode(moment?.observation?.summary||'Moment gardé'));tile.append(preview,copy);tile.onclick=()=>openLibrary().catch(e=>notice(reason(e)));return tile;});$('saved-rail').replaceChildren(...(tiles.length?tiles:[el('p','placeholder','Garde un moment pour le retrouver ici.')]));}
+async function openLibrary(){if(floatingMode)await changeWindowMode(true,true);$('library-dialog').showModal();await renderSaved();const settings=await bridge.viewingSettings();$('bookmark-shortcut').value=settings.bookmarkShortcut;$('shortcut-status').textContent=settings.shortcutRegistered?'Raccourci actif.':'Raccourci indisponible : choisis une autre combinaison.';}
+$('open-library').onclick=()=>openLibrary().catch(e=>notice(reason(e)));$('close-library').onclick=()=>$('library-dialog').close();$('refresh-saved').onclick=()=>renderSaved().catch(e=>notice(reason(e)));
 $('saved-all').onclick=$('open-library').onclick;
 $('nav-saved').onclick=$('open-library').onclick;
 $('nav-search').onclick=async()=>{await openLibrary();$('moment-query').focus();};
-$('moment-search-form').onsubmit=async e=>{e.preventDefault();$('search-status').textContent='Recherche dans la session…';try{const found=await window.tvlens.searchMoments($('moment-query').value);$('search-results').replaceChildren(...found.moments.map(m=>momentCard(m)));$('search-status').textContent=`${found.moments.length} passage(s) · ${found.mode}. ${found.warnings.join(' ')}`;}catch(e){$('search-status').textContent=e.message;}};
-$('shortcut-form').onsubmit=async e=>{e.preventDefault();try{await window.tvlens.saveViewingSettings({bookmarkShortcut:$('bookmark-shortcut').value.trim()});$('shortcut-status').textContent='Raccourci enregistré.';}catch(e){$('shortcut-status').textContent=e.message;}};
-$('cancel-delete-saved').onclick=()=>$('delete-saved-dialog').close();$('confirm-delete-saved').onclick=async()=>{try{await window.tvlens.removeSaved(deleteSavedId);$('delete-saved-dialog').close();await renderSaved();}catch(e){notice(e.message);}};
-window.tvlens.onSaved(()=>{notice('Moment conservé sur ce Mac jusqu’à suppression.');renderSavedRail().catch(()=>{});if($('library-dialog').open)renderSaved().catch(()=>{});});window.tvlens.onSaveError(notice);
+$('moment-search-form').onsubmit=async e=>{e.preventDefault();$('search-status').textContent='Recherche dans la session…';try{const found=await bridge.searchMoments($('moment-query').value);$('search-results').replaceChildren(...found.moments.map(m=>momentCard(m)));$('search-status').textContent=`${plural(found.moments.length,'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;}catch(e){$('search-status').textContent=reason(e);}};
+$('shortcut-form').onsubmit=async e=>{e.preventDefault();try{await bridge.saveViewingSettings({bookmarkShortcut:$('bookmark-shortcut').value.trim()});$('shortcut-status').textContent='Raccourci enregistré.';}catch(e){$('shortcut-status').textContent=reason(e);}};
+$('cancel-delete-saved').onclick=()=>$('delete-saved-dialog').close();$('confirm-delete-saved').onclick=async()=>{try{await bridge.removeSaved(deleteSavedId);$('delete-saved-dialog').close();await renderSaved();}catch(e){notice(reason(e));}};
+bridge.onSaved(()=>{notice('Moment conservé sur ce Mac jusqu’à suppression.');renderSavedRail().catch(()=>{});if($('library-dialog').open)renderSaved().catch(()=>{});});bridge.onSaveError(message=>notice(reason(message)));
 renderSavedRail().catch(()=>{});
-setInterval(()=>window.tvlens.quota().then(q=>{$('quota-status').textContent=q.windows.length?'Codex : '+q.windows.map(w=>`${w.remainingPercent} % restants (${w.windowMinutes===10080?'semaine':w.windowMinutes+' min'})`).join(' · '):'Quota Codex : pas encore lu';}).catch(()=>{}),10000);
+setInterval(()=>bridge.quota().then(q=>{$('quota-status').textContent=q.windows.length?'Codex : '+q.windows.map(w=>`${w.remainingPercent} % restants (${w.windowMinutes===10080?'semaine':w.windowMinutes+' min'})`).join(' · '):'Quota Codex : pas encore lu';}).catch(()=>{}),10000);
 
-function renderAuto(state){$('auto-status').textContent=state.enabled?`Surveillance auto · ${state.instruction} · dès ${formatTime(state.activationMs)} · toutes les ${state.frequencySeconds} s`:'Surveillance auto désactivée';$('auto-detail').textContent=state.message;$('auto-results').replaceChildren(...state.results.slice().reverse().map(item=>{const card=el('article','moment-card');const body=el('div');body.append(el('small','hint',`${formatTime(item.startMs)}–${formatTime(item.endMs)} · ${item.instruction}`),el('p','',item.result.answer));for(const c of item.result.citations||[]){const button=el('button','reference',`${formatTime(c.startMs)} ↗`);button.disabled=currentState?.id!==item.sessionId||!currentState?.segments.some(s=>s.id===c.id&&s.available);button.onclick=()=>replay(c.id,Math.max(0,(c.startMs-currentState.segments.find(s=>s.id===c.id).startMs)/1000));body.append(button);}for(const [index,source]of (item.result.sources||[]).entries()){const button=el('button','source-link',source.title+' ↗');button.onclick=()=>window.tvlens.openAutoSource(item.id,index).catch(e=>notice(e.message));body.append(button);}if(item.result.limits?.length)body.append(el('small','hint',item.result.limits.join(' ')));card.append(body);return card;}));}
-$('open-auto').onclick=async()=>{try{renderAuto(await window.tvlens.autoState());$('auto-dialog').showModal();}catch(e){notice(e.message);}};$('close-auto').onclick=()=>$('auto-dialog').close();$('auto-form').onsubmit=async e=>{e.preventDefault();try{renderAuto(await window.tvlens.startAuto({instruction:$('auto-instruction').value,frequencySeconds:Number($('auto-frequency').value)}));}catch(e){$('auto-detail').textContent=e.message;}};$('stop-auto').onclick=()=>window.tvlens.stopAuto().catch(e=>notice(e.message));window.tvlens.onAuto(renderAuto);
+// ---- Surveillance: free instruction, discreet activity, sourced cards, history by state --------
+const PREFERENCES = 'tvlens.surveillance.display';
+function loadPreferences() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(PREFERENCES) || '{}') || {}; } catch {}
+  // The only display choice is how long a card stays. What may become a card is not one: sourced verifications only.
+  return { cardDurationMs: CARD_DURATIONS_MS.includes(saved.cardDurationMs) ? saved.cardDurationMs : DEFAULT_CARD_DURATION_MS };
+}
+const preferences = loadPreferences();
+const savePreferences = () => { try { localStorage.setItem(PREFERENCES, JSON.stringify(preferences)); } catch {} };
+let surveillanceState = null, surveillanceRegistry = null, registryKey = '', registryAt = 0, registryBusy = false, registryTimer;
+let watchFilter = 'all', historyLimit = HISTORY_STEP, seen = { overlay: 0, signal: 0 }, seenFor, syncedInstruction = '', watchBusy = false, stackTimer, watchPushes = 0;
+const cardQueue = new CardQueue({ durationMs: preferences.cardDurationMs });
+const stackList = new KeyedList($('watch-stack')), resultsList = new KeyedList($('watch-results')), historyList = new KeyedList($('watch-history')), filtersList = new KeyedList($('watch-filters')), gapsList = new KeyedList($('watch-gaps-list'));
+const sequences = state => ({ overlay: state?.overlay?.seq || 0, signal: state?.signals?.seq || 0 });
+// banner: the notice "history not saved" has its own place above every view (#watch-notice), written once.
+const surveillanceView = () => describeSurveillance(surveillanceState, { registry: surveillanceRegistry, session: currentState ? { id: currentState.id, readOnly: currentState.readOnly } : null,
+  seen, filter: watchFilter, historyLimit, banner: true });
+function receiveSurveillance(state) {
+  if (!state || typeof state !== 'object' || !state.activity) return;
+  surveillanceState = state;
+  // First state of a session: what it already holds is history, not news for the tab badge. A state still
+  // restoring holds nothing final (sequences at zero): the reference is taken once the saved history is read.
+  if (seenFor !== state.sessionId) { const restoring = isRestoring(state); seen = sequences(restoring ? null : state); if (!restoring) seenFor = state.sessionId; }
+  // A restored registry (reopened archive) never pops up; otherwise freshness decides what is still news.
+  // view.cards holds sourced verifications only: a signal is counted on the tab and read in the panel.
+  cardQueue.offer(surveillanceView().cards, { sessionId: state.sessionId, now: Date.now(), prime: Boolean(state.restored) });
+  scheduleSurveillance();
+}
+function drawSurveillance() {
+  const open = shell.view === 'watch' && !(floatingMode && !floatingExpanded) && document.visibilityState === 'visible';
+  if (open) seen = sequences(surveillanceState);
+  const view = surveillanceView();
+  shell.watchBadge(view.badge);
+  const chip = $('watch-chip');
+  chip.hidden = !view.chip.visible; chip.textContent = view.chip.text; chip.dataset.state = view.chip.state;
+  $('watch-activity').textContent = [view.activity.text, view.activity.detail && `${view.activity.detail}.`, view.activity.error && `Incident : ${view.activity.error}`].filter(Boolean).join(' ');
+  $('watch-activity').dataset.state = view.status;
+  // History kept in memory only: said above every view for as long as the state says it, in its own words.
+  // The banner carries no action: nothing here ever offers to remove the registry on disk.
+  const unsaved = view.notice?.text || '';
+  $('watch-notice').hidden = !unsaved; $('watch-notice').dataset.tone = view.notice?.tone || '';
+  if ($('watch-notice-text').textContent !== unsaved) $('watch-notice-text').textContent = unsaved;
+  $('watch-start').textContent = view.form.startLabel; $('watch-start').disabled = !view.form.canStart || watchBusy;
+  $('watch-stop').disabled = !view.form.canStop || watchBusy; $('watch-hint').textContent = view.form.hint;
+  // The field shows the running instruction unless the viewer is writing another one.
+  const field = $('watch-instruction');
+  if (document.activeElement !== field && view.instruction && (!field.value || field.value === syncedInstruction)) field.value = view.instruction;
+  syncedInstruction = view.instruction || syncedInstruction;
+  drawStack();
+  if (shell.view !== 'watch') return;
+  resultsList.sync(view.results.map(card => cardEntry(card)));
+  $('watch-results-empty').hidden = view.results.length > 0;
+  $('watch-results-empty').textContent = view.resultsEmpty;
+  $('watch-counts').textContent = view.history.countsLine;
+  filtersList.sync(view.history.filters.length > 1 ? view.history.filters.map(filter => filterEntry(filter, filter.key === view.history.filter)) : []);
+  historyList.sync(view.history.rows.map(historyEntry));
+  $('watch-history-empty').hidden = !view.history.empty; $('watch-history-empty').textContent = view.history.empty || '';
+  $('watch-bound').hidden = !view.history.bound.label; $('watch-bound').textContent = view.history.bound.label || '';
+  $('watch-more').hidden = !view.history.hiddenByLimit; $('watch-more').textContent = view.history.moreLabel;
+  $('watch-gaps').hidden = !view.gaps.rows.length; $('watch-gaps-summary').textContent = `${plural(view.gaps.total, 'passage')} à signaler dans la lecture`;
+  gapsList.sync(view.gaps.rows.map(gapEntry));
+  refreshRegistry();
+}
+const scheduleSurveillance = batched(drawSurveillance);
+// The pushed state holds the most recent claims only: the whole registry is read when the panel is open and
+// something changed, never more than once every two seconds.
+function refreshRegistry() {
+  if (shell.view !== 'watch' || !surveillanceState?.sessionId || registryBusy || !bridge.surveillanceHistory) return;
+  const key = JSON.stringify([surveillanceState.sessionId, surveillanceState.totals, surveillanceState.counts]);
+  if (key === registryKey) return;
+  const wait = REGISTRY_EVERY_MS - (Date.now() - registryAt);
+  clearTimeout(registryTimer);
+  if (wait > 0) { registryTimer = setTimeout(refreshRegistry, wait); return; }
+  registryBusy = true; registryAt = Date.now();
+  bridge.surveillanceHistory().then(registry => { if (registry?.sessionId === surveillanceState?.sessionId) surveillanceRegistry = registry; }).catch(() => {})
+    .finally(() => { registryBusy = false; registryKey = key; scheduleSurveillance(); });
+}
+// Bottom-left stack, for sourced verifications only (the queue refuses any other kind). Nothing here focuses
+// anything: a card appears, stays its time and leaves.
+function drawStack() {
+  const now = Date.now(), collapsed = floatingMode && !floatingExpanded, shown = document.visibilityState === 'visible';
+  // With the surveillance panel open the results are already listed under the viewer's eyes: no card on top of them.
+  if (shown && !collapsed && shell.view === 'watch') cardQueue.clear();
+  const visible = cardQueue.visible(now, { displayable: shown });
+  stackList.sync(collapsed ? [] : visible.map(card => cardEntry(card, { compact: true })));
+  // The collapsed floating window is one bar high: the card is condensed to a line that opens the window.
+  const first = collapsed ? visible[0] : null, toast = $('float-toast');
+  toast.hidden = !first; document.body.classList.toggle('has-float-toast', Boolean(first));
+  if (first) { toast.textContent = `${first.label} · ${first.intervalLabel} — ${first.text}`; toast.title = 'Ouvrir pour lire le résultat et ses sources'; }
+  clearTimeout(stackTimer);
+  const next = cardQueue.nextChangeAt();
+  if (next !== null) stackTimer = setTimeout(drawStack, Math.max(50, next - Date.now() + 20));
+}
+const scheduleStack = batched(drawStack);
+function showLot(lotId) {
+  return showWatch().then(() => {
+    drawSurveillance();
+    const node = [...$('watch-results').children].find(child => child.dataset.lot === lotId);
+    if (!node) return;
+    node.scrollIntoView({ block: 'center' }); node.classList.add('flash'); setTimeout(() => node.classList.remove('flash'), 1600);
+  });
+}
+async function showWatch() {
+  if (floatingMode && !floatingExpanded) await changeWindowMode(true, true, { focus: false });
+  shell.show('watch');
+}
+for (const example of INSTRUCTION_EXAMPLES) $('watch-examples').append(action('suggestion watch-example', example.label, 'watch-example', { instruction: example.instruction }));
+$('watch-duration').replaceChildren(...CARD_DURATIONS_MS.map(ms => new Option(`${ms / 1000} secondes`, String(ms))));
+$('watch-duration').value = String(preferences.cardDurationMs);
+$('watch-duration').onchange = () => { preferences.cardDurationMs = Number($('watch-duration').value); cardQueue.setDuration(preferences.cardDurationMs); savePreferences(); };
+async function commandSurveillance(run) {
+  watchBusy = true; $('watch-error').textContent = ''; drawSurveillance();
+  try {
+    const pushed = watchPushes, state = await run();
+    // An activation is answered at once, while the saved history is still being read ("restoring"); the state
+    // that follows is pushed. Such an answer never replaces a state pushed since the command left.
+    if (!(isRestoring(state) && watchPushes !== pushed)) receiveSurveillance(state?.activity ? state : await bridge.surveillanceState());
+  }
+  catch (error) { $('watch-error').textContent = reason(error); }
+  finally { watchBusy = false; drawSurveillance(); }
+}
+$('watch-form').onsubmit = event => {
+  event.preventDefault();
+  const instruction = $('watch-instruction').value.trim();
+  if (!instruction) { $('watch-error').textContent = 'Écris d’abord ce que je dois surveiller.'; $('watch-instruction').focus(); return; }
+  commandSurveillance(() => bridge.startSurveillance({ instruction }));
+};
+$('watch-stop').onclick = () => commandSurveillance(() => bridge.stopSurveillance());
+$('watch-more').onclick = () => { historyLimit += HISTORY_STEP; drawSurveillance(); };
+$('watch-chip').onclick = () => showWatch();
+$('close-watch').onclick = () => { shell.show('direct'); if (floatingMode) $('question').focus(); };
+$('float-toast').onclick = async () => { const now = Date.now(); for (const card of cardQueue.visible(now)) cardQueue.release(card.key, now, cardQueue.durationMs); await changeWindowMode(true, true, { focus: false }); };
+// A card under the pointer or holding the keyboard focus does not vanish while it is being read.
+const heldCard = event => (event.target.classList?.contains('watch-card') ? event.target.dataset.key : null);
+$('watch-stack').addEventListener('pointerenter', event => { const key = heldCard(event); if (key) cardQueue.hold(key); }, true);
+$('watch-stack').addEventListener('pointerleave', event => { const key = heldCard(event); if (key) { cardQueue.release(key, Date.now()); scheduleStack(); } }, true);
+// Keyboard focus only: a mouse click also focuses its button, and must not pin the card for ever.
+$('watch-stack').addEventListener('focusin', event => { const key = event.target.matches?.(':focus-visible') && event.target.closest('.watch-card')?.dataset.key; if (key) cardQueue.hold(key); });
+// Never redrawn from inside the event: a card removed while focused fires this very handler.
+$('watch-stack').addEventListener('focusout', event => { const key = event.target.closest('.watch-card')?.dataset.key; if (key) { cardQueue.release(key, Date.now()); scheduleStack(); } });
+document.addEventListener('visibilitychange', () => { drawStack(); scheduleSurveillance(); });
+shell.onShow = view => { if (view === 'memory' && sessionsStale) refreshSessions(); if (view === 'watch') registryKey = ''; drawSurveillance(); };
+bridge.onSurveillance?.(state => { watchPushes++; receiveSurveillance(state); });
+bridge.surveillanceState?.().then(receiveSurveillance).catch(() => {});
 
 async function openMoment(frozen) {
   if (quickBusy || !currentState?.id) return;
   quickBusy = true; updateButtons(); notice('');
   try {
-    selectedMoment = frozen || await window.tvlens.freezeMoment({kind:'explain'});
+    selectedMoment = frozen || await bridge.freezeMoment({kind:'explain'});
     const preview = $('moment-preview'); preview.hidden = true;
     if ($('preview').videoWidth) {
       const canvas = document.createElement('canvas'); canvas.width=320; canvas.height=180;
@@ -489,7 +734,7 @@ async function openMoment(frozen) {
     if (!$('moment-dialog').open) $('moment-dialog').showModal();
     momentCheckpoint = recorder?.checkpoint(selectedMoment.anchorMs) || Promise.resolve();
     await momentCheckpoint;
-  } catch(error) { notice(error.message); $('moment-error').textContent=error.message; }
+  } catch(error) { notice(reason(error)); $('moment-error').textContent=reason(error); }
   finally { quickBusy=false; updateButtons(); }
 }
 async function submitMoment(intent, question) {
@@ -497,21 +742,22 @@ async function submitMoment(intent, question) {
   quickBusy=true; updateButtons();
   try {
     await momentCheckpoint;
-    await window.tvlens.explainMoment({token:selectedMoment.token,intent,question});
+    await bridge.explainMoment({token:selectedMoment.token,intent,question});
     $('moment-dialog').close();
     if(floatingMode) await changeWindowMode(true,true);
-  } catch(error) { $('moment-error').textContent=error.message; }
+  } catch(error) { $('moment-error').textContent=reason(error); }
   finally { quickBusy=false; updateButtons(); }
 }
 async function explainNow() {
   if (quickBusy || !currentState?.id) return;
   quickBusy=true; updateButtons(); notice('');
   try {
-    const frozen=await window.tvlens.freezeMoment({kind:'explain'});
+    const frozen=await bridge.freezeMoment({kind:'explain'});
     if(floatingMode) await changeWindowMode(true,true);
     await recorder?.checkpoint(frozen.anchorMs);
-    await window.tvlens.explainMoment({token:frozen.token,intent:'explain'});
-  } catch(error) { notice(error.message); }
+    forceBottom = true;
+    await bridge.explainMoment({token:frozen.token,intent:'explain'});
+  } catch(error) { notice(reason(error)); }
   finally { quickBusy=false;updateButtons(); }
 }
 $('float-explain').onclick=$('explain-moment').onclick=explainNow;
@@ -519,26 +765,27 @@ $('close-moment').onclick=()=>$('moment-dialog').close();
 $('moment-summarize').onclick=()=>submitMoment('summarize');
 $('moment-explain').onclick=()=>submitMoment('explain');
 $('moment-question-form').onsubmit=event=>{event.preventDefault();if($('moment-question').value.trim())submitMoment('explain',$('moment-question').value.trim());};
-window.tvlens.onExplainMoment(frozen=>openMoment(frozen));
+bridge.onExplainMoment(frozen=>openMoment(frozen));
 $('catch-up').onclick=async()=>{
   if(quickBusy)return;
   quickBusy=true; updateButtons(); notice('');
   try {
-    const frozen=await window.tvlens.freezeMoment({kind:'catch-up'});
+    const frozen=await bridge.freezeMoment({kind:'catch-up'});
     $('attention-status').textContent=`Je retrouve les passages de ${formatTime(frozen.startMs)} à ${formatTime(frozen.anchorMs)}…`;
     await recorder?.checkpoint(frozen.anchorMs);
-    const result=await window.tvlens.catchUp({token:frozen.token});
+    forceBottom = true;
+    const result=await bridge.catchUp({token:frozen.token});
     $('attention-status').textContent=`Rattrapage demandé : ${formatTime(result.startMs)}–${formatTime(result.endMs)}. Le repère avance après une réponse réussie.`;
-  } catch(error){notice(error.message);}
+  } catch(error){notice(reason(error));}
   finally{quickBusy=false;updateButtons();}
 };
 $('mark-attention').onclick=async()=>{
   if(quickBusy)return;
   quickBusy=true;updateButtons();
-  try{await recorder?.checkpoint();const marker=await window.tvlens.markAttention();$('attention-status').textContent=`Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;}
-  catch(error){notice(error.message);}finally{quickBusy=false;updateButtons();}
+  try{await recorder?.checkpoint();const marker=await bridge.markAttention();$('attention-status').textContent=`Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;}
+  catch(error){notice(reason(error));}finally{quickBusy=false;updateButtons();}
 };
-window.tvlens.momentShortcuts().then(value=>{
+bridge.momentShortcuts().then(value=>{
   const title=value.explainShortcutRegistered ? 'Explique cet instant · Ctrl/Cmd + Maj + E' : 'Explique cet instant · raccourci global indisponible, utilise ce bouton';
   $('float-explain').title=$('explain-moment').title=title;
 }).catch(()=>{});
@@ -555,7 +802,12 @@ function receiveRecap(state) {
   } : null;
   renderRecap();
 }
+// Redrawn when the recap or the availability of a cited passage changes, not at every session state.
 function renderRecap() {
+  const cited = (recapState?.chapters || []).flatMap(chapter => chapter.sources || []);
+  const key = [recapRevision, currentState?.id, recapState?.sessionId, cited.map(source => (passages.get(source.id)?.available ? 1 : 0)).join('')].join('|');
+  if (key === recapKey) return;
+  recapKey = key;
   renderRecapView({
     state: recapState, session: currentState,
     targets: [[$('recap-content'), false], [$('recap-dialog-content'), true]],
@@ -567,11 +819,11 @@ async function openRecap() {
   renderRecap();
   if (!$('recap-dialog').open) $('recap-dialog').showModal();
 }
-$('open-recap').onclick = $('open-recap-all').onclick = () => openRecap().catch(error => notice(error.message));
+$('open-recap').onclick = $('open-recap-all').onclick = () => openRecap().catch(error => notice(reason(error)));
 $('close-recap').onclick = () => $('recap-dialog').close();
-window.tvlens.onRecap(receiveRecap);
+bridge.onRecap(receiveRecap);
 const initialRecapRevision = recapRevision;
-window.tvlens.recapState().then(state => { if (recapRevision === initialRecapRevision) receiveRecap(state); }).catch(() => {
+bridge.recapState().then(state => { if (recapRevision === initialRecapRevision) receiveRecap(state); }).catch(() => {
   if (recapRevision === initialRecapRevision) receiveRecap({ sessionId: currentState?.id, status: 'error', chapters: [], overview: '' });
 });
-renderRecap();
+drawState();

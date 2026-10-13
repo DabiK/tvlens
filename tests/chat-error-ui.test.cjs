@@ -10,6 +10,12 @@ const insufficient = {
 test('companion.js exposes the pure view model without touching the browser', () => {
   assert.equal(typeof describeJob, 'function');
   assert.equal(typeof globalThis.window, 'undefined');
+  // The panel now loads several scripts; each keeps its view models above a CommonJS guard and none
+  // reaches for the browser when it is merely loaded.
+  for (const name of ['surveillance-view.js', 'sessions-view.js', 'remote-client.js', 'surveillance-overlay.js']) assert.equal(typeof require('../tv/app/' + name), 'object', name);
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.document, 'undefined');
+  assert.deepEqual(Object.keys(require('../tv/app/companion.js')).sort(), ['POLL', 'PollPlan', 'badgeReference', 'cancelTarget', 'clock', 'describeJob', 'describeJobFreshness', 'describeJobFreshnessShort', 'describeJobProgress', 'mergeState', 'pollPolicy', 'registryMarks']);
 });
 
 test('401 failure asks for Codex reconnection first and is never labelled as insufficient context', () => {
@@ -67,13 +73,18 @@ test('generic technical error shows the redacted Codex diagnostic', () => {
 
 test('timeout and cancellation keep partial observations but stay distinct from abstention', () => {
   const observed = { ...insufficient, answer: 'Un intervenant lève la main.', kind: 'observation', observations: [{ id: 's1', startMs: 0, endMs: 1000, text: 'Un intervenant lève la main.' }] };
-  const timeout = describeJob({ status: 'timeout', message: 'Limite de 60 secondes atteinte.', result: observed });
-  assert.equal(timeout.error, 'Limite de 60 secondes atteinte.');
+  const timeout = describeJob({ status: 'timeout', message: 'Limite de 5 minutes atteinte.', result: observed });
+  assert.equal(timeout.error, 'Limite de 5 minutes atteinte.');
+  // The ceiling in that sentence is worded by the server from the value it enforced; the panel adds none.
+  assert.equal(timeout.statusLabel, 'Délai atteint');
+  assert.equal(timeout.progress, null);
+  assert.equal(describeJob({ status: 'timeout' }).error, 'Délai atteint.');
   assert.equal(timeout.kindLabel, 'Observations partielles');
   assert.equal(timeout.answer, 'Un intervenant lève la main.');
   assert.deepEqual(timeout.limits, observed.limits);
   const cancelled = describeJob({ status: 'cancelled', message: 'Recherche annulée.' });
   assert.equal(cancelled.error, 'Recherche annulée.');
+  assert.equal(cancelled.statusLabel, 'Annulé');
   assert.equal(cancelled.answer, null);
   assert.equal(cancelled.preview, null);
   assert.equal(cancelled.provisional, null);
@@ -100,6 +111,10 @@ test('queued and running jobs show the provisional answer and the current step',
   assert.equal(view.provisionalLabel, null);
   assert.equal(view.provisional, null);
   assert.equal(view.message, 'Recherche sur Internet…');
+  // Without a clock the live line states the ceiling only: no elapsed time is made up.
+  assert.equal(view.statusLabel, 'En cours');
+  assert.equal(view.progress.label, 'En cours · arrêt au plus tard à 5:00');
+  assert.equal(view.freshness, null);
   const withSummary = describeJob({ status: 'running', message: 'Analyse…', preview: 'Le marxisme', provisional: 'Le débat porte sur…' });
   assert.equal(withSummary.previewLabel, 'Réponse provisoire');
   assert.equal(withSummary.preview, 'Le marxisme');
@@ -107,6 +122,7 @@ test('queued and running jobs show the provisional answer and the current step',
   assert.equal(withSummary.provisional, 'Le débat porte sur…');
   const queued = describeJob({ status: 'queued' });
   assert.equal(queued.message, '');
+  assert.equal(queued.progress.label, 'En file');
   assert.equal(queued.preview, null);
   assert.equal(queued.provisional, null);
 });

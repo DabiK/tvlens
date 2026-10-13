@@ -1,9 +1,9 @@
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
+const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
-const {AutoMonitor}=require('../core/auto-monitor.cjs');
 const {SavedMoments}=require('../core/saved-moments.cjs');
 const {SavedMomentStore}=require('../adapters/saved-moment-store.cjs');
 const {ViewingSettings}=require('../adapters/viewing-settings.cjs');
@@ -11,7 +11,10 @@ const {CodexQuota}=require('../adapters/codex-quota.cjs');
 const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, systemPreferences, shell, protocol, dialog, safeStorage, screen } = require('electron');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
-const { cleanupRawMedia } = require('../adapters/local-store.cjs');
+const { SessionLibrary, sessionTitle } = require('../adapters/session-library.cjs');
+const { DiskGuard, STORAGE_FULL } = require('../adapters/disk-guard.cjs');
+const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
+const { sweepStaleContexts } = require('../adapters/codex-confinement.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { UsageLedger } = require('../adapters/trial-budget.cjs');
@@ -19,17 +22,16 @@ const { VerificationService } = require('../core/verification.cjs');
 const { CodexVerifier } = require('../adapters/codex-verifier.cjs');
 const { VerificationArchive } = require('../adapters/verification-archive.cjs');
 const { safeExternalUrl } = require('../adapters/external-links.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
-const { DeepAsk } = require('../core/deep-ask.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
-const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
+// Mirrors the bound DeepAsk enforces on waiting questions; published so that the renderer carries no literal.
+const QUESTION_QUEUE_LIMIT = 5;
 let verifierAdapter, verification;
-let auto,autoAgent,autoTimer;
-let recap, recapAdapter, recapTimer, recapTransition = false;
-let deep, bridge, search, inspector, videoAgent, perception, inspectorModel, sessionClock;
-let window, watch, store, pruneTimer, config, sessionsRoot, closing = false;
+let surveillance, surveillanceTimer, storageTimer;
+let recap, recapAdapter, recapTimer, switching = false;
+let deep, bridge, search, inspector, videoAgent, perception, inspectorModel;
+let window, watch, store, live, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
 let sources = [], selectedId;
 const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
@@ -42,10 +44,31 @@ if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { window?.show(); window?.focus(); });
 app.whenReady().then(async () => {
   sessionsRoot = path.join(app.getPath('userData'), 'sessions');
-  await cleanupRawMedia(sessionsRoot);
+  // A crash leaves private Codex trees behind, each holding links to the credentials. Swept once, off the
+  // start path: it neither delays nor fails the launch. Saved sessions are never cleaned at start any more.
+  Promise.resolve().then(() => sweepStaleContexts()).catch(() => {});
   const arg = process.argv.find(x => x.startsWith('--config='))?.slice('--config='.length);
   const configPath = arg || (!app.isPackaged && (!smoke || liveInspection) ? path.join(__dirname, '..', '.env.local') : undefined);
-  config = smoke && !liveInspection ? { apiKey: '', model: 'test/fake' } : await loadConfig({ configPath, userData: app.getPath('userData'), safeStorage }).catch(() => ({ apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true }));
+  // The simulated and the fallback configuration keep the production default: a question may run five
+  // minutes and must not withhold the visual description of what is captured meanwhile.
+  config = smoke && !liveInspection ? { apiKey: '', model: 'test/fake', visionDuringAsk: true } : await loadConfig({ configPath, userData: app.getPath('userData'), safeStorage }).catch(() => ({ apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }));
+  // Reversible host settings, read from the environment of this start. Absent: the product default.
+  // Mistyped: refused at start by the composition that uses it, never run under another value.
+  const setting = name => process.env[name] ? Number(process.env[name]) : undefined;
+  const megabytes = name => { const value = setting(name); if (value !== undefined && !(Number.isFinite(value) && value >= 0)) throw new Error(`Réglage ${name} invalide : nombre de mégaoctets positif ou nul attendu.`); return value === undefined ? undefined : value * 1024 ** 2; };
+  config.questionTimeoutMs = setting('TVLENS_QUESTION_TIMEOUT_MS');
+  const workers = setting('TVLENS_SURVEILLANCE_WORKERS');
+  config.surveillance = { ...config.surveillance, ...(workers === undefined ? {} : { workers }) };
+  // Media are kept until their session is deleted. TVLENS_MEDIA_RETENTION_MS (or --retention-ms= in a
+  // test run) brings the rolling window back.
+  const retentionFlag = smoke ? process.argv.find(x => x.startsWith('--retention-ms='))?.split('=')[1] : undefined;
+  const retentionMs = retentionFlag ? Number(retentionFlag) : setting('TVLENS_MEDIA_RETENTION_MS') ?? Infinity;
+  if (!(retentionMs > 0)) throw new Error('Réglage TVLENS_MEDIA_RETENTION_MS invalide : durée positive en millisecondes attendue.');
+  // Durable retention never deletes to make room: below the floor, capture is refused and says why.
+  // A simulated run only depends on the free space of its machine when a threshold is set for it.
+  const guard = smoke && !process.env.TVLENS_DISK_MIN_FREE_MB && !process.env.TVLENS_DISK_WARN_FREE_MB ? null
+    : new DiskGuard({ path: sessionsRoot, minFreeBytes: megabytes('TVLENS_DISK_MIN_FREE_MB'), warnFreeBytes: megabytes('TVLENS_DISK_WARN_FREE_MB') });
+  const library = new SessionLibrary({ root: sessionsRoot, guard });
   const modelSettings = new ModelSettings(path.join(app.getPath('userData'),'models.json'));
   let selectedModels = await modelSettings.load({observationModel:'gpt-6-luna',inspectionModel:'gpt-6-luna',codexModel:config.codexModel||''});
   for(const key of ['observationModel','inspectionModel'])if(selectedModels[key].includes('/'))selectedModels[key]='gpt-6-luna';
@@ -61,6 +84,11 @@ app.whenReady().then(async () => {
     if (!trusted(event)) throw new Error('Unauthorized');
     return fn(...args);
   });
+  const send = (channel, value) => { if (!window.isDestroyed()) window.webContents.send(channel, value); };
+  // Session transitions (start, pause, new, open, resume, delete, quit) never interleave: each one sees
+  // the state the previous one left.
+  let transition = Promise.resolve();
+  const exclusive = fn => (...args) => { const run = transition.then(() => fn(...args)); transition = run.catch(() => {}); return run; };
   const savedArchive=new SavedMomentStore(path.join(app.getPath('userData'),'saved-moments'));
   const saved=new SavedMoments({archive:savedArchive,makeId:randomUUID});
   const keepMoment=async()=>{if(!watch)throw Error('Démarre une observation.');const value=await saved.keep({snapshot:watch.snapshot(),media:store});window.webContents.send('saved:changed');return value;};
@@ -103,36 +131,64 @@ app.whenReady().then(async () => {
       return { answer: result.observations.map(o => o.text).join(' '), kind: 'observation', citations: result.observations.map(({ id, startMs, endMs }) => ({ id, startMs, endMs })), limits: [] };
     }
   } : undefined;
+  const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
+  // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
+  const ask = (question, options) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return deep.start(question, options); };
   const conversation = createConversationRuntime({
     getSession: () => ({ watch, search, inspector, store }),
+    // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
+    getInstruction: () => { try { const state = surveillance?.snapshot?.({ brief: true }); return state?.enabled && state.sessionId === watch?.id ? state.activation?.instruction : undefined; } catch { return undefined; } },
     agent: videoAgent, codexBinary, config, selectedModels, quota,
     onChange: state => {
     if(watch){const busy=state.jobs.some(j=>j.sessionId===watch.id&&['running','queued'].includes(j.status));if(watch.asking!==busy){watch.asking=busy;watch.emit();if(!busy)queueMicrotask(()=>watch?.drain());}}
     if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
     if (!window.isDestroyed()) window.webContents.send('deep:state', state);
-    store?.saveResearch(state).catch(() => {});
+    // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
+    if (watch) store?.saveResearch({ ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) }).catch(() => {});
   } });
   videoAgent = conversation.agent;
   deep = conversation.deep;
   bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools: conversation.makeTools }).start();
-  autoAgent=smoke&&!process.argv.includes('--live-video-agent')?videoAgent:new CodexSessionAgent({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.codexModel,quota});
-  auto=new AutoMonitor({onChange:state=>{if(!window.isDestroyed())window.webContents.send('auto:state',state);store?.saveAuto?.(state).catch(()=>{});},evaluate:async({instruction,snapshot,signal,recent,onProgress})=>{
-   const runner=new DeepAsk({agent:{answer:input=>autoAgent.answer({...input,question:`Surveillance Auto : ${input.question}. Seulement les nouveaux passages fournis ; aucun fait antérieur à l’activation. Relie toute alerte à ses citations vidéo. Si rien ne répond à la consigne, kind=insufficient. Évite les doublons avec ${JSON.stringify(recent)}. Vérifie sur le web si demandé, sans transformer une accusation en fait établi.`})},makeTools:(sig,progress)=>new VideoTools({snapshot,search,inspector,media:store,signal:sig,onProgress:progress}),onChange:state=>{const j=state.jobs.at(-1);if(j)onProgress(j.message);}});
-   const abort=()=>runner.cancelAll('Auto suspendu : priorité manuelle.');signal.addEventListener('abort',abort,{once:true});
-   try{if(signal.aborted)throw signal.reason;runner.start(instruction,{mode:'chat'});await runner.jobs[0].done;signal.throwIfAborted();return runner.jobs[0].result;}finally{signal.removeEventListener('abort',abort);}
-  }});
+  // Same factory as the server host. Its agent is never the chat agent nor the manual verification adapter:
+  // a shared client would let a question serialise or cancel the surveillance. Questions and surveillance
+  // run side by side; `probe` only feeds an informative overlap counter.
+  surveillance = createSurveillanceRuntime({
+    getSession: () => (watch ? { watch, store } : null),
+    agent: smoke && !process.argv.includes('--live-surveillance') ? new SimulatedSurveillanceAgent({ detectDelayMs: 200, verifyDelayMs: 1500 }) : undefined,
+    codexBinary, config, selectedModels, quota,
+    probe: () => ({ chatBusy: questionPending() }),
+    onChange: state => send('surveillance:state', state),
+  });
+  // The surveillance role owns its Codex clients; a new thread picks up a changed model or account.
+  const surveillanceClients = () => [surveillance.agent.detector, ...(surveillance.agent.researchers || []).map(worker => worker.client)].filter(Boolean);
+  surveillanceTimer = setInterval(() => surveillance.tick(), 1000);
+  handle('surveillance:state', () => surveillance.snapshot());
+  handle('surveillance:history', () => surveillance.snapshot({ full: true }));
+  // Queued behind any session transition: an activation never binds to a session that is being closed.
+  handle('surveillance:start', exclusive(input => {
+    if (!watch) throw new Error('Démarre une session avant d’activer la surveillance.');
+    // A reopened archive receives no new passage: its registry is shown, not extended.
+    if (live.readOnly) throw new Error('Session ouverte en lecture seule : reprends la capture pour activer la surveillance.');
+    return surveillance.start({ instruction: input?.instruction });
+  }));
+  handle('surveillance:stop', () => surveillance.stop('Surveillance arrêtée.'));
+  handle('surveillance:retry', claimId => surveillance.retry(claimId));
+  handle('surveillance:open-source', input => {
+    // Only a source the core kept on this lot, and only if it is a public https page.
+    const url = safeExternalUrl(surveillance.surveillance.lots.find(lot => lot.id === input?.lotId)?.sources?.[input?.index]?.url);
+    if (!url) throw new Error('Source indisponible.'); return shell.openExternal(url);
+  });
   recap = new LivingRecap({throttleMs:smoke?1000:25000,
     summarize: input => recapAdapter.summarize(input),
     onChange: state => {
       if (!window.isDestroyed()) window.webContents.send('recap:state',state);
-      if (state.sessionId && state.sessionId===watch?.id) store?.saveRecap(state).catch(()=>{});
+      // A reopened archive is displayed, never rewritten.
+      if (state.sessionId && state.sessionId===watch?.id && !live.readOnly) store?.saveRecap(state).catch(()=>{});
     }
   });
-  recapTimer=setInterval(()=>{if(watch&&!closing&&!recapTransition)recap.tick({busy:Boolean(verification?.busy)||deep.jobs.some(j=>['queued','running'].includes(j.status))}).catch(()=>{});},1000);
+  // No synthesis while an archive is only being read: a provider is called again after an explicit resume.
+  recapTimer=setInterval(()=>{if(watch&&!live.readOnly&&!closing&&!switching)recap.tick({busy:Boolean(verification?.busy)||questionPending()}).catch(()=>{});},1000);
   handle('recap:state',()=>recap.snapshot());
-  autoTimer=setInterval(()=>auto.tick(watch?.snapshot(),deep.jobs.some(j=>['queued','running'].includes(j.status))).catch(()=>{}),1000);
-  handle('auto:state',()=>auto.snapshot());handle('auto:start',async input=>{if(!watch)throw Error('Démarre une session.');auto.stop();if(autoAgent!==videoAgent)await autoAgent.close?.();auto.configure(input,watch.snapshot());return auto.snapshot();});handle('auto:stop',()=>auto.stop());
-  handle('auto:open-source',({id,index})=>{const url=safeExternalUrl(auto.results.find(r=>r.id===id)?.result?.sources?.[index]?.url);if(!url)throw Error('Source indisponible.');return shell.openExternal(url);});
   handle('deep:open-source', ({jobId,index}) => {
     const source=deep.jobs.find(j=>j.id===jobId)?.result?.sources?.[index];
     const url=safeExternalUrl(source?.url); if(!url)throw new Error('Source indisponible.'); return shell.openExternal(url);
@@ -141,13 +197,14 @@ app.whenReady().then(async () => {
   handle('codex:quota',()=>quota.snapshot());
   handle('deep:budget', () => new UsageLedger(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json')).snapshot());
   handle('deep:cancel', id => deep.cancel('Recherche annulée.',id));
-  handle('deep:ask', question => {auto?.prioritizeManual();return deep.start(question);});
+  handle('deep:ask', question => ask(question));
   verifierAdapter = smoke && !process.argv.includes('--live-verifier') ? {
     verify: async ({ claim }) => {
       await new Promise(resolve => setTimeout(resolve, 2500));
       if (claim === 'FAIL_TEST') throw new Error('Recherche indisponible (test).');
       return { normalizedClaim: claim, assessment: 'contradicted', conclusion: 'Apollo 11 a aluni en 1969, selon la NASA.',
-        sources: [{ url: 'https://www.nasa.gov/mission/apollo-11/', title: 'Apollo 11', publisher: 'NASA', publishedAt: null, evidence: 'La NASA date la mission de juillet 1969.', relation: 'contradicts' }], limitations: [], research: { provider: 'test/fake', webSearches: 1, elapsedMs: 2500 } };
+        // The page is declared as opened, like a real verifier does: a source whose page was never opened is discarded.
+        sources: [{ url: 'https://www.nasa.gov/mission/apollo-11/', title: 'Apollo 11', publisher: 'NASA', publishedAt: null, evidence: 'La NASA date la mission de juillet 1969.', relation: 'contradicts' }], limitations: [], research: { provider: 'test/fake', webSearches: 1, openedUrls: ['https://www.nasa.gov/mission/apollo-11/'], elapsedMs: 2500 } };
     }
   } : new CodexVerifier({ binary: codexBinary || 'codex', authHome: config.codexAuthHome, model:selectedModels.codexModel });
   verification = new VerificationService({ verifier: {verify:async input=>{if(!smoke||process.argv.includes('--live-verifier')){await videoAgent.prepare(watch?.id||'verify-only');await quota.check(videoAgent.rpc);}return verifierAdapter.verify(input);}},
@@ -155,7 +212,7 @@ app.whenReady().then(async () => {
     onChange: state => { if(state.busy)recap?.tick({busy:true});if (!window.isDestroyed()) window.webContents.send('verify:state', state); } });
   handle('verify:run', input => {
     if (!input || typeof input.claim !== 'string') throw new Error('Écris l’affirmation à vérifier.');
-    auto?.prioritizeManual();return verification.verify({ claim: input.claim, context: 'Affirmation saisie ou corrigée explicitement par le spectateur. Elle peut provenir d’une transcription ou d’une réponse IA non vérifiée; rechercher des preuves indépendantes.' });
+    return verification.verify({ claim: input.claim, context: 'Affirmation saisie ou corrigée explicitement par le spectateur. Elle peut provenir d’une transcription ou d’une réponse IA non vérifiée; rechercher des preuves indépendantes.' });
   });
   handle('verify:state', () => verification.snapshot());
   handle('verify:cancel', () => verifierAdapter.cancel?.());
@@ -166,24 +223,29 @@ app.whenReady().then(async () => {
     if (!url) throw new Error('Ce lien de source ne peut pas être ouvert.');
     return shell.openExternal(url);
   });
-  const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs: smoke && !process.argv.includes('--live-observation') ? 1800 : 8000, retentionMs: 300000 });
+  const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
+  // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
+  const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
+    questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: Number.isFinite(retentionMs) ? 'rolling' : 'until-deleted', retentionMs: Number.isFinite(retentionMs) ? retentionMs : null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);
   handle('models:choices',()=>modelChoices(config.codexAuthHome));
   handle('models:save', async value => {
     selectedModels=await modelSettings.save(value);
     // In-flight jobs retain their invocation/model; new questions use the new selection.
-    videoAgent.model=selectedModels.codexModel; verifierAdapter.model=selectedModels.codexModel;if(autoAgent)autoAgent.model=selectedModels.codexModel;
+    videoAgent.model=selectedModels.codexModel; verifierAdapter.model=selectedModels.codexModel;
+    if(config.surveillance?.model===undefined)for(const client of surveillanceClients())client.model=selectedModels.codexModel;
     config.model=selectedModels.observationModel; config.inspectionModel=selectedModels.inspectionModel;
     return {settings:selectedModels,configuration:configuration()};
   });
   handle('app:import-config', async () => {
     const result = await dialog.showOpenDialog(window, { title: 'Sélectionner .env.local', properties: ['openFile', 'showHiddenFiles'] });
-    if (!result.canceled) { config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome; }
+    if (!result.canceled) { const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance }; config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); Object.assign(config, host); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome;for(const client of surveillanceClients())client.authHome=config.codexAuthHome; }
     return configuration();
   });
   const sourcePreferenceFile = path.join(app.getPath('userData'), 'last-source.json');
   let lastSource = await fs.readFile(sourcePreferenceFile, 'utf8').then(JSON.parse).catch(() => null);
+  let capturedSource = null;
   handle('capture:sources', async () => {
     sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }] : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
     const available = sources.filter(s => s.name !== 'TVLens').map(s => ({ id: s.id, name: s.name }));
@@ -195,60 +257,182 @@ app.whenReady().then(async () => {
     const source = sources.find(s => s.id === id && s.name !== 'TVLens');
     if (!source) throw new Error('Source indisponible');
     selectedId = id;
-    lastSource = { id, name: source.name };
+    lastSource = { id, name: source.name }; capturedSource = source.name;
     await fs.mkdir(path.dirname(sourcePreferenceFile), { recursive: true });
     await fs.writeFile(sourcePreferenceFile, JSON.stringify(lastSource), { mode: 0o600 });
   });
   handle('capture:settings', () => shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'));
-  handle('watch:start', async () => {
+  // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
+  let title = null, startedAt = null, storageShown = null;
+  const ingestions = new Set();
+  // The core state plus its additive title: what the renderer receives for the loaded session.
+  const sessionState = () => (watch ? { ...watch.snapshot(), title } : null);
+  const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap') ? {
+    summarize: async ({chapters,newPassages}) => ({overview:'Un cercle se déplace sur un fond bleu. Les passages observés montrent la continuité de cette animation.',chapters:[{
+      title:'Une animation en mouvement',summary:'Le cercle poursuit son déplacement sur un fond bleu.',
+      sourceIds:[...new Set([...chapters.flatMap(c=>c.sourceIds),...newPassages.map(p=>p.id)])]
+    }]})
+  } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
+  // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
+  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
+    smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
+    strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
+    onChange:state=>{if(!closing&&!switching)recap.observe(state);surveillance.observe(state);send('watch:state',{...state,title});}});
+  const adopt = (runtime, name, at) => { live = runtime; ({store,search,inspector,inspectorModel,perception,watch}=runtime); title = name; startedAt = at; saved.transcriber=runtime.transcriber; };
+  // Same shape as the server host. The manifest of the session in memory is up to thirty seconds old, or
+  // not written yet: its row carries the figures in memory instead.
+  const sessionRows = async () => {
+    const id = watch?.id || null, sessions = await library.list({ current: live?.readOnly ? null : id });
+    if (watch && !live.readOnly) {
+      const state = watch.snapshot(), at = sessions.findIndex(s => s.id === id), stored = state.segments.filter(s => s.available).length;
+      const row = { ...(at < 0 ? { id, firstTopic: null, host: 'mac', createdAt: startedAt, updatedAt: Date.now(), closedAt: null, legacy: false } : sessions[at]), title, state: 'live',
+        elapsedMs: state.elapsedMs, passages: state.coverage.passages, media: { stored, missing: state.coverage.passages - stored, bytes: state.storage?.sessionBytes ?? 0 } };
+      if (at < 0) sessions.unshift(row); else sessions[at] = row;
+    }
+    // The retention of the loaded session, not the setting of this host: an archive kept until deletion stays so here.
+    return { current: watch ? { id, title, elapsedMs: watch.now(), readOnly: live.readOnly, accepting: watch.accepting, retention: Number.isFinite(watch.retentionMs) ? 'rolling' : 'until-deleted', retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null } : null,
+      sessions: sessions.map(s => ({ ...s, current: s.id === id, readOnly: s.id === id && live.readOnly, capturing: s.id === id && watch.accepting })) };
+  };
+  // Disk state shared by sessions:list, sessions:storage and the storage:state event: what the library
+  // measures, plus the pace of the loaded session. Nothing is ever deleted to make room.
+  const storageInfo = async sessions => {
+    const usage = await library.usage(sessions || (await sessionRows()).sessions), { sessionBytes = 0, bytesPerMinute = null, remainingMinutes = null } = live?.storage() || {};
+    storageShown = usage.state;
+    return { ...usage, sessionBytes, bytesPerMinute, remainingMinutes };
+  };
+  // A publication that failed announced nothing: the next check publishes again.
+  const publishStorage = () => storageInfo().then(storage => send('storage:state', storage)).catch(() => { storageShown = null; });
+  // Pushed when the state changes (ok, low, blocked), from a cached measurement: never a tick of its own.
+  // Marked as announced before the publication, which lists the sessions: a slow listing is not announced twice.
+  if (guard) storageTimer = setInterval(async () => { const { state } = await guard.check(); if (state !== storageShown) { storageShown = state; publishStorage(); } }, 5000);
+  // End of the loaded session for this host: its work stops in order, then it is archived whole. Nothing
+  // is purged, here or at quit; `remove` is the explicit deletion of this one session and of nothing else.
+  const endSession = async (reason, { remove = false } = {}) => {
+    const ended = live, failed = []; let freedBytes = 0;
+    // Every closing step is attempted whatever the others did: an adapter that fails to close (recap, chat
+    // agent, surveillance, and inside the runtime perception, inspection model, index) neither keeps the
+    // session from being archived nor leaves a provider process behind. What failed goes to the journal.
+    const attempt = async (step, work) => { try { return await work(); } catch (error) { failed.push(`${step} : ${String(error?.message || error).slice(0, 200)}`); } };
+    switching = true;
+    try {
+      // The session is ending: a passage still landing is stored and saved, but no analysis is started for it
+      // only to be given up a moment later. Set before anything is awaited.
+      if (watch) watch.ending = true;
+      clearInterval(pruneTimer); recap.reset(); await attempt('résumé vivant', () => recapAdapter?.close?.()); recapAdapter = null;
+      // The last surveillance states reach the session folder before the session closes.
+      await attempt('surveillance', () => surveillance.reset(reason));
+      await attempt('questions', async () => { deep.cancelAll(reason); await Promise.allSettled(deep.jobs.map(job => job.done)); });
+      await attempt('agent de chat', () => videoAgent.close?.());
+      await Promise.allSettled([...ingestions]);
+      if (ended) {
+        if (watch.accepting) await attempt('capture', () => ended.pause());
+        // A session that received neither a passage nor a question is not worth an archive.
+        const empty = !ended.readOnly && !watch.snapshot().coverage.passages && !deep.jobs.length;
+        // Sealed first: no late write of this runtime can bring the deleted directory back.
+        const erase = async () => { await ended.seal(); if (await library.folder(ended.id).then(() => true, () => false)) ({ freedBytes } = await library.remove(ended.id)); };
+        // An explicit deletion that fails is said to whoever asked for it; an empty session or an archive never blocks the host.
+        if (remove) await erase(); else await attempt(empty ? 'session vide' : 'archive', () => (empty ? erase() : ended.archive()));
+      }
+      return { freedBytes };
+    } finally {
+      failed.push(...(ended?.closeErrors || []));
+      if (failed.length) console.error(`TVLens — fermeture incomplète de la session ${ended?.id || '(aucune)'} : ${failed.join(' ; ')}`);
+      // Whatever happened above, the host is left without a session, and the renderer is told so.
+      live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
+      viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
+      switching = false;
+      send('watch:reset'); send('sessions:changed');
+    }
+  };
+  archiveOnQuit = exclusive(() => endSession('Application fermée.'));
+  handle('watch:start', exclusive(async () => {
     if (watch?.accepting) throw new Error('Une session est déjà active.');
-    if(watch){sessionClock.resume();await watch.resume();return {id:watch.id,elapsedMs:watch.now(),segmentMs:configuration().segmentMs};}
+    // Capture never restarts inside an archive without the explicit gesture.
+    if (live?.readOnly) throw new Error('Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.');
+    // Start and resume are refused on a fresh measurement while the disk is blocked, before anything changes.
+    if (watch) { await live.resume().catch(error => { publishStorage(); throw error; }); send('sessions:changed'); return { id: watch.id, elapsedMs: watch.now(), segmentMs }; }
     if (!codexBinary && !smoke) throw new Error('Installe Codex et connecte ton compte.');
-    clearInterval(pruneTimer);
-    deep.cancelAll('Changement de session.');
-    if (store) await cleanupRawMedia(sessionsRoot);
-    const id = randomUUID();
-    recap.reset(id);
-    recapAdapter = smoke && !process.argv.includes('--live-recap') ? {
-      summarize: async ({chapters,newPassages}) => ({overview:'Un cercle se déplace sur un fond bleu. Les passages observés montrent la continuité de cette animation.',chapters:[{
-        title:'Une animation en mouvement',summary:'Le cercle poursuit son déplacement sur un fond bleu.',
-        sourceIds:[...new Set([...chapters.flatMap(c=>c.sourceIds),...newPassages.map(p=>p.id)])]
-      }]})
-    } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
-    const runtime = createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,
-      smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
-      strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
-      retentionMs:smoke?Number(process.argv.find(x=>x.startsWith('--retention-ms='))?.split('=')[1]||300000):300000,
-      onChange:state=>{if(!closing&&!recapTransition)recap.observe(state);if(!window.isDestroyed())window.webContents.send('watch:state',state);}});
-    ({store,search,inspector,inspectorModel,sessionClock,perception,watch}=runtime);
-    saved.transcriber=runtime.transcriber;
-    pruneTimer = setInterval(() => watch.prune().catch(() => {}), 5000);
+    await guard?.assertRoom().catch(error => { publishStorage(); throw error; });
+    const id = randomUUID(), at = Date.now(), runtime = compose(id);
+    // Additive title: the captured source and the start date are what a viewer recognises in a list. Set
+    // in memory only: the first manifest written by the runtime carries it.
+    const name = capturedSource ? `${capturedSource.slice(0, 80)} · ${sessionTitle(at).replace(/^Session du /, '')}` : sessionTitle(at);
+    runtime.store.manifest = { ...runtime.store.manifest, title: name };
+    recap.reset(id); recapAdapter = newRecapAdapter();
+    adopt(runtime, name, at);
+    pruneTimer = setInterval(() => watch?.prune().catch(() => {}), 5000);
     watch.emit();
     videoAgent.prepare?.(id).catch(()=>{});
     perception.agent?.prepare(id+'-observe').catch(()=>{});
-    return { id, elapsedMs: watch.now(), segmentMs: configuration().segmentMs };
-  });
+    send('sessions:changed');
+    return { id, elapsedMs: watch.now(), segmentMs };
+  }));
   handle('watch:ingest', async input => {
-    if (!watch || input.sessionId !== watch.id) throw new Error('Session obsolète.');
+    if (!watch || input?.sessionId !== watch.id) throw new Error('Session obsolète.');
     validateSegment(input, watch.now());
-    return watch.ingest(input);
+    const session = live, work = watch.ingest(input);
+    ingestions.add(work);
+    try { return await work; }
+    catch (error) {
+      // Out of room: nothing was stored and nothing is deleted. The session clock stops with the capture.
+      if (error?.code === STORAGE_FULL && session === live) { await session.pause().catch(() => {}); publishStorage(); }
+      throw error;
+    } finally { ingestions.delete(work); }
   });
-  handle('watch:stop', async () => {sessionClock?.pause();await watch?.stop();});
-  handle('watch:new',async()=>{
+  handle('watch:stop', exclusive(async () => { if (!live) return; await live.pause(); send('sessions:changed'); }));
+  handle('watch:new', exclusive(async () => {
     if(watch?.accepting||watch?.running)throw new Error('Arrête la capture et attends la fin de son analyse.');
-    recapTransition=true;
-    try {
-    clearInterval(pruneTimer);recap.reset();await recapAdapter?.close?.();
-    auto?.stop();await autoAgent?.close?.();deep.cancelAll('Nouvelle session.');await videoAgent.close?.();await perception?.close?.();await inspectorModel?.close?.();
-    clearInterval(pruneTimer);await cleanupRawMedia(sessionsRoot);watch=null;viewingActions.reset();store=null;search=null;inspector=null;deep.jobs=[];deep.emit();
-    recap.reset();
-    window.webContents.send('watch:reset');return true;
-    } finally { recapTransition=false; }
-  });
+    await endSession('Nouvelle session.');
+    return true;
+  }));
+  handle('sessions:list', async () => { const listed = await sessionRows(); return { ...listed, storage: await storageInfo(listed.sessions) }; });
+  handle('sessions:storage', () => storageInfo());
+  handle('sessions:open', exclusive(async id => {
+    // Same conditions as a new session: never while capturing or analysing.
+    if(watch?.accepting||watch?.running)throw new Error('Arrête la capture et attends la fin de son analyse.');
+    if (live?.readOnly && id === watch.id) return { id, readOnly: true, elapsedMs: watch.now() };
+    // Read before anything is closed: an unknown or unreadable archive leaves the loaded session as it is.
+    let archive = id === watch?.id ? (library.dir(id), null) : await library.read(id);
+    await endSession('Changement de session.');
+    archive ||= await library.read(id);
+    const runtime = compose(id, { snapshot: archive.snapshot, inventory: archive.inventory, manifest: archive.manifest, createdAt: archive.summary.createdAt });
+    // Silent restores: opening writes nothing and calls no provider. The questions in memory are replaced
+    // by those of this archive, so none can leak into another session.
+    deep.restore(archive.chat?.jobs || []);
+    recap.restore(archive.recap?.sessionId === id ? archive.recap : { sessionId: id });
+    adopt(runtime, archive.summary.title, archive.summary.createdAt);
+    surveillance.restore(archive.surveillance?.sessionId === id ? archive.surveillance : null);
+    // The renderer shows an archive through the same states as a live session.
+    watch.emit(); send('deep:state', deep.snapshot()); send('recap:state', recap.snapshot()); send('surveillance:state', surveillance.snapshot()); send('sessions:changed');
+    return { id, readOnly: true, elapsedMs: watch.now() };
+  }));
+  handle('sessions:resume', exclusive(async () => {
+    if (!live?.readOnly) throw new Error('Aucune session ouverte en lecture seule à reprendre.');
+    if (!codexBinary && !smoke) throw new Error('Installe Codex et connecte ton compte.');
+    // Ready before the session stops being read-only: the next recap tick may run at once.
+    recapAdapter ||= newRecapAdapter();
+    // The explicit gesture that lets capture write into this archive again; refused while the disk is blocked.
+    await live.resume().catch(error => { publishStorage(); throw error; });
+    clearInterval(pruneTimer); pruneTimer = setInterval(() => watch?.prune().catch(() => {}), 5000);
+    videoAgent.prepare?.(watch.id).catch(()=>{});
+    perception.agent?.prepare(watch.id+'-observe').catch(()=>{});
+    send('sessions:changed');
+    return { id: watch.id, elapsedMs: watch.now(), segmentMs };
+  }));
+  handle('sessions:delete', exclusive(async id => {
+    library.dir(id);
+    let freedBytes;
+    if (id === watch?.id) {
+      if (watch.accepting) throw new Error('Arrête la capture avant de supprimer cette session.');
+      // Kept moments and past verifications live outside the session folder and are not deleted with it.
+      ({ freedBytes } = await endSession('Session supprimée.', { remove: true }));
+    } else { ({ freedBytes } = await library.remove(id)); send('sessions:changed'); }
+    publishStorage();
+    return { deleted: true, freedBytes };
+  }));
   handle('watch:ask', question => {
     if (!watch) throw new Error('Démarre une session avant de poser une question.');
-    verifierAdapter.cancel?.();
-    auto?.prioritizeManual();return deep.start(question, {mode:'chat'});
+    return ask(question, {mode:'chat'});
   });
   handle('moments:freeze', value => viewingActions.freeze(watch?.snapshot(), value));
   handle('moments:mark', () => viewingActions.mark(watch?.snapshot()));
@@ -266,8 +450,7 @@ app.whenReady().then(async () => {
       question = input?.question?.trim() || (input?.intent === 'summarize' ? 'Résume ce moment en quelques phrases.' : 'Explique ce moment et ce qui aide à le comprendre.');
       question += ` Instant sélectionné : ${Math.round(frozen.anchorMs / 1000)} secondes. Réponds uniquement sur les passages de cet intervalle, en signalant ce qui manque.`;
     }
-    verifierAdapter.cancel?.(); auto?.prioritizeManual();
-    const result = deep.start(question, { mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', snapshot, startMs: frozen.startMs, anchorMs: frozen.anchorMs });
+    const result = ask(question, { mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', snapshot, startMs: frozen.startMs, anchorMs: frozen.anchorMs });
     if (kind === 'catch-up') {
       const job = deep.jobs.find(j => j.id === result.id);
       job.done.then(() => viewingActions.acknowledgeResult(frozen, job, eligible));
@@ -279,8 +462,7 @@ app.whenReady().then(async () => {
   handle('moments:reexamine', jobId => {
     const original = deep.jobs.find(job => job.id === jobId);
     const { question, options } = viewingActions.reexamination(original, watch?.snapshot());
-    verifierAdapter.cancel?.(); auto?.prioritizeManual();
-    return deep.start(question, options);
+    return ask(question, options);
   });
   const explainShortcut = 'CommandOrControl+Shift+E';
   let explainShortcutRegistered = false;
@@ -294,12 +476,21 @@ app.whenReady().then(async () => {
     });
   }
   handle('moments:shortcuts', () => ({ explainShortcut, explainShortcutRegistered }));
-  handle('watch:state', () => watch?.snapshot() || null);
-  protocol.handle('tvlens-media', request => {
-    const url = new URL(request.url);
-    const id = url.pathname.slice(1);
-    if (!watch || url.hostname !== watch.id || !/^moment-\d+$/.test(id) || !watch.segments.some(s => s.id === id && s.available)) return new Response('Passage expiré.', { status: 404 });
-    return store.response(id, request.headers.get('range'));
+  handle('watch:state', sessionState);
+  // tvlens-media://<session>/<moment-N> serves any passage of the loaded session whose media exists, archive
+  // included; tvlens-media://<session>/thumb/<moment-N> serves its thumbnail, which outlives the media.
+  protocol.handle('tvlens-media', async request => {
+    const gone = () => new Response('Passage indisponible.', { status: 404 });
+    try {
+      const url = new URL(request.url), [first, second, extra] = url.pathname.slice(1).split('/');
+      if (!watch || url.hostname !== watch.id || extra !== undefined) return gone();
+      if (first === 'thumb') {
+        if (!/^moment-\d+$/.test(second) || ![...watch.history, ...watch.segments].some(s => s.id === second && s.thumbnailAvailable)) return gone();
+        return new Response(await live.thumbnails.read(second), { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'no-store' } });
+      }
+      if (second !== undefined || !/^moment-\d+$/.test(first) || !watch.segments.some(s => s.id === first && s.available)) return gone();
+      return store.response(first, request.headers.get('range'));
+    } catch { return gone(); }
   });
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     const source = sources.find(s => s.id === selectedId);
@@ -310,6 +501,11 @@ app.whenReady().then(async () => {
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => event.preventDefault());
   await window.loadFile(path.join(__dirname, 'index.html'));
+}).catch(error => {
+  // A refused setting, like any failed start, is said in plain words instead of leaving a blank window.
+  console.error(error);
+  if (!smoke) dialog.showErrorBox('TVLens ne peut pas démarrer', String(error?.message || error));
+  app.quit();
 });
 async function findCodex() {
   const candidates = [path.join(os.homedir(), '.local', 'bin', 'codex'), '/opt/homebrew/bin/codex', '/usr/local/bin/codex', ...(process.env.PATH || '').split(path.delimiter).filter(Boolean).map(dir => path.join(dir, 'codex'))];
@@ -319,9 +515,10 @@ async function findCodex() {
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', event => {
   if (closing) return;
-  event.preventDefault(); closing = true; clearInterval(pruneTimer);clearInterval(autoTimer);clearInterval(recapTimer);recap?.reset();auto?.stop();
+  event.preventDefault(); closing = true;
+  for (const timer of [pruneTimer, recapTimer, surveillanceTimer, storageTimer]) clearInterval(timer);
   globalShortcut.unregisterAll();
   verifierAdapter?.cancel?.();
-  deep?.cancelAll();
-  Promise.all([recapAdapter?.close?.(),autoAgent?.close?.(),videoAgent?.close?.(),perception?.close?.(),inspectorModel?.close?.(),bridge?.close()]).then(() => watch?.stop()).then(() => sessionsRoot && cleanupRawMedia(sessionsRoot)).finally(() => app.quit());
+  // Quitting archives the loaded session like "Nouvelle session" does: nothing is purged, now or at the next start.
+  Promise.resolve().then(() => archiveOnQuit?.()).catch(() => {}).then(() => Promise.allSettled([surveillance?.close('Application fermée.'), bridge?.close()])).finally(() => app.quit());
 });

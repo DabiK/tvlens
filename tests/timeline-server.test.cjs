@@ -6,7 +6,7 @@ const fs = require("node:fs/promises"),
 const sharp = require("sharp");
 const { HeadlessRuntime } = require("../runtime/headless-runtime.cjs");
 const { RemoteServer } = require("../server/http.cjs");
-test("authenticated timeline thumbnails survive raw expiry; selected questions stay bounded; explicit end purges images", async (t) => {
+test("authenticated timeline thumbnails and media outlive the former five-minute window; selected questions stay bounded; ending archives without purging", async (t) => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "tvlens-timeline-http-"),
   );
@@ -96,9 +96,10 @@ test("authenticated timeline thumbnails survive raw expiry; selected questions s
   const thumb = await request(thumbRoute);
   assert.equal(thumb.status, 200);
   assert.match(thumb.headers.get("content-type"), /image\/jpeg/);
+  // Past the former rolling window: the media is kept until the session is deleted.
   clock = 320000;
   await runtime.session.watch.prune();
-  assert.equal((await request("/v1/media/moment-1")).status, 410);
+  assert.equal((await request("/v1/media/moment-1")).status, 200);
   assert.equal((await request(thumbRoute)).status, 200);
   clock = 328000;
   await request("/v1/segments", {
@@ -130,7 +131,7 @@ test("authenticated timeline thumbnails survive raw expiry; selected questions s
       segmentIds: ["moment-1"],
     })
   ).json();
-  assert.equal(detail.passages[0].available, false);
+  assert.equal(detail.passages[0].available, true);
   assert.equal(
     (
       await request("/v1/moments/detail", {
@@ -146,16 +147,37 @@ test("authenticated timeline thumbnails survive raw expiry; selected questions s
     (await (await request("/v1/session/start", {})).json()).id,
     session.id,
   );
-  assert.equal((await request("/v1/session/end", {})).status, 200);
+  // Ending answers what happened to the session: archived, under its identifier.
+  const ended = await request("/v1/session/end", {});
+  assert.equal(ended.status, 200);
+  assert.deepEqual(await ended.json(), {
+    ended: true,
+    id: session.id,
+    archived: true,
+  });
   assert.equal(runtime.session, null);
+  // The ended session is no longer the one served, but nothing of it was erased: it is an archive.
   assert.equal((await request(thumbRoute)).status, 410);
-  const remaining = await fs.readdir(path.join(root, "sessions", session.id));
-  assert.ok(!remaining.includes("thumbnails"));
-  assert.ok(!remaining.includes("moment-2.webm"));
-  assert.ok(remaining.includes("session.json"));
+  const dir = path.join(root, "sessions", session.id);
+  assert.deepEqual((await fs.readdir(path.join(dir, "media"))).sort(), [
+    "moment-1.json",
+    "moment-1.webm",
+    "moment-2.json",
+    "moment-2.webm",
+  ]);
+  assert.deepEqual((await fs.readdir(path.join(dir, "thumbs"))).sort(), [
+    "moment-1.jpg",
+    "moment-2.jpg",
+  ]);
+  assert.ok((await fs.readdir(dir)).includes("session.json"));
+  assert.equal(
+    JSON.parse(await fs.readFile(path.join(dir, "manifest.json"), "utf8"))
+      .state,
+    "archived",
+  );
 });
 
-test('ending waits for an in-flight ingestion before purging thumbnails and raw media', async t => {
+test('ending waits for an in-flight ingestion, then keeps its media and thumbnail instead of purging them', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-end-race-'));
   let clock = 0, releaseWrite, entered;
   const writeGate = new Promise(resolve => { releaseWrite = resolve; });
@@ -178,6 +200,9 @@ test('ending waits for an in-flight ingestion before purging thumbnails and raw 
   assert.equal(ended,false,'Closing cannot race past the media write');
   releaseWrite();await ingest;await end;
   assert.equal(runtime.session,null);
-  const files=await fs.readdir(path.join(root,'sessions',session.id));
-  assert.ok(!files.includes('thumbnails'));assert.ok(!files.includes('moment-1.webm'));assert.ok(!files.includes('moment-1.json'));
+  // The passage that was being written when the session ended is whole on disk, with its thumbnail.
+  const dir=path.join(root,'sessions',session.id);
+  assert.deepEqual((await fs.readdir(path.join(dir,'media'))).sort(),['moment-1.json','moment-1.webm']);
+  assert.deepEqual(await fs.readdir(path.join(dir,'thumbs')),['moment-1.jpg']);
+  assert.equal(JSON.parse(await fs.readFile(path.join(dir,'session.json'),'utf8')).segments[0].id,'moment-1');
 });

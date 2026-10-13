@@ -3,6 +3,7 @@ const {
   StdioServerTransport,
 } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const { mcpToolDefinitions } = require("./tool-definitions.cjs");
+const { QUESTION_TIMEOUT_MS } = require("../core/deep-ask.cjs");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
@@ -36,7 +37,11 @@ async function call(name, args, extra) {
         "X-TVLens-Client": client,
       },
       body: JSON.stringify({ name, args }),
-      signal: AbortSignal.any([extra.signal, AbortSignal.timeout(60000)]),
+      // Same ceiling as a question: the bridge context this call runs in expires at that limit anyway.
+      signal: AbortSignal.any([
+        extra.signal,
+        AbortSignal.timeout(QUESTION_TIMEOUT_MS),
+      ]),
     });
     const value = await response.json();
     if (!response.ok) throw new Error(value.error || "Outil indisponible.");

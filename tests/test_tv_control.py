@@ -13,7 +13,7 @@ import urllib.error
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tv'))
 from controller import CaptureController, DeviceServer
-from transport import Transport, SessionChanged
+from transport import Transport, SessionChanged, StorageFull, ReadOnly
 
 class ControlTests(unittest.TestCase):
  def test_boot_without_python_executable_uses_absolute_interpreter(self):
@@ -24,6 +24,12 @@ class ControlTests(unittest.TestCase):
     launch.return_value.poll.return_value=None
     self.assertTrue(controller.start()['active'])
     self.assertEqual(launch.call_args.args[0][0],'/usr/bin/python3')
+
+ def test_capture_is_bounded_to_six_hours_and_ends_after_ten_minutes_without_playback(self):
+  with tempfile.TemporaryDirectory() as temp:
+   command=CaptureController(Path(temp)/'config',Path(temp)/'report',lock_file=str(Path(temp)/'lock')).command
+   option=lambda name:command[command.index(name)+1]
+   self.assertEqual((option('--seconds'),option('--idle-seconds'),option('--lock'),option('--report')),('21600','600',str(Path(temp)/'lock'),str(Path(temp)/'report')))
 
  def test_concurrent_layout_requests_publish_complete_authenticated_messages(self):
   with tempfile.TemporaryDirectory() as temp:
@@ -66,13 +72,16 @@ class ControlTests(unittest.TestCase):
     request('/capture/stop','POST');controller.child.wait(timeout=3)
     self.assertFalse(request('/capture')['active']);request('/capture/stop','POST')
     with self.assertRaises(urllib.error.HTTPError) as missing:request('/shell','POST')
-    missing.exception.close()
+    self.assertEqual(missing.exception.code,404);missing.exception.close()
+    # Built as before, without the ambient part: its routes do not exist, token or not.
+    with self.assertRaises(urllib.error.HTTPError) as absent:request('/ambient')
+    self.assertEqual(absent.exception.code,404);absent.exception.close()
    finally:
     controller.stop();server.shutdown();server.server_close();thread.join()
 
 class DeliveryTests(unittest.TestCase):
  def setUp(self):
-  self.session='one';self.failures=1;self.accepted=set();self.attempts=0;self.ambiguous=True
+  self.session='one';self.failures=1;self.accepted=set();self.attempts=0;self.ambiguous=True;self.state={};self.refuse=None
   owner=self
   class Handler(BaseHTTPRequestHandler):
    def log_message(self,*_):pass
@@ -80,10 +89,12 @@ class DeliveryTests(unittest.TestCase):
     self.send_response(code);self.end_headers();self.wfile.write(json.dumps(value).encode())
    def do_GET(self):
     if owner.failures:owner.failures-=1;return self.reply(503,{})
-    self.reply(200,{'id':owner.session,'accepting':True})
+    self.reply(200,dict({'id':owner.session,'accepting':True},**owner.state))
    def do_POST(self):
     item=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-    owner.attempts+=1;owner.accepted.add(item['sequence'])
+    owner.attempts+=1
+    if owner.refuse:return self.reply(*owner.refuse)
+    owner.accepted.add(item['sequence'])
     if owner.ambiguous:owner.ambiguous=False;return self.reply(503,{})
     self.reply(200,{'duplicate':True})
   self.server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
@@ -98,8 +109,30 @@ class DeliveryTests(unittest.TestCase):
   self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic()-31))
   self.stop.set();self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':2},time.monotonic()))
   self.assertEqual(self.attempts,0)
+  # Every lost block names its cause; the total shown by the panel is unchanged.
+  self.assertEqual(self.report['dropReasons'],{'deliveryExpired':1,'stopped':1});self.assertEqual(self.report['dropped'],2)
  def test_restart_does_not_move_buffer_into_new_session(self):
   self.failures=0;self.session='two'
   with self.assertRaises(SessionChanged):self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic())
   self.assertEqual(self.attempts,0)
+  # The block in flight is lost with the session: it is counted, with its cause.
+  self.assertEqual(self.report['dropped'],1);self.assertEqual(self.report['dropReasons'],{'sessionChanged':1})
+ def test_full_storage_is_an_answer_of_the_server_never_a_network_cut(self):
+  self.failures=0;self.refuse=(507,{'error':'Espace disque insuffisant.','code':'storage-full'})
+  with self.assertRaises(StorageFull) as stopped:self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic(),ttl=5)
+  # One attempt, no retry, no "reconnecting": the capture stops and says storage.
+  self.assertEqual((stopped.exception.reason,self.attempts,self.report['retries'],self.report['dropReasons']),('storage-full',1,0,{'storageFull':1}))
+  self.assertIsInstance(stopped.exception,SessionChanged);self.assertIn('Stockage plein',str(stopped.exception))
+  self.assertNotIn('connection',self.report)
+  # The paused session says so itself: the next block is not even posted, and the cause is still storage.
+  self.refuse=None;self.state={'accepting':False,'storage':{'state':'blocked'}}
+  with self.assertRaises(StorageFull):self.transport.deliver({'sessionId':'one','sequence':2},time.monotonic(),ttl=5)
+  self.assertEqual((self.attempts,self.report['dropReasons'],self.report['dropped']),(1,{'storageFull':2},2))
+ def test_archive_open_read_only_stops_by_name_and_a_plain_conflict_stays_a_rejected_block(self):
+  self.failures=0;self.refuse=(409,{'error':'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.','code':'read-only'})
+  with self.assertRaises(ReadOnly) as stopped:self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic(),ttl=5)
+  self.assertEqual((stopped.exception.reason,self.report['dropReasons'],self.report['retries']),('read-only',{'readOnly':1},0))
+  self.refuse=(409,{'error':'Séquence ancienne.'})
+  self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':2},time.monotonic(),ttl=5))
+  self.assertEqual((self.report['dropReasons'],self.report['errors']),({'readOnly':1,'deliveryRejected':1},['HTTP 409']))
 if __name__=='__main__':unittest.main()

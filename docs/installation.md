@@ -44,6 +44,8 @@ OPENROUTER_API_KEY=ta_cle
 # TVLENS_WHISPER_BINARY=/opt/homebrew/bin/whisper-cli
 # TVLENS_FFMPEG=/opt/homebrew/bin/ffmpeg
 # TVLENS_WHISPER_THREADS=4
+# Facultatif : 0 retient la description visuelle pendant une question (défaut : 1)
+# TVLENS_VISION_DURING_ASK=0
 ```
 
 La clé n'est jamais transmise à Codex ni exposée au renderer. Les paramètres importés
@@ -77,16 +79,26 @@ Depuis **Direct**, sélectionner une source et cliquer **Lancer l’observation*
 Le démarrage conserve le mode choisi. Le bouton de fenêtre en haut à droite ouvre
 la barre flottante : **Demander** déploie le chat, le marque-page garde un moment,
 et pause/reprise contrôle l’observation. Le menu **⋯** donne accès à la fenêtre
-complète, Auto, la recherche, au changement de source et au résumé.
+complète, la surveillance, la recherche, au changement de source et au résumé.
 
 La pause conserve les résumés, questions et le fil Codex. La durée de pause n'est
-pas ajoutée à la chronologie observée. Les médias gardent une rétention de cinq
-minutes de contenu observé, y compris pendant une pause prolongée.
+pas ajoutée à la chronologie observée. Les médias de la session restent sur le
+disque jusqu'à sa suppression : plus rien n'expire au bout de cinq minutes.
 
 **Nouvelle session**, dans **Mémoire**, devient disponible après l'arrêt et la fin
-d'analyse. Elle efface le contexte actif ; les archives textuelles restent sur
-disque et le média brut est nettoyé. Fermer l'application termine les fils actifs.
-Leur restauration après fermeture complète n'est pas implémentée.
+d'analyse. Elle **archive** la session en cours : ses médias, miniatures, résumés,
+questions et réponses restent sur disque. Fermer l'application archive de même.
+Une session sans aucun passage ni question n'est pas gardée.
+
+**Sessions**, dans **Mémoire**, liste les sessions conservées. Une session s'ouvre
+en lecture seule ; la capture n'y reprend que par **Reprendre la capture**, après
+confirmation. **Supprimer** efface cette session et elle seule. Après un
+redémarrage, les questions d'une session rouverte sont retrouvées ; le fil Codex,
+éphémère, ne l'est pas : une nouvelle question ouvre un fil neuf.
+
+Sous 1 Gio d'espace libre, la capture est refusée et un bandeau l'explique ; rien
+n'est supprimé pour faire de la place. Compter de l'ordre de 9 Mo par minute de
+capture, d'après une estimation hors ligne non vérifiée sur une vraie capture.
 
 Voir [le guide d'interface](interface.md) pour les actions et les réglages.
 
@@ -100,16 +112,20 @@ Les changements de perception prennent effet dans une nouvelle session.
 
 - Images et texte de transcription sont envoyés à Codex, avec les extraits utiles
   de conversation et de mémoire. Les outils web consultent des sources externes.
-- L'audio brut est transcrit sur le Mac avec Whisper, puis conservé pour la relecture
-  selon la fenêtre de rétention. Aucun envoi audio à OpenRouter.
+- L'audio brut est transcrit sur le Mac avec Whisper, puis conservé avec sa session
+  pour la relecture, jusqu'à la suppression de celle-ci. Aucun envoi audio à OpenRouter.
 - OpenRouter reçoit uniquement du texte à vectoriser. Sans clé, la recherche reste
   textuelle/temporelle avec une limite signalée.
 - `models.json` dans les données Electron conserve les choix sans clé.
 
-Le chat utilise un App Server Codex isolé, maintenu ouvert, avec un fil éphémère par
-session. Son répertoire temporaire contient des liens vers l'authentification et le
+Le chat utilise un App Server Codex cloisonné, maintenu ouvert, avec un fil éphémère
+par session, ouvert sans environnement d'exécution. Son répertoire de travail est
+vide ; un dossier séparé ne contient que des liens vers l'authentification et le
 catalogue du compte existant, sans copier la configuration personnelle ni les outils
-des autres projets. Aucun shell/fichier/connecteur n'est accessible au modèle.
+des autres projets. Sur ce Mac, avec la version de Codex mesurée, le modèle n'a ni
+shell, ni lecteur de fichiers, ni outil de patch. Ce cloisonnement n'est pas absolu :
+ce qui est empêché, ce qui n'est que détecté et ce qui reste inconnu sont décrits
+dans [SECURITY.md](../SECURITY.md), avec les réglages de repli.
 Les outils internes appellent les mêmes ports que le MCP externe.
 
 Le modèle réutilise son contexte. Seuls les résumés nouveaux/modifiés sont réinjectés,
@@ -152,7 +168,8 @@ anciens modèles restent disponibles mais ne décrivent plus la configuration ac
 - Codex déconnecté : vérifier le CLI et l'authentification. Après panne du processus,
   la question suivante reconstruit un fil depuis la mémoire récente disponible ;
   l'ancien contexte LLM complet n'est pas garanti.
-- Recherche longue : étapes réelles visibles, file FIFO (5 en attente maximum), annulation par question, arrêt à 60 secondes de traitement. Le temps en file est affiché séparément.
+- Recherche longue : étapes réelles visibles, file FIFO (5 en attente maximum), annulation par question, arrêt à cinq minutes de traitement au plus. La carte affiche l'écoulé sur le plafond ; le temps en file est affiché séparément. `TVLENS_QUESTION_TIMEOUT_MS` abaisse ce plafond.
+- Capture refusée, bandeau « espace disque » : libérer de la place ou supprimer une session dans Mémoire → Sessions, puis reprendre.
 
 Références : [Codex App Server](https://learn.chatgpt.com/docs/app-server),
 [Whisper.cpp officiel](https://github.com/ggml-org/whisper.cpp).
@@ -165,12 +182,14 @@ Références : [Codex App Server](https://learn.chatgpt.com/docs/app-server),
   fermeture, hors de la rétention glissante ; suppression explicite dans la bibliothèque.
 - Le raccourci global par défaut est `CommandOrControl+Shift+S`. Modifier la combinaison
   dans « Rechercher / moments gardés ». Un conflit de raccourci est signalé.
-- Rechercher dans la session renvoie des cartes et aperçus si le média est encore
-  disponible. Après expiration, le texte reste interrogeable mais la relecture est désactivée.
-- Auto : consigne libre, fréquence 15–300 secondes de visionnage, démarre à l’activation.
-  Le segment déjà commencé à l’activation est exclu pour ne pas relire le passé.
-  Les questions manuelles interrompent Auto, qui reprend plus tard ; les questions
-  manuelles entre elles restent en file FIFO. Désactiver Auto n’efface pas ses résultats.
+- Rechercher dans la session renvoie des cartes et aperçus si le média est
+  disponible. S'il ne l'est pas (session ancienne, fichier absent, fenêtre glissante
+  réactivée), le texte reste interrogeable, la relecture est désactivée et le motif est dit.
+- Surveillance (onglet du même nom, qui remplace Auto) : consigne libre, démarre à
+  l’activation et ne relit pas le passé. Elle continue pendant les questions
+  manuelles, qui restent entre elles en file FIFO. Ses résultats sourcés arrivent en
+  cartes en bas à gauche ; les affirmations indéterminées et les signalements restent
+  dans son historique. Arrêter la surveillance n’efface pas ses résultats.
 - Le quota Codex est lu à titre informatif (cache de 60 secondes). Aucun seuil
   de réserve local ne suspend les appels, même si la lecture du quota échoue.
   Les limites effectives du fournisseur restent appliquées par Codex.
@@ -187,8 +206,38 @@ node scripts/check-codex-quota.cjs
 
 Le test réel substitue seulement le sélecteur de capture macOS par le flux décodé
 par Chromium : vidéo, son, transcription locale, perception et chat/web sont réels.
-La rétention est accélérée à 45 secondes dans ce test ; production : 5 minutes.
+La rétention est accélérée à 45 secondes dans ce test ; en production, les médias
+sont gardés jusqu'à la suppression de la session. Ce script date d'avant le
+13 octobre 2026 : il appelle encore l'ancien pont Auto, retiré depuis, et n'a pas
+été rejoué.
 
 Référence du raccourci global : [API Electron globalShortcut](https://www.electronjs.org/docs/latest/api/global-shortcut).
 
 Les plafonds locaux Codex (réserve de 55 %) et OpenRouter (5 USD) ont été supprimés à la demande de l’utilisateur. Le quota Codex reste informatif ; le compteur OpenRouter conserve les dépenses antérieures et distingue les appels au coût inconnu. Les limites imposées par les fournisseurs restent applicables.
+
+## Réglages réversibles (13 octobre 2026)
+
+Tous sont facultatifs. Absents, le défaut s'applique ; mal saisis, l'application
+refuse de démarrer avec un message.
+
+| Variable | Défaut | Effet |
+| --- | --- | --- |
+| `TVLENS_QUESTION_TIMEOUT_MS` | `300000` | Plafond de traitement d'une question, de 1 à 300 000 ms |
+| `TVLENS_MEDIA_RETENTION_MS` | absent : jusqu'à suppression | Une durée positive rétablit la fenêtre glissante |
+| `TVLENS_DISK_MIN_FREE_MB` | `1024` | Plancher d'espace libre sous lequel la capture est refusée |
+| `TVLENS_DISK_WARN_FREE_MB` | `2048` | Seuil du bandeau « espace faible » |
+| `TVLENS_SURVEILLANCE_WORKERS` | `1` | Vérifications de surveillance en parallèle, de 1 à 3 |
+| `TVLENS_VISION_DURING_ASK` | `1` | `0` retient la description visuelle pendant une question |
+
+**Où les poser.** Les cinq premières sont lues dans l'environnement du processus
+seulement : les exporter dans le terminal avant `npm start`, qui en hérite.
+Écrites dans `.env.local`, elles sont ignorées sans message. L'application
+empaquetée ne les reçoit pas : ouverte depuis le Finder, elle n'a pas l'environnement
+du terminal, et `npm run open:mac` ne lui transmet que `CODEX_HOME` et le chemin de
+`.env.local`. Pour elle, ces cinq retours arrière sont aujourd'hui hors d'atteinte.
+`TVLENS_VISION_DURING_ASK` peut, elle, être écrite dans `.env.local`.
+
+Les réglages de cloisonnement des agents sont décrits dans
+[SECURITY.md](../SECURITY.md) : chacun retire un contrôle et ne sert qu'à diagnostiquer.
+
+Preuves, limites et ce qui n'a pas été essayé : [livrable de la nuit](night-features-delivery.md).

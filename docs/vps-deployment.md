@@ -2,6 +2,7 @@
 
 > Les adresses 100.64.0.10 (serveur) et 100.64.0.20 (TV) sont des exemples anonymisés. Utiliser les adresses réelles de son propre tailnet.
 > Relevé de déploiement, pas une garantie que le VPS suit automatiquement GitHub. Les sources sont partagées avec le Mac ; configuration privée, binaires Whisper/Codex et modèles sont installés séparément.
+> **Ce relevé décrit la version déployée, que la mission du 13 octobre 2026 n’a pas touchée.** Les règles énoncées ici (rétention, 60 secondes par question, session non restaurée après redémarrage) restent celles du VPS. Le code de la branche `codex/tvlens-night-features` les change, sans être déployé : voir le complément en fin de page.
 
 ## Installation
 
@@ -36,7 +37,7 @@ systemctl restart tvlens
 ss -ltn 'sport = :8787'
 ```
 
-Un redémarrage termine la session active ; il n’en restaure pas la mémoire en cours. Les archives textuelles restent privées. La rétention média et la durée des miniatures suivent les mêmes règles que sur le Mac.
+Un redémarrage termine la session active ; il n’en restaure pas la mémoire en cours. Les archives textuelles restent privées. La rétention média et la durée des miniatures suivent les mêmes règles que sur le Mac. (Version déployée. Dans le code du 13 octobre 2026, non déployé, un arrêt archive la session et rien n’est purgé : voir le complément.)
 
 ## Validation
 
@@ -132,3 +133,18 @@ seconde passe : `/opt/tvlens/backups/cumulative-summary-1791142494/before.tar`.
 [le rapport](cumulative-summary-live.json). Le dernier essai comprend pause/reprise
 de capture sans arrêter YouTube. La capture est laissée active. Code, tests et rapports sont versionnés avec cette passe ; configuration privée
 d'appairage inchangée.
+
+## Complément — code du 13 octobre 2026, **installé ce matin-là par la supervision**
+
+Pendant la nuit, la session de travail n’a envoyé aucune commande à ce VPS : une lecture de son état (espace libre, charge, état du service) lui a été refusée par la politique de permissions, et ce refus a été respecté. Le 13 octobre au matin, avec l’autorisation de Dabi, la supervision y a installé le code de la branche (version `night-20261013T052056Z-e02590ce2a`, sauvegarde et retour arrière prévus). Le service a d’abord planté deux fois à cause d’une limite de 128 tâches, relevée ensuite à 512 ; les preuves et leurs limites sont dans [le livrable](night-features-delivery.md), section 13. Tout ce qui précède ce complément décrit l’état d’avant cette installation. La version de Codex (0.158.0) et l’espace libre (4,4 Go) cités pour cette mission sont des informations rapportées, pas des relevés.
+
+Ce que le code de la branche change sur un serveur où il est installé :
+
+- **Conservation.** Les médias, miniatures et textes d’une session restent sur disque jusqu’à sa suppression explicite. Rien n’est nettoyé au démarrage ni à l’arrêt. Un film coûte de l’ordre du gigaoctet, d’après une estimation hors ligne ; sous 1 Gio libre, la capture est refusée et rien n’est supprimé.
+- **Redémarrage.** Un arrêt du service archive la session en cours ; elle se rouvre en lecture seule depuis la liste des sessions, et la capture ne reprend que sur demande.
+- **Questions.** Plafond de traitement de cinq minutes au lieu de 60 secondes.
+- **Surveillance.** Des processus Codex de plus tournent pendant une session (un pour la lecture, un par poste de vérification). Leur mémoire et leur nombre n’ont pas été mesurés face aux limites de l’unité (2 Gio, 128 tâches).
+- **Cloisonnement.** Mesuré sur un Mac et sur `codex-cli 0.160.1` seulement. Rien sous Linux.
+- **État interrogé par la TV.** Vues légères et réponses `304` ; un panneau non mis à jour continue de télécharger l’état complet, un peu plus lourd qu’avant.
+
+Avant tout déploiement : [livrable de la nuit](night-features-delivery.md), section « Avant tout déploiement », [SECURITY.md](../SECURITY.md) et [installer son serveur](server-installation.md).

@@ -29,7 +29,7 @@ class TrialBudget {
     if (!['google/gemini-2.5-flash-lite', 'google/gemini-2.5-flash', 'google/gemini-3.8-flash', 'openai/text-embedding-3-small'].includes(model)) throw new Error('Ce modèle payant n’a pas de plafond de coût validé pour cet essai.');
     return this.transaction(data => {
       const held = Object.values(data.reservations).reduce((sum, r) => sum + r.amountUsd, 0);
-      // Embedding adapter bounds a request to 6,000 UTF-8 bytes (< 8,192 tokens).
+      // Embedding adapter bounds a request to 48,000 UTF-8 bytes (one text: 6,000), under 0.001 USD at 0.02 USD per million tokens.
       const amountUsd = model === 'openai/text-embedding-3-small' ? 0.001 : 0.45;
       if (!data.trackingOnly && data.spentUsd + held + amountUsd > data.limitUsd) throw new Error(`Budget d’essai protégé : plus assez de marge pour réserver cet appel (plafond ${data.limitUsd} $).`);
       const id = randomUUID(); data.reservations[id] = { amountUsd, at: new Date().toISOString() }; data.calls++;

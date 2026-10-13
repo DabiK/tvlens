@@ -6,6 +6,8 @@
 
 **Mise à jour suivante :** [contrôle depuis le panneau et reprise réseau](lg-capture-control.md). Les restrictions CLI/retry ci-dessous décrivent le premier essai et sont désormais dépassées par cet incrément.
 
+**Mise à jour du 13 octobre 2026, installée ce matin-là sur la TV de test par la supervision :** le texte ci-dessous est conservé tel qu’il a été écrit. Dans le code actuel, la limite de 60 secondes par question est devenue un plafond de cinq minutes (`TVLENS_QUESTION_TIMEOUT_MS`), les médias sont conservés jusqu’à la suppression de la session, Auto est remplacé par la surveillance, et l’API expose aussi les sessions, le stockage et la surveillance. Voir [le livrable de la nuit](night-features-delivery.md).
+
 État au 30 septembre 2026 : transport image/son et chat testés avec le YouTube réellement regardé sur la LG. La nouvelle sidebar est validée dans un navigateur indépendant. Après disponibilité confirmée par l’utilisateur, ses fichiers ont été déployés dans l’app existante (avec sauvegarde du prototype) sans lancement automatique. L’utilisateur a ensuite confirmé que les boutons, la dictée et la réponse fonctionnent sur la TV. Les essais automatiques n’ont pas lancé de panneau, redimensionné la vidéo ni envoyé de touche à la TV.
 
 ## Architecture et périmètre

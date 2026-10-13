@@ -1,12 +1,20 @@
 import {chromium} from 'playwright-core';
-import {pathToFileURL} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+// The page is loaded from a temporary copy of tv/app WITHOUT connection.js: a real pairing file in the
+// tree would override the injected configuration and send this smoke to the real server with the real token.
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const copy=await fs.mkdtemp(path.join(path.resolve(process.env.TVLENS_SMOKE_TMP||os.tmpdir()),'tvlens-tv-app-'));
+await fs.cp(path.join(root,'tv/app'),copy,{recursive:true,filter:source=>path.basename(source)!=='connection.js'});
+const index=pathToFileURL(path.join(copy,'index.html')).href;
 const browser=await chromium.launch({executablePath:process.env.TVLENS_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 try {
  const page=await browser.newPage({viewport:{width:1920,height:1080}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+ await page.goto(index);
  assert.match(await page.locator('#connection').textContent(),/Appairage requis/);
  assert.equal(await page.locator('#send').isDisabled(),true);
  assert.equal(await page.locator('#dictate').evaluate(n=>n===document.activeElement),true);
@@ -19,6 +27,15 @@ try {
  assert.equal(await page.locator('#dictate').evaluate(n=>n===document.activeElement),true);
  await page.keyboard.press('Enter');
  assert.equal(await page.locator('#question').evaluate(n=>n===document.activeElement),true);
+ // Header: the two view buttons are neighbours, and the way back down is unchanged.
+ await page.locator('#conversation').focus();await page.keyboard.press('ArrowUp');
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'show-timeline');
+ await page.keyboard.press('ArrowRight');
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'show-surveillance');
+ await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowDown');
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'conversation');
+ assert.equal(await page.locator('#cancel-question').isVisible(),false,'No cancel button without a question in progress');
+ assert.equal(await page.locator('#surveillance-overlay button, #surveillance-overlay a, #surveillance-overlay [tabindex]').count(),0,'Overlay holds no focusable element');
  assert.deepEqual(errors,[]);
  const controlled=await browser.newPage({viewport:{width:1920,height:1080}});
  await controlled.addInitScript(()=>{window.TVLENS_REMOTE={url:'http://unavailable.test',token:'x'.repeat(64)};});
@@ -30,7 +47,7 @@ try {
    if(url.endsWith('/stop')){active=false;stops++;await new Promise(r=>setTimeout(r,150));}
    await route.fulfill({json:{active,stopping:false,exitCode:0,report:{sent:active?1:0}}});
  });
- await controlled.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+ await controlled.goto(index);
  await controlled.waitForFunction(()=>!document.querySelector('#capture').disabled);
  await controlled.locator('#capture').focus();
  await controlled.keyboard.press('Enter');
@@ -53,11 +70,12 @@ try {
    return route.fulfill({json:snapshot});
  });
  try {
-  await chat.goto(pathToFileURL(path.resolve('tv/app/index.html')).href);
+  await chat.goto(index);
   await chat.waitForFunction(()=>!document.querySelector('#send').disabled);
   await chat.locator('#question').fill('Que vient-il de dire ?');
   await chat.keyboard.press('Enter');await submitted;
   assert.notEqual(await chat.evaluate(()=>document.activeElement.id),'question','Submission must release input focus before network response');
+  assert.equal(await chat.locator('#conversation article[data-pending] .chat-question').textContent(),'Que vient-il de dire ?','The question is echoed before the network answers');
   await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
   assert.equal(await chat.evaluate(()=>window.__closed),1,'Back must close even while submission is pending');
   release();
@@ -104,5 +122,5 @@ try {
   await chat.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{keyCode:461,bubbles:true})));
   assert.equal(await chat.evaluate(()=>window.__closed),3,'Next Back closes panel');
  } finally {release();}
- console.log('PASS: pairing, capture controls, focus, submission while pending, Back and dictation');
-} finally {await browser.close();}
+ console.log('PASS: pairing, capture controls, focus, header buttons, immediate echo, submission while pending, Back and dictation');
+} finally {await browser.close();await fs.rm(copy,{recursive:true,force:true});}

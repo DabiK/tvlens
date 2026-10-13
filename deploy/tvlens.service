@@ -33,7 +33,18 @@ ReadWritePaths=/var/lib/tvlens
 MemoryHigh=1500M
 MemoryMax=2G
 CPUQuota=200%
-TasksMax=128
+# Every THREAD of every process of the service counts against this limit, and each Codex role is a child process
+# of its own (npm launcher, native binary, sandbox helper). Measured on a 2-vCPU server on 2026-10-13, Codex
+# 0.158.0, no model turn: five roles connected at once hold 163 tasks, nine hold 347 (about 38 each).
+# The server keeps at most seven roles alive (chat, passage description, re-examination, surveillance reading,
+# one to three verification workers; five with the default single worker). A surveillance stopped and started
+# again leaves the two or more closing roles next to the new ones for a few seconds: nine process trees at the
+# worst, next to Node, Whisper and ffmpeg. The limit covers that peak, not only the seven.
+# With 128, starting a surveillance was enough: the kernel refused a fork ("fork rejected by pids controller"),
+# and with no task left the image library of the server process crashed it (SIGSEGV, reproduced in isolation);
+# the server restarted without its session. With 256, nine do not fit either (8 of 9 connected, 138 refusals).
+# Check a running service with: systemctl show tvlens -p TasksCurrent -p TasksMax ; cat <cgroup>/pids.events
+TasksMax=512
 
 [Install]
 WantedBy=multi-user.target

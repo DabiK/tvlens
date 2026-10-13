@@ -116,8 +116,9 @@ permettent de distinguer les étapes ; `contextThroughMs` ne doit pas être conf
 avec `analyzedThroughMs`. Ces bornes ne garantissent pas une couverture sans trous.
 
 Une question bloque les nouveaux départs de vision de fond, mais laisse la
-transcription avancer. Son contexte reste figé à la question et conserve les
-limites alors observées. La fermeture annule les traitements et empêche leurs
+transcription avancer. Son ancrage et sa liste de passages restent figés à la
+question ; le contenu de ces passages est relu au démarrage de la réponse et avant
+chaque outil, et un passage absent à l’envoi n’est jamais ajouté. La fermeture annule les traitements et empêche leurs
 publications tardives. La rétention des médias reste de cinq minutes. Le résumé
 vivant et Auto ne synthétisent encore que les passages `ready` ; le résumé vivant
 signale désormais les analyses partielles écartées.

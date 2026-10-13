@@ -1,5 +1,7 @@
 # Chat et outils de visionnage — 29 septembre 2026
 
+> **Document historique (29 septembre 2026).** Il décrit l’état de cette date. Depuis le 13 octobre 2026, une question dispose de cinq minutes après sa prise en charge (et non plus 60 s), les médias sont conservés jusqu’à la suppression de la session (plus d’expiration glissante par défaut) et la surveillance automatique a été remplacée par la surveillance par consigne. État courant : `docs/architecture.md` et `docs/night-features-delivery.md`.
+
 ## Correction
 
 La trace utilisateur montrait une bonne compréhension de « lien de l’article » dans

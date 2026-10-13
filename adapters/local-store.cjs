@@ -1,26 +1,97 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { StorageFullError } = require('./disk-guard.cjs');
+
+// Files of one session directory: a name outside this list is never read or written.
+const FILES = { session: 'session.json', research: 'deep-answers.json', recap: 'living-recap.json', auto: 'auto.json', surveillance: 'surveillance.json', manifest: 'manifest.json' };
+const MEDIA_DIR = 'media', THUMBS_DIR = 'thumbs', LEGACY_THUMBS_DIR = 'thumbnails';
+const MEDIA_FILE = /^(moment-\d+)\.(webm|json)$/, THUMB_FILE = /^moment-\d+\.jpg$/;
 
 class LocalSessionStore {
-  constructor(root) { this.root = root; this.serial = Promise.resolve(); this.leases = new Map(); this.pendingRemoval = new Set(); }
+  // A session keeps its media in media/: the cleanup of a former version only knows the moment-* files
+  // at the root of a session directory and its thumbnails/ folder, so it cannot erase them.
+  static forSession(root, options = {}) { return new LocalSessionStore(root, { ...options, mediaDir: MEDIA_DIR }); }
+  // Without mediaDir the files sit at the root: kept copies of saved moments, tools and former sessions.
+  constructor(root, { mediaDir = '', guard = null } = {}) {
+    Object.assign(this, { root, guard, mediaRoot: path.join(root, mediaDir) });
+    this.serial = Promise.resolve(); this.leases = new Map(); this.pendingRemoval = new Set();
+    this.legacy = new Set(); this.writes = new Set(); this.sealed = false; this.manifest = null;
+    // Volume is accumulated write by write: the directory is listed when a session is opened, never on a tick.
+    this.bytes = 0; this.writtenBytes = 0; this.writtenMs = 0;
+  }
   file(id, suffix) {
     if (!/^moment-\d+$/.test(id)) throw new Error('Identifiant de passage invalide.');
-    return path.join(this.root, `${id}.${suffix}`);
+    // A passage left by a former version is read where it is: nothing is migrated.
+    return path.join(this.legacy.has(id) ? this.root : this.mediaRoot, `${id}.${suffix}`);
   }
-  async put(id, input) {
-    await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
-    await Promise.all([
-      fs.writeFile(this.file(id, 'webm'), Buffer.from(input.clip), { mode: 0o600 }),
-      fs.writeFile(this.file(id, 'json'), JSON.stringify({ frames: input.frames, audio: input.audio ? Buffer.from(input.audio).toString('base64') : null }), { mode: 0o600 })
-    ]);
+  // Both files of a passage, at the durable location or where a former version left them.
+  async has(id) {
+    this.file(id, 'webm');
+    const both = dir => Promise.all(['webm', 'json'].map(ext => fs.access(path.join(dir, `${id}.${ext}`)))).then(() => true, () => false);
+    if (await both(this.mediaRoot)) { this.legacy.delete(id); return true; }
+    if (this.mediaRoot !== this.root && await both(this.root)) { this.legacy.add(id); return true; }
+    return false;
+  }
+  put(id, input) {
+    const work = this.write(id, input), done = () => this.writes.delete(work);
+    // Sealing waits for the writes in flight: none may land after the directory is gone.
+    this.writes.add(work); work.then(done, done);
+    return work;
+  }
+  async write(id, input) {
+    this.file(id, 'webm');
+    const files = ['webm', 'json'].map(ext => path.join(this.mediaRoot, `${id}.${ext}`));
+    const clip = Buffer.from(input.clip);
+    // The interval travels with the media: an orphan file can still be placed on the session clock.
+    const data = JSON.stringify({ frames: input.frames, audio: input.audio ? Buffer.from(input.audio).toString('base64') : null, startMs: input.startMs, endMs: input.endMs });
+    const bytes = clip.length + Buffer.byteLength(data);
+    if (this.sealed) throw new Error('Session supprimée.');
+    // Admission comes before any write: a refused passage leaves nothing on disk.
+    await this.guard?.admit(bytes);
+    if (this.sealed) throw new Error('Session supprimée.');
+    let failure;
+    try { await fs.mkdir(this.mediaRoot, { recursive: true, mode: 0o700 }); } catch (error) { failure = error; }
+    failure ||= (await Promise.allSettled([fs.writeFile(files[0], clip, { mode: 0o600 }), fs.writeFile(files[1], data, { mode: 0o600 })])).find(result => result.status === 'rejected')?.reason;
+    if (failure) {
+      // Both writes have settled: remove the partial pair of this passage, and of this passage only.
+      await Promise.all(files.map(file => fs.rm(file, { force: true }).catch(() => {})));
+      throw ['ENOSPC', 'EDQUOT'].includes(failure.code) ? this.guard?.trip() || new StorageFullError() : failure;
+    }
+    this.legacy.delete(id);
+    this.bytes += bytes; this.writtenBytes += bytes;
+    if (Number.isFinite(input.endMs - input.startMs)) this.writtenMs += Math.max(0, input.endMs - input.startMs);
+    return { bytes };
+  }
+  // Reads at the durable location; a miss looks once for the pair a former version left at the root.
+  async content(id, suffix, encoding) {
+    try { return await fs.readFile(this.file(id, suffix), encoding); }
+    catch (error) {
+      if (error.code !== 'ENOENT' || !(await this.has(id))) throw error;
+      return fs.readFile(this.file(id, suffix), encoding);
+    }
   }
   async read(id) {
-    const data = JSON.parse(await fs.readFile(this.file(id, 'json'), 'utf8'));
+    const data = JSON.parse(await this.content(id, 'json', 'utf8'));
     return { frames: data.frames, audio: data.audio ? Buffer.from(data.audio, 'base64') : null };
+  }
+  // Where a stored passage sits on the session clock, as written with its media. null when nothing says
+  // so: a file of a former version (no interval), or one that cannot be read. Never throws.
+  async interval(id) {
+    try {
+      const { startMs, endMs, audio } = JSON.parse(await this.content(id, 'json', 'utf8'));
+      // Same bounds as an ingest accepts: anything else is not an interval to build a passage on.
+      return Number.isFinite(startMs) && Number.isFinite(endMs) && startMs >= 0 && endMs > startMs && endMs - startMs <= 60000 ? { startMs, endMs, hasAudio: Boolean(audio) } : null;
+    } catch { return null; }
   }
   async remove(id) {
     if (this.leases.get(id)) { this.pendingRemoval.add(id); return; }
-    await Promise.all(['json', 'webm'].map(ext => fs.rm(this.file(id, ext), { force: true })));
+    this.file(id, 'webm');
+    for (const dir of new Set([this.mediaRoot, this.root])) for (const ext of ['json', 'webm']) {
+      const file = path.join(dir, `${id}.${ext}`), size = await fs.stat(file).then(stats => stats.size, () => 0);
+      await fs.rm(file, { force: true });
+      this.bytes = Math.max(0, this.bytes - size);
+    }
+    this.legacy.delete(id);
   }
   async lease(ids) {
     const held = [];
@@ -29,48 +100,87 @@ class LocalSessionStore {
       for (const id of ids) {
         if(this.pendingRemoval.has(id)) throw new Error('Passage expiré.');
         this.leases.set(id,(this.leases.get(id)||0)+1); held.push(id);
-        await fs.access(this.file(id,'webm'));
+        // An inspection reads the clip and the stored audio: a lease on half a passage is refused here, in plain words.
+        if (!(await this.has(id))) throw new Error('Média absent.');
       }
       return release;
     } catch { await release(); throw new Error('Média expiré ou indisponible.'); }
   }
-  save(snapshot) {
-    const data = JSON.stringify(snapshot, null, 2);
-    // Serialize snapshots so older writes can never replace newer state.
+  // One listing per location, when a session is opened or listed: never on a tick or a state emission.
+  async inventory() {
+    const scan = async (dir, pattern) => {
+      const names = (await fs.readdir(dir).catch(() => [])).filter(name => pattern.test(name));
+      const sizes = await Promise.all(names.map(name => fs.stat(path.join(dir, name)).then(stats => stats.size, () => 0)));
+      return names.map((name, i) => ({ name, size: sizes[i] }));
+    };
+    const [durable, former, thumbs, formerThumbs] = await Promise.all([scan(this.mediaRoot, MEDIA_FILE), this.mediaRoot === this.root ? [] : scan(this.root, MEDIA_FILE),
+      scan(path.join(this.root, THUMBS_DIR), THUMB_FILE), scan(path.join(this.root, LEGACY_THUMBS_DIR), THUMB_FILE)]);
+    const halves = files => { const seen = new Map(); for (const { name } of files) { const [, id, ext] = MEDIA_FILE.exec(name); seen.set(id, (seen.get(id) || 0) | (ext === 'webm' ? 1 : 2)); } return seen; };
+    const now = halves(durable), before = halves(former), ids = new Set(), legacy = new Set();
+    for (const [id, both] of now) if (both === 3) ids.add(id);
+    for (const [id, both] of before) if (both === 3 && !ids.has(id)) { ids.add(id); legacy.add(id); }
+    const sum = files => files.reduce((total, file) => total + file.size, 0);
+    const mediaBytes = sum(durable) + sum(former), thumbBytes = sum(thumbs) + sum(formerThumbs);
+    return { ids, legacy, partial: [...new Set([...now.keys(), ...before.keys()])].filter(id => !ids.has(id)),
+      thumbs: new Set([...thumbs, ...formerThumbs].map(file => file.name.slice(0, -4))), mediaBytes, thumbBytes, bytes: mediaBytes + thumbBytes };
+  }
+  // Reopening: what is already on disk is counted once here, then every write adds to it.
+  adopt(inventory, mediaMs = 0) {
+    this.legacy = new Set(inventory.legacy); this.bytes = this.writtenBytes = inventory.mediaBytes; this.writtenMs = mediaMs;
+  }
+  // Reads one saved file of the session; null when it was never written. Nothing is created.
+  async load(name = 'session') {
+    if (!Object.hasOwn(FILES, name)) throw new Error('Fichier de session inconnu.');
+    let raw;
+    try { raw = await fs.readFile(path.join(this.root, FILES[name]), 'utf8'); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+    try { return JSON.parse(raw); } catch { throw new Error('Fichier de session illisible.'); }
+  }
+  loadResearch() { return this.load('research'); }
+  loadSurveillance() { return this.load('surveillance'); }
+  // Serialised and atomic: an older write never replaces a newer state, a torn file never replaces a whole one.
+  persist(name, snapshot, indent = 2) {
+    if (this.sealed) return Promise.resolve();
+    const data = JSON.stringify(snapshot, null, indent);
     this.serial = this.serial.catch(() => {}).then(async () => {
+      // Checked again when the write runs: a sealed session must never get its directory back.
+      if (this.sealed) return;
       await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
-      const target = path.join(this.root, 'session.json');
+      const target = path.join(this.root, FILES[name]);
       await fs.writeFile(target + '.tmp', data, { mode: 0o600 });
       await fs.rename(target + '.tmp', target);
     });
     return this.serial;
   }
-  saveResearch(snapshot) {
-    const data=JSON.stringify(snapshot,null,2);
-    this.serial=this.serial.catch(()=>{}).then(async()=>{
-      await fs.mkdir(this.root,{recursive:true,mode:0o700});
-      const file=path.join(this.root,'deep-answers.json');
-      await fs.writeFile(file+'.tmp',data,{mode:0o600});await fs.rename(file+'.tmp',file);
-    });
-    return this.serial;
+  save(snapshot) { return this.persist('session', snapshot); }
+  saveResearch(snapshot) { return this.persist('research', snapshot); }
+  saveRecap(snapshot) { return this.persist('recap', snapshot); }
+  saveAuto(snapshot) { return this.persist('auto', snapshot); }
+  // The whole registry, rewritten as often as every second and megabytes at saturation: never indented.
+  saveSurveillance(snapshot) { return this.persist('surveillance', snapshot, 0); }
+  // Small and merged in memory: a partial update never loses the facts written before it.
+  saveManifest(patch) {
+    if (this.sealed) return Promise.resolve();
+    this.manifest = { ...this.manifest, ...patch };
+    return this.persist('manifest', this.manifest);
   }
-  saveRecap(snapshot) {
-    const data=JSON.stringify(snapshot,null,2);
-    this.serial=this.serial.catch(()=>{}).then(async()=>{
-      await fs.mkdir(this.root,{recursive:true,mode:0o700});
-      const file=path.join(this.root,'living-recap.json');
-      await fs.writeFile(file+'.tmp',data,{mode:0o600});await fs.rename(file+'.tmp',file);
-    });
-    return this.serial;
+  // Before the session is deleted: every later save is a no-op, and the writes in flight are awaited.
+  async seal() {
+    this.sealed = true;
+    await Promise.allSettled([...this.writes, this.serial]);
   }
-  saveAuto(snapshot){const data=JSON.stringify(snapshot,null,2);this.serial=this.serial.catch(()=>{}).then(async()=>{await fs.mkdir(this.root,{recursive:true});await fs.writeFile(path.join(this.root,'auto.json'),data,{mode:0o600});});return this.serial;}
+  // Explicit purge of this session's raw media, at both locations; its text stays.
   async clearRaw() {
-    const files = await fs.readdir(this.root).catch(() => []);
-    await Promise.all(files.filter(file => /^moment-\d+\.(?:webm|json)$/.test(file)).map(file => fs.rm(path.join(this.root, file), {force:true})));
+    for (const dir of new Set([this.mediaRoot, this.root])) {
+      const files = await fs.readdir(dir).catch(() => []);
+      await Promise.all(files.filter(file => MEDIA_FILE.test(file)).map(file => fs.rm(path.join(dir, file), {force:true})));
+    }
+    if (this.mediaRoot !== this.root) await fs.rmdir(this.mediaRoot).catch(() => {});
+    this.bytes = 0; this.legacy.clear();
   }
   async response(id, range) {
     let bytes;
-    try { bytes = await fs.readFile(this.file(id, 'webm')); }
+    try { bytes = await this.content(id, 'webm'); }
     catch { return new Response('Passage expiré ou indisponible.', { status: 404 }); }
     const headers = { 'Content-Type': 'video/webm', 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' };
     if (range) {
@@ -84,14 +194,17 @@ class LocalSessionStore {
   }
 }
 
+// Sweep of a former version: every session at once, limited to the layout that version wrote (moment-*
+// files at the root of a session directory and its thumbnails/ folder). Nothing in this tree calls it
+// for durable sessions any more; it stays exported for the hosts that still import it.
 async function cleanupRawMedia(sessionsRoot) {
   const entries = await fs.readdir(sessionsRoot, { withFileTypes: true }).catch(() => []);
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const dir = path.join(sessionsRoot, entry.name);
-    await fs.rm(path.join(dir, "thumbnails"), { recursive: true, force: true });
+    await fs.rm(path.join(dir, LEGACY_THUMBS_DIR), { recursive: true, force: true });
     const files = await fs.readdir(dir);
     await Promise.all(files.filter(file => /^moment-\d+\.(?:webm|json)$/.test(file)).map(file => fs.rm(path.join(dir, file), { force: true })));
   }
 }
-module.exports = { LocalSessionStore, cleanupRawMedia };
+module.exports = { LocalSessionStore, cleanupRawMedia, MEDIA_DIR, THUMBS_DIR, LEGACY_THUMBS_DIR };

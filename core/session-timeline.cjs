@@ -111,6 +111,8 @@ function momentDetail(snapshot, selection) {
       visionStatus: p.visionStatus,
       audioError: p.audioError,
       visionError: p.visionError,
+      // The transcriber failed: an empty transcript is not silence.
+      ...(p.audioFailed ? { audioFailed: true } : {}),
       transcript: p.observation?.transcript || "",
       summary: p.observation?.summary || "",
       uncertainty: p.observation?.uncertainty || "",

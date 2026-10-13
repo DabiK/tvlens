@@ -119,3 +119,41 @@ test('partial observations stay outside synthesis but expose incomplete coverage
  assert.equal(calls,1);assert.equal(recap.snapshot().sourceCount,1);
  assert.ok(!recap.snapshot().limits.some(x=>x.includes('analyse partielle')));
 });
+
+test('a reopened recap comes back silently, and the first tick after a resume sends only what arrived since',async()=>{
+ const passages=[source('a',0,8000,'Premier sujet'),source('b',8000,16000,'Deuxième sujet'),source('c',16000,24000,'Arrivé après la dernière synthèse')];
+ const first=new LivingRecap({summarize:async input=>synthesize(input)});
+ first.observe(snapshot(passages.slice(0,2)));await first.tick();first.observe(snapshot(passages));
+ // What the session folder holds: the last published state, as JSON.
+ const saved=JSON.parse(JSON.stringify(first.snapshot()));assert.equal(saved.pendingCount,1);assert.equal(saved.chapters.length,2);
+ let changes=0;const inputs=[];const reopened=new LivingRecap({onChange:()=>changes++,summarize:async input=>{inputs.push(input);return synthesize(input);}});
+ const before=changes,restored=reopened.restore(saved);
+ // Opening an archive: no emission (the host would write the folder it has just read) and no provider call.
+ assert.equal(changes,before);assert.equal(inputs.length,0);
+ const shape=c=>[c.id,c.title,c.summary,c.sourceIds,c.startMs,c.endMs];
+ assert.equal(restored.sessionId,'s');assert.equal(restored.overview,saved.overview);assert.deepEqual(restored.chapters.map(shape),saved.chapters.map(shape));
+ assert.equal(restored.sourceCount,3);assert.equal(restored.pendingCount,1);assert.equal(restored.status,'waiting');assert.equal(restored.updatedAt,saved.updatedAt);
+ assert.deepEqual(restored.limits,saved.limits,'the pending notice is derived again, not doubled');
+ // Replay is what the disk says now: nothing is advertised before the reopened session has been observed.
+ assert.ok(restored.chapters.every(c=>!c.available));
+ reopened.observe(snapshot([{...passages[0],available:false,mediaReason:'missing'},passages[1],passages[2]]));
+ assert.deepEqual(reopened.snapshot().chapters.map(c=>c.available),[false,true]);assert.equal(inputs.length,0);
+ // Explicit resume: the host ticks again. The two chapters and their sources are not paid for a second time.
+ await reopened.tick();
+ assert.equal(inputs.length,1);assert.deepEqual(inputs[0].newPassages.map(p=>p.id),['c']);assert.deepEqual(inputs[0].chapters.map(c=>c.sourceIds),[['a'],['b']]);
+ assert.deepEqual(inputs[0].sourcePassages.map(p=>p.id),['a','b','c']);assert.equal(reopened.snapshot().pendingCount,0);assert.equal(reopened.snapshot().chapters.length,3);
+});
+
+test('restoring abandons a synthesis in flight; a missing recap or a chapter without a known source is never trusted',async()=>{
+ let finish,changes=0;const recap=new LivingRecap({onChange:()=>changes++,summarize:input=>new Promise(r=>finish=()=>r(synthesize(input)))});
+ recap.observe(snapshot([source('x',0,100)],[],'other'));const running=recap.tick();
+ const before=changes,empty=recap.restore(null);
+ assert.equal(changes,before);assert.equal(empty.sessionId,null);assert.equal(empty.status,'idle');assert.equal(empty.sourceCount,0);
+ finish();await running;assert.equal(recap.snapshot().overview,'','the previous session cannot publish into the reopened one');assert.equal(changes,before);
+ // No recap was ever saved for this session: it is bound to it, empty, and everything waits for an explicit resume.
+ assert.deepEqual([recap.restore({sessionId:'s'}).sessionId,recap.snapshot().status,recap.snapshot().chapters.length],['s','idle',0]);
+ const odd=recap.restore({sessionId:'s',overview:'Vue d’ensemble',updatedAt:5,chapters:[{title:'Gardé',summary:'Cite a.',sourceIds:['a','fantôme']},{title:'Doublon',summary:'Cite encore a.',sourceIds:['a']},{title:'Vide',summary:'Sans source.',sourceIds:[]}],
+  sourcePassages:[{id:'a',startMs:0,endMs:100,text:'Texte a',available:true},{id:'b',startMs:100,endMs:200,text:'Texte b',available:true},{id:'bad',startMs:'0',endMs:1,text:'ignoré'}]});
+ assert.deepEqual(odd.chapters.map(c=>[c.title,c.sourceIds]),[['Gardé',['a']]]);assert.equal(odd.sourceCount,2);assert.equal(odd.pendingCount,1,'what no chapter covers is sent at the next synthesis');
+ assert.equal(changes,before);
+});

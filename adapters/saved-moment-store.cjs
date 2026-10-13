@@ -10,6 +10,7 @@ class SavedMomentStore {
  }
  async list(){const dirs=await fs.readdir(this.root,{withFileTypes:true}).catch(()=>[]);const out=[];for(const d of dirs)if(d.isDirectory()&&/^[a-f0-9-]{36}$/.test(d.name)){try{out.push(JSON.parse(await fs.readFile(path.join(this.root,d.name,'saved.json'),'utf8')));}catch{}}return out.sort((a,b)=>b.createdAt-a.createdAt);}
  async remove(id){await fs.rm(this.dir(id),{recursive:true,force:true});}
- response(id,moment,range){return new LocalSessionStore(this.dir(id)).response(moment,range);}
+ // Kept copies sit at the root of their own folder, not in the media/ folder of a session.
+ response(id,moment,range){return new LocalSessionStore(this.dir(id),{mediaDir:''}).response(moment,range);}
 }
 module.exports={SavedMomentStore};

@@ -8,7 +8,9 @@
  * @typedef {{summary:string,visual:string,audio:string,transcript:string,uncertainty?:string}} Observation
  * @typedef {{observe:(segment:object)=>Promise<{observation:Observation,cost?:number}>}} PerceptionPort
  * @typedef {{ask:(context:object)=>Promise<{answer:string,kind:'observation'|'explanation'|'insufficient',citations:string[],limits:string[],cost?:number}>}} AnswerPort
- * @typedef {{put:(id:string,input:CapturedSegment)=>Promise<void>,read:(id:string)=>Promise<{frames:Frame[],audio:Uint8Array|null}>,remove:(id:string)=>Promise<void>}} MediaPort
+ * @typedef {{put:(id:string,input:CapturedSegment)=>Promise<{bytes:number}>,read:(id:string)=>Promise<{frames:Frame[],audio:Uint8Array|null}>,remove:(id:string)=>Promise<void>}} MediaPort
+ * put() resolves to the volume it stored; a refusal for lack of room rejects with code 'TVLENS_STORAGE_FULL'
+ * before anything is written, and the session stops capture on that code without deleting anything.
  * @typedef {{save:(snapshot:object)=>Promise<void>}} ArchivePort
  * @typedef {()=>number} ObservationClock
  * @typedef {{claim:string,context:string}} VerificationRequest
@@ -18,11 +20,13 @@
  */
 module.exports = {};
 /**
- * @typedef {{embed:(text:string,signal?:AbortSignal)=>Promise<number[]>}} EmbeddingPort
+ * @typedef {{embed:(text:string,signal?:AbortSignal)=>Promise<number[]>,embedMany?:(texts:string[],signal?:AbortSignal)=>Promise<number[][]>}} EmbeddingPort
+ * embedMany is optional: one bounded request for several texts, vectors in input order.
  * @typedef {{search:(request:{query:string,segments:object[],anchorMs:number,signal?:AbortSignal})=>Promise<object>}} MomentSearchPort
  * @typedef {{inspect:(request:{question:string,startMs:number,endMs:number,segments:object[],signal?:AbortSignal})=>Promise<{observations:object[],hypotheses:string[],limits:string[]}>}} ClipInspectionPort
  * @typedef {{answer:(request:{question:string,tools:object,signal:AbortSignal})=>Promise<object>}} VideoAgentPort
  * @typedef {{lease:(ids:string[])=>Promise<()=>Promise<void>>}} MediaLeasePort
+ * A lease is only granted on a passage whose clip and stored frames/audio both exist.
  */
 
 /**
@@ -34,19 +38,26 @@ module.exports = {};
 
 /**
  * @typedef {{save:(value:object,media:MediaPort)=>Promise<object>,list:()=>Promise<object[]>,remove:(id:string)=>Promise<void>}} SavedMomentArchivePort
- * @typedef {{evaluate:(request:{instruction:string,snapshot:object,signal:AbortSignal,recent:string[],onProgress:Function})=>Promise<object>}} AutoEvaluationPort
  * @typedef {{check:(rpc:object)=>Promise<object>,snapshot:()=>object}} QuotaGuardPort
  * DeepAsk owns the FIFO, enqueue-time anchor, separate queue/processing timings,
- * manual per-question cancellation and 60-second processing deadline.
+ * manual per-question cancellation and the five-minute processing deadline
+ * (QUESTION_TIMEOUT_MS = 300000, published on every job as timeoutMs; a host may
+ * only lower it). Time spent waiting in the FIFO is never charged to that deadline.
  * SavedMoments owns explicit conservation; archive adapters own durable copies.
- * AutoMonitor owns prospective activation, cadence, deduplication and manual priority.
+ * Surveillance owns activation (t0), the per-passage cursor, the claim registry, its bounded
+ * non-losing queue, deadlines and grouped results. It runs alongside questions and never reads or
+ * writes a "question pending" flag: nothing manual suspends or cancels it.
  * CachedInspector wraps any ClipInspectionPort without provider knowledge.
  */
 
 /**
- * @typedef {{ensure:(segments:object[],signal?:AbortSignal)=>Promise<void>,queryVector:(query:string,signal?:AbortSignal)=>Promise<number[]>,passageVector:(segment:object)=>Promise<number[]|null>}} MomentIndexPort
- * Index creation/reuse is separate from ranking. Runtimes currently request it
- * lazily from MomentSearch; capture never implicitly schedules embedding calls.
+ * @typedef {{ensure:(segments:object[],signal?:AbortSignal)=>Promise<void>,queryVector:(query:string,signal?:AbortSignal)=>Promise<number[]>,passageVector:(segment:object)=>Promise<number[]|null>,observe?:(passages:object[])=>void,request?:(passages:object[])=>void,settle?:(budgetMs:number,signal?:AbortSignal)=>Promise<boolean>,status?:()=>object,close?:()=>Promise<void>}} MomentIndexPort
+ * Index creation/reuse is separate from ranking. When an embedding provider is
+ * configured, the session runtime feeds published passages to observe(): one batch
+ * in flight, bounded queue, coalescence by passage id, stale results never written.
+ * A search calls request() for its admissible prefix and waits settle() for a short
+ * budget only; what is not indexed yet is ranked lexically and counted. The index may
+ * know passages newer than a question: search still ranks its own prefix only.
  */
 
 /**
@@ -56,4 +67,37 @@ module.exports = {};
  * serializes each lane, bounds each backlog, and passes a close cancellation signal.
  * Legacy observe-only adapters keep the serial behavior. Partial observations
  * retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
+ * A transcribe() result carrying failed:true is counted (coverage.audioError) and flagged on the passage
+ * (audioFailed, listed in audioGaps); statuses stay unchanged so that image-only passages still complete.
+ * Every published change of an observation increments the passage revision; reception,
+ * lane starts and publications are stamped on the session clock (core/latency-trace.cjs).
+ * The visionDuringAsk option lets a new visual call start while a question is pending.
+ *
+ * VideoTools keeps session, scope start, anchor and passage ids fixed for one question.
+ * With a live snapshot provider it re-reads those passages at consultation boundaries
+ * (answer start, search, transcript, inspection); the journal records each revision read.
+ */
+
+/**
+ * Surveillance ports (free-instruction surveillance, core/surveillance.cjs).
+ * @typedef {{id:string,startMs:number,endMs:number,transcript:string,summary:string,visual:string,uncertainty:string}} SurveillancePassage
+ * Only the fields that belong to the passage itself: the cumulative topic summary never travels.
+ * @typedef {{passageId:string,quote:string,statement:string,action:'verify'|'signal',kind:'figure'|'date'|'quote'|'fact'|'other',checkable:boolean,reason:string,sameAs:string|null}} DetectedClaim
+ * action=verify + checkable: web verification queue; verify + not checkable: undetermined; action=signal
+ * (the instruction asks to be told, not to check): noted, grouped in a lot of kind "signal" without sources.
+ * @typedef {{detect:(request:{sessionId:string,instruction:string,passages:SurveillancePassage[],context:SurveillancePassage[],known:{id:string,statement:string}[],signal:AbortSignal})=>Promise<{claims:DetectedClaim[]}>}} ClaimDetectionPort
+ * @typedef {{claimId:string,assessment:'supported'|'contradicted'|'mixed'|'insufficient',conclusion:string,sources:ExternalEvidence[],limitations:string[]}} ClaimVerdict
+ * @typedef {{verify:(request:{sessionId:string,instruction:string,claims:{id:string,statement:string,quote:string,kind:string,startMs:number,endMs:number,context:string}[],signal:AbortSignal,onProgress?:Function})=>Promise<{summary:string,verdicts:ClaimVerdict[],research:{webSearches:number,openedUrls:string[],elapsedMs:number}}>}} ClaimResearchPort
+ * Detection gets neither web nor tools; research gets web search only. Neither is ever the chat agent
+ * or the manual verification adapter: a shared client would let a question cancel the surveillance.
+ *
+ * Durable sessions.
+ * @typedef {()=>({state:'ok'|'low'|'blocked'|'unknown',freeBytes:number|null,minFreeBytes:number|null,sessionBytes:number,bytesPerMinute:number|null,remainingMinutes:number|null}|null)} StoragePort
+ * Synchronous and cached: read at every state emission, it never measures anything itself.
+ * @typedef {{id:string,title:string,firstTopic:string|null,host:string|null,createdAt:number|null,updatedAt:number|null,closedAt:number|null,state:'live'|'archived'|'interrupted'|'unreadable',elapsedMs:number,passages:number,media:{stored:number,missing:number,bytes:number},legacy:boolean,error?:string}} SessionSummary
+ * @typedef {{list:(options?:{current?:string|null})=>Promise<SessionSummary[]>,read:(id:string,options?:{current?:string|null})=>Promise<{summary:SessionSummary,manifest:object|null,snapshot:object,chat:object|null,recap:object|null,auto:object|null,surveillance:object|null,inventory:object}>,remove:(id:string)=>Promise<{id:string,freedBytes:number}>,usage:(sessions?:SessionSummary[])=>Promise<{sessions:number,bytes:number,freeBytes:number|null,minFreeBytes:number|null,warnFreeBytes:number|null,state:string}>}} SessionLibraryPort
+ * Listing and reading never write. The only deletion is one whole session, named by a strict identifier;
+ * a session in memory is stopped and sealed by its host first. Nothing is ever evicted to make room.
+ * A reopened session is stopped and read-only until an explicit resume: WatchSession.restore,
+ * DeepAsk.restore, LivingRecap.restore and Surveillance.restore are silent (no emission, no write, no provider).
  */

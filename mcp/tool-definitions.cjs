@@ -6,6 +6,7 @@ function fieldSchema(name, field) {
   if (field.type === "string") return z.string().min(1).max(2000);
   if (field.type === "number")
     return name === "endMs" ? z.number().positive() : z.number().nonnegative();
+  if (field.type === "boolean") return z.boolean().optional();
   throw new Error(`Unsupported video tool field: ${name}`);
 }
 

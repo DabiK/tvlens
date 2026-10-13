@@ -1,11 +1,16 @@
 // Shared representation for retrieval and evidence summaries.
 function passageText(segment) {
+  // An archived passage without description falls back to its transcript as summary:
+  // the same words must not appear twice, nor change the text an index already holds.
   return [
-    segment.observation?.summary || segment.summary,
-    segment.observation?.visual,
-    segment.observation?.transcript,
+    ...new Set(
+      [
+        segment.observation?.summary || segment.summary,
+        segment.observation?.visual,
+        segment.observation?.transcript,
+      ].filter(Boolean),
+    ),
   ]
-    .filter(Boolean)
     .join("\n")
     .slice(0, 1200);
 }

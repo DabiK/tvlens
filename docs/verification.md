@@ -1,5 +1,7 @@
 # Vérification externe par port hexagonal
 
+> **Mise à jour du 13 octobre 2026.** Le vérificateur manuel ne lance plus `codex exec`. Il passe par le client App Server du chat, sous un rôle sans outil. Les sections « Adaptateur » et « Isolation » ci-dessous sont à jour ; l’ancien lancement est gardé plus bas, à titre d’historique. Ce changement n’est pas déployé. Preuves et limites : [SECURITY.md](../SECURITY.md) et [livrable de la nuit](night-features-delivery.md).
+
 Le domaine ne lance pas Codex. `VerificationService` dépend seulement de
 `VerificationPort.verify({ claim, context })` et reçoit une conclusion structurée,
 des preuves et des sources. Le choix du moteur reste dans la composition du script.
@@ -8,7 +10,7 @@ des preuves et des sources. Le choix du moteur reste dans la composition du scri
 | --- | --- |
 | Domaine | `core/verification.cjs` : validation de l’affirmation, une tâche à la fois, contrôle des résultats, abstention sans preuves |
 | Contrat | `VerificationPort` dans `core/ports.cjs` |
-| Adaptateur | `adapters/codex-verifier.cjs` : processus CLI, prompt de recherche, schéma JSON, délai maximal, nettoyage |
+| Adaptateur | `adapters/codex-verifier.cjs` : un client App Server par vérification (`CodexSessionClient`, rôle `verifier`), consigne de recherche, schéma JSON, délai maximal, fermeture du processus |
 | Hôte de test | `scripts/probe-verify.cjs` : compose le service et l’adaptateur, sauvegarde le résultat |
 
 Le contrat de sortie contient `normalizedClaim`, `assessment`, `conclusion`,
@@ -31,7 +33,24 @@ aucun média. Il utilise la connexion Codex existante : sa consommation relève 
 ce compte, séparément du plafond OpenRouter de 1 $. Aucun coût en dollars n’est
 déduit des tokens Codex. Le rapport est écrit dans `docs/verification-live.json`.
 
-## Isolation de l’essai
+## Isolation
+
+Depuis le 13 octobre 2026, une vérification manuelle tourne ainsi :
+
+- Un processus App Server par vérification, fermé à la fin, à l’annulation et au délai (180 secondes).
+- Rôle `verifier` : recherche web seule, **aucun outil déclaré**, fil ouvert sans environnement d’exécution. Le rôle ne peut pas être élargi par l’appelant.
+- Mêmes contrôles que le chat : réponse de Codex relue à l’ouverture du fil, liste blanche des éléments publiés, refus de toute requête du serveur, dossiers temporaires séparés des identifiants, environnement en liste blanche, réglages qui empêchent la création de sous-agents.
+- Effort de raisonnement fixé à `low`. L’ancien lancement ne fixait rien et prenait le défaut du modèle ; la qualité à cet effort n’a été jugée que sur une réponse réelle.
+- Une source n’est gardée que si sa page a été réellement ouverte pendant la recherche. Une ouverture qui rend plusieurs pages les compte toutes ; un résultat seulement listé par une recherche ne compte jamais. `research.openedUrls` porte ces pages, `research.confinement` les faits de l’exécution.
+- L’affirmation et son contexte voyagent comme des données, dans un bloc délimité déclaré non fiable.
+
+Mesuré avec un vrai modèle sur un Mac (`codex-cli 0.160.1`), consigne de rôle neutralisée : le vérificateur n’a ni shell, ni lecteur de fichiers, ni outil de patch, et n’atteint que l’horloge et la recherche web. L’écartement d’une source réellement non ouverte n’a été observé que dans des tests hors ligne. Rien n’est mesuré sous Linux.
+
+Cela reste une isolation de contexte, d’environnement et d’outils, **pas une VM ni un conteneur**. Le web est un canal de sortie : le modèle peut y envoyer des mots de l’affirmation dans une requête. Voir [SECURITY.md](../SECURITY.md) pour ce qui est empêché, détecté ou inconnu.
+
+### Premier essai (historique) : lancement `codex exec`
+
+Ce lancement ne sert plus à l’application. Il reste utilisé par `adapters/codex-video-agent.cjs`, pour des scripts d’évaluation ; il n’est pas confiné en lecture.
 
 - Répertoire temporaire distinct du projet; aucun fichier TVLens transmis.
 - Entrée par stdin, arguments de processus passés sans shell.
@@ -52,7 +71,7 @@ lui seul, une interdiction de lecture de tout le disque. Pour une distribution
 produit, une frontière de processus distant/conteneur et une authentification
 de service devront être validées indépendamment.
 
-## Intégration future dans TVLens
+## Intégration dans TVLens
 
 L’interface affiche une affirmation éditable avant de déclencher le port :
 les tests audio ont montré qu’un chiffre peut être mal transcrit. La tâche Verify indépendante reçoit actuellement uniquement l’affirmation corrigée
@@ -93,8 +112,12 @@ Codex n’est copié dans le projet.
 
 La validité d’une URL et la présence d’appels web ne prouvent pas à elles seules
 que chaque phrase de la conclusion est étayée. `research.openedUrls` permet
-d’auditer les ouvertures de pages rapportées par le CLI. Les sources et conclusions
+d’auditer les ouvertures de pages rapportées par Codex. Les sources et conclusions
 doivent rester visibles et contestables.
+
+Depuis le 13 octobre 2026, une question posée pendant une vérification ne l’annule
+plus, et la surveillance continue vérifie elle aussi des affirmations, par un rôle
+distinct : voir [architecture](architecture.md), « Surveillance et résumé progressif ».
 
 Documentation officielle utilisée :
 [mode non interactif et schéma de sortie](https://learn.chatgpt.com/docs/non-interactive-mode),

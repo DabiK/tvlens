@@ -50,7 +50,7 @@ select { flex: 1; }
 #observe { color: #142012; background: var(--lime); border-radius: 12px; padding: 11px 16px; font-weight: 750; }
 #stop { color: #f4ded4; }
 #new-session { margin-left: 7px; }
-#notice { color: var(--warning); font-size: 12px; margin-top: 8px; }
+#notice { color: var(--warning); font-size: 12px; padding: 7px 26px; border-bottom: 1px solid var(--line); }
 #notice:empty { display: none; }
 .sound { display: flex; align-items: center; gap: 9px; }
 .sound label { color: #9fb2b8; font-size: 10px; letter-spacing: .1em; }
@@ -64,9 +64,7 @@ meter { width: 63px; height: 9px; accent-color: var(--lime); }
 .moment p { margin: 0; font-size: 12px; line-height: 1.4; font-weight: 650; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .moment small { display: block; color: var(--muted); font-size: 10px; margin-top: 5px; }
 .placeholder { color: #93a8ae; padding: 24px 0; margin: 0; font-size: 13px; }
-.memory-actions { display: flex; gap: 8px; margin: 11px 0 5px; }
-.memory-actions .secondary { font-size: 11px; padding: 7px 11px; }
-#auto-status { margin: 6px 0 16px; }
+#timeline-older { margin: 2px 0 14px; }
 .saved-heading { margin: 10px 0 12px; }
 .saved-rail { gap: 10px; }
 .saved-tile { display: flex; align-items: center; gap: 9px; flex: 0 0 250px; border: 1px solid var(--line); border-radius: 12px; background: #0b202a; padding: 8px; color: var(--ink); text-align: left; }
@@ -104,7 +102,24 @@ textarea::placeholder { color: #a5b7bc; }
 .source-card p, .source-card small { display: block; color: var(--muted); font-size: 10px; }
 .source-link { display: block; color: var(--lime); background: transparent; padding: 0; text-align: left; text-decoration: underline; font-size: 11px; margin-top: 9px; }
 .activity-list { padding-left: 15px; color: var(--muted); font-size: 11px; }
-.job-elapsed { float: right; font: 10px Menlo, monospace; color: var(--muted); }
+/* A running question: elapsed / ceiling and a thin gauge, both read from the job itself. */
+.job-clock-row { display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; }
+.job-clock { font: 10px Menlo, monospace; color: var(--muted); white-space: nowrap; }
+.job-progress { flex: 1; height: 3px; appearance: none; -webkit-appearance: none; border: 0; border-radius: 2px; overflow: hidden; background: #ffffff1c; }
+.job-progress::-webkit-progress-bar { background: #ffffff1c; }
+.job-progress::-webkit-progress-value { background: var(--lime); }
+.job-fresh { margin: -6px 0 8px; text-align: right; font-size: 10px; }
+.job-fresh-detail { margin: 4px 0 0; }
+/* A failure, a deadline or a cancellation has its own block: it is not an answer and not an evidence verdict. */
+.job-outcome { border-left: 2px solid var(--warning); padding-left: 10px; margin: 8px 0; }
+.job-outcome .answer-kind { color: var(--warning); margin-top: 0; }
+.job-outcome[data-outcome=cancelled] { border-left-color: #ffffff40; }
+.job-outcome[data-outcome=cancelled] .answer-kind { color: var(--muted); }
+.job-error { margin: 4px 0; font-size: 12px; line-height: 1.5; }
+.job-status small, .job-waiting small { display: block; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.job-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.job-actions .secondary { height: 34px; padding: 0 11px; font-size: 12px; margin: 0; border-radius: 9px; }
+.pending-message { border-top: 1px solid var(--line); padding: 2px 0 12px; }
 .chat-preview, .chat-provisional { border-left: 2px solid var(--lime); padding-left: 9px; color: #d6e0e1; font-size: 11px; }
 #usage { margin-left: auto; }
 #quota-status { font-size: 10px; }
@@ -122,7 +137,14 @@ dialog button:not(.link) { border-radius: 10px; }
 #claim { min-height: 105px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-top: 10px; }
 #verify-dialog, #models-dialog { max-width: 620px; }
 .verify-submit { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 18px; }
-.verify-submit button, #float-launch, #auto-form button[type=submit], #confirm-delete-saved { color: #142012; background: var(--lime); padding: 10px 14px; }
+.verify-submit button, #float-launch, #confirm-resume-session { color: #142012; background: var(--lime); padding: 10px 14px; }
+/* A destructive confirmation never looks like the primary action, and never comes first. */
+#confirm-delete-saved, #confirm-delete-session { color: #2a1410; background: var(--warning); padding: 10px 14px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+#delete-session-dialog, #resume-session-dialog, #delete-saved-dialog { max-width: 520px; }
+#delete-session-dialog p, #resume-session-dialog p { font-size: 12px; line-height: 1.6; }
+#delete-session-error:empty, #resume-session-error:empty, #delete-session-warning:empty { display: none; }
+#delete-session-error, #resume-session-error { color: var(--warning); }
 #models-form input { background: #102a35; }
 #float-bar { display: none; }
 body.floating { min-width: 0; overflow: hidden; background: #081820; }
@@ -133,7 +155,7 @@ body.floating > header, body.floating > footer, body.floating .workspace { displ
 .float-action.primary { background: var(--lime); color: #142012; font-weight: 750; }
 .float-action.recording { background: #f3c6b6; color: #261511; }
 #float-keep, #float-library, #float-full { font-size: 16px; line-height: 1; padding: 8px; }
-body.floating main { display: none; height: calc(100vh - 65px); min-height: 0; }
+body.floating main { display: none; min-height: 0; }
 body.floating.floating-expanded main { display: block; }
 body.floating .conversation { position: static; width: 100%; height: 100%; border: 0; border-radius: 0; box-shadow: none; padding: 15px; }
 body.floating .conversation > .section-heading { display: flex; }
@@ -164,9 +186,8 @@ body.floating dialog { max-width: calc(100vw - 24px); }
 .quick-actions .secondary { padding:7px 9px; font-size:11px; }
 .quick-actions .link { font-size:10px; padding:4px; }
 #attention-status { margin:5px 0 0; font-size:10px; }
-#attention-status:empty, #quick-notice:empty { display:none; }
-#quick-notice, #moment-error { color:var(--warning); font-size:11px; }
-#quick-notice { max-height:55px; overflow:auto; margin-top:7px; }
+#attention-status:empty { display:none; }
+#moment-error { color:var(--warning); font-size:11px; }
 #moment-dialog { max-width:500px; }
 #moment-preview { width:100%; max-height:180px; object-fit:contain; margin-top:12px; border-radius:10px; background:#030b10; }
 .moment-intents { display:flex; gap:8px; margin:14px 0; }
@@ -206,3 +227,111 @@ body.floating #recap-dialog .recap-overview { font-size: 12px; }
 
 .recap-extra-sources { width: 100%; color: var(--muted); font-size: 10px; }
 .recap-extra-sources > summary { cursor: pointer; padding: 4px 0; }
+
+/* Banners above every view: storage low or blocked, reopened archive, unsaved surveillance history, and the single notice. */
+.banner { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 9px 26px; font-size: 12px; line-height: 1.45; background: #10262f; border-bottom: 1px solid var(--line); }
+.banner strong { font-weight: 650; }
+.banner > span { min-width: 0; }
+.banner .link { margin-left: auto; padding: 0; }
+.banner[data-state=low] { background: #2a2418; color: #f3dcc0; }
+.banner[data-state=blocked] { background: #3a1f1a; color: #ffd9cc; }
+/* Surveillance history kept in memory only: the plain banner, its title in the colour of a notice. No action in it. */
+.banner[data-tone=warning] strong { color: var(--warning); }
+.banner-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.banner-actions .secondary { padding: 6px 11px; font-size: 11px; border-radius: 9px; }
+.banner-actions .link { margin: 0; }
+
+/* Small state labels shared by the surveillance history and the session list. Never a true/false badge. */
+.state-chip { font-size: 10px; line-height: 1.4; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; color: var(--muted); white-space: nowrap; }
+.state-chip[data-state=sourced], .state-chip[data-state=complete] { color: var(--lime); border-color: #c5ef8e55; }
+.state-chip[data-state=running], .state-chip[data-state=live] { color: #ffd7b8; border-color: #f1ba9d66; }
+.state-chip[data-state=error], .state-chip[data-state=unreadable] { color: var(--warning); border-color: #f1ba9d88; }
+.state-chip[data-state=noted] { color: #a9cbe6; border-color: #a9cbe655; }
+.assessment { font-size: 10px; line-height: 1.4; color: #dfe9e4; border: 1px solid #ffffff33; border-radius: 999px; padding: 2px 8px; }
+.danger { color: var(--warning); }
+
+/* Surveillance: activity chip in the conversation, tab badge, panel, cards. */
+.watch-chip { align-self: flex-start; margin-top: 8px; background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 10px; text-align: left; }
+.watch-chip::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); margin-right: 7px; }
+.watch-chip[data-state=late] { color: var(--warning); border-color: #f1ba9d66; }
+.watch-chip[data-state=late]::before { background: var(--warning); }
+.watch-chip[data-state=verifying]::before, .watch-chip[data-state=detecting]::before { animation: watch-pulse 1.4s ease-in-out infinite; }
+@keyframes watch-pulse { 50% { opacity: .25; } }
+.nav-badge { display: inline-block; min-width: 8px; height: 8px; border-radius: 999px; background: var(--lime); margin-left: 7px; vertical-align: middle; font: 700 9px/15px Menlo, monospace; font-style: normal; color: #142012; text-align: center; }
+.nav-badge:not(:empty) { min-width: 15px; height: 15px; padding: 0 4px; }
+.nav-badge[data-tone=late] { background: var(--warning); }
+.nav-badge[data-tone=active] { background: #c5ef8e80; }
+.float-action { position: relative; }
+#float-menu-toggle[data-badge]::after { content: ''; position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+#float-menu-toggle[data-badge=late]::after { background: var(--warning); }
+.watch-section h1 { font-size: 30px; margin: 0; }
+.watch-section .section-heading { margin-top: 26px; }
+.watch-section .section-heading:first-child { margin-top: 0; }
+#watch-form label { display: block; color: var(--muted); font-size: 11px; margin: 16px 0 7px; }
+#watch-instruction { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #102631; min-height: 58px; }
+.watch-examples { display: flex; flex-wrap: wrap; gap: 7px; margin: 9px 0 12px; }
+.watch-examples .suggestion { width: auto; margin: 0; }
+.watch-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+#watch-start { color: #142012; background: var(--lime); border-radius: 10px; padding: 10px 14px; font-weight: 700; }
+#watch-error { color: var(--warning); font-size: 11px; }
+.watch-activity { margin: 16px 0 0; padding: 8px 12px; border-left: 2px solid #ffffff33; color: var(--muted); font-size: 12px; }
+.watch-activity[data-state=listening], .watch-activity[data-state=detecting], .watch-activity[data-state=verifying] { border-left-color: var(--lime); color: #d6e0e1; }
+.watch-activity[data-state=late] { border-left-color: var(--warning); color: var(--warning); }
+.watch-results { display: grid; gap: 10px; margin-top: 10px; }
+.watch-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.watch-filters:empty { display: none; }
+.watch-filter { background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 11px; }
+.watch-filter[aria-pressed=true] { color: var(--lime); border-color: #c5ef8e77; background: #d0f19b12; }
+.watch-row { border-top: 1px solid var(--line); padding: 10px 0; }
+.watch-row-head, .watch-item { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.watch-statement { margin: 7px 0 3px; font-size: 13px; line-height: 1.5; }
+.watch-row > .hint { margin: 3px 0; }
+.watch-conclusion, .watch-reason { margin: 4px 0; font-size: 12px; line-height: 1.5; color: #d2dfe0; }
+.watch-reason { color: var(--muted); }
+.watch-row-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.watch-row-actions .secondary { padding: 6px 11px; font-size: 11px; border-radius: 9px; }
+.watch-settings, .watch-gaps { margin-top: 22px; color: var(--muted); font-size: 12px; }
+.watch-settings > summary, .watch-gaps > summary { cursor: pointer; }
+.watch-settings label { display: block; margin: 12px 0 6px; font-size: 11px; }
+.watch-settings select { width: auto; }
+.watch-gap { margin: 6px 0; }
+/* One card per sourced result. A video signal is drawn apart (colour, dashed edge, own label): it is never a web check. */
+.watch-card { background: #0e2530; border: 1px solid var(--line); border-left: 3px solid #86a97b; border-radius: 12px; padding: 11px 12px; font-size: 12px; }
+.watch-card[data-kind=signal] { background: #0d2230; border-style: dashed; border-left: 3px solid #8fb8d8; }
+.watch-card-head { display: flex; align-items: center; gap: 8px; }
+.watch-card-label { font: 10px Menlo, monospace; letter-spacing: .12em; color: var(--lime); }
+.watch-card[data-kind=signal] .watch-card-label { color: #a9cbe6; }
+.watch-card-time { margin-left: auto; font: 10px Menlo, monospace; color: var(--muted); }
+.watch-card-close { background: transparent; color: var(--muted); font-size: 17px; line-height: 1; padding: 0 3px; }
+.watch-card-text { margin: 8px 0 6px; font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
+.watch-card-note { margin: 0 0 6px; font-size: 10px; }
+.watch-items { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 5px; }
+.watch-quote { color: var(--muted); font-size: 11px; }
+.watch-card .reference { padding: 4px 7px; min-height: 0; }
+.watch-card .source-link { margin-top: 5px; }
+.watch-card-more { display: block; margin-top: 4px; padding: 4px 0 0; font-size: 10px; }
+.watch-card.flash { outline: 2px solid var(--lime); outline-offset: 2px; }
+/* Mac equivalent of the TV overlay: a discreet stack, bottom left, that never takes the focus. Sourced verifications only. */
+.watch-stack { position: fixed; left: 16px; bottom: 16px; z-index: 30; display: flex; flex-direction: column; gap: 10px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }
+.watch-stack .watch-card { pointer-events: auto; box-shadow: 0 12px 35px #000a; animation: watch-in .25s ease; }
+@keyframes watch-in { from { opacity: 0; transform: translateY(8px); } }
+body.floating .watch-stack { left: 12px; bottom: 176px; width: calc(100vw - 24px); }
+/* Collapsed floating bar: the card becomes one line in place of "Demander"; a click opens the window on it. */
+.float-toast { display: none; }
+body.floating.has-float-toast .float-toast { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; -webkit-app-region: no-drag; flex: 1 1 auto; min-width: 0; height: 36px; text-align: left; background: #12303a; color: var(--ink); border: 1px solid #c5ef8e55; border-radius: 9px; padding: 3px 9px; font-size: 10px; line-height: 1.45; }
+body.floating.has-float-toast #float-chat { display: none; }
+body.floating.has-float-toast .float-grip { flex: 0 0 auto; }
+
+/* Saved sessions and disk space. */
+.sessions-panel { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
+.sessions-panel > .hint { margin: 6px 0; }
+#storage-line[data-state=low], #storage-line[data-state=blocked] { color: var(--warning); }
+.sessions-list { display: grid; gap: 8px; margin-top: 12px; }
+.session-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 12px; background: #0b202a; padding: 10px 12px; }
+.session-row[data-current] { border-color: #c5ef8e55; }
+.session-main strong { display: block; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.session-main small { display: block; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.session-badges, .session-actions { display: flex; align-items: center; gap: 8px; }
+.session-actions .secondary { padding: 6px 11px; font-size: 11px; border-radius: 9px; }
+@media (max-width: 1100px) { .session-row { grid-template-columns: minmax(0, 1fr) auto; } .session-badges { grid-row: 2; } }
+@media (prefers-reduced-motion: reduce) { .watch-stack .watch-card, .watch-chip::before { animation: none; } }

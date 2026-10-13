@@ -1,3 +1,11 @@
+// Same normalisation as the chat sources: HTTPS, no credentials, fragment ignored.
+function pageKey(value) {
+  try {
+    const url = new URL(String(value));
+    if (url.protocol !== 'https:' || url.username || url.password) return null;
+    url.hash = ''; return url.href;
+  } catch { return null; }
+}
 class VerificationService {
   /** @param {{verifier: import('./ports.cjs').VerificationPort}} dependencies */
   constructor({ verifier, onChange = () => {}, archive, now = () => Date.now() }) {
@@ -17,11 +25,17 @@ class VerificationService {
       const result = await this.verifier.verify({ claim: claim.trim(), context });
       if (!result || typeof result.normalizedClaim !== 'string' || typeof result.conclusion !== 'string' || !['supported', 'contradicted', 'mixed', 'insufficient'].includes(result.assessment) || !Array.isArray(result.sources) || !Array.isArray(result.limitations)) throw new Error('Résultat de vérification invalide.');
       const seen = new Set();
+      // A page the verifier never opened is a recollection of the model, not evidence: a search that
+      // merely happened does not vouch for the links cited afterwards.
+      const opened = new Set((Array.isArray(result.research?.openedUrls) ? result.research.openedUrls : []).map(pageKey).filter(Boolean));
+      let unopened = 0;
       const sources = result.sources.filter(source => {
         if (!source || typeof source.url !== 'string' || !/^https:\/\/[^\s/@]+(?:[/?#]|$)/i.test(source.url) || seen.has(source.url) || typeof source.title !== 'string' || !source.title.trim() || typeof source.evidence !== 'string' || !source.evidence.trim() || !['supports', 'contradicts', 'context'].includes(source.relation)) return false;
+        if (!opened.has(pageKey(source.url))) { unopened++; return false; }
         seen.add(source.url); return true;
       }).slice(0, 6);
       const limitations = result.limitations.filter(x => typeof x === 'string').slice(0, 8);
+      if (unopened) limitations.push(unopened === 1 ? 'Une source citée a été écartée : sa page n’a pas été ouverte pendant la recherche.' : `${unopened} sources citées ont été écartées : leurs pages n’ont pas été ouvertes pendant la recherche.`);
       if (!sources.length || !result.research?.webSearches) job.result = {
         claim: claim.trim(), normalizedClaim: result.normalizedClaim, assessment: 'insufficient',
         conclusion: 'La recherche n’a pas fourni de preuves externes exploitables. Cette affirmation n’est pas vérifiée.',

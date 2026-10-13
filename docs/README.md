@@ -10,6 +10,7 @@
 | [Installation LG](lg-installation.md) | Parcours complet TV → Mac/VPS, composants, appairage et limites |
 | [Frise LG](lg-timeline.md) | Navigation télécommande, sujets, miniatures, détail et questions attachées |
 | [Capture LG](lg-capture-control.md) | Démarrage manuel, pause/reprise, tampon et incidents réseau |
+| [Alertes LG panneau fermé](lg-ambient.md) | Mode ambiant : profils, sûreté des touches, protection de la capture, protocole de validation native. Code livré, affichage désactivé par défaut, **non validé sur la TV** |
 | [Installer son serveur](server-installation.md) | Configuration portable Linux, outils, systemd et appairage |
 | [VPS privé](vps-deployment.md) | Runtime Linux, systemd, appairage, mesures et retour au Mac |
 | [Tailscale sur LG](lg-tailscale.md) | Installation, coexistence LAN/VPN, persistance et retrait |
@@ -19,15 +20,28 @@
 | Document | Contenu |
 | --- | --- |
 | [Architecture](architecture.md) | Domaine, ports, adaptateurs et hôtes Mac/Linux |
-| [Rôles des agents](refactor-runtime.md) | Codex chat/perception, outils directs, MCP et indexation à la demande |
+| [Rôles des agents](refactor-runtime.md) | Codex chat/perception, outils directs, MCP et indexation |
+| [Latence du backend](backend-latency-optimization.md) | Chemin d’un bloc, changements de la branche de latence, mesures Mac/VPS, simulation et limites |
+| [Livrable de la nuit du 13 octobre 2026](night-features-delivery.md) | Questions de cinq minutes, sessions conservées, suppression et disque, cloisonnement, surveillance, cartes regroupées, overlay TV : ce qui est livré, prouvé, et ce qui ne l’est pas. Rien n’est déployé |
+| [Réexamen : réutiliser la transcription](reinspection-transcript-reuse.md) | Cause, correction, contrat d’`inspect_clip` (`exactSpeech`, intervalles images et paroles), mesures et réserves d’une autre session, intégrées par fusion |
+| [Confidentialité et cloisonnement](../SECURITY.md) | Ce qui est empêché, détecté après coup ou inconnu pour les agents Codex ; à faire avant tout déploiement |
 | [Audit avant publication](publication-audit.md) | Périmètre, anonymisation de l’historique et contrôles |
 | [Validation](validation.md) | Résultats actuels, essais réels, échecs et limites |
 | [Contribuer](../CONTRIBUTING.md) | Organisation et vérifications à lancer |
-| [Résumé progressif](living-recap.md) | Chapitres, provenance et expiration |
+| [Résumé progressif](living-recap.md) | Chapitres, provenance et conservation |
+| [Vérification externe](verification.md) | Port de vérification manuelle, rôle du vérificateur, isolation |
 | [Captures du README](../screenshots/current/README.md) | Protocole, médias et crédits |
+
+## Mission du 13 octobre 2026
+
+- [Demandes produit et neuf décisions](features-proactives-et-retention-2026-10-13.md) : le contrat de la mission.
+- [Objectif de la nuit](night-hackathon-objective.md) et [index des tickets](tvlens-night-tickets.md), avec l’état de chacun.
+- [Livrable](night-features-delivery.md) : à lire avant tout déploiement.
 
 ## Candidature et prochaines expériences
 
+- [PRD / roadmap V2 — trois jours](PRD-V2.md) : référence de livraison backend, tranche locale GX10, décisions et replis.
+- [Expérimentations perception et contexte](../experiments/README.md) : intentions, hypothèses et protocoles non exécutés sur mouvement, traitements asynchrones et navigation agentique.
 - [Roadmap companion LG](lg-companion-roadmap.md) : état livré, différences avec le contrat initial et critères restant ouverts.
 - [Exploration d’un moteur dans la TV](lg-on-device-exploration.md) : expérience future distincte du runtime Mac/VPS.
 - Inférence locale GX10, capture caméra/micro et embeddings multimodaux : pistes à valider, pas des fonctionnalités livrées.

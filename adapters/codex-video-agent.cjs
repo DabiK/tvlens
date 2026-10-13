@@ -2,7 +2,7 @@
 // Production conversation uses CodexSessionAgent and direct dynamic tools.
 const { videoToolNames } = require('../core/video-tool-contracts.cjs');
 const fs=require('node:fs/promises');const os=require('node:os');const path=require('node:path');const {spawn}=require('node:child_process');
-const {invocation,isolatedEnvironment}=require('./codex-verifier.cjs');
+const {invocation,isolatedEnvironment}=require('./codex-verifier.cjs');const {knownFeatures}=require('./codex-confinement.cjs');
 const { schema, buildPrompt, companionPersona } = require('./companion-prompt.cjs');
 class CodexVideoAgent{
  constructor({binary='codex',authHome,bridge,model='',nodeBinary=process.execPath,mcpScript=path.join(__dirname,'..','mcp','server.cjs')}){Object.assign(this,{binary,authHome,bridge,model,nodeBinary,mcpScript});}
@@ -11,7 +11,7 @@ class CodexVideoAgent{
   try{
    const descriptor=path.join(dir,'capability.json'),output=path.join(dir,'answer.json'),schemaFile=path.join(dir,'schema.json');
    await fs.writeFile(schemaFile,JSON.stringify(schema),{mode:0o600});revoke=await this.bridge.register(tools,signal,descriptor);
-   const args=invocation(dir,schemaFile,output);args.pop();
+   const args=invocation(dir,schemaFile,output,await knownFeatures(this.binary));args.pop();
    const cfg={'web_search':mode==='chat'?'live':'disabled','model_reasoning_effort':'low','mcp_servers.tvlens.command':this.nodeBinary,'mcp_servers.tvlens.args':[this.mcpScript,`--descriptor=${descriptor}`],'mcp_servers.tvlens.env':{ELECTRON_RUN_AS_NODE:'1'},'mcp_servers.tvlens.enabled_tools':videoToolNames,'mcp_servers.tvlens.startup_timeout_sec':10,'mcp_servers.tvlens.tool_timeout_sec':45,'mcp_servers.tvlens.default_tools_approval_mode':'approve'};
    if(this.model)cfg.model=this.model;
    for(const [key,value]of Object.entries(cfg))args.push('-c',`${key}=${toml(value)}`);args.push('-');

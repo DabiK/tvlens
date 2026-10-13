@@ -1,28 +1,35 @@
-import systemPaths from '../adapters/system-paths.cjs';
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
+import os from "node:os";
 import fs from "node:fs/promises";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-const jpeg = "/tmp/tvlens-timeline-fixture.jpg";
-await promisify(execFile)(systemPaths.executable('ffmpeg', {override:process.env.TVLENS_FFMPEG}), [
-  "-nostdin",
-  "-y",
-  "-v",
-  "error",
-  "-ss",
-  "30",
-  "-i",
-  "media/samples/kennedy-rice-7min.mp4",
-  "-frames:v",
-  "1",
-  "-vf",
-  "scale=640:-2",
-  jpeg,
-]);
-const image = await fs.readFile(jpeg);
+import sharp from "sharp";
+// The page is loaded from a temporary copy of tv/app WITHOUT connection.js: a real pairing file in the
+// tree would override the injected configuration and send this smoke to the real server with the real token.
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const temporary = path.resolve(process.env.TVLENS_SMOKE_TMP || os.tmpdir());
+const out = path.resolve(process.env.TVLENS_SMOKE_OUT || temporary);
+await fs.mkdir(out, { recursive: true });
+const copy = await fs.mkdtemp(path.join(temporary, "tvlens-tv-app-"));
+await fs.cp(path.join(root, "tv/app"), copy, {
+  recursive: true,
+  filter: (source) => path.basename(source) !== "connection.js",
+});
+// A generated frame: the thumbnail path is exercised with real JPEG bytes, without the sample video
+// (absent from a fresh checkout) and without ffmpeg.
+const image = await sharp({
+  create: { width: 640, height: 360, channels: 3, background: { r: 52, g: 82, b: 96 } },
+})
+  .composite([
+    {
+      input: Buffer.from(
+        '<svg width="640" height="360"><rect x="60" y="70" width="210" height="220" fill="#c5ef8e"/><circle cx="450" cy="180" r="90" fill="#17323e"/></svg>',
+      ),
+    },
+  ])
+  .jpeg()
+  .toBuffer();
 const card = (n, status = "ready") => ({
   id: "moment-" + n,
   title: "Sujet observé " + n,
@@ -61,6 +68,7 @@ let mode = "chat",
   asked;
 const browser = await chromium.launch({
   executablePath:
+    process.env.TVLENS_CHROME ||
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   headless: true,
 });
@@ -128,11 +136,13 @@ try {
         chat: { jobs: [] },
         timeline: { sessionId: null, cards: [] },
       };
-      return route.fulfill({ json: { ended: true } });
+      return route.fulfill({
+        json: { ended: true, id: "timeline-test", archived: true },
+      });
     }
     return route.fulfill({ json: state });
   });
-  await page.goto(pathToFileURL(path.resolve("tv/app/index.html")).href);
+  await page.goto(pathToFileURL(path.join(copy, "index.html")).href);
   await page.waitForFunction(() => window.tvlensTimeline?.cards.length === 3);
   await page.locator("#show-timeline").click();
   await page.waitForFunction(() => document.body.dataset.mode === "timeline");
@@ -227,7 +237,7 @@ try {
     await page.evaluate(() => window.tvlensTimeline.selected),
     "moment-5",
   );
-  // Presentation screenshot: real sample frame behind the overlay, not a simulated AI claim.
+  // Screenshot for reading the layout: the generated frame stands where the video plane is.
   await page.evaluate(
     (src) => {
       const n = document.createElement("img");
@@ -240,14 +250,29 @@ try {
     },
     "data:image/jpeg;base64," + image.toString("base64"),
   );
-  await page.screenshot({ path: "/tmp/tvlens-timeline-ui.png" });
+  await page.screenshot({ path: path.join(out, "tvlens-timeline-ui.png") });
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
     true,
   );
+  // Ending archives: the dialog says so, and no longer announces a deletion of thumbnails.
   await page.locator("#timeline-end").click();
+  assert.equal(
+    await page.evaluate(() => document.activeElement.id),
+    "end-cancel",
+    "The harmless choice is focused first",
+  );
+  assert.equal(await page.locator("#end-confirm").textContent(), "Terminer et archiver");
+  assert.match(
+    await page.locator("#end-session-dialog").textContent(),
+    /session archivée[\s\S]*restent consultables/,
+  );
+  assert.doesNotMatch(
+    await page.locator("#end-session-dialog").textContent(),
+    /supprim/i,
+  );
   await page.locator("#end-confirm").click();
   await page.waitForFunction(
     () => !document.querySelector("#end-session-dialog").open,
@@ -256,8 +281,9 @@ try {
   assert.equal(await page.locator(".timeline-card").count(), 0);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: bottom layout, real thumbnail rendering, focus through grouping, details/transcript, cumulative frozen summary, scoped question, live follow, session end",
+    "PASS: bottom layout, thumbnail rendering, focus through grouping, details/transcript, cumulative frozen summary, scoped question, live follow, session end (archive)",
   );
 } finally {
   await browser.close();
+  await fs.rm(copy, { recursive: true, force: true });
 }

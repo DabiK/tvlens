@@ -64,12 +64,20 @@ class CodexSessionAgent {
     context,
     conversation = [],
     mode = "chat",
+    // The viewer's standing instruction, when one is active. Never built from programme content.
+    instruction,
     onProgress,
     sourceRepair = false,
   }) {
     signal.throwIfAborted();
     const started = Date.now();
+    // The connection is made here, before the client's turn: its cost belongs to this question.
+    const coldStart =
+      !this.client.ready ||
+      !this.client.threadId ||
+      this.client.sessionId !== tools.sessionId;
     await this.prepare(tools.sessionId);
+    const connectMs = coldStart ? Date.now() - started : 0;
     const fresh = context
       ? {
           ...context,
@@ -78,23 +86,19 @@ class CodexSessionAgent {
           ),
         }
       : context;
-    let instructions = buildPrompt({
+    // The role text already lives in the thread (baseInstructions): a turn only adds its mode, the
+    // viewer's words and the data block. Pages already opened travel as data, not as instructions.
+    const instructions = buildPrompt({
       question,
       tools,
       context: fresh,
       conversation: this.sent.size ? [] : conversation,
       mode,
+      instruction,
+      openedUrls: [...this.client.opened],
+      sourceRepair,
+      inThread: true,
     });
-    instructions +=
-      "\nLes passages fournis sont une mise à jour de la même session : conserve ceux déjà lus, mais ne suppose pas une continuité pendant les pauses. Réutilise le contexte du fil pour les relances ; ne refais pas une recherche déjà suffisante. Les médias anciens peuvent avoir expiré.";
-    instructions +=
-      "\nURLs dont la consultation a été observée dans ce fil (seules ces URLs peuvent être réutilisées sans nouvelle ouverture) : " +
-      JSON.stringify([...this.client.opened]) +
-      ". Pour toute autre source, ouvre sa véritable URL HTTPS avec le web, pas seulement un identifiant interne de résultat. Un résultat de recherche seul ne suffit pas à attester la lecture de la page.";
-    if (sourceRepair) {
-      instructions +=
-        "\nLa précédente proposition de sources n’a pas pu être validée par l’application. Termine la demande initiale : ouvre explicitement les URLs HTTPS pertinentes avec le web, puis fournis la réponse et les sources consultées. N’invente aucun lien. Si cela échoue, réponds kind=insufficient et explique brièvement que le lien/la source n’a pas pu être confirmé. Ne remplace pas cette demande par un résumé vidéo.";
-    }
     const result = await this.client.answer({
       jobId,
       sessionId: tools.sessionId,
@@ -148,6 +152,7 @@ class CodexSessionAgent {
         context,
         conversation,
         mode,
+        instruction,
         onProgress,
         sourceRepair: true,
       });
@@ -156,6 +161,8 @@ class CodexSessionAgent {
         audit: [...result.audit, ...(repaired.audit || [])],
         sourceRepair: { initial: sourceValidation },
         elapsedMs: Date.now() - started,
+        coldStart,
+        connectMs,
       };
     }
     return {
@@ -167,6 +174,8 @@ class CodexSessionAgent {
         : sources.length,
       model: this.model || "default",
       elapsedMs: Date.now() - started,
+      coldStart,
+      connectMs,
     };
   }
 

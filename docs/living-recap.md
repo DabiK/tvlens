@@ -1,6 +1,6 @@
 # Jusqu’ici — récapitulatif progressif
 
-Le panneau Mémoire affiche un aperçu global et les trois derniers chapitres. « Tous les chapitres » et le bouton « Jusqu’ici » de la conversation ouvrent le récapitulatif complet, y compris en fenêtre flottante. Chaque horodatage référence un vrai passage rejouable. Après expiration vidéo, le texte et sa provenance restent conservés.
+Le panneau Mémoire affiche un aperçu global et les trois derniers chapitres. « Tous les chapitres » et le bouton « Jusqu’ici » de la conversation ouvrent le récapitulatif complet, y compris en fenêtre flottante. Chaque horodatage référence un vrai passage rejouable. Depuis le 13 octobre 2026, les vidéos restent avec la session jusqu’à sa suppression ; si une vidéo est indisponible (session ancienne, fichier absent, fenêtre glissante réactivée), le texte et sa provenance restent conservés et le motif est dit.
 
 ## Fonctionnement
 
@@ -10,11 +10,11 @@ Le panneau Mémoire affiche un aperçu global et les trois derniers chapitres. �
 - IDs sources validés : aucune invention, duplication ou omission. Horodatages calculés par l’application.
 - Questions et vérifications manuelles prioritaires : annulation de la synthèse, reprise après le travail manuel.
 - Délai de 45 secondes ; erreurs affichées en conservant le dernier récapitulatif valide. Une nouvelle session annule et réinitialise le récapitulatif.
-- Archive locale atomique `living-recap.json` dans le dossier de session, avec textes originaux et provenance. Conservée lors du nettoyage des vidéos brutes.
+- Archive locale atomique `living-recap.json` dans le dossier de session, avec textes originaux et provenance. Elle part avec la session quand celle-ci est supprimée, et seulement alors.
 
 ## Limites
 
-Les résumés dépendent des observations disponibles et peuvent être imprécis. Les passages non analysés et interruptions sont signalés. Le modèle reçoit tous les originaux : le coût augmente avec la durée. Au-delà de 240 000 caractères d’entrée, la mise à jour échoue explicitement sans tronquer ni prétendre couvrir les nouveaux passages. L’archive est conservée sur disque ; la réouverture d’une ancienne session n’est pas ajoutée ici.
+Les résumés dépendent des observations disponibles et peuvent être imprécis. Les passages non analysés et interruptions sont signalés. Le modèle reçoit tous les originaux : le coût augmente avec la durée. Au-delà de 240 000 caractères d’entrée, la mise à jour échoue explicitement sans tronquer ni prétendre couvrir les nouveaux passages. L’archive est conservée sur disque. Depuis le 13 octobre 2026, ouvrir une session archivée sur Mac recharge son récapitulatif, sans relancer de synthèse ; une correction faite après la dernière synthèse ne repart qu’avec la synthèse suivante. Le serveur TV n’a pas de récapitulatif progressif.
 
 ## Vérification
 

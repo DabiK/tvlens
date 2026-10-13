@@ -1,11 +1,15 @@
 import { setIcon } from './icons.js';
+import { describeHealth } from './sessions-view.mjs';
 /** Presentation adapter. Owns navigation and window chrome, never session data or inference. */
 export class ViewingShell {
   constructor(root = document) {
     this.root = root;
     this.get = id => root.getElementById(id);
+    this.view = 'direct';
+    this.onShow = () => {};
     this.get('nav-live').onclick = () => this.show('direct');
     this.get('nav-memory').onclick = () => this.show('memory');
+    this.get('nav-watch').onclick = () => this.show('watch');
     // Keep one conversation DOM tree in both modes so focus, drafts and history survive.
     const conversation = this.get('float-conversation');
     conversation.insertBefore(root.querySelector('.quick-actions'), this.get('ask-form'));
@@ -24,15 +28,19 @@ export class ViewingShell {
     setIcon(this.get('float-keep'), saved ? 'check' : 'bookmark');
     this.get('float-keep').title = saved ? 'Moment conservé' : 'Garder ce moment';
   }
+  /** direct: video and chat; memory: recap, passages, saved sessions; watch: surveillance beside the chat. */
   show(view) {
+    this.view = view;
     this.root.body.dataset.view = view;
     this.get('memory-section').hidden = view !== 'memory';
-    for (const [id, selected] of [['nav-live', view === 'direct'], ['nav-memory', view === 'memory']]) {
+    this.get('watch-section').hidden = view !== 'watch';
+    for (const [id, selected] of [['nav-live', view === 'direct'], ['nav-memory', view === 'memory'], ['nav-watch', view === 'watch']]) {
       const button = this.get(id);
       button.classList.toggle('active', selected);
       if (selected) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     }
+    this.onShow(view);
   }
   windowMode(floating, expanded) {
     this.root.body.classList.toggle('floating', floating);
@@ -41,20 +49,29 @@ export class ViewingShell {
     this.get('float-chat').setAttribute('aria-label', expanded ? 'Réduire le chat' : 'Ouvrir le chat');
     this.get('float-menu').hidePopover();
   }
+  /** Surveillance dot on the tab and on the floating bar: a count of new results, or lateness. Never a focus change. */
+  watchBadge({ visible = false, tone = null, count = 0, label = '' } = {}) {
+    const badge = this.get('watch-badge');
+    badge.hidden = !visible;
+    badge.dataset.tone = tone || '';
+    badge.textContent = count > 0 ? String(Math.min(count, 99)) : '';
+    this.get('nav-watch').title = label;
+    const toggle = this.get('float-menu-toggle');
+    if (visible && tone !== 'active') toggle.dataset.badge = tone; else delete toggle.dataset.badge;
+    // The label may already open with "Surveillance", with or without its separator: the word is written once.
+    this.get('float-watch').textContent = visible && label ? `Surveillance · ${label.replace(/^Surveillance\s*(?:·\s*)?/i, '') || 'active'}` : 'Surveillance';
+  }
   observation(state, recording) {
     this.get('observe').hidden = recording;
     this.get('stop').hidden = !recording;
     const record = this.get('float-record');
     setIcon(record, recording ? 'pause' : 'play');
-    record.setAttribute('aria-label', recording ? 'Mettre TVLens en pause' : 'Lancer ou reprendre l’observation');
-    const ready = state?.segments?.filter(s => s.status === 'ready') || [];
-    const pending = state?.pending || 0;
-    const gaps = state?.gaps?.length || 0;
-    const delay = Math.ceil(Math.max(0, (state?.capturedThroughMs || 0) - (state?.analyzedThroughMs || 0)) / 1000);
-    const health = !state?.id ? 'Prêt à observer' : !recording ? 'Observation en pause' : gaps ? `${gaps} passage(s) sans analyse` : pending || delay ? `Analyse en cours${delay ? ` · ${delay} s de décalage` : ''}` : ready.length ? 'Analyse à jour' : 'Premières observations en cours…';
-    this.root.body.dataset.health = !recording ? 'idle' : gaps || pending || delay ? 'pending' : 'ready';
-    for (const id of ['coverage-summary', 'chat-health-summary']) this.get(id).textContent = health;
-    const latest = ready.at(-1)?.observation;
-    this.get('current-context').textContent = latest?.summary || 'Le contexte apparaîtra avec les premières observations.';
+    record.setAttribute('aria-label', recording ? 'Mettre TVLens en pause' : state?.readOnly ? 'Reprendre la capture dans cette archive' : 'Lancer ou reprendre l’observation');
+    // The wording (and its French agreement) lives in the view model, where it is tested without a DOM.
+    const health = describeHealth(state, { recording });
+    this.root.body.dataset.health = health.tone;
+    this.root.body.classList.toggle('read-only', Boolean(state?.readOnly));
+    for (const id of ['coverage-summary', 'chat-health-summary']) this.get(id).textContent = health.label;
+    this.get('current-context').textContent = health.context || 'Le contexte apparaîtra avec les premières observations.';
   }
 }
