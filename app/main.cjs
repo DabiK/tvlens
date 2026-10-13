@@ -1,6 +1,7 @@
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
+const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
@@ -334,50 +335,53 @@ app.whenReady().then(async () => {
   // Pushed when the state changes (ok, low, blocked), from a cached measurement: never a tick of its own.
   // Marked as announced before the publication, which lists the sessions: a slow listing is not announced twice.
   if (guard) storageTimer = setInterval(async () => { const { state } = await guard.check(); if (state !== storageShown) { storageShown = state; publishStorage(); } }, 5000);
-  // End of the loaded session for this host: its work stops in order, then it is archived whole. Nothing
-  // is purged, here or at quit; `remove` is the explicit deletion of this one session and of nothing else.
+  // End of the loaded session for this host, by the protocol the server host follows too (session-closing.cjs):
+  // its work stops in the order of this host, then it is archived whole. Nothing is purged, here or at quit;
+  // `remove` is the explicit deletion of this one session and of nothing else. Every closing step is attempted
+  // whatever the others did: an adapter that fails to close (recap, chat agent, surveillance, and inside the
+  // runtime perception, inspection model, index) neither keeps the session from being archived nor leaves a
+  // provider process behind. What failed goes to the journal, an archive the disk refused included: its folder
+  // keeps what was last confirmed, and the list goes on showing the session as the manifest on disk says, cut
+  // short when it was written during a capture.
   const endSession = async (reason, { remove = false } = {}) => {
-    const ended = live, failed = []; let freedBytes = 0;
-    // Every closing step is attempted whatever the others did: an adapter that fails to close (recap, chat
-    // agent, surveillance, and inside the runtime perception, inspection model, index) neither keeps the
-    // session from being archived nor leaves a provider process behind. What failed goes to the journal, an
-    // archive the disk refused included: its folder keeps what was last confirmed, and the list goes on
-    // showing the session as the manifest on disk says, cut short when it was written during a capture.
-    const attempt = async (step, work) => { try { return await work(); } catch (error) { failed.push(`${step} : ${String(error?.message || error).slice(0, 200)}`); } };
+    const ended = live;
     switching = true;
+    // A passage search still running ends with the session it was asked in: told through its signal as the end
+    // begins, with the reason of this end. Its answer is refused once that session is no longer the one loaded.
+    searchController?.abort(new Error(reason)); searchController = null;
     try {
-      // The session is ending: a passage still landing is stored and saved, but no analysis is started for it
-      // only to be given up a moment later. Set before anything is awaited.
-      if (watch) watch.ending = true;
-      // The external MCP contexts opened on this session end here, before anything is awaited: a call that arrives
-      // while the session closes finds none of them, and one still running is refused instead of answered.
-      await attempt('contextes MCP', () => ended && bridge?.revoke(ended.id));
-      clearInterval(pruneTimer); recap.reset(); await attempt('résumé vivant', () => recapAdapter?.close?.()); recapAdapter = null;
-      // The last surveillance states reach the session folder before the session closes.
-      await attempt('surveillance', () => surveillance.reset(reason));
-      // Final states are saved as they are published; whatever still waited for its second is handed over too,
-      // before the session is archived or sealed.
-      await attempt('questions', async () => { try { deep.cancelAll(reason); await Promise.allSettled(deep.jobs.map(job => job.done)); } finally { saveQuestions(); } });
-      await attempt('agent de chat', () => videoAgent.close?.());
-      await Promise.allSettled([...ingestions]);
-      if (ended) {
-        if (watch.accepting) await attempt('capture', () => ended.pause());
+      const { freedBytes, refused } = await closeSession({
+        session: ended, library, remove,
         // A session that received neither a passage nor a question is not worth an archive.
-        const empty = !ended.readOnly && !watch.snapshot().coverage.passages && !deep.jobs.length;
-        // Sealed first: no late write of this runtime can bring the deleted directory back.
-        const erase = async () => { await ended.seal(); if (await library.folder(ended.id).then(() => true, () => false)) ({ freedBytes } = await library.remove(ended.id)); };
-        // An explicit deletion that fails is said to whoever asked for it; an empty session or an archive never blocks the host.
-        if (remove) await erase(); else await attempt(empty ? 'session vide' : 'archive', () => (empty ? erase() : ended.archive()));
-      }
+        empty: () => !ended.readOnly && !ended.watch.snapshot().coverage.passages && !deep.jobs.length,
+        // The external MCP contexts opened on this session end here, before anything is awaited: a call that arrives
+        // while the session closes finds none of them, and one still running is refused instead of answered.
+        begin: ['contextes MCP', () => ended && bridge?.revoke(ended.id)],
+        steps: [
+          ['résumé vivant', async () => { clearInterval(pruneTimer); try { recap.reset(); await recapAdapter?.close?.(); } finally { recapAdapter = null; } }],
+          // The last surveillance states reach the session folder before the session closes.
+          ['surveillance', () => surveillance.reset(reason)],
+          // Final states are saved as they are published; whatever still waited for its second is handed over too,
+          // before the session is archived or sealed.
+          ['questions', () => settleQuestions(deep, reason, saveQuestions)],
+          ['agent de chat', () => videoAgent.close?.()],
+          // A passage being stored lands first; only a capture still running is stopped.
+          ['capture', async () => { await Promise.allSettled([...ingestions]); if (ended?.watch.accepting) await ended.pause(); }],
+        ],
+        // Whatever happened above, the host is left without a session.
+        letGo: () => {
+          live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
+          // Nothing of this session waits past this point: a timer left behind would have nothing to write.
+          clearTimeout(checkpointTimer); checkpointTimer = unsavedQuestions = savedShape = null;
+          viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
+        },
+        log: line => console.error(line),
+      });
+      // An explicit deletion that fails is said to whoever asked for it; an empty session or an archive never blocks the host.
+      if (refused) throw refused;
       return { freedBytes };
     } finally {
-      failed.push(...(ended?.closeErrors || []));
-      if (failed.length) console.error(`TVLens — fermeture incomplète de la session ${ended?.id || '(aucune)'} : ${failed.join(' ; ')}`);
-      // Whatever happened above, the host is left without a session, and the renderer is told so.
-      live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
-      // Nothing of this session waits past this point: a timer left behind would have nothing to write.
-      clearTimeout(checkpointTimer); checkpointTimer = unsavedQuestions = savedShape = null;
-      viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
+      // Whatever happened, the renderer is told that the host is left without a session.
       switching = false;
       send('watch:reset'); send('sessions:changed');
     }

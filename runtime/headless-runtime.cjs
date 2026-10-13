@@ -11,6 +11,11 @@ const {
 } = require("./session-runtime.cjs");
 const { createConversationRuntime } = require("./conversation-runtime.cjs");
 const { createSurveillanceRuntime } = require("./surveillance-runtime.cjs");
+const {
+  closeSession,
+  settleQuestions,
+  attempt,
+} = require("./session-closing.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard, STORAGE_FULL } = require("../adapters/disk-guard.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
@@ -749,9 +754,10 @@ class HeadlessRuntime {
     return cancelled;
   }
   // What is being stored lands whole, as before. What was cancelled is then given preparationWaitMs to
-  // let go. Past that the session goes away all the same and says so: the block stays owned and refused,
-  // and the transport prepares no other, until its preparation has really settled.
-  async settleIngestions(errors, cancelled) {
+  // let go. Past that the session goes away all the same and says so, as the failure of this closing step
+  // ("préparation média"): the block stays owned and refused, and the transport prepares no other, until
+  // its preparation has really settled.
+  async settleIngestions(cancelled) {
     await Promise.allSettled([...this.ingestions]);
     if (!cancelled.length) return;
     let timer;
@@ -763,8 +769,8 @@ class HeadlessRuntime {
     ]);
     clearTimeout(timer);
     if (late)
-      errors.push(
-        `préparation média : arrêt non confirmé après ${this.preparationWaitMs} ms, bloc refusé, préparation suivante en attente`,
+      throw new Error(
+        `arrêt non confirmé après ${this.preparationWaitMs} ms, bloc refusé, préparation suivante en attente`,
       );
   }
   // `operation` is what accept() handed the transport for this block; a host that prepares nothing
@@ -832,87 +838,65 @@ class HeadlessRuntime {
     if (cancelled) this.deep.cancel("Question annulée.", id);
     return { cancelled, status: job?.status ?? null };
   }
-  async settleQuestions(reason) {
-    try {
-      this.deep.cancelAll(reason);
-      // The last state of each question is published, hence saved, before its promise settles.
-      await Promise.allSettled(this.deep.jobs.map((job) => job.done));
-    } finally {
-      // Whatever still waited for its second is handed over too, before the session is closed or sealed.
-      this.saveQuestions();
-    }
-  }
-  // One closing step of the session in memory. It is attempted whatever the steps before it did, and a
-  // failure is kept in `errors` instead of stopping the end of the session half-way: an adapter that
-  // fails to close neither keeps the session from being archived nor leaves the others open.
-  async attempt(errors, step, work) {
-    try {
-      return await work();
-    } catch (error) {
-      errors.push(`${step} : ${String(error?.message || error).slice(0, 200)}`);
-    }
-  }
-  // Closing failures are never swallowed: kept as the outcome of the last end, and written to the journal.
-  ended(outcome) {
-    this.lastEnd = outcome;
-    if (outcome.errors?.length)
-      try {
-        this.log(
-          `TVLens — fermeture incomplète de la session ${outcome.id} : ${outcome.errors.join(" ; ")}`,
-        );
-      } catch {}
-    return outcome;
-  }
-  // Ends the work on the session in memory and keeps it whole on disk. The order matters: capture
-  // stops, writes in flight land, questions and surveillance reach their final states and are written,
-  // and only then is the session closed.
-  async release(reason = "Session terminée.") {
-    const session = this.session;
-    if (!session) return { id: null, archived: false };
+  // The end of the session in memory, by the protocol the Mac host follows too (session-closing.cjs):
+  // every closing step is attempted, the host lets go of the session whatever happened, and what failed
+  // is never swallowed: kept as the outcome of this end, and written to the journal. The order is this
+  // host's own, and it matters: capture stops, writes in flight land, questions and surveillance reach
+  // their final states and are written, and only then is the session archived. Neither announced as
+  // archived nor erased unless that step itself came back: the folder then keeps what was last confirmed,
+  // and the list goes on showing the session as the manifest on disk says, cut short when that manifest
+  // was written during a capture. `remove` is the explicit deletion: sealed, and only then erased.
+  async leave(session, reason, remove = false) {
     this.releasing = true;
-    const errors = [];
+    let cancelled = [];
     try {
-      // The session is ending: a passage still landing is stored and saved, but no analysis is started
-      // for it only to be given up a moment later. Set before waiting for the ingestions in flight.
-      session.watch.ending = true;
-      // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
-      const cancelled = this.cancelPreparations();
-      await this.attempt(errors, "capture", () => session.pause());
-      await this.settleIngestions(errors, cancelled);
-      const asked = this.deep.jobs.length > 0 || session.watch.questions.length > 0;
-      await this.attempt(errors, "questions", () => this.settleQuestions(reason));
-      await this.attempt(errors, "surveillance", () =>
-        this.surveillance.reset(reason),
-      );
-      await this.attempt(errors, "agent de chat", () => this.agent.close?.());
-      // A session that saw no passage and no question is not an archive worth listing. Only one this
-      // host started itself: an archive that was opened is never discarded for being short.
-      const empty =
-        this.fresh && !asked && !session.watch.snapshot().coverage.passages;
-      // Neither announced as archived nor erased unless the step itself came back: archive() rejects
-      // when the disk refused one of the last states or the manifest. The folder then keeps what was
-      // last confirmed, and the list goes on showing the session as the manifest on disk says: cut
-      // short when that manifest was written during a capture.
-      let kept = false,
-        sealed = false;
-      await this.attempt(errors, empty ? "scellement" : "archive", async () => {
-        if (empty) await session.seal();
-        else await session.archive();
-        kept = !empty;
-        sealed = empty;
+      const outcome = await closeSession({
+        session,
+        library: this.library,
+        remove,
+        // A session that saw no passage and no question is not an archive worth listing. Only one this
+        // host started itself: an archive that was opened is never discarded for being short.
+        empty: () =>
+          this.fresh &&
+          !this.deep.jobs.length &&
+          !session.watch.questions.length &&
+          !session.watch.snapshot().coverage.passages,
+        // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
+        begin: [
+          "préparation média",
+          () => {
+            cancelled = this.cancelPreparations();
+          },
+        ],
+        steps: [
+          // A deletion is refused while its session captures: it has no capture left to stop.
+          ...(remove ? [] : [["capture", () => session.pause()]]),
+          ["préparation média", () => this.settleIngestions(cancelled)],
+          [
+            "questions",
+            () =>
+              settleQuestions(this.deep, reason, () => this.saveQuestions()),
+          ],
+          ["surveillance", () => this.surveillance.reset(reason)],
+          ["agent de chat", () => this.agent.close?.()],
+        ],
+        // Whatever failed above, the host lets go of this session: a new one can start.
+        letGo: () => this.adopt(null),
+        log: (line) => this.log(line),
       });
-      errors.push(...(session.closeErrors || []));
-      // Whatever failed above, the host lets go of this session: a new one can start.
-      this.adopt(null);
-      if (sealed) await this.library.remove(session.id).catch(() => {});
-      return this.ended({
-        id: session.id,
-        archived: kept,
-        ...(errors.length ? { errors } : {}),
-      });
+      const { id, archived, errors } = outcome;
+      this.lastEnd = { id, archived, ...(errors.length ? { errors } : {}) };
+      return outcome;
     } finally {
       this.releasing = false;
     }
+  }
+  // Ends the work on the session in memory and keeps it whole on disk: nothing is purged.
+  async release(reason = "Session terminée.") {
+    const session = this.session;
+    if (!session) return { id: null, archived: false };
+    await this.leave(session, reason);
+    return this.lastEnd;
   }
   // "Terminer la session" archives: nothing is purged. Coalesced: a second request shares the outcome.
   end() {
@@ -1071,39 +1055,19 @@ class HeadlessRuntime {
           "Arrête la capture avant de supprimer cette session.",
           "capturing",
         );
-      this.releasing = true;
-      const errors = [];
-      try {
-        // Same rule as an end: nothing new is analysed for a session that is going away, and a block
-        // still being prepared for it is cancelled before its folder is erased.
-        session.watch.ending = true;
-        await this.settleIngestions(errors, this.cancelPreparations());
-        // Same rule as an end: an adapter that fails to close does not keep the session from going.
-        await this.attempt(errors, "questions", () =>
-          this.settleQuestions("Session supprimée."),
-        );
-        await this.attempt(errors, "surveillance", () =>
-          this.surveillance.reset("Session supprimée."),
-        );
-        await this.attempt(errors, "agent de chat", () => this.agent.close?.());
-        // Not attempted "whatever happens": nothing is erased unless the store is really sealed.
-        await session.seal();
-        errors.push(...(session.closeErrors || []));
-        this.ended({ id, archived: false, ...(errors.length ? { errors } : {}) });
-        this.adopt(null);
-        // A session that never reached the disk has nothing to erase; any other failure is reported.
-        const onDisk = await this.library.folder(id).then(
-          () => true,
-          () => false,
-        );
-        const removed = onDisk
-          ? await this.library.remove(id)
-          : { freedBytes: 0 };
-        this.emit();
-        return { deleted: true, id, freedBytes: removed.freedBytes };
-      } finally {
-        this.releasing = false;
-      }
+      // Same rules as an end: nothing new is analysed for a session that is going away, a block still
+      // being prepared for it is cancelled before its folder is erased, and an adapter that fails to
+      // close does not keep the session from going.
+      const { freedBytes, refused } = await this.leave(
+        session,
+        "Session supprimée.",
+        true,
+      );
+      // Not erased "whatever happens": nothing is unless the store is really sealed. The host has let
+      // go of the session all the same, its folder keeps what it held, and whoever asked is told why.
+      if (refused) throw refused;
+      this.emit();
+      return { deleted: true, id, freedBytes };
     });
   }
   startSurveillance({ sessionId, instruction } = {}) {
@@ -1154,12 +1118,12 @@ class HeadlessRuntime {
         // No session to end, yet a preparation cancelled by an earlier end may still not have let go:
         // the host does not leave under it without the same bounded wait, and says so below.
         if (ended.id === null)
-          await this.settleIngestions(errors, this.cancelPreparations());
+          await attempt(errors, "préparation média", () =>
+            this.settleIngestions(this.cancelPreparations()),
+          );
       } finally {
         // The surveillance role releases its provider processes whatever the end of the session did.
-        await this.attempt(errors, "surveillance", () =>
-          this.surveillance.close(),
-        );
+        await attempt(errors, "surveillance", () => this.surveillance.close());
         if (errors.length) {
           this.lastEnd = {
             id: null,
