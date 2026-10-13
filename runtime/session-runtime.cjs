@@ -41,6 +41,9 @@ const INDEX_OBSERVE_TAIL = 48;
 // The manifest carries what a session list needs; during capture it is rewritten at most this often.
 const MANIFEST_EVERY_MS = 30000,
   MANIFEST_MAX_CAPTURES = 100;
+// What a re-examination is answered once the runtime of its session has closed.
+const REVOKED =
+  "Session terminée : ses passages ne peuvent plus être réexaminés.";
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -204,6 +207,29 @@ function createSessionRuntime({
           strategy: inspectionStrategy(smoke ? strategy : "sheets-diverse"),
         });
   inspector = new CachedInspector(inspector);
+  // The inspector outlives this runtime in whatever was handed it: a question, an external MCP context. Once
+  // the runtime has closed it serves nothing more, cached or not: a late re-examination would reconnect an
+  // inspection model that nobody owns any more. One still running is told through its signal, before it
+  // reaches that model, and what it brings back all the same is neither answered nor left in the cache.
+  const revocation = new AbortController(),
+    inspectCached = inspector.inspect.bind(inspector);
+  const refuseRevoked = () => {
+    if (!revocation.signal.aborted) return;
+    inspector.cache.clear();
+    throw new Error(REVOKED);
+  };
+  inspector.inspect = async (input) => {
+    refuseRevoked();
+    const signal = input.signal
+      ? AbortSignal.any([input.signal, revocation.signal])
+      : revocation.signal;
+    const result = await inspectCached({ ...input, signal }).catch((error) => {
+      refuseRevoked();
+      throw error;
+    });
+    refuseRevoked();
+    return result;
+  };
   sessionClock = new SessionClock(
     readClock,
     restore ? { elapsedMs: restore.snapshot.elapsedMs, paused: true } : {},
@@ -456,6 +482,9 @@ function createSessionRuntime({
         throw new Error(
           "Session ouverte en lecture seule : ses médias ne s’effacent qu’avec la suppression de la session.",
         );
+      // No re-examination from here on, and none kept: see the inspector above.
+      revocation.abort(new Error(REVOKED));
+      inspector.cache.clear();
       ending ||= (async () => {
         watch.asking = true;
         // No new passage from here, and one whose write is under way lands first, thumbnail included:

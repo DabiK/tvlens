@@ -27,6 +27,9 @@ const {
 const spawnRpc = (options) => new CodexRpc(options);
 // How long Codex gets to confirm the end of a turn the guard refused, before its process goes.
 const DRAIN_MS = 3000;
+// What a connection is refused with while the process group of the one it replaces is not seen gone.
+const STILL_RUNNING =
+  "Arrêt du processus Codex précédent non confirmé : connexion refusée.";
 // States a fact of the thread (no environment is bound to it); the control is technical, not this sentence.
 const ROLE_SUFFIX =
   " Tu n’es pas un agent de programmation : ce fil n’a ni fichiers, ni terminal, ni connecteur.";
@@ -127,6 +130,8 @@ class CodexSessionClient {
     this.threads = { own: new Set(), announced: new Set(), starting: 0 };
     // Set while a turn the guard refused is still ending inside Codex (see refuse).
     this.draining = null;
+    // The transport this client last closed, until its process group was seen gone (see connect).
+    this.leaving = null;
     // What the current connection really confirmed. `confined` is null until something was checked,
     // then true only when the last thread/start contradicts nothing AND Codex read back a setting
     // that blocks sub-agent creation (`subAgents`: "blocked", "not-blocked", "unknown"); otherwise
@@ -241,6 +246,17 @@ class CodexSessionClient {
     // close() can land during any await below: a superseded connection must leave neither a
     // process nor a directory behind (pre-warm and background reconnect make this reachable).
     const generation = (this.generation = (this.generation || 0) + 1);
+    // One process group at a time. The transport this client last closed is asked again, and nothing is
+    // started for this connection, not even its private tree, before that group was seen gone. One that
+    // is still there after the bound of the transport refuses the connection, in so many words: two
+    // generations of a role never run side by side, and the next connection asks again.
+    const leaving = this.leaving;
+    if (leaving) {
+      const gone = await leaving.close();
+      if (generation !== this.generation) throw Error("Connexion obsolète.");
+      if (gone === false) throw Error(STILL_RUNNING);
+      if (this.leaving === leaving) this.leaving = null;
+    }
     // The tree is published on the client only once complete: a close landing meanwhile finds
     // nothing to remove, and this connection removes its own tree when it sees it was superseded.
     const tree = await createContext("tvlens-codex-session-", this.authHome);
@@ -788,6 +804,8 @@ class CodexSessionClient {
       if (this.active === active) this.active = null;
     }
   }
+  // Closes the connection, not the client: a later prepare() or turn connects again, once the process
+  // group left here is gone. Resolves once its private tree is removed, after that process has left.
   async close() {
     this.generation = (this.generation || 0) + 1;
     this.active?.reject(Error("Session Codex fermée."));
@@ -797,12 +815,18 @@ class CodexSessionClient {
     this.ready = null;
     this.threadId = null;
     this.rotations = 0;
-    rpc?.close();
+    // Every way a transport is left ends here before a reconnection: prepare() closes what the guard, the
+    // drain or the watchdog closed first, and a transport closed twice answers for the same process group.
+    // A transport double that answers nothing is not waited for.
+    const exited = rpc?.close();
+    if (exited) this.leaving = rpc;
     this.opened.clear();
     this.context = null;
     if (this.dir) {
       const dir = this.dir;
       this.dir = null;
+      // The private tree goes once the process that runs in it has, or once the transport gave up waiting.
+      if (exited) await exited;
       await fs.rm(dir, { recursive: true, force: true });
     }
   }

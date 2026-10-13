@@ -171,7 +171,9 @@ app.whenReady().then(async () => {
   } });
   videoAgent = conversation.agent;
   deep = conversation.deep;
-  bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools: conversation.makeTools }).start();
+  // An external MCP context is opened on the loaded session, never on one that is being closed: the contexts of a
+  // session are revoked as its end begins (endSession), and none may be opened on it again while that end is awaited.
+  bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools: (...input) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return conversation.makeTools(...input); } }).start();
   // Same factory as the server host. Its agent is never the chat agent nor the manual verification adapter:
   // a shared client would let a question serialise or cancel the surveillance. Questions and surveillance
   // run side by side; `probe` only feeds an informative overlap counter.
@@ -347,6 +349,9 @@ app.whenReady().then(async () => {
       // The session is ending: a passage still landing is stored and saved, but no analysis is started for it
       // only to be given up a moment later. Set before anything is awaited.
       if (watch) watch.ending = true;
+      // The external MCP contexts opened on this session end here, before anything is awaited: a call that arrives
+      // while the session closes finds none of them, and one still running is refused instead of answered.
+      await attempt('contextes MCP', () => ended && bridge?.revoke(ended.id));
       clearInterval(pruneTimer); recap.reset(); await attempt('résumé vivant', () => recapAdapter?.close?.()); recapAdapter = null;
       // The last surveillance states reach the session folder before the session closes.
       await attempt('surveillance', () => surveillance.reset(reason));

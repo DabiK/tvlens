@@ -389,7 +389,8 @@ function createSurveillanceRuntime({
         announce();
       });
   };
-  // Final states are written at once; provider processes are released in the background.
+  // Final states are written at once; provider processes are released in the background. An activation that
+  // follows starts none before the ones released here are gone: each Codex client waits for the process it left.
   const stop = (reason) => {
     const state = surveillance.stop(reason);
     write();
