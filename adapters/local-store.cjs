@@ -131,9 +131,11 @@ class LocalSessionStore {
     return { ids, legacy, partial: [...new Set([...now.keys(), ...before.keys()])].filter(id => !ids.has(id)),
       thumbs: new Set([...thumbs, ...formerThumbs].map(file => file.name.slice(0, -4))), mediaBytes, thumbBytes, bytes: mediaBytes + thumbBytes };
   }
-  // Reopening: what is already on disk is counted once here, then every write adds to it.
-  adopt(inventory, mediaMs = 0) {
+  // Reopening: what is already on disk is counted once here, then every write adds to it. The manifest
+  // read from it is, for now, both what is asked for and what is confirmed.
+  adopt(inventory, mediaMs = 0, manifest = null) {
     this.legacy = new Set(inventory.legacy); this.bytes = this.writtenBytes = inventory.mediaBytes; this.writtenMs = mediaMs;
+    this.manifest = this.confirmed = manifest ? { ...manifest } : null;
   }
   // Reads one saved file of the session; null when it was never written. Nothing is created.
   async load(name = 'session') {

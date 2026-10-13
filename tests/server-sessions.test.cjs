@@ -455,6 +455,40 @@ test('an end the disk refuses is never announced as archived: with the state, th
   assert.deepEqual((await f.req('/v1/sessions')).value.sessions.find(s => s.id === id).state, 'archived', 'still the archive last confirmed');
 });
 
+test('an archive opened and resumed over HTTP is not announced as archived on the manifest of its earlier life: refused, the end names the file; once the disk is back, a new end archives it and the list carries the new passage', async t => {
+  const journal = [];
+  const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });
+  const id = (await f.req('/v1/session/start', {})).value.id, dir = path.join(f.sessionsRoot, id);
+  const rows = async () => (await f.req('/v1/sessions')).value.sessions.map(s => [s.id, s.state, s.passages, s.media.stored]);
+  await f.block(id, 1, 8000);
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id, archived: true });
+  const earlier = await fs.readFile(path.join(dir, 'manifest.json'), 'utf8');
+  assert.deepEqual(await rows(), [[id, 'archived', 1, 1]]);
+
+  // Opened, resumed and captured again while the disk refuses the manifest, and no other file.
+  assert.equal((await f.req(`/v1/sessions/${id}/open`, {})).value.readOnly, true);
+  const restore = refusing(t, 'manifest.json');
+  assert.equal((await f.req(`/v1/sessions/${id}/resume`, {})).status, 200);
+  f.clock += 8000; f.wall += 8000;
+  assert.deepEqual((await f.req('/v1/segments', { sessionId: id, sequence: 1, startMs: 8000, endMs: 16000, frames: [{ atMs: 8000, data: 'YQ==' }] })).value, { id: 'moment-2', duplicate: false });
+  do { await tick(); } while (f.runtime.session.watch.running);
+  await f.runtime.session.store.serial.catch(() => {}); await turns(5);
+  journal.length = 0;
+  const refusal = 'archive : Écriture refusée par le disque (manifest.json) : EIO';
+  assert.deepEqual(await f.req('/v1/session/end', {}), { status: 200, value: { ended: true, id, archived: false, errors: [refusal] } });
+  assert.deepEqual([f.runtime.lastEnd, journal], [{ id, archived: false, errors: [refusal] }, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]]);
+  assert.deepEqual([await fs.readFile(path.join(dir, 'manifest.json'), 'utf8') === earlier, (await f.saved(id, 'session.json')).segments.map(s => s.id)], [true, ['moment-1', 'moment-2']],
+    'the manifest on disk is still the one of the earlier life, beside a state that knows more');
+  restore();
+
+  // The disk takes writes again: reopened on its confirmed state, resumed explicitly and ended, it is archived with its new totals.
+  assert.equal((await f.req(`/v1/sessions/${id}/open`, {})).value.readOnly, true);
+  assert.deepEqual((await f.req('/v1/state')).value.session.segments.map(s => [s.id, s.status, s.available]), [['moment-1', 'ready', true], ['moment-2', 'ready', true]]);
+  assert.equal((await f.req(`/v1/sessions/${id}/resume`, {})).status, 200);
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id, archived: true });
+  assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await rows()], ['archived', [[id, 'archived', 2, 2]]]);
+});
+
 test('stopping the host while the disk refuses the state leaves no archive that lies: the journal says which file, the next start lists the session as cut short, and it reopens on its last confirmed state with the passage only its media know', async t => {
   const journal = [];
   const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });

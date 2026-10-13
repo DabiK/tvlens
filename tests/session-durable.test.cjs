@@ -705,6 +705,17 @@ test('archive() says archived only once the final states are on disk: refused on
   deaf.store.save = save;
   assert.deepEqual([(await deaf.archive()).state, await listed(deaf.id)], ['archived', ['archived']]);
 
+  // A directory that takes no write at all, as the ticket puts it: every state file is named, and "archived"
+  // is not even attempted.
+  const sunk = f.open({ host: 'server' });
+  f.clock += 8000; await sunk.watch.ingest(f.block(0, 8000)); await settle(sunk.watch); await sunk.store.serial;
+  await sunk.store.saveResearch(question('running')); await sunk.pause();
+  const none = refusing(t, 'session.json', 'deep-answers.json', 'manifest.json');
+  await sunk.store.saveResearch(question('cancelled')).catch(() => {});
+  await assert.rejects(sunk.archive(), { code: 'EIO', message: 'Écriture refusée par le disque (deep-answers.json, session.json) : EIO' });
+  none();
+  assert.deepEqual([sunk.watch.closed, JSON.parse(await fs.readFile(path.join(f.sessionsRoot, sunk.id, 'manifest.json'), 'utf8')).state, await listed(sunk.id)], [true, 'live', ['interrupted']]);
+
   // Deleting waits for no confirmation: a sealed session writes nothing, so nothing of it can be refused.
   const doomed = f.open();
   f.clock += 8000; await doomed.watch.ingest(f.block(0, 8000)); await settle(doomed.watch); await doomed.store.serial;
@@ -713,4 +724,43 @@ test('archive() says archived only once the final states are on disk: refused on
   restore();
   await library.remove(doomed.id);
   assert.deepEqual(await listed(doomed.id), []);
+});
+
+test('an archive reopened and resumed is archived on what this life wrote, never on what an earlier one left in its manifest: refused, its end says so, a late pause does not write "archived", and once the disk is back the list carries the new totals', async t => {
+  const f = await fixture(t), library = new SessionLibrary({ root: f.sessionsRoot });
+  const first = f.open({ host: 'server' }), id = first.id, dir = path.join(f.sessionsRoot, id);
+  const raw = name => fs.readFile(path.join(dir, name), 'utf8'), saved = async name => JSON.parse(await raw(name));
+  const listed = async () => (await library.list()).map(s => [s.state, s.passages, s.media.stored]);
+  f.clock = 8000; await first.watch.ingest(f.block(0, 8000)); await settle(first.watch); await first.store.serial;
+  await first.pause();
+  assert.equal((await first.archive()).state, 'archived');
+  const earlier = await raw('manifest.json');
+  assert.deepEqual(await listed(), [['archived', 1, 1]]);
+
+  // A new life of the same session: reopened, resumed, one more passage. The disk refuses its manifest from the resume on.
+  const second = (await f.reopen(library, id)).session;
+  let restore = refusing(t, 'manifest.json');
+  await second.resume();
+  f.clock += 8000; assert.equal(await second.watch.ingest(f.block(8000, 16000)), 'moment-2'); await settle(second.watch); await second.store.serial.catch(() => {});
+  await second.pause();
+  await assert.rejects(second.archive(), { code: 'EIO', message: 'Écriture refusée par le disque (manifest.json) : EIO' });
+  assert.deepEqual([second.watch.closed, await raw('manifest.json') === earlier, (await saved('session.json')).segments.map(s => s.id)], [true, true, ['moment-1', 'moment-2']],
+    'closed all the same; the manifest on disk is still the one of the earlier life, beside a state that knows more');
+  restore();
+  // A late pause lands now. The end of this life was refused: what it writes cannot say "archived".
+  await second.pause();
+  assert.deepEqual([(await saved('manifest.json')).state, await listed()], ['live', [['interrupted', 2, 2]]]);
+  const manifest = await second.archive();
+  assert.deepEqual([manifest.state, manifest.passages, manifest.captures.length, manifest === second.store.confirmed, await listed()], ['archived', 2, 2, true, [['archived', 2, 2]]],
+    'asked again: archived for good, and what archive() hands back is the manifest confirmed on disk');
+
+  // A third life: its manifest is refused while it captures, and the disk is back when it ends. The end writes
+  // the manifest of this life instead of trusting the one an earlier life left there.
+  const third = (await f.reopen(library, id)).session;
+  restore = refusing(t, 'manifest.json');
+  await third.resume();
+  f.clock += 8000; assert.equal(await third.watch.ingest(f.block(16000, 24000)), 'moment-3'); await settle(third.watch); await third.store.serial.catch(() => {});
+  await third.pause();
+  restore();
+  assert.deepEqual([(await third.archive()).state, (await saved('manifest.json')).captures.length, await listed()], ['archived', 3, [['archived', 3, 3]]]);
 });

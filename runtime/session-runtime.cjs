@@ -286,7 +286,10 @@ function createSessionRuntime({
     : [{ startedAt: wallClock(), fromMs: 0 }];
   let manifestAt = -Infinity,
     ending = null,
-    // Why the end of this session is not confirmed on disk, once asked for: the write that was refused.
+    // True once the end of this runtime is on disk, last states and manifest. Its own fact: what an
+    // earlier life of the session left in the manifest says nothing of this one.
+    archived = false,
+    // Why that end is not confirmed, once asked for: the write that was refused.
     unconfirmed = null;
   // What failed while this runtime was closing, one line per step: kept for the host, never swallowed.
   const closeErrors = [];
@@ -310,8 +313,7 @@ function createSessionRuntime({
     manifestAt = readClock();
     // Once on disk it stays: a late pause cannot make a closed session look interrupted again, nor one
     // whose end the disk refused look archived.
-    const archived =
-      final || (Boolean(ending) && store.confirmed?.state === "archived");
+    const closed = final || archived;
     const passages = [...state.history, ...state.segments],
       stored = state.segments.filter((s) => s.available).length,
       createdAt =
@@ -327,8 +329,8 @@ function createSessionRuntime({
         host: store.manifest?.host ?? host,
         createdAt,
         updatedAt: wallClock(),
-        closedAt: archived ? (store.manifest?.closedAt ?? wallClock()) : null,
-        state: archived ? "archived" : "live",
+        closedAt: closed ? (store.manifest?.closedAt ?? wallClock()) : null,
+        state: closed ? "archived" : "live",
         title: store.manifest?.title || sessionTitle(createdAt),
         firstTopic:
           store.manifest?.firstTopic ||
@@ -390,12 +392,9 @@ function createSessionRuntime({
           inventory.ids.has(p.id) ? total + (p.endMs - p.startMs) : total,
         0,
       ),
+      restore.manifest,
     );
     thumbnails.bytes = inventory.thumbBytes || 0;
-    // Read from disk: what is asked for and what is confirmed are one and the same here.
-    store.manifest = store.confirmed = restore.manifest
-      ? { ...restore.manifest }
-      : null;
     // Stopped and read-only: nothing is indexed, analysed or written until resume().
     watch.restore(snapshot, {
       hasMedia: (passage) => inventory.ids.has(passage),
@@ -483,14 +482,16 @@ function createSessionRuntime({
       if (unconfirmed) await watch.persist();
       const state = watch.snapshot();
       // The last states first, then the manifest that vouches for them: "archived" never sits on disk
-      // beside a state the disk refused. The refusal is kept for archive() to say; closing itself never
-      // fails for it, so neither a deletion nor a host that stops is held back.
+      // beside a state the disk refused. That manifest is written by every life of the session that
+      // captured, a resumed archive included; one that was only read has nothing to write. The refusal
+      // is kept for archive() to say; closing itself never fails for it, so neither a deletion nor a
+      // host that stops is held back.
       unconfirmed = await store
         .flush()
         .then(() => {
           // Refused before it ever reached the store: the session itself is the one that knows.
           if (watch.saveError) throw new Error(watch.saveError);
-          return purge || store.confirmed?.state !== "archived"
+          return purge || !archived
             ? recordManifest(
                 state,
                 purge
@@ -508,17 +509,22 @@ function createSessionRuntime({
             : null;
         })
         .then(
-          () => null,
+          () => {
+            archived = true;
+            return null;
+          },
           (error) => error,
         );
     },
-    // End of a session for its host: closed, kept, and listed as an archive. Rejects when the disk refused
-    // one of its last writes: every resource is released all the same, the folder keeps what was last
-    // confirmed, and asking again tries again.
+    // End of a session for its host: closed, kept, and listed as an archive; the manifest handed back is
+    // the one confirmed on disk. Rejects when the disk refused one of the last writes: every resource is
+    // released all the same and the folder keeps what was last confirmed. Asked again, this runtime saves
+    // its state and its manifest anew; a file its host writes (questions, recap, surveillance) stays
+    // refused until that host has written it again.
     async archive() {
       await runtime.close();
       if (unconfirmed) throw unconfirmed;
-      return store.manifest;
+      return store.confirmed;
     },
     // Before the session is deleted: once this resolves, nothing from this runtime can write into its
     // directory again, so a late save cannot bring a deleted session back.
