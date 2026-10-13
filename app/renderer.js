@@ -6,6 +6,7 @@ import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs
 import { clockLabel } from './ui/job-view.mjs';
 import { describeSurveillance, isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
 import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
+import { searchCards, replayTarget } from './ui/search-view.mjs';
 import { CardQueue, CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
 import { KeyedList, isNearBottom, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
 import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
@@ -159,13 +160,15 @@ async function stop({ quiet = false } = {}) {
     status(currentState?.id ? 'Capture en pause · Contexte et chat conservés' : 'Capture inactive');
   } finally { stopping = false; updateButtons(); drawBanners(); drawSessions(); }
 }
-function replay(id, offset = 0) {
-  const segment = passages.get(id);
-  // Says why the video cannot be replayed (not kept, missing, expired) instead of always blaming expiry.
-  if (!segment?.available || !currentState?.segments.includes(segment)) return notice(mediaNote(segment).long);
+// `card` is a search result, which names the session it was searched in; a citation is only drawn for the loaded one.
+function replay(id, offset = 0, card) {
+  // Session and passage are both checked before any address is built; the refusal says why (another session,
+  // video not kept, missing, expired).
+  const { segment, url, refusal } = replayTarget({ id, sessionId: card ? card.sessionId : currentState?.id }, currentState);
+  if (refusal) return notice(refusal);
   $('replay-title').textContent = `Passage ${formatTime(segment.startMs)} — ${formatTime(segment.endMs)}`;
   $('replay').muted = true;
-  $('replay').src = `tvlens-media://${currentState.id}/${segment.id}`;
+  $('replay').src = url;
   $('replay').onloadedmetadata = () => { $('replay').currentTime = Math.min(offset, Math.max(0, $('replay').duration - 0.1)); };
   $('replay-note').textContent = currentState.accepting ? 'Relecture muette pendant l’observation pour ne pas recapturer son audio.' : 'Tu peux activer le son : l’observation est arrêtée.';
   $('replay-dialog').showModal();
@@ -182,7 +185,7 @@ const previewOf = id => momentPreviews.get(id) || (passages.get(id)?.thumbnailAv
 // ---- Loaded session --------------------------------------------------------------------------
 function receiveState(state) {
   if (!state) return;
-  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; }
+  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; clearSearch(); }
   currentState = state;
   passages = new Map();
   for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
@@ -537,7 +540,7 @@ $('new-session').onclick = $('archive-new').onclick = startNewSession;
 function clearSession() {
   recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; selectedMoment = null; cancelling.clear();
   surveillanceRegistry = null; registryKey = ''; shownError = '';
-  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear();
+  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear(); clearSearch();
   renderRecap();
   $('elapsed').textContent = '00:00'; $('mode').textContent = 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
   $('memory-status').textContent = 'Les passages apparaîtront après quelques secondes de capture.'; $('chat-coverage').textContent = '';
@@ -555,7 +558,7 @@ function momentCard(moment,{savedId}={}){
  const card=el('article','moment-card');if(moment.preview){const image=el('img');image.src=moment.preview;image.alt='Aperçu du passage';card.append(image);}
  const content=el('div');content.append(el('strong','',`${formatTime(moment.startMs)}–${formatTime(moment.endMs)}`));content.append(el('p','',moment.text||moment.observation?.transcript||moment.observation?.summary||'Transcription indisponible.'));
  const available=savedId||moment.available;const play=el('button','secondary',available?'Revoir ↗':`Texte conservé · ${mediaNote(moment).short}`);play.disabled=!available;
- play.onclick=()=>{if(!savedId)return replay(moment.id);$('replay-title').textContent='Moment conservé';$('replay').src=`tvlens-saved://${savedId}/${moment.id}`;$('replay').onloadedmetadata=null;$('replay').muted=true;$('replay-note').textContent='Copie conservée sur ce Mac ; supprimer le moment efface aussi cette vidéo.';$('replay-dialog').showModal();$('replay').play().catch(()=>{});};content.append(play);card.append(content);return card;
+ play.onclick=()=>{if(!savedId)return replay(moment.id,0,moment);$('replay-title').textContent='Moment conservé';$('replay').src=`tvlens-saved://${savedId}/${moment.id}`;$('replay').onloadedmetadata=null;$('replay').muted=true;$('replay-note').textContent='Copie conservée sur ce Mac ; supprimer le moment efface aussi cette vidéo.';$('replay-dialog').showModal();$('replay').play().catch(()=>{});};content.append(play);card.append(content);return card;
 }
 async function renderSaved(){const values=await bridge.savedMoments();$('saved-results').replaceChildren(...values.map(value=>{const group=el('section','saved-group');group.append(el('small','hint',new Date(value.createdAt).toLocaleString()+' · Conservé'));for(const m of value.moments)group.append(momentCard(m,{savedId:value.id}));const remove=el('button','link','Supprimer ce moment');remove.onclick=()=>{deleteSavedId=value.id;$('delete-saved-dialog').showModal();};group.append(remove);return group;}));if(!values.length)$('saved-results').append(el('p','hint','Aucun moment gardé.'));renderSavedRail(values);}
 async function renderSavedRail(values){values ||= await bridge.savedMoments();const tiles=values.slice(0,5).map(value=>{const moment=value.moments[0],tile=el('button','saved-tile'),preview=el('img');preview.alt='Aperçu du moment gardé';if(moment?.preview)preview.src=moment.preview;const copy=el('span');copy.append(el('strong','',formatTime(value.startMs)),document.createTextNode(moment?.observation?.summary||'Moment gardé'));tile.append(preview,copy);tile.onclick=()=>openLibrary().catch(e=>notice(reason(e)));return tile;});$('saved-rail').replaceChildren(...(tiles.length?tiles:[el('p','placeholder','Garde un moment pour le retrouver ici.')]));}
@@ -564,7 +567,12 @@ $('open-library').onclick=()=>openLibrary().catch(e=>notice(reason(e)));$('close
 $('saved-all').onclick=$('open-library').onclick;
 $('nav-saved').onclick=$('open-library').onclick;
 $('nav-search').onclick=async()=>{await openLibrary();$('moment-query').focus();};
-$('moment-search-form').onsubmit=async e=>{e.preventDefault();$('search-status').textContent='Recherche dans la session…';try{const found=await bridge.searchMoments($('moment-query').value);$('search-results').replaceChildren(...found.moments.map(m=>momentCard(m)));$('search-status').textContent=`${plural(found.moments.length,'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;}catch(e){$('search-status').textContent=reason(e);}};
+// Search results belong to the session they were searched in and to the latest request: a reset or another session
+// empties them, and an answer or a refusal still on its way is dropped instead of being drawn in the new session.
+let searchRevision = 0;
+const searchIntro = $('search-status').textContent;
+function clearSearch() { searchRevision++; $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }
+$('moment-search-form').onsubmit=async e=>{e.preventDefault();const revision=++searchRevision;$('search-status').textContent='Recherche dans la session…';try{const found=await bridge.searchMoments($('moment-query').value);if(revision!==searchRevision)return;const cards=searchCards(found,currentState);if(!cards)return clearSearch();$('search-results').replaceChildren(...cards.map(m=>momentCard(m)));$('search-status').textContent=`${plural(found.moments.length,'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;}catch(e){if(revision===searchRevision)$('search-status').textContent=reason(e);}};
 $('shortcut-form').onsubmit=async e=>{e.preventDefault();try{await bridge.saveViewingSettings({bookmarkShortcut:$('bookmark-shortcut').value.trim()});$('shortcut-status').textContent='Raccourci enregistré.';}catch(e){$('shortcut-status').textContent=reason(e);}};
 $('cancel-delete-saved').onclick=()=>$('delete-saved-dialog').close();$('confirm-delete-saved').onclick=async()=>{try{await bridge.removeSaved(deleteSavedId);$('delete-saved-dialog').close();await renderSaved();}catch(e){notice(reason(e));}};
 bridge.onSaved(()=>{notice('Moment conservé sur ce Mac jusqu’à suppression.');renderSavedRail().catch(()=>{});if($('library-dialog').open)renderSaved().catch(()=>{});});bridge.onSaveError(message=>notice(reason(message)));

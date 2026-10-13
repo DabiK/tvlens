@@ -610,3 +610,62 @@ test('ending a Mac session archives it and closes its runtime even when adapters
   await host.quit();
   assert.deepEqual([JSON.parse(await fsp.readFile(path.join(folder(b.id), 'manifest.json'), 'utf8')).state, runtimes.length, runtimes[1].watch.closed, host.failures.length], ['archived', 2, true, 2]);
 });
+
+test('a passage search belongs to the session that asked: its thumbnails are that session’s, and an answer that arrives once another session is loaded is refused', async t => {
+  const { launch } = await stage(t);
+  // The search of every session can be held back, as a slow semantic ranking holds it.
+  let hold = null, entered = 0;
+  const host = await launch({ wrap: { session: runtime => {
+    const search = runtime.search.search.bind(runtime.search);
+    runtime.search.search = async input => { entered++; await hold; return search(input); };
+    return runtime;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const holdSearches = () => { let release; hold = new Promise(resolve => { release = resolve; }); return () => { hold = null; release(); }; };
+  const image = async background => 'data:image/jpeg;base64,' + (await sharp({ create: { width: 64, height: 36, channels: 3, background } }).jpeg().toBuffer()).toString('base64');
+  const imageA = await image({ r: 200, g: 40, b: 40 }), imageB = await image({ r: 40, g: 40, b: 200 });
+  assert.notEqual(imageA, imageB);
+  // The first passage of a session: moment-1 in each of them, told apart by its image and its clip.
+  const first = async (sessionId, dataUrl, clip) => {
+    await pause(20);
+    const endMs = Math.floor((await host.state()).elapsedMs);
+    assert.equal(await host.ingest({ sessionId, startMs: 0, endMs, clip: new Uint8Array(Buffer.from(clip)), audio: null, frames: [{ atMs: 0, dataUrl }] }), 'moment-1');
+    await until(t, analysed(host, 1), `the passage of ${clip}`);
+  };
+  // What a search answer says: the session it is for, and whose image each of its cards carries.
+  const seen = found => ({ sessionId: found.sessionId, moments: found.moments.map(m => [m.id, m.preview === imageA ? 'image of A' : m.preview === imageB ? 'image of B' : m.preview]) });
+  const search = () => host.searchMoments('cercle').then(seen, error => error.message);
+
+  // B first, archived with its moment-1; then A, live, with a moment-1 of its own.
+  const b = await host.start();
+  await first(b.id, imageB, 'clip de B');
+  await host.stop(); await host.newSession();
+  const a = await host.start();
+  await first(a.id, imageA, 'clip de A');
+  assert.deepEqual(await search(), { sessionId: a.id, moments: [['moment-1', 'image of A']] });
+
+  // Asked in A and still running when the viewer opens B, which also holds a moment-1.
+  let release = holdSearches(), before = entered;
+  const late = search();
+  await until(t, () => entered > before, 'the search of A under way');
+  await host.stop();
+  await host.openSession(b.id);
+  assert.deepEqual(await host.state().then(state => [state.id, state.segments.map(s => [s.id, s.available])]), [b.id, [['moment-1', true]]]);
+  release();
+  const refused = await late;
+  // Asked in B, the same words find the passage of B with the image of B.
+  assert.deepEqual(await search(), { sessionId: b.id, moments: [['moment-1', 'image of B']] });
+  // A card is replayed at the address of its own session: the moment-1 of A is not served while B is loaded.
+  assert.equal((await host.fetch(`tvlens-media://${a.id}/moment-1`)).status, 404);
+  assert.equal(await text(await host.fetch(`tvlens-media://${b.id}/moment-1`)), 'clip de B');
+
+  // Asked in B and still running when the session is left: no session is loaded when the answer is ready.
+  release = holdSearches(); before = entered;
+  const orphan = search();
+  await until(t, () => entered > before, 'the search of B under way');
+  await host.newSession();
+  assert.equal(await host.state(), null);
+  release();
+  // Neither answer is handed over: not with the thumbnails of the session opened meanwhile, not as a failure of the host.
+  assert.deepEqual({ otherSessionLoaded: refused, noSessionLoaded: await orphan }, { otherSessionLoaded: 'Session obsolète.', noSessionLoaded: 'Session obsolète.' });
+});

@@ -612,6 +612,51 @@ test('wording helpers: durations, sizes and errors read as a viewer would write 
   assert.deepEqual([cleanError('Session obsolète.'), cleanError(undefined)], ['Session obsolète.', 'Erreur inattendue.']);
 });
 
+test('search cards name the session they were searched in: a late answer is not drawn in another session, and an old card replays nothing there', async () => {
+  const { searchCards, replayTarget } = await ui('search-view');
+  const { mediaNote } = await ui('sessions-view');
+  const passage = (id, extra = {}) => ({ id, startMs: 0, endMs: 8000, available: true, ...extra });
+  // Passages are numbered from moment-1 in every session: A and B both hold one, and both can be replayed.
+  const a = { id: 'session-a', history: [], segments: [passage('moment-1')] };
+  const b = { id: 'session-b', history: [passage('moment-2', { available: false, mediaReason: 'expired' })], segments: [passage('moment-1'), passage('moment-3', { available: false, mediaReason: 'missing' })] };
+  const found = { sessionId: 'session-a', mode: 'lexical', warnings: [], moments: [{ id: 'moment-1', startMs: 0, endMs: 8000, text: 'Un cercle se déplace.', available: true, preview: 'data:image/jpeg;base64,QQ==', score: 1 }] };
+  // Drawn in the session that was searched: every card carries that session along with its passage and its thumbnail.
+  const cards = searchCards(found, a);
+  assert.deepEqual(cards, [{ ...found.moments[0], sessionId: 'session-a' }]);
+  // A late answer (B was opened meanwhile, or nothing is loaded any more) is not drawn; one that names no session is nobody's.
+  assert.deepEqual([searchCards(found, b), searchCards(found, null), searchCards({ ...found, sessionId: undefined }, a), searchCards(undefined, a)], [null, null, null, null]);
+
+  // Replay validates the session and the passage. In A the card opens the moment-1 of A, at the address of A.
+  assert.deepEqual(replayTarget(cards[0], a), { segment: a.segments[0], url: 'tvlens-media://session-a/moment-1' });
+  // In B the old card is refused although B holds a moment-1 that can be replayed: no address is built from B.
+  const refused = replayTarget(cards[0], b);
+  assert.deepEqual([Object.keys(refused), /autre session/.test(refused.refusal)], [['refusal'], true]);
+  // A card that names no session is refused the same way; only what was drawn for B is replayed in B.
+  assert.deepEqual(replayTarget({ id: 'moment-1' }, b), refused);
+  assert.deepEqual(replayTarget({ id: 'moment-1', sessionId: 'session-b' }, b), { segment: b.segments[0], url: 'tvlens-media://session-b/moment-1' });
+  // A passage without video, gone to the history, unknown, or asked while nothing is loaded: the reason, never an address.
+  const own = id => replayTarget({ id, sessionId: 'session-b' }, b);
+  assert.deepEqual([own('moment-3'), own('moment-2'), own('moment-9'), replayTarget({ id: 'moment-1' }, null)],
+    [{ refusal: mediaNote(b.segments[1]).long }, { refusal: mediaNote(b.history[0]).long }, { refusal: mediaNote(undefined).long }, { refusal: mediaNote(undefined).long }]);
+
+  // The window itself cannot be loaded here: at least it empties the results when the session is reset or changes,
+  // draws an answer only for the latest request and through searchCards, and has replay() ask replayTarget.
+  const renderer = fs.readFileSync(app('renderer.js'), 'utf8');
+  assert.match(renderer, /function clearSearch\(\) \{ searchRevision\+\+; \$\('search-results'\)\.replaceChildren\(\); \$\('search-status'\)\.textContent = searchIntro; \}/);
+  assert.match(renderer, /if \(currentState\?\.id !== state\.id\) \{[^}]*clearSearch\(\);[^}]*\}/, 'another session empties the results');
+  assert.ok(renderer.slice(renderer.indexOf('function clearSession()'), renderer.indexOf('bridge.onReset(clearSession)')).includes('clearSearch();'), 'a reset empties the results');
+  const submit = renderer.slice(renderer.indexOf("$('moment-search-form').onsubmit"), renderer.indexOf("$('shortcut-form').onsubmit"));
+  const at = text => { const index = submit.indexOf(text); assert.ok(index >= 0, `the search form no longer contains ${text}`); return index; };
+  // In this order: the request takes its number, a superseded answer is dropped, the others go through searchCards before anything is drawn.
+  assert.ok(at('const revision=++searchRevision;') < at('await bridge.searchMoments(') && at('await bridge.searchMoments(') < at('if(revision!==searchRevision)return;')
+    && at('if(revision!==searchRevision)return;') < at('const cards=searchCards(found,currentState);if(!cards)return clearSearch();') && at('searchCards(found,currentState)') < at("$('search-results').replaceChildren(...cards.map("));
+  // A refusal that arrives late is dropped like a late answer: the new session never reads the error of the former one.
+  at("catch(e){if(revision===searchRevision)$('search-status').textContent=reason(e);}");
+  assert.match(renderer, /if\(!savedId\)return replay\(moment\.id,0,moment\);/, 'a search card hands itself, session included, to replay()');
+  assert.match(renderer, /replayTarget\(\{ id, sessionId: card \? card\.sessionId : currentState\?\.id \}, currentState\)/);
+  assert.ok(!/tvlens-media:\/\/\$\{currentState\.id\}\/\$\{/.test(renderer), 'the address of a passage is built by replayTarget alone');
+});
+
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------
 const rendererFiles = ['renderer.js', 'recording.js', ...fs.readdirSync(app('ui')).filter(name => /\.m?js$/.test(name)).map(name => `ui/${name}`)];
 const read = file => fs.readFileSync(app(file), 'utf8');

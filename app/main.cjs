@@ -101,9 +101,13 @@ app.whenReady().then(async () => {
   handle('viewing:save',async value=>{if(typeof value?.bookmarkShortcut!=='string'||value.bookmarkShortcut.length>100)throw Error('Raccourci invalide.');if(value.bookmarkShortcut!==registeredShortcut)registerShortcut(value.bookmarkShortcut);viewing=await viewingSettings.save(value);return viewing;});
   let searchController;
   handle('moments:search',async query=>{
-   if(!watch||!search)throw Error('Démarre une observation.');searchController?.abort();searchController=new AbortController();const signal=AbortSignal.any([searchController.signal,AbortSignal.timeout(15000)]);
-   const state=watch.snapshot(),all=[...state.history,...state.segments];const found=await search.search({query,segments:all,anchorMs:state.capturedThroughMs,signal,limit:6});
-   return {...found,sessionId:state.id,moments:await Promise.all(found.moments.map(async m=>({...m,preview:m.available?(await store.read(m.id).catch(()=>null))?.frames?.[0]?.dataUrl:null})))};
+   // The session that asks is held until its answer: passages, thumbnails and sessionId all come from it. An
+   // answer that is ready once another session is loaded, or none, is refused instead of borrowing that one's media.
+   const session=live;if(!session)throw Error('Démarre une observation.');searchController?.abort();searchController=new AbortController();const signal=AbortSignal.any([searchController.signal,AbortSignal.timeout(15000)]);
+   const state=session.watch.snapshot(),all=[...state.history,...state.segments];const found=await session.search.search({query,segments:all,anchorMs:state.capturedThroughMs,signal,limit:6});
+   const moments=await Promise.all(found.moments.map(async m=>({...m,preview:m.available?(await session.store.read(m.id).catch(()=>null))?.frames?.[0]?.dataUrl:null})));
+   if(session!==live)throw Error('Session obsolète.');
+   return {...found,sessionId:state.id,moments};
   });
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
   let fullBounds = window.getBounds(), floating = false;
