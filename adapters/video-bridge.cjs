@@ -40,8 +40,10 @@ class VideoBridge {
   }
   // The end of a session for its host: the external contexts opened on it end now, whatever is left of their lifetime.
   // A call still running is answered with the refusal, the client has to open a context again, and nothing is kept of
-  // the session. Contexts of another session and the capabilities handed to questions are left as they are.
-  revoke(sessionId){for(const [client,scope] of this.external){if(scope.tools?.sessionId!==sessionId)continue;clearTimeout(scope.timer);scope.controller.abort(new Error('Contexte MCP révoqué : session terminée.'));this.external.delete(client);}}
+  // the session. A context is told by the `sessionId` its tools carry (makeTools hands back the tools of the loaded
+  // session): one whose tools name no session cannot be told from this one, and goes too. Contexts of another session
+  // and the capabilities handed to questions are left as they are.
+  revoke(sessionId){for(const [client,scope] of this.external){const opened=scope.tools?.sessionId;if(opened!==undefined&&opened!==sessionId)continue;clearTimeout(scope.timer);scope.controller.abort(new Error('Contexte MCP révoqué : session terminée.'));this.external.delete(client);}}
   async register(tools,signal,file){const token=randomBytes(32).toString('hex');this.scopes.set(token,{tools,signal});await fs.writeFile(file,JSON.stringify({url:this.url,token}),{mode:0o600});const revoke=()=>this.scopes.delete(token);signal.addEventListener('abort',revoke,{once:true});return()=>{revoke();signal.removeEventListener('abort',revoke);};}
   async close(){for(const scope of this.external.values()){clearTimeout(scope.timer);scope.controller.abort();}this.external.clear();this.scopes.clear();this.server?.closeAllConnections();await new Promise(resolve=>this.server?this.server.close(resolve):resolve());await fs.rm(this.descriptor,{force:true});}
 }

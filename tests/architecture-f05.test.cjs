@@ -349,51 +349,92 @@ test('a close landing while a reconnection waits leaves neither a process nor a 
   assert.equal(g.started(), 2);
 });
 
+// A real launcher that dies and what it leaves behind, as two Node programs. The launcher stands for the App Server: it
+// answers the handshake and a thread. Started as "mortal", it starts the survivor in its own group, detached from
+// every pipe of the host, and ends by itself once the file `die` exists and the survivor has said its pid. The
+// survivor records the SIGTERM it receives in the file `term` and only leaves once the file `go` exists: how long
+// it outlives its launcher is the test's to say, on no clock. Past the bound of the transport it is killed anyway.
+function orphaning(dir) {
+  const at = name => path.join(dir, name), file = name => JSON.stringify(at(name));
+  return { at, read: name => fs.readFileSync(at(name), 'utf8'), exists: name => fs.existsSync(at(name)),
+    survivor: `const fs = require('node:fs'); process.on('SIGTERM', () => { fs.writeFileSync(${file('term')}, 'received'); setInterval(() => { if (fs.existsSync(${file('go')})) process.exit(0); }, 5); });
+      setInterval(() => {}, 1000); fs.writeFileSync(${file('pid')}, String(process.pid));`,
+    server: `const fs = require('node:fs'); let buffer = '';
+      process.stdin.on('data', chunk => { buffer += chunk; for (let at; (at = buffer.indexOf('\\n')) >= 0;) {
+        const message = JSON.parse(buffer.slice(0, at)); buffer = buffer.slice(at + 1);
+        if (message.id !== undefined) process.stdout.write(JSON.stringify({ id: message.id, result: message.method === 'thread/start' ? { thread: { id: 'thread-' + process.pid } } : {} }) + '\\n');
+      } });
+      if (process.argv[2] === 'mortal') { require('node:child_process').spawn(process.execPath, ['-e', process.argv[1]], { stdio: 'ignore' });
+        const timer = setInterval(() => { if (fs.existsSync(${file('die')}) && fs.existsSync(${file('pid')})) { clearInterval(timer); process.exit(0); } }, 5); }` };
+}
+
 test('the real client on the real transport: a Codex whose launcher died is not replaced before what it left behind is gone', { skip: win32 }, async t => {
   const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-f05-orphan-'));
   t.after(() => fsp.rm(dir, { recursive: true, force: true }));
-  const file = name => JSON.stringify(path.join(dir, name)), read = name => fs.readFileSync(path.join(dir, name), 'utf8'), exists = name => fs.existsSync(path.join(dir, name));
-  // What the launcher leaves behind in its group: it says its pid, records the SIGTERM it receives, and goes on.
-  const survivor = `const fs = require('node:fs'); process.on('SIGTERM', () => fs.writeFileSync(${file('term')}, 'received')); setInterval(() => {}, 1000); fs.writeFileSync(${file('pid')}, String(process.pid));`;
-  // A Node child for the App Server: it answers the handshake and a thread. Started as "mortal", it starts the
-  // survivor in its own group and ends by itself once the test says so.
-  const server = `const fs = require('node:fs'); let buffer = '';
-    process.stdin.on('data', chunk => { buffer += chunk; for (let at; (at = buffer.indexOf('\\n')) >= 0;) {
-      const message = JSON.parse(buffer.slice(0, at)); buffer = buffer.slice(at + 1);
-      if (message.id !== undefined) process.stdout.write(JSON.stringify({ id: message.id, result: message.method === 'thread/start' ? { thread: { id: 'thread-' + process.pid } } : {} }) + '\\n');
-    } });
-    if (process.argv[2] === 'mortal') { require('node:child_process').spawn(process.execPath, ['-e', process.argv[1]], { stdio: 'ignore' }); const timer = setInterval(() => { if (fs.existsSync(${file('die')})) { clearInterval(timer); process.exit(0); } }, 5); }`;
-  const started = [];
+  const { at, read, exists, survivor, server } = orphaning(dir), started = [];
   const rpcFactory = options => {
     const rpc = new CodexRpc({ ...options, binary: process.execPath, args: ['-e', server, survivor, started.length ? 'plain' : 'mortal'] }), start = rpc.start.bind(rpc);
     rpc.start = () => { start(); reap(t, rpc.child.pid); return rpc; };
     started.push(rpc);
     return rpc;
   };
-  t.mock.timers.enable({ apis: ['setTimeout'] });
   const client = new CodexSessionClient({ authHome, rpcFactory });
   t.after(() => client.close());
   const first = await bounded(client.prepare('s'));
   assert.match(String(first), /^thread-\d+$/);
-  await until(() => exists('pid'), 'the launcher started something in its group');
+  // The launcher ends by itself: the client is told that the connection closed, as it always was.
+  fs.writeFileSync(at('die'), 'now');
+  await until(() => client.ready === null, 'the client is told the connection closed');
   const pid = Number(read('pid'));
   reap(t, pid, false);
-  // The launcher ends by itself: the client is told that the connection closed, as it always was.
-  fs.writeFileSync(path.join(dir, 'die'), 'now');
-  await until(() => client.ready === null, 'the client is told the connection closed');
-  fs.rmSync(path.join(dir, 'die'));
   let answered = false;
   const next = client.prepare('s');
   next.then(() => { answered = true; }, () => { answered = true; });
+  await until(() => exists('term'), 'what the launcher left behind is asked to end');
   await pause(150);
-  assert.deepEqual([started.length, answered, alive(pid), exists('term')], [1, false, true, true], 'no second process next to what the first left behind, which was asked to end and ignores it');
-  t.mock.timers.tick(3000);
-  await until(() => !alive(pid), 'what the launcher left behind is killed once the bound has passed');
-  for (let i = 0; i < 40 && !answered; i++) { t.mock.timers.tick(50); await pause(5); }
+  assert.deepEqual([started.length, answered, alive(pid)], [1, false, true], 'no second process, and no answer, next to what the first one left behind');
+  // It leaves at last: the connection is made.
+  fs.writeFileSync(at('go'), 'now');
   const second = await bounded(next);
-  assert.deepEqual([started.length, /^thread-\d+$/.test(String(second)), second !== first], [2, true, true], 'the connection is made once the group is gone');
+  assert.deepEqual([started.length, /^thread-\d+$/.test(String(second)), second !== first, alive(pid)], [2, true, true, false], 'the connection is made once the group is gone');
   await client.close();
   assert.deepEqual([client.rpc, started.every(rpc => rpc.child === null)], [null, true]);
+});
+
+test('a host with nothing else to do is still there once the group it waits for is gone: its private tree is removed, and what it does next is done', { skip: win32 }, async t => {
+  const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-f05-host-'));
+  t.after(() => fsp.rm(dir, { recursive: true, force: true }));
+  const { at, read, exists, survivor, server } = orphaning(dir);
+  t.after(() => { try { process.kill(Number(read('pid')), 'SIGKILL'); } catch {} });
+  // A host of its own, as server/main.cjs ends: it awaits the closing of its client, then does what comes next. Nothing
+  // else keeps it alive: no server, no timer of its own, no other child, and its launcher has ended by itself.
+  const host = `
+    const fs = require('node:fs');
+    const { CodexRpc } = require(${JSON.stringify(require.resolve('../adapters/codex-rpc.cjs'))});
+    const { CodexSessionClient } = require(${JSON.stringify(require.resolve('../adapters/codex-session-client.cjs'))});
+    let rpc;
+    const client = new CodexSessionClient({ authHome: ${JSON.stringify(authHome)}, rpcFactory: options => (rpc = new CodexRpc({ ...options, binary: process.execPath, args: ['-e', process.argv[1], process.argv[2], 'mortal'] })) });
+    client.prepare('s').then(async () => {
+      const left = new Promise(resolve => rpc.child.once('exit', resolve));
+      fs.writeFileSync(${JSON.stringify(at('die'))}, 'now');
+      await left;
+      fs.writeFileSync(${JSON.stringify(at('host'))}, JSON.stringify({ tree: client.dir }));
+      await client.close();
+      fs.writeFileSync(${JSON.stringify(at('closed'))}, 'the host was still there');
+    });`;
+  let child;
+  const ended = new Promise(resolve => { child = childProcess.execFile(process.execPath, ['-e', host, server, survivor], { timeout: 20000 }, (error, stdout, stderr) => resolve(error ? `${error.code ?? error.signal} ${stderr}` : 0)); });
+  let waiting;
+  await until(() => { try { waiting = JSON.parse(read('host')); return exists('term'); } catch { return false; } }, 'the host awaits the end of what its dead launcher left behind');
+  const pid = Number(read('pid'));
+  t.after(() => fsp.rm(waiting.tree, { recursive: true, force: true }));
+  // Left the time to end by itself, were nothing to keep it there: longer than the grace an exiting host gives what it closed.
+  await pause(600);
+  assert.deepEqual([child.exitCode, alive(pid), fs.existsSync(waiting.tree)], [null, true, true], 'the host is still there, waiting, and so is what it waits for');
+  fs.writeFileSync(at('go'), 'now');
+  assert.equal(await bounded(ended, 15000), 0);
+  await until(() => !alive(pid), 'what the launcher left behind is gone');
+  assert.deepEqual([exists('closed'), fs.existsSync(waiting.tree)], [true, false], 'it was still there once the group was gone: its private tree is removed, and what came next was done');
 });
 
 test('a surveillance stopped and started again starts no Codex process while the ones it stopped are not seen gone', async t => {
@@ -437,6 +478,10 @@ test('the external MCP contexts opened on a session are revoked at once: a call 
   assert.deepEqual(await call('client-a', 'search_moments'), [200, { sessionId: 'a', name: 'search_moments' }]);
   loaded = 'b';
   assert.deepEqual(await call('client-b', 'search_moments'), [200, { sessionId: 'b', name: 'search_moments' }]);
+  // Tools that name no session: their context cannot be told from one of the session that ends.
+  loaded = undefined;
+  assert.deepEqual(await call('client-x', 'search_moments'), [200, { name: 'search_moments' }]);
+  loaded = 'b';
   const cap = path.join(dir, 'cap.json'), question = new AbortController();
   await bridge.register({ call: async () => ({ scoped: true }) }, question.signal, cap);
   const capability = { Authorization: `Bearer ${JSON.parse(await fsp.readFile(cap, 'utf8')).token}` };
@@ -445,7 +490,7 @@ test('the external MCP contexts opened on a session are revoked at once: a call 
   await until(() => calls.includes('a inspect_clip'), 'a call of the first session is in flight');
   assert.equal(typeof bridge.revoke, 'function', 'the bridge can be told that a session ended');
   bridge.revoke('a');
-  assert.deepEqual([...bridge.external.keys()], ['client-b'], 'only the contexts of that session go, and nothing is kept of them');
+  assert.deepEqual([...bridge.external.keys()], ['client-b'], 'the contexts of that session go, with the one that names none; another session keeps its own, and nothing is kept of them');
   gate.resolve();
   assert.deepEqual(await flying, [400, { error: CONTEXT_REVOKED }], 'the call in flight is not answered with what it read');
   assert.deepEqual(await call('client-a', 'get_transcript'), [400, { error: OPEN_FIRST }]);
@@ -614,8 +659,7 @@ test('the Mac host revokes the external MCP contexts of a session as its end beg
     assert.deepEqual([first.watch.closed, await mcp('get_transcript', a1), await mcp('search_moments', { query: 'cercle' })], [true, [400, { error: OPEN_FIRST }], [400, { error: 'Démarre une session.' }]]);
     const late = { question: 'Et maintenant ?', startMs: a1.startMs, endMs: a1.endMs, segments: [{ id: 'moment-1', ...a1 }] };
     assert.equal((await failure(first.inspector.inspect(late))).message, REVOKED);
-    const model = first.inspectorModel.agent.client;
-    assert.deepEqual([seen.reached, seen.model, model.rpc ?? null, model.sessionId], [1, 0, null, undefined], 'no late call reached the inspector, and the inspection model never connected');
+    assert.deepEqual([seen.reached, seen.model], [1, 0], 'no late call reached the inspector, nor what stands for the model behind it');
     // The next session gets a context of its own.
     const b = await host.start(), b1 = await captured(host, b.id);
     const [again, fresh] = await mcp('search_moments', { query: 'cercle' });

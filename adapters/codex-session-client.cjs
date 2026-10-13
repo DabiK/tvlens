@@ -30,6 +30,16 @@ const DRAIN_MS = 3000;
 // What a connection is refused with while the process group of the one it replaces is not seen gone.
 const STILL_RUNNING =
   "Arrêt du processus Codex précédent non confirmé : connexion refusée.";
+// The answer of a transport asked whether its process group is gone, awaited by a host that stays alive
+// for it. The timers of the transport never keep a host alive: one with nothing left to do ends at once,
+// and what is left of the group is killed as it exits. A host that awaits the answer is not such a host,
+// and without this it would end in the middle of the wait whenever the group outlives its launcher: its
+// private tree left behind, and whatever it was about to do next (archive its session) never done. Held
+// for as long as the transport takes to answer, which it bounds itself.
+function exitOf(answer) {
+  const hold = setInterval(() => {}, 1000);
+  return Promise.resolve(answer).finally(() => clearInterval(hold));
+}
 // States a fact of the thread (no environment is bound to it); the control is technical, not this sentence.
 const ROLE_SUFFIX =
   " Tu n’es pas un agent de programmation : ce fil n’a ni fichiers, ni terminal, ni connecteur.";
@@ -252,10 +262,10 @@ class CodexSessionClient {
     // generations of a role never run side by side, and the next connection asks again.
     const leaving = this.leaving;
     if (leaving) {
-      const gone = await leaving.close();
+      const gone = await exitOf(leaving.close());
       if (generation !== this.generation) throw Error("Connexion obsolète.");
       if (gone === false) throw Error(STILL_RUNNING);
-      if (this.leaving === leaving) this.leaving = null;
+      this.leaving = null;
     }
     // The tree is published on the client only once complete: a close landing meanwhile finds
     // nothing to remove, and this connection removes its own tree when it sees it was superseded.
@@ -826,7 +836,7 @@ class CodexSessionClient {
       const dir = this.dir;
       this.dir = null;
       // The private tree goes once the process that runs in it has, or once the transport gave up waiting.
-      if (exited) await exited;
+      if (exited) await exitOf(exited);
       await fs.rm(dir, { recursive: true, force: true });
     }
   }

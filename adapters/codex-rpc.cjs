@@ -24,8 +24,9 @@ function atHostExit(){
 // turn it was closed for, nor the host. It resolves true once the group is seen empty, false when it still is not
 // REAP_MS after the kill; asked again after that, it looks once more and sends nothing. A launcher that leaves by
 // itself is stopped the same way when it leaves something behind. The timers never keep the host alive and are
-// dropped as soon as the group is gone, and a group seen empty is never signalled again: its number could by then
-// belong to another process.
+// dropped as soon as the group is gone: once the launcher has left, only they bring the answer, so whoever awaits it
+// keeps its host alive meanwhile (the client does). A group seen empty is never signalled again: its number could
+// by then belong to another process.
 function own(child){
  let gone=false,over=false,ended=null,settle=()=>{},killTimer,watchTimer;
  const send=signal=>{try{process.kill(-child.pid,signal);return true;}catch{return false;}};
