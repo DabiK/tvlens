@@ -220,19 +220,44 @@ class LocalSessionStore {
     if (this.mediaRoot !== this.root) await fs.rmdir(this.mediaRoot).catch(() => {});
     this.bytes = 0; this.legacy.clear();
   }
-  async response(id, range) {
-    let bytes;
-    try { bytes = await this.content(id, 'webm'); }
-    catch { return new Response('Passage expiré ou indisponible.', { status: 404 }); }
-    const headers = { 'Content-Type': 'video/webm', 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' };
-    if (range) {
-      const match = /^bytes=(\d+)-(\d*)$/.exec(range);
-      if (!match) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${bytes.length}` } });
-      const start = Number(match[1]), end = Math.min(match[2] ? Number(match[2]) : bytes.length - 1, bytes.length - 1);
-      if (start > end) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${bytes.length}` } });
-      return new Response(bytes.subarray(start, end + 1), { status: 206, headers: { ...headers, 'Content-Range': `bytes ${start}-${end}/${bytes.length}`, 'Content-Length': String(end - start + 1) } });
+  // The clip of a passage, opened where content() would read it: a miss looks once at the root, as it does.
+  async openClip(id) {
+    try { return await fs.open(this.file(id, 'webm'), 'r'); }
+    catch (error) {
+      if (error.code !== 'ENOENT' || !(await this.has(id))) throw error;
+      return fs.open(this.file(id, 'webm'), 'r');
     }
-    return new Response(bytes, { headers: { ...headers, 'Content-Length': String(bytes.length) } });
+  }
+  // Reads the bytes the answer carries and no others: the size, then the range, through one descriptor that
+  // is closed before the answer is handed back. A refused range reads nothing of the clip. Without a range,
+  // or with an open-ended one, what is asked for is the clip, and all of it is read.
+  async response(id, range) {
+    let handle;
+    try {
+      handle = await this.openClip(id);
+      const stats = await handle.stat(), size = stats.size;
+      // What bears the name of a clip without being a file was never readable: it has no size to answer with.
+      if (!stats.isFile()) throw new Error('Média illisible.');
+      const headers = { 'Content-Type': 'video/webm', 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' };
+      let start = 0, end = size - 1;
+      if (range) {
+        const match = /^bytes=(\d+)-(\d*)$/.exec(range);
+        if (!match) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+        start = Number(match[1]); end = Math.min(match[2] ? Number(match[2]) : size - 1, size - 1);
+        if (start > end) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+      }
+      const bytes = Buffer.alloc(end - start + 1);
+      // A read may hand back less than it was asked: it is asked again until the answer is whole. A clip that
+      // got shorter since its size was read is unavailable, never an answer shorter than its Content-Length.
+      for (let filled = 0; filled < bytes.length;) {
+        const { bytesRead } = await handle.read(bytes, filled, bytes.length - filled, start + filled);
+        if (!bytesRead) throw new Error('Média tronqué.');
+        filled += bytesRead;
+      }
+      if (range) return new Response(bytes, { status: 206, headers: { ...headers, 'Content-Range': `bytes ${start}-${end}/${size}`, 'Content-Length': String(bytes.length) } });
+      return new Response(bytes, { headers: { ...headers, 'Content-Length': String(size) } });
+    } catch { return new Response('Passage expiré ou indisponible.', { status: 404 }); }
+    finally { await handle?.close().catch(() => {}); }
   }
 }
 
