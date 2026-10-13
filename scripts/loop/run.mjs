@@ -232,6 +232,10 @@ const context = preflight();
 for (let done = 0; done < options.max; done++) {
   const { ticket, reason } = next(list(root), done === 0 ? options.ticket : null);
   if (!ticket) stop(0, reason);
+  // Un ticket hors de Git resterait hors de son propre commit : ni son journal ni son statut n'y entreraient.
+  if (git("ls-files", "--error-unmatch", "--", ticket.file).code !== 0) {
+    stop(1, `${ticket.id} n'est pas suivi par Git (${ticket.file}) : committer le ticket avant de lancer la boucle.`);
+  }
   if (options.dryRun) {
     say(`Prochain ticket : ${ticket.id} — ${ticket.titre} (${ticket.file})`);
     say(`Session : claude -p … --permission-mode ${options.permissionMode}, ${options.attempts} tentative(s) au plus.`);

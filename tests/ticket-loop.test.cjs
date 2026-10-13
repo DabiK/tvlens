@@ -218,6 +218,19 @@ test("files that were already untracked before the loop are left out of the tick
   assert.equal(repo.git("status", "--porcelain").stdout.trim(), "?? notes/");
 });
 
+test("a ticket that Git does not track is refused: its journal and status would stay out of its own commit", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  repo.write("docs/travail/tickets/002-add-farewell.md", ticketText({ id: "T002", titre: "Add the farewell" }));
+  for (const args of [["--ticket", "T002", "--dry-run"], ["--ticket", "T002"]]) {
+    const result = repo.loop("done", args);
+    assert.equal(result.code, 1, result.out);
+    assert.match(result.out, /T002 n'est pas suivi par Git/);
+  }
+  assert.deepEqual(repo.commits(), ["init"]);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+});
+
 test("the loop refuses to start on main, on a dirty tree, or with a malformed queue", (t) => {
   const dirty = loopRepo();
   t.after(dirty.cleanup);
