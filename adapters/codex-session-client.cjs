@@ -140,7 +140,9 @@ class CodexSessionClient {
     this.threads = { own: new Set(), announced: new Set(), starting: 0 };
     // Set while a turn the guard refused is still ending inside Codex (see refuse).
     this.draining = null;
-    // The transport this client last closed, until its process group was seen gone (see connect).
+    // What this client last left: `{ rpc, dir, attempt }`, the transport it closed and its private tree,
+    // until the process group was seen gone and the tree removed (see finish). One at most: nothing is
+    // started for this client while it is there (see connect).
     this.leaving = null;
     // What the current connection really confirmed. `confined` is null until something was checked,
     // then true only when the last thread/start contradicts nothing AND Codex read back a setting
@@ -256,16 +258,14 @@ class CodexSessionClient {
     // close() can land during any await below: a superseded connection must leave neither a
     // process nor a directory behind (pre-warm and background reconnect make this reachable).
     const generation = (this.generation = (this.generation || 0) + 1);
-    // One process group at a time. The transport this client last closed is asked again, and nothing is
-    // started for this connection, not even its private tree, before that group was seen gone. One that
-    // is still there after the bound of the transport refuses the connection, in so many words: two
-    // generations of a role never run side by side, and the next connection asks again.
-    const leaving = this.leaving;
-    if (leaving) {
-      const gone = await exitOf(leaving.close());
+    // One process group at a time. What this client last left is finished first, and nothing is started
+    // for this connection, not even its private tree, before that group was seen gone and its tree
+    // removed. A group that is still there after the bound of the transport refuses the connection, in so
+    // many words: two generations of a role never run side by side, and the next connection asks again.
+    if (this.leaving) {
+      const gone = await this.finish();
       if (generation !== this.generation) throw Error("Connexion obsolète.");
       if (gone === false) throw Error(STILL_RUNNING);
-      this.leaving = null;
     }
     // The tree is published on the client only once complete: a close landing meanwhile finds
     // nothing to remove, and this connection removes its own tree when it sees it was superseded.
@@ -814,31 +814,58 @@ class CodexSessionClient {
       if (this.active === active) this.active = null;
     }
   }
-  // Closes the connection, not the client: a later prepare() or turn connects again, once the process
-  // group left here is gone. Resolves once its private tree is removed, after that process has left.
+  // Finishes what this client left: its transport is asked, again if need be, whether its process group
+  // is gone, and only then is its private tree removed, never under a group that may still be running.
+  // One attempt at a time, shared by every close() and every connection that arrives meanwhile. Answers
+  // false while the group is not seen gone after the bound of the transport: the journal says so, and
+  // transport and tree are kept for the next attempt. A transport double that answers nothing is not
+  // waited for; one that answers a promise has to settle it.
+  finish() {
+    const left = this.leaving;
+    if (left.attempt) return left.attempt;
+    const attempt = (left.attempt = (async () => {
+      const answer = left.rpc?.close();
+      if (answer && (await exitOf(answer)) === false) {
+        reportOnce(
+          `TVLens : arrêt du processus Codex « ${this.role} » non confirmé. Son arbre privé est conservé et ce rôle ne se reconnecte pas tant que son groupe n’est pas vu parti.`,
+        );
+        return false;
+      }
+      try {
+        if (left.dir) await fs.rm(left.dir, { recursive: true, force: true });
+      } finally {
+        if (this.leaving === left) this.leaving = null;
+      }
+      return true;
+    })());
+    // Over, whatever it answered: the next one to ask starts another attempt.
+    const over = () => {
+      if (left.attempt === attempt) left.attempt = null;
+    };
+    attempt.then(over, over);
+    return attempt;
+  }
+  // Closes the connection, not the client: a later prepare() or turn connects again, once what was left
+  // here is finished. Every way a transport is left ends here before a reconnection: prepare() closes
+  // what the guard, the drain or the watchdog closed first, and a transport closed twice answers for the
+  // same process group. Closings that overlap share one closing: each invalidates what is running, and
+  // each resolves once the process has left and its private tree is removed, or once the journal says
+  // that the group is not seen gone. It never rejects for that, so that a session can still be archived.
   async close() {
     this.generation = (this.generation || 0) + 1;
     this.active?.reject(Error("Session Codex fermée."));
     this.draining?.end();
-    const rpc = this.rpc;
+    const rpc = this.rpc,
+      dir = this.dir;
     this.rpc = null;
     this.ready = null;
     this.threadId = null;
     this.rotations = 0;
-    // Every way a transport is left ends here before a reconnection: prepare() closes what the guard, the
-    // drain or the watchdog closed first, and a transport closed twice answers for the same process group.
-    // A transport double that answers nothing is not waited for.
-    const exited = rpc?.close();
-    if (exited) this.leaving = rpc;
     this.opened.clear();
     this.context = null;
-    if (this.dir) {
-      const dir = this.dir;
-      this.dir = null;
-      // The private tree goes once the process that runs in it has, or once the transport gave up waiting.
-      if (exited) await exitOf(exited);
-      await fs.rm(dir, { recursive: true, force: true });
-    }
+    this.dir = null;
+    if (rpc || dir) this.leaving = { rpc, dir, attempt: null };
+    if (this.leaving) await this.finish();
   }
 }
 module.exports = { CodexSessionClient, streamedAnswer, sourceKey };

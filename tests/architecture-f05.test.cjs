@@ -47,10 +47,21 @@ function created(t) {
   t.mock.method(fsp, 'mkdtemp', async (...args) => { const dir = await original(...args); dirs.push(dir); return dir; });
   return async () => (await Promise.all(dirs.map(dir => fsp.access(dir).then(() => dir, () => null)))).filter(Boolean);
 }
-// What the confinement guard reports goes to stderr: kept out of the test output.
-const write = process.stderr.write;
-before(() => { process.stderr.write = (chunk, ...rest) => (String(chunk).startsWith('TVLens :') ? true : write.call(process.stderr, chunk, ...rest)); });
+// What the client reports goes to stderr: kept out of the test output, and readable here.
+const write = process.stderr.write, journal = [];
+before(() => { process.stderr.write = (chunk, ...rest) => (String(chunk).startsWith('TVLens :') ? (journal.push(String(chunk)), true) : write.call(process.stderr, chunk, ...rest)); });
 after(() => { process.stderr.write = write; });
+// The removal of a client's private tree: counted, and held for as long as the test says.
+function treeRemovals(t) {
+  const rm = fsp.rm, seen = { removed: [], gate: null };
+  t.mock.method(fsp, 'rm', async (target, ...rest) => {
+    if (path.basename(String(target)).startsWith('tvlens-codex-session-')) { seen.removed.push(String(target)); await seen.gate?.promise; }
+    return rm(target, ...rest);
+  });
+  seen.hold = () => { seen.gate = deferred(); };
+  seen.release = () => { const gate = seen.gate; seen.gate = null; gate?.resolve(); };
+  return seen;
+}
 
 // ---- The transport and the process group it starts -----------------------------------------------------------------
 
@@ -246,9 +257,8 @@ test('a reconnection waits for the process group of the connection it replaces: 
   const remaining = created(t), f = connection(t);
   await f.client.prepare('s');
   const [first] = f.processes;
-  // close() then prepare(): the new connection asks the transport it replaces, and starts nothing meanwhile.
+  // close() then prepare(): the new connection waits for the closing of the one it replaces, and starts nothing meanwhile.
   const closing = f.client.close(), next = f.client.prepare('s');
-  await until(() => first.closed === 2 || f.started() === 2, 'the reconnection reaches the process it replaces');
   await pause(30);
   assert.deepEqual([f.started(), (await remaining()).length], [1, 1], 'no second process, and the tree of the first is kept, while its group is not seen gone');
   first.exit.resolve(true);
@@ -322,31 +332,81 @@ test('every way a transport is left holds the reconnection until its group is go
   await held(watched, watched.processes[0], watched.turn());
 });
 
-test('a close landing while a reconnection waits leaves neither a process nor a tree; a group that is still there refuses the connection by name until it is seen gone', async t => {
+test('a close landing while a reconnection waits leaves neither a process nor a tree, and the client connects again later', async t => {
   const remaining = created(t), f = connection(t);
   await f.client.prepare('s');
   const [first] = f.processes, closing = f.client.close(), waiting = failure(f.client.prepare('s'));
-  await until(() => first.closed === 2 || f.started() === 2, 'the reconnection waits for the process it replaces');
+  await pause(30);
   const again = f.client.close();
   first.exit.resolve(true);
   await Promise.all([closing, again]);
   assert.equal((await waiting).message, 'Connexion obsolète.');
   await settle();
   assert.deepEqual([f.started(), f.client.rpc, f.client.ready, await remaining()], [1, null, null, []]);
+  assert.ok(await f.client.prepare('s'));
+  assert.deepEqual([f.started(), (await remaining()).length], [2, 1], 'closing is a recycling: the same client connects again');
+});
 
-  // The group of the process it left is still there after the bound of the transport.
-  const g = connection(t);
-  await g.client.prepare('s');
-  const [stuck] = g.processes;
-  stuck.exit.resolve(false);
-  await g.client.close();
-  assert.deepEqual(await remaining(), [], 'its private tree goes all the same, once the bound has passed');
-  for (let i = 0; i < 2; i++) assert.equal((await failure(g.client.prepare('s'))).message, STILL_THERE);
-  assert.deepEqual([g.started(), g.client.rpc, g.client.ready, await remaining()], [1, null, null, []], 'nothing was started next to it');
-  // Seen gone at last: the transport, asked again by the next connection, says so.
-  stuck.exit = { promise: Promise.resolve(true) };
-  assert.ok(await g.client.prepare('s'));
-  assert.equal(g.started(), 2);
+test('closings that overlap are one closing: each waits for the process to be gone and for its private tree to be removed, once; a reconnection waits for it too', async t => {
+  const remaining = created(t), trees = treeRemovals(t), f = connection(t);
+  try {
+    await f.client.prepare('s');
+    const [first] = f.processes, over = [];
+    trees.hold();
+    const one = f.client.close().then(() => over.push('first')), two = f.client.close().then(() => over.push('second'));
+    await pause(30);
+    assert.deepEqual([over, first.closed, trees.removed.length], [[], 1, 0], 'neither is over while the process is not seen gone');
+    first.exit.resolve(true);
+    await until(() => trees.removed.length === 1, 'its private tree is being removed');
+    await pause(30);
+    assert.deepEqual([over, (await remaining()).length], [[], 1], 'nor while its private tree is still there');
+    trees.release();
+    await Promise.all([one, two]);
+    assert.deepEqual([over.sort(), first.closed, trees.removed.length, await remaining()], [['first', 'second'], 1, 1, []], 'the process was asked to end once, and its tree removed once');
+    // A reconnection arriving meanwhile makes nothing of its own, tree or process, before that closing is over.
+    assert.ok(await f.client.prepare('s'));
+    const [, second] = f.processes;
+    trees.hold();
+    const closing = f.client.close(), also = f.client.close(), next = f.client.prepare('s');
+    second.exit.resolve(true);
+    await until(() => trees.removed.length === 2, 'the tree of the former connection is being removed');
+    await pause(30);
+    assert.deepEqual([f.started(), (await remaining()).length], [2, 1], 'no tree and no process of its own while the former tree is still there');
+    trees.release();
+    await Promise.all([closing, also]);
+    assert.ok(await next);
+    assert.deepEqual([f.started(), second.closed, trees.removed.length, (await remaining()).length], [3, 1, 2, 1], 'one closing for the three of them, then the connection');
+  } finally { trees.release(); }
+});
+
+test('a process group that is not seen gone keeps its private tree: the closing returns and the journal says so, nothing is removed or started, and the tree goes, once, before the next connection when the group is gone at last', async t => {
+  const remaining = created(t), trees = treeRemovals(t), f = connection(t, { role: 'analysis' });
+  const said = () => journal.filter(line => /« analysis » non confirmé/.test(line)).length;
+  try {
+    await f.client.prepare('s');
+    const [stuck] = f.processes, tree = f.client.dir;
+    // Still there after the bound of the transport: the closing returns all the same, so that a session can be archived.
+    stuck.exit.resolve(false);
+    await f.client.close();
+    assert.deepEqual([await remaining(), trees.removed, f.client.dir, f.client.rpc, said()], [[tree], [], null, null, 1],
+      'the tree is kept, never removed under a group that may still be running, and the journal says it');
+    // Asked again by a later closing and by connections: still there.
+    await f.client.close();
+    for (let i = 0; i < 2; i++) assert.equal((await failure(f.client.prepare('s'))).message, STILL_THERE);
+    assert.deepEqual([f.started(), await remaining(), trees.removed, said(), f.client.ready], [1, [tree], [], 1, null], 'nothing is started next to it, nothing is removed, and the journal said it once');
+    // Gone at last. Two closings and a connection find it out together: the tree is removed once, before anything is made for the connection.
+    const asked = stuck.closed;
+    stuck.exit = { promise: Promise.resolve(true) };
+    trees.hold();
+    const one = f.client.close(), two = f.client.close(), next = f.client.prepare('s');
+    await until(() => trees.removed.length === 1, 'the tree is removed at last');
+    await pause(30);
+    assert.deepEqual([f.started(), await remaining(), stuck.closed - asked], [1, [tree], 1], 'asked once more for the three of them, and nothing made for the connection while the tree is still there');
+    trees.release();
+    await Promise.all([one, two]);
+    assert.ok(await next);
+    assert.deepEqual([trees.removed, f.started(), (await remaining()).length, said()], [[tree], 2, 1, 1], 'removed exactly once, then the connection');
+  } finally { trees.release(); }
 });
 
 // A real launcher that dies and what it leaves behind, as two Node programs. The launcher stands for the App Server: it
@@ -449,8 +509,7 @@ test('a surveillance stopped and started again starts no Codex process while the
   runtime.stop('Surveillance arrêtée.');
   await until(() => stopped.every(child => child.closed), 'both processes are asked to end');
   runtime.start({ instruction: 'Vérifie les chiffres annoncés.' });
-  await until(() => stopped.every(child => child.closed >= 2) || server.started() > 2, 'the warm-up of the new activation reaches them');
-  await pause(30);
+  await pause(50);
   assert.equal(server.started(), 2, 'no process is started next to the ones still ending');
   stopped[0].exit.resolve(true);
   await until(() => server.started() === 3, 'a role reconnects once its own former process is gone');
