@@ -1,14 +1,21 @@
 const {passageText}=require('./moment-search.cjs');
 
+// Set as `code` by a synthesis adapter on an input it refuses for its size, before any provider call: the one
+// failure that waiting does not cure.
+const RECAP_CAPACITY='TVLENS_RECAP_CAPACITY';
+
 // The source archive lives alongside the synthesized chapters. Retention only changes replay availability.
 class LivingRecap {
+  // `revision` counts every change to what a synthesis is sent: chapters, sources (which ones, bounds, text) and
+  // limits, never replay availability. `refused` is the revision of the input last refused for its size, and is
+  // cleared wherever `error` is.
   constructor({summarize,onChange=()=>{},now=Date.now,throttleMs=25000,timeoutMs=45000}) {
-    Object.assign(this,{summarize,onChange,now,throttleMs,timeoutMs});this.generation=0;this.reset();
+    Object.assign(this,{summarize,onChange,now,throttleMs,timeoutMs});this.generation=0;this.revision=0;this.reset();
   }
   reset(sessionId=null) {
     this.active?.controller.abort(new Error('Nouvelle session.'));
-    this.generation++;this.active=null;this.sessionId=sessionId;this.originals=new Map();this.included=new Map();
-    this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.status='idle';this.limits=[];this.emit();
+    this.generation++;this.revision++;this.active=null;this.sessionId=sessionId;this.originals=new Map();this.included=new Map();
+    this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.refused=null;this.status='idle';this.limits=[];this.emit();
   }
   // Reopened archive: the saved recap comes back as it was shown, with no synthesis and no emission.
   // Silent on purpose: an onChange here would make the host rewrite the archive it has just opened.
@@ -16,8 +23,8 @@ class LivingRecap {
   // resume sends what arrived since, not the whole session. A chapter is kept only with sources it can cite.
   restore(saved) {
     this.active?.controller.abort(new Error('Archive rouverte.'));
-    this.generation++;this.active=null;this.sessionId=typeof saved?.sessionId==='string'&&saved.sessionId?saved.sessionId:null;this.originals=new Map();this.included=new Map();
-    this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.limits=[];
+    this.generation++;this.revision++;this.active=null;this.sessionId=typeof saved?.sessionId==='string'&&saved.sessionId?saved.sessionId:null;this.originals=new Map();this.included=new Map();
+    this.chapters=[];this.overview='';this.updatedAt=null;this.lastAttempt=null;this.error=null;this.refused=null;this.limits=[];
     const text=value=>typeof value==='string'&&value.trim().length>0,list=value=>Array.isArray(value)?value:[];
     if(this.sessionId){
       // Replay availability is what the disk says now, not what the session believed: the next observe() sets it.
@@ -45,11 +52,13 @@ class LivingRecap {
     for(const source of this.originals.values())source.available=false;
     for(const segment of segments){
       if(segment.status!=='ready'||!passageText(segment).trim())continue;
-      this.originals.set(segment.id,{id:segment.id,startMs:segment.startMs,endMs:segment.endMs,text:passageText(segment),available:Boolean(segment.available)});
+      const text=passageText(segment),known=this.originals.get(segment.id);
+      if(!known||known.startMs!==segment.startMs||known.endMs!==segment.endMs||known.text!==text)this.revision++;
+      this.originals.set(segment.id,{id:segment.id,startMs:segment.startMs,endMs:segment.endMs,text,available:Boolean(segment.available)});
     }
     const pending=segments.filter(s=>['queued','analyzing'].includes(s.status)||['queued','analyzing'].includes(s.visionStatus)).length;
     const partial=segments.filter(s=>s.status==='partial').length;
-    const missing=segments.filter(s=>['error','skipped','expired'].includes(s.status)).length;
+    const missing=segments.filter(s=>['error','skipped','expired'].includes(s.status)).length,previous=this.limits;
     this.limits=['Résumé issu d’analyses automatiques, susceptible d’imprécisions.'];
     if(pending)this.limits.push(`${pending} passage(s) encore en analyse.`);
     if(partial)this.limits.push(`${partial} passage(s) avec une analyse partielle, non inclus dans le résumé.`);
@@ -57,9 +66,12 @@ class LivingRecap {
     const sorted=[...segments].sort((a,b)=>a.startMs-b.startMs);let through=0,holes=0;
     for(const s of sorted){if(s.startMs-through>250)holes++;through=Math.max(through,s.endMs);}
     if(holes)this.limits.push(`${holes} interruption(s) de capture : ces intervalles ne sont pas résumés.`);
-    if(!this.active)this.status=this.error?'error':this.originals.size?(this.pending().length?'waiting':'ready'):'idle';
+    if(previous.length!==this.limits.length||previous.some((limit,i)=>limit!==this.limits[i]))this.revision++;
+    if(!this.active)this.status=this.error?this.failure():this.originals.size?(this.pending().length?'waiting':'ready'):'idle';
     this.emit();return this.snapshot();
   }
+  // What a failed attempt leaves shown until the next one: a ceiling is not said as a passing failure.
+  failure(){return this.refused===null?'error':'capacity';}
   fingerprint(source){return JSON.stringify([source.startMs,source.endMs,source.text]);}
   pending(){return [...this.originals.values()].filter(s=>this.included.get(s.id)!==this.fingerprint(s)).sort((a,b)=>a.startMs-b.startMs);}
   snapshot(){
@@ -77,15 +89,16 @@ class LivingRecap {
     if(busy){
       const wasActive=Boolean(this.active),previousStatus=this.status;
       if(this.active){this.active.controller.abort(new Error('Priorité à la question en cours.'));this.generation++;this.active=null;this.lastAttempt=null;}
-      this.status=this.error?'error':this.pending().length?'waiting':this.overview?'ready':'idle';
+      this.status=this.error?this.failure():this.pending().length?'waiting':this.overview?'ready':'idle';
       if(wasActive||this.status!==previousStatus)this.emit();
       return Promise.resolve(this.snapshot());
     }
     if(this.active)return this.active.done;
     const newPassages=this.pending();
-    if(!newPassages.length||!this.sessionId||this.lastAttempt!==null&&this.now()-this.lastAttempt<this.throttleMs)return Promise.resolve(this.snapshot());
-    const controller=new AbortController(),generation=this.generation,sources=new Map([...this.originals].map(([id,s])=>[id,{...s}]));
-    const active={controller,generation,done:null};this.active=active;this.lastAttempt=this.now();this.status='updating';this.error=null;
+    // An input refused for its size is not sent again as it is: only a change to it allows another attempt.
+    if(!newPassages.length||!this.sessionId||this.refused===this.revision||this.lastAttempt!==null&&this.now()-this.lastAttempt<this.throttleMs)return Promise.resolve(this.snapshot());
+    const controller=new AbortController(),generation=this.generation,revision=this.revision,sources=new Map([...this.originals].map(([id,s])=>[id,{...s}]));
+    const active={controller,generation,done:null};this.active=active;this.lastAttempt=this.now();this.status='updating';this.error=null;this.refused=null;
     const chapters=this.chapters.map(({id,title,summary,sourceIds})=>({id,title,summary,sourceIds:[...sourceIds]}));
     this.emit();
     active.done=(async()=>{
@@ -99,10 +112,12 @@ class LivingRecap {
         // Edits arriving while synthesis runs cannot be silently marked as incorporated.
         this.chapters=validated.chapters;this.overview=validated.overview;
         for(const [id,source] of sources)this.included.set(id,this.fingerprint(source));
-        this.updatedAt=this.now();this.status=this.pending().length?'waiting':'ready';
+        this.revision++;this.updatedAt=this.now();this.status=this.pending().length?'waiting':'ready';
       }catch(error){
         if(this.generation!==generation||this.active!==active)return this.snapshot();
-        this.error=error.message;this.status='error';this.lastAttempt=this.now();
+        // The input held back is the one that was sent, not what the session has become while it settled.
+        if(error.code===RECAP_CAPACITY)this.refused=revision;
+        this.error=error.message;this.status=this.failure();this.lastAttempt=this.now();
       }finally{clearTimeout(timer);controller.signal.removeEventListener('abort',onAbort);if(this.active===active){this.active=null;this.emit();}}
       return this.snapshot();
     })();

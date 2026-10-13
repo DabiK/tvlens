@@ -20,6 +20,8 @@ export function renderRecapView({ state, session, targets, replay, notice }) {
   let statusText = !session?.id && !hasContent ? 'Lance une vidéo : son résumé et ses chapitres apparaîtront ici.' : 'Le résumé se construit au fil des passages analysés.';
   if (state?.status === 'updating') statusText = hasContent ? 'Mise à jour en cours · Le résumé précédent reste disponible.' : 'Préparation du premier résumé…';
   else if (state?.status === 'error') statusText = hasContent ? 'Mise à jour indisponible · Le dernier résumé reste disponible.' : 'Le résumé est momentanément indisponible.';
+  // A ceiling, not an outage: waiting brings no update back.
+  else if (state?.status === 'capacity') statusText = hasContent ? 'Session trop longue pour la synthèse automatique · Le résumé n’est plus mis à jour.' : 'Session trop longue pour la synthèse automatique · Aucun résumé n’est produit.';
   else if (hasContent) statusText = 'Résumé automatique des passages analysés.';
   if (state?.pendingCount) statusText += ` ${plural(state.pendingCount, 'passage')} en attente d’intégration au résumé.`;
   for (const [target, expanded] of targets) {
