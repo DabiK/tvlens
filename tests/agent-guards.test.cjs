@@ -166,6 +166,22 @@ test("in an interactive session the stop gate never blocks: a red check is only 
   assert.match(output.systemMessage, /Contrôle qualité rouge/);
 });
 
+test("a compaction during a ticket session is recorded and told what to keep; an interactive one is left alone", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const input = JSON.stringify({ hook_event_name: "PreCompact", trigger: "auto", session_id: "s1" });
+  const compact = (env) => repo.node(".claude/hooks/record-compaction.mjs", [], { input, env: { CLAUDE_PROJECT_DIR: repo.root, ...env } });
+  const kept = compact(LOOP);
+  assert.equal(kept.code, 0, kept.out);
+  assert.match(kept.stdout, /critères d'acceptation/);
+  assert.match(kept.stdout, /\.harness-state\/tickets\/T001\/verdict\.json/);
+  const recorded = repo.read(".harness-state/tickets/T001/compactions.jsonl").trim().split("\n").map((line) => JSON.parse(line));
+  assert.deepEqual(recorded.map((r) => [r.trigger, r.session]), [["auto", "s1"]]);
+  const alone = compact(INTERACTIVE);
+  assert.equal(alone.code, 0, alone.out);
+  assert.equal(alone.stdout, "");
+});
+
 test("the session start hook gives the branch and the mode", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);

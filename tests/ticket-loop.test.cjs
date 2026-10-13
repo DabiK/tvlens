@@ -66,6 +66,14 @@ const scenarios = {
     write("docs/adr/0011-greeting.md", "# 0011\\n");
     verdict("TERMINÉ");
   },
+  compacts() {
+    greeting();
+    verdict("TERMINÉ");
+    fs.appendFileSync(path.join(dir, "compactions.jsonl"), JSON.stringify({ trigger: "auto" }) + "\\n");
+    write(path.join(dir, "fake-window"), String(process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW));
+    const usage = { input_tokens: 10, output_tokens: 20, cache_read_input_tokens: 30, cache_creation_input_tokens: 40 };
+    console.log(JSON.stringify({ session_id: "s1", num_turns: 12, duration_ms: 3400, total_cost_usd: 0.5, usage, permission_denials: [{}] }));
+  },
   "removes-empty-catch"() {
     write("core/legacy.cjs", "module.exports = 1;\\n");
     verdict("TERMINÉ");
@@ -208,6 +216,23 @@ test("a ticket that improves a measure tightens the baseline in its own commit",
   assert.equal(result.code, 0, result.out);
   assert.equal(JSON.parse(repo.read("scripts/quality/baseline.json")).catch_vides_prod, 0);
   assert.match(repo.git("show", "--stat", "--format=", "HEAD").stdout, /scripts\/quality\/baseline\.json/);
+});
+
+test("the loop caps the context of a ticket session and records what the session cost, compactions included", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("compacts");
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /compactée 1 fois/);
+  assert.equal(repo.read(".harness-state/tickets/T001/fake-window"), "200000");
+  const events = repo.read(".harness-state/loop/events.jsonl").trim().split("\n").map((line) => JSON.parse(line));
+  const ended = events.find((e) => e.phase === "session-terminee");
+  const { session, tours, duree_s, cout_usd, tokens_sortie, tokens_lus_cumules, refus_de_permission, compactions } = ended;
+  assert.deepEqual(
+    { session, tours, duree_s, cout_usd, tokens_sortie, tokens_lus_cumules, refus_de_permission, compactions },
+    { session: "s1", tours: 12, duree_s: 3, cout_usd: 0.5, tokens_sortie: 20, tokens_lus_cumules: 80, refus_de_permission: 1, compactions: 1 },
+  );
+  assert.equal(repo.loop("done", ["--dry-run", "--compact-window", "0"]).code, 0);
 });
 
 test("files that were already untracked before the loop are left out of the ticket commit", (t) => {

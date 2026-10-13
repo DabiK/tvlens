@@ -8,6 +8,7 @@
 //   node scripts/loop/run.mjs --dry-run       montre ce qui serait fait, sans rien lancer
 //   --attempts 3 (sessions par ticket)   --no-push   --model <m>   --effort <e>
 //   --permission-mode auto   --budget-usd <n>   --timeout-min 120
+//   --compact-window 200000 (plafond de contexte d'une session, en tokens ; 0 pour ne pas le fixer)
 //
 // Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 push refusé.
 import { spawnSync } from "node:child_process";
@@ -33,6 +34,7 @@ const options = {
   permissionMode: option("--permission-mode", "auto"),
   budgetUsd: option("--budget-usd", null),
   timeoutMin: Number(option("--timeout-min", 120)),
+  compactWindow: Number(option("--compact-window", 200000)),
 };
 // Ce qui définit les règles : intouchable par un ticket, sauf s'il porte « harnais: oui ».
 const PROTECTED = [".claude/", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md"];
@@ -104,6 +106,31 @@ function preflight() {
   return { branch, untracked: new Set(statusEntries().flatMap((e) => e.paths)) };
 }
 
+function compactions(dir) {
+  const file = path.join(dir, "compactions.jsonl");
+  return fs.existsSync(file) ? fs.readFileSync(file, "utf8").split("\n").filter(Boolean).length : 0;
+}
+
+/** Ce que la session rapporte d'elle-même (sortie JSON de `claude -p`) : sert à calibrer la taille des tickets. */
+function sessionReport(stdout, dir, compactionsBefore) {
+  const report = { compactions: compactions(dir) - compactionsBefore };
+  try {
+    const result = JSON.parse(stdout);
+    const usage = result.usage || {};
+    report.session = result.session_id;
+    report.tours = result.num_turns;
+    report.duree_s = Math.round((result.duration_ms || 0) / 1000);
+    report.cout_usd = result.total_cost_usd;
+    report.tokens_sortie = usage.output_tokens;
+    // Cumul sur tous les appels de la session : il suit le coût, pas la taille du contexte à un instant donné.
+    report.tokens_lus_cumules = (usage.input_tokens || 0) + (usage.cache_read_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
+    report.refus_de_permission = (result.permission_denials || []).length;
+  } catch (error) {
+    // Sortie absente ou illisible (session interrompue) : seul le compte des compactions est connu.
+  }
+  return report;
+}
+
 function runSession(ticket, attempt, dir, failureReport) {
   const retry = failureReport
     ? ` C'est la tentative ${attempt} : une session précédente n'a pas abouti. Lis ${path.relative(root, failureReport)}` +
@@ -128,11 +155,18 @@ function runSession(ticket, attempt, dir, failureReport) {
     // Les sous-agents ne lancent pas eux-mêmes de sous-agents : trois rôles, un niveau.
     CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
   };
+  // Plafond de contexte : au-delà la session se compacte. Une session de ticket qui l'atteint traite un ticket trop gros.
+  if (options.compactWindow > 0) env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(options.compactWindow);
   const bin = process.env.TVLENS_CLAUDE_BIN || "claude";
   event("session", { ticket: ticket.id, attempt });
+  const compactionsBefore = compactions(dir);
   const result = sh(bin, args, { env, stdio: ["ignore", "pipe", "pipe"], timeout: options.timeoutMin * 60 * 1000 });
   fs.writeFileSync(path.join(dir, `session-${attempt}.json`), result.stdout);
   if (result.stderr) fs.writeFileSync(path.join(dir, `session-${attempt}.stderr`), result.stderr);
+  const report = sessionReport(result.stdout, dir, compactionsBefore);
+  event("session-terminee", { ticket: ticket.id, attempt, code: result.code, ...report });
+  if (report.tours !== undefined) say(`Session ${attempt} : ${report.tours} tours, ${report.duree_s} s, ${report.tokens_sortie} tokens produits.`);
+  if (report.compactions) say(`La session s'est compactée ${report.compactions} fois : ce ticket est sans doute trop gros pour une session.`);
   return result.code;
 }
 
