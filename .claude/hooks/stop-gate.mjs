@@ -13,8 +13,12 @@ const input = readInput();
 const root = projectDir(input);
 const subagent = process.argv.includes("--subagent");
 
+// Le hook a 300 s (settings.json) : le contrôle doit avoir rendu la main avant, sinon ses tests lui survivraient.
+const BUDGET_MS = process.env.TVLENS_TEST_BUDGET_MS || "240000";
+
 function check(extra = []) {
-  const result = spawnSync(process.execPath, ["scripts/check.mjs", "--changed", ...extra], { cwd: root, encoding: "utf8" });
+  const env = { ...process.env, TVLENS_TEST_BUDGET_MS: BUDGET_MS };
+  const result = spawnSync(process.execPath, ["scripts/check.mjs", "--changed", ...extra], { cwd: root, encoding: "utf8", env });
   return { ok: result.status === 0, out: (result.stdout || "") + (result.stderr || "") };
 }
 

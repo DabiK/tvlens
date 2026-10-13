@@ -95,3 +95,28 @@ test("the baseline cannot be re-initialised once it exists", (t) => {
   assert.equal(repo.node("scripts/quality/ratchet.mjs", ["--init"]).code, 0);
   assert.equal(repo.node("scripts/quality/ratchet.mjs", ["--init"]).code, 1);
 });
+
+test("a test file that never ends turns the check red within its time budget and leaves no process behind", async (t) => {
+  const stuck = [
+    "const { test } = require('node:test');",
+    "require('node:fs').writeFileSync('stuck.pid', String(process.pid));",
+    "test('never ends', () => new Promise(() => setInterval(() => {}, 1000)));",
+  ];
+  const repo = harnessRepo({ "tests/stuck.test.cjs": stuck.join("\n") + "\n" });
+  t.after(repo.cleanup);
+  const red = repo.node("scripts/check.mjs", [], { env: { TVLENS_TEST_BUDGET_MS: "4000" } });
+  assert.equal(red.code, 1, red.out);
+  assert.match(red.out, /Délai dépassé \(4 s\)/);
+  const pid = Number(repo.read("stuck.pid"));
+  const alive = () => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (error) {
+      // No such process: it was stopped.
+      return false;
+    }
+  };
+  for (let i = 0; i < 100 && alive(); i++) await new Promise((resolve) => setTimeout(resolve, 50));
+  assert.equal(alive(), false, "the stuck test process was stopped along with the check");
+});

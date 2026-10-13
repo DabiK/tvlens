@@ -22,10 +22,27 @@ const CODE = /\.(cjs|mjs|js)$/;
 const steps = [];
 const step = (name, status, detail = "") => steps.push({ name, status, detail });
 
-function run(command, commandArgs) {
-  const result = spawnSync(command, commandArgs, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-  return { code: result.status ?? 1, out: (result.stdout || "") + (result.stderr || "") };
+// Durée maximale d'une suite de tests. Sans elle, un fichier de test qui ne se termine pas bloque le contrôle,
+// donc la boucle, sans fin et sans message.
+const TEST_BUDGET_MS = Number(process.env.TVLENS_TEST_BUDGET_MS) || 20 * 60 * 1000;
+
+function run(command, commandArgs, budgetMs = 0) {
+  const options = { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 };
+  // Avec un budget, la commande mène son propre groupe de processus : à l'échéance tout le groupe est arrêté,
+  // y compris les fichiers de test que le lanceur a démarrés et qui ne rendraient jamais la main.
+  if (budgetMs) Object.assign(options, { timeout: budgetMs, killSignal: "SIGKILL", detached: true });
+  const result = spawnSync(command, commandArgs, options);
+  const timedOut = result.error?.code === "ETIMEDOUT";
+  if (timedOut && result.pid) {
+    try {
+      process.kill(-result.pid, "SIGKILL");
+    } catch (error) {
+      // Le groupe a déjà disparu : il n'y a plus rien à arrêter.
+    }
+  }
+  return { code: timedOut ? 1 : (result.status ?? 1), out: (result.stdout || "") + (result.stderr || ""), timedOut };
 }
+const overBudget = (what) => `Délai dépassé (${Math.round(TEST_BUDGET_MS / 1000)} s) : ${what} ne se termine pas. Ses processus ont été arrêtés.`;
 const git = (...gitArgs) => run("git", gitArgs);
 const tail = (text, lines) => text.trimEnd().split("\n").slice(-lines).join("\n");
 const bin = (name) => path.join(root, "node_modules", ".bin", name);
@@ -101,16 +118,18 @@ function jsTests(files) {
   const targets = files ? all.filter((f) => files.includes(f)) : all;
   if (!targets.length) return step("tests JS", files ? "ok" : "skip", files ? "" : "aucun test");
   // Séquentiel : sous charge, les fichiers lancés en parallèle se perturbent (échecs intermittents déjà observés).
-  const result = run(process.execPath, ["--test", "--test-concurrency=1", ...targets]);
+  const result = run(process.execPath, ["--test", "--test-concurrency=1", ...targets], TEST_BUDGET_MS);
   const summary = result.out.split("\n").filter((l) => /^ℹ (tests|pass|fail)|^✖/.test(l)).slice(0, 40).join("\n");
-  step(`tests JS (${targets.length} fichier(s))`, result.code === 0 ? "ok" : "ko", summary);
+  const detail = result.timedOut ? overBudget("un fichier de test") + "\n" + tail(result.out, 15) : summary;
+  step(`tests JS (${targets.length} fichier(s))`, result.code === 0 ? "ok" : "ko", detail);
 }
 
 function pythonTests() {
   const has = fs.existsSync(path.join(root, "tests")) && fs.readdirSync(path.join(root, "tests")).some((f) => /^test_.*\.py$/.test(f));
   if (!has) return step("tests Python", "skip", "aucun test");
-  const result = run("python3", ["-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"]);
-  step("tests Python", result.code === 0 ? "ok" : "ko", tail(result.out, result.code === 0 ? 3 : 25));
+  const result = run("python3", ["-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"], TEST_BUDGET_MS);
+  const detail = (result.timedOut ? overBudget("un test Python") + "\n" : "") + tail(result.out, result.code === 0 ? 3 : 25);
+  step("tests Python", result.code === 0 ? "ok" : "ko", detail);
 }
 
 if (!fs.existsSync(path.join(root, "package.json"))) {
