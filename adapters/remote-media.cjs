@@ -43,8 +43,9 @@ function validateRemote(input){
 const unavailable=(message,cause)=>Object.assign(Error(message,{cause}),{status:503,code:'media-unavailable'});
 // Every file of a block being prepared lives in its own temporary directory: a refusal there is the host's.
 const scratch=work=>work.catch(cause=>{throw unavailable('Espace temporaire média indisponible.',cause);});
-// `signal` is held by whoever owns the block. When it fires, this child and no other is killed, and the command still
-// settles on the exit of that child only: nothing is removed under a tool that runs.
+// `signal` is held by whoever owns the block. When it fires, this child and no other is killed. A child that started is
+// over when it exits and not before: an error it reports meanwhile (a kill the system refuses) settles nothing, its time
+// limit and its signal stay armed, and nothing is removed under a tool that may still run.
 async function command(binary,args,timeoutMs,signal){
   signal?.throwIfAborted();
   await new Promise((resolve,reject)=>{
@@ -54,8 +55,9 @@ async function command(binary,args,timeoutMs,signal){
     const timer=setTimeout(()=>{expired=true;kill();},timeoutMs);signal?.addEventListener('abort',kill,{once:true});
     const settle=()=>{clearTimeout(timer);signal?.removeEventListener('abort',kill);};
     // Heard before the pipe is read: a spawn the system refuses hands back a child without a pid, and without pipes when
-    // it ran out of descriptors, and only says so on the next tick. Unheard, that would end the host.
-    child.on('error',cause=>{settle();reject(signal?.aborted?signal.reason:unavailable('Outil média indisponible.',cause));});
+    // it ran out of descriptors, and only says so on the next tick. Unheard, that would end the host. Without a pid
+    // nothing was started: that error is the end of the command, and no other is.
+    child.on('error',cause=>{if(child.pid)return;settle();reject(signal?.aborted?signal.reason:unavailable('Outil média indisponible.',cause));});
     // A child killed by the timer exits with a signal and no code: a truncated file must never pass for a result.
     child.on('exit',(code,killed)=>{settle();if(signal?.aborted)reject(signal.reason);else if(expired)reject(unavailable('Préparation média trop longue.'));else if(code||killed)reject(Error('Préparation média échouée : '+err));else resolve();});
     child.stderr?.on('data',v=>{err=(err+v).slice(-2000);});
@@ -67,7 +69,7 @@ class RemoteMedia {
   // runs is killed, and the reason of the signal is what this rejects with once everything started has settled.
   async assemble(input,{signal}={}){
     const started=performance.now();if(!validated.has(input))validateRemote(input);signal?.throwIfAborted();
-    const dir=await scratch(fs.mkdtemp(path.join(os.tmpdir(),'tvlens-ingest-')));let result;
+    const dir=await scratch(fs.mkdtemp(path.join(os.tmpdir(),'tvlens-ingest-')));let result,failed=false,primary;
     try{
       signal?.throwIfAborted();
       const seconds=String((input.endMs-input.startMs)/1000);
@@ -106,7 +108,12 @@ class RemoteMedia {
       args.push('-t',seconds,'-vf','fps=2','-c:v','libvpx','-deadline','realtime','-cpu-used','8','-b:v','500k',path.join(dir,'clip.webm'));
       await command(this.ffmpeg,args,this.timeoutMs,signal);
       result={...input,frames,audio,clip:await scratch(fs.readFile(path.join(dir,'clip.webm')))};
-    }finally{await scratch(fs.rm(dir,{recursive:true,force:true}));}
+    }catch(error){failed=true;primary=error;}
+    // The directory goes whatever happened. A removal the system refuses is the host's doing only when nothing else went
+    // wrong: a block refused for what it is, or given up by its owner, keeps its own answer and carries that failure.
+    try{await fs.rm(dir,{recursive:true,force:true});}
+    catch(cause){if(!failed)throw unavailable('Espace temporaire média indisponible.',cause);try{primary.cleanup=cause;}catch{}}
+    if(failed)throw primary;
     // Carried to the passage: the session says by itself that such a scene was not seen whole. Absent when nothing was hidden.
     const overlay=declaredOverlay(input);
     result.ingest={assembleMs:Math.round(performance.now()-started),...(overlay?{overlay}:{})};return result;

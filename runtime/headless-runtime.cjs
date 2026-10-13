@@ -736,12 +736,14 @@ class HeadlessRuntime {
   }
   // First thing when the session in memory goes away: a block still being prepared is cancelled, its
   // media tool stopped and its capture told that the session is closing. One whose storage has begun is
-  // left to land. Hands back what settleIngestions() then waits for.
+  // left to land. Hands back what settleIngestions() then waits for: every preparation that has not let
+  // go, one cancelled by an earlier end included. That one is not cancelled twice, and stays owned.
   cancelPreparations() {
     const cancelled = [];
     for (const operation of this.admitted)
-      if (!operation.storing && !operation.controller.signal.aborted) {
-        operation.controller.abort(closing());
+      if (!operation.storing) {
+        if (!operation.controller.signal.aborted)
+          operation.controller.abort(closing());
         cancelled.push(operation.settled);
       }
     return cancelled;
@@ -1146,11 +1148,15 @@ class HeadlessRuntime {
     clearInterval(this.timer);
     clearInterval(this.ticker);
     return (this.closed ||= this.exclusive(async () => {
+      const errors = [];
       try {
-        await this.release();
+        const ended = await this.release();
+        // No session to end, yet a preparation cancelled by an earlier end may still not have let go:
+        // the host does not leave under it without the same bounded wait, and says so below.
+        if (ended.id === null)
+          await this.settleIngestions(errors, this.cancelPreparations());
       } finally {
         // The surveillance role releases its provider processes whatever the end of the session did.
-        const errors = [];
         await this.attempt(errors, "surveillance", () =>
           this.surveillance.close(),
         );

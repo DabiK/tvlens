@@ -59,9 +59,10 @@ async function tree(dir, base = dir) {
 
 // The temporary directories the assembler makes during a test, and which of them are still there. Other test files
 // share the temp root: only those made here are followed. `refuse` makes the next ones fail as the system would;
-// `once` runs when the next one exists, before the assembler is handed it.
+// `once` runs when the next one exists, before the assembler is handed it. Their removals are counted, and fail with
+// `stuck` while it is set; `sweep` then removes for real what such a refusal left behind.
 function scratch(t) {
-  const made = [], original = fsp.mkdtemp, seen = { made, refuse: null, once: null };
+  const made = [], original = fsp.mkdtemp, rm = fsp.rm, seen = { made, removals: [], refuse: null, once: null, stuck: null };
   t.mock.method(fsp, 'mkdtemp', async (prefix, ...rest) => {
     const mine = path.basename(String(prefix)).startsWith('tvlens-ingest-');
     if (mine && seen.refuse) throw seen.refuse;
@@ -69,7 +70,12 @@ function scratch(t) {
     if (mine) { made.push(dir); const once = seen.once; seen.once = null; once?.(); }
     return dir;
   });
+  t.mock.method(fsp, 'rm', async (target, ...rest) => {
+    if (path.basename(String(target)).startsWith('tvlens-ingest-')) { seen.removals.push(String(target)); if (seen.stuck) throw seen.stuck; }
+    return rm(target, ...rest);
+  });
   seen.left = async () => (await Promise.all(made.map(dir => fsp.access(dir).then(() => dir, () => null)))).filter(Boolean);
+  seen.sweep = async () => { seen.stuck = null; for (const dir of await seen.left()) await rm(dir, { recursive: true, force: true }); };
   return seen;
 }
 
@@ -158,7 +164,7 @@ test('a block still being prepared when its session ends is cancelled through it
     order: ['block', 'end'], other: true, first: { status: 200, value: { id: 'moment-1', duplicate: false } }, kept: ['moment-1'], journal: [] });
 });
 
-test('stopping the host while the real assembler runs its media tool kills that tool and no other, removes its temporary directory, and archives the session before the stop returns', async t => {
+test('stopping the host while the real assembler runs its media tool kills that tool, removes its temporary directory, and archives the session before the stop returns', async t => {
   const dirs = scratch(t), media = { assemble: (input, options) => media.current.assemble(input, options) }, f = await host(t, { media });
   const frames = endMs => ({ frames: [{ atMs: endMs - 8000, data: f.jpeg }] });
   f.jpeg = await image();
@@ -226,6 +232,57 @@ test('with the default wait of one second, a preparation resolved after the next
   assert.deepEqual({ cancelled: cancelled(call), ended, journal: f.journal, other: B !== A, waiting: waiting.status, late, inB, same, freed }, {
     cancelled: true, ended: { status: 200, value: { ended: true, id: A, archived: true, errors: [LATE(1000)] } }, journal: [`TVLens — fermeture incomplète de la session ${A} : ${LATE(1000)}`],
     other: true, waiting: 429, late: { status: 503, value: CLOSING }, inB: [], same: true, freed: { status: 200, value: { id: 'moment-1', duplicate: false } } });
+});
+
+test('a preparation that has still not let go when the next session ends is waited for again, within the bound, and said again; settled at last, its block is stored in no session and the transport is free', async t => {
+  const media = assembly(), f = await host(t, { media, runtimeOptions: { preparationWaitMs: 40 } });
+  const A = await f.start();
+  await f.block(A, 1, 8000);
+  media.hold = 'deaf';
+  const sent = f.send(f.body(A, 2, 16000));
+  await until(() => media.held.length === 1, 'the assembly of the second block');
+  const call = media.held[0];
+  const endedA = await bounded(f.req('/v1/session/end', {}));
+  const archive = await tree(path.join(f.sessionsRoot, A));
+  // The next session comes and goes while the preparation of the former one is still owned by the host.
+  const B = await f.start();
+  const endedB = await bounded(f.req('/v1/session/end', {}));
+  const C = await f.start();
+  const waiting = await f.send(f.body(C, 1, 8000));
+  call.finish();
+  const late = await bounded(sent);
+  const inC = await f.passages(), same = JSON.stringify(await tree(path.join(f.sessionsRoot, A))) === JSON.stringify(archive);
+  const folderB = await fsp.access(path.join(f.sessionsRoot, B)).then(() => 'there', () => 'gone');
+  const freed = await f.block(C, 1, 8000);
+  assert.deepEqual({ cancelled: cancelled(call), endedA: endedA.value, endedB: endedB.value, journal: f.journal, waiting: waiting.status, late, inC, same, folderB, freed }, {
+    cancelled: true, endedA: { ended: true, id: A, archived: true, errors: [LATE(40)] }, endedB: { ended: true, id: B, archived: false, errors: [LATE(40)] },
+    journal: [A, B].map(id => `TVLens — fermeture incomplète de la session ${id} : ${LATE(40)}`),
+    waiting: 429, late: { status: 503, value: CLOSING }, inC: [], same: true, folderB: 'gone', freed: { status: 200, value: { id: 'moment-1', duplicate: false } } });
+});
+
+test('stopping the host when no session is loaded still waits, within the bound, for a preparation an earlier end could not see go, and says so in the journal and in the last outcome; settled after the stop, it stores nothing and holds nothing', async t => {
+  const media = assembly(), f = await host(t, { media, runtimeOptions: { preparationWaitMs: 40 } });
+  const A = await f.start();
+  await f.block(A, 1, 8000);
+  media.hold = 'deaf';
+  const sent = f.send(f.body(A, 2, 16000)).then(() => 'answered', () => 'connection closed');
+  await until(() => media.held.length === 1, 'the assembly of the second block');
+  const call = media.held[0];
+  const ended = await bounded(f.req('/v1/session/end', {}));
+  const archive = await tree(path.join(f.sessionsRoot, A));
+  const stopped = await bounded(f.stop().then(() => 'stopped'));
+  // The server is closed: what the host still owns is read where it keeps it, the blocks it has not been handed
+  // back and the slot of the transport.
+  const held = () => ({ owned: f.runtime.admitted.size, slot: f.server.ingesting });
+  const atStop = { ...held(), lastEnd: f.runtime.lastEnd, journal: [...f.journal] };
+  call.finish();
+  await bounded(sent);
+  await eventually(() => f.runtime.admitted.size === 0);
+  assert.deepEqual({ ended: ended.value, stopped, atStop, after: held(), session: f.runtime.session, same: JSON.stringify(await tree(path.join(f.sessionsRoot, A))) === JSON.stringify(archive) }, {
+    ended: { ended: true, id: A, archived: true, errors: [LATE(40)] }, stopped: 'stopped',
+    atStop: { owned: 1, slot: true, lastEnd: { id: A, archived: true, errors: [LATE(40), LATE(40)] },
+      journal: [`TVLens — fermeture incomplète de la session ${A} : ${LATE(40)}`, `TVLens — arrêt incomplet de l’hôte : ${LATE(40)}`] },
+    after: { owned: 0, slot: false }, session: null, same: true });
 });
 
 test('deleting a paused session cancels the block still being prepared for it before its folder is erased', async t => {
@@ -376,6 +433,80 @@ test('a spawn the system refuses is a refusal of the host, heard: a child withou
   const without = shape(await bounded(failure(new (assemblerOn(t, starved))({ ffmpeg: 'ffmpeg' }).assemble(input())), 2000));
   const thrown = shape(await bounded(failure(new (assemblerOn(t, () => { throw Object.assign(new Error(`spawn ${os.tmpdir()}/ffmpeg EINVAL`), { code: 'EINVAL' }); }))({ ffmpeg: 'ffmpeg' }).assemble(input())), 2000));
   assert.deepEqual({ without, heard, thrown, left: await dirs.left() }, { without: [503, UNAVAILABLE, 'Outil média indisponible.'], heard: [true], thrown: [503, UNAVAILABLE, 'Outil média indisponible.'], left: [] });
+});
+
+test('an error of a media tool that did start is not its exit: a kill the system refuses settles nothing and removes nothing until the tool has left, and what was armed against it stays armed', async t => {
+  const dirs = scratch(t), jpeg = await image(), children = [], pending = [];
+  const input = () => ({ sessionId: 's', sequence: 1, startMs: 0, endMs: 100, frames: [{ atMs: 0, data: jpeg }], audio: wav() });
+  // A child of the test's that did start: it has a pid, which nothing here signals, and it leaves when the test says.
+  // Its kill is refused the way Node reports it (lib/internal/child_process.js): 'error' emitted from kill(), and
+  // false handed back.
+  const refusing = () => {
+    const child = Object.assign(new EventEmitter(), { pid: 424242, kills: 0 });
+    child.kill = () => { child.kills++; child.emit('error', Object.assign(new Error('kill EPERM'), { code: 'EPERM' })); return false; };
+    children.push(child);
+    return child;
+  };
+  const watch = promise => { const state = { settled: null }; state.done = promise.then(() => { state.settled = 'resolved'; }, error => { state.settled = error; }); pending.push(state.done); return state; };
+  // Whatever the test proved, every child has left when it ends: nothing waits on one, and no directory stays.
+  t.after(async () => { for (const child of children) child.emit('exit', null, 'SIGKILL'); await Promise.all(pending); await dirs.sweep(); });
+  const Media = assemblerOn(t, refusing), reason = Object.assign(new Error('given up by its owner'), { status: 503, code: 'test' });
+
+  // Given up by its owner: the kill is refused. The time limit, still armed, has its own kill refused in turn.
+  const owner = new AbortController(), given = watch(new Media({ ffmpeg: 'ffmpeg', timeoutMs: 80 }).assemble(input(), { signal: owner.signal }));
+  await until(() => children.length === 1, 'the first media tool to be started');
+  owner.abort(reason);
+  await eventually(() => given.settled !== null || children[0].kills >= 2, 100);
+  const first = { settled: given.settled !== null, kills: children[0].kills, removals: dirs.removals.length, there: (await dirs.left()).length };
+  children[0].emit('exit', null, 'SIGKILL');
+  await bounded(given.done, 2000);
+  Object.assign(first, { reason: given.settled === reason, removed: dirs.removals.length, left: (await dirs.left()).length });
+
+  // Out of time, with no owner to give it up: the kill of the time limit is refused, and the cause stays the time.
+  const timed = watch(new Media({ ffmpeg: 'ffmpeg', timeoutMs: 30 }).assemble(input()));
+  await until(() => children.length === 2 && children[1].kills === 1, 'the time limit of the second media tool');
+  await eventually(() => timed.settled !== null, 60);
+  const second = { settled: timed.settled !== null, removals: dirs.removals.length - first.removed, there: (await dirs.left()).length };
+  children[1].emit('exit', null, 'SIGKILL');
+  await bounded(timed.done, 2000);
+  Object.assign(second, { cause: [timed.settled?.status, timed.settled?.code, timed.settled?.message], removed: dirs.removals.length - first.removed, left: (await dirs.left()).length });
+
+  assert.deepEqual({ first, second }, {
+    first: { settled: false, kills: 2, removals: 0, there: 1, reason: true, removed: 1, left: 0 },
+    second: { settled: false, removals: 0, there: 1, cause: [503, UNAVAILABLE, 'Préparation média trop longue.'], removed: 1, left: 0 } });
+});
+
+test('a temporary directory the system refuses to remove does not change why a block was refused: one wrong in itself and one given up by its owner keep their own answer, with the failed removal attached; alone, it is a refusal of the host', async t => {
+  const dirs = scratch(t), media = { assemble: (input, options) => media.current.assemble(input, options) }, f = await host(t, { media });
+  const jpeg = await image(), A = await f.start(), notWav = Buffer.from('not wave').toString('base64');
+  const input = extra => ({ sessionId: 's', sequence: 1, startMs: 0, endMs: 100, frames: [{ atMs: 0, data: jpeg }], ...extra });
+  const stuck = Object.assign(new Error(`EBUSY: resource busy or locked, rm '${path.join(os.tmpdir(), 'tvlens-ingest-XXXXXX')}'`), { code: 'EBUSY' });
+  const shape = error => ({ status: error.status, code: error.code, message: error.message });
+  const facts = {};
+  try {
+    dirs.stuck = stuck;
+    media.current = new RemoteMedia({ ffmpeg: f.write });
+    // Over HTTP: the capture is told what is wrong with its block, and does not send it again.
+    facts.http = await f.send(f.body(A, 1, 8000, { frames: [{ atMs: 0, data: jpeg }], audio: notWav }));
+    const invalid = await failure(media.current.assemble(input({ audio: notWav })));
+    facts.invalid = { ...shape(invalid), removal: invalid.cleanup === stuck };
+    // Given up as soon as its directory exists: the reason handed to the signal comes back, itself.
+    const owner = new AbortController(), reason = Object.assign(new Error('given up by its owner'), { status: 503, code: 'test' });
+    dirs.once = () => owner.abort(reason);
+    const given = await failure(media.current.assemble(input(), { signal: owner.signal }));
+    facts.given = { same: given === reason, ...shape(given), removal: given.cleanup === stuck };
+    // Nothing else went wrong: the directory that stays is the host's doing, and the block can be sent again.
+    const alone = await failure(media.current.assemble(input()));
+    facts.alone = { ...shape(alone), removal: alone.cause === stuck };
+    Object.assign(facts, { attempts: dirs.removals.length, stayed: (await dirs.left()).length });
+  } finally {
+    // What the refused removals left is removed for real, the refusal lifted.
+    await dirs.sweep();
+  }
+  assert.deepEqual({ ...facts, left: await dirs.left() }, {
+    http: { status: 400, value: { error: 'Audio WAV requis.' } }, invalid: { status: undefined, code: undefined, message: 'Audio WAV requis.', removal: true },
+    given: { same: true, status: 503, code: 'test', message: 'given up by its owner', removal: true },
+    alone: { status: 503, code: UNAVAILABLE, message: 'Espace temporaire média indisponible.', removal: true }, attempts: 4, stayed: 4, left: [] });
 });
 
 // ---- What was already guaranteed --------------------------------------------------------------------------------------
