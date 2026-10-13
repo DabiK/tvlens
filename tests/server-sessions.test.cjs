@@ -26,6 +26,36 @@ function refusing(t, ...names) {
   });
   return () => mock.mock.restore();
 }
+// The disk as a test holds it. Every write of the files named is listed with its size; while the disk is
+// held it waits for release(), and with `refuse` it then fails as on EIO. Every other file lands at once.
+// Let go when the test ends, whatever happened: made before a fixture, it never keeps a host from closing.
+function disk(t, ...names) {
+  const writeFile = fs.writeFile, d = { seen: [], gate: null, refuse: false };
+  t.mock.method(fs, 'writeFile', async (file, data, ...rest) => {
+    const name = names.find(item => String(file).endsWith(item + '.tmp'));
+    if (!name) return writeFile(file, data, ...rest);
+    d.seen.push({ name, bytes: Buffer.byteLength(data) });
+    await d.gate?.promise;
+    if (d.refuse) throw Object.assign(new Error(`EIO: i/o error, write '${file}'`), { code: 'EIO' });
+    return writeFile(file, data, ...rest);
+  });
+  d.hold = () => { d.gate = deferred(); };
+  d.release = () => { const gate = d.gate; d.gate = null; gate?.resolve(); };
+  t.after(() => d.release());
+  // Resolves once `total` writes have reached the disk: the last of them is the one in flight while it is held.
+  // A write that never comes fails the test instead of holding it.
+  d.reached = async total => { for (const limit = Date.now() + 5000; d.seen.length < total; await tick()) if (Date.now() > limit) assert.fail(`the disk was handed ${d.seen.length} write(s), ${total} expected`); };
+  return d;
+}
+// A chat agent the test drives: its draft moves when the test says so, and its answer comes when the test hands it.
+function drivenChat() {
+  const turn = {};
+  turn.answer = input => new Promise((resolve, reject) => {
+    Object.assign(turn, { progress: input.onProgress, finish: resolve });
+    input.signal.addEventListener('abort', () => reject(input.signal.reason), { once: true });
+  });
+  return turn;
+}
 // Every entry under a directory with its content hash and modification time: two listings are equal
 // only when nothing was added, removed or rewritten.
 async function tree(dir, base = dir) {
@@ -605,4 +635,144 @@ test('the server host reads its reversible settings strictly, and no longer swee
   const source = await fs.readFile(path.join(__dirname, '..', 'server', 'main.cjs'), 'utf8');
   assert.doesNotMatch(source, /cleanupRawMedia|clearRaw|purge/, 'nothing is cleaned when the server starts or stops');
   assert.match(source, /sweepStaleContexts/);
+});
+
+test('a slow disk holds back neither what a client reads nor the analysis: with the state file held, a passage is published analysed, a pause and a resume are published under a new tag, and each request still answers only once the disk has', async t => {
+  const held = disk(t, 'session.json'), f = await fixture(t), chat = '/v1/state?view=chat', panel = '/v1/state?view=panel';
+  const id = (await f.req('/v1/session/start', {})).value.id, session = f.runtime.session;
+  await f.block(id, 1, 8000);
+  // The description of a passage can be held back, as a slow provider holds it.
+  let describing = null;
+  const observe = session.perception.observe.bind(session.perception);
+  session.perception.observe = async input => { await describing?.promise; return observe(input); };
+  const segment = (sequence, endMs) => { f.clock += 8000; f.wall += 8000; return f.req('/v1/segments', { sessionId: id, sequence, startMs: endMs - 8000, endMs, frames: [{ atMs: endMs - 8000, data: 'YQ==' }] }); };
+  // What a client that polls with the tag it holds ends up reading, once the host has published `expected`.
+  const published = async (from, expected) => {
+    for (let i = 0; i < 400; i++) { const next = await f.polled(from); if (next[chat].status === 200 && expected(next[chat].value)) return next; await tick(); }
+    assert.fail('never published');
+  };
+  // One passage is being described and another waits behind it; nothing else arrives afterwards.
+  describing = deferred();
+  assert.deepEqual([(await segment(2, 16000)).value.id, (await segment(3, 24000)).value.id], ['moment-2', 'moment-3']);
+  await turns(); await session.store.serial;
+  let polled = await f.polled();
+  assert.deepEqual(polled[panel].value.session.segments.map(s => [s.id, s.status]), [['moment-1', 'ready'], ['moment-2', 'analyzing'], ['moment-3', 'queued']]);
+  // The disk stops answering, then the description comes back.
+  held.hold();
+  const from = held.seen.length;
+  describing.resolve(); describing = null;
+  await held.reached(from + 1); await turns();
+  polled = await f.polled(polled);
+  assert.deepEqual([polled[panel].status, polled[panel].value?.session.segments.map(s => [s.id, s.status]), held.seen.length - from], [200, [['moment-1', 'ready'], ['moment-2', 'ready'], ['moment-3', 'ready']], 1],
+    'both passages are published analysed while the save of the first is still on its way to the disk');
+
+  // A pause: published at once, answered once the disk has taken it.
+  const answered = [];
+  const pausing = f.req('/v1/session/pause', {}).then(reply => { answered.push('pause'); return reply; });
+  polled = await published(polled, state => state.session.accepting === false);
+  assert.deepEqual(answered, [], 'the request itself still waits for the disk');
+  held.release();
+  assert.deepEqual(await pausing, { status: 200, value: { paused: true } });
+  await f.runtime.session.store.serial;
+  assert.equal((await f.saved(id, 'session.json')).accepting, false);
+  // A resume, the same way.
+  held.hold();
+  const resuming = f.req('/v1/session/start', {}).then(reply => { answered.push('resume'); return reply; });
+  polled = await published(polled, state => state.session.accepting === true);
+  assert.deepEqual(answered, ['pause']);
+  held.release();
+  assert.deepEqual([(await resuming).status, answered, (await f.saved(id, 'session.json')).accepting], [200, ['pause', 'resume'], true]);
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id, archived: true });
+});
+
+test('the draft of an answer is published each time it moves and saved at most once a second, its last state included when the answer stalls: a poll gets the latest draft under a new tag while the disk is held, a refused save reaches the end of the session, and nothing waits past an end or a change of session', async t => {
+  const turn = drivenChat(), journal = [], held = disk(t, 'deep-answers.json');
+  const f = await fixture(t, { chat: turn.answer, runtimeOptions: () => ({ log: line => journal.push(line) }) }), chat = '/v1/state?view=chat';
+  const draft = words => 'mot '.repeat(words).trim(), moving = words => turn.progress({ message: 'Rédaction de la réponse…', preview: draft(words) });
+  const ask = async (sessionId, question) => { const { value } = await f.req('/v1/questions', { sessionId, question, anchorMs: 0 }); await turns(5); await f.runtime.session.store.serial; return value.id; };
+  const A = (await f.req('/v1/session/start', {})).value.id, sessionA = f.runtime.session, dirA = path.join(f.sessionsRoot, A);
+  await f.block(A, 1, 8000);
+  // Virtual seconds from here: the cadence of these saves is the only thing below that runs on a timer.
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const second = async () => { t.mock.timers.tick(1000); await turns(5); };
+  const onDisk = async id => (await f.saved(id, 'deep-answers.json')).jobs.at(-1);
+  await ask(A, 'Que se passe-t-il ?');
+  assert.deepEqual([(await onDisk(A)).status, (await onDisk(A)).preview], ['running', ''], 'a question that starts is saved at once');
+
+  // The disk is held with one draft on its way to it. A hundred more drafts follow over five seconds.
+  held.hold();
+  let writes = held.seen.length, polled = await f.polled();
+  moving(1); await second(); await held.reached(writes + 1);
+  for (let words = 2; words <= 101; words++) { moving(words); t.mock.timers.tick(50); await tick(); }
+  polled = await f.polled(polled);
+  assert.deepEqual([polled[chat].status, polled[chat].value.chat.jobs.at(-1).preview, held.seen.length - writes, (await onDisk(A)).preview], [200, draft(101), 1, ''],
+    'the latest draft is published under a new tag while one write, and only one, is held by the disk');
+  held.release();
+  await sessionA.store.serial; await second(); await sessionA.store.serial;
+  assert.deepEqual([held.seen.length - writes <= 3, (await onDisk(A)).preview], [true, draft(101)], 'a hundred drafts behind a held disk: the write in flight, then the latest state');
+
+  // The answer stalls: its last draft is not left unsaved. Nothing before the second is over, the draft then.
+  writes = held.seen.length;
+  moving(200); await turns(5); await sessionA.store.serial;
+  t.mock.timers.tick(999); await turns(5);
+  assert.deepEqual([held.seen.length - writes, (await onDisk(A)).preview], [0, draft(101)]);
+  t.mock.timers.tick(1); await turns(5); await sessionA.store.serial;
+  assert.deepEqual([held.seen.length - writes, (await onDisk(A)).preview], [1, draft(200)], 'one second after it stopped moving, the draft is on disk');
+
+  // The disk refuses the next draft, then the final state: the barrier of the session knows, and its end says so.
+  held.refuse = true;
+  moving(201); await second(); await sessionA.store.serial.catch(() => {});
+  await assert.rejects(sessionA.store.flush(), /deep-answers\.json/);
+  const refusal = 'archive : Écriture refusée par le disque (deep-answers.json) : EIO';
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id: A, archived: false, errors: [refusal] });
+  assert.deepEqual([journal, (await onDisk(A)).preview, (await onDisk(A)).status], [[`TVLens — fermeture incomplète de la session ${A} : ${refusal}`], draft(200), 'running'], 'the folder keeps the last draft the disk confirmed');
+  held.refuse = false;
+
+  // B ends with a draft still waiting for its second: its final state is saved at once and nothing is written later.
+  const B = (await f.req('/v1/session/start', {})).value.id, dirB = path.join(f.sessionsRoot, B);
+  await f.block(B, 1, 8000);
+  await ask(B, 'Et maintenant ?'); moving(1);
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id: B, archived: true });
+  assert.deepEqual([(await onDisk(B)).status, (await onDisk(B)).message], ['cancelled', 'Session terminée.']);
+  const [closedA, closedB] = [await tree(dirA), await tree(dirB)];
+  writes = held.seen.length;
+  // C captures, stops, and is asked a question whose draft waits for its second when B is opened in its place.
+  const C = (await f.req('/v1/session/start', {})).value.id, dirC = path.join(f.sessionsRoot, C);
+  await f.block(C, 1, 8000);
+  for (let i = 0; i < 3; i++) await second();
+  assert.deepEqual([await tree(dirA), await tree(dirB), await exists(path.join(dirC, 'deep-answers.json')), held.seen.length - writes], [closedA, closedB, false, 0], 'no late save of an ended session, in its own folder or in the next one');
+  assert.equal((await f.req('/v1/session/pause', {})).status, 200);
+  await ask(C, 'Une dernière ?'); moving(1);
+  assert.equal((await f.req(`/v1/sessions/${B}/open`, {})).value.readOnly, true);
+  assert.deepEqual([(await f.saved(C, 'deep-answers.json')).jobs.map(job => [job.question, job.status, job.message]), (await f.saved(C, 'manifest.json')).state], [[['Une dernière ?', 'cancelled', 'Session fermée.']], 'archived']);
+  const closedC = await tree(dirC);
+  for (let i = 0; i < 3; i++) await second();
+  assert.deepEqual([await tree(dirB), await tree(dirC), (await f.req('/v1/state')).value.chat.jobs.map(job => job.question)], [closedB, closedC, ['Et maintenant ?']], 'the archive opened in its place is not written into, and shows its own questions only');
+});
+
+test('synthetic probe of the ticket at the host, on a disk that keeps up: thirty answers of 2 000 characters and a draft that moves a hundred times, every 80 ms', async t => {
+  const turn = drivenChat(), answered = { answer: 'r'.repeat(2000), kind: 'explanation', citations: [], limits: [] };
+  const f = await fixture(t, { chat: input => (/^Question \d+ \?$/.test(input.question) ? Promise.resolve(answered) : turn.answer(input)) });
+  const id = (await f.req('/v1/session/start', {})).value.id, session = f.runtime.session;
+  await f.block(id, 1, 8000);
+  for (let i = 1; i <= 30; i++) await f.ask(id, `Question ${i} ?`);
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const held = disk(t, 'deep-answers.json');
+  await f.req('/v1/questions', { sessionId: id, question: 'Et maintenant ?', anchorMs: 0 });
+  await turns(5); await session.store.serial;
+  const from = held.seen.length;
+  // Eight virtual seconds of an answer being written, the disk taking each save before the next draft.
+  for (let step = 1; step <= 100; step++) {
+    turn.progress({ message: 'Rédaction de la réponse…', preview: 'mot '.repeat(step) });
+    t.mock.timers.tick(80); await tick(); await session.store.serial;
+  }
+  const writes = held.seen.slice(from), figures = { ecritures: writes.length, octets: writes.reduce((sum, write) => sum + write.bytes, 0) };
+  t.diagnostic(`sonde F03, synthétique, hôte serveur, disque libre (100 progressions espacées de 80 ms, 30 réponses de 2000 caractères) : ${JSON.stringify(figures)}`);
+  assert.ok(figures.ecritures <= 8, `${figures.ecritures} writes for eight seconds of drafts`);
+  assert.equal((await f.saved(id, 'deep-answers.json')).jobs.length, 31);
+  // The final answer is saved at once, whole.
+  turn.finish({ answer: 'Réponse finale.', kind: 'explanation', citations: [], limits: [] });
+  await f.runtime.deep.jobs.at(-1).done; await turns(5); await session.store.serial;
+  const last = (await f.saved(id, 'deep-answers.json')).jobs.at(-1);
+  assert.deepEqual([last.status, last.result.answer, typeof last.metrics.totalMs], ['done', 'Réponse finale.', 'number']);
 });

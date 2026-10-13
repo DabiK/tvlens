@@ -244,7 +244,9 @@ class WatchSession {
       this.lastError = error.message;
     } finally {
       this.running = false;
-      if (!this.closed) { await this.persist(); this.emit(); this.drain(); }
+      // Published, and the next passage started, before waiting for persistence: a slow disk holds back
+      // neither what the viewer sees nor the analysis.
+      if (!this.closed) { this.emit(); this.drain(); await this.persist(); }
     }
   }
 
@@ -384,9 +386,11 @@ class WatchSession {
     if (this.closed) throw new Error('Session fermée.');
     // The only way out of a reopened archive, and of a capture stopped for lack of room.
     this.readOnly = false; this.storageError = null;
-    this.accepting = true; await this.persist(); this.emit(); this.drain();
+    // Published at once, like the pause below, and settled only once the state has been saved or refused:
+    // whoever awaits a resume or a pause waits for the disk, whoever watches the state does not.
+    this.accepting = true; this.emit(); this.drain(); await this.persist();
   }
-  async stop() { this.accepting = false; await this.persist(); this.emit(); }
+  async stop() { this.accepting = false; this.emit(); await this.persist(); }
   // Reopens a saved session stopped, at its archived instant. Synchronous and silent: nothing is written,
   // analysed or sent anywhere, and capture only comes back through an explicit resume().
   restore(saved, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
@@ -441,7 +445,9 @@ class WatchSession {
       pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length,
       // A capture stopped for lack of room keeps saying so, and so does a state that was not saved: a late
       // analysis must not clear the reason.
-      lastError: this.storageError || this.saveError || this.lastError, history: this.history, questions: this.questions,
+      // Lists of their own, like the passages below: an archive may hold a state for a while before writing
+      // it, and a sweep that moves a passage into the history meanwhile must not show it there too.
+      lastError: this.storageError || this.saveError || this.lastError, history: [...this.history], questions: [...this.questions],
       latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: this.visionBlockedMs + (this.visionHeldSince === null ? 0 : Math.max(0, now - this.visionHeldSince)) },
       audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus })),
       visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
@@ -455,8 +461,15 @@ class WatchSession {
     if (this.readOnly && !explicit) return;
     // Never rejects: an analysis or a pause must not fail for it. A host that needs the state confirmed on
     // disk, as before saying a session archived, asks its archive (see the shared runtime).
-    try { await this.archive.save(this.snapshot()); this.saveError = null; }
-    catch { this.saveError = 'Impossible de sauvegarder le résumé de session.'; }
+    let refused = null;
+    try { await this.archive.save(this.snapshot()); }
+    catch { refused = 'Impossible de sauvegarder le résumé de session.'; }
+    // States are published before they are saved: what the save answered is said when it changes what the
+    // state says, a refusal or its end, and only then. Compared when the answer comes, not when it was asked
+    // for: several saves may be under way.
+    const changed = refused !== this.saveError;
+    this.saveError = refused;
+    if (changed) this.emit();
   }
 }
 

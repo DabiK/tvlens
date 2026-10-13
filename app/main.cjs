@@ -138,6 +138,25 @@ app.whenReady().then(async () => {
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
   const ask = (question, options) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return deep.start(question, options); };
+  // Durability of the questions, apart from their publication: same rule as the server host. A question that
+  // appears, leaves or changes status is saved at once, final states included. Between two of those, the draft
+  // of a running answer is pushed to the window each time and saved at most once a second, the latest state
+  // after that delay even when the answer then stops moving. What waits is kept with the store of its own
+  // session: a save that comes late never reaches the session loaded since, nor a sealed one.
+  let unsavedQuestions = null, checkpointTimer = null, savedShape = null;
+  const saveQuestions = () => {
+    clearTimeout(checkpointTimer); checkpointTimer = null;
+    const waiting = unsavedQuestions; unsavedQuestions = null;
+    if (!waiting) return;
+    // A refusal is not lost here: the store keeps it for the barrier that ends the session.
+    savedShape = waiting.shape; waiting.store.saveResearch(waiting.state).catch(() => {});
+  };
+  const checkpoint = (target, state) => {
+    const shape = state.jobs.map(j => `${j.id}:${j.status}`).join();
+    unsavedQuestions = { store: target, state, shape };
+    if (shape !== savedShape || !state.jobs.some(j => ['queued', 'running'].includes(j.status))) saveQuestions();
+    else checkpointTimer ||= setTimeout(saveQuestions, 1000);
+  };
   const conversation = createConversationRuntime({
     getSession: () => ({ watch, search, inspector, store }),
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
@@ -148,7 +167,7 @@ app.whenReady().then(async () => {
     if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
     if (!window.isDestroyed()) window.webContents.send('deep:state', state);
     // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
-    if (watch) store?.saveResearch({ ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) }).catch(() => {});
+    if (watch && store) checkpoint(store, { ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) });
   } });
   videoAgent = conversation.agent;
   deep = conversation.deep;
@@ -283,6 +302,10 @@ app.whenReady().then(async () => {
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
     onChange:state=>{if(!closing&&!switching)recap.observe(state);surveillance.observe(state);send('watch:state',{...state,title});}});
   const adopt = (runtime, name, at) => { live = runtime; ({store,search,inspector,inspectorModel,perception,watch}=runtime); title = name; startedAt = at; saved.transcriber=runtime.transcriber; };
+  // Every five seconds while something of the loaded session moves without an event of its own: its clock while
+  // it captures, a rolling window to sweep, a removal to try again. A durable session that is paused pushes
+  // nothing: its state is the one already shown.
+  const sweep = () => { if (watch && (watch.accepting || Number.isFinite(watch.retentionMs) || watch.unremoved?.size)) watch.prune().catch(() => {}); };
   // Same shape as the server host. The manifest of the session in memory is up to thirty seconds old, or
   // not written yet: its row carries the figures in memory instead.
   const sessionRows = async () => {
@@ -327,7 +350,9 @@ app.whenReady().then(async () => {
       clearInterval(pruneTimer); recap.reset(); await attempt('résumé vivant', () => recapAdapter?.close?.()); recapAdapter = null;
       // The last surveillance states reach the session folder before the session closes.
       await attempt('surveillance', () => surveillance.reset(reason));
-      await attempt('questions', async () => { deep.cancelAll(reason); await Promise.allSettled(deep.jobs.map(job => job.done)); });
+      // Final states are saved as they are published; whatever still waited for its second is handed over too,
+      // before the session is archived or sealed.
+      await attempt('questions', async () => { try { deep.cancelAll(reason); await Promise.allSettled(deep.jobs.map(job => job.done)); } finally { saveQuestions(); } });
       await attempt('agent de chat', () => videoAgent.close?.());
       await Promise.allSettled([...ingestions]);
       if (ended) {
@@ -345,6 +370,8 @@ app.whenReady().then(async () => {
       if (failed.length) console.error(`TVLens — fermeture incomplète de la session ${ended?.id || '(aucune)'} : ${failed.join(' ; ')}`);
       // Whatever happened above, the host is left without a session, and the renderer is told so.
       live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
+      // Nothing of this session waits past this point: a timer left behind would have nothing to write.
+      clearTimeout(checkpointTimer); checkpointTimer = unsavedQuestions = savedShape = null;
       viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
       switching = false;
       send('watch:reset'); send('sessions:changed');
@@ -366,7 +393,7 @@ app.whenReady().then(async () => {
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at);
-    pruneTimer = setInterval(() => watch?.prune().catch(() => {}), 5000);
+    pruneTimer = setInterval(sweep, 5000);
     watch.emit();
     videoAgent.prepare?.(id).catch(()=>{});
     perception.agent?.prepare(id+'-observe').catch(()=>{});
@@ -419,7 +446,7 @@ app.whenReady().then(async () => {
     recapAdapter ||= newRecapAdapter();
     // The explicit gesture that lets capture write into this archive again; refused while the disk is blocked.
     await live.resume().catch(error => { publishStorage(); throw error; });
-    clearInterval(pruneTimer); pruneTimer = setInterval(() => watch?.prune().catch(() => {}), 5000);
+    clearInterval(pruneTimer); pruneTimer = setInterval(sweep, 5000);
     videoAgent.prepare?.(watch.id).catch(()=>{});
     perception.agent?.prepare(watch.id+'-observe').catch(()=>{});
     send('sessions:changed');

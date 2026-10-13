@@ -332,7 +332,9 @@ test('a Mac session is archived instead of purged, listed, reopened read-only wi
   await host.ask('Que voit-on maintenant ?');
   const again = await until(t, async () => { const job = (await host.deepState()).jobs.at(-1); return job.status === 'done' && job; }, 'an answer on the archive', 500);
   assert.deepEqual([again.sessionId, again.result.citations.length > 0, new Set([answered.id, again.id]).size], [a.id, true, 2]);
-  await until(t, async () => JSON.parse(await fsp.readFile(path.join(folder(a.id), 'deep-answers.json'), 'utf8')).jobs.at(-1).status === 'done', 'the answer saved in the archive');
+  // A finished question is written twice, its answer then its figures. The folder is read once that last write
+  // is there: the first one is on disk while the second is still on its way, its temporary file in the folder.
+  await until(t, async () => { const job = JSON.parse(await fsp.readFile(path.join(folder(a.id), 'deep-answers.json'), 'utf8')).jobs.at(-1); return job.status === 'done' && Boolean(job.metrics); }, 'the answer saved in the archive');
   const asked = await digest(folder(a.id)), apart = lines => lines.filter(line => !line.startsWith('deep-answers.json:'));
   assert.deepEqual(apart(asked), apart(before), 'an explicit question writes its answer and nothing else');
   assert.deepEqual(JSON.parse(await fsp.readFile(path.join(folder(a.id), 'deep-answers.json'), 'utf8')).jobs.map(j => j.sessionId), [a.id, a.id]);
@@ -712,4 +714,130 @@ test('a passage search belongs to the session that asked: its thumbnails are tha
   release();
   // Neither answer is handed over: not with the thumbnails of the session opened meanwhile, not as a failure of the host.
   assert.deepEqual({ otherSessionLoaded: refused, noSessionLoaded: await orphan }, { otherSessionLoaded: 'Session obsolète.', noSessionLoaded: 'Session obsolète.' });
+});
+
+test('the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; a rolling window is still swept while its session is paused', async t => {
+  const { folder, launch } = await stage(t);
+  let host = await launch();
+  assert.equal(host.started, true, host.failures.join(' '));
+  const pushed = () => host.events.filter(e => e.channel === 'watch:state');
+  // Five seconds of the host's own timer, then the real time its work needs.
+  const sweep = async () => { t.mock.timers.tick(5000); await pause(20); };
+  const quiet = async () => { await pause(40); host.events.length = 0; };
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await quiet();
+  for (let i = 0; i < 3; i++) await sweep();
+  const clock = pushed().map(e => e.value.elapsedMs);
+  assert.deepEqual([clock.length, clock.every((ms, i) => !i || ms > clock[i - 1])], [3, true], 'while it captures, the clock of the session reaches the window at each sweep');
+  // Paused: the state shown is the one that holds, for as long as nothing happens.
+  await host.stop();
+  await quiet();
+  for (let i = 0; i < 5; i++) await sweep();
+  assert.deepEqual([pushed().length, (await host.state()).accepting, (await host.state()).retention], [0, false, 'until-deleted'], 'paused and kept until deletion: nothing moves, nothing is pushed');
+  // Capturing again, pushed again.
+  await host.start();
+  await quiet();
+  await sweep();
+  assert.equal(pushed().length, 1);
+  await host.stop(); await host.newSession(); await host.quit();
+
+  // A session promised a rolling window is swept on that same timer whether it captures or not: a passage
+  // that left the window just before the pause (the session clock stops with it) is still erased.
+  host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: '50' } });
+  const b = await host.start();
+  await capture(host, b.id);
+  await pause(150);
+  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true, 'out of the window, and not swept yet');
+  await host.stop();
+  const expired = await until(t, async () => { await pause(60); const s = await host.state(); return [...s.history, ...s.segments].some(p => p.id === 'moment-1' && !p.available) && s; }, 'the passage of a paused rolling session expires', 5000);
+  assert.deepEqual([expired.accepting, expired.retention, fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm'))], [false, 'rolling', false]);
+});
+
+test('on the Mac host the draft of an answer reaches the window each time it moves and the disk at most once a second, its last state included when the answer stalls; ending the session saves the final state at once and leaves nothing to write later', async t => {
+  const { folder, launch } = await stage(t), turn = {};
+  // A chat agent the test drives: its draft moves when the test says so.
+  const host = await launch({ wrap: { conversation: built => {
+    built.agent.answer = input => new Promise((resolve, reject) => { Object.assign(turn, { progress: input.onProgress, finish: resolve }); input.signal.addEventListener('abort', () => reject(input.signal.reason), { once: true }); });
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  const writeFile = fsp.writeFile; let writes = 0;
+  t.mock.method(fsp, 'writeFile', async (file, ...rest) => { if (String(file).endsWith('deep-answers.json.tmp')) writes++; return writeFile(file, ...rest); });
+  const saved = async id => JSON.parse(await fsp.readFile(path.join(folder(id), 'deep-answers.json'), 'utf8')).jobs.at(-1);
+  const draft = words => 'mot '.repeat(words).trim(), moving = words => turn.progress({ message: 'Rédaction de la réponse…', preview: draft(words) });
+  await host.ask('Que voit-on maintenant ?');
+  await until(t, async () => (await saved(a.id).catch(() => null))?.status === 'running', 'the question saved as soon as it runs');
+  await pause(30);
+  let before = writes; host.events.length = 0;
+  for (let words = 1; words <= 50; words++) moving(words);
+  const pushes = host.events.filter(e => e.channel === 'deep:state');
+  assert.deepEqual([pushes.length, pushes.at(-1).value.jobs.at(-1).preview], [50, draft(50)], 'each draft reaches the window as it moves');
+  await pause(30);
+  assert.deepEqual([writes - before, (await saved(a.id)).preview], [0, ''], 'and none of them the disk before its second is over');
+  t.mock.timers.tick(1000);
+  await until(t, async () => (await saved(a.id)).preview === draft(50), 'the draft the answer stalled on, saved one second later');
+  assert.equal(writes - before, 1, 'fifty drafts, one write');
+  // The answer moves again, then the session ends with that draft still waiting for its second.
+  before = writes; moving(60);
+  await host.stop();
+  assert.equal(await host.newSession(), true);
+  const last = await saved(a.id);
+  assert.deepEqual([last.status, last.message, last.preview, JSON.parse(await fsp.readFile(path.join(folder(a.id), 'manifest.json'), 'utf8')).state, host.failures], ['cancelled', 'Nouvelle session.', draft(60), 'archived', []],
+    'the final state is on disk before the session is said archived');
+  const closed = await digest(folder(a.id)), ended = writes;
+  const b = await host.start();
+  for (let i = 0; i < 3; i++) { t.mock.timers.tick(1000); await pause(10); }
+  assert.deepEqual([await digest(folder(a.id)), writes - ended, fs.existsSync(path.join(folder(b.id), 'deep-answers.json'))], [closed, 0, false], 'no late save: not into the archive, not into the session started since');
+});
+
+test('a question is at rest on disk once the write that carries its figures has landed, not as soon as it is published or said finished: held, that write leaves its temporary file in the folder and the store unsettled; landed, the archive holds the answer and nothing else new, and no save follows', async t => {
+  const runtimes = [];
+  const { folder, launch } = await stage(t), host = await launch({ wrap: { session: runtime => { runtimes.push(runtime); return runtime; } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await host.stop(); await host.newSession();
+  await host.openSession(a.id);
+  const dir = folder(a.id), before = await digest(dir), store = runtimes.at(-1).store;
+  const saved = async () => JSON.parse(await fsp.readFile(path.join(dir, 'deep-answers.json'), 'utf8')).jobs.at(-1);
+  const temporary = async () => (await fsp.readdir(dir)).filter(name => name.endsWith('.tmp'));
+  const apart = lines => lines.filter(line => !line.startsWith('deep-answers.json:'));
+  const seconds = async count => { for (let i = 0; i < count; i++) { t.mock.timers.tick(1000); await pause(5); } };
+  // The last write of a question, the one that carries its figures, is held between its temporary file and its rename.
+  const writeFile = fsp.writeFile, rename = fsp.rename; let writes = 0, figures = false, held = false, release;
+  const gate = new Promise(resolve => { release = resolve; });
+  t.mock.method(fsp, 'writeFile', async (file, data, ...rest) => {
+    if (String(file).endsWith('deep-answers.json.tmp')) { writes++; figures = Boolean(JSON.parse(String(data)).jobs.at(-1).metrics); }
+    return writeFile(file, data, ...rest);
+  });
+  t.mock.method(fsp, 'rename', async (from, to) => {
+    if (String(from).endsWith('deep-answers.json.tmp') && figures) { held = true; await gate; }
+    return rename(from, to);
+  });
+  await host.ask('Que voit-on maintenant ?');
+  const published = await until(t, async () => { const job = (await host.deepState()).jobs.at(-1); return job.status === 'done' && job.metrics && job; }, 'the question published finished, with its figures', 500);
+  await until(t, () => held, 'the last write on its way to the disk');
+  let settled = false;
+  store.serial.then(() => { settled = true; }, () => { settled = true; });
+  await pause(20);
+  assert.deepEqual([published.sessionId, Boolean((await saved()).metrics), await temporary(), settled, apart(await digest(dir)).length - apart(before).length], [a.id, false, ['deep-answers.json.tmp'], false, 1],
+    'published finished, and not at rest: the figures are not on disk, a temporary file is in the folder, the store has not settled');
+  t.diagnostic(`pendant la retenue de la dernière écriture, le fichier sur disque dit déjà : ${(await saved()).status}`);
+  // Seconds pass: nothing else is handed to the disk. The save timer has nothing left of this question.
+  const handed = writes;
+  await seconds(3);
+  assert.equal(writes, handed);
+  release();
+  await store.serial;
+  const landed = await digest(dir), last = await saved();
+  assert.deepEqual([last.status, Boolean(last.metrics), await temporary(), apart(landed), (await host.state()).readOnly], ['done', true, [], apart(before), true],
+    'at rest: the answer with its figures, no temporary file, and nothing else of the archive touched');
+  await seconds(3);
+  assert.deepEqual([writes, await digest(dir)], [handed, landed], 'and no save follows');
 });

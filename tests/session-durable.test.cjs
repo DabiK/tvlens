@@ -42,6 +42,28 @@ function refusing(t, ...names) {
   });
   return () => mock.mock.restore();
 }
+// The disk as a test holds it. Every write of the files named is listed with its size; while the disk is
+// held it waits for release(), and with `refuse` it then fails as on EIO. Every other file lands at once.
+// Let go when the test ends, whatever happened: made before a fixture, it never keeps a host from closing.
+function disk(t, ...names) {
+  const writeFile = fs.writeFile, d = { seen: [], gate: null, refuse: false };
+  t.mock.method(fs, 'writeFile', async (file, data, ...rest) => {
+    const name = names.find(item => String(file).endsWith(item + '.tmp'));
+    if (!name) return writeFile(file, data, ...rest);
+    d.seen.push({ name, bytes: Buffer.byteLength(data) });
+    await d.gate?.promise;
+    if (d.refuse) throw Object.assign(new Error(`EIO: i/o error, write '${file}'`), { code: 'EIO' });
+    return writeFile(file, data, ...rest);
+  });
+  d.hold = () => { d.gate = deferred(); };
+  d.release = () => { const gate = d.gate; d.gate = null; gate?.resolve(); };
+  t.after(() => d.release());
+  d.count = name => d.seen.filter(write => write.name === name).length;
+  // Resolves once `total` writes have reached the disk: the last of them is the one in flight while it is held.
+  // A write that never comes fails the test instead of holding it.
+  d.reached = async total => { for (const limit = Date.now() + 5000; d.seen.length < total; await tick()) if (Date.now() > limit) assert.fail(`the disk was handed ${d.seen.length} write(s), ${total} expected`); };
+  return d;
+}
 
 // Real adapters on a temporary directory, simulated providers, host clock held by the test.
 async function fixture(t) {
@@ -815,4 +837,217 @@ test('a session whose manifest never reached the disk is listed as cut short, ne
   for (const options of [{}, { current: former }]) assert.deepEqual((await library.list(options)).find(s => s.id === former), expected);
   assert.deepEqual((await library.list()).filter(s => s.id === unknown).map(s => [s.state, s.legacy]), [['archived', true]]);
   assert.deepEqual(await tree(path.join(f.sessionsRoot, former)), kept);
+});
+
+test('a disk slower than the states it is handed writes the latest one, not each of them: per file one write runs and one state waits, whoever asked is answered by the write that covers its state, and a disk that keeps up still writes every state it is asked for', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
+  // The synthetic probe of the ticket: thirty answers of 2 000 characters, and the draft of one more that moves a hundred times.
+  const answers = Array.from({ length: 30 }, (_, i) => ({ id: `deep-${i + 1}`, status: 'done', question: `Question ${i + 1} ?`, result: { answer: 'r'.repeat(2000) } }));
+  const state = step => ({ jobs: [...answers, { id: 'deep-31', status: 'running', question: 'Et maintenant ?', preview: 'mot '.repeat(step) }] });
+  const whole = Buffer.byteLength(JSON.stringify(state(100), null, 2)), held = disk(t, 'deep-answers.json', 'session.json');
+  const figures = from => { const writes = held.seen.slice(from).filter(write => write.name === 'deep-answers.json'); return { ecritures: writes.length, octets: writes.reduce((sum, write) => sum + write.bytes, 0) }; };
+
+  // Held: the first state is on its way to the disk when the ninety-nine others are asked for.
+  held.hold();
+  const asked = [store.saveResearch(state(1))];
+  await held.reached(1);
+  for (let step = 2; step <= 100; step++) asked.push(store.saveResearch(state(step)));
+  const other = store.save({ id: 's', saves: 1 });
+  for (let i = 0; i < 20; i++) await tick();
+  const started = held.seen.length;
+  held.release();
+  const written = await Promise.all(asked);
+  await other; await store.serial;
+  const retained = { ...figures(0), enAttenteDerriereLEcritureEnCours: held.count('deep-answers.json') - started }, sessionWrites = held.count('session.json');
+  const newest = [await saved('deep-answers.json'), (await saved('session.json')).saves];
+  // Free: each state is on disk before the next one is asked for. The store decides nothing about cadence.
+  const from = held.seen.length, kept = [];
+  for (let step = 1; step <= 100; step++) { await store.saveResearch(state(step)); if (step % 20 === 0) kept.push(await saved('deep-answers.json')); }
+  const free = figures(from);
+  // Both regimes are said before anything is asserted: the same probe gives its figures on a tree that fails it.
+  t.diagnostic(`sonde F03, synthétique, disque retenu (100 progressions, 30 réponses de 2000 caractères) : ${JSON.stringify(retained)}`);
+  t.diagnostic(`sonde F03, synthétique, disque libre (chaque état attendu avant le suivant) : ${JSON.stringify(free)}`);
+
+  assert.equal(started, 1, 'one write runs, and nothing else starts while the disk is held');
+  assert.deepEqual([retained.ecritures, retained.enAttenteDerriereLEcritureEnCours, sessionWrites], [2, 1, 1], 'the write in flight, then the latest state: one waited, not ninety-nine');
+  assert.ok(retained.octets <= 2 * whole, `${retained.octets} bytes serialised for a hundred states of ${whole}`);
+  assert.deepEqual(newest, [state(100), 1], 'the newest state is the one on disk, and the other file was not held back by the ninety-nine');
+  assert.deepEqual([written[0], written[1] === written[99], written[99]], [state(1), true, state(100)], 'each caller is told what the write that answered it carried');
+  assert.deepEqual([free.ecritures, kept], [100, [20, 40, 60, 80, 100].map(state)], 'a save that is awaited is on disk when it settles');
+});
+
+test('a write the disk refuses is said to everyone whose state it carried, and only a write of that very file that lands clears it', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
+  const held = disk(t, 'deep-answers.json');
+  await store.saveResearch({ jobs: ['deep-1'] });
+  held.hold(); held.refuse = true;
+  const flying = store.saveResearch({ jobs: 2 });
+  await held.reached(2);
+  const grouped = [3, 4, 5].map(jobs => store.saveResearch({ jobs })), state = store.save({ id: 's', saves: 1 });
+  for (let i = 0; i < 20; i++) await tick();
+  held.release();
+  const outcomes = await Promise.allSettled([flying, ...grouped]);
+  assert.deepEqual(outcomes.map(outcome => [outcome.status, outcome.reason?.code]), Array(4).fill(['rejected', 'EIO']), 'the three that shared one write are each told that it was refused');
+  await state;
+  assert.deepEqual([held.count('deep-answers.json'), await saved('deep-answers.json'), (await saved('session.json')).saves], [3, { jobs: ['deep-1'] }, 1], 'two writes were tried, not four; the file keeps what it held and the other file landed');
+  const named = error => error.code === 'EIO' && error.message === 'Écriture refusée par le disque (deep-answers.json) : EIO';
+  await assert.rejects(store.flush(), named);
+  // Another file that lands says nothing of this one, and a disk that takes writes again has not written it.
+  await store.save({ id: 's', saves: 2 });
+  await assert.rejects(store.flush(), named);
+  held.refuse = false;
+  await assert.rejects(store.flush(), named);
+  await store.saveResearch({ jobs: 6 });
+  await store.flush();
+  assert.deepEqual(await saved('deep-answers.json'), { jobs: 6 });
+});
+
+test('the manifest said confirmed is the one a write really carried: asked for several times behind a slow write it is written once, whole, and confirmed as the disk holds it; refused, each request is told and what is confirmed does not move', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
+  const held = disk(t, 'session.json', 'manifest.json');
+  await store.saveManifest({ state: 'live', title: 'Film', passages: 1 });
+  held.hold();
+  // The state is on its way to the disk: three manifests are asked for behind it.
+  const slow = store.save({ id: 's', saves: 1 });
+  await held.reached(2);
+  const asked = [store.saveManifest({ passages: 2 }), store.saveManifest({ elapsedMs: 16000 }), store.saveManifest({ passages: 3 })];
+  for (let i = 0; i < 20; i++) await tick();
+  assert.deepEqual([store.manifest.passages, store.confirmed.passages, held.count('manifest.json')], [3, 1, 1], 'what is asked for moves at once; what is confirmed waits for the disk');
+  held.release();
+  await Promise.all([slow, ...asked]);
+  const merged = { state: 'live', title: 'Film', passages: 3, elapsedMs: 16000 };
+  assert.deepEqual([held.count('manifest.json'), await saved('manifest.json'), store.confirmed, store.confirmed === store.manifest], [2, merged, merged, true], 'one write for the three, and no fact of any of them lost');
+
+  held.hold(); held.refuse = true;
+  const refusedState = store.save({ id: 's', saves: 2 }).then(() => null, error => error);
+  await held.reached(4);
+  const refused = [store.saveManifest({ state: 'archived' }), store.saveManifest({ closedAt: 5 })].map(request => request.then(() => null, error => error));
+  for (let i = 0; i < 20; i++) await tick();
+  held.release();
+  assert.deepEqual((await Promise.all(refused)).map(error => [error?.code, error?.message]), Array(2).fill(['EIO', 'Écriture refusée par le disque (manifest.json) : EIO']));
+  assert.equal((await refusedState)?.code, 'EIO');
+  assert.deepEqual([held.count('manifest.json'), store.manifest.state, store.manifest.closedAt, store.confirmed, await saved('manifest.json')], [3, 'archived', 5, merged, merged], 'asked for, not confirmed: the disk still holds the manifest of before');
+  // The disk is back: the state first, then the manifest that vouches for it, confirmed as written.
+  held.refuse = false;
+  await store.save({ id: 's', saves: 3 }); await store.flush(); await store.saveManifest({});
+  assert.deepEqual([await saved('manifest.json'), store.confirmed, (await saved('session.json')).saves], [{ ...merged, state: 'archived', closedAt: 5 }, { ...merged, state: 'archived', closedAt: 5 }, 3]);
+});
+
+test('sealing drops the states that waited for their turn: the write in flight is awaited, nothing is written after it, nobody is left waiting, and the deleted folder does not come back', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), exists = target => fs.lstat(target).then(() => true, () => false);
+  const held = disk(t, 'deep-answers.json', 'session.json', 'manifest.json');
+  await store.saveResearch({ jobs: 1 });
+  held.hold();
+  const flying = store.saveResearch({ jobs: 2 });
+  await held.reached(2);
+  const waiting = [store.saveResearch({ jobs: 3 }), store.saveResearch({ jobs: 4 }), store.save({ id: 's' }), store.saveManifest({ state: 'live' })];
+  let sealed = false;
+  const sealing = store.seal().then(() => { sealed = true; });
+  for (let i = 0; i < 20; i++) await tick();
+  const started = held.seen.length;
+  assert.deepEqual([sealed, started], [false, 2], 'sealing waits for the write in flight: deleting now would let it recreate the directory');
+  held.release();
+  await sealing; await Promise.all([flying, ...waiting]); await store.flush();
+  assert.deepEqual([held.seen.length, JSON.parse(await fs.readFile(path.join(dir, 'deep-answers.json'), 'utf8')), await fs.readdir(dir), store.confirmed], [started, { jobs: 2 }, ['deep-answers.json'], null],
+    'the write in flight landed; the states that waited were dropped, the manifest among them');
+  await fs.rm(dir, { recursive: true });
+  await store.saveResearch({ jobs: 5 }); await store.save({ id: 's' }); await store.saveManifest({ state: 'archived' }); await store.flush();
+  for (let i = 0; i < 20; i++) await tick();
+  assert.deepEqual([await exists(dir), held.seen.length], [false, started], 'the deleted session does not come back');
+});
+
+test('a state that waits for its turn on disk is written as it was asked for: a rolling window that moves a passage into the history meanwhile does not show it twice', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
+  let time = 0;
+  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 5000, media: store, archive: store, perception: { observe: async () => ({ observation: { summary: 'Résumé' } }) } });
+  time = 1000; await watch.ingest({ startMs: 0, endMs: 1000, clip: Buffer.from('clip'), frames: [], audio: null }); await settle(watch); await store.serial;
+  const held = disk(t, 'session.json');
+  held.hold();
+  // A pause is on its way to the disk and a resume waits behind it, both with the passage still listed.
+  const pausing = watch.stop();
+  await held.reached(1);
+  const resuming = watch.resume();
+  for (let i = 0; i < 20; i++) await tick();
+  // The window closes on the passage meanwhile: its media go, its summary moves into the history.
+  time = 400000; await watch.prune();
+  assert.deepEqual([watch.segments.length, watch.history.map(passage => passage.id), held.count('session.json')], [0, ['moment-1'], 1]);
+  held.release();
+  await pausing; await resuming; await store.serial;
+  const written = await saved('session.json');
+  assert.deepEqual([written.accepting, written.segments.map(passage => passage.id), written.history.map(passage => passage.id), held.count('session.json')], [true, ['moment-1'], [], 2],
+    'the state asked for before the sweep, whole: the passage is listed once');
+  await watch.close();
+  const closed = await saved('session.json');
+  assert.deepEqual([closed.segments.length, closed.history.map(passage => passage.id)], [0, ['moment-1']], 'and the next save says where the passage is now');
+});
+
+test('a state is published before the disk has taken it: an analysed passage, a pause and a resume are shown while their save is held, whoever awaits a pause, a resume or a close still waits for the disk, and what the disk answered is published when it changes what the state says, never otherwise', async () => {
+  const SAVE = 'Impossible de sauvegarder le résumé de session.';
+  let time = 0, gate = null, refuse = false, describing = null; const files = new Map(), states = [];
+  const hold = () => { gate = deferred(); }, release = () => { const held = gate; gate = null; held?.resolve(); };
+  // One lane, as the simulated hosts and a host without split perception run: the passage is described in one call.
+  const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
+    perception: { observe: async segment => { await describing?.promise; return { observation: { summary: 'Passage ' + segment.id } }; } },
+    media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
+    archive: { save: async () => { await gate?.promise; if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
+  const block = index => ({ startMs: index * 1000, endMs: (index + 1) * 1000, clip: new Uint8Array([1]), frames: [], audio: null });
+  const turns = async () => { for (let i = 0; i < 20; i++) await tick(); };
+  const shown = () => { const state = states.at(-1); return [state.accepting, state.lastError, state.segments.map(segment => segment.status)]; };
+  time = 1000; await watch.ingest(block(0)); await settle(watch);
+
+  // Two more passages: one is being described, the other waits behind it, and nothing else arrives afterwards.
+  describing = deferred();
+  time = 2000; await watch.ingest(block(1)); time = 3000; await watch.ingest(block(2));
+  await turns();
+  assert.deepEqual(shown(), [true, null, ['ready', 'analyzing', 'queued']]);
+  // The disk stops answering, then the description comes back: the passage is published, and the next one is
+  // analysed and published in turn, without waiting for the save of the first.
+  hold();
+  describing.resolve(); describing = null;
+  await turns();
+  assert.deepEqual(shown(), [true, null, ['ready', 'ready', 'ready']], 'published and analysed while the disk holds their save');
+  // A pause, then a resume: shown at once, settled only once the disk has answered.
+  const settled = [];
+  const pausing = watch.stop().then(() => settled.push('pause'));
+  await turns();
+  assert.deepEqual([shown()[0], settled], [false, []], 'the pause is shown; whoever awaits it still waits for the disk');
+  const resuming = watch.resume().then(() => settled.push('resume'));
+  await turns();
+  assert.deepEqual([shown()[0], settled], [true, []], 'the resume is shown; whoever awaits it still waits for the disk');
+  const pushed = states.length;
+  release();
+  await pausing; await resuming; await turns();
+  assert.deepEqual([settled, states.length], [['pause', 'resume'], pushed], 'saves that land and change nothing of what the state says push nothing more');
+
+  // The disk refuses. The pause is shown first, as before; the refusal is published when it is known, once.
+  refuse = true; hold();
+  const refusedPause = watch.stop();
+  await turns();
+  assert.deepEqual([shown().slice(0, 2), states.length], [[false, null], pushed + 1]);
+  release(); await refusedPause;
+  assert.deepEqual([shown().slice(0, 2), states.length], [[false, SAVE], pushed + 2], 'said as soon as the disk refused, without waiting for another event');
+  await watch.resume();
+  assert.deepEqual([shown().slice(0, 2), states.length], [[true, SAVE], pushed + 3], 'refused again: nothing new to say');
+  // The disk is back: the next save that lands ends the refusal, and that is published too.
+  refuse = false;
+  await watch.stop();
+  assert.deepEqual([shown().slice(0, 2), states.length], [[false, null], pushed + 5], 'said for as long as it is true, and no longer');
+
+  // Closing is a barrier: it settles only when its last save has been answered.
+  hold();
+  const closing = watch.close().then(() => settled.push('close'));
+  await turns();
+  assert.deepEqual([watch.closed, settled.includes('close')], [true, false]);
+  release(); await closing;
+  assert.deepEqual(settled, ['pause', 'resume', 'close']);
 });

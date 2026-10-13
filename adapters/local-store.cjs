@@ -19,6 +19,8 @@ class LocalSessionStore {
     Object.assign(this, { root, guard, mediaRoot: path.join(root, mediaDir) });
     this.serial = Promise.resolve(); this.leases = new Map(); this.pendingRemoval = new Set();
     this.legacy = new Set(); this.writes = new Set(); this.sealed = false;
+    // Per saved file, the state that waits for its turn on disk: one at most, the latest asked for.
+    this.queued = new Map();
     // `manifest` is what was asked for; `confirmed` is what manifest.json holds, as last written or read.
     this.manifest = null; this.confirmed = null;
     // Files whose last write was refused, with the reason: each still holds what it held before.
@@ -148,13 +150,23 @@ class LocalSessionStore {
   loadResearch() { return this.load('research'); }
   loadSurveillance() { return this.load('surveillance'); }
   // Serialised and atomic: an older write never replaces a newer state, a torn file never replaces a whole one.
+  // Bounded too: per file, one write runs and at most one state waits behind it. A state asked for while
+  // another one waits takes its place, and is only turned into text when its turn comes: a disk slower than
+  // the states it is handed writes the latest one, not each of them. Whoever asked for a state that was
+  // replaced is answered by the write that covers it, refusal included. Resolves with the state written.
   persist(name, snapshot, indent = 2) {
     if (this.sealed) return Promise.resolve();
-    const data = JSON.stringify(snapshot, null, indent);
-    this.serial = this.serial.catch(() => {}).then(async () => {
+    const waiting = this.queued.get(name);
+    if (waiting) { waiting.snapshot = snapshot; return waiting.written; }
+    const turn = { snapshot };
+    this.queued.set(name, turn);
+    turn.written = this.serial = this.serial.catch(() => {}).then(async () => {
+      // Its turn has come: a state asked for from now on waits behind this write instead of joining it.
+      this.queued.delete(name);
       // Checked again when the write runs: a sealed session must never get its directory back.
       if (this.sealed) return;
       try {
+        const data = JSON.stringify(turn.snapshot, null, indent);
         await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
         const target = path.join(this.root, FILES[name]);
         await fs.writeFile(target + '.tmp', data, { mode: 0o600 });
@@ -166,8 +178,9 @@ class LocalSessionStore {
         throw error;
       }
       this.refused.delete(name);
+      return turn.snapshot;
     });
-    return this.serial;
+    return turn.written;
   }
   save(snapshot) { return this.persist('session', snapshot); }
   saveResearch(snapshot) { return this.persist('research', snapshot); }
@@ -176,22 +189,24 @@ class LocalSessionStore {
   // The whole registry, rewritten as often as every second and megabytes at saturation: never indented.
   saveSurveillance(snapshot) { return this.persist('surveillance', snapshot, 0); }
   // Small and merged in memory: a partial update never loses the facts written before it. What was asked
-  // for moves at once; what is confirmed only moves when that very content is on disk.
+  // for moves at once; what is confirmed only moves when that very content is on disk, which is the
+  // manifest the write really carried: the latest one asked for when its turn came.
   saveManifest(patch) {
     if (this.sealed) return Promise.resolve();
-    const wanted = this.manifest = { ...this.manifest, ...patch };
-    return this.persist('manifest', wanted).then(() => { if (!this.sealed) this.confirmed = wanted; }, error => { throw refusal(['manifest'], error); });
+    this.manifest = { ...this.manifest, ...patch };
+    return this.persist('manifest', this.manifest).then(written => { if (written && !this.sealed) this.confirmed = written; }, error => { throw refusal(['manifest'], error); });
   }
-  // The barrier before a session is said archived. Settles once every write asked so far has run, and
-  // rejects while the last write of a state file was refused. The manifest is not counted: it is written
-  // after this, and its own write answers for it.
+  // The barrier before a session is said archived. Settles once every write asked so far has run, a state
+  // still waiting for its turn included, and rejects while the last write of a state file was refused. The
+  // manifest is not counted: it is written after this, and its own write answers for it.
   async flush() {
     let serial;
     do { serial = this.serial; await serial.catch(() => {}); } while (serial !== this.serial);
     const names = [...this.refused.keys()].filter(name => name !== 'manifest');
     if (!this.sealed && names.length) throw refusal(names, this.refused.get(names[0]));
   }
-  // Before the session is deleted: every later save is a no-op, and the writes in flight are awaited.
+  // Before the session is deleted: every later save is a no-op, a state still waiting for its turn is
+  // dropped, and the writes in flight are awaited.
   async seal() {
     this.sealed = true;
     await Promise.allSettled([...this.writes, this.serial]);
