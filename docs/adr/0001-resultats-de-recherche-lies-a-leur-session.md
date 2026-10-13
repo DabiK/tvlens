@@ -12,11 +12,13 @@ Rédigé après coup, pendant la phase documentaire de F02, à partir des rappor
 
 ## Contexte
 
-Dans chaque session, les passages sont numérotés à partir de `moment-1`. Une carte de recherche de la fenêtre Mac ne retenait que cet identifiant. Trois conséquences, établies à la lecture puis observées par test :
+Dans chaque session, les passages sont numérotés à partir de `moment-1`. Une carte de recherche de la fenêtre Mac ne retenait que cet identifiant. Trois conséquences établies à la lecture du code d’origine :
 
 - au clic, la relecture reconstruisait l’adresse du passage à partir de la session chargée : une carte de la session A ouvrait le `moment-1` de la session B ;
 - les cartes survivaient au changement de session ;
 - une recherche lancée dans A et terminée après l’ouverture de B revenait étiquetée A, avec la miniature de B.
+
+Seules les réponses tardives (miniature de B et erreur brute sans session chargée) ont été reproduites en rouge sur le code d’origine. Le reset et le refus de relecture d’une ancienne carte ont été vérifiés dans la fenêtre native sur le code corrigé.
 
 ## Décision
 
