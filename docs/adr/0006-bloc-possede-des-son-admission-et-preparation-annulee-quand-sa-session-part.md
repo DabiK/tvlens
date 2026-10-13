@@ -1,0 +1,98 @@
+# ADR 0006 — Un bloc accepté est possédé dès son admission, et sa préparation est annulée quand sa session part
+
+| | |
+|---|---|
+| Issue | F06 — Préparation d’ingestion hors du cycle de vie suivi ([#6](https://github.com/DabiK/tvlens/issues/6)), fiche [`06-f06.md`](../architecture-improvements/06-f06.md) |
+| Date | 13 octobre 2026 |
+| Statut | Revu : reviews standards et spécification validées à la première passe sur le commit ci-dessous. En attente d’intégration locale par le merger à la date de rédaction. Non publié, non déployé. |
+| Code relu | `7d051b7ff6af2c159d7e7cec00442488dee87550`, un seul commit, base `89a4a72` |
+| Détail | [Historique F06](../architecture-improvements/history/F06.md) |
+
+## Contexte
+
+L’hôte serveur reçoit les blocs de la TV sur `POST /v1/segments`. Le transport contrôle le bloc, prend un créneau de préparation unique (un autre bloc reçoit 429 pendant ce temps), fait assembler les médias (encodage des images, puis jusqu’à deux commandes FFmpeg de 15 s chacune), et remet le résultat au runtime, qui le stocke.
+
+- Le runtime ne connaissait un bloc qu’à partir de son stockage. Pendant la préparation, le bloc n’existait que dans la pile du handler HTTP.
+- La fin d’une session attendait les stockages en cours, relevés à cet instant : aucun pendant une préparation. Elle n’attendait donc pas cette préparation et ne l’arrêtait pas.
+- Au retour de la préparation, le bloc était comparé à la session en mémoire par son identifiant seul. Une archive ouverte puis reprise garde l’identifiant de la session qui a fini.
+- Toute erreur sans statut était répondue 400, qu’elle vienne du bloc ou de l’hôte. Côté TV, un 400 est un rejet définitif ; un 5xx est renvoyé pendant les 30 s de vie du bloc.
+
+Observé sur la base par des tests rouges, avec une doublure d’assemblage tenue par le test ou des programmes Node à la place de FFmpeg :
+
+- l’assemblage ne reçoit aucun signal, et la fin de la session répond pendant que le bloc reste sans réponse ;
+- le premier bloc de la session suivante reçoit 429 tant que l’ancienne préparation tourne ;
+- l’arrêt de l’hôte rend la main avec l’outil encore vivant et son dossier temporaire en place ;
+- une préparation réglée après la fin, l’ouverture et la reprise du même identifiant est stockée dans cette nouvelle vie ;
+- un bloc préparé à cheval sur un redémarrage de capture est stocké ;
+- un bloc arrivé pendant qu’une fin est demandée est assemblé, puis refusé 400 ;
+- un outil trop lent, un outil introuvable et un dossier temporaire refusé sont répondus 400, les deux derniers avec un chemin de l’hôte dans le message ;
+- un spawn refusé qui rend un enfant sans tubes fait lever la commande avant que l’erreur annoncée au tick suivant ait un écouteur.
+
+Déjà vrai sur la base, et caractérisé : un bloc d’une session ne peut pas être stocké dans une session d’un autre identifiant. Lu dans le code, sans être mesuré : aucune fuite permanente, le dossier temporaire partant quand ses commandes se règlent. Rien n’a été observé sur une TV ni sur le VPS.
+
+## Décision
+
+1. **Le runtime possède le bloc dès que le transport prend son créneau.** Un seul fait de cycle de vie : la session elle-même, la capture où le bloc a été accepté, et un signal d’annulation. Le transport le rend dans le même `finally` que le créneau 429, une fois le bloc répondu et la préparation réglée. Ni file, ni classe, ni dépendance ; `ingest(input)` sans opération fonctionne toujours.
+2. **Un bloc qui arrive pendant qu’une session part est refusé avant tout travail média.**
+3. **La fin d’une session, sa suppression, l’ouverture d’une archive à sa place et l’arrêt de l’hôte annulent ce qui est encore en préparation**, avant toute attente. Un bloc dont le stockage a commencé atterrit comme avant, et reste attendu en entier.
+4. **L’attente de ce qui a été annulé est bornée : 1000 ms par défaut, réglable par l’hôte.** C’est un plafond sur la fin de la session, pas une garantie sur le nettoyage. Au-delà, la session part quand même et le dit, dans le résultat de la fin et au journal ; le bloc reste possédé et refusé, et le créneau reste pris, jusqu’au règlement réel de sa préparation. Rien n’est supprimé sous un outil qui tourne.
+5. **Juste avant d’être stocké, un bloc est comparé à la vie où il a été accepté** : annulation, objet session, capture. La comparaison et le début du stockage tiennent dans le même pas synchrone. Seul un bloc encore courant marque le registre des numéros déjà vus.
+6. **Un start ou un resume n’annule rien, mais renouvelle la capture** : le bloc préparé à cheval est refusé à son retour.
+7. **Un client qui part n’annule rien.** Son bloc est stocké, et renvoyé il est répondu comme doublon.
+8. **L’assembleur reçoit le signal.** Une fois levé, rien de neuf n’est fait pour le bloc : ni dossier, ni fichier, ni outil. L’outil lancé, et lui seul, est tué ; l’assemblage ne se règle qu’après sa sortie et la suppression du dossier. Un encodage d’image en cours ne s’arrête pas : il est laissé finir. Un spawn refusé, sans tubes ou qui lève, est entendu.
+9. **Ce qui relève de l’hôte n’est plus répondu comme une requête invalide.**
+
+   | Situation | Réponse |
+   |---|---|
+   | Outil qui ne finit pas à temps ou ne démarre pas, dossier temporaire refusé | 503 `media-unavailable`, message sans chemin de l’hôte |
+   | Préparation annulée, ou bloc arrivé pendant qu’une session part | 503 `session-closing` |
+   | Capture renouvelée pendant la préparation | 409 `capture-changed` |
+   | Bloc fautif : son non WAV, image indécodable, déclaration incohérente, outil sorti en erreur | 400, message inchangé |
+
+10. **Le reste ne change pas** : corps bornés (413), 429, 507, archive en lecture seule (409), doublons, et tous les délais (5 s côté TV, 15 s par commande, 30 s de vie d’un bloc). Ni accusé anticipé, ni en-tête de mesure. Une pause refuse toujours le bloc qu’elle interrompt, en 400.
+
+## Alternatives écartées
+
+| Alternative | Exécutée ? | Raison |
+|---|---|---|
+| Laisser finir la préparation à la fin de la session, au lieu de l’annuler | Non, option posée à l’exploration | Arbitrée par la supervision : jusqu’à deux fois 15 s d’attente, ou une borne nouvelle sans mesure, face aux 30 s d’arrêt de l’unité de service. |
+| Annuler quand le client HTTP se déconnecte | Non | La TV coupe son envoi à 5 s : un bloc lent ne serait jamais stocké et serait renvoyé jusqu’à expiration. |
+| Rendre le créneau, ou abandonner la préparation, à l’expiration de la borne | Non | Exclu par la supervision : le 429 reste vrai tant qu’une préparation tourne, et rien n’est supprimé sous elle. |
+| Annuler aussi à un start ou un resume | Non | La supervision réserve l’annulation à la fin, à la suppression et à l’arrêt de l’hôte. |
+| Répondre 503 à la capture renouvelée | Non, écartée au développement | Une ancienne capture renverrait son bloc et concurrencerait la nouvelle. Le 409 est un refus définitif, comme celui d’un numéro ancien. |
+| Garder 400 pour une session qui part | Non | La TV compterait un bloc rejeté et capturerait jusqu’au bloc suivant. Avec un 503 elle redemande la session et s’arrête sur sa vraie cause. |
+| Classer en ressource toute sortie en erreur de l’outil | Non | Exclu par la supervision : une entrée invalide inconnue ne doit pas devenir un renvoi. |
+| En-tête `Server-Timing` sur la réponse | Non, proposée à l’exploration | Refusée par la supervision : nouvelle surface publique. |
+| Allonger un délai, ou accuser réception avant le stockage | Non | Aucune mesure sur TV ne le justifie ; la fiche l’interdit sans preuve. |
+| Annuler à une pause, ou compter les préparations comme une capture en cours | Non | Hors du plan approuvé ; le refus à la pause est conservé tel quel. |
+
+## Conséquences
+
+- **Un bloc perdu à la fin.** Le bloc en préparation quand sa session part n’est pas stocké, même si son assemblage venait de finir : au plus un bloc de 8 s. La base le perdait déjà quand l’assemblage finissait après l’arrêt de la capture.
+- **Un bloc perdu au redémarrage de capture.** La base le stockait. Sa préparation n’est pas annulée : elle va au bout et garde le créneau, si bien que le premier bloc de la nouvelle capture peut recevoir 429 entre-temps, dans la limite des délais des commandes.
+- **Une fin plus longue d’une seconde au plus** quand une préparation ne lâche pas ; l’arrêt de l’hôte aussi.
+- **Après la borne, le créneau n’a plus de borne propre.** Un outil impossible à tuer tiendrait la préparation de toute session suivante en 429 jusqu’au redémarrage de l’hôte.
+- **L’attente bornée n’est consommée qu’une fois**, à la fin de la session du bloc. Une fin ou un arrêt d’hôte ultérieur n’attend plus cette préparation et ne la signale plus : l’hôte peut sortir pendant qu’elle se règle encore, en laissant son dossier temporaire. Relevé par les deux reviews ; non testé.
+- **Un 503 est renvoyé par la TV** pendant la vie du bloc. Sur un hôte chargé, un bloc dont l’outil dépasse son délai est donc préparé à nouveau à chaque renvoi, un à la fois. Cette charge n’est pas mesurée.
+- **Le 503 codé ne vaut que pour les blocs.** Le même message « Session en cours de fermeture. » reste un 400 sur les questions, la surveillance, le démarrage, l’ouverture et la reprise.
+- **Un échec de suppression du dossier temporaire remplace l’erreur qui précédait** par un 503 : un bloc fautif serait alors renvoyé au lieu d’être rejeté. La base remplaçait déjà l’erreur, en 400.
+- **Le transport reçoit tout l’enregistrement de l’opération**, contrôleur d’annulation compris. « Seule la fin de la session annule » ne tient donc que par convention.
+
+## Preuves
+
+- **Déclaré par le développeur**, avant toute vérification du merger : 13 tests dans un fichier dédié. Sur la base, 10 rouges et 3 verts, les 3 verts étant des caractérisations ; ce décompte est obtenu avant toute modification du code, puis à nouveau avec le fichier final sur une copie intacte de la base. Sur le commit relu : 13 sur 13. Dix-sept fichiers de tests existants, non modifiés, joués un à la fois : 130 sur 130 ; huit d’entre eux (85 tests) l’ont été avant le reformatage d’un commentaire, puis rejoués sur le commit en phase documentation. Les cinq tests existants de l’envoi côté TV, code inchangé : verts.
+- **Reviews indépendantes** : validation à la lecture du code, du diff et des journaux conservés, sans exécuter de test.
+- **Merger** : aucune exécution indépendante à la date de rédaction.
+
+## Limites
+
+- La preuve est synthétique : des programmes Node à la place de FFmpeg, une doublure d’assemblage, un runtime sur fournisseurs simulés. TV, VPS, réseau, hôte Mac et arrêt réel du service ne sont pas exercés.
+- Le désalignement entre les 5 s de la TV et les 15 s du serveur est inchangé. Une observation ponctuelle du délai HTTP complet a été faite sur la boucle locale d’un Mac, avec le vrai FFmpeg et des blocs générés : elle ne dit rien d’une TV ni d’un VPS, et aucun gain n’est annoncé. Ses chiffres sont dans l’historique.
+- Les 1000 ms sont choisis par analogie avec F05, pas mesurés. Le dépassement de la borne n’est exercé qu’avec une doublure qui ignore son signal.
+- Non testés : un arrêt de l’hôte pendant une préparation déjà en retard, une erreur émise après un spawn réussi, un échec de suppression du dossier temporaire. L’annulation à l’ouverture d’une archive est établie par lecture : elle passe par la même fin de session.
+- Le commentaire de la commande dit qu’elle ne se règle qu’à la sortie de son enfant. Elle se règle aussi sur une erreur de l’enfant, par exemple un kill refusé : le dossier partirait alors sous un outil vivant. Comportement de la base, cas non observé ; le commentaire dit plus que le code.
+- Une sortie en erreur de l’outil reste 400 même si sa cause est une ressource, par exemple un outil tué par le système.
+- Le refus de spawn n’est exercé que sur doublure. L’outil de documentation prévu par la mission n’a pas été utilisé, hors ligne : le comportement est établi par exécution sous Node 24.12.
+- Plusieurs tests lancent de vrais processus sur l’horloge réelle : à jouer hors charge concurrente.
+
+La liste complète des dettes, des constats des reviews et des preuves est dans l’historique.
