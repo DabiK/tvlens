@@ -79,6 +79,23 @@ test("the harness cannot be edited from a ticket session unless the ticket allow
   assert.equal(decision(write(repo, "core/session.cjs", LOOP)), "none");
 });
 
+test("the owner can open the harness for a bounded time in an interactive session; a ticket session ignores it", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const now = Math.floor(Date.now() / 1000);
+  const openUntil = (seconds) => repo.write(".harness-state/harnais-ouvert", String(seconds) + "\n");
+  openUntil(now + 3600);
+  assert.equal(decision(write(repo, "scripts/check.mjs", INTERACTIVE)), "none");
+  assert.equal(decision(write(repo, ".claude/settings.json", INTERACTIVE)), "none");
+  assert.equal(decision(write(repo, "scripts/check.mjs", LOOP)), "deny");
+  openUntil(now - 1);
+  assert.equal(decision(write(repo, "scripts/check.mjs", INTERACTIVE)), "ask");
+  openUntil(now + 48 * 3600);
+  assert.equal(decision(write(repo, "scripts/check.mjs", INTERACTIVE)), "ask");
+  repo.write(".harness-state/harnais-ouvert", "toujours\n");
+  assert.equal(decision(write(repo, "scripts/check.mjs", INTERACTIVE)), "ask");
+});
+
 test("a new test file named after a ticket is denied; an existing one can still be edited", (t) => {
   const repo = harnessRepo({ "tests/architecture-f04.test.cjs": "" });
   t.after(repo.cleanup);
