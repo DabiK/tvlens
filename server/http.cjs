@@ -246,13 +246,19 @@ class RemoteServer {
           return send(409, { error: "Séquence ancienne." });
         if (this.ingesting)
           return send(429, { error: "Préparation du passage précédent." });
+        // Owned by the host from here, before anything is prepared: the end of its session stops the
+        // media tool through this signal. A client that leaves does not: its block is stored, and sent
+        // again it is answered as a duplicate.
+        const operation = runtime.accept(body.sessionId);
         this.ingesting = true;
-        const epoch = this.epoch;
         try {
-          const input = await this.media.assemble(body);
-          const id = await runtime.ingest(input);
-          // The session changed while this block was being prepared: its number says nothing any more.
-          if (epoch === runtime.captureEpoch) {
+          const input = await this.media.assemble(body, {
+            signal: operation.controller.signal,
+          });
+          const id = await runtime.ingest(input, operation);
+          // The session or its capture changed while this block was being stored: its number says
+          // nothing any more.
+          if (runtime.current(operation)) {
             this.accepted.set(key, { id, hash });
             this.lastSequence = body.sequence;
             if (this.accepted.size > 100)
@@ -260,7 +266,9 @@ class RemoteServer {
           }
           return send(200, { id, duplicate: false });
         } finally {
+          // Only once the preparation has settled, its files removed: until then no other is started.
           this.ingesting = false;
+          runtime.finish(operation);
         }
       }
       send(404, { error: "Route inconnue." });

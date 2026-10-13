@@ -63,6 +63,13 @@ const shapeOf = (jobs) => jobs.map((job) => `${job.id}:${job.status}`).join();
 // The transport turns `status` into the HTTP status and `code` into a reason a client can act on.
 const refusal = (status, message, code) =>
   Object.assign(new Error(message), { status, code });
+// A block that arrives, or is still being prepared, while its session goes away is not a bad request: its
+// capture is answered 503 and asks the session again, instead of counting a block refused for its content.
+const closing = () =>
+  refusal(503, "Session en cours de fermeture.", "session-closing");
+// How long the end of a session waits for a preparation it cancelled to let go of its media tool and its
+// temporary files. A ceiling on that wait, never a promise about the cleanup itself.
+const PREPARATION_WAIT_MS = 1000;
 const clip = (value, max) =>
   typeof value === "string" && value.length > max
     ? value.slice(0, max).trimEnd() + "…"
@@ -226,6 +233,10 @@ class HeadlessRuntime {
     this.options = options;
     this.listeners = new Set();
     this.ingestions = new Set();
+    // Blocks the transport has accepted and not handed back yet, from before their media are prepared
+    // (see accept): what the end of their session cancels, or waits for once their storage has begun.
+    this.admitted = new Set();
+    this.preparationWaitMs = options.preparationWaitMs ?? PREPARATION_WAIT_MS;
     this.quota = new CodexQuota();
     // Wall clock of the host. Injected by tests only: question stamps, surveillance and serverNowMs then
     // sit on the same clock, so a client can subtract one from the other.
@@ -690,10 +701,88 @@ class HeadlessRuntime {
       );
     throw Error("La session est arrêtée.");
   }
-  async ingest(input) {
+  // A block the transport has accepted belongs to the host from here, before anything is prepared for
+  // it, until the transport hands it back (finish): the session and the capture it was accepted in, and
+  // the signal that stops its preparation when that session ends, is deleted, or the host stops.
+  // Refused while a session is going away, before any media work.
+  accept(sessionId) {
+    const session = this.admit(sessionId);
+    if (this.moving()) throw closing();
+    const operation = {
+      session,
+      epoch: this.captureEpoch,
+      controller: new AbortController(),
+      storing: false,
+    };
+    operation.settled = new Promise((resolve) => {
+      operation.settle = resolve;
+    });
+    this.admitted.add(operation);
+    return operation;
+  }
+  // Still the life it was accepted in: the session itself, not its identifier, which an archive opened
+  // and resumed shares with its former life; and the capture, which every start and resume renews.
+  current(operation) {
+    return (
+      !operation.controller.signal.aborted &&
+      operation.session === this.session &&
+      operation.epoch === this.captureEpoch
+    );
+  }
+  // Handed back once the block is answered and what prepared it has let go, however late that is.
+  finish(operation) {
+    this.admitted.delete(operation);
+    operation.settle();
+  }
+  // First thing when the session in memory goes away: a block still being prepared is cancelled, its
+  // media tool stopped and its capture told that the session is closing. One whose storage has begun is
+  // left to land. Hands back what settleIngestions() then waits for.
+  cancelPreparations() {
+    const cancelled = [];
+    for (const operation of this.admitted)
+      if (!operation.storing && !operation.controller.signal.aborted) {
+        operation.controller.abort(closing());
+        cancelled.push(operation.settled);
+      }
+    return cancelled;
+  }
+  // What is being stored lands whole, as before. What was cancelled is then given preparationWaitMs to
+  // let go. Past that the session goes away all the same and says so: the block stays owned and refused,
+  // and the transport prepares no other, until its preparation has really settled.
+  async settleIngestions(errors, cancelled) {
+    await Promise.allSettled([...this.ingestions]);
+    if (!cancelled.length) return;
+    let timer;
+    const late = await Promise.race([
+      Promise.all(cancelled).then(() => false),
+      new Promise((resolve) => {
+        timer = setTimeout(resolve, this.preparationWaitMs, true);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (late)
+      errors.push(
+        `préparation média : arrêt non confirmé après ${this.preparationWaitMs} ms, bloc refusé, préparation suivante en attente`,
+      );
+  }
+  // `operation` is what accept() handed the transport for this block; a host that prepares nothing
+  // (a probe, a test) ingests without one.
+  async ingest(input, operation) {
+    // Stored in the life it was accepted in and no other, whatever happened while it was prepared.
+    if (operation && !this.current(operation))
+      throw operation.controller.signal.aborted
+        ? operation.controller.signal.reason
+        : refusal(
+            409,
+            "La capture a changé pendant la préparation de ce bloc.",
+            "capture-changed",
+          );
     const session = this.admit(input?.sessionId);
     validateSegment(input, session.watch.now());
-    if (this.moving()) throw Error("Session en cours de fermeture.");
+    if (this.moving()) throw closing();
+    // Its storage starts in this very step: from here an end waits for it to land instead of
+    // cancelling it.
+    if (operation) operation.storing = true;
     const work = session.watch.ingest(input);
     this.ingestions.add(work);
     try {
@@ -784,8 +873,10 @@ class HeadlessRuntime {
       // The session is ending: a passage still landing is stored and saved, but no analysis is started
       // for it only to be given up a moment later. Set before waiting for the ingestions in flight.
       session.watch.ending = true;
+      // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
+      const cancelled = this.cancelPreparations();
       await this.attempt(errors, "capture", () => session.pause());
-      await Promise.allSettled([...this.ingestions]);
+      await this.settleIngestions(errors, cancelled);
       const asked = this.deep.jobs.length > 0 || session.watch.questions.length > 0;
       await this.attempt(errors, "questions", () => this.settleQuestions(reason));
       await this.attempt(errors, "surveillance", () =>
@@ -981,9 +1072,10 @@ class HeadlessRuntime {
       this.releasing = true;
       const errors = [];
       try {
-        // Same rule as an end: nothing new is analysed for a session that is going away.
+        // Same rule as an end: nothing new is analysed for a session that is going away, and a block
+        // still being prepared for it is cancelled before its folder is erased.
         session.watch.ending = true;
-        await Promise.allSettled([...this.ingestions]);
+        await this.settleIngestions(errors, this.cancelPreparations());
         // Same rule as an end: an adapter that fails to close does not keep the session from going.
         await this.attempt(errors, "questions", () =>
           this.settleQuestions("Session supprimée."),
