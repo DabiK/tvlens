@@ -489,6 +489,41 @@ test('an archive opened and resumed over HTTP is not announced as archived on th
   assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await rows()], ['archived', [[id, 'archived', 2, 2]]]);
 });
 
+test('a session whose manifest the disk never took is not listed as an archive of before manifests: its end names the manifest, the list shows it live then cut short with no closing date, and it reopens read-only without a write', async t => {
+  const journal = [];
+  const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });
+  const row = s => [s.id, s.state, s.legacy, s.closedAt, s.current, s.passages, s.media.stored];
+  const rows = async () => (await f.req('/v1/sessions')).value.sessions.map(row);
+  // Refused from the very first passage to the end: the folder never holds a manifest.
+  const restore = refusing(t, 'manifest.json');
+  const id = (await f.req('/v1/session/start', {})).value.id, dir = path.join(f.sessionsRoot, id);
+  f.clock += 8000; f.wall += 8000;
+  assert.deepEqual((await f.req('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 8000, frames: [{ atMs: 0, data: 'YQ==' }] })).value, { id: 'moment-1', duplicate: false });
+  do { await tick(); } while (f.runtime.session.watch.running);
+  await f.runtime.session.store.serial.catch(() => {}); await turns(5);
+  assert.deepEqual(await rows(), [[id, 'live', false, null, true, 1, 1]], 'the session in memory, saved state on disk and no manifest');
+  const refusal = 'archive : Écriture refusée par le disque (manifest.json) : EIO';
+  assert.deepEqual(await f.req('/v1/session/end', {}), { status: 200, value: { ended: true, id, archived: false, errors: [refusal] } });
+  assert.deepEqual(journal, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]);
+  restore();
+  assert.deepEqual([await exists(path.join(dir, 'manifest.json')), await exists(path.join(dir, 'session.json'))], [false, true]);
+  assert.deepEqual(await rows(), [[id, 'interrupted', false, null, false, 1, 1]], 'what the answer said is what the list shows');
+
+  // Opened as any session cut short: read-only, replayable, not a byte written.
+  const before = await tree(dir);
+  const opened = await f.req(`/v1/sessions/${id}/open`, {});
+  assert.deepEqual([opened.status, opened.value.readOnly, opened.value.accepting], [200, true, false]);
+  assert.deepEqual((await f.req('/v1/state')).value.session.segments.map(s => [s.id, s.status, s.available]), [['moment-1', 'ready', true]]);
+  const replay = await f.raw(`/v1/media/${id}/moment-1`, { headers: { Range: 'bytes=0-6' } });
+  assert.equal(replay.status, 206); assert.equal(await replay.text(), 'fixture');
+  assert.deepEqual(await tree(dir), before);
+  // The explicit resume and a confirmed end give it the manifest it never had.
+  assert.equal((await f.req(`/v1/sessions/${id}/resume`, {})).status, 200);
+  assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id, archived: true });
+  const [after] = (await f.req('/v1/sessions')).value.sessions;
+  assert.deepEqual([after.state, after.legacy, typeof after.closedAt, after.passages, (await f.saved(id, 'manifest.json')).state], ['archived', false, 'number', 1, 'archived']);
+});
+
 test('stopping the host while the disk refuses the state leaves no archive that lies: the journal says which file, the next start lists the session as cut short, and it reopens on its last confirmed state with the passage only its media know', async t => {
   const journal = [];
   const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });

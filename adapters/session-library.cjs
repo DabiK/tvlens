@@ -23,9 +23,14 @@ const readableManifest = manifest => manifest == null || (record(manifest)
   && optional(manifest.media, record) && optional(manifest.captures, value => Array.isArray(value) && value.every(record)));
 const passagesOf = snapshot => [...(snapshot.history || []), ...snapshot.segments];
 const firstTopic = passages => passages.find(passage => passage.observation?.topic)?.observation.topic || null;
+// The retentions a saved state names since sessions are durable (core/session.cjs). A state that names
+// one was written by a version that writes a manifest too; one written before manifests names none.
+const RETENTIONS = ['rolling', 'until-deleted'];
 
-// What a list shows for one session. From the manifest when there is one; otherwise the session was
-// written before manifests existed and is described from its saved state, which is never rewritten.
+// What a list shows for one session. From the manifest when there is one; otherwise it is described
+// from its saved state, which is never rewritten. Without a manifest, a state of before manifests is
+// the archive it always was. A newer one never got its manifest on disk: nothing says that the session
+// was closed, so it is live in memory or cut short, and no closing date is made up for it.
 function describe({ id, manifest, snapshot, savedAt, inventory, current = null }) {
   if (manifest) return {
     id, title: manifest.title || sessionTitle(manifest.createdAt), firstTopic: manifest.firstTopic || null, host: manifest.host ?? null,
@@ -35,8 +40,10 @@ function describe({ id, manifest, snapshot, savedAt, inventory, current = null }
     elapsedMs: manifest.elapsedMs || 0, passages: manifest.passages || 0,
     media: { stored: manifest.media?.stored || 0, missing: manifest.media?.missing || 0, bytes: manifest.media?.bytes || 0 }, legacy: false };
   const passages = passagesOf(snapshot), stored = passages.filter(passage => inventory.ids.has(passage.id)).length;
-  return { id, title: sessionTitle(savedAt), firstTopic: firstTopic(passages), host: null, createdAt: savedAt, updatedAt: savedAt, closedAt: savedAt, state: 'archived',
-    elapsedMs: snapshot.elapsedMs || 0, passages: passages.length, media: { stored, missing: passages.length - stored, bytes: inventory.bytes }, legacy: true };
+  const former = !RETENTIONS.includes(snapshot.retention);
+  return { id, title: sessionTitle(savedAt), firstTopic: firstTopic(passages), host: null, createdAt: savedAt, updatedAt: savedAt, closedAt: former ? savedAt : null,
+    state: former ? 'archived' : id === current ? 'live' : 'interrupted',
+    elapsedMs: snapshot.elapsedMs || 0, passages: passages.length, media: { stored, missing: passages.length - stored, bytes: inventory.bytes }, legacy: former };
 }
 const unreadable = id => ({ id, title: 'Session illisible', firstTopic: null, host: null, createdAt: null, updatedAt: null, closedAt: null, state: 'unreadable',
   elapsedMs: 0, passages: 0, media: { stored: 0, missing: 0, bytes: 0 }, legacy: false, error: 'Archive illisible.' });
@@ -116,7 +123,7 @@ class SessionLibrary {
         // With a manifest, the saved state (megabytes after a film) is not read at all.
         if (manifest) return describe({ id, manifest, current });
         const inventory = await store.inventory(), { snapshot, savedAt } = await this.state(store, id, null, inventory);
-        return describe({ id, snapshot, savedAt, inventory });
+        return describe({ id, snapshot, savedAt, inventory, current });
       } catch { return unreadable(id); }
     }));
     return sessions.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));

@@ -423,11 +423,12 @@ test('a session cut short reopens read-only with every stored passage: its first
   assert.equal(await (await b.session.store.response('moment-1')).text(), 'clip 0');
   await b.session.pause(); await b.session.close();
   assert.deepEqual(await tree(bare), untouched, 'rebuilding a state wrote nothing');
-  // Not even a manifest: stored media are enough. A directory that holds nothing of a session stays unreadable.
+  // Not even a manifest: stored media are enough, and the session is still one that was cut short, not an
+  // archive of before manifests. A directory that holds nothing of a session stays unreadable.
   await fs.rm(path.join(bare, 'manifest.json'));
   const empty = randomUUID(); await fs.mkdir(path.join(unsaved, empty));
   const c = await opened(unsaved);
-  assert.deepEqual((await c.library.list()).map(s => [s.id, s.state, s.passages, s.media.stored]).sort(), [[id, 'archived', 1, 1], [empty, 'unreadable', 0, 0]].sort());
+  assert.deepEqual((await c.library.list()).map(s => [s.id, s.state, s.passages, s.media.stored]).sort(), [[id, 'interrupted', 1, 1], [empty, 'unreadable', 0, 0]].sort());
   assert.deepEqual([c.archive.manifest, passages(c.state)], [null, [unanalysed(1, 0)]]);
   await assert.rejects(c.library.read(empty), { message: 'Archive illisible.' });
 
@@ -763,4 +764,55 @@ test('an archive reopened and resumed is archived on what this life wrote, never
   await third.pause();
   restore();
   assert.deepEqual([(await third.archive()).state, (await saved('manifest.json')).captures.length, await listed()], ['archived', 3, [['archived', 3, 3]]]);
+});
+
+test('a session whose manifest never reached the disk is listed as cut short, never as an archive of before manifests: live while it is the one in memory, opened read-only without a write, replayable, and archived only by an explicit resume and a confirmed end; a state of before manifests keeps its row', async t => {
+  const f = await fixture(t), library = new SessionLibrary({ root: f.sessionsRoot });
+  const row = s => [s.state, s.legacy, s.closedAt, s.passages, s.media.stored, s.media.missing];
+  // The disk refuses the manifest from the first passage on: the folder is the one the runtime itself leaves.
+  const restore = refusing(t, 'manifest.json');
+  const live = f.open({ host: 'server' }), id = live.id, dir = path.join(f.sessionsRoot, id);
+  const listed = async options => (await library.list(options)).filter(s => s.id === id).map(row);
+  f.clock = 8000; await live.watch.ingest(f.block(0, 8000)); await settle(live.watch); await live.store.serial.catch(() => {});
+  assert.deepEqual(await listed({ current: id }), [['live', false, null, 1, 1, 0]], 'the session in memory is live, with or without a manifest');
+  await live.pause();
+  await assert.rejects(live.archive(), { message: 'Écriture refusée par le disque (manifest.json) : EIO' });
+  restore();
+  assert.deepEqual([(await fs.readdir(dir)).includes('manifest.json'), (await fs.readdir(dir)).includes('session.json')], [false, true]);
+  assert.deepEqual(await listed(), [['interrupted', false, null, 1, 1, 0]], 'nothing says that it was closed: no closing date is made up');
+
+  // Opened as any session cut short: read-only, replayable, and not a byte written.
+  const before = await tree(dir), { session, archive } = await f.reopen(library, id);
+  assert.deepEqual([archive.manifest, archive.summary.state, archive.summary.legacy, archive.summary.closedAt], [null, 'interrupted', false, null]);
+  const state = session.watch.snapshot();
+  assert.deepEqual([state.readOnly, state.accepting, state.segments.map(s => [s.id, s.status, s.available])], [true, false, [['moment-1', 'ready', true]]]);
+  assert.equal(await (await session.store.response('moment-1')).text(), 'clip 0');
+  assert.equal((await inspect(session, 0, 8000)).observations[0].id, 'moment-1');
+  await session.pause(); await session.close();
+  assert.deepEqual([await tree(dir), await listed()], [before, [['interrupted', false, null, 1, 1, 0]]], 'listing, opening, replaying and closing wrote nothing');
+
+  // Only an explicit resume writes again: additive, and its confirmed end gives the session the manifest it never had.
+  const resumed = (await f.reopen(library, id)).session;
+  await resumed.resume();
+  assert.deepEqual(await listed({ current: id }), [['live', false, null, 1, 1, 0]]);
+  f.clock += 8000; assert.equal(await resumed.watch.ingest(f.block(8000, 16000)), 'moment-2'); await settle(resumed.watch);
+  assert.equal((await resumed.archive()).state, 'archived');
+  const [after] = (await library.list()).filter(s => s.id === id);
+  assert.deepEqual([after.state, after.legacy, typeof after.closedAt, after.passages, after.media.stored], ['archived', false, 'number', 2, 2]);
+
+  // A state saved before manifests existed names no retention: it is the archive it always was, row unchanged,
+  // the session in memory or not. A retention this version does not know is no proof of anything newer.
+  const former = randomUUID(), unknown = randomUUID();
+  const old = sessionId => ({ id: sessionId, accepting: false, elapsedMs: 16000, retentionMs: 300000, questions: [], history: [],
+    segments: [{ id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready', available: true, observation: { topic: 'Énergie', summary: 'Résumé 1' } }] });
+  for (const [sessionId, extra] of [[former, {}], [unknown, { retention: 'forever' }]]) {
+    await fs.mkdir(path.join(f.sessionsRoot, sessionId));
+    await fs.writeFile(path.join(f.sessionsRoot, sessionId, 'session.json'), JSON.stringify({ ...old(sessionId), ...extra }));
+  }
+  const savedAt = Math.round((await fs.stat(path.join(f.sessionsRoot, former, 'session.json'))).mtimeMs), kept = await tree(path.join(f.sessionsRoot, former));
+  const expected = { id: former, title: (await library.read(former)).summary.title, firstTopic: 'Énergie', host: null, createdAt: savedAt, updatedAt: savedAt, closedAt: savedAt, state: 'archived',
+    elapsedMs: 16000, passages: 1, media: { stored: 0, missing: 1, bytes: 0 }, legacy: true };
+  for (const options of [{}, { current: former }]) assert.deepEqual((await library.list(options)).find(s => s.id === former), expected);
+  assert.deepEqual((await library.list()).filter(s => s.id === unknown).map(s => [s.state, s.legacy]), [['archived', true]]);
+  assert.deepEqual(await tree(path.join(f.sessionsRoot, former)), kept);
 });
