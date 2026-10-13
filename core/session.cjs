@@ -4,6 +4,9 @@ const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
 const { holdsMedia } = require('./clip-container.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
+// Set as `code` by a perception adapter on a failed description it knows to be passing (a connection that gave
+// way, its own deadline): the only failure a passage may be described a second time for.
+const VISION_TRANSIENT = 'TVLENS_VISION_TRANSIENT';
 const unfinished = status => status === 'queued' || status === 'analyzing';
 // The files of a passage are there, whether or not its video plays: a recorder that received no frame leaves a
 // container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
@@ -53,7 +56,9 @@ class WatchSession {
     // analysis is started, since close() would abandon it at once.
     this.ending = false;
     this.splitPerception = typeof perception.transcribe === 'function' && typeof perception.observeVisual === 'function';
-    // Counted where the event happens, never recomputed from the passages.
+    // Counted where the event happens, never recomputed from the passages. Two more only exist once they
+    // happened: visionRetried, the second descriptions started, and visionRecovered, those that succeeded.
+    // visionError stays what was lost for good.
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
     this.unremoved = new Set();
     this.visionBlockedMs = 0; this.visionHeldSince = null;
@@ -290,6 +295,13 @@ class WatchSession {
     }
   }
 
+  // A second description needs a failure marked as passing, a session that is neither ending, closed nor read-only,
+  // media still kept, and a lane nobody waits for: no passage queued behind, no question holding vision back.
+  retriesVision(segment, error) {
+    return error?.code === VISION_TRANSIENT && !this.closed && !this.ending && !this.readOnly && stored(segment)
+      && !this.visionQueue.length && !(this.asking && !this.visionDuringAsk);
+  }
+
   async drainVision() {
     if (this.closed || this.ending || this.visionRunning || !this.visionQueue.length) return;
     // Only the time during which a question alone keeps queued vision waiting is charged to the gate.
@@ -299,13 +311,30 @@ class WatchSession {
     const segment = this.visionQueue.shift();
     segment.visionStatus = 'analyzing'; segment.visionStartedMs = this.now(); this.emit();
     try {
-      const evidence = await this.media.read(segment.id);
+      let evidence = await this.media.read(segment.id);
       if (this.closed) return;
-      this.apiCalls++;
-      const context = perceptionContext(this, segment);
-      const result = await this.perception.observeVisual({ ...segment, ...evidence,
-        context, signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
-        onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
+      let context, result, retried = false;
+      // Every call made is counted, the second one of a passage included.
+      const describe = () => {
+        this.apiCalls++;
+        context = perceptionContext(this, segment);
+        return this.perception.observeVisual({ ...segment, ...evidence,
+          context, signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
+          onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
+      };
+      try { result = await describe(); }
+      catch (error) {
+        // A failure its adapter marked as passing is tried once more, here and now: the passage stays in analysis,
+        // nothing is published as lost meanwhile, and nothing is queued or delayed for it. Its media are read again,
+        // and what allows the second call is checked again once they are. A description that ran into its deadline
+        // during a continuous capture will seldom find the lane free, and is then lost as before.
+        if (!this.retriesVision(segment, error)) throw error;
+        // Media that cannot be read any more leave the first failure as the reason, in its own words.
+        try { evidence = await this.media.read(segment.id); } catch { throw error; }
+        if (!this.retriesVision(segment, error)) throw error;
+        this.losses.visionRetried = (this.losses.visionRetried || 0) + 1; retried = true;
+        result = await describe();
+      }
       if (this.closed) return;
       segment.observation = withOverlayNote({ ...segment.observation, ...result.observation }, segment, evidence?.frames?.length);
       segment.topicSummary = completeTopicSummary(segment, result, context);
@@ -315,6 +344,7 @@ class WatchSession {
       segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
       segment.metrics = { ...segment.metrics, ...result.metrics };
       this.apiCost += result.cost || 0;
+      if (retried) this.losses.visionRecovered = (this.losses.visionRecovered || 0) + 1;
       // A completed passage recovers older failures, but cannot clear a newer
       // audio failure that arrived while this vision call was in flight.
       const outstanding = this.segments.slice().reverse().find(s =>
@@ -423,6 +453,12 @@ class WatchSession {
     for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
     // Counted only where it happened: a session without such a passage keeps the counters it always had.
     if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
+    // Likewise, and only as counts this session can have written: one second description per passage at most, and
+    // no more recoveries than second descriptions.
+    const counted = (value, most) => Number.isInteger(value) && value > 0 && value <= most ? value : 0;
+    const retried = counted(saved.coverage?.visionRetried, saved.segments.length + (saved.history?.length || 0)), recovered = counted(saved.coverage?.visionRecovered, retried);
+    if (retried) this.losses.visionRetried = retried;
+    if (recovered) this.losses.visionRecovered = recovered;
     if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.visionBlockedMs = saved.coverage.visionBlockedMs;
     // A summary whose media is gone stays a summary: only passages still listed with their media can be replayed.
     this.history = (saved.history || []).map(passage => { const { available, ...summary } = reopen(passage, false); return summary; });

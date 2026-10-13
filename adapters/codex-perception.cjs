@@ -10,6 +10,65 @@ const observationSchema = {
   },
   required: ["summary", "visual", "uncertainty", "topic", "continuity", "topicSummary"],
 };
+// The longest one description of the images may take.
+const VISUAL_TIMEOUT_MS = 45000;
+// Set as `code` on a failed description the session may ask for once more (core/session.cjs).
+const VISION_TRANSIENT = "TVLENS_VISION_TRANSIENT";
+// A connection that gave way, by the exact message its adapter writes: Codex lost during a turn
+// (codex-session-client), a dead pipe or a handshake left unanswered (codex-rpc), a local backend out of
+// reach or answering 5xx (local-vlm-agent). Two are left out on purpose: the plain "Connexion Codex
+// interrompue." of a pending request, which a process closed by the confinement guard answers too, and a
+// turn/start left unanswered, whose turn may be running. Anything else, a failed turn and the detail its
+// provider gives included, is no reason to describe a passage again.
+const CONNECTION_LOST = new Set([
+  "Connexion Codex interrompue. Réessaie la question.",
+  "Codex déconnecté.",
+  "Codex : délai de connexion dépassé (initialize).",
+  "Codex : délai de connexion dépassé (thread/start).",
+  "Backend local injoignable.",
+]);
+const LOCAL_UNAVAILABLE = /^Backend local indisponible \(HTTP 5\d\d\)\.$/;
+// Never described again, whatever else is true of the call: an authentication Codex refused, a confinement
+// or an input the client refused, a request the local backend refused (HTTP 4xx), a client or a backend
+// that was closed.
+const REFUSED = new Set([
+  "Entrée média non autorisée.",
+  "Backend local : image invalide.",
+  "Session Codex fermée.",
+  "Backend local fermé.",
+]);
+const REFUSED_PREFIXES = ["Confinement Codex non confirmé", "Outil hors du périmètre TVLens"];
+const LOCAL_REFUSED = /^Backend local indisponible \(HTTP 4\d\d\)\.$/;
+// Looked for on the failure and on what it names as its cause.
+function refused(error) {
+  for (let depth = 0; depth < 4 && error && typeof error === "object"; depth++, error = error.cause) {
+    const message = typeof error.message === "string" ? error.message : "";
+    if (
+      error.authRequired === true ||
+      REFUSED.has(message) ||
+      LOCAL_REFUSED.test(message) ||
+      REFUSED_PREFIXES.some((prefix) => message.startsWith(prefix))
+    )
+      return true;
+  }
+  return false;
+}
+// `caller` is the signal of whoever asked for the description, `deadline` the one set here. A cancelled
+// caller and a refusal come first and always win.
+function passing(error, caller, deadline) {
+  if (caller?.aborted || refused(error)) return false;
+  const message = error?.message;
+  // The deadline shows as the very reason of its signal, which the client and the local agent hand back as
+  // it is, or as the turn Codex confirms it interrupted with no failure of its own to report. A deadline
+  // that expired beside any other failure proves nothing, and neither does a timeout that is not this one.
+  if (
+    deadline.aborted &&
+    (error === deadline.reason ||
+      (message === "Recherche annulée." && error.turnStatus === "interrupted" && error.turnError === undefined))
+  )
+    return true;
+  return CONNECTION_LOST.has(message) || LOCAL_UNAVAILABLE.test(message);
+}
 class CodexPerception {
   constructor({
     binary,
@@ -19,8 +78,12 @@ class CodexPerception {
     sessionId,
     agent,
     quota,
+    timeoutMs,
   } = {}) {
     Object.assign(this, { model, transcriber, sessionId });
+    // Deadline of one description of the images: a host or a test can only lower it.
+    this.timeoutMs =
+      Number.isFinite(timeoutMs) && timeoutMs > 0 ? Math.min(timeoutMs, VISUAL_TIMEOUT_MS) : VISUAL_TIMEOUT_MS;
     this.agent =
       agent || new CodexAnalysisAgent({ binary, authHome, model, quota });
     // Turns served by the current model context; 0 means it is still fresh.
@@ -71,7 +134,8 @@ class CodexPerception {
     return { ...visual, metrics: { ...audio.metrics, ...visual.metrics }, elapsedMs: audio.elapsedMs + visual.elapsedMs };
   }
   async observeVisual(segment) {
-    const signal = segment.signal ? AbortSignal.any([segment.signal, AbortSignal.timeout(45000)]) : AbortSignal.timeout(45000);
+    const deadline = AbortSignal.timeout(this.timeoutMs);
+    const signal = segment.signal ? AbortSignal.any([segment.signal, deadline]) : deadline;
     const started = Date.now();
     const audio = { text: segment.observation?.transcript || "", limits: [segment.observation?.uncertainty || ""] };
     segment.onProgress?.("Description des images…");
@@ -106,7 +170,12 @@ class CodexPerception {
       input,
       observationSchema,
       signal,
-    );
+    ).catch((error) => {
+      if (!passing(error, segment.signal, deadline)) throw error;
+      // A new error carries the mark: the reason of an expired signal is a DOMException whose `code` cannot
+      // be written. Its message stays the one the passage would have been given.
+      throw Object.assign(new Error(error.message, { cause: error }), { code: VISION_TRANSIENT });
+    });
     // The agent had to reconnect: this call was the first turn of a new thread, whatever the counter said.
     if (output.coldStart === true) this.count = 1;
     for (const k of ["summary", "visual", "uncertainty", "topic"])
