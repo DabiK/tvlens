@@ -32,6 +32,16 @@ async function tree(dir, base = dir) {
 }
 const inspect = (session, startMs, endMs) => new VideoTools({ snapshot: session.watch.snapshot(), search: session.search, inspector: session.inspector, media: session.store })
   .call('inspect_clip', { startMs, endMs, question: 'Que voit-on ?' });
+// The disk refuses the files named, as on EIO or in a directory that is no longer writable: their temporary
+// file is never written, so each keeps what it held. Media, thumbnails and every other file still land.
+function refusing(t, ...names) {
+  const writeFile = fs.writeFile;
+  const mock = t.mock.method(fs, 'writeFile', async (file, ...rest) => {
+    if (names.some(name => String(file).endsWith(name + '.tmp'))) throw Object.assign(new Error(`EIO: i/o error, write '${file}'`), { code: 'EIO' });
+    return writeFile(file, ...rest);
+  });
+  return () => mock.mock.restore();
+}
 
 // Real adapters on a temporary directory, simulated providers, host clock held by the test.
 async function fixture(t) {
@@ -585,4 +595,122 @@ test('images hidden by a TV Lens card stay declared on the passage (state, histo
   const reopened = make(); reopened.restore(saves.at(-1));
   assert.deepEqual(kept(reopened.snapshot().history), expected);
   await watch.close();
+});
+
+test('the store tells a write the disk refused from one that landed: the file keeps what it held, the manifest asked for is not the manifest written, and the final barrier names what is missing', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-flush-')), dir = path.join(root, randomUUID());
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
+  await store.save({ id: 's', saves: 1 }); await store.saveResearch({ jobs: ['deep-1'] }); await store.saveManifest({ state: 'live', title: 'Film' });
+  await store.flush();
+  assert.deepEqual([store.manifest, store.confirmed], [{ state: 'live', title: 'Film' }, { state: 'live', title: 'Film' }]);
+
+  let restore = refusing(t, 'session.json', 'manifest.json');
+  await assert.rejects(store.save({ id: 's', saves: 2 }), { code: 'EIO' }, 'whoever asked for a write is still told that it was refused');
+  await assert.rejects(store.saveManifest({ state: 'archived' }), error => error.code === 'EIO' && /manifest\.json/.test(error.message) && !error.message.includes(root));
+  // A later write of another file lands: the chain goes on, and forgets nothing of what it refused.
+  await store.saveResearch({ jobs: ['deep-1', 'deep-2'] });
+  assert.deepEqual([store.manifest.state, store.confirmed.state, (await saved('manifest.json')).state, (await saved('session.json')).saves, (await saved('deep-answers.json')).jobs.length],
+    ['archived', 'live', 'live', 1, 2], 'what was asked for is not what the disk holds');
+  await assert.rejects(store.flush(), error => error.code === 'EIO' && /session\.json/.test(error.message) && !/manifest|deep-answers/.test(error.message) && !error.message.includes(root),
+    'the state file by its name, never by a path; the manifest is written after this barrier and answers for itself');
+  restore();
+  await assert.rejects(store.flush(), /session\.json/, 'a disk that takes writes again has not written the file');
+  await store.save({ id: 's', saves: 3 });
+  await store.flush();
+  await store.saveManifest({});
+  assert.deepEqual([store.confirmed.state, (await saved('manifest.json')).state, (await saved('session.json')).saves], ['archived', 'archived', 3]);
+
+  // A session being deleted has nothing left to confirm, and gets nothing back.
+  restore = refusing(t, 'session.json');
+  await assert.rejects(store.save({ id: 's', saves: 4 }), { code: 'EIO' });
+  restore();
+  await store.seal(); await store.flush(); await store.save({ id: 's', saves: 5 });
+  assert.equal((await saved('session.json')).saves, 3);
+});
+
+test('a save the disk refused stays said by the session until a save lands: an analysis that succeeds meanwhile does not clear it, a save that lands does, and closing still ends', async () => {
+  const SAVE = 'Impossible de sauvegarder le résumé de session.';
+  let time = 0, refuse = true; const files = new Map(), states = [], described = deferred();
+  // Split perception, as in production: each lane publishes before it saves. The description is held until the
+  // first saves have been refused.
+  const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
+    perception: { transcribe: async () => ({ observation: { transcript: 'Paroles' } }), observeVisual: async () => { await described.promise; return { observation: { summary: 'Images', visual: 'Image' } }; } },
+    media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
+    archive: { save: async () => { if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
+  time = 1000; await watch.ingest({ startMs: 0, endMs: 1000, audio: new Uint8Array([1]), frames: [] });
+  for (let i = 0; i < 10; i++) await tick();
+  assert.deepEqual([watch.segments[0].audioStatus, watch.snapshot().lastError], ['ready', SAVE]);
+  described.resolve(); await settle(watch);
+  for (let i = 0; i < 10; i++) await tick();
+  // The passage is described without a failure of its own, and nothing was saved meanwhile: the state published
+  // with its description still says so.
+  const published = states.find(state => state.segments[0]?.status === 'ready');
+  assert.deepEqual([published.segments[0].observation.summary, published.lastError], ['Images', SAVE]);
+  refuse = false; await watch.stop();
+  assert.deepEqual([states.at(-1).accepting, states.at(-1).lastError], [false, null], 'said for as long as it is true, and no longer');
+  refuse = true; await watch.close();
+  assert.deepEqual([watch.closed, watch.snapshot().lastError], [true, SAVE], 'closing ends whatever the disk did, and the session still knows that its last state was refused');
+});
+
+test('archive() says archived only once the final states are on disk: refused on the state, the questions or the manifest, it rejects with every resource released and the folder as last confirmed, and asked again once the disk is back it archives', async t => {
+  const f = await fixture(t), library = new SessionLibrary({ root: f.sessionsRoot });
+  const listed = async id => (await library.list()).filter(s => s.id === id).map(s => s.state);
+  const question = status => ({ jobs: [{ id: 'deep-1', status, question: 'Comment ça commence ?' }] });
+  for (const file of ['session.json', 'deep-answers.json', 'manifest.json']) {
+    const live = f.open({ host: 'server' }), dir = path.join(f.sessionsRoot, live.id), closed = [];
+    const raw = name => fs.readFile(path.join(dir, name), 'utf8'), saved = async name => JSON.parse(await raw(name));
+    f.clock += 8000; await live.watch.ingest(f.block(0, 8000)); await settle(live.watch); await live.store.serial;
+    await live.store.saveResearch(question('running'));
+    await live.pause();
+    const kept = await raw(file);
+    for (const [name, target] of [['index', live.search.index], ['miniatures', live.thumbnails], ['perception', live.perception], ['modèle d’inspection', live.inspectorModel]]) {
+      const close = target.close?.bind(target);
+      target.close = async () => { closed.push(name); return close?.(); };
+    }
+    const restore = refusing(t, file);
+    // What a host writes when a question reaches its final state while the session ends.
+    await live.store.saveResearch(question('cancelled')).catch(() => {});
+    const refusal = await live.archive().then(() => null, error => error);
+    assert.ok(refusal, `${file} refused: the session is not said archived`);
+    assert.deepEqual([refusal.code, refusal.message], ['EIO', `Écriture refusée par le disque (${file}) : EIO`]);
+    assert.deepEqual([live.watch.closed, closed, live.closeErrors], [true, ['index', 'miniatures', 'perception', 'modèle d’inspection'], []], 'every resource released, and the refusal said once, by archive()');
+    assert.deepEqual([(await saved('manifest.json')).state, await raw(file) === kept], ['live', true], 'nothing on disk says archived, and the refused file is the last one confirmed');
+    assert.deepEqual(await listed(live.id), ['interrupted']);
+    // A late pause does not make it look archived, and asking again while the disk still refuses changes nothing.
+    await live.pause();
+    await assert.rejects(live.archive(), { code: 'EIO' });
+    assert.deepEqual([(await saved('manifest.json')).state, closed.length], ['live', 4]);
+    restore();
+    // The disk takes writes again. What it refused is still not on it: the host writes its questions again, the runtime its state.
+    if (file === 'deep-answers.json') { await assert.rejects(live.archive(), /deep-answers\.json/); await live.store.saveResearch(question('cancelled')); }
+    const manifest = await live.archive();
+    assert.deepEqual([manifest.state, (await saved('manifest.json')).state, (await saved('session.json')).accepting, (await saved('deep-answers.json')).jobs[0].status, closed.length],
+      ['archived', 'archived', false, 'cancelled', 4], 'archived for good, its adapters closed once');
+    assert.deepEqual(await listed(live.id), ['archived']);
+    // Reopened and closed again, the confirmed archive is not rewritten.
+    const before = await tree(dir), { session } = await f.reopen(library, live.id);
+    assert.deepEqual(session.watch.snapshot().segments.map(s => [s.id, s.status, s.available]), [['moment-1', 'ready', true]]);
+    assert.equal((await session.archive()).state, 'archived');
+    assert.deepEqual(await tree(dir), before);
+  }
+  // A refusal that never reaches the store's own writes (the archive port itself says no) is known to the
+  // session alone: it keeps the session from being said archived all the same.
+  const deaf = f.open({ host: 'server' }), save = deaf.store.save.bind(deaf.store);
+  f.clock += 8000; await deaf.watch.ingest(f.block(0, 8000)); await settle(deaf.watch); await deaf.store.serial;
+  await deaf.pause();
+  deaf.store.save = async () => { throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); };
+  await assert.rejects(deaf.archive(), { message: 'Impossible de sauvegarder le résumé de session.' });
+  assert.deepEqual([deaf.watch.closed, JSON.parse(await fs.readFile(path.join(f.sessionsRoot, deaf.id, 'manifest.json'), 'utf8')).state, await listed(deaf.id)], [true, 'live', ['interrupted']]);
+  deaf.store.save = save;
+  assert.deepEqual([(await deaf.archive()).state, await listed(deaf.id)], ['archived', ['archived']]);
+
+  // Deleting waits for no confirmation: a sealed session writes nothing, so nothing of it can be refused.
+  const doomed = f.open();
+  f.clock += 8000; await doomed.watch.ingest(f.block(0, 8000)); await settle(doomed.watch); await doomed.store.serial;
+  const restore = refusing(t, 'session.json');
+  await doomed.pause(); await doomed.seal();
+  restore();
+  await library.remove(doomed.id);
+  assert.deepEqual(await listed(doomed.id), []);
 });

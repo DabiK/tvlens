@@ -751,7 +751,9 @@ class HeadlessRuntime {
       // host started itself: an archive that was opened is never discarded for being short.
       const empty =
         this.fresh && !asked && !session.watch.snapshot().coverage.passages;
-      // Neither announced as archived nor erased unless the step itself came back.
+      // Neither announced as archived nor erased unless the step itself came back: archive() rejects
+      // when the disk refused one of the last states. The folder then keeps what was last confirmed,
+      // and a session never archived before stays listed as cut short.
       let kept = false,
         sealed = false;
       await this.attempt(errors, empty ? "scellement" : "archive", async () => {

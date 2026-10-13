@@ -315,7 +315,9 @@ app.whenReady().then(async () => {
     const ended = live, failed = []; let freedBytes = 0;
     // Every closing step is attempted whatever the others did: an adapter that fails to close (recap, chat
     // agent, surveillance, and inside the runtime perception, inspection model, index) neither keeps the
-    // session from being archived nor leaves a provider process behind. What failed goes to the journal.
+    // session from being archived nor leaves a provider process behind. What failed goes to the journal, an
+    // archive the disk refused included: its folder keeps what was last confirmed, and a session never
+    // archived before stays listed as cut short.
     const attempt = async (step, work) => { try { return await work(); } catch (error) { failed.push(`${step} : ${String(error?.message || error).slice(0, 200)}`); } };
     switching = true;
     try {

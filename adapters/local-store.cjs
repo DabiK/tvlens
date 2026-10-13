@@ -6,6 +6,9 @@ const { StorageFullError } = require('./disk-guard.cjs');
 const FILES = { session: 'session.json', research: 'deep-answers.json', recap: 'living-recap.json', auto: 'auto.json', surveillance: 'surveillance.json', manifest: 'manifest.json' };
 const MEDIA_DIR = 'media', THUMBS_DIR = 'thumbs', LEGACY_THUMBS_DIR = 'thumbnails';
 const MEDIA_FILE = /^(moment-\d+)\.(webm|json)$/, THUMB_FILE = /^moment-\d+\.jpg$/;
+// A refused write in words a host journal can carry: the files by their name and the code of the system,
+// rather than the path its own message spells out.
+const refusal = (names, cause) => Object.assign(new Error(`Écriture refusée par le disque (${names.map(name => FILES[name]).join(', ')}) : ${cause?.code || String(cause?.message || cause).slice(0, 120)}`), { code: cause?.code });
 
 class LocalSessionStore {
   // A session keeps its media in media/: the cleanup of a former version only knows the moment-* files
@@ -15,7 +18,11 @@ class LocalSessionStore {
   constructor(root, { mediaDir = '', guard = null } = {}) {
     Object.assign(this, { root, guard, mediaRoot: path.join(root, mediaDir) });
     this.serial = Promise.resolve(); this.leases = new Map(); this.pendingRemoval = new Set();
-    this.legacy = new Set(); this.writes = new Set(); this.sealed = false; this.manifest = null;
+    this.legacy = new Set(); this.writes = new Set(); this.sealed = false;
+    // `manifest` is what was asked for; `confirmed` is what manifest.json holds, as last written or read.
+    this.manifest = null; this.confirmed = null;
+    // Files whose last write was refused, with the reason: each still holds what it held before.
+    this.refused = new Map();
     // Volume is accumulated write by write: the directory is listed when a session is opened, never on a tick.
     this.bytes = 0; this.writtenBytes = 0; this.writtenMs = 0;
   }
@@ -145,10 +152,18 @@ class LocalSessionStore {
     this.serial = this.serial.catch(() => {}).then(async () => {
       // Checked again when the write runs: a sealed session must never get its directory back.
       if (this.sealed) return;
-      await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
-      const target = path.join(this.root, FILES[name]);
-      await fs.writeFile(target + '.tmp', data, { mode: 0o600 });
-      await fs.rename(target + '.tmp', target);
+      try {
+        await fs.mkdir(this.root, { recursive: true, mode: 0o700 });
+        const target = path.join(this.root, FILES[name]);
+        await fs.writeFile(target + '.tmp', data, { mode: 0o600 });
+        await fs.rename(target + '.tmp', target);
+      } catch (error) {
+        // Whoever asked is told, and the refusal outlives the next link of the chain: until a write of this
+        // file lands.
+        this.refused.set(name, error);
+        throw error;
+      }
+      this.refused.delete(name);
     });
     return this.serial;
   }
@@ -158,11 +173,21 @@ class LocalSessionStore {
   saveAuto(snapshot) { return this.persist('auto', snapshot); }
   // The whole registry, rewritten as often as every second and megabytes at saturation: never indented.
   saveSurveillance(snapshot) { return this.persist('surveillance', snapshot, 0); }
-  // Small and merged in memory: a partial update never loses the facts written before it.
+  // Small and merged in memory: a partial update never loses the facts written before it. What was asked
+  // for moves at once; what is confirmed only moves when that very content is on disk.
   saveManifest(patch) {
     if (this.sealed) return Promise.resolve();
-    this.manifest = { ...this.manifest, ...patch };
-    return this.persist('manifest', this.manifest);
+    const wanted = this.manifest = { ...this.manifest, ...patch };
+    return this.persist('manifest', wanted).then(() => { if (!this.sealed) this.confirmed = wanted; }, error => { throw refusal(['manifest'], error); });
+  }
+  // The barrier before a session is said archived. Settles once every write asked so far has run, and
+  // rejects while the last write of a state file was refused. The manifest is not counted: it is written
+  // after this, and its own write answers for it.
+  async flush() {
+    let serial;
+    do { serial = this.serial; await serial.catch(() => {}); } while (serial !== this.serial);
+    const names = [...this.refused.keys()].filter(name => name !== 'manifest');
+    if (!this.sealed && names.length) throw refusal(names, this.refused.get(names[0]));
   }
   // Before the session is deleted: every later save is a no-op, and the writes in flight are awaited.
   async seal() {

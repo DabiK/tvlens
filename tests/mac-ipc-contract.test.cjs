@@ -611,6 +611,50 @@ test('ending a Mac session archives it and closes its runtime even when adapters
   assert.deepEqual([JSON.parse(await fsp.readFile(path.join(folder(b.id), 'manifest.json'), 'utf8')).state, runtimes.length, runtimes[1].watch.closed, host.failures.length], ['archived', 2, true, 2]);
 });
 
+test('a Mac session whose final state the disk refuses is not left as an archive that lies: the journal names the file, the runtime is closed, the session is listed as cut short and reopens on its last confirmed state, and a new one starts', async t => {
+  const { folder, launch } = await stage(t), runtimes = [];
+  const host = await launch({ wrap: { session: runtime => { runtimes.push(runtime); return runtime; } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  // The disk refuses session.json, as on EIO or in a directory that is no longer writable: its temporary file
+  // is never written, so the file keeps what it held. Media, thumbnails and the manifest still land.
+  const writeFile = fsp.writeFile;
+  const refusing = () => t.mock.method(fsp, 'writeFile', async (file, ...rest) => {
+    if (String(file).endsWith('session.json.tmp')) throw Object.assign(new Error(`EIO: i/o error, write '${file}'`), { code: 'EIO' });
+    return writeFile(file, ...rest);
+  });
+  const journal = id => `TVLens — fermeture incomplète de la session ${id} : archive : Écriture refusée par le disque (session.json) : EIO`;
+  const saved = async (id, name) => JSON.parse(await fsp.readFile(path.join(folder(id), name), 'utf8'));
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await host.stop();
+  const confirmed = await fsp.readFile(path.join(folder(a.id), 'session.json'), 'utf8');
+  host.events.length = 0;
+  let refused = refusing();
+  assert.equal(await host.newSession(), true, 'the host lets go of the session whatever its disk did');
+  refused.mock.restore();
+  assert.deepEqual(host.failures, [journal(a.id)], 'said in the journal, not swallowed');
+  assert.deepEqual([runtimes.length, runtimes[0].watch.closed], [1, true], 'the runtime was closed all the same');
+  assert.deepEqual([(await saved(a.id, 'manifest.json')).state, await fsp.readFile(path.join(folder(a.id), 'session.json'), 'utf8') === confirmed], ['live', true], 'nothing on disk says archived, and the state is the last one confirmed');
+  assert.deepEqual([await host.state(), (await host.sessions()).sessions.map(s => [s.id, s.state, s.passages, s.media.stored])], [null, [[a.id, 'interrupted', 1, 1]]]);
+  assert.ok(host.events.some(e => e.channel === 'watch:reset') && host.events.some(e => e.channel === 'sessions:changed'));
+
+  // Reopened read-only on what the disk confirmed; closing it again has nothing to write, hence nothing to report.
+  assert.deepEqual([(await host.openSession(a.id)).readOnly, (await host.state()).segments.map(s => [s.id, s.status, s.available])], [true, [['moment-1', 'ready', true]]]);
+  assert.equal(await host.newSession(), true);
+  assert.equal(host.failures.length, 1);
+
+  // A new session starts and captures; quitting while the disk refuses again is said the same way.
+  const b = await host.start();
+  assert.notEqual(b.id, a.id);
+  assert.equal((await capture(host, b.id)).id, 'moment-1');
+  await until(t, analysed(host, 1), 'the passage of the new session');
+  refused = refusing();
+  await host.quit();
+  refused.mock.restore();
+  assert.deepEqual([host.failures, runtimes.length, runtimes[2].watch.closed, (await saved(b.id, 'manifest.json')).state], [[journal(a.id), journal(b.id)], 3, true, 'live']);
+});
+
 test('a passage search belongs to the session that asked: its thumbnails are that session’s, and an answer that arrives once another session is loaded is refused', async t => {
   const { launch } = await stage(t);
   // The search of every session can be held back, as a slow semantic ranking holds it.

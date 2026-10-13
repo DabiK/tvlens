@@ -16,6 +16,16 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
 const turns = async (count = 20) => { for (let i = 0; i < count; i++) await tick(); };
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const exists = target => fs.lstat(target).then(() => true, () => false);
+// The disk refuses the files named, as on EIO or in a directory that is no longer writable: their temporary
+// file is never written, so each keeps what it held. Media, thumbnails and every other file still land.
+function refusing(t, ...names) {
+  const writeFile = fs.writeFile;
+  const mock = t.mock.method(fs, 'writeFile', async (file, ...rest) => {
+    if (names.some(name => String(file).endsWith(name + '.tmp'))) throw Object.assign(new Error(`EIO: i/o error, write '${file}'`), { code: 'EIO' });
+    return writeFile(file, ...rest);
+  });
+  return () => mock.mock.restore();
+}
 // Every entry under a directory with its content hash and modification time: two listings are equal
 // only when nothing was added, removed or rewritten.
 async function tree(dir, base = dir) {
@@ -390,6 +400,94 @@ test('ending a session archives it and closes its runtime even when adapters fai
   assert.equal((await f.req(`/v1/sessions/${A}/open`, {})).status, 200);
   const reopened = (await f.req('/v1/state')).value;
   assert.deepEqual([reopened.session.segments.map(s => [s.id, s.available]), reopened.chat.jobs.map(j => j.question)], [[['moment-1', true]], ['Une question ?']]);
+});
+
+test('an end the disk refuses is never announced as archived: with the state, the questions or the manifest missing, the answer names the file, the runtime is closed all the same, the folder keeps what was last confirmed and is listed as cut short, and it archives once the disk is back', async t => {
+  const journal = [], ids = [];
+  const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });
+  for (const file of ['session.json', 'deep-answers.json', 'manifest.json']) {
+    journal.length = 0;
+    const id = (await f.req('/v1/session/start', {})).value.id, session = f.runtime.session, dir = path.join(f.sessionsRoot, id), closed = [];
+    await f.block(id, 1, 8000); await f.ask(id, 'Première question ?');
+    for (const [name, target] of [['index', session.search.index], ['miniatures', session.thumbnails], ['perception', session.perception], ['modèle d’inspection', session.inspectorModel]]) {
+      const close = target.close?.bind(target);
+      target.close = async () => { closed.push(name); return close?.(); };
+    }
+    const kept = await fs.readFile(path.join(dir, file), 'utf8');
+    const restore = refusing(t, file);
+    // One more question, answered while the disk refuses: its last state is one of the writes an end waits for.
+    const { value: asked } = await f.req('/v1/questions', { sessionId: id, question: 'Seconde question ?', anchorMs: 0 });
+    await f.runtime.deep.jobs.find(job => job.id === asked.id).done; await turns(5); await session.store.serial.catch(() => {});
+
+    const refusal = `archive : Écriture refusée par le disque (${file}) : EIO`;
+    assert.deepEqual(await f.req('/v1/session/end', {}), { status: 200, value: { ended: true, id, archived: false, errors: [refusal] } });
+    assert.deepEqual([f.runtime.lastEnd, journal], [{ id, archived: false, errors: [refusal] }, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]], 'kept as the outcome of the end and in the journal');
+    assert.deepEqual([session.watch.closed, closed], [true, ['index', 'miniatures', 'perception', 'modèle d’inspection']], 'the resources are released whatever the disk did');
+    assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await fs.readFile(path.join(dir, file), 'utf8') === kept], ['live', true], 'nothing on disk says archived, and the refused file is the last one confirmed');
+    restore();
+    const after = (await f.req('/v1/state')).value;
+    assert.deepEqual([after.session, after.chat.jobs], [null, []], 'the host has let go of the session');
+    assert.deepEqual((await f.req('/v1/sessions')).value.sessions.filter(s => s.id === id).map(s => [s.state, s.passages, s.media.stored]), [['interrupted', 1, 1]]);
+
+    // Reopened on what the disk confirmed, read-only; then the explicit resume and a new end archive it for good.
+    const opened = await f.req(`/v1/sessions/${id}/open`, {});
+    assert.deepEqual([opened.status, opened.value.readOnly], [200, true]);
+    const reopened = (await f.req('/v1/state')).value;
+    assert.deepEqual([reopened.session.segments.map(s => [s.id, s.status, s.available]), reopened.chat.jobs.map(job => job.question)],
+      [[['moment-1', 'ready', true]], file === 'deep-answers.json' ? ['Première question ?'] : ['Première question ?', 'Seconde question ?']]);
+    assert.equal((await f.req(`/v1/sessions/${id}/resume`, {})).status, 200);
+    assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id, archived: true });
+    assert.deepEqual([(await f.saved(id, 'manifest.json')).state, (await f.saved(id, 'session.json')).accepting], ['archived', false]);
+    ids.push(id);
+  }
+  assert.deepEqual((await f.req('/v1/sessions')).value.sessions.map(s => s.state), ['archived', 'archived', 'archived']);
+
+  // An archive that is only being read takes one kind of write: the questions asked on it. Refused, closing
+  // it does not claim that they were kept, and the archive itself stays exactly what it was.
+  const id = ids[0], dir = path.join(f.sessionsRoot, id);
+  assert.equal((await f.req(`/v1/sessions/${id}/open`, {})).value.readOnly, true);
+  const before = await tree(dir), restore = refusing(t, 'deep-answers.json');
+  const { value: asked } = await f.req('/v1/questions', { sessionId: id, question: 'Question sur l’archive ?', anchorMs: 0 });
+  await f.runtime.deep.jobs.find(job => job.id === asked.id).done; await turns(5);
+  assert.deepEqual((await f.req('/v1/sessions/close', {})).value, { closed: true, id, archived: false, errors: ['archive : Écriture refusée par le disque (deep-answers.json) : EIO'] });
+  restore();
+  assert.deepEqual(await tree(dir), before);
+  assert.deepEqual((await f.req('/v1/sessions')).value.sessions.find(s => s.id === id).state, 'archived', 'still the archive last confirmed');
+});
+
+test('stopping the host while the disk refuses the state leaves no archive that lies: the journal says which file, the next start lists the session as cut short, and it reopens on its last confirmed state with the passage only its media know', async t => {
+  const journal = [];
+  const f = await fixture(t, { runtimeOptions: () => ({ log: line => journal.push(line) }) });
+  const id = (await f.req('/v1/session/start', {})).value.id, dir = path.join(f.sessionsRoot, id);
+  await f.block(id, 1, 8000);
+  const confirmed = await fs.readFile(path.join(dir, 'session.json'), 'utf8');
+  const restore = refusing(t, 'session.json');
+  // A second passage is stored and analysed, but the state that describes it never reaches the disk.
+  f.clock += 8000; f.wall += 8000;
+  assert.deepEqual((await f.req('/v1/segments', { sessionId: id, sequence: 2, startMs: 8000, endMs: 16000, frames: [{ atMs: 8000, data: 'YQ==' }] })).value, { id: 'moment-2', duplicate: false });
+  do { await tick(); } while (f.runtime.session.watch.running);
+  await f.runtime.session.store.serial.catch(() => {}); await turns(5);
+  const live = (await f.req('/v1/state')).value.session;
+  assert.deepEqual([live.segments.map(s => [s.id, s.status]), live.lastError], [[['moment-1', 'ready'], ['moment-2', 'ready']], 'Impossible de sauvegarder le résumé de session.'], 'said by the session while it lives');
+
+  // What a service stop runs (SIGTERM).
+  const stopped = f.hosts[0];
+  await stopped.stop();
+  const refusal = 'archive : Écriture refusée par le disque (session.json) : EIO';
+  assert.deepEqual([stopped.runtime.lastEnd, journal], [{ id, archived: false, errors: [refusal] }, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]]);
+  restore();
+  assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await fs.readFile(path.join(dir, 'session.json'), 'utf8') === confirmed], ['live', true]);
+
+  // A new process on the same data.
+  f.clock = 20000000; f.wall += 3600000;
+  await f.boot();
+  assert.deepEqual((await f.req('/v1/sessions')).value.sessions.map(s => [s.id, s.state, s.current, s.passages, s.media.stored]), [[id, 'interrupted', false, 2, 2]]);
+  const opened = await f.req(`/v1/sessions/${id}/open`, {});
+  assert.deepEqual([opened.status, opened.value.readOnly, opened.value.accepting], [200, true, false]);
+  assert.deepEqual((await f.req('/v1/state')).value.session.segments.map(s => [s.id, s.status, s.available, s.error]),
+    [['moment-1', 'ready', true, undefined], ['moment-2', 'error', true, 'Analyse interrompue à la fermeture de la session.']], 'the confirmed passage as it was saved, the other one replayable and honestly unanalysed');
+  const replay = await f.raw(`/v1/media/${id}/moment-2`, { headers: { Range: 'bytes=0-6' } });
+  assert.equal(replay.status, 206); assert.equal(await replay.text(), 'fixture');
 });
 
 test('a start renews the block numbering even when the session was still capturing (the TV restarted its capture without a pause), and a block already accepted is never ingested twice', async t => {

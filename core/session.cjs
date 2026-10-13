@@ -59,6 +59,9 @@ class WatchSession {
     this.visionBlockedMs = 0; this.visionHeldSince = null;
     this.sequence = 0; this.accepting = true; this.running = false; this.asking = false;
     this.readOnly = false; this.storageError = null;
+    // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
+    // successful, says that the state is on disk.
+    this.saveError = null;
     // Ingests under way, and media found on disk at reopening that no passage could be made of.
     this.landing = new Set(); this.unplacedMedia = 0;
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve(); this.ingestChain = Promise.resolve();
@@ -436,8 +439,9 @@ class WatchSession {
     return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: this.running,
       elapsedMs: now, capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null, retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted', readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
       pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length,
-      // A capture stopped for lack of room keeps saying so: a late analysis must not clear the reason.
-      lastError: this.storageError || this.lastError, history: this.history, questions: this.questions,
+      // A capture stopped for lack of room keeps saying so, and so does a state that was not saved: a late
+      // analysis must not clear the reason.
+      lastError: this.storageError || this.saveError || this.lastError, history: this.history, questions: this.questions,
       latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: this.visionBlockedMs + (this.visionHeldSince === null ? 0 : Math.max(0, now - this.visionHeldSince)) },
       audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus })),
       visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
@@ -449,8 +453,10 @@ class WatchSession {
   async persist(explicit = false) {
     // Opening, pausing or closing a reopened archive leaves its files untouched.
     if (this.readOnly && !explicit) return;
-    try { await this.archive.save(this.snapshot()); }
-    catch { this.lastError = 'Impossible de sauvegarder le résumé de session.'; }
+    // Never rejects: an analysis or a pause must not fail for it. A host that needs the state confirmed on
+    // disk, as before saying a session archived, asks its archive (see the shared runtime).
+    try { await this.archive.save(this.snapshot()); this.saveError = null; }
+    catch { this.saveError = 'Impossible de sauvegarder le résumé de session.'; }
   }
 }
 

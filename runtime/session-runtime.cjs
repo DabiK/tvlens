@@ -285,7 +285,9 @@ function createSessionRuntime({
     ? [...(restore.manifest?.captures || [])]
     : [{ startedAt: wallClock(), fromMs: 0 }];
   let manifestAt = -Infinity,
-    ending = null;
+    ending = null,
+    // Why the end of this session is not confirmed on disk, once asked for: the write that was refused.
+    unconfirmed = null;
   // What failed while this runtime was closing, one line per step: kept for the host, never swallowed.
   const closeErrors = [];
   // Every closing step is attempted whatever the others did: one adapter that fails to close neither
@@ -301,9 +303,15 @@ function createSessionRuntime({
   };
   // Wall-clock facts and totals a list needs without opening the saved state. Never for a reopened
   // archive that was not resumed: opening and closing one leaves its directory as it was.
-  const recordManifest = (state, patch = {}) => {
+  // `final` is the end of the session, once its last states are on disk: the only write that says
+  // "archived".
+  const recordManifest = (state, patch = {}, final = false) => {
     if (watch.readOnly) return Promise.resolve();
     manifestAt = readClock();
+    // Once on disk it stays: a late pause cannot make a closed session look interrupted again, nor one
+    // whose end the disk refused look archived.
+    const archived =
+      final || (Boolean(ending) && store.confirmed?.state === "archived");
     const passages = [...state.history, ...state.segments],
       stored = state.segments.filter((s) => s.available).length,
       createdAt =
@@ -319,9 +327,8 @@ function createSessionRuntime({
         host: store.manifest?.host ?? host,
         createdAt,
         updatedAt: wallClock(),
-        // Once this runtime has closed, a late pause cannot make the session look interrupted again.
-        closedAt: ending ? (store.manifest?.closedAt ?? wallClock()) : null,
-        state: ending ? "archived" : "live",
+        closedAt: archived ? (store.manifest?.closedAt ?? wallClock()) : null,
+        state: archived ? "archived" : "live",
         title: store.manifest?.title || sessionTitle(createdAt),
         firstTopic:
           store.manifest?.firstTopic ||
@@ -339,7 +346,11 @@ function createSessionRuntime({
         captures,
         ...patch,
       })
-      .catch(() => {});
+      .catch((error) => {
+        // While the session lives a refused manifest is only late, and the next one says it all again.
+        // The one that ends it is handed back: nothing else would say that the archive is not on disk.
+        if (final) throw error;
+      });
   };
   watch = new WatchSession({
     id,
@@ -381,7 +392,10 @@ function createSessionRuntime({
       ),
     );
     thumbnails.bytes = inventory.thumbBytes || 0;
-    store.manifest = restore.manifest ? { ...restore.manifest } : null;
+    // Read from disk: what is asked for and what is confirmed are one and the same here.
+    store.manifest = store.confirmed = restore.manifest
+      ? { ...restore.manifest }
+      : null;
     // Stopped and read-only: nothing is indexed, analysed or written until resume().
     watch.restore(snapshot, {
       hasMedia: (passage) => inventory.ids.has(passage),
@@ -412,8 +426,10 @@ function createSessionRuntime({
     get readOnly() {
       return watch.readOnly;
     },
+    // The manifest asked for, title set in memory included: not a proof that it is on disk.
     manifest: () => store.manifest,
-    // Empty unless a closing step failed: the session is archived all the same, and its host reports these.
+    // Empty unless an adapter failed to close: that alone keeps no session from being archived, and its
+    // host reports these. A write the disk refused is not one of them: archive() is the one to say it.
     get closeErrors() {
       return [...closeErrors];
     },
@@ -463,26 +479,45 @@ function createSessionRuntime({
         await thumbnails.clear();
         await store.clearRaw();
       }
-      if (purge || store.manifest?.state !== "archived") {
-        const state = watch.snapshot();
-        await recordManifest(
-          state,
-          purge
-            ? {
-                media: {
-                  stored: 0,
-                  missing: state.coverage.passages,
-                  bytes: 0,
-                  retention: state.retention,
-                },
-              }
-            : {},
+      // Asked again after a refusal: the state is saved anew before anything is confirmed.
+      if (unconfirmed) await watch.persist();
+      const state = watch.snapshot();
+      // The last states first, then the manifest that vouches for them: "archived" never sits on disk
+      // beside a state the disk refused. The refusal is kept for archive() to say; closing itself never
+      // fails for it, so neither a deletion nor a host that stops is held back.
+      unconfirmed = await store
+        .flush()
+        .then(() => {
+          // Refused before it ever reached the store: the session itself is the one that knows.
+          if (watch.saveError) throw new Error(watch.saveError);
+          return purge || store.confirmed?.state !== "archived"
+            ? recordManifest(
+                state,
+                purge
+                  ? {
+                      media: {
+                        stored: 0,
+                        missing: state.coverage.passages,
+                        bytes: 0,
+                        retention: state.retention,
+                      },
+                    }
+                  : {},
+                true,
+              )
+            : null;
+        })
+        .then(
+          () => null,
+          (error) => error,
         );
-      }
     },
-    // End of a session for its host: closed, kept, and listed as an archive.
+    // End of a session for its host: closed, kept, and listed as an archive. Rejects when the disk refused
+    // one of its last writes: every resource is released all the same, the folder keeps what was last
+    // confirmed, and asking again tries again.
     async archive() {
       await runtime.close();
+      if (unconfirmed) throw unconfirmed;
       return store.manifest;
     },
     // Before the session is deleted: once this resolves, nothing from this runtime can write into its
