@@ -10,7 +10,7 @@
 
 ## Contexte
 
-Chaque changement publié était aussi l’écriture d’un état entier :
+Chaque changement des questions réécrivait leur état complet ; les demandes de sauvegarde conservaient toutes les versions en attente :
 
 - chaque brouillon de réponse, jusqu’à un toutes les 80 ms, resauvegardait toutes les questions, sur les deux hôtes ;
 - le store sérialisait chaque état dès la demande et ajoutait une écriture par demande à sa chaîne : un disque plus lent que ses états gardait toutes les anciennes versions à écrire ;
@@ -56,7 +56,7 @@ Aucune route, aucun canal IPC, aucun module ni dépendance n’est ajouté.
 - **Déclaré par le développeur** : douze tests ajoutés aux coutures store, cœur, HTTP et IPC Mac ; neuf rouges sur la base puis verts, trois qui caractérisent ; suite hors ligne 498 sur 498, fichiers exécutés un à un ; trois mutations retenues ; un passage dans la fenêtre Electron native en mode simulé.
 - **Sonde synthétique, même sonde sur la base et sur le commit** : store derrière un disque retenu, 100 écritures et 99 états en attente deviennent 2 et 1 ; hôte serveur sur disque libre, 100 écritures de brouillons deviennent 7. Ce sont des comptages, pas des latences.
 - **Reviews indépendantes** : validation à la lecture du code et des journaux, sans exécuter de test.
-- **Merger** : relecture des journaux retenus, sans ré-exécution enregistrée à la date de rédaction.
+- **Confirmé par le merger** : une suite Node complète, exécutée un fichier à la fois, 498 sur 498 sur `b5fbf9ed` (code `e6190c2` inchangé), code de sortie 0. Les journaux causaux ont été relus ; les rouges et le passage natif restent des preuves du développeur.
 
 ## Limites
 
