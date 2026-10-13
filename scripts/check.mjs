@@ -1,0 +1,153 @@
+#!/usr/bin/env node
+// Contrôle qualité unique du projet. Les hooks, la boucle de tickets et la CI appellent ce script :
+// une règle s'écrit ici une seule fois.
+//
+//   node scripts/check.mjs                 tout : règles, format, lint, cliquet, tests JS (séquentiels), tests Python
+//   node scripts/check.mjs --changed       fichiers modifiés depuis HEAD : règles, format, lint, cliquet, tests modifiés
+//   node scripts/check.mjs --file <chemin> un fichier : règles, format, lint (contrôle rapide après une édition)
+//   --no-tests  ne lance aucun test        --json  sortie structurée
+//
+// Un outil absent (Prettier, ESLint) est signalé « non lancé », jamais compté comme réussi.
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { measure, measureText, PROD_DIRS, TICKET_NAMED_TEST } from "./quality/metrics.mjs";
+import { compare, readBaseline } from "./quality/ratchet.mjs";
+
+const root = process.cwd();
+const args = process.argv.slice(2);
+const flag = (name) => args.includes(name);
+const fileArg = args.includes("--file") ? args[args.indexOf("--file") + 1] : null;
+const CODE = /\.(cjs|mjs|js)$/;
+const steps = [];
+const step = (name, status, detail = "") => steps.push({ name, status, detail });
+
+function run(command, commandArgs) {
+  const result = spawnSync(command, commandArgs, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  return { code: result.status ?? 1, out: (result.stdout || "") + (result.stderr || "") };
+}
+const git = (...gitArgs) => run("git", gitArgs);
+const tail = (text, lines) => text.trimEnd().split("\n").slice(-lines).join("\n");
+const bin = (name) => path.join(root, "node_modules", ".bin", name);
+
+/** Fichiers modifiés ou ajoutés par rapport à HEAD (les suppressions sont ignorées). */
+function changedFiles() {
+  const { out } = git("status", "--porcelain", "--untracked-files=all");
+  const files = [];
+  for (const line of out.split("\n")) {
+    if (!line.trim()) continue;
+    const status = line.slice(0, 2);
+    if (status.includes("D")) continue;
+    const file = line.slice(3).split(" -> ").pop().replace(/^"|"$/g, "");
+    files.push({ file, added: status.includes("?") || status.includes("A") });
+  }
+  return files;
+}
+
+function inHead(file) {
+  const result = git("show", `HEAD:${file}`);
+  return result.code === 0 ? result.out : null;
+}
+
+/** Règles par fichier : comparent le fichier à sa version de HEAD, pour ne juger que ce qui a été ajouté. */
+function fileRules(files) {
+  const problems = [];
+  for (const { file, added } of files) {
+    if (!CODE.test(file) || !fs.existsSync(path.join(root, file))) continue;
+    const name = path.basename(file);
+    if (added && file.startsWith("tests/") && /\.test\./.test(name) && TICKET_NAMED_TEST.test(name))
+      problems.push(`${file} : un fichier de test porte le nom du comportement testé, pas celui d'un ticket ou d'une revue.`);
+    const before = measureText(inHead(file) ?? "");
+    const now = measureText(fs.readFileSync(path.join(root, file), "utf8"));
+    if (now.lignes_longues > before.lignes_longues)
+      problems.push(`${file} : ${now.lignes_longues - before.lignes_longues} ligne(s) de plus de 160 caractères ajoutée(s). Une instruction par ligne.`);
+    const prod = PROD_DIRS.some((dir) => file.startsWith(dir + "/"));
+    if (prod && now.catch_vides > before.catch_vides)
+      problems.push(`${file} : catch vide ajouté. Traiter l'erreur, ou la laisser passer avec un commentaire qui dit pourquoi.`);
+  }
+  step("règles par fichier", problems.length ? "ko" : "ok", problems.join("\n"));
+}
+
+function format(files) {
+  if (!fs.existsSync(bin("prettier"))) return step("format", "skip", "Prettier n'est pas installé");
+  const targets = files ? files.filter((f) => fs.existsSync(path.join(root, f))) : ["."];
+  if (!targets.length) return step("format", "ok");
+  const result = run(bin("prettier"), ["--check", "--ignore-unknown", ...targets]);
+  step("format", result.code === 0 ? "ok" : "ko", result.code === 0 ? "" : tail(result.out, 20));
+}
+
+function lint(files) {
+  const configured = ["eslint.config.mjs", "eslint.config.js", "eslint.config.cjs"].some((f) => fs.existsSync(path.join(root, f)));
+  if (!fs.existsSync(bin("eslint")) || !configured) return step("lint", "skip", "ESLint n'est pas installé ou pas configuré");
+  const targets = files ? files.filter((f) => CODE.test(f) && fs.existsSync(path.join(root, f))) : ["."];
+  if (!targets.length) return step("lint", "ok");
+  const result = run(bin("eslint"), targets);
+  step("lint", result.code === 0 ? "ok" : "ko", result.code === 0 ? "" : tail(result.out, 30));
+}
+
+function ratchet() {
+  const baseline = readBaseline(root);
+  if (!baseline) return step("cliquet", "skip", "aucun plancher (node scripts/quality/ratchet.mjs --init)");
+  const { regressions, improvements } = compare(baseline, measure(root));
+  const line = ({ key, before, now }) => `${key} : ${before} → ${now}`;
+  if (regressions.length) return step("cliquet", "ko", "Mesures dégradées :\n" + regressions.map(line).join("\n"));
+  step("cliquet", "ok", improvements.length ? "Mesures améliorées : " + improvements.map(line).join(", ") : "");
+}
+
+function jsTests(files) {
+  const all = fs.existsSync(path.join(root, "tests"))
+    ? fs.readdirSync(path.join(root, "tests")).filter((f) => f.endsWith(".test.cjs")).map((f) => "tests/" + f)
+    : [];
+  const targets = files ? all.filter((f) => files.includes(f)) : all;
+  if (!targets.length) return step("tests JS", files ? "ok" : "skip", files ? "" : "aucun test");
+  // Séquentiel : sous charge, les fichiers lancés en parallèle se perturbent (échecs intermittents déjà observés).
+  const result = run(process.execPath, ["--test", "--test-concurrency=1", ...targets]);
+  const summary = result.out.split("\n").filter((l) => /^ℹ (tests|pass|fail)|^✖/.test(l)).slice(0, 40).join("\n");
+  step(`tests JS (${targets.length} fichier(s))`, result.code === 0 ? "ok" : "ko", summary);
+}
+
+function pythonTests() {
+  const has = fs.existsSync(path.join(root, "tests")) && fs.readdirSync(path.join(root, "tests")).some((f) => /^test_.*\.py$/.test(f));
+  if (!has) return step("tests Python", "skip", "aucun test");
+  const result = run("python3", ["-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"]);
+  step("tests Python", result.code === 0 ? "ok" : "ko", tail(result.out, result.code === 0 ? 3 : 25));
+}
+
+if (!fs.existsSync(path.join(root, "package.json"))) {
+  console.error("check : à lancer depuis la racine du projet.");
+  process.exit(2);
+}
+
+if (fileArg) {
+  const file = path.relative(root, path.resolve(root, fileArg)).split(path.sep).join("/");
+  if (!file.startsWith("..")) {
+    const added = git("ls-files", "--error-unmatch", file).code !== 0;
+    fileRules([{ file, added }]);
+    format([file]);
+    lint([file]);
+  }
+} else {
+  const changed = flag("--changed") ? changedFiles() : null;
+  const names = changed ? changed.map((c) => c.file) : null;
+  fileRules(changed ?? changedFiles());
+  format(names);
+  lint(names);
+  ratchet();
+  if (!flag("--no-tests")) {
+    jsTests(names);
+    if (!changed) pythonTests();
+  }
+}
+
+const ok = steps.every((s) => s.status !== "ko");
+if (flag("--json")) {
+  console.log(JSON.stringify({ ok, steps }, null, 2));
+} else {
+  const mark = { ok: "✔", ko: "✖", skip: "–" };
+  for (const s of steps) {
+    console.log(`${mark[s.status]} ${s.name}${s.status === "skip" ? " : non lancé (" + s.detail + ")" : ""}`);
+    if (s.status !== "skip" && s.detail) console.log(s.detail.split("\n").map((l) => "    " + l).join("\n"));
+  }
+  console.log(ok ? "check : vert" : "check : ROUGE");
+}
+process.exit(ok ? 0 : 1);

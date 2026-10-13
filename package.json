@@ -24,7 +24,9 @@
     "setup:speech": "node scripts/setup-speech.mjs",
     "test:codex:speed": "node scripts/probe-codex-speed.cjs",
     "screenshots:live": "node scripts/capture-showcase.mjs",
-    "start:server": "node server/main.cjs"
+    "start:server": "node server/main.cjs",
+    "check": "node scripts/check.mjs",
+    "loop": "node scripts/loop/run.mjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

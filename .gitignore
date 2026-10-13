@@ -39,3 +39,6 @@ auth.json
 auth.txt
 device-token
 *.ovpn
+
+# État local de la boucle de tickets et des hooks (verdicts, rapports d'échec, journal d'événements).
+.harness-state/
