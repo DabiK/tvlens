@@ -1,7 +1,7 @@
 ---
 id: T002
 titre: Refuse a ticket whose final change differs from the one its reviewer read
-statut: a-faire
+statut: termine
 bloque_par: T001
 adr: non
 installe: non
@@ -91,3 +91,90 @@ du propriétaire avant le premier lancement. Si le contrôle ne peut pas disting
 du reste sans modifier un hook ou `scripts/check.mjs` : verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+### Exploration
+
+Rapport : `.harness-state/tickets/T002/exploration.md`. Aucun écart qui change le périmètre.
+- Les lignes citées ont bougé (`gates` à `run.mjs:239`, `processTicket` à `:290`) ; la comparaison se place dans
+  `gates`, juste avant `check.mjs`, dans un nouveau module de `scripts/loop/` copié aussi dans le dépôt de test.
+- Aucun hook à modifier : `node scripts/loop/….mjs` passe `guard-bash`, `.harness-state/` est ignoré par Git.
+- La skill écrit l'ADR après la relecture : elle sera réordonnée (ADR avant la relecture finale).
+- Les non suivis d'avant la session ne sont connus que de la boucle : elle les écrira dans le dossier d'état
+  pour que la fonction unique les exclue des deux côtés.
+- Le plancher `cas_de_test` est resserré par la boucle elle-même ; la session n'y touche pas.
+
+### Implémentation (tour 1)
+
+- Nouveau module `scripts/loop/reviewed-state.mjs` : une seule fonction calcule l'état relu (empreinte par
+  fichier, fichier du ticket et non suivis d'avant la session exclus). La commande
+  `node scripts/loop/reviewed-state.mjs record` écrit `revue-<n>.diff`, `revue-<n>.fichiers` et
+  `reviewed-state.json`.
+- `run.mjs` écrit `untracked-before.json` au début du ticket ; `gates` compare juste avant `check.mjs`.
+- La fausse session enregistre une relecture dans tous les scénarios TERMINÉ ; 6 tests ajoutés.
+- `node --test tests/ticket-loop.test.cjs` : 26/26. Rouge vu avant d'ajouter le contrôle : 3 échecs.
+- `node scripts/check.mjs --changed` : vert. `node scripts/check.mjs` dans cette session : rouge, 2 échecs
+  dans `tests/agent-guards.test.cjs`, fichier non modifié. Reproduit : `node --test tests/agent-guards.test.cjs`
+  donne 14/16 avec `TVLENS_HARNESS=1` hérité de la session, et 16/16 avec `env -u TVLENS_HARNESS`. Défaut
+  d'isolation du test, antérieur au ticket et hors de son périmètre.
+
+### Relecture (tour 1)
+
+État relu enregistré avec `node scripts/loop/reviewed-state.mjs record --ticket T002`, après avoir écrit
+`untracked-before.json` à la main avec les 9 fichiers non suivis d'avant la session (`experiments/`,
+`design/continuous-context/`) : la boucle déjà chargée ne l'écrit pas pour ce ticket. Verdict : à corriger.
+- Bloquant : aucun test ne protège l'exclusion des non suivis d'avant la session (remplacer la liste par `[]`
+  laisse tout vert).
+- Mineurs retenus : les chemins non ASCII sont lus différemment des deux côtés ; un fichier d'état
+  illisible fait planter la boucle au lieu de la faire refuser ; un test lit le format interne de
+  `reviewed-state.json`.
+- Signalé au propriétaire, non corrigé : la boucle vérifie qu'une relecture est enregistrée, pas qu'elle a été
+  acceptée.
+
+### Correction (tour 2)
+
+- Nouveau test par la boucle : un fichier non suivi avant la boucle et modifié après la relecture reste hors de
+  la relecture et du commit, joué avec `notes/personal.md` et `notes/café.md`. Rouge vu avec la liste
+  remplacée par `[]` : 2 échecs.
+- La liste des non suivis d'avant la session est lue avec le même lecteur `git status -z` que l'état relu.
+  Rouge vu avant ce changement : le cas `café.md` était refusé.
+- Un `reviewed-state.json` ou un `untracked-before.json` illisible donne un refus avec rapport (`echec-<n>.txt`,
+  puis `bloque`), et non plus un plantage. Rouge vu avant : code 1, sans rapport.
+- Le test de la commande ne lit plus le format interne de `reviewed-state.json`.
+- `node --test tests/ticket-loop.test.cjs` : 31/31.
+
+### Relecture (tour 2)
+
+`node scripts/loop/reviewed-state.mjs record --ticket T002` → `revue-2.diff`. Verdict : accepté. Mineurs
+non corrigés, laissés au propriétaire :
+- La boucle relit sur disque `untracked-before.json`, que la session pourrait réécrire, alors qu'elle garde la
+  liste en mémoire. Une session qui falsifierait ce fichier y glisserait un fichier non relu. Cela reste
+  dans la limite des garde-fous, qui rattrapent l'erreur et non la malveillance, comme un `record` relancé
+  sans relecteur.
+- `run.mjs` garde une deuxième lecture de `git status`, sans `-z`, pour `gates` et `integrate`.
+- La boucle vérifie qu'une relecture est enregistrée, pas qu'elle a été acceptée.
+
+### Contrôle final
+
+Aucune modification hors de ce journal depuis `revue-2` : `unreviewedChange` sur l'arbre de travail répond
+« identique ».
+- `node scripts/check.mjs --changed` : vert, 31/31, `cas_de_test` 617 → 627.
+- `node scripts/check.mjs` dans la session (`TVLENS_HARNESS=1` hérité) : ROUGE, 656/658. Les 2 échecs sont dans
+  `tests/agent-guards.test.cjs`, fichier non modifié, comme au tour 1.
+- `env -u TVLENS_HARNESS node scripts/check.mjs`, environnement de `gates` dans la boucle : vert, JS 658/658,
+  Python 84 OK (1 sauté). Format et lint non lancés : outils non installés.
+
+Critère 6, sortie de `grep` :
+
+```
+$ grep -n "reviewed-state.mjs record\|toute modification autre que le journal" .claude/skills/ticket/SKILL.md
+44:node scripts/loop/reviewed-state.mjs record      # hors boucle : ajouter --ticket <ID>
+52:Après une relecture, toute modification autre que le journal du ticket demande une nouvelle relecture,
+$ grep -n -i "relecture" docs/travail/README.md
+82:   - une relecture est enregistrée, et l'état final du dépôt est celui que le dernier relecteur a lu,
+107:de test ont été supprimés », « Le ticket demande un ADR et aucun n'a été ajouté », « Aucune relecture
+108:n'est enregistrée », « Aucune relecture lisible n'est enregistrée » (`reviewed-state.json` abîmé),
+110:la boucle, abîmé), « Le changement a été modifié depuis la dernière relecture » suivi des fichiers
+123:| `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
+124:| `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
+191:relecture, journal du ticket mis à part, fait refuser le ticket.
+```

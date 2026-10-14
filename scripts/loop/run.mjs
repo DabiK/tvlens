@@ -17,6 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { measure } from "../quality/metrics.mjs";
 import { readBaseline, tighten, writeBaseline } from "../quality/ratchet.mjs";
+import { ticketDir, unreviewedChange, untrackedPaths, writeUntrackedBefore } from "./reviewed-state.mjs";
 import { describe, list, next, setStatus, spec, validate } from "./tickets.mjs";
 
 const root = process.cwd();
@@ -103,7 +104,8 @@ function preflight() {
     }
     fs.writeFileSync(lockFile, String(process.pid));
   }
-  return { branch, untracked: new Set(statusEntries().flatMap((e) => e.paths)) };
+  // `untrackedBefore` est lu par `git status -z`, comme l'état relu : un nom hors ASCII y est le même des deux côtés.
+  return { branch, untracked: new Set(statusEntries().flatMap((e) => e.paths)), untrackedBefore: untrackedPaths(root) };
 }
 
 function compactions(dir) {
@@ -254,6 +256,8 @@ function gates(ticket, specBefore, untracked) {
     const added = entries.filter((e) => /[?A]/.test(e.status)).flatMap((e) => e.paths);
     if (!added.some((p) => /^docs\/adr\/\d{4}-.+\.md$/.test(p))) problems.push("Le ticket demande un ADR et aucun n'a été ajouté dans docs/adr/.");
   }
+  const unreviewed = unreviewedChange(root, ticket);
+  if (unreviewed) problems.push(unreviewed);
   const check = sh(process.execPath, ["scripts/check.mjs"]);
   if (check.code !== 0) problems.push("Le contrôle qualité complet est rouge :\n" + check.out);
   return problems;
@@ -288,8 +292,9 @@ function block(ticket, why) {
 }
 
 async function processTicket(ticket, context) {
-  const dir = path.join(stateDir, "tickets", ticket.id);
-  fs.mkdirSync(dir, { recursive: true });
+  const dir = ticketDir(root, ticket.id);
+  // La session ne connaît pas les fichiers non suivis d'avant elle : sans cette liste, ils entreraient dans l'état relu.
+  writeUntrackedBefore(dir, context.untrackedBefore);
   const file = path.join(root, ticket.file);
   const specBefore = spec(fs.readFileSync(file, "utf8"));
   fs.writeFileSync(file, setStatus(fs.readFileSync(file, "utf8"), "en-cours"));

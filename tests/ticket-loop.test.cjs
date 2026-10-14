@@ -30,29 +30,39 @@ const write = (file, text) => {
 };
 const verdict = (statut, extra = {}) => write(path.join(dir, "verdict.json"), JSON.stringify({ statut, resume: "fake", ...extra }));
 const greeting = () => write("core/greeting.cjs", "module.exports = () => 'hello';\\n");
+// Enregistre l'état relu comme le fait l'orchestrateur avant chaque relecture ; sortie capturée, hors du flux de la session.
+const review = () => {
+  const result = require("node:child_process").spawnSync(process.execPath, ["scripts/loop/reviewed-state.mjs", "record"], { encoding: "utf8" });
+  if (result.status !== 0) throw new Error("record failed: " + result.stdout + result.stderr);
+};
 const scenario = process.env.FAKE_SCENARIO;
 if (scenario === "silent") process.exit(0);
 fs.appendFileSync(process.env.TVLENS_TICKET_FILE, "- jalon : attempt " + attempt + "\\n");
 const scenarios = {
   done() {
     greeting();
+    review();
     verdict("TERMINÉ");
   },
   "long-line"() {
     write("core/greeting.cjs", "module.exports = '" + "x".repeat(200) + "';\\n");
+    review();
     verdict("TERMINÉ");
   },
   "edits-criteria"() {
     const file = process.env.TVLENS_TICKET_FILE;
     fs.writeFileSync(file, fs.readFileSync(file, "utf8").replace("says hello", "exists"));
+    review();
     verdict("TERMINÉ");
   },
   "edits-harness"() {
     fs.appendFileSync("scripts/check.mjs", "\\n// weakened\\n");
+    review();
     verdict("TERMINÉ");
   },
   "deletes-test"() {
     fs.rmSync("tests/sample.test.cjs");
+    review();
     verdict("TERMINÉ");
   },
   blocked() {
@@ -60,14 +70,17 @@ const scenarios = {
   },
   "partial-then-done"() {
     greeting();
+    review();
     verdict(attempt === 1 ? "PARTIEL" : "TERMINÉ", { reste: ["tests"] });
   },
   "with-adr"() {
     write("docs/adr/0011-greeting.md", "# 0011\\n");
+    review();
     verdict("TERMINÉ");
   },
   compacts() {
     greeting();
+    review();
     verdict("TERMINÉ");
     fs.appendFileSync(path.join(dir, "compactions.jsonl"), JSON.stringify({ trigger: "auto" }) + "\\n");
     write(path.join(dir, "fake-window"), String(process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW));
@@ -82,11 +95,52 @@ const scenarios = {
     console.log("not json");
     greeting();
     say([{ type: "tool_use", name: "Bash", input: { command: "node scripts/check.mjs --changed", description: "Run the changed-files check" } }]);
+    review();
     verdict("TERMINÉ");
     console.log(JSON.stringify({ type: "result", session_id: "s2", num_turns: 4, duration_ms: 1000, total_cost_usd: 0.1, usage: {} }));
   },
+  "changes-after-review"() {
+    greeting();
+    review();
+    write("core/greeting.cjs", "module.exports = () => 'hi';\\n");
+    verdict("TERMINÉ");
+  },
+  "done-without-review"() {
+    greeting();
+    verdict("TERMINÉ");
+  },
+  "journals-after-review"() {
+    greeting();
+    review();
+    fs.appendFileSync(process.env.TVLENS_TICKET_FILE, "- jalon : review accepted\\n");
+    verdict("TERMINÉ");
+  },
+  "edits-untracked-after-review"() {
+    greeting();
+    review();
+    for (const name of fs.readdirSync("notes")) fs.appendFileSync(path.join("notes", name), "changed after the review\\n");
+    verdict("TERMINÉ");
+  },
+  "corrupts-review"() {
+    greeting();
+    review();
+    write(path.join(dir, "reviewed-state.json"), "{ not json");
+    verdict("TERMINÉ");
+  },
+  "corrupts-untracked-list"() {
+    greeting();
+    review();
+    write(path.join(dir, "untracked-before.json"), "{ not json");
+    verdict("TERMINÉ");
+  },
+  "reviewed-then-partial"() {
+    greeting();
+    if (attempt === 1) review();
+    verdict(attempt === 1 ? "PARTIEL" : "TERMINÉ", { reste: ["check"] });
+  },
   "removes-empty-catch"() {
     write("core/legacy.cjs", "module.exports = 1;\\n");
+    review();
     verdict("TERMINÉ");
   },
 };
@@ -264,6 +318,101 @@ test("the loop shows each tool the session calls while it runs and keeps the who
   assert.equal(JSON.parse(repo.read(".harness-state/tickets/T001/session-1.json")).session_id, "s2");
 });
 
+const changedAfterReview = /modifié depuis la dernière relecture/;
+
+test("a session that changes the code after its last review is refused, retried, then blocked without any commit", (t) => {
+  const repo = loopRepo({ "core/greeting.cjs": "module.exports = () => 'hey';\n" });
+  t.after(repo.cleanup);
+  const result = repo.loop("changes-after-review", ["--attempts", "2"]);
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), changedAfterReview);
+  assert.match(repo.failure(), /core\/greeting\.cjs/);
+  assert.equal(repo.attempts(), "2");
+  assert.equal(repo.status(), "bloque");
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a session that changes a new untracked file after its last review is refused", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("changes-after-review", ["--attempts", "1"]);
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), changedAfterReview);
+  assert.match(repo.failure(), /core\/greeting\.cjs/);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a session that claims done without any recorded review is refused", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done-without-review", ["--attempts", "1"]);
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /Aucune relecture n'est enregistrée/);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a session whose final change is the one last reviewed is committed, even with a journal written after the review", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("journals-after-review");
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.commits()[0], "T001: Add the greeting");
+  assert.match(repo.git("show", "HEAD:docs/travail/tickets/001-add-greeting.md").stdout, /review accepted/);
+});
+
+test("a review recorded by an earlier attempt still counts for the next one", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("reviewed-then-partial");
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.attempts(), "2");
+  assert.equal(repo.status(), "termine");
+});
+
+for (const [what, scenario, expected] of [
+  ["reviewed state", "corrupts-review", /Aucune relecture lisible n'est enregistrée/],
+  ["list of files untracked before the session", "corrupts-untracked-list", /untracked-before\.json est illisible/],
+]) {
+  test(`a session that leaves an unreadable ${what} is refused with a report, not a crash`, (t) => {
+    const repo = loopRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop(scenario, ["--attempts", "1"]);
+    assert.equal(result.code, 2, result.out);
+    assert.match(repo.failure(), expected);
+    assert.equal(repo.status(), "bloque");
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+test("recording a review writes the diff with new files in full and the file list, numbered after the previous review", (t) => {
+  const repo = loopRepo({ "core/greeting.cjs": "module.exports = () => 'hey';\n" });
+  t.after(repo.cleanup);
+  repo.write("core/greeting.cjs", "module.exports = () => 'hello';\n");
+  repo.write("core/farewell.cjs", "module.exports = () => 'bye';\n");
+  repo.write("docs/travail/tickets/001-add-greeting.md", ticketText() + "- jalon\n");
+  const first = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(first.code, 0, first.out);
+  const dir = ".harness-state/tickets/T001/";
+  assert.deepEqual(first.stdout.trim().split("\n"), ["revue-1.diff", "revue-1.fichiers", "reviewed-state.json"].map((f) => dir + f));
+  const diff = repo.read(dir + "revue-1.diff");
+  assert.match(diff, /^-module\.exports = \(\) => 'hey';$/m);
+  assert.match(diff, /^\+module\.exports = \(\) => 'bye';$/m);
+  assert.doesNotMatch(diff, /jalon/);
+  assert.equal(repo.read(dir + "revue-1.fichiers"), " M core/greeting.cjs\n?? core/farewell.cjs\n");
+  const second = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.match(second.stdout, /revue-2\.diff/);
+});
+
+test("recording a review fails with a clear message when the list of files untracked before the session is unreadable", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  repo.write(".harness-state/tickets/T001/untracked-before.json", "{ not json");
+  const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(result.code, 2, result.out);
+  assert.match(result.out, /untracked-before\.json est illisible/);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T001/revue-1.diff")), false);
+});
+
 test("files that were already untracked before the loop are left out of the ticket commit", (t) => {
   const repo = loopRepo();
   t.after(repo.cleanup);
@@ -271,6 +420,21 @@ test("files that were already untracked before the loop are left out of the tick
   assert.equal(repo.loop("done").code, 0);
   assert.equal(repo.git("status", "--porcelain").stdout.trim(), "?? notes/");
 });
+
+for (const name of ["notes/personal.md", "notes/café.md"]) {
+  test(`a file untracked before the loop and changed after the review stays out of the review and of the commit: ${name}`, (t) => {
+    const repo = loopRepo();
+    t.after(repo.cleanup);
+    repo.write(name, "mine\n");
+    const result = repo.loop("edits-untracked-after-review", ["--attempts", "1"]);
+    assert.equal(result.code, 0, result.out);
+    assert.equal(repo.commits()[0], "T001: Add the greeting");
+    assert.doesNotMatch(repo.git("show", "--name-only", "--format=", "HEAD").stdout, /notes/);
+    assert.equal(repo.git("status", "--porcelain").stdout.trim(), "?? notes/");
+    const review = ".harness-state/tickets/T001/revue-1.";
+    assert.doesNotMatch(repo.read(review + "diff") + repo.read(review + "fichiers"), /notes|mine/);
+  });
+}
 
 test("a ticket that Git does not track is refused: its journal and status would stay out of its own commit", (t) => {
   const repo = loopRepo();

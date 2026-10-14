@@ -30,36 +30,45 @@ BLOQUÉ, avec l'écart constaté. Tu ne réécris pas le ticket et tu n'improvis
 Délègue à `implementeur` : le ticket, le rapport d'exploration, et le plan d'incréments retenu. Un seul
 implémenteur à la fois.
 
-## 4. Relire
-
-Écris le diff et la liste des fichiers dans le dossier d'état, puis délègue à un `relecteur` neuf :
-
-```sh
-git diff HEAD > .harness-state/tickets/<ID>/revue-<n>.diff
-git status --porcelain --untracked-files=all > .harness-state/tickets/<ID>/revue-<n>.fichiers
-```
-
-Les fichiers nouveaux (lignes `??`) n'apparaissent pas dans le diff : le relecteur les lit en entier.
-Donne-lui le chemin du ticket et ces deux fichiers, rien d'autre : pas ton avis, pas le compte rendu de
-l'implémenteur.
-
-## 5. Corriger, puis relire de nouveau
-
-Verdict « à corriger » : renvoie les constats bloquants à `implementeur`, puis fais relire par un
-**nouveau** `relecteur`. Trois tours au plus. Au-delà, verdict PARTIEL avec les constats restants.
-
-## 6. Laisser une trace
+## 4. Écrire l'ADR
 
 Si le ticket porte `adr: oui`, écris l'ADR dans `docs/adr/` à partir de `docs/adr/0000-gabarit.md`,
-avec le numéro suivant. Un ADR dit la décision, son contexte et ses conséquences ; l'historique des
-essais va dans le journal du ticket.
+avec le numéro suivant, avant la relecture : il en fait partie. Un ADR dit la décision, son contexte et
+ses conséquences ; l'historique des essais va dans le journal du ticket.
+
+## 5. Relire
+
+Enregistre l'état relu, puis délègue à un `relecteur` neuf :
+
+```sh
+node scripts/loop/reviewed-state.mjs record      # hors boucle : ajouter --ticket <ID>
+```
+
+La commande écrit dans le dossier d'état `revue-<n>.diff` (les fichiers suivis par rapport à `HEAD`,
+puis chaque fichier nouveau en entier), `revue-<n>.fichiers` (la liste des fichiers) et
+`reviewed-state.json`, et affiche leurs chemins. Donne au relecteur le chemin du ticket et ces deux
+fichiers `revue-<n>`, rien d'autre : pas ton avis, pas le compte rendu de l'implémenteur.
+
+Après une relecture, toute modification autre que le journal du ticket demande une nouvelle relecture,
+y compris une correction exigée à la fin par un contrôle rouge. La boucle compare l'état final à la
+dernière relecture enregistrée et refuse le ticket s'ils diffèrent, ou si aucune relecture n'est
+enregistrée.
+
+## 6. Corriger, puis relire de nouveau
+
+Verdict « à corriger » : renvoie les constats bloquants à `implementeur`, puis enregistre de nouveau
+l'état relu et fais relire par un **nouveau** `relecteur`. Trois tours au plus. Au-delà, verdict
+PARTIEL avec les constats restants.
+
+## 7. Laisser une trace
 
 Mets à jour le journal du ticket : un jalon par étape, avec la commande lancée et son résultat réel.
 Tu ne modifies rien au-dessus de la ligne `## Journal`.
 
-## 7. Conclure
+## 8. Conclure
 
-Lance `node scripts/check.mjs` en entier. Puis écris `.harness-state/tickets/<ID>/verdict.json` :
+Lance `node scripts/check.mjs` en entier. S'il est rouge, la correction repasse par l'implémenteur et
+par une nouvelle relecture (étapes 5 et 6). Puis écris `.harness-state/tickets/<ID>/verdict.json` :
 
 ```json
 { "statut": "TERMINÉ", "resume": "ce qui est livré, en deux phrases", "revue": "accepté", "adr": "docs/adr/0011-….md", "preuves": ["node scripts/check.mjs : vert, 602 tests"], "reste": [] }

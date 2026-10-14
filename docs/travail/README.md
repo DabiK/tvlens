@@ -70,7 +70,8 @@ Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six li
 
 1. Elle passe le ticket à `en-cours` et lance `claude -p` avec la consigne de suivre la skill `ticket`.
 2. La session explore (sous-agent `explorateur`), implémente (`implementeur`), fait relire
-   (`relecteur`), corrige au besoin, puis écrit son verdict dans
+   (`relecteur`) après avoir enregistré l'état relu (`node scripts/loop/reviewed-state.mjs record`),
+   corrige au besoin, puis écrit son verdict dans
    `.harness-state/tickets/<ID>/verdict.json`. Les sous-agents sont lancés au premier plan : une garde
    refuse tout lancement en arrière-plan, qui ferait finir la session avant leur rapport.
 3. Si le verdict est TERMINÉ, la boucle vérifie elle-même :
@@ -78,6 +79,8 @@ Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six li
    - le harnais n'a pas été touché, sauf ticket marqué `harnais: oui` ;
    - aucun fichier de test n'a été supprimé, sauf ticket marqué `supprime_tests: oui` ;
    - un ADR a été ajouté si le ticket porte `adr: oui` ;
+   - une relecture est enregistrée, et l'état final du dépôt est celui que le dernier relecteur a lu,
+     journal du ticket et fichiers non suivis d'avant la session mis à part ;
    - `node scripts/check.mjs` est vert en entier.
 4. Tout est bon : elle resserre le cliquet, passe le ticket à `termine`, committe
    (`<ID>: <titre>`) et pousse.
@@ -101,8 +104,11 @@ La dernière ligne de la boucle dit dans quel cas on est.
 Le rapport `echec-<n>.txt` commence par la raison, puis donne la sortie du contrôle qui a refusé.
 Les raisons possibles : « sans verdict », « PARTIELLE » avec ce qui reste, « Le ticket a été modifié
 au-dessus de son journal », « Le harnais a été modifié sans que le ticket l'autorise », « Des fichiers
-de test ont été supprimés », « Le ticket demande un ADR et aucun n'a été ajouté », « Le contrôle
-qualité complet est rouge » suivi de la sortie de `scripts/check.mjs`.
+de test ont été supprimés », « Le ticket demande un ADR et aucun n'a été ajouté », « Aucune relecture
+n'est enregistrée », « Aucune relecture lisible n'est enregistrée » (`reviewed-state.json` abîmé),
+« La liste des fichiers non suivis d'avant la session est perdue » (`untracked-before.json`, écrit par
+la boucle, abîmé), « Le changement a été modifié depuis la dernière relecture » suivi des fichiers
+concernés, « Le contrôle qualité complet est rouge » suivi de la sortie de `scripts/check.mjs`.
 
 Pour aller plus loin :
 
@@ -113,7 +119,9 @@ Pour aller plus loin :
 | `.harness-state/tickets/<ID>/verdict.json` | le verdict de la dernière session, ses preuves et ses réserves (`reste`) |
 | `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
 | `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
-| `.harness-state/tickets/<ID>/exploration.md`, `revue-<n>.diff` | le rapport d'exploration et les diffs relus |
+| `.harness-state/tickets/<ID>/exploration.md` | le rapport d'exploration |
+| `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
+| `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
 
 Un verdict TERMINÉ peut garder des réserves dans `reste` : la boucle intègre sans les afficher. Tant
 que ce point n'est pas tranché (voir le rapport de nuit), ouvrir `verdict.json` après chaque ticket.
@@ -178,7 +186,9 @@ Dans une session de ticket, les hooks de `.claude/hooks/` refusent : commit, pus
 branche, session Claude ou Codex imbriquée, `gh`, installation de dépendance non autorisée, écriture
 hors du projet, modification du harnais ou d'un autre ticket, création d'un fichier de test nommé
 d'après un chantier, sous-agent lancé en arrière-plan. Chaque fichier écrit est contrôlé aussitôt, et la
-session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur un contrôle rouge.
+session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur un contrôle rouge. La boucle
+n'intègre ensuite que le changement que le dernier relecteur a lu : une modification faite après la
+relecture, journal du ticket mis à part, fait refuser le ticket.
 
 Ce sont des garde-fous sur le texte des commandes, pas un bac à sable : ils rattrapent l'erreur, pas la
 malveillance. La décision d'intégrer reste celle de la boucle.
