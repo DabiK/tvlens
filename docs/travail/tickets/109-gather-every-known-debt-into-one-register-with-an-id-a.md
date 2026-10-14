@@ -2,7 +2,7 @@
 id: T109
 titre: Gather every known debt into one register with an id, a module and a state
 statut: a-faire
-bloque_par: T108
+bloque_par: T108, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T078
 titre: Name the context release, recap capacity and clip range tests by behaviour
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par: T057, T058, T059, T062, T063, T064, T145
 adr: non
 installe: non
 harnais: non

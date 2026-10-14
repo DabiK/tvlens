@@ -2,7 +2,7 @@
 id: T122
 titre: Decide whether an answer is backed by its evidence in one pure core function
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

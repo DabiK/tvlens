@@ -2,7 +2,7 @@
 id: T136
 titre: Let the server tell which build it runs, at start and on GET /v1/version
 statut: a-faire
-bloque_par: T038, T135
+bloque_par: T038, T135, T145
 adr: non
 installe: non
 harnais: non

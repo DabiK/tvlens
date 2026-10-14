@@ -2,7 +2,7 @@
 id: T102
 titre: Move the installed TV remote and the ipk builder out of prototypes
 statut: a-faire
-bloque_par: T005, T006, T008, T010, T011, T013, T014, T028
+bloque_par: T005, T006, T008, T010, T011, T013, T014, T028, T145
 adr: non
 installe: non
 harnais: oui

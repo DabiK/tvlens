@@ -2,7 +2,7 @@
 id: T050
 titre: Retry a failed surveillance registry read with a bounded backoff
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

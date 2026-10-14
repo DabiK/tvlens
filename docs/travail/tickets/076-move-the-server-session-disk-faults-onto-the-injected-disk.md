@@ -2,7 +2,7 @@
 id: T076
 titre: Move the server-session disk faults onto the injected disk double
 statut: a-faire
-bloque_par: T075
+bloque_par: T075, T145
 adr: non
 installe: non
 harnais: non

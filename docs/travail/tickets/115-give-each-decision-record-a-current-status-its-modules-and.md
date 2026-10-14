@@ -2,7 +2,7 @@
 id: T115
 titre: Give each decision record a current status, its modules and its guarding tests
 statut: a-faire
-bloque_par: T078, T079, T080, T081, T082, T086, T111
+bloque_par: T078, T079, T080, T081, T082, T086, T111, T145
 adr: non
 installe: non
 harnais: non

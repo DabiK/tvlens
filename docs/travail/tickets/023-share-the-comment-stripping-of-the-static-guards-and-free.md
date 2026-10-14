@@ -2,7 +2,7 @@
 id: T023
 titre: Share the comment stripping of the static guards and free one from quote style
 statut: a-faire
-bloque_par: T015
+bloque_par: T015, T145
 adr: non
 installe: non
 harnais: non

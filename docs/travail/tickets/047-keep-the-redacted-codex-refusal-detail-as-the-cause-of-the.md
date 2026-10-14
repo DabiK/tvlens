@@ -2,7 +2,7 @@
 id: T047
 titre: Keep the redacted Codex refusal detail as the cause of the fixed message
 statut: a-faire
-bloque_par: T046
+bloque_par: T046, T145
 adr: non
 installe: non
 harnais: non

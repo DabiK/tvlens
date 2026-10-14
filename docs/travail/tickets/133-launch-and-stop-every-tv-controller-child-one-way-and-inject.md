@@ -2,7 +2,7 @@
 id: T133
 titre: Launch and stop every TV controller child one way and inject the layout root
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

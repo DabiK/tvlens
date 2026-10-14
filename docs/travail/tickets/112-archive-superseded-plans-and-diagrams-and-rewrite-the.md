@@ -2,7 +2,7 @@
 id: T112
 titre: Archive superseded plans and diagrams, and rewrite the roadmap from what is open
 statut: a-faire
-bloque_par: T109
+bloque_par: T109, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T140
 titre: State what runs on the test TV and the server in one place
 statut: a-faire
-bloque_par: T108
+bloque_par: T108, T145
 adr: non
 installe: non
 harnais: non

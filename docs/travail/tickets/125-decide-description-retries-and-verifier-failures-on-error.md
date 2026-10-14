@@ -2,7 +2,7 @@
 id: T125
 titre: Decide description retries and verifier failures on error codes, not wording
 statut: a-faire
-bloque_par: T124
+bloque_par: T124, T145
 adr: oui
 installe: non
 harnais: non

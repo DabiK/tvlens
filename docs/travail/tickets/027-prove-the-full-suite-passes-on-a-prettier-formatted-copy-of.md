@@ -2,7 +2,7 @@
 id: T027
 titre: Prove the full suite passes on a Prettier-formatted copy of the tree
 statut: a-faire
-bloque_par: T016, T017, T018, T019, T020, T021, T022, T024, T025, T026
+bloque_par: T016, T017, T018, T019, T020, T021, T022, T024, T025, T026, T145
 adr: non
 installe: non
 harnais: non

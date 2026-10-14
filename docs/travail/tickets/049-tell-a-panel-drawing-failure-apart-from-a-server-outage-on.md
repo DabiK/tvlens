@@ -2,7 +2,7 @@
 id: T049
 titre: Tell a panel drawing failure apart from a server outage on the TV
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

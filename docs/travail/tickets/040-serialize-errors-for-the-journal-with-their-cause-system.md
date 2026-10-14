@@ -2,7 +2,7 @@
 id: T040
 titre: Serialize errors for the journal with their cause, system code and a short stack
 statut: a-faire
-bloque_par: T036
+bloque_par: T036, T145
 adr: non
 installe: non
 harnais: non

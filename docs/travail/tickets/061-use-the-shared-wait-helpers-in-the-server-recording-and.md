@@ -2,7 +2,7 @@
 id: T061
 titre: Use the shared wait helpers in the server, recording and Codex client tests
 statut: a-faire
-bloque_par: T055
+bloque_par: T055, T145
 adr: non
 installe: non
 harnais: non

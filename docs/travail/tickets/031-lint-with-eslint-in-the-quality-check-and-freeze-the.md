@@ -2,7 +2,7 @@
 id: T031
 titre: Lint with ESLint in the quality check and freeze the existing violations
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: oui
 installe: oui
 harnais: oui

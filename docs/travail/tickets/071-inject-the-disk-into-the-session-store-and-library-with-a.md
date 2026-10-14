@@ -2,7 +2,7 @@
 id: T071
 titre: Inject the disk into the session store and library with a fault double
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par: T057, T058, T059, T062, T063, T064, T145
 adr: oui
 installe: non
 harnais: non

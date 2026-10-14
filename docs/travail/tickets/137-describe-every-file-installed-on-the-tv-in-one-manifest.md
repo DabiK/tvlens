@@ -2,7 +2,7 @@
 id: T137
 titre: Describe every file installed on the TV in one manifest checked against the code
 statut: a-faire
-bloque_par: T100, T101, T103, T106
+bloque_par: T100, T101, T103, T106, T145
 adr: oui
 installe: non
 harnais: non

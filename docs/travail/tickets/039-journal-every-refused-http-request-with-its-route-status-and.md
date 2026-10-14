@@ -2,7 +2,7 @@
 id: T039
 titre: Journal every refused HTTP request with its route, status and block identity
 statut: a-faire
-bloque_par: T036
+bloque_par: T036, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T113
 titre: Archive the night mission briefs once their open items are in the register
 statut: a-faire
-bloque_par: T110, T112
+bloque_par: T110, T112, T145
 adr: non
 installe: non
 harnais: non

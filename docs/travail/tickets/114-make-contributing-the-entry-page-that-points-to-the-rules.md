@@ -2,7 +2,7 @@
 id: T114
 titre: Make CONTRIBUTING the entry page that points to the rules and the one check
 statut: a-faire
-bloque_par: T100, T101, T103, T106, T109, T110
+bloque_par: T100, T101, T103, T106, T109, T110, T145
 adr: non
 installe: non
 harnais: non

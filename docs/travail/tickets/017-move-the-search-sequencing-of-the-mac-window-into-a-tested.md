@@ -2,7 +2,7 @@
 id: T017
 titre: Move the search sequencing of the Mac window into a tested controller
 statut: a-faire
-bloque_par: T015
+bloque_par: T015, T145
 adr: non
 installe: non
 harnais: non

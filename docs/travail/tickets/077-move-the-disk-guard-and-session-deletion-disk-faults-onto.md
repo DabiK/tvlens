@@ -2,7 +2,7 @@
 id: T077
 titre: Move the disk-guard and session-deletion disk faults onto the injected disk
 statut: a-faire
-bloque_par: T071
+bloque_par: T071, T145
 adr: non
 installe: non
 harnais: non

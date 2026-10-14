@@ -2,7 +2,7 @@
 id: T103
 titre: Move the TV remote Python tests into tests and run them in one discovery
 statut: a-faire
-bloque_par: T102
+bloque_par: T102, T145
 adr: non
 installe: non
 harnais: oui

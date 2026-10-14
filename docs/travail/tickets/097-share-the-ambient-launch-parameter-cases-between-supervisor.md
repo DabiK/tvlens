@@ -2,7 +2,7 @@
 id: T097
 titre: Share the ambient launch parameter cases between supervisor and page tests
 statut: a-faire
-bloque_par: T096
+bloque_par: T096, T145
 adr: non
 installe: non
 harnais: non

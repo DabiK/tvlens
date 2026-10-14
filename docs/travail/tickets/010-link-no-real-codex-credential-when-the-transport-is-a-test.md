@@ -2,7 +2,7 @@
 id: T010
 titre: Link no real Codex credential when the transport is a test double
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

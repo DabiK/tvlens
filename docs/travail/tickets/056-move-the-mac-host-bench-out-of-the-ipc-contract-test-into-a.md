@@ -2,7 +2,7 @@
 id: T056
 titre: Move the Mac host bench out of the IPC contract test into a shared helper
 statut: a-faire
-bloque_par: T055
+bloque_par: T055, T145
 adr: non
 installe: non
 harnais: non

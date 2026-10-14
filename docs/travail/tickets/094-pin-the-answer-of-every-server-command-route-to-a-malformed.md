@@ -2,7 +2,7 @@
 id: T094
 titre: Pin the answer of every server command route to a malformed request
 statut: a-faire
-bloque_par: T047, T048, T049, T050, T052, T054, T065
+bloque_par: T047, T048, T049, T050, T052, T054, T065, T145
 adr: non
 installe: non
 harnais: non

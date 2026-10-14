@@ -2,7 +2,7 @@
 id: T042
 titre: Pin the status and code of every block refusal the TV capture reads
 statut: a-faire
-bloque_par: T038
+bloque_par: T038, T145
 adr: non
 installe: non
 harnais: non

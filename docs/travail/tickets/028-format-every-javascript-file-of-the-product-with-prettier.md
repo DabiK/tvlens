@@ -2,7 +2,7 @@
 id: T028
 titre: Format every JavaScript file of the product with Prettier
 statut: a-faire
-bloque_par: T027
+bloque_par: T027, T145
 adr: non
 installe: non
 harnais: non

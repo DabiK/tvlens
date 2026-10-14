@@ -2,7 +2,7 @@
 id: T055
 titre: Share the wait helpers of the tests and make every bounded wait fail aloud
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

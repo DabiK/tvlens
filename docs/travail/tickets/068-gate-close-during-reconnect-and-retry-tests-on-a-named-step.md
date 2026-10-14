@@ -2,7 +2,7 @@
 id: T068
 titre: Gate close-during-reconnect and retry tests on a named step, not a count
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par: T057, T058, T059, T062, T063, T064, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T090
 titre: Test the settings, archive, decoder and language modules directly
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T033
 titre: Remove the unused variables that ESLint reports
 statut: a-faire
-bloque_par: T032
+bloque_par: T032, T145
 adr: non
 installe: non
 harnais: non

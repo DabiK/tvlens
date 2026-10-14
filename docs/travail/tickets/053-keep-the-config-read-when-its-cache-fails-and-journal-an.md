@@ -2,7 +2,7 @@
 id: T053
 titre: Keep the config read when its cache fails and journal an unreadable cache
 statut: a-faire
-bloque_par: T028, T036
+bloque_par: T028, T036, T145
 adr: non
 installe: non
 harnais: non

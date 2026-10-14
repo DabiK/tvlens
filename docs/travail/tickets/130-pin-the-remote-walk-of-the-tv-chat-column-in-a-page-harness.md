@@ -2,7 +2,7 @@
 id: T130
 titre: Pin the remote walk of the TV chat column in a page harness without a browser
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

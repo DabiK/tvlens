@@ -2,7 +2,7 @@
 id: T026
 titre: Install Prettier with default settings and a staged ignore list
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: oui
 installe: oui
 harnais: non

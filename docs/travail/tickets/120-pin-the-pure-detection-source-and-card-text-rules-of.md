@@ -2,7 +2,7 @@
 id: T120
 titre: Pin the pure detection, source and card text rules of surveillance in tests
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

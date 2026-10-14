@@ -2,7 +2,7 @@
 id: T106
 titre: Inventory every entry of the scripts folder and keep the table in sync
 statut: a-faire
-bloque_par: T040, T041, T043, T044, T045, T098, T099, T105
+bloque_par: T040, T041, T043, T044, T045, T098, T099, T105, T145
 adr: non
 installe: non
 harnais: non

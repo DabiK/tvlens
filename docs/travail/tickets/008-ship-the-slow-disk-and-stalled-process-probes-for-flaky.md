@@ -2,7 +2,7 @@
 id: T008
 titre: Ship the slow-disk and stalled-process probes for flaky tests
 statut: a-faire
-bloque_par: T007
+bloque_par: T007, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T014
 titre: Run every Python test from npm test and from the quality check
 statut: a-faire
-bloque_par: T009, T012
+bloque_par: T009, T012, T145
 adr: non
 installe: non
 harnais: oui

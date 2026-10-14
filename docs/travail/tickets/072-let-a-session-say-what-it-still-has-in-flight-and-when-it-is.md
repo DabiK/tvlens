@@ -2,7 +2,7 @@
 id: T072
 titre: Let a session say what it still has in flight and when it is at rest
 statut: a-faire
-bloque_par: T071
+bloque_par: T071, T145
 adr: oui
 installe: non
 harnais: non

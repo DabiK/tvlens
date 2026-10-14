@@ -2,7 +2,7 @@
 id: T095
 titre: Prove that two overlapping session transitions settle on both hosts
 statut: a-faire
-bloque_par: T078, T079, T080, T081, T082, T086
+bloque_par: T078, T079, T080, T081, T082, T086, T145
 adr: non
 installe: non
 harnais: non

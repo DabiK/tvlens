@@ -2,7 +2,7 @@
 id: T105
 titre: Build both TV packages from a file manifest with one npm command
 statut: a-faire
-bloque_par: T104
+bloque_par: T104, T145
 adr: non
 installe: non
 harnais: non

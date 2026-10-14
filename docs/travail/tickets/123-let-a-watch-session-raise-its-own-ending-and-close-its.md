@@ -2,7 +2,7 @@
 id: T123
 titre: Let a watch session raise its own ending and close its intake
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

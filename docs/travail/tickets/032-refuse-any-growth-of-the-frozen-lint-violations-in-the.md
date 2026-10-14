@@ -2,7 +2,7 @@
 id: T032
 titre: Refuse any growth of the frozen lint violations in the quality check
 statut: a-faire
-bloque_par: T031
+bloque_par: T031, T145
 adr: non
 installe: non
 harnais: oui

@@ -2,7 +2,7 @@
 id: T020
 titre: Prove on the Mac bench that a question leaves a manual verification running
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T043
 titre: Name the surveillance registry version and report an unknown one when reopened
 statut: a-faire
-bloque_par: T037, T038
+bloque_par: T037, T038, T145
 adr: non
 installe: non
 harnais: non

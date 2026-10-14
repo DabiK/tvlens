@@ -2,7 +2,7 @@
 id: T087
 titre: Pin the tool and question limits of the core with boundary tests
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T069
 titre: Order abandoned-run and held-write tests by a signal instead of a delay
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par: T057, T058, T059, T062, T063, T064, T145
 adr: non
 installe: non
 harnais: non

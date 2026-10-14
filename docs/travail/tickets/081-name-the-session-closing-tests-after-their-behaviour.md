@@ -2,7 +2,7 @@
 id: T081
 titre: Name the session closing tests after their behaviour
 statut: a-faire
-bloque_par: T067, T068, T069, T070, T074, T076, T077
+bloque_par: T067, T068, T069, T070, T074, T076, T077, T145
 adr: non
 installe: non
 harnais: non

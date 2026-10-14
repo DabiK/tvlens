@@ -2,7 +2,7 @@
 id: T012
 titre: Run npm test and the quality check through the test launcher
 statut: a-faire
-bloque_par: T007
+bloque_par: T007, T145
 adr: non
 installe: non
 harnais: oui

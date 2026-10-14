@@ -2,7 +2,7 @@
 id: T110
 titre: Keep the product decisions and invariants in one reference page
 statut: a-faire
-bloque_par: T108
+bloque_par: T108, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T057
 titre: Launch the Mac host from the shared bench in the two remaining test files
 statut: a-faire
-bloque_par: T056
+bloque_par: T056, T145
 adr: non
 installe: non
 harnais: non

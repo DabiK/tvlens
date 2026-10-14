@@ -2,7 +2,7 @@
 id: T062
 titre: Leave no private copy of a wait helper in the test files
 statut: a-faire
-bloque_par: T056, T060, T061
+bloque_par: T056, T060, T061, T145
 adr: non
 installe: non
 harnais: non

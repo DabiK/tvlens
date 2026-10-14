@@ -2,7 +2,7 @@
 id: T041
 titre: Journal the start, the stop and the last-resort failure of the server host
 statut: a-faire
-bloque_par: T039
+bloque_par: T039, T145
 adr: non
 installe: non
 harnais: non

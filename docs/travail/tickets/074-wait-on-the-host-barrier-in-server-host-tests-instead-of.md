@@ -2,7 +2,7 @@
 id: T074
 titre: Wait on the host barrier in server-host tests instead of polling its state
 statut: a-faire
-bloque_par: T073
+bloque_par: T073, T145
 adr: non
 installe: non
 harnais: non

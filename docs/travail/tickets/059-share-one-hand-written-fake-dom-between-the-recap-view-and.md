@@ -2,7 +2,7 @@
 id: T059
 titre: Share one hand-written fake DOM between the recap view and overlay card tests
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

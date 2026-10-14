@@ -2,7 +2,7 @@
 id: T126
 titre: Keep the key of a cited page in one pure core module
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

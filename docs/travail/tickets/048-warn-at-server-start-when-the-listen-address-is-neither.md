@@ -2,7 +2,7 @@
 id: T048
 titre: Warn at server start when the listen address is neither loopback nor Tailscale
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T084
 titre: Move the moment index regression tests next to the index tests
 statut: a-faire
-bloque_par: T005, T006, T008, T010, T011, T013, T014, T040, T041, T043, T044, T045, T067, T068, T069, T070, T074, T076, T077, T083
+bloque_par: T005, T006, T008, T010, T011, T013, T014, T040, T041, T043, T044, T045, T067, T068, T069, T070, T074, T076, T077, T083, T145
 adr: non
 installe: non
 harnais: non

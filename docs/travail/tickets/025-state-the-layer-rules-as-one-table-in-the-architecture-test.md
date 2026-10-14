@@ -2,7 +2,7 @@
 id: T025
 titre: State the layer rules as one table in the architecture test
 statut: a-faire
-bloque_par: T023
+bloque_par: T023, T145
 adr: non
 installe: non
 harnais: non

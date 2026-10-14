@@ -2,7 +2,7 @@
 id: T065
 titre: Stop the Mac launch when the given config file cannot be read
 statut: a-faire
-bloque_par: T053, T057, T058, T059, T062, T063, T064
+bloque_par: T053, T057, T058, T059, T062, T063, T064, T145
 adr: non
 installe: non
 harnais: non

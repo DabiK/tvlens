@@ -2,7 +2,7 @@
 id: T124
 titre: Put a stable code on every Codex and local vision error a retry reads
 statut: a-faire
-bloque_par: T028, T038
+bloque_par: T028, T038, T145
 adr: non
 installe: non
 harnais: non

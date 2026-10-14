@@ -2,7 +2,7 @@
 id: T036
 titre: Add a journal port with a stderr sink and a contract test
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: oui
 installe: non
 harnais: non

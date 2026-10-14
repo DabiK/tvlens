@@ -2,7 +2,7 @@
 id: T100
 titre: Remove dead exports and move the temporal target out of the session module
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

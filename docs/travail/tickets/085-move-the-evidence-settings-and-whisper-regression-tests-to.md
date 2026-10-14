@@ -2,7 +2,7 @@
 id: T085
 titre: Move the evidence, settings and Whisper regression tests to behaviour files
 statut: a-faire
-bloque_par: T084
+bloque_par: T084, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T019
 titre: Declare the IPC channels of the Mac host once and check them at runtime
 statut: a-faire
-bloque_par: T015
+bloque_par: T015, T145
 adr: non
 installe: non
 harnais: non

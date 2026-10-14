@@ -2,7 +2,7 @@
 id: T075
 titre: Move the durable-session disk faults onto the injected disk double
 statut: a-faire
-bloque_par: T071
+bloque_par: T071, T145
 adr: non
 installe: non
 harnais: non

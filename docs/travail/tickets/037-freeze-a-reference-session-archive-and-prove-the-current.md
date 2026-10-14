@@ -2,7 +2,7 @@
 id: T037
 titre: Freeze a reference session archive and prove the current code reads it
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T079
 titre: Name the description retry tests after their behaviour
 statut: a-faire
-bloque_par: T005, T006, T008, T010, T011, T013, T014, T047, T048, T049, T050, T052, T054, T065, T067, T068, T069, T070, T074, T076, T077
+bloque_par: T005, T006, T008, T010, T011, T013, T014, T047, T048, T049, T050, T052, T054, T065, T067, T068, T069, T070, T074, T076, T077, T145
 adr: non
 installe: non
 harnais: non

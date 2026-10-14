@@ -2,7 +2,7 @@
 id: T013
 titre: Give each test file a private temp directory and report what it leaves
 statut: a-faire
-bloque_par: T012
+bloque_par: T012, T145
 adr: non
 installe: non
 harnais: oui

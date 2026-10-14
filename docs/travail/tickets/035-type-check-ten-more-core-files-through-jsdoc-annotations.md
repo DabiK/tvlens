@@ -2,7 +2,7 @@
 id: T035
 titre: Type-check ten more core files through JSDoc annotations
 statut: a-faire
-bloque_par: T034
+bloque_par: T034, T145
 adr: non
 installe: non
 harnais: non

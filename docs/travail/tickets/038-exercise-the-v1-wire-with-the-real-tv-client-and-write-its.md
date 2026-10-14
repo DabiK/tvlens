@@ -2,7 +2,7 @@
 id: T038
 titre: Exercise the /v1 wire with the real TV client and write its compatibility rule
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: oui
 installe: non
 harnais: non

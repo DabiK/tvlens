@@ -2,7 +2,7 @@
 id: T029
 titre: Ignore the formatting commit in blame and pin line endings
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

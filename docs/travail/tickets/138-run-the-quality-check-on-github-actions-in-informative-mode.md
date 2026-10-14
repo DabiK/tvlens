@@ -2,7 +2,7 @@
 id: T138
 titre: Run the quality check on GitHub Actions in informative mode
 statut: a-faire
-bloque_par: T031
+bloque_par: T031, T145
 adr: non
 installe: non
 harnais: non

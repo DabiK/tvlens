@@ -2,7 +2,7 @@
 id: T034
 titre: Add a type-check step and a typed-files measure to the quality check
 statut: a-faire
-bloque_par: T032
+bloque_par: T032, T145
 adr: oui
 installe: oui
 harnais: oui

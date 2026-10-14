@@ -2,7 +2,7 @@
 id: T116
 titre: Pin the question flag, warm-up and active instruction of the Mac host in tests
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par:
 adr: non
 installe: non
 harnais: non
@@ -53,14 +53,14 @@ aujourd'hui. Le code de production ne change pas.
     ligne 216, et `analysed`, ligne 224.
   - Référence côté serveur : `tests/chat-instruction.test.cjs`, test « the instruction of the active
     surveillance reaches the chat agent of the host… », ligne 11.
-- Le lot L05 déplace le banc de lancement vers `tests/helpers/mac-host.cjs`. Ses lignes auront bougé, et
-  un fichier de test a pu être renommé : partir de la version intégrée et retrouver chaque test par son
-  titre.
+- Ce ticket fait partie du plan court (section « Plan court » d'`INDEX.md`) : il ne dépend plus des
+  tickets de tests du lot L05. Le banc de lancement est celui de `tests/mac-ipc-contract.test.cjs` à la
+  version intégrée. Si ses lignes ont bougé, retrouver chaque test par son titre.
 
 ## Périmètre
 
 - À modifier : `tests/mac-ipc-contract.test.cjs`, en ajoutant trois tests qui utilisent le banc et les
-  gestes du fichier (après L05, ceux de `tests/helpers/mac-host.cjs`).
+  gestes du fichier.
   1. Question en cours : avec un agent de chat piloté par `wrap.conversation`, une question posée sur la
      session chargée met `asking` à vrai dans l'état de la session. Un passage capturé pendant la réponse
      n'est pas analysé. Quand la réponse se termine, `asking` repasse à faux, et ce passage est analysé

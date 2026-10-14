@@ -2,7 +2,7 @@
 id: T135
 titre: Record the build identity in a generated file and read it without Git
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: oui
 installe: non
 harnais: non

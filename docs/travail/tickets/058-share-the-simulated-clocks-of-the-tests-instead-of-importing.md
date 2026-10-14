@@ -2,7 +2,7 @@
 id: T058
 titre: Share the simulated clocks of the tests instead of importing one from a script
 statut: a-faire
-bloque_par: T055
+bloque_par: T055, T145
 adr: non
 installe: non
 harnais: non

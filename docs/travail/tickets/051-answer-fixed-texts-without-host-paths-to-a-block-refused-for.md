@@ -2,7 +2,7 @@
 id: T051
 titre: Answer fixed texts without host paths to a block refused for its content
 statut: a-faire
-bloque_par: T028, T038
+bloque_par: T028, T038, T145
 adr: non
 installe: non
 harnais: non

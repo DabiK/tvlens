@@ -2,7 +2,7 @@
 id: T044
 titre: Publish the server version and capabilities in the session answer
 statut: a-faire
-bloque_par: T038
+bloque_par: T038, T145
 adr: non
 installe: non
 harnais: non

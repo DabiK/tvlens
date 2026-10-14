@@ -2,7 +2,7 @@
 id: T142
 titre: Show the retrospective every tool the orchestrator called, in order and timed
 statut: a-faire
-bloque_par: T003
+bloque_par: T003, T145
 adr: non
 installe: non
 harnais: oui

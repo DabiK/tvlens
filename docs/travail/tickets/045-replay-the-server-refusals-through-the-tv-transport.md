@@ -2,7 +2,7 @@
 id: T045
 titre: Replay the server refusals through the TV transport
 statut: a-faire
-bloque_par: T042
+bloque_par: T042, T145
 adr: non
 installe: non
 harnais: non

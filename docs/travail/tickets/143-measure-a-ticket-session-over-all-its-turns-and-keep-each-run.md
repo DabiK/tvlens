@@ -2,7 +2,7 @@
 id: T143
 titre: Measure a ticket session over all its turns and sub-agent runs, and keep each launch's stream
 statut: a-faire
-bloque_par: T142
+bloque_par: T142, T145
 adr: non
 installe: non
 harnais: oui

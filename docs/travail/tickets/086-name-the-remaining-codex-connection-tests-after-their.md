@@ -2,7 +2,7 @@
 id: T086
 titre: Name the remaining Codex connection tests after their behaviour
 statut: a-faire
-bloque_par: T085
+bloque_par: T085, T145
 adr: non
 installe: non
 harnais: non

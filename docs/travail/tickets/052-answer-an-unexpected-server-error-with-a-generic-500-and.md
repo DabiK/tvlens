@@ -2,7 +2,7 @@
 id: T052
 titre: Answer an unexpected server error with a generic 500 and journal it
 statut: a-faire
-bloque_par: T036, T051
+bloque_par: T036, T051, T145
 adr: oui
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T073
 titre: Give the server host a barrier that resolves once nothing is in flight
 statut: a-faire
-bloque_par: T066, T072
+bloque_par: T066, T072, T145
 adr: non
 installe: non
 harnais: non

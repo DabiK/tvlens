@@ -2,7 +2,7 @@
 id: T016
 titre: Make the static guards of the Mac renderer fail when they scan nothing
 statut: a-faire
-bloque_par: T015
+bloque_par: T015, T145
 adr: non
 installe: non
 harnais: non

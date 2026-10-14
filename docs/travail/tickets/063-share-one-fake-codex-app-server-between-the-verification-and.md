@@ -2,7 +2,7 @@
 id: T063
 titre: Share one fake Codex App Server between the verification and surveillance tests
 statut: a-faire
-bloque_par: T061
+bloque_par: T061, T145
 adr: non
 installe: non
 harnais: non

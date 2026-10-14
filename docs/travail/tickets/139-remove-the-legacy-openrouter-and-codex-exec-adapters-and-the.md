@@ -2,7 +2,7 @@
 id: T139
 titre: Remove the legacy OpenRouter and codex exec adapters and the scripts using them
 statut: a-faire
-bloque_par: T100, T106
+bloque_par: T100, T106, T145
 adr: oui
 installe: non
 harnais: oui

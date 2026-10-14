@@ -2,7 +2,7 @@
 id: T054
 titre: Journal unreadable stores instead of treating them as absent
 statut: a-faire
-bloque_par: T028, T036
+bloque_par: T028, T036, T145
 adr: non
 installe: non
 harnais: non

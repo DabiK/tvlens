@@ -2,7 +2,7 @@
 id: T098
 titre: Give every paying npm script the :live suffix and test the rule
 statut: a-faire
-bloque_par:
+bloque_par: T145
 adr: non
 installe: non
 harnais: non

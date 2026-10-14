@@ -2,7 +2,7 @@
 id: T108
 titre: Make the architecture page and the docs index describe the current code
 statut: a-faire
-bloque_par: T107
+bloque_par: T107, T145
 adr: non
 installe: non
 harnais: non

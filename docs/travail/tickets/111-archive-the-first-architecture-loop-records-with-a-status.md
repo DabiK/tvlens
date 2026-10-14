@@ -2,7 +2,7 @@
 id: T111
 titre: Archive the first architecture loop records with a status line and a glossary
 statut: a-faire
-bloque_par: T109, T110
+bloque_par: T109, T110, T145
 adr: non
 installe: non
 harnais: non

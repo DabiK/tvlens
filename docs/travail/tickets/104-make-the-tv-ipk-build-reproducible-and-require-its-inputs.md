@@ -2,7 +2,7 @@
 id: T104
 titre: Make the TV ipk build reproducible and require its inputs explicitly
 statut: a-faire
-bloque_par: T102
+bloque_par: T102, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T091
 titre: Require every element id looked up by a TV script to exist in its page
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

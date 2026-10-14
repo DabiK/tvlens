@@ -2,7 +2,7 @@
 id: T067
 titre: Hold the session clock of the Mac host in its tests instead of pausing
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064
+bloque_par: T057, T058, T059, T062, T063, T064, T145
 adr: non
 installe: non
 harnais: non

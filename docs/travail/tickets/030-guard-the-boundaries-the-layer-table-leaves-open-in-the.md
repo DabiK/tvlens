@@ -2,7 +2,7 @@
 id: T030
 titre: Guard the boundaries the layer table leaves open in the architecture test
 statut: a-faire
-bloque_par: T016, T017, T018, T019, T020, T021, T022, T024, T025
+bloque_par: T016, T017, T018, T019, T020, T021, T022, T024, T025, T145
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T046
 titre: Reject the active Codex turn when its event handler throws
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

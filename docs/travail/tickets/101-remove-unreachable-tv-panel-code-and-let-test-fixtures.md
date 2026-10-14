@@ -2,7 +2,7 @@
 id: T101
 titre: Remove unreachable TV panel code and let test fixtures escape the webm ignore
 statut: a-faire
-bloque_par: T028
+bloque_par: T028, T145
 adr: non
 installe: non
 harnais: non

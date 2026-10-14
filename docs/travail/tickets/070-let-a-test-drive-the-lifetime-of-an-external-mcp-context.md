@@ -2,7 +2,7 @@
 id: T070
 titre: Let a test drive the lifetime of an external MCP context
 statut: a-faire
-bloque_par: T066
+bloque_par: T066, T145
 adr: non
 installe: non
 harnais: non

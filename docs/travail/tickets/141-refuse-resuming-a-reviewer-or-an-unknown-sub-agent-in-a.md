@@ -2,7 +2,7 @@
 id: T141
 titre: Refuse resuming a reviewer or a sub-agent of unknown role in a ticket session
 statut: a-faire
-bloque_par: T003
+bloque_par: T003, T145
 adr: non
 installe: non
 harnais: oui
