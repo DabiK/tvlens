@@ -39,6 +39,17 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-agent.mjs\"",
+            "timeout": 10,
+            "onFailure": "block"
+          }
+        ]
       }
     ],
     "PostToolUse": [

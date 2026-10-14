@@ -113,6 +113,22 @@ test("a ticket session writes only its own ticket, and nothing outside the proje
   assert.equal(decision(write(repo, "../elsewhere.txt", LOOP)), "deny");
 });
 
+test("a ticket session launches its sub-agents in the foreground; an interactive session launches them as it likes", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const launch = (extra, env) => {
+    const call = { tool_name: "Agent", tool_input: { subagent_type: "explorateur", prompt: "explore the ticket", ...extra } };
+    return hook(repo, "guard-agent", call, env);
+  };
+  const refused = launch({}, LOOP);
+  assert.equal(decision(refused), "deny");
+  assert.match(refused.hookSpecificOutput.permissionDecisionReason, /run_in_background: false/);
+  assert.equal(decision(launch({ run_in_background: true }, LOOP)), "deny");
+  assert.equal(decision(launch({ run_in_background: false }, LOOP)), "none");
+  assert.equal(decision(launch({}, INTERACTIVE)), "none");
+  assert.equal(decision(launch({ run_in_background: true }, INTERACTIVE)), "none");
+});
+
 test("after an edit, a file that breaks a rule is reported back and a clean one is silent", (t) => {
   const repo = harnessRepo({ "core/a.cjs": "const a = 1;\n" });
   t.after(repo.cleanup);
