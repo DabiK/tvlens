@@ -1,7 +1,7 @@
 ---
 id: T006
 titre: Read the session folder only after the store has finished writing
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -121,3 +121,22 @@ du fichier échoue sous sonde, ou si `flush()` rejette dans ce scénario : verdi
 Un autre test en échec sous sonde n'est pas corrigé ici.
 
 ## Journal
+
+- Reproduction (critère 1) : `FLK_MS=20 node $ETAT/garde.cjs 120 node --require ./$ETAT/slow-fs.cjs --test tests/session-durable.test.cjs`
+  sur le fichier non modifié, trois fois : 24 tests, 1 échec chaque fois, le test visé, avec
+  `[ 'manifest.json.tmp', 'media', 'thumbs' ]` dans la liste lue.
+- Exploration : aucun écart avec le ticket ; `live.store` est le `LocalSessionStore` du runtime, `flush()`
+  attend la file qui porte le manifeste et ne rejette pas ici. Limite connue : `embeddings.json.tmp` passe
+  par une autre file, non déclenchée dans ce test.
+- Implémentation (critère 2) : une ligne `await live.store.flush();` entre l'ingestion et
+  `cleanupRawMedia`, dans `tests/session-durable.test.cjs`. Aucune assertion modifiée.
+- Sonde après correction (critère 3) : `FLK_MS=5` cinq fois et `FLK_MS=20` cinq fois, chaque fois 24 tests,
+  `fail 0`, aucune ligne « GARDE ».
+- Sans sonde (critère 4) : `node --test --test-concurrency=1 tests/session-durable.test.cjs` vingt fois,
+  24 tests, `fail 0` à chaque fois.
+- Relecture : accepté, premier tour.
+
+### Réserves à la clôture
+
+- check.mjs signale « format » et « lint » non lancés : Prettier et ESLint ne sont pas installés sur cette machine.
+- embeddings.json.tmp passe par une file d'écriture que store.flush() n'attend pas ; non déclenché dans ce test, à garder pour le chantier de barrière commune.

@@ -271,6 +271,7 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
 test('the cleanup of a former version cannot erase durable media, and media it left behind are read in place', async t => {
   const f = await fixture(t), live = f.open(), dir = path.join(f.sessionsRoot, live.id);
   f.clock = 8000; await live.watch.ingest(f.block(0, 8000)); await settle(live.watch);
+  await live.store.flush();
   await cleanupRawMedia(f.sessionsRoot);
   assert.equal(await live.store.has('moment-1'), true);
   assert.ok((await live.thumbnails.read('moment-1')).length);
