@@ -310,22 +310,45 @@ function gates(ticket, specBefore, untracked) {
 
 const totalCost = (history) => history.reduce((sum, h) => sum + (h.report.cout_usd || 0), 0);
 
+/** Une réserve telle que la session l'a écrite : une chaîne telle quelle, toute autre valeur en JSON. */
+const reserveText = (reserve) => (typeof reserve === "string" ? reserve : JSON.stringify(reserve));
+
+/** Une réserve en élément de liste Markdown : ses lignes suivantes, indentées, restent dans l'élément. */
+function reserveItem(reserve) {
+  const [first, ...rest] = reserveText(reserve).trimEnd().split("\n");
+  return [`- ${first}`, ...rest.map((line) => (line ? `  ${line}` : line))].join("\n");
+}
+
+/** Le ticket suivi du jalon de ses réserves, à la fin du journal ; inchangé sans réserve. */
+function withReserves(text, reserves) {
+  if (!reserves.length) return text;
+  return `${text.trimEnd()}\n\n### Réserves à la clôture\n\n${reserves.map(reserveItem).join("\n")}\n`;
+}
+
+/** Paragraphes du message du commit : le texte des réserves reste dans le journal, en français ; le message dit leur nombre. */
+function commitMessage(ticket, reserves, trailer) {
+  const paragraphs = [`${ticket.id}: ${ticket.titre}`, `Ticket: ${ticket.file}`];
+  if (reserves.length) paragraphs.push(`Reserves: ${reserves.length}, listed in the ticket journal.`);
+  return [...paragraphs, trailer];
+}
+
 /** Commit (et push) du ticket. Renvoie le code de sortie de la boucle : 0, 2 si le commit échoue, 3 si le push est refusé. */
 function integrate(ticket, branch, untracked, { step, verdict, history }) {
+  const reserves = [verdict.reste].flat().filter(Boolean);
   const baseline = readBaseline(root);
   if (baseline) writeBaseline(root, tighten(baseline, measure(root)));
   const file = path.join(root, ticket.file);
-  fs.writeFileSync(file, setStatus(fs.readFileSync(file, "utf8"), "termine"));
+  fs.writeFileSync(file, withReserves(setStatus(fs.readFileSync(file, "utf8"), "termine"), reserves));
   const paths = statusEntries().flatMap((e) => e.paths).filter((p) => !untracked.has(p));
   git("add", "-A", "--", ...paths);
   const trailer = `Co-Authored-By: ${displayName(step.modele)} <noreply@anthropic.com>`;
-  const commit = git("commit", "-m", `${ticket.id}: ${ticket.titre}`, "-m", `Ticket: ${ticket.file}`, "-m", trailer);
+  const commit = git("commit", ...commitMessage(ticket, reserves, trailer).flatMap((paragraph) => ["-m", paragraph]));
   if (commit.code !== 0) return block(ticket, "Le commit a échoué :\n" + commit.out, history);
   const head = git("rev-parse", "--short", "HEAD").stdout.trim();
-  event("integre", { ticket: ticket.id, commit: head, modele: step.modele, tentatives: history.length, cout_usd: totalCost(history) });
+  const integrated = { ticket: ticket.id, commit: head, modele: step.modele, tentatives: history.length, cout_usd: totalCost(history) };
+  event("integre", reserves.length ? { ...integrated, reserves } : integrated);
   say(`${ticket.id} intégré (${head}) en ${history.length} tentative(s), ${usd(totalCost(history))}.`);
-  const reste = [verdict.reste].flat().filter(Boolean);
-  if (reste.length) say(`Réserves de la session : ${reste.map((r) => (typeof r === "string" ? r : JSON.stringify(r))).join(" ; ")}`);
+  if (reserves.length) say(`Réserves de la session : ${reserves.map(reserveText).join(" ; ")}`);
   if (!options.push) return 0;
   const push = git("push", "-u", "origin", branch);
   if (push.code !== 0) {

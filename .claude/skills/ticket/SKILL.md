@@ -81,6 +81,12 @@ par une nouvelle relecture (étapes 5 et 6). Puis écris `.harness-state/tickets
 - `PARTIEL` : du travail utile est fait mais il en reste ; dis quoi dans `reste`.
 - `BLOQUÉ` : impossible d'avancer sans une décision ; dis laquelle dans `resume`.
 
+Un TERMINÉ met ses réserves dans `reste` : un critère rempli à la lettre près, un passage non relu, une
+question pour le propriétaire. Elles ne bloquent pas l'intégration : la boucle les reporte dans le
+journal du ticket (jalon « Réserves à la clôture ») et donne leur nombre dans le message du commit, tu
+n'as donc pas à les recopier dans le journal. Une réserve ne remplace pas un PARTIEL ou un BLOQUÉ quand
+un critère n'est pas couvert.
+
 Un statut est un constat, pas un objectif : PARTIEL dit la vérité vaut mieux que TERMINÉ faux, que la
 boucle refusera de toute façon après ses propres contrôles.
 

@@ -72,6 +72,11 @@ const scenarios = {
     review();
     verdict("TERMINÉ");
   },
+  "done-with-reserves"() {
+    greeting();
+    review();
+    verdict("TERMINÉ", { reste: JSON.parse(process.env.FAKE_RESERVES) });
+  },
   "long-line"() {
     write("core/greeting.cjs", "module.exports = '" + "x".repeat(200) + "';\\n");
     review();
@@ -297,6 +302,58 @@ test("a ticket whose session finishes green is committed under its title and mar
   assert.equal(repo.commits()[0], "T001: Add the greeting");
   assert.equal(repo.git("status", "--porcelain").stdout.trim(), "");
   assert.match(repo.read("core/greeting.cjs"), /hello/);
+});
+
+// Réserves d'une session TERMINÉ : la boucle écrit une chaîne telle quelle et toute autre valeur en JSON.
+const reserves = ["Le critère 3 est rempli à la lettre près.", { fichier: "INDEX.md", lignes: "162-163", question: "à corriger ?" }];
+const reservesEnv = (list) => ({ FAKE_RESERVES: JSON.stringify(list) });
+const committedTicket = (repo) => repo.git("show", "HEAD:docs/travail/tickets/001-add-greeting.md").stdout;
+
+test("the reserves of a finished session go into the ticket journal, the commit message and the integration event", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done-with-reserves", [], reservesEnv(reserves));
+  assert.equal(result.code, 0, result.out);
+  const milestone = `\n\n### Réserves à la clôture\n\n- ${reserves[0]}\n- ${JSON.stringify(reserves[1])}\n`;
+  assert.ok(committedTicket(repo).endsWith(milestone), committedTicket(repo));
+  const paragraphs = repo.git("log", "-1", "--format=%B").stdout.trim().split("\n\n");
+  assert.equal(paragraphs[0], "T001: Add the greeting");
+  assert.match(paragraphs.at(-1), /^Co-Authored-By: [^\n]+$/);
+  assert.deepEqual(paragraphs.slice(1, -1), ["Ticket: docs/travail/tickets/001-add-greeting.md", "Reserves: 2, listed in the ticket journal."]);
+  assert.deepEqual(repo.events().find((e) => e.phase === "integre").reserves, reserves);
+});
+
+test("the reserves of a finished session are printed on the console after integration", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done-with-reserves", [], reservesEnv(reserves));
+  assert.equal(result.code, 0, result.out);
+  const lines = result.out.split("\n");
+  const integratedAt = lines.findIndex((line) => line.startsWith("[boucle] T001 intégré ("));
+  const shownAt = lines.indexOf(`[boucle] Réserves de la session : ${reserves[0]} ; ${JSON.stringify(reserves[1])}`);
+  assert.ok(integratedAt >= 0 && shownAt > integratedAt, result.out);
+});
+
+test("a finished session without reserves adds no reserve milestone, commit line or event field", (t) => {
+  for (const [scenario, env] of [["done", {}], ["done-with-reserves", reservesEnv([])]]) {
+    const repo = loopRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop(scenario, [], env);
+    assert.equal(result.code, 0, result.out);
+    assert.ok(committedTicket(repo).endsWith("\n- jalon : attempt 1\n"), committedTicket(repo));
+    assert.doesNotMatch(committedTicket(repo), /Réserves à la clôture/, scenario);
+    assert.doesNotMatch(repo.git("log", "-1", "--format=%B").stdout, /^Reserves:/m, scenario);
+    assert.equal("reserves" in repo.events().find((e) => e.phase === "integre"), false, scenario);
+  }
+});
+
+test("a reserve written over several lines stays inside its list item, and the journal ends with a single newline", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done-with-reserves", [], reservesEnv(["Deux choix :\n\n- garder\n- retirer\n"]));
+  assert.equal(result.code, 0, result.out);
+  const milestone = "\n- jalon : attempt 1\n\n### Réserves à la clôture\n\n- Deux choix :\n\n  - garder\n  - retirer\n";
+  assert.ok(committedTicket(repo).endsWith(milestone), committedTicket(repo));
 });
 
 test("a session that claims done on a red check is refused, retried, then the ticket is blocked without any commit", (t) => {

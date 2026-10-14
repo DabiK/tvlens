@@ -1,7 +1,7 @@
 ---
 id: T144
 titre: Keep the reserves of a finished ticket in its journal and its commit
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -114,3 +114,67 @@ Le ticket tranche ainsi :
   combien il y en a, ce qui suffit pour les retrouver : `git log --grep "^Reserves:"`.
 
 ## Journal
+
+### 2026-10-14 — Cadrage
+
+Première session : journal vide, pas de rapport d'échec dans `.harness-state/tickets/T144/`. Lus : le
+ticket, `docs/standards.md`, la skill `ticket`.
+
+### 2026-10-14 — Exploration
+
+Rapport complet : `.harness-state/tickets/T144/exploration.md`. Aucun écart qui change le périmètre.
+
+- Seul point d'insertion : `integrate` (`scripts/loop/run.mjs:314-338`), qui reçoit déjà le verdict ; la
+  liste `[verdict.reste].flat().filter(Boolean)` (`:327`) remonte en tête et sert aux quatre sorties.
+- Le jalon s'écrit avec le statut, avant `git add` ; `spec` ne lit que ce qui précède `## Journal`.
+- Tests par processus via `loopRepo` : nouveau scénario du faux `claude` qui lit ses réserves dans l'env.
+- Champ de l'événement retenu : `reserves`. Jalon `### Réserves à la clôture`, une ligne `- …` par entrée.
+- `baseline.json` non touché : la boucle resserre le plancher elle-même ; `docs/travail/README.md`
+  (qui décrit les réserves comme affichées) est hors périmètre.
+
+### 2026-10-14 — Implémentation
+
+Par l'implémenteur, sur `scripts/loop/run.mjs`, `tests/ticket-loop.test.cjs` et la section « 8. Conclure »
+de `.claude/skills/ticket/SKILL.md`. `baseline.json` non touché.
+
+- `integrate` calcule une fois la liste des réserves ; de petites aides écrivent le jalon (avec le statut,
+  avant `git add`), le paragraphe `Reserves: N, listed in the ticket journal.` avant le trailer, et le
+  champ `reserves` de l'événement `integre`, seulement s'il y a des réserves. Console inchangée.
+- Une entrée sur plusieurs lignes garde ses lignes suivantes indentées de deux espaces dans l'élément.
+- Nouveau scénario `done-with-reserves` du faux `claude` (réserves lues dans `FAKE_RESERVES`) et quatre
+  tests : critère 1, critère 3 (console), critère 2 (sans `reste` et `reste: []`), réserve multi-ligne.
+- Rouges vus (rapportés par l'implémenteur) : test du critère 1 rouge avant le code (`endsWith` du jalon) ;
+  critères 2 et 3 et multi-ligne rouges par mutations temporaires de `run.mjs`, restauré ensuite.
+- `node --test --test-concurrency=1 tests/ticket-loop.test.cjs` : 48/48 ; `node scripts/check.mjs --changed`
+  et `node scripts/check.mjs` : verts (678 tests JS, 84 Python), `cas_de_test` 642 → 646 (rapportés).
+
+Critère 4, `grep -n reste .claude/skills/ticket/SKILL.md` :
+
+```
+76:{ "statut": "TERMINÉ", "resume": "ce qui est livré, en deux phrases", "revue": "accepté", "adr": "docs/adr/0011-….md", "preuves": ["node scripts/check.mjs : vert, 602 tests"], "reste": [] }
+81:- `PARTIEL` : du travail utile est fait mais il en reste ; dis quoi dans `reste`.
+84:Un TERMINÉ met ses réserves dans `reste` : un critère rempli à la lettre près, un passage non relu, une
+```
+
+La ligne 84 ouvre le paragraphe (lignes 84 à 88) qui dit aussi le report dans le journal et le commit,
+le non-blocage de l'intégration, et qu'une réserve ne remplace pas un PARTIEL ou un BLOQUÉ.
+
+### 2026-10-14 — Relecture 1
+
+`node scripts/loop/reviewed-state.mjs record --ticket T144` : `revue-1.diff`, `revue-1.fichiers`. Relecteur
+neuf : **accepté**. Critères 1 à 4 couverts à la lecture ; il n'a pu lancer ni les tests ni `check`.
+Trois constats mineurs, non bloquants, laissés en réserves plutôt que de rouvrir le code :
+
+- un commit refusé après l'écriture du jalon : `block()` passe le ticket à `bloque` en gardant le jalon,
+  une relance après déblocage en ajouterait un second (cas exclu par le cadrage) ;
+- `docs/travail/README.md:119`, `:155` et `:165` décrivent encore les réserves comme seulement affichées
+  et l'événement d'intégration sans `reserves` : hors périmètre, à remettre d'accord par un suivi ;
+- une réserve faite seulement d'espaces passe le filtre et donne une puce vide (même filtre que la
+  console avant ce ticket).
+
+### 2026-10-14 — Contrôle final
+
+`node scripts/check.mjs` lancé par l'orchestrateur après la relecture, aucun fichier modifié depuis hors
+journal : **vert**, code 0. Règles par fichier ✔, cliquet ✔ (`cas_de_test` 642 → 646), tests JS 678/678
+sur 74 fichiers, tests Python 84 OK (1 ignoré). Format et lint : non lancés (Prettier et ESLint non
+installés).
