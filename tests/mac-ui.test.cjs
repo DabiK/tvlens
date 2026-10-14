@@ -9,6 +9,10 @@ const { Surveillance } = require('../core/surveillance.cjs');
 // The Mac view models are pure ES modules: imported as they are, without Electron and without a DOM.
 const ui = name => import(`../app/ui/${name}.mjs`);
 const app = (...parts) => path.join(__dirname, '..', 'app', ...parts);
+// Files of app/ are compared through their shape: the layout of their code (quotes, spaces, line breaks) is not what is checked.
+const { shape } = require('./helpers/source-shape.cjs');
+const shaped = (...parts) => shape(fs.readFileSync(app(...parts), 'utf8'));
+const holds = (shapedSource, fragment) => shapedSource.includes(shape(fragment));
 const flush = async (turns = 300) => { for (let i = 0; i < turns; i++) await Promise.resolve(); };
 const T0 = 1_760_000_000_000;
 
@@ -134,10 +138,12 @@ test('freshness of a question is shown from what the core measured, and nothing 
   assert.equal(describeFreshness({ anchorMs: 3000, evidenceAtStart: { contextThroughMs: 0, pendingCount: 1 } }).short, 'Aucun passage analysé');
   assert.deepEqual([describeJob({ status: 'done', anchorMs: 724000, result: observed }, { now: T0 }).freshnessLabel, describeJob({ status: 'running', anchorMs: 724000 }, { now: T0 }).freshnessLabel], [null, null]);
   // The card writes the label chosen by the view model above the answer, and the detail inside the folded block.
-  const card = fs.readFileSync(app('ui', 'job-card.js'), 'utf8');
-  assert.match(card, /el\('p', 'hint job-fresh', view\.freshnessLabel\)/);
-  assert.match(card, /line\.title = view\.freshness\.label/);
-  assert.ok(card.indexOf("'Détails du traitement'") > 0 && card.indexOf("'hint job-fresh-detail', view.freshness.detail") > card.indexOf("'Détails du traitement'"));
+  const card = shaped('ui', 'job-card.js');
+  assert.ok(holds(card, "el('p', 'hint job-fresh', view.freshnessLabel)"), 'the label is written above the answer');
+  assert.ok(holds(card, 'line.title = view.freshness.label'), 'the whole sentence stays on hover');
+  // A comment above names the block too: the line of code is the last mention of it.
+  const folded = card.lastIndexOf(shape("'Détails du traitement'"));
+  assert.ok(folded > 0 && card.indexOf(shape("'hint job-fresh-detail', view.freshness.detail")) > folded, 'the detail is inside the folded block');
 });
 
 // A real registry, produced by the surveillance core with scripted ports: the view model is checked against
@@ -327,16 +333,26 @@ test('a saved history still being read is told as a restoration, and a history k
   for (const text of [null, undefined, '  ']) assert.deepEqual([kept('memory-only', text).notice?.tone, /non enregistré/.test(kept('memory-only', text).notice?.text), /supprim|effac/i.test(kept('memory-only', text).notice?.text)], ['warning', true, false]);
   // The banner itself: a plain banner among the others, hidden without a notice, its text set from the view model,
   // and nothing to click in it.
-  const page = fs.readFileSync(app('index.html'), 'utf8'), renderer = fs.readFileSync(app('renderer.js'), 'utf8');
-  const banner = page.slice(page.indexOf('<div id="banners"')).match(/<div id="watch-notice"[^>]*>.*?<\/div>/s)[0];
-  assert.match(banner, /^<div id="watch-notice" class="banner" role="status" hidden>/);
-  assert.ok(banner.includes('<span id="watch-notice-text"></span>') && !/<button|<a\b|supprim|effac/i.test(banner));
-  assert.ok(page.indexOf('id="watch-notice"') < page.indexOf('<main>'), 'above every view');
-  assert.match(renderer, /historyLimit, banner: true \}\)/);
-  assert.match(renderer, /const unsaved = view\.notice\?\.text \|\| '';\s*\$\('watch-notice'\)\.hidden = !unsaved;/);
-  assert.match(renderer, /\$\('watch-notice-text'\)\.textContent = unsaved/);
+  // The page is read tag by tag and attribute by attribute: neither their order nor their line breaks are checked.
+  const page = fs.readFileSync(app('index.html'), 'utf8'), renderer = shaped('renderer.js');
+  const attributesOf = tag => Object.fromEntries([...tag.replace(/^<\w+|\/?>$/g, '').matchAll(/([^\s=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'))?/g)]
+    .map(match => [match[1], match[2] ?? match[3] ?? '']));
+  const tags = [...page.matchAll(/<div\b[^>]*>/g)].map(match => ({ at: match.index, attributes: attributesOf(match[0]) }));
+  const container = tags.find(tag => tag.attributes.id === 'banners'), notice = tags.find(tag => tag.attributes.id === 'watch-notice');
+  assert.ok(container && notice && container.at < notice.at, 'a banner among the others');
+  assert.deepEqual(Object.keys(notice.attributes).sort(), ['class', 'hidden', 'id', 'role']);
+  assert.deepEqual([notice.attributes.class, notice.attributes.role, notice.attributes.hidden], ['banner', 'status', '']);
+  const banner = page.slice(notice.at).match(/^[\s\S]*?<\/div>/)[0];
+  const spans = [...banner.matchAll(/<span\b[^>]*>\s*<\/span\s*>/g)].map(match => attributesOf(match[0].slice(0, match[0].indexOf('>') + 1)));
+  assert.ok(spans.some(attributes => Object.keys(attributes).join() === 'id' && attributes.id === 'watch-notice-text'), 'the text of the notice');
+  assert.ok(!/<button|<a\b|supprim|effac/i.test(banner), 'nothing to click in the notice');
+  const main = page.search(/<main[\s>]/);
+  assert.ok(main >= 0 && notice.at < main, 'above every view');
+  assert.ok(holds(renderer, 'historyLimit, banner: true })'), 'the view model is asked for the banner');
+  assert.ok(holds(renderer, "const unsaved = view.notice?.text || '';\n$('watch-notice').hidden = !unsaved;"), 'the banner is hidden without a notice');
+  assert.ok(holds(renderer, "$('watch-notice-text').textContent = unsaved"), 'its text is set from the view model');
   // The tab badge takes its reference once the saved history is read, not on a state that is still restoring.
-  assert.match(renderer, /seen = sequences\(restoring \? null : state\); if \(!restoring\) seenFor = state\.sessionId;/);
+  assert.ok(holds(renderer, 'seen = sequences(restoring ? null : state); if (!restoring) seenFor = state.sessionId;'), 'the reference waits for the history');
   await runtime.close();
 });
 
@@ -641,19 +657,26 @@ test('search cards name the session they were searched in: a late answer is not 
 
   // The window itself cannot be loaded here: at least it empties the results when the session is reset or changes,
   // draws an answer only for the latest request and through searchCards, and has replay() ask replayTarget.
-  const renderer = fs.readFileSync(app('renderer.js'), 'utf8');
-  assert.match(renderer, /function clearSearch\(\) \{ searchRevision\+\+; \$\('search-results'\)\.replaceChildren\(\); \$\('search-status'\)\.textContent = searchIntro; \}/);
-  assert.match(renderer, /if \(currentState\?\.id !== state\.id\) \{[^}]*clearSearch\(\);[^}]*\}/, 'another session empties the results');
-  assert.ok(renderer.slice(renderer.indexOf('function clearSession()'), renderer.indexOf('bridge.onReset(clearSession)')).includes('clearSearch();'), 'a reset empties the results');
-  const submit = renderer.slice(renderer.indexOf("$('moment-search-form').onsubmit"), renderer.indexOf("$('shortcut-form').onsubmit"));
-  const at = text => { const index = submit.indexOf(text); assert.ok(index >= 0, `the search form no longer contains ${text}`); return index; };
+  // Read through its shape, like the fragments below: a pattern writes no space around punctuation and no semicolon.
+  const renderer = shaped('renderer.js');
+  const between = (from, to) => {
+    const start = renderer.indexOf(shape(from)), end = renderer.indexOf(shape(to));
+    assert.ok(start >= 0 && end >= 0, `the renderer no longer contains ${from} and ${to}`);
+    return renderer.slice(start, end);
+  };
+  const clearing = "function clearSearch() { searchRevision++; $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }";
+  assert.ok(holds(renderer, clearing), 'clearSearch takes a new revision and empties the results and their status');
+  assert.match(renderer, /if\(currentState\?\.id!==state\.id\)\{[^}]*clearSearch\(\)[^}]*\}/, 'another session empties the results');
+  assert.ok(between('function clearSession()', 'bridge.onReset(clearSession)').includes(shape('clearSearch();')), 'a reset empties the results');
+  const submit = between("$('moment-search-form').onsubmit", "$('shortcut-form').onsubmit");
+  const at = text => { const index = submit.indexOf(shape(text)); assert.ok(index >= 0, `the search form no longer contains ${text}`); return index; };
   // In this order: the request takes its number, a superseded answer is dropped, the others go through searchCards before anything is drawn.
   assert.ok(at('const revision=++searchRevision;') < at('await bridge.searchMoments(') && at('await bridge.searchMoments(') < at('if(revision!==searchRevision)return;')
     && at('if(revision!==searchRevision)return;') < at('const cards=searchCards(found,currentState);if(!cards)return clearSearch();') && at('searchCards(found,currentState)') < at("$('search-results').replaceChildren(...cards.map("));
   // A refusal that arrives late is dropped like a late answer: the new session never reads the error of the former one.
   at("catch(e){if(revision===searchRevision)$('search-status').textContent=reason(e);}");
-  assert.match(renderer, /if\(!savedId\)return replay\(moment\.id,0,moment\);/, 'a search card hands itself, session included, to replay()');
-  assert.match(renderer, /replayTarget\(\{ id, sessionId: card \? card\.sessionId : currentState\?\.id \}, currentState\)/);
+  assert.ok(holds(renderer, 'if(!savedId)return replay(moment.id,0,moment);'), 'a search card hands itself, session included, to replay()');
+  assert.ok(holds(renderer, 'replayTarget({ id, sessionId: card ? card.sessionId : currentState?.id }, currentState)'), 'replay() asks replayTarget');
   assert.ok(!/tvlens-media:\/\/\$\{currentState\.id\}\/\$\{/.test(renderer), 'the address of a passage is built by replayTarget alone');
 });
 
@@ -685,7 +708,7 @@ test('the renderer parses, imports only what its modules export, and finds every
 test('the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own', () => {
   const preload = fs.readFileSync(app('preload.cjs'), 'utf8');
   const exposed = new Set([...preload.matchAll(/^\s*([A-Za-z]+)\s*:/gm)].map(match => match[1]));
-  const used = new Set(rendererFiles.flatMap(file => [...read(file).matchAll(/\b(?:bridge|window\.tvlens)\??\.([A-Za-z]+)/g)].map(match => match[1])));
+  const used = new Set(rendererFiles.flatMap(file => [...shaped(file).matchAll(/\b(?:bridge|window\.tvlens)\??\.([A-Za-z]+)/g)].map(match => match[1])));
   for (const name of ['surveillanceState', 'surveillanceHistory', 'startSurveillance', 'stopSurveillance', 'retrySurveillanceClaim', 'openSurveillanceSource', 'onSurveillance',
     'sessions', 'openSession', 'resumeSession', 'deleteSession', 'storage', 'onSessionsChanged', 'onStorage']) assert.ok(used.has(name), `the renderer never calls ${name}`);
   for (const name of used) assert.ok(exposed.has(name), `the renderer calls ${name}, which app/preload.cjs does not expose`);
@@ -702,18 +725,20 @@ test('the renderer talks to the bridge of the contract only, and writes no ceili
   // Contract 5.3: no setting, stored preference or control puts a signal on screen, and the stack is fed by the
   // view model alone (its `cards`), never from the signal cards of the state.
   assert.ok(!/showSignals|watch-signals|float-toast\[data-kind/.test(everything + read('style.css')), 'no "signals on screen" setting');
-  assert.match(read('renderer.js'), /cardQueue\.offer\(surveillanceView\(\)\.cards,/);
-  assert.equal([...read('renderer.js').matchAll(/cardQueue\.offer\(/g)].length, 1, 'one way into the stack');
-  assert.ok(!/signals\??\.cards/.test(read('renderer.js') + read('ui/surveillance-dom.js')), 'the renderer never reads the signal cards itself');
+  const renderer = shaped('renderer.js');
+  assert.ok(holds(renderer, 'cardQueue.offer(surveillanceView().cards,'), 'the stack is fed by the view model');
+  assert.equal([...renderer.matchAll(/cardQueue\.offer\(/g)].length, 1, 'one way into the stack');
+  assert.ok(!/signals\??\.cards/.test(renderer + shaped('ui', 'surveillance-dom.js')), 'the renderer never reads the signal cards itself');
   // The retention shown is the loaded session's: the renderer no longer reads the setting of the host for it.
-  assert.ok(!/retentionNote\(configuration\)|configuration\??\.retention/.test(read('renderer.js')), 'the host retention is not what the loaded session shows');
-  assert.match(read('renderer.js'), /\$\('memory-status'\)\.textContent = describeMemory\(state, \{ library \}\);/);
+  assert.ok(!/retentionNote\(configuration\)|configuration\??\.retention/.test(renderer), 'the host retention is not what the loaded session shows');
+  assert.ok(holds(renderer, "$('memory-status').textContent = describeMemory(state, { library });"), 'the memory status is written from the session');
   // No count written "N mot(s)": every count is agreed by ui/text.mjs, in the page and in the texts the modules build
   // (comments aside); sentences that come from the core go through agreeText where they are drawn.
   const code = file => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   for (const file of rendererFiles) assert.ok(!/\}\s[\p{L}’ ]*\p{L}\((?:s|es)\)/u.test(code(file)), `${file} writes a count with a parenthesised plural`);
   assert.ok(!/\p{L}\((?:s|es|e|x)\)/u.test(read('index.html')), 'index.html writes a parenthesised plural');
-  for (const [file, drawn] of [['ui/job-card.js', /agreeText\(view\.limits\.join\(' '\)\)/], ['ui/recap-view.js', /agreeText\(state\.limits\.join\(' '\)\)/], ['renderer.js', /agreeText\(found\.warnings\.join\(' '\)\)/]]) assert.match(read(file), drawn);
+  const agreed = [['ui/job-card.js', 'view.limits'], ['ui/recap-view.js', 'state.limits'], ['renderer.js', 'found.warnings']];
+  for (const [file, sentences] of agreed) assert.ok(holds(shaped(file), `agreeText(${sentences}.join(' '))`), `${file} agrees the sentences of the core`);
   // Ceilings and retention come from job.timeoutMs, the configuration and the session state.
   for (const file of [...rendererFiles, 'index.html']) {
     assert.ok(!/60\s?s\b|60 secondes|5\s?min\b|cinq minutes|Mémoire vidéo de|médias? expirés?/i.test(read(file)), `${file} states a ceiling or a retention by itself`);

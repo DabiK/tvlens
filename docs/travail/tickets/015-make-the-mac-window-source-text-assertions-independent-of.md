@@ -1,7 +1,7 @@
 ---
 id: T015
 titre: Make the Mac window source-text assertions independent of code layout
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -138,3 +138,38 @@ plus échouer son test : verdict BLOQUÉ, avec l'écart constaté. La remise en 
 ce ticket ne prouve pas le verdict d'un formateur réel, qui n'est pas installé.
 
 ## Journal
+
+- Exploration (`.harness-state/tickets/T015/exploration.md`) : numéros de ligne conformes, sauf l.657 du test l.615 omise par le ticket.
+  Piège relevé : le commentaire `job-card.js:38` à guillemets doubles fausserait l'ordre l.140 après unification des guillemets.
+  `shape` devra protéger les blancs des littéraux, remplacer `;` par une séparation et gérer `async (x) =>`.
+  Les assertions l.687 et l.713-715 deviendraient vides sur une forme à une ligne : laissées telles quelles (écarts déclarés dans `ecarts.md`).
+  `tests/architecture-f09.test.cjs:237` reste sensible à la mise en page, hors périmètre.
+- Implémentation : `tests/helpers/source-shape.cjs` (`shape`, découpeur en jetons sans dépendance) et `tests/source-shape.test.cjs`
+  (10 tests) ; conversion des cinq tests de `tests/mac-ui.test.cjs` et `tests/mac-ipc-contract.test.cjs`. Rouge vu avant le vert
+  (`node --test tests/source-shape.test.cjs` : 9 tests, 1 vert, 8 rouges avec une doublure identité).
+- Critère 3, preuve par reformatage (remise en page à la main, gardée dans `.harness-state/tickets/T015/relayout/`) :
+  `node --test --test-concurrency=1 tests/mac-ui.test.cjs tests/mac-ipc-contract.test.cjs` : HEAD 27/27 ; code remis en page, tests
+  d'avant conversion : 22/27, les cinq tests cités échouent et eux seuls (relevé des canaux 49 → 0, bannière introuvable, etc.) ;
+  code remis en page, tests convertis : 27/27. `git checkout -- app/` ensuite, `git status --short app/` vide.
+- Critères 4 et 5, huit fautes une à la fois (`faults.py`), chacune : 27 tests, 26 verts, 1 rouge, le bon : `clearSearch();` retiré de
+  `clearSession` → test de recherche ; `if (!restoring)` retiré → test de restauration ; second `cardQueue.offer(` → test du pont ;
+  « Détails du traitement » déplacé → test de fraîcheur ; `surveillance:stop` renommé, `retentionMs: 300000` (écrit sur une ligne,
+  puis coupé sur deux) et `verifierAdapter` dans la composition → test du contrat.
+- Relecture 1 : à corriger (1 bloquant : `;` simple séparateur, `return;` devenu préfixe de `return clearSearch();` ; 2 mineurs :
+  complexité de `tokenize`, paire tautologique). Corrigés : `shape` garde la fin d'instruction après `return`/`break`/`continue`/`throw` ;
+  `tokenize` découpée ; vraie paire. Preuve sur le code réel : `return clearSearch();` à la place de `return;` dans `app/renderer.js`
+  fait échouer le test de recherche (14/15). Fautes du critère 4 rejouées : mêmes résultats. Remise en page rejouée : 37/37.
+- Relecture 2 : accepté, 0 constat. Écarts déclarés et acceptés (`ecarts.md`) : assertions l.687, 713-715 et mots simples laissées hors
+  `shape` (deviendraient vides sur une forme à une ligne) ; l.657 et l.707/709 converties ; marqueur « Détails du traitement » pris sur
+  sa dernière occurrence ; fragments terminés par `;` devenus préfixes.
+- Critère 2 : `grep -c "^test("` : 15 (mac-ui), 12 (mac-ipc-contract) ; `app/` identique à HEAD.
+- Critère 6 : `node scripts/check.mjs` : vert, tests JS 730/730 sur 77 fichiers, tests Python 84 OK (1 ignoré) ; cliquet
+  `lignes_longues_tests 1724 → 1720`, `cas_de_test 677 → 687` ; format et lint non lancés (Prettier et ESLint non installés).
+
+### Réserves à la clôture
+
+- Écart accepté, périmètre : mac-ui l.687 (exposed lu sur preload.cjs), l.713-715 (pluriels dans les gabarits) et les absences de mots simples l.701, 704, 719, 721, 722, 724 ne passent pas par shape : elles deviendraient vides sur une forme à une ligne et ne dépendent pas de la mise en page ; elles passent avant et après la remise en page.
+- Non vérifié : le verdict d'un vrai formateur (Prettier non installé, remise en page écrite à la main) ; format et lint non lancés par check.mjs.
+- Hors périmètre : tests/architecture-f09.test.cjs (forme de receiveRecap), le test mac-ui sur les modules du renderer (ticket suivant) et d'autres tests qui citent app/ (non examinés) restent sensibles à la mise en page : ce ticket ne livre pas à lui seul tout le prérequis du formatage automatique.
+- Limite documentée de shape : un littéral contenant les deux sortes de guillemets n'est pas idempotent ; un formateur qui ajoute des parenthèses (a && b || c) ou des () après new X n'est pas couvert.
+- Question pour le propriétaire : la fenêtre du relevé `used` (mac-ui, relevé du pont) sur la forme suppose qu'une barre oblique de division n'est jamais prise pour une expression régulière ; aucun cas dans le code actuel.

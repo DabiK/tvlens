@@ -8,6 +8,7 @@ const Module = require('node:module');
 const { EventEmitter } = require('node:events');
 const { createHash, randomUUID } = require('node:crypto');
 const sharp = require('sharp');
+const { shape } = require('./helpers/source-shape.cjs');
 
 // The Mac host without Electron. First the contract read statically from the two files; then the real
 // app/main.cjs and app/preload.cjs wired to each other through a stand-in for Electron (simulated agents,
@@ -85,13 +86,22 @@ test('the bridge exposes exactly the names of the contract, on its channels, and
 
 test('every bridge call has its handler, every event its listener, and the host no longer purges, preempts or knows Auto', () => {
   const all = (source, pattern) => [...new Set([...source.matchAll(pattern)].map(match => match[1]))].sort();
+  // The host is read through its shape, so that the layout of its code is not what the test checks: quotes, spaces
+  // and line breaks are gone, hence the patterns below write no space around punctuation. A fragment is shaped like the text.
+  const main = shape(mainSource);
+  const has = fragment => main.includes(shape(fragment));
+  const between = (from, to) => {
+    const start = main.indexOf(shape(from)), end = main.indexOf(shape(to));
+    assert.ok(start >= 0 && end >= 0, `app/main.cjs still contains ${from} and ${to}`);
+    return main.slice(start, end);
+  };
   const bridge = loadBridge();
   // Call every method once: the channels are those the preload really uses, not a reading of its text.
   for (const api of [bridge.tvlens, bridge.capture]) for (const method of Object.values(api)) method(() => {});
   const invoked = [...new Set(bridge.invoked.map(call => call.channel))].sort(), listened = [...bridge.listeners.keys()].sort();
   // handle('…') is the guarded IPC registration of the host (protocol.handle is not IPC); send('…') covers both
   // its guarded helper and direct webContents.send calls.
-  const handled = all(mainSource, /(?<![.\w])handle\(\s*'([^']+)'/g), sent = all(mainSource, /\bsend\(\s*'([^']+)'/g);
+  const handled = all(main, /(?<![.\w])handle\(\s*'([^']+)'/g), sent = all(main, /\bsend\(\s*'([^']+)'/g);
   assert.deepEqual(invoked, handled, 'bridge calls and host handlers are the same set: no dead channel on either side');
   assert.deepEqual(sent, listened, 'host events and bridge listeners are the same set');
   for (const channel of [...handled, ...sent]) assert.doesNotMatch(channel, /^auto:/, channel);
@@ -101,20 +111,20 @@ test('every bridge call has its handler, every event its listener, and the host 
   // Durable sessions: no general sweep at start, at a new session or at quit. Decision 8: nothing manual
   // suspends or cancels the surveillance, and a question no longer cancels the manual verification.
   for (const gone of ['cleanupRawMedia', 'prioritizeManual', 'auto-monitor', 'AutoMonitor', 'autoAgent', 'saveAuto', 'retentionMs: 300000', 'retentionMs:300000'])
-    assert.ok(!mainSource.includes(gone), `app/main.cjs still contains ${gone}`);
+    assert.ok(!has(gone), `app/main.cjs still contains ${gone}`);
   assert.equal(fs.existsSync(path.join(root, 'core', 'auto-monitor.cjs')), false, 'core/auto-monitor.cjs is removed');
-  assert.equal([...mainSource.matchAll(/verifierAdapter\??\.cancel\?\.\(\)/g)].length, 2, 'the manual verification is cancelled by its own button and at quit, nowhere else');
-  assert.match(mainSource, /handle\('verify:cancel', \(\) => verifierAdapter\.cancel\?\.\(\)\)/);
-  assert.equal([...mainSource.matchAll(/surveillance\.stop\(/g)].length, 1, 'only the explicit stop channel stops the surveillance');
-  assert.match(mainSource, /handle\('surveillance:stop', \(\) => surveillance\.stop\(/);
+  assert.equal([...main.matchAll(/verifierAdapter\??\.cancel\?\.\(\)/g)].length, 2, 'the manual verification is cancelled by its own button and at quit, nowhere else');
+  assert.ok(has("handle('verify:cancel', () => verifierAdapter.cancel?.())"), 'the manual verification is cancelled by its own channel');
+  assert.equal([...main.matchAll(/surveillance\.stop\(/g)].length, 1, 'only the explicit stop channel stops the surveillance');
+  assert.ok(has("handle('surveillance:stop', () => surveillance.stop("), 'the surveillance is stopped by its own channel');
   // The surveillance agent is its own: never the chat agent, never the manual verification adapter.
-  const composition = mainSource.slice(mainSource.indexOf('createSurveillanceRuntime({'), mainSource.indexOf('surveillanceTimer = setInterval'));
-  assert.match(composition, /agent: smoke && [^,]*new SimulatedSurveillanceAgent\(/);
+  const composition = between('createSurveillanceRuntime({', 'surveillanceTimer = setInterval');
+  assert.match(composition, /agent:smoke&&[^,]*new SimulatedSurveillanceAgent\(/);
   assert.doesNotMatch(composition, /videoAgent|verifierAdapter/);
-  assert.match(mainSource, /sweepStaleContexts\(\)\)\.catch\(/, 'stale Codex contexts are swept once at start, without failing it');
+  assert.match(main, /sweepStaleContexts\(\)\)\.catch\(/, 'stale Codex contexts are swept once at start, without failing it');
   // A question may run five minutes: like production, the simulated and the fallback configuration let vision go on meanwhile.
-  assert.match(mainSource, /model: 'test\/fake', visionDuringAsk: true \}/);
-  assert.match(mainSource, /audioInput: true, visionDuringAsk: process\.env\.TVLENS_VISION_DURING_ASK !== '0' \}/);
+  assert.ok(has("model: 'test/fake', visionDuringAsk: true }"), 'the simulated configuration lets vision go on');
+  assert.ok(has("audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }"), 'the fallback configuration lets vision go on');
 });
 
 // ---- The real main process behind the real bridge, without Electron ----------------------------------
