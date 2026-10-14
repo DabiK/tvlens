@@ -2,6 +2,7 @@ const { createConversationRuntime } = require('../runtime/conversation-runtime.c
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
+const { createQuestionCheckpoint } = require('../runtime/question-checkpoint.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
@@ -139,25 +140,12 @@ app.whenReady().then(async () => {
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
   const ask = (question, options) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return deep.start(question, options); };
-  // Durability of the questions, apart from their publication: same rule as the server host. A question that
-  // appears, leaves or changes status is saved at once, final states included. Between two of those, the draft
-  // of a running answer is pushed to the window each time and saved at most once a second, the latest state
-  // after that delay even when the answer then stops moving. What waits is kept with the store of its own
-  // session: a save that comes late never reaches the session loaded since, nor a sealed one.
-  let unsavedQuestions = null, checkpointTimer = null, savedShape = null;
-  const saveQuestions = () => {
-    clearTimeout(checkpointTimer); checkpointTimer = null;
-    const waiting = unsavedQuestions; unsavedQuestions = null;
-    if (!waiting) return;
-    // A refusal is not lost here: the store keeps it for the barrier that ends the session.
-    savedShape = waiting.shape; waiting.store.saveResearch(waiting.state).catch(() => {});
-  };
-  const checkpoint = (target, state) => {
-    const shape = state.jobs.map(j => `${j.id}:${j.status}`).join();
-    unsavedQuestions = { store: target, state, shape };
-    if (shape !== savedShape || !state.jobs.some(j => ['queued', 'running'].includes(j.status))) saveQuestions();
-    else checkpointTimer ||= setTimeout(saveQuestions, 1000);
-  };
+  // Durability of the questions, apart from their publication. A question that appears, leaves or changes
+  // status is saved at once, final states included. Between two of those, the draft of a running answer is
+  // pushed to the window each time and saved at most once a second, the latest state after that delay even
+  // when the answer then stops moving. What waits is kept with the store of its own session: a save that
+  // comes late never reaches the session loaded since, nor a sealed one.
+  const questionSaves = createQuestionCheckpoint();
   const conversation = createConversationRuntime({
     getSession: () => ({ watch, search, inspector, store }),
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
@@ -168,7 +156,7 @@ app.whenReady().then(async () => {
     if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
     if (!window.isDestroyed()) window.webContents.send('deep:state', state);
     // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
-    if (watch && store) checkpoint(store, { ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) });
+    if (watch && store) questionSaves.checkpoint(store, { ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) });
   } });
   videoAgent = conversation.agent;
   deep = conversation.deep;
@@ -363,7 +351,7 @@ app.whenReady().then(async () => {
           ['surveillance', () => surveillance.reset(reason)],
           // Final states are saved as they are published; whatever still waited for its second is handed over too,
           // before the session is archived or sealed.
-          ['questions', () => settleQuestions(deep, reason, saveQuestions)],
+          ['questions', () => settleQuestions(deep, reason, () => questionSaves.flush())],
           ['agent de chat', () => videoAgent.close?.()],
           // A passage being stored lands first; only a capture still running is stopped.
           ['capture', async () => { await Promise.allSettled([...ingestions]); if (ended?.watch.accepting) await ended.pause(); }],
@@ -372,7 +360,7 @@ app.whenReady().then(async () => {
         letGo: () => {
           live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
           // Nothing of this session waits past this point: a timer left behind would have nothing to write.
-          clearTimeout(checkpointTimer); checkpointTimer = unsavedQuestions = savedShape = null;
+          questionSaves.forget();
           viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
         },
         log: line => console.error(line),

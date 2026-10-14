@@ -1,7 +1,7 @@
 ---
 id: T118
 titre: Save the questions of both hosts through one shared checkpoint module
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -123,3 +123,30 @@ Aucune décision n'est attendue. Le délai reste `1000` ms ; il devient un param
 réglage d'hôte.
 
 ## Journal
+
+- Cadrage : T157 est terminé, aucune reprise. Exploration (`.harness-state/tickets/T118/exploration.md`) : pas d'écart de périmètre ;
+  lignes de production du ticket exactes, lignes des tests décalées (retrouvés par titre) ; seule la ligne `settled` de
+  `architecture-f07` lit les champs retirés ; différences entre hôtes (filtre par session du Mac, garde `watch && store`, remise
+  à zéro dans `letGo` / `adopt`) gardées hors du module ; T066, T073 et T074 citent les noms retirés et seront périmés.
+- Implémentation : `runtime/question-checkpoint.cjs` et `tests/question-checkpoint.test.cjs` (rouge vu : module absent), puis
+  `runtime/headless-runtime.cjs`, `app/main.cjs` et la ligne `settled` de `tests/architecture-f07.test.cjs`.
+- Preuve de détection (critère 5) : condition de sauvegarde immédiate remplacée par `if (false) flush();`, annulée ensuite
+  (`cmp` identique à la sauvegarde). `node --test tests/question-checkpoint.test.cjs` : 10 tests à ce moment-là, 7 échecs (dont « a question that
+  appears, leaves or changes status is saved at once »). `node --test tests/server-sessions.test.cjs` : 5 échecs sur 14, dont « the
+  draft of an answer is published each time it moves and saved at most once a second… ».
+- Relecture 1 : à corriger, 1 mineur (le test du store ne changeait jamais de store pendant qu'un état attend ; deux mutations
+  passaient). Corrigé par deux tests ajoutés ; rouges vus sous les deux mutations, module inchangé après annulation.
+- Relecture 2 : accepté, 0 bloquant, 0 mineur, 0 hors périmètre.
+- Critère 1 : `node --test tests/question-checkpoint.test.cjs` : 12 tests, 12 verts, 44 ms.
+- Critère 2, un fichier à la fois : `server-sessions` 14/14 en 510 ms ; `mac-ipc-contract` 15/15 en 2 856 ms ;
+  `architecture-f07` 26/26 en 2 485 ms ; `architecture-f06` 17/17 en 4 075 ms. Assertions existantes inchangées.
+- Critères 3 et 4 : `grep -n "saveResearch" app/main.cjs runtime/headless-runtime.cjs` : aucune ligne ;
+  dans le module : ligne 29. `grep -nE "CHECKPOINT_MS|setTimeout\(saveQuestions"` sur les deux hôtes : aucune ligne.
+- Critère 6 : `node scripts/check.mjs` en entier : vert, 757 tests JS et 84 tests Python ; cliquet `cas_de_test` 702 → 714 ;
+  format et lint non lancés (outils non installés).
+
+### Réserves à la clôture
+
+- Hors périmètre : les tickets T066, T073 et T074 citent CHECKPOINT_MS, this.unsaved et this.checkpointTimer, retirés ici ; à réviser avant de les traiter.
+- Hors périmètre : l'ADR 0003 (limites) et 0007 (point 11) disent encore que la règle de cadence est dupliquée dans les deux hôtes.
+- La ligne settled de tests/architecture-f07.test.cjs dépasse encore 160 caractères (162, contre 174 avant) ; non découpée pour ne rien changer d'autre dans ce fichier.

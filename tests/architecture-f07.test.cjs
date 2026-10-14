@@ -184,7 +184,7 @@ async function serverHost(t) {
   };
   return { name: 'server', journal, order, chat, agent, deep: runtime.deep, folder: id => path.join(sessionsRoot, id), runtime: () => runtime.session, lastEnd: () => runtime.lastEnd,
     // Nothing of the questions still waits for its second, and the disk has taken what it was handed: read from the host itself.
-    settled: async () => { await until(() => !runtime.unsaved && !runtime.checkpointTimer, 'the questions are saved'); await runtime.session?.store.serial.catch(() => {}); },
+    settled: async () => { await until(() => !runtime.questionSaves.pending(), 'the questions are saved'); await runtime.session?.store.serial.catch(() => {}); },
     // The reason this adapter gives a session it ends, and the order this host keeps for its closing steps.
     reason: 'Session terminée.', closing: { paused: ['préparations', 'capture', 'questions', 'surveillance', 'agent de chat', 'archive'], capturing: ['préparations', 'capture', 'questions', 'surveillance', 'agent de chat', 'archive'] },
     start: async () => { const { value } = await req('/v1/session/start', {}); recorded(order, runtime.session, 'pause', 'capture'); recorded(order, runtime.session, 'archive', 'archive'); return value.id; },

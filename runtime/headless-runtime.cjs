@@ -16,6 +16,7 @@ const {
   settleQuestions,
   attempt,
 } = require("./session-closing.cjs");
+const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard, STORAGE_FULL } = require("../adapters/disk-guard.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
@@ -59,12 +60,6 @@ const HEADER = [
   "coverage",
 ];
 const active = (job) => job.status === "queued" || job.status === "running";
-// Durability of the questions, apart from their publication. A question that appears, leaves or changes
-// status is saved at once, final states included. Between two of those, the draft of a running answer
-// moves many times a second: it is published each time and saved at most this often, the latest state
-// after this delay even when the answer then stops moving.
-const CHECKPOINT_MS = 1000;
-const shapeOf = (jobs) => jobs.map((job) => `${job.id}:${job.status}`).join();
 // The transport turns `status` into the HTTP status and `code` into a reason a client can act on.
 const refusal = (status, message, code) =>
   Object.assign(new Error(message), { status, code });
@@ -262,11 +257,8 @@ class HeadlessRuntime {
     this.sessionState = null;
     this.derived = null;
     this.fresh = false;
-    // The state of the questions not saved yet, with the session it belongs to, the timer that will save
-    // it and the shape last handed to the store.
-    this.unsaved = null;
-    this.checkpointTimer = null;
-    this.savedShape = null;
+    // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
+    this.questionSaves = createQuestionCheckpoint();
     // One guard for the host: the sessions it creates and the library that lists and deletes them
     // decide on the same measurement. A simulated run has none unless it is handed one.
     this.guard =
@@ -299,7 +291,7 @@ class HeadlessRuntime {
             if (!busy) queueMicrotask(() => watch.drain());
           }
           // The questions in memory are those of this session and no other: adopt() replaces both together.
-          this.checkpoint(session, state);
+          this.questionSaves.checkpoint(session.store, state);
         }
         this.emit();
       },
@@ -396,31 +388,6 @@ class HeadlessRuntime {
     this.revision++;
     this.storageKey = JSON.stringify(this.storage());
     for (const listener of this.listeners) listener(this.snapshot());
-  }
-  // What is saved of the questions, and when (see CHECKPOINT_MS). The state waits with the session it was
-  // published for: a save that comes late is written into that session's folder, never into the one loaded
-  // since, and into none once its store is sealed.
-  checkpoint(session, state) {
-    const shape = shapeOf(state.jobs);
-    this.unsaved = { session, state, shape };
-    if (shape !== this.savedShape || !state.jobs.some(active))
-      this.saveQuestions();
-    else
-      this.checkpointTimer ||= setTimeout(
-        () => this.saveQuestions(),
-        CHECKPOINT_MS,
-      );
-  }
-  // Hands the store whatever waits, now. A refusal is not lost here: the store keeps it for the barrier
-  // that ends the session.
-  saveQuestions() {
-    clearTimeout(this.checkpointTimer);
-    this.checkpointTimer = null;
-    const waiting = this.unsaved;
-    this.unsaved = null;
-    if (!waiting) return;
-    this.savedShape = waiting.shape;
-    waiting.session.store.saveResearch(waiting.state).catch(() => {});
   }
   // Session onChange. A session that is no longer the one in memory publishes nothing.
   published(state) {
@@ -630,8 +597,7 @@ class HeadlessRuntime {
   adopt(session, jobs = []) {
     // Nothing of the former session waits past this point: what it had to save was handed over when its
     // questions were settled, and a timer left behind would have nothing to write.
-    clearTimeout(this.checkpointTimer);
-    this.checkpointTimer = this.unsaved = this.savedShape = null;
+    this.questionSaves.forget();
     this.deep.restore(jobs);
     this.session = session;
     this.sessionState = session ? session.watch.snapshot() : null;
@@ -875,7 +841,9 @@ class HeadlessRuntime {
           [
             "questions",
             () =>
-              settleQuestions(this.deep, reason, () => this.saveQuestions()),
+              settleQuestions(this.deep, reason, () =>
+                this.questionSaves.flush(),
+              ),
           ],
           ["surveillance", () => this.surveillance.reset(reason)],
           ["agent de chat", () => this.agent.close?.()],
