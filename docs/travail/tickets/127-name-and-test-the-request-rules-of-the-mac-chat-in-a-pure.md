@@ -2,7 +2,7 @@
 id: T127
 titre: Name and test the request rules of the Mac chat in a pure module
 statut: a-faire
-bloque_par: T152
+bloque_par: T157
 adr: non
 installe: non
 harnais: non

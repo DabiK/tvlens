@@ -2,7 +2,7 @@
 id: T118
 titre: Save the questions of both hosts through one shared checkpoint module
 statut: a-faire
-bloque_par: T152
+bloque_par: T157
 adr: non
 installe: non
 harnais: non

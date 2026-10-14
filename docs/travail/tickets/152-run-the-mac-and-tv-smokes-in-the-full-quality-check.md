@@ -2,7 +2,7 @@
 id: T152
 titre: Run the Mac and TV smokes in the full quality check
 statut: a-faire
-bloque_par: T157
+bloque_par: T145
 adr: non
 installe: non
 harnais: oui
@@ -56,6 +56,10 @@ personne regarde, de jour comme de nuit.
 
   On peut repartir de ce diff, en l'appliquant par `git apply`. Il se revérifie alors en entier : tests vus
   rouges sans lui, mutation du critère 3, relecteur neuf sur l'état final, puis les critères 2 et 4.
+- Deuxième tentative, le 14/10 : arrêtée par le propriétaire avant ses contrôles complets. T157 n'a pas établi la
+  cause de l'échec de `smoke-electron.mjs` : au clic, une seule transcription est en cours, et une transcription qui
+  dépasse son plafond de 15 s fait abandonner la conservation sans que le smoke le sache. Le ticket est parqué
+  derrière T145 tant que ce smoke n'est pas fiable. Travail gardé dans `.harness-state/archives/T152-arrete-2/`.
 
 ## Périmètre
 

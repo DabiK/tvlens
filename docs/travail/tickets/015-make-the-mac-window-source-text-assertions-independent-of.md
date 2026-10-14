@@ -2,7 +2,7 @@
 id: T015
 titre: Make the Mac window source-text assertions independent of code layout
 statut: a-faire
-bloque_par: T152
+bloque_par: T157
 adr: non
 installe: non
 harnais: non

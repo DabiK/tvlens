@@ -2,7 +2,7 @@
 id: T121
 titre: Revoke the inspector of a closed session through a core decorator
 statut: a-faire
-bloque_par: T152
+bloque_par: T157
 adr: non
 installe: non
 harnais: non

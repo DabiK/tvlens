@@ -2,7 +2,7 @@
 id: T116
 titre: Pin the question flag, warm-up and active instruction of the Mac host in tests
 statut: a-faire
-bloque_par: T152
+bloque_par: T157
 adr: non
 installe: non
 harnais: non
