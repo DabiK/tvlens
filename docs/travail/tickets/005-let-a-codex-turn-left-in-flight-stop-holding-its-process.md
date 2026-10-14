@@ -1,7 +1,7 @@
 ---
 id: T005
 titre: Let a Codex turn left in flight stop holding its process alive
-statut: a-faire
+statut: termine
 bloque_par: T004
 adr: non
 installe: non
@@ -95,3 +95,31 @@ minuterie de garde armée pour ce tour par le même client, le même geste s'y a
 dit. Quand c'est un maintien voulu (`hold` de `exitOf`) ou autre chose : verdict BLOQUÉ, avec la liste.
 
 ## Journal
+
+- Exploration : aucun écart de périmètre ; la garde de `run` est la seule minuterie retenue sur le chemin d'un tour
+  avec un transport de substitution ; `exitOf` et `draining.timer` n'ont pas à changer ; la fixture de
+  `codex-connect-race.test.cjs` répond `{}` à `turn/start`, le transport de l'enfant doit rendre `{ turn: { id } }`.
+- Rouge (critère 1) : `node --test tests/codex-abandoned-turn.test.cjs` sur le code de production non modifié :
+  `✖ a host that leaves a turn in flight on a transport double still exits by itself (10007ms)`,
+  `AssertionError: the host was still alive at the bound after leaving its turn`, `true !== false` ; l'assertion
+  `turn-started` placée avant passe. tests 1 / pass 0 / fail 1.
+- Correctif : `watchdog.unref?.()` après chaque `setTimeout` de `check` dans `run`
+  (`adapters/codex-session-client.cjs`), rien d'autre dans la production.
+- Vert (critère 2) : même commande après correctif : tests 1 / pass 1 / fail 0, le test dure environ 30 ms.
+- Critère 3 : `node --test --test-name-pattern="every way a transport is left" tests/architecture-f05.test.cjs` :
+  tests 1 / pass 1 / fail 0.
+- Critère 4 : `node --test --test-concurrency=1 tests/architecture-f05.test.cjs tests/codex-confinement.test.cjs
+  tests/codex-connect-race.test.cjs tests/verification.test.cjs` : tests 44 / pass 44 / fail 0.
+- Relecture 1 : à corriger. Le test attendait `exit` puis lisait la sortie standard, qui peut ne pas être arrivée ;
+  il attend maintenant `close`.
+- Relecture 2 : accepté. Constats mineurs restants : un `.catch(() => {})` dans l'hôte du test masquerait un rejet
+  de `run` après `turn/start` (l'enfant sortirait 0 sans prouver le `unref`).
+- Critère 5 : `node scripts/check.mjs` : vert, tests JS 679 / pass 679 / fail 0, tests Python 84 OK (1 ignoré) ;
+  format et lint non lancés (Prettier et ESLint non installés) ; cliquet `cas_de_test` 646 → 647.
+
+### Réserves à la clôture
+
+- Format et lint sont « non lancés » par le harnais (Prettier et ESLint non installés) : non vérifiés.
+- tests/codex-abandoned-turn.test.cjs : l'hôte enfant porte un `.catch(() => {})` sans commentaire ; si `run` rejetait juste après turn/start, l'enfant sortirait 0 sans prouver le `unref`. Retirer le `.catch` ferait échouer le test dans ce cas (constat mineur de la relecture 2, non corrigé).
+- La relecture n'a pas exécuté de commande : les critères 3, 4 et 5 ont été observés par moi et l'implémenteur, pas par le relecteur.
+- L'absence d'intermittence du test (attente de `close`) n'a pas été démontrée par répétition, seulement par la sémantique de `close`.

@@ -787,6 +787,9 @@ class CodexSessionClient {
               fail(signal.reason);
             } else check();
           }, 1000);
+          // The guard only matters while something else holds the host: a turn left in flight must not keep
+          // a process alive by itself, which a real transport never needs (its pipes hold the host).
+          watchdog.unref?.();
         };
         check();
       });
