@@ -157,15 +157,16 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md) | Move the window and capture source handlers of the Mac host into their own modules | plan court | T146, T148 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) | Move the moment actions and the session rows of the Mac host into their own modules | plan court | T148, T149 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) | Prove the TV panel end to end against the real server fed with TV-shaped capture blocks | plan court | T154 | — | — |
-| [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) | Run the Mac and TV smokes in the full quality check | plan court | T156 | touche au harnais | — |
+| [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) | Run the Mac and TV smokes in the full quality check | plan court | T157 | touche au harnais | — |
 | [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md) | Accept a review only when no finding is left in the ticket's scope | plan court | — | touche au harnais | — |
 | [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md) | Tune the harness instructions from recurring retrospective findings every few tickets | plan court | T155 | touche au harnais | — |
 | [T155](155-wait-for-the-analysed-passages-in-the-slow-disk-server-test.md) | Wait for the analysed passages in the slow-disk server test instead of a fixed number of turns | plan court | T153 | — | [FLK-08](../../audit-maintenabilite.md#FLK-08) |
 | [T156](156-set-aside-what-a-refused-tuning-leaves-and-keep-its-reviewer-out.md) | Set aside what a refused tuning leaves, keep its reviewer out of its reach and brief the next one | plan court | T154 | touche au harnais | — |
+| [T157](157-wait-for-the-kept-moment-in-the-electron-smoke-as-long-as-its.md) | Wait for the kept moment in the Electron smoke as long as its transcriptions can take | plan court | T156 | — | — |
 
 ## Plan court
 
-La semaine du hackathon, la boucle ne traite que ces vingt-six tickets, dans cet ordre, qui est celui où elle les prend. Tous les
+La semaine du hackathon, la boucle ne traite que ces vingt-sept tickets, dans cet ordre, qui est celui où elle les prend. Tous les
 autres tickets « à faire » dépendent de [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md), qui attend la décision de rouvrir la file complète. T145 dit comment la rouvrir.
 
 1. **Filet minimal** : [T004](004-wait-for-the-turn-request-itself-in-the-verifier-deadline.md), [T005](005-let-a-codex-turn-left-in-flight-stop-holding-its-process.md),
@@ -179,7 +180,8 @@ autres tickets « à faire » dépendent de [T145](145-hold-the-full-remediation
    [T156](156-set-aside-what-a-refused-tuning-leaves-and-keep-its-reviewer-out.md) (après T151 et avant la première harmonisation : une harmonisation refusée met de côté au lieu de
    supprimer, ne touche plus à son relecteur, ne reprend plus ses différées et dit à la suivante pourquoi elle a échoué).
 3. **Tester la TV sans la TV** : [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) (scénario de la capture au panneau, contre le vrai
-   serveur), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) (le contrôle complet lance les smokes du Mac et de la TV). Tous les tickets
+   serveur), [T157](157-wait-for-the-kept-moment-in-the-electron-smoke-as-long-as-its.md) (le smoke de la fenêtre Mac attend le moment gardé aussi longtemps que ses transcriptions
+   peuvent durer : un premier essai de T152 a été rouge sur cette attente), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) (le contrôle complet lance les smokes du Mac et de la TV). Tous les tickets
    suivants attendent T152 : un ticket qui casse la fenêtre ou le panneau est refusé sans que personne regarde.
 4. **Règles de l'interface en modules testés** : [T015](015-make-the-mac-window-source-text-assertions-independent-of.md) (gardes indépendantes de la mise en page),
    [T017](017-move-the-search-sequencing-of-the-mac-window-into-a-tested.md), [T018](018-extract-the-reception-rules-of-the-mac-window-as-pure-tested.md) (fenêtre Mac).

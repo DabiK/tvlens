@@ -2,7 +2,7 @@
 id: T152
 titre: Run the Mac and TV smokes in the full quality check
 statut: a-faire
-bloque_par: T156
+bloque_par: T157
 adr: non
 installe: non
 harnais: oui
@@ -46,6 +46,16 @@ personne regarde, de jour comme de nuit.
 - Tests du contrôle : `tests/quality-check.test.cjs`. Ils lancent `scripts/check.mjs` dans un dépôt
   temporaire ; le test l. 99 prouve déjà qu'un budget dépassé arrête tout et ne laisse aucun processus.
 - `CLAUDE.md`, section « Contrôler ».
+- Première tentative, le 14/10 : bloquée. Le premier contrôle complet avec les smokes a été rouge sur
+  `smoke-electron.mjs`, qui attendait le moment gardé 30 s pendant une suite de transcriptions. T157 rend cette
+  attente fiable. La relecture ne laissait que le bloquant des critères 2 et 4, et la session tenait les
+  critères 1, 3, 5 et 6. Son travail est gardé hors Git, dans `.harness-state/archives/T152-bloque-1/` :
+  - `code.patch` : le diff de `scripts/check.mjs`, `tests/quality-check.test.cjs` et `CLAUDE.md` ;
+  - `ticket.patch` : son journal et ses écarts acceptés ;
+  - `etat/` : exploration, écarts, relectures et journaux de contrôle.
+
+  On peut repartir de ce diff, en l'appliquant par `git apply`. Il se revérifie alors en entier : tests vus
+  rouges sans lui, mutation du critère 3, relecteur neuf sur l'état final, puis les critères 2 et 4.
 
 ## Périmètre
 
