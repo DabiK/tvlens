@@ -655,29 +655,134 @@ test('search cards name the session they were searched in: a late answer is not 
   assert.deepEqual([own('moment-3'), own('moment-2'), own('moment-9'), replayTarget({ id: 'moment-1' }, null)],
     [{ refusal: mediaNote(b.segments[1]).long }, { refusal: mediaNote(b.history[0]).long }, { refusal: mediaNote(undefined).long }, { refusal: mediaNote(undefined).long }]);
 
-  // The window itself cannot be loaded here: at least it empties the results when the session is reset or changes,
-  // draws an answer only for the latest request and through searchCards, and has replay() ask replayTarget.
-  // Read through its shape, like the fragments below: a pattern writes no space around punctuation and no semicolon.
+  // The window itself cannot be loaded here: its wiring is read through its shape, like the fragments below: a pattern
+  // writes no space around punctuation and no semicolon. The order of a search is proven by the controller tests below.
   const renderer = shaped('renderer.js');
   const between = (from, to) => {
     const start = renderer.indexOf(shape(from)), end = renderer.indexOf(shape(to));
     assert.ok(start >= 0 && end >= 0, `the renderer no longer contains ${from} and ${to}`);
     return renderer.slice(start, end);
   };
-  const clearing = "function clearSearch() { searchRevision++; $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }";
-  assert.ok(holds(renderer, clearing), 'clearSearch takes a new revision and empties the results and their status');
-  assert.match(renderer, /if\(currentState\?\.id!==state\.id\)\{[^}]*clearSearch\(\)[^}]*\}/, 'another session empties the results');
-  assert.ok(between('function clearSession()', 'bridge.onReset(clearSession)').includes(shape('clearSearch();')), 'a reset empties the results');
-  const submit = between("$('moment-search-form').onsubmit", "$('shortcut-form').onsubmit");
-  const at = text => { const index = submit.indexOf(shape(text)); assert.ok(index >= 0, `the search form no longer contains ${text}`); return index; };
-  // In this order: the request takes its number, a superseded answer is dropped, the others go through searchCards before anything is drawn.
-  assert.ok(at('const revision=++searchRevision;') < at('await bridge.searchMoments(') && at('await bridge.searchMoments(') < at('if(revision!==searchRevision)return;')
-    && at('if(revision!==searchRevision)return;') < at('const cards=searchCards(found,currentState);if(!cards)return clearSearch();') && at('searchCards(found,currentState)') < at("$('search-results').replaceChildren(...cards.map("));
-  // A refusal that arrives late is dropped like a late answer: the new session never reads the error of the former one.
-  at("catch(e){if(revision===searchRevision)$('search-status').textContent=reason(e);}");
+  assert.match(renderer, /if\(currentState\?\.id!==state\.id\)\{[^}]*search\.clear\(\)[^}]*\}/, 'another session empties the results');
+  assert.ok(between('function clearSession()', 'bridge.onReset(clearSession)').includes(shape('search.clear();')), 'a reset empties the results');
+  assert.ok(holds(renderer, "onClear: () => { $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }"),
+    'clearing the search empties the results and puts the introduction back');
   assert.ok(holds(renderer, 'if(!savedId)return replay(moment.id,0,moment);'), 'a search card hands itself, session included, to replay()');
   assert.ok(holds(renderer, 'replayTarget({ id, sessionId: card ? card.sessionId : currentState?.id }, currentState)'), 'replay() asks replayTarget');
   assert.ok(!/tvlens-media:\/\/\$\{currentState\.id\}\/\$\{/.test(renderer), 'the address of a passage is built by replayTarget alone');
+});
+
+// A request the test holds: it answers or refuses when the test says so, never on a timer.
+const deferred = () => {
+  const held = {};
+  held.promise = new Promise((resolve, reject) => { held.resolve = resolve; held.reject = reject; });
+  return held;
+};
+
+// A controller whose searches are the held requests, in the order they are asked, and whose observers write a log.
+async function searchHarness({ session = { id: 'session-a' }, onResult } = {}) {
+  const { createSearchController } = await ui('search-controller');
+  const log = [], requests = [];
+  const state = { session };
+  const search = query => { const held = deferred(); requests.push({ query, ...held }); return held.promise; };
+  const controller = createSearchController({
+    search,
+    session: () => state.session,
+    onStart: () => log.push(['start']),
+    onResult: onResult || ((cards, found) => log.push(['result', cards, found])),
+    onClear: () => log.push(['clear']),
+    onFailure: error => log.push(['failure', error]),
+  });
+  return { controller, log, requests, state };
+}
+
+const answerFor = (sessionId, ...ids) => ({ sessionId, mode: 'lexical', warnings: [], moments: ids.map(id => ({ id, startMs: 0, endMs: 1000, text: id })) });
+
+test('a search says it left, then draws its answer through searchCards with the session loaded when it answers', async () => {
+  const { controller, log, requests, state } = await searchHarness();
+  const done = controller.submit('un cercle');
+  // It left before the host answered, and with the words the viewer typed.
+  assert.deepEqual([log, requests.map(request => request.query)], [[['start']], ['un cercle']]);
+  state.session = { id: 'session-b' };
+  const found = answerFor('session-b', 'moment-1');
+  requests[0].resolve(found);
+  await done;
+  assert.deepEqual(log, [['start'], ['result', [{ ...found.moments[0], sessionId: 'session-b' }], found]]);
+});
+
+test('of two searches, only the one asked last is drawn: the older one, answering last, draws and writes nothing', async () => {
+  const { controller, log, requests } = await searchHarness();
+  const first = controller.submit('premier');
+  const second = controller.submit('second');
+  const newer = answerFor('session-a', 'moment-2');
+  requests[1].resolve(newer);
+  await second;
+  requests[0].resolve(answerFor('session-a', 'moment-1'));
+  await first;
+  assert.deepEqual(log, [['start'], ['start'], ['result', [{ ...newer.moments[0], sessionId: 'session-a' }], newer]]);
+});
+
+test('an answer searched in another session than the loaded one empties the results and draws nothing', async () => {
+  const { controller, log, requests, state } = await searchHarness();
+  const done = controller.submit('un cercle');
+  state.session = { id: 'session-b' };
+  requests[0].resolve(answerFor('session-a', 'moment-1'));
+  await done;
+  assert.deepEqual(log, [['start'], ['clear']]);
+  // The same goes for an answer that names no session, and for one that arrives with nothing loaded.
+  const second = controller.submit('un cercle');
+  requests[1].resolve({ mode: 'lexical', warnings: [], moments: [] });
+  await second;
+  state.session = null;
+  const third = controller.submit('un cercle');
+  requests[2].resolve(answerFor('session-b', 'moment-1'));
+  await third;
+  assert.deepEqual(log, [['start'], ['clear'], ['start'], ['clear'], ['start'], ['clear']]);
+});
+
+test('a clear while a search is on its way drops its answer, and clearing always tells the observer', async () => {
+  const { controller, log, requests } = await searchHarness();
+  controller.clear();
+  assert.deepEqual(log, [['clear']]);
+  const done = controller.submit('un cercle');
+  controller.clear();
+  requests[0].resolve(answerFor('session-a', 'moment-1'));
+  await done;
+  assert.deepEqual(log, [['clear'], ['start'], ['clear']]);
+});
+
+test('a refusal is told once when the search is still the latest, and not when it was cleared or superseded', async () => {
+  const { controller, log, requests } = await searchHarness();
+  const refusal = new Error('refused');
+  const current = controller.submit('un cercle');
+  requests[0].reject(refusal);
+  await current;
+  assert.deepEqual(log, [['start'], ['failure', refusal]]);
+
+  log.length = 0;
+  const cleared = controller.submit('un cercle');
+  controller.clear();
+  requests[1].reject(new Error('late'));
+  await cleared;
+  assert.deepEqual(log, [['start'], ['clear']]);
+
+  log.length = 0;
+  const old = controller.submit('premier');
+  const latest = controller.submit('second');
+  requests[2].reject(new Error('late'));
+  await old;
+  requests[3].resolve(answerFor('session-a', 'moment-1'));
+  await latest;
+  assert.deepEqual(log.map(entry => entry[0]), ['start', 'start', 'result']);
+});
+
+test('an observer that fails while drawing an answer has that failure told as the refusal of the search', async () => {
+  const drawing = new Error('cannot draw');
+  const { controller, log, requests } = await searchHarness({ onResult: () => { throw drawing; } });
+  const done = controller.submit('un cercle');
+  requests[0].resolve(answerFor('session-a', 'moment-1'));
+  await done;
+  assert.deepEqual(log, [['start'], ['failure', drawing]]);
 });
 
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------

@@ -1,7 +1,7 @@
 ---
 id: T017
 titre: Move the search sequencing of the Mac window into a tested controller
-statut: a-faire
+statut: termine
 bloque_par: T015
 adr: non
 installe: non
@@ -97,3 +97,26 @@ Aucune décision n'est attendue. Si l'extraction oblige à changer un texte affi
 états de la recherche, ou `app/ui/search-view.mjs` : verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+- Exploration : rapport dans `.harness-state/tickets/T017/exploration.md`. Aucun écart de périmètre ; numéros de ligne du ticket périmés
+  (test l.631, gestionnaire l.575). Le contrôleur reçoit la session par un getter ; la phrase de résultat reste dans `renderer.js`
+  avec le paramètre `found` (garde l.740-741). Risque relevé : le corps du rappel d'effacement n'est plus prouvé, garde de branchement
+  ajoutée (voir `ecarts.md`). `grep -c searchRevision app/renderer.js` = 3, `test(` = 15 au départ.
+- Implémentation : `app/ui/search-controller.mjs` créé, `app/renderer.js` branché (`search.submit`, `search.clear()` dans `receiveState` et
+  `clearSession`), six tests du contrôleur avec promesses différées ; gardes de branchement adaptées, garde du rappel d'effacement ajoutée.
+  `node --test tests/mac-ui.test.cjs` : 21 tests, 21 réussis. `grep -c searchRevision app/renderer.js` : 0. `test(` : 15 → 21.
+- Faute injectée (critère 3) : `search.clear();` retiré à la main de `clearSession`, `node --test tests/mac-ui.test.cjs` : 21 tests, 20 réussis, 1 échec :
+  `✖ search cards name the session they were searched in: ...` / `AssertionError [ERR_ASSERTION]: a reset empties the results`.
+  Ligne remise à la main, relance : 21 réussis, 0 échec.
+- Relecture 1 : à corriger (1 mineur : nom d'un test faux ; 1 hors périmètre). Nom corrigé. Relecture 2 (relecteur neuf) : accepté,
+  0 bloquant, 0 mineur, 1 hors périmètre (la fiche `docs/travail/fiches/interface-mac.md` cite encore `searchRevision`).
+- Contrôle : `node scripts/check.mjs` : vert, 736 tests JS, 84 tests Python (1 ignoré). Format et lint : non lancés (outils absents).
+  Aucun smoke Electron lancé : le comportement dans la vraie fenêtre n'est pas observé.
+
+### Réserves à la clôture
+
+- Hors périmètre : docs/travail/fiches/interface-mac.md:26 cite encore `searchRevision` (l.572, lot L02), qui n'existe plus dans app/renderer.js ; à mettre à jour dans un ticket ultérieur.
+- Écart accepté, critère 2 : « ces tests » lu comme les tests du contrôleur ; tests/mac-ui.test.cjs importe toujours `vm` pour des tests voisins hors périmètre.
+- Écart accepté, critère 3 : garde de branchement ajoutée sur le rappel d'effacement (vide #search-results, remet le texte d'introduction), pour ne pas perdre la preuve du corps de clearSearch.
+- Non vérifié : Prettier et ESLint non lancés (outils absents) ; aucun smoke Electron, le comportement dans la vraie fenêtre n'est pas observé.
+- Cycle rouge non vu pour le contrôleur lui-même : le module a été écrit avant ses tests, aucune mutation du contrôleur n'a été faite ; seul le branchement a été vu rouge puis vert.

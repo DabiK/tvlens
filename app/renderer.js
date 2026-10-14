@@ -6,7 +6,8 @@ import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs
 import { clockLabel } from './ui/job-view.mjs';
 import { describeSurveillance, isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
 import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
-import { searchCards, replayTarget } from './ui/search-view.mjs';
+import { replayTarget } from './ui/search-view.mjs';
+import { createSearchController } from './ui/search-controller.mjs';
 import { CardQueue, CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
 import { KeyedList, isNearBottom, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
 import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
@@ -185,7 +186,7 @@ const previewOf = id => momentPreviews.get(id) || (passages.get(id)?.thumbnailAv
 // ---- Loaded session --------------------------------------------------------------------------
 function receiveState(state) {
   if (!state) return;
-  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; clearSearch(); }
+  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; search.clear(); }
   currentState = state;
   passages = new Map();
   for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
@@ -540,7 +541,7 @@ $('new-session').onclick = $('archive-new').onclick = startNewSession;
 function clearSession() {
   recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; selectedMoment = null; cancelling.clear();
   surveillanceRegistry = null; registryKey = ''; shownError = '';
-  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear(); clearSearch();
+  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear(); search.clear();
   renderRecap();
   $('elapsed').textContent = '00:00'; $('mode').textContent = 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
   $('memory-status').textContent = 'Les passages apparaîtront après quelques secondes de capture.'; $('chat-coverage').textContent = '';
@@ -569,10 +570,19 @@ $('nav-saved').onclick=$('open-library').onclick;
 $('nav-search').onclick=async()=>{await openLibrary();$('moment-query').focus();};
 // Search results belong to the session they were searched in and to the latest request: a reset or another session
 // empties them, and an answer or a refusal still on its way is dropped instead of being drawn in the new session.
-let searchRevision = 0;
 const searchIntro = $('search-status').textContent;
-function clearSearch() { searchRevision++; $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }
-$('moment-search-form').onsubmit=async e=>{e.preventDefault();const revision=++searchRevision;$('search-status').textContent='Recherche dans la session…';try{const found=await bridge.searchMoments($('moment-query').value);if(revision!==searchRevision)return;const cards=searchCards(found,currentState);if(!cards)return clearSearch();$('search-results').replaceChildren(...cards.map(m=>momentCard(m)));$('search-status').textContent=`${plural(found.moments.length,'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;}catch(e){if(revision===searchRevision)$('search-status').textContent=reason(e);}};
+const search = createSearchController({
+  search: query => bridge.searchMoments(query),
+  session: () => currentState,
+  onStart: () => { $('search-status').textContent = 'Recherche dans la session…'; },
+  onResult: (cards, found) => {
+    $('search-results').replaceChildren(...cards.map(m => momentCard(m)));
+    $('search-status').textContent = `${plural(found.moments.length, 'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;
+  },
+  onClear: () => { $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; },
+  onFailure: e => { $('search-status').textContent = reason(e); },
+});
+$('moment-search-form').onsubmit = e => { e.preventDefault(); search.submit($('moment-query').value); };
 $('shortcut-form').onsubmit=async e=>{e.preventDefault();try{await bridge.saveViewingSettings({bookmarkShortcut:$('bookmark-shortcut').value.trim()});$('shortcut-status').textContent='Raccourci enregistré.';}catch(e){$('shortcut-status').textContent=reason(e);}};
 $('cancel-delete-saved').onclick=()=>$('delete-saved-dialog').close();$('confirm-delete-saved').onclick=async()=>{try{await bridge.removeSaved(deleteSavedId);$('delete-saved-dialog').close();await renderSaved();}catch(e){notice(reason(e));}};
 bridge.onSaved(()=>{notice('Moment conservé sur ce Mac jusqu’à suppression.');renderSavedRail().catch(()=>{});if($('library-dialog').open)renderSaved().catch(()=>{});});bridge.onSaveError(message=>notice(reason(message)));
