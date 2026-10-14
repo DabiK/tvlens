@@ -2,7 +2,7 @@
 id: T151
 titre: Prove the TV panel end to end against the real server fed with TV-shaped capture blocks
 statut: a-faire
-bloque_par:
+bloque_par: T153
 adr: non
 installe: non
 harnais: non
