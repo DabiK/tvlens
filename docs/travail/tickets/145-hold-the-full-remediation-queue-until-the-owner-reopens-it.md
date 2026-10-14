@@ -13,7 +13,7 @@ niveau:
 ## Ce que le ticket livre
 
 Ce ticket ne se traite pas en session : il retient la file. Le 14/10, le propriétaire a choisi un plan
-court pour la semaine du hackathon, vingt-trois tickets à forte valeur, à la place de la file complète des
+court pour la semaine du hackathon, vingt-cinq tickets à forte valeur, à la place de la file complète des
 127 tickets de dette. Les tickets hors du plan court gardent leur texte, mais chacun porte
 T145 dans `bloque_par` : la boucle ne les prend pas tant que ce ticket n'est pas terminé.
 

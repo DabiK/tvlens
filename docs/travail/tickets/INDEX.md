@@ -156,20 +156,25 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T148](148-hold-the-loaded-mac-session-in-one-object-instead-of-nine.md) | Hold the loaded Mac session in one object instead of nine host variables | plan court | T116, T118, T119 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md) | Move the window and capture source handlers of the Mac host into their own modules | plan court | T146, T148 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) | Move the moment actions and the session rows of the Mac host into their own modules | plan court | T148, T149 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
-| [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) | Prove the TV panel end to end against the real server fed with TV-shaped capture blocks | plan court | T153 | — | — |
+| [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) | Prove the TV panel end to end against the real server fed with TV-shaped capture blocks | plan court | T154 | — | — |
 | [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) | Run the Mac and TV smokes in the full quality check | plan court | T151 | touche au harnais | — |
 | [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md) | Accept a review only when no finding is left in the ticket's scope | plan court | — | touche au harnais | — |
+| [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md) | Tune the harness instructions from recurring retrospective findings every few tickets | plan court | T155 | touche au harnais | — |
+| [T155](155-wait-for-the-analysed-passages-in-the-slow-disk-server-test.md) | Wait for the analysed passages in the slow-disk server test instead of a fixed number of turns | plan court | T153 | — | [FLK-08](../../audit-maintenabilite.md#FLK-08) |
 
 ## Plan court
 
-La semaine du hackathon, la boucle ne traite que ces vingt-trois tickets, dans cet ordre, qui est celui où elle les prend. Tous les
+La semaine du hackathon, la boucle ne traite que ces vingt-cinq tickets, dans cet ordre, qui est celui où elle les prend. Tous les
 autres tickets « à faire » dépendent de [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md), qui attend la décision de rouvrir la file complète. T145 dit comment la rouvrir.
 
 1. **Filet minimal** : [T004](004-wait-for-the-turn-request-itself-in-the-verifier-deadline.md), [T005](005-let-a-codex-turn-left-in-flight-stop-holding-its-process.md),
    [T006](006-read-the-session-folder-only-after-the-store-has-finished.md) : les trois causes connues d'échec ou de blocage des tests sous
    charge.
-2. **Une relecture sans fuite** : [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md) : un relecteur n'accepte que s'il ne reste aucun constat dans le
-   périmètre, et un écart à un critère se déclare avant l'implémentation.
+2. **Une relecture sans fuite, un harnais qui apprend** : [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md) (un relecteur n'accepte que s'il ne
+   reste aucun constat dans le périmètre, et un écart à un critère se déclare avant l'implémentation),
+   [T155](155-wait-for-the-analysed-passages-in-the-slow-disk-server-test.md) (le test du disque lent, qui a fait rougir le contrôle complet pendant T153, attend le fait publié
+   au lieu d'un nombre de tours), [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md) (`--tune-every N` : tous les N tickets, une session corrige les
+   consignes du harnais d'après les problèmes qui reviennent dans les rétrospectives, sans toucher aux contrôles).
 3. **Tester la TV sans la TV** : [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) (scénario de la capture au panneau, contre le vrai
    serveur), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) (le contrôle complet lance les smokes du Mac et de la TV). Tous les tickets
    suivants attendent T152 : un ticket qui casse la fenêtre ou le panneau est refusé sans que personne regarde.
@@ -187,8 +192,8 @@ autres tickets « à faire » dépendent de [T145](145-hold-the-full-remediation
 11. **Hôte Mac** : [T148](148-hold-the-loaded-mac-session-in-one-object-instead-of-nine.md) (la session chargée en un objet), [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md)
     (fenêtre et source capturée), [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) (actions sur un moment et liste des sessions).
 
-Niveaux : T146 est `simple` (relu par Sonnet), T148 `sensible` (Opus dès la première tentative), T132 `sensible` par son ADR, T152 et T153
-`critique` parce qu'ils touchent au harnais. Les autres sont `standard` : Sonnet implémente, Opus relit.
+Niveaux : T146 est `simple` (relu par Sonnet), T148 `sensible` (Opus dès la première tentative), T132 `sensible` par son ADR, T152, T153 et
+T154 `critique` parce qu'ils touchent au harnais. Les autres sont `standard` : Sonnet implémente, Opus relit.
 
 Le découpage par zone de `app/renderer.js` et de `tv/app/companion.js` s'écrira après les étapes 4 et 8, contre le code qu'elles
 laissent. Hors du plan court, derrière T145 : les tickets de l'overlay de la TV (la surveillance reste dans le panneau ouvert), la
@@ -220,7 +225,7 @@ section « Hypothèses bloquantes » du ticket.
 
 - **Demande un ADR** (`adr: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T036](036-add-a-journal-port-with-a-stderr-sink-and-a-contract-test.md), [T038](038-exercise-the-v1-wire-with-the-real-tv-client-and-write-its.md), [T052](052-answer-an-unexpected-server-error-with-a-generic-500-and.md), [T066](066-drive-the-question-checkpoint-of-the-server-host-with-an.md), [T071](071-inject-the-disk-into-the-session-store-and-library-with-a.md), [T072](072-let-a-session-say-what-it-still-has-in-flight-and-when-it-is.md), [T125](125-decide-description-retries-and-verifier-failures-on-error.md), [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md), [T135](135-record-the-build-identity-in-a-generated-file-and-read-it.md), [T137](137-describe-every-file-installed-on-the-tv-in-one-manifest.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md).
 - **Installe une dépendance** (`installe: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md).
-- **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md), [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md).
+- **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md), [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md), [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md).
 - **Supprime des tests** (`supprime_tests: oui`) : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md).
 
 ## Par lot
