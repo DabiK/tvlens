@@ -20,10 +20,10 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md) | Run npm test and the quality check through the test launcher | L01 | T007, T145 | touche au harnais | [FLK-05](../../audit-maintenabilite.md#FLK-05), [FLK-13](../../audit-maintenabilite.md#FLK-13), [OUBLI-37](../../audit-maintenabilite.md#OUBLI-37) |
 | [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md) | Give each test file a private temp directory and report what it leaves | L01 | T012, T145 | touche au harnais | [FLK-13](../../audit-maintenabilite.md#FLK-13), [FLK-15](../../audit-maintenabilite.md#FLK-15) |
 | [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md) | Run every Python test from npm test and from the quality check | L01 | T009, T012, T145 | touche au harnais | [TSTC-08](../../audit-maintenabilite.md#TSTC-08), [OUBLI-41](../../audit-maintenabilite.md#OUBLI-41), [OPS-06](../../audit-maintenabilite.md#OPS-06), [FLK-14](../../audit-maintenabilite.md#FLK-14) |
-| [T015](015-make-the-mac-window-source-text-assertions-independent-of.md) | Make the Mac window source-text assertions independent of code layout | L02 | T145 | — | [UI-01](../../audit-maintenabilite.md#UI-01), [OUBLI-24](../../audit-maintenabilite.md#OUBLI-24) |
+| [T015](015-make-the-mac-window-source-text-assertions-independent-of.md) | Make the Mac window source-text assertions independent of code layout | L02 | T152 | — | [UI-01](../../audit-maintenabilite.md#UI-01), [OUBLI-24](../../audit-maintenabilite.md#OUBLI-24) |
 | [T016](016-make-the-static-guards-of-the-mac-renderer-fail-when-they.md) | Make the static guards of the Mac renderer fail when they scan nothing | L02 | T015, T145 | — | [TSTC-04](../../audit-maintenabilite.md#TSTC-04) |
-| [T017](017-move-the-search-sequencing-of-the-mac-window-into-a-tested.md) | Move the search sequencing of the Mac window into a tested controller | L02 | T015, T145 | — | [TSTC-01](../../audit-maintenabilite.md#TSTC-01) |
-| [T018](018-extract-the-reception-rules-of-the-mac-window-as-pure-tested.md) | Extract the reception rules of the Mac window as pure tested functions | L02 | T015, T145 | — | [TSTC-02](../../audit-maintenabilite.md#TSTC-02) |
+| [T017](017-move-the-search-sequencing-of-the-mac-window-into-a-tested.md) | Move the search sequencing of the Mac window into a tested controller | L02 | T015 | — | [TSTC-01](../../audit-maintenabilite.md#TSTC-01) |
+| [T018](018-extract-the-reception-rules-of-the-mac-window-as-pure-tested.md) | Extract the reception rules of the Mac window as pure tested functions | L02 | T015 | — | [TSTC-02](../../audit-maintenabilite.md#TSTC-02) |
 | [T019](019-declare-the-ipc-channels-of-the-mac-host-once-and-check-them.md) | Declare the IPC channels of the Mac host once and check them at runtime | L02 | T015, T145 | — | [TSTC-03](../../audit-maintenabilite.md#TSTC-03), [OUBLI-15](../../audit-maintenabilite.md#OUBLI-15) |
 | [T020](020-prove-on-the-mac-bench-that-a-question-leaves-a-manual.md) | Prove on the Mac bench that a question leaves a manual verification running | L02 | T145 | — | [TSTC-03](../../audit-maintenabilite.md#TSTC-03) |
 | [T021](021-import-the-rolling-recorder-in-its-tests-instead-of.md) | Import the rolling recorder in its tests instead of rewriting its source | L02 | T145 | — | [TSTC-07](../../audit-maintenabilite.md#TSTC-07) |
@@ -121,23 +121,23 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T113](113-archive-the-night-mission-briefs-once-their-open-items-are.md) | Archive the night mission briefs once their open items are in the register | L10 | T110, T112, T145 | — | [DOC-08](../../audit-maintenabilite.md#DOC-08) |
 | [T114](114-make-contributing-the-entry-page-that-points-to-the-rules.md) | Make CONTRIBUTING the entry page that points to the rules and the one check | L10 | T100, T101, T103, T106, T109, T110, T145 | — | [DOC-01](../../audit-maintenabilite.md#DOC-01), [OUBLI-20](../../audit-maintenabilite.md#OUBLI-20) |
 | [T115](115-give-each-decision-record-a-current-status-its-modules-and.md) | Give each decision record a current status, its modules and its guarding tests | L10 | T078, T079, T080, T081, T082, T086, T111, T145 | — | [DOC-04](../../audit-maintenabilite.md#DOC-04), [DOC-03](../../audit-maintenabilite.md#DOC-03) |
-| [T116](116-pin-the-question-flag-warm-up-and-active-instruction-of-the.md) | Pin the question flag, warm-up and active instruction of the Mac host in tests | L11 | — | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07) |
-| [T117](117-pin-the-server-host-warm-up-at-start-and-resume-never-on-a.md) | Pin the server host warm-up at start and resume, never on a read-only open | L11 | — | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07) |
-| [T118](118-save-the-questions-of-both-hosts-through-one-shared.md) | Save the questions of both hosts through one shared checkpoint module | L11 | — | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07), [OUBLI-10](../../audit-maintenabilite.md#OUBLI-10) |
+| [T116](116-pin-the-question-flag-warm-up-and-active-instruction-of-the.md) | Pin the question flag, warm-up and active instruction of the Mac host in tests | L11 | T152 | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07) |
+| [T117](117-pin-the-server-host-warm-up-at-start-and-resume-never-on-a.md) | Pin the server host warm-up at start and resume, never on a read-only open | L11 | T152 | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07) |
+| [T118](118-save-the-questions-of-both-hosts-through-one-shared.md) | Save the questions of both hosts through one shared checkpoint module | L11 | T152 | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07), [OUBLI-10](../../audit-maintenabilite.md#OUBLI-10) |
 | [T119](119-warm-up-a-session-and-read-the-active-instruction-through.md) | Warm up a session and read the active instruction through shared functions | L11 | T116, T117, T118 | — | [CORE-01](../../audit-maintenabilite.md#CORE-01), [ADP-07](../../audit-maintenabilite.md#ADP-07) |
 | [T120](120-pin-the-pure-detection-source-and-card-text-rules-of.md) | Pin the pure detection, source and card text rules of surveillance in tests | L12 | T145 | — | [CORE-07](../../audit-maintenabilite.md#CORE-07) |
-| [T121](121-revoke-the-inspector-of-a-closed-session-through-a-core.md) | Revoke the inspector of a closed session through a core decorator | L12 | — | — | [CORE-03](../../audit-maintenabilite.md#CORE-03) |
+| [T121](121-revoke-the-inspector-of-a-closed-session-through-a-core.md) | Revoke the inspector of a closed session through a core decorator | L12 | T152 | — | [CORE-03](../../audit-maintenabilite.md#CORE-03) |
 | [T122](122-decide-whether-an-answer-is-backed-by-its-evidence-in-one.md) | Decide whether an answer is backed by its evidence in one pure core function | L12 | T028, T145 | — | [CORE-13](../../audit-maintenabilite.md#CORE-13) |
 | [T123](123-let-a-watch-session-raise-its-own-ending-and-close-its.md) | Let a watch session raise its own ending and close its intake | L12 | T028, T145 | — | [CORE-06](../../audit-maintenabilite.md#CORE-06) |
 | [T124](124-put-a-stable-code-on-every-codex-and-local-vision-error-a.md) | Put a stable code on every Codex and local vision error a retry reads | L13 | T028, T038, T145 | — | [ADP-04](../../audit-maintenabilite.md#ADP-04) |
 | [T125](125-decide-description-retries-and-verifier-failures-on-error.md) | Decide description retries and verifier failures on error codes, not wording | L13 | T124, T145 | demande un ADR | [ADP-04](../../audit-maintenabilite.md#ADP-04) |
 | [T126](126-keep-the-key-of-a-cited-page-in-one-pure-core-module.md) | Keep the key of a cited page in one pure core module | L13 | T028, T145 | — | [ADP-12](../../audit-maintenabilite.md#ADP-12) |
-| [T127](127-name-and-test-the-request-rules-of-the-mac-chat-in-a-pure.md) | Name and test the request rules of the Mac chat in a pure module | L14 | T028, T145 | — | [OUBLI-23](../../audit-maintenabilite.md#OUBLI-23) |
-| [T128](128-derive-the-mac-window-controls-from-a-tested-pure-model.md) | Derive the Mac window controls from a tested pure model | L14 | T028, T145 | — | [UI-05](../../audit-maintenabilite.md#UI-05) |
+| [T127](127-name-and-test-the-request-rules-of-the-mac-chat-in-a-pure.md) | Name and test the request rules of the Mac chat in a pure module | L14 | T152 | — | [OUBLI-23](../../audit-maintenabilite.md#OUBLI-23) |
+| [T128](128-derive-the-mac-window-controls-from-a-tested-pure-model.md) | Derive the Mac window controls from a tested pure model | L14 | T152 | — | [UI-05](../../audit-maintenabilite.md#UI-05) |
 | [T129](129-keep-a-pushed-state-from-being-overwritten-by-an-older-read.md) | Keep a pushed state from being overwritten by an older read in the Mac window | L14 | T057, T058, T059, T062, T063, T064, T145 | — | [UI-03](../../audit-maintenabilite.md#UI-03) |
-| [T130](130-pin-the-remote-walk-of-the-tv-chat-column-in-a-page-harness.md) | Pin the remote walk of the TV chat column in a page harness without a browser | L15 | T145 | — | [TV-01](../../audit-maintenabilite.md#TV-01), [TV-02](../../audit-maintenabilite.md#TV-02) |
+| [T130](130-pin-the-remote-walk-of-the-tv-chat-column-in-a-page-harness.md) | Pin the remote walk of the TV chat column in a page harness without a browser | L15 | T152 | — | [TV-01](../../audit-maintenabilite.md#TV-01), [TV-02](../../audit-maintenabilite.md#TV-02) |
 | [T131](131-route-the-tv-thumbnail-through-the-shared-transport-and-name.md) | Route the TV thumbnail through the shared transport and name every /v1 call | L15 | T028, T145 | — | [TV-06](../../audit-maintenabilite.md#TV-06) |
-| [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md) | Share the clock and plural helpers of the TV panel views in one classic script | L15 | T028, T130, T145 | demande un ADR | [TV-04](../../audit-maintenabilite.md#TV-04), [TV-03](../../audit-maintenabilite.md#TV-03) |
+| [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md) | Share the clock and plural helpers of the TV panel views in one classic script | L15 | T130 | demande un ADR | [TV-04](../../audit-maintenabilite.md#TV-04), [TV-03](../../audit-maintenabilite.md#TV-03) |
 | [T133](133-launch-and-stop-every-tv-controller-child-one-way-and-inject.md) | Launch and stop every TV controller child one way and inject the layout root | L15 | T145 | — | [PY-03](../../audit-maintenabilite.md#PY-03) |
 | [T134](134-document-every-setting-the-code-reads-and-group-the-unit-s.md) | Document every setting the code reads and group the unit's environment lines | L16 | T145 | — | [OPS-15](../../audit-maintenabilite.md#OPS-15) |
 | [T135](135-record-the-build-identity-in-a-generated-file-and-read-it.md) | Record the build identity in a generated file and read it without Git | L16 | T028, T145 | demande un ADR | [OPS-15](../../audit-maintenabilite.md#OPS-15), [OPS-17](../../audit-maintenabilite.md#OPS-17) |
@@ -156,37 +156,47 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T148](148-hold-the-loaded-mac-session-in-one-object-instead-of-nine.md) | Hold the loaded Mac session in one object instead of nine host variables | plan court | T116, T118, T119 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md) | Move the window and capture source handlers of the Mac host into their own modules | plan court | T146, T148 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
 | [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) | Move the moment actions and the session rows of the Mac host into their own modules | plan court | T148, T149 | — | [ADP-06](../../audit-maintenabilite.md#ADP-06) |
+| [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) | Prove the TV panel end to end against the real server fed with TV-shaped capture blocks | plan court | — | — | — |
+| [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) | Run the Mac and TV smokes in the full quality check | plan court | T151 | touche au harnais | — |
 
 ## Plan court
 
-La semaine du hackathon, la boucle ne traite que ces treize tickets, dans cet ordre. Tous les autres tickets « à faire » dépendent
-de [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md), qui attend la décision de rouvrir la file complète.
-T145 dit comment la rouvrir.
+La semaine du hackathon, la boucle ne traite que ces vingt-deux tickets, dans cet ordre, qui est celui où elle les prend. Tous les
+autres tickets « à faire » dépendent de [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md), qui attend la décision de rouvrir la file complète. T145 dit comment la rouvrir.
 
-1. **Filet minimal** : [T004](004-wait-for-the-turn-request-itself-in-the-verifier-deadline.md),
-   [T005](005-let-a-codex-turn-left-in-flight-stop-holding-its-process.md),
+1. **Filet minimal** : [T004](004-wait-for-the-turn-request-itself-in-the-verifier-deadline.md), [T005](005-let-a-codex-turn-left-in-flight-stop-holding-its-process.md),
    [T006](006-read-the-session-folder-only-after-the-store-has-finished.md) : les trois causes connues d'échec ou de blocage des tests sous
    charge.
-2. **Tests des hôtes** : [T116](116-pin-the-question-flag-warm-up-and-active-instruction-of-the.md) (Mac),
-   [T117](117-pin-the-server-host-warm-up-at-start-and-resume-never-on-a.md) (serveur) : ce que les déplacements suivants doivent garder.
-3. **Un code pour les deux hôtes** : [T118](118-save-the-questions-of-both-hosts-through-one-shared.md) (sauvegarde des questions),
-   [T119](119-warm-up-a-session-and-read-the-active-instruction-through.md) (préchauffage et consigne active).
-4. **Inspecteur révoqué** : [T121](121-revoke-the-inspector-of-a-closed-session-through-a-core.md).
-5. **Faux du mode smoke hors de la composition** : [T146](146-serve-the-simulated-providers-of-the-smoke-mode-from-one.md).
-6. **Vues de l'hôte serveur** : [T147](147-compute-the-polled-state-views-of-the-server-host-in-pure.md).
-7. **Hôte Mac** : [T148](148-hold-the-loaded-mac-session-in-one-object-instead-of-nine.md) (la session chargée en un objet),
-   [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md) (fenêtre et source capturée),
-   [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) (actions sur un moment et liste des sessions).
+2. **Tester la TV sans la TV** : [T151](151-prove-the-tv-panel-end-to-end-against-the-real-server-fed.md) (scénario de la capture au panneau, contre le vrai
+   serveur), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md) (le contrôle complet lance les smokes du Mac et de la TV). Tous les tickets
+   suivants attendent T152 : un ticket qui casse la fenêtre ou le panneau est refusé sans que personne regarde.
+3. **Règles de l'interface en modules testés** : [T015](015-make-the-mac-window-source-text-assertions-independent-of.md) (gardes indépendantes de la mise en page),
+   [T017](017-move-the-search-sequencing-of-the-mac-window-into-a-tested.md), [T018](018-extract-the-reception-rules-of-the-mac-window-as-pure-tested.md) (fenêtre Mac).
+4. **Tests des hôtes** : [T116](116-pin-the-question-flag-warm-up-and-active-instruction-of-the.md) (Mac), [T117](117-pin-the-server-host-warm-up-at-start-and-resume-never-on-a.md) (serveur) : ce
+   que les déplacements suivants doivent garder.
+5. **Un code pour les deux hôtes** : [T118](118-save-the-questions-of-both-hosts-through-one-shared.md) (sauvegarde des questions), [T119](119-warm-up-a-session-and-read-the-active-instruction-through.md)
+   (préchauffage et consigne active).
+6. **Inspecteur révoqué** : [T121](121-revoke-the-inspector-of-a-closed-session-through-a-core.md).
+7. **Interface, suite** : [T127](127-name-and-test-the-request-rules-of-the-mac-chat-in-a-pure.md), [T128](128-derive-the-mac-window-controls-from-a-tested-pure-model.md) (fenêtre Mac), [T130](130-pin-the-remote-walk-of-the-tv-chat-column-in-a-page-harness.md)
+   (harnais du panneau TV sans navigateur), [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md) (horloge et pluriel de la TV, avec un ADR).
+8. **Faux du mode smoke hors de la composition** : [T146](146-serve-the-simulated-providers-of-the-smoke-mode-from-one.md).
+9. **Vues de l'hôte serveur** : [T147](147-compute-the-polled-state-views-of-the-server-host-in-pure.md).
+10. **Hôte Mac** : [T148](148-hold-the-loaded-mac-session-in-one-object-instead-of-nine.md) (la session chargée en un objet), [T149](149-move-the-window-and-capture-source-handlers-of-the-mac-host.md)
+    (fenêtre et source capturée), [T150](150-move-the-moment-actions-and-session-rows-of-the-mac-host.md) (actions sur un moment et liste des sessions).
 
-Hors du plan court, derrière T145 : les tickets de l'overlay de la TV (la surveillance reste dans le panneau ouvert), le découpage de
-l'interface Mac et du companion TV, la sortie des réglages, des modèles et de `verify:*` hors d'`app/main.cjs`, la suppression des
-adaptateurs hérités (T139), le code mort (T100, T101), le lanceur de tests (T007) et le reste de la file.
+Niveaux : T146 est `simple` (relu par Sonnet), T148 `sensible` (Opus dès la première tentative), T132 `sensible` par son ADR, T152
+`critique` parce qu'il touche au harnais. Les autres sont `standard` : Sonnet implémente, Opus relit.
+
+Le découpage par zone de `app/renderer.js` et de `tv/app/companion.js` s'écrira après les étapes 3 et 7, contre le code qu'elles
+laissent. Hors du plan court, derrière T145 : les tickets de l'overlay de la TV (la surveillance reste dans le panneau ouvert), la
+sortie des réglages, des modèles et de `verify:*` hors d'`app/main.cjs`, la suppression des adaptateurs hérités (T139), le code mort
+(T100, T101), le lanceur de tests (T007), la mesure de la latence et le reste de la file.
 
 ## Jalons
 
 Un jalon est un livrable dont d'autres lots dépendent.
 
-- **format** — livré par [T028](028-format-every-javascript-file-of-the-product-with-prettier.md) (Format every JavaScript file of the product with Prettier) ; attendu directement par T029, T031, T046, T048, T049, T050, T051, T053, T054, T055, T059, T091, T096, T100, T101, T102, T122, T123, T124, T126, T127, T128, T131, T132, T135.
+- **format** — livré par [T028](028-format-every-javascript-file-of-the-product-with-prettier.md) (Format every JavaScript file of the product with Prettier) ; attendu directement par T029, T031, T046, T048, T049, T050, T051, T053, T054, T055, T059, T091, T096, T100, T101, T102, T122, T123, T124, T126, T131, T135.
 - **lint** — livré par [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md) (Lint with ESLint in the quality check and freeze the existing violations) ; attendu directement par T032, T138.
 - **journal** — livré par [T036](036-add-a-journal-port-with-a-stderr-sink-and-a-contract-test.md) (Add a journal port with a stderr sink and a contract test) ; attendu directement par T039, T040, T052, T053, T054.
 - **archive-reference** — livré par [T037](037-freeze-a-reference-session-archive-and-prove-the-current.md) (Freeze a reference session archive and prove the current code reads it) ; attendu directement par T043.
@@ -207,7 +217,7 @@ section « Hypothèses bloquantes » du ticket.
 
 - **Demande un ADR** (`adr: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T036](036-add-a-journal-port-with-a-stderr-sink-and-a-contract-test.md), [T038](038-exercise-the-v1-wire-with-the-real-tv-client-and-write-its.md), [T052](052-answer-an-unexpected-server-error-with-a-generic-500-and.md), [T066](066-drive-the-question-checkpoint-of-the-server-host-with-an.md), [T071](071-inject-the-disk-into-the-session-store-and-library-with-a.md), [T072](072-let-a-session-say-what-it-still-has-in-flight-and-when-it-is.md), [T125](125-decide-description-retries-and-verifier-failures-on-error.md), [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md), [T135](135-record-the-build-identity-in-a-generated-file-and-read-it.md), [T137](137-describe-every-file-installed-on-the-tv-in-one-manifest.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md).
 - **Installe une dépendance** (`installe: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md).
-- **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md).
+- **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md).
 - **Supprime des tests** (`supprime_tests: oui`) : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md).
 
 ## Par lot

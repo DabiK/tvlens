@@ -2,7 +2,7 @@
 id: T018
 titre: Extract the reception rules of the Mac window as pure tested functions
 statut: a-faire
-bloque_par: T015, T145
+bloque_par: T015
 adr: non
 installe: non
 harnais: non

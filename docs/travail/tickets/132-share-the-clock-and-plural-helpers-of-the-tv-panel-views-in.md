@@ -2,7 +2,7 @@
 id: T132
 titre: Share the clock and plural helpers of the TV panel views in one classic script
 statut: a-faire
-bloque_par: T028, T130, T145
+bloque_par: T130
 adr: oui
 installe: non
 harnais: non

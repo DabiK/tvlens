@@ -2,7 +2,7 @@
 id: T117
 titre: Pin the server host warm-up at start and resume, never on a read-only open
 statut: a-faire
-bloque_par:
+bloque_par: T152
 adr: non
 installe: non
 harnais: non
