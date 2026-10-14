@@ -48,6 +48,8 @@ if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {
 if (loopMode) {
   if (file.startsWith("..")) decide("deny", "Refusé pendant un ticket : écriture en dehors du projet.");
   const ticket = process.env.TVLENS_TICKET_FILE ? relative(root, process.env.TVLENS_TICKET_FILE) : null;
-  if (file.startsWith("docs/travail/tickets/") && file !== ticket)
+  // Le gabarit n'est pas un ticket mais le format des tickets : seul un ticket de harnais le modifie.
+  const template = file === "docs/travail/tickets/_gabarit.md" && process.env.TVLENS_HARNESS === "1";
+  if (file.startsWith("docs/travail/tickets/") && file !== ticket && !template)
     decide("deny", "Refusé pendant un ticket : seul le journal du ticket en cours se modifie, pas les autres tickets.");
 }

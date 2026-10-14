@@ -126,6 +126,16 @@ test("a ticket session writes only its own ticket, and nothing outside the proje
   assert.equal(decision(write(repo, "../elsewhere.txt", LOOP)), "deny");
 });
 
+test("only a harness ticket edits the ticket template, and it still writes no other ticket", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const harness = { ...LOOP, TVLENS_HARNESS: "1" };
+  assert.equal(decision(write(repo, "docs/travail/tickets/_gabarit.md", LOOP)), "deny");
+  assert.equal(decision(write(repo, "docs/travail/tickets/_gabarit.md", harness)), "none");
+  assert.equal(decision(write(repo, "docs/travail/tickets/002-other.md", harness)), "deny");
+  assert.equal(decision(write(repo, "docs/travail/tickets/INDEX.md", harness)), "deny");
+});
+
 test("a ticket session runs its sub-agents in the foreground and its reviewer on the model the loop chose; an interactive session is left alone", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);

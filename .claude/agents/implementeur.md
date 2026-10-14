@@ -3,7 +3,6 @@ name: implementeur
 description: Implémente un incrément délimité d'un ticket, code et tests ensemble, à partir du rapport d'exploration. À appeler après l'explorateur, puis de nouveau pour corriger les constats du relecteur.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: inherit
-maxTurns: 80
 skills:
   - tests
 hooks:

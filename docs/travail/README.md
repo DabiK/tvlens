@@ -242,7 +242,8 @@ Ce que l'essai sur T001 a appris :
 Dans une session de ticket, les hooks de `.claude/hooks/` refusent : commit, push, changement de
 branche, session Claude ou Codex imbriquée, `gh`, installation de dépendance non autorisée, écriture
 hors du projet, modification du harnais ou d'un autre ticket, création d'un fichier de test nommé
-d'après un chantier. Un sous-agent lancé en arrière-plan est ramené au premier plan. Chaque fichier
+d'après un chantier. Un ticket `harnais: oui` lève le verrou du harnais et peut modifier le gabarit des
+tickets, jamais un autre ticket. Un sous-agent lancé en arrière-plan est ramené au premier plan. Chaque fichier
 écrit est contrôlé aussitôt, et la session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur
 un contrôle rouge. La boucle n'intègre ensuite que le changement que le dernier relecteur a lu et
 accepté : une modification faite après la relecture, journal du ticket mis à part, ou un dernier
