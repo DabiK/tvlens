@@ -17,6 +17,8 @@ const {
   attempt,
 } = require("./session-closing.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
+const { warmUp } = require("./session-warm-up.cjs");
+const { activeInstruction } = require("./active-instruction.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard, STORAGE_FULL } = require("../adapters/disk-guard.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
@@ -277,7 +279,8 @@ class HeadlessRuntime {
       getSession: () => this.session,
       // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the
       // surveillance is composed just below).
-      getInstruction: () => this.activeInstruction(),
+      getInstruction: () =>
+        activeInstruction(this.surveillance, this.session?.id),
       onChange: (state) => {
         const session = this.session;
         if (session) {
@@ -363,17 +366,6 @@ class HeadlessRuntime {
     // capture itself only comes back on an explicit start or resume.
     if (this.guard?.snapshot().state === "blocked") this.guard.check();
     if (JSON.stringify(this.storage()) !== this.storageKey) this.emit();
-  }
-  // The instruction of the surveillance active on the loaded session, or nothing. Never throws.
-  activeInstruction() {
-    try {
-      const state = this.surveillance?.snapshot?.({ brief: true });
-      return state?.enabled && state.sessionId === this.session?.id
-        ? state.activation?.instruction
-        : undefined;
-    } catch {
-      return undefined;
-    }
   }
   // Counters of the complete state that move without publishing anything.
   auxiliary() {
@@ -605,14 +597,6 @@ class HeadlessRuntime {
     this.captureEpoch++;
     this.emit();
   }
-  // Same warm-up as the Mac host: the first answer and the first description should not pay the
-  // connection. Never for an archive that is only being read.
-  warmUp(session) {
-    this.agent.prepare?.(session.id).catch(() => {});
-    Promise.resolve(
-      session.perception?.agent?.prepare?.(session.id + "-observe"),
-    ).catch(() => {});
-  }
   moving() {
     return Boolean(this.ending || this.releasing || this.closing);
   }
@@ -636,7 +620,13 @@ class HeadlessRuntime {
         });
         this.adopt(session);
         this.fresh = true;
-        this.warmUp(session);
+        // The first answer and the first description should not pay the connection. Never for an archive
+        // that is only being read.
+        warmUp({
+          chat: this.agent,
+          perception: session.perception,
+          sessionId: session.id,
+        });
       } else {
         const stopped = !session.watch.accepting;
         if (stopped) await session.resume();
@@ -1000,7 +990,12 @@ class HeadlessRuntime {
         // Refused by the guard, with its message, while the disk is below its floor.
         await session.resume();
         this.captureEpoch++;
-        this.warmUp(session);
+        // Same as at the start: never for an archive that is only being read.
+        warmUp({
+          chat: this.agent,
+          perception: session.perception,
+          sessionId: session.id,
+        });
         this.emit();
       }
       return this.described(session);

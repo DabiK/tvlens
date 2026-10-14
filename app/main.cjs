@@ -3,6 +3,8 @@ const { createSessionRuntime, validateSegment } = require('../runtime/session-ru
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
 const { createQuestionCheckpoint } = require('../runtime/question-checkpoint.cjs');
+const { warmUp } = require('../runtime/session-warm-up.cjs');
+const { activeInstruction } = require('../runtime/active-instruction.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
@@ -149,7 +151,7 @@ app.whenReady().then(async () => {
   const conversation = createConversationRuntime({
     getSession: () => ({ watch, search, inspector, store }),
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
-    getInstruction: () => { try { const state = surveillance?.snapshot?.({ brief: true }); return state?.enabled && state.sessionId === watch?.id ? state.activation?.instruction : undefined; } catch { return undefined; } },
+    getInstruction: () => activeInstruction(surveillance, watch?.id),
     agent: videoAgent, codexBinary, config, selectedModels, quota,
     onChange: state => {
     if(watch){const busy=state.jobs.some(j=>j.sessionId===watch.id&&['running','queued'].includes(j.status));if(watch.asking!==busy){watch.asking=busy;watch.emit();if(!busy)queueMicrotask(()=>watch?.drain());}}
@@ -393,8 +395,8 @@ app.whenReady().then(async () => {
     adopt(runtime, name, at);
     pruneTimer = setInterval(sweep, 5000);
     watch.emit();
-    videoAgent.prepare?.(id).catch(()=>{});
-    perception.agent?.prepare(id+'-observe').catch(()=>{});
+    // Never for an archive that is only being read: opening one warms nothing up.
+    warmUp({ chat: videoAgent, perception, sessionId: id });
     send('sessions:changed');
     return { id, elapsedMs: watch.now(), segmentMs };
   }));
@@ -445,8 +447,8 @@ app.whenReady().then(async () => {
     // The explicit gesture that lets capture write into this archive again; refused while the disk is blocked.
     await live.resume().catch(error => { publishStorage(); throw error; });
     clearInterval(pruneTimer); pruneTimer = setInterval(sweep, 5000);
-    videoAgent.prepare?.(watch.id).catch(()=>{});
-    perception.agent?.prepare(watch.id+'-observe').catch(()=>{});
+    // Same as at the start: never for an archive that is only being read.
+    warmUp({ chat: videoAgent, perception, sessionId: watch.id });
     send('sessions:changed');
     return { id: watch.id, elapsedMs: watch.now(), segmentMs };
   }));

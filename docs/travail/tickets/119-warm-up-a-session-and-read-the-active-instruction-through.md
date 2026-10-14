@@ -1,7 +1,7 @@
 ---
 id: T119
 titre: Warm up a session and read the active instruction through shared functions
-statut: a-faire
+statut: termine
 bloque_par: T116, T117, T118
 adr: non
 installe: non
@@ -99,3 +99,18 @@ ticket attend T118 parce que les deux touchent la même composition de la conver
 hôtes.
 
 ## Journal
+
+- Exploration (explorateur) : pas d'écart de périmètre. Lignes décalées depuis `0d5a954` ; critère 3 tenable (reste `app/main.cjs:226`). Différence de comportement un peu plus large que dite : le chat tolère aussi un `prepare` qui ne rend pas de promesse, sur les deux hôtes. Un `prepare` qui lève de façon synchrone n'est pas rattrapé (comportement actuel, non demandé).
+- Implémentation : `runtime/session-warm-up.cjs`, `runtime/active-instruction.cjs`, leurs deux tests (8 et 7 cas), branchement de `app/main.cjs` et `runtime/headless-runtime.cjs` (méthodes `warmUp` et `activeInstruction` du serveur supprimées). Rouge vu avant vert ; mutation (retrait de `Promise.resolve`) : 5 cas échouent, dont le cas `prepare` qui rend `undefined`.
+- Relecture 1 (relecteur neuf) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre. Le relecteur n'a lancé aucune commande ; les preuves ci-dessous sont celles de l'orchestrateur.
+- Critère 1 : `node --test tests/session-warm-up.test.cjs` (0,06 s) et `tests/active-instruction.test.cjs` (0,05 s) : code 0.
+- Critère 2, un fichier à la fois, sans modification : `mac-ipc-contract` 2,84 s, `server-warm-up` 0,09 s, `chat-instruction` 0,12 s, `deep-ask-restore` 0,05 s, `server-sessions` 0,41 s : tous code 0.
+- Critère 3 : `grep -n "\.prepare" app/main.cjs runtime/headless-runtime.cjs` : une seule ligne, `app/main.cjs:226` (`verify` de `VerificationService`).
+- Critère 4 : `grep -n "activation?.instruction" app/main.cjs runtime/headless-runtime.cjs` : aucune sortie.
+- Critère 5 : `node scripts/check.mjs` en entier, 125 s : vert ; 772 tests JS, 0 échec ; tests Python OK (1 ignoré) ; cliquet `lignes_longues_prod` 543 → 542, `cas_de_test` 714 → 729. Format et lint : non lancés (Prettier et ESLint absents) ; format tenu à la main.
+
+### Réserves à la clôture
+
+- Format et lint non lancés par check (Prettier et ESLint non installés) : format respecté à la main, non vérifié par machine.
+- Un prepare qui lève de façon synchrone n'est rattrapé sur aucun hôte (comportement antérieur conservé, la forme du ticket ne le couvre pas).
+- Changement de comportement assumé sur l'hôte Mac : le chat et l'agent d'observation tolèrent un prepare absent ou qui ne rend pas de promesse ; aucun agent de production n'est concerné.
