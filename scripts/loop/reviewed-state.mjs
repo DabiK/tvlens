@@ -16,6 +16,9 @@ import { list } from "./tickets.mjs";
 const UNTRACKED_BEFORE = "untracked-before.json";
 const REVIEWED_STATE = "reviewed-state.json";
 const REVIEWS = "relectures.jsonl";
+// Le rapport de chaque relecteur, numéroté comme sa ligne dans REVIEWS.
+const reviewReport = (rank) => `relecture-${rank}.md`;
+const REVIEW_REPORT = /^relecture-(\d+)\.md$/;
 const DELETED = "deleted";
 const RECORD_COMMAND = "node scripts/loop/reviewed-state.mjs record";
 
@@ -154,14 +157,27 @@ export function reviewVerdict(report) {
   return blocking + minor > 0 ? "à corriger" : "accepté";
 }
 
-/** Ajoute au journal des relectures le verdict rendu sur la dernière revue enregistrée. */
-export function recordReview(root, id, { verdict, modele }) {
+/**
+ * Ajoute au journal des relectures le verdict rendu sur la dernière revue enregistrée, et garde le texte du rapport dans
+ * `relecture-<n>.md`, `n` étant le rang de la ligne ajoutée : une harmonisation qui suit un refus lit le dernier.
+ */
+export function recordReview(root, id, { verdict, modele, report = "" }) {
   const dir = ticketDir(root, id);
   const state = readStateFile(dir, REVIEWED_STATE, isRecordedState);
   fs.mkdirSync(dir, { recursive: true });
   const entry = { at: new Date().toISOString(), revue: state.value?.revue ?? null, verdict, modele: modele ?? null };
-  fs.appendFileSync(path.join(dir, REVIEWS), JSON.stringify(entry) + "\n");
+  const reviews = path.join(dir, REVIEWS);
+  fs.appendFileSync(reviews, JSON.stringify(entry) + "\n");
+  const rank = fs.readFileSync(reviews, "utf8").split("\n").filter(Boolean).length;
+  fs.writeFileSync(path.join(dir, reviewReport(rank)), report);
   return entry;
+}
+
+/** Nom du dernier rapport de relecteur gardé dans un dossier d'état (`relecture-<n>.md` de plus grand rang), ou null. */
+export function lastReviewReport(dir) {
+  const names = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  const ranks = names.map((name) => REVIEW_REPORT.exec(name)).filter(Boolean).map((match) => Number(match[1]));
+  return ranks.length ? reviewReport(Math.max(...ranks)) : null;
 }
 
 /** Raison de refuser l'intégration si la dernière relecture n'a pas accepté la dernière revue enregistrée ; null sinon. */

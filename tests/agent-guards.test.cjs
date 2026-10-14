@@ -145,13 +145,21 @@ const TUNE = {
   TVLENS_HARNESS_SCOPE: "consignes",
 };
 
-test("a session scoped to the instructions writes the skills and the agents, and none of the checks, even with the harness open", (t) => {
+test("a session scoped to the instructions writes the skills and the agents, but none of the checks, its reviewer or its own instructions", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);
   for (const file of ["scripts/check.mjs", "scripts/loop/run.mjs", ".claude/hooks/guard-write.mjs", ".claude/settings.json"]) {
     assert.equal(decision(write(repo, file, TUNE)), "deny", file);
   }
-  for (const file of [".claude/skills/ticket/SKILL.md", ".claude/agents/relecteur.md"]) {
+  const closed = [".claude/agents/relecteur.md", ".claude/agents/harmoniseur.md", ".claude/skills/harmonisation/"];
+  for (const file of [".claude/agents/relecteur.md", ".claude/agents/harmoniseur.md", ".claude/skills/harmonisation/SKILL.md"]) {
+    const output = write(repo, file, TUNE);
+    assert.equal(decision(output), "deny", file);
+    const [first, ...next] = output.hookSpecificOutput.permissionDecisionReason.split("\n");
+    assert.match(first, /ne modifie que \.claude\/skills\/ et \.claude\/agents\/\.$/, file);
+    for (const entry of closed) assert.ok(next.join("\n").includes(entry), `${file}: ${next.join("\n")}`);
+  }
+  for (const file of [".claude/skills/ticket/SKILL.md", ".claude/agents/explorateur.md"]) {
     assert.equal(decision(write(repo, file, TUNE)), "none", file);
   }
 });
@@ -190,7 +198,7 @@ test("a ticket session runs its sub-agents in the foreground and its reviewer on
   assert.equal(launch({ run_in_background: true }, INTERACTIVE), null);
 });
 
-test("in a ticket session, each reviewer verdict is recorded against the review it read; other sub-agents and interactive sessions record nothing", (t) => {
+test("in a ticket session, each reviewer verdict is recorded against the review it read, its report kept by rank; other sub-agents record nothing", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);
   const reviews = ".harness-state/tickets/T001/relectures.jsonl";
@@ -216,6 +224,11 @@ test("in a ticket session, each reviewer verdict is recorded against the review 
       { revue: "revue-2.diff", verdict: "illisible", modele: "claude-opus-5-5" },
     ],
   );
+  const report = (n) => repo.read(`.harness-state/tickets/T001/relecture-${n}.md`);
+  assert.equal(report(1), "VERDICT : à corriger\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\n- constat");
+  assert.equal(report(2), "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre\nRien à signaler.");
+  assert.equal(report(3), "Le diff me semble correct.");
+  assert.throws(() => report(4), { code: "ENOENT" });
 });
 
 test("after an edit, a file that breaks a rule is reported back and a clean one is silent", (t) => {

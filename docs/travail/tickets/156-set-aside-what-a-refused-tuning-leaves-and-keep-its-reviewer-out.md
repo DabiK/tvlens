@@ -1,7 +1,7 @@
 ---
 id: T156
 titre: Set aside what a refused tuning leaves, keep its reviewer out of its reach and brief the next one
-statut: a-faire
+statut: termine
 bloque_par: T154
 adr: non
 installe: non
@@ -191,3 +191,126 @@ Le ticket tranche ainsi :
 - **Pas d'ADR.** Ces changements resserrent une étape existante, sans choisir entre deux architectures.
 
 ## Journal
+
+### 14/10 — Cadrage et exploration
+
+Session neuve, pas de reprise (journal vide, aucun rapport d'échec). Rapport complet dans
+`.harness-state/tickets/T156/exploration.md`. En cinq lignes :
+- Les numéros de ligne du ticket tombent juste sur `df302a3` ; `run.mjs` (503 lignes) n'a pas à changer, tout se
+  branche dans `tune.mjs` (`pendingProblemsBySubject`, `prepare`/`tunePrompt`, `restore`/`refuse`, `integrateTuning`).
+- Reprise : seul `refus.txt` distingue un H refusé d'un H intégré ; la fausse session passe par le vrai hook
+  `record-review`, donc `relecture-1.md` existera dans H001 pour les scénarios relus.
+- `retro.mjs` : `DECISION` doit accepter `differee:H\d+` avant tout marquage ; `liste` affiche déjà la décision et la
+  note d'un statut autre que `propose`.
+- Deux tests existants (l. 836-851, 853-863) affirment `propose` pour une différée, contre le critère 4 ; la fausse
+  rétrospective sème un problème `cible: "boucle"` dont dépendent sept exécutions de tests d'harmonisation.
+- Le message de refus de périmètre est vérifié au format exact (l. 734) ; des passages du README hors des sections
+  citées deviendront faux.
+
+Décisions avant l'implémentation, déclarées dans `.harness-state/tickets/T156/ecarts.md` : quatre écarts (assertions
+`propose` → `differee:H001` des deux tests existants ; `FAKE_RETRO_TARGET` dans la fausse rétrospective, sans
+changer d'assertion ; volet boucle du critère 2 et critère 6 dans `ticket-loop` ; passages du README hors section)
+et cinq précisions (message de refus, signal de reprise, différées marquées une par une, rang de
+`relecture-<n>.md`, erreurs de déplacement). Aucun ne sort du périmètre ni n'affaiblit un critère.
+
+### 14/10 — Implémentation (premier passage de l'implémenteur)
+
+- `harness-scopes.mjs` : liste fermée de la portée `consignes` (`relecteur.md`, `harmoniseur.md`, `harmonisation/`),
+  `closedLine` pour le message ; `guard-write.mjs` ajoute cette ligne. `tune.mjs` : `TUNABLE_TARGETS` (`skill`,
+  `agent`) avant le regroupement ; `markDeferred` après intégration et sans changement ; `setAsideAdded` remplace
+  `removeAdded` ; `previousRefusal` dans `prepare`, nommé par `tunePrompt`. `retro.mjs` : `differee:H<n>`, `liste`
+  montre `propose` et `differee:…`. `reviewed-state.mjs` : `recordReview` écrit `relecture-<n>.md`,
+  `lastReviewReport` ; `record-review.mjs` passe le texte. Consignes de l'harmonisation et README à jour.
+- Rapporté par l'implémenteur : avant tout changement, `node --test --test-concurrency=1 tests/agent-guards.test.cjs
+  tests/ticket-loop.test.cjs` 85/85 ; après, 98/98 ; chaque incrément vu rouge avant le vert (deux tests vus rouges
+  par une mutation temporaire après coup, un test négatif de la reprise vert dès le départ) ;
+  `node scripts/check.mjs --changed` vert (`cas_de_test` 664 → 677) ; `node scripts/check.mjs` complet vert (720
+  tests JS, 84 Python dont 1 sauté ; Prettier et ESLint non lancés, non installés), lancé avant une dernière retouche
+  de mise en forme du README.
+- Deux points ajoutés à `ecarts.md` (10 et 11) : un passage de plus du README ; noms de deux tests d'`agent-guards`
+  et texte de deux messages.
+
+### 14/10 — Mutation du critère 7
+
+Mutation temporaire dans `scripts/loop/tune.mjs`, `pendingProblemsBySubject` : `|| !TUNABLE_TARGETS.has(o.cible)`
+retiré (la sélection ignore la cible). Commande : `node --test --test-concurrency=1 --test-name-pattern="a problem
+that recurs on two tickets but targets the checks starts no tuning session" tests/ticket-loop.test.cjs`. Sortie rouge
+(complète dans `.harness-state/tickets/T156/mutation-7.txt`) :
+
+```text
+✖ a problem that recurs on two tickets but targets the checks starts no tuning session: there is nothing to tune
+ℹ tests 1 / pass 0 / fail 1
+test at tests/ticket-loop.test.cjs:700:1
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Rien à harmoniser/. Input:
+'[boucle] T001 intégré (02a9fa2) en 1 tentative(s), 0.00 $.\n' +
+'[boucle] Harmonisation H001 : « slow check » (R-T008-1, R-T009-1).\n' +
+'[boucle] Harmonisation H001 intégrée (e1769e9) : 2 observation(s) traitée(s).\n'
+# Code de sortie : 1
+```
+
+Mutation retirée : empreinte SHA-256 de `tune.mjs` identique avant et après (`fcc3af66…66d1d38f`), le test repasse au
+vert (1/1), rapporté par l'implémenteur.
+
+### 14/10 — Relecture 1 : à corriger
+
+`node scripts/loop/reviewed-state.mjs record` → `revue-1`. Relecteur neuf : « à corriger », 0 bloquant, 1 mineur,
+2 hors périmètre. Écarts 1 à 4 et 10 à 11, précisions 5 à 9 acceptés. Critères 1 à 7 couverts selon lui ; 8 et 9
+non vérifiés par lui (pas de shell). Il note que la mutation du critère 7 a été faite sur un état intermédiaire
+(lignes décalées, empreinte qui n'est pas celle du `tune.mjs` final).
+- Mineur 1 : `.claude/hooks/guard-write.mjs` modifié (seconde ligne du message de refus) sans être dans le
+  périmètre ni déclaré. Décision : déclaré (point 12 de `ecarts.md`) plutôt que retiré, car sans lui le message de
+  refus de `relecteur.md` se contredit ; l'exception reste dans le seul `harness-scopes.mjs`. Aucun changement de code.
+- Hors périmètre : `.harness-state/` non protégé, une session peut écrire un faux `refus.txt` ou rapport que la
+  reprise lira ; comparaison de la portée sensible à la casse sur un disque qui ne l'est pas → réserves.
+- Mutation du critère 7 refaite sur l'état final par l'implémenteur, sans autre modification (jalon suivant).
+
+### 14/10 — Mutation du critère 7, refaite sur l'état final
+
+Même mutation (`tune.mjs:39`, `|| !TUNABLE_TARGETS.has(o.cible)` retiré), même commande, test désormais en
+`tests/ticket-loop.test.cjs:746`. Sortie complète dans `.harness-state/tickets/T156/mutation-7-final.txt` :
+
+```text
+✖ a problem that recurs on two tickets but targets the checks starts no tuning session: there is nothing to tune
+ℹ tests 1 / pass 0 / fail 1
+test at tests/ticket-loop.test.cjs:746:1
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Rien à harmoniser/. Input:
+'[boucle] Harmonisation H001 : « slow check » (R-T008-1, R-T009-1).\n' +
+'[boucle] Harmonisation H001 intégrée (c90228d) : 2 observation(s) traitée(s).\n'
+# Code de sortie : 1
+```
+
+Mutation retirée : SHA-256 de `tune.mjs` `a585f1f8…0bf5fdfa` avant et après (constaté par l'orchestrateur avec
+`shasum -a 256` après coup), empreinte de `git diff` identique avant et après, le test repasse au vert (1/1).
+Constat au passage : la session réelle a déjà écrit `.harness-state/tickets/T156/relecture-1.md` par le hook modifié.
+
+### 14/10 — Contrôle complet
+
+`node scripts/check.mjs`, lancé par l'orchestrateur sur l'état final (après la mutation refaite, avant
+l'enregistrement de `revue-2`) : vert. Règles par fichier vertes ; cliquet vert, `cas_de_test` 664 → 677 ; tests JS
+720/720 sur 76 fichiers ; tests Python 84, OK (1 sauté). Format et lint non lancés : Prettier et ESLint ne sont pas
+installés.
+
+### 14/10 — Relecture 2 : acceptée
+
+`node scripts/loop/reviewed-state.mjs record` → `revue-2` (même code que `revue-1`, écart 12 ajouté à `ecarts.md`).
+Relecteur neuf : « accepté », 0 bloquant, 0 mineur, 3 hors périmètre. Écarts 1 à 4 et 10 à 12, précisions 5 à 9
+acceptés ; le mineur de la relecture 1 tombe avec l'écart 12. Critères 1 à 7 couverts selon lui (7 sur la mutation
+refaite) ; 8 tenu à la lecture du diff ; 8 et 9 non lancés par lui (pas de shell). Verdict enregistré dans
+`relectures.jsonl` (`revue-2.diff`, « accepté ») et rapport dans `relecture-2.md`.
+- Hors périmètre, en réserves : `.harness-state/` non protégé (faux `refus.txt` ou rapport lus par la reprise) ;
+  comparaison de la portée sensible à la casse ; fermeture par chemin, pas par `name` d'agent ou de skill.
+
+### Réserves à la clôture
+
+- Écart accepté, critère 8 : deux tests existants de l'harmonisation affirmaient « propose » pour une différée, contre le critère 4 ; ils affirment désormais differee:H001 avec la raison en note (plus strict), et leurs noms décrivent ce comportement.
+- Écart accepté, critère 8 : la fausse rétrospective des tests lit sa cible dans FAKE_RETRO_TARGET (défaut boucle) ; les tests d'harmonisation qui dépendent de son problème la fixent à skill, sans changer d'assertion existante.
+- Écart accepté, critères 2 et 6 : le volet boucle du critère 2 et le critère 6 sont prouvés dans tests/ticket-loop.test.cjs par run.mjs ; le volet hook du critère 2 et les rangs du hook record-review dans tests/agent-guards.test.cjs.
+- Écart accepté, périmètre : des passages de docs/travail/README.md hors de la section « Harmonisation des consignes » (« Rétrospective », « Garde-fous », « Lire un échec », « Ce que fait la boucle ») sont mis à jour, sinon ils devenaient faux.
+- Écart accepté, critère 8 : deux tests d'agent-guards renommés (portée, hook record-review) et le texte de deux messages de la boucle retouché, sans assertion retirée ni relâchée.
+- Écart accepté, périmètre : .claude/hooks/guard-write.mjs ajoute à son message de refus une ligne qui nomme les fichiers fermés (closedLine de harness-scopes.mjs) ; la décision reste inScope et la liste n'est pas recopiée.
+- Hors périmètre : .harness-state/ n'est pas protégé des écritures de session ; une harmonisation intégrée pourrait déposer un faux refus.txt ou un faux relecture-<n>.md que la reprise de la suivante lui ferait lire en premier (même famille que la réserve de T154). Proposition : un ticket harnais: oui qui protège .harness-state/tickets/<ID>/ dans PROTECTED.
+- Hors périmètre : la portée et PROTECTED comparent les chemins en tenant compte de la casse alors qu'APFS n'en tient pas compte ; une écriture vers .claude/agents/Relecteur.md passe le hook (la boucle la rattrape et défait la session, qui est perdue).
+- Hors périmètre, question pour le propriétaire : la fermeture se fait par chemin ; un nouveau .claude/agents/<autre>.md déclarant name: relecteur (ou une skill déclarant name: harmonisation) reste dans la portée. Non vérifié : comment Claude Code choisit entre deux agents du même nom. Faut-il aussi fermer par nom ?
+- Non vérifié : un déplacement impossible (rename en échec) n'est pas testé directement ; le code 4 avec mise de côté est testé par un index.lock.
+- Non vérifié : une skill mise de côté sous .harness-state/tickets/H…/mis-de-cote/.claude/skills/… pourrait être découverte par Claude Code comme skill imbriquée.
+- Observation pour le propriétaire : le hook guard-bash a refusé une commande de l'implémenteur parce que le texte « git checkout HEAD » figurait dans un heredoc, pas dans une commande (faux positif, rien n'a été exécuté).

@@ -4,7 +4,7 @@
 //   echo $(( $(date +%s) + 10*3600 )) > .harness-state/harnais-ouvert
 import fs from "node:fs";
 import path from "node:path";
-import { inScope, scopeDirs } from "../../scripts/loop/harness-scopes.mjs";
+import { closedLine, inScope, scopeDirs } from "../../scripts/loop/harness-scopes.mjs";
 import { TICKET_NAMED_TEST } from "../../scripts/quality/metrics.mjs";
 import { decide, loopMode, projectDir, readInput, refuseOrAsk, relative } from "./lib.mjs";
 
@@ -47,7 +47,8 @@ const scope = process.env.TVLENS_HARNESS_SCOPE;
 if (scope !== undefined && isProtected && !inScope(scope, file)) {
   const dirs = scopeDirs(scope);
   const allowed = dirs ? `ne modifie que ${dirs.join(" et ")}` : "est inconnue : elle n'ouvre aucune partie du harnais";
-  decide("deny", `${file} fait partie du harnais et la portée « ${scope} » de cette session ${allowed}.`);
+  const reason = [`${file} fait partie du harnais et la portée « ${scope} » de cette session ${allowed}.`, closedLine(scope)];
+  decide("deny", reason.filter(Boolean).join("\n"));
 }
 
 if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {

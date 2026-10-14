@@ -106,7 +106,8 @@ session. Le commit est signé du modèle de la tentative qui a abouti.
    corrige au besoin, puis écrit son verdict dans
    `.harness-state/tickets/<ID>/verdict.json`. Les sous-agents tournent au premier plan : le hook
    `guard-agent` corrige tout lancement en arrière-plan, qui ferait finir la session avant leur
-   rapport. Le hook `record-review` enregistre le verdict de chaque relecteur dans `relectures.jsonl`.
+   rapport. Le hook `record-review` enregistre le verdict de chaque relecteur dans `relectures.jsonl`,
+   et son rapport dans `relecture-<n>.md`.
 3. Si le verdict est TERMINÉ, la boucle vérifie elle-même :
    - le ticket n'a pas changé au-dessus de son journal ;
    - le harnais n'a pas été touché, sauf ticket marqué `harnais: oui` ;
@@ -139,7 +140,7 @@ La dernière ligne de la boucle dit dans quel cas on est.
 | `Tentative n refusée : …` | la session n'a pas rendu de verdict, s'est dite PARTIELLE, ou s'est dite TERMINÉE alors qu'un contrôle refuse | `.harness-state/tickets/<ID>/echec-<n>.txt` |
 | `<ID> est bloqué : …` (code 2) | la session s'est dite BLOQUÉE, ou toutes les tentatives ont été refusées | la raison affichée, puis le journal du ticket |
 | `Le commit est fait mais le push a échoué` (code 3) | le ticket est intégré en local, rien d'autre n'est lancé | `git status`, puis `git push` à la main |
-| `Harmonisation <ID> refusée …` | l'harmonisation est annulée, remise à `HEAD` ; la file continue | `.harness-state/tickets/<ID>/refus.txt` |
+| `Harmonisation <ID> refusée …` | l'harmonisation est annulée : fichiers suivis remis à `HEAD`, fichiers nouveaux mis de côté ; la file continue | `.harness-state/tickets/<ID>/refus.txt`, et `mis-de-cote/` pour un fichier à récupérer |
 | `… sa remise à HEAD est incomplète …` (code 4) | refus non défait ; aucun ticket lancé | fichiers listés, `git status`, `.git/index.lock`, `refus.txt` |
 
 Le rapport `echec-<n>.txt` commence par la raison, puis donne la sortie du contrôle qui a refusé.
@@ -158,7 +159,7 @@ Pour aller plus loin :
 | Où | Quoi |
 | --- | --- |
 | Le journal du ticket (section `## Journal`) | les jalons écrits par la session, avec commandes et sorties |
-| `.harness-state/loop/events.jsonl` | une ligne par événement, avec la charge de la machine : session lancée (niveau, modèle, effort, palier, relecteur), session terminée (tours, durée, coût, coût par modèle, sous-agents, refus de permission, compactions), refus, intégration et blocage (tentatives, coût total), rétrospective, harmonisation (lancée : identifiant, sujets, observations ; puis intégrée avec son commit, les observations traitées et, s'il a échoué, la raison du marquage manqué, refusée avec sa raison, ou sans changement ; sautée, avec la raison, quand le journal des retours est illisible ; non défaite, avec les fichiers restants et les commandes Git en échec, quand la remise à `HEAD` est incomplète) |
+| `.harness-state/loop/events.jsonl` | une ligne par événement, avec la charge de la machine : session lancée (niveau, modèle, effort, palier, relecteur), session terminée (tours, durée, coût, coût par modèle, sous-agents, refus de permission, compactions), refus, intégration et blocage (tentatives, coût total), rétrospective, harmonisation (lancée : identifiant, sujets, observations ; puis intégrée avec son commit, les observations traitées et, s'il a échoué, la raison du marquage manqué, refusée avec sa raison et les fichiers mis de côté, ou sans changement ; sautée, avec la raison, quand le journal des retours est illisible ; non défaite, avec les fichiers restants, les commandes Git en échec et les fichiers déjà mis de côté, quand la remise à `HEAD` est incomplète) |
 | `.harness-state/tickets/<ID>/verdict.json` | le verdict de la dernière session, ses preuves et ses réserves (`reste`) |
 | `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
 | `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
@@ -167,8 +168,10 @@ Pour aller plus loin :
 | `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
 | `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
 | `.harness-state/tickets/<ID>/relectures.jsonl` | le verdict de chaque relecteur, la revue qu'il a lue et son modèle |
+| `.harness-state/tickets/<ID>/relecture-<n>.md` | le rapport du relecteur dont le verdict est la ligne `n` de `relectures.jsonl`, pour un ticket comme pour une harmonisation |
 | `.harness-state/tickets/<ID>/retro-entree.md`, `retro.json` | ce que la rétrospective a reçu, et ce qu'elle a rendu |
-| `.harness-state/tickets/H<nnn>/observations.json`, `refus.txt` | pour une harmonisation : les observations retenues par la boucle, et la raison d'un refus |
+| `.harness-state/tickets/H<nnn>/observations.json`, `refus.txt` | pour une harmonisation : les observations retenues par la boucle, et la raison d'un refus, que lit l'harmonisation suivante |
+| `.harness-state/tickets/H<nnn>/mis-de-cote/` | pour une harmonisation refusée : les fichiers nouveaux apparus pendant la session, sous leur chemin, à récupérer à la main s'ils n'en venaient pas |
 
 Un verdict TERMINÉ peut garder des réserves dans `reste` : un constat de relecture hors périmètre, un
 écart à un critère accepté par le relecteur, ce qui n'a pas pu être vérifié, ou une question pour le
@@ -185,7 +188,7 @@ Les propositions s'accumulent dans `.harness-state/retours/observations.jsonl`, 
 Après un lot de tickets :
 
 ```sh
-node scripts/loop/retro.mjs liste                     # propositions ouvertes, par cible puis impact
+node scripts/loop/retro.mjs liste                     # propositions ouvertes ou différées, par cible puis impact
 node scripts/loop/retro.mjs liste --tous              # avec celles déjà tranchées
 node scripts/loop/retro.mjs decider R-T003-2 accepte "fait dans la skill ticket"
 node scripts/loop/retro.mjs decider R-T003-4 ticket:T015
@@ -195,7 +198,8 @@ node scripts/loop/retro.mjs decider R-T004-1 refuse "voulu : garde-fou"
 La rétrospective propose, elle ne modifie rien. Sans `--tune-every`, une proposition n'est appliquée
 que par le propriétaire. Avec, l'harmonisation des consignes (plus bas) applique aux skills et aux
 agents les problèmes qui reviennent, et les marque `harmonisation:<commit>` ; tout ce qui touche aux
-contrôles reste au propriétaire.
+contrôles reste au propriétaire. Une proposition qu'elle diffère passe à `differee:<ID>` : `liste` la montre
+avec cette décision et sa note jusqu'à ce que le propriétaire la tranche.
 
 Un échec qui ne se produit que sous charge se reproduit et s'explique avant d'être écarté : on ne
 relance pas la boucle jusqu'à ce qu'elle passe.
@@ -210,10 +214,13 @@ dernier, la boucle harmonise les consignes du harnais avant le ticket suivant. P
 `--dry-run` dit si elle est active, et tous les combien.
 
 **Ce qui est retenu**, par le code et non par un modèle : parmi les observations en attente de type
-`probleme`, les sujets qui reviennent sur au moins deux tickets différents, ou dont une observation est
-d'impact `fort`. Les plus fréquents d'abord (à égalité, le premier apparu dans le journal), trois sujets
-au plus ; un sujet retenu apporte toutes ses observations de problème en attente. Deux observations ne
-comptent pour le même sujet que s'il est écrit à l'identique, espaces de début et de fin mis à part : la
+`probleme` dont la cible est `skill` ou `agent`, les seules qu'une harmonisation peut corriger, les sujets
+qui reviennent sur au moins deux tickets différents, ou dont une observation est d'impact `fort`. Les plus
+fréquents d'abord (à égalité, le premier apparu dans le journal), trois sujets au plus ; un sujet retenu
+apporte toutes ses observations de problème en attente qui visent une skill ou un agent. Un sujet qui mêle
+plusieurs cibles n'apporte que celles-là, et ses tickets se comptent sur elles seules. Les autres cibles
+(`hook`, `boucle`, `controle`, `ticket`, `autre`) restent au propriétaire, par `retro.mjs liste`. Deux
+observations ne comptent pour le même sujet que s'il est écrit à l'identique, espaces de début et de fin mis à part : la
 rétrospective reprend mot pour mot le sujet d'une proposition déjà ouverte. Sans rien à retenir, la boucle affiche « Rien à harmoniser » et
 continue. Un journal des retours illisible (ligne tronquée, écrite à la main) fait sauter
 l'harmonisation : la boucle l'affiche (« Harmonisation sautée ») et continue la file.
@@ -226,39 +233,59 @@ boucle écrit `observations.json`. Elle suit la skill `harmonisation` : l'agent 
 consignes, un `relecteur` neuf relit le diff contre les observations et contre la règle « ne retire
 aucune vérification », puis viennent `node scripts/check.mjs` et `verdict.json`.
 
-**Ce qu'elle peut modifier** : `.claude/skills/` et `.claude/agents/`, rien d'autre.
+**Ce qu'elle peut modifier** : `.claude/skills/` et `.claude/agents/`, hors ce que la portée y ferme
+(ci-dessous) ; rien d'autre.
 
-**Ce qu'elle ne peut pas modifier** : les contrôles (`scripts/check.mjs`, `scripts/quality/` et le
-plancher du cliquet, `scripts/loop/`, `.claude/hooks/`, `.claude/settings.json`), les tickets et leur
-gabarit, `CLAUDE.md`, `docs/standards.md`. Le hook `guard-write` le refuse pendant la session, et la
-boucle le revérifie sur le diff. Une proposition qui viserait les contrôles, ou qui retirerait une
-vérification, est différée : elle reste en attente, visible par `retro.mjs liste`, et la boucle
-l'affiche avec sa raison.
+**Ce qu'elle ne peut pas modifier** : ses arbitres, c'est-à-dire `.claude/agents/relecteur.md`,
+`.claude/agents/harmoniseur.md` et `.claude/skills/harmonisation/`, que la portée ferme bien qu'ils soient
+dans ces dossiers ; les contrôles (`scripts/check.mjs`, `scripts/quality/` et le plancher du cliquet,
+`scripts/loop/`, `.claude/hooks/`, `.claude/settings.json`) ; les tickets et leur gabarit, `CLAUDE.md`,
+`docs/standards.md`. Le hook `guard-write` le refuse pendant la session, et la boucle le revérifie sur le
+diff ; les deux lisent la même portée (`scripts/loop/harness-scopes.mjs`). Les modifier reste la décision
+du propriétaire, par un ticket `harnais: oui`.
+
+**Une observation différée** : une proposition qui viserait ces fichiers ou les contrôles, ou qui
+retirerait une vérification, est différée par la session, avec sa raison. La boucle l'affiche et, si elle
+intègre la session ou la termine sans changement, la marque `differee:<ID>` (l'identifiant de
+l'harmonisation), avec cette raison en note. Une différée n'est plus retenue par les harmonisations
+suivantes : elle attend le propriétaire, qui la voit dans `retro.mjs liste`, avec sa décision et sa note,
+et la tranche avec `retro.mjs decider <id> accepte|refuse|ticket:T…`. Après un refus, aucune n'est
+marquée.
 
 **Après la session**, la boucle vérifie, dans cet ordre :
 
 1. un verdict TERMINÉ ;
 2. un diff (fichiers suivis modifiés, fichiers nouveaux) limité à `.claude/skills/` et `.claude/agents/`,
-   avant de lancer quoi que ce soit : un contrôle modifié n'est jamais exécuté ;
+   hors fichiers fermés, avant de lancer quoi que ce soit : un contrôle modifié n'est jamais exécuté ;
 3. une relecture enregistrée sur l'état final, et acceptée par le dernier relecteur ;
 4. `node scripts/check.mjs` vert en entier.
 
 Tout passe : un commit `Tune the harness: <resume du verdict>`, avec les identifiants des observations
 traitées et la ligne `Co-Authored-By` du modèle. Ces observations passent à `harmonisation:<commit>`,
-puis la boucle pousse ; un push refusé l'arrête (code 3), comme pour un ticket. Si le marquage échoue
-(journal devenu illisible pendant la session), la boucle le dit, avec la commande `retro.mjs decider`
-pour le faire à la main, et pousse quand même : le commit est fait. Un verdict TERMINÉ sans
-aucun changement ne committe rien, et les observations restent en attente.
+les différées à `differee:<ID>`, puis la boucle pousse ; un push refusé l'arrête (code 3), comme pour un
+ticket. Si le marquage échoue (journal devenu illisible pendant la session), la boucle le dit, avec la
+commande `retro.mjs decider` pour le faire à la main, et pousse quand même : le commit est fait. Un
+verdict TERMINÉ sans aucun changement ne committe rien : les différées passent à `differee:<ID>`, les
+autres observations restent en attente.
 
 **Un refus** (verdict absent ou autre que TERMINÉ, diff hors des consignes, relecture absente, périmée
 ou refusée, contrôle rouge) annule la session : la boucle désindexe, remet les fichiers suivis modifiés
-dans leur état de `HEAD`, retire les fichiers nouveaux absents avant la session, puis vérifie qu'il ne
-reste rien de la session et qu'aucune de ces commandes Git n'a échoué. Remise réussie : elle écrit la
-raison dans `refus.txt`, l'affiche et continue la file ; les observations restent en attente. Remise
-incomplète (par exemple un `.git/index.lock` resté en place) : elle s'arrête avec le code 4, sans lancer
-de ticket sur un arbre sale, et dit quels fichiers restent et quoi examiner. Une harmonisation ne bloque
-donc jamais un ticket ; seuls une remise à `HEAD` impossible (code 4) ou un push refusé (code 3)
-arrêtent la boucle.
+dans leur état de `HEAD`, met de côté les fichiers nouveaux absents avant la session, puis vérifie qu'il
+ne reste rien de la session et qu'aucune de ces commandes Git n'a échoué. **Mettre de côté**, c'est
+déplacer chaque fichier, sous son chemin, dans `.harness-state/tickets/<ID>/mis-de-cote/`, hors Git : la
+boucle ne sait pas qui l'a créé pendant la session (la session, le propriétaire, une autre session), et
+ne supprime donc rien. Elle affiche la liste de ces fichiers et leur dossier, et l'événement du refus la
+porte ; un fichier qui ne venait pas de la session se récupère à la main. Remise réussie : elle écrit la
+raison dans `refus.txt`, l'affiche et continue la file ; les observations restent en attente, différées
+comprises. Remise incomplète (par exemple un `.git/index.lock` resté en place, ou un fichier qui n'a pas
+pu être déplacé) : elle s'arrête avec le code 4, sans lancer de ticket sur un arbre sale, et dit quels
+fichiers restent et quoi examiner. Une harmonisation ne bloque donc jamais un ticket ; seuls une remise à
+`HEAD` impossible (code 4) ou un push refusé (code 3) arrêtent la boucle.
+
+**Reprise après un refus** : si l'harmonisation précédente, celle au numéro juste inférieur, a été
+refusée, la consigne de la suivante nomme son `refus.txt` et, s'il existe, le dernier `relecture-<n>.md`
+de son dossier ; la session les lit d'abord. Seule la précédente compte, pas tout l'historique. Après une
+harmonisation intégrée, ou pour la première, la consigne n'en nomme aucun.
 
 **Annuler une harmonisation intégrée** : `git revert <commit>` du commit `Tune the harness: …`. Ses
 observations restent marquées de ce commit ; les trancher de nouveau avec `retro.mjs decider` (`refuse`
@@ -334,8 +361,9 @@ branche, session Claude ou Codex imbriquée, `gh`, installation de dépendance n
 hors du projet, modification du harnais ou d'un autre ticket, création d'un fichier de test nommé
 d'après un chantier. Un ticket `harnais: oui` lève le verrou du harnais et peut modifier le gabarit des
 tickets, jamais un autre ticket. Une session d'harmonisation ne le lève que sur les consignes
-(`TVLENS_HARNESS_SCOPE=consignes`) : `.claude/skills/` et `.claude/agents/` ; le reste du harnais et le
-gabarit lui restent fermés, et une portée inconnue n'ouvre rien. Un sous-agent lancé en arrière-plan est
+(`TVLENS_HARNESS_SCOPE=consignes`) : `.claude/skills/` et `.claude/agents/`, sauf
+`.claude/agents/relecteur.md`, `.claude/agents/harmoniseur.md` et `.claude/skills/harmonisation/` ; le
+reste du harnais et le gabarit lui restent fermés, et une portée inconnue n'ouvre rien. Un sous-agent lancé en arrière-plan est
 ramené au premier plan. Chaque fichier écrit est contrôlé aussitôt, et la session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur
 un contrôle rouge. La boucle n'intègre ensuite que le changement que le dernier relecteur a lu et
 accepté : une modification faite après la relecture, journal du ticket mis à part, ou un dernier

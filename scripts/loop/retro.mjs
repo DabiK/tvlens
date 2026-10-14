@@ -2,10 +2,11 @@
 // Rétrospective d'un ticket : après l'intégration ou le blocage, une courte session en lecture seule relit ce
 // que la boucle a observé et propose des améliorations du harnais. Les propositions s'accumulent dans un
 // journal ; le propriétaire les tranche après un lot de tickets. L'harmonisation des consignes (tune.mjs) marque
-// `harmonisation:<commit>` celles qu'elle a traitées dans les skills et les agents.
+// `harmonisation:<commit>` celles qu'elle a traitées dans les skills et les agents, et `differee:<H…>` celles qu'elle
+// laisse au propriétaire.
 //
-//   node scripts/loop/retro.mjs liste [--tous]                   propositions à trancher, groupées par cible
-//   node scripts/loop/retro.mjs decider <id> accepte|refuse|ticket:T012|harmonisation:<commit> [note]
+//   node scripts/loop/retro.mjs liste [--tous]      propositions à trancher (ouvertes ou différées), groupées par cible
+//   node scripts/loop/retro.mjs decider <id> accepte|refuse|ticket:T012|harmonisation:<commit>|differee:H001 [note]
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -129,8 +130,11 @@ export function runRetro(root, ticket, dir, run, { bin = "claude", permissionMod
 
 const ORDER = Object.fromEntries(IMPACTS.map((impact, i) => [impact, i]));
 
+/** Différée par une harmonisation : elle attend une décision du propriétaire, mais la sélection ne la reprend plus. */
+const DEFERRED = /^differee:/;
+
 function listCommand(root, all) {
-  const entries = all ? readJournal(root) : pendingObservations(root);
+  const entries = all ? readJournal(root) : readJournal(root).filter((e) => e.statut === "propose" || DEFERRED.test(e.statut));
   if (!entries.length) return console.log(all ? "Aucune observation." : "Aucune proposition à trancher.");
   for (const target of TARGETS) {
     const group = entries.filter((e) => e.cible === target).sort((a, b) => ORDER[a.impact] - ORDER[b.impact]);
@@ -143,9 +147,12 @@ function listCommand(root, all) {
   }
 }
 
-/** Décisions possibles : `harmonisation:<commit>` marque une observation traitée par une harmonisation des consignes. */
-const DECISION = /^(accepte|refuse|ticket:T\d+|harmonisation:[0-9a-f]{7,40})$/;
-const DECIDE_USAGE = "decider <id> accepte|refuse|ticket:T012|harmonisation:<commit> [note]";
+/**
+ * Décisions possibles : `harmonisation:<commit>` marque une observation traitée par une harmonisation des consignes,
+ * `differee:<H…>` une observation que cette harmonisation a laissée au propriétaire.
+ */
+const DECISION = /^(accepte|refuse|ticket:T\d+|harmonisation:[0-9a-f]{7,40}|differee:H\d+)$/;
+const DECIDE_USAGE = "decider <id> accepte|refuse|ticket:T012|harmonisation:<commit>|differee:H001 [note]";
 
 /** Les observations encore à trancher (`statut: propose`), dans l'ordre du journal. */
 export function pendingObservations(root) {

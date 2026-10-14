@@ -14,16 +14,22 @@ Dossier d'état : `.harness-state/tickets/<ID>/` (hors Git), où `<ID>` est l'id
 (`H` suivi d'un numéro). La boucle l'a créé et y a écrit `observations.json` et
 `untracked-before.json` ; tu ne modifies ni l'un ni l'autre.
 
-La session ne modifie que `.claude/skills/` et `.claude/agents/`. Les contrôles (`scripts/check.mjs`,
-`scripts/quality/`, `scripts/loop/`, `.claude/hooks/`, `.claude/settings.json`), les tickets,
-`CLAUDE.md` et `docs/standards.md` restent la décision du propriétaire : un hook refuse de les écrire,
-et la boucle annule toute la session si son diff en sort.
+La session ne modifie que `.claude/skills/` et `.claude/agents/`, sauf `.claude/agents/relecteur.md`,
+`.claude/agents/harmoniseur.md` et `.claude/skills/harmonisation/` : le relecteur et la marche de
+l'harmonisation sont ses arbitres. Ces fichiers, les contrôles (`scripts/check.mjs`, `scripts/quality/`,
+`scripts/loop/`, `.claude/hooks/`, `.claude/settings.json`), les tickets, `CLAUDE.md` et
+`docs/standards.md` restent la décision du propriétaire : un hook refuse de les écrire, et la boucle
+annule toute la session si son diff en sort.
 
 ## 1. Lire les observations
 
-Lis `observations.json` : les problèmes en attente que la boucle a retenus, parce qu'ils reviennent sur
-plusieurs tickets ou qu'ils ont un impact fort. Tu n'en ajoutes pas et tu n'en choisis pas d'autres.
-Lis `CLAUDE.md`, puis la skill ou l'agent que vise chaque observation.
+Quand la consigne de la session nomme le refus de l'harmonisation précédente (`refus.txt`) et, s'il
+existe, le dernier rapport de son relecteur (`relecture-<n>.md`), lis-les d'abord : ils disent pourquoi
+elle a été annulée. Ne refais pas ce qui l'a fait refuser, et dis-le à l'harmoniseur (étape 2).
+
+Lis `observations.json` : les problèmes en attente que la boucle a retenus, parce qu'ils visent une skill
+ou un agent et qu'ils reviennent sur plusieurs tickets ou ont un impact fort. Tu n'en ajoutes pas et tu
+n'en choisis pas d'autres. Lis `CLAUDE.md`, puis la skill ou l'agent que vise chaque observation.
 
 ## 2. Déléguer à `harmoniseur`
 
@@ -91,11 +97,15 @@ une nouvelle relecture (étapes 3 à 5).
   la session.
 - `resume` : une ligne, en anglais ; elle devient le titre du commit, `Tune the harness: <resume>`.
 - `observations` : les identifiants que le diff traite. Seuls ceux de `observations.json` sont marqués.
-- `differees` : chaque observation laissée au propriétaire, avec sa raison. Elle reste en attente.
+- `differees` : chaque observation laissée au propriétaire, avec sa raison. Si la boucle intègre la
+  session, ou la termine sans changement, elle la marque `differee:<ID>` avec cette raison en note :
+  l'observation attend le propriétaire, et les harmonisations suivantes ne la reprennent plus.
 
 Tout différer est un résultat valable : verdict TERMINÉ, `observations` vide, aucun changement ; la
 boucle ne committe rien.
 
 Tu ne committes pas et tu ne pousses pas : la boucle revérifie le périmètre du diff, la relecture et le
-contrôle complet, puis committe, marque les observations traitées et pousse. Un refus remet tout à
-`HEAD`.
+contrôle complet, puis committe, marque les observations traitées et différées, et pousse. Un refus remet
+les fichiers suivis à `HEAD` et déplace les fichiers nouveaux dans
+`.harness-state/tickets/<ID>/mis-de-cote/`, sous leur chemin ; il ne marque aucune observation, pas même
+les différées.
