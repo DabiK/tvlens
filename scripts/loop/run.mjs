@@ -11,7 +11,7 @@
 //   --compact-window 200000 (plafond de contexte d'une session, en tokens ; 0 pour ne pas le fixer)
 //
 // Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 push refusé.
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -111,27 +111,83 @@ function compactions(dir) {
   return fs.existsSync(file) ? fs.readFileSync(file, "utf8").split("\n").filter(Boolean).length : 0;
 }
 
-/** Ce que la session rapporte d'elle-même (sortie JSON de `claude -p`) : sert à calibrer la taille des tickets. */
-function sessionReport(stdout, dir, compactionsBefore) {
+/** Ce que la session rapporte d'elle-même (message `result` de `claude -p`) : sert à calibrer la taille des tickets. */
+function sessionReport(result, dir, compactionsBefore) {
   const report = { compactions: compactions(dir) - compactionsBefore };
-  try {
-    const result = JSON.parse(stdout);
-    const usage = result.usage || {};
-    report.session = result.session_id;
-    report.tours = result.num_turns;
-    report.duree_s = Math.round((result.duration_ms || 0) / 1000);
-    report.cout_usd = result.total_cost_usd;
-    report.tokens_sortie = usage.output_tokens;
-    // Cumul sur tous les appels de la session : il suit le coût, pas la taille du contexte à un instant donné.
-    report.tokens_lus_cumules = (usage.input_tokens || 0) + (usage.cache_read_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
-    report.refus_de_permission = (result.permission_denials || []).length;
-  } catch (error) {
-    // Sortie absente ou illisible (session interrompue) : seul le compte des compactions est connu.
-  }
+  // Sans message `result` (session interrompue), seul le compte des compactions est connu.
+  if (!result) return report;
+  const usage = result.usage || {};
+  report.session = result.session_id;
+  report.tours = result.num_turns;
+  report.duree_s = Math.round((result.duration_ms || 0) / 1000);
+  report.cout_usd = result.total_cost_usd;
+  report.tokens_sortie = usage.output_tokens;
+  // Cumul sur tous les appels de la session : il suit le coût, pas la taille du contexte à un instant donné.
+  report.tokens_lus_cumules = (usage.input_tokens || 0) + (usage.cache_read_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
+  report.refus_de_permission = (result.permission_denials || []).length;
   return report;
 }
 
-function runSession(ticket, attempt, dir, failureReport) {
+/** Ce que fait la session, une ligne par outil appelé : la cible plutôt que l'entrée entière. */
+function actions(message) {
+  if (message.type !== "assistant") return [];
+  const indent = message.parent_tool_use_id ? "    " : "  ";
+  const relative = (p) => (p && path.isAbsolute(p) ? path.relative(root, p) : p);
+  return (message.message?.content || [])
+    .filter((part) => part.type === "tool_use")
+    .map(({ name, input = {} }) => {
+      const target =
+        name === "Agent" || name === "Task"
+          ? `${input.subagent_type || ""} ${input.description || ""}`
+          : name === "Bash"
+            ? input.description || input.command
+            : relative(input.file_path || input.path) || input.pattern || input.skill || "";
+      return `${indent}${name} ${String(target).replace(/\s+/g, " ").trim()}`.slice(0, 160);
+    });
+}
+
+/** Lance la session en affichant ses actions au fil de l'eau ; garde le flux entier pour examen. */
+function streamSession(bin, args, env, dir, attempt) {
+  const started = Date.now();
+  const clock = () => {
+    const s = Math.round((Date.now() - started) / 1000);
+    return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  };
+  const stream = fs.createWriteStream(path.join(dir, `session-${attempt}.jsonl`));
+  return new Promise((resolve) => {
+    const child = spawn(bin, args, { cwd: root, env, stdio: ["ignore", "pipe", "pipe"] });
+    const timer = setTimeout(() => child.kill("SIGTERM"), options.timeoutMin * 60 * 1000);
+    let pending = "";
+    let stderr = "";
+    let result = null;
+    child.stdout.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      stream.write(chunk);
+      const lines = (pending + chunk).split("\n");
+      pending = lines.pop();
+      for (const line of lines) {
+        let message;
+        try {
+          message = JSON.parse(line);
+        } catch (error) {
+          // Ligne qui n'est pas du JSON : gardée dans le flux, rien à afficher.
+          continue;
+        }
+        if (message.type === "result") result = message;
+        for (const action of actions(message)) console.log(`[boucle] ${clock()}${action}`);
+      }
+    });
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk) => (stderr += chunk));
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      stream.end();
+      resolve({ code: code ?? 1, result, stderr });
+    });
+  });
+}
+
+async function runSession(ticket, attempt, dir, failureReport) {
   const retry = failureReport
     ? ` C'est la tentative ${attempt} : une session précédente n'a pas abouti. Lis ${path.relative(root, failureReport)}` +
       " et le journal du ticket, regarde git status, puis reprends là où le travail s'est arrêté."
@@ -140,7 +196,7 @@ function runSession(ticket, attempt, dir, failureReport) {
     `Traite le ticket ${ticket.id} (${ticket.file}) en suivant la skill « ticket » : lis d'abord` +
     ` .claude/skills/ticket/SKILL.md, puis le ticket en entier.${retry}` +
     ` Avant de terminer, écris ton verdict dans .harness-state/tickets/${ticket.id}/verdict.json.`;
-  const args = ["-p", prompt, "--permission-mode", options.permissionMode, "--output-format", "json"];
+  const args = ["-p", prompt, "--permission-mode", options.permissionMode, "--output-format", "stream-json", "--verbose"];
   args.push("--session-id", randomUUID(), "--name", `TVLens ${ticket.id} tentative ${attempt}`);
   if (options.model) args.push("--model", options.model);
   if (options.effort) args.push("--effort", options.effort);
@@ -160,10 +216,10 @@ function runSession(ticket, attempt, dir, failureReport) {
   const bin = process.env.TVLENS_CLAUDE_BIN || "claude";
   event("session", { ticket: ticket.id, attempt });
   const compactionsBefore = compactions(dir);
-  const result = sh(bin, args, { env, stdio: ["ignore", "pipe", "pipe"], timeout: options.timeoutMin * 60 * 1000 });
-  fs.writeFileSync(path.join(dir, `session-${attempt}.json`), result.stdout);
+  const result = await streamSession(bin, args, env, dir, attempt);
+  if (result.result) fs.writeFileSync(path.join(dir, `session-${attempt}.json`), JSON.stringify(result.result));
   if (result.stderr) fs.writeFileSync(path.join(dir, `session-${attempt}.stderr`), result.stderr);
-  const report = sessionReport(result.stdout, dir, compactionsBefore);
+  const report = sessionReport(result.result, dir, compactionsBefore);
   event("session-terminee", { ticket: ticket.id, attempt, code: result.code, ...report });
   if (report.tours !== undefined) say(`Session ${attempt} : ${report.tours} tours, ${report.duree_s} s, ${report.tokens_sortie} tokens produits.`);
   if (report.compactions) say(`La session s'est compactée ${report.compactions} fois : ce ticket est sans doute trop gros pour une session.`);
@@ -231,7 +287,7 @@ function block(ticket, why) {
   stop(2, `${ticket.id} est bloqué : ${why}\nLe travail en cours est laissé tel quel dans le dossier, pour examen.`);
 }
 
-function processTicket(ticket, context) {
+async function processTicket(ticket, context) {
   const dir = path.join(stateDir, "tickets", ticket.id);
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(root, ticket.file);
@@ -242,7 +298,7 @@ function processTicket(ticket, context) {
   for (let attempt = 1; attempt <= options.attempts; attempt++) {
     // Un verdict d'une tentative précédente ne vaut pas pour celle-ci.
     fs.rmSync(path.join(dir, "verdict.json"), { force: true });
-    const code = runSession(ticket, attempt, dir, failureReport);
+    const code = await runSession(ticket, attempt, dir, failureReport);
     const verdict = readVerdict(dir);
     let failure;
     if (!verdict) failure = `La session s'est terminée sans verdict (code de sortie ${code}).`;
@@ -276,6 +332,6 @@ for (let done = 0; done < options.max; done++) {
     say(options.push ? `Après contrôle : commit puis push sur origin/${context.branch}.` : "Après contrôle : commit local, sans push.");
     stop(0);
   }
-  processTicket(ticket, context);
+  await processTicket(ticket, context);
 }
 stop(0, "Nombre de tickets demandé atteint.");

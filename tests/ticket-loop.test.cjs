@@ -72,7 +72,18 @@ const scenarios = {
     fs.appendFileSync(path.join(dir, "compactions.jsonl"), JSON.stringify({ trigger: "auto" }) + "\\n");
     write(path.join(dir, "fake-window"), String(process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW));
     const usage = { input_tokens: 10, output_tokens: 20, cache_read_input_tokens: 30, cache_creation_input_tokens: 40 };
-    console.log(JSON.stringify({ session_id: "s1", num_turns: 12, duration_ms: 3400, total_cost_usd: 0.5, usage, permission_denials: [{}] }));
+    console.log(JSON.stringify({ type: "result", session_id: "s1", num_turns: 12, duration_ms: 3400, total_cost_usd: 0.5, usage, permission_denials: [{}] }));
+  },
+  narrates() {
+    const say = (content, parent = null) => console.log(JSON.stringify({ type: "assistant", parent_tool_use_id: parent, message: { content } }));
+    say([{ type: "text", text: "Je lis le ticket." }, { type: "tool_use", name: "Read", input: { file_path: path.resolve(process.env.TVLENS_TICKET_FILE) } }]);
+    say([{ type: "tool_use", name: "Agent", input: { subagent_type: "explorateur", description: "Explore greeting" } }]);
+    say([{ type: "tool_use", name: "Grep", input: { pattern: "hello" } }], "toolu_1");
+    console.log("not json");
+    greeting();
+    say([{ type: "tool_use", name: "Bash", input: { command: "node scripts/check.mjs --changed", description: "Run the changed-files check" } }]);
+    verdict("TERMINÉ");
+    console.log(JSON.stringify({ type: "result", session_id: "s2", num_turns: 4, duration_ms: 1000, total_cost_usd: 0.1, usage: {} }));
   },
   "removes-empty-catch"() {
     write("core/legacy.cjs", "module.exports = 1;\\n");
@@ -233,6 +244,24 @@ test("the loop caps the context of a ticket session and records what the session
     { session: "s1", tours: 12, duree_s: 3, cout_usd: 0.5, tokens_sortie: 20, tokens_lus_cumules: 80, refus_de_permission: 1, compactions: 1 },
   );
   assert.equal(repo.loop("done", ["--dry-run", "--compact-window", "0"]).code, 0);
+});
+
+test("the loop shows each tool the session calls while it runs and keeps the whole stream", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("narrates");
+  assert.equal(result.code, 0, result.out);
+  const shown = result.out.split("\n").filter((line) => /^\[boucle\] \d\d:\d\d /.test(line)).map((line) => line.slice(14));
+  assert.deepEqual(shown, [
+    "  Read docs/travail/tickets/001-add-greeting.md",
+    "  Agent explorateur Explore greeting",
+    "    Grep hello",
+    "  Bash Run the changed-files check",
+  ]);
+  assert.ok(result.out.indexOf("Bash Run the changed-files check") < result.out.indexOf("Session 1 : 4 tours"));
+  const stream = repo.read(".harness-state/tickets/T001/session-1.jsonl").trim().split("\n");
+  assert.equal(stream.length, 6);
+  assert.equal(JSON.parse(repo.read(".harness-state/tickets/T001/session-1.json")).session_id, "s2");
 });
 
 test("files that were already untracked before the loop are left out of the ticket commit", (t) => {

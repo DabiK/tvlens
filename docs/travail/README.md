@@ -59,6 +59,9 @@ dans « Hypothèses bloquantes » : elle lance sa session comme une autre. Tranc
 lancer, ou s'arrêter avant eux avec `--max`. Le ticket qui corrige ce point est dans la file
 (constat ESSAI-06 du rapport d'audit).
 
+Pendant la session, la boucle affiche une ligne par outil appelé, avec le temps écoulé :
+`[boucle] 03:12  Read core/session.cjs`. Les lignes plus en retrait viennent d'un sous-agent.
+
 Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six lignes dans un test) :
 29 tours, 18 min 40 s de session, 3,73 $, puis environ 1 min 30 de contrôle complet. Commencer par
 `--max 1`, lire le résultat, puis monter.
@@ -108,7 +111,8 @@ Pour aller plus loin :
 | Le journal du ticket (section `## Journal`) | les jalons écrits par la session, avec commandes et sorties |
 | `.harness-state/loop/events.jsonl` | une ligne par événement : session lancée, session terminée (tours, durée, coût, compactions), refus, intégration, blocage, avec la charge de la machine |
 | `.harness-state/tickets/<ID>/verdict.json` | le verdict de la dernière session, ses preuves et ses réserves (`reste`) |
-| `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu brut de la session |
+| `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
+| `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
 | `.harness-state/tickets/<ID>/exploration.md`, `revue-<n>.diff` | le rapport d'exploration et les diffs relus |
 
 Un verdict TERMINÉ peut garder des réserves dans `reste` : la boucle intègre sans les afficher. Tant
