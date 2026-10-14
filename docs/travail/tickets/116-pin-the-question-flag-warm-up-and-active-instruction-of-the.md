@@ -1,7 +1,7 @@
 ---
 id: T116
 titre: Pin the question flag, warm-up and active instruction of the Mac host in tests
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -111,3 +111,29 @@ Aucune décision n'est attendue. Le filtre par session de `onChange` (ligne 167)
 trouve un, elle l'ajoute au test 1 ; sinon, elle le note au journal.
 
 ## Journal
+
+- Exploration : références du ticket exactes ; seuls les numéros de ligne de `tests/mac-ipc-contract.test.cjs` ont
+  bougé (+10). Aucun écart de périmètre. Le test 1 fixe la voie héritée de `drain()` (perception smoke).
+- Implémentation : trois tests ajoutés à `tests/mac-ipc-contract.test.cjs` (+84 lignes, constante `CHAT_ANSWER`),
+  aucun code de production ni test existant modifié (`git diff --stat` : seuls ce ticket et le fichier de test).
+- Critère 1 : `node --test tests/mac-ipc-contract.test.cjs` : 15 tests, 15 pass, 0 fail, duration_ms 2850.
+- Critère 2, chaque essai avec `--test-name-pattern`, `app/main.cjs` restauré ensuite (`cmp` identique à la copie) :
+  - sans `queueMicrotask(() => watch?.drain())` (motif « asking flag ») : 1 fail,
+    `never happened: the passage held during the question, analysed with no other gesture`.
+  - sans le `prepare` d'observation de `sessions:resume` (motif « warmed up ») : 1 fail,
+    `resume warms both again, for the same session`.
+  - `getInstruction` rendant `undefined` (motif « instruction of the surveillance ») : 1 fail, la deuxième entrée vaut
+    `['Pendant la surveillance ?', undefined]` au lieu de la consigne.
+- Critère 3 : toutes les attentes passent par `until` (borné, nomme ce qui n'est pas arrivé) ; `pause(30)` borné
+  seulement pour constater qu'un passage reste `queued`, comme dans les tests voisins.
+- Critère 4 : `node scripts/check.mjs` en entier : vert, 742 tests JS, 84 tests Python (1 ignoré) ; cliquet
+  `cas_de_test` 696 → 699 ; format et lint non lancés (Prettier et ESLint non installés).
+- Hypothèse « job d'une autre session » : aucun geste du pont trouvé qui laisse un job d'une autre session pendant
+  qu'une session est chargée (`letGo` vide `deep.jobs`) ; le filtre par session de `onChange` n'est pas testé.
+- Relecture 1 (relecteur neuf) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre.
+
+### Réserves à la clôture
+
+- format (Prettier) et lint (ESLint) non lancés : outils non installés dans ce dépôt
+- Le filtre par session de onChange n'est pas testé : aucun geste du pont ne laisse un job d'une autre session pendant qu'une session est chargée (letGo vide deep.jobs)
+- Le test du drapeau asking fixe la voie héritée de drain() (perception smoke), pas la politique de vision de la perception de production

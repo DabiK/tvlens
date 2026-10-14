@@ -851,3 +851,87 @@ test('a question is at rest on disk once the write that carries its figures has 
   await seconds(3);
   assert.deepEqual([writes, await digest(dir)], [handed, landed], 'and no save follows');
 });
+
+const CHAT_ANSWER = { answer: 'Ok.', kind: 'explanation', citations: [], limits: [] };
+
+test('on the Mac host a question raises the asking flag of the session, holds the passages that arrive meanwhile and analyses them after', async t => {
+  const { launch } = await stage(t), turn = {};
+  // A chat agent the test drives: its answer ends when the test says so, or when the question is cancelled.
+  const host = await launch({ wrap: { conversation: built => {
+    built.agent.answer = input => new Promise((resolve, reject) => {
+      turn.finish = resolve;
+      input.signal.addEventListener('abort', () => reject(input.signal.reason), { once: true });
+    });
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  assert.equal((await host.state()).asking, false, 'no question, no flag');
+  await host.ask('Que voit-on maintenant ?');
+  await until(t, async () => (await host.state()).asking === true && Boolean(turn.finish), 'the session says a question is running');
+  // The passage lands while the answer is being written: it is kept and queued, not analysed.
+  await capture(host, a.id);
+  const statuses = async () => (await host.state()).segments.map(s => [s.id, s.status]);
+  assert.deepEqual(await statuses(), [['moment-1', 'ready'], ['moment-2', 'queued']], 'the passage arrived during the question is waiting');
+  await pause(30);
+  assert.deepEqual([await statuses(), (await host.state()).asking], [[['moment-1', 'ready'], ['moment-2', 'queued']], true], 'and still waiting');
+  turn.finish(CHAT_ANSWER);
+  await until(t, async () => (await host.state()).asking === false, 'the flag lowered once the answer is over');
+  await until(t, analysed(host, 2), 'the passage held during the question, analysed with no other gesture');
+});
+
+test('on the Mac host a question reaches the chat agent with the instruction of the surveillance active on the session, and none otherwise', async t => {
+  const { launch } = await stage(t), seen = [];
+  const host = await launch({ wrap: { conversation: built => {
+    built.agent.answer = async input => { seen.push([input.question, input.instruction]); return CHAT_ANSWER; };
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  const question = async text => {
+    const { id } = await host.ask(text);
+    await until(t, async () => (await host.deepState()).jobs.find(job => job.id === id)?.status === 'done', `the answer to: ${text}`);
+  };
+  const instruction = 'Vérifie tous les chiffres annoncés.';
+  await question('Avant toute consigne ?');
+  await host.startSurveillance({ instruction });
+  await until(t, async () => (await host.surveillanceState()).registry.ready, 'the session folder read by the surveillance');
+  await question('Pendant la surveillance ?');
+  await host.stopSurveillance();
+  await question('Après l’arrêt ?');
+  assert.deepEqual(seen, [['Avant toute consigne ?', undefined], ['Pendant la surveillance ?', instruction], ['Après l’arrêt ?', undefined]]);
+});
+
+test('on the Mac host both agents are warmed up with the id of the session when it starts or resumes, never when an archive is only read', async t => {
+  const calls = [], warming = { rejects: false };
+  const prepare = agent => async id => { calls.push(`${agent}:${id}`); if (warming.rejects) throw new Error('warm-up refused'); };
+  // Only the pairs matter: the chat agent and the observation agent, each called once, whatever their order.
+  const took = () => calls.splice(0).sort();
+  const { launch } = await stage(t), host = await launch({ wrap: {
+    conversation: built => { built.agent.prepare = prepare('chat'); return built; },
+    session: runtime => { runtime.perception.agent = { prepare: prepare('observe') }; return runtime; },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  assert.deepEqual(took(), [`chat:${a.id}`, `observe:${a.id}-observe`], 'start warms both agents once, for the new session');
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await host.stop(); await host.newSession();
+  assert.equal((await host.openSession(a.id)).readOnly, true);
+  assert.deepEqual(took(), [], 'a passage, stop, a new session and an archive opened read-only warm nothing');
+  await host.resumeSession();
+  assert.deepEqual(took(), [`chat:${a.id}`, `observe:${a.id}-observe`], 'resume warms both again, for the same session');
+  // A warm-up that fails is the provider’s business: neither the resume nor the start is refused for it.
+  warming.rejects = true;
+  await host.stop(); await host.newSession();
+  await host.openSession(a.id);
+  assert.equal((await host.resumeSession()).id, a.id);
+  assert.deepEqual(took(), [`chat:${a.id}`, `observe:${a.id}-observe`], 'the rejecting warm-ups were asked all the same');
+  await host.stop(); await host.newSession();
+  const b = await host.start();
+  assert.deepEqual([took(), host.failures], [[`chat:${b.id}`, `observe:${b.id}-observe`], []], 'a rejecting warm-up fails neither start nor the host');
+});
