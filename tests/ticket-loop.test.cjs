@@ -6,6 +6,7 @@ const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
 
 const tickets = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tickets.mjs")).href);
+const tuning = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tune.mjs")).href);
 
 function ticketText(fields = {}, body = "") {
   const meta = { id: "T001", titre: "Add the greeting", statut: "a-faire", bloque_par: "", adr: "non", ...fields };
@@ -63,6 +64,70 @@ const review = (text = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 
   record();
   handBack(text);
 };
+// Harmonisation des consignes : la session lit les observations retenues par la boucle, puis joue FAKE_TUNE.
+if (process.env.TVLENS_TUNE === "1") {
+  const names = ["LOOP", "TICKET", "TICKET_FILE", "TUNE", "HARNESS", "HARNESS_SCOPE", "REVIEW_MODEL", "ALLOW_INSTALL"].map((n) => "TVLENS_" + n);
+  const call = { env: Object.fromEntries(names.map((n) => [n, process.env[n] ?? null])), prompt: argument("-p") };
+  write(path.join(dir, "fake-tune-call"), JSON.stringify(call));
+  const ids = JSON.parse(fs.readFileSync(process.env.TVLENS_TICKET_FILE, "utf8")).map((o) => o.id);
+  const listed = (name) => (process.env[name] || "").split(",").filter(Boolean);
+  const deferred = (list) => list.map((id) => ({ id, raison: "it would loosen a check" }));
+  const tuned = () => {
+    const handled = [...ids.filter((id) => !listed("FAKE_DEFER").includes(id)), ...listed("FAKE_EXTRA_IDS")];
+    verdict("TERMINÉ", { resume: "Tell the reviewer to read the tests first", observations: handled, differees: deferred(listed("FAKE_DEFER")) });
+  };
+  const editSkill = () => fs.appendFileSync(".claude/skills/ticket/SKILL.md", "Read the tests first.\\n");
+  const newAgent = () => write(".claude/agents/extra.md", "# Extra\\n");
+  // Un contrôle modifié qui laisse une trace s'il est exécuté : la boucle doit le refuser sans le lancer.
+  const editCheck = () => {
+    const source = fs.readFileSync("scripts/check.mjs", "utf8");
+    const marker = 'fs.writeFileSync(".harness-state/modified-check-ran", "");\\n';
+    fs.writeFileSync("scripts/check.mjs", source.replace("const root = process.cwd();", marker + "const root = process.cwd();"));
+  };
+  const rejected = "VERDICT : à corriger\\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\\n- it removes a proof";
+  const tunes = {
+    "edits-skill"() {
+      editSkill();
+      review();
+      tuned();
+    },
+    "edits-check"() {
+      editSkill();
+      newAgent();
+      editCheck();
+      review();
+      tuned();
+    },
+    "review-rejected"() {
+      editSkill();
+      newAgent();
+      review(rejected);
+      tuned();
+    },
+    silent() {
+      editSkill();
+      newAgent();
+    },
+    "defers-all"() {
+      verdict("TERMINÉ", { resume: "Nothing to change", observations: [], differees: deferred(ids) });
+    },
+    // Une session refusée qui laisse un verrou d'index : Git ne peut plus remettre ses fichiers dans leur état de HEAD.
+    "blocks-restore"() {
+      editCheck();
+      write(".git/index.lock", "");
+      tuned();
+    },
+    // Le journal des retours est hors Git et hors de la portée protégée : une session peut le rendre illisible.
+    "corrupts-journal"() {
+      editSkill();
+      review();
+      fs.appendFileSync(".harness-state/retours/observations.jsonl", "{ not json\\n");
+      tuned();
+    },
+  };
+  tunes[process.env.FAKE_TUNE]();
+  process.exit(0);
+}
 const scenario = process.env.FAKE_SCENARIO;
 if (scenario === "silent") process.exit(0);
 fs.appendFileSync(process.env.TVLENS_TICKET_FILE, "- jalon : attempt " + attempt + "\\n");
@@ -523,6 +588,280 @@ test("after a ticket, a read-only retrospective proposes harness changes that th
   assert.match(repo.node("scripts/loop/retro.mjs", ["liste", "--tous"]).stdout, /R-T001-2 .* → ticket:T009 \(queue it\)/);
 });
 
+// Une observation du journal des retours, telle que la rétrospective l'écrit.
+const observation = (fields) => ({
+  ticket: "T001",
+  at: "2026-10-14T00:00:00.000Z",
+  statut: "propose",
+  type: "probleme",
+  sujet: "reviewer",
+  constat: "found",
+  preuve: "session-1.jsonl",
+  proposition: "tell the reviewer",
+  cible: "skill",
+  impact: "moyen",
+  ...fields,
+});
+const journalFile = ".harness-state/retours/observations.jsonl";
+const seedJournal = (repo, entries) => repo.write(journalFile, entries.map((e) => JSON.stringify(e) + "\n").join(""));
+const journal = (repo) => repo.read(journalFile).trim().split("\n").map((line) => JSON.parse(line));
+const statuses = (repo) => Object.fromEntries(journal(repo).map((o) => [o.id, o.statut]));
+// Deux tickets et une skill suivie par Git ; la fausse rétrospective relève après chaque ticket le même problème (« reviewer »).
+const tuningRepo = () =>
+  loopRepo({
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+    ".claude/skills/ticket/SKILL.md": "# Ticket\n",
+  });
+const tuneCall = (repo) => JSON.parse(repo.read(".harness-state/tickets/H001/fake-tune-call"));
+const lastCommit = (repo) => ({
+  head: repo.git("rev-parse", "--short", "HEAD").stdout.trim(),
+  paragraphs: repo.git("log", "-1", "--format=%B").stdout.trim().split("\n\n"),
+  files: repo.git("show", "--name-only", "--format=", "HEAD").stdout.trim().split("\n"),
+});
+
+test("an observation handled by a harness tuning commit is marked with that commit and leaves the list to decide", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  seedJournal(repo, [observation({ id: "R-T001-1" }), observation({ id: "R-T001-2" })]);
+  const retro = (...args) => repo.node("scripts/loop/retro.mjs", args);
+  const marked = retro("decider", "R-T001-1", "harmonisation:0a1b2c3");
+  assert.equal(marked.code, 0, marked.out);
+  for (const wrong of ["harmonisation:", "harmonisation:0a1b2c", "harmonisation:not-hex", `harmonisation:${"a".repeat(41)}`]) {
+    assert.equal(retro("decider", "R-T001-2", wrong).code, 2, wrong);
+  }
+  assert.deepEqual(statuses(repo), { "R-T001-1": "harmonisation:0a1b2c3", "R-T001-2": "propose" });
+  const open = retro("liste").stdout;
+  assert.doesNotMatch(open, /R-T001-1/);
+  assert.match(open, /R-T001-2/);
+  assert.match(retro("liste", "--tous").stdout, /R-T001-1 .* → harmonisation:0a1b2c3/);
+});
+
+test("the subjects to tune are the pending problems seen on two tickets or more, or with a strong impact, most frequent first, three at most", async () => {
+  const { selectSubjects } = await tuning();
+  const seen = (id, ticket, sujet, fields = {}) => observation({ id, ticket, sujet, ...fields });
+  const journal = [
+    seen("R-T001-1", "T001", "once", { impact: "faible" }),
+    seen("R-T001-2", "T001", "strong", { impact: "fort" }),
+    seen("R-T001-3", "T001", "twice"),
+    seen("R-T002-1", "T002", "twice", { impact: "faible" }),
+    seen("R-T002-2", "T002", "twice", { type: "bien" }),
+    seen("R-T003-1", "T003", "twice", { statut: "refuse" }),
+    seen("R-T001-4", "T001", "same ticket"),
+    seen("R-T001-5", "T001", "same ticket"),
+    seen("R-T002-3", "T002", "praised", { type: "bien", impact: "fort" }),
+    seen("R-T003-2", "T003", "praised", { type: "bien" }),
+    seen("R-T002-4", "T002", "decided", { statut: "ticket:T009", impact: "fort" }),
+    seen("R-T003-3", "T003", "decided", { statut: "accepte" }),
+  ];
+  const chosen = (entries) => selectSubjects(entries).map((s) => [s.sujet, s.observations.map((o) => o.id)]);
+  assert.deepEqual(chosen(journal), [["twice", ["R-T001-3", "R-T002-1"]], ["strong", ["R-T001-2"]]]);
+  const more = [
+    seen("R-T004-1", "T004", "late twice"),
+    seen("R-T005-1", "T005", "late twice"),
+    seen("R-T004-2", "T004", "thrice"),
+    seen("R-T005-2", "T005", "thrice"),
+    seen("R-T006-1", "T006", "thrice"),
+  ];
+  assert.deepEqual(chosen([...journal, ...more]).map(([sujet]) => sujet), ["thrice", "twice", "late twice"]);
+  assert.deepEqual(chosen(journal.filter((o) => o.sujet !== "twice" && o.sujet !== "strong")), []);
+});
+
+test("with no problem that recurs or has a strong impact, the loop says there is nothing to tune and starts no session", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  const seeded = [
+    observation({ id: "R-T008-1", ticket: "T008", sujet: "slow review", impact: "moyen" }),
+    observation({ id: "R-T009-1", ticket: "T009", sujet: "slow review", type: "bien" }),
+    observation({ id: "R-T008-2", ticket: "T008", sujet: "noisy hook", impact: "faible" }),
+    observation({ id: "R-T008-3", ticket: "T008", sujet: "noisy hook", impact: "faible" }),
+    observation({ id: "R-T008-4", ticket: "T008", sujet: "already decided", statut: "refuse" }),
+    observation({ id: "R-T009-2", ticket: "T009", sujet: "already decided", statut: "refuse", impact: "fort" }),
+  ];
+  seedJournal(repo, seeded);
+  const result = repo.loop("done", ["--tune-every", "1", "--no-retro"], { FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Rien à harmoniser/);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/H001")), false, "no tuning session was started");
+  assert.deepEqual(repo.commits(), ["T001: Add the greeting", "init"]);
+  assert.deepEqual(journal(repo), seeded);
+});
+
+test("without --tune-every, no tuning session runs, even after two tickets with a recurring problem", (t) => {
+  const repo = loopRepo({ "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }) });
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--max", "2"], { FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 0, result.out);
+  assert.deepEqual(repo.commits(), ["T002: Add the farewell", "T001: Add the greeting", "init"]);
+  const recurring = journal(repo).filter((o) => o.type === "probleme" && o.statut === "propose" && o.sujet === "reviewer");
+  assert.deepEqual(recurring.map((o) => o.ticket), ["T001", "T002"]);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/H001")), false, "no tuning session was started");
+  assert.doesNotMatch(result.out, /harmonis/i);
+});
+
+test("every N integrated tickets, a tuning session edits a skill; its commit holds only skills and agents and marks the problems handled", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--tune-every", "2", "--max", "2"], { FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 0, result.out);
+  const title = "Tune the harness: Tell the reviewer to read the tests first";
+  assert.deepEqual(repo.commits(), [title, "T002: Add the farewell", "T001: Add the greeting", "init"]);
+  assert.ok(result.out.indexOf("[boucle] T002 intégré") < result.out.indexOf("[boucle] Harmonisation H001"), result.out);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/H002")), false, "a single tuning session");
+  const { env, prompt } = tuneCall(repo);
+  assert.deepEqual(env, {
+    TVLENS_LOOP: "1",
+    TVLENS_TICKET: "H001",
+    TVLENS_TICKET_FILE: ".harness-state/tickets/H001/observations.json",
+    TVLENS_TUNE: "1",
+    TVLENS_HARNESS: "1",
+    TVLENS_HARNESS_SCOPE: "consignes",
+    TVLENS_REVIEW_MODEL: "opus",
+    TVLENS_ALLOW_INSTALL: "0",
+  });
+  assert.match(prompt, /\.claude\/skills\/harmonisation\/SKILL\.md/);
+  const plans = repo.read(".harness-state/tickets/H001/fake-plans").trim().split("\n").map((line) => JSON.parse(line));
+  assert.deepEqual(plans, [{ model: "claude-opus-5-5", effort: "high", review: "opus" }]);
+  const { head, paragraphs, files } = lastCommit(repo);
+  assert.ok(files.every((file) => file.startsWith(".claude/skills/") || file.startsWith(".claude/agents/")), files.join("\n"));
+  assert.deepEqual(files, [".claude/skills/ticket/SKILL.md"]);
+  assert.deepEqual(paragraphs, [title, "Observations: R-T001-2, R-T002-2", "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"]);
+  const handled = `harmonisation:${head}`;
+  assert.deepEqual(statuses(repo), { "R-T001-1": "propose", "R-T001-2": handled, "R-T002-1": "propose", "R-T002-2": handled });
+  assert.equal(repo.git("status", "--porcelain").stdout, "");
+});
+
+for (const [scenario, expected] of [
+  ["edits-check", /Le diff sort des consignes \(\.claude\/skills\/, \.claude\/agents\/\) : scripts\/check\.mjs$/m],
+  ["review-rejected", /Le dernier relecteur n'a pas accepté revue-1\.diff \(verdict : à corriger\)/],
+  ["silent", /sans verdict/],
+]) {
+  test(`a refused tuning session leaves none of its files, keeps its problems pending, and the next ticket runs: ${scenario}`, (t) => {
+    const repo = tuningRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop("done", ["--tune-every", "1", "--max", "2"], { FAKE_TUNE: scenario });
+    assert.equal(result.code, 0, result.out);
+    assert.match(repo.read(".harness-state/tickets/H001/refus.txt"), expected);
+    assert.ok(result.out.indexOf("[boucle] Harmonisation H001 refusée") < result.out.indexOf("[boucle] T002 intégré"), result.out);
+    assert.deepEqual(repo.commits(), ["T002: Add the farewell", "T001: Add the greeting", "init"]);
+    assert.deepEqual(lastCommit(repo).files, ["docs/travail/tickets/002-add-farewell.md"]);
+    assert.equal(repo.git("status", "--porcelain").stdout, "");
+    assert.equal(repo.read(".claude/skills/ticket/SKILL.md"), "# Ticket\n");
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/modified-check-ran")), false, "a modified check is never run");
+    assert.deepEqual([...new Set(Object.values(statuses(repo)))], ["propose"]);
+  });
+}
+
+// Dépôt distant local qui refuse tout push contenant un commit d'harmonisation.
+const REFUSE_TUNING = `#!/bin/sh
+while read old new ref; do
+  if git log --format=%s "$new" | grep -q "^Tune the harness"; then
+    echo "tuning commits are refused here" >&2
+    exit 1
+  fi
+done
+`;
+
+/** Dépôt distant local, `origin` du dépôt de test ; `preReceive`, s'il est donné, décide de ce qu'il accepte. */
+function addRemote(repo, preReceive = null) {
+  const remote = path.join(repo.root, ".harness-state", "remote.git");
+  assert.equal(repo.git("init", "--bare", "-q", remote).code, 0);
+  if (preReceive) {
+    fs.writeFileSync(path.join(remote, "hooks", "pre-receive"), preReceive);
+    fs.chmodSync(path.join(remote, "hooks", "pre-receive"), 0o755);
+  }
+  repo.git("remote", "add", "origin", remote);
+  return remote;
+}
+
+/** La boucle avec push, contrairement à `loop()` qui passe toujours `--no-push`. */
+const loopWithPush = (repo, args, env) =>
+  repo.node("scripts/loop/run.mjs", args, { env: { TVLENS_CLAUDE_BIN: path.join(repo.root, ".harness-state", "fake-claude.cjs"), ...env } });
+
+test("a tuning commit whose push is refused stops the loop with code 3, its problems already marked with that commit", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  addRemote(repo, REFUSE_TUNING);
+  const result = loopWithPush(repo, ["--tune-every", "1", "--max", "2"], { FAKE_SCENARIO: "done", FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 3, result.out);
+  assert.match(result.out, /Le commit est fait mais le push a échoué/);
+  const { head } = lastCommit(repo);
+  assert.deepEqual(repo.commits(), ["Tune the harness: Tell the reviewer to read the tests first", "T001: Add the greeting", "init"]);
+  assert.equal(statuses(repo)["R-T001-2"], `harmonisation:${head}`);
+  assert.equal(repo.events().find((e) => e.phase === "push-refuse").ticket, "H001");
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false, "the next ticket was not started");
+});
+
+test("a refused tuning session that cannot be undone stops the loop with code 4, names what is left, and starts no other ticket", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--tune-every", "1", "--max", "2"], { FAKE_TUNE: "blocks-restore" });
+  assert.equal(result.code, 4, result.out);
+  assert.match(result.out, /remise à HEAD est incomplète/);
+  assert.match(result.out, /Restent de la session : scripts\/check\.mjs/);
+  assert.match(repo.read(".harness-state/tickets/H001/refus.txt"), /Le diff sort des consignes/);
+  const stopped = repo.events().find((e) => e.phase === "harmonisation-non-defaite");
+  assert.deepEqual([stopped.id, stopped.reste], ["H001", ["scripts/check.mjs"]]);
+  assert.match(stopped.erreurs[0], /^git reset a échoué/);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false, "the next ticket was not started");
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/modified-check-ran")), false, "a modified check is never run");
+  assert.deepEqual(repo.commits(), ["T001: Add the greeting", "init"]);
+  assert.deepEqual([...new Set(Object.values(statuses(repo)))], ["propose"]);
+});
+
+test("an unreadable feedback journal skips the tuning with a reason, and the queue goes on", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  repo.write(journalFile, JSON.stringify(observation({ id: "R-T008-1", ticket: "T008", impact: "fort" })) + '\n{"id": "R-T009-1", "tick\n');
+  const result = repo.loop("done", ["--tune-every", "1", "--max", "2", "--no-retro"], { FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Harmonisation sautée : le journal des retours est illisible/);
+  assert.deepEqual(repo.commits(), ["T002: Add the farewell", "T001: Add the greeting", "init"]);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/H001")), false, "no tuning session was started");
+  assert.equal(repo.events().filter((e) => e.phase === "harmonisation-sautee").length, 2);
+});
+
+test("when the handled problems cannot be marked after the tuning commit, the loop says so and still pushes", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  const remote = addRemote(repo);
+  const result = loopWithPush(repo, ["--tune-every", "1"], { FAKE_SCENARIO: "done", FAKE_TUNE: "corrupts-journal" });
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Les observations traitées n'ont pas pu être marquées .*: R-T001-2/);
+  const title = "Tune the harness: Tell the reviewer to read the tests first";
+  assert.equal(repo.git("--git-dir", remote, "log", "-1", "--format=%s", "work").stdout.trim(), title);
+  assert.doesNotMatch(repo.read(journalFile), /harmonisation:/);
+  assert.match(repo.events().find((e) => e.phase === "harmonisation-integree").marquage_echoue, /\S/);
+});
+
+test("problems a tuning session defers stay pending and are shown with their reason; an id outside the selection is never marked", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  seedJournal(repo, [
+    observation({ id: "R-T008-1", ticket: "T008" }),
+    observation({ id: "R-T009-1", ticket: "T009" }),
+    observation({ id: "R-T009-2", ticket: "T009", sujet: "praise", type: "bien" }),
+  ]);
+  const env = { FAKE_TUNE: "edits-skill", FAKE_DEFER: "R-T009-1", FAKE_EXTRA_IDS: "R-T009-2" };
+  const result = repo.loop("done", ["--tune-every", "1", "--no-retro"], env);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Différée par l'harmonisation : R-T009-1 — it would loosen a check/);
+  const { head, paragraphs } = lastCommit(repo);
+  assert.equal(paragraphs[1], "Observations: R-T008-1");
+  assert.deepEqual(statuses(repo), { "R-T008-1": `harmonisation:${head}`, "R-T009-1": "propose", "R-T009-2": "propose" });
+});
+
+test("a tuning session that defers everything and changes nothing commits nothing and leaves its problems pending", (t) => {
+  const repo = tuningRepo();
+  t.after(repo.cleanup);
+  seedJournal(repo, [observation({ id: "R-T008-1", ticket: "T008", impact: "fort" })]);
+  const result = repo.loop("done", ["--tune-every", "1", "--no-retro"], { FAKE_TUNE: "defers-all" });
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Harmonisation H001 sans changement/);
+  assert.match(result.out, /Différée par l'harmonisation : R-T008-1 — it would loosen a check/);
+  assert.deepEqual(repo.commits(), ["T001: Add the greeting", "init"]);
+  assert.deepEqual(statuses(repo), { "R-T008-1": "propose" });
+});
+
 test("a failed retrospective is reported and never stops the loop; --no-retro skips it", (t) => {
   const failing = loopRepo();
   t.after(failing.cleanup);
@@ -753,6 +1092,30 @@ test("a dry run names the next ticket and changes nothing", (t) => {
   assert.match(result.out, /Prochain ticket : T001 — Add the greeting/);
   assert.equal(repo.status(), "a-faire");
   assert.equal(repo.git("status", "--porcelain").stdout.trim(), "");
+});
+
+test("a dry run says how often the instructions are tuned, or that they are not", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const every4 = repo.loop("done", ["--dry-run", "--tune-every", "4"]);
+  assert.equal(every4.code, 0, every4.out);
+  assert.match(every4.out, /Harmonisation des consignes : active, tous les 4 tickets intégrés\./);
+  for (const args of [[], ["--tune-every", "0"]]) {
+    const off = repo.loop("done", ["--dry-run", ...args]);
+    assert.equal(off.code, 0, off.out);
+    assert.match(off.out, /Harmonisation des consignes : désactivée/, args.join(" "));
+  }
+});
+
+test("--tune-every takes a whole number of tickets, zero or more, and anything else is refused at start", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  for (const value of ["four", "-1", "1.5", "", undefined]) {
+    const result = repo.loop("done", ["--dry-run", "--tune-every", ...(value === undefined ? [] : [value])]);
+    assert.equal(result.code, 1, `${value}\n${result.out}`);
+    assert.match(result.out, /--tune-every attend un nombre entier de tickets/, String(value));
+  }
+  assert.equal(repo.status(), "a-faire");
 });
 
 test("a dry run on a queue led by a ticket waiting for a decision names the first ready ticket and starts nothing", (t) => {

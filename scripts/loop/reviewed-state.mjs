@@ -64,7 +64,7 @@ function readUntrackedBefore(dir) {
 }
 
 /** Entrées de `git status -z` : chemins bruts, sans guillemets ni échappement, même hors ASCII. */
-function statusEntries(root) {
+export function statusEntries(root) {
   const fields = git(root, ["status", "--porcelain", "-z", "--untracked-files=all"]).stdout.split("\0");
   const entries = [];
   for (let i = 0; i < fields.length; i++) {

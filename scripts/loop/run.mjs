@@ -10,8 +10,10 @@
 //   --model <m> (fige le modèle, sans escalade)   --effort <e>   --no-push   --no-retro
 //   --permission-mode auto   --budget-usd <n>   --timeout-min 120
 //   --compact-window 200000 (plafond de contexte d'une session, en tokens ; 0 pour ne pas le fixer)
+//   --tune-every <n> (harmonise les consignes du harnais tous les n tickets intégrés ; 0, par défaut, jamais)
 //
-// Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 push refusé.
+// Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 push refusé,
+// 4 harmonisation refusée que la boucle n'a pas pu défaire (arbre laissé sale, aucun ticket lancé ensuite).
 import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
@@ -22,11 +24,13 @@ import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
 import { runRetro } from "./retro.mjs";
 import { ticketDir, unacceptedReview, unreviewedChange, untrackedPaths, writeUntrackedBefore } from "./reviewed-state.mjs";
 import { awaitingDecision, describe, list, next, setStatus, spec, validate } from "./tickets.mjs";
+import { tuneInstructions } from "./tune.mjs";
 
 const root = process.cwd();
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(name);
 const option = (name, fallback) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : fallback);
+const tuneEveryArg = option("--tune-every", "0");
 const options = {
   max: Number(option("--max", 1)),
   attempts: argv.includes("--attempts") ? Number(option("--attempts")) : null,
@@ -40,6 +44,8 @@ const options = {
   budgetUsd: option("--budget-usd", null),
   timeoutMin: Number(option("--timeout-min", 120)),
   compactWindow: Number(option("--compact-window", 200000)),
+  // Un nombre de tickets : un entier, 0 ou plus. Toute autre valeur est refusée au démarrage (null).
+  tuneEvery: /^\d+$/.test(tuneEveryArg ?? "") ? Number(tuneEveryArg) : null,
 };
 // Ce qui définit les règles : intouchable par un ticket, sauf s'il porte « harnais: oui ».
 const PROTECTED = [".claude/", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md"];
@@ -85,6 +91,7 @@ function statusEntries() {
 
 function preflight() {
   if (!fs.existsSync(path.join(root, "scripts/check.mjs"))) stop(1, "À lancer depuis la racine du projet.");
+  if (options.tuneEvery === null) stop(1, `--tune-every attend un nombre entier de tickets, 0 ou plus (0 : jamais), pas « ${tuneEveryArg ?? ""} ».`);
   const branch = git("branch", "--show-current").stdout.trim();
   if (!branch) stop(1, "HEAD détachée : la boucle travaille sur une branche.");
   if (["main", "master"].includes(branch)) stop(1, `La boucle ne travaille pas sur ${branch} : créer une branche dédiée.`);
@@ -224,6 +231,46 @@ function attemptsFor(ticket) {
 
 const usd = (n) => `${(n || 0).toFixed(2)} $`;
 
+/**
+ * Lance `claude -p` pour une session de la boucle, de ticket ou d'harmonisation, et rend compte de ce qu'elle a coûté.
+ * `env` porte les variables propres au type de session ; `TVLENS_LOOP` et `TVLENS_TICKET` (`id`) valent pour toutes.
+ */
+async function launchSession({ id, attempt, dir, prompt, name, step, env }) {
+  const args = ["-p", prompt, "--permission-mode", options.permissionMode, "--output-format", "stream-json", "--verbose"];
+  args.push("--session-id", randomUUID(), "--name", name);
+  // Aucun serveur MCP du compte (messagerie, documents, navigateur) : un ticket n'en a pas besoin, et la session
+  // tourne sans demander de permission.
+  args.push("--strict-mcp-config");
+  if (step.modele) args.push("--model", step.modele);
+  if (step.effort) args.push("--effort", step.effort);
+  if (options.budgetUsd) args.push("--max-budget-usd", options.budgetUsd);
+  const sessionEnv = {
+    ...process.env,
+    TVLENS_LOOP: "1",
+    TVLENS_TICKET: id,
+    ...env,
+    // Les sous-agents ne lancent pas eux-mêmes de sous-agents : trois rôles, un niveau.
+    CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
+  };
+  // Le relecteur tourne sur le modèle du palier, ou plus haut : le hook guard-agent le lui impose.
+  if (step.relecteur) sessionEnv.TVLENS_REVIEW_MODEL = step.relecteur;
+  // Plafond de contexte : au-delà la session se compacte. Une session de ticket qui l'atteint traite un ticket trop gros.
+  if (options.compactWindow > 0) sessionEnv.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(options.compactWindow);
+  const bin = process.env.TVLENS_CLAUDE_BIN || "claude";
+  event("session", { ticket: id, attempt, ...step });
+  const compactionsBefore = compactions(dir);
+  const result = await streamSession(bin, args, sessionEnv, dir, attempt);
+  if (result.result) fs.writeFileSync(path.join(dir, `session-${attempt}.json`), JSON.stringify(result.result));
+  if (result.stderr) fs.writeFileSync(path.join(dir, `session-${attempt}.stderr`), result.stderr);
+  const report = { ...sessionReport(result.result, dir, compactionsBefore), sous_agents: result.subAgents };
+  event("session-terminee", { ticket: id, attempt, code: result.code, ...report });
+  if (report.tours !== undefined) {
+    say(`Session ${attempt} : ${report.tours} tours, ${report.duree_s} s, ${report.tokens_sortie} tokens produits, ${usd(report.cout_usd)}.`);
+  }
+  if (report.compactions) say(`La session s'est compactée ${report.compactions} fois : ce ticket est sans doute trop gros pour une session.`);
+  return { code: result.code, report };
+}
+
 async function runSession(ticket, attempt, dir, failureReport, step) {
   const retry = failureReport
     ? ` C'est la tentative ${attempt} : une session précédente n'a pas abouti. Lis ${path.relative(root, failureReport)}` +
@@ -233,42 +280,13 @@ async function runSession(ticket, attempt, dir, failureReport, step) {
     `Traite le ticket ${ticket.id} (${ticket.file}) en suivant la skill « ticket » : lis d'abord` +
     ` .claude/skills/ticket/SKILL.md, puis le ticket en entier.${retry}` +
     ` Avant de terminer, écris ton verdict dans .harness-state/tickets/${ticket.id}/verdict.json.`;
-  const args = ["-p", prompt, "--permission-mode", options.permissionMode, "--output-format", "stream-json", "--verbose"];
-  args.push("--session-id", randomUUID(), "--name", `TVLens ${ticket.id} tentative ${attempt}`);
-  // Aucun serveur MCP du compte (messagerie, documents, navigateur) : un ticket n'en a pas besoin, et la session
-  // tourne sans demander de permission.
-  args.push("--strict-mcp-config");
-  if (step.modele) args.push("--model", step.modele);
-  if (step.effort) args.push("--effort", step.effort);
-  if (options.budgetUsd) args.push("--max-budget-usd", options.budgetUsd);
   const env = {
-    ...process.env,
-    TVLENS_LOOP: "1",
-    TVLENS_TICKET: ticket.id,
     TVLENS_TICKET_FILE: ticket.file,
     TVLENS_ALLOW_INSTALL: ticket.installe ? "1" : "0",
     TVLENS_HARNESS: ticket.harnais ? "1" : "0",
-    // Les sous-agents ne lancent pas eux-mêmes de sous-agents : trois rôles, un niveau.
-    CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
   };
-  // Le relecteur tourne sur le modèle du palier, ou plus haut : le hook guard-agent le lui impose.
-  if (step.relecteur) env.TVLENS_REVIEW_MODEL = step.relecteur;
-  // Plafond de contexte : au-delà la session se compacte. Une session de ticket qui l'atteint traite un ticket trop gros.
-  if (options.compactWindow > 0) env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(options.compactWindow);
-  const bin = process.env.TVLENS_CLAUDE_BIN || "claude";
-  event("session", { ticket: ticket.id, attempt, ...step });
   say(`Tentative ${attempt} : ${step.modele || "modèle par défaut"}, effort ${step.effort || "par défaut"}, relecteur ${step.relecteur || "hérité"}.`);
-  const compactionsBefore = compactions(dir);
-  const result = await streamSession(bin, args, env, dir, attempt);
-  if (result.result) fs.writeFileSync(path.join(dir, `session-${attempt}.json`), JSON.stringify(result.result));
-  if (result.stderr) fs.writeFileSync(path.join(dir, `session-${attempt}.stderr`), result.stderr);
-  const report = { ...sessionReport(result.result, dir, compactionsBefore), sous_agents: result.subAgents };
-  event("session-terminee", { ticket: ticket.id, attempt, code: result.code, ...report });
-  if (report.tours !== undefined) {
-    say(`Session ${attempt} : ${report.tours} tours, ${report.duree_s} s, ${report.tokens_sortie} tokens produits, ${usd(report.cout_usd)}.`);
-  }
-  if (report.compactions) say(`La session s'est compactée ${report.compactions} fois : ce ticket est sans doute trop gros pour une session.`);
-  return { code: result.code, report };
+  return launchSession({ id: ticket.id, attempt, dir, prompt, name: `TVLens ${ticket.id} tentative ${attempt}`, step, env });
 }
 
 function readVerdict(dir) {
@@ -332,6 +350,27 @@ function commitMessage(ticket, reserves, trailer) {
   return [...paragraphs, trailer];
 }
 
+/** Indexe ces chemins et committe, un paragraphe par `-m`. Renvoie le commit court (`head`), ou `problem` avec la sortie de Git. */
+function commitPaths(paths, paragraphs) {
+  git("add", "-A", "--", ...paths);
+  const commit = git("commit", ...paragraphs.flatMap((paragraph) => ["-m", paragraph]));
+  if (commit.code !== 0) return { problem: commit.out };
+  return { head: git("rev-parse", "--short", "HEAD").stdout.trim() };
+}
+
+/** Pousse la branche, sauf avec `--no-push`. Renvoie le code de sortie de la boucle : 0, ou 3 si le push est refusé. */
+function pushBranch(branch, id) {
+  if (!options.push) return 0;
+  const push = git("push", "-u", "origin", branch);
+  if (push.code !== 0) {
+    event("push-refuse", { ticket: id, sortie: push.out.slice(-2000) });
+    say("Le commit est fait mais le push a échoué. Rien d'autre n'est lancé :\n" + push.out);
+    return 3;
+  }
+  say(`Poussé sur origin/${branch}.`);
+  return 0;
+}
+
 /** Commit (et push) du ticket. Renvoie le code de sortie de la boucle : 0, 2 si le commit échoue, 3 si le push est refusé. */
 function integrate(ticket, branch, untracked, { step, verdict, history }) {
   const reserves = [verdict.reste].flat().filter(Boolean);
@@ -340,24 +379,15 @@ function integrate(ticket, branch, untracked, { step, verdict, history }) {
   const file = path.join(root, ticket.file);
   fs.writeFileSync(file, withReserves(setStatus(fs.readFileSync(file, "utf8"), "termine"), reserves));
   const paths = statusEntries().flatMap((e) => e.paths).filter((p) => !untracked.has(p));
-  git("add", "-A", "--", ...paths);
   const trailer = `Co-Authored-By: ${displayName(step.modele)} <noreply@anthropic.com>`;
-  const commit = git("commit", ...commitMessage(ticket, reserves, trailer).flatMap((paragraph) => ["-m", paragraph]));
-  if (commit.code !== 0) return block(ticket, "Le commit a échoué :\n" + commit.out, history);
-  const head = git("rev-parse", "--short", "HEAD").stdout.trim();
+  const committed = commitPaths(paths, commitMessage(ticket, reserves, trailer));
+  if (committed.problem) return block(ticket, "Le commit a échoué :\n" + committed.problem, history);
+  const { head } = committed;
   const integrated = { ticket: ticket.id, commit: head, modele: step.modele, tentatives: history.length, cout_usd: totalCost(history) };
   event("integre", reserves.length ? { ...integrated, reserves } : integrated);
   say(`${ticket.id} intégré (${head}) en ${history.length} tentative(s), ${usd(totalCost(history))}.`);
   if (reserves.length) say(`Réserves de la session : ${reserves.map(reserveText).join(" ; ")}`);
-  if (!options.push) return 0;
-  const push = git("push", "-u", "origin", branch);
-  if (push.code !== 0) {
-    event("push-refuse", { ticket: ticket.id, sortie: push.out.slice(-2000) });
-    say("Le commit est fait mais le push a échoué. Rien d'autre n'est lancé :\n" + push.out);
-    return 3;
-  }
-  say(`Poussé sur origin/${branch}.`);
-  return 0;
+  return pushBranch(branch, ticket.id);
 }
 
 function block(ticket, why, history) {
@@ -428,7 +458,15 @@ function retrospective(ticket, run) {
   say(`Rétrospective : ${added.length} observation(s), ${usd(cost)}. À trancher : node scripts/loop/retro.mjs liste`);
 }
 
+/** Fréquence de l'harmonisation des consignes, telle que l'affiche `--dry-run`. */
+function tuneCadence(every) {
+  if (!every) return "désactivée (--tune-every 0)";
+  return every === 1 ? "active, après chaque ticket intégré" : `active, tous les ${every} tickets intégrés`;
+}
+
 const context = preflight();
+// Tickets intégrés depuis le lancement : l'harmonisation des consignes part tous les `--tune-every` d'entre eux.
+let integrated = 0;
 for (let done = 0; done < options.max; done++) {
   const wanted = done === 0 ? options.ticket : null;
   const queue = list(root);
@@ -448,10 +486,17 @@ for (let done = 0; done < options.max; done++) {
     say(`Session : claude -p … --permission-mode ${options.permissionMode}, ${attemptsFor(ticket)} tentative(s) au plus.`);
     say(`Première tentative : ${first.modele || "modèle par défaut"}, effort ${first.effort || "par défaut"}, relecteur ${first.relecteur || "hérité"}.`);
     say(options.push ? `Après contrôle : commit puis push sur origin/${context.branch}.` : "Après contrôle : commit local, sans push.");
+    say(`Harmonisation des consignes : ${tuneCadence(options.tuneEvery)}.`);
     stop(0);
   }
   const run = await processTicket(ticket, context);
   if (options.retro) retrospective(ticket, run);
   if (run.code !== 0) stop(run.code);
+  integrated++;
+  if (options.tuneEvery > 0 && integrated % options.tuneEvery === 0) {
+    const io = { say, event, launch: launchSession, commit: commitPaths, push: (id) => pushBranch(context.branch, id) };
+    const tuned = await tuneInstructions(root, io);
+    if (tuned !== 0) stop(tuned);
+  }
 }
 stop(0, "Nombre de tickets demandé atteint.");

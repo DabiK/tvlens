@@ -136,6 +136,39 @@ test("only a harness ticket edits the ticket template, and it still writes no ot
   assert.equal(decision(write(repo, "docs/travail/tickets/INDEX.md", harness)), "deny");
 });
 
+// Session d'harmonisation : le harnais est ouvert, mais seulement sur les consignes (skills et agents).
+const TUNE = {
+  TVLENS_LOOP: "1",
+  TVLENS_TICKET: "H001",
+  TVLENS_TICKET_FILE: ".harness-state/tickets/H001/observations.json",
+  TVLENS_HARNESS: "1",
+  TVLENS_HARNESS_SCOPE: "consignes",
+};
+
+test("a session scoped to the instructions writes the skills and the agents, and none of the checks, even with the harness open", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const file of ["scripts/check.mjs", "scripts/loop/run.mjs", ".claude/hooks/guard-write.mjs", ".claude/settings.json"]) {
+    assert.equal(decision(write(repo, file, TUNE)), "deny", file);
+  }
+  for (const file of [".claude/skills/ticket/SKILL.md", ".claude/agents/relecteur.md"]) {
+    assert.equal(decision(write(repo, file, TUNE)), "none", file);
+  }
+});
+
+test("a session scoped to the instructions cannot edit the ticket template, an unknown scope opens nothing, and unprotected files stay writable", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  assert.equal(decision(write(repo, "docs/travail/tickets/_gabarit.md", TUNE)), "deny");
+  for (const file of [".claude/skills/ticket/SKILL.md", "scripts/check.mjs", "CLAUDE.md"]) {
+    assert.equal(decision(write(repo, file, { ...TUNE, TVLENS_HARNESS_SCOPE: "everything" })), "deny", file);
+  }
+  assert.equal(decision(write(repo, ".claude/skills/ticket/SKILL.md", { ...TUNE, TVLENS_HARNESS_SCOPE: "constructor" })), "deny");
+  for (const file of [".harness-state/tickets/H001/verdict.json", "core/session.cjs"]) {
+    assert.equal(decision(write(repo, file, TUNE)), "none", file);
+  }
+});
+
 test("a ticket session runs its sub-agents in the foreground and its reviewer on the model the loop chose; an interactive session is left alone", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);

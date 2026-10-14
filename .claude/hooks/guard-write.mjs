@@ -4,6 +4,7 @@
 //   echo $(( $(date +%s) + 10*3600 )) > .harness-state/harnais-ouvert
 import fs from "node:fs";
 import path from "node:path";
+import { inScope, scopeDirs } from "../../scripts/loop/harness-scopes.mjs";
 import { TICKET_NAMED_TEST } from "../../scripts/quality/metrics.mjs";
 import { decide, loopMode, projectDir, readInput, refuseOrAsk, relative } from "./lib.mjs";
 
@@ -40,6 +41,15 @@ function unlocked() {
   }
 }
 
+// Une portée resserre ce qu'ouvre TVLENS_HARNESS : une session qui harmonise les consignes n'écrit, dans le harnais, que
+// les skills et les agents ; les contrôles restent la décision du propriétaire. Une portée inconnue n'ouvre rien.
+const scope = process.env.TVLENS_HARNESS_SCOPE;
+if (scope !== undefined && isProtected && !inScope(scope, file)) {
+  const dirs = scopeDirs(scope);
+  const allowed = dirs ? `ne modifie que ${dirs.join(" et ")}` : "est inconnue : elle n'ouvre aucune partie du harnais";
+  decide("deny", `${file} fait partie du harnais et la portée « ${scope} » de cette session ${allowed}.`);
+}
+
 if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {
   const when = "Il ne se modifie que dans un ticket marqué « harnais: oui » ou à la demande explicite de l'utilisateur.";
   refuseOrAsk(`${file} fait partie du harnais (règles, contrôles, boucle). ${when}`);
@@ -48,8 +58,8 @@ if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {
 if (loopMode) {
   if (file.startsWith("..")) decide("deny", "Refusé pendant un ticket : écriture en dehors du projet.");
   const ticket = process.env.TVLENS_TICKET_FILE ? relative(root, process.env.TVLENS_TICKET_FILE) : null;
-  // Le gabarit n'est pas un ticket mais le format des tickets : seul un ticket de harnais le modifie.
-  const template = file === "docs/travail/tickets/_gabarit.md" && process.env.TVLENS_HARNESS === "1";
+  // Le gabarit n'est pas un ticket mais le format des tickets : seul un ticket de harnais le modifie, sans portée.
+  const template = file === "docs/travail/tickets/_gabarit.md" && process.env.TVLENS_HARNESS === "1" && scope === undefined;
   if (file.startsWith("docs/travail/tickets/") && file !== ticket && !template)
     decide("deny", "Refusé pendant un ticket : seul le journal du ticket en cours se modifie, pas les autres tickets.");
 }
