@@ -109,17 +109,17 @@ Limites à garder en tête :
 | Les neuf audits | 176 | 48 | 128 | 0 | 112 | 64 |
 | Les trois audits complémentaires | 30 | 2 | 28 | 0 | 13 | 17 |
 | Signalements des relecteurs | 59 | 34 | 25 | 0 | 29 | 30 |
-| Essai de la boucle | 9 | 9 | 0 | 0 | 5 | 4 |
-| **Total** | 274 | 93 | 181 | 0 | 159 | 115 |
+| Essai de la boucle | 9 | 9 | 0 | 0 | 6 | 3 |
+| **Total** | 274 | 93 | 181 | 0 | 160 | 114 |
 
 | Priorité | Constats | Avec ticket | Sans ticket |
 | --- | ---: | ---: | ---: |
 | P0 | 15 | 14 | 1 |
-| P1 | 61 | 44 | 17 |
+| P1 | 61 | 45 | 16 |
 | P2 | 101 | 64 | 37 |
 | P3 | 38 | 8 | 30 |
 
-Les signalements des relecteurs n'ont pas de priorité : ils n'ont pas été classés par un second lecteur. 142 tickets au total, dont 3 attendent une décision.
+Les signalements des relecteurs n'ont pas de priorité : ils n'ont pas été classés par un second lecteur. 143 tickets au total, dont 3 attendent une décision.
 
 Détail par audit :
 
@@ -137,7 +137,7 @@ Détail par audit :
 | Complément : journal et diagnostic d'une panne | 10 | 1 | 9 | 0 | 5 | 5 |
 | Complément : formats écrits sur disque | 10 | 1 | 9 | 0 | 4 | 6 |
 | Complément : contrat de fil entre parties déployées | 10 | 0 | 10 | 0 | 4 | 6 |
-| Essai de la boucle sur un ticket réel | 9 | 9 | 0 | 0 | 5 | 4 |
+| Essai de la boucle sur un ticket réel | 9 | 9 | 0 | 0 | 6 | 3 |
 
 ## Constats, lot par lot
 
@@ -145,19 +145,20 @@ Les lots sont dans l'ordre d'exécution des tickets. Dans chaque lot, les consta
 
 ### L18 — Ce que l'essai de la boucle a montré
 
-Vague 1 · 9 constats · 5 tickets
+Vague 1 · 9 constats · 6 tickets
 
 - [T002](travail/tickets/002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md) — Refuse a ticket whose final change differs from the one its reviewer read _(touche au harnais)_
 - [T003](travail/tickets/003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md) — Never start a ticket that still waits for an owner decision _(touche au harnais)_
 - [T141](travail/tickets/141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) — Refuse resuming a reviewer or a sub-agent of unknown role in a ticket session _(touche au harnais)_
 - [T142](travail/tickets/142-show-the-retrospective-every-tool-the-orchestrator-called-in.md) — Show the retrospective every tool the orchestrator called, in order and timed _(touche au harnais)_
 - [T143](travail/tickets/143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md) — Measure a ticket session over all its turns and sub-agent runs, and keep each launch's stream _(touche au harnais)_
+- [T144](travail/tickets/144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md) — Keep the reserves of a finished ticket in its journal and its commit _(touche au harnais)_
 
 | Constat | Titre | Verdict | Priorité | Suite |
 | --- | --- | --- | --- | --- |
 | [ESSAI-01](#ESSAI-01) | Un sous-agent lancé en arrière-plan fait finir le tour de l'orchestrateur sans verdict | confirmé | P0 | pas de ticket |
 | [ESSAI-02](#ESSAI-02) | La boucle intègre un changement fait après la relecture, que personne n'a relu | confirmé | P0 | [T002](travail/tickets/002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md) |
-| [ESSAI-05](#ESSAI-05) | Un verdict TERMINÉ qui garde des réserves est intégré sans que personne les voie | confirmé | P1 | pas de ticket |
+| [ESSAI-05](#ESSAI-05) | Un verdict TERMINÉ qui garde des réserves est intégré sans que personne les voie | confirmé | P1 | [T144](travail/tickets/144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md) |
 | [ESSAI-06](#ESSAI-06) | La boucle lance une session entière sur un ticket qui attend une décision | confirmé | P1 | [T003](travail/tickets/003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md) |
 | [ESSAI-07](#ESSAI-07) | Une session de ticket peut reprendre un relecteur sans qu'aucun hook le voie | confirmé | P1 | [T141](travail/tickets/141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) |
 | [ESSAI-03](#ESSAI-03) | Un critère d'acceptation sur l'état du checkout ne peut pas être rempli à la lettre | confirmé | P2 | pas de ticket |
@@ -199,7 +200,7 @@ _Observé pendant l'essai de la boucle._
 
 _Observé pendant l'essai de la boucle._
 
-**Suite : pas de ticket.** Pas de ticket tant que la voie n'est pas choisie : décision du propriétaire, notée dans `docs/travail/nuit-2026-10-14.md`. Ma recommandation : afficher plutôt que refuser.
+**Suite :** [T144](travail/tickets/144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md) « Keep the reserves of a finished ticket in its journal and its commit ». Décision du propriétaire, le 14/10 : afficher plutôt que refuser.
 
 - **Où :** `scripts/loop/run.mjs:234-262` (`processTicket` ne lit `reste` que pour un verdict PARTIEL) ; `.claude/skills/ticket/SKILL.md:60-75` (`reste` est décrit pour PARTIEL seulement).
 - **Preuve :** Le verdict de T001 (`.harness-state/tickets/T001/verdict.json`) est TERMINÉ avec deux entrées dans `reste` : le critère 5 non rempli à la lettre et le commentaire non relu. La boucle a intégré et affiché « T001 intégré » ; les réserves ne sont ni dans la sortie de la boucle, ni dans le message du commit, ni dans `events.jsonl`.
