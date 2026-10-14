@@ -1,6 +1,6 @@
 {
   "lignes_longues_prod": 545,
-  "lignes_longues_tests": 1725,
+  "lignes_longues_tests": 1724,
   "catch_vides_prod": 40,
   "tests_nommes_par_chantier": 9,
   "process_env_hors_config": 8,

@@ -1,7 +1,7 @@
 ---
 id: T004
 titre: Wait for the turn request itself in the verifier deadline test
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -144,3 +144,45 @@ premier temps de la preuve du critère 4 n'affiche pas la ligne « GARDE » (le 
 pas le fichier), le journal le dit avec la sortie et les `t.after` sont inscrits quand même.
 
 ## Journal
+
+- **Cadrage et reproduction (critère 1).** Sonde et garde enregistrées dans `.harness-state/tickets/T004/`.
+  `FLK_MS=10 node $ETAT/garde.cjs 30 node --require ./$ETAT/slow-fs.cjs --test --test-reporter=tap
+  tests/verification.test.cjs`, fichier non modifié, trois lancements : trois échecs
+  `not ok 10 - cancelling a verification while it is being prepared…` avec `error: 'condition never reached'`,
+  et trois lignes « GARDE : encore vivant après 30 s » (exit 124). Le rapporteur par défaut n'affiche le
+  texte de l'erreur qu'en fin de fichier, donc jamais ici ; d'où `--test-reporter=tap`. Avec le rapporteur
+  par défaut et une garde de 60 s : trois fois « GARDE » et le test visé marqué ✖ (234 ms).
+- **Exploration.** Rapport dans `.harness-state/tickets/T004/exploration.md` : pas d'écart de périmètre ;
+  `until` n'a que deux usages ; risque de course si la promesse est résolue dans `gate` (le client n'a pas
+  encore `turnId`) ; `settle` (l.224) compte aussi des tours de boucle.
+- **Implémentation (critères 2 et 3).** `tests/verification.test.cjs` seul : le test reçoit `t`, chaque attente
+  est `Promise.race([promesse du tour, pending])`, `until` est supprimée, assertions et valeurs inchangées.
+  Écart à la lettre du critère 2 : la promesse n'est pas résolue dans `gate` mais dans le script du tour du
+  faux App Server, appelé après la réponse à `turn/start`. Essai de la variante `gate`, un lancement :
+  assertion l.242 `actual: [ true, 0, true, 0 ]` au lieu de `[ true, 1, true, 0 ]` (le client n'a pas encore
+  `turnId`, donc pas de `turn/interrupt`). La variante retenue tient.
+- **`settle()` conservé (critère 2, lecture littérale).** `await settle()` (10 tours) reste dans la boucle
+  `for` du même test : c'est une fenêtre d'observation avant des assertions d'absence (aucun `turn/start`,
+  aucun `thread/start` tardifs). Aucun événement ne signifie « rien d'autre n'arrivera » ; le retirer le
+  fichier passe aussi, mais l'assertion d'absence n'aurait plus de fenêtre. Réserve reportée à la clôture.
+- **Critère 4.** Ligne `assert.fail('preuve')` temporaire après l'attente de la partie délai, retirée ensuite
+  (`grep preuve` vide). Sans `t.after` : `garde.cjs 30 node --test --test-reporter=tap
+  tests/verification.test.cjs`, exit 124, ligne « GARDE : encore vivant après 30 s »
+  (`preuve-sans-after.txt`). Avec `t.after` : exit 1, `# pass 9`, `# fail 1`, `error: 'preuve'`, aucune
+  ligne GARDE (`preuve-avec-after.txt`).
+- **Critère 5.** Commande de sonde, cinq lancements : 5/5 exit 0, `tests 10 / pass 10 / fail 0`, aucune
+  ligne GARDE (`sonde-1.txt` à `sonde-5.txt`).
+- **Critère 6.** `node --test --test-concurrency=1 tests/verification.test.cjs`, vingt lancements de suite,
+  sans relance conditionnelle : 20/20 exit 0, dix tests à chaque fois (`vingt-fois.txt`).
+- **Relecture.** Un relecteur neuf : « accepté » sur `revue-1`. Mineurs : décision sur `settle` à
+  consigner (fait ci-dessus), bloc « promesse + résolveur » dupliqué pour `running` (facultatif).
+- **Critère 7.** `node scripts/check.mjs` : exit 0, « check : vert », 678 tests JS, 84 tests Python
+  (1 ignoré). Format (Prettier) et lint (ESLint) non lancés : outils non installés. Cliquet :
+  `lignes_longues_tests` 1725 → 1724 (le plancher est resserré par la boucle, pas par moi).
+
+### Réserves à la clôture
+
+- Critère 2 à la lettre : la promesse est résolue dans le script du tour du faux App Server (après la réponse à turn/start) et non dans gate ; la variante gate donne turn/interrupt = 0 (course observée sur un lancement), l'assertion l.242 échouerait.
+- `await settle()` (10 tours de setImmediate) reste dans la boucle for du même test : fenêtre d'observation avant des assertions d'absence, aucun événement ne la remplace sans affaiblir ces assertions. À trancher par le propriétaire si le critère 2 doit s'entendre sans exception.
+- Format (Prettier) et lint (ESLint) non lancés par check.mjs : outils non installés.
+- Le bloc « promesse + résolveur + script » est dupliqué pour `running` (facultatif : factoriser dans appServer).

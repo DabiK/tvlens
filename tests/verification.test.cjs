@@ -74,7 +74,6 @@ test('source links must be public HTTPS URLs, never local files or actions', () 
 // Never an existing directory: the client must not link real credentials during tests.
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 const settle = async (rounds = 10) => { for (let i = 0; i < rounds; i++) await new Promise(resolve => setImmediate(resolve)); };
-const until = async (check, rounds = 2000) => { for (let i = 0; i < rounds; i++) { if (check()) return; await new Promise(resolve => setImmediate(resolve)); } assert.fail('condition never reached'); };
 // The product deadline is 180 s. Here a turn that a regression leaves unfinished must fail its test
 // within seconds, not hold the suite for three minutes: every verifier below is given this one.
 const DEADLINE = 5000;
@@ -204,7 +203,7 @@ test('the manual verifier is refused like every role when Codex does not confirm
   assert.equal(journal.filter(line => line.startsWith('TVLens : Confinement Codex non confirmé (sous-agents) : connexion refusée.')).length, 2, 'each refusal is in the journal');
 });
 
-test('cancelling a verification while it is being prepared sends no turn; the deadline stops a turn that never ends', async () => {
+test('cancelling a verification while it is being prepared sends no turn; the deadline stops a turn that never ends', async t => {
   // Held back at each step of the preparation in turn: flag listing (no process yet), handshake, the
   // read-back of the sub-agent settings, thread/start. The binary stands for an installed Codex that
   // accepts the settings: one that could not be asked is refused before any of these steps.
@@ -231,21 +230,28 @@ test('cancelling a verification while it is being prepared sends no turn; the de
 
   // Deadline, with an injected timer: the turn never ends by itself.
   const timers = [];
-  const server = appServer(() => new Promise(() => {}));
+  // The turn script runs once the client holds the id of the turn: this is the point where the deadline can interrupt it.
+  let turnStarted;
+  const started = new Promise(resolve => { turnStarted = resolve; });
+  const server = appServer(() => { turnStarted(); return new Promise(() => {}); });
   const verifier = new CodexVerifier({ authHome, rpcFactory: server.rpcFactory, timeoutMs: 180000, setTimer: (run, ms) => { timers.push({ run, ms }); return timers.length; }, clearTimer: id => { timers[id - 1].cleared = true; } });
+  t.after(() => verifier.cancel());
   const pending = verifier.verify({ claim: 'Une affirmation.' });
   pending.catch(() => {});
-  await until(() => server.processes[0] && server.sent(server.processes[0], 'turn/start').length);
+  await Promise.race([started, pending]);
   assert.deepEqual([timers.length, timers[0].ms, server.sent(server.processes[0], 'turn/start').length], [1, 180000, 1]);
   timers[0].run();
   await assert.rejects(pending, /^Error: Vérification interrompue après le délai maximal\./);
   assert.deepEqual([server.processes[0].closed, server.sent(server.processes[0], 'turn/interrupt').length, timers[0].cleared, verifier.active.size], [true, 1, true, 0]);
   // A cancel during the turn stops it the same way, and a verification that ends clears its timer.
-  const running = appServer(() => new Promise(() => {}));
+  let secondTurnStarted;
+  const secondStarted = new Promise(resolve => { secondTurnStarted = resolve; });
+  const running = appServer(() => { secondTurnStarted(); return new Promise(() => {}); });
   const other = new CodexVerifier({ authHome, timeoutMs: DEADLINE, rpcFactory: running.rpcFactory });
+  t.after(() => other.cancel());
   const second = other.verify({ claim: 'Une affirmation.' });
   second.catch(() => {});
-  await until(() => running.processes[0] && running.sent(running.processes[0], 'turn/start').length);
+  await Promise.race([secondStarted, second]);
   other.cancel();
   await assert.rejects(second, /^Error: Vérification annulée\.$/);
   assert.equal(running.processes[0].closed, true);
