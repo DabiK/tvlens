@@ -134,10 +134,24 @@ export function unreviewedChange(root, ticket) {
   );
 }
 
-/** Verdict d'un rapport de relecteur : sa ligne « VERDICT : … », « illisible » s'il n'en a pas. */
+const VERDICT_LINE = /^\s*VERDICT\s*:\s*(accepté|à corriger)(?!\p{L})/imu;
+const FINDINGS_LINE = /^\s*CONSTATS\s*:.*$/imu;
+const FINDINGS_COUNTS = /^\s*CONSTATS\s*:\s*(\d+)\s+bloquants?\s*,\s*(\d+)\s+mineurs?\s*,\s*\d+\s+hors\s+périmètre\s*$/iu;
+
+/**
+ * Verdict d'un rapport de relecteur, lu sur ses lignes « VERDICT : … » et « CONSTATS : … » ; « illisible » sans
+ * ligne VERDICT. Un relecteur peut se contredire : « accepté » n'est retenu que si la première ligne CONSTATS compte
+ * zéro bloquant et zéro mineur. Avec un bloquant ou un mineur compté, le rapport vaut « à corriger » ; sans ligne
+ * CONSTATS lisible, « illisible ».
+ */
 export function reviewVerdict(report) {
-  const match = /^\s*VERDICT\s*:\s*(accepté|à corriger)(?!\p{L})/imu.exec(report || "");
-  return match ? match[1].toLowerCase() : "illisible";
+  const verdict = VERDICT_LINE.exec(report || "");
+  if (!verdict) return "illisible";
+  if (verdict[1].toLowerCase() === "à corriger") return "à corriger";
+  const counts = FINDINGS_COUNTS.exec(FINDINGS_LINE.exec(report)?.[0] ?? "");
+  if (!counts) return "illisible";
+  const [, blocking, minor] = counts.map(Number);
+  return blocking + minor > 0 ? "à corriger" : "accepté";
 }
 
 /** Ajoute au journal des relectures le verdict rendu sur la dernière revue enregistrée. */

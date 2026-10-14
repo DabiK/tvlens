@@ -166,8 +166,10 @@ test("in a ticket session, each reviewer verdict is recorded against the review 
     hook(repo, "record-review", { tool_name: "Agent", tool_input: { subagent_type: agent }, tool_response: response }, LOOP);
   repo.write(".harness-state/tickets/T001/reviewed-state.json", JSON.stringify({ revue: "revue-2.diff", fichiers: {} }));
 
-  handback("relecteur", "VERDICT : à corriger\n- constat");
-  handback("relecteur", "VERDICT : accepté", { content: [{ type: "text", text: "VERDICT : accepté\nRien à signaler." }] });
+  handback("relecteur", "VERDICT : à corriger\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\n- constat");
+  handback("relecteur", "VERDICT : accepté", {
+    content: [{ type: "text", text: "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre\nRien à signaler." }],
+  });
   handback("relecteur", "Le diff me semble correct.");
   handback("explorateur", "VERDICT : accepté");
   const interactive = { tool_name: "Agent", tool_input: { subagent_type: "relecteur" }, tool_response: { handbackReport: { text: "VERDICT : accepté" } } };

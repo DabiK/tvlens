@@ -59,7 +59,7 @@ const handBack = (text) => {
   const result = spawnSync(process.execPath, [".claude/hooks/record-review.mjs"], { input: JSON.stringify(input), encoding: "utf8" });
   if (result.status !== 0) throw new Error("review hook failed: " + result.stdout + result.stderr);
 };
-const review = (text = "VERDICT : accepté") => {
+const review = (text = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre") => {
   record();
   handBack(text);
 };
@@ -178,7 +178,7 @@ const scenarios = {
   },
   "review-rejected"() {
     greeting();
-    review("VERDICT : à corriger\\n- the greeting is untested");
+    review("VERDICT : à corriger\\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\\n- the greeting is untested");
     verdict("TERMINÉ");
   },
   "review-stale"() {

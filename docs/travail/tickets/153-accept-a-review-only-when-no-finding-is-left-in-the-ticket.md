@@ -1,7 +1,7 @@
 ---
 id: T153
 titre: Accept a review only when no finding is left in the ticket's scope
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -141,3 +141,179 @@ Le ticket tranche ainsi :
   relecteur, la skill et la fonction qui lit son verdict.
 
 ## Journal
+
+### 14/10 — Cadrage et exploration
+
+Session neuve, pas de reprise (journal vide, aucun rapport d'échec). Rapport complet dans
+`.harness-state/tickets/T153/exploration.md`. En cinq lignes :
+- `reviewVerdict` (`scripts/loop/reviewed-state.mjs:137-141`) n'a aucun test unitaire : ils sont à créer, dans
+  `tests/reviewed-state.test.cjs`, un `test()` par cas pour que la mutation du critère 1 en fasse échouer plusieurs.
+- Le hook, `recordReview` et `unacceptedReview` restent intacts : la nouvelle règle ne sort pas de {accepté, à corriger, illisible}.
+- Les rapports fabriqués à compléter : `ticket-loop.test.cjs:62` (rapport par défaut, environ 17 tests en dépendent)
+  et `:181`, `agent-guards.test.cjs:169` et `:170` ; aucun ne tient sur une ligne `assert`.
+- Critère 4 : `agent-guards.test.cjs:170` dépasserait 160 caractères avec la ligne `CONSTATS` et doit être scindée.
+- Le ticket s'applique à sa propre relecture : le relecteur final est jugé par le nouveau `reviewVerdict`.
+
+Décisions de l'orchestrateur avant l'implémentation :
+- Écart 1 déclaré dans `.harness-state/tickets/T153/ecarts.md` : remaniement de `agent-guards.test.cjs:170`, preuve
+  de remplacement par le diff des tests. Il ne sort pas du périmètre et n'affaiblit pas ce que prouve le critère 4.
+- Format lu par `reviewVerdict` : première ligne qui commence par `CONSTATS :`, n'importe où dans le rapport comme
+  `VERDICT`, casse ignorée, espaces souples, pluriel toléré (`bloquants`, `mineurs`) ; une ligne mal formée compte
+  comme absente.
+
+### 14/10 — Implémentation (un passage de l'implémenteur)
+
+- `reviewVerdict` lit `VERDICT` puis, pour un « accepté », la première ligne `CONSTATS :` ; nouveau
+  `tests/reviewed-state.test.cjs`, dix cas générés en `test()` séparés ; lignes `CONSTATS` ajoutées aux rapports
+  fabriqués ; `relecteur.md`, SKILL.md §§ 2, 5, 6, 8 et `docs/travail/README.md` mis à jour.
+- Rouge avant la règle, rapporté par l'implémenteur : `node --test --test-concurrency=1 tests/reviewed-state.test.cjs`,
+  10 tests, 5 échecs (`actual: 'accepté'`).
+- Vert après, rapporté par l'implémenteur : `node --test --test-concurrency=1 tests/reviewed-state.test.cjs
+  tests/agent-guards.test.cjs tests/ticket-loop.test.cjs`, 77 tests, 0 échec ; `node scripts/check.mjs --changed`
+  vert ; `node scripts/check.mjs` complet vert (689 tests JS, 84 tests Python, format et lint non lancés).
+- Critère 1, mutation (`reviewVerdict` ne lit plus que `VERDICT`), sortie complète dans
+  `.harness-state/tickets/T153/mutation.txt`, que j'ai relue :
+
+```
+✔ a report that accepts with only out-of-scope findings counts as accepted
+✖ a report that accepts while counting a minor finding counts as to be fixed
+✖ a report that accepts while counting a blocking finding counts as to be fixed
+✖ a report that accepts without a findings line is unreadable
+✖ a report that accepts with a malformed findings line is unreadable
+✖ a report that accepts is judged on its first findings line only
+✔ the verdict and findings lines are read anywhere, ignoring case, extra spaces and plurals
+✔ a report that asks for fixes with a findings line counts as to be fixed
+✔ a report that asks for fixes without a findings line still counts as to be fixed
+✔ a report without a verdict line is unreadable, even with a findings line
+ℹ tests 10
+ℹ pass 5
+ℹ fail 5
+exit=1
+```
+
+  Les échecs sont des `AssertionError` (`+ 'accepté'` contre `- 'à corriger'` ou `- 'illisible'`). La mutation est
+  retirée : `git diff scripts/loop/reviewed-state.mjs` ne montre que la nouvelle règle.
+- Critère 2, lancé par moi : les deux `grep -n` (« Les constats mineurs n'empêchent pas d'accepter » dans
+  `relecteur.md`, « à la lettre près » dans SKILL.md) ne rendent rien, code de sortie 1.
+- Critère 3, lancé par moi :
+
+```
+$ grep -n "CONSTATS :" .claude/agents/relecteur.md .claude/skills/ticket/SKILL.md
+.claude/skills/ticket/SKILL.md:61:`CONSTATS : <n> bloquant, <n> mineur, <n> hors périmètre`. Un « accepté » qui compte un bloquant ou un
+.claude/agents/relecteur.md:44:`CONSTATS : <n> bloquant, <n> mineur, <n> hors périmètre`
+$ grep -n "ecarts.md" .claude/agents/relecteur.md .claude/skills/ticket/SKILL.md
+.claude/skills/ticket/SKILL.md:30:  (§ 2) critère prouve : verdict BLOQUÉ. Sinon, écris l'écart dans `.harness-state/tickets/<ID>/ecarts.md` : le
+.claude/skills/ticket/SKILL.md:56:  (§ 5) fichiers `revue-<n>` et `.harness-state/tickets/<ID>/ecarts.md` quand il existe, rien d'autre. Ton avis
+.claude/skills/ticket/SKILL.md:57:  (§ 5) ne lui parvient que par `ecarts.md` (un écart déclaré, un constat contesté avec sa raison), jamais par
+.claude/skills/ticket/SKILL.md:73:  (§ 6) au lieu de le faire corriger : écris-le dans `.harness-state/tickets/<ID>/ecarts.md` avec une raison
+.claude/agents/relecteur.md:9:s'il existe, le fichier des écarts `.harness-state/tickets/<ID>/ecarts.md`.
+.claude/agents/relecteur.md:27:Si `.harness-state/tickets/<ID>/ecarts.md` existe, lis-le avant de juger. L'orchestrateur y déclare,
+```
+
+  (les repères « (§ n) » sont ajoutés par moi ; § 2 = l. 20-33, § 5 = l. 45-67, § 6 = l. 69-76).
+- Critère 4, lancé par moi : `git diff tests/agent-guards.test.cjs tests/ticket-loop.test.cjs | grep -c '^-.*assert'`
+  rend `0`. Le diff ne change que quatre rapports fabriqués, en y ajoutant leur ligne `CONSTATS`. Seul
+  `agent-guards.test.cjs:170` est scindé sur trois lignes : c'est l'écart 1 de `ecarts.md`.
+
+```
+-  handback("relecteur", "VERDICT : à corriger\n- constat");
+-  handback("relecteur", "VERDICT : accepté", { content: [{ type: "text", text: "VERDICT : accepté\nRien à signaler." }] });
++  handback("relecteur", "VERDICT : à corriger\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\n- constat");
++  handback("relecteur", "VERDICT : accepté", {
++    content: [{ type: "text", text: "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre\nRien à signaler." }],
++  });
+-const review = (text = "VERDICT : accepté") => {
++const review = (text = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre") => {
+-    review("VERDICT : à corriger\\n- the greeting is untested");
++    review("VERDICT : à corriger\\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre\\n- the greeting is untested");
+```
+
+### 14/10 — Relecture 1 : à corriger, puis correction
+
+- `node scripts/loop/reviewed-state.mjs record` → `revue-1.diff`, `revue-1.fichiers`. Relecteur neuf, avec le ticket,
+  ces deux fichiers et `ecarts.md`. Son rapport porte bien les deux lignes du nouveau contrat :
+  `VERDICT : à corriger` et `CONSTATS : 0 bloquant, 1 mineur, 1 hors périmètre`. `relectures.jsonl` enregistre
+  `"revue":"revue-1.diff","verdict":"à corriger"`.
+- Constat mineur : au § 2 de SKILL.md, la phrase « Si le tenir demanderait…, ou si l'écart affaiblirait… » met un
+  conditionnel après « si ». Renvoyé à l'implémenteur, corrigé en « demande » et « affaiblit » ;
+  `node scripts/check.mjs --changed` : vert, 77 tests, 0 échec.
+- Constat hors périmètre : la skill ne dit pas quoi faire d'un rapport enregistré « illisible ». Il est gardé en réserve.
+- « Écart accepté, critère 4 : `tests/agent-guards.test.cjs:170` passe sur trois lignes ». Le relecteur juge que seule
+  la ligne `CONSTATS` est ajoutée au rapport et qu'aucune assertion ne change.
+
+### 14/10 — Relecture 2 : acceptée
+
+- `node scripts/loop/reviewed-state.mjs record` → `revue-2.diff`, `revue-2.fichiers`. Relecteur neuf, avec le ticket,
+  ces deux fichiers et `ecarts.md`. Rapport : `VERDICT : accepté`, `CONSTATS : 0 bloquant, 0 mineur, 1 hors périmètre`.
+  `relectures.jsonl` enregistre `"revue":"revue-2.diff","verdict":"accepté"`.
+- Écart accepté, critère 4 : `tests/agent-guards.test.cjs:170` passe sur trois lignes, et seule la ligne `CONSTATS`
+  s'ajoute au rapport.
+- Constat hors périmètre, le même qu'à la relecture 1 : la skill ne dit pas quoi faire d'un rapport « illisible ».
+- Après la relecture, seul le journal a changé. `unreviewedChange` et `unacceptedReview`, appelés sur l'état final,
+  rendent tous deux `null`.
+
+### 14/10 — Contrôle final : rouge sur un test hors périmètre, reproduit et expliqué
+
+- `node scripts/check.mjs` (sortie dans `.harness-state/tickets/T153/check-final.txt`) : **ROUGE**. Règles par fichier ✔,
+  cliquet ✔ (`cas_de_test : 647 → 648`), tests Python ✔ (84, 1 sauté). Tests JS : 689 tests, 688 réussis, **1 échec** :
+  `tests/server-sessions.test.cjs:640`, « a slow disk holds back neither what a client reads nor the analysis… »,
+  en 16 ms. Format et lint : non lancés (Prettier et ESLint absents). Le résumé du contrôle ne garde pas le message
+  d'erreur.
+- Lancements qui ont suivi, tous rapportés ; aucun n'est compté comme une preuve de vert :
+  - `node --test --test-concurrency=1 tests/server-sessions.test.cjs` seul : 14/14 (`server-sessions-run1.txt`) ;
+  - la suite JS entière, dans la commande du contrôle, pour capturer le message d'erreur : 689/689, 0 échec
+    (`js-suite-repro1.txt`). L'échec ne s'est pas reproduit et son message est perdu.
+- Analyse en lecture seule, par un explorateur. La durée de 16 ms est normale pour ce test sans sonde (15 à 19 ms).
+  L'hypothèse la plus probable : `:664` n'attend qu'un nombre fixe de tours (`turns()`) avant l'assertion de `:666`.
+  Celle-ci exige `moment-3` `ready`, alors que l'analyse de `moment-3` passe par une lecture sur le vrai disque
+  (`adapters/local-store.cjs`). Sur une machine chargée, la lecture peut arriver après l'assertion. Aucun lien avec le
+  diff : le test n'importe rien de `scripts/loop/`, et aucun fichier de `runtime/`, `server/`, `adapters/` ou `core/`
+  n'est modifié.
+- Reproduction déterministe de cette hypothèse, avec la sonde d'audit
+  `.harness-state/audit/flaky/slow-fs.cjs` (sorties `h1-*.txt`). Un premier essai n'avait rien ralenti : en zsh,
+  `set -- $cfg` ne découpe pas la chaîne. Il a été refait avec des paramètres explicites :
+  - `FLK_SLOW=readFile FLK_MS=200 node --require ./.harness-state/audit/flaky/slow-fs.cjs --test --test-concurrency=1
+    --test-name-pattern="a slow disk holds back" tests/server-sessions.test.cjs` : **exit=1**, échec à
+    `tests/server-sessions.test.cjs:666`, « both passages are published analysed while the save of the first is
+    still on its way to the disk », `'moment-3'` avec `+ 'analyzing'` contre `- 'ready'` ;
+  - témoin `FLK_SLOW=readFile FLK_MS=0` : exit=0, 1/1 ;
+  - témoin `FLK_SLOW=mkdir FLK_MS=200` : exit=0, 1/1.
+- Conclusion : il s'agit d'une course qui existait avant ce ticket, dans `tests/server-sessions.test.cjs:664-666`.
+  Ce fichier est hors du périmètre du ticket (critère 5) : la course n'y est donc pas corrigée. Je ne peux pas
+  affirmer qu'elle a causé l'échec observé, faute de message d'erreur ; c'est la seule dépendance au temps réel que
+  l'analyse ait trouvée sur ce chemin. Aucun ticket ouvert ne la vise. FLK-08 (`docs/audit-maintenabilite.md`) cite
+  `:664` comme une preuve d'absence, sans relever le fait positif qu'affirme `:666`.
+
+### 14/10 — Critère 5
+
+```
+$ git diff --stat
+ .claude/agents/relecteur.md                        |  38 +++++++-
+ .claude/skills/ticket/SKILL.md                     |  38 +++++---
+ docs/travail/README.md                             |   5 +-
+ ...w-only-when-no-finding-is-left-in-the-ticket.md | 101 ++++++++++++++++++++-
+ scripts/loop/reviewed-state.mjs                    |  20 +++-
+ tests/agent-guards.test.cjs                        |   6 +-
+ tests/ticket-loop.test.cjs                         |   4 +-
+$ git status --porcelain   (non suivis)
+?? design/continuous-context/      (déjà là avant la session, untracked-before.json)
+?? experiments/                    (déjà là avant la session, untracked-before.json)
+?? tests/reviewed-state.test.cjs   (nouveau test du périmètre)
+```
+
+### 14/10 — Verdict
+
+Verdict TERMINÉ dans `.harness-state/tickets/T153/verdict.json`. Les critères 1 à 5 sont couverts et vérifiés, et la
+dernière relecture est acceptée. Le critère 6 est rapporté tel qu'observé : le contrôle complet de l'implémenteur était
+vert, celui de l'état final est rouge sur un seul test, hors périmètre. Cet échec vient d'une course qui existait avant
+le ticket ; elle est reproduite de façon déterministe et expliquée plus haut. Le vert reste donc à observer par le
+contrôle de la boucle. La course de `server-sessions.test.cjs:664-666` et le cas du rapport « illisible » sont en
+réserve, avec une recommandation chacun.
+
+### Réserves à la clôture
+
+- Non vérifié : le dernier contrôle complet sur l'état final est rouge, sur tests/server-sessions.test.cjs:640, hors périmètre. Cause la plus probable, reproduite de façon déterministe : :664 attend un nombre fixe de tours alors que l'analyse de moment-3 lit le vrai disque, puis :666 exige moment-3 ready. Le message de l'échec observé est perdu, car scripts/check.mjs ne garde que les lignes de résumé. Le vert reste à observer par le contrôle de la boucle.
+- Constat hors périmètre (relectures 1 et 2), question pour le propriétaire : la course de server-sessions.test.cjs:664-666 n'est visée par aucun ticket ouvert. Recommandation : un ticket qui remplace l'attente à tours fixes par une attente bornée du fait publié (moment-3 ready), sur le modèle de published() (:650-653). Preuves : la reproduction avec readFile ralenti passe au vert ; la mutation de core/session.cjs:254 la fait toujours échouer.
+- Constat hors périmètre (relectures 1 et 2), question pour le propriétaire : la skill ne dit pas quoi faire d'un rapport enregistré « illisible ». Ce cas devient plus probable avec la nouvelle règle. Un « accepté » sans ligne CONSTATS est illisible, et le parseur est strict : une ligne en gras, entre backticks ou finie par un point est mal formée. Recommandation : au § 6, « un rapport illisible se refait relire par un relecteur neuf, et compte comme un tour ».
+- Écart accepté, critère 4 : tests/agent-guards.test.cjs:170 est scindée sur trois lignes pour rester sous 160 caractères. Seule la ligne CONSTATS s'ajoute au rapport fabriqué, et aucune assertion ne change.
+- Non vérifié : format (Prettier) et lint (ESLint) non lancés, outils absents du dépôt.

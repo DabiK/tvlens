@@ -157,12 +157,15 @@ Pour aller plus loin :
 | `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
 | `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
 | `.harness-state/tickets/<ID>/exploration.md` | le rapport d'exploration |
+| `.harness-state/tickets/<ID>/ecarts.md` | les écarts aux critères déclarés avant l'implémentation et les constats contestés, que le relecteur tranche |
 | `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
 | `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
 | `.harness-state/tickets/<ID>/relectures.jsonl` | le verdict de chaque relecteur, la revue qu'il a lue et son modèle |
 | `.harness-state/tickets/<ID>/retro-entree.md`, `retro.json` | ce que la rétrospective a reçu, et ce qu'elle a rendu |
 
-Un verdict TERMINÉ peut garder des réserves dans `reste` : la boucle intègre et les affiche.
+Un verdict TERMINÉ peut garder des réserves dans `reste` : un constat de relecture hors périmètre, un
+écart à un critère accepté par le relecteur, ce qui n'a pas pu être vérifié, ou une question pour le
+propriétaire. La boucle intègre et les affiche.
 
 ## Rétrospective
 
