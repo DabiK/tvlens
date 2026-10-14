@@ -526,8 +526,10 @@ test('a client that leaves while its block is prepared cancels nothing: the bloc
   for (let i = 0; i < 10; i++) await tick();
   const given = cancelled(call);
   call.finish();
-  await until(async () => (await f.passages()).length === 1, 'the block to be stored');
-  assert.deepEqual({ cancelled: given === true, again: await f.send(body), stored: await f.passages(), prepared: media.calls.length }, {
+  // The server answers 429 until it has stored the block and registered it as accepted: like a client, send it again until it answers otherwise.
+  let again;
+  await until(async () => (again = await f.send(body)).status !== 429, 'an answer to the block sent again other than 429');
+  assert.deepEqual({ cancelled: given === true, again, stored: await f.passages(), prepared: media.calls.length }, {
     cancelled: false, again: { status: 200, value: { id: 'moment-1', duplicate: true } }, stored: ['moment-1'], prepared: 1 });
 });
 
