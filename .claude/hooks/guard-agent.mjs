@@ -1,11 +1,20 @@
 #!/usr/bin/env node
-// PreToolUse(Agent) : dans une session de ticket, un sous-agent se lance au premier plan.
-// Lancé en arrière-plan, il rend la main avant d'avoir fini : l'orchestrateur termine alors son tour sans verdict
-// et dépense pour rien un des refus de fin de tour, qui sont comptés.
-import { decide, loopMode, readInput } from "./lib.mjs";
+// PreToolUse(Agent) : dans une session de ticket, un sous-agent se lance au premier plan, et le relecteur sur
+// le modèle que la boucle a choisi pour lui (TVLENS_REVIEW_MODEL).
+// Lancé en arrière-plan, un sous-agent rend la main avant d'avoir fini : l'orchestrateur terminerait son tour
+// sans verdict. L'appel est corrigé plutôt que refusé : un refus coûte un tour pour aboutir au même appel.
+import { loopMode, readInput } from "./lib.mjs";
 
 const input = readInput();
-if (loopMode && input.tool_input?.run_in_background !== false) {
-  const how = "relance le même appel avec « run_in_background: false » et attends son rapport avant de continuer.";
-  decide("deny", `Dans une session de ticket, un sous-agent se lance au premier plan : ${how}`);
+if (loopMode) {
+  const call = { ...input.tool_input, run_in_background: false };
+  const reviewModel = process.env.TVLENS_REVIEW_MODEL;
+  if (call.subagent_type === "relecteur" && reviewModel) call.model = reviewModel;
+  const output = {
+    hookEventName: "PreToolUse",
+    permissionDecision: "allow",
+    permissionDecisionReason: "Sous-agent de ticket : premier plan" + (call.model ? `, modèle ${call.model}` : ""),
+    updatedInput: call,
+  };
+  console.log(JSON.stringify({ hookSpecificOutput: output }));
 }

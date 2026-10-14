@@ -24,7 +24,8 @@ Lis le code complet autour de chaque modification, pas seulement les lignes du d
 
 ## Ce que tu rends
 
-Première ligne : `VERDICT : accepté` ou `VERDICT : à corriger`.
+Première ligne : `VERDICT : accepté` ou `VERDICT : à corriger`, telle quelle : la boucle la lit et
+n'intègre un ticket que si le dernier verdict est « accepté ».
 
 Puis les constats, du plus grave au moins grave, chacun avec :
 - `chemin:ligne` ;

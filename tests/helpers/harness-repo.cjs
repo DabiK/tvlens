@@ -16,8 +16,11 @@ function harnessRepo(files = {}) {
   };
   const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
   // Un test lancé par `node --test` transmet NODE_TEST_CONTEXT à ses enfants, ce qui change leur sortie.
+  // Lancé depuis une session de ticket, il transmettrait aussi le mode de la session (TVLENS_LOOP,
+  // TVLENS_HARNESS…) et le dossier du vrai projet : un test ne voit que l'environnement qu'il fixe.
   const env = (extra = {}) => {
-    const merged = { ...process.env, ...extra };
+    const inherited = Object.entries(process.env).filter(([key]) => !key.startsWith("TVLENS_") && key !== "CLAUDE_PROJECT_DIR");
+    const merged = { ...Object.fromEntries(inherited), ...extra };
     delete merged.NODE_TEST_CONTEXT;
     return merged;
   };

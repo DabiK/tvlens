@@ -63,6 +63,16 @@
             "statusMessage": "Contrôle rapide du fichier"
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/record-review.mjs\"",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PreCompact": [

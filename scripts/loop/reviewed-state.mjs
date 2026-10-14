@@ -15,6 +15,7 @@ import { list } from "./tickets.mjs";
 
 const UNTRACKED_BEFORE = "untracked-before.json";
 const REVIEWED_STATE = "reviewed-state.json";
+const REVIEWS = "relectures.jsonl";
 const DELETED = "deleted";
 const RECORD_COMMAND = "node scripts/loop/reviewed-state.mjs record";
 
@@ -131,6 +132,46 @@ export function unreviewedChange(root, ticket) {
     `Le changement a été modifié depuis la dernière relecture : ${changed.join(", ")}.` +
     ` Dernière relecture enregistrée : ${recorded.revue}. Toute modification autre que le journal du ticket demande une nouvelle relecture.`
   );
+}
+
+/** Verdict d'un rapport de relecteur : sa ligne « VERDICT : … », « illisible » s'il n'en a pas. */
+export function reviewVerdict(report) {
+  const match = /^\s*VERDICT\s*:\s*(accepté|à corriger)(?!\p{L})/imu.exec(report || "");
+  return match ? match[1].toLowerCase() : "illisible";
+}
+
+/** Ajoute au journal des relectures le verdict rendu sur la dernière revue enregistrée. */
+export function recordReview(root, id, { verdict, modele }) {
+  const dir = ticketDir(root, id);
+  const state = readStateFile(dir, REVIEWED_STATE, isRecordedState);
+  fs.mkdirSync(dir, { recursive: true });
+  const entry = { at: new Date().toISOString(), revue: state.value?.revue ?? null, verdict, modele: modele ?? null };
+  fs.appendFileSync(path.join(dir, REVIEWS), JSON.stringify(entry) + "\n");
+  return entry;
+}
+
+/** Raison de refuser l'intégration si la dernière relecture n'a pas accepté la dernière revue enregistrée ; null sinon. */
+export function unacceptedReview(root, ticket) {
+  const dir = ticketDir(root, ticket.id);
+  const file = path.join(dir, REVIEWS);
+  const lines = fs.existsSync(file) ? fs.readFileSync(file, "utf8").split("\n").filter(Boolean) : [];
+  if (!lines.length) return "Aucun verdict de relecteur n'est enregistré : la boucle n'intègre qu'un changement qu'un relecteur a accepté.";
+  let last;
+  try {
+    last = JSON.parse(lines.at(-1));
+  } catch (error) {
+    // Ligne tronquée ou écrite à la main : on refuse en le disant, sans exception.
+    return `La dernière ligne de ${REVIEWS} est illisible (${error.message}).`;
+  }
+  const state = readStateFile(dir, REVIEWED_STATE, isRecordedState);
+  const current = state.value?.revue ?? "aucune";
+  if (last.revue !== state.value?.revue) {
+    return `Le dernier verdict porte sur ${last.revue ?? "aucune revue"}, pas sur la dernière revue enregistrée (${current}) : la faire relire.`;
+  }
+  if (last.verdict !== "accepté") {
+    return `Le dernier relecteur n'a pas accepté ${last.revue} (verdict : ${last.verdict}). Corriger, enregistrer une nouvelle revue et la faire relire.`;
+  }
+  return null;
 }
 
 /** Le diff relu : fichiers suivis par rapport à HEAD, puis chaque fichier nouveau en entier. */

@@ -7,6 +7,7 @@ adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau:
 ---
 
 ## Ce que le ticket livre

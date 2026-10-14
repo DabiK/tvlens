@@ -47,12 +47,14 @@ node scripts/loop/reviewed-state.mjs record      # hors boucle : ajouter --ticke
 La commande écrit dans le dossier d'état `revue-<n>.diff` (les fichiers suivis par rapport à `HEAD`,
 puis chaque fichier nouveau en entier), `revue-<n>.fichiers` (la liste des fichiers) et
 `reviewed-state.json`, et affiche leurs chemins. Donne au relecteur le chemin du ticket et ces deux
-fichiers `revue-<n>`, rien d'autre : pas ton avis, pas le compte rendu de l'implémenteur.
+fichiers `revue-<n>`, rien d'autre : pas ton avis, pas le compte rendu de l'implémenteur. Lance-le au
+premier plan et ne lui fixe pas de modèle : dans la boucle, un hook impose celui du palier et enregistre
+son verdict (la ligne `VERDICT : …` de son rapport) dans `relectures.jsonl`.
 
 Après une relecture, toute modification autre que le journal du ticket demande une nouvelle relecture,
 y compris une correction exigée à la fin par un contrôle rouge. La boucle compare l'état final à la
-dernière relecture enregistrée et refuse le ticket s'ils diffèrent, ou si aucune relecture n'est
-enregistrée.
+dernière relecture enregistrée et refuse le ticket s'ils diffèrent, si aucune relecture n'est
+enregistrée, ou si le dernier relecteur n'a pas rendu « accepté » sur cette revue.
 
 ## 6. Corriger, puis relire de nouveau
 
@@ -74,7 +76,8 @@ par une nouvelle relecture (étapes 5 et 6). Puis écris `.harness-state/tickets
 { "statut": "TERMINÉ", "resume": "ce qui est livré, en deux phrases", "revue": "accepté", "adr": "docs/adr/0011-….md", "preuves": ["node scripts/check.mjs : vert, 602 tests"], "reste": [] }
 ```
 
-- `TERMINÉ` : critères couverts, relecture acceptée, contrôle vert.
+- `TERMINÉ` : critères couverts, dernière relecture acceptée, contrôle vert. Une relecture « à
+  corriger » suivie d'un TERMINÉ est refusée.
 - `PARTIEL` : du travail utile est fait mais il en reste ; dis quoi dans `reste`.
 - `BLOQUÉ` : impossible d'avancer sans une décision ; dis laquelle dans `resume`.
 

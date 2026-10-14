@@ -32,18 +32,20 @@ Les constats qui justifient chaque ticket sont dans `docs/audit-maintenabilite.m
 ## Lancer
 
 ```sh
-node scripts/loop/run.mjs --dry-run                 # dit quel ticket partirait, sans rien lancer
-node scripts/loop/run.mjs --model claude-opus-5-5   # le prochain ticket prêt, puis s'arrête
-node scripts/loop/run.mjs --max 5 --model claude-opus-5-5
-node scripts/loop/run.mjs --ticket T012 --model claude-opus-5-5
+node scripts/loop/run.mjs --dry-run       # dit quel ticket partirait, sur quel modèle, sans rien lancer
+node scripts/loop/run.mjs                 # le prochain ticket prêt, puis s'arrête
+node scripts/loop/run.mjs --max 5
+node scripts/loop/run.mjs --ticket T012
 ```
 
 | Option | Défaut | Rôle |
 | --- | --- | --- |
 | `--max <n>` | 1 | nombre de tickets à enchaîner |
 | `--ticket <id>` | prochain prêt | traiter ce ticket précisément |
-| `--attempts <n>` | 3 | sessions fraîches par ticket avant de le bloquer |
-| `--model`, `--effort` | ceux du compte | modèle et effort des sessions |
+| `--attempts <n>` | jusqu'en haut de l'échelle | sessions fraîches par ticket avant de le bloquer (3 avec `--model`) |
+| `--model <m>` | l'échelle | fige le modèle de toutes les tentatives, sans escalade |
+| `--effort <e>` | celui du palier | remplace l'effort de chaque palier |
+| `--no-retro` | rétrospective | ne pas lancer la rétrospective après le ticket |
 | `--timeout-min <n>` | 120 | durée maximale d'une session |
 | `--compact-window <n>` | 200000 | plafond de contexte d'une session, en tokens ; 0 pour ne pas le fixer |
 | `--budget-usd <n>` | aucun | plafond de dépense d'une session |
@@ -62,9 +64,35 @@ lancer, ou s'arrêter avant eux avec `--max`. Le ticket qui corrige ce point est
 Pendant la session, la boucle affiche une ligne par outil appelé, avec le temps écoulé :
 `[boucle] 03:12  Read core/session.cjs`. Les lignes plus en retrait viennent d'un sous-agent.
 
-Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six lignes dans un test) :
-29 tours, 18 min 40 s de session, 3,73 $, puis environ 1 min 30 de contrôle complet. Commencer par
-`--max 1`, lire le résultat, puis monter.
+Ordre de grandeur, mesuré sur Opus : T001 (six lignes dans un test) 29 tours, 18 min 40 s, 3,73 $ ;
+T002 (un contrôle de la boucle et ses tests) 6,79 $. Commencer par `--max 1`, lire le résultat, puis
+monter.
+
+### Modèle de chaque tentative
+
+Chaque tentative tourne sur un palier d'une échelle, du moins cher au plus fort
+(`scripts/loop/models.mjs`) :
+
+| Palier | Modèle | Effort |
+| --- | --- | --- |
+| 0 | Sonnet 5.5 | high |
+| 1 | Opus 5.5 | high |
+| 2 | Opus 5.5 | xhigh |
+| 3 | Fable 5.1 | high |
+
+Le niveau du ticket fixe le palier de départ et le palier en dessous duquel le relecteur ne descend
+pas. Une tentative refusée fait monter d'un palier ; par défaut la boucle tente jusqu'en haut.
+
+| Niveau | Départ | Relecteur au moins | Par défaut pour |
+| --- | --- | --- | --- |
+| `simple` | 0 | 0 | — (à déclarer) |
+| `standard` | 0 | 1 | tout ticket sans autre marque |
+| `sensible` | 1 | 1 | `adr`, `supprime_tests` ou `installe` à `oui` |
+| `critique` | 2 | 2 | `harnais: oui` |
+
+Le champ `niveau:` de l'en-tête remplace le niveau déduit. Le modèle du relecteur est imposé par le
+hook `guard-agent`, à partir de `TVLENS_REVIEW_MODEL` ; les autres sous-agents héritent du modèle de la
+session. Le commit est signé du modèle de la tentative qui a abouti.
 
 ## Ce que fait la boucle pour un ticket
 
@@ -72,8 +100,9 @@ Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six li
 2. La session explore (sous-agent `explorateur`), implémente (`implementeur`), fait relire
    (`relecteur`) après avoir enregistré l'état relu (`node scripts/loop/reviewed-state.mjs record`),
    corrige au besoin, puis écrit son verdict dans
-   `.harness-state/tickets/<ID>/verdict.json`. Les sous-agents sont lancés au premier plan : une garde
-   refuse tout lancement en arrière-plan, qui ferait finir la session avant leur rapport.
+   `.harness-state/tickets/<ID>/verdict.json`. Les sous-agents tournent au premier plan : le hook
+   `guard-agent` corrige tout lancement en arrière-plan, qui ferait finir la session avant leur
+   rapport. Le hook `record-review` enregistre le verdict de chaque relecteur dans `relectures.jsonl`.
 3. Si le verdict est TERMINÉ, la boucle vérifie elle-même :
    - le ticket n'a pas changé au-dessus de son journal ;
    - le harnais n'a pas été touché, sauf ticket marqué `harnais: oui` ;
@@ -81,12 +110,15 @@ Ordre de grandeur, mesuré sur le seul ticket passé par la boucle (T001, six li
    - un ADR a été ajouté si le ticket porte `adr: oui` ;
    - une relecture est enregistrée, et l'état final du dépôt est celui que le dernier relecteur a lu,
      journal du ticket et fichiers non suivis d'avant la session mis à part ;
+   - le dernier relecteur a rendu « accepté », sur cette même revue ;
    - `node scripts/check.mjs` est vert en entier.
 4. Tout est bon : elle resserre le cliquet, passe le ticket à `termine`, committe
-   (`<ID>: <titre>`) et pousse.
-5. Sinon : elle écrit la raison du refus et lance une nouvelle session fraîche, qui reprend à partir du
-   journal et du rapport d'échec. Après le nombre de tentatives prévu, le ticket passe à `bloque` et la
-   boucle s'arrête.
+   (`<ID>: <titre>`) et pousse. Elle affiche le coût total du ticket et les réserves (`reste`) du verdict.
+5. Sinon : elle écrit la raison du refus et lance une nouvelle session fraîche, un palier plus haut, qui
+   reprend à partir du journal et du rapport d'échec. Après le nombre de tentatives prévu, le ticket
+   passe à `bloque`.
+6. Intégré ou bloqué, elle lance la rétrospective du ticket (plus bas), puis s'arrête si le ticket est
+   bloqué ou le push refusé.
 
 Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 commit fait mais push refusé.
 
@@ -108,23 +140,47 @@ de test ont été supprimés », « Le ticket demande un ADR et aucun n'a été 
 n'est enregistrée », « Aucune relecture lisible n'est enregistrée » (`reviewed-state.json` abîmé),
 « La liste des fichiers non suivis d'avant la session est perdue » (`untracked-before.json`, écrit par
 la boucle, abîmé), « Le changement a été modifié depuis la dernière relecture » suivi des fichiers
-concernés, « Le contrôle qualité complet est rouge » suivi de la sortie de `scripts/check.mjs`.
+concernés, « Aucun verdict de relecteur n'est enregistré », « Le dernier verdict porte sur revue-<n>,
+pas sur la dernière revue enregistrée », « Le dernier relecteur n'a pas accepté », « Le contrôle
+qualité complet est rouge » suivi de la sortie de `scripts/check.mjs`.
 
 Pour aller plus loin :
 
 | Où | Quoi |
 | --- | --- |
 | Le journal du ticket (section `## Journal`) | les jalons écrits par la session, avec commandes et sorties |
-| `.harness-state/loop/events.jsonl` | une ligne par événement : session lancée, session terminée (tours, durée, coût, compactions), refus, intégration, blocage, avec la charge de la machine |
+| `.harness-state/loop/events.jsonl` | une ligne par événement, avec la charge de la machine : session lancée (niveau, modèle, effort, palier, relecteur), session terminée (tours, durée, coût, coût par modèle, sous-agents, refus de permission, compactions), refus, intégration et blocage (tentatives, coût total), rétrospective |
 | `.harness-state/tickets/<ID>/verdict.json` | le verdict de la dernière session, ses preuves et ses réserves (`reste`) |
 | `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
 | `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
 | `.harness-state/tickets/<ID>/exploration.md` | le rapport d'exploration |
 | `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
 | `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
+| `.harness-state/tickets/<ID>/relectures.jsonl` | le verdict de chaque relecteur, la revue qu'il a lue et son modèle |
+| `.harness-state/tickets/<ID>/retro-entree.md`, `retro.json` | ce que la rétrospective a reçu, et ce qu'elle a rendu |
 
-Un verdict TERMINÉ peut garder des réserves dans `reste` : la boucle intègre sans les afficher. Tant
-que ce point n'est pas tranché (voir le rapport de nuit), ouvrir `verdict.json` après chaque ticket.
+Un verdict TERMINÉ peut garder des réserves dans `reste` : la boucle intègre et les affiche.
+
+## Rétrospective
+
+Après chaque ticket, intégré ou bloqué, une courte session Sonnet en lecture seule relit ce que la
+boucle a observé (tentatives, modèles, coûts, refus, sous-agents, verdicts) et propose des
+améliorations du harnais, chacune avec sa preuve. Elle coûte quelques dizaines de centimes ; son
+échec est signalé et n'arrête jamais la boucle.
+
+Les propositions s'accumulent dans `.harness-state/retours/observations.jsonl`, au statut `propose`.
+Après un lot de tickets :
+
+```sh
+node scripts/loop/retro.mjs liste                     # propositions ouvertes, par cible puis impact
+node scripts/loop/retro.mjs liste --tous              # avec celles déjà tranchées
+node scripts/loop/retro.mjs decider R-T003-2 accepte "fait dans la skill ticket"
+node scripts/loop/retro.mjs decider R-T003-4 ticket:T015
+node scripts/loop/retro.mjs decider R-T004-1 refuse "voulu : garde-fou"
+```
+
+Une proposition acceptée n'est appliquée par personne d'autre que le propriétaire : la rétrospective
+propose, elle ne modifie rien.
 
 Un échec qui ne se produit que sous charge se reproduit et s'explique avant d'être écarté : on ne
 relance pas la boucle jusqu'à ce qu'elle passe.
@@ -166,7 +222,8 @@ Attention : cette commande emporte aussi les fichiers non suivis qui ne viennent
 Suivre la skill `decoupage` et partir de `docs/travail/tickets/_gabarit.md`. Un bon ticket tient dans
 une session et un commit, livre seul quelque chose de vérifiable, et chacun de ses critères se vérifie
 par un test ou une commande. Les champs `installe`, `harnais` et `supprime_tests` valent `non` par
-défaut ; les passer à `oui` est une décision à relire.
+défaut ; les passer à `oui` est une décision à relire. `niveau` vide laisse la boucle le déduire ;
+`simple` n'est jamais déduit, il se déclare pour un ticket mécanique (renommage, texte, test isolé).
 
 Ce que l'essai sur T001 a appris :
 
@@ -185,10 +242,11 @@ Ce que l'essai sur T001 a appris :
 Dans une session de ticket, les hooks de `.claude/hooks/` refusent : commit, push, changement de
 branche, session Claude ou Codex imbriquée, `gh`, installation de dépendance non autorisée, écriture
 hors du projet, modification du harnais ou d'un autre ticket, création d'un fichier de test nommé
-d'après un chantier, sous-agent lancé en arrière-plan. Chaque fichier écrit est contrôlé aussitôt, et la
-session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur un contrôle rouge. La boucle
-n'intègre ensuite que le changement que le dernier relecteur a lu : une modification faite après la
-relecture, journal du ticket mis à part, fait refuser le ticket.
+d'après un chantier. Un sous-agent lancé en arrière-plan est ramené au premier plan. Chaque fichier
+écrit est contrôlé aussitôt, et la session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur
+un contrôle rouge. La boucle n'intègre ensuite que le changement que le dernier relecteur a lu et
+accepté : une modification faite après la relecture, journal du ticket mis à part, ou un dernier
+verdict « à corriger », fait refuser le ticket.
 
 Ce sont des garde-fous sur le texte des commandes, pas un bac à sable : ils rattrapent l'erreur, pas la
 malveillance. La décision d'intégrer reste celle de la boucle.

@@ -1,6 +1,7 @@
 // Lecture et sélection des tickets de docs/travail/tickets/. Aucun effet de bord hors `list`, qui lit le disque.
 import fs from "node:fs";
 import path from "node:path";
+import { LEVELS } from "./models.mjs";
 
 export const TICKETS_DIR = "docs/travail/tickets";
 export const STATUSES = ["a-faire", "en-cours", "termine", "bloque"];
@@ -45,6 +46,7 @@ export function describe(file, text) {
     installe: yes(meta.installe),
     harnais: yes(meta.harnais),
     supprimeTests: yes(meta.supprime_tests),
+    niveau: meta.niveau || "",
   };
 }
 
@@ -69,6 +71,7 @@ export function validate(tickets) {
     ids.add(t.id);
     if (!t.titre) problems.push(`${t.file} : titre manquant.`);
     if (!STATUSES.includes(t.statut)) problems.push(`${t.file} : statut « ${t.statut} » inconnu.`);
+    if (t.niveau && !LEVELS[t.niveau]) problems.push(`${t.file} : niveau « ${t.niveau} » inconnu (${Object.keys(LEVELS).join(", ")}).`);
   }
   for (const t of tickets) for (const b of t.bloquePar) if (!ids.has(b)) problems.push(`${t.file} : bloqué par ${b}, qui n'existe pas.`);
   return problems;
