@@ -27,7 +27,7 @@ ne se découpe pas ; dis ce qui manque.
    l'ancienne), **migrer** par lots, **contracter** (l'ancienne forme disparaît). Un ticket par temps
    ou par lot.
 3. Chaque ticket liste ce qui le bloque. La boucle prend le premier ticket « à faire » dont tous les
-   bloqueurs sont terminés.
+   bloqueurs sont terminés et qui n'attend aucune décision du propriétaire (section « Écrire »).
 
 ## Écrire
 
@@ -47,6 +47,15 @@ de `docs/travail/tickets/_gabarit.md`. Champs de l'en-tête :
 
 Les trois derniers valent `non` par défaut : les mettre à `oui` est une décision humaine, prise au
 découpage et relue.
+
+La section « Hypothèses bloquantes » commence par l'une de deux phrases exactes, que la boucle lit :
+
+- « Aucune décision n'est attendue. » ;
+- « Décision attendue du propriétaire : » suivie de la question à trancher avant de commencer.
+
+La boucle ne lance pas un ticket qui attend une décision. Elle continue avec les tickets prêts qui n'en
+dépendent pas et nomme ceux qui attendent. Le propriétaire tranche en remplaçant la question par sa
+décision, au début de la section. Un accord écrit ailleurs, dans le journal par exemple, ne suffit pas.
 
 ## Règles
 

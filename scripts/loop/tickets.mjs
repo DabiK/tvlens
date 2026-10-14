@@ -34,8 +34,24 @@ export function setStatus(text, status) {
 
 const yes = (value) => value === "oui";
 
+const ASSUMPTIONS = /^## Hypothèses bloquantes[ \t]*$/m;
+const ASKS_OWNER = "Décision attendue du propriétaire";
+// Une demande sans question reste une demande : une valeur vide ferait passer le ticket pour tranché.
+const UNWRITTEN_QUESTION = "(question non écrite dans le ticket)";
+
+/** Question que le ticket pose encore au propriétaire, ou "" : seul le début de la section « Hypothèses bloquantes » compte. */
+function pendingDecision(body) {
+  const title = ASSUMPTIONS.exec(body);
+  if (!title) return "";
+  const rest = body.slice(title.index + title[0].length);
+  const end = rest.search(/^## /m);
+  const section = (end < 0 ? rest : rest.slice(0, end)).trim();
+  if (!section.startsWith(ASKS_OWNER)) return "";
+  return section.slice(ASKS_OWNER.length).replace(/^\s*:/, "").replace(/\s+/g, " ").trim() || UNWRITTEN_QUESTION;
+}
+
 export function describe(file, text) {
-  const { meta } = parse(text);
+  const { meta, body } = parse(text);
   return {
     file,
     id: meta.id || "",
@@ -47,6 +63,7 @@ export function describe(file, text) {
     harnais: yes(meta.harnais),
     supprimeTests: yes(meta.supprime_tests),
     niveau: meta.niveau || "",
+    decisionAttendue: pendingDecision(body),
   };
 }
 
@@ -77,23 +94,41 @@ export function validate(tickets) {
   return problems;
 }
 
+const waitsForOwner = (t) => t.statut === "a-faire" && Boolean(t.decisionAttendue);
+
+/** Identifiants des tickets à faire qui attendent une décision du propriétaire : la boucle ne les lance pas. */
+export function awaitingDecision(tickets) {
+  return tickets.filter(waitsForOwner).map((t) => t.id);
+}
+
+/** Pourquoi aucun ticket n'est prêt. Les tickets qui attendent une décision sont nommés : c'est au propriétaire d'agir. */
+function nothingReady(tickets) {
+  const todo = tickets.filter((t) => t.statut === "a-faire");
+  if (!todo.length) return "Plus aucun ticket à faire.";
+  const asking = awaitingDecision(tickets);
+  if (!asking.length) return `${todo.length} ticket(s) à faire, tous bloqués par un ticket non terminé.`;
+  return (
+    `${todo.length} ticket(s) à faire, aucun n'est prêt. Ces tickets attendent une décision du propriétaire : ${asking.join(", ")}.` +
+    " La décision s'écrit à la place de la question, au début de leur section « Hypothèses bloquantes »."
+  );
+}
+
 /**
- * Prochain ticket à traiter : le premier « a-faire » dont tous les bloqueurs sont terminés.
- * Un ticket « en-cours » ou « bloque » arrête la file : il attend une décision humaine.
+ * Prochain ticket à traiter : le premier « a-faire » dont tous les bloqueurs sont terminés et qui n'attend
+ * aucune décision. Un ticket « en-cours » ou « bloque » arrête la file : il attend une décision humaine.
  */
 export function next(tickets, wanted = null) {
   const stuck = tickets.find((t) => t.statut === "en-cours" || t.statut === "bloque");
   if (stuck) return { reason: `${stuck.id} est « ${stuck.statut} » : à reprendre ou à trancher avant de continuer.` };
   const done = new Set(tickets.filter((t) => t.statut === "termine").map((t) => t.id));
-  const ready = (t) => t.statut === "a-faire" && t.bloquePar.every((b) => done.has(b));
+  const ready = (t) => t.statut === "a-faire" && !t.decisionAttendue && t.bloquePar.every((b) => done.has(b));
   if (wanted) {
     const ticket = tickets.find((t) => t.id === wanted);
     if (!ticket) return { reason: `${wanted} n'existe pas.` };
+    if (waitsForOwner(ticket)) return { reason: `${wanted} attend une décision du propriétaire : ${ticket.decisionAttendue}` };
     if (!ready(ticket)) return { reason: `${wanted} n'est pas prêt (statut « ${ticket.statut} », bloqué par ${ticket.bloquePar.join(", ") || "rien"}).` };
     return { ticket };
   }
   const ticket = tickets.find(ready);
-  if (ticket) return { ticket };
-  const waiting = tickets.filter((t) => t.statut === "a-faire").length;
-  return { reason: waiting ? `${waiting} ticket(s) à faire, tous bloqués par un ticket non terminé.` : "Plus aucun ticket à faire." };
+  return ticket ? { ticket } : { reason: nothingReady(tickets) };
 }

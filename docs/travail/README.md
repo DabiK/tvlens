@@ -52,14 +52,17 @@ node scripts/loop/run.mjs --ticket T012
 | `--no-push` | pousse | committer sans pousser |
 | `--permission-mode <m>` | `auto` | mode de permission des sessions |
 
-Le prochain ticket prêt est le premier, dans l'ordre des numéros, dont le statut est `a-faire` et dont
-tous les bloqueurs (`bloque_par`) sont `termine`. Un ticket `en-cours` ou `bloque` arrête la file : il
-attend une décision.
+Le prochain ticket prêt est le premier, dans l'ordre des numéros, dont le statut est `a-faire`, dont
+tous les bloqueurs (`bloque_par`) sont `termine`, et qui n'attend aucune décision. Un ticket `en-cours`
+ou `bloque` arrête la file : il attend une décision.
 
-La boucle ne lit que l'en-tête d'un ticket. Elle ne sait pas qu'un ticket pose encore une question
-dans « Hypothèses bloquantes » : elle lance sa session comme une autre. Trancher ces tickets avant de
-lancer, ou s'arrêter avant eux avec `--max`. Le ticket qui corrige ce point est dans la file
-(constat ESSAI-06 du rapport d'audit).
+La boucle lit l'en-tête d'un ticket et le début de sa section « Hypothèses bloquantes ». Un ticket dont
+la section commence par « Décision attendue du propriétaire : » n'est jamais lancé : il reste `a-faire`,
+et ceux qui en dépendent attendent avec lui. La boucle continue avec les tickets prêts qui n'en dépendent
+pas, et nomme une fois, au premier ticket choisi, ceux qui attendent une décision (`--dry-run` compris).
+Quand plus rien n'est prêt, la raison d'arrêt les nomme et la boucle s'arrête (code 0).
+`--ticket` sur un tel ticket est refusé avant toute session, avec la question (code 1). Pour trancher :
+« Débloquer un ticket », plus bas.
 
 Pendant la session, la boucle affiche une ligne par outil appelé, avec le temps écoulé :
 `[boucle] 03:12  Read core/session.cjs`. Les lignes plus en retrait viennent d'un sous-agent.
@@ -128,7 +131,7 @@ La dernière ligne de la boucle dit dans quel cas on est.
 
 | La boucle affiche | Ce que ça veut dire | Où regarder |
 | --- | --- | --- |
-| un refus avant toute session (code 1) | branche `main`, fichier suivi modifié, file invalide ou ticket non suivi par Git | le message lui-même ; corriger puis relancer |
+| un refus avant toute session (code 1) | branche `main`, fichier suivi modifié, file invalide, ticket non suivi par Git, ou ticket demandé par `--ticket` qui ne peut pas partir (inconnu, pas prêt, en attente d'une décision, ou file arrêtée par un autre ticket `en-cours` ou `bloque`) | le message lui-même ; corriger puis relancer |
 | `Tentative n refusée : …` | la session n'a pas rendu de verdict, s'est dite PARTIELLE, ou s'est dite TERMINÉE alors qu'un contrôle refuse | `.harness-state/tickets/<ID>/echec-<n>.txt` |
 | `<ID> est bloqué : …` (code 2) | la session s'est dite BLOQUÉE, ou toutes les tentatives ont été refusées | la raison affichée, puis le journal du ticket |
 | `Le commit est fait mais le push a échoué` (code 3) | le ticket est intégré en local, rien d'autre n'est lancé | `git status`, puis `git push` à la main |
@@ -194,10 +197,9 @@ Le ticket est à `bloque`, la file est arrêtée, le travail en cours est laiss�
 Lire d'abord la raison affichée et le dernier `echec-<n>.txt`, puis `git status` et `git diff`. Quatre
 cas.
 
-1. **Le ticket attend une décision.** La section « Hypothèses bloquantes » pose une question au
-   propriétaire et la session a rendu BLOQUÉ. Écrire la décision dans cette section, à la place de la
-   question, remettre `statut: a-faire`, committer, relancer. Si la session a tranché elle-même au
-   lieu de s'arrêter, relire son commit comme une proposition : rien dans la boucle ne l'en empêche.
+1. **Le ticket attend une décision.** La session a rendu BLOQUÉ sur une question au propriétaire.
+   Écrire la décision au début de la section « Hypothèses bloquantes », à la place de la question,
+   remettre `statut: a-faire`, committer, relancer.
 2. **Le ticket est faux ou trop gros** (périmètre contredit par le code, critère invérifiable, session
    qui s'est compactée). Corriger ou recouper le ticket, garder ou jeter le travail en cours, remettre
    `statut: a-faire`, committer, relancer.
@@ -217,6 +219,18 @@ git stash --include-untracked   # réversible ; `git stash drop` ensuite si le t
 
 Attention : cette commande emporte aussi les fichiers non suivis qui ne viennent pas du ticket.
 
+### Trancher un ticket qui attend une décision
+
+Un ticket dont la section « Hypothèses bloquantes » commence par
+« Décision attendue du propriétaire : » n'est pas `bloque` : il reste `a-faire`, la boucle ne le lance
+pas et continue sans lui. Pour le trancher, remplacer la question par la décision, au début de la
+section, puis committer. Un accord écrit ailleurs, dans le journal par exemple, ne suffit pas : la
+boucle ne lit que le début de la section, et le ticket resterait en attente.
+
+Seul le début de la section compte. Une question posée ailleurs dans le ticket n'arrête pas la boucle :
+la session peut rendre BLOQUÉ (cas 1 plus haut) ou trancher à la place du propriétaire. Relire alors
+son commit comme une proposition.
+
 ## Écrire un ticket
 
 Suivre la skill `decoupage` et partir de `docs/travail/tickets/_gabarit.md`. Un bon ticket tient dans
@@ -231,9 +245,12 @@ Ce que l'essai sur T001 a appris :
   non suivis étrangers au ticket le rendent impossible à tenir, et la boucle les écarte déjà du commit.
 - Les retouches triviales d'un même fichier se regroupent dans un ticket : le coût fixe d'une session
   (explorer, relire, contrôle complet) domine pour un petit changement.
-- La section « Hypothèses bloquantes » commence par « Aucune décision n'est attendue. » ou par
-  « Décision attendue du propriétaire : » suivi de la question. Un ticket qui attend une décision se
-  place en fin de file : la boucle le lancerait comme un autre, pour le prix d'une session entière.
+- La section « Hypothèses bloquantes » commence par l'une de deux phrases exactes :
+  « Aucune décision n'est attendue. », ou
+  « Décision attendue du propriétaire : » suivie de la question. La boucle ne lance pas un ticket qui
+  attend une décision : elle continue avec les tickets prêts qui n'en dépendent pas et nomme ceux qui
+  attendent. Le propriétaire tranche en remplaçant la question par sa décision, au début de la section ;
+  un accord écrit ailleurs ne suffit pas.
 - Le ticket cite les chemins et la version du code qu'il a lus. Si le code a bougé depuis, la session
   doit le dire et s'arrêter plutôt que deviner.
 

@@ -21,7 +21,7 @@ import { readBaseline, tighten, writeBaseline } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
 import { runRetro } from "./retro.mjs";
 import { ticketDir, unacceptedReview, unreviewedChange, untrackedPaths, writeUntrackedBefore } from "./reviewed-state.mjs";
-import { describe, list, next, setStatus, spec, validate } from "./tickets.mjs";
+import { awaitingDecision, describe, list, next, setStatus, spec, validate } from "./tickets.mjs";
 
 const root = process.cwd();
 const argv = process.argv.slice(2);
@@ -407,12 +407,18 @@ function retrospective(ticket, run) {
 
 const context = preflight();
 for (let done = 0; done < options.max; done++) {
-  const { ticket, reason } = next(list(root), done === 0 ? options.ticket : null);
-  if (!ticket) stop(0, reason);
+  const wanted = done === 0 ? options.ticket : null;
+  const queue = list(root);
+  const { ticket, reason } = next(queue, wanted);
+  // Un ticket demandé qui ne peut pas partir est un refus au démarrage ; une file sans ticket prêt est une fin normale.
+  if (!ticket) stop(wanted ? 1 : 0, reason);
   // Un ticket hors de Git resterait hors de son propre commit : ni son journal ni son statut n'y entreraient.
   if (git("ls-files", "--error-unmatch", "--", ticket.file).code !== 0) {
     stop(1, `${ticket.id} n'est pas suivi par Git (${ticket.file}) : committer le ticket avant de lancer la boucle.`);
   }
+  // Une fois par lancement : sans cette ligne, un ticket sauté parce qu'il attend une décision passerait inaperçu.
+  const asking = awaitingDecision(queue);
+  if (done === 0 && asking.length) say(`En attente d'une décision du propriétaire : ${asking.join(", ")}.`);
   if (options.dryRun) {
     const first = sessionPlan(ticket, 1);
     say(`Prochain ticket : ${ticket.id} — ${ticket.titre} (${ticket.file}), niveau ${first.niveau}`);

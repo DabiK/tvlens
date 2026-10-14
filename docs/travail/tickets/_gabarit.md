@@ -37,7 +37,12 @@ Le test qui prouve le premier critère, par quelle frontière, dans quel fichier
 
 ## Hypothèses bloquantes
 
-Ce qui doit être tranché par une personne avant de commencer. Vide si rien.
+La section commence par l'une de deux phrases exactes, que la boucle lit :
+« Aucune décision n'est attendue. », ou
+« Décision attendue du propriétaire : » suivie de ce qui doit être tranché avant de commencer.
+La boucle ne lance pas un ticket qui attend une décision. Le propriétaire tranche en remplaçant la
+question par sa décision, au début de la section. Un accord écrit ailleurs, dans le journal par exemple,
+ne suffit pas.
 
 ## Journal
 

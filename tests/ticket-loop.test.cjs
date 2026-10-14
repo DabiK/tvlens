@@ -14,6 +14,10 @@ function ticketText(fields = {}, body = "") {
   return `---\n${header}\n---\n\n${criteria}${body}\n## Journal\n\n`;
 }
 
+// Section « Hypothèses bloquantes » d'un ticket, suivie d'une autre section qui n'en fait pas partie.
+const assumptions = (text) => `\n## Hypothèses bloquantes\n\n${text}\n\n## Notes\n\nNot part of the assumptions.\n`;
+const asksOwner = assumptions("Décision attendue du propriétaire : which CI\nprovider,   and when?");
+
 // Fausse session Claude Code : joue un scénario écrit d'avance au lieu d'appeler un modèle.
 const FAKE_SESSION = `#!/usr/bin/env node
 const fs = require("node:fs");
@@ -213,6 +217,46 @@ test("the next ticket is the first one to do whose blockers are all finished", a
   ];
   assert.equal(next(queue).ticket.id, "T003");
   assert.match(next(queue, "T002").reason, /T002 n'est pas prêt/);
+});
+
+test("a ticket gives the question it still waits on when its blocking assumptions start by asking the owner", async () => {
+  const { describe } = await tickets();
+  const waitsOn = (body) => describe("001.md", ticketText({}, body)).decisionAttendue;
+  assert.equal(waitsOn(asksOwner), "which CI provider, and when?");
+  assert.equal(waitsOn(assumptions("Aucune décision n'est attendue. Décision attendue du propriétaire : none.")), "");
+  assert.equal(waitsOn(assumptions("Decided by the owner: GitHub Actions, on main only.")), "");
+  assert.equal(waitsOn(""), "");
+});
+
+test("a ticket that still waits for an owner decision is never started, and the tickets that do not depend on it go on", async () => {
+  const { describe, next } = await tickets();
+  const finished = describe("000.md", ticketText({ id: "T000", statut: "termine" }));
+  const waiting = describe("001.md", ticketText({ id: "T001", bloque_par: "T000" }, asksOwner));
+  assert.equal(next([finished, waiting]).ticket, undefined);
+  const unwritten = describe("001.md", ticketText({ id: "T001" }, assumptions("Décision attendue du propriétaire :")));
+  assert.equal(next([unwritten]).ticket, undefined);
+  const dependent = describe("002.md", ticketText({ id: "T002", bloque_par: "T001" }));
+  const independent = describe("003.md", ticketText({ id: "T003", bloque_par: "T000" }));
+  assert.equal(next([finished, waiting, dependent, independent]).ticket.id, "T003");
+  for (const decided of ["Aucune décision n'est attendue.", "Decided by the owner: GitHub Actions, on main only."]) {
+    const ready = describe("001.md", ticketText({ id: "T001", bloque_par: "T000" }, assumptions(decided)));
+    assert.equal(next([finished, ready, dependent]).ticket.id, "T001", decided);
+  }
+  const finishedStillAsking = describe("004.md", ticketText({ id: "T004", statut: "termine" }, asksOwner));
+  assert.match(next([finished, finishedStillAsking], "T004").reason, /T004 n'est pas prêt \(statut « termine »/);
+});
+
+test("when only tickets waiting for a decision, or tickets that depend on them, are left, the loop names the ones waiting", async () => {
+  const { describe, next } = await tickets();
+  const queue = [
+    describe("001.md", ticketText({ id: "T001", statut: "termine" })),
+    describe("002.md", ticketText({ id: "T002" }, asksOwner)),
+    describe("003.md", ticketText({ id: "T003", bloque_par: "T002" })),
+    describe("004.md", ticketText({ id: "T004", bloque_par: "T001" }, asksOwner)),
+  ];
+  const { ticket, reason } = next(queue);
+  assert.equal(ticket, undefined);
+  assert.match(reason, /attendent une décision du propriétaire : T002, T004\./);
 });
 
 test("a ticket in progress or blocked stops the queue until someone decides", async () => {
@@ -585,6 +629,47 @@ test("a ticket that Git does not track is refused: its journal and status would 
   assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
 });
 
+test("--ticket on a ticket that cannot start is refused with code 1 before any session and changes nothing; a queue with nothing ready ends in 0", (t) => {
+  const repo = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({}, asksOwner),
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell", bloque_par: "T001" }),
+  });
+  t.after(repo.cleanup);
+  const citesQuestion = /T001 attend une décision du propriétaire : which CI provider, and when\?/;
+  for (const [args, expected] of [
+    [["--ticket", "T001"], citesQuestion],
+    [["--ticket", "T001", "--dry-run"], citesQuestion],
+    [["--ticket", "T002"], /T002 n'est pas prêt/],
+    [["--ticket", "T009"], /T009 n'existe pas/],
+  ]) {
+    const result = repo.loop("done", args);
+    assert.equal(result.code, 1, `${args.join(" ")}\n${result.out}`);
+    assert.match(result.out, expected);
+    assert.equal(repo.status(), "a-faire");
+    assert.equal(repo.git("status", "--porcelain").stdout.trim(), "");
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets")), false, "no session was started");
+  }
+  const end = repo.loop("done");
+  assert.equal(end.code, 0, end.out);
+  assert.match(end.out, /attendent une décision du propriétaire : T001\./);
+  assert.doesNotMatch(end.out, /En attente d'une décision/);
+
+  const stuck = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({ statut: "en-cours" }),
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+  });
+  t.after(stuck.cleanup);
+  const refused = stuck.loop("done", ["--ticket", "T002"]);
+  assert.equal(refused.code, 1, refused.out);
+  assert.match(refused.out, /T001 est « en-cours »/);
+  assert.equal(stuck.git("status", "--porcelain").stdout.trim(), "");
+  assert.deepEqual(stuck.commits(), ["init"]);
+  assert.equal(fs.existsSync(path.join(stuck.root, ".harness-state/loop/lock")), false);
+  assert.equal(fs.existsSync(path.join(stuck.root, ".harness-state/tickets")), false, "no session was started");
+});
+
 test("the loop refuses to start on main, on a dirty tree, or with a malformed queue", (t) => {
   const dirty = loopRepo();
   t.after(dirty.cleanup);
@@ -611,4 +696,31 @@ test("a dry run names the next ticket and changes nothing", (t) => {
   assert.match(result.out, /Prochain ticket : T001 — Add the greeting/);
   assert.equal(repo.status(), "a-faire");
   assert.equal(repo.git("status", "--porcelain").stdout.trim(), "");
+});
+
+test("a dry run on a queue led by a ticket waiting for a decision names the first ready ticket and starts nothing", (t) => {
+  const repo = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({}, asksOwner),
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+  });
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--dry-run"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Prochain ticket : T002 — Add the farewell/);
+  assert.match(result.out, /En attente d'une décision du propriétaire : T001\./);
+  assert.equal(repo.git("status", "--porcelain").stdout.trim(), "");
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets")), false, "no session was started");
+});
+
+test("the tickets waiting for a decision are named once per run, even when several tickets are processed", (t) => {
+  const repo = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({}, asksOwner),
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+    "docs/travail/tickets/003-add-welcome.md": ticketText({ id: "T003", titre: "Add the welcome" }),
+  });
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--max", "2", "--no-retro"]);
+  assert.equal(result.code, 0, result.out);
+  assert.deepEqual(repo.commits(), ["T003: Add the welcome", "T002: Add the farewell", "init"]);
+  assert.equal(result.out.match(/En attente d'une décision du propriétaire : T001\./g).length, 1, result.out);
 });
