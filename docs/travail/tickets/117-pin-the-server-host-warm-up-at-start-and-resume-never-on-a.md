@@ -1,7 +1,7 @@
 ---
 id: T117
 titre: Pin the server host warm-up at start and resume, never on a read-only open
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -76,3 +76,26 @@ Aucune décision n'est attendue. Le geste qui termine et archive une session est
 par le deuxième test de `tests/chat-instruction.test.cjs`.
 
 ## Journal
+
+- Cadrage : T157 est terminé (`9caac2d`), le ticket n'est plus bloqué. Pas de reprise.
+- Exploration (rapport dans `.harness-state/tickets/T117/exploration.md`) : aucun écart avec le ticket, lignes
+  exactes ; il faut ingérer un passage avant `end()` (une session vide est effacée) ; un `prepare` async
+  enregistre son appel de façon synchrone ; `unhandledRejection` se lit après un macro-tick ; la
+  surveillance ne doit pas démarrer (elle appelle son propre `prepare`).
+- Implémentation : `tests/server-warm-up.test.cjs` (3 tests), aucun code de production modifié.
+- Critère 1 : `node --test tests/server-warm-up.test.cjs` → `tests 3, pass 3, fail 0`, `duration_ms 68.8`
+  (moins de 10 s), sur `runtime/headless-runtime.cjs` inchangé.
+- Critère 2, rejoué par l'orchestrateur, chaque modification annulée ensuite par `git checkout --` :
+  - `this.warmUp(session)` ajouté avant le `return` d'`open(id)` : `pass 1, fail 2` ; test 2 :
+    `AssertionError: reading an archive calls no provider`.
+  - appel de `warmUp` retiré de `resume(id)` : `pass 1, fail 2` ; test 2 : `Expected values to be
+    strictly deep-equal` (liste vide au lieu des deux appels).
+  - `git diff --stat runtime/` vide après chaque annulation.
+- Relecture 1 (`revue-1`) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre.
+- Critère 3 : `node scripts/check.mjs --changed` → vert (tests JS 1 fichier, 3 pass ; cliquet `cas_de_test`
+  699 → 702) ; format et lint non lancés (Prettier et ESLint non installés).
+- Contrôle complet : `node scripts/check.mjs` → vert, 745 tests JS et 84 tests Python (1 ignoré).
+
+### Réserves à la clôture
+
+- Prettier et ESLint ne sont pas installés : les étapes format et lint du contrôle n'ont pas été lancées.
