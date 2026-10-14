@@ -55,6 +55,24 @@ export function isRestoring(state) {
   return state?.activity?.state === 'restoring' || (Boolean(state?.registry) && typeof state.registry === 'object' && state.registry.ready === false);
 }
 
+/** The sequence numbers of the overlay and of the signals that a state holds: what the tab badge counts from. */
+export function sequences(state) {
+  return { overlay: state?.overlay?.seq || 0, signal: state?.signals?.seq || 0 };
+}
+
+/**
+ * The reference of the tab badge. The first state of a session holds history, not news: its sequences become the
+ * reference and the session is retained. A state still restoring holds nothing final (sequences at zero): the
+ * reference is left at zero and the session is not retained, so that the next state, ready, takes it.
+ * `current` is returned as it is for the session already retained.
+ * @param {{seen:{overlay:number,signal:number},seenFor?:string}} current
+ */
+export function nextSeen(current, state) {
+  if (current.seenFor === state.sessionId) return current;
+  const restoring = isRestoring(state);
+  return { seen: sequences(restoring ? null : state), seenFor: restoring ? current.seenFor : state.sessionId };
+}
+
 /**
  * One result card, from a card of the compact state or from a lot of the registry.
  * Returns null when the item must not be shown as a result (unsourced verification, lot still running…).

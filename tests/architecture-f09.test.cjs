@@ -1,8 +1,5 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 
@@ -231,12 +228,37 @@ function page() {
 }
 const marked = (node, name) => [...(node.className.split(' ').includes(name) ? [node] : []), ...node.children.flatMap(child => marked(child, name))];
 const texts = (node, name) => marked(node, name).map(found => found.textContent);
-// The renderer's own reception of a recap state, lifted from app/renderer.js and run on its own: it keeps an
-// earlier recap only for the statuses it knows, and `capacity` is not one of them.
-function reception() {
-  const lifted = fs.readFileSync(path.join(__dirname, '..', 'app', 'renderer.js'), 'utf8').match(/\nfunction receiveRecap\(state\) \{\n[\s\S]*?\n\}\n/);
-  assert.ok(lifted, 'app/renderer.js no longer declares receiveRecap the way this test lifts it');
-  return vm.runInNewContext(`let recapState = null, recapRevision = 0; const currentState = { id: 's' }, renderRecap = () => {};${lifted[0]}({ receive: receiveRecap, state: () => recapState })`);
+// What the window keeps of the recap it shows when a new recap state arrives: the rule is a function of the module.
+const earlier = { sessionId: 's', status: 'ready', overview: 'Vue d’ensemble', chapters: [{ title: 'Chapitre a', summary: 'Un sujet', sources: [] }] };
+
+test('a recap state of another session is ignored, and one of this session keeps the earlier recap only while it is being updated', async () => {
+  const { reduceRecap } = await import('../app/ui/recap-state.mjs');
+  // Another session than the current one: the window touches nothing.
+  assert.equal(reduceRecap(earlier, { sessionId: 'other', status: 'ready', overview: 'Autre', chapters: [] }, 's'), undefined);
+  // An update or a failure of this session that carries no recap goes on showing the earlier one.
+  for (const status of ['updating', 'error']) {
+    const kept = reduceRecap(earlier, { sessionId: 's', status, overview: '', chapters: [] }, 's');
+    assert.deepEqual([kept.status, kept.overview, kept.chapters], [status, earlier.overview, earlier.chapters], status);
+  }
+  // A recap that carries its own overview and chapters is shown as it is.
+  const own = { sessionId: 's', status: 'updating', overview: 'Nouvelle vue', chapters: [{ title: 'Chapitre b', summary: 'Autre', sources: [] }] };
+  assert.deepEqual(reduceRecap(earlier, own, 's'), own);
+  // A ready recap without chapters has none: nothing is borrowed from the earlier one.
+  const none = reduceRecap(earlier, { sessionId: 's', status: 'ready', overview: 'Vue', chapters: [] }, 's');
+  assert.deepEqual([none.overview, none.chapters], ['Vue', []]);
+  // The earlier recap belongs to another session than the state received: nothing is taken from it.
+  const fresh = reduceRecap({ ...earlier, sessionId: 'old' }, { sessionId: 's', status: 'updating' }, 's');
+  assert.deepEqual([fresh.overview, fresh.chapters], ['', []]);
+  // No state at all: no recap, and that is not an ignored state.
+  assert.equal(reduceRecap(earlier, null, 's'), null);
+});
+
+// The window's reception of a recap state, over the rule of the module: ignored for another session, else kept.
+// A ceiling is not a status that keeps an earlier recap, and the state of the ceiling carries its own.
+async function reception(sessionId = 's') {
+  const { reduceRecap } = await import('../app/ui/recap-state.mjs');
+  let shown = null;
+  return { receive(state) { const next = reduceRecap(shown, state, sessionId); if (next !== undefined) shown = next; }, state: () => shown };
 }
 
 test('the Mémoire view says a ceiling as a ceiling, with or without an earlier recap, and goes on showing that recap', async t => {
@@ -248,7 +270,7 @@ test('the Mémoire view says a ceiling as a ceiling, with or without an earlier 
     return { panel, dialog };
   };
   const host = await overCapacity(), ready = host.states.find(state => state.status === 'ready');
-  const shown = reception(); shown.receive(ready); shown.receive(host.recap.snapshot());
+  const shown = await reception(); shown.receive(ready); shown.receive(host.recap.snapshot());
   for (const target of Object.values(render(shown.state(), host.passages))) {
     assert.deepEqual(texts(target, 'recap-status'), ['Session trop longue pour la synthèse automatique · Le résumé n’est plus mis à jour. 100 passages en attente d’intégration au résumé.']);
     assert.equal(marked(target, 'recap-status')[0].attributes.role, 'status');
@@ -259,7 +281,7 @@ test('the Mémoire view says a ceiling as a ceiling, with or without an earlier 
   const never = compose(); never.passages = many(100);
   never.recap.observe(snapshot(never.passages)); await never.recap.tick();
   assert.deepEqual([never.recap.snapshot().status, never.attempts, never.calls], ['capacity', 1, 0]);
-  const empty = reception(); empty.receive(never.recap.snapshot());
+  const empty = await reception(); empty.receive(never.recap.snapshot());
   const { panel } = render(empty.state(), never.passages);
   assert.deepEqual(texts(panel, 'recap-status'), ['Session trop longue pour la synthèse automatique · Aucun résumé n’est produit. 100 passages en attente d’intégration au résumé.']);
   assert.deepEqual([texts(panel, 'recap-error'), texts(panel, 'recap-overview'), marked(panel, 'recap-chapter').length], [[REFUSED], [], 0]);

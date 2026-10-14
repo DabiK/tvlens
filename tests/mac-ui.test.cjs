@@ -351,9 +351,51 @@ test('a saved history still being read is told as a restoration, and a history k
   assert.ok(holds(renderer, 'historyLimit, banner: true })'), 'the view model is asked for the banner');
   assert.ok(holds(renderer, "const unsaved = view.notice?.text || '';\n$('watch-notice').hidden = !unsaved;"), 'the banner is hidden without a notice');
   assert.ok(holds(renderer, "$('watch-notice-text').textContent = unsaved"), 'its text is set from the view model');
-  // The tab badge takes its reference once the saved history is read, not on a state that is still restoring.
-  assert.ok(holds(renderer, 'seen = sequences(restoring ? null : state); if (!restoring) seenFor = state.sessionId;'), 'the reference waits for the history');
+  // The tab badge takes its reference from nextSeen on every state received (its rule is proved below, without a DOM).
+  const from = renderer.indexOf(shape('function receiveSurveillance(')), to = renderer.indexOf(shape('function drawSurveillance('));
+  assert.ok(from >= 0 && to > from, 'the renderer no longer declares receiveSurveillance before drawSurveillance');
+  assert.ok(renderer.slice(from, to).includes(shape('nextSeen(')), 'the reference of the tab badge comes from nextSeen');
   await runtime.close();
+});
+
+// The states of a surveillance as the tab badge sees them: what a session already holds when it first shows is not news.
+const ready = (sessionId, overlay, signal) => ({
+  sessionId, activity: { state: 'listening' }, overlay: { seq: overlay }, signals: { seq: signal }, registry: { ready: true },
+});
+const restoring = sessionId => ({
+  sessionId, activity: { state: 'restoring' }, overlay: { seq: 0 }, signals: { seq: 0 }, registry: { ready: false },
+});
+const nothingSeen = { seen: { overlay: 0, signal: 0 }, seenFor: undefined };
+
+test('the reference of the tab badge is the first ready state of a session, and a state still restoring does not give it', async () => {
+  const { nextSeen } = await ui('surveillance-view');
+  // A new session that is ready: what it holds is the reference, and the session is retained.
+  assert.deepEqual(nextSeen(nothingSeen, ready('a', 4, 2)), { seen: { overlay: 4, signal: 2 }, seenFor: 'a' });
+  // A state still restoring holds nothing final: the reference is at zero and the session is not retained...
+  const waiting = nextSeen(nothingSeen, restoring('a'));
+  assert.deepEqual(waiting, { seen: { overlay: 0, signal: 0 }, seenFor: undefined });
+  // ...so the next state, ready, takes the reference.
+  assert.deepEqual(nextSeen(waiting, ready('a', 3, 1)), { seen: { overlay: 3, signal: 1 }, seenFor: 'a' });
+  // A state of the session already retained changes nothing, whatever it holds.
+  const retained = { seen: { overlay: 1, signal: 0 }, seenFor: 'a' };
+  assert.deepEqual(nextSeen(retained, ready('a', 9, 9)), retained);
+  assert.deepEqual(nextSeen(retained, restoring('a')), retained);
+  // Another session starts again; if it is still restoring, the one retained stays until its own history is read.
+  assert.deepEqual(nextSeen(retained, ready('b', 5, 0)), { seen: { overlay: 5, signal: 0 }, seenFor: 'b' });
+  assert.deepEqual(nextSeen(retained, restoring('b')), { seen: { overlay: 0, signal: 0 }, seenFor: 'a' });
+});
+
+test('a restored history is not news: the header count waits for a ready registry, then counts what comes after', async () => {
+  const { nextSeen, describeSurveillance } = await ui('surveillance-view');
+  // The saved history holds seven results: restoring (numbers at zero, twice), then ready with those seven, again
+  // seven, then an eighth. Only the eighth is new.
+  const states = [restoring('a'), restoring('a'), ready('a', 7, 0), ready('a', 7, 0), ready('a', 8, 0)];
+  let reference = nothingSeen;
+  const counts = states.map(state => {
+    reference = nextSeen(reference, state);
+    return describeSurveillance({ ...state, enabled: true, activation: { t0Ms: 0 } }, { seen: reference.seen }).badge.count;
+  });
+  assert.deepEqual(counts, [0, 0, 0, 0, 1]);
 });
 
 test('a reading that fails is told as a failed reading, with the passages left unread, never as claims waiting', async () => {
@@ -834,6 +876,10 @@ test('the renderer talks to the bridge of the contract only, and writes no ceili
   assert.ok(holds(renderer, 'cardQueue.offer(surveillanceView().cards,'), 'the stack is fed by the view model');
   assert.equal([...renderer.matchAll(/cardQueue\.offer\(/g)].length, 1, 'one way into the stack');
   assert.ok(!/signals\??\.cards/.test(renderer + shaped('ui', 'surveillance-dom.js')), 'the renderer never reads the signal cards itself');
+  // A recap state is received through reduceRecap (its rule is proved without a DOM): the window keeps no copy of it.
+  const recapFrom = renderer.indexOf(shape('function receiveRecap(')), recapTo = renderer.indexOf(shape('function renderRecap('));
+  assert.ok(recapFrom >= 0 && recapTo > recapFrom, 'the renderer no longer declares receiveRecap before renderRecap');
+  assert.ok(renderer.slice(recapFrom, recapTo).includes(shape('reduceRecap(')), 'the recap received goes through reduceRecap');
   // The retention shown is the loaded session's: the renderer no longer reads the setting of the host for it.
   assert.ok(!/retentionNote\(configuration\)|configuration\??\.retention/.test(renderer), 'the host retention is not what the loaded session shows');
   assert.ok(holds(renderer, "$('memory-status').textContent = describeMemory(state, { library });"), 'the memory status is written from the session');

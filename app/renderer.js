@@ -1,10 +1,11 @@
 import { renderRecapView } from './ui/recap-view.js';
+import { reduceRecap } from './ui/recap-state.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { RollingRecorder } from './recording.js';
 import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
-import { describeSurveillance, isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
+import { describeSurveillance, isRestoring, nextSeen, sequences, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
 import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
 import { replayTarget } from './ui/search-view.mjs';
 import { createSearchController } from './ui/search-controller.mjs';
@@ -603,7 +604,6 @@ let surveillanceState = null, surveillanceRegistry = null, registryKey = '', reg
 let watchFilter = 'all', historyLimit = HISTORY_STEP, seen = { overlay: 0, signal: 0 }, seenFor, syncedInstruction = '', watchBusy = false, stackTimer, watchPushes = 0;
 const cardQueue = new CardQueue({ durationMs: preferences.cardDurationMs });
 const stackList = new KeyedList($('watch-stack')), resultsList = new KeyedList($('watch-results')), historyList = new KeyedList($('watch-history')), filtersList = new KeyedList($('watch-filters')), gapsList = new KeyedList($('watch-gaps-list'));
-const sequences = state => ({ overlay: state?.overlay?.seq || 0, signal: state?.signals?.seq || 0 });
 // banner: the notice "history not saved" has its own place above every view (#watch-notice), written once.
 const surveillanceView = () => describeSurveillance(surveillanceState, { registry: surveillanceRegistry, session: currentState ? { id: currentState.id, readOnly: currentState.readOnly } : null,
   seen, filter: watchFilter, historyLimit, banner: true });
@@ -612,7 +612,7 @@ function receiveSurveillance(state) {
   surveillanceState = state;
   // First state of a session: what it already holds is history, not news for the tab badge. A state still
   // restoring holds nothing final (sequences at zero): the reference is taken once the saved history is read.
-  if (seenFor !== state.sessionId) { const restoring = isRestoring(state); seen = sequences(restoring ? null : state); if (!restoring) seenFor = state.sessionId; }
+  ({ seen, seenFor } = nextSeen({ seen, seenFor }, state));
   // A restored registry (reopened archive) never pops up; otherwise freshness decides what is still news.
   // view.cards holds sourced verifications only: a signal is counted on the tab and read in the panel.
   cardQueue.offer(surveillanceView().cards, { sessionId: state.sessionId, now: Date.now(), prime: Boolean(state.restored) });
@@ -810,14 +810,10 @@ bridge.momentShortcuts().then(value=>{
 
 
 function receiveRecap(state) {
-  if (state?.sessionId && currentState?.id && state.sessionId !== currentState.id) return;
+  const next = reduceRecap(recapState, state, currentState?.id);
+  if (next === undefined) return;
   recapRevision++;
-  const sameSession = state?.sessionId && state.sessionId === recapState?.sessionId;
-  const keepPrevious = sameSession && ['updating', 'error'].includes(state.status);
-  recapState = state ? { ...state,
-    overview: state.overview || (keepPrevious ? recapState.overview : ''),
-    chapters: state.chapters?.length ? state.chapters : keepPrevious ? recapState.chapters : []
-  } : null;
+  recapState = next;
   renderRecap();
 }
 // Redrawn when the recap or the availability of a cited passage changes, not at every session state.

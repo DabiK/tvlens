@@ -1,7 +1,7 @@
 ---
 id: T018
 titre: Extract the reception rules of the Mac window as pure tested functions
-statut: a-faire
+statut: termine
 bloque_par: T015
 adr: non
 installe: non
@@ -111,3 +111,26 @@ fenêtre affiche ou l'ordre `recapRevision++` puis `renderRecap()` : verdict BLO
 constaté.
 
 ## Journal
+
+- Exploration faite (rapport dans .harness-state/tickets/T018/exploration.md) : aucun écart de périmètre,
+  numéros de ligne du ticket décalés (renderer +10, mac-ui +6) ; plan en 6 incréments.
+- Implémentation : `nextSeen` et `sequences` dans `app/ui/surveillance-view.mjs`, `reduceRecap` dans
+  `app/ui/recap-state.mjs`, branchement de `receiveSurveillance` et `receiveRecap`, tests dans
+  `tests/mac-ui.test.cjs` (23 tests, 21 avant) et `tests/architecture-f09.test.cjs` (10 tests, 9 avant).
+  `node --test tests/mac-ui.test.cjs tests/architecture-f09.test.cjs` : 33 passent.
+- Critère 5, faute injectée (`seen = sequences(state)` dans `receiveSurveillance`) : `node --test
+  tests/mac-ui.test.cjs` donne pass 22 / fail 1, « the reference of the tab badge comes from nextSeen » ;
+  faute défaite par restauration du renderer sain, 23 tests verts.
+- `grep -c` : `receiveRecap\|runInNewContext` dans f09 = 0, `seenFor !== state.sessionId` et `keepPrevious`
+  dans renderer.js = 0.
+- Relecture 1 : « à corriger », 1 mineur (commentaire du garde de `mac-ui.test.cjs` disant « proved above »
+  alors que la preuve est plus bas), 2 hors périmètre. Corrigé (« proved below »).
+- Relecture 2 : « accepté », 0 bloquant, 0 mineur, 2 hors périmètre (ADR 0009 « Limites » et fiche
+  interface-mac décrivent l'ancienne forme de `receiveRecap` ; libellé périmé d'un exemple de
+  `tests/source-shape.test.cjs`).
+
+### Réserves à la clôture
+
+- Hors périmètre : docs/adr/0009 (« Limites »), docs/interface.md l.57 et docs/travail/fiches/interface-mac.md décrivent encore l'ancienne forme de receiveRecap / la liste des modules app/ui/
+- Hors périmètre : le libellé d'un exemple de tests/source-shape.test.cjs recopie l'ancienne ligne de receiveSurveillance (test toujours juste, libellé périmé)
+- Non vérifié : le comportement de la fenêtre Electron réelle n'a pas été exécuté ; il n'est couvert que par les tests purs et les gardes de branchement
