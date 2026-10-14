@@ -109,17 +109,17 @@ Limites à garder en tête :
 | Les neuf audits | 176 | 48 | 128 | 0 | 112 | 64 |
 | Les trois audits complémentaires | 30 | 2 | 28 | 0 | 13 | 17 |
 | Signalements des relecteurs | 59 | 34 | 25 | 0 | 29 | 30 |
-| Essai de la boucle | 6 | 6 | 0 | 0 | 2 | 4 |
-| **Total** | 271 | 90 | 181 | 0 | 156 | 115 |
+| Essai de la boucle | 9 | 9 | 0 | 0 | 5 | 4 |
+| **Total** | 274 | 93 | 181 | 0 | 159 | 115 |
 
 | Priorité | Constats | Avec ticket | Sans ticket |
 | --- | ---: | ---: | ---: |
 | P0 | 15 | 14 | 1 |
-| P1 | 60 | 43 | 17 |
-| P2 | 99 | 62 | 37 |
+| P1 | 61 | 44 | 17 |
+| P2 | 101 | 64 | 37 |
 | P3 | 38 | 8 | 30 |
 
-Les signalements des relecteurs n'ont pas de priorité : ils n'ont pas été classés par un second lecteur. 139 tickets au total, dont 3 attendent une décision.
+Les signalements des relecteurs n'ont pas de priorité : ils n'ont pas été classés par un second lecteur. 142 tickets au total, dont 3 attendent une décision.
 
 Détail par audit :
 
@@ -137,7 +137,7 @@ Détail par audit :
 | Complément : journal et diagnostic d'une panne | 10 | 1 | 9 | 0 | 5 | 5 |
 | Complément : formats écrits sur disque | 10 | 1 | 9 | 0 | 4 | 6 |
 | Complément : contrat de fil entre parties déployées | 10 | 0 | 10 | 0 | 4 | 6 |
-| Essai de la boucle sur un ticket réel | 6 | 6 | 0 | 0 | 2 | 4 |
+| Essai de la boucle sur un ticket réel | 9 | 9 | 0 | 0 | 5 | 4 |
 
 ## Constats, lot par lot
 
@@ -145,10 +145,13 @@ Les lots sont dans l'ordre d'exécution des tickets. Dans chaque lot, les consta
 
 ### L18 — Ce que l'essai de la boucle a montré
 
-Vague 1 · 6 constats · 2 tickets
+Vague 1 · 9 constats · 5 tickets
 
 - [T002](travail/tickets/002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md) — Refuse a ticket whose final change differs from the one its reviewer read _(touche au harnais)_
 - [T003](travail/tickets/003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md) — Never start a ticket that still waits for an owner decision _(touche au harnais)_
+- [T141](travail/tickets/141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) — Refuse resuming a reviewer or a sub-agent of unknown role in a ticket session _(touche au harnais)_
+- [T142](travail/tickets/142-show-the-retrospective-every-tool-the-orchestrator-called-in.md) — Show the retrospective every tool the orchestrator called, in order and timed _(touche au harnais)_
+- [T143](travail/tickets/143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md) — Measure a ticket session over all its turns and sub-agent runs, and keep each launch's stream _(touche au harnais)_
 
 | Constat | Titre | Verdict | Priorité | Suite |
 | --- | --- | --- | --- | --- |
@@ -156,8 +159,11 @@ Vague 1 · 6 constats · 2 tickets
 | [ESSAI-02](#ESSAI-02) | La boucle intègre un changement fait après la relecture, que personne n'a relu | confirmé | P0 | [T002](travail/tickets/002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md) |
 | [ESSAI-05](#ESSAI-05) | Un verdict TERMINÉ qui garde des réserves est intégré sans que personne les voie | confirmé | P1 | pas de ticket |
 | [ESSAI-06](#ESSAI-06) | La boucle lance une session entière sur un ticket qui attend une décision | confirmé | P1 | [T003](travail/tickets/003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md) |
+| [ESSAI-07](#ESSAI-07) | Une session de ticket peut reprendre un relecteur sans qu'aucun hook le voie | confirmé | P1 | [T141](travail/tickets/141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) |
 | [ESSAI-03](#ESSAI-03) | Un critère d'acceptation sur l'état du checkout ne peut pas être rempli à la lettre | confirmé | P2 | pas de ticket |
 | [ESSAI-04](#ESSAI-04) | Un ticket de six lignes coûte 3,73 $ et dix-neuf minutes | confirmé | P2 | pas de ticket |
+| [ESSAI-08](#ESSAI-08) | La rétrospective ne voit pas ce que l'orchestrateur a fait | confirmé | P2 | [T142](travail/tickets/142-show-the-retrospective-every-tool-the-orchestrator-called-in.md) |
+| [ESSAI-09](#ESSAI-09) | Les chiffres d'une session ne couvrent que son dernier tour | confirmé | P2 | [T143](travail/tickets/143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md) |
 
 <a id="ESSAI-01"></a>
 #### ESSAI-01 — Un sous-agent lancé en arrière-plan fait finir le tour de l'orchestrateur sans verdict
@@ -240,6 +246,92 @@ _Observé pendant l'essai de la boucle._
 - **Preuve :** Mesure de la seule session réelle : 29 tours, 1 120 s, 3,726 $, 27 860 jetons écrits, 1 251 745 jetons lus en cumul, aucune compaction, aucun refus de permission, pour une modification de six lignes dans un test. Le contrôle complet de la boucle ajoute environ 1 min 30.
 - **Impact :** À ce prix, une file d'une centaine de tickets demande de l'ordre de 400 $ et trente heures en séquentiel. Le coût fixe (exploration, relecture, contrôle complet) domine pour les petits tickets.
 - **Remède proposé par l'audit :** Regrouper les changements triviaux d'un même fichier dans un seul ticket ; décider si un mode allégé (sans exploration séparée) est acceptable pour les tickets marqués triviaux.
+
+<a id="ESSAI-07"></a>
+#### ESSAI-07 — Une session de ticket peut reprendre un relecteur sans qu'aucun hook le voie
+
+**Verdict : confirmé** · priorité P1 · effort S · risque faible · Essai de la boucle sur un ticket réel
+
+_Observé pendant l'essai de la boucle._
+
+**Suite :** [T141](travail/tickets/141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) « Refuse resuming a reviewer or a sub-agent of unknown role in a ticket session ».
+
+- **Où :**
+  - `.claude/hooks/guard-agent.mjs` ;
+  - `.claude/hooks/record-review.mjs:9` ;
+  - `.claude/settings.json:44` et `:68`, où les filtres valent `Agent|Task` ;
+  - `.claude/skills/ticket/SKILL.md:62`.
+- **Preuve :**
+  - Sur T003, l'orchestrateur a repris des sous-agents par l'outil `SendMessage` :
+    - au premier lancement, l'explorateur ;
+    - au second, l'implémenteur, deux fois (`.harness-state/tickets/T003/session-1.jsonl`).
+  - L'entrée de l'outil ne porte que le destinataire (`to`). Aucun hook ne la voit : les deux filtres
+    valent `Agent|Task`.
+  - La reprise rend la main tout de suite, et le rapport arrive plus tard par un message.
+  - Au premier lancement, l'orchestrateur a attendu ce rapport avec une boucle Bash en arrière-plan. Le
+    processus est resté vivant après le verdict, jusqu'à un arrêt manuel.
+- **Impact :**
+  - Un relecteur repris relit sans regard neuf, contre la règle de la skill.
+  - Son verdict n'est pas enregistré : `record-review` ne lit que l'outil `Agent`. La boucle jugerait le
+    ticket sur une relecture qui n'est pas la dernière.
+- **Remède proposé par l'audit :**
+  - En mode boucle, refuser `SendMessage` vers un relecteur ou vers un sous-agent de rôle inconnu.
+  - Dire dans la skill comment attendre le rapport d'un implémenteur repris.
+
+<a id="ESSAI-08"></a>
+#### ESSAI-08 — La rétrospective ne voit pas ce que l'orchestrateur a fait
+
+**Verdict : confirmé** · priorité P2 · effort S · risque faible · Essai de la boucle sur un ticket réel
+
+_Observé pendant l'essai de la boucle._
+
+**Suite :** [T142](travail/tickets/142-show-the-retrospective-every-tool-the-orchestrator-called-in.md) « Show the retrospective every tool the orchestrator called, in order and timed ».
+
+- **Où :**
+  - `scripts/loop/retro.mjs:58-83` (`digest`) ;
+  - `scripts/loop/run.mjs:140-155` (`actions`, lignes envoyées à la console seulement).
+- **Preuve :**
+  - Au second lancement de T003, l'orchestrateur appelle 42 outils, dont 2 `SendMessage`.
+  - `retro-entree.md` n'en cite aucun.
+  - Aucune des 7 observations de `retro.json` ne parle d'une reprise de sous-agent.
+  - La rétrospective du premier lancement n'a pas vu non plus la session restée suspendue après son
+    verdict.
+- **Impact :** les écarts de conduite de l'orchestrateur échappent à la seule étape chargée de les
+  relever :
+  - un sous-agent repris ;
+  - une attente en arrière-plan ;
+  - une fin de tour prématurée.
+- **Remède proposé par l'audit :** noter pendant la session la suite chronologique des appels d'outils
+  de l'orchestrateur et des fins de tour, et la donner à la rétrospective.
+
+<a id="ESSAI-09"></a>
+#### ESSAI-09 — Les chiffres d'une session ne couvrent que son dernier tour
+
+**Verdict : confirmé** · priorité P2 · effort S · risque faible · Essai de la boucle sur un ticket réel
+
+_Observé pendant l'essai de la boucle._
+
+**Suite :** [T143](travail/tickets/143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md) « Measure a ticket session over all its turns and sub-agent runs, and keep each launch's stream ».
+
+- **Où :**
+  - `scripts/loop/run.mjs:193` : seul le dernier message `result` est gardé ;
+  - `scripts/loop/run.mjs:158-163` : `subAgent` ;
+  - `scripts/loop/run.mjs:172`, où le flux est écrit dans `session-${attempt}.jsonl`.
+- **Preuve :**
+  - Premier lancement de T003 : 1 tour, 3 s et 167 tokens produits sont rapportés pour 3,52 $ et dix-sept
+    minutes et demie de session (`.harness-state/loop/events.jsonl`).
+  - Second lancement : l'implémenteur, repris deux fois, a trois passages dans le flux. Le rapport n'en
+    compte qu'un.
+  - Le flux du premier lancement a été réécrit par le second.
+- **Impact :**
+  - Les mesures qui doivent calibrer la taille des tickets et le plafond de tours des sous-agents sont
+    fausses dès qu'une session finit plusieurs tours.
+  - La preuve d'un lancement raté disparaît au lancement suivant.
+- **Remède proposé par l'audit :**
+  - Additionner les compteurs par tour et prendre les compteurs cumulés sur le dernier `result`.
+  - Mesurer la durée réelle du processus.
+  - Compter chaque passage de sous-agent.
+  - Ne jamais réécrire le flux d'un lancement précédent.
 
 ### L01 — Un filet de tests fiable et reproductible
 
