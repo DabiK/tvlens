@@ -661,8 +661,20 @@ test('a slow disk holds back neither what a client reads nor the analysis: with 
   held.hold();
   const from = held.seen.length;
   describing.resolve(); describing = null;
-  await held.reached(from + 1); await turns();
-  polled = await f.polled(polled);
+  await held.reached(from + 1);
+  // The analysis ends on the host's own time, which a loaded machine stretches: a count of turns says nothing about
+  // it. The panel is asked again, with the tag held before the resume, until it shows the three passages analysed.
+  const seenPassages = reply => reply[panel].value?.session?.segments?.map(s => s.id + ':' + s.status);
+  const analysed = reply => reply[panel].status === 200 && seenPassages(reply)?.join() === 'moment-1:ready,moment-2:ready,moment-3:ready';
+  let latest = await f.polled(polled);
+  for (const limit = Date.now() + 5000; !analysed(latest); latest = await f.polled(polled)) {
+    // A 304 has no body: the panel has not moved from what the held tag showed.
+    const unchanged = latest[panel].status === 304;
+    const seen = unchanged ? `304, unchanged since the tag held, which showed ${seenPassages(polled)}` : `${latest[panel].status} with ${seenPassages(latest)}`;
+    if (Date.now() > limit) assert.fail(`the panel answered ${seen}, three ready expected`);
+    await tick();
+  }
+  polled = latest;
   assert.deepEqual([polled[panel].status, polled[panel].value?.session.segments.map(s => [s.id, s.status]), held.seen.length - from], [200, [['moment-1', 'ready'], ['moment-2', 'ready'], ['moment-3', 'ready']], 1],
     'both passages are published analysed while the save of the first is still on its way to the disk');
 

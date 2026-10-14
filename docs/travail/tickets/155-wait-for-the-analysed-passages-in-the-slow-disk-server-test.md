@@ -1,7 +1,7 @@
 ---
 id: T155
 titre: Wait for the analysed passages in the slow-disk server test instead of a fixed number of turns
-statut: a-faire
+statut: termine
 bloque_par: T153
 adr: non
 installe: non
@@ -132,3 +132,22 @@ Le ticket tranche ainsi :
   vérifiée.
 
 ## Journal
+
+- **Exploration** : aucun écart de périmètre ; le test finit l. 686 et non l. 683. Rapport dans `.harness-state/tickets/T155/exploration.md`.
+- **Critère 1, avant modification** :
+  - `FLK_SLOW=readFile FLK_MS=200 node --require <sonde> --test --test-concurrency=1 --test-name-pattern="a slow disk holds back" tests/server-sessions.test.cjs` : échec à « both passages are published analysed while the save of the first is still on its way to the disk », `moment-3` vaut `analyzing` là où `ready` est attendu ;
+  - témoins : `FLK_MS=0` passe (1 test), `FLK_SLOW=mkdir FLK_MS=200` passe (1 test).
+- **Implémentation** : dans ce test seulement, `await turns()` et la lecture suivante sont remplacés par une interrogation du panneau, avec l'étiquette tenue avant la reprise, par `tick()` et bornée à 5 s d'horloge réelle. Le message d'échec nomme les statuts vus, y compris pour un 304 sans corps.
+- **Critère 2** : même commande, `FLK_MS=200` : 1 test passe (≈1,1 s) ; `FLK_MS=1000` : 1 test passe (≈5,1 s).
+- **Critère 3** : avec `await this.persist()` placé avant `this.emit(); this.drain();` en `core/session.cjs:254`, sans sonde, le test échoue en 5 s : « the panel answered 304, unchanged since the tag held, which showed moment-1:ready,moment-2:analyzing,moment-3:queued, three ready expected ». Mutation retirée, `git status core/` vide.
+- **Critère 4** : `git diff -U0 tests/server-sessions.test.cjs` ne retire que `await held.reached(from + 1); await turns();` et `polled = await f.polled(polled);`. L'assertion `deepEqual`, son message et le titre sont intacts.
+- **Critère 5** : `node --test --test-concurrency=1 tests/server-sessions.test.cjs`, cinq fois de suite : 14 tests, 14 passent à chaque fois.
+- **Critère 6** : `git diff --stat` cite `tests/server-sessions.test.cjs` (+15 −3) et ce ticket.
+- **Relecture 1** : « à corriger », 0 bloquant, 1 mineur (`seenPassages` plantait sur un corps sans `session`), 1 hors périmètre. Mineur corrigé (`session?.segments?.`).
+- **Relecture 2** : « accepté », 0 bloquant, 0 mineur, 1 hors périmètre (la borne de 5 s est écrite deux fois, ici et dans `d.reached`).
+- **Critère 7** : `node scripts/check.mjs` : vert, 689 tests JS (76 fichiers), tests Python OK (84, 1 ignoré). Format et lint non lancés : outils non installés.
+
+### Réserves à la clôture
+
+- Hors périmètre (relecteur) : la borne de 5 s d'horloge réelle est écrite en dur dans d.reached (l. 47) et dans la nouvelle attente (l. 670) ; la nommer une fois relève de T074 ou d'un ticket ultérieur, le ticket interdisant de toucher d.reached.
+- Non vérifié : format (Prettier) et lint (ESLint) sont signalés « non lancé » par check.mjs, les outils n'étant pas installés.
