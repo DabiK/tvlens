@@ -1,7 +1,7 @@
 ---
 id: T157
 titre: Wait for the kept moment in the Electron smoke as long as its transcriptions can take
-statut: a-faire
+statut: termine
 bloque_par: T156
 adr: non
 installe: non
@@ -121,3 +121,52 @@ Le ticket tranche ainsi :
 - **Pas d'ADR.** Le smoke change sa façon d'attendre, pas ce qu'il prouve.
 
 ## Journal
+
+- **Exploration** (`.harness-state/tickets/T157/exploration.md`, `ecarts.md`).
+  - En mode smoke, `app/main.cjs:55` ne charge pas la configuration : `TVLENS_WHISPER_BINARY` n'est jamais lue.
+    Couture utilisée à la place : un `whisper-cli` factice en tête de `PATH` (même faux, même vrai whisper derrière).
+  - Au clic sur « Garder ce moment », l'état contient 2 passages et la conservation n'en transcrit qu'un
+    (le faux n'est appelé qu'une fois dans tout le smoke). Le ticket parle d'une dizaine : ce n'est pas le cas
+    au moment naturel du clic. Le plafond du produit est de 15 s par passage, un seul passage ne dépasse donc
+    pas 30 s avec `SLOW_WHISPER_S=3`.
+  - Avant toute modification : `node scripts/smoke-electron.mjs` sans faux : PASS, 68,9 s au total ;
+    avec le faux en tête de `PATH` et `SLOW_WHISPER_S=3` : PASS, 72,7 s (3 s de transcription).
+    Le critère 1 « échoue » n'est pas obtenu sur le smoke tel quel : écart déclaré, preuve de remplacement
+    par un clic tardif temporaire.
+- **Implémentation** (`scripts/smoke-electron.mjs`, étape du moment gardé seulement, +18/-1). Le smoke lit dans
+  l'état, juste avant le clic, le nombre de passages que la conservation transcrira (même filtre que
+  `core/saved-moments.cjs`), et attend la tuile au plus `(passages + 2) x 15 000 ms`. Fenêtre de 30 s et plafond
+  de 15 s sont des constantes nommées du smoke, dupliquées du cœur qui ne les exporte pas (le cœur n'est pas touché).
+  Échec : « The kept moment (moment gardé) did not appear within N ms: n passages to transcribe, 15000 ms each at most ».
+- **Critères 1 et 2, preuve par clic tardif temporaire** (`clic-tardif.patch`, attend 12 passages à transcrire
+  avant le clic, non livré, retiré). Couture : faux `whisper-cli` en tête de `PATH`.
+  - Smoke d'origine + patch, `SLOW_WHISPER_S=3` : rouge en 55 s, `Timeout 30000ms exceeded` à l'attente de la
+    tuile, 10 appels du faux commencés.
+  - Smoke modifié + patch, `SLOW_WHISPER_S=3` : vert, 126 s au total, clic -> tuile 38,6 s (12 appels).
+  - Smoke modifié + patch, `SLOW_WHISPER_S=8` : vert, 187 s au total, clic -> tuile 98,9 s (12 appels ; borne 210 s).
+  - Première version du patch (`waitForFunction` asynchrone) sans effet : le clic partait tout de suite ; remplacée
+    par une boucle explicite, le nombre 12 inchangé.
+- **Critère 3, mutation** (clic `#keep-moment` retiré, sans faux) : rouge en 50 s, « The kept moment (moment gardé) did
+  not appear within 45000 ms: 1 passages to transcribe, 15000 ms each at most », cause `Timeout 45000ms exceeded`.
+  Mutation retirée, clic restauré (fichier identique à la version livrée).
+- **Critère 4** : `node scripts/smoke-electron.mjs` sans faux binaire, trois fois de suite, sans relance : vert à
+  chaque fois, 70 s, 69 s, 69 s.
+- **Latence, hors de ce ticket** : avec 12 passages à transcrire, l'utilisateur attend 38,6 s à `SLOW_WHISPER_S=3` et
+  98,9 s à 8 avant de voir la tuile. Le produit n'est pas touché ; c'est un sujet de latence à part.
+- **Non établi** : la cause de l'échec du 14/10. Au clic naturel, le smoke n'a qu'un passage à transcrire (borne 45 s) ;
+  seul un clic tardif simulé reproduit un dépassement de 30 s. Si un passage atteint son plafond de 15 s, la
+  conservation jette aussitôt et le smoke attend la borne entière avant d'échouer.
+- **Relecture** (`revue-1`, relecteur neuf) : accepté, 0 bloquant, 0 mineur, 2 hors périmètre ; les deux écarts
+  déclarés (point d'injection du faux par `PATH`, preuve par clic tardif temporaire) sont acceptés.
+- **Contrôle complet** : `node scripts/check.mjs` vert en 129 s (règles, cliquet, 720 tests JS, 84 tests Python ;
+  format et lint non lancés, outils non installés). Aucun smoke n'est lancé par ce contrôle dans cet arbre : le
+  texte du ticket suppose le contraire ; le smoke a été lancé à part (critères 2, 3 et 4).
+
+### Réserves à la clôture
+
+- Écart accepté, critères 1 et 2 : en mode smoke app/main.cjs ne charge pas la configuration, TVLENS_WHISPER_BINARY n'est jamais lue ; le faux whisper-cli est mis en tête de PATH à la place (même faux, même vrai whisper derrière). La commande de reproduction écrite dans le ticket est à corriger.
+- Écart accepté, critère 1 : au clic naturel le smoke n'a qu'un passage à transcrire (le faux n'est appelé qu'une fois), et le smoke d'origine passe avec SLOW_WHISPER_S=3. L'échec avant modification n'est obtenu qu'avec un clic tardif temporaire (12 passages), non livré (clic-tardif.patch dans .harness-state/tickets/T157/).
+- Non établi : la cause de l'échec du 14/10. Avec un seul passage, une transcription qui atteint son plafond de 15 s fait jeter la conservation aussitôt ; le smoke attendrait alors la borne entière puis accuserait l'attente. Suite possible : faire remonter au smoke l'erreur de saved:keep.
+- Hors périmètre : la fenêtre de 30 s et le plafond de 15 s sont dupliqués dans le smoke (constantes nommées) parce que core/saved-moments.cjs les écrit en dur sans les exporter ; à nommer et exporter dans un ticket qui ouvre le cœur.
+- Hors périmètre, latence : avec 12 passages à transcrire l'utilisateur attend 38,6 s (SLOW_WHISPER_S=3) à 98,9 s (8) avant la tuile.
+- Le contrôle complet ne lance aucun smoke dans cet arbre, contrairement à ce que dit le ticket : la fiabilité du smoke dans le contrôle n'a pas été éprouvée par lui.

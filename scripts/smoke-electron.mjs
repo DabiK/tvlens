@@ -11,6 +11,11 @@ const localOptions = process.argv.slice(2).filter(a=>a==='--local-inspection'||a
 const launchArgs = ['.', '--smoke-test', ...localOptions, ...(liveVerifier ? ['--live-verifier'] : []), ...(liveVideoAgent ? ['--live-video-agent'] : []), ...(liveInspection ? ['--live-inspection'] : [])];
 const app = await electron.launch({ args: launchArgs, executablePath: require('electron') });
 let userData, stateTimeoutMs = 65000;
+// What keeping a moment transcribes, as core/saved-moments.cjs decides it: the window it keeps and the ceiling it gives
+// each passage. The core does not export them, so they are repeated here; the wait for the kept moment follows them.
+const keptWindowMs = 30000, transcriptionCeilingMs = 15000;
+// Passages that arrive between reading the state and the click (one every 1.8 s, more on a loaded machine).
+const keptMomentMarginPassages = 2;
 const withoutFrame = {}, archivedVolume = {};
 const { holdsMedia } = require('../core/clip-container.cjs');
 const clock = ms => { const total = Math.floor(ms / 1000), two = value => String(value).padStart(2, '0'); return total >= 3600 ? `${Math.floor(total / 3600)}:${two(Math.floor(total / 60) % 60)}:${two(total % 60)}` : `${two(Math.floor(total / 60))}:${two(total % 60)}`; };
@@ -86,11 +91,23 @@ try {
   // The newest row may still be waiting for its preview: the rail as a whole shows what was captured.
   await page.waitForFunction(()=>[...document.querySelectorAll('img.moment-image')].some(img=>img.getAttribute('src')?.startsWith('data:image/jpeg')));
   assert.equal(await page.locator('#timeline').evaluate(el=>getComputedStyle(el).display),'flex','Recent moments use a horizontal rail');
+  // The passages the conservation will transcribe one after the other, picked as the core picks them.
+  const passagesToTranscribe = await page.evaluate(async windowMs => {
+    const { segments } = await window.tvlens.state();
+    const anchorMs = segments.at(-1)?.endMs || 0;
+    return segments.filter(s => s.available && s.endMs > anchorMs - windowMs && s.endMs <= anchorMs && !s.observation?.transcript).length;
+  }, keptWindowMs);
+  const keptMomentBoundMs = (passagesToTranscribe + keptMomentMarginPassages) * transcriptionCeilingMs;
   await page.locator('#keep-moment').click();
   await page.locator('#nav-memory').click();
   assert.equal(await page.locator('.hero').isVisible(),false,'Memory is a separate view');
   assert.equal(await page.locator('#nav-memory').getAttribute('aria-current'),'page');
-  await page.waitForSelector('#saved-rail .saved-tile');
+  try {
+    await page.waitForSelector('#saved-rail .saved-tile', { timeout: keptMomentBoundMs });
+  } catch (error) {
+    throw new Error(`The kept moment (moment gardé) did not appear within ${keptMomentBoundMs} ms: ${passagesToTranscribe} passages to `
+      + `transcribe, ${transcriptionCeilingMs} ms each at most`, { cause: error });
+  }
   assert.match(await page.locator('#saved-rail .saved-tile').first().textContent(),/00:/);
   await page.locator('#saved-rail .saved-tile').first().click();
   assert.equal(await page.locator('#library-dialog').evaluate(el=>el.open),true);
