@@ -12,6 +12,24 @@
 
 Les mesures transcription n’incluent pas l’attente ni la vision. Les corpus et charges diffèrent entre essais : aucune accélération globale précise n’est déduite de leur comparaison. Le réglage Audio est vérifié par API et rendu sur TV ; confirmation physique de navigation encore distincte. Aucun reboot ni essai longue durée supplémentaire n’est revendiqué.
 
+## Parcours TV de bout en bout sans la TV
+
+`node scripts/smoke-tv-end-to-end.mjs` fait le trajet entier sur le Mac, avec `ffmpeg` du PATH et Chrome de bureau (`TVLENS_CHROME`).
+Il envoie au vrai serveur du dépôt (`RemoteServer`, `HeadlessRuntime` en mode smoke, vrai `RemoteMedia`, agent de conversation
+scripté, port éphémère de `127.0.0.1`) trois blocs au format de ceux de la TV : quatre images PNG 1280×720 à 2 s d’écart et 8 s de son
+WAV 48 kHz stéréo, avec la même séquence `/v1/session`, `/v1/segments` et la même reprise sur 429 que `tv/transport.py`. Il ouvre la vraie
+page du panneau, sur une copie temporaire de `tv/app` sans `connection.js`, et la parcourt au clavier : passages prêts (lus dans l’état de
+la page), frise avec une vignette servie par le serveur et chargée, détail d’un passage, question, réponse scriptée, fin de session depuis
+le panneau, puis liste `/v1/sessions`. Entre la page et le serveur, il n’y a aucune interception ; seul le contrôleur local de la TV
+(`127.0.0.1:8788`) est remplacé, par une réponse minimale à état. L’horloge de session est celle du processus plus un saut, pour ne pas
+attendre 21 s de capture réelle. Sa sortie se termine par une ligne `PASS:` et une ligne `LIMITES:`. Il échoue en nommant l’étape manquante
+(et sans `PASS:`) si `ffmpeg` est absent, si un passage n’apparaît pas dans la page ou si la frise ne dessine aucune carte.
+
+Ce que ce parcours ne prouve pas : le moteur de navigateur de webOS (ici Chrome de bureau), les codes réels des touches de la
+télécommande, l’affichage par-dessus la vidéo, la capture réelle de la TV (`tv/capture.py`) ni son contrôleur local, remplacé par une
+réponse minimale à état. Le texte des passages n’est pas vérifié : en mode smoke, l’observation et la transcription sont simulées. Aucun fournisseur
+réel n’est appelé et la TV n’est pas touchée.
+
 ## Historique — préparation à la publication
 
 114 tests Node réussis après ajout de deux régressions : résolution des exécutables via PATH/override et configuration facultative avec compteurs dans un dossier inscriptible. Les essais VPS ci-dessous restent les mesures de la version effectivement déployée ; la publication ne redéploie pas les appareils existants.

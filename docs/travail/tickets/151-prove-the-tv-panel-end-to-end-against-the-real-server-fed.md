@@ -1,7 +1,7 @@
 ---
 id: T151
 titre: Prove the TV panel end to end against the real server fed with TV-shaped capture blocks
-statut: a-faire
+statut: termine
 bloque_par: T154
 adr: non
 installe: non
@@ -122,3 +122,25 @@ Le ticket tranche ainsi :
   simulées. Le script vérifie que les passages existent et s'affichent, pas ce qu'ils disent.
 
 ## Journal
+
+- Exploration : aucun écart bloquant. Le contrôleur local doit être un mini-contrôleur à état (`/panel`, `/panel/<mode>`, `/capture*`) ; l'horloge de session est injectée par `readClock` ; `docs/validation.md` n'a pas de liste de smokes.
+- Implémentation : `scripts/smoke-tv-end-to-end.mjs` (nouveau) et section « Parcours TV de bout en bout sans la TV » dans `docs/validation.md`. Aucun fichier de `tv/app/`, `server/`, `runtime/`, `adapters/`, `core/`, `app/`, `tests/`.
+- Critère 1 : `node scripts/smoke-tv-end-to-end.mjs` → exit 0, 4,9 s :
+  `PASS: 3 blocs reçus par le serveur réel (RemoteMedia et ffmpeg réels) ; 3 passages prêts dans la vue du panneau ; frise de 3 carte(s) avec vignette servie par le serveur (largeur naturelle 320) ; détail ouvert et fermé au clavier ; réponse scriptée affichée après la question posée par la page ; session terminée depuis le panneau puis listée archivée par /v1/sessions (4.9 s)`
+  `LIMITES: ne prouve ni le moteur de navigateur de webOS (Chrome de bureau ici), ni les codes réels des touches, ni l’affichage par-dessus la vidéo, ni la capture réelle de la TV (tv/capture.py) et son contrôleur local, remplacé par une réponse fixe.`
+- Critère 2 : `grep -n "route(" scripts/smoke-tv-end-to-end.mjs` → `180:  await page.route("http://127.0.0.1:8788/**", (route) => {`
+- Critère 3, mutation 1 (`tv/app/timeline-view.js`, `render` : `var visible = cards.slice(0, 0);`) → exit 1 :
+  `ÉCHEC : étape manquante « frise : au moins une carte dessinée » : non atteint en 10000 ms (mode timeline, focus timeline-chat, passages [ready,ready,ready], cartes 0, connexion « Capture reçue »)`. Fichier restauré depuis HEAD ensuite.
+- Critère 3, mutation 2 (`server/http.cjs` : `const id = "moment-0";` à la place de `runtime.ingest`) → exit 1 :
+  `ÉCHEC : étape manquante « passage 1 prêt dans la vue du panneau » : non atteint en 25000 ms (mode chat, focus dictate, passages [], cartes 0, connexion « Aucune capture récente · mémoire disponible »)`. Fichier restauré depuis HEAD ; `git status --short server tv` vide.
+- Critère 4 : `PATH=/tmp/tvlens-empty-path <node absolu> scripts/smoke-tv-end-to-end.mjs` → exit 1 :
+  `ÉCHEC : étape manquante « ffmpeg disponible » : ffmpeg est introuvable dans le PATH : le serveur ne peut pas assembler les blocs.` Pas de `PASS:`.
+- Critère 5 : `grep -nE "\.env\.local|--live|0\.0\.0\.0|process\.env"` → `21:const CHROME = process.env.TVLENS_CHROME || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";`. `git diff --stat` : le ticket et `docs/validation.md` seulement (le script est nouveau).
+- Relectures : revue 1 « à corriger » (3 mineurs : appel forcé de `kick()` dans l'attente, commentaires d'horloge faux, doc contradictoire) ; revue 2 « à corriger » (1 mineur : paramètre `request` du gestionnaire `route`) ; revue 3 « accepté », 0 constat.
+- Critère 6 : `node scripts/check.mjs` → vert, 707 tests JS, 84 tests Python (1 sauté) ; format et lint « non lancé » (Prettier et ESLint absents).
+
+### Réserves à la clôture
+
+- Non vérifié : le script sur un Mac sans Chrome dans /Applications et sans TVLENS_CHROME : il échouerait au lancement de Chrome (erreur Playwright), sans étape nommée.
+- Le chemin de retente sur 429 est écrit mais jamais exercé : le script attend que chaque passage soit prêt avant d'envoyer le bloc suivant.
+- Le contrôleur local de la TV est un contrôleur à état minimal, plus riche que la « réponse fixe » citée par le ticket : sans lui la frise est inatteignable. Il reste la seule interception, vers 127.0.0.1:8788.
