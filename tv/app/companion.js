@@ -25,20 +25,11 @@ var TVLENS_STATUS_LABELS = {
 var TVLENS_POLL = { activeMs: 250, idleMs: 1000, panelEvery: 4, timeoutMs: 300000, viewRetryMs: 10000, backoffMaxMs: 8000 };
 // Session identifiers are the server's randomUUID(): the local controller takes nothing else.
 var TVLENS_SESSION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-function tvlensFinite(value) {
-  return typeof value === "number" && isFinite(value);
-}
-// Position in the video or elapsed time: 12:40, and 1:32:15 past the hour.
-function tvlensClock(ms) {
-  var s = Math.max(0, Math.floor((tvlensFinite(ms) ? ms : 0) / 1000)),
-    h = Math.floor(s / 3600),
-    m = Math.floor(s / 60) % 60;
-  return (
-    (h ? h + ":" + String(m).padStart(2, "0") : String(m)) +
-    ":" +
-    String(s % 60).padStart(2, "0")
-  );
-}
+// The top of this file is not wrapped: a name added here becomes a global of the page and takes the tvlens prefix.
+var tvlensText = typeof module === "object" && module && module.exports ? require("./text.js") : window.TVLensText;
+var tvlensFinite = tvlensText.finite,
+  tvlensClock = tvlensText.clock,
+  tvlensPlural = tvlensText.plural;
 function tvlensJobActive(job) {
   return job.status === "queued" || job.status === "running";
 }
@@ -319,9 +310,6 @@ function tvlensRegistryMarks(state) {
     shown: 0,
     unsettled: !!(s.registry && s.registry.ready === false),
   };
-}
-function tvlensPlural(count, one, many) {
-  return count + " " + (count > 1 ? many : one);
 }
 // State held by the panel after a new body. Questions are merged by identifier: a light view only
 // lists the recent ones, and an absence is not a deletion. A chat view refreshes the conversation,

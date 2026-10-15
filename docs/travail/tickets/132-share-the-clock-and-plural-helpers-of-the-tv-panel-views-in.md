@@ -1,7 +1,7 @@
 ---
 id: T132
 titre: Share the clock and plural helpers of the TV panel views in one classic script
-statut: a-faire
+statut: termine
 bloque_par: T130
 adr: oui
 installe: non
@@ -119,3 +119,46 @@ autre que les deux admis plus haut (par exemple un texte affiché qui changerait
 l'écart constaté.
 
 ## Journal
+
+### 2026-10-15 — Exploration
+
+- Explorateur à HEAD `839c06f` ; rapport dans `.harness-state/tickets/T132/exploration.md`. Aucun écart de périmètre.
+- Les trois `clock` (companion, surveillance-view, sessions-view) sont identiques ; les `plural` ne diffèrent que par
+  la forme par défaut de companion (écart admis), dont aucun appel n'omet la forme plurielle.
+- La frise change sur `NaN`/`undefined` (admis) et aussi sur `Infinity` (« Infinity:NaN:NaN » → « 0:00 », valeur non
+  finie) et sur une chaîne numérique, qu'aucun appelant ne passe : déclaré dans `ecarts.md`.
+- Piège : `surveillance-view.js` a déjà une fonction `text` (hissée) ; le module partagé y prend un autre nom local.
+- La faute du critère 2 n'est visible que si les fonctions sont lues au chargement : `tests/helpers/tv-page.cjs`
+  exécute les scripts d'`index.html` dans un `vm` sans `module`, la branche `root.TVLensText` est donc celle testée.
+
+### 2026-10-15 — Implémentation
+
+- `tv/app/text.js` (IIFE, `root.TVLensText` et `module.exports`) et `tests/tv-text.test.cjs` (7 tests). Rouge vu avec un
+  `text.js` vide (5 échecs `clock/plural is not a function`), puis 7/7.
+- Consommateurs : `surveillance-view.js` et `sessions-view.js` par un local `shared`, `companion.js` par `tvlensText`
+  au niveau du fichier, `timeline-view.js` par `var time = root.TVLensText.clock` ; `index.html` charge `text.js` avant
+  `surveillance-view.js`. Exports inchangés.
+- Changements de comportement : la frise rend « 0:00 » pour une position non finie (`NaN`, `undefined`, `Infinity`) au
+  lieu de « NaN:NaN » / « Infinity:NaN:NaN » ; `plural` de `companion.js` gagne la forme par défaut `one + "s"`, qu'aucun
+  appel n'utilise.
+- Faute injectée (critère 2) : balise `text.js` retirée, `node --test tests/tv-remote-navigation.test.cjs` → 20 tests,
+  0 pass, 20 fail, premier échec `TypeError: Cannot read properties of undefined (reading 'finite')` à
+  `tv/app/surveillance-view.js:48` depuis `loadTvPage` (`tests/helpers/tv-page.cjs:187`). Balise rétablie : 20/20.
+- Greps du critère 3 : aucune sortie. Critère 4 : 0 pour `surveillance-overlay.js`, `ambient.js`, `ambient.html`.
+- En séquentiel : tv-text 7/7, chat-error-ui 7/7, tv-app-compat 5/5, tv-panel 19/19, mac-ui 34/34,
+  tv-remote-navigation 20/20.
+- ADR : `docs/adr/0011-un-script-partage-du-panneau-tv-est-une-iife-exposee-sur-la-page-et-par-commonjs.md`.
+
+### 2026-10-15 — Relecture et contrôle
+
+- `node scripts/loop/reviewed-state.mjs record --ticket T132` → `revue-1` ; relecteur neuf : « accepté », 0 bloquant,
+  0 mineur, 0 hors périmètre ; les deux écarts de `ecarts.md` (frise sur `Infinity` et sur une chaîne numérique) acceptés.
+- `node scripts/check.mjs` : vert (exit 0), 821/821 tests JS, 84 tests Python OK (1 ignoré), `cas_de_test` 771 → 778.
+
+### Réserves à la clôture
+
+- Écart accepté (frise, au-delà de NaN) : Infinity rend « 0:00 » au lieu de « Infinity:NaN:NaN », valeur non finie du même changement admis.
+- Écart accepté (frise, chaîne numérique) : "120000" rendrait « 0:00 » au lieu de « 2:00 » ; aucun appelant n'en passe (positions numériques de core/session-timeline.cjs).
+- Non vérifié : chargement sur la TV ou dans un vrai navigateur ; seul le harnais vm de tests/helpers/tv-page.cjs le prouve.
+- Non lancé : scripts/bench-perceived.cjs (require de companion.js, qui résout ./text.js relativement) ; format et lint non lancés, Prettier et ESLint absents.
+- Le ticket T105 (à faire) recopie la liste des scripts d'index.html sans text.js et deviendra inexact.

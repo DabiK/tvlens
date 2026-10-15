@@ -3,20 +3,12 @@
   // Saved sessions on the TV panel (tickets 02 and 03): pure view models first, then the list shown in
   // the timeline band. Every size, threshold and duration shown comes from the server: none is known here.
   // Opening a session never starts a capture; capture only comes back through an explicit choice.
-  function finite(value) {
-    return typeof value === "number" && isFinite(value);
-  }
-  function plural(count, one, many) {
-    return count + " " + (count > 1 ? many || one + "s" : one);
-  }
+  var shared = typeof module === "object" && module && module.exports ? require("./text.js") : root.TVLensText,
+    finite = shared.finite,
+    clock = shared.clock,
+    plural = shared.plural;
   function two(value) {
     return String(value).padStart(2, "0");
-  }
-  function clock(ms) {
-    var s = Math.max(0, Math.floor((finite(ms) ? ms : 0) / 1000)),
-      h = Math.floor(s / 3600),
-      m = Math.floor(s / 60) % 60;
-    return (h ? h + ":" + two(m) : String(m)) + ":" + two(s % 60);
   }
   // Length of a session: "45 s", "4 min", "1 h 32".
   function duration(ms) {

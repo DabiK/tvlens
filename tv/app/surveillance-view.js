@@ -44,27 +44,16 @@
   var DISPLAY_CHOICES = [8000, 14000, 20000],
     DISPLAY_DEFAULT = 14000,
     PAGE = 20;
-  function finite(value) {
-    return typeof value === "number" && isFinite(value);
-  }
+  var shared = typeof module === "object" && module && module.exports ? require("./text.js") : root.TVLensText,
+    finite = shared.finite,
+    clock = shared.clock,
+    plural = shared.plural;
   function list(value) {
     return Array.isArray(value) ? value : [];
-  }
-  function clock(ms) {
-    var s = Math.max(0, Math.floor((finite(ms) ? ms : 0) / 1000)),
-      h = Math.floor(s / 3600),
-      m = Math.floor(s / 60) % 60,
-      two = function (n) {
-        return String(n).padStart(2, "0");
-      };
-    return (h ? h + ":" + two(m) : String(m)) + ":" + two(s % 60);
   }
   function range(startMs, endMs) {
     if (!finite(startMs)) return "";
     return clock(startMs) + (finite(endMs) ? "–" + clock(endMs) : "");
-  }
-  function plural(count, one, many) {
-    return count + " " + (count > 1 ? many || one + "s" : one);
   }
   // A lateness is told with its cause and the number that belongs to it, never with a number that is 0.
   function caused(cause, count, one, many) {
