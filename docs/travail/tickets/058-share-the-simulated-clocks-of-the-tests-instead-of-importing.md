@@ -1,7 +1,7 @@
 ---
 id: T058
 titre: Share the simulated clocks of the tests instead of importing one from a script
-statut: a-faire
+statut: termine
 bloque_par: T055
 adr: non
 installe: non
@@ -137,3 +137,43 @@ attendu ; un test n'est jamais relancé jusqu'à ce qu'il passe.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex le 15/10 : consignes, code cité, appelants, tests et ADR de qualité lus.
+  État initial et conversions des avances consignés dans `.harness-state/tickets/T058/exploration.md` ;
+  aucun écart prévu (`ecarts.md`). Les fichiers préexistants hors périmètre sont conservés.
+
+- Développement Codex : quatre cycles rouge/vert observés avec
+  `node --test tests/simulated-clock.test.cjs` (installation/restauration, échéances et intervalles,
+  avance manuelle et annulation, nombre de tours). Les rouges portent sur des assertions ;
+  sorties conservées dans `.harness-state/tickets/T058/clock-*-{red,green}.log`.
+- Migration : horloges partagées, script limité à l’import et au retrait de sa classe/export,
+  doubles locaux remplacés avec les mêmes instants et tours, boucle MCP remplacée par `until` nommé.
+- Acceptation : `node --test --test-concurrency=1 tests/simulated-clock.test.cjs tests/question-ceiling.test.cjs tests/moment-index.test.cjs tests/review-regressions.test.cjs tests/stream-simulation.test.cjs`
+  donne code 0, 57/57. Les vérifications statiques confirment 4/22/19 cas existants, aucune assertion
+  retirée, aucun double local restant, aucune ligne nouvelle >160 caractères et simulation inchangée.
+  L’export du script contient exactement `MODELS SCENARIOS runScenario`.
+- Contrôle Codex : `node scripts/check.mjs --changed` donne code 0, vert ; règles, format,
+  lint, gel du lint, cliquet et 49 tests JS passent. Aucun élagage des suppressions nécessaire.
+  `git diff --check` donne code 0. Sorties dans `.harness-state/tickets/T058/`.
+- Contrôle complet Codex : `node scripts/check.mjs` donne code 0, vert ; règles, format, lint,
+  gel du lint et cliquet passent, 1 184/1 184 tests JS dans 100 fichiers ; Python : 84 tests,
+  OK avec 1 ignoré. Sortie conservée dans `.harness-state/tickets/T058/check-full.log`.
+  Verdict `TERMINÉ` écrit dans le dossier d’état ; aucun commit ni push, relecture laissée à la boucle.
+
+- Reprise Codex après `relecture-1.md` : rapport, ticket, journal, écarts et diff relus.
+  Unique constat mineur accepté : restaurer le commentaire anglais d’origine. Aucun comportement
+  ne change ; pas de test textuel du source ajouté. Test concerné exécuté avant correction,
+  puis contrôles `--changed` et complet ; aucun écart ni contestation prévu.
+- Correction du constat 1 : commentaire `// the fuller text is now in flight` restauré sur
+  `await clock.advance(10);` ; aucune instruction ni assertion modifiée.
+  Avant correction, `node --test --test-name-pattern='a search holding an older copy of a passage does not discard the newer text being indexed' tests/review-regressions.test.cjs`
+  donne code 0, 1/1. Après correction, `node scripts/check.mjs --changed` donne code 0,
+  vert (49/49 tests JS, règles, format, lint, gel du lint et cliquet).
+  `git diff --check` donne code 0. Sorties `correction-1-before.log` et `correction-1-check-changed.log`
+  dans le dossier d’état. Aucun rouge comportemental revendiqué pour cette correction de commentaire.
+- Contrôle complet après correction : `node scripts/check.mjs` donne code 0, vert ;
+  1 184/1 184 tests JS dans 100 fichiers ; Python : 84 tests, OK avec 1 ignoré ;
+  règles, format, lint, gel du lint et cliquet passent (`correction-1-check-full.log`).
+  Commentaire d’origine confirmé ligne 173 par `rg -n 'fuller text|version complète' tests/review-regressions.test.cjs` ;
+  `git diff --check` final donne code 0. Le constat 1 est corrigé, aucune contestation ni réserve.
+  Nouveau verdict `TERMINÉ` écrit ; aucun commit ni push, relecture laissée à la boucle.

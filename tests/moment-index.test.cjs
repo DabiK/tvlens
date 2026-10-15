@@ -8,30 +8,12 @@ const { MomentSearch } = require('../core/moment-search.cjs');
 const { passageText } = require('../core/passage-text.cjs');
 const { OpenRouterEmbeddings } = require('../adapters/openrouter-embeddings.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
+const { manualClock } = require('./helpers/clock.cjs');
 
 const SLOW = 'Recherche sémantique trop lente : classement textuel et temporel uniquement.';
 const UNAVAILABLE = 'Recherche sémantique indisponible : classement textuel et temporel uniquement.';
 // Lets every promise chain settle; nothing in this file waits for real time.
 const tick = () => new Promise(resolve => setImmediate(resolve));
-// Timers only fire through advance(), in order, with promise chains settled between two of them.
-function manualClock() {
-  let t = 0, sequence = 0; const timers = new Map();
-  return {
-    io: { now: () => t, setTimer: (fn, ms = 0) => { timers.set(++sequence, { at: t + ms, fn }); return sequence; }, clearTimer: id => { timers.delete(id); } },
-    get armed() { return timers.size; },
-    async advance(ms) {
-      const limit = t + ms;
-      for (;;) {
-        await tick();
-        let next;
-        for (const [id, timer] of timers) if (timer.at <= limit && (!next || timer.at < next.at)) next = { id, ...timer };
-        if (!next) break;
-        t = next.at; timers.delete(next.id); next.fn();
-      }
-      t = limit; await tick();
-    },
-  };
-}
 const vector = text => (/chien/.test(text) ? [0, 1] : [1, 0]);
 // Records every call with its signal; a manual call stays in flight until resolve()/reject().
 function provider({ manual = false, many = true, fail = false } = {}) {
@@ -519,28 +501,27 @@ test('EmbeddingStore reads the former single-object file and continues it as a l
   } finally { await fsp.rm(dir, { recursive: true, force: true }); }
 });
 test('a steady stream is sent as a few passages per request once a flush interval is set, and a question never waits for it', async () => {
-  let time = 0; const timers = [];
-  const setTimer = (fn, ms) => { const timer = { fn, at: time + ms }; timers.push(timer); return timer; };
-  const clearTimer = timer => { const i = timers.indexOf(timer); if (i >= 0) timers.splice(i, 1); };
-  const settle = async () => { for (let i = 0; i < 6; i++) await new Promise(resolve => setImmediate(resolve)); };
-  const advance = async to => { for (;;) { await settle(); const next = timers.filter(t => t.at <= to).sort((a, b) => a.at - b.at)[0]; if (!next) break; clearTimer(next); time = next.at; next.fn(); } time = to; await settle(); };
+  const clock = manualClock({ turns: 6 });
   const batches = [], values = new Map();
   const index = new MomentIndex({ embeddings: { embedMany: async texts => { batches.push(texts); return texts.map(() => [1, 0]); } },
     cache: { get: async (id, text) => values.get(id + text) || null, putMany: async items => { for (const { id, text, vector } of items) values.set(id + text, vector); } },
-    holdMs: 6000, flushMs: 30000, now: () => time, setTimer, clearTimer });
+    holdMs: 6000, flushMs: 30000, ...clock.io });
   // One passage every 8 s, as a live capture publishes them.
-  const publish = async i => { await advance(i * 8000); index.observe([{ id: `moment-${i + 1}`, observation: { summary: `Passage ${i + 1}` } }]); };
+  const publish = async i => {
+    await clock.advance(i * 8000 - clock.io.now());
+    index.observe([{ id: `moment-${i + 1}`, observation: { summary: `Passage ${i + 1}` } }]);
+  };
   for (let i = 0; i < 4; i++) await publish(i);
-  await advance(29999);
+  await clock.advance(5999);
   assert.deepEqual(batches, [], 'nothing leaves before the first boundary');
-  await advance(30000);
+  await clock.advance(1);
   assert.deepEqual(batches, [['Passage 1', 'Passage 2', 'Passage 3', 'Passage 4']], 'everything held long enough leaves together');
   for (let i = 4; i < 7; i++) await publish(i);
   // A question asks for the newest passages: they leave at once, without the hold or the boundary.
   index.request([{ id: 'moment-6', observation: { summary: 'Passage 6' } }, { id: 'moment-7', observation: { summary: 'Passage 7' } }]);
   assert.equal(await index.settle(1500), true);
   assert.deepEqual(batches[1], ['Passage 6', 'Passage 7']);
-  await advance(60000);
+  await clock.advance(12000);
   assert.deepEqual(batches[2], ['Passage 5']);
   index.close();
 });

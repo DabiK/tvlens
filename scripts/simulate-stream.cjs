@@ -10,43 +10,11 @@
 //   node scripts/simulate-stream.cjs --diff before.json after.json
 const path = require('node:path');
 const fs = require('node:fs');
+const { VirtualClock } = require('../tests/helpers/clock.cjs');
 
 const realSetImmediate = setImmediate;
 const settle = async () => { for (let i = 0; i < 2; i++) await new Promise(resolve => realSetImmediate(resolve)); };
 
-// Virtual time: timers fire in order without waiting; microtasks settle between two timers.
-class VirtualClock {
-  constructor() { this.t = 0; this.timers = new Map(); this.sequence = 0; }
-  install() {
-    this.saved = { setTimeout: globalThis.setTimeout, clearTimeout: globalThis.clearTimeout, setInterval: globalThis.setInterval, clearInterval: globalThis.clearInterval, now: Date.now };
-    const add = (fn, ms, args, repeat) => {
-      const delay = Math.max(0, Number(ms) || 0);
-      const timer = { id: ++this.sequence, at: this.t + delay, fn, args, repeat: repeat ? Math.max(1, delay) : 0, unref() { return timer; }, ref() { return timer; } };
-      this.timers.set(timer.id, timer);
-      return timer;
-    };
-    const remove = handle => { this.timers.delete(handle && typeof handle === 'object' ? handle.id : handle); };
-    globalThis.setTimeout = (fn, ms, ...args) => add(fn, ms, args, false);
-    globalThis.setInterval = (fn, ms, ...args) => add(fn, ms, args, true);
-    globalThis.clearTimeout = remove; globalThis.clearInterval = remove;
-    Date.now = () => 1790000000000 + Math.floor(this.t);
-    return this;
-  }
-  uninstall() { Object.assign(globalThis, { setTimeout: this.saved.setTimeout, clearTimeout: this.saved.clearTimeout, setInterval: this.saved.setInterval, clearInterval: this.saved.clearInterval }); Date.now = this.saved.now; }
-  async runUntil(limit) {
-    for (;;) {
-      await settle();
-      let next = null;
-      for (const timer of this.timers.values()) if (!next || timer.at < next.at || (timer.at === next.at && timer.id < next.id)) next = timer;
-      if (!next || next.at > limit) break;
-      this.t = next.at;
-      if (next.repeat) next.at += next.repeat; else this.timers.delete(next.id);
-      next.fn(...next.args);
-    }
-    this.t = limit;
-    await settle();
-  }
-}
 const sleep = (ms, signal) => new Promise((resolve, reject) => {
   if (signal?.aborted) return reject(signal.reason);
   const abort = () => { clearTimeout(timer); reject(signal.reason); };
@@ -417,4 +385,4 @@ if (require.main === module) (async () => {
   for (const r of results) console.log(JSON.stringify({ scenario: r.scenario, passages: r.passages, delaysMs: r.delaysMs, provider: r.provider, questionSummary: r.questionSummary, wallClockMs: r.wallClockMs }, null, 1));
 })().catch(error => { console.error(error); process.exit(1); });
 
-module.exports = { runScenario, SCENARIOS, MODELS, VirtualClock };
+module.exports = { runScenario, SCENARIOS, MODELS };

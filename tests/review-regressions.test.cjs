@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { turns, until, pause } = require('./helpers/wait.cjs');
+const { manualClock } = require('./helpers/clock.cjs');
 const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
@@ -132,33 +133,20 @@ setTimeout(() => fs.writeFileSync(out + '.json', JSON.stringify({ transcription:
   assert.equal(await starts(), 2, 'the third caller shares the second run instead of spawning its own');
 });
 
-function manualTimers() {
-  let time = 0; const timers = [];
-  const setTimer = (fn, ms) => { const timer = { fn, at: time + ms }; timers.push(timer); return timer; };
-  const clearTimer = timer => { const i = timers.indexOf(timer); if (i >= 0) timers.splice(i, 1); };
-  const advance = async to => {
-    for (;;) {
-      await turns(6);
-      const next = timers.filter(t => t.at <= to).sort((a, b) => a.at - b.at)[0];
-      if (!next) break;
-      clearTimer(next);
-      time = Math.max(time, next.at);
-      next.fn();
-    }
-    time = to;
-    await turns(6);
-  };
-  return { now: () => time, setTimer, clearTimer, advance };
-}
 const memoryCache = () => { const values = new Map(); return { values, get: async (id, text) => values.get(id + '\n' + text) || null, putMany: async items => { for (const { id, text, vector } of items) values.set(id + '\n' + text, vector); } }; };
 const passage = (n, summary = `Passage ${n}`) => ({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', observation: { summary } });
 
 test('during an embeddings outage searches do not multiply failing requests: one per shared backoff step', async () => {
-  const clock = manualTimers(); let requests = 0;
-  const index = new MomentIndex({ embeddings: { embedMany: async () => { requests++; throw Error('HTTP 503'); } }, cache: memoryCache(), ...clock });
-  const search = new MomentSearch({ index, setTimer: clock.setTimer, clearTimer: clock.clearTimer });
+  const clock = manualClock({ turns: 6 });
+  let requests = 0;
+  const index = new MomentIndex({ embeddings: { embedMany: async () => { requests++; throw Error('HTTP 503'); } }, cache: memoryCache(), ...clock.io });
+  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
-  const ask = async () => { const found = search.search({ query: 'il est question du budget', segments, anchorMs: 800000, budgetMs: 1500, queryBudgetMs: 100 }); await clock.advance(clock.now() + 1600); return found; };
+  const ask = async () => {
+    const found = search.search({ query: 'il est question du budget', segments, anchorMs: 800000, budgetMs: 1500, queryBudgetMs: 100 });
+    await clock.advance(1600);
+    return found;
+  };
   const first = await ask();
   assert.equal(first.mode, 'lexical');
   const afterFirst = requests;
@@ -170,14 +158,23 @@ test('during an embeddings outage searches do not multiply failing requests: one
 });
 
 test('a search holding an older copy of a passage does not discard the newer text being indexed', async () => {
-  const clock = manualTimers(); const cache = memoryCache(); let release;
-  const index = new MomentIndex({ embeddings: { embedMany: async texts => { if (texts[0] === 'Texte complet') await new Promise(resolve => { release = resolve; }); return texts.map(() => [1, 0]); } }, cache, holdMs: 0, ...clock });
+  const clock = manualClock({ turns: 6 });
+  const cache = memoryCache();
+  let release;
+  const index = new MomentIndex({ embeddings: {
+    embedMany: async texts => {
+      if (texts[0] === 'Texte complet') await new Promise(resolve => { release = resolve; });
+      return texts.map(() => [1, 0]);
+    },
+  }, cache, holdMs: 0, ...clock.io });
   index.request([passage(1, 'Paroles seules')]); await clock.advance(10);
   assert.ok(cache.values.has('moment-1\nParoles seules'));
-  index.observe([passage(1, 'Texte complet')]); await clock.advance(20); // the fuller text is now in flight
+  index.observe([passage(1, 'Texte complet')]);
+  await clock.advance(10); // the fuller text is now in flight
   index.request([passage(1, 'Paroles seules')]);
   await turns(6); // a question still holds the older, already indexed text
-  release(); await clock.advance(30);
+  release();
+  await clock.advance(10);
   assert.ok(cache.values.has('moment-1\nTexte complet'), 'the newer vector is written');
   assert.equal(index.status().stale, 0);
   index.close();
@@ -295,11 +292,18 @@ test('the headless state exposes index counters only when an index exists', asyn
 });
 
 test('a search during the pause that follows a provider failure answers at once instead of waiting its whole budget', async () => {
-  const clock = manualTimers(); let fail = true, batches = 0;
+  const clock = manualClock({ turns: 6 });
+  let fail = true, batches = 0;
   const reply = value => { if (fail) throw Error('HTTP 503'); return value; };
   const cache = memoryCache(); cache.put = (id, text, vector) => cache.putMany([{ id, text, vector }]);
-  const index = new MomentIndex({ embeddings: { embed: async () => reply([1, 0]), embedMany: async texts => { batches++; return reply(texts.map(() => [1, 0])); } }, cache, ...clock });
-  const search = new MomentSearch({ index, setTimer: clock.setTimer, clearTimer: clock.clearTimer });
+  const index = new MomentIndex({ embeddings: {
+    embed: async () => reply([1, 0]),
+    embedMany: async texts => {
+      batches++;
+      return reply(texts.map(() => [1, 0]));
+    },
+  }, cache, ...clock.io });
+  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = () => { const found = {}; search.search({ query: 'il est question du budget', segments, anchorMs: 800000 }).then(value => { found.value = value; }); return found; };
   // No timer fires below unless the clock is advanced: an answer means the search did not wait.
@@ -314,11 +318,11 @@ test('a search during the pause that follows a provider failure answers at once 
   assert.equal(batches, 1, 'nothing is sent during the pause');
   // The pause now ends inside the budget and the provider is back: this search waits for the retry.
   fail = false;
-  await clock.advance(1000);
+  await clock.advance(500);
   const third = ask();
   await turns(12);
   assert.equal(third.value, undefined);
-  await clock.advance(2000);
+  await clock.advance(1000);
   assert.equal(third.value?.mode, 'hybrid');
   assert.deepEqual(third.value.semantic, { eligible: 100, indexed: 100, pending: 0 });
   index.close();

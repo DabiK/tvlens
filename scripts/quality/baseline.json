@@ -1,9 +1,9 @@
 {
   "lignes_longues_prod": 512,
-  "lignes_longues_tests": 1707,
+  "lignes_longues_tests": 1703,
   "catch_vides_prod": 38,
   "tests_nommes_par_chantier": 9,
   "process_env_hors_config": 8,
   "inner_html": 2,
-  "cas_de_test": 1079
+  "cas_de_test": 1083
 }

@@ -3,7 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { VirtualClock } = require('../scripts/simulate-stream.cjs');
+const { VirtualClock } = require('./helpers/clock.cjs');
+const { until } = require('./helpers/wait.cjs');
 const { WatchSession } = require('../core/session.cjs');
 const { DeepAsk, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel } = require('../core/deep-ask.cjs');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
@@ -199,7 +200,7 @@ test('an external MCP context lasts as long as a question may be processed, and 
   // The lifetime really is the option: a short context expires by itself and the client has to open a new one.
   const brief = await open({ contextMs: 80 }), openedAt = performance.now();
   assert.deepEqual(await call(brief, 'search_moments'), [200, { name: 'search_moments' }]);
-  for (let i = 0; i < 300 && brief.external.size; i++) await new Promise(resolve => setTimeout(resolve, 10));
+  await until(() => brief.external.size === 0, 'external MCP context expired', { timeoutMs: 3000 });
   assert.equal(brief.external.size, 0);
   assert.ok(performance.now() - openedAt >= 70, 'the context was not dropped before its lifetime');
   assert.deepEqual(await call(brief, 'get_transcript'), [400, { error: 'Commence par search_moments pour ouvrir un contexte de 1 seconde.' }]);
