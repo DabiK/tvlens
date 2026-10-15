@@ -25,10 +25,16 @@ Plusieurs écarts séparent encore le moteur Codex (T158) du flux Claude :
   skill Claude.
 - **Une session, Claude ou Codex, peut modifier `untracked-before.json`.** Elle retire alors un fichier nouveau du diff
   relu, et ce fichier part quand même dans le commit.
+- **Une session Codex ne peut pas écrire dans `.codex/` ni dans `.agents/`, même sur un ticket de harnais.** Le bac à
+  sable `workspace-write` les garde en lecture seule. T158 et T159 ont dû livrer ces fichiers en patch, appliqués à la
+  main.
+- **Deux messages nomment encore la skill `ticket` à une session Codex** (réserve de T159) : celui de `stop-gate` quand
+  le verdict manque, et celui de `session-context` dans une session Codex interactive, sans `TVLENS_ENGINE`.
 
 Après ce ticket, les réserves de la dernière relecture vont au journal et au commit, la rétrospective lit le flux
 Codex, l'échelle Codex démarre un ticket sensible sur Sol 6.1 xhigh, l'harmonisation peut ajuster la skill Codex, et
-la boucle refuse une session qui a touché à la liste des fichiers non suivis.
+la boucle refuse une session qui a touché à la liste des fichiers non suivis. Une session Codex d'un ticket de harnais
+écrit elle-même dans `.codex/` et `.agents/`, et chaque message nomme la skill du moteur qui le reçoit.
 
 ## Sources
 
@@ -48,6 +54,12 @@ la boucle refuse une session qui a touché à la liste des fichiers non suivis.
   - `.claude/agents/relecteur.md` : la forme du rapport (constats classés `bloquant`, `mineur`, `hors périmètre`,
     section des écarts) ;
   - `tests/ticket-loop.test.cjs`, `tests/agent-guards.test.cjs`.
+- Réserves de T159, dans son journal : `stop-gate.mjs:59` et `session-context.mjs:11`. Une session Claude a
+  `CLAUDE_PROJECT_DIR` dans l'environnement de ses hooks ; une session Codex ne l'a pas.
+- Observé le 15/10 avec Codex CLI 0.162.1 : sous `workspace-write`, `.codex/` et `.agents/` sont en lecture seule, et
+  `--add-dir <racine>/.codex` rend `.codex/` inscriptible pour la session (`codex exec --help` : « Additional
+  directories that should be writable alongside the primary workspace »). Les gardes du projet décident toujours de ce
+  que la session a le droit d'écrire.
 
 ## Périmètre
 
@@ -58,6 +70,11 @@ la boucle refuse une session qui a touché à la liste des fichiers non suivis.
       donc au journal (« Réserves à la clôture ») et au compte du commit ;
     - **la liste des non suivis.** `gates` compare la liste `untracked-before.json` lue sur disque à celle gardée en
       mémoire depuis `preflight`. Si elles diffèrent, la tentative est refusée. Cela vaut pour les deux moteurs ;
+  - `scripts/loop/codex.mjs`, arguments de session : sur un ticket `harnais: oui`, `--add-dir <racine>/.codex` et
+    `--add-dir <racine>/.agents`. Sur un autre ticket, aucun `--add-dir` ;
+  - `.claude/hooks/session-context.mjs` et `.claude/hooks/stop-gate.mjs` : la skill nommée est celle du moteur. C'est
+    `.agents/skills/ticket-codex/SKILL.md` avec `TVLENS_ENGINE=codex`, ou sans `CLAUDE_PROJECT_DIR`, et la skill
+    `ticket` sinon ;
   - `scripts/loop/retro.mjs` : pour une tentative Codex, le résumé cite `codex-<n>.jsonl` et n'écrit plus de
     compactions inconnues ;
   - `scripts/loop/models.mjs` : `CODEX_LADDER`, palier 1 = `gpt-6.1-sol` effort `xhigh`. Les paliers 0, 2 et 3 ne
@@ -85,7 +102,12 @@ la boucle refuse une session qui a touché à la liste des fichiers non suivis.
    T156.
 6. Mutation temporaire : `integrate` ignore les réserves de la dernière relecture. Le test du critère 1 échoue ; la
    sortie rouge va au journal, puis la mutation est retirée.
-7. `node scripts/check.mjs` est vert.
+7. Les arguments de `codex exec` enregistrés par le faux `codex` contiennent `--add-dir <racine>/.codex` et
+   `--add-dir <racine>/.agents` pour un ticket `harnais: oui`, et aucun `--add-dir` pour un autre ticket.
+8. `session-context.mjs` nomme `.agents/skills/ticket-codex/SKILL.md` sans `TVLENS_ENGINE` ni `CLAUDE_PROJECT_DIR`,
+   et la skill `ticket` avec `CLAUDE_PROJECT_DIR`. `stop-gate.mjs` en mode boucle, sans verdict et avec
+   `TVLENS_ENGINE=codex`, nomme la skill Codex.
+9. `node scripts/check.mjs` est vert.
 
 ## Test d'acceptation attendu
 
@@ -104,6 +126,8 @@ Le ticket tranche ainsi :
 - **La liste des non suivis est vérifiée, pas seulement protégée.** Une écriture par le shell échappe aux hooks ; la
   comparaison faite par la boucle ne dépend pas d'eux.
 - **Niveau `standard`, décidé par le propriétaire le 15/10** : Sol 6.1 high implémente, et Opus relit.
+- **`--add-dir` seulement pour un ticket de harnais.** Le bac à sable reste le premier mur pour les autres tickets ;
+  pour un ticket de harnais, les gardes décident, comme pour une session Claude.
 - **Pas d'ADR.** Ces changements complètent le moteur décrit par l'ADR 0012.
 
 ## Journal
