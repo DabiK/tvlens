@@ -39,8 +39,9 @@ const QUESTION_QUEUE_LIMIT = 5;
 let verifierAdapter, verification;
 let surveillance, surveillanceTimer, storageTimer;
 let recap, recapAdapter, recapTimer, switching = false;
-let deep, bridge, search, inspector, videoAgent, perception, inspectorModel;
-let window, watch, store, live, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
+let deep, bridge, videoAgent;
+let window, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
+let loaded = null;
 let sources = [], selectedId;
 const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
@@ -100,7 +101,12 @@ app.whenReady().then(async () => {
   const exclusive = fn => (...args) => { const run = transition.then(() => fn(...args)); transition = run.catch(() => {}); return run; };
   const savedArchive=new SavedMomentStore(path.join(app.getPath('userData'),'saved-moments'));
   const saved=new SavedMoments({archive:savedArchive,makeId:randomUUID});
-  const keepMoment=async()=>{if(!watch)throw Error('Démarre une observation.');const value=await saved.keep({snapshot:watch.snapshot(),media:store});window.webContents.send('saved:changed');return value;};
+  const keepMoment = async () => {
+    if (!loaded) throw Error('Démarre une observation.');
+    const value = await saved.keep({ snapshot: loaded.runtime.watch.snapshot(), media: loaded.runtime.store });
+    window.webContents.send('saved:changed');
+    return value;
+  };
   handle('saved:keep',keepMoment);handle('saved:list',()=>saved.list());handle('saved:remove',id=>saved.remove(id));
   const viewingSettings=new ViewingSettings(path.join(app.getPath('userData'),'viewing-settings.json'));
   let viewing=await viewingSettings.load(),registeredShortcut;
@@ -112,10 +118,14 @@ app.whenReady().then(async () => {
   handle('moments:search',async query=>{
    // The session that asks is held until its answer: passages, thumbnails and sessionId all come from it. An
    // answer that is ready once another session is loaded, or none, is refused instead of borrowing that one's media.
-   const session=live;if(!session)throw Error('Démarre une observation.');searchController?.abort();searchController=new AbortController();const signal=AbortSignal.any([searchController.signal,AbortSignal.timeout(15000)]);
+   const session = loaded?.runtime;
+   if (!session) throw Error('Démarre une observation.');
+   searchController?.abort();
+   searchController = new AbortController();
+   const signal = AbortSignal.any([searchController.signal, AbortSignal.timeout(15000)]);
    const state=session.watch.snapshot(),all=[...state.history,...state.segments];const found=await session.search.search({query,segments:all,anchorMs:state.capturedThroughMs,signal,limit:6});
    const moments=await Promise.all(found.moments.map(async m=>({...m,preview:m.available?(await session.store.read(m.id).catch(()=>null))?.frames?.[0]?.dataUrl:null})));
-   if(session!==live)throw Error('Session obsolète.');
+   if (session !== loaded?.runtime) throw Error('Session obsolète.');
    return {...found,sessionId:state.id,moments};
   });
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
@@ -146,17 +156,28 @@ app.whenReady().then(async () => {
   // comes late never reaches the session loaded since, nor a sealed one.
   const questionSaves = createQuestionCheckpoint();
   const conversation = createConversationRuntime({
-    getSession: () => ({ watch, search, inspector, store }),
+    getSession: () => loaded?.runtime,
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
-    getInstruction: () => activeInstruction(surveillance, watch?.id),
+    getInstruction: () => activeInstruction(surveillance, loaded?.runtime.watch.id),
     agent: videoAgent, codexBinary, config, selectedModels, quota,
     onChange: state => {
-    if(watch){const busy=state.jobs.some(j=>j.sessionId===watch.id&&['running','queued'].includes(j.status));if(watch.asking!==busy){watch.asking=busy;watch.emit();if(!busy)queueMicrotask(()=>watch?.drain());}}
-    if(state.jobs.some(j=>['running','queued'].includes(j.status)))recap?.tick({busy:true});
-    if (!window.isDestroyed()) window.webContents.send('deep:state', state);
-    // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
-    if (watch && store) questionSaves.checkpoint(store, { ...state, jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === watch.id) });
-  } });
+      if (loaded) {
+        const busy = state.jobs.some(j => j.sessionId === loaded.runtime.watch.id && ['running', 'queued'].includes(j.status));
+        if (loaded.runtime.watch.asking !== busy) {
+          loaded.runtime.watch.asking = busy;
+          loaded.runtime.watch.emit();
+          if (!busy) queueMicrotask(() => loaded?.runtime.watch.drain());
+        }
+      }
+      if (state.jobs.some(j => ['running', 'queued'].includes(j.status))) recap?.tick({ busy: true });
+      if (!window.isDestroyed()) window.webContents.send('deep:state', state);
+      // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
+      if (loaded) questionSaves.checkpoint(loaded.runtime.store, {
+        ...state,
+        jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === loaded.runtime.watch.id),
+      });
+    },
+  });
   videoAgent = conversation.agent;
   deep = conversation.deep;
   // An external MCP context is opened on the loaded session, never on one that is being closed: the contexts of a
@@ -166,7 +187,7 @@ app.whenReady().then(async () => {
   // a shared client would let a question serialise or cancel the surveillance. Questions and surveillance
   // run side by side; `probe` only feeds an informative overlap counter.
   surveillance = createSurveillanceRuntime({
-    getSession: () => (watch ? { watch, store } : null),
+    getSession: () => loaded?.runtime ?? null,
     agent: smoke && !process.argv.includes('--live-surveillance') ? new SimulatedSurveillanceAgent({ detectDelayMs: 200, verifyDelayMs: 1500 }) : undefined,
     codexBinary, config, selectedModels, quota,
     probe: () => ({ chatBusy: questionPending() }),
@@ -179,9 +200,9 @@ app.whenReady().then(async () => {
   handle('surveillance:history', () => surveillance.snapshot({ full: true }));
   // Queued behind any session transition: an activation never binds to a session that is being closed.
   handle('surveillance:start', exclusive(input => {
-    if (!watch) throw new Error('Démarre une session avant d’activer la surveillance.');
+    if (!loaded) throw new Error('Démarre une session avant d’activer la surveillance.');
     // A reopened archive receives no new passage: its registry is shown, not extended.
-    if (live.readOnly) throw new Error('Session ouverte en lecture seule : reprends la capture pour activer la surveillance.');
+    if (loaded.runtime.readOnly) throw new Error('Session ouverte en lecture seule : reprends la capture pour activer la surveillance.');
     return surveillance.start({ instruction: input?.instruction });
   }));
   handle('surveillance:stop', () => surveillance.stop('Surveillance arrêtée.'));
@@ -196,11 +217,15 @@ app.whenReady().then(async () => {
     onChange: state => {
       if (!window.isDestroyed()) window.webContents.send('recap:state',state);
       // A reopened archive is displayed, never rewritten.
-      if (state.sessionId && state.sessionId===watch?.id && !live.readOnly) store?.saveRecap(state).catch(()=>{});
+      if (state.sessionId && state.sessionId === loaded?.runtime.watch.id && !loaded.runtime.readOnly)
+        loaded.runtime.store.saveRecap(state).catch(() => {});
     }
   });
   // No synthesis while an archive is only being read: a provider is called again after an explicit resume.
-  recapTimer=setInterval(()=>{if(watch&&!live.readOnly&&!closing&&!switching)recap.tick({busy:Boolean(verification?.busy)||questionPending()}).catch(()=>{});},1000);
+  recapTimer = setInterval(() => {
+    if (loaded && !loaded.runtime.readOnly && !closing && !switching)
+      recap.tick({ busy: Boolean(verification?.busy) || questionPending() }).catch(() => {});
+  }, 1000);
   handle('recap:state',()=>recap.snapshot());
   handle('deep:open-source', ({jobId,index}) => {
     const source=deep.jobs.find(j=>j.id===jobId)?.result?.sources?.[index];
@@ -218,7 +243,14 @@ app.whenReady().then(async () => {
         authHome: config.codexAuthHome,
         model: selectedModels.codexModel,
       });
-  verification = new VerificationService({ verifier: {verify:async input=>{if(!smoke||process.argv.includes('--live-verifier')){await videoAgent.prepare(watch?.id||'verify-only');await quota.check(videoAgent.rpc);}return verifierAdapter.verify(input);}},
+  verification = new VerificationService({
+    verifier: { verify: async input => {
+      if (!smoke || process.argv.includes('--live-verifier')) {
+        await videoAgent.prepare(loaded?.runtime.watch.id || 'verify-only');
+        await quota.check(videoAgent.rpc);
+      }
+      return verifierAdapter.verify(input);
+    } },
     archive: new VerificationArchive(path.join(app.getPath('userData'), 'verifications')),
     onChange: state => { if(state.busy)recap?.tick({busy:true});if (!window.isDestroyed()) window.webContents.send('verify:state', state); } });
   handle('verify:run', input => {
@@ -274,10 +306,10 @@ app.whenReady().then(async () => {
   });
   handle('capture:settings', () => shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'));
   // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
-  let title = null, startedAt = null, storageShown = null;
+  let storageShown = null;
   const ingestions = new Set();
   // The core state plus its additive title: what the renderer receives for the loaded session.
-  const sessionState = () => (watch ? { ...watch.snapshot(), title } : null);
+  const sessionState = () => (loaded ? { ...loaded.runtime.watch.snapshot(), title: loaded.title } : null);
   const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
     ? simulatedRecap()
     : new CodexRecap({
@@ -290,30 +322,61 @@ app.whenReady().then(async () => {
   const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
     smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
-    onChange:state=>{if(!closing&&!switching)recap.observe(state);surveillance.observe(state);send('watch:state',{...state,title});}});
-  const adopt = (runtime, name, at) => { live = runtime; ({store,search,inspector,inspectorModel,perception,watch}=runtime); title = name; startedAt = at; saved.transcriber=runtime.transcriber; };
+    onChange: state => {
+      if (!closing && !switching) recap.observe(state);
+      surveillance.observe(state);
+      send('watch:state', { ...state, title: loaded?.title ?? null });
+    },
+  });
+  const adopt = (runtime, name, at) => {
+    loaded = { runtime, title: name, startedAt: at };
+    saved.transcriber = runtime.transcriber;
+  };
   // Every five seconds while something of the loaded session moves without an event of its own: its clock while
   // it captures, a rolling window to sweep, a removal to try again. A durable session that is paused pushes
   // nothing: its state is the one already shown.
-  const sweep = () => { if (watch && (watch.accepting || Number.isFinite(watch.retentionMs) || watch.unremoved?.size)) watch.prune().catch(() => {}); };
+  const sweep = () => {
+    if (loaded && (loaded.runtime.watch.accepting || Number.isFinite(loaded.runtime.watch.retentionMs) || loaded.runtime.watch.unremoved?.size))
+      loaded.runtime.watch.prune().catch(() => {});
+  };
   // Same shape as the server host. The manifest of the session in memory is up to thirty seconds old, or
   // not written yet: its row carries the figures in memory instead.
   const sessionRows = async () => {
-    const id = watch?.id || null, sessions = await library.list({ current: live?.readOnly ? null : id });
-    if (watch && !live.readOnly) {
-      const state = watch.snapshot(), at = sessions.findIndex(s => s.id === id), stored = state.segments.filter(s => s.available).length;
-      const row = { ...(at < 0 ? { id, firstTopic: null, host: 'mac', createdAt: startedAt, updatedAt: Date.now(), closedAt: null, legacy: false } : sessions[at]), title, state: 'live',
-        elapsedMs: state.elapsedMs, passages: state.coverage.passages, media: { stored, missing: state.coverage.passages - stored, bytes: state.storage?.sessionBytes ?? 0 } };
-      if (at < 0) sessions.unshift(row); else sessions[at] = row;
+    const id = loaded?.runtime.watch.id || null;
+    const sessions = await library.list({ current: loaded?.runtime.readOnly ? null : id });
+    if (loaded && !loaded.runtime.readOnly) {
+      const state = loaded.runtime.watch.snapshot();
+      const at = sessions.findIndex(s => s.id === id);
+      const stored = state.segments.filter(s => s.available).length;
+      const row = {
+        ...(at < 0 ? {
+          id, firstTopic: null, host: 'mac', createdAt: loaded.startedAt, updatedAt: Date.now(), closedAt: null, legacy: false,
+        } : sessions[at]),
+        title: loaded.title, state: 'live', elapsedMs: state.elapsedMs, passages: state.coverage.passages,
+        media: { stored, missing: state.coverage.passages - stored, bytes: state.storage?.sessionBytes ?? 0 },
+      };
+      if (at < 0) sessions.unshift(row);
+      else sessions[at] = row;
     }
     // The retention of the loaded session, not the setting of this host: an archive kept until deletion stays so here.
-    return { current: watch ? { id, title, elapsedMs: watch.now(), readOnly: live.readOnly, accepting: watch.accepting, retention: Number.isFinite(watch.retentionMs) ? 'rolling' : 'until-deleted', retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null } : null,
-      sessions: sessions.map(s => ({ ...s, current: s.id === id, readOnly: s.id === id && live.readOnly, capturing: s.id === id && watch.accepting })) };
+    return {
+      current: loaded ? {
+        id, title: loaded.title, elapsedMs: loaded.runtime.watch.now(), readOnly: loaded.runtime.readOnly,
+        accepting: loaded.runtime.watch.accepting,
+        retention: Number.isFinite(loaded.runtime.watch.retentionMs) ? 'rolling' : 'until-deleted',
+        retentionMs: Number.isFinite(loaded.runtime.watch.retentionMs) ? loaded.runtime.watch.retentionMs : null,
+      } : null,
+      sessions: sessions.map(s => ({
+        ...s, current: s.id === id, readOnly: s.id === id && loaded.runtime.readOnly,
+        capturing: s.id === id && loaded.runtime.watch.accepting,
+      })),
+    };
   };
   // Disk state shared by sessions:list, sessions:storage and the storage:state event: what the library
   // measures, plus the pace of the loaded session. Nothing is ever deleted to make room.
   const storageInfo = async sessions => {
-    const usage = await library.usage(sessions || (await sessionRows()).sessions), { sessionBytes = 0, bytesPerMinute = null, remainingMinutes = null } = live?.storage() || {};
+    const usage = await library.usage(sessions || (await sessionRows()).sessions);
+    const { sessionBytes = 0, bytesPerMinute = null, remainingMinutes = null } = loaded?.runtime.storage() || {};
     storageShown = usage.state;
     return { ...usage, sessionBytes, bytesPerMinute, remainingMinutes };
   };
@@ -331,7 +394,7 @@ app.whenReady().then(async () => {
   // keeps what was last confirmed, and the list goes on showing the session as the manifest on disk says, cut
   // short when it was written during a capture.
   const endSession = async (reason, { remove = false } = {}) => {
-    const ended = live;
+    const ended = loaded?.runtime;
     switching = true;
     // A passage search still running ends with the session it was asked in: told through its signal as the end
     // begins, with the reason of this end. Its answer is refused once that session is no longer the one loaded.
@@ -357,7 +420,7 @@ app.whenReady().then(async () => {
         ],
         // Whatever happened above, the host is left without a session.
         letGo: () => {
-          live = watch = store = search = inspector = inspectorModel = perception = title = startedAt = null;
+          loaded = null;
           // Nothing of this session waits past this point: a timer left behind would have nothing to write.
           questionSaves.forget();
           viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
@@ -376,11 +439,18 @@ app.whenReady().then(async () => {
   };
   archiveOnQuit = exclusive(() => endSession('Application fermée.'));
   handle('watch:start', exclusive(async () => {
-    if (watch?.accepting) throw new Error('Une session est déjà active.');
+    if (loaded?.runtime.watch.accepting) throw new Error('Une session est déjà active.');
     // Capture never restarts inside an archive without the explicit gesture.
-    if (live?.readOnly) throw new Error('Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.');
+    if (loaded?.runtime.readOnly) throw new Error('Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.');
     // Start and resume are refused on a fresh measurement while the disk is blocked, before anything changes.
-    if (watch) { await live.resume().catch(error => { publishStorage(); throw error; }); send('sessions:changed'); return { id: watch.id, elapsedMs: watch.now(), segmentMs }; }
+    if (loaded) {
+      await loaded.runtime.resume().catch(error => {
+        publishStorage();
+        throw error;
+      });
+      send('sessions:changed');
+      return { id: loaded.runtime.watch.id, elapsedMs: loaded.runtime.watch.now(), segmentMs };
+    }
     if (!codexBinary && !smoke) throw new Error('Installe Codex et connecte ton compte.');
     await guard?.assertRoom().catch(error => { publishStorage(); throw error; });
     const id = randomUUID(), at = Date.now(), runtime = compose(id);
@@ -391,27 +461,36 @@ app.whenReady().then(async () => {
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at);
     pruneTimer = setInterval(sweep, 5000);
-    watch.emit();
+    loaded.runtime.watch.emit();
     // Never for an archive that is only being read: opening one warms nothing up.
-    warmUp({ chat: videoAgent, perception, sessionId: id });
+    warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: id });
     send('sessions:changed');
-    return { id, elapsedMs: watch.now(), segmentMs };
+    return { id, elapsedMs: loaded.runtime.watch.now(), segmentMs };
   }));
   handle('watch:ingest', async input => {
-    if (!watch || input?.sessionId !== watch.id) throw new Error('Session obsolète.');
-    validateSegment(input, watch.now());
-    const session = live, work = watch.ingest(input);
+    if (!loaded || input?.sessionId !== loaded.runtime.watch.id) throw new Error('Session obsolète.');
+    validateSegment(input, loaded.runtime.watch.now());
+    const session = loaded.runtime;
+    const work = loaded.runtime.watch.ingest(input);
     ingestions.add(work);
     try { return await work; }
     catch (error) {
       // Out of room: nothing was stored and nothing is deleted. The session clock stops with the capture.
-      if (error?.code === STORAGE_FULL && session === live) { await session.pause().catch(() => {}); publishStorage(); }
+      if (error?.code === STORAGE_FULL && session === loaded?.runtime) {
+        await session.pause().catch(() => {});
+        publishStorage();
+      }
       throw error;
     } finally { ingestions.delete(work); }
   });
-  handle('watch:stop', exclusive(async () => { if (!live) return; await live.pause(); send('sessions:changed'); }));
+  handle('watch:stop', exclusive(async () => {
+    if (!loaded) return;
+    await loaded.runtime.pause();
+    send('sessions:changed');
+  }));
   handle('watch:new', exclusive(async () => {
-    if(watch?.accepting||watch?.running)throw new Error('Arrête la capture et attends la fin de son analyse.');
+    if (loaded?.runtime.watch.accepting || loaded?.runtime.watch.running)
+      throw new Error('Arrête la capture et attends la fin de son analyse.');
     await endSession('Nouvelle session.');
     return true;
   }));
@@ -419,10 +498,12 @@ app.whenReady().then(async () => {
   handle('sessions:storage', () => storageInfo());
   handle('sessions:open', exclusive(async id => {
     // Same conditions as a new session: never while capturing or analysing.
-    if(watch?.accepting||watch?.running)throw new Error('Arrête la capture et attends la fin de son analyse.');
-    if (live?.readOnly && id === watch.id) return { id, readOnly: true, elapsedMs: watch.now() };
+    if (loaded?.runtime.watch.accepting || loaded?.runtime.watch.running)
+      throw new Error('Arrête la capture et attends la fin de son analyse.');
+    if (loaded?.runtime.readOnly && id === loaded.runtime.watch.id)
+      return { id, readOnly: true, elapsedMs: loaded.runtime.watch.now() };
     // Read before anything is closed: an unknown or unreadable archive leaves the loaded session as it is.
-    let archive = id === watch?.id ? (library.dir(id), null) : await library.read(id);
+    let archive = id === loaded?.runtime.watch.id ? (library.dir(id), null) : await library.read(id);
     await endSession('Changement de session.');
     archive ||= await library.read(id);
     const runtime = compose(id, { snapshot: archive.snapshot, inventory: archive.inventory, manifest: archive.manifest, createdAt: archive.summary.createdAt });
@@ -433,27 +514,34 @@ app.whenReady().then(async () => {
     adopt(runtime, archive.summary.title, archive.summary.createdAt);
     surveillance.restore(archive.surveillance?.sessionId === id ? archive.surveillance : null);
     // The renderer shows an archive through the same states as a live session.
-    watch.emit(); send('deep:state', deep.snapshot()); send('recap:state', recap.snapshot()); send('surveillance:state', surveillance.snapshot()); send('sessions:changed');
-    return { id, readOnly: true, elapsedMs: watch.now() };
+    loaded.runtime.watch.emit();
+    send('deep:state', deep.snapshot());
+    send('recap:state', recap.snapshot());
+    send('surveillance:state', surveillance.snapshot());
+    send('sessions:changed');
+    return { id, readOnly: true, elapsedMs: loaded.runtime.watch.now() };
   }));
   handle('sessions:resume', exclusive(async () => {
-    if (!live?.readOnly) throw new Error('Aucune session ouverte en lecture seule à reprendre.');
+    if (!loaded?.runtime.readOnly) throw new Error('Aucune session ouverte en lecture seule à reprendre.');
     if (!codexBinary && !smoke) throw new Error('Installe Codex et connecte ton compte.');
     // Ready before the session stops being read-only: the next recap tick may run at once.
     recapAdapter ||= newRecapAdapter();
     // The explicit gesture that lets capture write into this archive again; refused while the disk is blocked.
-    await live.resume().catch(error => { publishStorage(); throw error; });
+    await loaded.runtime.resume().catch(error => {
+      publishStorage();
+      throw error;
+    });
     clearInterval(pruneTimer); pruneTimer = setInterval(sweep, 5000);
     // Same as at the start: never for an archive that is only being read.
-    warmUp({ chat: videoAgent, perception, sessionId: watch.id });
+    warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: loaded.runtime.watch.id });
     send('sessions:changed');
-    return { id: watch.id, elapsedMs: watch.now(), segmentMs };
+    return { id: loaded.runtime.watch.id, elapsedMs: loaded.runtime.watch.now(), segmentMs };
   }));
   handle('sessions:delete', exclusive(async id => {
     library.dir(id);
     let freedBytes;
-    if (id === watch?.id) {
-      if (watch.accepting) throw new Error('Arrête la capture avant de supprimer cette session.');
+    if (id === loaded?.runtime.watch.id) {
+      if (loaded.runtime.watch.accepting) throw new Error('Arrête la capture avant de supprimer cette session.');
       // Kept moments and past verifications live outside the session folder and are not deleted with it.
       ({ freedBytes } = await endSession('Session supprimée.', { remove: true }));
     } else { ({ freedBytes } = await library.remove(id)); send('sessions:changed'); }
@@ -461,13 +549,13 @@ app.whenReady().then(async () => {
     return { deleted: true, freedBytes };
   }));
   handle('watch:ask', question => {
-    if (!watch) throw new Error('Démarre une session avant de poser une question.');
+    if (!loaded) throw new Error('Démarre une session avant de poser une question.');
     return ask(question, {mode:'chat'});
   });
-  handle('moments:freeze', value => viewingActions.freeze(watch?.snapshot(), value));
-  handle('moments:mark', () => viewingActions.mark(watch?.snapshot()));
+  handle('moments:freeze', value => viewingActions.freeze(loaded?.runtime.watch.snapshot(), value));
+  handle('moments:mark', () => viewingActions.mark(loaded?.runtime.watch.snapshot()));
   const startMomentAction = (input, kind) => {
-    const snapshot = watch?.snapshot();
+    const snapshot = loaded?.runtime.watch.snapshot();
     const frozen = viewingActions.resolve(snapshot, input?.token, kind);
     const eligible = [...snapshot.history, ...snapshot.segments].filter(s => s.startMs >= frozen.startMs && s.endMs <= frozen.anchorMs);
     if (!eligible.length) throw Error('Aucun nouveau passage capturé pour cet instant. Laisse tourner la vidéo quelques secondes.');
@@ -491,7 +579,7 @@ app.whenReady().then(async () => {
   handle('moments:catch-up', input => startMomentAction(input, 'catch-up'));
   handle('moments:reexamine', jobId => {
     const original = deep.jobs.find(job => job.id === jobId);
-    const { question, options } = viewingActions.reexamination(original, watch?.snapshot());
+    const { question, options } = viewingActions.reexamination(original, loaded?.runtime.watch.snapshot());
     return ask(question, options);
   });
   const explainShortcut = 'CommandOrControl+Shift+E';
@@ -499,7 +587,7 @@ app.whenReady().then(async () => {
   if (!smoke || process.argv.includes('--live-shortcut')) {
     explainShortcutRegistered = globalShortcut.register(explainShortcut, () => {
       try {
-        const frozen = viewingActions.freeze(watch?.snapshot());
+        const frozen = viewingActions.freeze(loaded?.runtime.watch.snapshot());
         window.show();
         window.webContents.send('moments:explain-requested', frozen);
       } catch (error) { window.webContents.send('saved:error', error.message); }
@@ -513,13 +601,15 @@ app.whenReady().then(async () => {
     const gone = () => new Response('Passage indisponible.', { status: 404 });
     try {
       const url = new URL(request.url), [first, second, extra] = url.pathname.slice(1).split('/');
-      if (!watch || url.hostname !== watch.id || extra !== undefined) return gone();
+      if (!loaded || url.hostname !== loaded.runtime.watch.id || extra !== undefined) return gone();
       if (first === 'thumb') {
-        if (!/^moment-\d+$/.test(second) || ![...watch.history, ...watch.segments].some(s => s.id === second && s.thumbnailAvailable)) return gone();
-        return new Response(await live.thumbnails.read(second), { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'no-store' } });
+        if (!/^moment-\d+$/.test(second) ||
+          ![...loaded.runtime.watch.history, ...loaded.runtime.watch.segments].some(s => s.id === second && s.thumbnailAvailable)) return gone();
+        return new Response(await loaded.runtime.thumbnails.read(second), { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'no-store' } });
       }
-      if (second !== undefined || !/^moment-\d+$/.test(first) || !watch.segments.some(s => s.id === first && s.available)) return gone();
-      return store.response(first, request.headers.get('range'));
+      if (second !== undefined || !/^moment-\d+$/.test(first) ||
+        !loaded.runtime.watch.segments.some(s => s.id === first && s.available)) return gone();
+      return loaded.runtime.store.response(first, request.headers.get('range'));
     } catch { return gone(); }
   });
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
