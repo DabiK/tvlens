@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Boucle de tickets : une session Claude Code fraîche par ticket, puis des contrôles que la session
+// Boucle de tickets : une session d'agent fraîche par ticket, puis des contrôles que la session
 // ne peut pas contourner, puis un commit et un push. La session propose ; ce script décide.
 //
 //   node scripts/loop/run.mjs                 traite le prochain ticket prêt
@@ -18,6 +18,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { runCodex } from "./codex.mjs";
 import { measure } from "../quality/metrics.mjs";
 import { readBaseline, tighten, writeBaseline } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
@@ -32,6 +33,7 @@ const flag = (name) => argv.includes(name);
 const option = (name, fallback) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : fallback);
 const tuneEveryArg = option("--tune-every", "0");
 const options = {
+  engine: option("--engine", "claude"),
   max: Number(option("--max", 1)),
   attempts: argv.includes("--attempts") ? Number(option("--attempts")) : null,
   ticket: option("--ticket", null),
@@ -48,7 +50,9 @@ const options = {
   tuneEvery: /^\d+$/.test(tuneEveryArg ?? "") ? Number(tuneEveryArg) : null,
 };
 // Ce qui définit les règles : intouchable par un ticket, sauf s'il porte « harnais: oui ».
-const PROTECTED = [".claude/", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md"];
+const PROTECTED = [
+  ".claude/", ".codex/", ".agents/", "AGENTS.md", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md",
+];
 const stateDir = path.join(root, ".harness-state");
 const loopDir = path.join(stateDir, "loop");
 const lockFile = path.join(loopDir, "lock");
@@ -90,6 +94,7 @@ function statusEntries() {
 }
 
 function preflight() {
+  if (!["claude", "codex"].includes(options.engine)) stop(1, "--engine attend claude ou codex.");
   if (!fs.existsSync(path.join(root, "scripts/check.mjs"))) stop(1, "À lancer depuis la racine du projet.");
   if (options.tuneEvery === null) stop(1, `--tune-every attend un nombre entier de tickets, 0 ou plus (0 : jamais), pas « ${tuneEveryArg ?? ""} ».`);
   const branch = git("branch", "--show-current").stdout.trim();
@@ -215,12 +220,16 @@ function streamSession(bin, args, env, dir, attempt) {
 
 /**
  * Modèle de la tentative : un palier de l'échelle selon le niveau du ticket, un de plus à chaque tentative
- * refusée. `--model` fige le modèle de toutes les tentatives et laisse le relecteur hériter du sien.
+ * refusée. Avec Claude, `--model` laisse le relecteur hériter ; Codex garde un relecteur Claude séparé.
  */
 function sessionPlan(ticket, attempt) {
   const niveau = levelOf(ticket);
-  if (options.model) return { niveau, modele: options.model, effort: options.effort, palier: null, relecteur: null };
-  const step = plan(niveau, attempt);
+  const step = plan(niveau, attempt, options.engine);
+  if (options.model) {
+    const codex = options.engine === "codex";
+    const effort = options.effort || (codex ? step.effort : null);
+    return { niveau, modele: options.model, effort, palier: null, relecteur: codex ? step.reviewModel : null };
+  }
   return { niveau, modele: step.model, effort: options.effort || step.effort, palier: step.rung, relecteur: step.reviewModel };
 }
 
@@ -229,7 +238,7 @@ function attemptsFor(ticket) {
   return options.model ? 3 : attemptsToTop(levelOf(ticket));
 }
 
-const usd = (n) => `${(n || 0).toFixed(2)} $`;
+const usd = (n) => (n === null ? "coût indisponible" : `${(n || 0).toFixed(2)} $`);
 
 /**
  * Lance `claude -p` pour une session de la boucle, de ticket ou d'harmonisation, et rend compte de ce qu'elle a coûté.
@@ -326,7 +335,10 @@ function gates(ticket, specBefore, untracked) {
   return problems;
 }
 
-const totalCost = (history) => history.reduce((sum, h) => sum + (h.report.cout_usd || 0), 0);
+const totalCost = (history) => {
+  if (history.some((h) => h.report.cout_usd === null)) return null;
+  return history.reduce((sum, h) => sum + (h.report.cout_usd || 0), 0);
+};
 
 /** Une réserve telle que la session l'a écrite : une chaîne telle quelle, toute autre valeur en JSON. */
 const reserveText = (reserve) => (typeof reserve === "string" ? reserve : JSON.stringify(reserve));
@@ -379,7 +391,8 @@ function integrate(ticket, branch, untracked, { step, verdict, history }) {
   const file = path.join(root, ticket.file);
   fs.writeFileSync(file, withReserves(setStatus(fs.readFileSync(file, "utf8"), "termine"), reserves));
   const paths = statusEntries().flatMap((e) => e.paths).filter((p) => !untracked.has(p));
-  const trailer = `Co-Authored-By: ${displayName(step.modele)} <noreply@anthropic.com>`;
+  const email = options.engine === "codex" ? "noreply@openai.com" : "noreply@anthropic.com";
+  const trailer = `Co-Authored-By: ${displayName(step.modele, options.engine)} <${email}>`;
   const committed = commitPaths(paths, commitMessage(ticket, reserves, trailer));
   if (committed.problem) return block(ticket, "Le commit a échoué :\n" + committed.problem, history);
   const { head } = committed;
@@ -415,12 +428,18 @@ async function processTicket(ticket, context) {
     // Un verdict d'une tentative précédente ne vaut pas pour celle-ci.
     fs.rmSync(path.join(dir, "verdict.json"), { force: true });
     const step = sessionPlan(ticket, attempt);
-    const { code, report } = await runSession(ticket, attempt, dir, failureReport, step);
+    const session = options.engine === "codex" ? runCodex : runSession;
+    const args = [ticket, attempt, dir, failureReport, step];
+    const result = options.engine === "codex"
+      ? await session(root, ...args, { event, timeoutMin: options.timeoutMin })
+      : await session(...args);
+    const { code, report, problem } = result;
     const entry = { attempt, plan: step, report, failure: null };
     history.push(entry);
     const verdict = readVerdict(dir);
     let failure;
-    if (!verdict) failure = `La session s'est terminée sans verdict (code de sortie ${code}).`;
+    if (problem) failure = problem;
+    else if (!verdict) failure = `La session s'est terminée sans verdict (code de sortie ${code}).`;
     else if (verdict.statut === "BLOQUÉ") {
       const why = verdict.resume || "la session s'est déclarée bloquée sans dire pourquoi";
       return ended(block(ticket, why, history), "bloqué", why);
@@ -483,7 +502,16 @@ for (let done = 0; done < options.max; done++) {
   if (options.dryRun) {
     const first = sessionPlan(ticket, 1);
     say(`Prochain ticket : ${ticket.id} — ${ticket.titre} (${ticket.file}), niveau ${first.niveau}`);
-    say(`Session : claude -p … --permission-mode ${options.permissionMode}, ${attemptsFor(ticket)} tentative(s) au plus.`);
+    say(`Moteur : ${options.engine}.`);
+    const command = options.engine === "codex" ? "codex exec --json" : `claude -p … --permission-mode ${options.permissionMode}`;
+    say(`Session : ${command}, ${attemptsFor(ticket)} tentative(s) au plus.`);
+    for (let attempt = 1; attempt <= attemptsFor(ticket); attempt++) {
+      const step = sessionPlan(ticket, attempt);
+      const model = step.modele || "modèle par défaut";
+      const effort = step.effort || "par défaut";
+      const reviewer = step.relecteur || "hérité";
+      say(`Palier ${step.palier ?? "fixe"} : ${model}, effort ${effort}, relecteur ${reviewer}.`);
+    }
     say(`Première tentative : ${first.modele || "modèle par défaut"}, effort ${first.effort || "par défaut"}, relecteur ${first.relecteur || "hérité"}.`);
     say(options.push ? `Après contrôle : commit puis push sur origin/${context.branch}.` : "Après contrôle : commit local, sans push.");
     say(`Harmonisation des consignes : ${tuneCadence(options.tuneEvery)}.`);

@@ -1,7 +1,7 @@
 # Travailler par tickets avec la boucle
 
 La boucle traite les tickets de `docs/travail/tickets/` un par un. Pour chaque ticket elle lance une
-session Claude Code fraîche, puis relance elle-même tous les contrôles avant de committer et de pousser.
+session d'agent fraîche (Claude par défaut), puis relance elle-même tous les contrôles avant de committer et de pousser.
 La session propose ; le script décide.
 
 Ce dossier contient :
@@ -41,6 +41,7 @@ node scripts/loop/run.mjs --ticket T012
 | Option | Défaut | Rôle |
 | --- | --- | --- |
 | `--max <n>` | 1 | nombre de tickets à enchaîner |
+| `--engine claude\|codex` | `claude` | moteur de l'exploration et de l'implémentation ; relecteur Claude |
 | `--ticket <id>` | prochain prêt | traiter ce ticket précisément |
 | `--attempts <n>` | jusqu'en haut de l'échelle | sessions fraîches par ticket avant de le bloquer (3 avec `--model`) |
 | `--model <m>` | l'échelle | fige le modèle de toutes les tentatives, sans escalade |
@@ -72,7 +73,61 @@ Ordre de grandeur, mesuré sur Opus : T001 (six lignes dans un test) 29 tours, 1
 T002 (un contrôle de la boucle et ses tests) 6,79 $. Commencer par `--max 1`, lire le résultat, puis
 monter.
 
-### Modèle de chaque tentative
+### Moteur Codex
+
+```sh
+node scripts/loop/run.mjs --engine codex --dry-run
+node scripts/loop/run.mjs --engine codex --no-push --max 1
+```
+
+Codex suit `.agents/skills/ticket-codex/SKILL.md` : il explore et implémente lui-même, tests d'abord,
+déclare les écarts avant de coder, tient le journal et écrit son verdict. `AGENTS.md` est un lien vers
+`CLAUDE.md`. La boucle enregistre ensuite l'état relu et lance un processus Claude séparé avec
+`--agent relecteur`, au modèle Claude du palier (au moins Opus pour un ticket standard).
+Elle garde le rapport dans `relecture-<n>.md` et le verdict dans `relectures.jsonl`.
+
+Seul un verdict TERMINÉ déclenche la relecture. Un BLOQUÉ arrête la boucle immédiatement avec sa
+raison, y compris après une correction. Un verdict absent, illisible ou PARTIEL refuse la tentative
+sans relecture ; la tentative suivante peut reprendre le travail à partir du rapport d'échec.
+Le relecteur tourne hors mode ticket : les hooks ne lui demandent pas de corriger ni d'écrire le verdict.
+
+Une relecture « à corriger » ou « illisible » reprend la même session avec `codex exec resume`, son
+`thread_id` et le rapport complet. Trois corrections au plus par tentative, puis refus et escalade.
+Les contrôles de la boucle restent communs ; la rétrospective et l'harmonisation restent sur Claude.
+Le verdict appartient à la session, la boucle ne le réécrit pas.
+
+| Palier | Modèle Codex | Effort |
+| --- | --- | --- |
+| 0 | `gpt-6.1-sol` | high |
+| 1 | `gpt-6-astra` | high |
+| 2 | `gpt-6-astra` | xhigh |
+| 3 | `gpt-6-astra` | max |
+
+Le niveau fixe le départ comme pour Claude. `--model` et `--effort` remplacent ces réglages ; le
+relecteur reste Claude. `--dry-run` affiche le moteur et les paliers prévus. Toute valeur de moteur
+autre que `claude` ou `codex` est refusée au démarrage. Les binaires se remplacent pour les tests
+par `TVLENS_CODEX_BIN` et `TVLENS_CLAUDE_BIN`.
+
+La boucle lance `codex exec --json` avec stdin ignoré et impose `workspace-write`,
+`approval_policy="never"`, `sandbox_workspace_write.network_access=true`, `--ignore-user-config`
+et `--dangerously-bypass-hook-trust`. À la reprise, le bac à sable passe par
+`-c sandbox_mode="workspace-write"` et le processus part dans la racine : `resume` n'accepte pas
+`-s` ni `-C`. Aucun `--ephemeral`, pour conserver la session. `--timeout-min` borne chaque processus.
+`--budget-usd`, `--permission-mode` et `--compact-window` concernent les sessions Claude ; ils ne
+remplacent pas les réglages imposés à Codex.
+
+Le flux, reprises comprises, est archivé dans `.harness-state/tickets/<ID>/codex-<tentative>.jsonl`.
+Les événements enregistrent le moteur, les jetons cumulés par catégorie, les tours, la durée mesurée
+et le nombre de relectures. Le coût en dollars reste `null`, car le flux Codex ne le donne pas.
+Une erreur du flux ou un processus Codex en échec refuse la tentative, même avec un verdict TERMINÉ.
+
+Les hooks de `.codex/hooks.json` partagent `guard-write.mjs` et `guard-bash.mjs`, avec résolution de
+la racine par Git. Un patch est refusé si un seul de ses chemins est interdit, déplacement compris.
+Un hook Codex en erreur laisse passer l'appel : les contrôles de la boucle restent le dernier mur.
+Le bac à sable interdit aussi l'écriture dans `.git`, `.codex` et `.agents` ; ces deux derniers
+dossiers doivent être installés depuis un contexte disposant des droits nécessaires.
+
+### Modèle de chaque tentative Claude
 
 Chaque tentative tourne sur un palier d'une échelle, du moins cher au plus fort
 (`scripts/loop/models.mjs`) :

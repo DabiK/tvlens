@@ -9,6 +9,13 @@ export const LADDER = [
   { model: "claude-fable-5-1", alias: "fable", effort: "high" },
 ];
 
+export const CODEX_LADDER = [
+  { model: "gpt-6.1-sol", effort: "high" },
+  { model: "gpt-6-astra", effort: "high" },
+  { model: "gpt-6-astra", effort: "xhigh" },
+  { model: "gpt-6-astra", effort: "max" },
+];
+
 /**
  * Niveau d'un ticket : palier de départ, et palier en dessous duquel le relecteur ne descend pas.
  * Le relecteur est le dernier filet avant les contrôles de la boucle : sauf sur un ticket simple, il
@@ -40,16 +47,19 @@ export function attemptsToTop(level) {
 }
 
 /** Ce que la session et son relecteur utilisent à ce palier. */
-export function plan(level, attempt) {
+export function plan(level, attempt, engine = "claude") {
   const rung = rungFor(level, attempt);
   const review = LADDER[Math.max(rung, LEVELS[level].reviewFloor)];
-  return { rung, ...LADDER[rung], reviewModel: review.alias };
+  const ladder = engine === "codex" ? CODEX_LADDER : LADDER;
+  return { rung, ...ladder[rung], reviewModel: review.alias };
 }
 
-/** « claude-opus-5-5 » → « Claude Opus 5.5 » ; un nom qui ne suit pas ce format → « Claude ». */
-export function displayName(model) {
+/** Un modèle personnalisé garde le nom de son moteur même si son libellé n'est pas encore connu. */
+export function displayName(model, engine = "claude") {
+  if (model === "gpt-6.1-sol") return "Codex (GPT-6.1 Sol)";
+  if (model === "gpt-6-astra") return "Codex (GPT-6 Astra)";
   const match = /^claude-([a-z]+)-(\d+)-(\d+)$/.exec(model || "");
-  if (!match) return "Claude";
+  if (!match) return engine === "codex" ? "Codex" : "Claude";
   const [, family, major, minor] = match;
   return `Claude ${family[0].toUpperCase()}${family.slice(1)} ${major}.${minor}`;
 }

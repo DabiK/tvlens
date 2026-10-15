@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
+const { CODEX_SESSION } = require("./helpers/codex-session.cjs");
 
 const tickets = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tickets.mjs")).href);
 const tuning = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tune.mjs")).href);
@@ -27,6 +28,18 @@ const id = process.env.TVLENS_TICKET;
 const dir = path.join(".harness-state", "tickets", id);
 fs.mkdirSync(dir, { recursive: true });
 const argument = (name) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : null);
+if (argument("--agent") === "relecteur") {
+  const calls = path.join(dir, "fake-review-calls");
+  const rank = fs.existsSync(calls) ? fs.readFileSync(calls, "utf8").trim().split("\\n").length : 0;
+  const call = { args: process.argv.slice(2), prompt: argument("-p"), model: argument("--model"), loop: process.env.TVLENS_LOOP ?? null };
+  fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
+  const accepted = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
+  const reports = JSON.parse(process.env.FAKE_REVIEWS || "null");
+  const report = reports?.[rank] || accepted;
+  const failure = process.env.FAKE_REVIEW_FAILURE;
+  console.log(JSON.stringify({ type: "result", is_error: failure === "error", result: (failure ? "\\n" : "") + report }));
+  process.exit(failure === "exit" ? 1 : 0);
+}
 // Rétrospective : une session courte en lecture seule qui rend des observations structurées.
 if (process.env.TVLENS_RETRO === "1") {
   const call = { model: argument("--model"), tools: argument("--tools"), loop: process.env.TVLENS_LOOP ?? null, prompt: argument("-p") };
@@ -1382,4 +1395,303 @@ test("the tickets waiting for a decision are named once per run, even when sever
   assert.equal(result.code, 0, result.out);
   assert.deepEqual(repo.commits(), ["T003: Add the welcome", "T002: Add the farewell", "init"]);
   assert.equal(result.out.match(/En attente d'une décision du propriétaire : T001\./g).length, 1, result.out);
+});
+
+test("a Codex dry run lists its engine and every planned model and effort", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--dry-run", "--engine", "codex"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Moteur : codex/);
+  for (const line of [
+    "Palier 0 : gpt-6.1-sol, effort high, relecteur opus",
+    "Palier 1 : gpt-6-astra, effort high, relecteur opus",
+    "Palier 2 : gpt-6-astra, effort xhigh, relecteur opus",
+    "Palier 3 : gpt-6-astra, effort max, relecteur fable",
+  ]) assert.ok(result.out.includes(line), result.out);
+  assert.equal(repo.git("status", "--porcelain").stdout, "");
+});
+
+test("an unknown engine is refused before any session or state change", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  for (const value of ["autre", "", null]) {
+    const args = ["--engine", ...(value === null ? [] : [value])];
+    const result = repo.loop("done", args);
+    assert.equal(result.code, 1, result.out);
+    assert.match(result.out, /--engine/);
+    assert.equal(repo.git("status", "--porcelain").stdout, "");
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets")), false);
+  }
+});
+
+const codexDir = ".harness-state/tickets/T001/";
+const jsonLines = (repo, file) => repo.read(codexDir + file).trim().split("\n").map(JSON.parse);
+function codexRepo(fields = {}) {
+  const repo = loopRepo({ "docs/travail/tickets/001-add-greeting.md": ticketText(fields) });
+  repo.write(".harness-state/fake-codex.cjs", CODEX_SESSION);
+  const bin = path.join(repo.root, ".harness-state/fake-codex.cjs");
+  fs.chmodSync(bin, 0o755);
+  const codex = (args = [], env = {}) => repo.loop("done", ["--engine", "codex", "--no-retro", ...args], { TVLENS_CODEX_BIN: bin, ...env });
+  return { ...repo, codex };
+}
+
+test("a Codex ticket accepted on its first review is integrated with safe options and its own signature", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  assert.ok(fs.existsSync(path.join(repo.root, codexDir, "fake-codex-calls")), "the loop must launch Codex");
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 1);
+  const { args, cwd, stdin, env } = calls[0];
+  assert.deepEqual(args.slice(0, 2), ["exec", "--json"]);
+  const option = (name) => args[args.indexOf(name) + 1];
+  assert.equal(option("-s"), "workspace-write");
+  assert.equal(option("-C"), repo.root);
+  assert.equal(option("-m"), "gpt-6.1-sol");
+  for (const value of [
+    'approval_policy="never"', 'sandbox_workspace_write.network_access=true', 'model_reasoning_effort="high"',
+  ]) assert.ok(args.some((arg, i) => arg === "-c" && args[i + 1] === value), args.join(" "));
+  assert.ok(args.includes("--ignore-user-config"));
+  assert.ok(args.includes("--dangerously-bypass-hook-trust"));
+  assert.ok(args.at(-1).includes(".agents/skills/ticket-codex/SKILL.md"));
+  assert.equal(cwd, repo.root);
+  assert.equal(stdin, "");
+  assert.deepEqual(env, { LOOP: "1", TICKET: "T001", TICKET_FILE: "docs/travail/tickets/001-add-greeting.md", HARNESS: "0", ALLOW_INSTALL: "0" });
+  const review = jsonLines(repo, "fake-review-calls")[0];
+  assert.equal(review.model, "opus");
+  assert.ok(review.args.includes("--strict-mcp-config"));
+  assert.equal(review.args[review.args.indexOf("--output-format") + 1], "json");
+  for (const file of ["001-add-greeting.md", "revue-1.diff", "revue-1.fichiers"]) assert.ok(review.prompt.includes(file), review.prompt);
+  assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(r => r.verdict), ["accepté"]);
+  assert.equal(JSON.parse(repo.read(codexDir + "verdict.json")).resume, "fake codex");
+  assert.equal(repo.status(), "termine");
+  assert.match(repo.git("log", "-1", "--format=%B").stdout, /Co-Authored-By: Codex \(GPT-6.1 Sol\) <noreply@openai.com>/);
+  assert.equal(repo.events().find(e => e.phase === "session").moteur, "codex");
+  const ended = repo.events().find(e => e.phase === "session-terminee");
+  assert.deepEqual(ended.jetons, { input_tokens: 10, cached_input_tokens: 4, output_tokens: 5, reasoning_output_tokens: 2 });
+  assert.equal(ended.tours, 1);
+  assert.equal(ended.relectures, 1);
+  assert.equal(ended.cout_usd, null);
+  assert.ok(Number.isFinite(ended.duree_s) && ended.duree_s >= 0);
+  assert.match(result.out, /\[boucle\] \d\d:\d\d  Bash node --test/);
+  assert.match(result.out, /\[boucle\] \d\d:\d\d  Write core\/greeting.cjs/);
+  assert.equal(jsonLines(repo, "codex-1.jsonl").length, 5);
+});
+
+const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 0 hors périmètre\n- core/greeting.cjs:1 : preuve manquante.\n- nom à préciser.";
+const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
+
+test("Codex resumes the same thread with the complete reviewer report before its accepted integration", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]) });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  const resumed = calls[1];
+  assert.deepEqual(resumed.args.slice(0, 3), ["exec", "resume", "codex-thread"]);
+  assert.ok(resumed.args.at(-1).includes(rejectedReview), "the full reviewer report must reach the resumed thread");
+  for (const value of [
+    'sandbox_mode="workspace-write"', 'approval_policy="never"',
+    'sandbox_workspace_write.network_access=true', 'model_reasoning_effort="high"',
+  ]) assert.ok(resumed.args.some((arg, i) => arg === "-c" && resumed.args[i + 1] === value), resumed.args.join(" "));
+  assert.ok(resumed.args.includes("--ignore-user-config"));
+  assert.ok(resumed.args.includes("--dangerously-bypass-hook-trust"));
+  assert.ok(resumed.args.includes("--json"));
+  assert.equal(resumed.args[resumed.args.indexOf("-m") + 1], "gpt-6.1-sol");
+  assert.equal(resumed.args.includes("-s"), false);
+  assert.equal(resumed.args.includes("-C"), false);
+  assert.equal(resumed.cwd, repo.root);
+  assert.equal(resumed.stdin, "");
+  assert.deepEqual(resumed.env, calls[0].env);
+  const reviews = jsonLines(repo, "relectures.jsonl");
+  assert.deepEqual(reviews.map(r => [r.revue, r.verdict]), [["revue-1.diff", "à corriger"], ["revue-2.diff", "accepté"]]);
+  assert.equal(repo.read(codexDir + "relecture-1.md"), rejectedReview);
+  assert.equal(repo.read(codexDir + "relecture-2.md"), acceptedReview);
+  assert.equal(repo.status(), "termine");
+  const ended = repo.events().find(e => e.phase === "session-terminee");
+  assert.equal(ended.relectures, 2);
+  assert.equal(ended.tours, 2);
+  assert.deepEqual(ended.jetons, { input_tokens: 20, cached_input_tokens: 8, output_tokens: 10, reasoning_output_tokens: 4 });
+  assert.equal(jsonLines(repo, "codex-1.jsonl").length, 10);
+});
+
+test("four rejected Codex reviews exhaust three corrections and the next attempt climbs to Astra", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const reports = Array.from({ length: 4 }, (_, i) => rejectedReview + `\nConstat maintenu ${i + 1}.`);
+  const result = repo.codex(["--attempts", "2"], { FAKE_REVIEWS: JSON.stringify([...reports, acceptedReview]) });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 5);
+  assert.deepEqual(calls.map(c => c.args.includes("resume")), [false, true, true, true, false]);
+  assert.deepEqual(calls.map(c => c.args[c.args.indexOf("-m") + 1]), Array(4).fill("gpt-6.1-sol").concat("gpt-6-astra"));
+  for (let i = 1; i <= 3; i++) assert.ok(calls[i].args.at(-1).includes(reports[i - 1]));
+  assert.ok(repo.failure().includes(reports[3]), repo.failure());
+  assert.equal(jsonLines(repo, "relectures.jsonl").length, 5);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.relectures), [4, 1]);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.palier), [0, 1]);
+  assert.ok(calls[4].args.at(-1).includes("echec-1.txt"));
+  assert.equal(repo.status(), "termine");
+  assert.match(repo.git("log", "-1", "--format=%B").stdout, /Co-Authored-By: Codex \(GPT-6 Astra\) <noreply@openai.com>/);
+});
+
+test("a Codex session that edits the quality check without harness permission is refused by the gates", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_EDIT: "scripts/check.mjs" });
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /harnais a été modifié sans que le ticket l'autorise.*scripts\/check\.mjs/);
+  assert.equal(jsonLines(repo, "relectures.jsonl")[0].verdict, "accepté");
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("the loop protects Codex hooks, instructions and their shared entry point without harness permission", (t) => {
+  for (const file of [".codex/hooks.json", ".agents/skills/example/SKILL.md", "AGENTS.md"]) {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_EDIT: file });
+    assert.equal(result.code, 2, result.out);
+    assert.match(repo.failure(), /harnais a été modifié sans que le ticket l'autorise/);
+    assert.ok(repo.failure().includes(file));
+    assert.deepEqual(repo.commits(), ["init"]);
+  }
+});
+
+test("a fixed Codex model keeps a separate Claude reviewer and applies the requested effort", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--model", "gpt-6-astra", "--effort", "xhigh"]);
+  assert.equal(result.code, 0, result.out);
+  const { args } = jsonLines(repo, "fake-codex-calls")[0];
+  assert.equal(args[args.indexOf("-m") + 1], "gpt-6-astra");
+  assert.ok(args.includes('model_reasoning_effort="xhigh"'));
+  assert.equal(jsonLines(repo, "fake-review-calls")[0].model, "opus");
+});
+
+test("Codex usage remains unknown in dollars through integration", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex();
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.events().find(e => e.phase === "integre").cout_usd, null);
+  assert.doesNotMatch(result.out, /0\.00 \$/);
+});
+
+test("Codex prints a single action per completed command or file change item", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex([], { FAKE_CODEX_SCENARIO: "actions" });
+  assert.equal(result.code, 0, result.out);
+  const shown = result.out.split("\n").filter(line => /^\[boucle\] \d\d:\d\d /.test(line)).map(line => line.slice(14));
+  assert.deepEqual(shown, ["  Bash node --test", "  Write core/greeting.cjs, core/farewell.cjs"]);
+});
+
+test("a failed Claude reviewer cannot accept a Codex change even when its output contains an acceptance", (t) => {
+  for (const failure of ["error", "exit"]) {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], { FAKE_REVIEW_FAILURE: failure });
+    assert.equal(result.code, 2, result.out);
+    assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(r => r.verdict), Array(4).fill("illisible"));
+    assert.deepEqual(repo.commits(), ["init"]);
+  }
+});
+
+test("the separate Claude reviewer runs outside ticket mode while Codex keeps its ticket environment", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls")[0].env.LOOP, "1");
+  assert.equal(jsonLines(repo, "fake-review-calls")[0].loop, null);
+  assert.equal(repo.read(codexDir + "relecture-1.md"), acceptedReview);
+});
+
+test("a blocked Codex verdict preserves the owner question and stops after one session without review", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex([], { FAKE_CODEX_SCENARIO: "blocked", FAKE_REVIEWS: JSON.stringify(Array(16).fill(rejectedReview)) });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  assert.equal(repo.status(), "bloque");
+  assert.equal(repo.events().find(e => e.phase === "bloque").raison, "Quel fournisseur choisir ?");
+  assert.ok(result.out.includes("Quel fournisseur choisir ?"), result.out);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("Codex hands back an absent, unreadable or partial verdict without asking for review", (t) => {
+  for (const scenario of ["missing-verdict", "unreadable-verdict", "partial"]) {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_SCENARIO: scenario });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false, scenario);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 0);
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    assert.deepEqual(repo.commits(), ["init"]);
+  }
+});
+
+test("a Codex correction that becomes blocked preserves its new question without another review", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_SCENARIO: "blocked-after-resume", FAKE_REVIEWS: JSON.stringify(Array(4).fill(rejectedReview)),
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+  assert.equal(repo.events().find(e => e.phase === "bloque").raison, "Quel fournisseur choisir ?");
+  assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 1);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("Codex receives a null input device with immediate end of input", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  const call = jsonLines(repo, "fake-codex-calls")[0];
+  assert.equal(call.stdinIsDevice, true);
+  assert.equal(call.stdin, "");
+});
+
+test("a failed Codex session cannot be reviewed or integrated despite its finished verdict", (t) => {
+  for (const failure of ["turn.failed", "error", "exit"]) {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_FAILURE: failure });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(JSON.parse(repo.read(codexDir + "verdict.json")).statut, "TERMINÉ");
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    const ended = repo.events().find(e => e.phase === "session-terminee");
+    assert.equal(ended.code, 1);
+    assert.equal(ended.relectures, 0);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+    assert.deepEqual(repo.commits(), ["init"]);
+  }
+});
+
+test("a custom Codex model signs integration with the Codex engine name", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--model", "custom-codex-model", "--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(repo.git("log", "-1", "--format=%B").stdout, /^Co-Authored-By: Codex <noreply@openai\.com>$/m);
+});
+
+test("a fixed Claude model dry run uses readable defaults for effort and reviewer", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("done", ["--dry-run", "--model", "custom-claude-model"]);
+  assert.equal(result.code, 0, result.out);
+  const levels = result.out.split("\n").filter(line => line.startsWith("[boucle] Palier"));
+  assert.deepEqual(levels, Array(3).fill("[boucle] Palier fixe : custom-claude-model, effort par défaut, relecteur hérité."));
+  assert.doesNotMatch(result.out, /effort null|relecteur null|undefined/);
+  assert.equal(repo.git("status", "--porcelain").stdout, "");
 });

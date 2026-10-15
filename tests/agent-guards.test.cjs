@@ -307,3 +307,65 @@ test("the session start hook gives the branch and the mode", (t) => {
   assert.match(output.hookSpecificOutput.additionalContext, /Branche work/);
   assert.match(output.hookSpecificOutput.additionalContext, /Mode boucle : ticket T001/);
 });
+
+const patch = (repo, command, env = LOOP) => hook(repo, "guard-write", {
+  tool_name: "apply_patch", cwd: repo.root, tool_input: { command },
+}, env);
+
+test("a Codex patch is refused as a whole when any source or move destination belongs to the harness", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const body of [
+    "*** Update File: scripts/check.mjs",
+    "*** Add File: .codex/hooks.json",
+    "*** Add File: .agents/skills/example/SKILL.md",
+    "*** Update File: AGENTS.md",
+    "*** Update File: core/session.cjs\n@@\n-old\n+new\n*** Delete File: scripts/loop/run.mjs",
+    "*** Update File: core/session.cjs\n*** Move to: .codex/hooks.json",
+  ]) assert.equal(decision(patch(repo, `*** Begin Patch\n${body}\n*** End Patch`)), "deny", body);
+  assert.equal(decision(patch(repo, "*** Begin Patch\n*** Add File: core/greeting.cjs\n+hello\n*** End Patch")), "none");
+});
+
+test("Codex loads the shared instructions through a symlink and runs both configured guards without a Claude root variable", (t) => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const root = path.resolve(__dirname, "..");
+  const agents = path.join(root, "AGENTS.md");
+  assert.ok(fs.existsSync(agents), "Codex must find the shared instructions");
+  assert.equal(fs.lstatSync(agents).isSymbolicLink(), true);
+  assert.equal(fs.realpathSync(agents), fs.realpathSync(path.join(root, "CLAUDE.md")));
+  const hooksFile = path.join(root, ".codex/hooks.json");
+  assert.ok(fs.existsSync(hooksFile), "Codex must load its project hooks");
+  const config = JSON.parse(fs.readFileSync(hooksFile, "utf8"));
+  const entries = config.hooks.PreToolUse;
+  assert.equal(entries.length, 2);
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const [tool, tool_input] of [
+    ["apply_patch", { command: "*** Begin Patch\n*** Update File: scripts/check.mjs\n*** End Patch" }],
+    ["Edit", { file_path: "scripts/check.mjs" }],
+    ["Write", { file_path: "scripts/check.mjs" }],
+    ["Bash", { command: "git commit -m forbidden" }],
+  ]) {
+    const matching = entries.filter(entry => new RegExp(`^(?:${entry.matcher})$`).test(tool));
+    assert.equal(matching.length, 1, tool);
+    const result = repo.run("sh", ["-c", matching[0].hooks[0].command], {
+      input: JSON.stringify({ cwd: repo.root, tool_name: tool, tool_input }), env: LOOP,
+    });
+    assert.equal(result.code, 0, result.out);
+    assert.equal(decision(JSON.parse(result.stdout)), "deny", tool);
+  }
+});
+
+test("indented Codex patch markers still enforce every path rule", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const body of [
+    "  *** Update File: scripts/check.mjs",
+    "\t*** Add File: .codex/hooks.json",
+    "  *** Update File: core/session.cjs\n \t*** Move to: scripts/loop/run.mjs",
+    "  *** Update File: docs/travail/tickets/002-other.md",
+    "  *** Add File: tests/review-regressions.test.cjs",
+  ]) assert.equal(decision(patch(repo, `*** Begin Patch\n${body}\n*** End Patch`)), "deny", body);
+  assert.equal(decision(patch(repo, "*** Begin Patch\n  *** Add File: core/greeting.cjs\n+hello\n*** End Patch")), "none");
+});

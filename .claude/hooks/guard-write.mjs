@@ -11,20 +11,15 @@ import { decide, loopMode, projectDir, readInput, refuseOrAsk, relative } from "
 const input = readInput();
 const root = projectDir(input);
 const target = input.tool_input?.file_path || input.tool_input?.notebook_path;
-if (!target) process.exit(0);
-const file = relative(root, target);
+const patchPaths = [...String(input.tool_input?.command || "").matchAll(
+  /^\s*\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/gm,
+)].map((match) => match[1].trim());
+const targets = target ? [target] : patchPaths;
 
 // Ce qui définit les règles ne se modifie pas en cours de ticket : sinon un contrôle rouge se « répare » en l'affaiblissant.
-const PROTECTED = [".claude/", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md"];
-const isProtected = PROTECTED.some((p) => (p.endsWith("/") ? file.startsWith(p) : file === p));
-
-const name = path.basename(file);
-const newFile = !fs.existsSync(path.resolve(root, target));
-if (newFile && file.startsWith("tests/") && /\.test\./.test(name) && TICKET_NAMED_TEST.test(name)) {
-  const advice = "Nomme le fichier d'après le comportement testé, ou ajoute le test au fichier du module concerné.";
-  decide("deny", `« ${name} » porte le nom d'un ticket ou d'une revue. ${advice}`);
-}
-
+const PROTECTED = [
+  ".claude/", ".codex/", ".agents/", "AGENTS.md", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md",
+];
 // Déverrouillage temporaire : en session interactive, le propriétaire peut ouvrir le harnais pour une durée
 // bornée, par un fichier hors Git qui contient l'heure de fin en secondes. Une session de ticket l'ignore.
 const UNLOCK_FILE = ".harness-state/harnais-ouvert";
@@ -41,26 +36,40 @@ function unlocked() {
   }
 }
 
-// Une portée resserre ce qu'ouvre TVLENS_HARNESS : une session qui harmonise les consignes n'écrit, dans le harnais, que
-// les skills et les agents ; les contrôles restent la décision du propriétaire. Une portée inconnue n'ouvre rien.
-const scope = process.env.TVLENS_HARNESS_SCOPE;
-if (scope !== undefined && isProtected && !inScope(scope, file)) {
-  const dirs = scopeDirs(scope);
-  const allowed = dirs ? `ne modifie que ${dirs.join(" et ")}` : "est inconnue : elle n'ouvre aucune partie du harnais";
-  const reason = [`${file} fait partie du harnais et la portée « ${scope} » de cette session ${allowed}.`, closedLine(scope)];
-  decide("deny", reason.filter(Boolean).join("\n"));
+function guardTarget(target) {
+  const file = relative(root, target);
+  const isProtected = PROTECTED.some((p) => (p.endsWith("/") ? file.startsWith(p) : file === p));
+
+  const name = path.basename(file);
+  const newFile = !fs.existsSync(path.resolve(root, target));
+  if (newFile && file.startsWith("tests/") && /\.test\./.test(name) && TICKET_NAMED_TEST.test(name)) {
+    const advice = "Nomme le fichier d'après le comportement testé, ou ajoute le test au fichier du module concerné.";
+    decide("deny", `« ${name} » porte le nom d'un ticket ou d'une revue. ${advice}`);
+  }
+
+  // Une portée resserre ce qu'ouvre TVLENS_HARNESS : une session qui harmonise les consignes n'écrit, dans le harnais, que
+  // les skills et les agents ; les contrôles restent la décision du propriétaire. Une portée inconnue n'ouvre rien.
+  const scope = process.env.TVLENS_HARNESS_SCOPE;
+  if (scope !== undefined && isProtected && !inScope(scope, file)) {
+    const dirs = scopeDirs(scope);
+    const allowed = dirs ? `ne modifie que ${dirs.join(" et ")}` : "est inconnue : elle n'ouvre aucune partie du harnais";
+    const reason = [`${file} fait partie du harnais et la portée « ${scope} » de cette session ${allowed}.`, closedLine(scope)];
+    decide("deny", reason.filter(Boolean).join("\n"));
+  }
+
+  if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {
+    const when = "Il ne se modifie que dans un ticket marqué « harnais: oui » ou à la demande explicite de l'utilisateur.";
+    refuseOrAsk(`${file} fait partie du harnais (règles, contrôles, boucle). ${when}`);
+  }
+
+  if (loopMode) {
+    if (file.startsWith("..")) decide("deny", "Refusé pendant un ticket : écriture en dehors du projet.");
+    const ticket = process.env.TVLENS_TICKET_FILE ? relative(root, process.env.TVLENS_TICKET_FILE) : null;
+    // Le gabarit n'est pas un ticket mais le format des tickets : seul un ticket de harnais le modifie, sans portée.
+    const template = file === "docs/travail/tickets/_gabarit.md" && process.env.TVLENS_HARNESS === "1" && scope === undefined;
+    if (file.startsWith("docs/travail/tickets/") && file !== ticket && !template)
+      decide("deny", "Refusé pendant un ticket : seul le journal du ticket en cours se modifie, pas les autres tickets.");
+  }
 }
 
-if (isProtected && process.env.TVLENS_HARNESS !== "1" && !unlocked()) {
-  const when = "Il ne se modifie que dans un ticket marqué « harnais: oui » ou à la demande explicite de l'utilisateur.";
-  refuseOrAsk(`${file} fait partie du harnais (règles, contrôles, boucle). ${when}`);
-}
-
-if (loopMode) {
-  if (file.startsWith("..")) decide("deny", "Refusé pendant un ticket : écriture en dehors du projet.");
-  const ticket = process.env.TVLENS_TICKET_FILE ? relative(root, process.env.TVLENS_TICKET_FILE) : null;
-  // Le gabarit n'est pas un ticket mais le format des tickets : seul un ticket de harnais le modifie, sans portée.
-  const template = file === "docs/travail/tickets/_gabarit.md" && process.env.TVLENS_HARNESS === "1" && scope === undefined;
-  if (file.startsWith("docs/travail/tickets/") && file !== ticket && !template)
-    decide("deny", "Refusé pendant un ticket : seul le journal du ticket en cours se modifie, pas les autres tickets.");
-}
+for (const target of targets) guardTarget(target);
