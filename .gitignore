@@ -13,6 +13,7 @@ challenge/
 *.log
 *.wav
 *.webm
+!tests/fixtures/*.webm
 *.mp4
 *.bin
 *.enc

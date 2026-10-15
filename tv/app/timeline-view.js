@@ -387,19 +387,6 @@
       back = key === 461 || event.key === "Escape";
     if (![13, 37, 38, 39, 40, 461].includes(key) && !back) return false;
     var active = document.activeElement;
-    if (el("end-session-dialog").open) {
-      if (back) {
-        event.preventDefault();
-        el("end-cancel").click();
-      } else if ([37, 38, 39, 40].includes(key)) {
-        event.preventDefault();
-        (active === el("end-cancel")
-          ? el("end-confirm")
-          : el("end-cancel")
-        ).focus();
-      }
-      return true;
-    }
     if (back) {
       event.preventDefault();
       if (this.detail) this.closeDetail();

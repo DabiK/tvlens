@@ -36,7 +36,7 @@ const CONTRACT_CALLS = [
 ];
 const CONTRACT_EVENTS = { onSurveillance: 'surveillance:state', onSessionsChanged: 'sessions:changed', onStorage: 'storage:state' };
 const RETIRED = ['autoState', 'startAuto', 'stopAuto', 'openAutoSource', 'onAuto'];
-// What the bridge already offered before the mission and still offers.
+// Méthodes que le pont doit continuer d’offrir : référence du contrat pour les canaux conservés.
 const KEPT = ['freezeMoment', 'explainMoment', 'reexamineMoment', 'catchUp', 'markAttention', 'momentShortcuts', 'onExplainMoment', 'recapState', 'onRecap',
   'keepMoment', 'savedMoments', 'removeSaved', 'searchMoments', 'viewingSettings', 'saveViewingSettings', 'quota', 'onSaved', 'onSaveError', 'windowMode', 'modelChoices',
   'models', 'saveModels', 'openChatSource', 'config', 'importConfig', 'newSession', 'onReset', 'start', 'ingest', 'stop', 'ask', 'deepen', 'deepState', 'researchBudget',

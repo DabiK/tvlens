@@ -1,7 +1,7 @@
 ---
 id: T101
 titre: Remove unreachable TV panel code and let test fixtures escape the webm ignore
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -127,3 +127,42 @@ Aucun test ni smoke exécuté pendant ce rafraîchissement.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex sur `9931b60` : périmètre confirmé, aucun lecteur des cinq alias globaux trouvé ;
+  sept fichiers de tests présents (dont `tv-ambient-params.test.cjs`), témoin des hooks présent.
+  Détails et écarts : `.harness-state/tickets/T101/exploration.md` et `ecarts.md` (aucun écart).
+- Avant modification : `node --test tests/tv-remote-navigation.test.cjs` — 20/20 passent.
+  Assertion publique Git exécutée avec `node -e` : attendu code 1 pour
+  `git check-ignore -q tests/fixtures/nouvelle-fixture.webm`, reçu 0 ; rouge observé sur cette assertion,
+  sans créer de fixture. Commande exacte et sortie conservées dans `fixtures-red.log` ;
+  sortie de navigation dans `navigation-before.log`, sous `.harness-state/tickets/T101/`.
+- Implémentation : seule la branche inaccessible de `handleKey` et les cinq alias globaux sont retirés ;
+  `active`, les trois appels `showModal()`/`close()`, `TVLensOverlay` et CommonJS restent en place.
+  Exception `!tests/fixtures/*.webm` ajoutée ; les deux commentaires décrivent leur contrat actuel.
+- Vert observé : `rg -n 'end-session-dialog.*\.open' tv/app/timeline-view.js`,
+  `grep -nE "^var (OverlayQueue|describeCard)|as globals of a classic script" tv/app/surveillance-overlay.js`
+  et `grep -n "before the mission" tests/mac-ipc-contract.test.cjs` ne rendent rien (code 1).
+  `rg -n 'end-session-dialog.*(showModal|close)' tv/app/timeline-view.js` retrouve les trois appels (code 0).
+  `git check-ignore -q tests/fixtures/nouvelle-fixture.webm` sort avec 1,
+  `git check-ignore -q enregistrement.webm` avec 0 ; la même assertion Node que lors du rouge passe.
+  Aucun fichier créé. Commandes et sorties : `acceptance-green.log` dans le dossier d’état.
+- Régressions : sept commandes `node --test tests/<nom>.test.cjs`, lancées séparément et en séquentiel :
+  `tv-remote-navigation` 20/20, `tv-panel` 19/19, `tv-overlay-queue` 23/23, `tv-ambient-params` 6/6,
+  `tv-app-compat` 5/5, `chat-error-ui` 7/7, `mac-ipc-contract` 15/15 ; aucun échec ni saut (95/95).
+  Commandes exactes et sorties : `*-after.log` et `targeted-results.json` dans le dossier d’état.
+  Empreintes des tests, du banc, du companion et des fixtures conservées ; seul le commentaire IPC varie.
+- `node scripts/check.mjs --changed` — vert : règles, format, lint, gel du lint, cliquet et 15 tests IPC passent.
+  Sortie complète : `.harness-state/tickets/T101/check-changed.log`.
+- `node scripts/check.mjs` — vert : règles, format, lint, gel du lint, cliquet,
+  1 203/1 203 tests JavaScript (102 fichiers) et 84 cas Python acceptés, dont un ignoré.
+  Code de sortie 0 ; sortie complète : `.harness-state/tickets/T101/check-full.log`.
+- Vérification finale : `git diff --check` — code 0. Les cinq modifications prévues et le journal
+  constituent le diff ; aucun changement d’assertion, de liste de tests, de fixture ou de harnais.
+  Le contenu antérieur à `## Journal` est conservé, y compris le statut `en-cours` déjà présent au départ.
+- Smoke visuel `scripts/smoke-tv-timeline.mjs` : **non vérifié** (non lancé).
+  Aucun smoke navigateur exécuté ; aucune intervention sur la TV, le VPS ou les fournisseurs réels.
+  Verdict Codex : **TERMINÉ**, prêt pour relecture par la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- Smoke visuel scripts/smoke-tv-timeline.mjs non vérifié : non lancé, vérification distincte des critères automatisés. Aucun smoke navigateur exécuté.

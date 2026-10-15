@@ -238,6 +238,7 @@ async function open(browser, options = {}) {
       await page.evaluate(() => { document.querySelector("#video-fixture").remove(); document.body.style.background = ""; });
     },
   };
+  // window.tvlensPanel est l’interface d’observation du panneau, documentée dans tv/app/companion.js juste au-dessus de son affectation.
   await tools.until(() => window.tvlensPanel && window.tvlensPanel.stats.renders > 0, "premier état affiché");
   return tools;
 }

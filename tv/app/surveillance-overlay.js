@@ -491,10 +491,4 @@ var TVLensOverlay = (function () {
     DISPLAY_MAX_MS: DISPLAY_MAX_MS,
   };
 })();
-// The names the pages use, as globals of a classic script.
-var OverlayQueue = TVLensOverlay.OverlayQueue,
-  describeCard = TVLensOverlay.describeCard,
-  describeActivity = TVLensOverlay.describeActivity,
-  parseAmbientParams = TVLensOverlay.parseAmbientParams,
-  renderCard = TVLensOverlay.renderCard;
 if (typeof module === "object" && module && module.exports) module.exports = TVLensOverlay;
