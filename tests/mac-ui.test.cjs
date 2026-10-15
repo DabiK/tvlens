@@ -1140,8 +1140,8 @@ test('the window switches its commands off from the controls model alone, and re
   // of cases above is worth something only if updateButtons applies what the model says instead of a chain of its own.
   const renderer = shaped('renderer.js');
   assert.ok(holds(renderer, "import { describeControls } from './ui/controls-view.mjs';"), 'the window imports the controls model');
-  const from = renderer.indexOf(shape('function updateButtons(')), to = renderer.indexOf(shape('async function startPreview('));
-  assert.ok(from >= 0 && to > from, 'updateButtons is no longer declared before startPreview');
+  const from = renderer.indexOf(shape('function updateButtons(')), to = renderer.indexOf(shape('const capture = createCaptureController('));
+  assert.ok(from >= 0 && to > from, 'the controls wiring is present before capture composition');
   const body = renderer.slice(from, to);
   assert.ok(body.includes(shape('describeControls(')), 'updateButtons asks the model');
   assert.ok(body.includes(shape('Object.entries(controls.disabled)')), 'the commands switched off are the ones of the model');
@@ -1156,6 +1156,30 @@ test('the window switches its commands off from the controls model alone, and re
   const sourceRead = shape("$('source').value");
   assert.ok(new RegExp(`[{,]source:${sourceRead.replace(/[$().]/g, '\\$&')}(?=[,}])`).test(input),
     "the source of the input handed to describeControls is the value of the source element, read in that call");
+});
+
+test('the window composes one capture controller and delegates preview, observation and stop to it', () => {
+  const renderer = shaped('renderer.js');
+  assert.ok(holds(renderer, "import { createCaptureController } from './ui/capture-controller.mjs';"));
+  assert.equal([...renderer.matchAll(/createCaptureController\(\{/g)].length, 1);
+  for (const fragment of [
+    'bridge,', "selectSource: id => window.capture.select(id)", "source: () => $('source').value",
+    'getDisplayMedia: options => navigator.mediaDevices.getDisplayMedia(options)',
+    'createAudioContext: options => new AudioContext(options)',
+    'createWorkletNode: (context, name) => new AudioWorkletNode(context, name)',
+    'createMediaStream: tracks => new MediaStream(tracks)',
+    'createRecorder: options => new RollingRecorder(options)',
+    'setTimeout: (callback, delay) => setTimeout(callback, delay)', 'clearTimeout: id => clearTimeout(id)',
+    'uuid: () => crypto.randomUUID()', "video: $('preview')", 'session: () => currentState',
+    'changed: updateButtons', 'status,', 'state: receiveState',
+    "stopping: () => { $('stop').disabled = true; }",
+    "preview: active => { document.body.classList.toggle('has-preview', active); $('stop').disabled = !active;",
+    'function startPreview() { return capture.startPreview(); }',
+    'function observe() { return capture.observe(); }',
+    'function stop(options) { return capture.stop(options); }',
+    'recording: capture.recording', 'previewOpen: capture.previewOpen', 'stopping: capture.stopping',
+    "$('start').onclick = startPreview", "$('stop').onclick = () => stop().catch(error => notice(reason(error)))",
+  ]) assert.ok(holds(renderer, fragment), `capture wiring: ${fragment}`);
 });
 
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------

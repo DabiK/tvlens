@@ -3,6 +3,7 @@ import { reduceRecap } from './ui/recap-state.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { RollingRecorder } from './recording.js';
+import { createCaptureController } from './ui/capture-controller.mjs';
 import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
 import { describeSurveillance, isRestoring, nextSeen, sequences, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
@@ -22,7 +23,7 @@ const shell = new ViewingShell();
 const bridge = window.tvlens;
 // Reversible display bounds: a film is hundreds of passages, the window draws the recent ones.
 const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, STICK_PX = 80, HISTORY_STEP = 200, REGISTRY_EVERY_MS = 2000;
-let stream, context, worklet, recorder, configuration, currentState = null, stopping = false, pendingQuestion = '';
+let configuration, currentState = null, pendingQuestion = '';
 let verificationState = { busy: false, jobs: [] }, pendingQuestionAt = 0;
 let deepState = { jobs: [] };
 const deepFreshness = createFreshness();
@@ -34,7 +35,6 @@ const momentPreviews = new Map();
 let passages = new Map(), shownError = '', forceBottom = false, settled = -1;
 let quickBusy = false, selectedMoment = null, momentCheckpoint = Promise.resolve();
 const cancelling = new Set();
-const flushes = new Map();
 const reason = error => cleanError(error);
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
 // One notice, above every view: an error raised from Mémoire or Surveillance is no longer written off screen.
@@ -51,10 +51,17 @@ async function refresh() {
   try {
     const result = await window.capture.sources();
     setSources(result);
-    $('start').disabled = !result.sources.length || Boolean(stream);
-    if (!stream) status(result.permission === 'granted' ? 'Écran autorisé · Choisis une source' : `Autorisation écran : ${result.permission} · Vérifie les autorisations`);
+    $('start').disabled = !result.sources.length || capture.previewOpen;
+    if (!capture.previewOpen) {
+      status(result.permission === 'granted'
+        ? 'Écran autorisé · Choisis une source'
+        : `Autorisation écran : ${result.permission} · Vérifie les autorisations`);
+    }
   } catch (error) { status(`Capture indisponible : ${reason(error)}`); }
-  finally { $('refresh').disabled = Boolean(stream); updateButtons(); }
+  finally {
+    $('refresh').disabled = capture.previewOpen;
+    updateButtons();
+  }
 }
 function setSources(result) {
   const previous = $('source').value;
@@ -89,9 +96,10 @@ const ASK_STATUS = {
   idle: 'Choisis une source et lance TVLens.',
 };
 function updateButtons() {
-  shell.observation(currentState, Boolean(recorder));
+  shell.observation(currentState, capture.recording);
   const controls = describeControls({
-    session: currentState, recording: Boolean(recorder), previewOpen: Boolean(stream), stopping, captureBusy: floatingCaptureBusy, quickBusy,
+    session: currentState, recording: capture.recording, previewOpen: capture.previewOpen, stopping: capture.stopping,
+    captureBusy: floatingCaptureBusy, quickBusy,
     configuration, verificationBusy: verificationState.busy, pendingQuestion, source: $('source').value,
   });
   for (const [id, disabled] of Object.entries(controls.disabled)) $(id).disabled = disabled;
@@ -101,83 +109,68 @@ function updateButtons() {
   $('observe').textContent = OBSERVE_LABEL[controls.observeLabel];
   $('ask-status').textContent = ASK_STATUS[controls.askStatus];
 }
-async function startPreview() {
-  $('start').disabled = true;
-  try {
-    await window.capture.select($('source').value);
-    stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 10, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true });
-    $('preview').srcObject = stream;
-    await $('preview').play();
-    document.body.classList.add('has-preview');
-    $('stop').disabled = false; $('source').disabled = true; $('refresh').disabled = true;
-    stream.getVideoTracks()[0].onended = () => stop().catch(error => notice(reason(error)));
-    const tracks = stream.getAudioTracks().filter(track => track.readyState === 'live');
-    status(tracks.length ? 'Aperçu actif · Vérifie le son' : 'Aperçu actif · Sans piste audio');
-    if (tracks.length) {
-      context = new AudioContext({ sampleRate: 16000 });
-      await context.audioWorklet.addModule('./audio-worklet.js');
-      await context.resume();
-      worklet = new AudioWorkletNode(context, 'tvlens-pcm');
-      context.createMediaStreamSource(new MediaStream(tracks)).connect(worklet);
-      worklet.connect(context.destination); // Worklet output is silence: no feedback loop.
-      worklet.port.onmessage = ({ data }) => {
-        if (data.type === 'samples') { $('meter').value = Math.min(1, data.rms * 4); recorder?.samples(data.samples); }
-        if (data.type === 'flushed') { flushes.get(data.id)?.(); flushes.delete(data.id); }
-      };
-    }
-    updateButtons();
-    return true;
-  } catch (error) { await stop(); status(`Capture interrompue : ${reason(error)}`); return false; }
-}
-function flushAudio() {
-  if (!worklet) return Promise.resolve();
-  return new Promise(resolve => {
-    const id = crypto.randomUUID();
-    const timeout = setTimeout(() => { flushes.delete(id); resolve(); }, 500);
-    flushes.set(id, () => { clearTimeout(timeout); resolve(); });
-    worklet.port.postMessage({ type: 'flush', id });
-  });
-}
-// An archive is only written to again through the explicit resume of the bridge; a live session starts or resumes as before.
-async function openCapture() {
-  if (!currentState?.readOnly) return bridge.start();
-  const resumed = await bridge.resumeSession();
-  return (await bridge.state())?.accepting ? resumed : bridge.start();
-}
-async function observe() {
-  $('observe').disabled = true; notice('');
-  try {
-    const session = await openCapture();
-    receiveState(await bridge.state());
-    recorder = new RollingRecorder({ stream, video: $('preview'), audioContext: context, flushAudio, session, onError: error => { if (!diskFull()) notice(reason(error)); }, onSegment: (id, preview) => {
+const capture = createCaptureController({
+  bridge,
+  selectSource: id => window.capture.select(id),
+  source: () => $('source').value,
+  browser: {
+    getDisplayMedia: options => navigator.mediaDevices.getDisplayMedia(options),
+    createAudioContext: options => new AudioContext(options),
+    createWorkletNode: (context, name) => new AudioWorkletNode(context, name),
+    createMediaStream: tracks => new MediaStream(tracks),
+  },
+  createRecorder: options => new RollingRecorder(options),
+  timers: {
+    setTimeout: (callback, delay) => setTimeout(callback, delay),
+    clearTimeout: id => clearTimeout(id),
+  },
+  uuid: () => crypto.randomUUID(),
+  video: $('preview'),
+  session: () => currentState,
+  view: {
+    previewStarting: () => { $('start').disabled = true; },
+    observing: () => {
+      $('observe').disabled = true;
+      notice('');
+    },
+    stopping: () => { $('stop').disabled = true; },
+    preview: active => {
+      document.body.classList.toggle('has-preview', active);
+      $('stop').disabled = !active;
+      $('source').disabled = active;
+      $('refresh').disabled = active;
+      if (!active) $('start').disabled = !$('source').value;
+    },
+    recording: () => {
+      $('mode').textContent = 'EN DIRECT';
+      $('mode').classList.add('cloud');
+      $('source').disabled = true;
+    },
+    stopped: () => {
+      $('mode').textContent = currentState?.id ? 'EN PAUSE' : 'PRÊT À REGARDER';
+      $('mode').classList.remove('cloud');
+    },
+    changed: updateButtons,
+    settled: () => {
+      drawBanners();
+      drawSessions();
+    },
+    status,
+    error: (error, phase) => {
+      if (phase === 'preview') status(`Capture interrompue : ${reason(error)}`);
+      else if (phase !== 'recorder' || !diskFull()) notice(reason(error));
+    },
+    meter: value => { $('meter').value = value; },
+    state: receiveState,
+    segment: (id, preview, session) => {
       if (preview && currentState?.id === session.id) momentPreviews.set(id, preview);
       scheduleState();
-    } });
-    recorder.start();
-    $('mode').textContent = 'EN DIRECT'; $('mode').classList.add('cloud');
-    $('source').disabled = true;
-    status('Capture + mémoire actives');
-    updateButtons(); drawSessions();
-  } catch (error) { recorder = undefined; await bridge.stop().catch(() => {}); notice(reason(error)); updateButtons(); }
-}
-// `quiet`: the session stopped accepting passages by itself (disk full): the last partial passage is not reported again.
-async function stop({ quiet = false } = {}) {
-  if (stopping) return;
-  stopping = true; $('stop').disabled = true; updateButtons();
-  try {
-    if (quiet && recorder) recorder.onError = () => {};
-    await recorder?.stop(); recorder = undefined;
-    await bridge.stop();
-    const old = stream; stream = undefined;
-    old?.getTracks().forEach(track => track.stop());
-    await context?.close(); context = undefined; worklet = undefined;
-    $('preview').srcObject = null; $('meter').value = 0;
-    document.body.classList.remove('has-preview');
-    $('start').disabled = !$('source').value; $('source').disabled = false; $('refresh').disabled = false;
-    $('mode').textContent = currentState?.id ? 'EN PAUSE' : 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
-    status(currentState?.id ? 'Capture en pause · Contexte et chat conservés' : 'Capture inactive');
-  } finally { stopping = false; updateButtons(); drawBanners(); drawSessions(); }
-}
+    },
+  },
+});
+function startPreview() { return capture.startPreview(); }
+function observe() { return capture.observe(); }
+function stop(options) { return capture.stop(options); }
 // `card` is a search result, which names the session it was searched in; a citation is only drawn for the loaded one.
 function replay(id, offset = 0, card) {
   // Session and passage are both checked before any address is built; the refusal says why (another session,
@@ -209,7 +202,7 @@ function receiveState(state) {
   for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
   if (state.storage) storageState = { ...storageState, ...state.storage };
   // The session no longer accepts passages (disk full, pause decided by the host): the recorder stops with it.
-  if (recorder && !stopping && state.accepting === false) stop({ quiet: true }).catch(error => notice(reason(error)));
+  if (capture.recording && !capture.stopping && state.accepting === false) stop({ quiet: true }).catch(error => notice(reason(error)));
   scheduleState();
 }
 const PASSAGE_LABELS = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Vidéo expirée avant l’analyse' };
@@ -262,12 +255,12 @@ function drawBanners() {
   const archive = describeArchive(currentState);
   $('archive-banner').hidden = !archive;
   if (archive) { $('archive-label').textContent = archive.label.toUpperCase(); $('archive-text').textContent = `${archive.text}.`; $('archive-hint').textContent = archive.hint; }
-  storageView = describeStorage(storageState, { capturing: Boolean(recorder) });
+  storageView = describeStorage(storageState, { capturing: capture.recording });
   $('storage-banner').hidden = !storageView.banner;
   if (storageView.banner) { $('storage-banner').dataset.state = storageView.banner.state; $('storage-banner-title').textContent = storageView.banner.title; $('storage-banner-text').textContent = storageView.banner.text; }
   $('storage-line').textContent = storageView.line; $('storage-line').dataset.state = storageView.state;
   // Out of room: capture stops and says so. Nothing is deleted, here or by the host.
-  if (storageView.blocked && recorder && !stopping) stop({ quiet: true }).catch(error => notice(reason(error)));
+  if (storageView.blocked && capture.recording && !capture.stopping) stop({ quiet: true }).catch(error => notice(reason(error)));
 }
 function receiveStorage(storage) { if (!storage) return; storageState = { ...storage }; drawBanners(); }
 
@@ -403,7 +396,7 @@ $('close-replay').onclick = () => $('replay-dialog').close();
 $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttribute('src'); $('replay').load(); };
 $('replay').onvolumechange = () => { if (currentState?.accepting) $('replay').muted = true; };
 $('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
-window.addEventListener('beforeunload', () => stream?.getTracks().forEach(track => track.stop()));
+window.addEventListener('beforeunload', () => capture.stream?.getTracks().forEach(track => track.stop()));
 bridge.onState(receiveState);
 bridge.config().then(setConfig).catch(error => notice(reason(error)));
 // A reloaded window finds the session the host still holds.
@@ -436,12 +429,12 @@ $('float-source-change').onclick=async()=>{await stop();shell.show('direct');awa
 // In the floating window the surveillance takes the place of the chat: "Demander" brings the chat back.
 $('float-chat').onclick=()=>{if(floatingExpanded&&shell.view==='watch'){shell.show('direct');$('question').focus();return;}return changeWindowMode(true,!floatingExpanded);};
 async function watchWithSelectedSource() {
-  if (floatingCaptureBusy || stopping || recorder) return;
+  if (floatingCaptureBusy || capture.stopping || capture.recording) return;
   floatingCaptureBusy = true; updateButtons(); notice('');
   try {
-    if (!stream && !await startPreview()) throw Error($('state').textContent);
+    if (!capture.previewOpen && !await startPreview()) throw Error($('state').textContent);
     await observe();
-    if (!recorder) throw Error($('notice').textContent || 'L’observation n’a pas démarré.');
+    if (!capture.recording) throw Error($('notice').textContent || 'L’observation n’a pas démarré.');
   } catch (error) { notice(reason(error)); }
   finally { floatingCaptureBusy = false; updateButtons(); }
 }
@@ -468,7 +461,7 @@ async function captureFromFloatingBar(){
   sourceReturnExpanded=floatingExpanded;
   await changeWindowMode(true,true);
   $('float-source-dialog').showModal();
-  if(stream){
+  if(capture.previewOpen){
     $('float-source').replaceChildren(new Option($('source').selectedOptions[0]?.textContent||'Source actuelle',$('source').value));
     $('float-source').disabled=true;$('float-refresh').hidden=true;
     $('float-launch').disabled=!configuration?.canObserve;
@@ -476,8 +469,18 @@ async function captureFromFloatingBar(){
   }else{$('float-source').disabled=false;$('float-refresh').hidden=false;await refreshFloatingSources();}
 }
 $('float-record').onclick=async()=>{
-  if(floatingCaptureBusy||stopping)return;
-  if(recorder){floatingCaptureBusy=true;updateButtons();try{await stop();}catch(e){notice(reason(e));}finally{floatingCaptureBusy=false;updateButtons();}return;}
+  if(floatingCaptureBusy||capture.stopping)return;
+  if (capture.recording) {
+    floatingCaptureBusy = true;
+    updateButtons();
+    try { await stop(); }
+    catch (error) { notice(reason(error)); }
+    finally {
+      floatingCaptureBusy = false;
+      updateButtons();
+    }
+    return;
+  }
   await requestCapture(captureFromFloatingBar);
 };
 $('float-refresh').onclick=refreshFloatingSources;
@@ -488,9 +491,12 @@ $('float-source-form').onsubmit=async event=>{
   event.preventDefault();if(floatingCaptureBusy||!configuration?.canObserve)return;
   floatingCaptureBusy=true;updateButtons();$('float-launch').disabled=true;$('close-float-source').disabled=true;$('float-refresh').disabled=true;$('float-source-error').textContent='Démarrage…';
   try{
-    if(!stream){$('source').value=$('float-source').value;if(!await startPreview())throw Error($('state').textContent);}
+    if (!capture.previewOpen) {
+      $('source').value = $('float-source').value;
+      if (!await startPreview()) throw Error($('state').textContent);
+    }
     await observe();
-    if(!recorder)throw Error($('notice').textContent||'L’observation n’a pas démarré.');
+    if(!capture.recording)throw Error($('notice').textContent||'L’observation n’a pas démarré.');
     $('float-source-dialog').close();
   }catch(e){$('float-source-error').textContent=reason(e);}
   finally{floatingCaptureBusy=false;$('float-launch').disabled=false;$('close-float-source').disabled=false;$('float-refresh').disabled=false;updateButtons();}
@@ -500,7 +506,7 @@ $('float-source-form').onsubmit=async event=>{
 let library = null, sessionsView = describeSessions(null), sessionsStale = true, deleteSessionId = null, pendingCapture = null;
 const sessionsList = new KeyedList($('sessions-list'));
 function drawSessions() {
-  sessionsView = describeSessions(library, { capturing: Boolean(recorder), readOnly: Boolean(currentState?.readOnly) });
+  sessionsView = describeSessions(library, { capturing: capture.recording, readOnly: Boolean(currentState?.readOnly) });
   sessionsList.sync(sessionsView.rows.map(sessionEntry));
   $('sessions-empty').hidden = !sessionsView.empty; $('sessions-empty').textContent = sessionsView.empty || '';
 }
@@ -542,7 +548,7 @@ async function pullSession() {
   forceBottom = true; scheduleState();
 }
 async function openArchive(id) {
-  if (recorder || stream) return notice('Mets la capture en pause avant d’ouvrir une autre session.');
+  if (capture.recording || capture.previewOpen) return notice('Mets la capture en pause avant d’ouvrir une autre session.');
   notice('');
   await bridge.openSession(id);
   await pullSession();
@@ -783,10 +789,11 @@ async function openMoment(frozen) {
       preview.src=canvas.toDataURL('image/jpeg',.7); preview.hidden=false;
     }
     if (floatingMode) await changeWindowMode(true,true);
-    $('moment-anchor').textContent = `Instant retenu à ${formatTime(selectedMoment.anchorMs)}. ${recorder ? 'La vidéo continue.' : 'La capture est en pause.'}`;
+    const captureNote = capture.recording ? 'La vidéo continue.' : 'La capture est en pause.';
+    $('moment-anchor').textContent = `Instant retenu à ${formatTime(selectedMoment.anchorMs)}. ${captureNote}`;
     $('moment-error').textContent=''; $('moment-question').value='';
     if (!$('moment-dialog').open) $('moment-dialog').showModal();
-    momentCheckpoint = recorder?.checkpoint(selectedMoment.anchorMs) || Promise.resolve();
+    momentCheckpoint = capture.recorder?.checkpoint(selectedMoment.anchorMs) || Promise.resolve();
     await momentCheckpoint;
   } catch(error) { notice(reason(error)); $('moment-error').textContent=reason(error); }
   finally { quickBusy=false; updateButtons(); }
@@ -808,7 +815,7 @@ async function explainNow() {
   try {
     const frozen=await bridge.freezeMoment({kind:'explain'});
     if(floatingMode) await changeWindowMode(true,true);
-    await recorder?.checkpoint(frozen.anchorMs);
+    await capture.recorder?.checkpoint(frozen.anchorMs);
     forceBottom = true;
     await bridge.explainMoment({token:frozen.token,intent:'explain'});
   } catch(error) { notice(reason(error)); }
@@ -826,7 +833,7 @@ $('catch-up').onclick=async()=>{
   try {
     const frozen=await bridge.freezeMoment({kind:'catch-up'});
     $('attention-status').textContent=`Je retrouve les passages de ${formatTime(frozen.startMs)} à ${formatTime(frozen.anchorMs)}…`;
-    await recorder?.checkpoint(frozen.anchorMs);
+    await capture.recorder?.checkpoint(frozen.anchorMs);
     forceBottom = true;
     const result=await bridge.catchUp({token:frozen.token});
     $('attention-status').textContent=`Rattrapage demandé : ${formatTime(result.startMs)}–${formatTime(result.endMs)}. Le repère avance après une réponse réussie.`;
@@ -836,7 +843,11 @@ $('catch-up').onclick=async()=>{
 $('mark-attention').onclick=async()=>{
   if(quickBusy)return;
   quickBusy=true;updateButtons();
-  try{await recorder?.checkpoint();const marker=await bridge.markAttention();$('attention-status').textContent=`Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;}
+  try {
+    await capture.recorder?.checkpoint();
+    const marker = await bridge.markAttention();
+    $('attention-status').textContent = `Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;
+  }
   catch(error){notice(reason(error));}finally{quickBusy=false;updateButtons();}
 };
 bridge.momentShortcuts().then(value=>{
