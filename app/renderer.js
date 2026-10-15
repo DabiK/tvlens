@@ -16,6 +16,7 @@ import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillanc
 import { sessionEntry } from './ui/sessions-dom.js';
 import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
 import { describeControls } from './ui/controls-view.mjs';
+import { createFreshness } from './ui/freshness.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
 const bridge = window.tvlens;
@@ -24,6 +25,8 @@ const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, STICK_PX = 80, HISTORY_STEP = 200, RE
 let stream, context, worklet, recorder, configuration, currentState = null, stopping = false, pendingQuestion = '';
 let verificationState = { busy: false, jobs: [] }, pendingQuestionAt = 0;
 let deepState = { jobs: [] };
+const deepFreshness = createFreshness();
+const verificationFreshness = createFreshness();
 let recapState = null, recapRevision = 0, recapKey = '';
 let floatingCaptureBusy = false, sourceReturnExpanded = false;
 const momentPreviews = new Map();
@@ -312,11 +315,32 @@ $('verify-form').onsubmit = async event => {
   try { await bridge.verify(claim); }
   catch (error) { notice(reason(error)); }
 };
-bridge.onVerificationState(state => { verificationState = state; scheduleChat(); updateButtons(); });
+bridge.onVerificationState(state => {
+  verificationFreshness.pushed();
+  verificationState = state;
+  scheduleChat();
+  updateButtons();
+});
 function refreshResearchBudget() { bridge.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
-bridge.onDeepState(state => { deepState = state; scheduleChat(); updateButtons(); });
-bridge.deepState().then(state => { deepState = state; scheduleChat(); }).catch(error => notice(reason(error)));
-bridge.verificationState().then(state => { verificationState = state; scheduleChat(); updateButtons(); }).catch(error => notice(reason(error)));
+bridge.onDeepState(state => {
+  deepFreshness.pushed();
+  deepState = state;
+  scheduleChat();
+  updateButtons();
+});
+const initialDeepFresh = deepFreshness.beginRead();
+bridge.deepState().then(state => {
+  if (!initialDeepFresh()) return;
+  deepState = state;
+  scheduleChat();
+}).catch(error => notice(reason(error)));
+const initialVerificationFresh = verificationFreshness.beginRead();
+bridge.verificationState().then(state => {
+  if (!initialVerificationFresh()) return;
+  verificationState = state;
+  scheduleChat();
+  updateButtons();
+}).catch(error => notice(reason(error)));
 $('ask-form').onsubmit = async event => {
   event.preventDefault(); const question = $('question').value.trim();
   // Enter goes through the same gate as the button: no request the host can only refuse.
@@ -510,8 +534,9 @@ async function pullSession() {
   const state = await bridge.state();
   if (!state) return clearSession();
   receiveState(state);
+  const deepIsFresh = deepFreshness.beginRead();
   const [deep, recap, surveillance] = await Promise.all([bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)]);
-  deepState = deep;
+  if (deepIsFresh()) deepState = deep;
   if (recap) receiveRecap(recap);
   if (surveillance) receiveSurveillance(surveillance);
   forceBottom = true; scheduleState();

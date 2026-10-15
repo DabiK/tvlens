@@ -1,7 +1,7 @@
 ---
 id: T129
 titre: Keep a pushed state from being overwritten by an older read in the Mac window
-statut: a-faire
+statut: termine
 bloque_par: T055
 adr: non
 installe: non
@@ -138,3 +138,38 @@ alors le seul état à jour) : verdict BLOQUÉ, avec l'écart constaté.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex : consignes, code de fenêtre et tests lus ; publications de `DeepAsk`, de la
+  vérification et de `sessions:open` vérifiées. `deferred` partagé disponible, aucun écart prévu.
+  Détails dans `.harness-state/tickets/T129/exploration.md` et `ecarts.md`.
+  `grep -c '^\s*test(' tests/mac-ui.test.cjs` : 35 avant modification.
+
+- Règle pure, tests d'abord :
+  `node --test --test-name-pattern='a state read overtaken' tests/mac-ui.test.cjs` : rouge observé
+  sur l'assertion `true !== false` (poussée après départ), puis vert, 1/1.
+  `node --test --test-name-pattern='of two state reads' tests/mac-ui.test.cjs` : rouge observé
+  sur l'ancienne lecture déclarée fraîche, puis
+  `node --test --test-name-pattern='a state read overtaken|of two state reads' tests/mac-ui.test.cjs` : vert, 2/2.
+  Six cas de fraîcheur couvrent premier chargement, poussées aux deux instants, poussée antérieure,
+  réponses inversées, sources séparées et rejet sans effet sur la lecture suivante.
+  Sorties conservées dans `.harness-state/tickets/T129/` (`push-*`, `reads-*`, `module-green.log`).
+
+- Branchement : `node --test --test-name-pattern='the window tracks pushes' tests/mac-ui.test.cjs` :
+  rouge sur l'import de la règle absent. Après branchement des deux abonnements et des trois lectures,
+  `node --test tests/mac-ui.test.cjs` : vert, 42/42 (gardes statiques incluses).
+  `node scripts/check.mjs --changed` : code 0, règles, format, lint, gel, cliquet et 42 tests verts.
+  Sorties `wiring-red.log`, `wiring-green.log` et `check-changed.log` dans le dossier d'état.
+
+- Faute injectée : retrait manuel de `deepFreshness.pushed()` dans `onDeepState`, puis
+  `node --test --test-name-pattern='the window tracks pushes' tests/mac-ui.test.cjs` : code 1,
+  assertion `a deep push invalidates pending deep reads before applying its state` échouée.
+  Faute défaite à la main ; même commande relancée : code 0, 1/1 vert.
+  Sorties intégrales : `mutation-deep-push-red.log` et `mutation-restored-green.log` dans le dossier d'état.
+  `grep -c '^\s*test(' tests/mac-ui.test.cjs` après modification : 42 (avant : 35).
+
+- Contrôle final : `node scripts/check.mjs` : code 0, vert. Règles, format, lint, gel et
+  cliquet verts ; 103 fichiers JS, 1 215 tests réussis, aucun échec ; Python : 84 tests,
+  `OK (skipped=1)`. Sortie conservée dans `.harness-state/tickets/T129/check-full.log`.
+  `git diff --check` : code 0. Aucun IPC réel ni Electron exécuté ; courses couvertes par
+  promesses contrôlées et branchement par la garde autorisée. Verdict `TERMINÉ`, sans écart,
+  remis à la boucle pour relecture ; aucun commit ni push.

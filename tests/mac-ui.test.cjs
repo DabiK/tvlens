@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const { pathToFileURL } = require('node:url');
 const { describeJob: describeTvJob } = require('../tv/app/companion.js');
 const { Surveillance } = require('../core/surveillance.cjs');
+const { deferred } = require('./helpers/wait.cjs');
 
 // The Mac view models are pure ES modules: imported as they are, without Electron and without a DOM.
 const ui = name => import(`../app/ui/${name}.mjs`);
@@ -715,12 +716,123 @@ test('search cards name the session they were searched in: a late answer is not 
   assert.ok(!/tvlens-media:\/\/\$\{currentState\.id\}\/\$\{/.test(renderer), 'the address of a passage is built by replayTarget alone');
 });
 
-// A request the test holds: it answers or refuses when the test says so, never on a timer.
-const deferred = () => {
-  const held = {};
-  held.promise = new Promise((resolve, reject) => { held.resolve = resolve; held.reject = reject; });
-  return held;
-};
+test('a state read overtaken by a push is stale, right after departure or just before its answer', async () => {
+  const { createFreshness } = await ui('freshness');
+  for (const when of ['after departure', 'before answer']) {
+    const freshness = createFreshness();
+    const held = deferred();
+    const isFresh = freshness.beginRead();
+    const answer = held.promise.then(() => isFresh());
+    if (when === 'before answer') await Promise.resolve();
+    freshness.pushed();
+    held.resolve({ jobs: [] });
+    assert.equal(await answer, false, when);
+  }
+});
+
+test('of two state reads answered in reverse order, only the one started last is fresh', async () => {
+  const { createFreshness } = await ui('freshness');
+  const freshness = createFreshness();
+  const first = deferred(), second = deferred();
+  const firstIsFresh = freshness.beginRead();
+  const older = first.promise.then(() => firstIsFresh());
+  const secondIsFresh = freshness.beginRead();
+  const newer = second.promise.then(() => secondIsFresh());
+  second.resolve({ jobs: ['new'] });
+  assert.equal(await newer, true);
+  first.resolve({ jobs: [] });
+  assert.equal(await older, false);
+});
+
+test('a first state read with nothing overtaking it stays fresh until its answer', async () => {
+  const { createFreshness } = await ui('freshness');
+  const freshness = createFreshness();
+  const held = deferred();
+  const isFresh = freshness.beginRead();
+  const answer = held.promise.then(() => isFresh());
+  held.resolve({ jobs: [] });
+  assert.equal(await answer, true);
+});
+
+test('an archive push before a state read starts does not make its answer stale', async () => {
+  const { createFreshness } = await ui('freshness');
+  const freshness = createFreshness();
+  freshness.pushed();
+  const held = deferred();
+  const isFresh = freshness.beginRead();
+  const answer = held.promise.then(() => isFresh());
+  held.resolve({ jobs: ['restored'] });
+  assert.equal(await answer, true);
+});
+
+test('a verification push does not overtake a deep state read from a separate source', async () => {
+  const { createFreshness } = await ui('freshness');
+  const deep = createFreshness(), verification = createFreshness();
+  const held = deferred();
+  const isFresh = deep.beginRead();
+  const answer = held.promise.then(() => isFresh());
+  verification.pushed();
+  verification.beginRead();
+  held.resolve({ jobs: [] });
+  assert.equal(await answer, true);
+});
+
+test('a rejected state read propagates its failure and leaves the next read fresh', async () => {
+  const { createFreshness } = await ui('freshness');
+  const freshness = createFreshness();
+  const refused = deferred();
+  const wasFresh = freshness.beginRead();
+  const failed = refused.promise.then(() => wasFresh());
+  const error = new Error('read refused');
+  const rejection = assert.rejects(failed, cause => cause === error);
+  const held = deferred();
+  const isFresh = freshness.beginRead();
+  const answer = held.promise.then(() => isFresh());
+  refused.reject(error);
+  await rejection;
+  held.resolve({ jobs: [] });
+  assert.equal(await answer, true);
+});
+
+test('the window tracks pushes and guards all three deep and verification reads with their own freshness source', () => {
+  // Exception de branchement : renderer ne se charge pas sans Electron ; shape ignore sa mise en page.
+  const renderer = shaped('renderer.js');
+  assert.ok(holds(renderer, "import { createFreshness } from './ui/freshness.mjs';"), 'the window imports the freshness rule');
+  for (const source of ['deep', 'verification']) {
+    assert.ok(holds(renderer, `const ${source}Freshness = createFreshness();`), `${source} owns a separate source`);
+  }
+  assert.ok(holds(renderer, `bridge.onDeepState(state => {
+    deepFreshness.pushed(); deepState = state; scheduleChat(); updateButtons();
+  });`), 'a deep push invalidates pending deep reads before applying its state');
+  assert.ok(holds(renderer, `bridge.onVerificationState(state => {
+    verificationFreshness.pushed(); verificationState = state; scheduleChat(); updateButtons();
+  });`), 'a verification push invalidates pending verification reads before applying its state');
+  assert.ok(holds(renderer, `const initialDeepFresh = deepFreshness.beginRead();
+    bridge.deepState().then(state => {
+      if (!initialDeepFresh()) return;
+      deepState = state; scheduleChat();
+    }).catch(error => notice(reason(error)));`),
+  'the initial deep read checks freshness before applying or drawing, with its existing error notice');
+  assert.ok(holds(renderer, `const initialVerificationFresh = verificationFreshness.beginRead();
+    bridge.verificationState().then(state => {
+      if (!initialVerificationFresh()) return;
+      verificationState = state; scheduleChat(); updateButtons();
+    }).catch(error => notice(reason(error)));`),
+  'the initial verification read checks freshness before applying or drawing, with its existing error notice');
+  const start = renderer.indexOf(shape('async function pullSession()'));
+  const end = renderer.indexOf(shape('async function openArchive('));
+  assert.ok(start >= 0 && end > start, 'pullSession is declared before openArchive');
+  const pull = renderer.slice(start, end);
+  assert.ok(holds(pull, `const deepIsFresh = deepFreshness.beginRead();
+    const [deep, recap, surveillance] = await Promise.all([
+      bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)
+    ]);
+    if (deepIsFresh()) deepState = deep;`), 'the archive read starts its guard before the read and applies deep state only while fresh');
+  assert.ok(holds(pull, `if (recap) receiveRecap(recap);
+    if (surveillance) receiveSurveillance(surveillance);
+    forceBottom = true; scheduleState();`), 'the other archive states and their drawing remain unconditional');
+  assert.equal([...pull.matchAll(/catch\(/g)].length, 2, 'a rejected deep read still propagates');
+});
 
 // A controller whose searches are the held requests, in the order they are asked, and whose observers write a log.
 async function searchHarness({ session = { id: 'session-a' }, onResult } = {}) {
