@@ -131,7 +131,10 @@ app.whenReady().then(async () => {
   // pushed to the window each time and saved at most once a second, the latest state after that delay even
   // when the answer then stops moving. What waits is kept with the store of its own session: a save that
   // comes late never reaches the session loaded since, nor a sealed one.
-  const questionSaves = createQuestionCheckpoint();
+  const questionSaves = createQuestionCheckpoint({
+    setTimer: (fn, ms) => setTimeout(fn, ms),
+    clearTimer: handle => clearTimeout(handle),
+  });
   const conversation = createConversationRuntime({
     getSession: () => loaded?.runtime,
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).

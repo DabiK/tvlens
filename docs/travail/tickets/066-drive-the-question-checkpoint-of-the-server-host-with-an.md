@@ -1,7 +1,7 @@
 ---
 id: T066
 titre: Drive the question checkpoint of the server host with an injected timer
-statut: a-faire
+statut: termine
 bloque_par: T055, T058
 adr: oui
 installe: non
@@ -137,3 +137,47 @@ cause. L'injection de ces minuteries ne s'ajoute pas au présent périmètre.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex le 15/10 sur `bf3f3a3` : consignes, checkpoint partagé, deux hôtes,
+  bancs HTTP/IPC, helpers d'horloge et d'attente, ADR 0003/0007 lus. Périmètre confirmé,
+  aucun écart prévu ; détails dans `.harness-state/tickets/T066/exploration.md` et `ecarts.md`.
+  Les trois changements préexistants sont identifiés et conservés. Aucun test exécuté à cette étape.
+
+- Cycle du module : `node --test --test-name-pattern='injected timers' tests/question-checkpoint.test.cjs`
+  rouge (1 test, assertion `armed` : 0 au lieu de 1), puis injection de `setTimer`/`clearTimer` et
+  `node --test tests/question-checkpoint.test.cjs` vert (13/13). Sorties : `red-checkpoint.log`,
+  `green-checkpoint.log` dans le dossier d'état. Les assertions préexistantes restent intactes.
+
+- Cycle HTTP : `node --test --test-concurrency=1 --test-name-pattern='closing the server runtime with a pending draft'
+  tests/server-sessions.test.cjs` rouge (1 test, `armed` : 0 au lieu de 1), puis câblage du runtime
+  et même commande verte (1/1), sorties `red-runtime-close.log` et `green-runtime-close.log`.
+  Le contrôle rapide a refusé une première écriture sur quatre lignes (constructeur à 82 lignes,
+  maximum 80) ; une déstructuration locale conserve le câblage sur deux lignes, sans changer le gel.
+
+- Deux tests HTTP migrés vers les avances relatives du seul checkpoint, titres et assertions conservés.
+  `rg -n 'mock\.timers' tests/server-sessions.test.cjs` : aucune sortie (code 1).
+  `node --test --test-concurrency=1 tests/server-sessions.test.cjs` : vert, 15/15, sonde à 7 écritures,
+  aucune activité asynchrone tardive signalée (`green-server-sessions.log`). ADR 0015 rédigé.
+
+- `node scripts/check.mjs --changed` : vert, règles/format/lint/gel/cliquet et 28/28 tests des deux
+  fichiers modifiés (`check-changed.log`). Aucun test ou seuil affaibli.
+
+- Voies par défaut vérifiées en séquentiel :
+  `node --test --test-concurrency=1 --test-name-pattern="server host \(HTTP\)" tests/architecture-f07.test.cjs`
+  vert, 9 tests réellement sélectionnés ; `node --test tests/mac-ipc-contract.test.cjs` vert, 15/15.
+  Sorties `default-server-closing-sequential.log` et `default-mac-ipc-sequential.log` ; aucun changement
+  dans ces fichiers. Un premier lancement des deux commandes s'était chevauché (9/9 et 15/15 verts) :
+  ce lancement n'est pas retenu comme preuve séquentielle ; les sorties initiales sont conservées.
+
+- Série demandée : `node --test --test-concurrency=1 tests/server-sessions.test.cjs` exécuté vingt
+  fois consécutives en séquentiel, 15/15 à chaque passage (300 tests), aucun échec ni sortie
+  « asynchronous activity ». Sorties intégrales `server-sessions-repeat-01.log` à `-20.log`,
+  commande et résultats dans `server-sessions-repetitions.json`. La série s'arrêterait au premier échec.
+  `git diff --check` : code 0.
+
+- Validation finale : `node --test tests/question-checkpoint.test.cjs` vert, 13/13
+  (`final-question-checkpoint.log`), puis `node scripts/check.mjs` vert, code 0 : règles, format,
+  lint, gel et cliquet ; 100 fichiers JS, 1186/1186 tests ; Python annonce 84 tests, `OK (skipped=1)`
+  (`check-full.log`). Le nombre de cas mesuré passe de 1083 à 1085 sans modifier le plancher.
+  Verdict Codex `TERMINÉ` écrit dans `.harness-state/tickets/T066/verdict.json` ; relecture laissée
+  à la boucle. Aucun commit, push ni changement du harnais.

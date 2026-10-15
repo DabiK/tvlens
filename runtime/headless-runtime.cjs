@@ -78,7 +78,8 @@ class HeadlessRuntime {
     this.derived = null;
     this.fresh = false;
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
-    this.questionSaves = createQuestionCheckpoint();
+    const { setTimer, clearTimer } = options;
+    this.questionSaves = createQuestionCheckpoint({ setTimer, clearTimer });
     // One guard for the host: the sessions it creates and the library that lists and deletes them
     // decide on the same measurement. A simulated run has none unless it is handed one.
     this.guard =

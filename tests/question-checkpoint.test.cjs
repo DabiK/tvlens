@@ -5,6 +5,7 @@ const path = require("node:path");
 const {
   createQuestionCheckpoint,
 } = require("../runtime/question-checkpoint.cjs");
+const { manualClock } = require("./helpers/clock.cjs");
 
 const DELAY_MS = 1000;
 const running = (id, preview = "") => ({ id, status: "running", preview });
@@ -24,6 +25,41 @@ const fakeStore = ({ refuse = false } = {}) => {
   return store;
 };
 const timers = (t) => t.mock.timers.enable({ apis: ["setTimeout"] });
+
+test("injected timers save the latest draft at one second and are cancelled by flush and forget", async (t) => {
+  const clock = manualClock(), store = fakeStore();
+  const saves = createQuestionCheckpoint({
+    setTimer: clock.io.setTimer,
+    clearTimer: clock.io.clearTimer,
+  });
+  t.after(() => saves.forget());
+  const initial = stateOf(running("a"));
+  saves.checkpoint(store, initial);
+  saves.checkpoint(store, stateOf(running("a", "un")));
+  const latest = stateOf(running("a", "un deux"));
+  saves.checkpoint(store, latest);
+  assert.equal(clock.armed, 1, "several drafts share one injected timer");
+  await clock.advance(DELAY_MS - 1);
+  assert.deepEqual(store.writes, [initial], "nothing before the second is over");
+  await clock.advance(1);
+  assert.deepEqual(store.writes, [initial, latest], "the latest draft at one second");
+  assert.deepEqual([clock.armed, saves.pending()], [0, false]);
+
+  const flushed = stateOf(running("a", "à sauvegarder"));
+  saves.checkpoint(store, flushed);
+  assert.equal(clock.armed, 1);
+  saves.flush();
+  assert.deepEqual([clock.armed, saves.pending()], [0, false], "flush cancels the injected timer");
+  await clock.advance(DELAY_MS * 3);
+  assert.deepEqual(store.writes, [initial, latest, flushed], "flush leaves no late write");
+
+  saves.checkpoint(store, stateOf(running("a", "à oublier")));
+  assert.equal(clock.armed, 1);
+  saves.forget();
+  assert.deepEqual([clock.armed, saves.pending()], [0, false], "forget cancels the injected timer");
+  await clock.advance(DELAY_MS * 3);
+  assert.deepEqual(store.writes, [initial, latest, flushed], "forget leaves no late write");
+});
 
 test("a question that appears, leaves or changes status is saved at once", (t) => {
   timers(t);

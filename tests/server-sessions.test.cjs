@@ -9,6 +9,8 @@ const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
+const { manualClock } = require('./helpers/clock.cjs');
+const { until } = require('./helpers/wait.cjs');
 
 const token = 's'.repeat(64), GIB = 1024 ** 3;
 const READ_ONLY = 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.';
@@ -698,15 +700,25 @@ test('a slow disk holds back neither what a client reads nor the analysis: with 
 });
 
 test('the draft of an answer is published each time it moves and saved at most once a second, its last state included when the answer stalls: a poll gets the latest draft under a new tag while the disk is held, a refused save reaches the end of the session, and nothing waits past an end or a change of session', async t => {
+  const clock = manualClock();
   const turn = drivenChat(), journal = [], held = disk(t, 'deep-answers.json');
-  const f = await fixture(t, { chat: turn.answer, runtimeOptions: () => ({ log: line => journal.push(line) }) }), chat = '/v1/state?view=chat';
+  const f = await fixture(t, {
+    chat: turn.answer,
+    runtimeOptions: () => ({
+      setTimer: clock.io.setTimer,
+      clearTimer: clock.io.clearTimer,
+      log: line => journal.push(line),
+    }),
+  }), chat = '/v1/state?view=chat';
   const draft = words => 'mot '.repeat(words).trim(), moving = words => turn.progress({ message: 'Rédaction de la réponse…', preview: draft(words) });
   const ask = async (sessionId, question) => { const { value } = await f.req('/v1/questions', { sessionId, question, anchorMs: 0 }); await turns(5); await f.runtime.session.store.serial; return value.id; };
   const A = (await f.req('/v1/session/start', {})).value.id, sessionA = f.runtime.session, dirA = path.join(f.sessionsRoot, A);
   await f.block(A, 1, 8000);
-  // Virtual seconds from here: the cadence of these saves is the only thing below that runs on a timer.
-  t.mock.timers.enable({ apis: ['setTimeout'] });
-  const second = async () => { t.mock.timers.tick(1000); await turns(5); };
+  // Only the checkpoint runs on these virtual seconds; HTTP and question deadlines keep their own timers.
+  const second = async () => {
+    await clock.advance(1000);
+    await turns(5);
+  };
   const onDisk = async id => (await f.saved(id, 'deep-answers.json')).jobs.at(-1);
   await ask(A, 'Que se passe-t-il ?');
   assert.deepEqual([(await onDisk(A)).status, (await onDisk(A)).preview], ['running', ''], 'a question that starts is saved at once');
@@ -715,7 +727,11 @@ test('the draft of an answer is published each time it moves and saved at most o
   held.hold();
   let writes = held.seen.length, polled = await f.polled();
   moving(1); await second(); await held.reached(writes + 1);
-  for (let words = 2; words <= 101; words++) { moving(words); t.mock.timers.tick(50); await tick(); }
+  for (let words = 2; words <= 101; words++) {
+    moving(words);
+    await clock.advance(50);
+    await tick();
+  }
   polled = await f.polled(polled);
   assert.deepEqual([polled[chat].status, polled[chat].value.chat.jobs.at(-1).preview, held.seen.length - writes, (await onDisk(A)).preview], [200, draft(101), 1, ''],
     'the latest draft is published under a new tag while one write, and only one, is held by the disk');
@@ -726,9 +742,12 @@ test('the draft of an answer is published each time it moves and saved at most o
   // The answer stalls: its last draft is not left unsaved. Nothing before the second is over, the draft then.
   writes = held.seen.length;
   moving(200); await turns(5); await sessionA.store.serial;
-  t.mock.timers.tick(999); await turns(5);
+  await clock.advance(999);
+  await turns(5);
   assert.deepEqual([held.seen.length - writes, (await onDisk(A)).preview], [0, draft(101)]);
-  t.mock.timers.tick(1); await turns(5); await sessionA.store.serial;
+  await clock.advance(1);
+  await turns(5);
+  await sessionA.store.serial;
   assert.deepEqual([held.seen.length - writes, (await onDisk(A)).preview], [1, draft(200)], 'one second after it stopped moving, the draft is on disk');
 
   // The disk refuses the next draft, then the final state: the barrier of the session knows, and its end says so.
@@ -762,13 +781,44 @@ test('the draft of an answer is published each time it moves and saved at most o
   assert.deepEqual([await tree(dirB), await tree(dirC), (await f.req('/v1/state')).value.chat.jobs.map(job => job.question)], [closedB, closedC, ['Et maintenant ?']], 'the archive opened in its place is not written into, and shows its own questions only');
 });
 
+test('closing the server runtime with a pending draft cancels its checkpoint timer and leaves no late session write', async t => {
+  const clock = manualClock(), turn = drivenChat();
+  const f = await fixture(t, {
+    chat: turn.answer,
+    runtimeOptions: () => ({ setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer }),
+  });
+  const id = (await f.req('/v1/session/start', {})).value.id;
+  const dir = path.join(f.sessionsRoot, id), session = f.runtime.session;
+  await f.block(id, 1, 8000);
+  const asked = await f.req('/v1/questions', { sessionId: id, question: 'Et maintenant ?', anchorMs: 0 });
+  assert.equal(asked.status, 200);
+  await until(() => turn.progress, 'the question reached the agent');
+  await session.store.serial;
+  turn.progress({ message: 'Rédaction de la réponse…', preview: 'brouillon en attente' });
+  assert.equal(clock.armed, 1, 'the draft waits on the injected checkpoint timer');
+  assert.equal((await f.saved(id, 'deep-answers.json')).jobs.at(-1).preview, '');
+  assert.equal((await f.req('/v1/state?view=chat')).value.chat.jobs.at(-1).preview, 'brouillon en attente');
+
+  await f.runtime.close();
+  assert.equal(clock.armed, 0, 'closing cancels the injected timer');
+  const last = (await f.saved(id, 'deep-answers.json')).jobs.at(-1);
+  assert.deepEqual([last.status, last.message, last.preview], ['cancelled', 'Session terminée.', 'brouillon en attente']);
+  assert.equal((await f.saved(id, 'manifest.json')).state, 'archived');
+  const closed = await tree(dir);
+  await clock.advance(3000);
+  assert.deepEqual(await tree(dir), closed, 'no session file is added, removed or rewritten after closing');
+});
+
 test('synthetic probe of the ticket at the host, on a disk that keeps up: thirty answers of 2 000 characters and a draft that moves a hundred times, every 80 ms', async t => {
+  const clock = manualClock();
   const turn = drivenChat(), answered = { answer: 'r'.repeat(2000), kind: 'explanation', citations: [], limits: [] };
-  const f = await fixture(t, { chat: input => (/^Question \d+ \?$/.test(input.question) ? Promise.resolve(answered) : turn.answer(input)) });
+  const f = await fixture(t, {
+    chat: input => (/^Question \d+ \?$/.test(input.question) ? Promise.resolve(answered) : turn.answer(input)),
+    runtimeOptions: () => ({ setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer }),
+  });
   const id = (await f.req('/v1/session/start', {})).value.id, session = f.runtime.session;
   await f.block(id, 1, 8000);
   for (let i = 1; i <= 30; i++) await f.ask(id, `Question ${i} ?`);
-  t.mock.timers.enable({ apis: ['setTimeout'] });
   const held = disk(t, 'deep-answers.json');
   await f.req('/v1/questions', { sessionId: id, question: 'Et maintenant ?', anchorMs: 0 });
   await turns(5); await session.store.serial;
@@ -776,7 +826,9 @@ test('synthetic probe of the ticket at the host, on a disk that keeps up: thirty
   // Eight virtual seconds of an answer being written, the disk taking each save before the next draft.
   for (let step = 1; step <= 100; step++) {
     turn.progress({ message: 'Rédaction de la réponse…', preview: 'mot '.repeat(step) });
-    t.mock.timers.tick(80); await tick(); await session.store.serial;
+    await clock.advance(80);
+    await tick();
+    await session.store.serial;
   }
   const writes = held.seen.slice(from), figures = { ecritures: writes.length, octets: writes.reduce((sum, write) => sum + write.bytes, 0) };
   t.diagnostic(`sonde F03, synthétique, hôte serveur, disque libre (100 progressions espacées de 80 ms, 30 réponses de 2000 caractères) : ${JSON.stringify(figures)}`);

@@ -8,7 +8,11 @@
 const active = (job) => job.status === "queued" || job.status === "running";
 const shapeOf = (jobs) => jobs.map((job) => `${job.id}:${job.status}`).join();
 
-function createQuestionCheckpoint({ delayMs = 1000 } = {}) {
+function createQuestionCheckpoint({
+  delayMs = 1000,
+  setTimer = (fn, ms) => setTimeout(fn, ms),
+  clearTimer = (handle) => clearTimeout(handle),
+} = {}) {
   // The state not saved yet, with the store of the session it was published for, the timer that will hand it
   // over and the shape last handed to a store.
   let unsaved = null;
@@ -19,7 +23,7 @@ function createQuestionCheckpoint({ delayMs = 1000 } = {}) {
   // comes late is written into that session's folder, never into the one loaded since, and into none once
   // its store is sealed.
   const flush = () => {
-    clearTimeout(timer);
+    clearTimer(timer);
     timer = null;
     const waiting = unsaved;
     unsaved = null;
@@ -33,13 +37,13 @@ function createQuestionCheckpoint({ delayMs = 1000 } = {}) {
     const shape = shapeOf(state.jobs);
     unsaved = { store, state, shape };
     if (shape !== savedShape || !state.jobs.some(active)) flush();
-    else timer ||= setTimeout(flush, delayMs);
+    else timer ||= setTimer(flush, delayMs);
   };
 
   // Nothing of the former session waits past this point: what it had to save was handed over when its
   // questions were settled, and a timer left behind would have nothing to write.
   const forget = () => {
-    clearTimeout(timer);
+    clearTimer(timer);
     timer = unsaved = savedShape = null;
   };
 
