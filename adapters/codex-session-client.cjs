@@ -322,6 +322,15 @@ class CodexSessionClient {
       onEvent: (m, p) => {
         if (this.rpc === rpc) this.event(m, p);
       },
+      onFault: (error, method) => {
+        if (this.rpc !== rpc) return;
+        this.trace("event.failed", { method, error: safeError(error) });
+        const active = this.active;
+        if (!active) return;
+        active.reject(Error("Codex : événement illisible. Réessaie la question.", { cause: error }));
+        this.ready = null;
+        this.rpc?.close();
+      },
       onRequest: (m, p) => {
         if (this.rpc !== rpc) throw Error("Connexion obsolète.");
         return this.tool(m, p);
@@ -767,13 +776,17 @@ class CodexSessionClient {
     let watchdog;
     try {
       this.trace("turn.start.request",{model:this.model});
-      const response = await this.rpc.request("turn/start", {
-        threadId: this.threadId,
-        input: [{ type: "text", text: instructions }, ...mediaInput],
-        model: this.model || null,
-        effort: this.reasoningEffort,
-        summary: "none",
-        outputSchema,
+      const response = await new Promise((acknowledge, fail) => {
+        // Écouter le premier rejet du tour avant que sa fermeture rejette aussi turn/start.
+        done.catch(fail);
+        this.rpc.request("turn/start", {
+          threadId: this.threadId,
+          input: [{ type: "text", text: instructions }, ...mediaInput],
+          model: this.model || null,
+          effort: this.reasoningEffort,
+          summary: "none",
+          outputSchema,
+        }).then(acknowledge, fail);
       });
       active.turnId = response.turn.id;
       this.trace("turn.start.ack",{status:response.turn.status});

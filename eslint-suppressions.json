@@ -33,7 +33,7 @@
   },
   "adapters/codex-rpc.cjs": {
     "no-empty": {
-      "count": 3
+      "count": 1
     }
   },
   "adapters/codex-session-agent.cjs": {

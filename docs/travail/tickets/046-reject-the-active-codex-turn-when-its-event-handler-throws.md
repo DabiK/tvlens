@@ -1,7 +1,7 @@
 ---
 id: T046
 titre: Reject the active Codex turn when its event handler throws
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -163,3 +163,67 @@ test ou l'écart constaté.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex le 15/10 sur `2a1bbea` : défaut et notification malformée toujours présents ;
+  modèle de fermeture et trace conditionnelle confirmés par lecture. Détails et écarts prévus dans
+  `.harness-state/tickets/T046/`. Mesure initiale : commande `measureText` des sources exécutée,
+  code 0, `{ lignes_longues: 6, catch_vides: 3 }`. Aucun fournisseur exécuté.
+
+- Transport, tests d'abord : `node --test --test-concurrency=1 tests/codex-handler-failure.test.cjs`
+  rouge observé (0/1, `onFault` absent), puis vert (1/1). Cas de compatibilité ajoutés : 5/5 verts,
+  avant et après séparation JSON/distribution. Sorties dans `transport-*.log` du dossier d'état.
+  `node_modules/.bin/eslint --prune-suppressions adapters/codex-rpc.cjs` : code 0 ; gel `no-empty`
+  abaissé de 3 à 1 après signalement du contrôle rapide, sans hausse ailleurs.
+
+- Client, même commande : rouge observé (5/6, rejet absent), puis vert (6/6). Le complément avec vrai
+  transport et `turn/start` en attente échoue sur le message générique de fermeture (12/13) ;
+  conservation du premier défaut dans `run`, puis 13/13 verts. Raisonnement consigné dans `ecarts.md`.
+  Preuves ajoutées pour les signalements inactifs et obsolètes, les filtres de trace et `safeError`.
+
+- `node scripts/check.mjs --changed` : code 0, vert, 14/14 tests dédiés. Le cas supplémentaire conserve
+  la tolérance existante des valeurs JSON non objets. La commande `measureText` des sources rend
+  `{ lignes_longues: 4, catch_vides: 1 }`, code 0. Sorties : `check-changed.log`, `metrics.log`.
+
+- `node --test --test-concurrency=1 tests/codex-stream-decoding.test.cjs tests/codex-connect-race.test.cjs tests/architecture-f05.test.cjs tests/architecture-f08.test.cjs tests/review-regressions.test.cjs` :
+  code 0, 56/56 tests verts, aucun ignoré ni annulé. Aucune assertion existante modifiée.
+  Sortie : `.harness-state/tickets/T046/regressions.log`.
+
+- Contrôle final : `node scripts/check.mjs`, code 0, vert. Règles, format, lint, gel du lint et cliquet
+  verts ; 1 162/1 162 tests JS sur 98 fichiers ; 84 tests Python, résultat OK avec 1 ignoré.
+  Sortie : `.harness-state/tickets/T046/check-full.log`. `git diff --check` : code 0.
+  Verdict `TERMINÉ` écrit dans le dossier d'état ; relecture et intégration laissées à la boucle.
+  Aucun commit, push ni fournisseur réel.
+
+- Reprise après `.harness-state/tickets/T046/relecture-1.md` : constat mineur accepté sur la priorité
+  indue du défaut de gestionnaire après un autre rejet. Lecture du rapport, du journal, des écarts,
+  de l'état Git et du diff effectuée ; correction prévue et réserve hors périmètre consignées dans
+  le dossier d'état. Tests de conservation du refus de garde et du diagnostic 401 à ajouter d'abord.
+
+- Correction, tests d'abord : `node --test --test-concurrency=1 tests/codex-handler-failure.test.cjs`,
+  code 1, 14/15 réussis ; nouveau test rouge sur le message de garde remplacé par le défaut.
+  Retrait de `handlerFailure` et de la priorité dans le `catch` ; écoute du rejet de la question
+  dès l'attente de `turn/start`. Même commande : code 0, 15/15 réussis, puis 19/19 avec les cas
+  complémentaires (garde pendant le démarrage fermé, diagnostic 401 avant/après acquittement,
+  succès du tour qui attend toujours l'acquittement). Aucune assertion antérieure modifiée.
+  Sorties : `correction-1-guard-red.log`, `correction-1-guard-green.log`, `correction-1-cases-green.log`.
+
+- `node scripts/check.mjs --changed` : code 0, vert, 19/19 tests dédiés ; règles, format, lint, gel
+  et cliquet verts (`correction-1-check-changed.log`).
+  `node --test --test-concurrency=1 tests/codex-stream-decoding.test.cjs tests/codex-connect-race.test.cjs tests/architecture-f05.test.cjs tests/architecture-f08.test.cjs tests/review-regressions.test.cjs` :
+  code 0, 56/56 réussis, aucun ignoré ni annulé (`correction-1-regressions.log`).
+  `git diff --check` : code 0. Tous les journaux sont dans `.harness-state/tickets/T046/`.
+
+- Contrôle complet après correction : `node scripts/check.mjs`, code 0, vert ; 1 167/1 167 tests JS
+  sur 98 fichiers ; 84 tests Python, OK avec 1 ignoré. Règles, format, lint, gel et cliquet verts.
+  Sortie : `.harness-state/tickets/T046/correction-1-check-full.log`. Constat mineur 1 corrigé ;
+  réserve hors périmètre 2 (seuil du tampon sans nom) conservée dans `reste` du nouveau verdict
+  `TERMINÉ`. Relecture de correction et intégration laissées à la boucle. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- Réserve hors périmètre de la relecture 1, constat 2 : adapters/codex-rpc.cjs conserve le seuil de tampon 4000000 sans constante nommée. Ce nombre préexistait au ticket ; il n'a pas été modifié pendant la correction.
+- .harness-state/tickets/T046/relecture-2.md : `adapters/codex-rpc.cjs:73` (hors périmètre, reconduit)
+
+  `if(buffer.length>4000000)return this.close();` : la taille limite du tampon reste un nombre magique sans nom (standards, « Les constantes portent un nom »). Le nombre existait avant le ticket, qui ne demande pas de le nommer. C'est une réserve, déjà inscrite par l'implémenteur dans `reste` du verdict.
+- .harness-state/tickets/T046/relecture-2.md : **Écart accepté, périmètre (élagage du gel ESLint).** Inchangé depuis la relecture 1 : `no-empty` passe de 3 à 1, comme les standards l'exigent.
+- .harness-state/tickets/T046/relecture-2.md : **Écart accepté, critère 3 étendu au vrai transport (complément dans `run`).** La nouvelle forme, écouter `done` dès l'attente de `turn/start`, rend à l'appelant le premier motif de rejet. Le défaut de gestionnaire ne passe plus devant un refus de la garde ou un diagnostic 401. L'affirmation de `ecarts.md` est exacte : « un succès du tour ne remplace pas l'acquittement attendu de `turn/start` ». Le test « a completed turn still waits for the start acknowledgment » la prouve.
