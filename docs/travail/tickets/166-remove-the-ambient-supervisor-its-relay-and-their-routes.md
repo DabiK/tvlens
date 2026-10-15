@@ -103,7 +103,7 @@ La suite de gate encore présente prouve que l’étape intermédiaire conserve 
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ?
+Décision du propriétaire, le 15/10 (« Oui », en réponse à la question posée) : oui. Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert.
 
 La décision doit figurer au début de cette section, même si T165 a été tranché. Elle ne couvre que
 les cas des capacités supprimées ; les preuves génériques sont conservées. Les suppressions sont

@@ -154,8 +154,9 @@ historiques volontairement abandonnées.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : supprimer les deux adaptateurs hérités, leurs cinq scripts
-d’évaluation, trois entrées npm et cinq tests, en acceptant la perte de ces évaluations historiques ? Et, pour que la suppression puisse passer le cliquet, autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés ?
+Décision du propriétaire, le 15/10 (« Oui », en réponse à la question posée) : oui. Supprimer les deux adaptateurs
+hérités, leurs cinq scripts d’évaluation, trois entrées npm et cinq tests, en acceptant la perte de ces évaluations
+historiques, et autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés.
 
 La question vise exactement les fichiers et cas inventoriés ci-dessus. Le propriétaire inscrit sa
 décision au début de cette section ; un accord dans le journal seul ne lève pas le blocage. La décision du propriétaire, le 15/10, demande expressément de garder cette question tant que cette décision n’a pas été écrite par lui.

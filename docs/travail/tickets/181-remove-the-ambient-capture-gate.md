@@ -86,7 +86,7 @@ résiduel prouve l’absence de consultation sans comparer le texte du programme
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ?
+Décision du propriétaire, le 15/10 (« Oui », en réponse à la question posée) : oui. Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert.
 
 La décision doit être inscrite dans cette section, même si T165 et T166 ont été tranchés. Les
 suppressions sont Python : n = 0 et le plancher JavaScript ne bouge pas. T182 achève page et documents ;

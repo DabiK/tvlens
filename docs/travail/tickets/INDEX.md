@@ -144,7 +144,7 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T136](136-let-the-server-tell-which-build-it-runs-at-start-and-on-get.md) | Let the server tell which build it runs, at start and on GET /v1/version | L16 | T038, T135, T145 | — | [OPS-15](../../audit-maintenabilite.md#OPS-15) |
 | [T137](137-describe-every-file-installed-on-the-tv-in-one-manifest.md) | Describe every file installed on the TV in one manifest checked against the code | L16 | T100, T101, T103, T106, T145 | demande un ADR | [OPS-16](../../audit-maintenabilite.md#OPS-16) |
 | [T138](138-run-the-quality-check-on-github-actions-in-informative-mode.md) | Run the quality check on GitHub Actions in informative mode | L03 | T031, T145 | attend une décision | [OPS-05](../../audit-maintenabilite.md#OPS-05), [FLK-17](../../audit-maintenabilite.md#FLK-17), [OPS-19](../../audit-maintenabilite.md#OPS-19), [ADP-15](../../audit-maintenabilite.md#ADP-15) |
-| [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) | Remove the legacy OpenRouter and codex exec adapters and the scripts using them | L09 | T163 | demande un ADR ; touche au harnais ; supprime des tests ; attend une décision | [ADP-11](../../audit-maintenabilite.md#ADP-11), [OPS-11](../../audit-maintenabilite.md#OPS-11) |
+| [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) | Remove the legacy OpenRouter and codex exec adapters and the scripts using them | L09 | T163 | demande un ADR ; touche au harnais ; supprime des tests | [ADP-11](../../audit-maintenabilite.md#ADP-11), [OPS-11](../../audit-maintenabilite.md#OPS-11) |
 | [T140](140-state-what-runs-on-the-test-tv-and-the-server-in-one-place.md) | State what runs on the test TV and the server in one place | L10 | T108, T145 | attend une décision | [DOC-02](../../audit-maintenabilite.md#DOC-02) |
 | [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md) | Refuse resuming a reviewer or a sub-agent of unknown role in a ticket session | L18 | T003, T145 | touche au harnais | [ESSAI-07](../../audit-maintenabilite.md#ESSAI-07) |
 | [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md) | Show the retrospective every tool the orchestrator called, in order and timed | L18 | T003, T145 | touche au harnais | [ESSAI-08](../../audit-maintenabilite.md#ESSAI-08) |
@@ -170,8 +170,8 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T162](162-resume-the-codex-session-for-a-correction-and-prove-its-hooks.md) | Resume the Codex session for a correction, and prove its hooks run on resume | plan court | T161 | touche au harnais | — |
 | [T163](163-report-the-test-coverage-of-each-module.md) | Report the test coverage of each module | base saine | T150 | — | [audit du 15/10](../../audit-points-chauds.md) |
 | [T164](164-walk-core-runtime-and-server-recursively-in-the-architecture-guard.md) | Walk core, runtime and server recursively in the architecture guard | base saine | T163, T123 | — | [audit du 15/10](../../audit-points-chauds.md) |
-| [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md) | Remove the closed-panel ambient page, its build and its dedicated tools | base saine | T163 | demande un ADR ; touche au harnais ; supprime des tests ; attend une décision | [audit du 15/10](../../audit-points-chauds.md) |
-| [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md) | Remove the ambient supervisor, its relay and their routes | base saine | T165 | supprime des tests ; attend une décision | [audit du 15/10](../../audit-points-chauds.md) |
+| [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md) | Remove the closed-panel ambient page, its build and its dedicated tools | base saine | T163 | demande un ADR ; touche au harnais ; supprime des tests | [audit du 15/10](../../audit-points-chauds.md) |
+| [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md) | Remove the ambient supervisor, its relay and their routes | base saine | T165 | supprime des tests | [audit du 15/10](../../audit-points-chauds.md) |
 | [T167](167-move-mac-preview-and-recording-into-an-injected-capture-controller.md) | Move Mac preview and recording into an injected capture controller | base saine | T016, T021, T129 | demande un ADR | [audit du 15/10](../../audit-points-chauds.md) |
 | [T168](168-keep-mac-capture-resources-inside-one-controller.md) | Keep Mac capture resources inside one controller | base saine | T167 | — | [audit du 15/10](../../audit-points-chauds.md) |
 | [T169](169-expose-tv-chat-models-through-a-dedicated-classic-script.md) | Expose TV chat models through a dedicated classic script | base saine | T182 | — | [audit du 15/10](../../audit-points-chauds.md) |
@@ -186,8 +186,8 @@ terminés. Le statut de chacun est dans son en-tête, pas ici. Chaque constat ci
 | [T178](178-report-a-deterministic-capture-to-display-latency.md) | Report a deterministic capture-to-display latency | base saine | T058, T066, T168, T171, T183 | demande un ADR | [audit du 15/10](../../audit-points-chauds.md) |
 | [T179](179-move-headless-capture-admission-into-one-intake-owner.md) | Move headless capture admission into one intake owner | base saine | T066, T123, T147 | demande un ADR | [audit du 15/10](../../audit-points-chauds.md) |
 | [T180](180-move-headless-session-transitions-into-one-coordinator.md) | Move headless session transitions into one coordinator | base saine | T179 | demande un ADR | [audit du 15/10](../../audit-points-chauds.md) |
-| [T181](181-remove-the-ambient-capture-gate.md) | Remove the ambient capture gate | base saine | T166 | supprime des tests ; attend une décision | [audit du 15/10](../../audit-points-chauds.md) |
-| [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) | Remove the ambient integrations of the TV page and its documents | base saine | T181, T185 | touche au harnais ; supprime des tests ; attend une décision | [audit du 15/10](../../audit-points-chauds.md) |
+| [T181](181-remove-the-ambient-capture-gate.md) | Remove the ambient capture gate | base saine | T166 | supprime des tests | [audit du 15/10](../../audit-points-chauds.md) |
+| [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) | Remove the ambient integrations of the TV page and its documents | base saine | T181, T185 | touche au harnais ; supprime des tests | [audit du 15/10](../../audit-points-chauds.md) |
 | [T183](183-deliver-the-pushed-state-of-the-mac-window-through-one-tested-seam.md) | Deliver the pushed state of the Mac window through one tested seam | base saine | T168, T058 | demande un ADR | [audit du 15/10](../../audit-points-chauds.md) |
 | [T184](184-handle-or-justify-every-empty-catch-in-the-core.md) | Handle or justify every empty catch in the core | base saine | T177 | — | [audit du 15/10](../../audit-points-chauds.md) |
 | [T185](185-drive-the-paired-tv-page-in-the-test-bench.md) | Drive the paired TV page in the test bench | base saine | T163 | — | [audit du 15/10](../../audit-points-chauds.md) |
@@ -248,7 +248,7 @@ dépendances, puis de leur numéro.
 2. **Filet de tests** : [T016](016-make-the-static-guards-of-the-mac-renderer-fail-when-they.md), [T021](021-import-the-rolling-recorder-in-its-tests-instead-of.md), [T055](055-share-the-wait-helpers-of-the-tests-and-make-every-bounded.md), [T058](058-share-the-simulated-clocks-of-the-tests-instead-of-importing.md), [T066](066-drive-the-question-checkpoint-of-the-server-host-with-an.md), [T129](129-keep-a-pushed-state-from-being-overwritten-by-an-older-read.md),
    [T046](046-reject-the-active-codex-turn-when-its-event-handler-throws.md), [T185](185-drive-the-paired-tv-page-in-the-test-bench.md) (banc de la page TV appairée).
 3. **Domaine et code mort** : [T098](098-give-every-paying-npm-script-the-live-suffix-and-test-the.md), [T100](100-remove-dead-exports-and-move-the-temporal-target-out-of-the.md), [T101](101-remove-unreachable-tv-panel-code-and-let-test-fixtures.md), [T123](123-let-a-watch-session-raise-its-own-ending-and-close-its.md).
-4. **Coupes, sur décision du propriétaire** : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) (adaptateurs hérités) ; [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md),
+4. **Coupes, décidées par le propriétaire le 15/10** : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) (adaptateurs hérités) ; [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md),
    [T181](181-remove-the-ambient-capture-gate.md) et [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) (affichage ambient panneau fermé).
 5. **Découpages** : capture Mac ([T167](167-move-mac-preview-and-recording-into-an-injected-capture-controller.md), [T168](168-keep-mac-capture-resources-inside-one-controller.md), [T183](183-deliver-the-pushed-state-of-the-mac-window-through-one-tested-seam.md)) ; conversation TV ([T169](169-expose-tv-chat-models-through-a-dedicated-classic-script.md),
    [T170](170-move-tv-polling-into-an-injected-controller.md), [T171](171-keep-tv-chat-cards-and-submission-state-inside-one-view.md)) ; `createSessionRuntime` ([T172](172-build-the-session-providers-of-createsessionruntime-outside-it.md), [T173](173-move-the-restore-and-close-of-a-session-runtime-into-their-own-module.md)) ; routes HTTP
@@ -278,12 +278,7 @@ section « Hypothèses bloquantes » du ticket.
 
 - [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md) — Hold the full remediation queue until the owner reopens it. Décision attendue du propriétaire : rouvrir la file complète des tickets de dette, après le plan court, en relisant d'abord les tickets retenus contre le code du moment.
 - [T138](138-run-the-quality-check-on-github-actions-in-informative-mode.md) — Run the quality check on GitHub Actions in informative mode. Décision attendue du propriétaire : sous quelles conditions la CI tourne sur GitHub. Elle porte sur
-- [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) — Remove the legacy OpenRouter and codex exec adapters and the scripts using them. Décision attendue du propriétaire : supprimer les deux adaptateurs hérités, leurs cinq scripts
 - [T140](140-state-what-runs-on-the-test-tv-and-the-server-in-one-place.md) — State what runs on the test TV and the server in one place. Décision attendue du propriétaire : la version de la nuit tourne-t-elle encore sur la TV de test et sur le
-- [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md) — Remove the closed-panel ambient page, its build and its dedicated tools. Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ? Et, pour que la suppression puisse passer le cliquet, autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés ?
-- [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md) — Remove the ambient supervisor, its relay and their routes. Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ?
-- [T181](181-remove-the-ambient-capture-gate.md) — Remove the ambient capture gate. Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ?
-- [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) — Remove the ambient integrations of the TV page and its documents. Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ? Et, pour que la suppression puisse passer le cliquet, autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés ?
 
 ## Tickets à relire avant de lancer
 
@@ -298,8 +293,8 @@ section « Hypothèses bloquantes » du ticket.
 
 - [T163](163-report-the-test-coverage-of-each-module.md) — Report the test coverage of each module
 - [T164](164-walk-core-runtime-and-server-recursively-in-the-architecture-guard.md) — Walk core, runtime and server recursively in the architecture guard
-- [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md) — Remove the closed-panel ambient page, its build and its dedicated tools _(demande un ADR ; touche au harnais ; supprime des tests ; attend une décision)_
-- [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md) — Remove the ambient supervisor, its relay and their routes _(supprime des tests ; attend une décision)_
+- [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md) — Remove the closed-panel ambient page, its build and its dedicated tools _(demande un ADR ; touche au harnais ; supprime des tests)_
+- [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md) — Remove the ambient supervisor, its relay and their routes _(supprime des tests)_
 - [T167](167-move-mac-preview-and-recording-into-an-injected-capture-controller.md) — Move Mac preview and recording into an injected capture controller _(demande un ADR)_
 - [T168](168-keep-mac-capture-resources-inside-one-controller.md) — Keep Mac capture resources inside one controller
 - [T169](169-expose-tv-chat-models-through-a-dedicated-classic-script.md) — Expose TV chat models through a dedicated classic script
@@ -314,8 +309,8 @@ section « Hypothèses bloquantes » du ticket.
 - [T178](178-report-a-deterministic-capture-to-display-latency.md) — Report a deterministic capture-to-display latency _(demande un ADR)_
 - [T179](179-move-headless-capture-admission-into-one-intake-owner.md) — Move headless capture admission into one intake owner _(demande un ADR)_
 - [T180](180-move-headless-session-transitions-into-one-coordinator.md) — Move headless session transitions into one coordinator _(demande un ADR)_
-- [T181](181-remove-the-ambient-capture-gate.md) — Remove the ambient capture gate _(supprime des tests ; attend une décision)_
-- [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) — Remove the ambient integrations of the TV page and its documents _(touche au harnais ; supprime des tests ; attend une décision)_
+- [T181](181-remove-the-ambient-capture-gate.md) — Remove the ambient capture gate _(supprime des tests)_
+- [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md) — Remove the ambient integrations of the TV page and its documents _(touche au harnais ; supprime des tests)_
 - [T183](183-deliver-the-pushed-state-of-the-mac-window-through-one-tested-seam.md) — Deliver the pushed state of the Mac window through one tested seam _(demande un ADR)_
 - [T184](184-handle-or-justify-every-empty-catch-in-the-core.md) — Handle or justify every empty catch in the core
 - [T185](185-drive-the-paired-tv-page-in-the-test-bench.md) — Drive the paired TV page in the test bench
@@ -462,7 +457,7 @@ section « Hypothèses bloquantes » du ticket.
 - [T104](104-make-the-tv-ipk-build-reproducible-and-require-its-inputs.md) — Make the TV ipk build reproducible and require its inputs explicitly
 - [T105](105-build-both-tv-packages-from-a-file-manifest-with-one-npm.md) — Build both TV packages from a file manifest with one npm command
 - [T106](106-inventory-every-entry-of-the-scripts-folder-and-keep-the.md) — Inventory every entry of the scripts folder and keep the table in sync
-- [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) — Remove the legacy OpenRouter and codex exec adapters and the scripts using them _(demande un ADR ; touche au harnais ; supprime des tests ; attend une décision du propriétaire)_
+- [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md) — Remove the legacy OpenRouter and codex exec adapters and the scripts using them _(demande un ADR ; touche au harnais ; supprime des tests du propriétaire)_
 
 ### L10 — Une documentation qui dit l'état actuel
 

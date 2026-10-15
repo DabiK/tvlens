@@ -105,7 +105,7 @@ Le scénario ajouté ici vérifie surveillance, carte et réglages sans ambient.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ? Et, pour que la suppression puisse passer le cliquet, autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés ?
+Décision du propriétaire, le 15/10 (« Oui », en réponse à la question posée) : oui. Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert, et autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés.
 
 La décision doit figurer dans cette section, même si les trois premières étapes ont été tranchées.
 La boucle resserre le plancher à chaque intégration (`scripts/loop/run.mjs:407`) ; les cas appairés

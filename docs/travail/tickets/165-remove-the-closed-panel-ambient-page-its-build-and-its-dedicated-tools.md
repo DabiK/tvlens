@@ -114,7 +114,7 @@ sur le panneau ouvert ne sont pas affaiblies au motif qu'ambient disparaît.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert ? Et, pour que la suppression puisse passer le cliquet, autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés ?
+Décision du propriétaire, le 15/10 (« Oui », en réponse à la question posée) : oui. Supprimer définitivement l’affichage ambient panneau fermé, son superviseur, son relais et ses outils dédiés, tout en conservant la surveillance et les cartes du panneau ouvert, et autoriser l'abaissement du plancher `cas_de_test` du nombre exact de cas supprimés.
 
 Ce ticket propose le premier temps de cette suppression, avec le retrait des huit cas JavaScript
 dédiés cité plus haut ; `supprime_tests: oui` ne s'applique qu'après la décision inscrite au début de
