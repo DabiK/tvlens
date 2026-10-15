@@ -1,7 +1,7 @@
 ---
 id: T147
 titre: Compute the polled state views of the server host in pure functions
-statut: a-faire
+statut: termine
 bloque_par: T118, T119
 adr: non
 installe: non
@@ -116,3 +116,68 @@ Le ticket tranche ainsi :
   consigne active : le critère 3 se mesure sur le fichier qu'ils laissent.
 
 ## Journal
+
+### Cadrage
+
+- Consignes, ticket, hôte, appelant HTTP, tests protecteurs et ADR pertinents lus ; exploration et écarts dans `.harness-state/tickets/T147/`.
+- `git status --short` : ticket déjà modifié (`en-cours`), `design/continuous-context/` et `experiments/` non suivis ; éléments conservés.
+- `wc -l runtime/headless-runtime.cjs` : **1113** lignes avant extraction.
+- Aucun écart prévu ; mémoïsation et lectures en direct conservées dans l'hôte.
+
+### Tests et extraction
+
+- `node --test tests/state-views.test.cjs` : cinq cycles rouges/verts observés, un comportement à la fois (panneau, en-tête, cartes, assemblage, overlay). Sorties conservées dans `panel-{red,green}.log`, `header-{red,green}.log`, `cards-{red,green}.log`, `assembly-{red,green}.log` et `overlay-{red,green}.log` du dossier d'état. Les rouges sont des échecs d'assertion, pas d'import.
+- `node --test --test-concurrency=1 tests/state-views.test.cjs tests/server-state-views.test.cjs tests/server-surveillance.test.cjs tests/timeline-server.test.cjs tests/remote-server.test.cjs` : **12 tests verts**, exécutés en séquentiel (`protective-tests.log`). Les fichiers existants ne sont pas modifiés.
+- `node_modules/.bin/prettier --write --ignore-path /dev/null runtime/state-views.cjs tests/state-views.test.cjs` : code de sortie 0 (`format.log`).
+- `node scripts/check.mjs --changed` : **vert**, 5 tests, règles/format/cliquet verts ; lint non lancé car ESLint absent ou non configuré (`check-changed.log`).
+
+### Mutation exigée
+
+Valeur temporaire `PANEL_SEGMENTS = 41` dans `runtime/state-views.cjs` :
+
+- `node --test tests/state-views.test.cjs` : **rouge**, code 1, assertion `41 !== 40`, 4 tests verts et 1 rouge (`mutation-state-views-red.log`).
+- `node --test tests/server-state-views.test.cjs` : **rouge**, code 1, panneau contenant 41 passages dès `moment-860` au lieu de 40 dès `moment-861` (`mutation-server-state-views-red.log`).
+- Valeur **40 rétablie**. `node --test --test-concurrency=1 tests/state-views.test.cjs tests/server-state-views.test.cjs` : **6 tests verts** (`mutation-restored-green.log`).
+
+### Vérifications structurelles
+
+- `wc -l runtime/headless-runtime.cjs` : **860** lignes à la fin, contre **1113** au cadrage, soit **253 lignes retirées**.
+- `grep -cE "process\.|setTimeout|setInterval|Date\.now" runtime/state-views.cjs` : sortie **0** (code 1 normal de grep sans correspondance).
+- `git diff --stat` : uniquement le ticket et `runtime/headless-runtime.cjs` parmi les fichiers suivis ; `git status --short` ajoute `runtime/state-views.cjs` et `tests/state-views.test.cjs`. Aucun autre test ni `server/http.cjs` modifié. Dossiers non suivis présents au départ conservés.
+- `git diff --check` : code 0. Sorties dans `static-checks.log` du dossier d'état.
+
+### Contrôle final et remise à la boucle
+
+- `node scripts/check.mjs` : **vert**, code 0. Règles, format et cliquet verts ; **1074 tests JS verts** sur 92 fichiers, **84 tests Python, OK (1 ignoré)**. Lint non lancé : ESLint absent ou non configuré. Sortie conservée dans `.harness-state/tickets/T147/check-full.log`.
+- Critères couverts, aucun écart ni reste de périmètre. Verdict `TERMINÉ` dans `.harness-state/tickets/T147/verdict.json` ; relecture et intégration laissées à la boucle. Aucun commit ni push.
+
+### Reprise après relecture 1 — cadrage
+
+- Rapport `.harness-state/tickets/T147/relecture-1.md`, ticket et journal, écarts, `git status --short` et `git diff` relus ; travail précédent conservé.
+- Trois constats mineurs acceptés : déplacer la normalisation de l'absence de session dans la fonction pure, rétablir les deux commentaires d'origine. Test renforcé avant correction.
+- Constats 4 et 5 conservés comme réserves hors périmètre (emplacement de `refusal` et défaut de langue `fr` dupliqué) ; aucun constat contesté.
+
+### Reprise après relecture 1 — corrections
+
+- Constat 1 : le test « overlay sans session » remet désormais `undefined` pour `sessionId` et `elapsedMs`, tout en exigeant `null` dans la réponse. `node --test tests/state-views.test.cjs` : **rouge**, 4 verts et 1 échec d'assertion sur ces deux champs (`correction-overlay-red.log`).
+- `overlayView` applique désormais `sessionId ?? null` et `elapsedMs ?? null` ; l'hôte lui transmet `this.session?.id` et `watch?.now()`, sans lire l'heure dans le module pur. Même commande : **5 tests verts** (`correction-overlay-green.log`).
+- Constats 2 et 3 : commentaire d'origine sur le registre rétabli en anglais, commentaire d'origine expliquant `refusal`, `status` et `code` rétabli au-dessus du constructeur. Vérification à la lecture ; aucun test de texte source ajouté.
+- `node scripts/check.mjs --changed` : **vert**, 5 tests, règles/format/cliquet verts ; lint non lancé car ESLint absent ou non configuré (`correction-check-changed.log`).
+
+### Réserves hors périmètre de la relecture 1
+
+- Constat 4 : `refusal` reste dans `runtime/state-views.cjs`, dont l'hôte l'importe aussi pour ses refus hors vues ; un module d'erreurs de transport dédié serait un travail ultérieur.
+- Constat 5 : la langue par défaut `fr` reste dupliquée entre la vue pure et `snapshot`, cette dernière restant dans l'hôte conformément au périmètre.
+- Vérifications structurelles après correction : `wc -l runtime/headless-runtime.cjs` donne toujours **860**, soit **253 lignes retirées** ; `grep -cE "process\.|setTimeout|setInterval|Date\.now" runtime/state-views.cjs` donne **0** ; `git diff --check` sort à 0. Sorties dans `correction-static-checks.log`.
+
+### Reprise après relecture 1 — contrôle final
+
+- `node scripts/check.mjs` : **vert**, code 0. **1074 tests JS verts** sur 92 fichiers, **84 tests Python OK (1 ignoré)** ; règles, format et cliquet verts. Lint non lancé : ESLint absent ou non configuré (`correction-check-full.log`).
+- Les trois constats mineurs sont corrigés. Nouveau verdict `TERMINÉ` dans `.harness-state/tickets/T147/verdict.json`, avec les deux réserves hors périmètre dans `reste`. Relecture et intégration laissées à la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- Relecture 1, constat 4 hors périmètre : refusal reste dans le module de vues bien que l’hôte l’utilise aussi pour ses autres refus ; envisager un module d’erreurs de transport dans un travail ultérieur.
+- Relecture 1, constat 5 hors périmètre : la langue par défaut fr reste dupliquée entre stateView et snapshot, que le ticket maintient dans l’hôte.
+- .harness-state/tickets/T147/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 2 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
+- .harness-state/tickets/T147/relecture-2.md : **Écart accepté, `refusal` déplacé dans le module (déclaré dans `ecarts.md`) :** même décision qu'à la relecture 1, et pour la même raison. `surveillanceHistory` et `surveillanceDetail`, que le ticket ordonne de déplacer, ont besoin de `refusal`. Le laisser dans l'hôte aurait obligé à le recopier. Le problème de cohésion reste en réserve 1.
