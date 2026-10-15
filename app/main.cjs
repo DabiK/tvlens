@@ -32,6 +32,8 @@ const { CodexVerifier } = require('../adapters/codex-verifier.cjs');
 const { VerificationArchive } = require('../adapters/verification-archive.cjs');
 const { safeExternalUrl } = require('../adapters/external-links.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
+const { createWindowMode } = require('./window-mode.cjs');
+const { createCaptureSources } = require('./capture-sources.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 // Mirrors the bound DeepAsk enforces on waiting questions; published so that the renderer carries no literal.
@@ -42,7 +44,6 @@ let recap, recapAdapter, recapTimer, switching = false;
 let deep, bridge, videoAgent;
 let window, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
 let loaded = null;
-let sources = [], selectedId;
 const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
 const liveInspection = smoke && process.argv.includes('--live-inspection');
@@ -129,20 +130,8 @@ app.whenReady().then(async () => {
    return {...found,sessionId:state.id,moments};
   });
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
-  let fullBounds = window.getBounds(), floating = false;
-  handle('window:mode', value => {
-    if(!value || typeof value.floating!=='boolean' || typeof value.expanded!=='boolean')throw new Error('Mode de fenêtre invalide.');
-    if(value.floating){
-      if(!floating)fullBounds=window.getBounds();
-      window.setMinimumSize(420,96); window.setAlwaysOnTop(true,'floating');
-      const area=screen.getDisplayMatching(window.getBounds()).workArea;
-      const chromeHeight=window.getBounds().height-window.getContentBounds().height;
-      const height=value.expanded?Math.min(620+chromeHeight,area.height):64+chromeHeight;
-      const old=window.getBounds();
-      window.setBounds({x:Math.max(area.x,Math.min(floating?old.x:area.x+area.width-440,area.x+area.width-420)),y:Math.max(area.y,Math.min(floating?old.y:area.y+60,area.y+area.height-height)),width:420,height});
-    }else{window.setAlwaysOnTop(false);window.setMinimumSize(1000,720);window.setBounds(fullBounds);}
-    floating=value.floating;return value;
-  });
+  const windowMode = createWindowMode({ window, screen });
+  handle('window:mode', value => windowMode(value));
   const codexBinary = await findCodex();
   const quota=new CodexQuota();
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
@@ -286,25 +275,13 @@ app.whenReady().then(async () => {
     if (!result.canceled) { const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance }; config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); Object.assign(config, host); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome;for(const client of surveillanceClients())client.authHome=config.codexAuthHome; }
     return configuration();
   });
-  const sourcePreferenceFile = path.join(app.getPath('userData'), 'last-source.json');
-  let lastSource = await fs.readFile(sourcePreferenceFile, 'utf8').then(JSON.parse).catch(() => null);
-  let capturedSource = null;
-  handle('capture:sources', async () => {
-    sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }] : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
-    const available = sources.filter(s => s.name !== 'TVLens').map(s => ({ id: s.id, name: s.name }));
-    // Window IDs can be recycled: only preselect when both ID and title still match.
-    const preferred = available.find(s => s.id === lastSource?.id && s.name === lastSource?.name);
-    return { permission: smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen'), sources: available, preferredSourceId: preferred?.id || null };
+  const captureSources = await createCaptureSources({
+    smoke, desktopCapturer, systemPreferences, shell,
+    preferenceFile: path.join(app.getPath('userData'), 'last-source.json'),
   });
-  handle('capture:select', async id => {
-    const source = sources.find(s => s.id === id && s.name !== 'TVLens');
-    if (!source) throw new Error('Source indisponible');
-    selectedId = id;
-    lastSource = { id, name: source.name }; capturedSource = source.name;
-    await fs.mkdir(path.dirname(sourcePreferenceFile), { recursive: true });
-    await fs.writeFile(sourcePreferenceFile, JSON.stringify(lastSource), { mode: 0o600 });
-  });
-  handle('capture:settings', () => shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'));
+  handle('capture:sources', () => captureSources.sources());
+  handle('capture:select', id => captureSources.select(id));
+  handle('capture:settings', () => captureSources.settings());
   // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
   let storageShown = null;
   const ingestions = new Set();
@@ -456,7 +433,8 @@ app.whenReady().then(async () => {
     const id = randomUUID(), at = Date.now(), runtime = compose(id);
     // Additive title: the captured source and the start date are what a viewer recognises in a list. Set
     // in memory only: the first manifest written by the runtime carries it.
-    const name = capturedSource ? `${capturedSource.slice(0, 80)} · ${sessionTitle(at).replace(/^Session du /, '')}` : sessionTitle(at);
+    const sourceName = captureSources.capturedSourceName();
+    const name = sourceName ? `${sourceName.slice(0, 80)} · ${sessionTitle(at).replace(/^Session du /, '')}` : sessionTitle(at);
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at);
@@ -613,8 +591,7 @@ app.whenReady().then(async () => {
     } catch { return gone(); }
   });
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
-    const source = sources.find(s => s.id === selectedId);
-    selectedId = undefined;
+    const source = captureSources.takeSelectedSource();
     if (!source || request.frame !== window.webContents.mainFrame) return callback({});
     callback({ video: source, audio: 'loopback' });
   });

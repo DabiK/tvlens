@@ -76,6 +76,16 @@ Tout cela est prouvé par simulation ; la qualité de la détection avec un vrai
 
 ## Interface et dépendances
 
+Les logiques propres à l’hôte Mac suivent la forme de `app/window-mode.cjs` et
+`app/capture-sources.cjs` : une fabrique reçoit les objets Electron en paramètres et garde tout
+l’état mutable dans son instance. Elle ne charge ni Electron, ni les compositions `runtime/`, ni
+les adaptateurs substitués par les bancs Mac ; les choix d’environnement lui sont transmis par
+`app/main.cjs`. Les bancs remplacent Electron à chaque lancement mais gardent les nouveaux modules
+en cache : aucune dépendance Electron ni aucun état d’un lancement ne doit donc vivre au niveau
+du module. `main.cjs` conserve la table des canaux et événements (`handle` et `send`), avec une
+ligne par canal qui appelle le module ; les gardes du contrat IPC continuent ainsi de lire cette
+table dans un seul fichier. Les fabriques se testent sans Electron, avec des objets injectés.
+
 - `ViewingShell` gère la navigation, les états de couverture et le chrome visuel.
 - Les modèles de vue purs (`app/ui/job-view.mjs`, `surveillance-view.mjs`, `sessions-view.mjs`, `card-queue.mjs`) sont testés sans DOM ; le chat et la frise sont redessinés par entrée, sans défilement forcé.
 - `renderRecapView` rend les snapshots dans le panneau Mémoire et le dialogue compact ; `replay` et `notice` sont injectés.
