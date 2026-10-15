@@ -34,6 +34,8 @@ const { safeExternalUrl } = require('../adapters/external-links.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
 const { createWindowMode } = require('./window-mode.cjs');
 const { createCaptureSources } = require('./capture-sources.cjs');
+const { createMomentActions } = require('./moment-actions.cjs');
+const { sessionRows: buildSessionRows } = require('./session-rows.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 // Mirrors the bound DeepAsk enforces on waiting questions; published so that the renderer carries no literal.
@@ -115,20 +117,6 @@ app.whenReady().then(async () => {
   try{registerShortcut(viewing.bookmarkShortcut);}catch{}
   handle('viewing:get',()=>({...viewing,shortcutRegistered:(smoke&&!process.argv.includes('--live-shortcut'))||Boolean(registeredShortcut)}));
   handle('viewing:save',async value=>{if(typeof value?.bookmarkShortcut!=='string'||value.bookmarkShortcut.length>100)throw Error('Raccourci invalide.');if(value.bookmarkShortcut!==registeredShortcut)registerShortcut(value.bookmarkShortcut);viewing=await viewingSettings.save(value);return viewing;});
-  let searchController;
-  handle('moments:search',async query=>{
-   // The session that asks is held until its answer: passages, thumbnails and sessionId all come from it. An
-   // answer that is ready once another session is loaded, or none, is refused instead of borrowing that one's media.
-   const session = loaded?.runtime;
-   if (!session) throw Error('Démarre une observation.');
-   searchController?.abort();
-   searchController = new AbortController();
-   const signal = AbortSignal.any([searchController.signal, AbortSignal.timeout(15000)]);
-   const state=session.watch.snapshot(),all=[...state.history,...state.segments];const found=await session.search.search({query,segments:all,anchorMs:state.capturedThroughMs,signal,limit:6});
-   const moments=await Promise.all(found.moments.map(async m=>({...m,preview:m.available?(await session.store.read(m.id).catch(()=>null))?.frames?.[0]?.dataUrl:null})));
-   if (session !== loaded?.runtime) throw Error('Session obsolète.');
-   return {...found,sessionId:state.id,moments};
-  });
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
   const windowMode = createWindowMode({ window, screen });
   handle('window:mode', value => windowMode(value));
@@ -169,6 +157,8 @@ app.whenReady().then(async () => {
   });
   videoAgent = conversation.agent;
   deep = conversation.deep;
+  const momentActions = createMomentActions({ getSession: () => loaded, ask, viewingActions, deep });
+  handle('moments:search', query => momentActions.search(query));
   // An external MCP context is opened on the loaded session, never on one that is being closed: the contexts of a
   // session are revoked as its end begins (endSession), and none may be opened on it again while that end is awaited.
   bridge = await new VideoBridge({ descriptor: path.join(app.getPath('userData'), 'mcp-bridge.json'), makeTools: (...input) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return conversation.makeTools(...input); } }).start();
@@ -321,33 +311,7 @@ app.whenReady().then(async () => {
   const sessionRows = async () => {
     const id = loaded?.runtime.watch.id || null;
     const sessions = await library.list({ current: loaded?.runtime.readOnly ? null : id });
-    if (loaded && !loaded.runtime.readOnly) {
-      const state = loaded.runtime.watch.snapshot();
-      const at = sessions.findIndex(s => s.id === id);
-      const stored = state.segments.filter(s => s.available).length;
-      const row = {
-        ...(at < 0 ? {
-          id, firstTopic: null, host: 'mac', createdAt: loaded.startedAt, updatedAt: Date.now(), closedAt: null, legacy: false,
-        } : sessions[at]),
-        title: loaded.title, state: 'live', elapsedMs: state.elapsedMs, passages: state.coverage.passages,
-        media: { stored, missing: state.coverage.passages - stored, bytes: state.storage?.sessionBytes ?? 0 },
-      };
-      if (at < 0) sessions.unshift(row);
-      else sessions[at] = row;
-    }
-    // The retention of the loaded session, not the setting of this host: an archive kept until deletion stays so here.
-    return {
-      current: loaded ? {
-        id, title: loaded.title, elapsedMs: loaded.runtime.watch.now(), readOnly: loaded.runtime.readOnly,
-        accepting: loaded.runtime.watch.accepting,
-        retention: Number.isFinite(loaded.runtime.watch.retentionMs) ? 'rolling' : 'until-deleted',
-        retentionMs: Number.isFinite(loaded.runtime.watch.retentionMs) ? loaded.runtime.watch.retentionMs : null,
-      } : null,
-      sessions: sessions.map(s => ({
-        ...s, current: s.id === id, readOnly: s.id === id && loaded.runtime.readOnly,
-        capturing: s.id === id && loaded.runtime.watch.accepting,
-      })),
-    };
+    return buildSessionRows(sessions, loaded, Date.now());
   };
   // Disk state shared by sessions:list, sessions:storage and the storage:state event: what the library
   // measures, plus the pace of the loaded session. Nothing is ever deleted to make room.
@@ -375,7 +339,7 @@ app.whenReady().then(async () => {
     switching = true;
     // A passage search still running ends with the session it was asked in: told through its signal as the end
     // begins, with the reason of this end. Its answer is refused once that session is no longer the one loaded.
-    searchController?.abort(new Error(reason)); searchController = null;
+    momentActions.cancelSearch(reason);
     try {
       const { freedBytes, refused } = await closeSession({
         session: ended, library, remove,
@@ -530,36 +494,11 @@ app.whenReady().then(async () => {
     if (!loaded) throw new Error('Démarre une session avant de poser une question.');
     return ask(question, {mode:'chat'});
   });
-  handle('moments:freeze', value => viewingActions.freeze(loaded?.runtime.watch.snapshot(), value));
-  handle('moments:mark', () => viewingActions.mark(loaded?.runtime.watch.snapshot()));
-  const startMomentAction = (input, kind) => {
-    const snapshot = loaded?.runtime.watch.snapshot();
-    const frozen = viewingActions.resolve(snapshot, input?.token, kind);
-    const eligible = [...snapshot.history, ...snapshot.segments].filter(s => s.startMs >= frozen.startMs && s.endMs <= frozen.anchorMs);
-    if (!eligible.length) throw Error('Aucun nouveau passage capturé pour cet instant. Laisse tourner la vidéo quelques secondes.');
-    const endMs = Math.max(...eligible.map(s => s.endMs));
-    let question;
-    if (kind === 'catch-up') question = `J’ai décroché. Résume en quelques phrases ce que j’ai manqué entre ${Math.round(frozen.startMs / 1000)} et ${Math.round(endMs / 1000)} secondes. Mentionne les passages non analysés ou manquants. Appuie les points importants sur deux ou trois passages cités.`;
-    else {
-      if (input?.question !== undefined && (typeof input.question !== 'string' || input.question.length > 1600)) throw Error('Question invalide.');
-      if (input?.intent !== undefined && !['explain', 'summarize'].includes(input.intent)) throw Error('Action inconnue.');
-      question = input?.question?.trim() || (input?.intent === 'summarize' ? 'Résume ce moment en quelques phrases.' : 'Explique ce moment et ce qui aide à le comprendre.');
-      question += ` Instant sélectionné : ${Math.round(frozen.anchorMs / 1000)} secondes. Réponds uniquement sur les passages de cet intervalle, en signalant ce qui manque.`;
-    }
-    const result = ask(question, { mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', snapshot, startMs: frozen.startMs, anchorMs: frozen.anchorMs });
-    if (kind === 'catch-up') {
-      const job = deep.jobs.find(j => j.id === result.id);
-      job.done.then(() => viewingActions.acknowledgeResult(frozen, job, eligible));
-    }
-    return { ...result, ...frozen, endMs };
-  };
-  handle('moments:explain', input => startMomentAction(input, 'explain'));
-  handle('moments:catch-up', input => startMomentAction(input, 'catch-up'));
-  handle('moments:reexamine', jobId => {
-    const original = deep.jobs.find(job => job.id === jobId);
-    const { question, options } = viewingActions.reexamination(original, loaded?.runtime.watch.snapshot());
-    return ask(question, options);
-  });
+  handle('moments:freeze', value => momentActions.freeze(value));
+  handle('moments:mark', () => momentActions.mark());
+  handle('moments:explain', input => momentActions.explain(input));
+  handle('moments:catch-up', input => momentActions.catchUp(input));
+  handle('moments:reexamine', jobId => momentActions.reexamine(jobId));
   const explainShortcut = 'CommandOrControl+Shift+E';
   let explainShortcutRegistered = false;
   if (!smoke || process.argv.includes('--live-shortcut')) {

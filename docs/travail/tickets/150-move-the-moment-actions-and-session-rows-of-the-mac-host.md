@@ -1,7 +1,7 @@
 ---
 id: T150
 titre: Move the moment actions and the session rows of the Mac host into their own modules
-statut: a-faire
+statut: termine
 bloque_par: T148, T149
 adr: non
 installe: non
@@ -121,3 +121,91 @@ Le ticket tranche ainsi :
   T149 fixe la forme des modules de l'hôte Mac.
 
 ## Journal
+
+- Exploration : lecture des règles, du ticket, des modules Mac, des appelants et tests protecteurs et des ADR 0001/0005/0007. Témoin hooks présent. Détails dans `.harness-state/tickets/T150/exploration.md` ; aucun écart prévu.
+
+- Tests d’abord, frontière publique : `node --test tests/moment-actions.test.cjs` et
+  `node --test tests/session-rows.test.cjs`. Rouges observés sur assertion, puis verts pour chaque
+  extraction : recherche sans session, résultats, session obsolète, remplacement, annulation,
+  borne, gel/repère, rattrapage, acquittement, explication, longueur, intention, absence de passage,
+  réexamen ; lignes nouvelles, existantes, archives. Sorties conservées dans
+  `.harness-state/tickets/T150/*-red.log` et `*-green.log`. Caractérisations complémentaires :
+  questions par défaut, type invalide et absence de session chargée pour la liste.
+- Extraction et raccordement : `main.cjs` conserve les canaux et la fermeture ; les textes et options
+  des questions sont déplacés à l’identique. La liste lue est copiée dans la fonction pure.
+- `node scripts/check.mjs --changed` : vert, 20 tests réussis, 0 échec ; règles, format et cliquet verts.
+  Lint non lancé : ESLint absent ou non configuré.
+- Contrôles textuels et périmètre (`.harness-state/tickets/T150/acceptance.log`) :
+
+```text
+$ grep -cE "searchController|J’ai décroché|Instant sélectionné|firstTopic" app/main.cjs
+0
+Code de sortie : 1
+
+$ grep -nE "require\(['\"]electron['\"]\)|process\.|handle\(|send\(" app/moment-actions.cjs app/session-rows.cjs
+Code de sortie : 1
+
+$ git diff --stat
+ app/main.cjs                                       | 83 +++-------------------
+ ...ent-actions-and-session-rows-of-the-mac-host.md |  4 +-
+ 2 files changed, 14 insertions(+), 73 deletions(-)
+Code de sortie : 0
+
+$ git status --short -- tests/
+?? tests/moment-actions.test.cjs
+?? tests/session-rows.test.cjs
+Code de sortie : 0
+```
+
+La seconde commande ne produit aucune sortie (code 1 attendu de grep sans correspondance).
+Aucun test existant modifié ; les deux fichiers de tests sont nouveaux.
+
+- Contrôle final : `node scripts/check.mjs` — code 0, **vert**. Règles, format et cliquet verts ;
+  96 fichiers JavaScript, 1 106 tests réussis, 0 échec ; Python : 84 tests, OK, 1 ignoré.
+  Les bancs `mac-ipc-contract`, `architecture-f07` et `architecture-f05` sont inclus, inchangés.
+  Lint non lancé : ESLint absent ou non configuré. Sortie complète dans
+  `.harness-state/tickets/T150/check-full.log`.
+- Bilan : modules `app/moment-actions.cjs` et `app/session-rows.cjs` livrés avec leurs deux fichiers de
+  tests (20 cas). Aucun écart ni test existant modifié ; aucun commit ni push. Verdict `TERMINÉ`
+  écrit dans `.harness-state/tickets/T150/verdict.json`, relecture et intégration confiées à la boucle.
+
+- Reprise après `relecture-1.md` : deux constats mineurs acceptés ; témoin hooks de reprise présent,
+  ticket/journal/écarts/statut/diff relus. Corrections prévues : constantes nommées et une instruction
+  par ligne dans les doublures. Aucun changement comportemental : tests publics existants lancés
+  avant la refactorisation, sans fabriquer de rouge ni ajouter un test textuel du code.
+  La source commune du seuil entre interface et hôte reste une réserve hors périmètre (constat 3).
+
+- Correction 1, constat 1 : `QUESTION_MAX_LENGTH = 1600` et `SEARCH_RESULT_LIMIT = 6` nommées en tête
+  du module ; commentaire du seuil de question relié au `maxlength` de `#moment-question` dans
+  `app/index.html`. Valeurs, questions et options inchangées.
+- Correction 1, constat 2 : les cinq doublures signalées ont une instruction par ligne ; assertions
+  et scénarios conservés.
+- `node --test tests/moment-actions.test.cjs` avant correction : 16 réussis, 0 échec
+  (`correction-1-before.log`). `node scripts/check.mjs --changed` après correction : vert,
+  20 réussis, 0 échec ; règles/format/cliquet verts ; lint non lancé, ESLint absent ou non configuré
+  (`correction-1-changed.log`). `git diff --check` : code 0, sortie vide.
+  Empreintes des cinq fichiers de code/tests conservées dans `correction-1-code-sha256.json`
+  pour vérifier leur stabilité pendant le contrôle complet.
+
+- `node scripts/check.mjs` après correction 1 : code 0, **vert** ; 96 fichiers JavaScript,
+  1 106 tests réussis, 0 échec ; Python : 84 tests, OK, 1 ignoré. Règles, format et cliquet verts ;
+  lint non lancé (ESLint absent ou non configuré). Sortie : `correction-1-full.log`.
+  Empreintes SHA-256 des cinq fichiers de code/tests identiques avant et après le contrôle
+  (`correction-1-integrity.log`).
+- Relecture 1 : constats 1 et 2 corrigés ; aucune contestation. Constat 3 gardé en réserve dans
+  `reste` du verdict : mutualiser la limite de question entre interface et hôte, hors périmètre.
+  Nouveau verdict `TERMINÉ` enregistré ; aucun commit ni push, relecture confiée à la boucle.
+
+### Réserves à la clôture
+
+- Relecture 1, constat 3 hors périmètre : une source commune reste à établir pour la limite de 1600 caractères entre app/index.html (maxlength) et l’hôte ; le commentaire explicite maintenant ce lien.
+- Lint non lancé par le contrôle : ESLint absent ou non configuré.
+- .harness-state/tickets/T150/relecture-2.md : `app/index.html:111` et `app/moment-actions.cjs:2-3` (hors périmètre, reporté de la relecture 1)
+
+  **Ce qui ne va pas.** La limite de 1600 caractères est encore écrite à deux endroits, dans deux processus :
+  - dans l'interface, avec `maxlength="1600"` sur `#moment-question` ;
+  - dans l'hôte, avec `QUESTION_MAX_LENGTH = 1600`.
+
+  La correction rend ce lien explicite par un commentaire, mais il reste deux sources.
+
+  **Ce qui est attendu.** Une seule source pour cette valeur. Le ticket n'autorise pas à toucher le rendu, donc ce constat reste en réserve. Il figure déjà dans `reste` du verdict.
