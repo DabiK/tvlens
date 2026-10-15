@@ -107,3 +107,15 @@ pour le code et les tests ; aucun test exécuté pendant ce rafraîchissement.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Orchestrateur, le 15/10 vers 22 h : une première session (Codex, Sol xhigh) a été interrompue par la mise en veille
+  du Mac, après l'implémentation et un `node scripts/check.mjs` vert (1 207 tests JS), avant le verdict et toute
+  relecture. Son travail est archivé dans `.harness-state/archives/T123-interrompu-1/` :
+  - `code-sans-ticket.patch` : le code et les tests (`git apply --check` passe sur `83efde9`) ;
+  - `watch-session-ending.test.cjs` : le nouveau fichier de test, non suivi, à remettre dans `tests/` ;
+  - `journal-interrompu.md` : son journal (rouges et verts observés) ;
+  - `etat/` : son dossier d'état (exploration, écarts, journaux de tests).
+
+  La session suivante part de ce travail : elle l'applique, le relit contre chaque critère, relance les tests ciblés
+  puis le contrôle complet, reprend dans le journal ce qu'elle a vérifié elle-même, et rend son verdict. Elle ne
+  recopie aucune preuve qu'elle n'a pas observée à nouveau.
