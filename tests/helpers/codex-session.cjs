@@ -1,0 +1,53 @@
+// Une session externe factice permet de vérifier le protocole sans appeler de fournisseur réel.
+const CODEX_SESSION = `#!/usr/bin/env node
+const fs = require("node:fs");
+const path = require("node:path");
+const dir = path.join(".harness-state", "tickets", process.env.TVLENS_TICKET);
+fs.mkdirSync(dir, { recursive: true });
+const args = process.argv.slice(2);
+const scenario = process.env.FAKE_CODEX_SCENARIO;
+const failure = process.env.FAKE_CODEX_FAILURE;
+const blocked = scenario === "blocked" || (scenario === "blocked-after-resume" && args.includes("resume"));
+const names = ["LOOP", "TICKET", "TICKET_FILE", "HARNESS", "ALLOW_INSTALL"];
+const env = Object.fromEntries(names.map(name => [name, process.env["TVLENS_" + name]]));
+const stdinIsDevice = fs.fstatSync(0).isCharacterDevice();
+// Une régression vers un pipe doit échouer sur une assertion, sans attendre sa fermeture.
+const stdin = stdinIsDevice ? fs.readFileSync(0, "utf8") : null;
+const call = { args, cwd: process.cwd(), stdin, stdinIsDevice, env };
+fs.appendFileSync(path.join(dir, "fake-codex-calls"), JSON.stringify(call) + "\\n");
+fs.mkdirSync("core", { recursive: true });
+if (!blocked) fs.writeFileSync("core/greeting.cjs", "module.exports = () => 'hello';\\n");
+if (process.env.FAKE_CODEX_EDIT) {
+  const file = process.env.FAKE_CODEX_EDIT;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.appendFileSync(file, "\\n// La doublure simule une modification interdite du harnais.\\n");
+}
+const verdict = {
+  statut: blocked ? "BLOQUÉ" : "TERMINÉ", resume: blocked ? "Quel fournisseur choisir ?" : "fake codex",
+  preuves: ["fake proof"], reste: [],
+};
+if (scenario === "partial") verdict.statut = "PARTIEL";
+if (scenario !== "missing-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), JSON.stringify(verdict));
+if (scenario === "unreadable-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), "{ incomplete");
+const events = [
+  { type: "thread.started", thread_id: "codex-thread" },
+  { type: "turn.started" },
+  { type: "item.completed", item: { type: "command_execution", command: "node --test", exit_code: 0, status: "completed" } },
+  { type: "item.completed", item: { type: "file_change", changes: [{ path: "core/greeting.cjs", kind: "add" }], status: "completed" } },
+  { type: "turn.completed", usage: { input_tokens: 10, cached_input_tokens: 4, output_tokens: 5, reasoning_output_tokens: 2 } },
+];
+if (process.env.FAKE_CODEX_SCENARIO === "actions") {
+  events.splice(2, 2,
+    { type: "item.started", item: { type: "command_execution", command: "pending command" } },
+    { type: "item.completed", item: { type: "command_execution", command: "node\\n --test" } },
+    { type: "item.completed", item: { type: "file_change", changes: [
+      { path: path.resolve("core/greeting.cjs"), kind: "update" }, { path: "core/farewell.cjs", kind: "delete" },
+    ] } },
+  );
+}
+if (["turn.failed", "error"].includes(failure)) events.push({ type: failure, error: { message: "simulated Codex failure" } });
+for (const event of events) console.log(JSON.stringify(event));
+if (failure === "exit") process.exitCode = 1;
+`;
+
+module.exports = { CODEX_SESSION };

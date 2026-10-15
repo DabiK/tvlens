@@ -31,7 +31,7 @@ que tu n'as pas observé.
 ## Ce qui ne se fait pas
 
 - Affaiblir ou supprimer un test, ou relancer un test instable jusqu'à ce qu'il passe.
-- Modifier le harnais (`.claude/`, `scripts/check.mjs`, `scripts/quality/`, `scripts/loop/`) ou le
+- Modifier le harnais (`.claude/`, `.codex/`, `.agents/`, `scripts/check.mjs`, `scripts/quality/`, `scripts/loop/`) ou le
   plancher du cliquet pour faire passer un contrôle.
 - Nommer un fichier, un test ou un commentaire d'après un ticket ou un chantier (« F07 », « T012 ») :
   le code décrit un comportement, l'historique vit dans Git et dans les tickets.
