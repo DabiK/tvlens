@@ -1,7 +1,4 @@
 // Core must not import adapters: tracing and error serialization are injected by the runtime.
-function needsInspection(question) {
-  return /(?:pourquoi|comment|combien de fois|avant|apres|après|entre|tombe|tombé|chute|geste|action|mouvement|que fait|se passer|s.est passe|s’est passé|s'est passé|déplace|deplace|changement|bouge|revois|revoir|approfond|retrouve|cherche.*moment)/i.test(question);
-}
 // An answer is plain text: its pages travel in `sources`, shown apart by every client. A model that still writes a
 // Markdown link keeps its words and loses the address; nothing else of the answer is touched.
 const plainAnswer=text=>typeof text==='string'?text.replace(/\[([^\]\n]{1,200})\]\(https?:\/\/[^\s)]+\)/g,'$1'):text;
@@ -171,4 +168,4 @@ function isRecentSummary(question){
   const q=question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return /(?:ca parle de quoi|qu.est.ce qui vient de se passer|j.ai decroche|^(?:resume|recapitule)(?:[.!? ]*$| (?:ce moment|cette scene|ce qui vient)))/.test(q)&&!/(?:vrai|verifi|source|exact|combien|pourquoi|il y a|premier|debut|[0-9])/.test(q);
 }
-module.exports={DeepAsk,needsInspection,isRecentSummary,QUESTION_TIMEOUT_MS,QUESTION_PROGRESS_MS,limitLabel};
+module.exports={DeepAsk,isRecentSummary,QUESTION_TIMEOUT_MS,QUESTION_PROGRESS_MS,limitLabel};

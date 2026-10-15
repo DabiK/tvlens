@@ -17,6 +17,17 @@ test('shared runtime and headless transport do not import Electron',()=>{
     assert.doesNotMatch(fs.readFileSync(path.join(__dirname,'..',dir,file),'utf8'),/require\(['"]electron['"]\)/,dir+'/'+file);
   }
 });
+test('core services do not import the session use case', () => {
+  const root = path.join(__dirname, '..', 'core');
+  for (const filename of fs.readdirSync(root)) {
+    if (filename === 'session.cjs') continue;
+    const source = fs.readFileSync(path.join(root, filename), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    for (const match of source.matchAll(/(?:require\s*\(|from\s+|import\s*\()\s*['"]([^'"]+)['"]/g)) {
+      assert.notEqual(match[1], './session.cjs', `${filename} depends on the session use case`);
+    }
+  }
+});
 test('active Codex roles do not depend on the legacy MCP transport', () => {
   const root = path.join(__dirname, '..');
   for (const filename of ['adapters/codex-session-agent.cjs', 'adapters/codex-session-client.cjs', 'adapters/codex-analysis-agent.cjs', 'adapters/companion-prompt.cjs']) {

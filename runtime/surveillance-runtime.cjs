@@ -547,7 +547,6 @@ function createSurveillanceRuntime({
 }
 module.exports = {
   createSurveillanceRuntime,
-  SAVE_INTERVAL_MS,
   saveIntervalMs,
   REGISTRY_MESSAGES,
 };

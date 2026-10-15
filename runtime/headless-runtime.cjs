@@ -857,5 +857,4 @@ module.exports = {
   surveillanceHistory,
   surveillanceDetail,
   READ_ONLY,
-  VIEWS,
 };

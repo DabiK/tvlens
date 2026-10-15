@@ -3,4 +3,4 @@ function validateTranscriptionLanguage(language) {
   if (!TRANSCRIPTION_LANGUAGES.includes(language)) throw Error('Langue de transcription invalide.');
   return language;
 }
-module.exports = { TRANSCRIPTION_LANGUAGES, validateTranscriptionLanguage };
+module.exports = { validateTranscriptionLanguage };

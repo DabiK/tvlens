@@ -18,9 +18,6 @@
     },
     "no-empty": {
       "count": 2
-    },
-    "no-unused-vars": {
-      "count": 1
     }
   },
   "adapters/codex-perception.cjs": {

@@ -917,5 +917,5 @@ class Surveillance {
   }
 }
 
-module.exports = { Surveillance, DEFAULT_LIMITS, COVERAGE_BUCKETS, CLAIM_STATES, ASSESSMENT_LABELS, CARD_LABELS, TEXT_LIMITS,
+module.exports = { Surveillance, COVERAGE_BUCKETS, CLAIM_STATES, ASSESSMENT_LABELS, CARD_LABELS,
   claimKey, sameClaim, validateDetection, applyVerdicts, composeLotText, composeSignalText, acceptableText, sentences, sourceKey };

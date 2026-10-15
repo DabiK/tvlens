@@ -439,7 +439,6 @@ function validMediaInput(items) {
 // whatever it carries. Shape measured on codex 0.160.1: `open_page` in the `codex exec` events,
 // `openPage` from the App Server. A reference format this does not recognise falls back to the
 // first page only.
-const OPEN_ACTIONS = ["open_page", "openPage"];
 function openedPages(item) {
   const action = item?.action;
   const urls = new Set();

@@ -1,6 +1,6 @@
 const { passageText } = require("./passage-text.cjs");
 const { MomentIndex } = require("./moment-index.cjs");
-const { resolveTemporalTarget } = require("./session.cjs");
+const { resolveTemporalTarget } = require("./temporal-target.cjs");
 const normalize = (text) =>
   text
     .toLowerCase()
@@ -160,4 +160,4 @@ function result(s, score) {
     score,
   };
 }
-module.exports = { MomentSearch, passageText, cosine };
+module.exports = { MomentSearch };

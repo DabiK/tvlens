@@ -65,4 +65,4 @@ function perceptionContext(snapshot, current) {
     recent, sessionOutline: outline,
     limits: 'Extraits bornés et non exhaustifs ; les résumés, OCR et transcriptions peuvent être erronés. Aucune source externe vérifiée.' };
 }
-module.exports = { perceptionContext, observedTopic };
+module.exports = { perceptionContext };
