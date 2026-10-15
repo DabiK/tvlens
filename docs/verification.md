@@ -23,8 +23,8 @@ jugement du spectateur par un badge vrai/faux.
 ## Exécuter le test
 
 ```sh
-npm run test:verify
-npm run test:verify -- "Le premier alunissage habité a eu lieu en 1972."
+npm run test:verify:live
+npm run test:verify:live -- "Le premier alunissage habité a eu lieu en 1972."
 ```
 
 Prérequis : Codex CLI installé et connexion existante (`codex login status`).

@@ -1,7 +1,7 @@
 ---
 id: T098
 titre: Give every paying npm script the :live suffix and test the rule
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -122,3 +122,56 @@ Aucun script fournisseur, test ni installation lancé pendant ce rafraîchisseme
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex du 15/10 : consignes, méthode de tests, sources et ADR de contrôle lus ;
+  exploration et absence d'écart consignées dans `.harness-state/tickets/T098/`.
+  `git status --short` : ticket déjà en cours et deux dossiers non suivis, conservés.
+  `node -e 'const s=require("./package.json").scripts;console.log(Object.keys(s).length)'` :
+  **25**, code 0, avant modification. La recherche du critère 3 trouve seulement les cinq
+  entrées et les deux guides prévus. Aucun fournisseur réel lancé.
+
+- Tests d'abord : `node --test tests/npm-scripts.test.cjs` avant renommage : code 1,
+  assertion rouge nommant exactement les cinq entrées, sortie conservée dans
+  `.harness-state/tickets/T098/manifest-red.log`. Après les cinq renommages et les
+  tests sur objets inventés : même commande, code 0, **4 tests réussis**, sortie dans
+  `manifest-green.log`. Les guides ne changent que les noms de commande.
+- `node scripts/check.mjs --changed` : code 0, **vert** ; règles, format, lint, gel,
+  cliquet et les quatre tests du fichier nouveau passent (`check-changed.log`).
+- Critère d'absence : commande exacte ci-dessous, **aucune sortie, code 1**
+  (`.harness-state/tickets/T098/active-names.log` vide) :
+
+  ```sh
+  git grep -nE 'verify-live|deep-live|full-live|test:verify([^:]|$)|test:codex:speed' -- . \
+    ':!docs/travail' ':!docs/adr' ':!docs/audit-maintenabilite.md' ':!docs/reexamen-validation.md'
+  ```
+
+- `node -e 'const s=require("./package.json").scripts;console.log(Object.keys(s).length)'` :
+  **25**, code 0, après modification (`script-count-after.log`) ; nombre identique au départ.
+  Comparaison structurelle avec `git show HEAD:package.json` par assertion Node : code 0,
+  exactement cinq clés renommées, toutes les commandes et les autres champs identiques.
+  `git diff --check` : code 0.
+- `node scripts/check.mjs` : code 0, **vert** ; règles, format, lint, gel et cliquet
+  réussis ; **1 190 tests JS réussis** sur 101 fichiers ; **84 tests Python exécutés,
+  dont un ignoré**, résultat OK. Sortie conservée dans
+  `.harness-state/tickets/T098/check-full.log`.
+- Verdict Codex : **TERMINÉ**, sans réserve, dans
+  `.harness-state/tickets/T098/verdict.json`. Aucun script fournisseur, aucune installation,
+  aucun commit ni push ; les dossiers non suivis préexistants et les documents historiques
+  restent intacts. La boucle garde la responsabilité de la relecture et de l'intégration.
+
+- Reprise après `relecture-1.md` : rapport, ticket et journal, écarts, consignes et diff relus.
+  Le constat mineur sur l'espacement de `docs/installation.md:156` est accepté ; aucun autre
+  constat ni écart. Vérification ponctuelle préparée dans le dossier d'état avant correction,
+  sans ajouter de test permanent pour la mise en forme du guide.
+- `node .harness-state/tickets/T098/check-guide-spacing.cjs` : code 1 avant correction
+  (`guide-spacing-red.log`), sur l'assertion des sept espaces ; code 0 après correction
+  (`guide-spacing-green.log`). La ligne concernée passe de douze à sept espaces.
+- `node scripts/check.mjs --changed` : code 0, **vert**, quatre tests npm réussis ;
+  sortie dans `.harness-state/tickets/T098/correction-check-changed.log`.
+  `git diff --check` : code 0.
+- `node scripts/check.mjs` après correction : code 0, **vert**, **1 190 tests JS réussis**
+  sur 101 fichiers et **84 tests Python, dont un ignoré**, résultat OK ; sortie dans
+  `.harness-state/tickets/T098/correction-check-full.log`.
+- Nouveau verdict : **TERMINÉ**, unique constat mineur corrigé, aucune réserve ni
+  contestation. Verdict mis à jour dans `.harness-state/tickets/T098/verdict.json`.
+  Aucun fournisseur réel, installation, commit, push, sous-agent ou relecteur lancé.

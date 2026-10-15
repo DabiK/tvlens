@@ -151,9 +151,9 @@ est sans coût ni quota.
 ```sh
 npm test
 npm run test:electron               # capture/agents simulés, véritable UI
-npm run test:electron:full-live     # chat + outils + Luna + Whisper réels
+npm run test:electron:full:live     # chat + outils + Luna + Whisper réels
 node scripts/probe-chat-web.cjs     # web réel, mémoire de test
-npm run test:codex:speed            # mesures sur un petit scénario contrôlé
+npm run test:codex-speed:live       # mesures sur un petit scénario contrôlé
 ```
 
 Les tests live nécessitent le compte Codex et, pour les embeddings, une clé créditée.
