@@ -2,11 +2,12 @@
 id: T031
 titre: Lint with ESLint in the quality check and freeze the existing violations
 statut: a-faire
-bloque_par: T028, T145
+bloque_par: T163
 adr: oui
 installe: oui
 harnais: oui
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -24,47 +25,27 @@ tant qu'elle n'est pas élaguée : le stock ne peut que baisser.
 
 - Constats : OPS-03, ADP-15, OUBLI-27, OPS-07
 - Livre : jalon:lint
-- Code concerné, à la version `0d5a954` :
+- Code concerné, à la version `e92c6a6` :
   - `scripts/check.mjs`, fonction `lint` (ligne 96) : elle lance `eslint <cibles>` (tout l'arbre, ou
     les fichiers de code modifiés en mode `--changed` et `--file`) dès que `node_modules/.bin/eslint` et
     un `eslint.config.{mjs,js,cjs}` existent. Ce ticket ne la modifie pas.
   - `docs/standards.md`, lignes 11 à 13 : trois règles vérifiées par « relecture, puis ESLint ».
     Lignes 59-60 : ces règles « rejoindront `check` avec le ticket qui installe l'outil ».
-  - `package.json`, blocs `scripts` et `devDependencies` : ni ESLint ni entrée `lint`.
-  - `promo/` a son propre `eslint.config.mjs`, `film/` n'en a pas ; ce sont deux sous-projets avec
+  - `package.json:7` et `package.json:33`, blocs `scripts` et `devDependencies` : ni ESLint ni entrée `lint`.
+  - `promo/eslint.config.mjs:1` configure son propre ESLint ; `film/` n’en a pas. Ce sont deux sous-projets avec
     leur `package.json`, qu'un `eslint .` à la racine ne doit pas parcourir.
-  - aucun commentaire `eslint-disable`, `eslint-env` ni `/* global` dans les fichiers suivis hors `film/`
-    et `promo/` (`git grep -n "eslint-disable\|eslint-env\|/\* global" -- ':!film' ':!promo'` ne rend
-    rien).
   - `console.` en production : `app/main.cjs` (2), `server/main.cjs` (3), et
-    `runtime/headless-runtime.cjs:259`, journal par défaut de `HeadlessRuntime`.
-- Mesures au découpage, avec ESLint 9.39.5, `@eslint/js` 9.39.5 et `globals` 14.0.0 (ceux de
-  `promo/node_modules`), sur la copie formatée décrite par le ticket de preuve du formatage, avec une
-  configuration d'essai proche de celle du périmètre (recommandée, CommonJS pour `.cjs`, module pour
-  `.mjs` et `.js`, navigateur pour `app/ui/` et `app/*.js`, script ES2022 pour `tv/app/`, règles
-  ci-dessous, sans exemption des tests ni globales navigateur pour les scripts) :
-  - `eslint --suppress-all --suppressions-location <fichier> .` sort en 0 et gèle 1 184 infractions
-    dans 124 fichiers ;
-  - par règle (production, scripts, tests) : `no-empty` 39, 7, 5 ; `complexity` 105, 19, 0 ;
-    `max-lines-per-function` 57, 30, 165 ; `no-nested-ternary` 132, 10, 2 ; `max-lines` 21, 10, 32 ;
-    `no-unused-vars` 3, 4, 9 ; `no-undef` 0, 529, 2 ; `constructor-super` 0, 1, 0 ;
-    `no-useless-escape` 2, 0, 0 ;
-  - les 529 `no-undef` des scripts sont des `document` et `window` dans les fonctions passées à
-    Playwright (`scripts/smoke-electron.mjs`, `smoke-tv-*.mjs`, `capture-showcase`, etc.) : les
-    globales navigateur les font tomber ;
-  - avec ce fichier, `eslint --suppressions-location <fichier> .` sort en 0 ; une fonction vide ajoutée
-    à `core/ports.cjs` sort en 1 ;
-  - après la correction d'une infraction gelée (paramètre renommé `_mode` dans `core/deep-ask.cjs`),
-    `eslint <fichier>` sort en 2 (« There are suppressions left that do not occur anymore ») ;
-    `eslint --prune-suppressions core/deep-ask.cjs` retire la seule entrée devenue inutile et garde les
-    123 autres fichiers ;
-  - `prettier --check` refuse le fichier de suppressions tel qu'ESLint l'écrit ;
-  - la configuration d'essai ne portait ni `no-console` ni `eqeqeq`. Relevé à part sur l'arbre non
-    formaté (`eslint --no-config-lookup` avec ces deux seules règles, sur les dossiers de code) :
-    `eqeqeq` avec `null` ignoré, 0 infraction ; `no-console`, 2 dans `app/main.cjs`, 3 dans
-    `server/main.cjs`, 114 dans `scripts/`, 1 dans `runtime/headless-runtime.cjs` (ligne 259) et 13
-    dans `tests/`. Avec les exemptions du périmètre, les 14 dernières sont gelées en plus du total
-    ci-dessus : le stock réel est celui du critère 4.
+    `runtime/headless-runtime.cjs:256`, journal par défaut de `HeadlessRuntime`.
+- État de formatage : Prettier 3.8.1 est déjà déclaré à `package.json:37`, `.prettierrc.json`
+  contient `{}` et `.prettierignore:23` ouvre un bloc temporaire qui ignore encore tout le JavaScript.
+  L’ADR `docs/adr/0013-formatage-prettier-reglages-par-defaut.md` décrit cette étape. T028 n’est donc
+  pas requis pour activer le lint : ce ticket ne retire pas le bloc et ne reformate pas le produit.
+- `eslint-suppressions.json` et une configuration ESLint racine sont absents. Le test du contrôle
+  isolé à `tests/quality-check.test.cjs:78` vérifie le signalement de Prettier absent ; il n’exerce
+  ni ESLint ni ses suppressions. Les mesures d’essai faites sur une ancienne copie formatée ne valent pas mesure
+  de ce worktree : le stock doit être relevé pendant l’implémentation, après T150.
+- Décision du propriétaire, le 15/10 : T150 remplace T028/T145 ; `harnais: oui` et `installe: oui`
+  restent autorisés. La fiche n’avait pas de niveau : `standard`, selon l’exception décidée pour T031/T032.
 
 ## Périmètre
 
@@ -74,8 +55,8 @@ tant qu'elle n'est pas élaguée : le stock ne peut que baisser.
   - `linterOptions: { noInlineConfig: true }` : aucun commentaire ne désactive une règle ;
   - ignorés : `.harness-state/`, `.local/`, `.scratch/`, `challenge/`, `node_modules/`, `dist/`,
     `tv/dist/`, `film/`, `promo/`, `media/`, `design/`, `experiments/`, `screenshots/`, `prototypes/`,
-    `tests/fixtures/`, `docs/`, et le harnais (`.claude/`, `scripts/check.mjs`, `scripts/quality/`,
-    `scripts/loop/`) ;
+    `tests/fixtures/`, `docs/`, et le harnais (`.claude/`, `.codex/`, `.agents/`, `scripts/check.mjs`,
+    `scripts/quality/`, `scripts/loop/`) ;
   - `js.configs.recommended` ;
   - `.cjs` en CommonJS et `.mjs` et `.js` en module, ECMAScript 2024, globales Node ;
   - `app/ui/**` et `app/*.js` : module, globales navigateur ;
@@ -101,16 +82,21 @@ tant qu'elle n'est pas élaguée : le stock ne peut que baisser.
   - une ligne dans « Erreurs » : `no-empty` vérifie aussi la règle du `catch` vide ;
   - lignes 59-60 : remplacées par un paragraphe sur le gel. Une infraction gelée se corrige, puis
     `eslint --prune-suppressions <fichier>` retire sa suppression dans le même ticket. Une suppression
-    ne s'ajoute jamais pour faire passer un contrôle.
+    ne s'ajoute jamais pour faire passer un contrôle. Le paragraphe dit aussi, pour tous les tickets
+    suivants :
+    - un ticket qui rend une suppression inutile l'élague, même si `eslint-suppressions.json` n'est pas
+      dans son périmètre ;
+    - du code déplacé vers un nouveau fichier y arrive sans infraction : le ticket de déplacement corrige
+      celles du code qu'il déplace.
 - ADR : `docs/adr/<prochain numéro libre>-eslint-gel-des-infractions.md`, d'après le gabarit. Il
   présente trois options : tout corriger avant d'activer, avertissements seulement, ou gel par
   suppressions ; il retient le gel. Il donne les conséquences :
   - un ticket qui déplace du code gelé vers un autre fichier crée une infraction nouvelle : il la
-    corrige, ou il porte `harnais: oui` pour la geler à nouveau ;
+    corrige. T032 empêchera l’augmentation du gel, y compris lors d’un déplacement ;
   - les règles de couches restent dans `tests/architecture.test.cjs` (arbitrage A3) ;
   - le harnais n'est ni formaté ni analysé pour l'instant ;
-  - aucune règle de style : ESLint 9 n'en porte plus dans sa configuration recommandée, d'où l'absence
-    d'`eslint-config-prettier`.
+  - aucune règle de style ajoutée : le périmètre retient la configuration recommandée et les seules
+    règles listées ; il n’ajoute pas `eslint-config-prettier`.
 - À ne pas toucher : `scripts/check.mjs`, `scripts/loop/`, `.claude/`, le code de production, les
   tests, `.prettierrc.json`.
 
@@ -127,7 +113,7 @@ Chaque critère se vérifie par une commande, avec sa sortie dans le journal.
    journal, avec son total :
    `node -e 'const s=require("./eslint-suppressions.json"),c={};for(const[f,rs]of Object.entries(s))for(const[r,{count}]of Object.entries(rs)){const z=f.split("/")[0];c[r]??={};c[r][z]=(c[r][z]||0)+count}console.table(c)'`.
    Aucune clé ne commence par `tests/` pour `max-lines` ni `max-lines-per-function`. Aucune clé ne
-   commence par `film/`, `promo/`, `.claude/` ni `scripts/quality/`.
+   commence par `film/`, `promo/`, `.claude/`, `.codex/`, `.agents/`, `scripts/quality/` ni `scripts/loop/`.
 5. `node_modules/.bin/eslint --print-config <fichier>` montre, pour chacun :
    - `tv/app/companion.js` : `sourceType` à `script` ;
    - `app/ui/text.mjs` : la globale `document` ;
@@ -140,25 +126,46 @@ Chaque critère se vérifie par une commande, avec sa sortie dans le journal.
    - `console.log(1)` ajouté à `core/ports.cjs` est refusé.
 7. `node_modules/.bin/prettier --check .` sort en 0 ; `node_modules/.bin/prettier --file-info
    eslint-suppressions.json` rend `"ignored": true`.
-8. `node scripts/check.mjs` est vert.
+8. Sur une copie temporaire du code et du gel, corriger une infraction réellement gelée sans l’élaguer
+   fait échouer ESLint avec un diagnostic de suppression devenue inutile. `--prune-suppressions <fichier>`
+   retire cette seule entrée devenue inutile, conserve les autres fichiers et rend le contrôle vert.
+   Le fichier choisi, les commandes et les trois sorties sont consignés. Aucun changement produit
+   de cette preuve ne reste dans le diff du dépôt.
+9. `node scripts/check.mjs` est vert ; le code de production et les tests sont inchangés.
 
 ## Test d'acceptation attendu
 
 Aucun test nouveau dans ce ticket : la preuve est l'étape « lint » du contrôle unique, qui passe de
-« non lancé » à « ✔ », et les fautes injectées du critère 6. Le chemin « non lancé » reste couvert par
-le test « the full check fails when a measure regresses against the baseline and reports skipped tools
-as not run » de `tests/quality-check.test.cjs`. Le test qui empêche le gel de grandir vient au ticket
-suivant.
+« non lancé » à « ✔ », les fautes injectées du critère 6 et l’élagage du critère 8. Le test
+« the full check fails when a measure regresses against the baseline and reports skipped tools as not
+run » de `tests/quality-check.test.cjs` prouve le signalement de Prettier absent dans un dépôt isolé ;
+il ne prouve pas le lancement d’ESLint. Le test qui empêche le gel de grandir vient au ticket suivant.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Les seuils viennent de `docs/standards.md` ; les exemptions des tests,
+Aucune décision n'est attendue.
+
+Hypothèse technique à vérifier à l’implémentation : ESLint 9.39.5 fournit les options `--suppress-all`
+et `--prune-suppressions`, le fichier par défaut et les refus exigés ici. Aucun ESLint racine n’a été
+installé ou exécuté pour le rafraîchissement. L’implémentation vérifie ces capacités avant le gel ;
+si elles manquent, elle décrit l’écart et s’arrête sans changer de mécanisme ni affaiblir le contrôle.
+
+Les seuils viennent de `docs/standards.md` ; les exemptions des tests,
 les ignorés et l'absence des autres règles sont consignés dans l'ADR, et le propriétaire peut les
 revoir plus tard par un ticket marqué `harnais: oui`.
 
 Verdict BLOQUÉ, avec la sortie constatée, dans deux cas :
+
 - l'installation échoue (réseau, registre) ;
 - une option de suppression attendue (`--suppress-all`, `--prune-suppressions`) manque à la version
   installée.
 
 ## Journal
+
+Rafraîchi le 15/10 contre `e92c6a6` : T150 remplace T028/T145, Prettier et son ignore progressif sont
+reconnus, anciennes mesures ESLint retirées, repères corrigés et réduction des suppressions à prouver.
+Aucun ESLint installé et aucun test exécuté pendant ce rafraîchissement ; les commandes des critères
+restent à exécuter lors de l’implémentation.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

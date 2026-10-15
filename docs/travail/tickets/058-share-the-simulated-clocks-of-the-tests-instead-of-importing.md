@@ -2,11 +2,12 @@
 id: T058
 titre: Share the simulated clocks of the tests instead of importing one from a script
 statut: a-faire
-bloque_par: T055, T145
+bloque_par: T055
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -19,15 +20,16 @@ prend la sienne dans le module partagé.
 
 ## Sources
 
-- Constats : OPS-13, TSTB-04
-- Code vérifié à la version `0d5a954` (le nom d'abord, la ligne ensuite) :
+- Constats : OPS-13, TSTB-04 ; `docs/audit-points-chauds.md`, sections E et F (entrée T058),
+  retenu par décision du propriétaire, le 15/10.
+- Code vérifié par lecture à la version `e92c6a6` (le nom d'abord, la ligne ensuite) :
   - `scripts/simulate-stream.cjs` : `const realSetImmediate`, ligne 14 ; `const settle` (deux tours de
     `realSetImmediate`), ligne 15, utilisé dans la classe et aussi hors d'elle (`await settle();`,
     ligne 353) ; `class VirtualClock`, ligne 18 — `install()` remplace `setTimeout`, `setInterval`,
     `clearTimeout`, `clearInterval` et `Date.now` ; `uninstall()` ; `runUntil(limit)` déclenche les
     minuteries par échéance puis par ordre de création et répète les intervalles ;
-    `module.exports = { runScenario, SCENARIOS, MODELS, VirtualClock }`, ligne 420. Quatre lignes de
-    plus de 160 caractères dans les lignes 1 à 68.
+    `module.exports = { runScenario, SCENARIOS, MODELS, VirtualClock }`, ligne 420 ; `runScenario`
+    construit l'horloge ligne 130. Quatre lignes de plus de 160 caractères dans les lignes 1 à 68.
   - `tests/question-ceiling.test.cjs` : `const { VirtualClock } = require('../scripts/simulate-stream.cjs')`,
     ligne 6 ; `new VirtualClock().install()`, lignes 62 et 134 ; boucle d'attente muette
     `for (let i = 0; i < 300 && brief.external.size; i++)`, ligne 202, suivie de son assertion ligne 203.
@@ -39,7 +41,7 @@ prend la sienne dans le module partagé.
     flush interval is set, and a question never waits for it » (ligne 521) : une troisième horloge
     manuelle écrite sur place — `const setTimer`, ligne 523, `const clearTimer`, ligne 524,
     `const settle` (six tours), ligne 525, `const advance = async to =>` vers un instant absolu,
-    ligne 526 ; appels `advance(` lignes 532, 534, 536 et 543.
+    ligne 526 ; appels `advance(` lignes 532 (dans `publish`), 534, 536 et 543 ; la ligne 538 avance par `publish`.
   - `tests/review-regressions.test.cjs` : `function manualTimers()`, ligne 138 — `{ now, setTimer,
     clearTimer, advance }`, `advance(to)` vers un instant absolu, `settle()` (six tours) aux mêmes
     endroits que le `tick()` de `manualClock` ; créée lignes 149, 165 et 282, passée par `...clock`
@@ -48,6 +50,10 @@ prend la sienne dans le module partagé.
   - `tests/stream-simulation.test.cjs:4` importe `runScenario` du même script : hors de ce ticket.
 - `scripts/quality/metrics.mjs`, `lignes_longues_tests` : compte tous les fichiers de code sous
   `tests/`, aides comprises.
+- `tests/helpers/clock.cjs` n'existe pas encore. Seul T055 est requis pour `until` et les tours partagés ;
+  il implique T150. Les bancs `moment-index`, `review-regressions` et `stream-simulation` sont déjà présents.
+  Leurs comptages statiques utiles sont respectivement 22, 19 et 8 déclarations de tests ;
+  `question-ceiling` en compte 4. Aucun test n'a été exécuté pour les revalider.
 
 ## Périmètre
 
@@ -86,7 +92,8 @@ Chaque critère se vérifie par un test ou une commande.
    `grep -n "class VirtualClock" scripts/simulate-stream.cjs` ne sort rien.
 2. `node -e "console.log(Object.keys(require('./scripts/simulate-stream.cjs')).sort().join(' '))"` affiche
    `MODELS SCENARIOS runScenario`.
-3. `grep -nE "function (manualClock|manualTimers)|const advance = async" tests/*.test.cjs` ne sort rien.
+3. `rg -n 'function (manualClock|manualTimers)|const advance = async' tests/moment-index.test.cjs
+   tests/review-regressions.test.cjs` ne sort rien : les trois doubles migrés n'y sont plus définis.
 4. `grep -n "i < 300 && " tests/question-ceiling.test.cjs` ne sort rien.
 5. `tests/simulated-clock.test.cjs` prouve au moins : `install()` puis `uninstall()` rendent les
    `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval` et `Date.now` d'origine ; `runUntil`
@@ -96,7 +103,7 @@ Chaque critère se vérifie par un test ou une commande.
    `io.now()` vaut l'instant de la minuterie pendant qu'elle part et l'instant visé à la fin ; avec
    `turns: 6`, une suite de trois tours de boucle lancée par une minuterie est terminée avant que la
    minuterie suivante parte, et ne l'est pas avec la valeur par défaut.
-6. `grep -c "^\s*test(" ` donne toujours 4, 22 et 19 pour `question-ceiling`, `moment-index` et
+6. `rg -c '^\s*test\('` donne toujours 4, 22 et 19 pour `question-ceiling`, `moment-index` et
    `review-regressions`, et `git diff -U0 HEAD -- tests/question-ceiling.test.cjs tests/moment-index.test.cjs
    tests/review-regressions.test.cjs | grep -E "^-.*assert\."` ne sort rien.
 7. `node --test --test-concurrency=1 tests/simulated-clock.test.cjs tests/question-ceiling.test.cjs
@@ -119,3 +126,14 @@ scénarios du script : verdict BLOQUÉ, avec le test en cause. Si la boucle de l
 attendu ; un test n'est jamais relancé jusqu'à ce qu'il passe.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : T145 retiré, T055 conservé (donc T150), niveau standard ;
+  horloges et bancs existants revérifiés, avances absolues du scénario recomptées (la ligne 538 avance par `publish`), critère d'absence
+  borné aux deux fichiers migrés. Helpers à créer explicités ; comptages confirmés par lecture, aucun test exécuté.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

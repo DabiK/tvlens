@@ -2,11 +2,12 @@
 id: T055
 titre: Share the wait helpers of the tests and make every bounded wait fail aloud
 statut: a-faire
-bloque_par: T028, T145
+bloque_par: T163
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -19,8 +20,9 @@ propres tests, et quatre premiers fichiers l'utilisent : une attente bornée qui
 
 ## Sources
 
-- Constats : FLK-12, TSTA-02, TSTB-03
-- Code vérifié à la version `0d5a954` (le nom d'abord, la ligne ensuite) :
+- Constats : FLK-12, TSTA-02, TSTB-03 ; `docs/audit-points-chauds.md`, sections E et F (entrée T055),
+  retenu par décision du propriétaire, le 15/10.
+- Code vérifié par lecture à la version `e92c6a6` (le nom d'abord, la ligne ensuite) :
   - `tests/transcriber-sharing.test.cjs` : `const until = async check =>`, ligne 23 — 200 tours de
     10 ms puis retour sans erreur ; deux appels, lignes 39 et 50.
   - `tests/review-regressions.test.cjs` : `const tick`, ligne 21 ; `const settle = async (n = 6)` (tours de
@@ -36,11 +38,16 @@ propres tests, et quatre premiers fichiers l'utilisent : une attente bornée qui
     `const realTimeout = globalThis.setTimeout` et `const pause`, lignes 22-23 (minuterie réelle
     capturée au chargement, insensible à `t.mock.timers`) ; `tests/architecture-f06.test.cjs`,
     `const bounded`, ligne 34 et `const failure`, ligne 38.
-  - `tests/helpers/` ne contient que `harness-repo.cjs`.
+  - `tests/helpers/` contient `codex-session.cjs`, `harness-repo.cjs`, `loop-state-dir.cjs`,
+    `loop-stream.cjs`, `source-shape.cjs` et `tv-page.cjs`. `wait.cjs` et ses tests restent à créer.
 - `Date` est figée par `t.mock.timers` dans `tests/codex-confinement.test.cjs:436` et
   `tests/architecture-f05.test.cjs:306` : une échéance mesurée avec `Date.now()` n'y avancerait pas.
-- Sonde disque lent : le fichier décrit dans
-  `docs/travail/tickets/001-resent-block-duplicate-without-race.md`, section « Sonde de reproduction ».
+- Sonde disque lent : source complète dans
+  `docs/travail/tickets/001-resent-block-duplicate-without-race.md:37`, section « Sonde de reproduction ».
+  Elle capture la vraie minuterie avant de retarder `mkdir`, `writeFile` et `rename`.
+  Son fichier d'état n'est pas présent dans ce worktree : le recréer depuis cette source pour le critère 7.
+- Comptages statiques actuels des déclarations `test(` : 3, 19, 2 et 2 dans les quatre fichiers migrés,
+  dans l'ordre ci-dessus. Aucun résultat d'exécution n'est déduit de ces comptages.
 
 ## Périmètre
 
@@ -101,13 +108,14 @@ Chaque critère se vérifie par un test ou une commande.
    tests/review-regressions.test.cjs tests/chat-instruction.test.cjs tests/server-surveillance.test.cjs`
    ne sort rien, et `grep -c "helpers/wait.cjs"` vaut 1 dans chacun des quatre fichiers.
 4. `grep -n "i < 100 && " tests/review-regressions.test.cjs` ne sort rien.
-5. `grep -c "^\s*test(" ` donne toujours 3, 19, 2 et 2 pour `transcriber-sharing`, `review-regressions`,
-   `chat-instruction` et `server-surveillance`.
+5. `rg -c '^\s*test\('` sur les quatre fichiers migrés donne toujours 3, 19, 2 et 2 pour
+   `transcriber-sharing`, `review-regressions`, `chat-instruction` et `server-surveillance`.
 6. `git diff -U0 HEAD -- tests/transcriber-sharing.test.cjs tests/review-regressions.test.cjs
    tests/chat-instruction.test.cjs tests/server-surveillance.test.cjs | grep -E "^-.*assert\."` ne sort
    que des lignes appartenant aux définitions locales de `until` supprimées. Sortie dans le journal.
-7. Sonde disque lent, enregistrée dans le dossier d'état du ticket (`.harness-state/tickets/<id>/slow-fs.cjs`,
-   hors Git) : pour chacun des quatre fichiers, `FLK_MS=10 node --require ./.harness-state/tickets/<id>/slow-fs.cjs
+7. Sonde disque lent, recréée depuis la source de T001 dans le dossier d'état du ticket
+   (`.harness-state/tickets/<id>/slow-fs.cjs`, hors Git) avant la mesure initiale : pour chacun des quatre fichiers,
+   `FLK_MS=10 node --require ./.harness-state/tickets/<id>/slow-fs.cjs
    --test --test-concurrency=1 tests/<fichier>` est lancée une fois avant toute modification et une fois
    après. Un fichier qui passait avant passe après. Les deux sorties (`ℹ pass`, `ℹ fail`) dans le journal.
 8. `node --test --test-concurrency=1` sur les quatre fichiers migrés passe, sans sonde.
@@ -122,8 +130,24 @@ de sens.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si une attente aujourd'hui muette échoue sans sonde une fois rendue
+Aucune décision n'est attendue.
+
+Les pauses fixes de 20 et 120 ms sont conservées volontairement : ce ticket partage leurs aides,
+sans prétendre rendre ces deux scénarios indépendants du temps réel. L'effet de la sonde sur cette
+version reste à observer ; les résultats historiques de T001 ne valent pas mesure de ces quatre fichiers.
+Si une attente aujourd'hui muette échoue sans sonde une fois rendue
 bruyante, ou si la migration exige de toucher au code de production : verdict BLOQUÉ, avec le test et
 le fait attendu. Un test n'est jamais relancé jusqu'à ce qu'il passe.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : T028 et T145 remplacés par T150, niveau standard ; inventaire
+  des helpers corrigé, absence du fichier de sonde explicitée avec sa source de reconstruction.
+  Les boucles muettes, appels, pauses fixes et comptages 3/19/2/2 sont confirmés par lecture ; aucun test exécuté.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

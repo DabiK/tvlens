@@ -2,25 +2,26 @@
 id: T046
 titre: Reject the active Codex turn when its event handler throws
 statut: a-faire
-bloque_par: T028, T145
+bloque_par: T163
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: sensible
 ---
 
 ## Ce que le ticket livre
 
 Aujourd'hui, une exception levée pendant le traitement d'une notification Codex est avalée par le
-transport : la question en cours reste suspendue jusqu'à son délai, sans trace. Après ce ticket, le
-transport continue de lire, signale l'exception, et le client rejette aussitôt la question en cours
+transport : elle ne rejette pas la question en cours, qui peut rester suspendue jusqu'à son délai.
+Après ce ticket, le transport continue de lire, signale l'exception, et le client rejette aussitôt la question en cours
 avec un message fixe qui garde l'exception comme cause, puis ferme sa connexion pour que la question
 suivante ne reçoive pas la fin du tour abandonné.
 
 ## Sources
 
-- Constats : ADP-01
-- Code vérifié à la version `0d5a954` (le formatage du lot L03 décalera les lignes : chercher par nom) :
+- Constats : ADP-01 ; `docs/audit-points-chauds.md`, sections E et F (entrée T046), retenu par décision du propriétaire, le 15/10.
+- Code vérifié par lecture à la version `e92c6a6` (chercher les symboles si T150 a décalé les lignes) :
   - `adapters/codex-rpc.cjs`, `CodexRpc.start` (l.58-70) : le gestionnaire de `stdout`, l.67, exécute
     `try{this.receive(JSON.parse(line));}catch{}`. Le même `catch` vide couvre la lecture du JSON et
     tout ce que `receive` appelle.
@@ -48,7 +49,13 @@ suivante ne reçoive pas la fin du tour abandonné.
     `adapters/chat-trace.cjs` : la trace existante, à réutiliser telle quelle.
   - `adapters/codex-perception.cjs`, `CONNECTION_LOST` (l.23-29) et `passing` (l.58-71) : une erreur
     dont le message n'est pas dans ces listes n'est pas prise pour une coupure passagère.
-  - Seuls utilisateurs de `CodexRpc` : `adapters/codex-rpc.cjs` et `adapters/codex-session-client.cjs`.
+  - Le chemin produit construit `CodexRpc` par `spawnRpc` (`adapters/codex-session-client.cjs:27`),
+    utilisé comme fabrique par défaut par le constructeur (`adapters/codex-session-client.cjs:98`).
+    `scripts/probe-confinement.cjs:119` le construit aussi directement ; les tests de transport l'importent.
+    Ces appelants doivent pouvoir omettre le nouveau rappel.
+  - Fermeture : `CodexRpc.close` (`adapters/codex-rpc.cjs:82`) garde la barrière du groupe de processus ;
+    `CodexSessionClient.finish` (`adapters/codex-session-client.cjs:820`) l'attend avant de retirer son arbre.
+    Le signalement d'une exception ne contourne pas ce protocole (ADR 0005).
 - Modèles de test :
   - `tests/codex-stream-decoding.test.cjs`, test « an accented character split across two pipe chunks
     reaches the client intact » (l.8) : vrai `CodexRpc` devant un faux binaire écrit dans un dossier
@@ -59,7 +66,8 @@ suivante ne reçoive pas la fin du tour abandonné.
     transport qui compte ses connexions, sait dire lesquelles sont fermées, et fait aboutir une
     question en appelant `options.onEvent` (`item/completed` puis `turn/completed`). Le nouveau test
     écrit son propre double sur ce modèle, dans son fichier.
-- Mesure, à la version `0d5a954` : `adapters/codex-rpc.cjs` compte 3 `catch` vides.
+- Relevé statique à `e92c6a6` : trois `catch` vides dans `adapters/codex-rpc.cjs:17`, `:67` et `:74`.
+  La commande suivante est une vérification attendue du traitement, pas une mesure exécutée ici.
 
   ```sh
   node --input-type=module -e "import fs from 'node:fs';import {measureText} from './scripts/quality/metrics.mjs';console.log(measureText(fs.readFileSync('adapters/codex-rpc.cjs','utf8')))"
@@ -78,8 +86,10 @@ suivante ne reçoive pas la fin du tour abandonné.
   - Un `throw` synchrone de `onRequest` garde son comportement observable d'aujourd'hui : rien n'est
     écrit sur l'entrée du binaire pour cette requête, aucun `onFault`. Un commentaire dit pourquoi
     (connexion remplacée : on ne répond plus sur l'ancienne).
+    Le rejet asynchrone garde sa réponse d'erreur JSON-RPC actuelle.
   - `CodexSessionClient` passe un `onFault` qui n'agit que pour la connexion courante
     (`this.rpc === rpc`, comme `onEvent`). Il trace l'exception par `this.trace` avec `safeError`.
+    La trace reste conditionnelle : rôle client (`webSearch` ou `surveillance`) et réglage de trace existants.
     - Question en cours : il la rejette avec le message fixe « Codex : événement illisible. Réessaie
       la question. » et l'exception en `cause`, puis ferme la connexion comme le fait
       `foreignThread()` (`this.ready = null`, `this.rpc?.close()`). Le tour abandonné ne peut plus
@@ -97,6 +107,8 @@ Chaque critère se vérifie par un test ou une commande.
    n'est pas du JSON, puis une notification B, avec un `onEvent` qui lève sur A : B est remise à
    `onEvent` ; `onFault` est appelé exactement une fois, avec l'exception levée et la méthode de A ; la
    ligne non JSON ne provoque aucun appel à `onFault`.
+   Le même ordre est vérifié sans rappel `onFault`, puis avec un rappel qui lève lui-même : B est
+   toujours remise et aucune exception du rappel n'arrête le lecteur.
 2. Même montage, le faux binaire envoie une requête dont `onRequest` lève de façon synchrone, puis une
    notification : `onFault` n'est pas appelé et la notification est remise. Le faux binaire garde les
    lignes reçues sur son entrée et les rend dans sa réponse à une requête que le test lui envoie
@@ -111,6 +123,7 @@ Chaque critère se vérifie par un test ou une commande.
    cette connexion.
 5. Même client, sans question en cours : un signalement remis à `options.onFault` ne lève rien, ne
    ferme pas la connexion, et une question posée ensuite aboutit sur la même connexion.
+   Un signalement d'une ancienne connexion ne rejette pas la question ni ne ferme la connexion courante.
 6. La commande de mesure ci-dessus rend `catch_vides` inférieur ou égal à 2 pour
    `adapters/codex-rpc.cjs`.
 7. `node --test --test-concurrency=1 tests/codex-stream-decoding.test.cjs tests/codex-connect-race.test.cjs tests/architecture-f05.test.cjs tests/architecture-f08.test.cjs tests/review-regressions.test.cjs`
@@ -127,10 +140,26 @@ le fichier (modèles : `tests/codex-connect-race.test.cjs` et `appServer` de
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Le texte du rejet est nouveau et suit la forme de « Connexion Codex
+Aucune décision n'est attendue.
+
+Le cas malformé est déduit des accès directs de `event`, pas observé chez un vrai fournisseur.
+Son rejet immédiat et la reconnexion restent à prouver par les doubles ci-dessus.
+Le texte du rejet est nouveau et suit la forme de « Connexion Codex
 interrompue. Réessaie la question. ». La fermeture de la connexion après le rejet suit le modèle de
 `foreignThread()`. Si un test existant exige qu'une exception de gestionnaire reste silencieuse, ou
 si aucune notification ne fait lever `event` à la version traitée : verdict BLOQUÉ, avec le nom du
 test ou l'écart constaté.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : T028 et T145 remplacés par T150, niveau sensible ; catch commun
+  au décodage et au gestionnaire confirmé, appelant direct de la sonde réintégré à l'inventaire, barrières de
+  fermeture et trace conditionnelle précisées. Preuves du rappel absent, défaillant ou obsolète explicitées.
+  Relevés statiques seulement ; aucun test ni fournisseur exécuté.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

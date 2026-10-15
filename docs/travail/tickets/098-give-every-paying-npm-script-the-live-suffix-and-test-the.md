@@ -2,11 +2,12 @@
 id: T098
 titre: Give every paying npm script the :live suffix and test the rule
 statut: a-faire
-bloque_par: T145
+bloque_par: T163
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -22,9 +23,10 @@ retouche. Il tient seulement la liste des fichiers de script payants.
 
 ## Sources
 
-- Constats : DOC-12, TSTC-18
-- Code vérifié à la version `0d5a954` :
-  - `package.json`, bloc `scripts` lignes 7-30 :
+- Constats : DOC-12, TSTC-18. Décision du propriétaire, le 15/10 : attente de T150 et
+  exclusion des documents historiques du critère d’absence.
+- Code vérifié à la version `e92c6a6` :
+  - `package.json`, bloc `scripts` à `package.json:7` (24 entrées) :
     - ligne 13 `test:electron:verify-live` (`smoke-electron.mjs --live-verifier`) ;
     - ligne 15 `test:verify` (`scripts/probe-verify.cjs`, vérificateur Codex réel) ;
     - ligne 16 `test:electron:deep-live` (`--live-video-agent`) ;
@@ -34,13 +36,20 @@ retouche. Il tient seulement la liste des fichiers de script payants.
     ligne 21, `test:strategies:live` ligne 22, `screenshots:live` ligne 26.
   - Entrée hors ligne qui passe des drapeaux sans être payante : `test:electron:sheets` ligne 23
     (`--local-inspection --inspection-strategy=sheets-crop`).
-  - `scripts/smoke-electron.mjs` lignes 7-9 : les seuls drapeaux payants qu'il lit sont `--live-verifier`,
+  - `scripts/smoke-electron.mjs:7-9` : les seuls drapeaux payants qu'il lit sont `--live-verifier`,
     `--live-video-agent` et `--live-inspection`.
 - Fichiers qui citent les anciens noms, hors `package.json` (`git grep` à la version citée) :
   - `docs/installation.md:154` et `:156`, des instructions ;
   - `docs/verification.md:26-27`, des instructions ;
   - `docs/reexamen-validation.md:48`, le relevé daté du 28 septembre 2026.
-  `CONTRIBUTING.md`, à la section qui suit `npm run test:electron`, énonce la convention `*:live`.
+  `CONTRIBUTING.md:25` énonce la convention `*:live`.
+  `docs/audit-maintenabilite.md` contient aussi les anciens noms : ce relevé historique reste inchangé.
+- Chemins fournisseurs lus : `scripts/probe-live.cjs:8` (OpenRouter), `scripts/probe-verify.cjs:3`
+  (CodexVerifier), `scripts/evaluate-actions.cjs:4` et `scripts/compare-inspection-strategies.cjs:6`
+  (adaptateurs réels), `scripts/probe-retrieval.cjs:2` (embeddings), `scripts/probe-codex-speed.cjs:2`
+  (agents Codex), `scripts/capture-showcase.mjs:15` (Electron avec options live).
+- `tests/npm-scripts.test.cjs` est absent : l’invariant reste à tester. Les commandes de démarrage
+  des hôtes ne sont pas des sondes lancées par le test de classement.
 - `git grep` des anciens noms dans `.claude/`, `scripts/loop/`, `scripts/quality/` et `tests/` ne rend rien :
   le harnais ne les cite pas.
 
@@ -82,10 +91,15 @@ Chaque critère se vérifie par un test ou une commande.
 2. Le même fichier prouve, sur un objet inventé, que `{"probe:x": "node scripts/probe-verify.cjs"}` et
    `{"x:live": "node scripts/smoke-electron.mjs"}` sont tous deux signalés, et que
    `{"test:electron:sheets": "node scripts/smoke-electron.mjs --local-inspection"}` ne l'est pas.
-3. `git grep -nE "verify-live|deep-live|full-live|test:verify([^:]|$)|test:codex:speed" -- . ':!docs/travail'`
-   ne rend qu'une ligne : `docs/reexamen-validation.md:48`, le relevé daté laissé tel quel.
+3. La recherche suivante ne rend rien dans les instructions et le code actifs :
+   ```sh
+   git grep -nE 'verify-live|deep-live|full-live|test:verify([^:]|$)|test:codex:speed' -- . \
+     ':!docs/travail' ':!docs/adr' ':!docs/audit-maintenabilite.md' ':!docs/reexamen-validation.md'
+   ```
+   Les tickets, ADR, audit et rapport daté sont exclus : ils décrivent l’état de leur époque. La sortie
+   et le code de retour 1 (aucune correspondance) sont notés au journal.
 4. `node -e 'const s=require("./package.json").scripts;console.log(Object.keys(s).length)'` rend le même nombre
-   en fin de session qu'au début (22 à la version citée ; d'autres lots ont pu en ajouter depuis) : aucune
+   en fin de session qu'au début (24 à la version citée ; d'autres lots ont pu en ajouter depuis) : aucune
    entrée n'est ajoutée ni retirée. Les deux mesures figurent au journal.
 5. `node scripts/check.mjs` est vert.
 
@@ -101,3 +115,10 @@ règle ci-dessus (un script qui appelle Codex ou OpenRouter sans être nommé), 
 la renomme. Si le renommage casse un lecteur hors de la liste des sources : verdict BLOQUÉ, avec le lecteur.
 
 ## Journal
+
+Rafraîchi le 15/10 contre `e92c6a6` : T145 remplacé par T150, 24 entrées npm relevées au lieu de 22,
+chemins fournisseurs vérifiés et critère d’absence corrigé pour préserver les documents historiques.
+Aucun script fournisseur, test ni installation lancé pendant ce rafraîchissement.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

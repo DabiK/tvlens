@@ -2,11 +2,12 @@
 id: T021
 titre: Import the rolling recorder in its tests instead of rewriting its source
 statut: a-faire
-bloque_par: T145
+bloque_par: T163
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: sensible
 ---
 
 ## Ce que le ticket livre
@@ -20,8 +21,8 @@ avant.
 
 ## Sources
 
-- Constats : TSTC-07
-- Code concerné, à la version `0d5a954` :
+- Constats : TSTC-07 ; `docs/audit-points-chauds.md`, sections E et F (entrée T021), retenu par décision du propriétaire, le 15/10.
+- Code concerné, vérifié par lecture à la version `e92c6a6` :
   - `tests/recording.test.cjs`, `fixture` (l.7-38) : construit `sandbox` (l.23-31) avec `MediaRecorder`,
     `Blob`, `performance`, `document`, `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval` et
     `window.tvlens.ingest` ; `fs.readFileSync(…).replace(/^import .*;\n/, '').replace(/export /g, '')`
@@ -34,12 +35,14 @@ avant.
     `performance.now()` (l.17, 22), `document.createElement('canvas')` (l.18-19), `MediaRecorder`
     (l.26, 28), `setInterval` (l.34), `setTimeout` (l.36), `clearInterval` et `clearTimeout` (l.55),
     `new Blob` (l.71), `window.tvlens.ingest` (l.75).
-  - `app/renderer.js`, construction de l'enregistreur (l.134) :
+  - `app/renderer.js:149`, construction de l'enregistreur dans `observe` :
     `new RollingRecorder({ stream, video: $('preview'), audioContext: context, flushAudio, session,
     onError, onSegment })`.
   - `tests/mac-ui.test.cjs`, test « the renderer talks to the bridge of the contract only, and writes no
-    ceiling or retention of its own » (l.685) : relève dans `recording.js` l'usage `window.tvlens.ingest`.
-- Vérifié par `node -e` sous Node 24 : `await import('./app/recording.js')` réussit sans DOM.
+    ceiling or retention of its own » (`tests/mac-ui.test.cjs:1073`) : relève dans `recording.js`
+    l'usage `window.tvlens.ingest` par `shaped` (`tests/mac-ui.test.cjs:1076`).
+- Les six scénarios sont déclarés dans `tests/recording.test.cjs:41`, `:57`, `:73`, `:82`, `:97` et `:107`.
+  Le relevé est statique : aucun test ni import du module exécuté pendant ce rafraîchissement.
 
 ## Périmètre
 
@@ -50,7 +53,7 @@ avant.
   écrit dans ce fichier.
 - À modifier : `tests/recording.test.cjs` — `fixture` fait `await import('../app/recording.js')` et
   passe ses doublures par `env` ; plus de `fs`, plus de `vm`.
-- À ne pas toucher : `app/renderer.js` (l'appel de la l.134 reste tel quel), `core/frame-policy.mjs`,
+- À ne pas toucher : `app/renderer.js` (l'appel de la l.149 reste tel quel), `core/frame-policy.mjs`,
   les six scénarios et leurs valeurs attendues, les autres tests.
 - La coupure de l'import faite pour la preuve du critère 5 est défaite à la main avant la fin de la
   session : `app/recording.js` ne garde que l'option `env`.
@@ -65,7 +68,8 @@ Chaque critère se vérifie par un test ou une commande.
 2. `grep -c "readFileSync\|node:vm\|runInNewContext" tests/recording.test.cjs` rend 0.
 3. `node --test --test-concurrency=1 tests/mac-ui.test.cjs` passe : la fenêtre construit toujours
    l'enregistreur sans option `env`, et le garde du pont voit toujours `ingest`.
-4. `grep -c "new RollingRecorder({ stream, video: \$('preview')" app/renderer.js` rend 1.
+4. Le diff de `app/renderer.js` est vide : son unique construction de `RollingRecorder` reste sans `env`.
+   La preuve de compatibilité du navigateur reste aussi portée par la garde du pont du critère 3.
 5. Preuve consignée au journal puis défaite : couper l'import de `app/recording.js` sur deux lignes
    laisse les six tests verts.
 6. `node scripts/check.mjs` est vert.
@@ -77,8 +81,25 @@ réel `app/recording.js`, importé par Node, avec un environnement fourni par le
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si un des six scénarios dépend d'une globale que l'option `env` ne peut
+Aucune décision n'est attendue.
+
+Hypothèse à vérifier au début du traitement : le module réel s'importe sans DOM ni effet de bord ;
+la lecture montre que les globales du navigateur sont utilisées dans les méthodes, pas au chargement.
+Ce rafraîchissement ne constitue pas une preuve d'import réussi.
+Si un des six scénarios dépend d'une globale que l'option `env` ne peut
 pas porter sans changer le comportement de l'enregistreur dans la fenêtre : verdict BLOQUÉ, avec l'écart
 constaté.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : dépendance T150, niveau sensible, appel du renderer et garde du pont
+  relocalisés ; les six scénarios et la chirurgie du source sont toujours présents. L'ancien succès d'import
+  n'est pas repris comme preuve actuelle ; le critère textuel sur le constructeur devient un diff vide du renderer.
+  Vérification par lecture seulement, aucun test exécuté.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

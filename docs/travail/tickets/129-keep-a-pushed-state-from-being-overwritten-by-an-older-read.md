@@ -2,11 +2,12 @@
 id: T129
 titre: Keep a pushed state from being overwritten by an older read in the Mac window
 statut: a-faire
-bloque_par: T057, T058, T059, T062, T063, T064, T145
+bloque_par: T055
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -23,35 +24,37 @@ rien n'a dépassée s'applique comme aujourd'hui.
 
 ## Sources
 
-- Constats : UI-03
+- Constats : UI-03 ; `docs/audit-points-chauds.md`, sections E et F (entrée T129), retenu par décision du propriétaire, le 15/10.
 - Fiche : `docs/travail/fiches/interface-mac.md`, étape 3 (l'étape 4 reprend `refreshSessions`,
   `renderSaved` et la commande de surveillance).
-- Code concerné, à la version `0d5a954` :
-  - `app/renderer.js`, abonnements `bridge.onVerificationState` (l.302) et `bridge.onDeepState` (l.304) :
+- Code concerné, vérifié par lecture à la version `e92c6a6` :
+  - `app/renderer.js`, abonnements `bridge.onVerificationState` (l.315) et `bridge.onDeepState` (l.317) :
     état poussé, appliqué tel quel.
-  - `app/renderer.js`, lectures initiales `bridge.deepState().then(...)` (l.305) et
-    `bridge.verificationState().then(...)` (l.306) : aucune garde.
-  - `app/renderer.js`, `pullSession` (l.496-505) : `Promise.all([bridge.deepState(), …])` puis
-    `deepState = deep` (l.501) sans garde. `pullSession` n'est appelée que par `openArchive` (l.510),
+  - `app/renderer.js`, lectures initiales `bridge.deepState().then(...)` (l.318) et
+    `bridge.verificationState().then(...)` (l.319) : aucune garde.
+  - `app/renderer.js`, `pullSession` (l.509-518) : `Promise.all([bridge.deepState(), …])` puis
+    `deepState = deep` (l.514) sans garde. `pullSession` n'est appelée que par `openArchive` (l.523),
     après `await bridge.openSession(id)`. L'hôte pousse `deep:state` dans le gestionnaire
-    `sessions:open` (`app/main.cjs`, l.449, avant de répondre à `openSession`) et à chaque changement d'un
+    `sessions:open` (`app/main.cjs:439`, avant de répondre à `openSession`) et aux publications d'un
     approfondissement (`DeepAsk.emit`, `core/deep-ask.cjs` l.26, relayé par le `onChange` de
-    `createConversationRuntime` dans `app/main.cjs`, l.169) : une question en cours peut donc pousser
+    `createConversationRuntime` dans `app/main.cjs:156`, envoi l.159) : une question en cours peut donc pousser
     pendant la lecture. L'état de vérification est poussé par le `onChange` de la vérification
-    (`app/main.cjs`, l.238, canal `verify:state`).
-  - Patron existant à reprendre : `commandSurveillance` (l.693-703) note `watchPushes` au départ et
-    n'applique une réponse « en restauration » que si aucune poussée n'est arrivée depuis (l.696-699) ;
-    `bridge.onSurveillance` incrémente `watchPushes` (l.725).
+    (`app/main.cjs:228`, canal `verify:state`). Les lectures du pont invoquent les canaux correspondants
+    (`app/preload.cjs:68`, `:73`), traités par les instantanés de `app/main.cjs:212` et `:233`.
+  - Patron existant à reprendre : `commandSurveillance` (l.714-724) note `watchPushes` au départ et
+    refuse une réponse « en restauration » dépassée par une poussée (l.717-720) ;
+    `bridge.onSurveillance` incrémente `watchPushes` (l.746).
   - Les instantanés de l'hôte n'ont pas de numéro de révision : `DeepAsk.snapshot` (`core/deep-ask.cjs`,
     l.25) et `VerificationService.snapshot` (`core/verification.cjs`, l.15).
-  - Pourquoi écarter une lecture dépassée par une poussée ne perd rien : les changements d'état de
-    `DeepAsk` et de `VerificationService` passent par `emit()` ; `DeepAsk.restore` (l.45) n'émet pas, mais
-    le gestionnaire `sessions:open` pousse l'instantané juste après (l.449). La dernière poussée reçue
-    porte donc un état au moins aussi récent que celui d'une lecture partie avant elle. Si la session
-    trouve un changement d'état qui n'est suivi d'aucune poussée, elle le note au journal : verdict BLOQUÉ
-    (voir les hypothèses).
-- Aide de test partagée (lot L05) : `tests/helpers/wait.cjs`, `deferred()` rend
-  `{ promise, resolve, reject }`.
+  - `DeepAsk.restore` (`core/deep-ask.cjs:45`) n'émet pas ; `sessions:open` pousse après restauration
+    (`app/main.cjs:434`, `:439`). `VerificationService.verify` émet au départ puis après la sauvegarde
+    d'archive (`core/verification.cjs:23`, `:51-52`). La causalité réelle des réponses et poussées n'a pas
+    été exercée dans ce rafraîchissement : l'hypothèse à caractériser est nommée plus bas.
+- Banc existant : `tests/mac-ui.test.cjs:10` importe les modules purs ; `:718` définit un `deferred`
+  local, utilisé par `searchHarness` (`:725`). Les gardes de branchement passent déjà par `shape`
+  (`:13`, `:704`). Il n'est pas nécessaire d'attendre l'extraction de bancs des tickets parqués.
+- Aide partagée à livrer par T055 : `tests/helpers/wait.cjs`, `deferred()` rend
+  `{ promise, resolve, reject }`. Ce fichier n'existe pas encore à cette version ; T055 implique T150.
 - Le relecteur de l'audit précise qu'un simple « dernière demande gagne » ne suffit pas : il faut aussi
   écarter une lecture dépassée par une poussée, sur le modèle de `watchPushes`, ou un numéro de révision de
   l'hôte (décision 2 de la fiche ; ce ticket retient le compteur côté fenêtre, sans changer l'IPC).
@@ -64,13 +67,16 @@ rien n'a dépassée s'applique comme aujourd'hui.
   exacte (fabrique, classe, fonctions) est libre ; elle ne dépend ni du temps ni d'une minuterie.
 - À modifier : `app/renderer.js` (les deux abonnements, les deux lectures initiales, `pullSession`) et le
   fichier de tests des modules `app/ui/` (aujourd'hui `tests/mac-ui.test.cjs`).
-- Une lecture écartée ne touche ni à l'état ni au dessin. Une lecture en échec garde son traitement
+- Une lecture écartée ne touche pas à l'état de sa source et ne déclenche pas son dessin.
+  Dans `pullSession`, les autres états reçus gardent leur application et leur dessin.
+  Une lecture en échec garde son traitement
   d'aujourd'hui (`notice(reason(error))` pour les lectures initiales ; rejet propagé dans `pullSession`).
 - Dans `pullSession`, seule l'affectation de l'état d'approfondissement est gardée ; les lectures du
-  récapitulatif (`receiveRecap`, qui incrémente `recapRevision` l.804 mais n'est pas lui-même gardé contre
-  une poussée `onRecap`) et de la surveillance ne changent pas : elles relèvent de l'étape 4 de la fiche.
+  récapitulatif (`receiveRecap`, qui incrémente `recapRevision` l.826) et de la surveillance ne changent pas.
+  La lecture initiale du récapitulatif a déjà sa garde de révision (l.850-853) ; elle reste telle quelle.
 - Les promesses différées des tests viennent de `deferred` de `tests/helpers/wait.cjs` (arbitrage A2) :
-  aucune copie privée de `deferred`, `tick` ou `until` n'est ajoutée au fichier de tests.
+  la définition locale existante est remplacée par cet import, également pour les tests de recherche qui
+  l'utilisent déjà. Aucune copie privée de `deferred`, `tick` ou `until` n'est ajoutée.
 - Hors périmètre : `refreshSessions`, `renderSaved`, `commandSurveillance`, `watchPushes`,
   `refreshRegistry`, `app/preload.cjs`, `app/main.cjs`, `core/`.
 - La faute injectée pour le critère 3 est défaite à la main avant la fin de la session et le test relancé.
@@ -89,7 +95,9 @@ rien n'a dépassée s'applique comme aujourd'hui.
      d'approfondissement) ;
    - une lecture rejetée ne change pas la fraîcheur d'une lecture suivante.
 2. Ces tests importent `app/ui/freshness.mjs` ; ils n'utilisent ni `vm` ni le texte de `app/renderer.js`.
-3. Une garde de branchement, indifférente à la mise en page, prouve que les deux abonnements notent la
+3. Une garde de branchement, indifférente à la mise en page — exception déclarée par ce ticket, pour
+   un branchement que rien d'autre ne peut prouver : la fenêtre ne se charge pas sans Electron
+   (`tests/mac-ui.test.cjs:700`) — prouve que les deux abonnements notent la
    poussée et que les trois lectures passent par la règle ; une faute injectée puis défaite (l'abonnement
    `onDeepState` ne note plus la poussée) la fait échouer, sortie au journal.
 4. Les gardes statiques existantes de `tests/mac-ui.test.cjs` passent avec le nouveau module dans
@@ -105,9 +113,28 @@ module importé depuis `app/ui/freshness.mjs`, avec des promesses différées (`
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si la règle ne peut pas être appliquée sans changer un canal IPC, un
+Aucune décision n'est attendue.
+
+Hypothèse de fraîcheur des poussées : les transitions utiles sont suivies d'une publication de leur
+instantané ; l'état d'une lecture écartée ne sera pas le seul état à jour jamais livré. Les chemins
+de publication sont identifiés dans les sources, mais la course reste à caractériser par des promesses
+contrôlées. Aucune exécution IPC ni de renderer ne l'a reproduite ici.
+
+Si la règle ne peut pas être appliquée sans changer un canal IPC, un
 instantané de l'hôte ou le comportement d'une lecture que rien n'a dépassée, ou si un changement d'état
 de l'approfondissement ou de la vérification n'est suivi d'aucune poussée (une lecture écartée perdrait
 alors le seul état à jour) : verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : dépendances réduites à T055 (donc T150), niveau standard ;
+  trois lectures sans garde et canaux repérés à nouveau. Banc de modules et `shape` déjà présents,
+  remplacement du `deferred` local explicité ; garde initiale du récapitulatif déjà livrée reconnue.
+  Garantie de publication formulée comme hypothèse à caractériser ; aucun test exécuté.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.

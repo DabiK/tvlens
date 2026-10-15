@@ -2,11 +2,12 @@
 id: T016
 titre: Make the static guards of the Mac renderer fail when they scan nothing
 statut: a-faire
-bloque_par: T015, T145
+bloque_par: T163
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
@@ -19,31 +20,34 @@ le prive de matière.
 
 ## Sources
 
-- Constats : TSTC-04
-- Code concerné, à la version `0d5a954` :
-  - `tests/mac-ui.test.cjs`, liste `rendererFiles` (l.661) : `renderer.js`, `recording.js` et les
-    14 scripts de `app/ui/`.
-  - `tests/mac-ui.test.cjs`, test « the renderer parses, imports only what its modules export, and finds
-    every element it asks for » (l.664) : `exportsOf` lit les exports dans le texte (l.665) ; les
-    imports sont relevés par `/^import\s*\{([^}]+)\}\s*from\s*'([^']+)';?\s*$/gm` (l.668) ; les
-    identifiants demandés par `/\$\('([^']+)'\)/g` sur `renderer.js` et `/this\.get\('([^']+)'\)/g` sur
-    `ui/shell.js` (l.678).
-  - `tests/mac-ui.test.cjs`, test « the renderer talks to the bridge of the contract only, and writes no
-    ceiling or retention of its own » (l.685) : `exposed` vient du texte de `app/preload.cjs` par
-    `/^\s*([A-Za-z]+)\s*:/gm` (l.686-687) ; `used` vient du texte des modules (l.688).
-  - `tests/mac-ipc-contract.test.cjs`, `loadBridge` (l.45-57) : charge le vrai preload devant un faux
-    `electron` ; modèle de la technique.
-- Mesures à `0d5a954`, par `node -e` appliquant les motifs ci-dessus : 33 imports nommés (14 dans
-  `renderer.js`, 5 dans `ui/job-card.js`, 3 dans `ui/recap-view.js`, 2 dans `ui/shell.js`, 1 dans neuf
-  autres fichiers, 0 dans `card-queue.mjs`, `icons.js`, `text.mjs`) ; 378 appels `$('…')` dans
-  `renderer.js` pour 166 identifiants distincts ; 27 `this.get('…')` dans `ui/shell.js` ; 57 méthodes du
-  pont utilisées ; le motif de la l.686 trouve 60 noms dans le preload, alors que le vrai preload expose
-  57 méthodes sous `tvlens` et 3 sous `capture`.
-- Mesure de l'audit, non rejouable hors ligne : après formatage, 378 passe à 0, 27 à 0, 33 à 0 et le
-  test de la l.664 reste vert.
-- Vérifié par `node -e` sous Node 24 : `await import()` réussit, sans DOM, pour `app/recording.js` et
-  chacun des 14 scripts de `app/ui/`. `app/renderer.js` ne peut pas être importé (il lit le document dès
-  son chargement).
+- Constat : TSTC-04 ; `docs/audit-points-chauds.md`, sections E et F (entrée T016), retenu par décision du propriétaire, le 15/10.
+- Code vérifié par lecture à la version `e92c6a6` :
+  - `tests/mac-ui.test.cjs:1049`, `rendererFiles` : `renderer.js`, `recording.js` et les scripts
+    `.js`/`.mjs` de `app/ui/`, maintenant au nombre de 18 ;
+  - `tests/mac-ui.test.cjs:1052`, test « the renderer parses, imports only what its modules export,
+    and finds every element it asks for » : `exportsOf` relève les exports dans le texte (`:1053`),
+    les imports nommés sont relevés par un motif imposant des apostrophes (`:1056`),
+    puis comparés aux exports textuels (`:1057-1058`). Aucun plancher ne vérifie le nombre d'imports ;
+  - dans ce même test, les identifiants HTML sont relevés à `:1064` ; les motifs des appels littéraux
+    du renderer et du shell sont parcourus à `:1066-1067`, sans assertion de non-vacuité ;
+  - `tests/mac-ui.test.cjs:1073`, test « the renderer talks to the bridge of the contract only, and
+    writes no ceiling or retention of its own » : `exposed` mélange les clés textuelles des deux
+    objets du preload (`:1074-1075`) ; `used` vient déjà du source normalisé par `shape` (`:1076`).
+    Les scripts de sonde ont leur relevé propre et des méthodes obligatoires (`:1082-1085`) ;
+  - `tests/helpers/source-shape.cjs:238`, `shape`, normalise les mises en page : ce helper existe déjà
+    et est déjà utilisé par ces gardes ; T015 est terminé. Il ne prouve ni syntaxe complète ni imports réels ;
+  - `app/renderer.js:1` à `:18` déclare 18 imports nommés, dont `RollingRecorder` à `:5`.
+    Le chargement accède au document (`:19-20`) et au pont (`:21`) : ce module n'est pas à exécuter
+    dans ce test ; `app/index.html:143` le charge comme module de la page ;
+  - `app/preload.cjs:14` expose trois méthodes sous `capture`, `:19` expose 57 méthodes sous `tvlens`.
+    Le pont réel peut être chargé devant un faux `electron`, suivant `loadBridge` dans
+    `tests/mac-ipc-contract.test.cjs:46-58`, dont le test de contrat commence à `:60` ;
+  - `app/ui/shell.js:5`, `ViewingShell`, évalue le document par défaut à l'instanciation seulement.
+    Les appels littéraux `this.get` ne sont pas tous les accès dynamiques (boucles à `:37` et `:74`) :
+    le présent ticket garde le périmètre des relevés littéraux, sans annoncer une validation DOM complète.
+- Relevé statique : le fichier déclare 34 tests. Les 18 modules UI et `recording.js` ont été lus ;
+  leurs accès navigateur sont dans les fonctions ou méthodes, pas au chargement. Aucun import réel
+  ni test n'a été exécuté pour ce rafraîchissement : leur importabilité est une hypothèse à vérifier.
 
 ## Périmètre
 
@@ -57,29 +61,32 @@ le prive de matière.
   parenthèse.
 - Pont : `exposed` vient des clés de l'objet que le vrai `app/preload.cjs` expose sous `tvlens`, chargé
   devant un faux `electron` par une aide locale au fichier (même technique que `loadBridge`). `used`
-  reste relevé dans le texte, tel que le premier ticket du lot l'a rendu indifférent à la mise en page :
-  ce ticket n'y ajoute que le plancher. Le contrôle des scripts de la page (l.694-698) ne relève que
+  reste relevé dans le texte, tel que T015 l'a rendu indifférent à la mise en page :
+  ce ticket n'y ajoute que le plancher. Le contrôle des scripts de la page (l.1082-1085) ne relève que
   `window.tvlens.…` : il reste valable avec les seules méthodes de `tvlens`.
-- Plancher : chaque couple (fichier, motif) parcouru doit trouver au moins une occurrence, sinon le test
-  échoue en nommant le fichier ; pour les imports, le plancher ne vaut que pour les fichiers qui
-  importent.
+- Planchers : le relevé des imports de `renderer.js`, chacun des deux relevés d'identifiants
+  (`renderer.js` et `ui/shell.js`), le relevé agrégé des méthodes du pont et celui de chacun des deux
+  scripts doivent être non vides ; chaque échec nomme le fichier ou le groupe concerné.
+  Les modules sans import ou sans accès au pont ne sont pas soumis à un plancher impossible :
+  leur import réel vérifie leurs dépendances, même quand ils n'en ont aucune.
 - À ne pas toucher : le code de production ; `tests/mac-ipc-contract.test.cjs` (son relevé de canaux est
   traité par le ticket de la table des canaux) ; les gardes d'absence du second test. Aucun cas de test
-  n'est retiré, aucun titre changé. `tests/helpers/mac-host.cjs` n'est pas créé ici : il relève du lot
-  L05, qui reprendra l'aide locale.
+  n'est retiré, aucun titre changé. `tests/helpers/mac-host.cjs` n'est pas créé ici : le banc local
+  du preload suffit et les extractions de helpers parquées ne sont pas un prérequis.
 - Les fautes injectées pour les preuves sont défaites avant la fin de la session
-  (`git checkout -- <chemin>`) : aucun fichier de `app/` ne reste modifié par ce ticket.
+  par retrait manuel des seules fautes : aucun fichier de `app/` ne reste modifié par ce ticket.
 - Aucune ligne de plus de 160 caractères n'est ajoutée au fichier.
 
 ## Critères d'acceptation
 
 Chaque critère se vérifie par un test ou une commande.
 
-1. `node --test tests/mac-ui.test.cjs` passe, et `grep -c "^test(" tests/mac-ui.test.cjs` rend un de
-   plus qu'au début de la session (15 à `0d5a954`).
+1. `node --test tests/mac-ui.test.cjs` passe, et `rg -c '^test\(' tests/mac-ui.test.cjs` rend un de
+   plus qu'au début de la session (34 déclarations à `e92c6a6`). Aucun titre existant ne change.
 2. Le cas ajouté prouve, sur des textes écrits en dur : le relevé d'identifiants et celui des imports
    rendent le même résultat en apostrophes sur une ligne et en guillemets doubles sur plusieurs lignes ;
-   un texte sans aucune occurrence fait échouer le garde avec le nom du fichier.
+   un texte sans aucune occurrence fait échouer le garde avec le nom du fichier. Le relevé du pont
+   est également éprouvé avec une entrée vide ; un module sans import reste accepté par l'import réel.
 3. Le test des imports n'utilise plus `exportsOf` : `grep -c "exportsOf" tests/mac-ui.test.cjs` rend 0.
 4. `exposed` ne vient plus du texte du preload : dans le test du pont, il compte 57 noms (assertion du
    test) et `capture` n'en fait pas partie.
@@ -97,8 +104,24 @@ faux `electron`, et le texte de `app/renderer.js` et `app/index.html`.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si l'import réel d'un module de `rendererFiles` échoue ou a un effet de
-bord (minuterie, écriture) dans le processus de test, ou si le vrai preload n'expose pas 57 méthodes
+Aucune décision n'est attendue.
+
+Hypothèse à vérifier par le traitement : les 18 modules UI et l'enregistreur s'importent sans DOM et sans
+effet de bord sous la version de Node utilisée. Cette réussite n'a pas été exécutée ici.
+Si l'import réel d'un module de `rendererFiles` échoue ou a un effet de bord (minuterie, écriture)
+dans le processus de test, ou si le vrai preload n'expose pas 57 méthodes
 sous `tvlens` : verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+- Rafraîchi le 15/10 contre `e92c6a6` : dépendance T150, niveau standard ; 18 modules UI au lieu de 14,
+  18 imports du renderer, 34 déclarations de tests au lieu de 15. Preload toujours à 57 méthodes sous
+  `tvlens` ; relevé `used` déjà normalisé. Planchers limités aux relevés attendus non vides, ancien
+  succès d'import remplacé par une hypothèse explicite ; aucune exécution de test.
+
+- Contrôle documentaire : `node scripts/check.mjs --changed` lancé une fois, code 0, vert.
+  Aucun fichier de test modifié, donc aucun test exécuté ; Markdown ignoré par Prettier.
+  ESLint non lancé (absent ou non configuré). En-têtes, sections et repères contrôlés séparément par lecture.
+
+- Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
+  `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
