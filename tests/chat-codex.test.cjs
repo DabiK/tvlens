@@ -19,16 +19,6 @@ test('settings persist across instances and reject malformed model IDs without c
  await assert.rejects(store.save({...value,codexModel:'bad\n-c setting'}));assert.deepEqual(await store.load(),value);
  }finally{await fs.rm(dir,{recursive:true,force:true})}
 });
-test('Codex adapter passes the selected model, permits audited web, and drops URLs never opened',async()=>{
- const {CodexVideoAgent}=require('../adapters/codex-video-agent.cjs');const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-agent-test-'));
- try{
- const binary=path.join(dir,'fake-codex');
- await fs.writeFile(binary,`#!${process.execPath}\nconst fs=require('node:fs');const args=process.argv.slice(2);let input='';process.stdin.on('data',b=>input+=b);process.stdin.on('end',()=>{if(!args.includes('model="test-model"')||!args.includes('web_search="live"'))process.exit(2);console.log(JSON.stringify({type:'item.completed',item:{type:'web_search',action:{type:'open_page',url:'https://www.rice.edu/jfk-speech'}}}));fs.writeFileSync(args[args.indexOf('-o')+1],JSON.stringify({answer:'1962',kind:'external',citations:[],limits:[],sources:[{url:'https://www.rice.edu/jfk-speech',title:'Rice',evidence:'Date'},{url:'https://invented.example/x',title:'Fake',evidence:'Fake'}]}));});`,{mode:0o700});
- const agent=new CodexVideoAgent({binary,model:'test-model',bridge:{register:async()=>()=>{}}});
- const result=await agent.answer({question:'Tu peux chercher ?',tools:{anchorMs:1000},signal:AbortSignal.timeout(5000),mode:'chat'});
- assert.equal(result.sources.length,1);assert.equal(result.sources[0].title,'Rice');assert.equal(result.model,'test-model');
- }finally{await fs.rm(dir,{recursive:true,force:true})}
-});
 test('populated memory answers a topic question after an earlier empty turn, without a reinspection',async()=>{
  const {VideoTools}=require('../core/video-tools.cjs');let snapshot={id:'same-session',history:[],segments:[]};let received;
  const service=new DeepAsk({makeTools:()=>new VideoTools({snapshot,search:{},inspector:{inspect:()=>{throw Error('Unneeded inspection');}},media:{}}),agent:{answer:async input=>{received=input;const passage=input.context.passages[0];return passage?{answer:'La vidéo traite d’un débat politique, selon les résumés.',kind:'observation',citations:[{id:passage.id,startMs:0,endMs:15026}],limits:[]}:{answer:'Premier segment attendu.',kind:'insufficient',citations:[],limits:[]};}}});

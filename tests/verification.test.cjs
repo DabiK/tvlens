@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { VerificationService } = require('../core/verification.cjs');
-const { CodexVerifier, isolatedEnvironment, invocation, verifierRole, schema } = require('../adapters/codex-verifier.cjs');
+const { CodexVerifier, verifierRole, schema } = require('../adapters/codex-verifier.cjs');
 const { DISABLED_FEATURES, ENABLED_FEATURES, SUB_AGENT_CONTROLS, childEnvironment } = require('../adapters/codex-confinement.cjs');
 const { dynamicTools } = require('../adapters/codex-tool-definitions.cjs');
 const { safeExternalUrl } = require('../adapters/external-links.cjs');
@@ -37,24 +37,10 @@ test('a failed verifier releases its slot and rejects overlapping jobs', async (
   reject(new Error('Timeout')); await assert.rejects(pending, /Timeout/);
   assert.equal(service.busy, false);
 });
-// Launch flags are not a proof of confinement: the model catalog keeps `unified_exec` and the
-// collaboration tools exposed whatever is disabled here. This only pins what is passed to the child;
-// what the model can really reach is measured by scripts/probe-confinement.cjs. `invocation` is the
-// former `codex exec` launch: the manual verifier no longer uses it (legacy CLI agent only).
-test('Codex subprocess receives no provider key or token, and its launch follows the shared flag list', () => {
+test('Codex child environment filters provider keys and tokens and redirects private homes', () => {
   const parent = { HOME: '/home/user', PATH: '/bin', CODEX_HOME: '/auth', OPENROUTER_API_KEY: 'secret', OPENAI_API_KEY: 'secret', CODEX_API_KEY: 'secret', OTHER_TOKEN: 'secret', TVLENS_LOCAL_VLM_TOKEN: 'secret' };
-  assert.deepEqual(isolatedEnvironment(parent), { PATH: '/bin', HOME: '/home/user', CODEX_HOME: '/auth' });
   assert.deepEqual(childEnvironment(parent, { codexHome: '/tmp/x/home', home: '/tmp/x/user' }), { PATH: '/bin', HOME: '/tmp/x/user', CODEX_HOME: '/tmp/x/home' });
   assert.equal(childEnvironment({ ...parent, TVLENS_CODEX_REAL_HOME: '1' }, { codexHome: '/tmp/x/home', home: '/tmp/x/user' }).HOME, '/home/user');
-  const disabled = args => args.flatMap((arg, index) => arg === '--disable' ? [args[index + 1]] : []);
-  const args = invocation('/tmp/isolated', '/tmp/schema', '/tmp/result');
-  assert.ok(args.includes('--ignore-user-config')); assert.ok(args.includes('--ephemeral'));
-  assert.equal(args[args.indexOf('--sandbox') + 1], 'read-only'); assert.equal(args[args.indexOf('-C') + 1], '/tmp/isolated');
-  assert.deepEqual(disabled(args), DISABLED_FEATURES);
-  assert.ok(args.includes('web_search="live"')); assert.equal(args.at(-1), '-');
-  // A name the installed binary does not know would stop it at start: it is left out.
-  const older = invocation('/tmp/isolated', '/tmp/schema', '/tmp/result', new Set(['shell_tool', 'apps']));
-  assert.deepEqual(disabled(older), ['shell_tool', 'apps']); assert.ok(!older.includes('--enable'));
 });
 test('verification publishes progress and archives the final evidence', async () => {
   const states = [], archived = [];

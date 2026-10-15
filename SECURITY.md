@@ -149,7 +149,7 @@ Des **profils de permissions à lecture restreinte** existent dans Codex. Ils ne
 - **Le web est un canal de sortie.** Un rôle qui cherche sur le web peut y envoyer du contenu de son fil dans une requête ou une adresse. L'application le constate après coup, elle ne peut pas l'empêcher. Aucune restriction de domaine.
 - **Texte provisoire.** Le message provisoire et l'aperçu d'une réponse s'affichent avant la validation des citations et des sources.
 - **Compte du service.** Le processus TVLens lit ses propres secrets et les médias des sessions. Le confinement repose sur l'absence d'outil de lecture donné au modèle.
-- **Chemin historique.** `adapters/codex-video-agent.cjs` lance encore `codex exec`. Il ne sert qu'à des scripts d'évaluation, pas à l'application ; il n'est **pas confiné en lecture** et ne porte pas les réglages de sous-agents.
+- **Chemin historique retiré.** `adapters/codex-video-agent.cjs`, son lancement `codex exec` et les évaluations associées sont supprimés. Voir [la décision de retrait](docs/adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md) pour les capacités perdues et leur récupération dans Git.
 - **Fournisseurs.** Images, transcriptions et questions partent chez les fournisseurs décrits dans le README.
 
 ### 6. Avant tout déploiement

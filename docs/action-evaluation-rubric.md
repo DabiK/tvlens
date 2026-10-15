@@ -1,7 +1,12 @@
 # Critères de lecture du corpus temporel
 
-Corpus de développement figé par `scripts/generate-action-fixtures.py` avant les
-inférences. Les dix clips n'ont pas été changés entre les stratégies. Les réponses
+Le générateur `scripts/generate-action-fixtures.py`, le rejeu des actions et la comparaison
+des stratégies sont retirés, sans remplacement. Voir [la décision de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md)
+pour les capacités perdues et la récupération du code dans Git. Les critères ci-dessous
+servent à lire les rapports historiques ; ils ne décrivent plus un banc exécutable.
+
+Le corpus de développement avait été figé avant les inférences.
+Les dix clips n'ont pas été changés entre les stratégies. Les réponses
 attendues restent dans le banc d'essai, jamais dans les requêtes de perception ou
 les outils fournis à Codex. Les images à 0 et 5 secondes servent au comparateur Ask.
 

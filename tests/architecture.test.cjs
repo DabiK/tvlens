@@ -50,6 +50,9 @@ test('core services do not import the session use case', () => {
 });
 test('active Codex roles do not depend on the legacy MCP transport', () => {
   const root = path.join(__dirname, '..');
+  for (const filename of ['adapters/openrouter.cjs', 'adapters/codex-video-agent.cjs']) {
+    assert.equal(fs.existsSync(path.join(root, filename)), false, `${filename} must remain absent`);
+  }
   for (const filename of ['adapters/codex-session-agent.cjs', 'adapters/codex-session-client.cjs', 'adapters/codex-analysis-agent.cjs', 'adapters/companion-prompt.cjs']) {
     assert.doesNotMatch(fs.readFileSync(path.join(root, filename), 'utf8'), /require\(['"]\.\/codex-video-agent\.cjs['"]\)/, filename);
   }

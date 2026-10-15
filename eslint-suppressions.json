@@ -58,14 +58,6 @@
       "count": 2
     }
   },
-  "adapters/codex-video-agent.cjs": {
-    "complexity": {
-      "count": 1
-    },
-    "no-empty": {
-      "count": 2
-    }
-  },
   "adapters/companion-prompt.cjs": {
     "complexity": {
       "count": 1
@@ -108,14 +100,6 @@
     },
     "no-empty": {
       "count": 2
-    }
-  },
-  "adapters/openrouter.cjs": {
-    "complexity": {
-      "count": 1
-    },
-    "no-nested-ternary": {
-      "count": 3
     }
   },
   "adapters/remote-media.cjs": {

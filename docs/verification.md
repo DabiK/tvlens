@@ -1,6 +1,6 @@
 # Vérification externe par port hexagonal
 
-> **Mise à jour du 13 octobre 2026.** Le vérificateur manuel ne lance plus `codex exec`. Il passe par le client App Server du chat, sous un rôle sans outil. Les sections « Adaptateur » et « Isolation » ci-dessous sont à jour ; l’ancien lancement est gardé plus bas, à titre d’historique. Ce changement n’est pas déployé. Preuves et limites : [SECURITY.md](../SECURITY.md) et [livrable de la nuit](night-features-delivery.md).
+> **Mise à jour du 15 octobre 2026.** Le vérificateur manuel passe par le client App Server du chat, sous un rôle sans outil. L’ancien lancement `codex exec` et son adaptateur d’évaluation sont supprimés : voir [la décision de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md). Les mesures du chemin actif restent celles du 13 octobre : [SECURITY.md](../SECURITY.md) et [livrable de la nuit](night-features-delivery.md).
 
 Le domaine ne lance pas Codex. `VerificationService` dépend seulement de
 `VerificationPort.verify({ claim, context })` et reçoit une conclusion structurée,
@@ -48,28 +48,13 @@ Mesuré avec un vrai modèle sur un Mac (`codex-cli 0.160.1`), consigne de rôle
 
 Cela reste une isolation de contexte, d’environnement et d’outils, **pas une VM ni un conteneur**. Le web est un canal de sortie : le modèle peut y envoyer des mots de l’affirmation dans une requête. Voir [SECURITY.md](../SECURITY.md) pour ce qui est empêché, détecté ou inconnu.
 
-### Premier essai (historique) : lancement `codex exec`
+### Retrait du premier lancement `codex exec`
 
-Ce lancement ne sert plus à l’application. Il reste utilisé par `adapters/codex-video-agent.cjs`, pour des scripts d’évaluation ; il n’est pas confiné en lecture.
-
-- Répertoire temporaire distinct du projet; aucun fichier TVLens transmis.
-- Entrée par stdin, arguments de processus passés sans shell.
-- Environnement filtré : pas de `OPENROUTER_API_KEY`, `OPENAI_API_KEY` ou `CODEX_API_KEY` héritée.
-- Authentification CLI existante conservée, sans copie de ses secrets dans le projet.
-- `--ignore-user-config`, session `--ephemeral`, sandbox `read-only`.
-- Outils shell, exécution, navigateur local, ordinateur, images locales,
-  connecteurs/apps, plugins, hooks et sous-agents désactivés. Recherche web intégrée activée.
-- Pas de chargement des instructions de projet ni de découverte des skills hôte pour ce processus.
-- Audit des événements JSONL; arrêt si un événement d’exécution locale, modification
-  de fichier ou appel MCP est malgré tout observé.
-- Délai maximal de 180 secondes; terminaison du groupe de processus, puis nettoyage.
-
-Il s’agit d’une isolation de contexte, d’environnement et d’outils, **pas d’une VM
-ni d’un conteneur**. Le programme Codex doit toujours accéder à son authentification
-et à son fonctionnement interne. Un sandbox en lecture seule ne constitue pas, à
-lui seul, une interdiction de lecture de tout le disque. Pour une distribution
-produit, une frontière de processus distant/conteneur et une authentification
-de service devront être validées indépendamment.
+`adapters/codex-video-agent.cjs` et les aides de lancement qu’il utilisait dans le
+vérificateur sont supprimés. Cet ancien chemin d’évaluation ne confinait pas la lecture
+du disque. Le vérificateur actif conserve son rôle App Server décrit ci-dessus.
+La capacité perdue et le moyen de retrouver le code sont consignés dans
+[l’ADR de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md).
 
 ## Intégration dans TVLens
 

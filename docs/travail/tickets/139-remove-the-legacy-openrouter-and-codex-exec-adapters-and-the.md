@@ -1,7 +1,7 @@
 ---
 id: T139
 titre: Remove the legacy OpenRouter and codex exec adapters and the scripts using them
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: oui
 installe: non
@@ -176,3 +176,247 @@ documents historiques exclus. Décision de suppression toujours attendue. Aucun 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
   Autorisation de harnais limitée à `cas_de_test` harmonisée dans le périmètre ; niveau standard (décision de l'orchestrateur : un retrait limité, relu par Opus, sans Astra).
+
+### Exploration et inventaire avant retrait — 15 octobre 2026
+
+- Base `eef7bf5`, témoin de hooks présent ; exploration et écarts dans `.harness-state/tickets/T139/`.
+  Décision écrite du propriétaire constatée dans « Hypothèses bloquantes » avant toute suppression.
+- Mesure initiale par `measure(process.cwd()).cas_de_test` de `scripts/quality/metrics.mjs` et lecture
+  JSON de `scripts/quality/baseline.json` : **M = 1102, P = 1102**, cible **1097** pour les deux.
+  Décompte statique `^\s*test\(` : adapters 5, chat-codex 7, verification 10, architecture 5,
+  codex-confinement 17. Résultat conservé dans `mesure-initiale.json` du dossier d’état.
+- `scripts/README.md` et `tests/scripts-inventory.test.cjs` absents : contrôles correspondants non lancés.
+  `tests/npm-scripts.test.cjs` présent : sa liste payante est conservée et son exécution est prévue.
+- Recherche des lecteurs : seuls les scripts et cas inventoriés chargent les deux anciens adaptateurs.
+  Les trois `probe-chat-*` importent `CodexSessionAgent` sous un alias local ; ils restent.
+  Le vérificateur des hôtes utilise déjà `CodexSessionClient`. Les embeddings et MCP restent.
+
+Comportements des cinq cas retirés et preuves restantes :
+
+| Cas retiré | Couverture abandonnée ou preuve active distincte |
+| --- | --- |
+| adapters : JSON invalide et erreur fournisseur sans secret | Contrat des complétions OpenRouter abandonné, aucune preuve équivalente revendiquée pour cet ancien transport. Le chemin de vérification actif conserve son traitement d’erreur et son isolation dans verification et codex-confinement. |
+| adapters : blocs image/audio, modèle et absence de plugins | Formats image_url/input_audio OpenRouter abandonnés, sans équivalent. Le client actif n’accepte que des images incluses et refuse chemins, URL distantes et skills : cas « media inputs are inline images only » de codex-confinement. |
+| adapters : conversion des temps relatifs d’une vidéo ralentie | Conversion fournisseur abandonnée, sans preuve équivalente revendiquée. Le chemin actif travaille sur des planches aux temps de session. |
+| adapters : libération de réservation sur rejet HTTP 402 | Traitement de cette complétion payante abandonné, sans preuve équivalente. Les tests du registre de budget ne prouvent pas le traitement de ce rejet réseau. |
+| chat-codex : modèle choisi, web audité, URL jamais ouverte écartée | « chat dispatches tools and applies changed model selection on subsequent turns » de refactor-boundaries protège le modèle actif ; « a grouped page open counts every page… » de codex-confinement protège l’audit et le filtrage par CodexSessionAgent. Le transport exec et son format JSONL ne sont plus évalués. |
+
+Assertions héritées retirées du cas de vérification :
+
+| Assertion retirée | Preuve sur le chemin actif ou perte |
+| --- | --- |
+| isolatedEnvironment(parent) filtre les secrets et garde HOME/CODEX_HOME | Wrapper abandonné ; les deux assertions childEnvironment restent avec le même parent ; le cas « a role is launched… with an allow-listed environment » de codex-confinement protège le lancement actif. |
+| invocation contient ignore-user-config et ephemeral | Drapeaux de lancement exec abandonnés, aucune équivalence de ces drapeaux revendiquée. |
+| sandbox read-only et répertoire -C temporaire | Le cas actif « a role is launched… » vérifie sandbox, cwd et dossiers séparés. |
+| disabled(args) égale DISABLED_FEATURES | Le même cas actif vérifie les drapeaux transmis au processus App Server. |
+| web_search live et dernier argument stdin « - » | Le rôle web actif est protégé par « the manual verifier is a web-only role… » de verification ; l’argument stdin exec est abandonné. |
+| older filtre shell_tool/apps et ne transmet pas enable | Le cas « launch flags are limited to the names the installed binary knows… » de codex-confinement protège le filtrage du lancement actif ; la forme exec est abandonnée. |
+
+Le rejeu des actions et la comparaison des stratégies sont abandonnés par décision, sans remplacement
+ni revendication de couverture. Aucune assertion active de childEnvironment ni garde existante ne sera retirée.
+
+### Retrait, cycle rouge/vert et contrôles ciblés — 15 octobre 2026
+
+- `node --test tests/architecture.test.cjs` avant suppression : **rouge**, 4/5 passent,
+  assertion `adapters/openrouter.cjs must remain absent` (`true !== false`), pas un échec d’import.
+  Après retrait : **vert**, 5/5. Sorties intégrales dans `architecture-rouge.log` et `architecture-vert.log`.
+- Sept fichiers, trois entrées npm et les cinq seuls cas autorisés supprimés.
+  Les deux assertions `childEnvironment` et leur parent sont conservés à l’identique.
+  Les interdictions existantes d’architecture restent ; deux assertions d’absence physique les complètent.
+- ADR 0016 créé ; les quatre documents actifs annoncent le retrait et y renvoient.
+  Les documents historiques et les composants exclus du périmètre sont conservés.
+- `node_modules/.bin/eslint --prune-suppressions .` : code 0 ; seules les deux entrées
+  des adaptateurs supprimés disparaissent du gel, sans ajout ni hausse.
+- Tests exécutés **en séquentiel**, chacun par `node --test`, code 0 pour chaque fichier :
+
+| Commande | Résultat observé | Écart de cas |
+| --- | --- | --- |
+| `node --test tests/adapters.test.cjs` | 1/1, aucun échec | 5 → 1, −4 |
+| `node --test tests/chat-codex.test.cjs` | 6/6, aucun échec | 7 → 6, −1 |
+| `node --test tests/verification.test.cjs` | 10/10, aucun échec | inchangé |
+| `node --test tests/architecture.test.cjs` | 5/5, aucun échec | inchangé |
+| `node --test tests/codex-confinement.test.cjs` | 17/17, aucun échec | inchangé |
+| `node --test tests/npm-scripts.test.cjs` | 4/4, aucun échec | fichier inchangé |
+
+Les sorties intégrales sont dans les six fichiers `*-final.log` du dossier d’état.
+`tests/scripts-inventory.test.cjs` reste absent : contrôle non lancé.
+
+Mesure finale, commande et sortie (code 0) :
+
+```text
+$ node --input-type=module <<'JS'
+import fs from 'node:fs';
+import { measure } from './scripts/quality/metrics.mjs';
+const files = ['adapters', 'chat-codex', 'verification', 'architecture', 'codex-confinement'];
+console.log(JSON.stringify({
+  M: measure(process.cwd()).cas_de_test,
+  P: JSON.parse(fs.readFileSync('scripts/quality/baseline.json')).cas_de_test,
+  cases: Object.fromEntries(files.map(name => [name,
+    (fs.readFileSync(`tests/${name}.test.cjs`, 'utf8').match(/^\s*test\(/gm) || []).length]))
+}, null, 2));
+JS
+{
+  "M": 1097,
+  "P": 1097,
+  "cases": {
+    "adapters": 1,
+    "chat-codex": 6,
+    "verification": 10,
+    "architecture": 5,
+    "codex-confinement": 17
+  }
+}
+
+Exit: 0
+```
+
+La mesure initiale a été exécutée avec `node --input-type=module`, en important le même
+`measure` et en lisant le même JSON de plancher, avant toute modification ; résultat intégral :
+
+```json
+{
+  "M": 1102,
+  "P": 1102,
+  "cases": {
+    "tests/adapters.test.cjs": 5,
+    "tests/chat-codex.test.cjs": 7,
+    "tests/verification.test.cjs": 10,
+    "tests/architecture.test.cjs": 5,
+    "tests/codex-confinement.test.cjs": 17
+  },
+  "inventories": {
+    "scripts/README.md": false,
+    "tests/npm-scripts.test.cjs": true,
+    "tests/scripts-inventory.test.cjs": false
+  }
+}
+```
+
+La baisse est exactement de cinq cas statiques et de cinq au plancher, sans cas ajouté.
+Diff du plancher (code 0), seule ligne modifiée :
+
+```text
+$ git diff -- scripts/quality/baseline.json
+diff --git a/scripts/quality/baseline.json b/scripts/quality/baseline.json
+index 6663ee7..d14b4bb 100644
+--- a/scripts/quality/baseline.json
++++ b/scripts/quality/baseline.json
+@@ -5,5 +5,5 @@
+   "tests_nommes_par_chantier": 9,
+   "process_env_hors_config": 8,
+   "inner_html": 2,
+-  "cas_de_test": 1102
++  "cas_de_test": 1097
+ }
+
+Exit: 0
+```
+
+Recherche d’absence complète, commande et sortie (code 0) :
+
+```text
+$ git grep -nE -e 'codex-video-agent|openrouter\.cjs|OpenRouterAdapter|isolatedEnvironment|probe-live' -e 'evaluate-actions|compare-inspection-strategies|diagnose-inspect|generate-action-fixtures' -- . ':!docs/travail' ':!docs/adr' ':!docs/audit-maintenabilite.md' ':!docs/audit-points-chauds.md' ':!docs/night-features-delivery.md' ':!docs/video-temporal-research.md'
+SECURITY.md:152:- **Chemin historique retiré.** `adapters/codex-video-agent.cjs`, son lancement `codex exec` et les évaluations associées sont supprimés. Voir [la décision de retrait](docs/adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md) pour les capacités perdues et leur récupération dans Git.
+docs/action-evaluation-rubric.md:3:Le générateur `scripts/generate-action-fixtures.py`, le rejeu des actions et la comparaison
+docs/refactor-runtime.md:27:Les adaptateurs historiques `adapters/codex-video-agent.cjs` et `adapters/openrouter.cjs`, les scripts d’évaluation dont `evaluate-actions.cjs` et leurs cinq cas de test sont supprimés. Le rejeu des actions et la comparaison des stratégies sont abandonnés. Le chat actif, les embeddings OpenRouter et le serveur MCP restent disponibles. Voir [la décision de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md).
+docs/verification.md:53:`adapters/codex-video-agent.cjs` et les aides de lancement qu’il utilisait dans le
+tests/architecture.test.cjs:53:  for (const filename of ['adapters/openrouter.cjs', 'adapters/codex-video-agent.cjs']) {
+tests/architecture.test.cjs:57:    assert.doesNotMatch(fs.readFileSync(path.join(root, filename), 'utf8'), /require\(['"]\.\/codex-video-agent\.cjs['"]\)/, filename);
+tests/npm-scripts.test.cjs:7:  "probe-live.cjs",
+tests/npm-scripts.test.cjs:9:  "evaluate-actions.cjs",
+tests/npm-scripts.test.cjs:11:  "compare-inspection-strategies.cjs",
+
+Exit: 0
+```
+
+Aucun lecteur actif supplémentaire. Les alias des trois sondes ont été revérifiés par
+`rg -n CodexSessionAgent:CodexVideoAgent scripts/probe-chat-memory.cjs scripts/probe-chat-web.cjs scripts/probe-chat-sources.cjs`
+(code 0, trois imports de `adapters/codex-session-agent.cjs` ; sortie dans `alias-chat.log`).
+
+Contrôle du périmètre du harnais, commande et sortie complètes :
+
+```text
+$ git status --porcelain -- .claude .codex .agents AGENTS.md CLAUDE.md docs/standards.md scripts/check.mjs scripts/quality scripts/loop
+ M scripts/quality/baseline.json
+
+Exit: 0
+```
+
+`git diff --check` : code 0, aucune sortie.
+Contrôle qualité des fichiers modifiés, commande et sortie complètes :
+
+```text
+$ node scripts/check.mjs --changed
+✔ règles par fichier
+✔ format
+✔ lint
+✔ gel du lint
+✔ cliquet
+    Mesures améliorées : lignes_longues_prod : 509 → 471, lignes_longues_tests : 1703 → 1696, catch_vides_prod : 38 → 36, process_env_hors_config : 8 → 6
+✔ tests JS (4 fichier(s))
+    ℹ tests 22
+    ℹ pass 22
+    ℹ fail 0
+check : vert
+
+Exit: 0
+```
+
+Aucun script fournisseur, aucune TV, aucun VPS ni identifiant utilisé. Le contrôle complet est lancé ;
+son résultat sera consigné ci-dessous avant le verdict.
+
+- Vérification de la frontière publique :
+  `node -e "console.log(Object.keys(require('./adapters/codex-verifier.cjs')))"`, code 0,
+  sortie `[ 'CodexVerifier', 'verifierRole', 'schema' ]`.
+- Comparaison JSON de `package.json` avec `HEAD` : seules les trois entrées autorisées disparaissent.
+  Comparaison JSON du plancher : seule `cas_de_test` baisse de cinq. Les sept chemins sont absents.
+  Le texte du ticket avant `## Journal` est conservé, avec le statut en-cours déjà présent au démarrage.
+
+### Contrôle complet et remise à la boucle — 15 octobre 2026
+
+Commande et sortie intégrales, après les contrôles ciblés :
+
+```text
+$ node scripts/check.mjs
+✔ règles par fichier
+✔ format
+✔ lint
+✔ gel du lint
+✔ cliquet
+    Mesures améliorées : lignes_longues_prod : 509 → 471, lignes_longues_tests : 1703 → 1696, catch_vides_prod : 38 → 36, process_env_hors_config : 8 → 6
+✔ tests JS (103 fichier(s))
+    ℹ tests 1210
+    ℹ pass 1210
+    ℹ fail 0
+✔ tests Python
+    Ran 84 tests in 27.106s
+
+    OK (skipped=1)
+check : vert
+
+Exit: 0
+```
+
+Le compteur statique de 1097 diffère des 1210 tests exécutés : des tests sont générés à l’exécution.
+Les 84 tests Python annoncés incluent un cas ignoré ; ce cas n’est pas déclaré exécuté.
+Aucun échec, aucune relance d’un test instable. Aucun script fournisseur lancé.
+
+Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T139/verdict.json` : critères couverts,
+relecture et intégration laissées à la boucle. Aucun commit ni push. Les fichiers non suivis
+préexistants de `design/continuous-context/` et `experiments/` restent sans modification.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T139/relecture-1.md : `.env.example:9-10` — hors périmètre
+
+  - **Ce qui ne va pas** : le commentaire dit encore « Les scripts historiques OpenRouter de comparaison acceptent aussi OPENROUTER_MODEL et TVLENS_INSPECTION_MODEL ». Ces scripts sont supprimés par le diff (`evaluate-actions.cjs`, `compare-inspection-strategies.cjs`, `diagnose-inspect.cjs`, `probe-live.cjs`), donc la phrase est devenue fausse. Les deux variables restent lues par `adapters/config.cjs:12` et `adapters/config.cjs:20`. La recherche du critère 2 ne voit pas ce fichier, car elle cherche des noms de fichiers.
+  - **Ce qui est attendu** : retirer ou reformuler cette phrase, dans un ticket qui a le droit de modifier `.env.example` (T134 documente les réglages). Le ticket autorise seulement « les quatre documents actifs cités ».
+- .harness-state/tickets/T139/relecture-1.md : `adapters/codex-confinement.cjs:11` — hors périmètre
+
+  - **Ce qui ne va pas** : le commentaire dit « One list for the App Server roles and `codex exec`. » Le lancement `codex exec` (`invocation`, `CodexVideoAgent`) n'existe plus. Seuls les rôles App Server utilisent encore `DISABLED_FEATURES` et `featureArgs` (`adapters/codex-session-client.cjs:307`).
+  - **Ce qui est attendu** : enlever la mention de `codex exec` dans un ticket qui touche `codex-confinement.cjs`. Ce fichier n'est pas dans le périmètre de T139.
+- .harness-state/tickets/T139/relecture-1.md : **Écart accepté, élagage de `eslint-suppressions.json`** : `docs/standards.md` oblige tout ticket qui rend une suppression inutile à l'élaguer, même hors de son périmètre. Le diff retire seulement les deux entrées des adaptateurs supprimés, sans rien ajouter ni augmenter. Le fichier ne fait pas partie des chemins protégés contrôlés par le critère 4.
+- .harness-state/tickets/T139/relecture-1.md : **Écart accepté, M = P = 1102 au lieu de 966** : ce n'est pas un écart à un critère. Le ticket demande de relever M et P au début de la session ; 966 était la valeur à `e92c6a6`. La cible M − 5 = P − 5 = 1097 est tenue.
+- .harness-state/tickets/T139/relecture-1.md : **Écart accepté, `tests/npm-scripts.test.cjs` présent** : le critère 5 prévoit ce cas. Le test a été lancé, il est vert, et sa liste payante est conservée.
+
+  Aucun constat contesté : c'est une première relecture.

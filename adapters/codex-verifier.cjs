@@ -1,5 +1,4 @@
 const { CodexSessionClient } = require('./codex-session-client.cjs');
-const { childEnvironment, featureArgs } = require('./codex-confinement.cjs');
 const { untrustedBlock } = require('./companion-prompt.cjs');
 
 const schema = {
@@ -14,15 +13,6 @@ const schema = {
     limitations: { type: 'array', items: { type: 'string' } }
   }, required: ['normalizedClaim', 'assessment', 'conclusion', 'sources', 'limitations']
 };
-
-// Former `codex exec` launch, kept only for the legacy CLI agent (adapters/codex-video-agent.cjs,
-// scripts) and its tests. The manual verifier no longer uses it: `codex exec` has no thread without
-// execution environment, so a model started this way keeps a patch surface and can read the disk.
-function isolatedEnvironment(parent = process.env, authHome) { return childEnvironment(parent, { codexHome: authHome }); }
-// `known`: flag names of the installed binary (codex-confinement.knownFeatures); null passes them all.
-function invocation(workdir, schemaFile, outputFile, known = null) {
-  return ['--no-daemon', '-a', 'never', 'exec', '--ignore-user-config', '--ephemeral', '--skip-git-repo-check', '--sandbox', 'read-only', '-C', workdir, '--json', '--color', 'never', '--output-schema', schemaFile, '-o', outputFile, '-c', 'web_search="live"', '-c', 'project_doc_max_bytes=0', '-c', 'history.persistence="none"', ...featureArgs(known), '-'];
-}
 
 // Role text of a verification thread, sent once as its base instructions. It states what the role
 // is for; what the role can reach is decided by the client (no tool, no execution environment).
@@ -87,4 +77,4 @@ class CodexVerifier {
   // Nothing outlives a verification; kept so that a host can treat every Codex adapter alike.
   async close() { this.cancel(); }
 }
-module.exports = { CodexVerifier, isolatedEnvironment, invocation, verifierRole, schema };
+module.exports = { CodexVerifier, verifierRole, schema };

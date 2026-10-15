@@ -18,13 +18,13 @@ Les prompts et schémas de réponse vivent dans `adapters/companion-prompt.cjs`,
 
 ## Outils directs et MCP
 
-`core/video-tool-contracts.cjs` définit noms, descriptions et arguments. L’adaptateur Codex ajoute l’enveloppe des outils dynamiques ; `mcp/tool-definitions.cjs` convertit les champs pour le SDK MCP. Le pont HTTP et l’ancien adaptateur utilisent le même catalogue de noms autorisés.
+`core/video-tool-contracts.cjs` définit noms, descriptions et arguments. L’adaptateur Codex ajoute l’enveloppe des outils dynamiques ; `mcp/tool-definitions.cjs` convertit les champs pour le SDK MCP. Le pont HTTP utilise le même catalogue de noms autorisés.
 
 `runtime/conversation-runtime.cjs` compose le chat, `DeepAsk` et la fabrique `VideoTools` pour les deux hôtes. Le snapshot gelé d’une question prime sur l’état courant. `runtime/session-runtime.cjs` compose la capture analysée, le stockage, la recherche et le réexamen.
 
 Electron lance encore `VideoBridge` pour les clients MCP externes. Le serveur TV ne l’expose pas : le chat interne utilise les outils dynamiques directement. Ce refactor n’ajoute ni serveur MCP public ni nouvelle dépendance réseau.
 
-`CodexVideoAgent` reste disponible pour les scripts historiques d’évaluation (`evaluate-actions.cjs`) et leurs tests. Ce n’est plus une dépendance de la classe de chat active. Son retrait casserait encore ces consommateurs ; il est conservé explicitement.
+Les adaptateurs historiques `adapters/codex-video-agent.cjs` et `adapters/openrouter.cjs`, les scripts d’évaluation dont `evaluate-actions.cjs` et leurs cinq cas de test sont supprimés. Le rejeu des actions et la comparaison des stratégies sont abandonnés. Le chat actif, les embeddings OpenRouter et le serveur MCP restent disponibles. Voir [la décision de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md).
 
 ## Quand les embeddings sont-ils créés ?
 
@@ -68,7 +68,7 @@ Le tableau et le flux du début décrivent l’état du 30 septembre. Dans le co
 - **`DeepAsk`** : le plafond de traitement d’une question est de cinq minutes hors attente, et non plus de 60 secondes. Il est publié avec chaque question (`job.timeoutMs`) ; `TVLENS_QUESTION_TIMEOUT_MS` peut seulement l’abaisser. Le contexte d’un client MCP externe (`VideoBridge`) et le délai d’un appel d’outil MCP suivent le même plafond.
 - **Conservation** : la limite « cinq minutes de médias détaillés » ne vaut plus. Les médias restent jusqu’à la suppression de la session ; une archive se rouvre en lecture seule, avec ses questions. Le fil Codex, lui, n’est toujours pas restauré.
 - **`CodexSessionClient`** : les fils sont ouverts sans environnement d’exécution, la réponse de Codex est relue, les éléments publiés sont filtrés par une liste blanche par rôle, et la création de sous-agents est empêchée par configuration quand le binaire l’accepte. Détail et limites : [SECURITY.md](../SECURITY.md).
-- **Vérificateur manuel** : `CodexVerifier` ne lance plus `codex exec`. Il tourne sur `CodexSessionClient`, sous un rôle `verifier` : web seul, aucun outil. `CodexVideoAgent`, conservé pour les scripts d’évaluation, reste sur l’ancien lancement.
+- **Vérificateur manuel** : `CodexVerifier` tourne sur `CodexSessionClient`, sous un rôle `verifier` : web seul, aucun outil. L’ancien lancement et son agent d’évaluation ont depuis été retirés ; voir [la décision de retrait](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md).
 - **Surveillance** : deux rôles de plus sur le même client, composés par `runtime/surveillance-runtime.cjs` pour les deux hôtes. Lecture des passages : ni web ni outil. Vérification : web seul, aucun outil. L’ancien mode Auto et `core/auto-monitor.cjs` sont retirés.
 - **`inspect_clip`** : option `exactSpeech` et champ `intervals`, qui sépare l’intervalle des images de celui des paroles. Ce changement vient d’une autre session : [réexamen](reinspection-transcript-reuse.md). Le catalogue reste de trois outils.
 - **Consigne** : `adapters/companion-prompt.cjs` envoie la demande et la consigne active du spectateur hors du bloc de données déclaré non fiable. Une consigne active arrive avec sa portée : la surveillance l’exécute de son côté, le tour de chat répond à la demande depuis la vidéo et n’ouvre le web que si la demande le réclame ou si la réponse dépend d’un fait que la vidéo ne donne pas ; un chiffre venu de la vidéo est dit annoncé, jamais confirmé.
