@@ -61,7 +61,7 @@ const recorded = (order, target, method, step) => { const original = target[meth
 // particular to say.
 function stage({ archive, seal, remove, onDisk = true, closeErrors = [] } = {}) {
   const calls = [], journal = [];
-  const session = { id: 'session-1', watch: { ending: false }, closeErrors,
+  const session = { id: 'session-1', watch: { ending: false, beginEnding() { this.ending = true; } }, closeErrors,
     archive: async () => { calls.push('archive'); if (archive) throw archive; },
     seal: async () => { calls.push('seal'); if (seal) throw seal; } };
   const library = { folder: async id => { calls.push('folder ' + id); if (!onDisk) throw new Error('Session introuvable.'); return '/sessions/' + id; },

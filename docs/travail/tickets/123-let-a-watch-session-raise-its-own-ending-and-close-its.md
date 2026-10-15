@@ -1,7 +1,7 @@
 ---
 id: T123
 titre: Let a watch session raise its own ending and close its intake
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -119,3 +119,72 @@ pour le code et les tests ; aucun test exécuté pendant ce rafraîchissement.
   La session suivante part de ce travail : elle l'applique, le relit contre chaque critère, relance les tests ciblés
   puis le contrôle complet, reprend dans le journal ce qu'elle a vérifié elle-même, et rend son verdict. Elle ne
   recopie aucune preuve qu'elle n'a pas observée à nouveau.
+
+- Reprise Codex sur `97f3cdd` : archive, diff courant, domaine, compositions, appelants, tests protecteurs
+  et ADR 0005–0007 relus. `git apply --check .harness-state/archives/T123-interrompu-1/code-sans-ticket.patch`
+  passe (code 0). Aucun écart prévu ; exploration et écarts écrits dans `.harness-state/tickets/T123/`.
+  Les preuves de la session interrompue restent historiques ; les contrôles seront exécutés à nouveau.
+- Reprise, transitions : `node --test --test-name-pattern=beginEnding tests/watch-session-ending.test.cjs`
+  rouge sur l'assertion de présence (0/2, code 1), puis vert après ajout (2/2, code 0).
+  `node --test --test-name-pattern=closeIntake tests/watch-session-ending.test.cjs` rouge sur
+  l'assertion de présence (0/1, code 1), puis vert après ajout (1/1, code 0).
+  Sorties propres à cette reprise : `begin-ending-{red,green}.log`, `close-intake-{red,green}.log`.
+- Reprise, garde : `node --test tests/architecture.test.cjs` rouge (4/5, code 1), désignant
+  `runtime/session-closing.cjs writes watch.ending =` ; après application des appels aux transitions,
+  même commande verte (5/5, code 0). La doublure `stage` reçoit uniquement `beginEnding()` ; toutes
+  les assertions et tous les cas préexistants sont conservés. Sorties : `architecture-{red,green}.log`.
+- Reprise, mutation exigée : `session.watch.ending = true` temporairement réintroduit dans `closeSession` ;
+  `node --test tests/architecture.test.cjs` échoue sur la garde (4/5, code 1,
+  `architecture-mutation-red.log`). Affectation retirée et fichier restauré à l'octet près ; même commande
+  verte (5/5, code 0, `architecture-mutation-green.log`).
+  `python3 .harness-state/tickets/T123/probe-architecture.py` vérifie également les sous-dossiers des quatre
+  compositions : lectures et comparaisons acceptées, quatre drapeaux refusés en écriture directe, notation
+  par crochets et affectation composée refusées. Sondes retirées ; garde complète verte (5/5).
+  Script et sorties conservés dans le dossier d'état de cette reprise.
+- Reprise, sept fichiers protecteurs exécutés un par un, tous verts (code 0) :
+  `node --test tests/watch-session-ending.test.cjs` (3/3),
+  `node --test tests/architecture.test.cjs` (5/5),
+  `node --test tests/architecture-f07.test.cjs` (26/26),
+  `node --test tests/session-durable.test.cjs` (24/24),
+  `node --test tests/architecture-f08.test.cjs` (19/19),
+  `node --test tests/split-perception.test.cjs` (10/10),
+  `node --test tests/session-latency.test.cjs` (20/20). Total : 107 tests réussis.
+  Commandes et sorties : `targeted-*.log` dans le dossier d'état de cette reprise.
+  `git diff --check` passe (code 0).
+- Reprise, contrôles qualité observés : `node scripts/check.mjs --changed` vert (code 0), règles,
+  format, lint, gel, cliquet et 34/34 tests JS ; `node scripts/check.mjs` complet vert (code 0),
+  1 207/1 207 tests JS sur 103 fichiers et 84 tests Python comptabilisés, dont un ignoré
+  (`OK (skipped=1)`). Sorties : `check-changed.log` et `check-full.log` dans le dossier d'état.
+  Le code et les tests livrés sont identiques au patch et au nouveau fichier archivés ; toutes les
+  preuves citées dans cette reprise ont été observées à nouveau. Aucun écart ; verdict `TERMINÉ`
+  écrit dans `.harness-state/tickets/T123/verdict.json`, pour relecture par la boucle.
+
+- Correction après `relecture-1.md` : constat mineur 1 accepté. Rapport, ticket et journal, écarts,
+  `git status --short` et `git diff` relus. Le domaine tient déjà le contrat ; le test sera renforcé
+  pour couvrir `beginEnding()` après `closeIntake()`, en pause, en lecture seule et après fermeture.
+  Aucun écart prévu ; exploration et écarts complétés avant modification du test.
+- Correction, test d'abord : nouveau cas public parcourant les quatre états demandés ; deux appels
+  comparent les drapeaux à `{ ...before, ending: true }`, l'instantané et les compteurs de publication
+  et de sauvegarde. Les tests d'ingestion sur session vivante sont conservés.
+  `python3 .harness-state/tickets/T123/probe-ending-preservation.py` vérifie quatre mutations temporaires
+  de `beginEnding()` : `accepting = true`, `asking = false`, `readOnly = false`, `closed = false`.
+  Chacune rend rouge sur assertion (0/1, code 1) le test lancé par
+  `node --test --test-name-pattern='beginEnding silently preserves every existing lifecycle flag across repeated calls' tests/watch-session-ending.test.cjs`.
+  Domaine restauré à l'octet près, `node --test tests/watch-session-ending.test.cjs` est vert
+  (4/4, code 0). Sorties : `review-preservation-*-red.log`, `review-preservation-green.log` et
+  `review-preservation-probes.log`. Aucun changement permanent du code de production pour cette correction.
+- Correction, sept fichiers protecteurs relancés séparément, tous verts (code 0) :
+  `node --test tests/watch-session-ending.test.cjs` (4/4),
+  `node --test tests/architecture.test.cjs` (5/5),
+  `node --test tests/architecture-f07.test.cjs` (26/26),
+  `node --test tests/session-durable.test.cjs` (24/24),
+  `node --test tests/architecture-f08.test.cjs` (19/19),
+  `node --test tests/split-perception.test.cjs` (10/10),
+  `node --test tests/session-latency.test.cjs` (20/20). Total : 108 tests réussis.
+  Sorties : `review-targeted-*.log` dans le dossier d'état.
+  `node scripts/check.mjs --changed` vert (code 0), 35/35 tests JS, toutes les étapes vertes ;
+  sortie : `review-check-changed.log`. `git diff --check` passe (code 0).
+- Correction, `node scripts/check.mjs` complet vert (code 0) : règles, format, lint, gel et cliquet
+  verts ; 1 208/1 208 tests JS sur 103 fichiers ; 84 tests Python comptabilisés, dont un ignoré
+  (`OK (skipped=1)`). Sortie : `review-check-full.log`. Constat 1 corrigé, aucune contestation,
+  aucun reste ; nouveau verdict `TERMINÉ` écrit dans `.harness-state/tickets/T123/verdict.json`.

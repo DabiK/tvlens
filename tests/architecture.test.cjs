@@ -17,6 +17,26 @@ test('shared runtime and headless transport do not import Electron',()=>{
     assert.doesNotMatch(fs.readFileSync(path.join(__dirname,'..',dir,file),'utf8'),/require\(['"]electron['"]\)/,dir+'/'+file);
   }
 });
+test('compositions leave watch session lifecycle flags to the domain', () => {
+  function* sources(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const filename = path.join(directory, entry.name);
+      if (entry.isDirectory()) yield* sources(filename);
+      else if (entry.isFile() && entry.name.endsWith('.cjs')) yield filename;
+    }
+  }
+  const member = String.raw`\bwatch\s*(?:\.\s*(?:ending|accepting|readOnly|closed)\b|\[\s*(['"])(?:ending|accepting|readOnly|closed)\1\s*\])`;
+  const assignment = String.raw`\s*(?:=(?!=|>)|(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])=|\+\+|--)`;
+  const write = new RegExp(member + assignment);
+  for (const directory of ['app', 'runtime', 'server', 'mcp']) {
+    for (const filename of sources(path.join(__dirname, '..', directory))) {
+      const source = fs.readFileSync(filename, 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const match = write.exec(source);
+      assert.equal(match?.[0] ?? null, null, `${path.relative(path.join(__dirname, '..'), filename)} writes ${match?.[0]}`);
+    }
+  }
+});
 test('core services do not import the session use case', () => {
   const root = path.join(__dirname, '..', 'core');
   for (const filename of fs.readdirSync(root)) {

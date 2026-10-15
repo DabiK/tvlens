@@ -81,6 +81,17 @@ class WatchSession {
     this.visionBlockedMs += Math.max(0, this.now() - this.visionHeldSince); this.visionHeldSince = null;
   }
 
+  // Empêche de lancer une analyse qui serait abandonnée à la fermeture, sans fermer l'admission des passages.
+  beginEnding() {
+    this.ending = true;
+  }
+
+  // Empêche une nouvelle question ou un nouveau passage pendant l'attente des écritures déjà admises.
+  closeIntake() {
+    this.asking = true;
+    this.accepting = false;
+  }
+
   async ingest(input) {
     if (!this.accepting) throw new Error('La session est arrêtée.');
     if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 60000) throw new Error('Horodatage invalide.');

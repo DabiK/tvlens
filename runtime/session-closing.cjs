@@ -70,7 +70,7 @@ async function closeSession({
     };
   // A passage still landing is stored and saved, but no analysis is started for it only to be given up a
   // moment later.
-  if (session) session.watch.ending = true;
+  if (session) session.watch.beginEnding();
   try {
     begin[1]();
   } catch (error) {

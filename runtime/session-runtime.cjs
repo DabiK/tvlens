@@ -426,13 +426,12 @@ function createSessionRuntime({
       // No re-examination from here on, and none kept: see the inspector above.
       inspector.revoke();
       ending ||= (async () => {
-        watch.asking = true;
         // No new passage from here, and one whose write is under way lands first, thumbnail included:
         // the state saved by close() lists every identifier ingest() has handed or is about to hand back.
-        watch.accepting = false;
+        watch.closeIntake();
         // A passage that lands during this wait is stored and saved, but its analysis is not started
         // only to be abandoned by the close that follows.
-        watch.ending = true;
+        watch.beginEnding();
         await watch.landed();
         await closing("session", () => watch.close());
         await closing("index", () => index?.close?.());
