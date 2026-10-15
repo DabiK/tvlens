@@ -1,7 +1,7 @@
 ---
 id: T121
 titre: Revoke the inspector of a closed session through a core decorator
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -101,3 +101,21 @@ de `core/revocable-inspector.cjs`.
 Aucune décision n'est attendue.
 
 ## Journal
+
+- Exploration : pas d'écart de périmètre ; `bloque_par: T157` levé ; rapport dans `.harness-state/tickets/T121/exploration.md`. Les deux tests de révocation cités sont dans `tests/architecture-f05.test.cjs` (572 et 686) ; le `CachedInspector` réel recouvre le refus après résultat, seul le test du décorateur seul l'attrape.
+- Implémentation : `core/revocable-inspector.cjs` (décorateur, `revoke()` idempotent, getters `inner`/`cache`/`hits`/`misses`), `runtime/session-runtime.cjs` (composition et `inspector.revoke()` dans `close`), `tests/revocable-inspector.test.cjs` (10 tests).
+- Relecture 1 : à corriger (1 bloquant : refus avant l'appel non prouvé ; 1 mineur : assertion du cache vide sans cache rempli). Corrigés, chacun prouvé par une mutation vue rouge puis retirée.
+- Relecture 2 : à corriger (1 mineur : nom d'un test qui annonçait une révocation absente). Renommé.
+- Relecture 3 : à corriger (1 mineur : aucun test n'échoue si `#emptyCache()` est retiré de `#refuseWhenRevoked` ; il manque un décoré en mémoire avec un `cache` qu'il alimente en ignorant le signal). Non corrigé : trois tours atteints, verdict PARTIEL.
+- Mutation (critère 8) : retrait du refus qui suit le résultat du décoré dans `inspect` ; `node --test tests/revocable-inspector.test.cjs` : 8 pass, 1 fail, « a revoked inspector refuses a call in flight whose decorated inspector ignores the signal and brings a result back » (`the call was expected to be refused`). Refus restauré, 9/9 vert à ce moment-là, aucune mutation ne reste.
+- Mutations de preuve de la correction : retrait du premier refus → le test « …without calling the decorated inspector… » échoue (`calls` 2 au lieu de 1) ; retrait de `#emptyCache()` dans `revoke()` → `cache.size` 1 au lieu de 0. Restaurées.
+- Contrôles : tests du critère 7 un fichier à la fois (revocable-inspector 10/10, architecture 3/3, architecture-f05 15/15, session-durable 24/24, session-delete 3/3, disk-guard 4/4, mac-ipc-contract 15/15, relevés par l'implémenteur avant la correction) ; `node scripts/check.mjs` en entier : vert, 782 tests, Python 84 OK ; format et lint non lancés (outils non installés).
+- Reprise (tentative 2) : `echec-1.txt` relu ; un seul reste, le mineur de la relecture 3 (test du vidage du cache au refus). Pas de nouvelle exploration : le rapport existant suffit et le code de production ne change pas.
+- Correction du mineur de la relecture 3 : test « a revoked inspector empties the cache that a decorated inspector ignoring the signal fills with its late result » (décoré en mémoire avec une `Map` qu'il remplit en rendant son résultat). Mutation : retrait de `this.#emptyCache()` dans `#refuseWhenRevoked` → `node --test tests/revocable-inspector.test.cjs` : 10 pass, 1 fail, le nouveau test (`1 !== 0` sur `cache.size`). Code restauré à l'identique (empreinte `shasum` identique) ; 11/11 vert ; `node scripts/check.mjs --changed` : vert (format et lint non lancés, outils non installés).
+- Relecture 4 (`revue-4.diff`) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre.
+- Contrôles finaux, un fichier à la fois : revocable-inspector 11/11, architecture 3/3, architecture-f05 15/15, session-durable 24/24, session-delete 3/3, disk-guard 4/4, mac-ipc-contract 15/15 ; `grep -n "inspector.inspect = " runtime/session-runtime.cjs` : rien. `node scripts/check.mjs` : vert, 783 tests JS, Python 84 OK (1 ignoré), cas de test 729 → 740 ; format et lint non lancés (outils non installés).
+
+### Réserves à la clôture
+
+- Non vérifié : format et lint non lancés par check.mjs (Prettier et ESLint non installés)
+- Question pour le propriétaire : runtime.inspector n'expose plus maxEntries (aucun lecteur aujourd'hui, le ticket ne liste que inner, cache, hits et misses)

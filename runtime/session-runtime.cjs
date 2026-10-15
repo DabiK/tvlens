@@ -4,6 +4,7 @@ const { randomUUID } = require("node:crypto");
 const { WatchSession, restorable } = require("../core/session.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const { CachedInspector } = require("../core/cached-inspector.cjs");
+const { RevocableInspector } = require("../core/revocable-inspector.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
 const { MomentSearch } = require("../core/moment-search.cjs");
 const {
@@ -211,25 +212,7 @@ function createSessionRuntime({
   // the runtime has closed it serves nothing more, cached or not: a late re-examination would reconnect an
   // inspection model that nobody owns any more. One still running is told through its signal, before it
   // reaches that model, and what it brings back all the same is neither answered nor left in the cache.
-  const revocation = new AbortController(),
-    inspectCached = inspector.inspect.bind(inspector);
-  const refuseRevoked = () => {
-    if (!revocation.signal.aborted) return;
-    inspector.cache.clear();
-    throw new Error(REVOKED);
-  };
-  inspector.inspect = async (input) => {
-    refuseRevoked();
-    const signal = input.signal
-      ? AbortSignal.any([input.signal, revocation.signal])
-      : revocation.signal;
-    const result = await inspectCached({ ...input, signal }).catch((error) => {
-      refuseRevoked();
-      throw error;
-    });
-    refuseRevoked();
-    return result;
-  };
+  inspector = new RevocableInspector(inspector, REVOKED);
   sessionClock = new SessionClock(
     readClock,
     restore ? { elapsedMs: restore.snapshot.elapsedMs, paused: true } : {},
@@ -483,8 +466,7 @@ function createSessionRuntime({
           "Session ouverte en lecture seule : ses médias ne s’effacent qu’avec la suppression de la session.",
         );
       // No re-examination from here on, and none kept: see the inspector above.
-      revocation.abort(new Error(REVOKED));
-      inspector.cache.clear();
+      inspector.revoke();
       ending ||= (async () => {
         watch.asking = true;
         // No new passage from here, and one whose write is under way lands first, thumbnail included:
