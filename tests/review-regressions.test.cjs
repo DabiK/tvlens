@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { turns, until, pause } = require('./helpers/wait.cjs');
 const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
@@ -17,11 +18,6 @@ const { loadConfig } = require('../adapters/config.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 
-// Defects found by the independent review of the latency branch, each pinned by its failing case.
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const settle = async (n = 6) => { for (let i = 0; i < n; i++) await tick(); };
-// Real files are written on the way: wait for the state itself, not for a number of turns.
-const until = async check => { for (let i = 0; i < 300 && !check(); i++) await new Promise(resolve => setTimeout(resolve, 10)); };
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 
 function appServer({ handle } = {}) {
@@ -58,7 +54,7 @@ test('an App Server dying during the handshake leaves neither its directory nor 
   } });
   const client = new CodexSessionClient({ authHome, rpcFactory: server.rpcFactory });
   await assert.rejects(client.prepare('s'), /interrompue/);
-  await settle();
+  await turns(6);
   assert.equal(client.rpc, null);
   assert.equal(client.dir, null, 'the session directory (links to the auth files in production) is removed');
 });
@@ -70,7 +66,8 @@ test('a client closed while its process is being recycled stays closed', async (
   const recycling = client.rotateThread(); // maxRotations reached: close, then reconnect in the background
   await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
   await client.close(); // the host ends the session while the recycle is removing its directory
-  await recycling; await settle(10);
+  await recycling;
+  await turns(10);
   assert.equal(server.live().length, 0, 'no App Server may be started after the owner closed the client');
   assert.equal(client.ready, null);
 });
@@ -125,11 +122,11 @@ setTimeout(() => fs.writeFileSync(out + '.json', JSON.stringify({ transcription:
   const audio = Buffer.from('eight seconds'), leaving = new AbortController();
   const starts = async () => (await fs.readFile(log, 'utf8').catch(() => '')).split('\n').filter(Boolean).length;
   const gone = transcriber.transcribe(audio, leaving.signal);
-  for (let i = 0; i < 100 && !(await starts()); i++) await new Promise(resolve => setTimeout(resolve, 10));
+  await until(starts, 'abandoned Whisper process started');
   leaving.abort(new Error('annulé'));
   await assert.rejects(gone, /annulé/);
   const second = transcriber.transcribe(audio); // registered while the first process is still dying
-  await new Promise(resolve => setTimeout(resolve, 120)); // the abandoned run has settled by now
+  await pause(120); // the abandoned run has settled by now
   const third = transcriber.transcribe(audio);
   assert.deepEqual([(await second).text, (await third).text], ['Bonjour', 'Bonjour']);
   assert.equal(await starts(), 2, 'the third caller shares the second run instead of spawning its own');
@@ -139,7 +136,18 @@ function manualTimers() {
   let time = 0; const timers = [];
   const setTimer = (fn, ms) => { const timer = { fn, at: time + ms }; timers.push(timer); return timer; };
   const clearTimer = timer => { const i = timers.indexOf(timer); if (i >= 0) timers.splice(i, 1); };
-  const advance = async to => { for (;;) { await settle(); const next = timers.filter(t => t.at <= to).sort((a, b) => a.at - b.at)[0]; if (!next) break; clearTimer(next); time = Math.max(time, next.at); next.fn(); } time = to; await settle(); };
+  const advance = async to => {
+    for (;;) {
+      await turns(6);
+      const next = timers.filter(t => t.at <= to).sort((a, b) => a.at - b.at)[0];
+      if (!next) break;
+      clearTimer(next);
+      time = Math.max(time, next.at);
+      next.fn();
+    }
+    time = to;
+    await turns(6);
+  };
   return { now: () => time, setTimer, clearTimer, advance };
 }
 const memoryCache = () => { const values = new Map(); return { values, get: async (id, text) => values.get(id + '\n' + text) || null, putMany: async items => { for (const { id, text, vector } of items) values.set(id + '\n' + text, vector); } }; };
@@ -167,7 +175,8 @@ test('a search holding an older copy of a passage does not discard the newer tex
   index.request([passage(1, 'Paroles seules')]); await clock.advance(10);
   assert.ok(cache.values.has('moment-1\nParoles seules'));
   index.observe([passage(1, 'Texte complet')]); await clock.advance(20); // the fuller text is now in flight
-  index.request([passage(1, 'Paroles seules')]); await settle(); // a question still holds the older, already indexed text
+  index.request([passage(1, 'Paroles seules')]);
+  await turns(6); // a question still holds the older, already indexed text
   release(); await clock.advance(30);
   assert.ok(cache.values.has('moment-1\nTexte complet'), 'the newer vector is written');
   assert.equal(index.status().stale, 0);
@@ -203,7 +212,7 @@ test('an older read returned late never replaces the newer consulted version, ev
   const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
-  await settle();
+  await turns(6);
   // Meanwhile the description fails and the media expires: same revision, newer state.
   live = { ...snapshot, elapsedMs: 12000, segments: [{ ...snapshot.segments[0], visionStatus: 'error', visionError: 'Délai dépassé', available: false }] };
   await tools.call('get_transcript', { startMs: 0, endMs: 8000 });
@@ -257,14 +266,21 @@ test('the session runtime feeds published passages to the index, honours the opt
   const fed = build({ visionDuringAsk: true, whisperAudioCtx: 512 });
   assert.equal(fed.watch.visionDuringAsk, true);
   assert.equal(fed.transcriber.audioCtx, 512);
-  await fed.watch.ingest(block); await until(() => fed.watch.segments[0].status === 'ready' && fed.search.index.status().pending === 1);
+  await fed.watch.ingest(block);
+  await until(
+    () => fed.watch.segments[0].status === 'ready' && fed.search.index.status().pending === 1,
+    'published passage queued for indexing',
+  );
   assert.deepEqual([fed.search.index.status().pending, fed.watch.segments[0].status], [1, 'ready'], 'the published passage waits in the background queue');
-  await fed.close(); await settle();
+  await fed.close();
+  await turns(6);
   assert.equal(fed.search.index.status().closed, true);
   assert.deepEqual(calls, [], 'nothing is sent after the session ended');
   const silent = build({ backgroundIndex: false });
   assert.equal(silent.watch.visionDuringAsk, false);
-  await silent.watch.ingest(block); await until(() => silent.watch.segments[0].status === 'ready'); await settle();
+  await silent.watch.ingest(block);
+  await until(() => silent.watch.segments[0].status === 'ready', 'passage ready with background indexing disabled');
+  await turns(6);
   assert.equal(silent.search.index.status().pending, 0, 'opted out: only a search may request an embedding');
   await silent.close();
 });
@@ -287,17 +303,20 @@ test('a search during the pause that follows a provider failure answers at once 
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = () => { const found = {}; search.search({ query: 'il est question du budget', segments, anchorMs: 800000 }).then(value => { found.value = value; }); return found; };
   // No timer fires below unless the clock is advanced: an answer means the search did not wait.
-  const first = ask(); await settle(12);
+  const first = ask();
+  await turns(12);
   assert.equal(first.value?.mode, 'lexical', 'the first batch failed and the pause outlasts the budget');
   await clock.advance(500);
-  const second = ask(); await settle(12);
+  const second = ask();
+  await turns(12);
   assert.equal(second.value?.mode, 'lexical');
   assert.deepEqual(second.value.semantic, { eligible: 100, indexed: 0, pending: 100 });
   assert.equal(batches, 1, 'nothing is sent during the pause');
   // The pause now ends inside the budget and the provider is back: this search waits for the retry.
   fail = false;
   await clock.advance(1000);
-  const third = ask(); await settle(12);
+  const third = ask();
+  await turns(12);
   assert.equal(third.value, undefined);
   await clock.advance(2000);
   assert.equal(third.value?.mode, 'hybrid');
@@ -316,7 +335,7 @@ test('a client closed while a turn is removing a dead connection stays closed', 
   for (let i = 0; i < 6; i++) await Promise.resolve(); // the turn's prepare() is now removing that directory
   controller.abort(Error('Session fermée.')); await client.close(); // the host ends the session meanwhile
   await assert.rejects(turn);
-  await settle(10);
+  await turns(10);
   assert.equal(server.live().length, 0, 'no App Server may be started after the owner closed the client');
   assert.deepEqual([client.ready, client.dir], [null, null]);
 });
@@ -342,7 +361,7 @@ test('with the session clock stopped by a pause, an older read returned late sti
   const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
-  await settle();
+  await turns(6);
   // Paused session: elapsedMs no longer advances, yet the passage changes (the description fails, the media expires).
   live = { ...snapshot, segments: [{ ...passage, visionStatus: 'error', visionError: 'Délai dépassé', available: false }] };
   await tools.call('get_transcript', { startMs: 0, endMs: 8000 });

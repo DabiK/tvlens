@@ -4,14 +4,13 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
+const { tick, until } = require('./helpers/wait.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 
 const token = 'v'.repeat(64);
-const tick = () => new Promise(resolve => setImmediate(resolve));
-// Waits for a real state, bounded in time rather than in loop turns: a busy machine only makes it slower.
-const until = async (check, label) => { for (const deadline = Date.now() + 15000; Date.now() < deadline;) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 2)); } assert.fail('never reached: ' + label); };
+const SURVEILLANCE_TIMEOUT_MS = 15000;
 const gate = () => { let open; const gated = { closed: true, promise: new Promise(resolve => { open = resolve; }) }; gated.open = () => { gated.closed = false; open(); }; return gated; };
 const aborted = signal => new Promise((resolve, reject) => { if (signal.aborted) reject(signal.reason); signal.addEventListener('abort', () => reject(signal.reason), { once: true }); });
 const digest = async file => createHash('sha256').update(await fs.readFile(file)).digest('hex') + ':' + (await fs.stat(file)).mtimeMs;
@@ -63,12 +62,24 @@ test('chat and surveillance overlap on the server host: neither holds the other 
 
   // A long question is running. Blocks are still accepted, and the surveillance works through them.
   const long = (await req('/v1/questions', { sessionId: id, question: 'Question longue', anchorMs: 0 })).value.id;
-  await until(() => job(long).status === 'running', 'question running');
+  await until(
+    () => job(long).status === 'running',
+    'question running',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   for (const n of [1, 2, 3]) assert.equal((await block(n)).status, 200, 'block ' + n + ' accepted during the question');
-  await until(() => runtime.session.watch.segments.every(s => s.audioStatus === 'ready'), 'speech published');
+  await until(
+    () => runtime.session.watch.segments.every(s => s.audioStatus === 'ready'),
+    'speech published',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   // With the description held back by the question, a passage is read on its words after the grace period.
   wall += 10000; runtime.tick();
-  await until(() => runtime.surveillance.snapshot().counts.sourced === 2 && !runtime.surveillance.snapshot().activity.running, 'lots finished during the question');
+  await until(
+    () => runtime.surveillance.snapshot().counts.sourced === 2 && !runtime.surveillance.snapshot().activity.running,
+    'lots finished during the question',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   let seen = await state();
   assert.deepEqual([seen.chat.jobs[0].status, seen.session.asking], ['running', true]);
   assert.ok(seen.session.segments.some(s => s.visionStatus !== 'ready'), 'descriptions were still held back by the question');
@@ -81,7 +92,12 @@ test('chat and surveillance overlap on the server host: neither holds the other 
 
   // The question ends: only then is the flag lowered. Descriptions arrive, each passage is read once more at most.
   chatGate.open(); await job(long).done;
-  await until(() => runtime.session.watch.segments.every(s => !['queued', 'analyzing'].includes(s.visionStatus)) && !runtime.surveillance.snapshot().activity.detecting, 'descriptions published');
+  await until(
+    () => runtime.session.watch.segments.every(s => !['queued', 'analyzing'].includes(s.visionStatus))
+      && !runtime.surveillance.snapshot().activity.detecting,
+    'descriptions published',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   seen = await state();
   // The oldest description was shed while the question held the lane: it stays a passage read on its words.
   assert.deepEqual(seen.session.segments.map(s => [s.id, s.status, s.visionStatus]), [['moment-1', 'partial', 'skipped'], ['moment-2', 'ready', 'ready'], ['moment-3', 'ready', 'ready']]);
@@ -90,7 +106,11 @@ test('chat and surveillance overlap on the server host: neither holds the other 
   // Reciprocal: a verification lot is stuck, a question is asked and answered at once.
   verifyGate = gate();
   assert.equal((await block(4)).status, 200);
-  await until(() => runtime.surveillance.snapshot().activity.running === 1, 'lot stuck');
+  await until(
+    () => runtime.surveillance.snapshot().activity.running === 1,
+    'lot stuck',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   assert.equal((await state()).session.asking, false, 'surveillance work never raises the question flag');
   const quick = (await req('/v1/questions', { sessionId: id, question: 'Question rapide', anchorMs: 0 })).value.id;
   await job(quick).done;
@@ -132,7 +152,11 @@ test('chat and surveillance overlap on the server host: neither holds the other 
   // checks in the state and typed as such in the history.
   await req('/v1/surveillance/start', { sessionId: id, instruction: 'Préviens-moi quand ils parlent de croissance.' });
   assert.equal((await block(5)).status, 200);
-  await until(() => runtime.surveillance.snapshot().signals.cards.length === 1, 'signal noted');
+  await until(
+    () => runtime.surveillance.snapshot().signals.cards.length === 1,
+    'signal noted',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   const followed = (await state()).surveillance;
   assert.deepEqual([followed.signals.cards.map(card => [card.kind, card.label, card.sources, 'assessments' in card, card.interval]), followed.overlay.cards.every(card => card.kind === 'verification'), followed.overlay.cards.length, followed.counts.noted],
     [[['signal', 'Repéré dans la vidéo', [], false, { startMs: 32000, endMs: 40000 }]], true, stopped.overlay.cards.length, 1]);
@@ -144,7 +168,11 @@ test('chat and surveillance overlap on the server host: neither holds the other 
   verifyGate = gate();
   await req('/v1/surveillance/start', { sessionId: id, instruction: 'Vérifie tous les chiffres qui sont balancés.' });
   assert.equal((await block(6)).status, 200);
-  await until(() => runtime.surveillance.snapshot().activity.running === 1, 'last activation working');
+  await until(
+    () => runtime.surveillance.snapshot().activity.running === 1,
+    'last activation working',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   // Nothing is relaunched by itself: the claim cancelled by the earlier stop goes back to the queue on request.
   const retried = await req('/v1/surveillance/retry', { sessionId: id, id: history.items[0].id });
   assert.deepEqual([retried.status, retried.value.surveillance.counts.cancelled, retried.value.surveillance.counts.queued + retried.value.surveillance.counts.detected], [200, 0, 1]);
@@ -201,7 +229,11 @@ test('a published surveillance card invalidates the entity tags of the polled vi
   clock = 8000; wall += 8000;
   assert.equal((await post('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 8000, frames: [{ atMs: 0, data: 'YQ==' }] })).id, 'moment-1');
   // Passage analysed and saved, claim found, its verification stuck at the gate.
-  await until(() => runtime.session.watch.segments[0].status === 'ready' && !runtime.session.watch.running && runtime.surveillance.snapshot().activity.running === 1, 'verification under way');
+  await until(
+    () => runtime.session.watch.segments[0].status === 'ready' && !runtime.session.watch.running && runtime.surveillance.snapshot().activity.running === 1,
+    'verification under way',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   await runtime.session.store.serial; await runtime.surveillance.flush(); for (let i = 0; i < 10; i++) await tick();
 
   const waiting = await polled();
@@ -211,7 +243,11 @@ test('a published surveillance card invalidates the entity tags of the polled vi
 
   // The lot ends: a sourced card is published. Every tag held is refused, and each body carries the card.
   verifyGate.open();
-  await until(() => runtime.surveillance.snapshot().overlay.cards.length === 1 && !runtime.surveillance.snapshot().activity.running, 'card published');
+  await until(
+    () => runtime.surveillance.snapshot().overlay.cards.length === 1 && !runtime.surveillance.snapshot().activity.running,
+    'card published',
+    { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
+  );
   for (let i = 0; i < 10; i++) await tick();
   const published = await polled(waiting);
   for (const [route, reply] of Object.entries(published))

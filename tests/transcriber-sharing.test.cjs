@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { until } = require('./helpers/wait.cjs');
 const { LocalTranscriber } = require('../adapters/local-transcriber.cjs');
 
 // Stands for whisper-cli: logs each start, waits, then writes the transcript where -of points.
@@ -20,7 +21,6 @@ setTimeout(() => { fs.writeFileSync(out + '.json', JSON.stringify({ transcriptio
   return { transcriber: new LocalTranscriber({ binary, model, threads: 1, getLanguage: () => 'fr' }), events };
 }
 const audio = Buffer.from('same eight seconds of sound');
-const until = async check => { for (let i = 0; i < 200 && !(await check()); i++) await new Promise(resolve => setTimeout(resolve, 10)); };
 
 test('the background lane and a re-inspection asking for the same audio share one Whisper run', async t => {
   const f = await fixture(t);
@@ -36,7 +36,7 @@ test('a caller giving up does not take the shared run away from the other one', 
   const f = await fixture(t);
   const leaving = new AbortController();
   const gone = f.transcriber.transcribe(audio, leaving.signal), staying = f.transcriber.transcribe(audio);
-  await until(async () => (await f.events()).includes('start'));
+  await until(async () => (await f.events()).includes('start'), 'Whisper process started');
   leaving.abort(new Error('Question annulée.'));
   await assert.rejects(gone, /Question annulée/);
   assert.equal((await staying).text, 'Bonjour');
@@ -47,7 +47,7 @@ test('a run abandoned by every caller is killed, and a later request starts its 
   const f = await fixture(t, 600);
   const a = new AbortController(), b = new AbortController();
   const first = f.transcriber.transcribe(audio, a.signal), second = f.transcriber.transcribe(audio, b.signal);
-  await until(async () => (await f.events()).includes('start'));
+  await until(async () => (await f.events()).includes('start'), 'Whisper process started');
   a.abort(new Error('A')); b.abort(new Error('B'));
   await assert.rejects(first, /A/); await assert.rejects(second, /B/);
   const fresh = await f.transcriber.transcribe(audio);

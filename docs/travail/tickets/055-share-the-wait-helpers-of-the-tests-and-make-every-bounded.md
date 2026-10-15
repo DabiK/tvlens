@@ -1,7 +1,7 @@
 ---
 id: T055
 titre: Share the wait helpers of the tests and make every bounded wait fail aloud
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -151,3 +151,140 @@ le fait attendu. Un test n'est jamais relancé jusqu'à ce qu'il passe.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+### 2026-10-15 — Exploration Codex
+
+Lecture des consignes, des quatre fichiers complets et des modèles d’attente ; état initial et choix
+consignés dans `.harness-state/tickets/T055/exploration.md`, écarts dans `ecarts.md` (aucun).
+Témoin de hooks présent ; aucun rapport de reprise. Les fichiers non suivis initiaux sont conservés.
+Sonde reconstruite depuis la source T001 dans le dossier d’état avant modification des tests.
+
+### 2026-10-15 — Sonde disque lent avant et après
+
+Pour chacun des quatre fichiers, cette commande est lancée une seule fois avant modification,
+puis une seule fois après migration (tests séquentiels) :
+
+```sh
+FLK_MS=10 node --require ./.harness-state/tickets/T055/slow-fs.cjs \
+  --test --test-concurrency=1 tests/transcriber-sharing.test.cjs
+FLK_MS=10 node --require ./.harness-state/tickets/T055/slow-fs.cjs \
+  --test --test-concurrency=1 tests/review-regressions.test.cjs
+FLK_MS=10 node --require ./.harness-state/tickets/T055/slow-fs.cjs \
+  --test --test-concurrency=1 tests/chat-instruction.test.cjs
+FLK_MS=10 node --require ./.harness-state/tickets/T055/slow-fs.cjs \
+  --test --test-concurrency=1 tests/server-surveillance.test.cjs
+```
+
+| Fichier | Avant : sortie | Après : sortie | Code avant/après |
+| --- | --- | --- | --- |
+| `transcriber-sharing` | ℹ pass 3 ; ℹ fail 0 | ℹ pass 3 ; ℹ fail 0 | 0 / 0 |
+| `review-regressions` | ℹ pass 19 ; ℹ fail 0 | ℹ pass 19 ; ℹ fail 0 | 0 / 0 |
+| `chat-instruction` | ℹ pass 2 ; ℹ fail 0 | ℹ pass 2 ; ℹ fail 0 | 0 / 0 |
+| `server-surveillance` | ℹ pass 2 ; ℹ fail 0 | ℹ pass 2 ; ℹ fail 0 | 0 / 0 |
+
+Sorties complètes : `.harness-state/tickets/T055/before-<fichier>.txt` et `after-<fichier>.txt`.
+Aucun échec sous sonde, aucune relance de la mesure.
+
+### 2026-10-15 — Module partagé, tests d’abord
+
+Commande de chaque cycle, avec sorties conservées dans le dossier d’état :
+
+```sh
+node --test --test-concurrency=1 tests/wait-helpers.test.cjs
+```
+
+| Comportement ajouté | Rouge observé | Vert observé | Sorties |
+| --- | --- | --- | --- |
+| Valeur vraie synchrone/asynchrone | 0 pass / 1 fail, assertion export absent | 1 pass / 0 fail | `red-truthy.txt`, `green-truthy.txt` |
+| Échéance nommée | 1 pass / 1 fail, rejet absent | 2 pass / 0 fail | `red-deadline.txt`, `green-deadline.txt` |
+| Libellé obligatoire | 2 pass / 1 fail, rejet absent | 3 pass / 0 fail | `red-label.txt`, `green-label.txt` |
+| Tours explicites et invalides | 3 pass / 2 fail, assertions exports absents | 5 pass / 0 fail | `red-turns.txt`, `green-turns.txt` |
+| Promesse différée résolue/rejetée | 5 pass / 1 fail, assertion export absent | 6 pass / 0 fail | `red-deferred.txt`, `green-deferred.txt` |
+| Pause réelle sous horloge figée | 6 pass / 1 fail, assertion export absent | 7 pass / 0 fail | `red-pause.txt`, `green-pause.txt` |
+| Valeur, rejet et borne d’une promesse | 7 pass / 1 fail, assertion export absent | 8 pass / 0 fail | `red-bounded.txt`, `green-bounded.txt` |
+| Contrôle qui ne se règle pas | 8 pass / 1 fail, rejet absent | 9 pass / 0 fail | `red-pending-check.txt`, `green-pending-check.txt` |
+| Erreur attendue et succès refusé | 9 pass / 1 fail, assertion export absent | 10 pass / 0 fail | `red-failure.txt`, `green-failure.txt` |
+
+Rouges observés sur `AssertionError`, aucun échec d’import. Le contrat existant est ensuite complété
+par trois tests : contrôles lents sans chevauchement (maximum 1), événement réel et expiration sous
+horloge figée, propagation des erreurs du contrôle. Même commande : 13 pass / 0 fail, code 0
+(`green-contracts.txt`). Minuteries réelles capturées, échéance monotone ; le contrôle en cours n’est
+pas relancé après expiration.
+
+### 2026-10-15 — Migration et contrôles ciblés
+
+Les quatre fichiers importent le module en tête. Les appels de `manualTimers` deviennent
+`turns(6)` ; seule la ligne qui les contient est découpée pour respecter 160 caractères, sans autre
+changement de logique (précision consignée dans `ecarts.md`). Pauses 20/120 ms et délais 10/15 s conservés.
+
+```sh
+node --test --test-concurrency=1 tests/transcriber-sharing.test.cjs \
+  tests/review-regressions.test.cjs tests/chat-instruction.test.cjs \
+  tests/server-surveillance.test.cjs
+```
+
+Résultat : code 0, `ℹ pass 26`, `ℹ fail 0` (`migrated.txt`).
+
+```sh
+node -e "console.log(Object.keys(require('./tests/helpers/wait.cjs')).sort().join(' '))"
+```
+
+Sortie : `bounded deferred failure pause tick turns until`, code 0.
+
+```sh
+grep -nE "^(const|function|async function) (tick|settle|until) ?[=(]" \
+  tests/transcriber-sharing.test.cjs tests/review-regressions.test.cjs \
+  tests/chat-instruction.test.cjs tests/server-surveillance.test.cjs
+grep -c "helpers/wait.cjs" tests/transcriber-sharing.test.cjs \
+  tests/review-regressions.test.cjs tests/chat-instruction.test.cjs \
+  tests/server-surveillance.test.cjs
+grep -n "i < 100 && " tests/review-regressions.test.cjs
+rg -c '^\s*test\(' tests/transcriber-sharing.test.cjs \
+  tests/review-regressions.test.cjs tests/chat-instruction.test.cjs \
+  tests/server-surveillance.test.cjs
+```
+
+Résultats : aucune définition locale (code 1, sans sortie) ; un import par fichier ; ancienne boucle
+absente (code 1, sans sortie) ; nombres de tests inchangés : 3, 19, 2, 2. Vérification supplémentaire
+par comparaison des lignes : titres et assertions identiques hors définitions locales supprimées.
+Aucune ligne ajoutée de plus de 160 caractères dans les six fichiers JavaScript.
+Sorties complètes et commandes dans `static-checks.txt`.
+
+```sh
+git diff -U0 HEAD -- tests/transcriber-sharing.test.cjs \
+  tests/review-regressions.test.cjs tests/chat-instruction.test.cjs \
+  tests/server-surveillance.test.cjs | grep -E "^-.*assert\."
+```
+
+Sortie (deux lignes de définitions locales `until` uniquement, repliées ici pour lecture ;
+sortie originale complète dans `static-checks.txt`) :
+
+```text
+-const until = async (check, label) => { for (const deadline = Date.now() + 10000; Date.now() < deadline;) {
+  if (await check()) return; await new Promise(resolve => setTimeout(resolve, 2)); } assert.fail('never reached: ' + label); };
+-const until = async (check, label) => { for (const deadline = Date.now() + 15000; Date.now() < deadline;) {
+  if (await check()) return; await new Promise(resolve => setTimeout(resolve, 2)); } assert.fail('never reached: ' + label); };
+```
+
+```sh
+node scripts/check.mjs --changed
+```
+
+Résultat : code 0, vert ; règles, format, lint, gel, cliquet et 5 fichiers de tests contrôlés ;
+`ℹ pass 39`, `ℹ fail 0`. Mesures améliorées : lignes longues de tests 1714 → 1707,
+cas de test 1066 → 1079. Sortie complète : `check-changed.txt`. Plancher du cliquet inchangé.
+
+### 2026-10-15 — Contrôle complet et remise à la boucle
+
+```sh
+node scripts/check.mjs
+```
+
+Résultat observé : code 0, `check : vert`. Règles, format, lint, gel et cliquet verts ;
+99 fichiers JavaScript, `ℹ tests 1180`, `ℹ pass 1180`, `ℹ fail 0` ; Python :
+`Ran 84 tests in 27.179s`, `OK (skipped=1)`. Sortie complète :
+`.harness-state/tickets/T055/check-full.txt`.
+
+Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T055/verdict.json`.
+Les neuf critères sont couverts ; aucun changement de production, de harnais ou de plancher,
+aucun commit ni push. Relecture et intégration laissées à la boucle.

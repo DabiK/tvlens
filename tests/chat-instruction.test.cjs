@@ -3,10 +3,11 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { until, pause } = require('./helpers/wait.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 
-const until = async (check, label) => { for (const deadline = Date.now() + 10000; Date.now() < deadline;) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 2)); } assert.fail('never reached: ' + label); };
+const CHAT_TIMEOUT_MS = 10000;
 
 test('the instruction of the active surveillance reaches the chat agent of the host, and stops reaching it when the surveillance stops', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-chat-instruction-'));
@@ -20,7 +21,14 @@ test('the instruction of the active surveillance reaches the chat agent of the h
   const { id } = await runtime.start();
   clock = 8000;
   await runtime.ingest({ sessionId: id, startMs: 0, endMs: 8000, clip: Buffer.from('fixture'), frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null });
-  const ask = async question => { const { id: jobId } = runtime.ask({ question, sessionId: id, anchorMs: 8000 }); await until(() => ['done', 'error'].includes(runtime.deep.jobs.find(j => j.id === jobId)?.status), question); };
+  const ask = async question => {
+    const { id: jobId } = runtime.ask({ question, sessionId: id, anchorMs: 8000 });
+    await until(
+      () => ['done', 'error'].includes(runtime.deep.jobs.find(j => j.id === jobId)?.status),
+      'question completed: ' + question,
+      { timeoutMs: CHAT_TIMEOUT_MS },
+    );
+  };
   await ask('Avant toute consigne ?');
   runtime.startSurveillance({ sessionId: id, instruction: 'Vérifie tous les chiffres annoncés.' });
   await ask('Pendant la surveillance ?');
@@ -44,13 +52,17 @@ test('a passage still landing when the host ends the session is kept but never a
   const { id } = await runtime.start();
   const passage = (startMs, endMs) => ({ sessionId: id, startMs, endMs, clip: Buffer.from('fixture'), frames: [{ atMs: startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null });
   clock = 8000; await runtime.ingest(passage(0, 8000));
-  await until(() => !runtime.session.watch.running && runtime.session.watch.segments[0].status === 'ready', 'first passage analysed');
+  await until(
+    () => !runtime.session.watch.running && runtime.session.watch.segments[0].status === 'ready',
+    'first passage analysed',
+    { timeoutMs: CHAT_TIMEOUT_MS },
+  );
   const before = described, store = runtime.session.store, put = store.put.bind(store);
   store.put = async (...args) => { await held; return put(...args); };
   clock = 16000; const landing = runtime.ingest(passage(8000, 16000));
   const ending = runtime.end();
   // The host is now waiting for that write, with the flag already raised: nothing may start once it lands.
-  await new Promise(resolve => setTimeout(resolve, 20));
+  await pause(20);
   release();
   const [landed, ended] = await Promise.all([landing, ending]);
   assert.equal(landed, 'moment-2');
