@@ -1,11 +1,9 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const vm = require('node:vm');
 
 function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }
 async function fixture({ delayedFlush = false, delayedIngest = false } = {}) {
-  const { selectFrameCandidates, visualChange } = await import('../core/frame-policy.mjs');
+  const { RollingRecorder } = await import('../app/recording.js');
   let now = 0, nextTimer = 0;
   const timers = new Map(), media = [], ingested = [], errors = [];
   const flush = deferred(), ingest = deferred();
@@ -20,20 +18,22 @@ async function fixture({ delayedFlush = false, delayedIngest = false } = {}) {
     }
   }
   const drawing = { drawImage() {}, getImageData: () => ({ data: new Uint8ClampedArray(64 * 36 * 4) }) };
-  const sandbox = {
-    selectFrameCandidates, visualChange, MediaRecorder: Recorder, Blob, Uint8Array, ArrayBuffer, DataView,
+  const env = {
+    MediaRecorder: Recorder, Blob,
     performance: { now: () => now },
     document: { createElement: () => ({ getContext: () => drawing, toDataURL: () => 'data:image/jpeg;base64,YQ==' }) },
     setTimeout: (fn, ms) => { const id = ++nextTimer; timers.set(id, { fn, ms, interval: false }); return id; },
     setInterval: (fn, ms) => { const id = ++nextTimer; timers.set(id, { fn, ms, interval: true }); return id; },
     clearTimeout: id => timers.delete(id), clearInterval: id => timers.delete(id),
-    window: { tvlens: { ingest: async value => { ingested.push(value); if (delayedIngest) await ingest.promise; return 'moment-' + ingested.length; } } },
+    ingest: async value => {
+      ingested.push(value);
+      if (delayedIngest) await ingest.promise;
+      return 'moment-' + ingested.length;
+    },
   };
-  const source = fs.readFileSync(require.resolve('../app/recording.js'), 'utf8').replace(/^import .*;\n/, '').replace(/export /g, '');
-  const RollingRecorder = vm.runInNewContext(source + '\nRollingRecorder;', sandbox);
   const recorder = new RollingRecorder({ stream: {}, video: { videoWidth: 1280, videoHeight: 720 },
     audioContext: { sampleRate: 16000 }, flushAudio: () => delayedFlush ? flush.promise : Promise.resolve(),
-    session: { id: 'session', elapsedMs: 0, segmentMs: 8000 }, onError: error => errors.push(error) });
+    session: { id: 'session', elapsedMs: 0, segmentMs: 8000 }, onError: error => errors.push(error), env });
   return { recorder, media, ingested, errors, timers, flush, ingest, advance: ms => { now += ms; } };
 }
 const tick = () => new Promise(resolve => setImmediate(resolve));

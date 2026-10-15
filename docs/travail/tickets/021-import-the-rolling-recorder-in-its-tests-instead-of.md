@@ -1,7 +1,7 @@
 ---
 id: T021
 titre: Import the rolling recorder in its tests instead of rewriting its source
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -103,3 +103,51 @@ constaté.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration du 15/10 contre `842b880` : consignes, module, fixture, appelant et gardes Mac lus ;
+  détails dans `.harness-state/tickets/T021/exploration.md`, aucun écart prévu (`ecarts.md`).
+  Seuls l'environnement de l'enregistreur et la fixture seront modifiés ; les six scénarios,
+  le renderer et les règles de sélection d'images restent dans leur état initial.
+
+- Avant implémentation : import réel sans DOM réussi (code 0) avec
+  `node --input-type=module -e "import assert from 'node:assert/strict'; const module = await import('./app/recording.js'); assert.equal(typeof module.RollingRecorder, 'function'); assert.equal(typeof module.encodeWav, 'function'); console.log('Import réel sans DOM : réussi.');"`.
+  `node --test tests/recording.test.cjs` : 6/6 verts dans l'état initial.
+  `node .harness-state/tickets/T021/environment-contract.mjs` : rouge attendu, code 1,
+  `ERR_ASSERTION` sur `doesNotThrow` (construction avec `env`, cause : `document is not defined`).
+  Les commandes et leurs sorties sont conservées dans le dossier d'état (`import`, `baseline`, `env-red`).
+
+- Après injection de `env` et remplacement de la fixture :
+  `node .harness-state/tickets/T021/environment-contract.mjs` : code 0, assertion verte ;
+  `node --test tests/recording.test.cjs` : 6/6 verts, mêmes titres et assertions.
+  Sorties conservées sous `env-green` et `recording-green` dans le dossier d'état.
+
+- Critère 5 : import de `app/recording.js` temporairement réparti sur deux lignes ;
+  `node --test tests/recording.test.cjs` : code 0, 6/6 verts (`multiline-import.log`).
+  Coupure défaite à la main juste après cette preuve ; l'import initial sur une ligne est rétabli.
+
+- Vérifications ciblées : `node --test --test-concurrency=1 tests/mac-ui.test.cjs` : code 0,
+  35/35 verts, dont le chargement sans DOM et la garde du pont (`mac-ui.log`).
+  `grep -c "readFileSync\|node:vm\|runInNewContext" tests/recording.test.cjs` : sortie `0`,
+  code 1 attendu de `grep` lorsqu'il ne trouve aucune occurrence (`no-source-surgery.log`).
+  `git diff --exit-code HEAD -- app/renderer.js` : sortie vide, code 0 (`renderer-diff.log`).
+  Comparaison à HEAD : les six corps de tests et leurs assertions sont strictement identiques ;
+  aucune ligne ajoutée de plus de 160 caractères, import initial rétabli, `core/frame-policy.mjs`
+  inchangé (`scope-proof.log`). `git diff --check` : code 0.
+
+- `node scripts/check.mjs --changed` : code 0, vert ; six tests verts, format et règles verts,
+  cliquet amélioré (`lignes_longues_prod` : 515 → 514). ESLint non lancé (absent ou non configuré).
+  Sortie conservée dans `.harness-state/tickets/T021/check-changed.log`.
+
+- Contrôle final : `node scripts/check.mjs` : code 0, vert ; 97 fichiers de tests JS,
+  1 123/1 123 tests verts ; Python : 84 cas, dont un ignoré, résultat `OK (skipped=1)`.
+  Règles, format et cliquet verts ; ESLint non lancé (absent ou non configuré).
+  Sortie conservée dans `.harness-state/tickets/T021/check-full.log`.
+  Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T021/verdict.json`, rendu à la boucle
+  pour relecture et intégration ; aucun commit ni push effectué.
+
+### Réserves à la clôture
+
+- ESLint non lancé par les contrôles : absent ou non configuré dans le dépôt.
+- .harness-state/tickets/T021/relecture-1.md : `app/recording.js:29-33` (avec `:28` et `:65`) : `hors périmètre`
+     - **Problème** : le diff découpe en plusieurs lignes la création des canevas, ce qui ajoute de nouvelles lignes qui portent des nombres en dur : `768`, `64` et `36`. Le couple `64 × 36` revient aussi à la ligne 65 (`drawImage(this.video,0,0,64,36)`, `getImageData(0,0,64,36)`), qui n'a pas changé. La règle « Les constantes portent un nom et vivent à un seul endroit » n'est donc pas respectée sur ces lignes ajoutées. Le défaut existait avant : le diff n'a fait que découper la ligne. Ce découpage était d'ailleurs nécessaire, car la ligne d'origine dépassait 160 caractères et devait changer pour passer par `this.env.document`.
+     - **Attendu** : nommer la taille du canevas de capture et celle du canevas de comparaison à un seul endroit. Le ticket ne le demande pas (« l'enregistreur se comporte comme avant », périmètre limité à `env`) : à reporter en réserve.

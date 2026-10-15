@@ -12,28 +12,42 @@ export function encodeWav(chunks, sampleRate) {
   return new Uint8Array(bytes);
 }
 export class RollingRecorder {
-  constructor({ stream, video, audioContext, flushAudio, session, onError, onSegment }) {
-    Object.assign(this, { stream, video, audioContext, flushAudio, session, onError, onSegment });
-    this.origin = performance.now() - session.elapsedMs;
-    this.canvas = document.createElement('canvas'); this.canvas.width = 768;
-    this.deltaCanvas=document.createElement('canvas');this.deltaCanvas.width=64;this.deltaCanvas.height=36;this.deltaContext=this.deltaCanvas.getContext('2d',{willReadFrequently:true});
+  constructor({
+    stream, video, audioContext, flushAudio, session, onError, onSegment,
+    env = {
+      performance, document, MediaRecorder, Blob,
+      setTimeout: (callback, delay) => setTimeout(callback, delay),
+      setInterval: (callback, delay) => setInterval(callback, delay),
+      clearTimeout: id => clearTimeout(id),
+      clearInterval: id => clearInterval(id),
+      ingest: passage => window.tvlens.ingest(passage),
+    },
+  }) {
+    Object.assign(this, { stream, video, audioContext, flushAudio, session, onError, onSegment, env });
+    this.origin = this.env.performance.now() - session.elapsedMs;
+    this.canvas = this.env.document.createElement('canvas');
+    this.canvas.width = 768;
+    this.deltaCanvas = this.env.document.createElement('canvas');
+    this.deltaCanvas.width = 64;
+    this.deltaCanvas.height = 36;
+    this.deltaContext = this.deltaCanvas.getContext('2d', { willReadFrequently: true });
     this.active = false; this.pending = new Set(); this.rotating = null; this.startedSegments = 0;
   }
-  now() { return performance.now() - this.origin; }
+  now() { return this.env.performance.now() - this.origin; }
   samples(samples) { if (this.current) this.current.audio.push(samples); }
   start() { this.active = true; this.begin(); }
   begin() {
-    const mimeType = ['video/webm;codecs=vp8,opus', 'video/webm'].find(type => MediaRecorder.isTypeSupported(type));
+    const mimeType = ['video/webm;codecs=vp8,opus', 'video/webm'].find(type => this.env.MediaRecorder.isTypeSupported(type));
     if (!mimeType) throw new Error('Enregistrement WebM indisponible.');
-    const recorder = new MediaRecorder(this.stream, { mimeType, videoBitsPerSecond: 1000000, audioBitsPerSecond: 64000 });
+    const recorder = new this.env.MediaRecorder(this.stream, { mimeType, videoBitsPerSecond: 1000000, audioBitsPerSecond: 64000 });
     const item = { recorder, startMs: this.now(), frames: [], candidates:[], previousPixels:null, audio: [], blobs: [] };
     this.current = item;
     recorder.ondataavailable = event => { if (event.data.size) item.blobs.push(event.data); };
     recorder.onerror = () => { this.onError('L’enregistrement du passage a échoué.'); this.stop(); };
     recorder.start(); this.frame();
-    this.framesTimer = setInterval(() => this.frame(), Math.min(400, this.session.segmentMs / 3));
+    this.framesTimer = this.env.setInterval(() => this.frame(), Math.min(400, this.session.segmentMs / 3));
     const duration = this.startedSegments++ === 0 ? Math.min(2000, this.session.segmentMs) : this.session.segmentMs;
-    this.segmentTimer = setTimeout(() => { this.rotate().catch(error => this.onError(error.message)); }, duration);
+    this.segmentTimer = this.env.setTimeout(() => { this.rotate().catch(error => this.onError(error.message)); }, duration);
   }
   rotate(anchorMs) {
     if (!this.rotating && Number.isFinite(anchorMs) && this.current && anchorMs <= this.current.startMs) return Promise.resolve();
@@ -52,7 +66,8 @@ export class RollingRecorder {
     this.current.candidates.push({atMs:this.now(),change,dataUrl:this.canvas.toDataURL('image/jpeg',0.7)});
   }
   async finish(anchorMs) {
-    clearInterval(this.framesTimer); clearTimeout(this.segmentTimer);
+    this.env.clearInterval(this.framesTimer);
+    this.env.clearTimeout(this.segmentTimer);
     const item = this.current;
     if (!item) return;
     if (!Number.isFinite(anchorMs)) await this.flushAudio();
@@ -68,11 +83,11 @@ export class RollingRecorder {
     if (endMs - item.startMs < 350 || !item.frames.length) return;
     if (this.pending.size >= 2) { this.onError('Stockage en retard : un passage n’a pas pu être conservé.'); return; }
     const submit = async () => {
-      const clip = new Uint8Array(await new Blob(item.blobs, { type: 'video/webm' }).arrayBuffer());
+      const clip = new Uint8Array(await new this.env.Blob(item.blobs, { type: 'video/webm' }).arrayBuffer());
       let samplesLeft = Math.floor((endMs - item.startMs) * (this.audioContext?.sampleRate || 16000) / 1000);
       const chunks = item.audio.map(chunk => { const trimmed = chunk.subarray(0, Math.max(0, samplesLeft)); samplesLeft -= trimmed.length; return trimmed; });
       const audio = chunks.length ? encodeWav(chunks, this.audioContext.sampleRate) : null;
-      const id = await window.tvlens.ingest({ sessionId: this.session.id, startMs: item.startMs, endMs, frames: item.frames, audio, clip });
+      const id = await this.env.ingest({ sessionId: this.session.id, startMs: item.startMs, endMs, frames: item.frames, audio, clip });
       this.onSegment?.(id, item.frames[0]?.dataUrl);
     };
     const task = submit().catch(error => this.onError(error.message));
