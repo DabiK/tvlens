@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import fcntl
 import json
 from pathlib import Path
@@ -12,6 +12,7 @@ import urllib.request
 import urllib.error
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tv'))
+import controller as device
 from controller import CaptureController, DeviceServer
 from transport import Transport, SessionChanged, StorageFull, ReadOnly
 
@@ -73,11 +74,116 @@ class ControlTests(unittest.TestCase):
     self.assertFalse(request('/capture')['active']);request('/capture/stop','POST')
     with self.assertRaises(urllib.error.HTTPError) as missing:request('/shell','POST')
     self.assertEqual(missing.exception.code,404);missing.exception.close()
-    # Built as before, without the ambient part: its routes do not exist, token or not.
+    # Removed routes follow the authenticated unknown-route response.
     with self.assertRaises(urllib.error.HTTPError) as absent:request('/ambient')
     self.assertEqual(absent.exception.code,404);absent.exception.close()
    finally:
     controller.stop();server.shutdown();server.server_close();thread.join()
+
+class DeviceRoutes(unittest.TestCase):
+ def setUp(self):
+  temp=tempfile.TemporaryDirectory()
+  self.addCleanup(temp.cleanup)
+  self.root=Path(temp.name)
+  self.capture=CaptureController(self.root/'config',self.root/'report',lock_file=str(self.root/'capture.lock'))
+  self.server=DeviceServer(('127.0.0.1',0),self.capture,'x'*64)
+  thread=threading.Thread(target=self.server.serve_forever)
+  thread.start()
+  def close():
+   self.server.shutdown()
+   self.server.server_close()
+   thread.join()
+  self.addCleanup(close)
+ def request(self,route,method='GET',token='x'*64,origin='null'):
+  headers={'Origin':origin}
+  if token is not None:headers['Authorization']='Bearer '+token
+  request=urllib.request.Request('http://127.0.0.1:'+str(self.server.server_port)+route,method=method,headers=headers)
+  try:response=urllib.request.urlopen(request,timeout=5)
+  except urllib.error.HTTPError as error:response=error
+  with response:return response.status,json.load(response),response.headers
+
+ def test_removed_display_routes_use_the_authenticated_unknown_route(self):
+  routes=[('/ambient','GET'),('/ambient/start','POST'),('/ambient/ack/'+'a'*32,'POST'),
+   ('/ambient/wait/'+'a'*32,'GET'),('/ambient/key/'+'a'*32,'POST'),('/ambient/stop','POST'),
+   ('/ambient/test','POST'),('/ambient/alerts/on','POST'),('/ambient/seen/overlay/3','POST')]
+  with patch.object(device.subprocess,'Popen') as launch:
+   for route,method in routes:
+    for token,status in ((None,401),('bad',401),('x'*64,404)):
+     with self.subTest(route=route,token=token):
+      actual,body,headers=self.request(route,method,token)
+      self.assertEqual(actual,status)
+      if status==404:self.assertEqual(body,{})
+      self.assertEqual(headers['Access-Control-Allow-Origin'],'null')
+   launch.assert_not_called()
+  self.assertFalse(self.capture.status()['active'])
+
+ def test_capture_and_panel_routes_keep_authentication_and_cors(self):
+  with patch.object(device,'Path',side_effect=lambda value:self.root/Path(value).name),\
+    patch.object(device.subprocess,'Popen') as launch:
+   for route,method in (('/capture','GET'),('/capture/start','POST'),('/capture/stop','POST'),
+     ('/panel','GET'),('/panel/chat','POST'),('/panel/timeline','POST')):
+    self.assertEqual(self.request(route,method,token=None)[0],401,route)
+   launch.assert_not_called()
+   self.assertEqual(self.request('/capture')[:2],(200,{'active':False,'stopping':False,'exitCode':None,'report':{}}))
+   self.assertEqual(self.request('/panel')[:2],(200,{'active':False,'mode':'chat'}))
+   self.assertEqual(self.request('/panel/chat','POST')[0],409)
+   self.assertFalse((self.root/'tvlens-panel-layout-request.json').exists())
+   (self.root/'tvlens-panel-layout-state.json').write_text('{"active":true,"mode":"chat"}')
+   for mode in ('chat','timeline'):
+    status,body,headers=self.request('/panel/'+mode,'POST')
+    self.assertEqual((status,body['mode']),(200,mode))
+    self.assertEqual(json.loads((self.root/'tvlens-panel-layout-request.json').read_text()),body)
+    self.assertEqual(headers['Access-Control-Allow-Origin'],'null')
+    self.assertEqual(headers['Cache-Control'],'no-store')
+   self.assertFalse(list(self.root.glob('*.tmp')))
+   status,body,headers=self.request('/panel','OPTIONS',token=None)
+   self.assertEqual((status,body),(200,{}))
+   self.assertEqual(headers['Access-Control-Allow-Headers'],'Authorization, Content-Type')
+   self.assertEqual(headers['Access-Control-Allow-Methods'],'GET, POST, OPTIONS')
+   self.assertNotIn('Access-Control-Allow-Origin',self.request('/panel',origin='https://example.test')[2])
+   launch.assert_not_called()
+
+ def test_capture_process_is_started_once_and_stopped_through_http(self):
+  stopped=threading.Event()
+  child=MagicMock()
+  child.poll.side_effect=lambda:0 if stopped.is_set() else None
+  child.wait.side_effect=lambda **_:stopped.set()
+  with patch.object(device.subprocess,'Popen',return_value=child) as launch:
+   for _ in range(2):self.assertTrue(self.request('/capture/start','POST')[1]['active'])
+   launch.assert_called_once()
+   self.assertEqual(launch.call_args.args[0],self.capture.command)
+   self.request('/capture/stop','POST')
+   self.assertTrue(stopped.wait(5))
+   self.assertFalse(self.request('/capture')[1]['active'])
+   self.assertFalse(self.request('/capture/stop','POST')[1]['active'])
+   child.terminate.assert_called_once_with()
+
+class DeviceLifecycle(unittest.TestCase):
+ def test_startup_and_shutdown_launch_no_background_work(self):
+  with tempfile.TemporaryDirectory() as temp:
+   root=Path(temp)
+   config=root/'connection.json'
+   config.write_text(json.dumps({'token':'x'*64}))
+   (root/'ambient.json').write_text('{"focus":"relay"}')
+   gate=root/'tvlens-ambient-gate.json'
+   gate.write_text('{"v":2,"epoch":3,"state":"shown"}')
+   for termination in ('interrupt','signal'):
+    with self.subTest(termination=termination):
+     signals={}
+     def serve(server):
+      self.assertEqual(server.server_address[0],'127.0.0.1')
+      if termination=='signal':signals[device.signal.SIGTERM](None,None)
+      raise KeyboardInterrupt
+     args=['controller.py','--config',str(config),'--port','0','--capture-report',str(root/'report'),
+      '--capture-lock',str(root/'capture.lock')]
+     with patch.object(sys,'argv',args),patch.dict(device.os.environ,{'TVLENS_AMBIENT_RUN':temp}),\
+       patch.object(DeviceServer,'serve_forever',serve),patch.object(device.os,'umask'),\
+       patch.object(device.signal,'signal',side_effect=lambda sig,handler:signals.update({sig:handler})),\
+       patch.object(device.subprocess,'Popen') as launch,patch.object(device.threading,'Thread') as background:
+      device.main()
+     launch.assert_not_called()
+     background.assert_not_called()
+     self.assertEqual(json.loads(gate.read_text()),{'v':2,'epoch':3,'state':'shown'})
 
 class DeliveryTests(unittest.TestCase):
  def setUp(self):

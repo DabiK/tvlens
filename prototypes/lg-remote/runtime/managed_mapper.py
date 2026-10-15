@@ -34,10 +34,6 @@ CONFIG_PATH = os.path.join(ROOT_DIR, "magic_mapper_config.json")
 STATE_DIR = "/tmp/magic-mapper"
 APP_DIR = ROOT_DIR
 STOP_REQUESTED = False
-# Set by tvlens_mapper only when ambient.json enables an experimental profile. None (shipped default):
-# the loop below takes exactly the path it took before the ambient display existed.
-key_hook = None
-status_extra = {}
 
 
 def write_input_event(output_device, event_type, code, value):
@@ -118,7 +114,6 @@ def write_status(active, button_map, input_device=None, output_device=None, disc
         # Same clock as every other TV-side process: freshness is never judged on the wall time.
         "updatedMono": time.monotonic(),
     }
-    status.update(status_extra)
     if discovery:
         status["discovery"] = discovery.state()
     if error:
@@ -211,17 +206,6 @@ def input_loop(button_map):
                 continue
             unused_sec, unused_usec, event_type, code, value = struct.unpack(input_format, event)
             del unused_sec, unused_usec
-
-            if key_hook:
-                # Before the sync skip and before `now`: the hook may hold the event while a card closes, and a
-                # Rakuten press stamped before that wait would be read as a long press. It also sees SYN_DROPPED.
-                try:
-                    verdict = key_hook(event_type, code, value)
-                except Exception:
-                    verdict = None
-                if verdict == "swallow":
-                    suppress_next_sync = True
-                    continue
 
             if suppress_next_sync and event_type == 0:
                 suppress_next_sync = False
