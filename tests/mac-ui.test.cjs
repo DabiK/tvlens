@@ -1135,51 +1135,60 @@ test('every command the controls switch off is an element of the window', async 
   assert.deepEqual(switched.filter(id => !ids.has(id)), []);
 });
 
-test('the window switches its commands off from the controls model alone, and reads the chosen source once', () => {
-  // The window cannot be loaded without Electron, so its wiring is read through its shape (layout aside): the table
-  // of cases above is worth something only if updateButtons applies what the model says instead of a chain of its own.
-  const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, "import { describeControls } from './ui/controls-view.mjs';"), 'the window imports the controls model');
-  const from = renderer.indexOf(shape('function updateButtons(')), to = renderer.indexOf(shape('const capture = createCaptureController('));
-  assert.ok(from >= 0 && to > from, 'the controls wiring is present before capture composition');
-  const body = renderer.slice(from, to);
-  assert.ok(body.includes(shape('describeControls(')), 'updateButtons asks the model');
-  assert.ok(body.includes(shape('Object.entries(controls.disabled)')), 'the commands switched off are the ones of the model');
-  // The right-hand side of every `.disabled` assignment is what the loop reads from the model, nothing computed here.
-  const assigned = [...body.matchAll(/\.disabled=(?=([^\s]*))/g)].map(match => match[1]);
-  assert.ok(assigned.length > 0, 'updateButtons no longer assigns .disabled');
-  assert.deepEqual(assigned.filter(value => value !== 'disabled'), [], 'a command is switched off from a state of the window');
-  assert.equal([...body.matchAll(/\$\('source'\)\.value/g)].length, 1, 'the source is read once in updateButtons');
-  // That single read is the `source` of the input handed to the model, in the very call that asks for the controls.
-  const call = body.slice(body.indexOf(shape('describeControls(')));
-  const input = call.slice(0, call.indexOf('})') + 1);
-  const sourceRead = shape("$('source').value");
-  assert.ok(new RegExp(`[{,]source:${sourceRead.replace(/[$().]/g, '\\$&')}(?=[,}])`).test(input),
-    "the source of the input handed to describeControls is the value of the source element, read in that call");
+test('the window applies all controls from the public capture status and reads the source once', async () => {
+  const { renderCaptureControls } = await ui('capture-controls');
+  for (const { name, input, disabled, recording } of controlCases) {
+    const values = { ...idleInput, ...input }, nodes = new Map(), observations = [];
+    const get = id => {
+      if (!nodes.has(id)) nodes.set(id, { classList: { toggle: (key, value) => { nodes.get(id)[key] = value; } } });
+      return nodes.get(id);
+    };
+    let reads = 0;
+    Object.defineProperty(get('source'), 'value', { get: () => { reads++; return values.source; } });
+    const { recording: isRecording, previewOpen, stopping, ...pageInput } = values;
+    const capture = { recording: isRecording, previewOpen, stopping };
+    renderCaptureControls({ ...pageInput, get, capture, shell: { observation: (...args) => observations.push(args) } });
+    assert.deepEqual(observations, [[values.session, values.recording]], name);
+    assert.equal(reads, 1, name);
+    for (const [id, expected] of Object.entries(disabledOnly(disabled))) assert.equal(get(id).disabled, expected, `${name}: ${id}`);
+    assert.equal(get('float-record').recording, recording, name);
+    for (const id of ['float-status', 'observe', 'ask-status']) assert.equal(typeof get(id).textContent, 'string', `${name}: ${id}`);
+    assert.equal(typeof get('float-record').title, 'string', name);
+  }
 });
 
-test('the window composes one capture controller and delegates preview, observation and stop to it', () => {
-  const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, "import { createCaptureController } from './ui/capture-controller.mjs';"));
-  assert.equal([...renderer.matchAll(/createCaptureController\(\{/g)].length, 1);
-  for (const fragment of [
-    'bridge,', "selectSource: id => window.capture.select(id)", "source: () => $('source').value",
-    'getDisplayMedia: options => navigator.mediaDevices.getDisplayMedia(options)',
-    'createAudioContext: options => new AudioContext(options)',
-    'createWorkletNode: (context, name) => new AudioWorkletNode(context, name)',
-    'createMediaStream: tracks => new MediaStream(tracks)',
-    'createRecorder: options => new RollingRecorder(options)',
-    'setTimeout: (callback, delay) => setTimeout(callback, delay)', 'clearTimeout: id => clearTimeout(id)',
-    'uuid: () => crypto.randomUUID()', "video: $('preview')", 'session: () => currentState',
-    'changed: updateButtons', 'status,', 'state: receiveState',
-    "stopping: () => { $('stop').disabled = true; }",
-    "preview: active => { document.body.classList.toggle('has-preview', active); $('stop').disabled = !active;",
-    'function startPreview() { return capture.startPreview(); }',
-    'function observe() { return capture.observe(); }',
-    'function stop(options) { return capture.stop(options); }',
-    'recording: capture.recording', 'previewOpen: capture.previewOpen', 'stopping: capture.stopping',
-    "$('start').onclick = startPreview", "$('stop').onclick = () => stop().catch(error => notice(reason(error)))",
-  ]) assert.ok(holds(renderer, fragment), `capture wiring: ${fragment}`);
+test('browser composition selects the source and shares its preview with one injected recorder', async () => {
+  const { createBrowserCaptureController } = await ui('browser-capture');
+  const events = [], records = [];
+  const track = { stop: () => events.push('track.stop') };
+  const stream = { getTracks: () => [track], getVideoTracks: () => [track], getAudioTracks: () => [] };
+  const video = { play: async () => events.push('play') };
+  const session = { id: 'session' };
+  const view = Object.fromEntries(['previewStarting', 'preview', 'changed', 'status', 'observing', 'state',
+    'recording', 'settled', 'stopping', 'stopped', 'meter'].map(name => [name, () => {}]));
+  view.error = error => { throw error; };
+  const controller = createBrowserCaptureController({
+    video, source: () => 'window:1', session: () => session, view,
+    bridge: { start: async () => session, state: async () => ({ accepting: true }), stop: async () => events.push('host.stop') },
+    createRecorder: options => {
+      records.push(options);
+      return { start: () => events.push('record'), stop: async () => events.push('recorder.stop') };
+    },
+  }, {
+    window: { capture: { select: async id => events.push(['select', id]) } },
+    navigator: { mediaDevices: { getDisplayMedia: async () => { events.push('display'); return stream; } } },
+  });
+  await controller.startPreview();
+  await controller.observe();
+  await controller.observe();
+  assert.deepEqual(events, [['select', 'window:1'], 'display', 'play', 'record']);
+  assert.equal(records.length, 1);
+  assert.equal(records[0].stream, stream);
+  assert.equal(records[0].video, video);
+  assert.equal(records[0].session, session);
+  await controller.stop();
+  assert.deepEqual(events.slice(-3), ['recorder.stop', 'host.stop', 'track.stop']);
+  assert.equal(video.srcObject, null);
 });
 
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------
@@ -1188,6 +1197,9 @@ const read = file => fs.readFileSync(app(file), 'utf8');
 
 const elementPatterns = new Map([
   ['renderer.js', /\$\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/capture-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/moment-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/capture-controls.mjs', /\bget\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/shell.js', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
 ]);
 const namedImportPattern = /^\s*import\s*\{([^}]+)\}\s*from\s*(['"])([^'"]+)\2\s*;?/gm;
@@ -1321,4 +1333,333 @@ test('the renderer talks to the bridge of the contract only, and writes no ceili
     if (!/ui\/(?:text|card-queue)\.mjs$/.test(file)) assert.ok(!/\b60000\b/.test(read(file)), `${file} carries a duration constant`);
   }
   assert.ok(!/PREUVES INSUFFISANTES/.test(read('renderer.js') + read('ui/job-card.js')), 'the label lives in the view model, where it is reserved for a completed abstention');
+});
+
+test("browser composition uses every injected factory and the real rolling recorder", async (t) => {
+  const { createBrowserCaptureController } = await ui("browser-capture");
+  const contexts = [],
+    worklets = [],
+    streams = [],
+    canvases = [],
+    media = [];
+  const selected = [],
+    displayed = [],
+    scheduled = [],
+    cleared = [],
+    uuids = [],
+    errors = [],
+    ingested = [],
+    blobs = [];
+  const timers = new Map();
+  let nextTimer = 0,
+    now = 0;
+  const clipBytes = Uint8Array.of(3, 1, 4, 1, 5, 9);
+  const chunk = new Blob([clipBytes], { type: "video/webm" });
+  class ClipBlobStub extends Blob {
+    constructor(parts, options) {
+      super(parts, options);
+      blobs.push({ parts, options });
+    }
+  }
+  const schedule = (kind, callback, delay) => {
+    const id = ++nextTimer;
+    const timer = { id, kind, callback, delay };
+    scheduled.push(timer);
+    timers.set(id, timer);
+    return id;
+  };
+  const clear = (id) => {
+    cleared.push(id);
+    timers.delete(id);
+  };
+  const videoTrack = {
+    stops: 0,
+    stop() {
+      this.stops++;
+    },
+  };
+  const audioTrack = {
+    readyState: "live",
+    stops: 0,
+    stop() {
+      this.stops++;
+    },
+  };
+  const stream = {
+    getTracks: () => [videoTrack, audioTrack],
+    getVideoTracks: () => [videoTrack],
+    getAudioTracks: () => [audioTrack],
+  };
+  const video = {
+    srcObject: null,
+    videoWidth: 1280,
+    videoHeight: 720,
+    play: async () => {},
+  };
+  class AudioContextStub {
+    constructor(options) {
+      this.sampleRate = options.sampleRate;
+      this.modules = [];
+      this.inputs = [];
+      this.destination = {};
+      this.closed = 0;
+      this.audioWorklet = { addModule: async (url) => this.modules.push(url) };
+      contexts.push({ context: this, options });
+    }
+    async resume() {
+      this.resumed = true;
+    }
+    createMediaStreamSource(input) {
+      this.inputs.push(input);
+      return {
+        connect: (node) => {
+          this.connected = node;
+        },
+        disconnect() {},
+      };
+    }
+    async close() {
+      this.closed++;
+    }
+  }
+  class WorkletStub {
+    constructor(context, name) {
+      this.messages = [];
+      this.port = {
+        postMessage: (message) => this.messages.push(message),
+        close: () => {
+          this.closed = true;
+        },
+      };
+      worklets.push({ worklet: this, context, name });
+    }
+    connect(destination) {
+      this.destination = destination;
+    }
+    disconnect() {}
+  }
+  class MediaStreamStub {
+    constructor(tracks) {
+      this.tracks = tracks;
+      streams.push(this);
+    }
+  }
+  class MediaRecorderStub {
+    static isTypeSupported() {
+      return true;
+    }
+    constructor(input, options) {
+      this.state = "inactive";
+      this.stops = 0;
+      media.push({ recorder: this, input, options });
+    }
+    start() {
+      this.state = "recording";
+    }
+    stop() {
+      this.state = "inactive";
+      this.stops++;
+      queueMicrotask(() => {
+        this.ondataavailable({ data: chunk });
+        this.onstop();
+      });
+    }
+  }
+  const environment = {
+    window: { capture: { select: async (id) => selected.push(id) } },
+    navigator: {
+      mediaDevices: {
+        getDisplayMedia: async (options) => {
+          displayed.push(options);
+          return stream;
+        },
+      },
+    },
+    AudioContext: AudioContextStub,
+    AudioWorkletNode: WorkletStub,
+    MediaStream: MediaStreamStub,
+    MediaRecorder: MediaRecorderStub,
+    Blob: ClipBlobStub,
+    performance: { now: () => now },
+    document: {
+      createElement: (...args) => {
+        const calls = { args, draws: [], contexts: [], encodings: [] };
+        calls.canvas = {
+          getContext: (...args) => {
+            calls.contexts.push(args);
+            return {
+              drawImage: (...args) => calls.draws.push(args),
+              getImageData: () => ({
+                data: new Uint8ClampedArray(64 * 36 * 4),
+              }),
+            };
+          },
+          toDataURL: (...args) => {
+            calls.encodings.push(args);
+            return "data:image/jpeg;preview";
+          },
+        };
+        canvases.push(calls);
+        return calls.canvas;
+      },
+    },
+    setTimeout: (callback, delay) => schedule("timeout", callback, delay),
+    clearTimeout: clear,
+    setInterval: (callback, delay) => schedule("interval", callback, delay),
+    clearInterval: clear,
+    crypto: {
+      randomUUID: () => {
+        uuids.push("uuid");
+        return "native-flush-id";
+      },
+    },
+  };
+  const session = { id: "session", elapsedMs: 0, segmentMs: 8000 };
+  const view = Object.fromEntries(
+    [
+      "previewStarting",
+      "preview",
+      "changed",
+      "status",
+      "observing",
+      "state",
+      "recording",
+      "settled",
+      "stopping",
+      "stopped",
+      "meter",
+      "segment",
+    ].map((name) => [name, () => {}]),
+  );
+  view.error = (error) => errors.push(error);
+  const controller = createBrowserCaptureController(
+    {
+      video,
+      source: () => "window:1",
+      session: () => session,
+      view,
+      bridge: {
+        start: async () => session,
+        state: async () => ({ accepting: true }),
+        stop: async () => {},
+        ingest: async (passage) => {
+          ingested.push(passage);
+          return "moment-1";
+        },
+      },
+    },
+    environment,
+  );
+  t.after(() => controller.release());
+  assert.equal(await controller.startPreview(), true);
+  assert.deepEqual(selected, ["window:1"]);
+  assert.deepEqual(displayed, [
+    {
+      video: { frameRate: 10, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: true,
+    },
+  ]);
+  const context = contexts[0].context,
+    worklet = worklets[0].worklet;
+  assert.deepEqual(contexts[0].options, { sampleRate: 16000 });
+  assert.deepEqual(context.modules, ["./audio-worklet.js"]);
+  assert.equal(context.resumed, true);
+  assert.equal(worklets[0].context, context);
+  assert.equal(worklets[0].name, "tvlens-pcm");
+  assert.deepEqual(streams[0].tracks, [audioTrack]);
+  assert.equal(context.inputs[0], streams[0]);
+  assert.equal(context.connected, worklet);
+  assert.equal(worklet.destination, context.destination);
+  assert.equal(controller.snapshot(), "data:image/jpeg;preview");
+  assert.deepEqual(canvases[0].args, ["canvas"]);
+  assert.deepEqual(
+    [canvases[0].canvas.width, canvases[0].canvas.height],
+    [320, 180],
+  );
+  assert.deepEqual(canvases[0].contexts, [["2d"]]);
+  assert.deepEqual(canvases[0].draws, [[video, 0, 0, 320, 180]]);
+  assert.deepEqual(canvases[0].encodings, [["image/jpeg", 0.7]]);
+  const flushed = controller.flushAudio();
+  assert.deepEqual(uuids, ["uuid"]);
+  assert.deepEqual(worklet.messages, [
+    { type: "flush", id: "native-flush-id" },
+  ]);
+  const [timer] = timers.values();
+  assert.equal(timer.kind, "timeout");
+  assert.equal(timer.delay, 500);
+  worklet.port.onmessage({ data: { type: "flushed", id: "native-flush-id" } });
+  await flushed;
+  assert.deepEqual(cleared, [timer.id]);
+  assert.equal(timers.size, 0);
+  let deadlineFlushed = false;
+  const deadline = controller.flushAudio().then(() => {
+    deadlineFlushed = true;
+  });
+  const [deadlineTimer] = timers.values();
+  assert.equal(typeof deadlineTimer.callback, "function");
+  assert.equal(deadlineTimer.delay, 500);
+  deadlineTimer.callback();
+  await Promise.resolve();
+  assert.equal(deadlineFlushed, true);
+  await deadline;
+  assert.deepEqual(uuids, ["uuid", "uuid"]);
+  assert.deepEqual(cleared, [timer.id, deadlineTimer.id]);
+  assert.equal(timers.size, 0);
+  await controller.observe();
+  await controller.observe();
+  assert.equal(controller.recording, true);
+  assert.equal(media.length, 1);
+  assert.equal(media[0].input, stream);
+  assert.deepEqual(media[0].options, {
+    mimeType: "video/webm;codecs=vp8,opus",
+    videoBitsPerSecond: 1000000,
+    audioBitsPerSecond: 64000,
+  });
+  assert.deepEqual(
+    canvases.map((call) => call.args),
+    [["canvas"], ["canvas"], ["canvas"]],
+  );
+  assert.deepEqual(
+    scheduled.slice(2).map(({ kind, delay }) => [kind, delay]),
+    [
+      ["interval", 400],
+      ["timeout", 2000],
+    ],
+  );
+  now = 1000;
+  const checkpoint = controller.checkpoint();
+  const audioFlush = worklet.messages.at(-1);
+  assert.deepEqual(audioFlush, { type: "flush", id: "native-flush-id" });
+  worklet.port.onmessage({ data: { type: "flushed", id: audioFlush.id } });
+  await checkpoint;
+  assert.equal(ingested.length, 1);
+  const [passage] = ingested;
+  assert.equal(passage.sessionId, "session");
+  assert.deepEqual([passage.startMs, passage.endMs], [0, 1000]);
+  assert.ok(passage.frames.length > 0);
+  assert.ok(
+    passage.frames.every(
+      (frame) =>
+        frame.atMs <= 1000 && frame.dataUrl === "data:image/jpeg;preview",
+    ),
+  );
+  assert.ok(passage.clip instanceof Uint8Array);
+  assert.deepEqual(passage.clip, clipBytes);
+  assert.equal(blobs.length, 1);
+  assert.deepEqual(blobs[0].options, { type: "video/webm" });
+  assert.equal(blobs[0].parts.length, 1);
+  assert.equal(blobs[0].parts[0], chunk);
+  assert.equal(media.length, 2);
+  await controller.release();
+  assert.equal(ingested.length, 1);
+  assert.equal(media[0].recorder.stops, 1);
+  assert.equal(media[1].recorder.stops, 1);
+  assert.equal(timers.size, 0);
+  assert.equal(context.closed, 1);
+  assert.equal(worklet.closed, true);
+  assert.deepEqual(
+    [videoTrack.stops, audioTrack.stops, video.srcObject],
+    [1, 1, null],
+  );
+  assert.deepEqual(errors, []);
 });

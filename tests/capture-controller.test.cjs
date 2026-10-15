@@ -31,6 +31,11 @@ async function fixture({
   display,
   audioModule,
   recorderStop,
+  recorderStart,
+  recorderFactory,
+  recorderStopError,
+  contextClose,
+  checkpoint,
   view = {},
 } = {}) {
   const { createCaptureController } =
@@ -42,7 +47,8 @@ async function fixture({
     states = [],
     segments = [];
   const recorderStopping = deferred(),
-    displayRequested = deferred();
+    displayRequested = deferred(),
+    audioLoading = deferred();
   const track = (name) => ({
     readyState: "live",
     stop: () => events.push(`${name}.stop`),
@@ -63,20 +69,31 @@ async function fixture({
     audioWorklet: {
       addModule: async (url) => {
         events.push(["audio.module", url]);
+        audioLoading.resolve();
         await audioModule;
       },
     },
     resume: async () => events.push("audio.resume"),
     createMediaStreamSource: (input) => {
       events.push(["audio.source", input]);
-      return { connect: (node) => events.push(["audio.connect", node]) };
+      return {
+        connect: (node) => events.push(["audio.connect", node]),
+        disconnect: () => events.push(["audio.disconnect"]),
+      };
     },
     destination: {},
-    close: async () => events.push("audio.close"),
+    close: async () => {
+      events.push("audio.close");
+      await contextClose;
+    },
   };
   const messages = [],
     worklet = {
-      port: { postMessage: (message) => messages.push(message) },
+      port: {
+        postMessage: (message) => messages.push(message),
+        close: () => events.push(["port.close"]),
+      },
+      disconnect: () => events.push(["worklet.disconnect"]),
       connect: (destination) => events.push(["worklet.connect", destination]),
     };
   let nextTimer = 0,
@@ -131,6 +148,15 @@ async function fixture({
         events.push(["worklet", ctx, name]);
         return worklet;
       },
+      createCanvas: () => ({
+        getContext: () => ({
+          drawImage: (...args) => events.push(["snapshot", ...args]),
+        }),
+        toDataURL: (...args) => {
+          events.push(["snapshot.encoding", ...args]);
+          return "data:image/jpeg;moment";
+        },
+      }),
       createMediaStream: (tracks) => {
         events.push(["audio.tracks", tracks]);
         return { tracks };
@@ -138,14 +164,27 @@ async function fixture({
     },
     createRecorder: (options) => {
       events.push("recorder.create");
+      if (recorderFactory) {
+        const recorder = recorderFactory(options);
+        recorders.push(recorder);
+        return recorder;
+      }
       const recorder = {
         ...options,
-        start: () => events.push("recorder.start"),
+        start: () => {
+          events.push("recorder.start");
+          recorderStart?.(recorder);
+        },
         stop: async () => {
           events.push("recorder.stop");
           recorderStopping.resolve();
           await recorderStop;
+          if (recorderStopError) throw recorderStopError;
           events.push("recorder.stopped");
+        },
+        checkpoint: async (...args) => {
+          events.push(["checkpoint", recorder, args]);
+          await checkpoint;
         },
         samples: (value) => samples.push(value),
       };
@@ -196,6 +235,7 @@ async function fixture({
     samples,
     recorderStopping,
     displayRequested,
+    audioLoading,
     setState: (state) => {
       currentState = state;
     },
@@ -564,7 +604,7 @@ test("a failed audio connection reports its error and releases the acquired trac
   );
 });
 
-test("a refused host opening keeps the preview and reports the observation error", async () => {
+test("a refused host opening releases capture and reports the observation error", async () => {
   const f = await fixture(),
     failure = new Error("host refused");
   await f.controller.startPreview();
@@ -575,7 +615,14 @@ test("a refused host opening keeps the preview and reports the observation error
   assert.deepEqual(f.errors, [{ error: failure, phase: "observe" }]);
   assert.equal(f.recorders.length, 0);
   assert.equal(f.controller.recording, false);
-  assert.equal(f.controller.previewOpen, true);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.worklet.port.onmessage, null);
+  assert.equal(f.videoTrack.onended, null);
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+  assert.ok(f.events.includes("audio.close"));
+  assert.ok(f.events.includes("audio.stop"));
+  assert.ok(f.events.includes("video.stop"));
   assert.equal(f.events.includes("host.stop"), true);
 });
 
@@ -692,4 +739,468 @@ test("an archive whose resumed host is not accepting falls back to start", async
     ["host.resume", "host.state", "host.start", "host.state"],
   );
   assert.equal(f.recorders[0].session, f.session);
+});
+
+test("checkpoints use the current recorder and wait for its ingestion before returning", async () => {
+  const ingestion = deferred();
+  const f = await fixture({ checkpoint: ingestion.promise });
+  await f.controller.startPreview();
+  await f.controller.observe();
+  let done = false;
+  const pending = Promise.resolve(f.controller.checkpoint?.(1250)).then(() => {
+    done = true;
+  });
+  assert.deepEqual(
+    f.events.filter((event) => event[0] === "checkpoint"),
+    [["checkpoint", f.recorders[0], [1250]]],
+  );
+  await Promise.resolve();
+  assert.equal(done, false);
+  ingestion.resolve();
+  await pending;
+  assert.equal(done, true);
+  await f.controller.stop();
+  await f.controller.startPreview();
+  await f.controller.observe();
+  await f.controller.checkpoint();
+  assert.deepEqual(
+    f.events.filter((event) => event[0] === "checkpoint").at(-1),
+    ["checkpoint", f.recorders[1], [undefined]],
+  );
+  await f.controller.stop();
+  await f.controller.checkpoint();
+  assert.equal(f.events.filter((event) => event[0] === "checkpoint").length, 2);
+});
+
+test("release is repeatable, drains flushes and detaches audio callbacks without touching the released page", async () => {
+  let released = false;
+  const pageCalls = [];
+  const f = await fixture({
+    view: {
+      meter: (value) => {
+        if (released) pageCalls.push(["meter", value]);
+      },
+      changed: () => {
+        if (released) pageCalls.push("changed");
+      },
+      status: (text) => {
+        if (released) pageCalls.push(["status", text]);
+      },
+      segment: () => {
+        if (released) pageCalls.push("segment");
+      },
+    },
+  });
+  await f.controller.startPreview();
+  await f.controller.observe();
+  const audioCallback = f.worklet.port.onmessage;
+  const pending = f.controller.flushAudio();
+  released = true;
+  await f.controller.release?.();
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.controller.recording, false);
+  assert.equal(f.timers.size, 0);
+  await pending;
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.worklet.port.onmessage, null);
+  assert.equal(f.videoTrack.onended, null);
+  for (const event of [
+    "audio.disconnect",
+    "worklet.disconnect",
+    "port.close",
+  ]) {
+    assert.equal(
+      f.events.filter((value) => value[0] === event).length,
+      1,
+      event,
+    );
+  }
+  await f.controller.release();
+  audioCallback({
+    data: { type: "samples", samples: new Float32Array([1]), rms: 1 },
+  });
+  audioCallback({ data: { type: "flushed", id: "flush-1" } });
+  f.recorders[0].onSegment("late", "image");
+  await f.controller.startPreview();
+  await f.controller.observe();
+  await f.controller.flushAudio();
+  await f.controller.checkpoint();
+  assert.equal(f.recorders.length, 1);
+  assert.equal(f.timers.size, 0);
+  assert.deepEqual(f.samples, []);
+  assert.deepEqual(pageCalls, []);
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+  for (const event of ["video.stop", "audio.stop", "audio.close"]) {
+    assert.equal(f.events.filter((value) => value === event).length, 1, event);
+  }
+});
+
+test("release waits for a pending display acquisition and stops late tracks without attaching them", async () => {
+  const display = deferred();
+  const f = await fixture({ display: display.promise });
+  const opening = f.controller.startPreview();
+  await f.displayRequested.promise;
+  let done = false;
+  const release = f.controller.release().then(() => {
+    done = true;
+  });
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(done, false);
+  display.resolve();
+  await Promise.all([opening, release]);
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.events.includes("video.play"), false);
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 0);
+  assert.equal(f.events.filter((event) => event === "video.stop").length, 1);
+  assert.equal(f.events.filter((event) => event === "audio.stop").length, 1);
+});
+
+test("release during audio setup closes the context without constructing a late worklet", async () => {
+  const audioModule = deferred();
+  const f = await fixture({ audioModule: audioModule.promise });
+  const opening = f.controller.startPreview();
+  await f.audioLoading.promise;
+  const release = f.controller.release();
+  audioModule.resolve();
+  await Promise.all([opening, release]);
+  assert.equal(
+    f.events.some((event) => event[0] === "worklet"),
+    false,
+  );
+  assert.equal(f.events.includes("audio.resume"), false);
+  assert.equal(f.events.filter((event) => event === "audio.close").length, 1);
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.timers.size, 0);
+});
+
+test("stop during host opening waits for it and prevents a recorder from starting after release", async () => {
+  const f = await fixture();
+  await f.controller.startPreview();
+  const opened = deferred(),
+    requested = deferred();
+  f.bridge.start = () => {
+    requested.resolve();
+    return opened.promise;
+  };
+  const observation = f.controller.observe();
+  await requested.promise;
+  const stopped = f.controller.stop();
+  opened.resolve(f.session);
+  await Promise.all([observation, stopped]);
+  assert.equal(f.recorders.length, 0);
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.controller.recording, false);
+});
+
+test("moment snapshots sample only the controller's current preview", async () => {
+  const f = await fixture();
+  f.video.videoWidth = 1280;
+  assert.equal(f.controller.snapshot?.(), undefined);
+  await f.controller.startPreview();
+  const image = f.controller.snapshot?.();
+  assert.equal(image, "data:image/jpeg;moment");
+  assert.deepEqual(
+    f.events.find((event) => event[0] === "snapshot"),
+    ["snapshot", f.video, 0, 0, 320, 180],
+  );
+  assert.deepEqual(
+    f.events.find((event) => event[0] === "snapshot.encoding"),
+    ["snapshot.encoding", "image/jpeg", 0.7],
+  );
+  await f.controller.stop();
+  assert.equal(f.controller.snapshot(), undefined);
+});
+
+test("a partially started recorder is stopped and capture is released even if the recorder refuses cleanup", async () => {
+  const failure = new Error("recording start refused");
+  const cleanupFailure = new Error("partial recorder refused stop");
+  let flush;
+  const f = await fixture({
+    recorderStart: (recorder) => {
+      flush = recorder.flushAudio();
+      throw failure;
+    },
+    recorderStopError: cleanupFailure,
+  });
+  await f.controller.startPreview();
+  await f.controller.observe();
+  assert.deepEqual(f.errors, [
+    { error: cleanupFailure, phase: "stop" },
+    { error: failure, phase: "observe" },
+  ]);
+  await flush;
+  assert.equal(f.controller.recording, false);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.worklet.port.onmessage, null);
+  assert.equal(f.timers.size, 0);
+  for (const event of [
+    "recorder.stop",
+    "host.stop",
+    "video.stop",
+    "audio.stop",
+    "audio.close",
+  ]) {
+    assert.equal(f.events.filter((value) => value === event).length, 1, event);
+  }
+});
+
+test("release returns the same promise and waits for audio context closure", async () => {
+  const closing = deferred();
+  const f = await fixture({ contextClose: closing.promise });
+  await f.controller.startPreview();
+  const first = f.controller.release?.();
+  const second = f.controller.release?.();
+  assert.equal(f.worklet.port.onmessage, null);
+  assert.equal(first, second);
+  let done = false;
+  const release = Promise.resolve(first).then(() => {
+    done = true;
+  });
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(done, false);
+  closing.resolve();
+  await release;
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.events.filter((event) => event === "audio.close").length, 1);
+});
+
+test("release prevents the real recorder from restarting an anchored rotation whose audio flush is pending", async () => {
+  const { RollingRecorder } = await import("../app/recording.js");
+  const stopped = deferred(),
+    media = [],
+    timers = new Map();
+  let now = 0,
+    nextTimer = 0;
+  class MediaRecorderStub {
+    static isTypeSupported() {
+      return true;
+    }
+    constructor() {
+      this.state = "inactive";
+      media.push(this);
+    }
+    start() {
+      this.state = "recording";
+    }
+    stop() {
+      this.state = "inactive";
+      queueMicrotask(() => {
+        this.ondataavailable({ data: new Blob(["clip"]) });
+        this.onstop();
+        stopped.resolve();
+      });
+    }
+  }
+  const drawing = {
+    drawImage() {},
+    getImageData: () => ({ data: new Uint8ClampedArray(64 * 36 * 4) }),
+  };
+  const env = {
+    performance: { now: () => now },
+    MediaRecorder: MediaRecorderStub,
+    Blob,
+    document: {
+      createElement: () => ({
+        getContext: () => drawing,
+        toDataURL: () => "data:image/jpeg;frame",
+      }),
+    },
+    setTimeout: (fn) => {
+      const id = ++nextTimer;
+      timers.set(id, fn);
+      return id;
+    },
+    setInterval: (fn) => {
+      const id = ++nextTimer;
+      timers.set(id, fn);
+      return id;
+    },
+    clearTimeout: (id) => timers.delete(id),
+    clearInterval: (id) => timers.delete(id),
+    ingest: async () => "moment-1",
+  };
+  const f = await fixture({
+    recorderFactory: (options) => new RollingRecorder({ ...options, env }),
+  });
+  f.video.videoWidth = 1280;
+  f.video.videoHeight = 720;
+  f.context.sampleRate = 16000;
+  await f.controller.startPreview();
+  await f.controller.observe();
+  now = 1000;
+  const rotation = f.controller.checkpoint(1000);
+  await stopped.promise;
+  assert.equal(f.timers.size, 1);
+  await Promise.all([f.controller.release(), rotation]);
+  assert.equal(media.length, 1);
+  assert.equal(timers.size, 0);
+  assert.equal(f.timers.size, 0);
+  assert.equal(f.controller.recording, false);
+});
+
+test("a late audio callback after stopping preview cannot update the page or create a flush timer", async () => {
+  const f = await fixture();
+  await f.controller.startPreview();
+  await f.controller.observe();
+  const callback = f.worklet.port.onmessage;
+  await f.controller.stop();
+  const meters = [...f.meters];
+  callback({
+    data: { type: "samples", samples: new Float32Array([1]), rms: 1 },
+  });
+  callback({ data: { type: "flushed", id: "flush-1" } });
+  assert.deepEqual(f.meters, meters);
+  assert.deepEqual(f.samples, []);
+  assert.equal(f.timers.size, 0);
+});
+
+for (const path of [
+  { name: "normal stop", run: (f) => f.controller.stop() },
+  { name: "quiet stop", run: (f) => f.controller.stop({ quiet: true }) },
+  { name: "track end", run: (f) => f.videoTrack.onended() },
+  { name: "partial start", partial: true, run: (f) => f.controller.observe() },
+]) {
+  test(`shared capture cleanup drains a pending flush after ${path.name}`, async () => {
+    const failure = Object.assign(new Error("recording start refused"), {
+      code: "RECORDING_START_REFUSED",
+    });
+    const f = await fixture({
+      recorderStart: path.partial
+        ? () => {
+            throw failure;
+          }
+        : undefined,
+    });
+    await f.controller.startPreview();
+    if (!path.partial) await f.controller.observe();
+    const audioCallback = f.worklet.port.onmessage;
+    let flushed = false;
+    const flush = f.controller.flushAudio().then(() => {
+      flushed = true;
+    });
+    assert.equal(f.timers.size, 1);
+    assert.equal(flushed, false);
+    await path.run(f);
+    assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+    for (const event of ["video.stop", "audio.stop", "audio.close"]) {
+      assert.equal(
+        f.events.filter((value) => value === event).length,
+        1,
+        event,
+      );
+    }
+    assert.equal(f.controller.recording, false);
+    assert.equal(f.controller.previewOpen, false);
+    assert.equal(f.video.srcObject, null);
+    assert.equal(f.videoTrack.onended, null);
+    assert.equal(f.worklet.port.onmessage, null);
+    assert.equal(f.timers.size, 0);
+    await flush;
+    assert.equal(flushed, true);
+    for (const event of [
+      "audio.disconnect",
+      "worklet.disconnect",
+      "port.close",
+    ]) {
+      assert.equal(
+        f.events.filter((value) => value[0] === event).length,
+        1,
+        event,
+      );
+    }
+    const meters = [...f.meters];
+    audioCallback({
+      data: { type: "samples", samples: new Float32Array([1]), rms: 1 },
+    });
+    audioCallback({ data: { type: "flushed", id: "flush-1" } });
+    assert.deepEqual(f.meters, meters);
+    assert.deepEqual(f.samples, []);
+    assert.equal(f.timers.size, 0);
+    assert.deepEqual(
+      f.errors,
+      path.partial ? [{ error: failure, phase: "observe" }] : [],
+    );
+  });
+}
+
+for (const preview of [false, true]) {
+  test(`release leaves an unowned host untouched with ${preview ? "preview only" : "an idle page"}`, async () => {
+    const f = await fixture();
+    if (preview) await f.controller.startPreview();
+    await f.controller.release();
+    await f.controller.release();
+    assert.equal(f.events.filter((event) => event === "host.stop").length, 0);
+    assert.equal(f.controller.previewOpen, false);
+    assert.equal(f.video.srcObject, null);
+    assert.equal(f.timers.size, 0);
+    if (preview) {
+      assert.equal(f.worklet.port.onmessage, null);
+      for (const event of ["video.stop", "audio.stop", "audio.close"]) {
+        assert.equal(
+          f.events.filter((value) => value === event).length,
+          1,
+          event,
+        );
+      }
+    }
+  });
+}
+
+test("release of an observation still opening waits for the host and pauses its capture once", async () => {
+  const f = await fixture(),
+    opened = deferred(),
+    requested = deferred();
+  await f.controller.startPreview();
+  f.bridge.start = () => {
+    requested.resolve();
+    return opened.promise;
+  };
+  const observation = f.controller.observe();
+  await requested.promise;
+  const released = f.controller.release();
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 0);
+  opened.resolve(f.session);
+  await Promise.all([observation, released]);
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+  assert.equal(f.recorders.length, 0);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.video.srcObject, null);
+  assert.equal(f.timers.size, 0);
+});
+
+test("release retries a host pause that was refused after its recorder stopped", async () => {
+  const f = await fixture();
+  const failure = Object.assign(new Error("host stop refused"), {
+    code: "HOST_STOP_REFUSED",
+  });
+  let calls = 0;
+  f.bridge.stop = async () => {
+    if (++calls === 1) throw failure;
+  };
+  await f.controller.startPreview();
+  await f.controller.observe();
+  await assert.rejects(f.controller.stop(), (error) => error === failure);
+  assert.equal(f.controller.recording, false);
+  assert.equal(f.controller.previewOpen, true);
+  await f.controller.release();
+  await f.controller.release();
+  assert.equal(calls, 2);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.video.srcObject, null);
+});
+
+test("release after a completed pause does not pause the host a second time", async () => {
+  const f = await fixture();
+  await f.controller.startPreview();
+  await f.controller.observe();
+  await f.controller.stop();
+  await f.controller.release();
+  assert.equal(f.events.filter((event) => event === "host.stop").length, 1);
+  assert.equal(f.controller.previewOpen, false);
+  assert.equal(f.controller.recording, false);
 });

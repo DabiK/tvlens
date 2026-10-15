@@ -2,8 +2,10 @@ import { renderRecapView } from './ui/recap-view.js';
 import { reduceRecap } from './ui/recap-state.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
-import { RollingRecorder } from './recording.js';
-import { createCaptureController } from './ui/capture-controller.mjs';
+import { createBrowserCaptureController } from './ui/browser-capture.mjs';
+import { bindCaptureActions } from './ui/capture-actions.mjs';
+import { bindMomentActions } from './ui/moment-actions.mjs';
+import { renderCaptureControls } from './ui/capture-controls.mjs';
 import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
 import { describeSurveillance, isRestoring, nextSeen, sequences, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
@@ -16,7 +18,6 @@ import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
 import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
 import { sessionEntry } from './ui/sessions-dom.js';
 import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
-import { describeControls } from './ui/controls-view.mjs';
 import { createFreshness } from './ui/freshness.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
@@ -29,11 +30,9 @@ let deepState = { jobs: [] };
 const deepFreshness = createFreshness();
 const verificationFreshness = createFreshness();
 let recapState = null, recapRevision = 0, recapKey = '';
-let floatingCaptureBusy = false, sourceReturnExpanded = false;
 const momentPreviews = new Map();
 // Passages of the loaded session by id, rebuilt once per state: cards and citations look them up, never scan.
 let passages = new Map(), shownError = '', forceBottom = false, settled = -1;
-let quickBusy = false, selectedMoment = null, momentCheckpoint = Promise.resolve();
 const cancelling = new Set();
 const reason = error => cleanError(error);
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
@@ -75,56 +74,16 @@ function setConfig(value) {
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';
   scheduleState(); updateButtons();
 }
-// The model of ui/controls-view.mjs says which mode applies; the sentences stay here.
-const FLOAT_STATUS = { live: 'En direct', archive: 'Archive en lecture seule', paused: 'En pause', ready: 'Prêt' };
-const RECORD_TITLE = {
-  recording: 'Mettre en pause ; mémoire et fil Codex conservés',
-  archive: 'Reprendre la capture dans cette archive',
-  idle: 'Choisir une source puis lancer la capture et l’analyse',
-};
-const OBSERVE_LABEL = {
-  recording: 'Observation en cours',
-  archive: 'Reprendre la capture…',
-  paused: 'Reprendre l’observation',
-  idle: 'Lancer l’observation',
-};
-const ASK_STATUS = {
-  answering: 'Réponse en cours · Tu peux ajouter une question.',
-  archive: 'Archive · Tu peux poser des questions sur ce qui a été enregistré.',
-  ready: 'Entrée pour envoyer · Maj+Entrée pour une ligne',
-  waiting: 'Les premiers passages arrivent bientôt.',
-  idle: 'Choisis une source et lance TVLens.',
-};
 function updateButtons() {
-  shell.observation(currentState, capture.recording);
-  const controls = describeControls({
-    session: currentState, recording: capture.recording, previewOpen: capture.previewOpen, stopping: capture.stopping,
-    captureBusy: floatingCaptureBusy, quickBusy,
-    configuration, verificationBusy: verificationState.busy, pendingQuestion, source: $('source').value,
+  renderCaptureControls({
+    get: $, shell, capture, session: currentState,
+    captureBusy: captureActions.busy, quickBusy: momentActions.busy,
+    configuration, verificationBusy: verificationState.busy, pendingQuestion,
   });
-  for (const [id, disabled] of Object.entries(controls.disabled)) $(id).disabled = disabled;
-  $('float-record').classList.toggle('recording', controls.recording);
-  $('float-status').textContent = FLOAT_STATUS[controls.floatStatus];
-  $('float-record').title = RECORD_TITLE[controls.recordTitle];
-  $('observe').textContent = OBSERVE_LABEL[controls.observeLabel];
-  $('ask-status').textContent = ASK_STATUS[controls.askStatus];
 }
-const capture = createCaptureController({
+const capture = createBrowserCaptureController({
   bridge,
-  selectSource: id => window.capture.select(id),
   source: () => $('source').value,
-  browser: {
-    getDisplayMedia: options => navigator.mediaDevices.getDisplayMedia(options),
-    createAudioContext: options => new AudioContext(options),
-    createWorkletNode: (context, name) => new AudioWorkletNode(context, name),
-    createMediaStream: tracks => new MediaStream(tracks),
-  },
-  createRecorder: options => new RollingRecorder(options),
-  timers: {
-    setTimeout: (callback, delay) => setTimeout(callback, delay),
-    clearTimeout: id => clearTimeout(id),
-  },
-  uuid: () => crypto.randomUUID(),
   video: $('preview'),
   session: () => currentState,
   view: {
@@ -168,9 +127,23 @@ const capture = createCaptureController({
     },
   },
 });
-function startPreview() { return capture.startPreview(); }
-function observe() { return capture.observe(); }
-function stop(options) { return capture.stop(options); }
+const captureActions = bindCaptureActions({
+  get: $, capture, bridge, window,
+  sources: () => window.capture.sources(),
+  session: () => currentState,
+  configuration: () => configuration,
+  mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
+  changeWindowMode,
+  showDirect: () => shell.show('direct'),
+  refresh, setSources, changed: updateButtons, notice,
+});
+const momentActions = bindMomentActions({
+  get: $, capture, bridge,
+  session: () => currentState,
+  mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
+  changeWindowMode, changed: updateButtons, notice,
+  forceBottom: () => { forceBottom = true; },
+});
 // `card` is a search result, which names the session it was searched in; a citation is only drawn for the loaded one.
 function replay(id, offset = 0, card) {
   // Session and passage are both checked before any address is built; the refusal says why (another session,
@@ -202,7 +175,7 @@ function receiveState(state) {
   for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
   if (state.storage) storageState = { ...storageState, ...state.storage };
   // The session no longer accepts passages (disk full, pause decided by the host): the recorder stops with it.
-  if (capture.recording && !capture.stopping && state.accepting === false) stop({ quiet: true }).catch(error => notice(reason(error)));
+  captureActions.pauseIfUnavailable({ accepting: state.accepting });
   scheduleState();
 }
 const PASSAGE_LABELS = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Vidéo expirée avant l’analyse' };
@@ -260,7 +233,7 @@ function drawBanners() {
   if (storageView.banner) { $('storage-banner').dataset.state = storageView.banner.state; $('storage-banner-title').textContent = storageView.banner.title; $('storage-banner-text').textContent = storageView.banner.text; }
   $('storage-line').textContent = storageView.line; $('storage-line').dataset.state = storageView.state;
   // Out of room: capture stops and says so. Nothing is deleted, here or by the host.
-  if (storageView.blocked && capture.recording && !capture.stopping) stop({ quiet: true }).catch(error => notice(reason(error)));
+  captureActions.pauseIfUnavailable({ blocked: storageView.blocked });
 }
 function receiveStorage(storage) { if (!storage) return; storageState = { ...storage }; drawBanners(); }
 
@@ -377,7 +350,7 @@ const actions = {
   'watch-example': data => { $('watch-instruction').value = data.instruction; $('watch-instruction').focus(); },
   'session-open': data => openArchive(data.id),
   'session-delete': data => askDeleteSession(data.id),
-  'session-resume': () => requestCapture(captureFromArchive),
+  'session-resume': () => captureActions.requestCapture(() => captureActions.captureFromArchive()),
 };
 document.addEventListener('click', event => {
   const target = event.target.closest?.('[data-action]');
@@ -385,18 +358,14 @@ document.addEventListener('click', event => {
   if (run) Promise.resolve().then(() => run(target.dataset, target)).catch(error => notice(reason(error)));
 });
 
-$('start').onclick = startPreview;
-$('observe').onclick = () => requestCapture(watchWithSelectedSource);
 $('source').onchange = updateButtons;
 $('refresh').onclick = refresh;
-$('stop').onclick = () => stop().catch(error => notice(reason(error)));
 $('settings').onclick = () => window.capture.settings().catch(error => notice(reason(error)));
 $('import').onclick = () => bridge.importConfig().then(setConfig).catch(error => notice(reason(error)));
 $('close-replay').onclick = () => $('replay-dialog').close();
 $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttribute('src'); $('replay').load(); };
 $('replay').onvolumechange = () => { if (currentState?.accepting) $('replay').muted = true; };
 $('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
-window.addEventListener('beforeunload', () => capture.stream?.getTracks().forEach(track => track.stop()));
 bridge.onState(receiveState);
 bridge.config().then(setConfig).catch(error => notice(reason(error)));
 // A reloaded window finds the session the host still holds.
@@ -425,85 +394,10 @@ $('float-menu-toggle').onclick=async()=>{
 };
 $('float-watch').onclick=()=>showWatch();
 $('float-memory').onclick=()=>openLibrary();
-$('float-source-change').onclick=async()=>{await stop();shell.show('direct');await changeWindowMode(false);$('source').focus();};
 // In the floating window the surveillance takes the place of the chat: "Demander" brings the chat back.
 $('float-chat').onclick=()=>{if(floatingExpanded&&shell.view==='watch'){shell.show('direct');$('question').focus();return;}return changeWindowMode(true,!floatingExpanded);};
-async function watchWithSelectedSource() {
-  if (floatingCaptureBusy || capture.stopping || capture.recording) return;
-  floatingCaptureBusy = true; updateButtons(); notice('');
-  try {
-    if (!capture.previewOpen && !await startPreview()) throw Error($('state').textContent);
-    await observe();
-    if (!capture.recording) throw Error($('notice').textContent || 'L’observation n’a pas démarré.');
-  } catch (error) { notice(reason(error)); }
-  finally { floatingCaptureBusy = false; updateButtons(); }
-}
-
-async function refreshFloatingSources(){
-  $('float-refresh').disabled=true; $('float-launch').disabled=true; $('float-source-error').textContent='';
-  try{
-    const result=await window.capture.sources();
-    $('float-source').replaceChildren(...result.sources.map(s=>new Option(s.name,s.id)));
-    setSources(result);
-    if ($('source').value) $('float-source').value=$('source').value;
-    if(!result.sources.length)$('float-source-error').textContent='Aucune source disponible. Vérifie les autorisations de capture dans le mode complet.';
-    $('float-launch').disabled=!result.sources.length||!configuration?.canObserve;
-    if(!configuration?.canObserve)$('float-source-error').textContent='Connecte ton compte Codex avant de lancer l’analyse.';
-  }catch(e){$('float-source-error').textContent=reason(e);}
-  finally{$('float-refresh').disabled=false;}
-}
-async function captureFromFloatingBar(){
-  const previousSource=$('source').value;
-  floatingCaptureBusy=true; updateButtons();
-  try { await refresh(); } finally { floatingCaptureBusy=false; updateButtons(); }
-  if (previousSource && !Array.from($('source').options).some(option=>option.value===previousSource)) $('source').value='';
-  if ($('source').value) { await watchWithSelectedSource(); return; }
-  sourceReturnExpanded=floatingExpanded;
-  await changeWindowMode(true,true);
-  $('float-source-dialog').showModal();
-  if(capture.previewOpen){
-    $('float-source').replaceChildren(new Option($('source').selectedOptions[0]?.textContent||'Source actuelle',$('source').value));
-    $('float-source').disabled=true;$('float-refresh').hidden=true;
-    $('float-launch').disabled=!configuration?.canObserve;
-    $('float-source-error').textContent=configuration?.canObserve?'':'Connecte ton compte Codex dans le mode complet.';
-  }else{$('float-source').disabled=false;$('float-refresh').hidden=false;await refreshFloatingSources();}
-}
-$('float-record').onclick=async()=>{
-  if(floatingCaptureBusy||capture.stopping)return;
-  if (capture.recording) {
-    floatingCaptureBusy = true;
-    updateButtons();
-    try { await stop(); }
-    catch (error) { notice(reason(error)); }
-    finally {
-      floatingCaptureBusy = false;
-      updateButtons();
-    }
-    return;
-  }
-  await requestCapture(captureFromFloatingBar);
-};
-$('float-refresh').onclick=refreshFloatingSources;
-$('close-float-source').onclick=()=>$('float-source-dialog').close();
-$('float-source-dialog').onclose=()=>{if(floatingMode)changeWindowMode(true,sourceReturnExpanded);};
-$('float-source-dialog').oncancel=event=>{if(floatingCaptureBusy)event.preventDefault();};
-$('float-source-form').onsubmit=async event=>{
-  event.preventDefault();if(floatingCaptureBusy||!configuration?.canObserve)return;
-  floatingCaptureBusy=true;updateButtons();$('float-launch').disabled=true;$('close-float-source').disabled=true;$('float-refresh').disabled=true;$('float-source-error').textContent='Démarrage…';
-  try{
-    if (!capture.previewOpen) {
-      $('source').value = $('float-source').value;
-      if (!await startPreview()) throw Error($('state').textContent);
-    }
-    await observe();
-    if(!capture.recording)throw Error($('notice').textContent||'L’observation n’a pas démarré.');
-    $('float-source-dialog').close();
-  }catch(e){$('float-source-error').textContent=reason(e);}
-  finally{floatingCaptureBusy=false;$('float-launch').disabled=false;$('close-float-source').disabled=false;$('float-refresh').disabled=false;updateButtons();}
-};
-
 // ---- Sessions: archives, explicit resume, deletion, disk --------------------------------------
-let library = null, sessionsView = describeSessions(null), sessionsStale = true, deleteSessionId = null, pendingCapture = null;
+let library = null, sessionsView = describeSessions(null), sessionsStale = true, deleteSessionId = null;
 const sessionsList = new KeyedList($('sessions-list'));
 function drawSessions() {
   sessionsView = describeSessions(library, { capturing: capture.recording, readOnly: Boolean(currentState?.readOnly) });
@@ -519,23 +413,6 @@ async function refreshSessions() {
 }
 // Listing reads the disk: it is done when the panel is on screen, and otherwise remembered as due.
 const sessionsChanged = () => { if (shell.view === 'memory' && !document.body.classList.contains('floating')) refreshSessions(); else sessionsStale = true; };
-// Capture never restarts inside an archive by a plain click: the viewer confirms, then the bridge resumes it.
-async function requestCapture(run) {
-  if (!currentState?.readOnly) return run();
-  $('resume-session-text').textContent = describeArchive(currentState).resumeText; $('resume-session-error').textContent = '';
-  pendingCapture = run;
-  if (floatingMode && !floatingExpanded) await changeWindowMode(true, true, { focus: false });
-  if (!$('resume-session-dialog').open) $('resume-session-dialog').showModal();
-}
-async function captureFromArchive() {
-  if (floatingMode) return captureFromFloatingBar();
-  shell.show('direct');
-  if (!$('source').value) { notice('Choisis d’abord la fenêtre ou l’écran à regarder, puis reprends la capture.'); $('source').focus(); return; }
-  await watchWithSelectedSource();
-}
-$('archive-resume').onclick = () => requestCapture(captureFromArchive);
-$('cancel-resume-session').onclick = () => { pendingCapture = null; $('resume-session-dialog').close(); };
-$('confirm-resume-session').onclick = async () => { const run = pendingCapture; pendingCapture = null; $('resume-session-dialog').close(); try { await run?.(); } catch (error) { notice(reason(error)); } };
 async function pullSession() {
   const state = await bridge.state();
   if (!state) return clearSession();
@@ -548,11 +425,12 @@ async function pullSession() {
   forceBottom = true; scheduleState();
 }
 async function openArchive(id) {
-  if (capture.recording || capture.previewOpen) return notice('Mets la capture en pause avant d’ouvrir une autre session.');
-  notice('');
-  await bridge.openSession(id);
-  await pullSession();
-  shell.show('direct');
+  return captureActions.openArchive(async () => {
+    notice('');
+    await bridge.openSession(id);
+    await pullSession();
+    shell.show('direct');
+  });
 }
 function askDeleteSession(id) {
   const row = sessionsView.rows.find(item => item.id === id);
@@ -582,7 +460,7 @@ $('storage-banner-open').onclick = async () => { if (floatingMode) await changeW
 const startNewSession = async () => { try { await bridge.newSession(); } catch (e) { notice(reason(e)); } };
 $('new-session').onclick = $('archive-new').onclick = startNewSession;
 function clearSession() {
-  recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; selectedMoment = null; cancelling.clear();
+  recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; momentActions.reset(); cancelling.clear();
   surveillanceRegistry = null; registryKey = ''; shownError = '';
   $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear(); search.clear();
   renderRecap();
@@ -776,85 +654,6 @@ document.addEventListener('visibilitychange', () => { drawStack(); scheduleSurve
 shell.onShow = view => { if (view === 'memory' && sessionsStale) refreshSessions(); if (view === 'watch') registryKey = ''; drawSurveillance(); };
 bridge.onSurveillance?.(state => { watchPushes++; receiveSurveillance(state); });
 bridge.surveillanceState?.().then(receiveSurveillance).catch(() => {});
-
-async function openMoment(frozen) {
-  if (quickBusy || !currentState?.id) return;
-  quickBusy = true; updateButtons(); notice('');
-  try {
-    selectedMoment = frozen || await bridge.freezeMoment({kind:'explain'});
-    const preview = $('moment-preview'); preview.hidden = true;
-    if ($('preview').videoWidth) {
-      const canvas = document.createElement('canvas'); canvas.width=320; canvas.height=180;
-      canvas.getContext('2d').drawImage($('preview'),0,0,320,180);
-      preview.src=canvas.toDataURL('image/jpeg',.7); preview.hidden=false;
-    }
-    if (floatingMode) await changeWindowMode(true,true);
-    const captureNote = capture.recording ? 'La vidéo continue.' : 'La capture est en pause.';
-    $('moment-anchor').textContent = `Instant retenu à ${formatTime(selectedMoment.anchorMs)}. ${captureNote}`;
-    $('moment-error').textContent=''; $('moment-question').value='';
-    if (!$('moment-dialog').open) $('moment-dialog').showModal();
-    momentCheckpoint = capture.recorder?.checkpoint(selectedMoment.anchorMs) || Promise.resolve();
-    await momentCheckpoint;
-  } catch(error) { notice(reason(error)); $('moment-error').textContent=reason(error); }
-  finally { quickBusy=false; updateButtons(); }
-}
-async function submitMoment(intent, question) {
-  if (!selectedMoment || quickBusy) return;
-  quickBusy=true; updateButtons();
-  try {
-    await momentCheckpoint;
-    await bridge.explainMoment({token:selectedMoment.token,intent,question});
-    $('moment-dialog').close();
-    if(floatingMode) await changeWindowMode(true,true);
-  } catch(error) { $('moment-error').textContent=reason(error); }
-  finally { quickBusy=false; updateButtons(); }
-}
-async function explainNow() {
-  if (quickBusy || !currentState?.id) return;
-  quickBusy=true; updateButtons(); notice('');
-  try {
-    const frozen=await bridge.freezeMoment({kind:'explain'});
-    if(floatingMode) await changeWindowMode(true,true);
-    await capture.recorder?.checkpoint(frozen.anchorMs);
-    forceBottom = true;
-    await bridge.explainMoment({token:frozen.token,intent:'explain'});
-  } catch(error) { notice(reason(error)); }
-  finally { quickBusy=false;updateButtons(); }
-}
-$('float-explain').onclick=$('explain-moment').onclick=explainNow;
-$('close-moment').onclick=()=>$('moment-dialog').close();
-$('moment-summarize').onclick=()=>submitMoment('summarize');
-$('moment-explain').onclick=()=>submitMoment('explain');
-$('moment-question-form').onsubmit=event=>{event.preventDefault();if($('moment-question').value.trim())submitMoment('explain',$('moment-question').value.trim());};
-bridge.onExplainMoment(frozen=>openMoment(frozen));
-$('catch-up').onclick=async()=>{
-  if(quickBusy)return;
-  quickBusy=true; updateButtons(); notice('');
-  try {
-    const frozen=await bridge.freezeMoment({kind:'catch-up'});
-    $('attention-status').textContent=`Je retrouve les passages de ${formatTime(frozen.startMs)} à ${formatTime(frozen.anchorMs)}…`;
-    await capture.recorder?.checkpoint(frozen.anchorMs);
-    forceBottom = true;
-    const result=await bridge.catchUp({token:frozen.token});
-    $('attention-status').textContent=`Rattrapage demandé : ${formatTime(result.startMs)}–${formatTime(result.endMs)}. Le repère avance après une réponse réussie.`;
-  } catch(error){notice(reason(error));}
-  finally{quickBusy=false;updateButtons();}
-};
-$('mark-attention').onclick=async()=>{
-  if(quickBusy)return;
-  quickBusy=true;updateButtons();
-  try {
-    await capture.recorder?.checkpoint();
-    const marker = await bridge.markAttention();
-    $('attention-status').textContent = `Tu reprends ici : ${formatTime(marker.atMs)}. Le prochain rattrapage partira de ce repère.`;
-  }
-  catch(error){notice(reason(error));}finally{quickBusy=false;updateButtons();}
-};
-bridge.momentShortcuts().then(value=>{
-  const title=value.explainShortcutRegistered ? 'Explique cet instant · Ctrl/Cmd + Maj + E' : 'Explique cet instant · raccourci global indisponible, utilise ce bouton';
-  $('float-explain').title=$('explain-moment').title=title;
-}).catch(()=>{});
-
 
 function receiveRecap(state) {
   const next = reduceRecap(recapState, state, currentState?.id);
