@@ -16,6 +16,53 @@ Ce dossier contient :
 
 Les constats qui justifient chaque ticket sont dans `docs/audit-maintenabilite.md`.
 
+## Lire la couverture JavaScript
+
+Depuis la racine du dépôt, avec Node 24 :
+
+```sh
+node scripts/coverage.mjs
+node scripts/coverage.mjs --json > couverture.json
+```
+
+La commande lance les mêmes fichiers `tests/*.test.cjs` que le contrôle, un fichier à la fois,
+avec la couverture expérimentale de Node. Elle ne lance ni `check`, ni smoke, ni navigateur,
+ni script `*:live`. Elle n'installe rien. Le rapport reste informatif : aucun seuil de couverture
+ne conditionne le contrôle qualité, et une couverture nulle n'est pas un échec.
+
+Le tableau donne, par module, les pourcentages de lignes, branches et fonctions de Node/V8.
+Il inventorie récursivement les fichiers `.js`, `.cjs` et `.mjs` de `core/`, `adapters/`,
+`runtime/`, `server/`, `app/`, `tv/app/` et `mcp/`. Les dépendances, tests, scripts et ressources
+non JavaScript sont exclus. Les chemins sont relatifs au dépôt. Un module absent de la collecte
+apparaît à `0 / 0 / 0`, sans être importé : cela concerne notamment les pages et les hôtes que
+les tests n'exercent pas. Le Python n'est pas mesuré.
+
+Le tri est croissant sur les lignes, puis les branches, puis les fonctions, puis le chemin
+(ordre des caractères, indépendant de la langue du système). Les valeurs de Node sont conservées
+sans arrondi, dans le tableau comme dans le JSON. Les branches suivent la définition de V8 ;
+ce rapport ne mesure pas la pertinence des assertions, même quand les taux sont élevés.
+Les processus enfants interrompus avant de vider leur couverture peuvent manquer à la collecte ;
+les chemins et branches réellement parcourus par une suite asynchrone peuvent aussi varier.
+La collecte native de Node peut également faire varier légèrement le taux de branches entre deux
+exécutions sans changement du code : le nombre total de branches comptées peut changer alors que
+les branches couvertes, les lignes et les fonctions restent identiques. Il faut comparer deux
+rapports en tenant compte de cette limite, sans interpréter chaque écart comme une régression.
+
+Avec `--json`, stdout contient uniquement un objet avec `complete`, `testsPassed`, `errors` et
+`modules`. Chaque module expose `path`, `lines`, `branches`, `functions`. Les sorties des tests
+et leurs diagnostics vont sur stderr. Une erreur de collecte, une suite sans fichier de test ou
+un échec de test donne un code de sortie non nul et `complete: false` ; le tableau est alors marqué
+« INCOMPLÈTE ». Les éventuelles mesures disponibles servent au diagnostic et ne constituent pas
+un rapport réussi. `testsPassed` décrit le résultat des assertions indépendamment de la collecte :
+il reste vrai si elles passent mais que la collecte échoue. Une collecte incomplète et des tests en
+échec donnent chacun leur erreur (`COVERAGE_INCOMPLETE` et `TESTS_FAILED`).
+Pour `COVERAGE_INCOMPLETE`, le champ `details` indique les données de couverture absentes
+(`coverageMissing`), les fichiers non terminés (`unfinishedFiles`, chemins relatifs au dépôt
+avec des séparateurs `/`, par exemple `tests/exemple.test.cjs`), l'absence de résumé global
+(`summaryMissing`) et l'échec d'exécution malgré des assertions réussies (`executionFailed`).
+La collecte est bornée à vingt minutes ; un dépassement arrête son groupe
+de processus et signale l'échec.
+
 ## Avant de lancer
 
 - Être sur une branche de travail, jamais `main`.
