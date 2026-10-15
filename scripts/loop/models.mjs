@@ -11,7 +11,7 @@ export const LADDER = [
 
 export const CODEX_LADDER = [
   { model: "gpt-6.1-sol", effort: "high" },
-  { model: "gpt-6-astra", effort: "high" },
+  { model: "gpt-6.1-sol", effort: "xhigh" },
   { model: "gpt-6-astra", effort: "xhigh" },
   { model: "gpt-6-astra", effort: "max" },
 ];

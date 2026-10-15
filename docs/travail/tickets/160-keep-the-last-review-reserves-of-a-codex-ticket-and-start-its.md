@@ -1,7 +1,7 @@
 ---
 id: T160
 titre: Keep the last review's reserves of a Codex ticket, read its stream in the retrospective, and start it on Sol
-statut: a-faire
+statut: termine
 bloque_par: T159
 adr: non
 installe: non
@@ -131,3 +131,162 @@ Le ticket tranche ainsi :
 - **Pas d'ADR.** Ces changements complètent le moteur décrit par l'ADR 0012.
 
 ## Journal
+
+### Exploration
+
+Consignes, ticket, ADR 0012, modules concernés, appelants et tests lus. État initial observé avec
+`git status --short` et `git diff` : ticket déjà en cours, fichiers non suivis étrangers conservés.
+Plan et absence d’écart consignés dans `.harness-state/tickets/T160/exploration.md` et `ecarts.md`.
+
+### Comportements implémentés, tests rouges puis verts
+
+Sorties intégrales conservées dans `.harness-state/tickets/T160/`, avec la commande et son code de sortie.
+Chaque commande ci-dessous utilise `node --test --test-name-pattern='<motif>' <fichier>`.
+
+| Étape | Motif exact et fichier | Résultat observé | Sorties rouge / verte |
+| --- | --- | --- | --- |
+| Réserves du dernier rapport | `the last accepted Codex review carries`, `tests/ticket-loop.test.cjs` | rouge : jalon absent ; vert : 1 test | `reserves-red.txt`, `reserves-green.txt` |
+| Liste initiale des non suivis | `the gates refuse.*untracked list change`, `tests/ticket-loop.test.cjs` | rouge : 6 intégrations indues ; vert : 6 refus attendus | `untracked-red.txt`, `untracked-green.txt` |
+| Rétrospective Codex | `the retrospective of a Codex attempt`, `tests/ticket-loop.test.cjs` | rouge : flux Claude et compactions undefined ; vert : 1 test | `retro-red.txt`, `retro-green.txt` |
+| Palier et départ sensible | `Codex dry run\|sensitive Codex ticket\|four rejected Codex reviews`, `tests/ticket-loop.test.cjs` | rouge : Astra high au palier 1 ; vert : 3 tests | `models-red.txt`, `models-green.txt` |
+| Portée, hook | `the instructions scope opens`, `tests/agent-guards.test.cjs` | rouge : écriture Codex refusée ; vert avec `the instructions scope opens\|a session scoped` : 3 tests | `scope-hook-red.txt`, `scope-hook-green.txt` |
+| Portée, intégration | `a tuning session can integrate a change`, `tests/ticket-loop.test.cjs` | rouge : harmonisation refusée ; vert avec les refus existants : 5 tests | `scope-loop-red.txt`, `scope-loop-green.txt` |
+| Dossiers inscriptibles | `Codex only adds its configuration`, `tests/ticket-loop.test.cjs` | rouge : arguments absents pour harnais ; vert : 2 tests, corrections comprises | `writable-dirs-red.txt`, `writable-dirs-green.txt` |
+| Skill dans les hooks | `the startup and missing verdict messages`, `tests/agent-guards.test.cjs` | rouge : 2 messages erronés ; vert : 3 tests | `hook-skills-red.txt`, `hook-skills-green.txt` |
+| Écarts et réserves multilignes | `Codex preserves accepted deviations`, `tests/ticket-loop.test.cjs` | rouge : titre compté et texte tronqué ; vert avec le premier test de réserves : 2 tests | `deviations-red.txt`, `deviations-green.txt` |
+
+Le verdict de session n'est pas réécrit : les réserves du rapport sont transmises séparément à l'intégration.
+Les fichiers fermés de l'harmonisation restent refusés. Trois assertions de messages de portée nomment désormais
+le troisième dossier ouvert ; les assertions sur les refus restent strictes.
+
+### Mutation de l'intégration
+
+Mutation temporaire dans `integrate` : retirer `...reviewReserves` de la liste intégrée.
+Commande : `node --test --test-name-pattern='the last accepted Codex review carries' tests/ticket-loop.test.cjs`.
+Sortie rouge observée :
+
+```text
+✖ the last accepted Codex review carries both out-of-scope findings into the committed journal and reserve count
+ℹ tests 1
+ℹ pass 0
+ℹ fail 1
+AssertionError [ERR_ASSERTION] : jalon « Réserves à la clôture » absent (actual: undefined, expected: true).
+exit=1
+```
+
+Sortie intégrale : `.harness-state/tickets/T160/mutation-reserves-red.txt`. Mutation retirée immédiatement après la preuve.
+
+### Contrôle des fichiers modifiés
+
+`node scripts/check.mjs --changed` : code 0, **vert**. Règles, format et cliquet verts ;
+153 tests JS réussis sur les deux fichiers modifiés, zéro échec. La mutation est donc retirée et
+le test de ses réserves est de nouveau vert dans cette suite. ESLint : **non lancé**, absent ou non configuré.
+Sortie : `.harness-state/tickets/T160/check-changed.txt`.
+
+`git diff --check` : code 0, aucune erreur d'espacement.
+
+### Contrôle complet et remise à la boucle
+
+`node scripts/check.mjs` : code 0, **vert**. Règles, format et cliquet verts ; **1 017 tests JS
+réussis** dans 90 fichiers, zéro échec ; **84 tests Python**, succès avec **un test ignoré**.
+ESLint : **non lancé**, absent ou non configuré. Sortie intégrale du contrôle :
+`.harness-state/tickets/T160/check-full.txt`.
+
+`git diff --check` : code 0. Contrat du ticket vérifié inchangé au-dessus du journal, hormis son
+statut déjà passé à `en-cours` avant cette session. Fichiers non suivis initiaux conservés, aucun
+changement du produit, de `scripts/check.mjs`, de `scripts/quality/` ou du plancher du cliquet.
+
+Verdict écrit dans `.harness-state/tickets/T160/verdict.json` : `TERMINÉ`. Aucun commit ni push du
+dépôt de travail ; aucune relecture lancée par cette session. La boucle enregistre et fait relire.
+
+### Reprise après la relecture 1 — exploration
+
+Relecture, ticket et journal, écarts, état Git et diff lus ; travail existant conservé. Le constat
+bloquant du parseur est accepté. Exploration et état d’entrée archivés dans
+`.harness-state/tickets/T160/exploration.md`, `reprise-status.txt` et `reprise-diff.patch`.
+Correction prévue, tests d’abord : préserver les constats structurés, reconnaître « Écarts acceptés »
+et signaler tout désaccord avec le nombre annoncé par `CONSTATS`. Aucun nouvel écart demandé.
+Les trois constats hors périmètre restent à reporter dans les réserves du verdict.
+
+### Reprise — constat bloquant corrigé, rouges puis verts
+
+Toutes les commandes ciblées utilisent `node --test --test-name-pattern='<motif>' tests/ticket-loop.test.cjs`.
+Sorties intégrales avec commande et code dans `.harness-state/tickets/T160/`.
+
+| Motif exact | Rouge observé | Vert observé | Preuves |
+| --- | --- | --- | --- |
+| `Codex preserves complete structured findings` | 4 échecs : synthèse et critères comptés, corps absent | 6 réussites avec les deux tests existants de réserves | `structured-reserves-red.txt`, `structured-reserves-green.txt` |
+| `Codex retains singular and plural` | 1 échec : pluriel absent | 1 réussite | `plural-deviations-red.txt`, `plural-deviations-green.txt` |
+| `Codex references the report when the finding count disagrees` | 4 échecs : aucun repli explicite | 11 réussites avec les tests de structure et d’écarts | `reserve-count-red.txt`, `reserve-count-green.txt` |
+| `Codex retains singular and plural` (trois titres de section) | 2 échecs : sections « Décisions sur les écarts » ignorées | 3 réussites | `deviation-sections-red.txt`, `deviation-sections-green.txt` |
+
+La commande verte de structure ajoute au premier motif `|Codex preserves accepted deviations|the last accepted Codex review carries`.
+La commande verte du compte ajoute `|Codex retains singular and plural|Codex preserves complete structured findings|Codex preserves accepted deviations|the last accepted Codex review carries`.
+Un essai intermédiaire du pluriel a montré que `\b` après « accepté » rejette le singulier accentué ;
+il a été remplacé par une borne Unicode. Échec conservé dans `plural-deviations-intermediate-red.txt`.
+
+Le parseur garde chaque constat jusqu’au suivant ou à la section suivante, y compris les champs en
+puces non indentées et les paragraphes vides. Les titres Markdown ne partent plus en clair dans la
+réserve. Les synthèses et les critères restent exclus. Les écarts acceptés au singulier et au pluriel
+sont conservés, y compris sous « Décisions sur les écarts ». Le nombre de constats est rapproché de
+`CONSTATS` ; en cas de désaccord, une réserve unique donne les deux nombres et renvoie au rapport,
+à la place de l’extraction incertaine. Les écarts acceptés restent distincts. Le README décrit ce repli.
+
+### Reprise — rejeu des six rapports archivés
+
+`node --test .harness-state/tickets/T160/replay-archived-reports.cjs` : code 0, **6 tests réussis**.
+Chaque rapport original passe par `run.mjs --engine codex --no-push --no-retro --attempts 1` dans un
+dépôt temporaire, avec les deux fournisseurs simulés. Le test vérifie les comptes exacts, le contenu
+des constats, les références au rapport, le message du commit temporaire et le verdict non réécrit.
+
+| Rapport | Constats complets | Réserves d’écarts acceptés |
+| --- | --- | --- |
+| `T018/relecture-2.md` | 2 | 0 |
+| `T156/relecture-2.md` | 3 | 6 |
+| `T159/relecture-2.md` | 1 | 10 |
+| `T017/relecture-2.md` | 1 | 2 |
+| `T157/relecture-1.md` | 2 | 2 |
+| `T127/relecture-1.md` | 1 | 0 |
+
+Aucun repli nécessaire sur ces six rapports. Sortie : `archived-reports.txt` ; script de preuve
+conservé hors Git dans le dossier d’état. Aucun fournisseur réel ni relecteur lancé.
+
+### Reprise — contrôle des fichiers modifiés
+
+`node scripts/check.mjs --changed` : code 0, **vert**. Règles, format et cliquet verts ;
+**164 tests JS réussis sur 164**, dans deux fichiers, zéro échec. ESLint : **non lancé**,
+absent ou non configuré. Sortie : `.harness-state/tickets/T160/reprise-check-changed.txt`.
+`git diff --check` : code 0, aucune erreur d’espacement.
+
+### Reprise — contrôle complet et nouveau verdict
+
+`node scripts/check.mjs` : code 0, **vert**. Règles, format et cliquet verts ; **1 028 tests JS
+réussis sur 1 028**, dans 90 fichiers, zéro échec ; **84 tests Python**, succès avec **un test ignoré**.
+ESLint : **non lancé**, absent ou non configuré. Sortie complète :
+`.harness-state/tickets/T160/reprise-check-full.txt`. Tests lancés en séquentiel.
+
+`git diff --check` : code 0. La comparaison par `spec` avec HEAD confirme le contrat inchangé
+au-dessus du journal ; `git status --short` contient exactement les mêmes chemins qu’à la reprise.
+Les fichiers non suivis initiaux sont conservés. Aucun commit ni push dans le dépôt de travail,
+aucun état relu enregistré par cette session, aucun relecteur lancé.
+
+Le constat bloquant 1 est corrigé et couvert par les tests rouges puis verts. Nouveau verdict
+d’implémentation : `TERMINÉ`, écrit dans `.harness-state/tickets/T160/verdict.json`.
+Les trois constats hors périmètre de `relecture-1.md` restent dans `reste` :
+
+- Constat 2, `.claude/agents/harmoniseur.md:30` et `.claude/skills/harmonisation/SKILL.md:17` :
+  ces consignes fermées limitent encore l’harmonisation aux deux dossiers Claude. Leur mise à jour
+  pour `.agents/skills/` demande un ticket qui les ouvre, sur décision du propriétaire.
+- Constat 3, `.claude/hooks/guard-write.mjs:51` : l’énumération utilise « et » entre chaque dossier ;
+  la formulation « A, B et C » reste à traiter dans un ticket qui ouvre ce fichier.
+- Constat 4, `.claude/hooks/session-context.mjs:11-12` et `.claude/hooks/stop-gate.mjs:59-60` :
+  le choix de la skill reste dupliqué. La fonction commune attendue demande d’ouvrir
+  `.claude/hooks/lib.mjs` dans un autre ticket.
+
+La boucle assure la nouvelle relecture et décide de l’intégration.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T160/relecture-1.md, constat 2 — hors périmètre : .claude/agents/harmoniseur.md:30 et .claude/skills/harmonisation/SKILL.md:17 limitent encore les consignes de l’harmonisation aux dossiers Claude. Le propriétaire doit ouvrir ces fichiers fermés pour autoriser .agents/skills/.
+- .harness-state/tickets/T160/relecture-1.md, constat 3 — hors périmètre : .claude/hooks/guard-write.mjs:51 énumère les trois dossiers avec « et » entre chacun. La formulation « A, B et C » demande un ticket qui ouvre ce fichier.
+- .harness-state/tickets/T160/relecture-1.md, constat 4 — hors périmètre : choix du moteur et chemin de la skill dupliqués dans .claude/hooks/session-context.mjs:11-12 et .claude/hooks/stop-gate.mjs:59-60. La fonction commune attendue dans .claude/hooks/lib.mjs demande un autre ticket qui ouvre ce fichier.

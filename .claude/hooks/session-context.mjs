@@ -8,7 +8,8 @@ import { loopMode, projectDir, readInput, stateDir } from "./lib.mjs";
 const input = readInput();
 const root = projectDir(input);
 const ticket = process.env.TVLENS_TICKET;
-const skill = process.env.TVLENS_ENGINE === "codex" ? ".agents/skills/ticket-codex/SKILL.md" : "ticket";
+const codex = process.env.TVLENS_ENGINE === "codex" || !process.env.CLAUDE_PROJECT_DIR;
+const skill = codex ? ".agents/skills/ticket-codex/SKILL.md" : "ticket";
 if (loopMode && ticket) {
   const marker = { session: input.session_id || null, run: process.env.TVLENS_HOOK_RUN || null };
   fs.writeFileSync(path.join(stateDir(root, "tickets", ticket), "hooks-started.json"), JSON.stringify(marker) + "\n");

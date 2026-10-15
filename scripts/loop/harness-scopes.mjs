@@ -5,7 +5,7 @@
 /** Portée de l'harmonisation des consignes : les skills et les agents, jamais les contrôles. */
 export const INSTRUCTIONS_SCOPE = "consignes";
 
-const SCOPES = new Map([[INSTRUCTIONS_SCOPE, Object.freeze([".claude/skills/", ".claude/agents/"])]]);
+const SCOPES = new Map([[INSTRUCTIONS_SCOPE, Object.freeze([".claude/skills/", ".claude/agents/", ".agents/skills/"])]]);
 
 // Ce qu'une portée ferme dans les dossiers qu'elle ouvre. Le relecteur et la marche de l'harmonisation sont ses arbitres,
 // comme les contrôles sont ceux d'un ticket : les modifier reste la décision du propriétaire. Une entrée finie par « / »

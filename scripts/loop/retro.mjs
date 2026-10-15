@@ -66,12 +66,14 @@ export function digest(root, ticket, dir, { outcome, reason, history }) {
     lines.push(`## Tentative ${attempt}`, "");
     const model = `modèle ${plan.modele || "par défaut"}, effort ${plan.effort || "par défaut"}`;
     lines.push(`- Niveau ${plan.niveau}, ${model}, relecteur ${plan.relecteur || "hérité"}`);
-    lines.push(`- ${report.tours ?? "?"} tours, ${report.duree_s ?? "?"} s, ${usd(report.cout_usd)}, ${report.compactions} compaction(s)`);
+    const compactions = Number.isFinite(report.compactions) ? `, ${report.compactions} compaction(s)` : "";
+    lines.push(`- ${report.tours ?? "?"} tours, ${report.duree_s ?? "?"} s, ${usd(report.cout_usd)}${compactions}`);
     for (const agent of report.sous_agents || []) {
       lines.push(`- Sous-agent ${agent.role} (${agent.modele}) : ${agent.tokens} tokens, ${agent.outils} outils, ${Math.round(agent.duree_ms / 1000)} s`);
     }
     for (const denial of report.refus || []) lines.push(`- Refus de permission : ${denial}`);
-    lines.push(`- Flux complet : ${rel(path.join(dir, `session-${attempt}.jsonl`))}`);
+    const stream = report.moteur === "codex" ? "codex" : "session";
+    lines.push(`- Flux complet : ${rel(path.join(dir, `${stream}-${attempt}.jsonl`))}`);
     if (failure) lines.push("", "Refus de la boucle :", "", "```", failure.trim(), "```");
     lines.push("");
   }

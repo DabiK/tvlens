@@ -85,6 +85,13 @@ déclare les écarts avant de coder, tient le journal et écrit son verdict. `AG
 `CLAUDE.md`. La boucle enregistre ensuite l'état relu et lance un processus Claude séparé avec
 `--agent relecteur`, au modèle Claude du palier (au moins Opus pour un ticket standard).
 Elle garde le rapport dans `relecture-<n>.md` et le verdict dans `relectures.jsonl`.
+Quand la dernière relecture accepte, ses constats hors périmètre et ses écarts acceptés s'ajoutent
+aux réserves de la session. Chaque réserve cite ce rapport ; la boucle les reporte dans « Réserves
+à la clôture » du journal et les compte dans le message du commit. Les rapports précédents ne sont
+pas repris et le verdict de Codex reste inchangé.
+Si le nombre de constats extraits diffère du nombre annoncé par `CONSTATS`, une réserve de repli
+remplace cette extraction : elle indique les deux nombres et renvoie au rapport complet. Les écarts
+acceptés restent des réserves distinctes.
 
 Seul un verdict TERMINÉ déclenche la relecture. Un BLOQUÉ arrête la boucle immédiatement avec sa
 raison, y compris après une correction. Un verdict absent, illisible ou PARTIEL refuse la tentative
@@ -103,11 +110,12 @@ Le verdict appartient à la session, la boucle ne le réécrit pas.
 | Palier | Modèle Codex | Effort |
 | --- | --- | --- |
 | 0 | `gpt-6.1-sol` | high |
-| 1 | `gpt-6-astra` | high |
+| 1 | `gpt-6.1-sol` | xhigh |
 | 2 | `gpt-6-astra` | xhigh |
 | 3 | `gpt-6-astra` | max |
 
-Le niveau fixe le départ comme pour Claude. `--model` et `--effort` remplacent ces réglages ; le
+Le niveau fixe le départ comme pour Claude : un ticket `sensible` démarre donc sur Sol 6.1 xhigh.
+`--model` et `--effort` remplacent ces réglages ; le
 relecteur reste Claude. `--dry-run` affiche le moteur et les paliers prévus. Toute valeur de moteur
 autre que `claude` ou `codex` est refusée au démarrage. Les binaires se remplacent pour les tests
 par `TVLENS_CODEX_BIN` et `TVLENS_CLAUDE_BIN`.
@@ -125,6 +133,9 @@ Ses autres apports sont neutralisés par `--disable plugins`, `--disable apps`, 
 Une liste en échec ou illisible refuse la session avant tout `exec` ; la raison nomme la liste des
 serveurs MCP. Le constructeur exporté des arguments est partagé avec la preuve réelle.
 Chaque session reçoit `-s workspace-write` et `-C <racine>`, corrections comprises.
+Pour un ticket `harnais: oui`, elle reçoit aussi `--add-dir <racine>/.codex` et
+`--add-dir <racine>/.agents` : ces dossiers sont inscriptibles, sous le contrôle des gardes du projet.
+Un autre ticket ne reçoit aucun `--add-dir`.
 `--timeout-min` borne chaque processus.
 `--budget-usd`, `--permission-mode` et `--compact-window` concernent les sessions Claude ; ils ne
 remplacent pas les réglages imposés à Codex.
@@ -140,6 +151,8 @@ contexte au démarrage, gardes avant commande et écriture, contrôle rapide apr
 compactions et porte de fin de tour. Les hooks de sous-agents ne concernent pas cette session Codex.
 Un patch est refusé si un seul de ses chemins est interdit, déplacement compris ; chaque fichier
 JavaScript encore présent est contrôlé après édition. Le contexte de démarrage indique la skill Codex.
+Le contexte et le refus de fin sans verdict choisissent la skill Codex avec `TVLENS_ENGINE=codex`
+ou en l'absence de `CLAUDE_PROJECT_DIR`, y compris en interactif ; sinon ils nomment la skill `ticket`.
 
 Le propriétaire approuve les hooks dans `codex`, puis `/hooks`. Cette approbation vit dans sa config
 utilisateur et porte sur le chemin absolu de `.codex/hooks.json` : la boucle Codex tourne seulement
@@ -156,8 +169,8 @@ chargés », même si la session a rendu TERMINÉ. Ce refus indique les causes p
 les approuve avec `codex`, puis `/hooks`. La confiance seule ne constitue donc pas une preuve.
 
 Un hook Codex en erreur laisse passer l'appel : les contrôles de la boucle restent le dernier mur.
-Le bac à sable interdit aussi l'écriture dans `.git`, `.codex` et `.agents` ; ces deux derniers
-dossiers doivent être installés depuis un contexte disposant des droits nécessaires.
+Le bac à sable interdit l'écriture dans `.git`. Sans ticket de harnais, `.codex` et `.agents` restent
+aussi en lecture seule.
 
 ### Modèle de chaque tentative Claude
 
@@ -248,6 +261,9 @@ ticket. Seule commande lancée : `ps -p <pid de la boucle>`, pour lire sa ligne 
    et son rapport dans `relecture-<n>.md`.
 3. Si le verdict est TERMINÉ, la boucle vérifie elle-même :
    - le ticket n'a pas changé au-dessus de son journal ;
+   - `untracked-before.json` contient toujours la liste des fichiers non suivis gardée en mémoire
+     au démarrage ; un ajout, un retrait, une suppression ou une liste illisible refuse la tentative,
+     pour Claude comme pour Codex, même si le relecteur a accepté ;
    - le harnais n'a pas été touché, sauf ticket marqué `harnais: oui` ;
    - aucun fichier de test n'a été supprimé, sauf ticket marqué `supprime_tests: oui` ;
    - un ADR a été ajouté si le ticket porte `adr: oui` ;
@@ -301,6 +317,8 @@ Pour aller plus loin :
 | `.harness-state/tickets/<ID>/verdict.json` | le verdict de la dernière session, ses preuves et ses réserves (`reste`) |
 | `.harness-state/tickets/<ID>/session-<n>.json` | le compte rendu final de la session (tours, durée, coût) |
 | `.harness-state/tickets/<ID>/session-<n>.jsonl` | le flux entier de la session, message par message |
+| `.harness-state/tickets/<ID>/codex-<n>.jsonl` | le flux Codex de la tentative, corrections comprises, cité par sa rétrospective |
+| `.harness-state/tickets/<ID>/untracked-before.json` | la liste initiale des non suivis, que les contrôles comparent à la référence en mémoire |
 | `.harness-state/tickets/<ID>/exploration.md` | le rapport d'exploration |
 | `.harness-state/tickets/<ID>/ecarts.md` | les écarts aux critères déclarés avant l'implémentation et les constats contestés, que le relecteur tranche |
 | `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
@@ -314,6 +332,8 @@ Pour aller plus loin :
 Un verdict TERMINÉ peut garder des réserves dans `reste` : un constat de relecture hors périmètre, un
 écart à un critère accepté par le relecteur, ce qui n'a pas pu être vérifié, ou une question pour le
 propriétaire. La boucle intègre et les affiche.
+Avec Codex, elle y ajoute les réserves de la dernière relecture acceptée, chacune avec le chemin
+du rapport conservé.
 
 ## Rétrospective
 
@@ -321,6 +341,8 @@ Après chaque ticket, intégré ou bloqué, une courte session Sonnet en lecture
 boucle a observé (tentatives, modèles, coûts, refus, sous-agents, verdicts) et propose des
 améliorations du harnais, chacune avec sa preuve. Elle coûte quelques dizaines de centimes ; son
 échec est signalé et n'arrête jamais la boucle.
+Pour une tentative Codex, son entrée cite `codex-<n>.jsonl` ; elle omet le nombre de compactions
+quand il est inconnu.
 
 Les propositions s'accumulent dans `.harness-state/retours/observations.jsonl`, au statut `propose`.
 Après un lot de tickets :
@@ -371,7 +393,7 @@ boucle écrit `observations.json`. Elle suit la skill `harmonisation` : l'agent 
 consignes, un `relecteur` neuf relit le diff contre les observations et contre la règle « ne retire
 aucune vérification », puis viennent `node scripts/check.mjs` et `verdict.json`.
 
-**Ce qu'elle peut modifier** : `.claude/skills/` et `.claude/agents/`, hors ce que la portée y ferme
+**Ce qu'elle peut modifier** : `.claude/skills/`, `.claude/agents/` et `.agents/skills/`, hors ce que la portée y ferme
 (ci-dessous) ; rien d'autre.
 
 **Ce qu'elle ne peut pas modifier** : ses arbitres, c'est-à-dire `.claude/agents/relecteur.md`,
@@ -499,7 +521,7 @@ branche, session Claude ou Codex imbriquée, `gh`, installation de dépendance n
 hors du projet, modification du harnais ou d'un autre ticket, création d'un fichier de test nommé
 d'après un chantier. Un ticket `harnais: oui` lève le verrou du harnais et peut modifier le gabarit des
 tickets, jamais un autre ticket. Une session d'harmonisation ne le lève que sur les consignes
-(`TVLENS_HARNESS_SCOPE=consignes`) : `.claude/skills/` et `.claude/agents/`, sauf
+(`TVLENS_HARNESS_SCOPE=consignes`) : `.claude/skills/`, `.claude/agents/` et `.agents/skills/`, sauf
 `.claude/agents/relecteur.md`, `.claude/agents/harmoniseur.md` et `.claude/skills/harmonisation/` ; le
 reste du harnais et le gabarit lui restent fermés, et une portée inconnue n'ouvre rien. Un sous-agent lancé en arrière-plan est
 ramené au premier plan. Chaque fichier écrit est contrôlé aussitôt, et la session ne peut pas se terminer sans verdict ni se dire TERMINÉE sur

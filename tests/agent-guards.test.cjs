@@ -156,7 +156,7 @@ test("a session scoped to the instructions writes the skills and the agents, but
     const output = write(repo, file, TUNE);
     assert.equal(decision(output), "deny", file);
     const [first, ...next] = output.hookSpecificOutput.permissionDecisionReason.split("\n");
-    assert.match(first, /ne modifie que \.claude\/skills\/ et \.claude\/agents\/\.$/, file);
+    assert.match(first, /ne modifie que \.claude\/skills\/ et \.claude\/agents\/ et \.agents\/skills\/\.$/, file);
     for (const entry of closed) assert.ok(next.join("\n").includes(entry), `${file}: ${next.join("\n")}`);
   }
   for (const file of [".claude/skills/ticket/SKILL.md", ".claude/agents/explorateur.md"]) {
@@ -175,6 +175,16 @@ test("a session scoped to the instructions cannot edit the ticket template, an u
   for (const file of [".harness-state/tickets/H001/verdict.json", "core/session.cjs"]) {
     assert.equal(decision(write(repo, file, TUNE)), "none", file);
   }
+});
+
+test("the instructions scope opens the Codex skills and keeps the tuning arbiters closed", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  assert.equal(decision(write(repo, ".agents/skills/ticket-codex/SKILL.md", TUNE)), "none");
+  for (const file of [".claude/agents/relecteur.md", ".claude/agents/harmoniseur.md", ".claude/skills/harmonisation/SKILL.md"]) {
+    assert.equal(decision(write(repo, file, TUNE)), "deny", file);
+  }
+  assert.equal(decision(write(repo, ".codex/hooks.json", TUNE)), "deny");
 });
 
 test("a ticket session runs its sub-agents in the foreground and its reviewer on the model the loop chose; an interactive session is left alone", (t) => {
@@ -374,6 +384,28 @@ test("the Codex start hook gives its skill and records its session and launch, w
   assert.match(claude, /skill ticket/);
   assert.doesNotMatch(claude, /ticket-codex/);
 });
+
+for (const [name, engine, claudeRoot, skill] of [
+  ["Codex interactive", "", "", ".agents/skills/ticket-codex/SKILL.md"],
+  ["Claude interactive", "", "project", "ticket"],
+  ["Codex explicit", "codex", "project", ".agents/skills/ticket-codex/SKILL.md"],
+]) {
+  test(`the startup and missing verdict messages name the receiving engine skill: ${name}`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    const env = { TVLENS_ENGINE: engine, CLAUDE_PROJECT_DIR: claudeRoot ? repo.root : "" };
+    const input = { cwd: repo.root, session_id: "engine-skill" };
+    const context = hook(repo, "session-context", input, { ...INTERACTIVE, ...env }).hookSpecificOutput.additionalContext;
+    assert.ok(context.includes(`skill ${skill}`), context);
+    const stopped = hook(repo, "stop-gate", input, { ...LOOP, ...env });
+    assert.equal(stopped.decision, "block");
+    assert.ok(stopped.reason.includes(`skill ${skill}`), stopped.reason);
+    if (skill === "ticket") {
+      assert.doesNotMatch(context, /ticket-codex/);
+      assert.doesNotMatch(stopped.reason, /ticket-codex/);
+    }
+  });
+}
 
 test("a Codex patch is refused as a whole when any source or move destination belongs to the harness", (t) => {
   const repo = harnessRepo();

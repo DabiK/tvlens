@@ -54,6 +54,9 @@ export function codexArgs(root, step, prompt, { env = process.env, timeoutMs = D
     ...disabled, "-c", "notify=[]", ...mcp, "--dangerously-bypass-hook-trust",
     "-s", "workspace-write", "-C", root,
   ];
+  if (env.TVLENS_HARNESS === "1") {
+    for (const dir of [".codex", ".agents"]) args.push("--add-dir", path.join(root, dir));
+  }
   return [...args, prompt];
 }
 
@@ -183,6 +186,54 @@ function sessionVerdict(dir) {
   }
 }
 
+function findingTitle(line) {
+  if (!/[^\s`]+:\d+/u.test(line)) return false;
+  if (/^(?:#{1,6}\s+|\d+[.)]\s+|\*\*.+\*\*\s*$)/u.test(line)) return true;
+  return /^[-*+]\s+`?[^\s`]+:\d+/u.test(line);
+}
+
+/** Les champs et paragraphes d'un constat appartiennent au même bloc, même sans indentation. */
+function reviewBlocks(report) {
+  const blocks = [];
+  let section = "findings";
+  let current = null;
+  for (const line of report.replace(/\r\n/g, "\n").split("\n")) {
+    if (/^\s*(?:VERDICT|CONSTATS)\s*:/iu.test(line)) continue;
+    const heading = /^#{1,6}\s+(.+)$/u.exec(line);
+    const title = line.replace(/^#{1,6}\s+/u, "").replace(/^(?:[-*+]|\d+[.)])\s+/u, "");
+    const finding = section === "findings" && findingTitle(line);
+    const deviation = section !== "other" && /^(?:\*\*)?[ée]carts?\s+acceptés?(?!\p{L})/iu.test(title);
+    if (finding || deviation) {
+      current = { kind: finding ? "finding" : "deviation", lines: [title] };
+      blocks.push(current);
+    } else if (heading) {
+      current = null;
+      section = "other";
+      if (/^constats\b/iu.test(heading[1])) section = "findings";
+      if (/(?:^|\s)[ée]carts\b/iu.test(heading[1])) section = "deviations";
+    } else if (current?.kind === "deviation" && /^(?:[-*+]|\d+[.)])\s/u.test(line)) {
+      current = null;
+    } else if (current) {
+      current.lines.push(line);
+    }
+  }
+  return blocks.map(({ kind, lines }) => ({ kind, text: lines.join("\n").trim() }));
+}
+
+/** Les réserves du rapport accepté restent référencées sans réécrire le verdict ni l'état relu. */
+function reviewReserves(report, reference) {
+  const blocks = reviewBlocks(report);
+  const findings = blocks.filter((block) => block.kind === "finding" && /hors\s+périmètre/iu.test(block.text));
+  const deviations = blocks.filter((block) => block.kind === "deviation").map((block) => block.text);
+  const expected = Number(/^\s*CONSTATS\s*:.*?(\d+)\s+hors\s+périmètre/imu.exec(report)?.[1]);
+  // Un compte discordant rend l'extraction incertaine : le rapport entier reste la référence des constats.
+  const kept = findings.length === expected ? findings.map((block) => block.text) : [
+    `Nombre de constats discordant : CONSTATS annonce ${expected} hors périmètre ; ${findings.length} constat(s) extrait(s).` +
+    " Consulter le rapport pour l'ensemble des constats hors périmètre.",
+  ];
+  return [...kept, ...deviations].map((text) => `${reference} : ${text}`);
+}
+
 export async function runCodex(root, ticket, attempt, dir, failureReport, step, { event, timeoutMin }) {
   const started = Date.now();
   const timeoutMs = timeoutMin * SECONDS_PER_MINUTE * MS_PER_SECOND;
@@ -195,11 +246,16 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   fs.writeFileSync(file, "");
   let code = await hookedSession(root, { step, prompt }, env, file, state, timeoutMs, started, dir);
   let relectures = 0;
+  let reserves = [];
   for (let correction = 0; code === 0; correction++) {
     if (sessionVerdict(dir)?.statut !== "TERMINÉ") break;
     const reviewed = review(root, ticket, dir, env, step, timeoutMs);
     relectures++;
-    if (reviewed.verdict === "accepté") break;
+    if (reviewed.verdict === "accepté") {
+      const reference = path.relative(root, path.join(dir, lastReviewReport(dir)));
+      reserves = reviewReserves(reviewed.report, reference);
+      break;
+    }
     if (reviewed.problem || correction >= MAX_CORRECTIONS) {
       state.problem = reviewed.problem || reviewed.report;
       code = 1;
@@ -213,7 +269,7 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
     code = await hookedSession(root, { step, prompt: fix }, env, file, state, timeoutMs, started, dir);
   }
   const { problem, ...usage } = state;
-  const report = { ...usage, duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };
+  const report = { ...usage, moteur: "codex", duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };
   event("session-terminee", { ticket: ticket.id, attempt, code, ...report });
-  return { code, report, problem };
+  return { code, report, problem, reserves };
 }

@@ -307,9 +307,26 @@ function readVerdict(dir) {
   }
 }
 
+/** La référence en mémoire ne dépend pas d'un fichier que la session peut réécrire avant sa relecture. */
+function untrackedListChange(ticket, expected) {
+  const name = "untracked-before.json";
+  const file = path.join(ticketDir(root, ticket.id), name);
+  if (!fs.existsSync(file)) return `${name} est absent : la session a retiré la liste écrite par la boucle.`;
+  let paths;
+  try {
+    paths = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    // Une liste perdue interdit d'exclure des fichiers de la relecture et du commit.
+    return `${name} est illisible (${error.message}).`;
+  }
+  return JSON.stringify(paths) === JSON.stringify(expected) ? null : `${name} a été modifié depuis le démarrage de la boucle.`;
+}
+
 /** Contrôles de la boucle après une session qui se dit terminée. Renvoie la liste des refus. */
-function gates(ticket, specBefore, untracked) {
+function gates(ticket, specBefore, { untracked, untrackedBefore }) {
   const problems = [];
+  const listChange = untrackedListChange(ticket, untrackedBefore);
+  if (listChange) problems.push(listChange);
   const text = fs.readFileSync(path.join(root, ticket.file), "utf8");
   if (spec(text) !== specBefore) problems.push("Le ticket a été modifié au-dessus de son journal (critères, périmètre ou en-tête).");
   const entries = statusEntries().filter((e) => !e.paths.every((p) => untracked.has(p)));
@@ -384,8 +401,8 @@ function pushBranch(branch, id) {
 }
 
 /** Commit (et push) du ticket. Renvoie le code de sortie de la boucle : 0, 2 si le commit échoue, 3 si le push est refusé. */
-function integrate(ticket, branch, untracked, { step, verdict, history }) {
-  const reserves = [verdict.reste].flat().filter(Boolean);
+function integrate(ticket, branch, untracked, { step, verdict, history, reviewReserves = [] }) {
+  const reserves = [verdict.reste, ...reviewReserves].flat().filter(Boolean);
   const baseline = readBaseline(root);
   if (baseline) writeBaseline(root, tighten(baseline, measure(root)));
   const file = path.join(root, ticket.file);
@@ -446,9 +463,9 @@ async function processTicket(ticket, context) {
     } else if (verdict.statut === "PARTIEL") {
       failure = "La session s'est déclarée PARTIELLE. Reste à faire : " + JSON.stringify(verdict.reste || verdict.resume || "");
     } else if (verdict.statut === "TERMINÉ") {
-      const problems = gates(ticket, specBefore, context.untracked);
+      const problems = gates(ticket, specBefore, context);
       if (!problems.length) {
-        const code = integrate(ticket, context.branch, context.untracked, { step, verdict, history });
+        const code = integrate(ticket, context.branch, context.untracked, { step, verdict, history, reviewReserves: result.reserves });
         return ended(code, code === 2 ? "bloqué" : "intégré", code === 3 ? "push refusé" : null);
       }
       failure = "La session s'est déclarée TERMINÉE mais la boucle refuse l'intégration :\n\n" + problems.join("\n\n");

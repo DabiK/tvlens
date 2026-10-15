@@ -36,6 +36,14 @@ if (process.env.FAKE_CODEX_HOOKS !== "missing" && !(rank > 0 && process.env.FAKE
 }
 fs.mkdirSync("core", { recursive: true });
 if (!blocked) fs.writeFileSync("core/greeting.cjs", "module.exports = () => 'hello';\\n");
+if (process.env.FAKE_UNTRACKED_CHANGE) {
+  const file = path.join(dir, "untracked-before.json");
+  const before = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (process.env.FAKE_UNTRACKED_CHANGE === "add") before.push("core/greeting.cjs");
+  if (process.env.FAKE_UNTRACKED_CHANGE === "remove") before.pop();
+  fs.writeFileSync(file, JSON.stringify(before));
+  if (process.env.FAKE_UNTRACKED_CHANGE === "delete") fs.rmSync(file);
+}
 if (process.env.FAKE_CODEX_EDIT) {
   const file = process.env.FAKE_CODEX_EDIT;
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -43,7 +51,7 @@ if (process.env.FAKE_CODEX_EDIT) {
 }
 const verdict = {
   statut: blocked ? "BLOQUÉ" : "TERMINÉ", resume: blocked ? "Quel fournisseur choisir ?" : "fake codex",
-  preuves: ["fake proof"], reste: [],
+  preuves: ["fake proof"], reste: JSON.parse(process.env.FAKE_CODEX_RESERVES || "[]"),
 };
 if (scenario === "partial") verdict.statut = "PARTIEL";
 if (scenario !== "missing-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), JSON.stringify(verdict));

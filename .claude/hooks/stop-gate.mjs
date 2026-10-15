@@ -56,7 +56,9 @@ try {
   verdict = null;
 }
 if (!verdict || !VERDICTS.includes(verdict.statut)) {
-  const expected = `"statut" (${VERDICTS.join(", ")}) et "resume", comme le décrit la skill ticket`;
+  const codex = process.env.TVLENS_ENGINE === "codex" || !process.env.CLAUDE_PROJECT_DIR;
+  const skill = codex ? ".agents/skills/ticket-codex/SKILL.md" : "ticket";
+  const expected = `"statut" (${VERDICTS.join(", ")}) et "resume", comme le décrit la skill ${skill}`;
   refuse(`Aucun verdict pour ${ticket}. Écris .harness-state/tickets/${ticket}/verdict.json avec ${expected}.`);
 }
 if (verdict.statut === "TERMINÉ") {
