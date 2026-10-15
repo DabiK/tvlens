@@ -1,4 +1,39 @@
-# LG : alertes panneau fermé (mode ambiant)
+# LG : retrait des alertes panneau fermé
+
+**État du dépôt au 15 octobre 2026 : la page ambient, son paquet et ses outils dédiés sont retirés.**
+La décision écrite du propriétaire abandonne l’affichage panneau fermé. Les cartes sourcées,
+la file, l’activité et les vues du panneau ouvert restent disponibles, ainsi que la surveillance serveur.
+La décision complète figure dans l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md).
+Ce retrait du dépôt ne décrit aucune installation, désinstallation ni opération sur une TV ou un VPS ;
+l’état d’une TV installée n’a pas été vérifié dans cette session.
+
+Les fichiers `tv/app/ambient.html`, `ambient.js`, `ambient.css` et `appinfo.ambient.json`, ainsi que
+`scripts/package-tv-ambient.mjs`, `scripts/smoke-tv-ambient.mjs`, `scripts/simulate-tv-ambient.mjs`
+et `scripts/probe-tv-ambient-capture.mjs`, ne sont plus disponibles. Les anciennes commandes qui les
+mentionnent ci-dessous sont des traces datées, plus des instructions applicables à cet arbre.
+L’empaqueteur générique `prototypes/lg-sidebar/package.py` et `scripts/smoke-tv-overlay.mjs` restent.
+
+Le retrait se déroule en quatre étapes :
+
+| Étape | État et périmètre |
+| --- | --- |
+| T165, page et outils | Retirés dans cet arbre, avec les huit cas JavaScript exclusivement dédiés |
+| T166, superviseur et relais | Encore présents : superviseur, routes locales `/ambient/*`, relais des touches et coordination native du panneau ; leur retrait conservera provisoirement les primitives lues par la capture |
+| T181, gate de capture | Encore présent : lecture du gate, recadrage d’occultation et métadonnées associées ; retrait après le superviseur |
+| T182, intégrations de page et documents | Encore présentes : appels locaux et réglages d’état fermé, `parseAmbientParams` et ses exports, présentation des compteurs de gate ; nettoyage après les étapes précédentes |
+
+`tv/app/surveillance-overlay.js` reste partagé avec le panneau ouvert. Ses modèles, sa file et ses
+rendus ne disparaissent pas. `/v1/surveillance/overlay`, sa projection runtime, ses champs et ses ETags
+restent aussi : leur retrait attend un cadrage distinct, sans présumer l’absence d’autres consommateurs.
+
+Le reste de cette page conserve l’historique du 13 octobre et le protocole natif alors proposé.
+**Ce protocole est abandonné avec la capacité ; il n’a pas été exécuté.** Les simulations et tests datés
+ne deviennent pas des validations matérielles. Les mentions d’installation ci-dessous sont des faits
+rapportés à cette date, sans nouvelle vérification ni déploiement annoncé le 15 octobre.
+
+---
+
+# Historique au 13 octobre 2026 : alertes panneau fermé
 
 **État au 13 octobre 2026 : code, simulation et tests livrés ; validation native non exécutée ; profil livré `off`.**
 Avec ce profil, rien ne s’affiche panneau fermé sur la TV et rien ne change à la télécommande. Le besoin « résultats sourcés en bas à gauche sans ouvrir le panneau » n’est donc **pas rendu sur la TV** aujourd’hui : le ticket 07 reste incomplet tant que le protocole de ce document n’a pas été exécuté. Rien ici n’a été « validé sur la TV ».

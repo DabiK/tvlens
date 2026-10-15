@@ -421,11 +421,6 @@
       "count": 1
     }
   },
-  "scripts/package-tv-ambient.mjs": {
-    "complexity": {
-      "count": 1
-    }
-  },
   "scripts/probe-confinement.cjs": {
     "complexity": {
       "count": 4
@@ -447,11 +442,6 @@
   },
   "scripts/probe-refactor-live.cjs": {
     "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "scripts/probe-tv-ambient-capture.mjs": {
-    "complexity": {
       "count": 1
     }
   },
@@ -482,27 +472,11 @@
       "count": 1
     }
   },
-  "scripts/simulate-tv-ambient.mjs": {
-    "complexity": {
-      "count": 1
-    },
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "scripts/smoke-electron.mjs": {
     "constructor-super": {
       "count": 1
     },
     "max-lines": {
-      "count": 1
-    }
-  },
-  "scripts/smoke-tv-ambient.mjs": {
-    "max-lines": {
-      "count": 1
-    },
-    "no-nested-ternary": {
       "count": 1
     }
   },
@@ -651,14 +625,6 @@
       "count": 1
     },
     "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "tv/app/ambient.js": {
-    "no-empty": {
-      "count": 4
-    },
-    "no-nested-ternary": {
       "count": 1
     }
   },
