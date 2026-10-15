@@ -1,7 +1,7 @@
 ---
 id: T016
 titre: Make the static guards of the Mac renderer fail when they scan nothing
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -125,3 +125,47 @@ sous `tvlens` : verdict BLOQUÉ, avec l'écart constaté.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex le 15/10 : consignes et code lus, 34 tests au départ, modifications préexistantes préservées.
+  Exploration et absence d’écart prévu consignées dans `.harness-state/tickets/T016/`.
+
+- Hypothèses vérifiées : `node --input-type=module -e …` (commande complète dans `hypotheses.log`),
+  code 0 : les 19 modules s’importent sans DOM ; le preload expose 57 méthodes sous `tvlens`.
+  `node --test tests/mac-ui.test.cjs` initial : 34 réussites (`baseline.log`).
+- Cycles tests d’abord : `node --test --test-name-pattern='static scans' tests/mac-ui.test.cjs` :
+  rouge observé sur les identifiants multilignes, puis sur l’absence d’exception pour une entrée vide,
+  puis sur les imports multilignes (`red-layout.log`, `red-empty.log`, `red-import-layout.log`).
+  Après correction : 1 réussite (`green-scans.log`).
+- Pont : `node --test --test-name-pattern='the renderer talks' tests/mac-ui.test.cjs` rouge :
+  60 clés textuelles au lieu de 57 (`red-bridge-keys.log`). Chargement réel du preload corrigé.
+  `node --test tests/mac-ui.test.cjs` : 35 réussites (`green-mac-ui.log`).
+  `node scripts/check.mjs --changed` : vert, 35 tests ; lint non lancé (ESLint absent ou non configuré).
+  Commandes et sorties conservées dans `.harness-state/tickets/T016/`.
+
+- Fautes injectées séparément, échecs observés puis seules les lignes injectées retirées :
+  - `import { absentExport } from './format.js';` dans `app/ui/job-card.js` :
+    `node --test --test-name-pattern='the renderer parses' tests/mac-ui.test.cjs`, code 1,
+    assertion `doesNotReject` nommant `ui/job-card.js` et export inexistant (`mutation-import.log`).
+  - `$('absent-id');` dans `app/renderer.js` : même commande, code 1,
+    assertion `renderer.js uses #absent-id, absent from index.html` (`mutation-element.log`).
+  - `bridge.absentMethod();` dans `app/renderer.js` :
+    `node --test --test-name-pattern='the renderer talks' tests/mac-ui.test.cjs`, code 1,
+    assertion sur la méthode non exposée (`mutation-bridge.log`).
+  Identité des octets des deux fichiers avec leur état avant injection vérifiée après retrait.
+
+- Vérification finale : `rg -c '^test\(' tests/mac-ui.test.cjs` rend 35 ;
+  `grep -c "exportsOf" tests/mac-ui.test.cjs` rend 0 (code 1 normal sans occurrence).
+  Les 34 titres antérieurs sont conservés dans leur ordre ; aucune ligne ajoutée ne dépasse 160 caractères ;
+  `git diff --exit-code -- app` rend 0 (`acceptance-inventory.log`).
+- `node scripts/check.mjs` complet : code 0, vert (`check-full.log`) ;
+  1 123 tests JS réussis sur 97 fichiers ; Python : 84 tests, OK avec 1 ignoré.
+  Règles, format et cliquet verts ; lint non lancé (ESLint absent ou non configuré).
+  Verdict Codex `TERMINÉ` écrit dans `.harness-state/tickets/T016/verdict.json` ;
+  aucun commit ni push, relecture laissée à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T016/relecture-1.md : **1. `tests/mac-ui.test.cjs:1072` (`importRendererModule`) — hors périmètre**
+  - **Problème :** les modules `.js` de `app/` ont la syntaxe ESM, mais aucun `package.json` ne déclare `"type": "module"`. Le premier import réel affiche donc l'avertissement `[MODULE_TYPELESS_PACKAGE_JSON]`, et Node relit le fichier comme ESM, ce qui ajoute un coût. Ce bruit n'existait pas dans la sortie de ce fichier avant le ticket : `baseline.log` est propre, `green-mac-ui.log` le montre. Le journal ne le mentionne pas.
+  - **Effet de bord au sens de l'hypothèse bloquante ? Non.** L'avertissement vient du chargeur de Node, pas du module : aucune minuterie, aucune écriture. Le phénomène existe déjà ailleurs dans la suite (`tests/architecture-f09.test.cjs:265` importe `app/ui/recap-view.js`).
+  - **Ce qu'il faudrait :** déclarer le type de module (`package.json` racine ou `app/`), ou renommer les modules en `.mjs`. Ce ticket interdit de toucher au code de production : c'est une réserve pour un ticket ultérieur.

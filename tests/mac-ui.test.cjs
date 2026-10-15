@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { pathToFileURL } = require('node:url');
 const { describeJob: describeTvJob } = require('../tv/app/companion.js');
 const { Surveillance } = require('../core/surveillance.cjs');
 
@@ -1049,38 +1050,106 @@ test('the window switches its commands off from the controls model alone, and re
 const rendererFiles = ['renderer.js', 'recording.js', ...fs.readdirSync(app('ui')).filter(name => /\.m?js$/.test(name)).map(name => `ui/${name}`)];
 const read = file => fs.readFileSync(app(file), 'utf8');
 
-test('the renderer parses, imports only what its modules export, and finds every element it asks for', () => {
-  const exportsOf = source => new Set([...source.matchAll(/^export\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map(match => match[1]));
-  for (const file of rendererFiles) {
-    const source = read(file);
-    for (const [, names, target] of source.matchAll(/^import\s*\{([^}]+)\}\s*from\s*'([^']+)';?\s*$/gm)) {
-      const provided = exportsOf(fs.readFileSync(path.resolve(path.dirname(app(file)), target), 'utf8'));
-      for (const name of names.split(',').map(part => part.trim().split(/\s+as\s+/)[0]).filter(Boolean)) assert.ok(provided.has(name), `${file} imports ${name}, which ${target} does not export`);
-    }
-    // Syntax only: imports and exports removed, the rest compiled as a function body and never run.
-    const body = source.replace(/^import\s[^;]*;?\s*$/gm, '').replace(/^export\s+/gm, '');
-    assert.doesNotThrow(() => new vm.Script(`(async () => {${body}\n})`, { filename: file }), `${file} does not parse`);
+const elementPatterns = new Map([
+  ['renderer.js', /\$\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/shell.js', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+]);
+const namedImportPattern = /^\s*import\s*\{([^}]+)\}\s*from\s*(['"])([^'"]+)\2\s*;?/gm;
+function scanned(source, pattern, file) {
+  const matches = [...source.matchAll(pattern)];
+  assert.ok(matches.length > 0, `${file}: le garde n'a relevé aucune occurrence`);
+  return matches;
+}
+const elementIds = (source, file) => scanned(source, elementPatterns.get(file), file).map(match => match[2]);
+const namedImports = (source, file) => scanned(source, namedImportPattern, file).map(([, names, , target]) => ({
+  target,
+  names: names.split(',').map(part => part.trim().split(/\s+as\s+/)[0]).filter(Boolean),
+}));
+const bridgeMethods = (source, group, pattern = /\b(?:bridge|window\.tvlens)\??\.([A-Za-z]+)/g) =>
+  new Set(scanned(source, pattern, group).map(match => match[1]));
+
+// Le renderer initialise le DOM au chargement ; seuls ses modules peuvent être exécutés ici.
+const importRendererModule = file => import(pathToFileURL(app(file)).href);
+
+test('static scans survive quote and line changes and reject empty input with its file or group', async () => {
+  for (const [file, call] of [['renderer.js', '$'], ['ui/shell.js', 'this.get']]) {
+    const expected = ['first-id', 'second-id'];
+    const inline = `${call}('first-id'); ${call}('second-id');`;
+    const multiline = `${call}(\n  "first-id",\n); ${call}(\n  "second-id"\n);`;
+    assert.deepEqual(elementIds(inline, file), expected, file);
+    assert.deepEqual(elementIds(multiline, file), expected, file);
+    assert.throws(() => elementIds('const untouched = true;', file),
+      error => error.code === 'ERR_ASSERTION' && error.message.includes(file));
   }
+  const inline = "import { first, second as local } from './module.mjs';";
+  const multiline = 'import {\n  first,\n  second as local,\n} from\n  "./module.mjs";';
+  const expected = [{ target: './module.mjs', names: ['first', 'second'] }];
+  assert.deepEqual(namedImports(inline, 'renderer.js'), expected);
+  assert.deepEqual(namedImports(multiline, 'renderer.js'), expected);
+  assert.throws(() => namedImports('const untouched = true;', 'renderer.js'),
+    error => error.code === 'ERR_ASSERTION' && error.message.includes('renderer.js'));
+  for (const [group, pattern] of [
+    ['rendererFiles', undefined],
+    ['scripts/smoke-electron.mjs', /window\.tvlens\.([A-Za-z]+)/g],
+    ['scripts/probe-video-chat-live.mjs', /window\.tvlens\.([A-Za-z]+)/g],
+  ]) {
+    assert.deepEqual([...bridgeMethods('window.tvlens.state()', group, pattern)], ['state']);
+    assert.throws(() => bridgeMethods('', group, pattern),
+      error => error.code === 'ERR_ASSERTION' && error.message.includes(group));
+  }
+  // Ce module sans import reste vérifié par son chargement réel, sans plancher textuel.
+  const icons = await importRendererModule('ui/icons.js');
+  assert.equal(typeof icons.setIcon, 'function');
+});
+
+function loadRendererBridge() {
+  const exposed = {};
+  new Function('require', read('preload.cjs'))(name => {
+    assert.equal(name, 'electron');
+    return {
+      contextBridge: { exposeInMainWorld: (key, api) => { exposed[key] = api; } },
+      ipcRenderer: {},
+    };
+  });
+  return exposed.tvlens;
+}
+
+test('the renderer parses, imports only what its modules export, and finds every element it asks for', async () => {
+  for (const file of rendererFiles.filter(file => file !== 'renderer.js')) {
+    await assert.doesNotReject(() => importRendererModule(file), `${file} ne s'importe pas sans DOM`);
+  }
+  const source = read('renderer.js');
+  for (const { names, target } of namedImports(source, 'renderer.js')) {
+    const provided = new Set(Object.keys(await importRendererModule(target)));
+    for (const name of names) {
+      assert.ok(provided.has(name), `renderer.js importe ${name}, absent des exports de ${target}`);
+    }
+  }
+  // La syntaxe du renderer est compilée sans exécuter ses accès au document et au pont.
+  const body = source.replace(namedImportPattern, '');
+  assert.doesNotThrow(() => new vm.Script(`(async () => {${body}\n})`, { filename: 'renderer.js' }), 'renderer.js does not parse');
   const html = read('index.html'), ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]));
   assert.equal(ids.size, [...html.matchAll(/\sid="([^"]+)"/g)].length, 'every id is unique');
-  for (const [file, pattern] of [['renderer.js', /\$\('([^']+)'\)/g], ['ui/shell.js', /this\.get\('([^']+)'\)/g]]) {
-    for (const [, id] of read(file).matchAll(pattern)) assert.ok(ids.has(id), `${file} uses #${id}, absent from index.html`);
+  for (const file of elementPatterns.keys()) {
+    for (const id of elementIds(read(file), file)) assert.ok(ids.has(id), `${file} uses #${id}, absent from index.html`);
   }
   // Thumbnails of a reopened session come through the media protocol: the page must be allowed to show them.
   assert.match(html, /img-src 'self' data: tvlens-media:/);
 });
 
 test('the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own', () => {
-  const preload = fs.readFileSync(app('preload.cjs'), 'utf8');
-  const exposed = new Set([...preload.matchAll(/^\s*([A-Za-z]+)\s*:/gm)].map(match => match[1]));
-  const used = new Set(rendererFiles.flatMap(file => [...shaped(file).matchAll(/\b(?:bridge|window\.tvlens)\??\.([A-Za-z]+)/g)].map(match => match[1])));
+  const exposed = new Set(Object.keys(loadRendererBridge()));
+  assert.equal(exposed.size, 57, 'app/preload.cjs expose 57 méthodes sous tvlens');
+  assert.ok(!exposed.has('capture'), 'capture est un pont distinct de tvlens');
+  const used = bridgeMethods(rendererFiles.map(file => shaped(file)).join('\n'), 'rendererFiles');
   for (const name of ['surveillanceState', 'surveillanceHistory', 'startSurveillance', 'stopSurveillance', 'retrySurveillanceClaim', 'openSurveillanceSource', 'onSurveillance',
     'sessions', 'openSession', 'resumeSession', 'deleteSession', 'storage', 'onSessionsChanged', 'onStorage']) assert.ok(used.has(name), `the renderer never calls ${name}`);
   for (const name of used) assert.ok(exposed.has(name), `the renderer calls ${name}, which app/preload.cjs does not expose`);
   // The two scripts that drive this window through the bridge are not run here: at least they call nothing the
   // bridge no longer exposes (the former Auto calls), and they start and read the surveillance by its own methods.
   for (const script of ['smoke-electron.mjs', 'probe-video-chat-live.mjs']) {
-    const source = fs.readFileSync(path.join(__dirname, '..', 'scripts', script), 'utf8'), called = new Set([...source.matchAll(/window\.tvlens\.([A-Za-z]+)/g)].map(match => match[1]));
+    const source = fs.readFileSync(path.join(__dirname, '..', 'scripts', script), 'utf8');
+    const called = bridgeMethods(source, `scripts/${script}`, /window\.tvlens\.([A-Za-z]+)/g);
     for (const name of called) assert.ok(exposed.has(name), `scripts/${script} calls ${name}, which app/preload.cjs does not expose`);
     for (const name of ['startSurveillance', 'surveillanceState', 'stopSurveillance']) assert.ok(called.has(name), `scripts/${script} never calls ${name}`);
   }
