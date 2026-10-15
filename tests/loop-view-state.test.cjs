@@ -69,7 +69,7 @@ test("once the session has ended the phases come from the events: the loop's own
   assert.equal(timelineOf(retro).at(-1), "current:Rétrospective");
 });
 
-test("a blocked ticket is blocked, with the reason, and a refused attempt says so", async () => {
+test("a blocked ticket keeps its reason during retrospective and a refused attempt shows its reason", async () => {
   const started = [stream.sessionEvent(0, "T015"), stream.endedEvent(80, "T015")];
   const blocked = await viewOf({ events: [...started, stream.blockedEvent(81, "T015", "the ticket is wrong")] });
   assert.deepEqual([blocked.phase.label, blocked.reason], ["Rétrospective", "the ticket is wrong"]);
@@ -215,16 +215,17 @@ test("the review phase uses the cumulative cycle rank after a refused attempt", 
   assert.equal(view.cycles.at(-1).rank, 3);
 });
 
-test("the view exposes English timeline and time-basis discriminants", async () => {
-  const launched = await viewOf({});
-  assert.ok(Array.isArray(launched.timeline));
-  assert.equal(launched.sinceKind, "launch");
-  assert.equal(launched.eta.basis, "launch");
-  const historical = await viewOf({ events: [stream.sessionEvent(-100, "T001"), stream.integratedEvent(-80, "T001")],
-    loop: { launchedAt: stream.START, alive: true } });
-  assert.equal(historical.eta.basis, "history");
-  const window = await viewOf({ loop: { launchedAt: null } });
-  assert.equal(window.sinceKind, "window");
+test("an estimate from previous launches uses only the ten most recent integrated ticket durations", async () => {
+  const events = Array.from({ length: 12 }, (_, index) => {
+    const minute = -2000 + index * 100;
+    const duration = index < 2 ? 90 : (index - 1) * 2;
+    return [stream.sessionEvent(minute, "T001"), stream.integratedEvent(minute + duration, "T001")];
+  }).flat();
+  events.push(stream.sessionEvent(1, "T015"));
+  const view = await viewOf({ events, now: 2 });
+  assert.equal(view.eta.averageMs, 11 * 60000);
+  assert.equal(view.eta.at, Date.parse(stream.minutesAfter(34)));
+  assert.deepEqual(view.finished, []);
 });
 
 test("a harmonizer correction announces the next review without announcing another harmonization", async () => {

@@ -20,4 +20,3 @@ export function commandPhase(command) {
   }
   return null;
 }
-

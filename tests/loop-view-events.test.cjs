@@ -2,9 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const stream = require("./helpers/loop-stream.cjs");
 
-const { loopView, playSteps } = stream;
-
-const { ticket } = stream;
+const { loopView, ticket } = stream;
 
 // --- Événements de la boucle : ticket en cours, étape, tickets terminés ---
 
@@ -144,7 +142,6 @@ test("the cost counts the sessions and the retrospectives since the launch, and 
 
 // --- File restante ---
 
-
 test("the remaining tickets are the ones the loop would take next, as if each ticket it takes were finished", async () => {
   const { remainingTickets } = await loopView();
   const queue = [
@@ -212,7 +209,6 @@ test("there is no estimated end without a finished ticket to average", async () 
   const { estimateEnd } = await loopView();
   assert.equal(estimateEnd({ now: 0, durationsMs: [], remaining: 4, elapsedMs: 0 }), null);
 });
-
 
 test("an event whose phase looks like a property of every object changes nothing", async () => {
   const { analyzeEvents } = await loopView();

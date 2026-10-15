@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Suivi de la boucle de tickets dans le terminal : ticket en cours, phase, cycles de relecture, dernières actions,
-// file restante. Il ne fait que lire `.harness-state/` et les tickets : il n'écrit rien et ne lance rien.
+// Suivi de la boucle Claude ou Codex : ticket, phase, relectures, dernières actions et file restante.
+// Lecture de `session-<n>.jsonl` ou `codex-<n>.jsonl` ; `verdict.json` aide à repérer la relecture externe de Codex.
+// Les actions Codex portent son nom et son coût reste inconnu. La rétrospective suit une intégration ou un blocage,
+// sauf si la commande de la boucle contient `--no-retro`. Lecture seule de `.harness-state/` et des tickets ; seul `ps` est lancé.
 //
 //   node scripts/watch-loop.mjs                 redessine l'écran chaque seconde, jusqu'à Ctrl-C
 //   node scripts/watch-loop.mjs --once          imprime un seul écran et sort
@@ -31,7 +33,6 @@ function parseArguments(argv) {
 
 const columns = () => process.stdout.columns || DEFAULT_COLUMNS;
 const useColor = () => Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
-
 
 function main() {
   const options = parseArguments(process.argv.slice(2));

@@ -161,40 +161,6 @@ dossiers doivent être installés depuis un contexte disposant des droits néces
 
 ### Modèle de chaque tentative Claude
 
-### Suivre la boucle
-
-Dans un autre terminal, pendant que la boucle tourne :
-
-```sh
-node scripts/watch-loop.mjs                 # redessine l'écran chaque seconde ; Ctrl-C pour quitter
-node scripts/watch-loop.mjs --once          # un seul écran, puis sort (aussi quand la sortie n'est pas un terminal)
-node scripts/watch-loop.mjs --root <dossier>  # suivre la boucle d'un autre dossier de projet
-```
-
-L'écran montre, de haut en bas :
-
-- le ticket en cours : titre, niveau, modèle et effort, numéro de tentative, durée ;
-- la phase (exploration, implémentation, relecture n, correction, enregistrement de l'état relu, contrôle complet,
-  verdict, puis contrôles de la boucle, rétrospective, bloqué ou boucle arrêtée) et la frise des phases faites (`✓`),
-  en cours (`▶`) et à venir (`·`) ;
-- les cycles de relecture : le verdict de chacun et ses constats (bloquants, mineurs, hors périmètre) ;
-- les huit dernières actions de la session, avec l'agent qui les a faites (orchestrateur, explorateur, implémenteur,
-  relecteur) ;
-- la nuit : tickets intégrés ou bloqués depuis le lancement de la boucle (durée, coût), coût cumulé, tickets restants et
-  heure de fin estimée.
-
-La phase vient du flux de la session (`session-<n>.jsonl`, lu par incréments) tant qu'elle tourne, puis des événements de
-`events.jsonl`. La boucle est « vivante » quand le processus du verrou `loop/lock` existe ; l'heure de lancement est celle du
-verrou. Les tickets restants rejouent `next` comme si chaque ticket pris était terminé, jusqu'à la première raison de
-s'arrêter, et sont limités par le `--max` de la boucle quand la ligne de commande de son processus le dit. La fin estimée est
-la durée moyenne des tickets intégrés depuis le lancement (à défaut, des dix derniers de l'historique) multipliée par les
-tickets restants ; elle ne tient pas compte d'un ticket qui échouerait.
-
-L'outil ne fait que lire : il n'écrit rien dans `.harness-state/` ni dans le dépôt, ne prend pas le verrou et ne modifie aucun
-ticket. Seule commande lancée : `ps -p <pid de la boucle>`, pour lire sa ligne de commande.
-
-### Modèle de chaque tentative
-
 Chaque tentative tourne sur un palier d'une échelle, du moins cher au plus fort
 (`scripts/loop/models.mjs`) :
 
@@ -218,6 +184,57 @@ pas. Une tentative refusée fait monter d'un palier ; par défaut la boucle tent
 Le champ `niveau:` de l'en-tête remplace le niveau déduit. Le modèle du relecteur est imposé par le
 hook `guard-agent`, à partir de `TVLENS_REVIEW_MODEL` ; les autres sous-agents héritent du modèle de la
 session. Le commit est signé du modèle de la tentative qui a abouti.
+
+### Suivre la boucle
+
+Dans un autre terminal, pendant que la boucle tourne :
+
+```sh
+node scripts/watch-loop.mjs                 # redessine l'écran chaque seconde ; Ctrl-C pour quitter
+node scripts/watch-loop.mjs --once          # un seul écran, puis sort (aussi quand la sortie n'est pas un terminal)
+node scripts/watch-loop.mjs --root <dossier>  # suivre la boucle d'un autre dossier de projet
+```
+
+L'écran montre, de haut en bas :
+
+- le ticket en cours : titre, niveau, modèle et effort, numéro de tentative, durée ;
+- la phase (exploration, implémentation, relecture n, correction, enregistrement de l'état relu, contrôle complet,
+  verdict, puis contrôles de la boucle, rétrospective, bloqué ou boucle arrêtée) et la frise des phases faites (`✓`),
+  en cours (`▶`) et à venir (`·`) ;
+- les cycles de relecture : le verdict de chacun et ses constats (bloquants, mineurs, hors périmètre) ;
+- les huit dernières actions de la session, avec l'agent qui les a faites (orchestrateur, explorateur, implémenteur,
+  relecteur, ou Codex pour ses propres actions) ;
+- la nuit : tickets intégrés ou bloqués depuis le lancement de la boucle (durée, coût), coût cumulé, tickets restants et
+  heure de fin estimée. Le coût Codex reste « inconnu » : le flux ne fournit aucun montant en dollars.
+
+La phase vient du flux de la session, lu par incréments : `session-<n>.jsonl` pour Claude, `codex-<n>.jsonl` pour Codex.
+La frise suit l'ordre du moteur : sous Codex, contrôle complet, verdict, puis relecture Claude externe. Une fois un tour
+Codex terminé, la vue repère cette relecture par `relectures.jsonl` ou, pendant qu'elle tourne, par le statut TERMINÉ de
+`verdict.json`, même si l'écriture du verdict n'a pas été reconnue dans le flux. La session de correction après refus apparaît comme « Correction ».
+Après la session, les phases viennent des événements de `events.jsonl`. La rétrospective suit aussi bien une intégration
+qu'un blocage ; elle disparaît de la vue si la commande de la boucle contient `--no-retro`.
+
+Les enveloppes shell `sh`, `bash` et `zsh` avec option `-c` ou `-lc` sont décodées avant lecture, y compris leurs
+segments entre apostrophes ou guillemets doubles concaténés, sans évaluer les substitutions shell.
+Dans les heredocs `python` ou `python3`, la lecture accepte les chaînes simples, triples ou brutes et ces formes :
+
+- listes littérales passées directement à `subprocess.run` ;
+- listes littérales affectées par `=` ou ajoutées par `+=`, puis passées à `subprocess.run` directement ou par une
+  boucle `for` sur leur nom ou sur `enumerate(nom)` ;
+- listes littérales écrites dans le `for` lui-même, dont les éléments sont passés à `subprocess.run` ;
+- chaînes littérales passées directement à `subprocess.run` avec `shell=True` ;
+- écritures de verdict par `Path('…verdict.json').write_text` ou `(nom / 'verdict.json').write_text`.
+
+Toute autre forme Python n'est pas lue.
+
+La boucle est « vivante » quand le processus du verrou `loop/lock` existe ; l'heure de lancement est celle du verrou.
+Les tickets restants rejouent `next` comme si chaque ticket pris était terminé, jusqu'à la première raison de s'arrêter,
+et sont limités par le `--max` lu sur la ligne de commande du processus. La fin estimée utilise la durée moyenne des tickets
+intégrés depuis le lancement (à défaut, des dix derniers de l'historique) et le nombre de tickets restants, en tenant compte
+du temps déjà passé sur le ticket en cours ; elle ne tient pas compte d'un ticket qui échouerait.
+
+L'outil ne fait que lire : il n'écrit rien dans `.harness-state/` ni dans le dépôt, ne prend pas le verrou et ne modifie aucun
+ticket. Seule commande lancée : `ps -p <pid de la boucle>`, pour lire sa ligne de commande.
 
 ## Ce que fait la boucle pour un ticket
 

@@ -250,7 +250,6 @@ test("the loop is stopped when the lock is absent, empty or not a process number
   }
 });
 
-
 test("names that come from the stream and look like properties of every object are not mistaken for known ones", async () => {
   const lines = [
     stream.assistant([stream.toolUse("c1", "constructor", { description: "odd tool" })]),
@@ -303,8 +302,15 @@ test("a full check after a partial check in the same shell command is recognised
   assert.equal(await phaseAfter(stream.bash("b", "node scripts/check.mjs --changed && node scripts/check.mjs")), "Contrôle complet");
 });
 
-test("phase history identifies recording by its key as well as its displayed label", async () => {
-  const states = await playSteps([stream.fullSession().exploration, stream.fullSession().record1]);
-  assert.deepEqual(states.at(-1).history.map((phase) => phase.key), ["exploration", "record"]);
+test("Claude and Codex action targets shorten project paths and stay on one bounded line", async () => {
+  const paths = ["/work/core/example.cjs", "/work-other/other.cjs", "/elsewhere/file name\ncontinued.cjs", `/work/${"x".repeat(180)}`, ""];
+  const expected = ["core/example.cjs", "/work-other/other.cjs", "/elsewhere/file name continued.cjs", "x".repeat(160), ""];
+  for (const engine of ["claude", "codex"]) {
+    const lines = paths.map((file, index) => {
+      if (engine === "claude") return stream.assistant([stream.toolUse(`read-${index}`, "Read", { file_path: file })]);
+      return stream.codexItem("item.completed", { id: `write-${index}`, type: "file_change", changes: [{ path: file, kind: "update" }] });
+    });
+    const [state] = await playSteps([lines], { engine, root: "/work" });
+    assert.deepEqual(state.actions.map((action) => action.target), expected, engine);
+  }
 });
-

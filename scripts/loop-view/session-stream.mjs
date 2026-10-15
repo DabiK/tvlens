@@ -1,6 +1,6 @@
 import { foldCodexSession } from "./codex-stream.mjs";
 import { commandPhase } from "./commands.mjs";
-import { MAX_TARGET, LAST_ACTIONS, ORCHESTRATOR, enterPhase } from "./session-state.mjs";
+import { LAST_ACTIONS, ORCHESTRATOR, enterPhase, relativePath, formatTarget, isVerdictPath } from "./session-state.mjs";
 import { PHASES } from "./phases.mjs";
 // Flux `stream-json` d'une session `claude -p` : la phase où en est l'orchestrateur et ses dernières actions.
 // Fonctions pures : l'état passe d'un appel à l'autre, c'est l'appelant qui lit le fichier, par incréments.
@@ -34,11 +34,6 @@ function parseLine(line) {
 
 const firstLine = (text) => String(text || "").split("\n").find((line) => line.trim()) || "";
 
-function relative(file, root) {
-  if (!file) return "";
-  return root && file.startsWith(`${root}/`) ? file.slice(root.length + 1) : file;
-}
-
 const agentTarget = (input) => `${input.subagent_type || ""} ${input.description || ""}`;
 // La cible de chaque outil qui a la sienne ; les autres se lisent d'après leur chemin, leur motif ou leur description.
 const TARGETS = {
@@ -48,15 +43,15 @@ const TARGETS = {
 };
 
 function genericTarget(input, root) {
-  if (input.pattern) return `${input.pattern} ${relative(input.path, root)}`;
-  return relative(input.file_path || input.path, root) || input.skill || input.query || input.description || "";
+  if (input.pattern) return `${input.pattern} ${relativePath(input.path, root)}`;
+  return relativePath(input.file_path || input.path, root) || input.skill || input.query || input.description || "";
 }
 
 /** Ce que l'action vise, en une ligne : la cible plutôt que l'entrée entière de l'outil. */
 function targetOf(name, input, root) {
   const own = AGENT_TOOLS.has(name) ? agentTarget : lookup(TARGETS, name);
   const target = own ? own(input) : genericTarget(input, root);
-  return String(target).replace(/\s+/g, " ").trim().slice(0, MAX_TARGET);
+  return formatTarget(target);
 }
 
 function agentPhase(type, state) {
@@ -82,7 +77,7 @@ function resumedPhase(recipient, state) {
 function phaseOf(part, state, input) {
   if (AGENT_TOOLS.has(part.name)) return agentPhase(input.subagent_type, state);
   if (part.name === "SendMessage") return resumedPhase(input.to, state);
-  if (WRITE_TOOLS.has(part.name)) return /(^|\/)verdict\.json$/.test(input.file_path || "") ? PHASES.verdict : null;
+  if (WRITE_TOOLS.has(part.name)) return isVerdictPath(input.file_path) ? PHASES.verdict : null;
   return part.name === "Bash" ? commandPhase(String(input.command || "")) : null;
 }
 

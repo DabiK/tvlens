@@ -1,10 +1,7 @@
 // Décodeur pur de codex exec --json : Codex travaille sans sous-agent.
 import { PHASES } from "./phases.mjs";
 import { codexCommandPhase } from "./codex-commands.mjs";
-import { enterPhase, MAX_TARGET, LAST_ACTIONS } from "./session-state.mjs";
-
-const targetOf = (text) => String(text || "").replace(/\s+/g, " ").trim().slice(0, MAX_TARGET);
-const relative = (file, root) => root && file.startsWith(`${root}/`) ? file.slice(root.length + 1) : file;
+import { enterPhase, LAST_ACTIONS, relativePath, formatTarget, isVerdictPath } from "./session-state.mjs";
 
 function parseLine(line) {
   try {
@@ -17,7 +14,7 @@ function parseLine(line) {
 }
 
 function addAction(state, item, tool, target, at) {
-  const action = { id: item.id, turn: state.turnsStarted ?? 0, agent: "Codex", tool, target: targetOf(target), at,
+  const action = { id: item.id, turn: state.turnsStarted ?? 0, agent: "Codex", tool, target: formatTarget(target), at,
     status: item.status ?? null, exitCode: item.exit_code ?? null };
   const index = state.actions.findIndex((entry) => item.id && entry.id === item.id && entry.turn === action.turn);
   if (index < 0) state.actions.push(action);
@@ -40,9 +37,9 @@ function applyItem(state, item, at, root) {
   }
   if (item.type === "file_change") {
     const changes = Array.isArray(item.changes) ? item.changes : [];
-    const paths = changes.filter((change) => typeof change?.path === "string").map((change) => relative(change.path, root));
+    const paths = changes.filter((change) => typeof change?.path === "string").map((change) => relativePath(change.path, root));
     addAction(state, item, "Write", paths.join(", "), at);
-    const verdict = paths.some((file) => /(^|\/)verdict\.json$/.test(file));
+    const verdict = paths.some(isVerdictPath);
     if (verdict) enterPhase(state, PHASES.verdict, at);
     else if (!state.hasChanges && paths.length) enterPhase(state, PHASES.implementation, at);
     if (paths.length) state.hasChanges = true;

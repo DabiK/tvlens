@@ -125,15 +125,16 @@ test("the timeline goes on to the next line between two phases instead of losing
   assert.ok(lines.every((line) => width(line) <= 50));
 });
 
-test("model aliases and non-Claude models are displayed verbatim", async () => {
+test("unknown model identifiers stay verbatim and known Codex models use their display name", async () => {
   const { render } = await screen();
   const rendered = [];
-  for (const modele of ["opus", "gpt-6-astra"]) {
+  for (const modele of ["opus", "custom-model", "gpt-6-astra"]) {
     const view = await viewOf({ events: [stream.sessionEvent(0, "T015", 1, { modele })] });
     rendered.push(render(view, { width: 120 }).find((line) => line.includes("effort high")));
   }
   assert.match(rendered[0], /opus, effort high/);
-  assert.match(rendered[1], /gpt-6-astra, effort high/);
+  assert.match(rendered[1], /custom-model, effort high/);
+  assert.match(rendered[2], /Codex \(GPT-6 Astra\), effort high/);
 });
 
 test("a completed Codex session with null cost is shown as unknown rather than free", async () => {

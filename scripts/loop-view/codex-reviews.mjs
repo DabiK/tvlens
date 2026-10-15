@@ -1,4 +1,4 @@
-// Les relectures sont externes à Codex. Leurs rangs viennent du journal ; les tours du flux situent les reprises.
+// Les relectures sont externes à Codex. Leurs rangs viennent du journal ; les tours du flux situent les sessions de correction.
 import { PHASES } from "./phases.mjs";
 
 const WORK_PHASES = new Set(["resume", "exploration", "implementation"]);
@@ -18,7 +18,7 @@ export function codexReviews(stream, reviews, current, verdictStatus) {
     const endsTurn = stream.history[index + 1]?.turn !== entry.turn;
     const reviewed = Boolean(attemptReviews[entry.turn - 1]);
     const pending = entry.turn === stream.turnsStarted && verdictStatus === "TERMINÉ";
-    if (endsTurn && entry.key === "verdict" && entry.turn <= (stream.turnsCompleted ?? 0) && (reviewed || pending)) {
+    if (endsTurn && entry.turn <= (stream.turnsCompleted ?? 0) && (reviewed || pending)) {
       const number = offset + entry.turn;
       history.push({ key: "review", label: `Relecture ${number}`, number, turn: entry.turn });
     }

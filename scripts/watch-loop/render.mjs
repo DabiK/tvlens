@@ -82,11 +82,17 @@ function headerLine(view, columns) {
   return gap > 0 ? [...left, seg(" ".repeat(gap)), ...right] : left;
 }
 
+function modelName(model) {
+  if (!model) return "modèle inconnu";
+  const name = displayName(model);
+  if (name === "Claude") return model;
+  return name.replace(/^Claude /, "");
+}
+
 function ticketLines(view) {
   const ticket = view.ticket;
   if (!ticket) return [[seg("Aucun ticket en cours", "dim")]];
-  const name = displayName(ticket.modele);
-  const model = ticket.modele ? (name === "Claude" ? ticket.modele : name.replace(/^Claude /, "")) : "modèle inconnu";
+  const model = modelName(ticket.modele);
   const attempt = ticket.attempt > 1 ? `tentative ${ticket.attempt} (depuis ${duration(ticket.attemptElapsedMs)})` : "tentative 1";
   const details = [
     ticket.niveau ? `niveau ${ticket.niveau}` : null,

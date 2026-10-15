@@ -1,5 +1,5 @@
-// Fabrique des lignes du flux `stream-json` d'une session `claude -p`, telles que la boucle les garde dans
-// `session-<n>.jsonl`, et des événements de `events.jsonl` : de quoi jouer une session sans lancer de modèle.
+// Fabrique les flux Claude (`stream-json`, session-<n>.jsonl), Codex (`exec --json`, codex-<n>.jsonl)
+// et les événements de events.jsonl : de quoi jouer une session sans lancer de modèle.
 
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
@@ -133,6 +133,22 @@ async function viewOf({ events, lines = [], reviews = [], reports = {}, loop = {
 
 const sessionUpTo = (...names) => names.flatMap((name) => fullSession()[name]);
 
+/** Flux codex exec --json sans horodatage, comme celui conservé par la boucle. */
+const codexEvent = (type, data = {}) => JSON.stringify({ type, ...data });
+const codexItem = (type, item) => codexEvent(type, { item });
+function codexSession() {
+  return {
+    exploration: [codexEvent("thread.started", { thread_id: "thread-example" }), codexEvent("turn.started"),
+      codexItem("item.started", { id: "cmd-read", type: "command_execution", command: "cat CLAUDE.md", status: "in_progress" }),
+      codexItem("item.completed", { id: "cmd-read", type: "command_execution", command: "cat CLAUDE.md", status: "completed", exit_code: 0 })],
+    implementation: [codexItem("item.completed", { id: "patch", type: "file_change", changes: [{ path: "/work/core/example.cjs", kind: "update" }] })],
+    check: [codexItem("item.started", { id: "check", type: "command_execution", command: "node scripts/check.mjs", status: "in_progress" })],
+    verdict: [codexItem("item.completed", { id: "verdict", type: "file_change",
+      changes: [{ path: "/work/.harness-state/tickets/T015/verdict.json", kind: "add" }] })],
+    end: [codexEvent("turn.completed", { usage: { input_tokens: 100, cached_input_tokens: 60, output_tokens: 10 } })],
+    resume: [codexEvent("thread.started", { thread_id: "thread-example" }), codexEvent("turn.started")],
+  };
+}
 module.exports = {
   QUEUE,
   LAUNCH,
@@ -150,24 +166,19 @@ module.exports = {
   refusedEvent,
   blockedEvent,
   retroEvent,
-  integratedEvent, START, clock, toolUse, agentCall, bash, write, assistant, agentResult, finalResult, fullSession, TICKET };
-
-/** Flux codex exec --json sans horodatage, comme celui conservé par la boucle. */
-const codexEvent = (type, data = {}) => JSON.stringify({ type, ...data });
-const codexItem = (type, item) => codexEvent(type, { item });
-function codexSession() {
-  return {
-    exploration: [codexEvent("thread.started", { thread_id: "thread-example" }), codexEvent("turn.started"),
-      codexItem("item.started", { id: "cmd-read", type: "command_execution", command: "cat CLAUDE.md", status: "in_progress" }),
-      codexItem("item.completed", { id: "cmd-read", type: "command_execution", command: "cat CLAUDE.md", status: "completed", exit_code: 0 })],
-    implementation: [codexItem("item.completed", { id: "patch", type: "file_change", changes: [{ path: "/work/core/example.cjs", kind: "update" }] })],
-    check: [codexItem("item.started", { id: "check", type: "command_execution", command: "node scripts/check.mjs", status: "in_progress" })],
-    verdict: [codexItem("item.completed", { id: "verdict", type: "file_change",
-      changes: [{ path: "/work/.harness-state/tickets/T015/verdict.json", kind: "add" }] })],
-    end: [codexEvent("turn.completed", { usage: { input_tokens: 100, cached_input_tokens: 60, output_tokens: 10 } })],
-    resume: [codexEvent("thread.started", { thread_id: "thread-example" }), codexEvent("turn.started")],
-  };
-}
-module.exports.codexEvent = codexEvent;
-module.exports.codexItem = codexItem;
-module.exports.codexSession = codexSession;
+  integratedEvent,
+  START,
+  clock,
+  toolUse,
+  agentCall,
+  bash,
+  write,
+  assistant,
+  agentResult,
+  finalResult,
+  fullSession,
+  TICKET,
+  codexEvent,
+  codexItem,
+  codexSession,
+};

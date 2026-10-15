@@ -1,7 +1,9 @@
 // La phase où en est le ticket et la frise qui la situe : d'abord le flux de l'orchestrateur, puis les événements de la boucle.
 
 import { PHASES } from "./phases.mjs";
+import { msOf } from "./constants.mjs";
 const TICKET_STAGES = ["exploration", "implementation", "review", "check", "verdict", "gates", "retro"].map((key) => PHASES[key]);
+const CODEX_STAGES = ["exploration", "implementation", "check", "verdict", "review", "gates", "retro"].map((key) => PHASES[key]);
 const TUNING_STAGES = ["harmonisation", "review", "check", "verdict", "gates"].map((key) => PHASES[key]);
 const BETWEEN = { key: "between", label: "Entre deux tickets" };
 
@@ -18,8 +20,6 @@ const STAGE_PHASES = {
 };
 const STARTING = { key: "start", label: "Démarrage" };
 const STOPPED = { key: "stopped", label: "Boucle arrêtée" };
-
-const msOf = (iso) => (iso ? Date.parse(iso) : null);
 
 /**
  * La phase en cours : celle du flux tant que la session tourne, celle des événements sinon. Une boucle sans verrou
@@ -39,7 +39,7 @@ export function currentPhase({ stage, stageAt, stream, alive, retroPending = fal
 function rankOf(key, stages) {
   const index = (wanted) => stages.findIndex((stage) => stage.key === wanted);
   if (key === "record") return index("review") - 0.5;
-  if (key === "correction") return index("review") - 1;
+  if (key === "correction") return stages.findIndex((stage) => stage.key === "implementation" || stage.key === "harmonisation");
   if (key === "start") return -1;
   const own = index(key);
   // Une phase hors de la suite (en attente, bloqué, refusé, entre deux tickets) n'annonce plus rien.
@@ -50,8 +50,11 @@ function rankOf(key, stages) {
  * Les phases vues par le flux (`history`, dans l'ordre), celle qui est en cours, puis celles qui restent. L'enregistrement
  * de l'état relu n'apparaît que le temps qu'il dure : il précède chaque relecture et encombrerait la frise.
  */
-export function buildTimeline({ history, phase, kind, retrospective = true }) {
-  const stages = (kind === "harmonisation" ? TUNING_STAGES : TICKET_STAGES).filter((stage) => retrospective || stage.key !== "retro");
+export function buildTimeline({ history, phase, kind, engine = "claude", retrospective = true }) {
+  let stages = TICKET_STAGES;
+  if (engine === "codex") stages = CODEX_STAGES;
+  if (kind === "harmonisation") stages = TUNING_STAGES;
+  stages = stages.filter((stage) => retrospective || stage.key !== "retro");
   const shown = (entries) => entries.filter((entry) => entry.key !== PHASES.record.key).map(({ label }) => ({ label, state: "done" }));
   // Boucle arrêtée : tout ce que le flux a vu est passé, et la frise s'arrête là où la boucle s'est arrêtée.
   if (phase.key === "stopped") return [...shown(history), { label: phase.label, state: "stopped" }];

@@ -312,7 +312,7 @@ test("a Codex screen shows its model and a failed command while leaving the fake
   const before = snapshot(root);
   const { code, out } = watch(["--root", root, "--once"]);
   assert.equal(code, 0);
-  assert.match(out, /gpt-6-astra, effort high/);
+  assert.match(out, /Codex \(GPT-6 Astra\), effort high/);
   assert.match(out, /Bash.*échec 2.*node --test/);
   assert.deepEqual(snapshot(root), before);
 });

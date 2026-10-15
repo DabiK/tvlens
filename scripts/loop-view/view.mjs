@@ -5,13 +5,11 @@ import { buildTimeline, currentPhase } from "./phase.mjs";
 import { estimateEnd, remainingTickets } from "./queue.mjs";
 import { reviewCycles } from "./reviews.mjs";
 
-import { RECENT_WINDOW_MS } from "./constants.mjs";
-export { RECENT_WINDOW_MS } from "./constants.mjs";
+import { RECENT_WINDOW_MS, msOf } from "./constants.mjs";
 // Sans ticket intégré depuis le lancement, la durée moyenne se prend sur les derniers tickets intégrés de l'historique.
 const HISTORY_SAMPLE = 10;
 const TUNING_TITLE = "Harmonisation des consignes";
 const RUNNING_STAGES = new Set(["session", "gates", "refused"]);
-const msOf = (iso) => (iso ? Date.parse(iso) : null);
 
 function ticketOf(current, tickets, now) {
   if (!current) return null;
@@ -80,7 +78,8 @@ function nightWindow(loop, everything, now) {
 function queueOf({ loop, night, ticket, tickets }) {
   const running = loop.alive && RUNNING_STAGES.has(night.stage);
   const runningId = running && ticket?.kind === "ticket" ? ticket.id : null;
-  const slots = Number.isInteger(loop.maxTickets) ? loop.maxTickets - night.finished.length - (runningId ? 1 : 0) : null;
+  let slots = null;
+  if (Number.isInteger(loop.maxTickets)) slots = loop.maxTickets - night.finished.length - Number(Boolean(runningId));
   const remaining = remainingTickets(tickets, { runningId, limit: slots === null ? null : Math.max(0, slots) });
   return { running, runningId, remaining };
 }
@@ -119,7 +118,9 @@ export function buildView({ now, events, stream, reviews, reports, tickets, loop
     phase,
     reason: night.reason,
     pushRefused: night.pushRefused,
-    timeline: buildTimeline({ history: stream?.history ?? [], phase, kind: ticket?.kind ?? "ticket", retrospective: loop.retrospective }),
+    timeline: buildTimeline({
+      history: stream?.history ?? [], phase, kind: ticket?.kind ?? "ticket", engine: ticket?.moteur, retrospective: loop.retrospective,
+    }),
     cycles: cyclesOf({ reviews, reports, stream, running }),
     reviewCount: reviews.length,
     actions: stream?.actions ?? [],

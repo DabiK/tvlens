@@ -11,4 +11,3 @@ export const PHASES = {
   verdict: { key: "verdict", label: "Verdict" },
   harmonisation: { key: "harmonisation", label: "Harmonisation" },
 };
-

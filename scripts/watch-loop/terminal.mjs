@@ -56,4 +56,3 @@ export function watch(frame, { output, lifecycle, schedule, reportError, stop })
   draw();
   schedule(draw, REFRESH_MS);
 }
-
