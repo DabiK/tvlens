@@ -8,7 +8,8 @@ côté TV. Présentation dans `README.md`, architecture dans `docs/architecture.
 1. Lis `docs/standards.md` : ce sont les règles, et la plupart sont vérifiées par une machine.
 2. Lis le code que tu vas toucher en entier, ses appelants et ses tests. Lis les ADR de `docs/adr/` qui
    concernent la zone.
-3. Pour traiter un ticket de `docs/travail/tickets/`, suis la skill `ticket`.
+3. Pour traiter un ticket de `docs/travail/tickets/`, une session Claude suit la skill `ticket` ; une
+   session Codex suit `.agents/skills/ticket-codex/SKILL.md`.
 
 ## Frontières
 

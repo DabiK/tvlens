@@ -24,6 +24,15 @@ export function relative(root, file) {
   return path.relative(root, path.resolve(root, file)).split(path.sep).join("/");
 }
 
+/** Chemins d'une édition ou d'un patch Codex, sources et destinations de déplacement comprises. */
+export function editPaths(input) {
+  const target = input.tool_input?.file_path || input.tool_input?.notebook_path;
+  if (target) return [target];
+  return [...String(input.tool_input?.command || "").matchAll(
+    /^\s*\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/gm,
+  )].map((match) => match[1].trim());
+}
+
 /** Réponse d'un hook PreToolUse : "deny" refuse, "ask" demande à la personne présente. */
 export function decide(decision, reason) {
   const output = { hookEventName: "PreToolUse", permissionDecision: decision, permissionDecisionReason: reason };

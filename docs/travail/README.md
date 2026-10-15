@@ -91,8 +91,12 @@ raison, y compris après une correction. Un verdict absent, illisible ou PARTIEL
 sans relecture ; la tentative suivante peut reprendre le travail à partir du rapport d'échec.
 Le relecteur tourne hors mode ticket : les hooks ne lui demandent pas de corriger ni d'écrire le verdict.
 
-Une relecture « à corriger » ou « illisible » reprend la même session avec `codex exec resume`, son
-`thread_id` et le rapport complet. Trois corrections au plus par tentative, puis refus et escalade.
+Une relecture « à corriger » ou « illisible » lance une session `codex exec` neuve avec les mêmes
+réglages que la première. Sa consigne nomme le ticket, le chemin du rapport `relecture-<n>.md` et
+transmet son contenu complet ; elle demande de reprendre le travail présent dans l'arbre. La session
+relit les consignes et le rapport avant de corriger. `codex exec resume` ne charge aucun hook du
+projet dans Codex CLI 0.162.1 : chaque correction doit donc passer par une session neuve pour avoir
+les mêmes gardes. Trois corrections au plus par tentative, puis refus et escalade.
 Les contrôles de la boucle restent communs ; la rétrospective et l'harmonisation restent sur Claude.
 Le verdict appartient à la session, la boucle ne le réécrit pas.
 
@@ -109,20 +113,48 @@ autre que `claude` ou `codex` est refusée au démarrage. Les binaires se rempla
 par `TVLENS_CODEX_BIN` et `TVLENS_CLAUDE_BIN`.
 
 La boucle lance `codex exec --json` avec stdin ignoré et impose `workspace-write`,
-`approval_policy="never"`, `sandbox_workspace_write.network_access=true`, `--ignore-user-config`
-et `--dangerously-bypass-hook-trust`. À la reprise, le bac à sable passe par
-`-c sandbox_mode="workspace-write"` et le processus part dans la racine : `resume` n'accepte pas
-`-s` ni `-C`. Aucun `--ephemeral`, pour conserver la session. `--timeout-min` borne chaque processus.
+`approval_policy="never"`, `sandbox_workspace_write.network_access=true` et
+`--dangerously-bypass-hook-trust`. Elle passe `TVLENS_ENGINE=codex` et la confiance du projet avec
+`-c 'projects."<racine>".trust_level="trusted"'`. La config utilisateur reste chargée, car elle contient
+l'approbation des hooks ; `--ignore-user-config` empêcherait leur chargement.
+
+Ses autres apports sont neutralisés par `--disable plugins`, `--disable apps`, `--disable memories`,
+`--disable image_generation` et `-c 'notify=[]'`. Avant chaque session, le même binaire
+(`TVLENS_CODEX_BIN`) exécute `codex mcp list --json` avec ces mêmes `--disable`. La boucle ajoute
+`-c mcp_servers.<nom>.enabled=false` pour chaque serveur actif, sans toucher aux serveurs inactifs.
+Une liste en échec ou illisible refuse la session avant tout `exec` ; la raison nomme la liste des
+serveurs MCP. Le constructeur exporté des arguments est partagé avec la preuve réelle.
+Chaque session reçoit `-s workspace-write` et `-C <racine>`, corrections comprises.
+`--timeout-min` borne chaque processus.
 `--budget-usd`, `--permission-mode` et `--compact-window` concernent les sessions Claude ; ils ne
 remplacent pas les réglages imposés à Codex.
 
-Le flux, reprises comprises, est archivé dans `.harness-state/tickets/<ID>/codex-<tentative>.jsonl`.
+Le flux de chaque session, corrections comprises, s'ajoute au même
+`.harness-state/tickets/<ID>/codex-<tentative>.jsonl`.
 Les événements enregistrent le moteur, les jetons cumulés par catégorie, les tours, la durée mesurée
 et le nombre de relectures. Le coût en dollars reste `null`, car le flux Codex ne le donne pas.
 Une erreur du flux ou un processus Codex en échec refuse la tentative, même avec un verdict TERMINÉ.
 
-Les hooks de `.codex/hooks.json` partagent `guard-write.mjs` et `guard-bash.mjs`, avec résolution de
-la racine par Git. Un patch est refusé si un seul de ses chemins est interdit, déplacement compris.
+Les six hooks de `.codex/hooks.json` partagent les scripts Claude, avec résolution de la racine par Git :
+contexte au démarrage, gardes avant commande et écriture, contrôle rapide après édition, trace des
+compactions et porte de fin de tour. Les hooks de sous-agents ne concernent pas cette session Codex.
+Un patch est refusé si un seul de ses chemins est interdit, déplacement compris ; chaque fichier
+JavaScript encore présent est contrôlé après édition. Le contexte de démarrage indique la skill Codex.
+
+Le propriétaire approuve les hooks dans `codex`, puis `/hooks`. Cette approbation vit dans sa config
+utilisateur et porte sur le chemin absolu de `.codex/hooks.json` : la boucle Codex tourne seulement
+dans le dépôt approuvé. Un worktree ou une copie demande sa propre approbation. `hooks.json` reste
+figé : modifier un script appelé conserve l'approbation ; changer la définition d'un hook demande
+une nouvelle approbation avec `/hooks`.
+
+Avant chaque processus, corrections comprises, la boucle renouvelle `TVLENS_HOOK_RUN` et retire l'ancien
+témoin `.harness-state/tickets/<ID>/hooks-started.json`. `session-context.mjs` écrit l'identifiant du
+lancement et celui de la session dans ce témoin. Après le processus et avant toute relecture, la boucle
+vérifie les deux : témoin absent, illisible ou périmé, la tentative est refusée avec « hooks Codex non
+chargés », même si la session a rendu TERMINÉ. Ce refus indique les causes probables : hooks de
+`.codex/hooks.json` non approuvés pour ce dépôt ou session hors du dépôt approuvé. Le propriétaire
+les approuve avec `codex`, puis `/hooks`. La confiance seule ne constitue donc pas une preuve.
+
 Un hook Codex en erreur laisse passer l'appel : les contrôles de la boucle restent le dernier mur.
 Le bac à sable interdit aussi l'écriture dans `.git`, `.codex` et `.agents` ; ces deux derniers
 dossiers doivent être installés depuis un contexte disposant des droits nécessaires.

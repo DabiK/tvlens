@@ -1,21 +1,25 @@
 // Codex écrit ; un processus Claude séparé juge l'état enregistré avant les contrôles de la boucle.
 import { spawn, spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createInterface } from "node:readline";
-import { record, recordReview, reviewVerdict } from "./reviewed-state.mjs";
+import { lastReviewReport, record, recordReview, reviewVerdict } from "./reviewed-state.mjs";
 
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const MAX_ACTION_LENGTH = 160;
 const MAX_REVIEW_OUTPUT = 64 * 1024 * 1024;
 const MAX_CORRECTIONS = 3;
+const DISABLED_FEATURES = ["plugins", "apps", "memories", "image_generation"];
+const DEFAULT_DISCOVERY_TIMEOUT_MS = SECONDS_PER_MINUTE * MS_PER_SECOND;
 const TOKEN_FIELDS = ["input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens"];
 
 function sessionEnv(ticket) {
   return {
     ...process.env,
     TVLENS_LOOP: "1",
+    TVLENS_ENGINE: "codex",
     TVLENS_TICKET: ticket.id,
     TVLENS_TICKET_FILE: ticket.file,
     TVLENS_HARNESS: ticket.harnais ? "1" : "0",
@@ -23,16 +27,33 @@ function sessionEnv(ticket) {
   };
 }
 
-function codexArgs(root, step, prompt, thread = null) {
+export function codexArgs(root, step, prompt, { env = process.env, timeoutMs = DEFAULT_DISCOVERY_TIMEOUT_MS } = {}) {
+  const disabled = DISABLED_FEATURES.flatMap((name) => ["--disable", name]);
+  let servers;
+  try {
+    const listed = spawnSync(env.TVLENS_CODEX_BIN || "codex", ["mcp", "list", "--json", ...disabled], {
+      cwd: root, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: timeoutMs,
+    });
+    if (listed.status !== 0) throw new Error(listed.error?.message || `processus en échec (code ${listed.status})`);
+    servers = JSON.parse(listed.stdout);
+    const valid = (server) => server && typeof server.name === "string" && server.name.trim() && typeof server.enabled === "boolean";
+    if (!Array.isArray(servers) || !servers.every(valid)) throw new Error("format inattendu");
+  } catch (error) {
+    throw Object.assign(new Error(`Codex : liste des serveurs MCP en échec ou illisible : ${error.message}`), { code: "CODEX_MCP_LIST" });
+  }
+  const mcp = servers.filter((server) => server.enabled).flatMap(({ name }) => {
+    const key = /^[A-Za-z0-9_-]+$/.test(name) ? name : JSON.stringify(name);
+    return ["-c", `mcp_servers.${key}.enabled=false`];
+  });
   const args = [
-    "exec", ...(thread ? ["resume", thread] : []), "--json", "-m", step.modele,
+    "exec", "--json", "-m", step.modele,
     "-c", `model_reasoning_effort="${step.effort}"`,
     "-c", 'approval_policy="never"',
     "-c", "sandbox_workspace_write.network_access=true",
-    "--ignore-user-config", "--dangerously-bypass-hook-trust",
+    "-c", `projects.${JSON.stringify(root)}.trust_level="trusted"`,
+    ...disabled, "-c", "notify=[]", ...mcp, "--dangerously-bypass-hook-trust",
+    "-s", "workspace-write", "-C", root,
   ];
-  if (thread) args.push("-c", 'sandbox_mode="workspace-write"');
-  else args.push("-s", "workspace-write", "-C", root);
   return [...args, prompt];
 }
 
@@ -91,6 +112,37 @@ function streamSession(root, args, env, file, state, timeoutMs, started) {
   });
 }
 
+async function hookedSession(root, request, env, file, state, timeoutMs, started, dir) {
+  const markerFile = path.join(dir, "hooks-started.json");
+  const run = randomUUID();
+  fs.rmSync(markerFile, { force: true });
+  state.session = null;
+  let args;
+  try {
+    args = codexArgs(root, request.step, request.prompt, { env, timeoutMs });
+  } catch (error) {
+    if (error.code !== "CODEX_MCP_LIST") throw error;
+    state.problem = error.message;
+    return 1;
+  }
+  const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, file, state, timeoutMs, started);
+  let marker;
+  try {
+    marker = JSON.parse(fs.readFileSync(markerFile, "utf8"));
+  } catch (error) {
+    // Un témoin absent ou illisible ne prouve pas le chargement des hooks.
+    marker = null;
+  }
+  if (!state.session || marker?.session !== state.session || marker?.run !== run) {
+    const missing = "hooks Codex non chargés : aucun témoin de démarrage valide pour cette session et ce lancement." +
+      " Cause probable : hooks de .codex/hooks.json non approuvés pour ce dépôt, ou session hors du dépôt approuvé." +
+      " Le propriétaire les approuve avec codex, puis /hooks.";
+    state.problem = state.problem ? `${state.problem} ${missing}` : missing;
+    return 1;
+  }
+  return code;
+}
+
 function review(root, ticket, dir, env, step, timeoutMs) {
   const snapshot = record(root, ticket);
   if (snapshot.problem) return { problem: snapshot.problem };
@@ -101,6 +153,7 @@ function review(root, ticket, dir, env, step, timeoutMs) {
   const reviewEnv = { ...env };
   // Les hooks de ticket exigeraient du relecteur un verdict d'implémentation et remplaceraient son rapport.
   delete reviewEnv.TVLENS_LOOP;
+  delete reviewEnv.TVLENS_ENGINE;
   const result = spawnSync(process.env.TVLENS_CLAUDE_BIN || "claude", args, {
     cwd: root, env: reviewEnv, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: timeoutMs, maxBuffer: MAX_REVIEW_OUTPUT,
   });
@@ -140,21 +193,24 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   event("session", { ticket: ticket.id, attempt, moteur: "codex", ...step });
   const file = path.join(dir, `codex-${attempt}.jsonl`);
   fs.writeFileSync(file, "");
-  let code = await streamSession(root, codexArgs(root, step, prompt), env, file, state, timeoutMs, started);
+  let code = await hookedSession(root, { step, prompt }, env, file, state, timeoutMs, started, dir);
   let relectures = 0;
   for (let correction = 0; code === 0; correction++) {
     if (sessionVerdict(dir)?.statut !== "TERMINÉ") break;
     const reviewed = review(root, ticket, dir, env, step, timeoutMs);
     relectures++;
     if (reviewed.verdict === "accepté") break;
-    if (reviewed.problem || correction >= MAX_CORRECTIONS || !state.session) {
+    if (reviewed.problem || correction >= MAX_CORRECTIONS) {
       state.problem = reviewed.problem || reviewed.report;
       code = 1;
       break;
     }
-    const fix = `Corrige chaque constat bloquant et mineur de cette relecture, puis rends un nouveau verdict.\n\n${reviewed.report}`;
+    const reportFile = path.relative(root, path.join(dir, lastReviewReport(dir)));
+    const fix = `Reprends le ticket ${ticket.id} (${ticket.file}) en suivant .agents/skills/ticket-codex/SKILL.md.` +
+      ` Lis ${reportFile}, le ticket et son journal, les écarts, git status et git diff, puis reprends le travail présent dans l'arbre.` +
+      ` Corrige chaque constat bloquant et mineur de cette relecture, tests d'abord, puis rends un nouveau verdict.\n\n${reviewed.report}`;
     fs.rmSync(path.join(dir, "verdict.json"), { force: true });
-    code = await streamSession(root, codexArgs(root, step, fix, state.session), env, file, state, timeoutMs, started);
+    code = await hookedSession(root, { step, prompt: fix }, env, file, state, timeoutMs, started, dir);
   }
   const { problem, ...usage } = state;
   const report = { ...usage, duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };

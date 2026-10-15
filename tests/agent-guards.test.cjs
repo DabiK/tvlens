@@ -312,6 +312,69 @@ const patch = (repo, command, env = LOOP) => hook(repo, "guard-write", {
   tool_name: "apply_patch", cwd: repo.root, tool_input: { command },
 }, env);
 
+test("after a Codex patch every JavaScript destination is checked, including moved files", (t) => {
+  const repo = harnessRepo({ "core/a.cjs": "module.exports = 1;\n" });
+  t.after(repo.cleanup);
+  const edit = (command) => hook(repo, "after-edit", {
+    cwd: repo.root, tool_name: "apply_patch", tool_input: { command },
+  }, { ...INTERACTIVE, CLAUDE_PROJECT_DIR: "" });
+  const command = "*** Begin Patch\n*** Update File: core/a.cjs\n*** Add File: core/b.js\n*** End Patch";
+  repo.write("core/b.js", "const b = '" + "x".repeat(170) + "';\n");
+  assert.match(edit(command)?.reason || "", /core\/b\.js.*[\s\S]*160 caractères/);
+  repo.write("core/b.js", "module.exports = 2;\n");
+  assert.equal(edit(command), null);
+  repo.write("core/moved.mjs", "const b = '" + "x".repeat(170) + "';\n");
+  const move = "*** Begin Patch\n*** Update File: core/gone.mjs\n  *** Move to: core/moved.mjs\n*** End Patch";
+  assert.match(edit(move)?.reason || "", /core\/moved\.mjs/);
+  repo.write("notes.md", "x".repeat(170));
+  assert.equal(edit("*** Begin Patch\n*** Add File: notes.md\n*** End Patch"), null);
+});
+
+test("after a Codex patch non-JavaScript files bypass a failing formatter while JavaScript files are reported", (t) => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const repo = harnessRepo({ "notes.md": "notes\n", "core/a.cjs": "module.exports = 1;\n" });
+  t.after(repo.cleanup);
+  repo.write("node_modules/.bin/prettier", "#!/bin/sh\nexit 1\n");
+  fs.chmodSync(path.join(repo.root, "node_modules/.bin/prettier"), 0o755);
+  const edit = (file) => hook(repo, "after-edit", {
+    cwd: repo.root, tool_name: "apply_patch", tool_input: { command: `*** Begin Patch\n*** Update File: ${file}\n*** End Patch` },
+  }, { ...INTERACTIVE, CLAUDE_PROJECT_DIR: "" });
+  assert.equal(edit("notes.md"), null);
+  const reported = edit("core/a.cjs");
+  assert.equal(reported?.decision, "block");
+  assert.match(reported.reason, /core\/a\.cjs/);
+});
+
+test("Codex Stop accepts cwd and stop_hook_active while enforcing the verdict and quality gate", (t) => {
+  const repo = harnessRepo({ "core/a.cjs": "module.exports = 1;\n" });
+  t.after(repo.cleanup);
+  const stop = (session, active = false) => hook(repo, "stop-gate", {
+    cwd: repo.root, session_id: session, hook_event_name: "Stop", stop_hook_active: active, last_assistant_message: "Fait.",
+  }, { ...LOOP, TVLENS_ENGINE: "codex", CLAUDE_PROJECT_DIR: "" });
+  assert.equal(stop("codex").decision, "block");
+  assert.match(stop("codex", true).reason, /Aucun verdict/);
+  repo.write(".harness-state/tickets/T001/verdict.json", JSON.stringify({ statut: "BLOQUÉ", resume: "décision attendue" }));
+  assert.equal(stop("blocked", true), null);
+  repo.write(".harness-state/tickets/T001/verdict.json", JSON.stringify({ statut: "TERMINÉ", resume: "fait" }));
+  repo.write("core/a.cjs", "module.exports = '" + "x".repeat(170) + "';\n");
+  assert.match(stop("red").reason, /TERMINÉ mais le contrôle qualité est rouge/);
+});
+
+test("the Codex start hook gives its skill and records its session and launch, while Claude keeps the ticket skill", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const input = { cwd: repo.root, session_id: "codex-start", hook_event_name: "SessionStart" };
+  const output = hook(repo, "session-context", input, {
+    ...LOOP, TVLENS_ENGINE: "codex", TVLENS_HOOK_RUN: "launch-1", CLAUDE_PROJECT_DIR: "",
+  });
+  assert.ok(output.hookSpecificOutput.additionalContext.includes(".agents/skills/ticket-codex/SKILL.md"));
+  assert.deepEqual(JSON.parse(repo.read(".harness-state/tickets/T001/hooks-started.json")), { session: "codex-start", run: "launch-1" });
+  const claude = hook(repo, "session-context", input, LOOP).hookSpecificOutput.additionalContext;
+  assert.match(claude, /skill ticket/);
+  assert.doesNotMatch(claude, /ticket-codex/);
+});
+
 test("a Codex patch is refused as a whole when any source or move destination belongs to the harness", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);
@@ -368,4 +431,34 @@ test("indented Codex patch markers still enforce every path rule", (t) => {
     "  *** Add File: tests/review-regressions.test.cjs",
   ]) assert.equal(decision(patch(repo, `*** Begin Patch\n${body}\n*** End Patch`)), "deny", body);
   assert.equal(decision(patch(repo, "*** Begin Patch\n  *** Add File: core/greeting.cjs\n+hello\n*** End Patch")), "none");
+});
+
+test("Codex declares all six shared lifecycle hooks with executable commands independent of Claude", (t) => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const root = path.resolve(__dirname, "..");
+  const config = JSON.parse(fs.readFileSync(path.join(root, ".codex/hooks.json"), "utf8"));
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const expected = {
+    SessionStart: ["session-context"], PreToolUse: ["guard-bash", "guard-write"], PostToolUse: ["after-edit"],
+    PreCompact: ["record-compaction"], Stop: ["stop-gate"],
+  };
+  assert.deepEqual(Object.keys(config.hooks).sort(), Object.keys(expected).sort());
+  for (const [event, names] of Object.entries(expected)) {
+    const entries = config.hooks[event];
+    const commands = entries.flatMap(entry => entry.hooks.map(handler => handler.command));
+    assert.equal(commands.length, names.length);
+    for (const name of names) assert.ok(commands.some(command => command.includes(`/${name}.mjs`)), event);
+    for (const command of commands) {
+      assert.doesNotMatch(command, /CLAUDE_PROJECT_DIR/);
+      const result = repo.run("sh", ["-c", command], {
+        input: JSON.stringify({ cwd: repo.root, hook_event_name: event, session_id: "config-check" }), env: INTERACTIVE,
+      });
+      assert.equal(result.code, 0, result.out);
+    }
+  }
+  for (const tool of ["apply_patch", "Edit", "Write"]) {
+    assert.equal(config.hooks.PostToolUse.filter(entry => new RegExp(`^(?:${entry.matcher})$`).test(tool)).length, 1, tool);
+  }
 });

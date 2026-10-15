@@ -6,15 +6,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { closedLine, inScope, scopeDirs } from "../../scripts/loop/harness-scopes.mjs";
 import { TICKET_NAMED_TEST } from "../../scripts/quality/metrics.mjs";
-import { decide, loopMode, projectDir, readInput, refuseOrAsk, relative } from "./lib.mjs";
+import { decide, editPaths, loopMode, projectDir, readInput, refuseOrAsk, relative } from "./lib.mjs";
 
 const input = readInput();
 const root = projectDir(input);
-const target = input.tool_input?.file_path || input.tool_input?.notebook_path;
-const patchPaths = [...String(input.tool_input?.command || "").matchAll(
-  /^\s*\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/gm,
-)].map((match) => match[1].trim());
-const targets = target ? [target] : patchPaths;
+const targets = editPaths(input);
 
 // Ce qui définit les règles ne se modifie pas en cours de ticket : sinon un contrôle rouge se « répare » en l'affaiblissant.
 const PROTECTED = [

@@ -31,7 +31,10 @@ const argument = (name) => (process.argv.includes(name) ? process.argv[process.a
 if (argument("--agent") === "relecteur") {
   const calls = path.join(dir, "fake-review-calls");
   const rank = fs.existsSync(calls) ? fs.readFileSync(calls, "utf8").trim().split("\\n").length : 0;
-  const call = { args: process.argv.slice(2), prompt: argument("-p"), model: argument("--model"), loop: process.env.TVLENS_LOOP ?? null };
+  const call = {
+    args: process.argv.slice(2), prompt: argument("-p"), model: argument("--model"),
+    loop: process.env.TVLENS_LOOP ?? null, engine: process.env.TVLENS_ENGINE ?? null,
+  };
   fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
   const accepted = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
   const reports = JSON.parse(process.env.FAKE_REVIEWS || "null");
@@ -1453,7 +1456,7 @@ test("a Codex ticket accepted on its first review is integrated with safe option
   for (const value of [
     'approval_policy="never"', 'sandbox_workspace_write.network_access=true', 'model_reasoning_effort="high"',
   ]) assert.ok(args.some((arg, i) => arg === "-c" && args[i + 1] === value), args.join(" "));
-  assert.ok(args.includes("--ignore-user-config"));
+  assert.equal(args.includes("--ignore-user-config"), false);
   assert.ok(args.includes("--dangerously-bypass-hook-trust"));
   assert.ok(args.at(-1).includes(".agents/skills/ticket-codex/SKILL.md"));
   assert.equal(cwd, repo.root);
@@ -1483,29 +1486,156 @@ test("a Codex ticket accepted on its first review is integrated with safe option
 const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 0 hors périmètre\n- core/greeting.cjs:1 : preuve manquante.\n- nom à préciser.";
 const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
 
-test("Codex resumes the same thread with the complete reviewer report before its accepted integration", (t) => {
+test("Codex trusts the project and identifies its engine on startup and every fresh correction", (t) => {
   const repo = codexRepo();
   t.after(repo.cleanup);
   const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]) });
   assert.equal(result.code, 0, result.out);
   const calls = jsonLines(repo, "fake-codex-calls");
   assert.equal(calls.length, 2);
-  const resumed = calls[1];
-  assert.deepEqual(resumed.args.slice(0, 3), ["exec", "resume", "codex-thread"]);
-  assert.ok(resumed.args.at(-1).includes(rejectedReview), "the full reviewer report must reach the resumed thread");
+  for (const call of calls) {
+    const trust = `projects.${JSON.stringify(repo.root)}.trust_level="trusted"`;
+    assert.ok(call.args.some((arg, i) => arg === "-c" && call.args[i + 1] === trust), call.args.join(" "));
+    assert.equal(call.engine, "codex");
+    assert.deepEqual(call.args.slice(0, 2), ["exec", "--json"]);
+  }
+});
+
+test("Codex neutralizes user extensions and only active MCP servers on startup and correction", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const servers = [{ name: "research", enabled: true }, { name: "team.docs", enabled: true }, { name: "paused", enabled: false }];
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_MCP_LIST: JSON.stringify(servers), FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  for (const { args } of calls) {
+    assert.equal(args.includes("--ignore-user-config"), false);
+    const disabled = args.flatMap((arg, i) => arg === "--disable" ? [args[i + 1]] : []);
+    assert.deepEqual(disabled, ["plugins", "apps", "memories", "image_generation"]);
+    const configs = args.flatMap((arg, i) => arg === "-c" ? [args[i + 1]] : []);
+    assert.ok(configs.includes("notify=[]"));
+    assert.deepEqual(configs.filter(value => value.startsWith("mcp_servers.")), [
+      "mcp_servers.research.enabled=false", 'mcp_servers."team.docs".enabled=false',
+    ]);
+  }
+  const listings = jsonLines(repo, "fake-mcp-calls");
+  assert.equal(listings.length, 2);
+  for (const listing of listings) {
+    assert.deepEqual(listing.args.slice(0, 3), ["mcp", "list", "--json"]);
+    assert.deepEqual(listing.args.slice(3), calls[0].args.filter((_, i, args) => args[i - 1] === "--disable" || args[i] === "--disable"));
+    assert.equal(listing.cwd, repo.root);
+  }
+});
+
+for (const [kind, env] of [
+  ["failed", { FAKE_CODEX_MCP_FAILURE: "1" }],
+  ["unreadable", { FAKE_CODEX_MCP_LIST: "{ incomplete" }],
+  ["not an array", { FAKE_CODEX_MCP_LIST: "{}" }],
+  ["ambiguous activation", { FAKE_CODEX_MCP_LIST: '[{"name":"docs"}]' }],
+]) {
+  test(`a ${kind} MCP server list refuses Codex without any exec or review`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], env);
+    assert.equal(result.code, 2, result.out);
+    assert.match(repo.failure(), /liste des serveurs MCP/);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-codex-calls")), false);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+    assert.equal(jsonLines(repo, "fake-mcp-calls").length, 1);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+test("a Codex session without its startup hook is refused before review, even with an older witness", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  repo.write(codexDir + "hooks-started.json", JSON.stringify({ session: "codex-thread-1", run: "old-launch" }));
+  const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_HOOKS: "missing" });
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /hooks Codex non chargés/);
+  assert.match(repo.failure(), /\.codex\/hooks\.json.*non approuvés.*dépôt/);
+  assert.match(repo.failure(), /hors du dépôt approuvé/);
+  assert.match(repo.failure(), /propriétaire.*codex.*\/hooks/);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 0);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a failed Codex process without its hook witness retains the failure and explains approval", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_HOOKS: "missing", FAKE_CODEX_FAILURE: "exit" });
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /processus en échec/);
+  assert.match(repo.failure(), /hooks Codex non chargés.*non approuvés.*hors du dépôt approuvé.*propriétaire.*codex.*\/hooks/);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a fresh Codex correction without its hook witness is refused before another review", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_HOOKS: "missing-on-correction", FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /hooks Codex non chargés/);
+  assert.match(repo.failure(), /\.codex\/hooks\.json.*non approuvés.*dépôt/);
+  assert.match(repo.failure(), /hors du dépôt approuvé/);
+  assert.match(repo.failure(), /propriétaire.*codex.*\/hooks/);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  assert.deepEqual(calls[1].args.slice(0, 2), ["exec", "--json"]);
+  assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("the separate Claude reviewer does not inherit the Codex startup instructions", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  assert.equal(jsonLines(repo, "fake-review-calls")[0].engine, null);
+});
+
+test("Codex starts a fresh guarded correction with the ticket, report and existing tree before integration", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]) });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  const corrected = calls[1];
+  assert.deepEqual(corrected.args.slice(0, 2), ["exec", "--json"]);
+  assert.deepEqual(corrected.args.slice(0, -1), calls[0].args.slice(0, -1));
+  const prompt = corrected.args.at(-1);
+  assert.ok(prompt.includes("T001"));
+  assert.ok(prompt.includes("docs/travail/tickets/001-add-greeting.md"));
+  assert.ok(prompt.includes(codexDir + "relecture-1.md"));
+  assert.ok(prompt.includes(".agents/skills/ticket-codex/SKILL.md"));
+  assert.match(prompt, /reprends.*travail.*arbre/i);
+  assert.ok(prompt.includes(rejectedReview), "the complete report must reach the fresh correction");
   for (const value of [
-    'sandbox_mode="workspace-write"', 'approval_policy="never"',
+    'approval_policy="never"',
     'sandbox_workspace_write.network_access=true', 'model_reasoning_effort="high"',
-  ]) assert.ok(resumed.args.some((arg, i) => arg === "-c" && resumed.args[i + 1] === value), resumed.args.join(" "));
-  assert.ok(resumed.args.includes("--ignore-user-config"));
-  assert.ok(resumed.args.includes("--dangerously-bypass-hook-trust"));
-  assert.ok(resumed.args.includes("--json"));
-  assert.equal(resumed.args[resumed.args.indexOf("-m") + 1], "gpt-6.1-sol");
-  assert.equal(resumed.args.includes("-s"), false);
-  assert.equal(resumed.args.includes("-C"), false);
-  assert.equal(resumed.cwd, repo.root);
-  assert.equal(resumed.stdin, "");
-  assert.deepEqual(resumed.env, calls[0].env);
+  ]) assert.ok(corrected.args.some((arg, i) => arg === "-c" && corrected.args[i + 1] === value), corrected.args.join(" "));
+  assert.equal(corrected.args.includes("--ignore-user-config"), false);
+  assert.ok(corrected.args.includes("--dangerously-bypass-hook-trust"));
+  assert.ok(corrected.args.includes("--json"));
+  assert.equal(corrected.args[corrected.args.indexOf("-m") + 1], "gpt-6.1-sol");
+  assert.equal(corrected.args[corrected.args.indexOf("-s") + 1], "workspace-write");
+  assert.equal(corrected.args[corrected.args.indexOf("-C") + 1], repo.root);
+  assert.equal(corrected.cwd, repo.root);
+  assert.equal(corrected.stdin, "");
+  assert.deepEqual(corrected.env, calls[0].env);
+  assert.equal(corrected.greetingPresent, true);
+  assert.notEqual(corrected.session, calls[0].session);
+  assert.ok(corrected.run);
+  assert.notEqual(corrected.run, calls[0].run);
+  assert.deepEqual(JSON.parse(repo.read(codexDir + "hooks-started.json")), { session: corrected.session, run: corrected.run });
   const reviews = jsonLines(repo, "relectures.jsonl");
   assert.deepEqual(reviews.map(r => [r.revue, r.verdict]), [["revue-1.diff", "à corriger"], ["revue-2.diff", "accepté"]]);
   assert.equal(repo.read(codexDir + "relecture-1.md"), rejectedReview);
@@ -1516,6 +1646,23 @@ test("Codex resumes the same thread with the complete reviewer report before its
   assert.equal(ended.tours, 2);
   assert.deepEqual(ended.jetons, { input_tokens: 20, cached_input_tokens: 8, output_tokens: 10, reasoning_output_tokens: 4 });
   assert.equal(jsonLines(repo, "codex-1.jsonl").length, 10);
+  assert.deepEqual(jsonLines(repo, "codex-1.jsonl").filter(e => e.type === "thread.started").map(e => e.thread_id), calls.map(c => c.session));
+});
+
+test("an unreadable Codex review starts a fresh correction naming its recorded report", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const unreadable = "Rapport incomplet : relire les preuves.";
+  const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([unreadable, acceptedReview]) });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  assert.deepEqual(calls[1].args.slice(0, 2), ["exec", "--json"]);
+  assert.ok(calls[1].args.at(-1).includes(codexDir + "relecture-1.md"));
+  assert.ok(calls[1].args.at(-1).includes(unreadable));
+  assert.equal(repo.read(codexDir + "relecture-1.md"), unreadable);
+  assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(r => r.verdict), ["illisible", "accepté"]);
+  assert.deepEqual(JSON.parse(repo.read(codexDir + "hooks-started.json")), { session: calls[1].session, run: calls[1].run });
 });
 
 test("four rejected Codex reviews exhaust three corrections and the next attempt climbs to Astra", (t) => {
@@ -1526,9 +1673,12 @@ test("four rejected Codex reviews exhaust three corrections and the next attempt
   assert.equal(result.code, 0, result.out);
   const calls = jsonLines(repo, "fake-codex-calls");
   assert.equal(calls.length, 5);
-  assert.deepEqual(calls.map(c => c.args.includes("resume")), [false, true, true, true, false]);
+  assert.deepEqual(calls.map(c => c.args.slice(0, 2)), Array(5).fill(["exec", "--json"]));
   assert.deepEqual(calls.map(c => c.args[c.args.indexOf("-m") + 1]), Array(4).fill("gpt-6.1-sol").concat("gpt-6-astra"));
-  for (let i = 1; i <= 3; i++) assert.ok(calls[i].args.at(-1).includes(reports[i - 1]));
+  for (let i = 1; i <= 3; i++) {
+    assert.ok(calls[i].args.at(-1).includes(reports[i - 1]));
+    assert.ok(calls[i].args.at(-1).includes(codexDir + `relecture-${i}.md`));
+  }
   assert.ok(repo.failure().includes(reports[3]), repo.failure());
   assert.equal(jsonLines(repo, "relectures.jsonl").length, 5);
   assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.relectures), [4, 1]);
@@ -1641,7 +1791,7 @@ test("a Codex correction that becomes blocked preserves its new question without
   const repo = codexRepo();
   t.after(repo.cleanup);
   const result = repo.codex(["--attempts", "1"], {
-    FAKE_CODEX_SCENARIO: "blocked-after-resume", FAKE_REVIEWS: JSON.stringify(Array(4).fill(rejectedReview)),
+    FAKE_CODEX_SCENARIO: "blocked-after-correction", FAKE_REVIEWS: JSON.stringify(Array(4).fill(rejectedReview)),
   });
   assert.equal(result.code, 2, result.out);
   assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);

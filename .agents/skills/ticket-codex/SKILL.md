@@ -10,6 +10,14 @@ Tu ne lances ni sous-agent ni relecteur, tu ne committes pas et tu ne pousses pa
 
 Dossier d'état : `.harness-state/tickets/<ID>/`, hors Git.
 
+La boucle Codex tourne dans le dépôt approuvé par le propriétaire avec `codex`, puis `/hooks`.
+L'approbation de `.codex/hooks.json` vit dans la config utilisateur et dépend du chemin absolu du
+dépôt ; un worktree ou une copie demande sa propre approbation. La boucle conserve cette config,
+neutralise ses extensions et ses serveurs MCP, puis exige le témoin de démarrage à chaque session.
+Sans témoin, le refus « hooks Codex non chargés » indique les causes probables et le remède `/hooks`.
+`hooks.json` reste figé : changer un script appelé conserve l'approbation ; changer la définition
+d'un hook impose une nouvelle approbation du propriétaire. Ne contourne pas ce refus.
+
 ## 1. Cadrer et explorer
 
 Lis `AGENTS.md` (lien vers `CLAUDE.md`), `docs/standards.md` et le ticket en entier.
@@ -34,8 +42,13 @@ ne change. Si `adr: oui`, écris l'ADR au numéro suivant, avec `docs/adr/0000-g
 
 ## 3. Reprendre après une relecture
 
-La boucle transmet le rapport complet du relecteur dans la même session Codex.
-Lis-le et corrige chaque constat bloquant et mineur, tests d'abord. Une contestation se déclare
+Après une relecture « à corriger » ou « illisible », la boucle lance une session Codex neuve avec
+les mêmes réglages et la même vérification du témoin de hooks que la première. Une reprise par
+`codex exec resume` ne charge aucun hook du projet : elle ne peut pas servir à corriger.
+La consigne nomme le ticket et le chemin du rapport `relecture-<n>.md` à corriger, et transmet son
+contenu complet. Lis les consignes, le ticket et son journal, ce rapport, les écarts, puis `git status`
+et `git diff` : le travail des sessions précédentes est présent dans l'arbre. Reprends ce travail et
+corrige chaque constat bloquant et mineur, tests d'abord. Une contestation se déclare
 avec sa raison dans `ecarts.md` ; le relecteur suivant tranche. Les constats hors périmètre deviennent
 des réserves dans `reste`. Mets le journal à jour et rends un nouveau verdict.
 N'enregistre pas toi-même l'état relu et ne lance pas de relecteur : la boucle s'en charge après toi.

@@ -5,16 +5,35 @@ const path = require("node:path");
 const dir = path.join(".harness-state", "tickets", process.env.TVLENS_TICKET);
 fs.mkdirSync(dir, { recursive: true });
 const args = process.argv.slice(2);
+if (args[0] === "mcp") {
+  fs.appendFileSync(path.join(dir, "fake-mcp-calls"), JSON.stringify({ args, cwd: process.cwd() }) + "\\n");
+  console.log(process.env.FAKE_CODEX_MCP_LIST || JSON.stringify([
+    { name: "docs", enabled: true }, { name: "offline", enabled: false },
+  ]));
+  process.exit(process.env.FAKE_CODEX_MCP_FAILURE ? 1 : 0);
+}
 const scenario = process.env.FAKE_CODEX_SCENARIO;
 const failure = process.env.FAKE_CODEX_FAILURE;
-const blocked = scenario === "blocked" || (scenario === "blocked-after-resume" && args.includes("resume"));
+const calls = path.join(dir, "fake-codex-calls");
+const rank = fs.existsSync(calls) ? fs.readFileSync(calls, "utf8").trim().split("\\n").length : 0;
+const session = "codex-thread-" + (rank + 1);
+const blocked = scenario === "blocked" || (scenario === "blocked-after-correction" && rank > 0);
 const names = ["LOOP", "TICKET", "TICKET_FILE", "HARNESS", "ALLOW_INSTALL"];
 const env = Object.fromEntries(names.map(name => [name, process.env["TVLENS_" + name]]));
 const stdinIsDevice = fs.fstatSync(0).isCharacterDevice();
 // Une régression vers un pipe doit échouer sur une assertion, sans attendre sa fermeture.
 const stdin = stdinIsDevice ? fs.readFileSync(0, "utf8") : null;
-const call = { args, cwd: process.cwd(), stdin, stdinIsDevice, env };
-fs.appendFileSync(path.join(dir, "fake-codex-calls"), JSON.stringify(call) + "\\n");
+const call = {
+  args, cwd: process.cwd(), stdin, stdinIsDevice, env, engine: process.env.TVLENS_ENGINE,
+  session, run: process.env.TVLENS_HOOK_RUN, greetingPresent: fs.existsSync("core/greeting.cjs"),
+};
+fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
+if (process.env.FAKE_CODEX_HOOKS !== "missing" && !(rank > 0 && process.env.FAKE_CODEX_HOOKS === "missing-on-correction")) {
+  const { spawnSync } = require("node:child_process");
+  const input = { cwd: process.cwd(), session_id: session, hook_event_name: "SessionStart" };
+  const started = spawnSync(process.execPath, [".claude/hooks/session-context.mjs"], { input: JSON.stringify(input), encoding: "utf8" });
+  if (started.status !== 0) throw new Error("startup hook failed: " + started.stdout + started.stderr);
+}
 fs.mkdirSync("core", { recursive: true });
 if (!blocked) fs.writeFileSync("core/greeting.cjs", "module.exports = () => 'hello';\\n");
 if (process.env.FAKE_CODEX_EDIT) {
@@ -30,7 +49,7 @@ if (scenario === "partial") verdict.statut = "PARTIEL";
 if (scenario !== "missing-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), JSON.stringify(verdict));
 if (scenario === "unreadable-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), "{ incomplete");
 const events = [
-  { type: "thread.started", thread_id: "codex-thread" },
+  { type: "thread.started", thread_id: session },
   { type: "turn.started" },
   { type: "item.completed", item: { type: "command_execution", command: "node --test", exit_code: 0, status: "completed" } },
   { type: "item.completed", item: { type: "file_change", changes: [{ path: "core/greeting.cjs", kind: "add" }], status: "completed" } },
