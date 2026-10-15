@@ -1,0 +1,27 @@
+film/
+promo/
+dist/
+tv/dist/
+media/
+screenshots/
+design/
+experiments/
+prototypes/lg-remote/
+docs/**/*.json
+tests/fixtures/
+package-lock.json
+**/*.md
+**/*.css
+**/*.html
+.claude/
+scripts/check.mjs
+scripts/quality/
+scripts/loop/
+.codex/
+.agents/
+
+# >>> code JavaScript pas encore formaté
+**/*.js
+**/*.cjs
+**/*.mjs
+# <<< code JavaScript pas encore formaté

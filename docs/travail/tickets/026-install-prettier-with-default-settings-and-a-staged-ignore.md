@@ -1,7 +1,7 @@
 ---
 id: T026
 titre: Install Prettier with default settings and a staged ignore list
-statut: a-faire
+statut: termine
 bloque_par: T158
 adr: oui
 installe: oui
@@ -123,3 +123,272 @@ avant le ticket qui rejoue la suite sur une copie formatée : cette preuve se fa
 réglages. Si l'installation échoue (réseau, registre) : verdict BLOQUÉ, avec la sortie de `npm`.
 
 ## Journal
+
+### Exploration — 2026-10-15
+
+Lecture du ticket, des consignes, du contrôle et de ses tests ; aucun écart fonctionnel prévu.
+Prochain ADR libre : 0012. Preuves conservées dans `.harness-state/tickets/T026/`.
+
+Commande initiale : `node scripts/check.mjs --no-tests` (sortie 0).
+
+```text
+✔ règles par fichier
+– format : non lancé (Prettier n'est pas installé)
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+check : vert
+```
+
+### Installation et configuration — 2026-10-15
+
+`npm install --save-dev --save-exact prettier@3.8.1` : premier essai refusé (EPERM sur le cache npm utilisateur).
+Même commande avec `npm_config_cache` dans un dossier temporaire autorisé : sortie 0, `added 1 package`, `found 0 vulnerabilities`.
+Sorties complètes dans `installation.log` et `installation-cache-temporaire.log`.
+Ajout des scripts, de la configuration vide, de la liste d’ignorés et de l’ADR 0012.
+
+### Vérification des critères — 2026-10-15
+
+```text
+$ node_modules/.bin/prettier --version
+3.8.1
+Code de sortie : 0
+
+$ node -p "require('./package.json').devDependencies.prettier"
+3.8.1
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+Code de sortie : 0
+
+$ npm run format:check
+
+> tvlens@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+Code de sortie : 0
+
+$ node scripts/check.mjs --no-tests
+✔ règles par fichier
+✔ format
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+check : vert
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info film/package.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info promo/package.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info package-lock.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info .claude/settings.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info scripts/check.mjs
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info scripts/quality/baseline.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info tests/fixtures/tv-overlay-queue-cases.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info docs/latency-local.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info runtime/session-closing.cjs
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info package.json
+{ "ignored": false, "inferredParser": "json-stringify" }
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --file-info tv/app/appinfo.json
+{ "ignored": false, "inferredParser": "json" }
+Code de sortie : 0
+
+$ node -e 'const assert = require("node:assert/strict"); const lines = require("node:fs").readFileSync(".prettierignore", "utf8").trimEnd().split("\n"); const start = "# >>> code JavaScript pas encore formaté"; const end = "# <<< code JavaScript pas encore formaté"; for (const marker of [start, end]) assert.equal(lines.filter(line => line === marker).length, 1); const block = lines.slice(lines.indexOf(start) + 1, lines.indexOf(end)); assert.deepEqual(block, ["**/*.js", "**/*.cjs", "**/*.mjs"]); assert.equal(lines.at(-1), end); console.log(block.join("\n"));'
+**/*.js
+**/*.cjs
+**/*.mjs
+Code de sortie : 0
+
+$ node_modules/.bin/prettier --find-config-path core/ports.cjs
+.prettierrc.json
+Code de sortie : 0
+
+$ node scripts/check.mjs --changed
+✔ règles par fichier
+✔ format
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+✔ tests JS
+check : vert
+Code de sortie : 0
+
+$ git diff --check
+Code de sortie : 0
+```
+
+### Contrôle complet — 2026-10-15
+
+Commande : `node scripts/check.mjs` (sortie 0).
+
+```text
+✔ règles par fichier
+✔ format
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+✔ tests JS (82 fichier(s))
+    ℹ tests 805
+    ℹ pass 805
+    ℹ fail 0
+✔ tests Python
+    Ran 84 tests in 27.696s
+
+    OK (skipped=1)
+check : vert
+```
+
+Verdict : **TERMINÉ**, critères 1 à 7 vérifiés. ESLint reste explicitement non lancé
+(absent ou non configuré, hors périmètre). Le contrôle Python rapporte un test ignoré.
+`git diff --check` a détecté les espaces d’une ligne vide recopiée du bilan Python dans ce journal ;
+après retrait de ces espaces, sortie 0. La sortie brute reste dans `controle-complet.log`.
+Verdict détaillé dans `.harness-state/tickets/T026/verdict.json`.
+Relecture et intégration laissées à la boucle. Aucun commit ni push.
+
+### Reprise après relecture — 2026-10-15
+
+Constat mineur accepté : le harnais comprend désormais `.codex/` et `.agents/`.
+Contrairement aux quatre fichiers recensés au découpage, `.codex/hooks.json` est aussi contrôlé ;
+sa conformité actuelle masquait cette omission. Les deux dossiers seront ajoutés aux exclusions permanentes.
+
+```text
+$ node_modules/.bin/prettier --file-info .codex/hooks.json
+{ "ignored": false, "inferredParser": "json" }
+Code de sortie : 0
+Assertion ROUGE observée : .codex/hooks.json doit être ignoré
+```
+
+```text
+$ node_modules/.bin/prettier --file-info .codex/hooks.json
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+Assertion ignored=true : réussie.
+```
+
+```text
+$ node_modules/.bin/prettier --file-info .agents/skills/ticket-codex/SKILL.md
+{ "ignored": true, "inferredParser": null }
+Code de sortie : 0
+Assertion ignored=true : réussie.
+```
+
+```text
+$ node_modules/.bin/prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+Code de sortie : 0
+```
+
+```text
+$ npm run format:check
+
+> tvlens@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+Code de sortie : 0
+```
+
+```text
+$ node -e 'const assert = require("node:assert/strict"); const lines = require("node:fs").readFileSync(".prettierignore", "utf8").trimEnd().split("
+"); const start = "# >>> code JavaScript pas encore formaté"; const end = "# <<< code JavaScript pas encore formaté"; for (const marker of [start, end]) assert.equal(lines.filter(line => line === marker).length, 1); const block = lines.slice(lines.indexOf(start) + 1, lines.indexOf(end)); assert.deepEqual(block, ["**/*.js", "**/*.cjs", "**/*.mjs"]); assert.equal(lines.at(-1), end); console.log(block.join("
+"));'
+[eval]:1
+const assert = require("node:assert/strict"); const lines = require("node:fs").readFileSync(".prettierignore", "utf8").trimEnd().split("
+                                                                                                                                       ^
+Expected ',', got 'string literal (); const start = , "); const start = ")'
+
+SyntaxError: Invalid or unexpected token
+    at makeContextifyScript (node:internal/vm:194:14)
+    at compileScript (node:internal/process/execution:388:10)
+    at evalTypeScript (node:internal/process/execution:260:22)
+    at node:internal/main/eval_string:71:3
+
+Node.js v24.12.0
+Code de sortie : 1
+```
+
+La commande d’extraction ci-dessus avait un saut de ligne mal échappé dans son argument JavaScript.
+Correction de la commande de vérification, sans changement de configuration :
+
+```text
+$ node -e 'const assert = require("node:assert/strict"); const lines = require("node:fs").readFileSync(".prettierignore", "utf8").trimEnd().split("\n"); const start = "# >>> code JavaScript pas encore formaté"; const end = "# <<< code JavaScript pas encore formaté"; for (const marker of [start, end]) assert.equal(lines.filter(line => line === marker).length, 1); const block = lines.slice(lines.indexOf(start) + 1, lines.indexOf(end)); assert.deepEqual(block, ["**/*.js", "**/*.cjs", "**/*.mjs"]); assert.equal(lines.at(-1), end); console.log(block.join("\n"));'
+**/*.js
+**/*.cjs
+**/*.mjs
+Code de sortie : 0
+```
+
+```text
+$ node scripts/check.mjs --changed
+✔ règles par fichier
+✔ format
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+✔ tests JS
+check : vert
+Code de sortie : 0
+```
+
+```text
+$ git diff --check
+Code de sortie : 0
+```
+
+```text
+$ node scripts/check.mjs
+✔ règles par fichier
+✔ format
+– lint : non lancé (ESLint n'est pas installé ou pas configuré)
+✔ cliquet
+    Mesures améliorées : cas_de_test : 740 → 762
+✔ tests JS (82 fichier(s))
+    ℹ tests 805
+    ℹ pass 805
+    ℹ fail 0
+✔ tests Python
+    Ran 84 tests in 27.129s
+
+    OK (skipped=1)
+check : vert
+Code de sortie : 0
+```
+
+Nouveau verdict : **TERMINÉ**. Constat mineur corrigé, aucun constat contesté ni restant.
+L’ADR précise désormais les deux dossiers ajoutés au harnais. Aucun fichier du harnais modifié.
+Preuves : `relecture-rouge.log`, `relecture-verifications.log` ; verdict dans `verdict.json`.
+ESLint reste non lancé ; la suite Python conserve un test ignoré. Relecture et intégration à la boucle.
