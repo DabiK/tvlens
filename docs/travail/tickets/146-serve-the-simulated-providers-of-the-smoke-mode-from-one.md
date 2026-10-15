@@ -1,7 +1,7 @@
 ---
 id: T146
 titre: Serve the simulated providers of the smoke mode from one adapter module
-statut: a-faire
+statut: termine
 bloque_par: T121
 adr: non
 installe: non
@@ -112,3 +112,29 @@ Le ticket tranche ainsi :
 - **Après T121**, qui modifie les lignes voisines de l'inspecteur dans `createSessionRuntime`.
 
 ## Journal
+
+- Exploration : règles, skill de traitement et méthode de tests lues ; six faux repérés et appelants des deux hôtes examinés.
+  État initial et plan de preuve consignés dans `.harness-state/tickets/T146/exploration.md` ; aucun écart prévu.
+- Tests d'abord : `node --test tests/simulated-providers.test.cjs`, exécuté après chaque ajout puis extraction,
+  donne successivement rouge/vert : modèle d'inspection 0/1 puis 1/1 ; inspecteur 1/2 puis 2/2 ;
+  perception 2/3 puis 3/3 ; agent vidéo 3/5 puis 5/5 ; vérificateur 5/7 puis 7/7 ; synthèse 7/8 puis 8/8.
+  Les rouges sont des échecs d'assertion, les attentes de 2500 ms sont pilotées par `mock.timers`.
+  Sorties conservées dans `.harness-state/tickets/T146/*-red.log` et `*-green.log`.
+- Extraction : six fabriques regroupées dans `adapters/simulated-providers.cjs`, sans paramètres ni import.
+  Les hôtes gardent leurs conditions de choix et `overrides` ; les six objets originaux sont conservés
+  dans le dossier d'état pour vérifier le déplacement. Le délai commun est nommé `SIMULATED_DELAY_MS`.
+  Le contrôle rapide a signalé deux lignes trop longues après la copie de l'agent vidéo ; elles sont formatées.
+- `node scripts/check.mjs --changed` : vert, 8 tests réussis ; règles, format et cliquet verts.
+  ESLint non lancé (absent ou non configuré). Sortie : `.harness-state/tickets/T146/check-changed.log`.
+- `grep -cE "Un cercle|FAIL_TEST|Apollo" runtime/session-runtime.cjs app/main.cjs` :
+  `runtime/session-runtime.cjs:0`, `app/main.cjs:0` (code 1 attendu, aucun résultat).
+  `grep -c "process\." adapters/simulated-providers.cjs` : `0` (code 1 attendu).
+  `git diff --stat` ne cite aucun test existant ; `git diff --name-only -- tests/` est vide.
+  `git diff --check` est sans erreur. Sorties : `.harness-state/tickets/T146/acceptance.log`.
+- `node scripts/check.mjs` : vert, 91 fichiers de tests JavaScript, 1069 tests réussis, aucun échec ;
+  Python : 84 tests exécutés, succès avec 1 test ignoré. Règles, format et cliquet verts ;
+  ESLint non lancé (absent ou non configuré). Sortie : `.harness-state/tickets/T146/check-full.log`.
+  Cela couvre tous les fichiers en `smoke: true`, les contrats IPC Mac et l'UI Mac, sans les modifier.
+- `node scripts/check.mjs --changed` après mise en forme finale des compositions : vert, 8 tests réussis ;
+  règles, format et cliquet verts, ESLint non lancé. Sortie : `.harness-state/tickets/T146/check-changed-final.log`.
+  Aucun commit ni push ; verdict remis à la boucle dans `.harness-state/tickets/T146/verdict.json`.

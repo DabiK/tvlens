@@ -1,3 +1,8 @@
+const {
+  simulatedInspectionModel,
+  simulatedInspector,
+  simulatedPerception,
+} = require("../adapters/simulated-providers.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
@@ -160,24 +165,7 @@ function createSessionRuntime({
       ),
   });
   const inspectionModel = (inspectorModel = localInspection
-    ? {
-        inspect: async ({ segments }) => ({
-          observations: segments.map((s) => ({
-            id: s.id,
-            startMs: s.startMs,
-            endMs: s.endMs,
-            text: "Un cercle est visible dans les planches du test.",
-          })),
-          hypotheses: [],
-          limits: ["Modèle simulé pour le test local."],
-          cost: 0,
-        }),
-        selectRegion: async () => ({
-          region: { x: 0.1, y: 0.1, width: 0.8, height: 0.8 },
-          reason: "Rectangle de test, sans inférence.",
-          cost: 0,
-        }),
-      }
+    ? simulatedInspectionModel()
     : new CodexPerception({
         binary: codexBinary,
         authHome: config.codexAuthHome,
@@ -188,19 +176,7 @@ function createSessionRuntime({
       }));
   inspector =
     smoke && !liveInspection && !localInspection
-      ? {
-          inspect: async ({ segments, startMs, endMs }) => ({
-            observations: segments.map((s) => ({
-              id: s.id,
-              startMs: Math.max(startMs, s.startMs),
-              endMs: Math.min(endMs, s.endMs),
-              text: "Le cercle effectue un bref saut entre deux images.",
-            })),
-            hypotheses: [],
-            limits: [],
-            sampledFrames: 12,
-          }),
-        }
+      ? simulatedInspector()
       : new ClipInspector({
           media: store,
           model: inspectionModel,
@@ -220,25 +196,7 @@ function createSessionRuntime({
   const adapter = (perception =
     overrides.perception ||
     (smoke && !liveObservation
-      ? {
-          observe: async (input) => ({
-            observation: {
-              summary: "Un cercle se déplace sur un fond bleu.",
-              visual: `${input.frames.length} images reçues.`,
-              audio: input.audio ? "Audio reçu." : "Pas d’audio.",
-              transcript: "",
-              uncertainty: "",
-            },
-            cost: 0,
-          }),
-          ask: async (input) => ({
-            answer: "Un cercle se déplace sur un fond bleu.",
-            kind: "observation",
-            citations: [input.context.at(-1).id],
-            limits: [],
-            cost: 0,
-          }),
-        }
+      ? simulatedPerception()
       : new CodexPerception({
           binary: codexBinary,
           authHome: config.codexAuthHome,

@@ -1,3 +1,8 @@
+const {
+  simulatedVideoAgent,
+  simulatedVerifier,
+  simulatedRecap,
+} = require("../adapters/simulated-providers.cjs");
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
@@ -130,15 +135,7 @@ app.whenReady().then(async () => {
   });
   const codexBinary = await findCodex();
   const quota=new CodexQuota();
-  videoAgent = smoke && !process.argv.includes('--live-video-agent') ? {
-    answer: async ({ question, tools, signal }) => {
-      const found = await tools.call('search_moments', { query: question });
-      await new Promise((resolve, reject) => { const timer = setTimeout(resolve, 2500); signal.addEventListener('abort', () => { clearTimeout(timer); reject(signal.reason); }, { once: true }); });
-      const moment = found.moments[0];
-      const result = await tools.call('inspect_clip', { startMs: moment.startMs, endMs: moment.endMs, question });
-      return { answer: result.observations.map(o => o.text).join(' '), kind: 'observation', citations: result.observations.map(({ id, startMs, endMs }) => ({ id, startMs, endMs })), limits: [] };
-    }
-  } : undefined;
+  videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
   const ask = (question, options) => { if (switching) throw new Error('Changement de session en cours. Réessaie dans un instant.'); return deep.start(question, options); };
@@ -214,15 +211,13 @@ app.whenReady().then(async () => {
   handle('deep:budget', () => new UsageLedger(config.researchBudgetFile || path.join(app.getPath('userData'), 'research-budget.json')).snapshot());
   handle('deep:cancel', id => deep.cancel('Recherche annulée.',id));
   handle('deep:ask', question => ask(question));
-  verifierAdapter = smoke && !process.argv.includes('--live-verifier') ? {
-    verify: async ({ claim }) => {
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      if (claim === 'FAIL_TEST') throw new Error('Recherche indisponible (test).');
-      return { normalizedClaim: claim, assessment: 'contradicted', conclusion: 'Apollo 11 a aluni en 1969, selon la NASA.',
-        // The page is declared as opened, like a real verifier does: a source whose page was never opened is discarded.
-        sources: [{ url: 'https://www.nasa.gov/mission/apollo-11/', title: 'Apollo 11', publisher: 'NASA', publishedAt: null, evidence: 'La NASA date la mission de juillet 1969.', relation: 'contradicts' }], limitations: [], research: { provider: 'test/fake', webSearches: 1, openedUrls: ['https://www.nasa.gov/mission/apollo-11/'], elapsedMs: 2500 } };
-    }
-  } : new CodexVerifier({ binary: codexBinary || 'codex', authHome: config.codexAuthHome, model:selectedModels.codexModel });
+  verifierAdapter = smoke && !process.argv.includes('--live-verifier')
+    ? simulatedVerifier()
+    : new CodexVerifier({
+        binary: codexBinary || 'codex',
+        authHome: config.codexAuthHome,
+        model: selectedModels.codexModel,
+      });
   verification = new VerificationService({ verifier: {verify:async input=>{if(!smoke||process.argv.includes('--live-verifier')){await videoAgent.prepare(watch?.id||'verify-only');await quota.check(videoAgent.rpc);}return verifierAdapter.verify(input);}},
     archive: new VerificationArchive(path.join(app.getPath('userData'), 'verifications')),
     onChange: state => { if(state.busy)recap?.tick({busy:true});if (!window.isDestroyed()) window.webContents.send('verify:state', state); } });
@@ -283,12 +278,14 @@ app.whenReady().then(async () => {
   const ingestions = new Set();
   // The core state plus its additive title: what the renderer receives for the loaded session.
   const sessionState = () => (watch ? { ...watch.snapshot(), title } : null);
-  const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap') ? {
-    summarize: async ({chapters,newPassages}) => ({overview:'Un cercle se déplace sur un fond bleu. Les passages observés montrent la continuité de cette animation.',chapters:[{
-      title:'Une animation en mouvement',summary:'Le cercle poursuit son déplacement sur un fond bleu.',
-      sourceIds:[...new Set([...chapters.flatMap(c=>c.sourceIds),...newPassages.map(p=>p.id)])]
-    }]})
-  } : new CodexRecap({binary:codexBinary||'codex',authHome:config.codexAuthHome,model:selectedModels.observationModel,quota});
+  const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
+    ? simulatedRecap()
+    : new CodexRecap({
+        binary: codexBinary || 'codex',
+        authHome: config.codexAuthHome,
+        model: selectedModels.observationModel,
+        quota,
+      });
   // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
   const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
     smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
