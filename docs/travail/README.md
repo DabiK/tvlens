@@ -161,6 +161,40 @@ dossiers doivent être installés depuis un contexte disposant des droits néces
 
 ### Modèle de chaque tentative Claude
 
+### Suivre la boucle
+
+Dans un autre terminal, pendant que la boucle tourne :
+
+```sh
+node scripts/watch-loop.mjs                 # redessine l'écran chaque seconde ; Ctrl-C pour quitter
+node scripts/watch-loop.mjs --once          # un seul écran, puis sort (aussi quand la sortie n'est pas un terminal)
+node scripts/watch-loop.mjs --root <dossier>  # suivre la boucle d'un autre dossier de projet
+```
+
+L'écran montre, de haut en bas :
+
+- le ticket en cours : titre, niveau, modèle et effort, numéro de tentative, durée ;
+- la phase (exploration, implémentation, relecture n, correction, enregistrement de l'état relu, contrôle complet,
+  verdict, puis contrôles de la boucle, rétrospective, bloqué ou boucle arrêtée) et la frise des phases faites (`✓`),
+  en cours (`▶`) et à venir (`·`) ;
+- les cycles de relecture : le verdict de chacun et ses constats (bloquants, mineurs, hors périmètre) ;
+- les huit dernières actions de la session, avec l'agent qui les a faites (orchestrateur, explorateur, implémenteur,
+  relecteur) ;
+- la nuit : tickets intégrés ou bloqués depuis le lancement de la boucle (durée, coût), coût cumulé, tickets restants et
+  heure de fin estimée.
+
+La phase vient du flux de la session (`session-<n>.jsonl`, lu par incréments) tant qu'elle tourne, puis des événements de
+`events.jsonl`. La boucle est « vivante » quand le processus du verrou `loop/lock` existe ; l'heure de lancement est celle du
+verrou. Les tickets restants rejouent `next` comme si chaque ticket pris était terminé, jusqu'à la première raison de
+s'arrêter, et sont limités par le `--max` de la boucle quand la ligne de commande de son processus le dit. La fin estimée est
+la durée moyenne des tickets intégrés depuis le lancement (à défaut, des dix derniers de l'historique) multipliée par les
+tickets restants ; elle ne tient pas compte d'un ticket qui échouerait.
+
+L'outil ne fait que lire : il n'écrit rien dans `.harness-state/` ni dans le dépôt, ne prend pas le verrou et ne modifie aucun
+ticket. Seule commande lancée : `ps -p <pid de la boucle>`, pour lire sa ligne de commande.
+
+### Modèle de chaque tentative
+
 Chaque tentative tourne sur un palier d'une échelle, du moins cher au plus fort
 (`scripts/loop/models.mjs`) :
 
