@@ -61,6 +61,9 @@ Les mesures du cliquet restent simples et sans dépendance. ESLint complète `ch
 configuration recommandée et les règles de `eslint.config.mjs`. Les infractions existantes sont
 gelées par fichier et par règle dans `eslint-suppressions.json`. Une infraction nouvelle et une
 suppression devenue inutile font échouer le contrôle : le stock ne peut que baisser.
+En mode complet comme en mode `--changed`, le contrôle refuse toute hausse du gel par rapport au
+dernier commit (`HEAD`), même sans ESLint : aucun compteur ne monte, aucun couple fichier et règle
+n'apparaît. Les configurations du lint et du formatage font partie du harnais protégé.
 
 Une infraction gelée se corrige, puis `node_modules/.bin/eslint --prune-suppressions <fichier>` retire
 sa suppression dans le même ticket. Une suppression ne s'ajoute jamais pour faire passer un contrôle.

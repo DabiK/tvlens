@@ -92,6 +92,18 @@ test("the harness cannot be edited from a ticket session unless the ticket allow
   assert.equal(decision(write(repo, "core/session.cjs", LOOP)), "none");
 });
 
+test("lint and formatting configurations are protected while lint suppressions remain editable", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const file of ["eslint.config.mjs", ".prettierrc.json", ".prettierignore"]) {
+    assert.equal(decision(write(repo, file, LOOP)), "deny", file);
+    assert.equal(decision(write(repo, file, INTERACTIVE)), "ask", file);
+    assert.equal(decision(write(repo, file, { ...LOOP, TVLENS_HARNESS: "1" })), "none", file);
+    assert.equal(decision(write(repo, file, TUNE)), "deny", file);
+  }
+  assert.equal(decision(write(repo, "eslint-suppressions.json", LOOP)), "none");
+});
+
 test("the owner can open the harness for a bounded time in an interactive session; a ticket session ignores it", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);

@@ -15,6 +15,7 @@ const targets = editPaths(input);
 // Ce qui définit les règles ne se modifie pas en cours de ticket : sinon un contrôle rouge se « répare » en l'affaiblissant.
 const PROTECTED = [
   ".claude/", ".codex/", ".agents/", "AGENTS.md", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md",
+  "eslint.config.mjs", ".prettierrc.json", ".prettierignore",
 ];
 // Déverrouillage temporaire : en session interactive, le propriétaire peut ouvrir le harnais pour une durée
 // bornée, par un fichier hors Git qui contient l'heure de fin en secondes. Une session de ticket l'ignore.

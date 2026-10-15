@@ -1,11 +1,106 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const fs = require("node:fs");
 const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
 
 const load = (rel) => import(pathToFileURL(path.join(__dirname, "..", rel)).href);
 const LONG = "const value = '" + "x".repeat(170) + "';\n";
+
+for (const mode of [[], ["--changed"]]) {
+  const label = mode.length ? "changed" : "full";
+  const frozen = { "core/legacy.cjs": { complexity: { count: 3 } } };
+  for (const [name, current, file, rule, before, now] of [
+    ["a higher count", { "core/legacy.cjs": { complexity: { count: 4 } } }, "core/legacy.cjs", "complexity", 3, 4],
+    ["a new rule", { "core/legacy.cjs": { complexity: { count: 3 }, "no-empty": { count: 1 } } }, "core/legacy.cjs", "no-empty", 0, 1],
+    ["a new file", { ...frozen, "core/new.cjs": { complexity: { count: 1 } } }, "core/new.cjs", "complexity", 0, 1],
+  ]) {
+    test(`the ${label} check refuses ${name} in the lint freeze without ESLint`, (t) => {
+      const repo = harnessRepo({ "eslint-suppressions.json": JSON.stringify(frozen) });
+      t.after(repo.cleanup);
+      repo.write("eslint-suppressions.json", JSON.stringify(current));
+      const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+      assert.equal(result.code, 1, result.out);
+      const report = JSON.parse(result.out);
+      assert.equal(report.steps.find((step) => step.name === "lint").status, "skip");
+      const freeze = report.steps.find((step) => step.name === "gel du lint");
+      assert.equal(freeze.status, "ko");
+      assert.ok(freeze.detail.includes(`${file} : ${rule} : ${before} → ${now}`), freeze.detail);
+      assert.match(freeze.detail, /infraction nouvelle se corrige au lieu de se geler/);
+    });
+  }
+
+  for (const [name, current] of [
+    ["a lower count", { "core/legacy.cjs": { complexity: { count: 2 } } }],
+    ["a removed rule", { "core/legacy.cjs": {} }],
+    ["a removed entry", {}],
+    ["a removed freeze file", null],
+  ]) {
+    test(`the ${label} check accepts ${name} in the lint freeze without ESLint`, (t) => {
+      const repo = harnessRepo({ "eslint-suppressions.json": JSON.stringify(frozen) });
+      t.after(repo.cleanup);
+      if (current === null) fs.unlinkSync(path.join(repo.root, "eslint-suppressions.json"));
+      else repo.write("eslint-suppressions.json", JSON.stringify(current));
+      const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+      assert.equal(result.code, 0, result.out);
+      const report = JSON.parse(result.out);
+      assert.equal(report.steps.find((step) => step.name === "lint").status, "skip");
+      assert.equal(report.steps.find((step) => step.name === "gel du lint").status, "ok");
+    });
+  }
+
+  test(`the ${label} check accepts an absent lint freeze in both the tree and HEAD`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+    assert.equal(result.code, 0, result.out);
+    const report = JSON.parse(result.out);
+    assert.equal(report.steps.find((step) => step.name === "lint").status, "skip");
+    assert.equal(report.steps.find((step) => step.name === "gel du lint").status, "ok");
+  });
+
+  for (const version of ["tree", "HEAD"]) {
+    test(`the ${label} check explicitly refuses invalid lint freeze JSON in ${version}`, (t) => {
+      const initial = version === "HEAD" ? "{" : JSON.stringify(frozen);
+      const repo = harnessRepo({ "eslint-suppressions.json": initial });
+      t.after(repo.cleanup);
+      repo.write("eslint-suppressions.json", version === "HEAD" ? JSON.stringify(frozen) : "{");
+      const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+      assert.equal(result.code, 1, result.out);
+      const freeze = JSON.parse(result.out).steps.find((step) => step.name === "gel du lint");
+      assert.equal(freeze.status, "ko");
+      assert.match(freeze.detail, /eslint-suppressions\.json.*JSON invalide/);
+      if (version === "HEAD") assert.match(freeze.detail, /HEAD:eslint-suppressions\.json/);
+    });
+  }
+
+  test(`the ${label} check explicitly refuses an unreadable lint freeze`, (t) => {
+    const repo = harnessRepo({ "eslint-suppressions.json": JSON.stringify(frozen) });
+    t.after(repo.cleanup);
+    const file = path.join(repo.root, "eslint-suppressions.json");
+    fs.unlinkSync(file);
+    fs.mkdirSync(file);
+    const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+    assert.equal(result.code, 1, result.out);
+    const freeze = JSON.parse(result.out).steps.find((step) => step.name === "gel du lint");
+    assert.equal(freeze.status, "ko");
+    assert.match(freeze.detail, /eslint-suppressions\.json.*illisible/);
+  });
+
+  test(`the ${label} check reports every new lint freeze pair when HEAD has no freeze`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    const current = { "core/legacy.cjs": { complexity: { count: 3 }, "no-empty": { count: 1 } } };
+    repo.write("eslint-suppressions.json", JSON.stringify(current));
+    const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+    assert.equal(result.code, 1, result.out);
+    const freeze = JSON.parse(result.out).steps.find((step) => step.name === "gel du lint");
+    assert.equal(freeze.status, "ko");
+    assert.ok(freeze.detail.includes("core/legacy.cjs : complexity : 0 → 3"), freeze.detail);
+    assert.ok(freeze.detail.includes("core/legacy.cjs : no-empty : 0 → 1"), freeze.detail);
+  });
+}
 
 test("measures count long lines, empty catches, env reads, innerHTML, ticket-named tests and test cases", async (t) => {
   const { measure } = await load("scripts/quality/metrics.mjs");

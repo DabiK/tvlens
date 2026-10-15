@@ -52,6 +52,7 @@ const options = {
 // Ce qui définit les règles : intouchable par un ticket, sauf s'il porte « harnais: oui ».
 const PROTECTED = [
   ".claude/", ".codex/", ".agents/", "AGENTS.md", "scripts/check.mjs", "scripts/quality/", "scripts/loop/", "CLAUDE.md", "docs/standards.md",
+  "eslint.config.mjs", ".prettierrc.json", ".prettierignore",
 ];
 const stateDir = path.join(root, ".harness-state");
 const loopDir = path.join(stateDir, "loop");

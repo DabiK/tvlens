@@ -2,8 +2,8 @@
 // Contrôle qualité unique du projet. Les hooks, la boucle de tickets et la CI appellent ce script :
 // une règle s'écrit ici une seule fois.
 //
-//   node scripts/check.mjs                 tout : règles, format, lint, cliquet, tests JS (séquentiels), tests Python
-//   node scripts/check.mjs --changed       fichiers modifiés depuis HEAD : règles, format, lint, cliquet, tests modifiés
+//   node scripts/check.mjs                 tout : règles, format, lint, gel du lint, cliquet, tests JS (séquentiels), tests Python
+//   node scripts/check.mjs --changed       fichiers modifiés depuis HEAD : règles, format, lint, gel du lint, cliquet, tests modifiés
 //   node scripts/check.mjs --file <chemin> un fichier : règles, format, lint (contrôle rapide après une édition)
 //   --no-tests  ne lance aucun test        --json  sortie structurée
 //
@@ -102,6 +102,58 @@ function lint(files) {
   step("lint", result.code === 0 ? "ok" : "ko", result.code === 0 ? "" : tail(result.out, 30));
 }
 
+/** Comparaison pure du stock gelé : chaque couple nouveau ou augmenté est une hausse. */
+function suppressionIncreases(before, current) {
+  const increases = [];
+  for (const [file, rules] of Object.entries(current)) {
+    for (const [rule, { count: now }] of Object.entries(rules)) {
+      const known = Object.hasOwn(before, file) && Object.hasOwn(before[file], rule);
+      const previous = known ? before[file][rule].count : 0;
+      if (!known || now > previous) increases.push({ file, rule, before: previous, now });
+    }
+  }
+  return increases;
+}
+
+const SUPPRESSIONS_FILE = "eslint-suppressions.json";
+
+function readTreeSuppressions() {
+  const file = path.join(root, SUPPRESSIONS_FILE);
+  try {
+    fs.lstatSync(file);
+  } catch (error) {
+    if (error.code === "ENOENT") return {};
+    throw error;
+  }
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function readHeadSuppressions() {
+  const entry = git("ls-tree", "--name-only", "HEAD", "--", SUPPRESSIONS_FILE);
+  if (entry.code !== 0) throw new Error(`HEAD:${SUPPRESSIONS_FILE} : lecture Git impossible : ${entry.out}`);
+  if (!entry.out.trim()) return {};
+  const source = inHead(SUPPRESSIONS_FILE);
+  if (source === null) throw new Error(`HEAD:${SUPPRESSIONS_FILE} : lecture Git impossible`);
+  try {
+    return JSON.parse(source);
+  } catch (error) {
+    throw new Error(`HEAD:${SUPPRESSIONS_FILE} : JSON invalide : ${error.message}`);
+  }
+}
+
+function lintFreeze() {
+  try {
+    const headFreeze = readHeadSuppressions();
+    const treeFreeze = readTreeSuppressions();
+    const increases = suppressionIncreases(headFreeze, treeFreeze);
+    const details = increases.map(({ file, rule, before, now }) => `${file} : ${rule} : ${before} → ${now}`);
+    if (increases.length) details.push("Une infraction nouvelle se corrige au lieu de se geler.");
+    step("gel du lint", increases.length ? "ko" : "ok", details.join("\n"));
+  } catch (error) {
+    step("gel du lint", "ko", `${SUPPRESSIONS_FILE} : gel illisible ou JSON invalide : ${error.message}`);
+  }
+}
+
 function ratchet() {
   const baseline = readBaseline(root);
   if (!baseline) return step("cliquet", "skip", "aucun plancher (node scripts/quality/ratchet.mjs --init)");
@@ -151,6 +203,7 @@ if (fileArg) {
   fileRules(changed ?? changedFiles());
   format(names);
   lint(names);
+  lintFreeze();
   ratchet();
   if (!flag("--no-tests")) {
     jsTests(names);

@@ -1,7 +1,7 @@
 ---
 id: T032
 titre: Refuse any growth of the frozen lint violations in the quality check
-statut: a-faire
+statut: termine
 bloque_par: T031
 adr: non
 installe: non
@@ -121,3 +121,64 @@ présumé ; aucun test exécuté pendant ce rafraîchissement.
 
 - Relecture documentaire le 15/10 contre `e92c6a6` : sources rendues pérennes dans
   `docs/audit-points-chauds.md` ou attribuées à la décision du propriétaire, le 15/10.
+
+- Exploration Codex le 15/10 : format du gel confirmé (`fichier → règle → count`), deux listes
+  `PROTECTED` identiques et comparaison absente du contrôle. Lecture des ADR 0012 à 0014 et des
+  frontières de test. Exploration et écarts consignés dans `.harness-state/tickets/T032/` ; aucun
+  écart prévu. Les fichiers hors périmètre présents avant la session sont conservés.
+
+- Référence avant modification : `node --test tests/quality-check.test.cjs` → 9/9, puis
+  `node --test tests/agent-guards.test.cjs` → 33/33. Sorties : `avant-quality-check.log` et
+  `avant-agent-guards.log` dans le dossier d'état.
+- Rouge observé : `node --test --test-name-pattern='lint freeze' tests/quality-check.test.cjs`
+  → 6 échecs sur l'assertion du code de sortie (0 obtenu, 1 attendu), pour les trois hausses dans les
+  deux modes. Après ajout de la comparaison pure et de l'étape indépendante d'ESLint, même commande
+  → 6/6. Sorties : `rouge-gel.log`, `vert-gel.log`.
+- Rouge observé : `node --test --test-name-pattern='lint and formatting' tests/agent-guards.test.cjs`
+  → échec sur `eslint.config.mjs` (`none` obtenu, `deny` attendu). Ajout des trois configurations
+  dans les deux listes, sans y ajouter les suppressions. Sortie : `rouge-protections.log`.
+- Après implémentation : `node --test tests/quality-check.test.cjs` → 33/33, puis
+  `node --test tests/agent-guards.test.cjs` → 34/34. Tous les tests préexistants sont conservés.
+  Couverture ajoutée : hausses, baisses, retraits de règle, d'entrée et du fichier, absence des deux
+  côtés, JSON invalide dans l'arbre et HEAD, fichier illisible et affichage de plusieurs couples,
+  dans les deux modes sans ESLint. Les gardes couvrent `deny`, `ask`, `none`, le maintien de la portée
+  des consignes et l'édition des suppressions. Sorties : `apres-quality-check.log`,
+  `apres-agent-guards.log`.
+- Injection prescrite : compteur `adapters/chat-trace.cjs : no-empty` augmenté de 1 ;
+  `node scripts/check.mjs --no-tests` → code 1, étape « gel du lint » rouge avec
+  `adapters/chat-trace.cjs : no-empty : 1 → 2` et le conseil de corriger l'infraction.
+  Fichier immédiatement restauré à ses octets originaux ; aucune modification du gel conservée.
+  Sortie intégrale : `injection-gel.log`.
+- Vérification des protections : `node -e` extrait par expression régulière les deux constantes
+  `PROTECTED`, trie leurs chemins et compare les tableaux → `identiques`, code 0.
+  Commande exacte et sortie : `protections-identiques.log`.
+- Contrôle des fichiers modifiés : `node scripts/check.mjs --changed` → code 0, règles, format,
+  lint, gel du lint et cliquet verts ; 67/67 tests JS dans les deux fichiers modifiés.
+  Sortie : `check-changed.log`.
+- Contrôle final : `node scripts/check.mjs` → code 0, toutes les étapes vertes ; 1 148/1 148 tests JS
+  dans 97 fichiers ; 84 tests Python, `OK (skipped=1)`. Sortie : `check-complet.log`.
+  `git diff --check` → code 0 ; `git diff --exit-code -- eslint.config.mjs eslint-suppressions.json`
+  → code 0. Aucun commit ni push ; verdict `TERMINÉ` écrit pour la relecture par la boucle.
+
+- Reprise après relecture 1 le 15/10 : rapport, ticket/journal, écarts, état Git et diff relus.
+  Les deux constats mineurs sont confirmés manuellement avant correction ; vérifications et
+  périmètre consignés dans `.harness-state/tickets/T032/correction-1.md`. Aucun écart prévu.
+  Le constat sur les trois consignes reste hors périmètre et sera porté en réserve dans le verdict.
+- Avant correction : `node --test tests/quality-check.test.cjs` → 33/33, code 0
+  (`correction-1-avant-tests.log`). Les corrections de texte et de noms ne changent aucun comportement ;
+  aucun test rouge automatisé nouveau n'est revendiqué. Attendus vérifiés manuellement avant/après
+  dans `correction-1.md`, sans test comparant le texte source, conformément aux standards.
+- Correction : en-tête des deux modes complété avec « gel du lint » ; objets renommés `headFreeze`
+  et `treeFreeze` dans `lintFreeze`. `--file` inchangé. `node scripts/check.mjs --changed` → code 0,
+  toutes les étapes vertes, 67/67 tests JS (`correction-1-check-changed.log`). `git diff --check` → code 0.
+- Contrôle complet de la correction : `node scripts/check.mjs` → code 0, toutes les étapes vertes,
+  1 148/1 148 tests JS dans 97 fichiers, 84 tests Python, `OK (skipped=1)`
+  (`correction-1-check-complet.log`). Les diffs des tests, protections et standards sont identiques
+  à l'état relu (`correction-1-perimetre.log`). Configurations et gel inchangés, vérifiés par
+  `git diff --exit-code -- eslint.config.mjs eslint-suppressions.json` → code 0.
+  Nouveau verdict `TERMINÉ`, avec le constat 3 hors périmètre en réserve ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- Constat 3 de relecture-1.md, hors périmètre : mettre à jour .claude/skills/decoupage/SKILL.md:45, CLAUDE.md:35 et .claude/agents/implementeur.md:33 pour citer eslint.config.mjs, .prettierrc.json et .prettierignore parmi les fichiers du harnais, dans un ticket autorisé à modifier ces consignes.
+- .harness-state/tickets/T032/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 2 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
