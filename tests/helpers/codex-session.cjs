@@ -12,11 +12,23 @@ if (args[0] === "mcp") {
   ]));
   process.exit(process.env.FAKE_CODEX_MCP_FAILURE ? 1 : 0);
 }
+if (args.includes("--help")) {
+  fs.appendFileSync(path.join(dir, "fake-help-calls"), JSON.stringify({ args, cwd: process.cwd() }) + "\\n");
+  const unsupported = process.env.FAKE_CODEX_UNSUPPORTED_RESUME;
+  if (args[0] === "exec" && args[1] === "resume" && unsupported && args.includes(unsupported)) {
+    console.error("unexpected argument: " + unsupported);
+    process.exit(1);
+  }
+  console.log("--disable <FEATURE> --add-dir <DIR>");
+  process.exit(0);
+}
 const scenario = process.env.FAKE_CODEX_SCENARIO;
-const failure = process.env.FAKE_CODEX_FAILURE;
+const resumeFailure = args[1] === "resume" && process.env.FAKE_CODEX_RESUME_FAILURE;
+const failure = resumeFailure === "after-turn" ? "exit" : process.env.FAKE_CODEX_FAILURE;
 const calls = path.join(dir, "fake-codex-calls");
 const rank = fs.existsSync(calls) ? fs.readFileSync(calls, "utf8").trim().split("\\n").length : 0;
-const session = "codex-thread-" + (rank + 1);
+const resumedSession = process.env.FAKE_CODEX_RESUME_SESSION || args[2];
+const session = args[1] === "resume" ? resumedSession : "codex-thread-" + (rank + 1);
 const blocked = scenario === "blocked" || (scenario === "blocked-after-correction" && rank > 0);
 const names = ["LOOP", "TICKET", "TICKET_FILE", "HARNESS", "ALLOW_INSTALL"];
 const env = Object.fromEntries(names.map(name => [name, process.env["TVLENS_" + name]]));
@@ -28,11 +40,22 @@ const call = {
   session, run: process.env.TVLENS_HOOK_RUN, greetingPresent: fs.existsSync("core/greeting.cjs"),
 };
 fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
-if (process.env.FAKE_CODEX_HOOKS !== "missing" && !(rank > 0 && process.env.FAKE_CODEX_HOOKS === "missing-on-correction")) {
+if (process.env.FAKE_CODEX_HOOKS !== "missing" && !(rank > 0 && process.env.FAKE_CODEX_HOOKS === "missing-on-correction") &&
+    !(args[1] === "resume" && process.env.FAKE_CODEX_HOOKS === "missing-on-resume")) {
   const { spawnSync } = require("node:child_process");
   const input = { cwd: process.cwd(), session_id: session, hook_event_name: "SessionStart" };
   const started = spawnSync(process.execPath, [".claude/hooks/session-context.mjs"], { input: JSON.stringify(input), encoding: "utf8" });
   if (started.status !== 0) throw new Error("startup hook failed: " + started.stdout + started.stderr);
+  fs.appendFileSync(path.join(dir, "fake-hook-witnesses"), fs.readFileSync(path.join(dir, "hooks-started.json"), "utf8").trim() + "\\n");
+}
+if (args[1] === "resume" && process.env.FAKE_CODEX_HOOKS === "stale-on-resume") {
+  const previous = JSON.parse(fs.readFileSync(calls, "utf8").split("\\n")[0]);
+  fs.writeFileSync(path.join(dir, "hooks-started.json"), JSON.stringify({ session, run: previous.run }));
+}
+if (resumeFailure === "before-turn") {
+  console.log(JSON.stringify({ type: "thread.started", thread_id: session }));
+  console.log(JSON.stringify({ type: "error", message: "resume unavailable before turn" }));
+  process.exit(1);
 }
 fs.mkdirSync("core", { recursive: true });
 if (!blocked) fs.writeFileSync("core/greeting.cjs", "module.exports = () => 'hello';\\n");

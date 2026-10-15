@@ -98,12 +98,14 @@ raison, y compris après une correction. Un verdict absent, illisible ou PARTIEL
 sans relecture ; la tentative suivante peut reprendre le travail à partir du rapport d'échec.
 Le relecteur tourne hors mode ticket : les hooks ne lui demandent pas de corriger ni d'écrire le verdict.
 
-Une relecture « à corriger » ou « illisible » lance une session `codex exec` neuve avec les mêmes
-réglages que la première. Sa consigne nomme le ticket, le chemin du rapport `relecture-<n>.md` et
-transmet son contenu complet ; elle demande de reprendre le travail présent dans l'arbre. La session
-relit les consignes et le rapport avant de corriger. `codex exec resume` ne charge aucun hook du
-projet dans Codex CLI 0.162.1 : chaque correction doit donc passer par une session neuve pour avoir
-les mêmes gardes. Deux corrections au plus par tentative, puis refus et escalade.
+Une relecture « à corriger » ou « illisible » reprend la session de la tentative par
+`codex exec resume <thread_id>`, avec les réglages du palier et un nouveau témoin de hooks vérifié.
+Sa consigne nomme le ticket, le chemin du rapport `relecture-<n>.md` et transmet son contenu complet.
+La session conserve son contexte et corrige le travail présent dans l'arbre. Si les options requises
+ne sont pas acceptées, si le témoin manque ou si la reprise échoue avant tout tour, la boucle lance
+une session neuve pour la même correction. L'événement `reprise-impossible` en donne la raison.
+Ce repli relit les consignes et vérifie aussi son témoin. Deux corrections au plus par tentative,
+puis refus et escalade ; chaque tentative sur un nouveau palier démarre dans une session neuve.
 Les contrôles de la boucle restent communs ; la rétrospective et l'harmonisation restent sur Claude.
 Le verdict appartient à la session, la boucle ne le réécrit pas.
 
@@ -147,10 +149,14 @@ Ses autres apports sont neutralisés par `--disable plugins`, `--disable apps`, 
 `-c mcp_servers.<nom>.enabled=false` pour chaque serveur actif, sans toucher aux serveurs inactifs.
 Une liste en échec ou illisible refuse la session avant tout `exec` ; la raison nomme la liste des
 serveurs MCP. Le constructeur exporté des arguments est partagé avec la preuve réelle.
-Chaque session reçoit `-s workspace-write` et `-C <racine>`, corrections comprises.
+Une session neuve reçoit `-s workspace-write` et `-C <racine>`. Une reprise part de la racine et reçoit
+`-c 'sandbox_mode="workspace-write"'`, car `exec resume` n'accepte ni `-s` ni `-C`.
 Pour un ticket `harnais: oui`, elle reçoit aussi `--add-dir <racine>/.codex` et
 `--add-dir <racine>/.agents` : ces dossiers sont inscriptibles, sous le contrôle des gardes du projet.
 Un autre ticket ne reçoit aucun `--add-dir`.
+Avant chaque reprise, la boucle vérifie par l'aide du binaire que `exec resume` accepte les
+`--disable` imposés et, pour un ticket de harnais, les `--add-dir`. Un refus entraîne le repli sur
+une session neuve, avec toutes ces options conservées.
 `--timeout-min` borne chaque processus.
 `--budget-usd`, `--permission-mode` et `--compact-window` concernent les sessions Claude ; ils ne
 remplacent pas les réglages imposés à Codex.
@@ -159,7 +165,8 @@ Le flux de chaque session, corrections comprises, s'ajoute au même
 `.harness-state/tickets/<ID>/codex-<tentative>.jsonl`.
 Les événements enregistrent le moteur, les jetons cumulés par catégorie, les tours, la durée mesurée
 et le nombre de relectures. Le coût en dollars reste `null`, car le flux Codex ne le donne pas.
-Une erreur du flux ou un processus Codex en échec refuse la tentative, même avec un verdict TERMINÉ.
+Une erreur du flux ou un processus Codex en échec refuse la tentative, même avec un verdict TERMINÉ,
+sauf le repli technique d'une reprise décrit plus haut.
 
 Les six hooks de `.codex/hooks.json` partagent les scripts Claude, avec résolution de la racine par Git :
 contexte au démarrage, gardes avant commande et écriture, contrôle rapide après édition, trace des
@@ -178,8 +185,10 @@ une nouvelle approbation avec `/hooks`.
 Avant chaque processus, corrections comprises, la boucle renouvelle `TVLENS_HOOK_RUN` et retire l'ancien
 témoin `.harness-state/tickets/<ID>/hooks-started.json`. `session-context.mjs` écrit l'identifiant du
 lancement et celui de la session dans ce témoin. Après le processus et avant toute relecture, la boucle
-vérifie les deux : témoin absent, illisible ou périmé, la tentative est refusée avec « hooks Codex non
-chargés », même si la session a rendu TERMINÉ. Ce refus indique les causes probables : hooks de
+vérifie les deux, ainsi que la conservation du `thread_id` sur une reprise. Si la session change,
+la boucle se replie sur une session neuve ; la raison nomme l'identifiant attendu et celui reçu.
+Un témoin absent, illisible ou périmé déclenche le repli si c'est une reprise ; sur une session neuve, la tentative
+est refusée avec « hooks Codex non chargés », même si la session a rendu TERMINÉ. Ce refus indique les causes probables : hooks de
 `.codex/hooks.json` non approuvés pour ce dépôt ou session hors du dépôt approuvé. Le propriétaire
 les approuve avec `codex`, puis `/hooks`. La confiance seule ne constitue donc pas une preuve.
 

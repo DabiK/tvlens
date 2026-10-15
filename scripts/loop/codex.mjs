@@ -27,8 +27,22 @@ function sessionEnv(ticket) {
   };
 }
 
-export function codexArgs(root, step, prompt, { env = process.env, timeoutMs = DEFAULT_DISCOVERY_TIMEOUT_MS } = {}) {
+function checkResumeOptions(root, disabled, directories, env, timeoutMs) {
+  const result = spawnSync(env.TVLENS_CODEX_BIN || "codex", ["exec", "resume", ...disabled, ...directories, "--help"], {
+    cwd: root, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: timeoutMs,
+  });
+  if (result.status !== 0) {
+    const reason = result.error?.message || result.stderr || `code ${result.status}`;
+    throw Object.assign(new Error(`Codex : options requises de reprise indisponibles : ${reason}`), { code: "CODEX_RESUME_UNAVAILABLE" });
+  }
+}
+
+export function codexArgs(root, step, prompt, {
+  env = process.env, timeoutMs = DEFAULT_DISCOVERY_TIMEOUT_MS, session = null,
+} = {}) {
   const disabled = DISABLED_FEATURES.flatMap((name) => ["--disable", name]);
+  const directories = env.TVLENS_HARNESS === "1" ? [".codex", ".agents"].flatMap((dir) => ["--add-dir", path.join(root, dir)]) : [];
+  if (session) checkResumeOptions(root, disabled, directories, env, timeoutMs);
   let servers;
   try {
     const listed = spawnSync(env.TVLENS_CODEX_BIN || "codex", ["mcp", "list", "--json", ...disabled], {
@@ -46,17 +60,16 @@ export function codexArgs(root, step, prompt, { env = process.env, timeoutMs = D
     return ["-c", `mcp_servers.${key}.enabled=false`];
   });
   const args = [
-    "exec", "--json", "-m", step.modele,
+    ...(session ? ["exec", "resume", session] : ["exec"]), "--json", "-m", step.modele,
     "-c", `model_reasoning_effort="${step.effort}"`,
     "-c", 'approval_policy="never"',
     "-c", "sandbox_workspace_write.network_access=true",
     "-c", `projects.${JSON.stringify(root)}.trust_level="trusted"`,
     ...disabled, "-c", "notify=[]", ...mcp, "--dangerously-bypass-hook-trust",
-    "-s", "workspace-write", "-C", root,
   ];
-  if (env.TVLENS_HARNESS === "1") {
-    for (const dir of [".codex", ".agents"]) args.push("--add-dir", path.join(root, dir));
-  }
+  args.push(...directories);
+  if (session) args.push("-c", 'sandbox_mode="workspace-write"');
+  else args.push("-s", "workspace-write", "-C", root);
   return [...args, prompt];
 }
 
@@ -82,6 +95,7 @@ function consumeLine(root, line, state, started) {
     return;
   }
   if (message.type === "thread.started") state.session = message.thread_id;
+  if (message.type === "turn.started" || message.type === "turn.completed") state.turnStarted = true;
   if (message.type === "turn.completed") {
     state.tours++;
     for (const field of TOKEN_FIELDS) state.jetons[field] += message.usage?.[field] || 0;
@@ -115,18 +129,33 @@ function streamSession(root, args, env, file, state, timeoutMs, started) {
   });
 }
 
+function sessionProblem(request, state, marker, run) {
+  if (request.session && state.session && state.session !== request.session) {
+    const reason = `Codex : session changée lors de la reprise : ${request.session} attendue, ${state.session} reçue.`;
+    return { reason, resumeImpossible: true };
+  }
+  if (!state.session || marker?.session !== state.session || marker?.run !== run) {
+    const reason = "hooks Codex non chargés : aucun témoin de démarrage valide pour cette session et ce lancement." +
+      " Cause probable : hooks de .codex/hooks.json non approuvés pour ce dépôt, ou session hors du dépôt approuvé." +
+      " Le propriétaire les approuve avec codex, puis /hooks.";
+    return { reason, resumeImpossible: Boolean(request.session) };
+  }
+  return null;
+}
+
 async function hookedSession(root, request, env, file, state, timeoutMs, started, dir) {
   const markerFile = path.join(dir, "hooks-started.json");
   const run = randomUUID();
   fs.rmSync(markerFile, { force: true });
   state.session = null;
+  state.turnStarted = false;
   let args;
   try {
-    args = codexArgs(root, request.step, request.prompt, { env, timeoutMs });
+    args = codexArgs(root, request.step, request.prompt, { env, timeoutMs, session: request.session });
   } catch (error) {
-    if (error.code !== "CODEX_MCP_LIST") throw error;
+    if (!["CODEX_MCP_LIST", "CODEX_RESUME_UNAVAILABLE"].includes(error.code)) throw error;
     state.problem = error.message;
-    return 1;
+    return { code: 1, resumeImpossible: Boolean(request.session) };
   }
   const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, file, state, timeoutMs, started);
   let marker;
@@ -136,14 +165,23 @@ async function hookedSession(root, request, env, file, state, timeoutMs, started
     // Un témoin absent ou illisible ne prouve pas le chargement des hooks.
     marker = null;
   }
-  if (!state.session || marker?.session !== state.session || marker?.run !== run) {
-    const missing = "hooks Codex non chargés : aucun témoin de démarrage valide pour cette session et ce lancement." +
-      " Cause probable : hooks de .codex/hooks.json non approuvés pour ce dépôt, ou session hors du dépôt approuvé." +
-      " Le propriétaire les approuve avec codex, puis /hooks.";
-    state.problem = state.problem ? `${state.problem} ${missing}` : missing;
-    return 1;
+  const problem = sessionProblem(request, state, marker, run);
+  if (problem) {
+    state.problem = state.problem ? `${state.problem} ${problem.reason}` : problem.reason;
+    return { code: 1, resumeImpossible: problem.resumeImpossible };
   }
-  return code;
+  return { code, resumeImpossible: Boolean(request.session && code !== 0 && !state.turnStarted) };
+}
+
+async function correctionSession(root, request, env, file, state, timeoutMs, started, dir, event) {
+  fs.rmSync(path.join(dir, "verdict.json"), { force: true });
+  const result = await hookedSession(root, request, env, file, state, timeoutMs, started, dir);
+  if (!result.resumeImpossible) return result.code;
+  event("reprise-impossible", { ticket: env.TVLENS_TICKET, session: request.session, raison: state.problem });
+  state.problem = null;
+  fs.rmSync(path.join(dir, "verdict.json"), { force: true });
+  const fresh = await hookedSession(root, { ...request, session: null }, env, file, state, timeoutMs, started, dir);
+  return fresh.code;
 }
 
 function reviewRequest(root, ticket, dir, correction) {
@@ -264,7 +302,7 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   event("session", { ticket: ticket.id, attempt, moteur: "codex", ...step });
   const file = path.join(dir, `codex-${attempt}.jsonl`);
   fs.writeFileSync(file, "");
-  let code = await hookedSession(root, { step, prompt }, env, file, state, timeoutMs, started, dir);
+  let { code } = await hookedSession(root, { step, prompt }, env, file, state, timeoutMs, started, dir);
   let relectures = 0;
   let reserves = [];
   for (let correction = 0; code === 0; correction++) {
@@ -292,10 +330,10 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
     const fix = `Reprends le ticket ${ticket.id} (${ticket.file}) en suivant .agents/skills/ticket-codex/SKILL.md.` +
       ` Lis ${reportFile}, le ticket et son journal, les écarts, git status et git diff, puis reprends le travail présent dans l'arbre.` +
       ` Corrige chaque constat bloquant et mineur de cette relecture, tests d'abord, puis rends un nouveau verdict.\n\n${reviewed.report}`;
-    fs.rmSync(path.join(dir, "verdict.json"), { force: true });
-    code = await hookedSession(root, { step, prompt: fix }, env, file, state, timeoutMs, started, dir);
+    const fallbackEvent = (phase, data) => event(phase, { ...data, attempt });
+    code = await correctionSession(root, { step, prompt: fix, session: state.session }, env, file, state, timeoutMs, started, dir, fallbackEvent);
   }
-  const { problem, ...usage } = state;
+  const { problem, turnStarted, ...usage } = state;
   const report = { ...usage, moteur: "codex", duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };
   event("session-terminee", { ticket: ticket.id, attempt, code, ...report });
   return { code, report, problem, reserves };

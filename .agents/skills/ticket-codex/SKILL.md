@@ -42,13 +42,16 @@ ne change. Si `adr: oui`, écris l'ADR au numéro suivant, avec `docs/adr/0000-g
 
 ## 3. Reprendre après une relecture
 
-Après une relecture « à corriger » ou « illisible », la boucle lance une session Codex neuve avec
-les mêmes réglages et la même vérification du témoin de hooks que la première. Une reprise par
-`codex exec resume` ne charge aucun hook du projet : elle ne peut pas servir à corriger.
+Après une relecture « à corriger » ou « illisible », la boucle reprend la session de la tentative par
+`codex exec resume <thread_id>`, avec les réglages du palier et un nouveau témoin de hooks vérifié.
+La reprise conserve le contexte de développement. Si les options requises sont incompatibles,
+si le témoin manque ou si la reprise échoue avant tout tour, la boucle lance une session neuve pour
+la même correction et enregistre `reprise-impossible` avec sa raison. Cette session vérifie aussi son
+témoin. Une tentative sur le palier suivant démarre toujours dans une session neuve.
 La consigne nomme le ticket et le chemin du rapport `relecture-<n>.md` à corriger, et transmet son
-contenu complet. Lis les consignes, le ticket et son journal, ce rapport, les écarts, puis `git status`
-et `git diff` : le travail des sessions précédentes est présent dans l'arbre. Reprends ce travail et
-corrige chaque constat bloquant et mineur, tests d'abord. Une contestation se déclare
+contenu complet. Lis ce rapport, le ticket et son journal, les écarts, puis `git status` et `git diff`.
+En repli sur une session neuve, relis aussi les consignes : le travail précédent est présent dans l'arbre.
+Reprends ce travail et corrige chaque constat bloquant et mineur, tests d'abord. Une contestation se déclare
 avec sa raison dans `ecarts.md` ; le relecteur suivant tranche. Les constats hors périmètre deviennent
 des réserves dans `reste`. Mets le journal à jour et rends un nouveau verdict.
 N'enregistre pas toi-même l'état relu et ne lance pas de relecteur : la boucle s'en charge après toi.

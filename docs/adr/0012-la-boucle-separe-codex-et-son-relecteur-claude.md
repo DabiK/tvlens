@@ -16,11 +16,12 @@ séparé. Le flux Codex fournit les jetons, les tours et un identifiant de sessi
 La boucle choisit le moteur par `--engine claude|codex`, avec Claude par défaut. Le module
 `scripts/loop/codex.mjs` lance Codex pour explorer et implémenter, enregistre l'état avec
 `reviewed-state.mjs`, puis lance Claude avec l'agent `relecteur` et le modèle Claude du palier.
-Le rapport est conservé avec son verdict. Un refus du relecteur ou rapport illisible entraîne une nouvelle
-session `codex exec`, dans la limite de trois corrections par tentative. Sa consigne nomme le ticket et le
+Le rapport est conservé avec son verdict. Un refus du relecteur ou rapport illisible entraîne une reprise
+`codex exec resume <thread_id>`, dans la limite de deux corrections par tentative. Sa consigne nomme le ticket et le
 chemin du rapport `relecture-<n>.md`, transmet le rapport complet et demande de reprendre le travail présent
-dans l'arbre. Chaque session relit ainsi les consignes et retrouve le contexte sur disque.
-Après refus, une nouvelle tentative monte dans l'échelle Codex. Les contrôles, l'intégration,
+dans l'arbre. La reprise conserve le contexte de développement. Si elle est impossible, la même correction
+part dans une session neuve qui relit les consignes et retrouve le contexte sur disque.
+Après refus, une nouvelle tentative monte dans l'échelle Codex avec une session neuve. Les contrôles, l'intégration,
 la rétrospective et l'harmonisation restent ceux de la boucle ; les deux dernières utilisent Claude.
 
 Seul un verdict d'implémentation TERMINÉ est relu. BLOQUÉ rend immédiatement sa question au
@@ -37,7 +38,7 @@ réponse aux contrôles d'implémentation.
 
 ## Conséquences
 
-Les réglages sont imposés à chaque session, corrections comprises : `-s workspace-write`, `-C` vers
+Les réglages sont imposés à chaque session, corrections comprises : `workspace-write`, processus à
 la racine, aucune approbation, réseau autorisé, confiance du projet et
 `--dangerously-bypass-hook-trust`. La config utilisateur reste chargée pour l'approbation des hooks.
 La boucle neutralise ses extensions par `--disable plugins`, `--disable apps`, `--disable memories`,
@@ -54,9 +55,17 @@ scripts partagés : modifier un script conserve l'approbation, modifier une déf
 une nouvelle approbation par `/hooks`. Le refus « hooks Codex non chargés » donne cette cause probable
 et ce remède au propriétaire.
 
-Une expérience sur Codex CLI 0.162.1 a établi que `codex exec resume` ne charge aucun hook du projet,
-alors que `codex exec` les charge. Une session neuve garantit donc les mêmes gardes pour chaque
-correction ; une reprise laisserait la correction sans gardes et serait refusée faute de témoin.
+Le constat initial sur Codex CLI 0.162.1 était faussé par `--ignore-user-config`. Dans le dépôt
+approuvé, avec la config conservée et neutralisée, la reprise écrit son propre témoin de démarrage
+avec le même identifiant de session. Les gardes d'écriture sur une vraie reprise restent à prouver
+par le script préparé dans `.harness-state/tickets/T162/prouver-les-hooks.sh` : l'orchestrateur le lance
+après intégration. Ce script vérifie le témoin, le refus du vrai `guard-write` et le fichier intact.
+Une reprise reçoit `-c 'sandbox_mode="workspace-write"'` ; une session neuve reçoit `-s workspace-write`
+et `-C <racine>`. Avant de reprendre, la boucle vérifie par l'aide du binaire les `--disable` requis et
+les `--add-dir` nécessaires aux tickets de harnais. Des options incompatibles, un témoin manquant ou
+une erreur avant tout tour déclenchent une session neuve pour la même correction, avec son propre
+témoin vérifié. L'événement `reprise-impossible` conserve la raison. Une erreur après le début d'un
+tour avec un témoin valide refuse la tentative.
 Le flux de toutes les sessions d'une tentative est ajouté au même `codex-<tentative>.jsonl`, les
 jetons et tours sont cumulés et le coût reste inconnu.
 
@@ -68,7 +77,7 @@ Le coût de la relecture séparée et la pertinence des paliers restent à calib
 
 ## Protégée par
 
-`tests/ticket-loop.test.cjs` vérifie le protocole des processus, les corrections par session neuve
+`tests/ticket-loop.test.cjs` vérifie le protocole des processus, les corrections par reprise et leur repli sur une session neuve
 avec le ticket, le chemin du rapport et son contenu complet, les réglages et le témoin de chaque
 session, la limite de corrections, l'escalade, la signature et le refus des changements de harnais.
 `tests/agent-guards.test.cjs` vérifie les patches, le lien de consignes et les hooks déclarés.
