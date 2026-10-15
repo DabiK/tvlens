@@ -1,0 +1,771 @@
+{
+  "adapters/chat-trace.cjs": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "adapters/clip-inspector.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "adapters/codex-confinement.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "adapters/codex-perception.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "adapters/codex-rpc.cjs": {
+    "no-empty": {
+      "count": 3
+    }
+  },
+  "adapters/codex-session-agent.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "adapters/codex-session-client.cjs": {
+    "complexity": {
+      "count": 5
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 3
+    },
+    "no-empty": {
+      "count": 3
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "adapters/codex-video-agent.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "adapters/companion-prompt.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "adapters/config.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 3
+    }
+  },
+  "adapters/disk-guard.cjs": {
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "adapters/embedding-store.cjs": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "adapters/frame-selection.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "adapters/inspection-strategies.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "adapters/local-vlm-agent.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "adapters/openrouter.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 3
+    }
+  },
+  "adapters/remote-media.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "adapters/saved-moment-store.cjs": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "adapters/session-library.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "adapters/simulated-surveillance-agent.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "adapters/video-bridge.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "app/main.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "app/moment-actions.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "app/renderer.js": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "app/ui/job-card.js": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "app/ui/job-view.mjs": {
+    "complexity": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 5
+    }
+  },
+  "app/ui/recap-state.mjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "app/ui/recap-view.js": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "app/ui/sessions-view.mjs": {
+    "complexity": {
+      "count": 5
+    },
+    "no-nested-ternary": {
+      "count": 12
+    }
+  },
+  "app/ui/shell.js": {
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "app/ui/surveillance-view.mjs": {
+    "complexity": {
+      "count": 3
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 14
+    }
+  },
+  "core/clip-container.cjs": {
+    "no-nested-ternary": {
+      "count": 4
+    }
+  },
+  "core/deep-ask.cjs": {
+    "complexity": {
+      "count": 3
+    },
+    "no-empty": {
+      "count": 5
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "core/frame-policy.mjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "core/living-recap.cjs": {
+    "complexity": {
+      "count": 3
+    },
+    "no-nested-ternary": {
+      "count": 5
+    }
+  },
+  "core/moment-index.cjs": {
+    "complexity": {
+      "count": 2
+    }
+  },
+  "core/moment-search.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "core/perception-context.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "core/session-timeline.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 3
+    }
+  },
+  "core/session.cjs": {
+    "complexity": {
+      "count": 7
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "core/surveillance.cjs": {
+    "complexity": {
+      "count": 9
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 13
+    }
+  },
+  "core/verification.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "core/video-tools.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "runtime/headless-runtime.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-console": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "runtime/session-closing.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "runtime/session-runtime.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "runtime/state-views.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "runtime/surveillance-runtime.cjs": {
+    "complexity": {
+      "count": 3
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 6
+    }
+  },
+  "scripts/bench-backend.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "scripts/bench-perceived.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "scripts/bench-whisper.cjs": {
+    "complexity": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 3
+    }
+  },
+  "scripts/loop-view/codex-commands.mjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "scripts/loop-view/codex-stream.mjs": {
+    "complexity": {
+      "count": 2
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "scripts/loop-view/session-stream.mjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "scripts/package-tv-ambient.mjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "scripts/probe-confinement.cjs": {
+    "complexity": {
+      "count": 4
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 4
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "scripts/probe-overlap-live.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "scripts/probe-refactor-live.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "scripts/probe-tv-ambient-capture.mjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "scripts/replay-lg-stream.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "scripts/replay-reinspection.cjs": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "scripts/simulate-stream.cjs": {
+    "complexity": {
+      "count": 4
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "scripts/simulate-tv-ambient.mjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    }
+  },
+  "scripts/smoke-electron.mjs": {
+    "constructor-super": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    }
+  },
+  "scripts/smoke-tv-ambient.mjs": {
+    "max-lines": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "scripts/smoke-tv-overlay.mjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "scripts/watch-loop/reader.mjs": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "scripts/watch-loop/text.mjs": {
+    "no-control-regex": {
+      "count": 1
+    }
+  },
+  "server/http.cjs": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 1
+    },
+    "no-empty": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "server/main.cjs": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "tests/architecture-f05.test.cjs": {
+    "no-console": {
+      "count": 3
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "tests/architecture-f06.test.cjs": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "tests/architecture-f07.test.cjs": {
+    "no-console": {
+      "count": 3
+    }
+  },
+  "tests/architecture-f09.test.cjs": {
+    "no-undef": {
+      "count": 2
+    }
+  },
+  "tests/codex-confinement.test.cjs": {
+    "no-console": {
+      "count": 4
+    },
+    "no-empty": {
+      "count": 2
+    }
+  },
+  "tests/inspection-strategies.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/loop-view-state.test.cjs": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "tests/mac-ipc-contract.test.cjs": {
+    "no-console": {
+      "count": 3
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "tests/quality-check.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/refactor-boundaries.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/remote-server.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/server-surveillance.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/surveillance-runtime.test.cjs": {
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "tests/surveillance.test.cjs": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "tests/ticket-loop.test.cjs": {
+    "no-regex-spaces": {
+      "count": 2
+    }
+  },
+  "tests/video-research.test.cjs": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tests/watch-loop-render.test.cjs": {
+    "no-control-regex": {
+      "count": 3
+    }
+  },
+  "tests/watch-loop.test.cjs": {
+    "no-control-regex": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "tv/app/ambient.js": {
+    "no-empty": {
+      "count": 4
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "tv/app/companion.js": {
+    "complexity": {
+      "count": 4
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    },
+    "no-empty": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 9
+    },
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "tv/app/remote-client.js": {
+    "no-empty": {
+      "count": 1
+    }
+  },
+  "tv/app/sessions-view.js": {
+    "complexity": {
+      "count": 4
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 11
+    },
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "tv/app/surveillance-overlay.js": {
+    "complexity": {
+      "count": 5
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 1
+    },
+    "no-useless-escape": {
+      "count": 2
+    }
+  },
+  "tv/app/surveillance-view.js": {
+    "complexity": {
+      "count": 9
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 10
+    },
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "tv/app/timeline-view.js": {
+    "complexity": {
+      "count": 3
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 5
+    }
+  }
+}
