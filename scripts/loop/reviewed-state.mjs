@@ -24,8 +24,11 @@ const RECORD_COMMAND = "node scripts/loop/reviewed-state.mjs record";
 
 export const ticketDir = (root, id) => path.join(root, ".harness-state", "tickets", id);
 
-function git(root, args) {
-  const result = spawnSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
+function git(root, args, env = {}) {
+  const result = spawnSync("git", args, {
+    cwd: root, encoding: "utf8", maxBuffer: 256 * 1024 * 1024,
+    env: { ...process.env, GIT_OPTIONAL_LOCKS: "0", ...env },
+  });
   return { code: result.status ?? 1, stdout: result.stdout || "" };
 }
 
@@ -157,6 +160,14 @@ export function reviewVerdict(report) {
   return blocking + minor > 0 ? "à corriger" : "accepté";
 }
 
+/** Une correction sans compte entier lisible vaut au moins un constat non corrigé. Seule la première ligne compte. */
+export function uncorrectedFindings(report) {
+  const line = /^[\t ]*NON CORRIGÉS[\t ]*:[^\r\n]*$/imu.exec(report || "")?.[0];
+  const count = /^[\t ]*NON CORRIGÉS[\t ]*:[\t ]*(\d+)[\t ]*$/iu.exec(line || "");
+  const value = count ? Number(count[1]) : NaN;
+  return Number.isSafeInteger(value) ? value : 1;
+}
+
 /**
  * Ajoute au journal des relectures le verdict rendu sur la dernière revue enregistrée, et garde le texte du rapport dans
  * `relecture-<n>.md`, `n` étant le rang de la ligne ajoutée : une harmonisation qui suit un refus lit le dernier.
@@ -212,6 +223,40 @@ function reviewDiff(root, { tracked, added }) {
   return parts.join("");
 }
 
+/** Un index jetable part de HEAD : seuls les fichiers du ticket remplacent cet état de référence. */
+function reviewTree(root, dir, { tracked, added }) {
+  const head = git(root, ["ls-tree", "-r", "--name-only", "-z", "HEAD"]);
+  if (head.code !== 0) return { problem: "Impossible de lire les chemins Git de référence (ls-tree)." };
+  const inHead = new Set(head.stdout.split("\0"));
+  // AD et RD peuvent nommer une cible déjà supprimée, inconnue de l'index temporaire parti de HEAD.
+  const paths = [...new Set([...tracked, ...added].map((file) => file.path))]
+    .filter((file) => inHead.has(file) || fs.lstatSync(path.join(root, file), { throwIfNoEntry: false }));
+  const temp = fs.mkdtempSync(path.join(dir, "index-"));
+  const env = { GIT_INDEX_FILE: path.join(temp, "index"), GIT_LITERAL_PATHSPECS: "1" };
+  const commands = [["read-tree", "HEAD"]];
+  if (paths.length) commands.push(["add", "-A", "-f", "--", ...paths]);
+  commands.push(["write-tree"]);
+  let tree;
+  try {
+    for (const args of commands) {
+      const result = git(root, args, env);
+      if (result.code !== 0) return { problem: `Impossible d'enregistrer l'arbre Git de la relecture (${args[0]}).` };
+      tree = result.stdout.trim();
+    }
+    return { tree };
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+}
+
+/** Un historique perdu ou inutilisable n'empêche pas de reconstruire l'état pour une relecture complète. */
+function reviewInterdiff(root, previousTree, currentTree) {
+  if (typeof previousTree !== "string" || !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/.test(previousTree)) return undefined;
+  if (git(root, ["cat-file", "-e", `${previousTree}^{tree}`]).code !== 0) return undefined;
+  const diff = git(root, ["diff", previousTree, currentTree, "--"]);
+  return diff.code === 0 ? diff.stdout : undefined;
+}
+
 /** Enregistre la relecture suivante du ticket ; renvoie les fichiers écrits, ou `problem` sans rien écrire. */
 export function record(root, ticket) {
   const dir = ticketDir(root, ticket.id);
@@ -222,11 +267,20 @@ export function record(root, ticket) {
   while (fs.existsSync(path.join(dir, `revue-${n}.diff`))) n++;
   const scope = { ticketFile: ticket.file, untrackedBefore: before.paths };
   const files = changedFiles(root, scope);
+  const previous = readStateFile(dir, REVIEWED_STATE, isRecordedState);
+  const snapshot = reviewTree(root, dir, files);
+  if (snapshot.problem) return snapshot;
+  const interdiff = n > 1 ? reviewInterdiff(root, previous.value?.arbre, snapshot.tree) : undefined;
   const written = [`revue-${n}.diff`, `revue-${n}.fichiers`, REVIEWED_STATE].map((name) => path.join(dir, name));
   fs.writeFileSync(written[0], reviewDiff(root, files));
   fs.writeFileSync(written[1], [...files.tracked, ...files.added].map((f) => `${f.status} ${f.path}\n`).join(""));
-  const state = { revue: `revue-${n}.diff`, fichiers: reviewedState(root, scope) };
+  const state = { revue: `revue-${n}.diff`, fichiers: reviewedState(root, scope), arbre: snapshot.tree };
   fs.writeFileSync(written[2], JSON.stringify(state, null, 2) + "\n");
+  if (interdiff !== undefined) {
+    const file = path.join(dir, `revue-${n}.interdiff`);
+    fs.writeFileSync(file, interdiff);
+    written.push(file);
+  }
   return { written };
 }
 

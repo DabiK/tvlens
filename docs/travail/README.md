@@ -103,9 +103,24 @@ réglages que la première. Sa consigne nomme le ticket, le chemin du rapport `r
 transmet son contenu complet ; elle demande de reprendre le travail présent dans l'arbre. La session
 relit les consignes et le rapport avant de corriger. `codex exec resume` ne charge aucun hook du
 projet dans Codex CLI 0.162.1 : chaque correction doit donc passer par une session neuve pour avoir
-les mêmes gardes. Trois corrections au plus par tentative, puis refus et escalade.
+les mêmes gardes. Deux corrections au plus par tentative, puis refus et escalade.
 Les contrôles de la boucle restent communs ; la rétrospective et l'harmonisation restent sur Claude.
 Le verdict appartient à la session, la boucle ne le réécrit pas.
+
+Pour les deux moteurs, la première relecture de chaque tentative reste complète. Chaque relecture
+suivante est une relecture de correction par un relecteur neuf : il reçoit le rapport précédent
+`relecture-<n>.md` et `revue-<n>.interdiff`, le diff exact entre les deux états relus. L'enregistrement
+conserve un arbre Git incluant les nouveaux fichiers du ticket, sans toucher à l'index réel ni à
+l'arbre de travail. Le relecteur vérifie chaque ancien constat bloquant ou mineur, cherche les
+régressions dans le code changé et classe les nouveaux mineurs sur du code inchangé en réserves
+hors périmètre. Un nouveau bloquant reste possible partout.
+
+Le rapport de correction ajoute `NON CORRIGÉS : <n>` juste après `CONSTATS : …` ; une relecture
+complète n'a pas cette ligne. Un constat non corrigé refuse la tentative immédiatement, en nommant
+le rapport : la boucle passe au palier suivant sans redemander la même correction au même modèle.
+Une ligne absente ou illisible vaut un constat non corrigé. Dans le flux Claude, l'orchestrateur
+rend alors PARTIEL et met le constat et le chemin du rapport dans `reste`. Même avec tous les anciens
+constats corrigés, deux corrections refusées épuisent la tentative.
 
 | Palier | Modèle Codex | Effort |
 | --- | --- | --- |
@@ -322,7 +337,8 @@ Pour aller plus loin :
 | `.harness-state/tickets/<ID>/exploration.md` | le rapport d'exploration |
 | `.harness-state/tickets/<ID>/ecarts.md` | les écarts aux critères déclarés avant l'implémentation et les constats contestés, que le relecteur tranche |
 | `.harness-state/tickets/<ID>/revue-<n>.diff`, `revue-<n>.fichiers` | chaque relecture : le diff relu, fichiers nouveaux en entier, et la liste des fichiers |
-| `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, que la boucle compare à l'état final |
+| `.harness-state/tickets/<ID>/revue-<n>.interdiff` | le diff entre deux états relus successifs, si l'arbre précédent est encore utilisable |
+| `.harness-state/tickets/<ID>/reviewed-state.json` | l'état de la dernière relecture, avec son arbre Git ; la boucle le compare à l'état final |
 | `.harness-state/tickets/<ID>/relectures.jsonl` | le verdict de chaque relecteur, la revue qu'il a lue et son modèle |
 | `.harness-state/tickets/<ID>/relecture-<n>.md` | le rapport du relecteur dont le verdict est la ligne `n` de `relectures.jsonl`, pour un ticket comme pour une harmonisation |
 | `.harness-state/tickets/<ID>/retro-entree.md`, `retro.json` | ce que la rétrospective a reçu, et ce qu'elle a rendu |

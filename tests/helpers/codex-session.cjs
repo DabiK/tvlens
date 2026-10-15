@@ -56,6 +56,17 @@ const verdict = {
 if (scenario === "partial") verdict.statut = "PARTIEL";
 if (scenario !== "missing-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), JSON.stringify(verdict));
 if (scenario === "unreadable-verdict") fs.writeFileSync(path.join(dir, "verdict.json"), "{ incomplete");
+if (rank > 0 && process.env.FAKE_CODEX_REVIEW_STATE) {
+  const file = path.join(dir, "reviewed-state.json");
+  const change = process.env.FAKE_CODEX_REVIEW_STATE;
+  if (change === "corrupt") fs.writeFileSync(file, "{ incomplete");
+  if (change === "missing") fs.rmSync(file, { force: true });
+  if (change === "legacy") {
+    const state = JSON.parse(fs.readFileSync(file, "utf8"));
+    delete state.arbre;
+    fs.writeFileSync(file, JSON.stringify(state));
+  }
+}
 const events = [
   { type: "thread.started", thread_id: session },
   { type: "turn.started" },

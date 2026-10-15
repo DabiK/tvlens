@@ -4,13 +4,13 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createInterface } from "node:readline";
-import { lastReviewReport, record, recordReview, reviewVerdict } from "./reviewed-state.mjs";
+import { lastReviewReport, record, recordReview, reviewVerdict, uncorrectedFindings } from "./reviewed-state.mjs";
 
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const MAX_ACTION_LENGTH = 160;
 const MAX_REVIEW_OUTPUT = 64 * 1024 * 1024;
-const MAX_CORRECTIONS = 3;
+const MAX_CORRECTIONS = 2;
 const DISABLED_FEATURES = ["plugins", "apps", "memories", "image_generation"];
 const DEFAULT_DISCOVERY_TIMEOUT_MS = SECONDS_PER_MINUTE * MS_PER_SECOND;
 const TOKEN_FIELDS = ["input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens"];
@@ -146,12 +146,30 @@ async function hookedSession(root, request, env, file, state, timeoutMs, started
   return code;
 }
 
-function review(root, ticket, dir, env, step, timeoutMs) {
+function reviewRequest(root, ticket, dir, correction) {
+  const previousReport = correction ? lastReviewReport(dir) : null;
   const snapshot = record(root, ticket);
   if (snapshot.problem) return { problem: snapshot.problem };
   const files = snapshot.written.slice(0, 2).map((file) => path.relative(root, file));
-  const prompt = `Relis le ticket ${ticket.id} (${ticket.file}), ${files.join(" et ")}` +
+  let prompt = `Relis le ticket ${ticket.id} (${ticket.file}), ${files.join(" et ")}` +
     ` et, s'il existe, ${path.relative(root, path.join(dir, "ecarts.md"))}.`;
+  if (correction) {
+    const previous = path.relative(root, path.join(dir, previousReport));
+    const interdiffFile = snapshot.written.find((file) => file.endsWith(".interdiff"));
+    if (!interdiffFile) {
+      const state = path.relative(root, path.join(dir, "reviewed-state.json"));
+      return { problem: `Relecture de correction impossible : interdiff absent après reconstruction de ${state}. La tentative est refusée.` };
+    }
+    const interdiff = path.relative(root, interdiffFile);
+    prompt += ` Fais une relecture de correction contre ${previous} et ${interdiff}, selon la section correspondante de tes consignes.`;
+  }
+  return { prompt };
+}
+
+function review(root, ticket, dir, env, step, timeoutMs, correction) {
+  const request = reviewRequest(root, ticket, dir, correction);
+  if (request.problem) return request;
+  const { prompt } = request;
   const args = ["-p", prompt, "--agent", "relecteur", "--model", step.relecteur, "--output-format", "json", "--strict-mcp-config"];
   const reviewEnv = { ...env };
   // Les hooks de ticket exigeraient du relecteur un verdict d'implémentation et remplaceraient son rapport.
@@ -172,9 +190,11 @@ function review(root, ticket, dir, env, step, timeoutMs) {
     report = `Relecteur illisible : ${result.error?.message || result.stderr || result.stdout || error.message}`;
     failed = true;
   }
-  const verdict = failed ? "illisible" : reviewVerdict(report);
+  const uncorrected = correction ? uncorrectedFindings(report) : 0;
+  let verdict = failed ? "illisible" : reviewVerdict(report);
+  if (!failed && uncorrected > 0) verdict = "à corriger";
   recordReview(root, ticket.id, { verdict, modele: step.relecteur, report });
-  return { verdict, report };
+  return { verdict, report, uncorrected };
 }
 
 function sessionVerdict(dir) {
@@ -249,8 +269,15 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   let reserves = [];
   for (let correction = 0; code === 0; correction++) {
     if (sessionVerdict(dir)?.statut !== "TERMINÉ") break;
-    const reviewed = review(root, ticket, dir, env, step, timeoutMs);
+    const reviewed = review(root, ticket, dir, env, step, timeoutMs, correction > 0);
     relectures++;
+    if (reviewed.uncorrected > 0) {
+      const reference = path.relative(root, path.join(dir, lastReviewReport(dir)));
+      state.problem = `Un constat non corrigé (ou une ligne NON CORRIGÉS absente ou illisible) dans ${reference}` +
+        ` refuse la tentative : la boucle passe au palier suivant.\n\n${reviewed.report}`;
+      code = 1;
+      break;
+    }
     if (reviewed.verdict === "accepté") {
       const reference = path.relative(root, path.join(dir, lastReviewReport(dir)));
       reserves = reviewReserves(reviewed.report, reference);

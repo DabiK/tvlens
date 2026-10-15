@@ -38,7 +38,11 @@ if (argument("--agent") === "relecteur") {
   fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
   const accepted = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
   const reports = JSON.parse(process.env.FAKE_REVIEWS || "null");
-  const report = reports?.[rank] || accepted;
+  let report = reports?.[rank] || accepted;
+  if (/relecture de correction/i.test(call.prompt) && !/^NON CORRIGÉS\\s*:/m.test(report) && process.env.FAKE_UNCORRECTED !== "missing") {
+    const count = process.env.FAKE_UNCORRECTED ?? "0";
+    report = report.replace(/^(CONSTATS[^\\n]*)/m, "$1\\nNON CORRIGÉS : " + count);
+  }
   const failure = process.env.FAKE_REVIEW_FAILURE;
   console.log(JSON.stringify({ type: "result", is_error: failure === "error", result: (failure ? "\\n" : "") + report }));
   process.exit(failure === "exit" ? 1 : 0);
@@ -1270,6 +1274,175 @@ test("recording a review fails with a clear message when the list of files untra
   assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T001/revue-1.diff")), false);
 });
 
+for (const previous of ["corrupt", "legacy", "missing", "missing-tree", "blob", "option", "diff-failure"]) {
+  test(`record recovers a ${previous} previous state and resumes interdiffs on the following record`, (t) => {
+    const repo = loopRepo();
+    t.after(repo.cleanup);
+    const dir = ".harness-state/tickets/T001/";
+    const record = () => repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+    repo.write("core/greeting.cjs", "module.exports = 'before';\n");
+    assert.equal(record().code, 0);
+    if (previous === "corrupt") repo.write(dir + "reviewed-state.json", "{ incomplete");
+    if (previous === "missing") fs.rmSync(path.join(repo.root, dir + "reviewed-state.json"));
+    if (previous === "legacy") repo.write(dir + "reviewed-state.json", JSON.stringify({ revue: "revue-1.diff", fichiers: {} }));
+    const output = path.join(repo.root, ".harness-state/unexpected-output");
+    const trees = {
+      "missing-tree": "0".repeat(40),
+      blob: repo.git("hash-object", "-w", "core/greeting.cjs").stdout.trim(),
+      option: `--output=${output}`,
+    };
+    if (trees[previous]) repo.write(dir + "reviewed-state.json", JSON.stringify({ revue: "revue-1.diff", fichiers: {}, arbre: trees[previous] }));
+    if (previous === "diff-failure") {
+      repo.write("core/trigger.cjs", "module.exports = 'force a diff';\n");
+      assert.equal(repo.git("config", "diff.external", "false").code, 0);
+    }
+    const recovered = record();
+    assert.equal(fs.existsSync(output), false, "an old tree must never be interpreted as a Git option");
+    assert.equal(recovered.code, 0, recovered.out);
+    assert.doesNotMatch(recovered.stdout, /interdiff/);
+    assert.equal(fs.existsSync(path.join(repo.root, dir + "revue-2.interdiff")), false);
+    if (previous === "diff-failure") assert.equal(repo.git("config", "--unset", "diff.external").code, 0);
+    repo.write("core/greeting.cjs", "module.exports = 'after';\n");
+    const next = record();
+    assert.equal(next.code, 0, next.out);
+    assert.match(next.stdout, /revue-3\.interdiff/);
+    assert.ok(repo.read(dir + "revue-3.interdiff").includes("-module.exports = 'before';"));
+  });
+}
+
+test("record recovers a corrupt state even before any numbered review exists", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  repo.write(".harness-state/tickets/T001/reviewed-state.json", "{ incomplete");
+  const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.stdout, /revue-1\.diff/);
+  repo.write("core/greeting.cjs", "module.exports = 'after recovery';\n");
+  const next = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(next.code, 0, next.out);
+  assert.ok(repo.read(".harness-state/tickets/T001/revue-2.interdiff").includes("+module.exports = 'after recovery';"));
+});
+
+for (const status of ["AD", "RD"]) {
+  test(`record accepts a staged path deleted from disk with status ${status} without changing the real index`, (t) => {
+    const repo = loopRepo({ "core/greeting.cjs": "module.exports = 'hello';\n" });
+    t.after(repo.cleanup);
+    const file = "core/removed.cjs";
+    if (status === "AD") {
+      repo.write(file, "module.exports = 'temporary';\n");
+      assert.equal(repo.git("add", "--", file).code, 0);
+    } else {
+      assert.equal(repo.git("mv", "core/greeting.cjs", file).code, 0);
+    }
+    fs.rmSync(path.join(repo.root, file));
+    const before = repo.git("status", "--porcelain", "-z").stdout;
+    assert.ok(before.includes(`${status} ${file}`), before);
+    const index = fs.readFileSync(path.join(repo.root, ".git/index"));
+    const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+    assert.equal(result.code, 0, result.out);
+    assert.deepEqual(fs.readFileSync(path.join(repo.root, ".git/index")), index);
+    assert.equal(repo.git("status", "--porcelain", "-z").stdout, before);
+    repo.write(file, "module.exports = 'restored target';\n");
+    if (status === "RD") repo.write("core/greeting.cjs", "module.exports = 'restored source';\n");
+    const next = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+    assert.equal(next.code, 0, next.out);
+    const diff = repo.read(".harness-state/tickets/T001/revue-2.interdiff");
+    assert.ok(diff.includes(`diff --git a/${file} b/${file}\nnew file mode`), diff);
+    assert.ok(diff.includes("+module.exports = 'restored target';"), diff);
+    if (status === "RD") {
+      assert.ok(diff.includes("diff --git a/core/greeting.cjs b/core/greeting.cjs\nnew file mode"), diff);
+      assert.ok(diff.includes("+module.exports = 'restored source';"), diff);
+    }
+  });
+}
+
+test("record includes a force-added ignored file in the review diff and successive interdiffs without changing the real index", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const dir = ".harness-state/tickets/T001/";
+  const record = () => {
+    const status = repo.git("status", "--porcelain", "-z").stdout;
+    const index = fs.readFileSync(path.join(repo.root, ".git/index"));
+    const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+    assert.equal(result.code, 0, result.out);
+    assert.deepEqual(fs.readFileSync(path.join(repo.root, ".git/index")), index);
+    assert.equal(repo.git("status", "--porcelain", "-z").stdout, status);
+  };
+  record();
+  repo.write(".git/info/exclude", "core/ignored.cjs\ncore/untracked.cjs\n");
+  repo.write("core/ignored.cjs", "module.exports = 'force-added';\n");
+  repo.write("core/untracked.cjs", "module.exports = 'still ignored';\n");
+  assert.equal(repo.git("add", "-f", "--", "core/ignored.cjs").code, 0);
+  record();
+  for (const suffix of ["diff", "interdiff"]) {
+    const diff = repo.read(dir + "revue-2." + suffix);
+    assert.match(diff, /diff --git a\/core\/ignored\.cjs b\/core\/ignored\.cjs\nnew file mode/);
+    assert.ok(diff.includes("+module.exports = 'force-added';"), diff);
+    assert.doesNotMatch(diff, /untracked|still ignored/);
+  }
+  repo.write("core/ignored.cjs", "module.exports = 'corrected';\n");
+  record();
+  const diff = repo.read(dir + "revue-3.interdiff");
+  assert.ok(diff.includes("-module.exports = 'force-added';"), diff);
+  assert.ok(diff.includes("+module.exports = 'corrected';"), diff);
+});
+
+test("record names add when a required clean filter fails while filling the temporary index", (t) => {
+  const repo = loopRepo({ "core/greeting.cjs": "module.exports = 'hello';\n" });
+  t.after(repo.cleanup);
+  repo.write("core/greeting.cjs", "module.exports = 'corrected';\n");
+  repo.write(".git/info/attributes", "core/greeting.cjs filter=review\n");
+  assert.equal(repo.git("config", "filter.review.clean", "false").code, 0);
+  assert.equal(repo.git("config", "filter.review.required", "true").code, 0);
+  const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(result.code, 2, result.out);
+  assert.match(result.out, /\(add\)/);
+  assert.doesNotMatch(result.out, /--literal-pathspecs/);
+});
+
+test("record interdiff includes only corrected files and preserves the working tree and real index", (t) => {
+  const repo = loopRepo({ "core/greeting.cjs": "module.exports = 'hey';\n", "core/other.cjs": "module.exports = 1;\n" });
+  t.after(repo.cleanup);
+  const dir = ".harness-state/tickets/T001/";
+  repo.write(dir + "untracked-before.json", JSON.stringify(["notes/personal.md"]));
+  repo.write("notes/personal.md", "unrelated\n");
+  repo.write("core/other.cjs", "module.exports = 2;\n");
+  assert.equal(repo.git("add", "core/other.cjs").code, 0);
+  repo.write("core/other.cjs", "module.exports = 3;\n");
+  repo.write("core/greeting.cjs", "module.exports = 'hello';\n");
+  repo.write("core/new.cjs", "module.exports = 'first review';\n");
+  const record = (rank) => {
+    const status = repo.git("status", "--porcelain", "-z", "--untracked-files=all").stdout;
+    const index = fs.readFileSync(path.join(repo.root, ".git/index"));
+    const result = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+    assert.equal(result.code, 0, result.out);
+    assert.deepEqual(fs.readFileSync(path.join(repo.root, ".git/index")), index);
+    assert.equal(repo.git("status", "--porcelain", "-z", "--untracked-files=all").stdout, status);
+    if (rank > 1) assert.ok(result.stdout.includes(dir + `revue-${rank}.interdiff`), result.stdout);
+  };
+  record(1);
+  assert.equal(fs.existsSync(path.join(repo.root, dir + "revue-1.interdiff")), false);
+  repo.write("core/greeting.cjs", "module.exports = 'corrected';\n");
+  repo.write("core/new.cjs", "module.exports = 'corrected new file';\n");
+  repo.write("core/café.cjs", "module.exports = 'created by correction';\n");
+  repo.write("notes/personal.md", "still unrelated\n");
+  repo.write("docs/travail/tickets/001-add-greeting.md", ticketText() + "- journal changed\n");
+  record(2);
+  const diff = repo.read(dir + "revue-2.interdiff");
+  for (const text of ["core/greeting.cjs", "core/new.cjs", "created by correction", "-module.exports = 'hello';"]) {
+    assert.ok(diff.includes(text), diff);
+  }
+  assert.ok(diff.includes("-module.exports = 'first review';"), diff);
+  assert.doesNotMatch(diff, /core\/other|personal|journal changed/);
+  repo.write("core/greeting.cjs", "module.exports = 'hey';\n");
+  fs.rmSync(path.join(repo.root, "core/new.cjs"));
+  record(3);
+  const third = repo.read(dir + "revue-3.interdiff");
+  assert.match(third, /deleted file mode/);
+  assert.ok(third.includes("+module.exports = 'hey';"), third);
+  assert.doesNotMatch(third, /core\/other|created by correction/);
+});
+
 test("files that were already untracked before the loop are left out of the ticket commit", (t) => {
   const repo = loopRepo();
   t.after(repo.cleanup);
@@ -1549,6 +1722,7 @@ test("a Codex ticket accepted on its first review is integrated with safe option
 
 const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 0 hors périmètre\n- core/greeting.cjs:1 : preuve manquante.\n- nom à préciser.";
 const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
+const correctedReview = (report) => report.replace(/^(CONSTATS[^\n]*)/m, "$1\nNON CORRIGÉS : 0");
 
 for (const engine of ["claude", "codex"]) {
   for (const change of ["add", "remove", "delete"]) {
@@ -1846,7 +2020,7 @@ test("Codex starts a fresh guarded correction with the ticket, report and existi
   const reviews = jsonLines(repo, "relectures.jsonl");
   assert.deepEqual(reviews.map(r => [r.revue, r.verdict]), [["revue-1.diff", "à corriger"], ["revue-2.diff", "accepté"]]);
   assert.equal(repo.read(codexDir + "relecture-1.md"), rejectedReview);
-  assert.equal(repo.read(codexDir + "relecture-2.md"), acceptedReview);
+  assert.equal(repo.read(codexDir + "relecture-2.md"), correctedReview(acceptedReview));
   assert.equal(repo.status(), "termine");
   const ended = repo.events().find(e => e.phase === "session-terminee");
   assert.equal(ended.relectures, 2);
@@ -1872,26 +2046,118 @@ test("an unreadable Codex review starts a fresh correction naming its recorded r
   assert.deepEqual(JSON.parse(repo.read(codexDir + "hooks-started.json")), { session: calls[1].session, run: calls[1].run });
 });
 
-test("four rejected Codex reviews exhaust three corrections and the next attempt raises the Sol effort", (t) => {
+test("a Codex correction reviewer receives the previous report and exact interdiff while the first review stays complete", (t) => {
   const repo = codexRepo();
   t.after(repo.cleanup);
-  const reports = Array.from({ length: 4 }, (_, i) => rejectedReview + `\nConstat maintenu ${i + 1}.`);
+  const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]) });
+  assert.equal(result.code, 0, result.out);
+  const reviews = jsonLines(repo, "fake-review-calls");
+  assert.equal(reviews.length, 2);
+  assert.doesNotMatch(reviews[0].prompt, /interdiff|relecture-\d+\.md|relecture de correction/i);
+  assert.match(reviews[1].prompt, /relecture de correction/i);
+  assert.ok(reviews[1].prompt.includes(codexDir + "relecture-1.md"), reviews[1].prompt);
+  assert.ok(reviews[1].prompt.includes(codexDir + "revue-2.interdiff"), reviews[1].prompt);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir + "revue-2.interdiff")), true);
+});
+
+test("a complete Codex review can restart from a legacy recorded state without an interdiff", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  repo.write(codexDir + "revue-1.diff", "old review\n");
+  repo.write(codexDir + "reviewed-state.json", JSON.stringify({ revue: "revue-1.diff", fichiers: {} }));
+  const result = repo.codex(["--attempts", "1"]);
+  assert.equal(result.code, 0, result.out);
+  const reviews = jsonLines(repo, "fake-review-calls");
+  assert.equal(reviews.length, 1);
+  assert.match(reviews[0].prompt, /revue-2\.diff/);
+  assert.doesNotMatch(reviews[0].prompt, /interdiff|relecture de correction/i);
+});
+
+for (const previous of ["corrupt", "legacy", "missing"]) {
+  test(`a Codex correction refuses a missing interdiff after a ${previous} state without crashing`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]), FAKE_CODEX_REVIEW_STATE: previous,
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.match(repo.failure(), /interdiff.*absent/i);
+    assert.ok(repo.failure().includes(codexDir + "reviewed-state.json"), repo.failure());
+    assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.doesNotMatch(result.out, /TypeError/);
+  });
+}
+
+test("a Codex correction with an unresolved finding refuses the attempt without a third session", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]), FAKE_UNCORRECTED: "1",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.equal(jsonLines(repo, "fake-review-calls").length, 2);
+  assert.ok(repo.failure().includes(codexDir + "relecture-2.md"), repo.failure());
+  assert.match(repo.failure(), /non corrigé.*palier suivant/s);
+  assert.equal(jsonLines(repo, "relectures.jsonl").at(-1).verdict, "à corriger");
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("Codex escalates immediately after an unresolved correction and starts a complete review on the next rung", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "2"], {
+    FAKE_REVIEWS: JSON.stringify([rejectedReview, rejectedReview, acceptedReview]), FAKE_UNCORRECTED: "1",
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 3);
+  assert.ok(calls[2].args.includes('model_reasoning_effort="xhigh"'));
+  assert.ok(calls[2].args.at(-1).includes("echec-1.txt"));
+  assert.ok(repo.failure().includes(codexDir + "relecture-2.md"), repo.failure());
+  assert.match(repo.failure(), /non corrigé.*palier suivant/s);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.relectures), [2, 1]);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.palier), [0, 1]);
+  const reviews = jsonLines(repo, "fake-review-calls");
+  assert.doesNotMatch(reviews[2].prompt, /interdiff|relecture-\d+\.md|relecture de correction/i);
+});
+
+for (const count of ["missing", "inconnu", "-1", "0 restant", "0.5"]) {
+  test(`an absent or unreadable correction count refuses Codex without another correction: ${count}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]), FAKE_UNCORRECTED: count,
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+    assert.ok(repo.failure().includes(codexDir + "relecture-2.md"), repo.failure());
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+test("three rejected Codex reviews with resolved findings exhaust two corrections and the next attempt raises the Sol effort", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const reports = Array.from({ length: 3 }, (_, i) => (i ? correctedReview(rejectedReview) : rejectedReview) + `\nNouveau constat ${i + 1}.`);
   const result = repo.codex(["--attempts", "2"], { FAKE_REVIEWS: JSON.stringify([...reports, acceptedReview]) });
   assert.equal(result.code, 0, result.out);
   const calls = jsonLines(repo, "fake-codex-calls");
-  assert.equal(calls.length, 5);
-  assert.deepEqual(calls.map(c => c.args.slice(0, 2)), Array(5).fill(["exec", "--json"]));
-  assert.deepEqual(calls.map(c => c.args[c.args.indexOf("-m") + 1]), Array(5).fill("gpt-6.1-sol"));
-  assert.ok(calls[4].args.includes('model_reasoning_effort="xhigh"'));
-  for (let i = 1; i <= 3; i++) {
+  assert.equal(calls.length, 4);
+  assert.deepEqual(calls.map(c => c.args.slice(0, 2)), Array(4).fill(["exec", "--json"]));
+  assert.deepEqual(calls.map(c => c.args[c.args.indexOf("-m") + 1]), Array(4).fill("gpt-6.1-sol"));
+  assert.ok(calls[3].args.includes('model_reasoning_effort="xhigh"'));
+  for (let i = 1; i <= 2; i++) {
     assert.ok(calls[i].args.at(-1).includes(reports[i - 1]));
     assert.ok(calls[i].args.at(-1).includes(codexDir + `relecture-${i}.md`));
   }
-  assert.ok(repo.failure().includes(reports[3]), repo.failure());
-  assert.equal(jsonLines(repo, "relectures.jsonl").length, 5);
-  assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.relectures), [4, 1]);
+  assert.ok(repo.failure().includes(reports[2]), repo.failure());
+  assert.equal(jsonLines(repo, "relectures.jsonl").length, 4);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.relectures), [3, 1]);
   assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.palier), [0, 1]);
-  assert.ok(calls[4].args.at(-1).includes("echec-1.txt"));
+  assert.ok(calls[3].args.at(-1).includes("echec-1.txt"));
   assert.equal(repo.status(), "termine");
   assert.match(repo.git("log", "-1", "--format=%B").stdout, /Co-Authored-By: Codex \(GPT-6.1 Sol\) <noreply@openai.com>/);
 });
@@ -1953,7 +2219,7 @@ test("a failed Claude reviewer cannot accept a Codex change even when its output
     t.after(repo.cleanup);
     const result = repo.codex(["--attempts", "1"], { FAKE_REVIEW_FAILURE: failure });
     assert.equal(result.code, 2, result.out);
-    assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(r => r.verdict), Array(4).fill("illisible"));
+    assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(r => r.verdict), Array(3).fill("illisible"));
     assert.deepEqual(repo.commits(), ["init"]);
   }
 });

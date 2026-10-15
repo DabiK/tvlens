@@ -53,6 +53,15 @@ avec sa raison dans `ecarts.md` ; le relecteur suivant tranche. Les constats hor
 des réserves dans `reste`. Mets le journal à jour et rends un nouveau verdict.
 N'enregistre pas toi-même l'état relu et ne lance pas de relecteur : la boucle s'en charge après toi.
 
+La première relecture d'une tentative reste complète. Les suivantes sont des relectures de
+correction par un relecteur neuf, avec le rapport précédent et l'interdiff des deux états relus.
+Il vérifie chaque ancien constat et les régressions dans le code changé. Un nouveau mineur sur du
+code inchangé devient une réserve hors périmètre ; un bloquant reste possible partout.
+La boucle autorise deux corrections au plus par tentative. Dès qu'une relecture de correction
+compte un constat non corrigé dans `NON CORRIGÉS : <n>`, elle refuse la tentative et passe au palier
+suivant sans nouvelle correction au même palier. Une ligne absente ou illisible vaut un constat
+non corrigé. Même avec `NON CORRIGÉS : 0`, deux corrections refusées épuisent la tentative.
+
 ## 4. Conclure
 
 Avant de rendre la main, lance `node scripts/check.mjs` en entier, puis écris ton verdict.

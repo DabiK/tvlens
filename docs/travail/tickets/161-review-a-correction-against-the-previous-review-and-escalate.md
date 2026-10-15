@@ -1,7 +1,7 @@
 ---
 id: T161
 titre: Review a correction against the previous review, and escalate when a finding is not fixed
-statut: a-faire
+statut: termine
 bloque_par: T160
 adr: non
 installe: non
@@ -121,3 +121,102 @@ Le ticket tranche ainsi :
 - **Pas d'ADR.** Ces règles complètent la boucle de relecture décrite par l'ADR 0012 et la skill `ticket`.
 
 ## Journal
+
+### Exploration
+
+- Lu les consignes, les standards, l'ADR 0012, les modules concernés, leurs appelants et leurs tests.
+- `git status --short` et `git diff` : statut du ticket modifié par la boucle ; deux dossiers non suivis préexistants, hors périmètre.
+- Le code actuel conserve trois corrections et des diffs contre HEAD. Les frontières du ticket restent applicables à e92c6a6.
+- Plan et écarts consignés dans `.harness-state/tickets/T161/exploration.md` et `ecarts.md` ; aucun écart aux critères.
+
+### États Git et relecture de correction
+
+- `node --test --test-name-pattern='record interdiff' tests/ticket-loop.test.cjs` : rouge observé sur l'absence de `revue-2.interdiff` (sortie `red-interdiff.log`).
+- `node --test --test-name-pattern='record interdiff|recording a review' tests/ticket-loop.test.cjs` : vert, 3 tests ; index réel identique octet par octet et statut Git inchangé, fichiers exclus absents, suppression et retour à HEAD couverts (`green-interdiff.log`).
+- `node --test --test-name-pattern='correction reviewer receives' tests/ticket-loop.test.cjs` : rouge sur la consigne encore complète, puis vert après ajout du rapport précédent et de l'interdiff (`red-review-prompt.log`, `green-review-prompt.log`).
+
+### Refus immédiat et limite
+
+- `node --test --test-name-pattern='unresolved|correction count' tests/ticket-loop.test.cjs` : rouge, 7 assertions comportementales ; le compte était ignoré (`red-uncorrected.log`).
+- `node --test --test-name-pattern='unresolved|correction count|correction reviewer receives|fresh guarded correction' tests/ticket-loop.test.cjs` : vert, 9 tests ; compte positif, absent ou illisible refuse immédiatement, rapport nommé, palier suivant et nouvelle relecture complète vérifiés (`green-uncorrected.log`).
+- `node --test --test-name-pattern='exhaust two corrections' tests/ticket-loop.test.cjs` : rouge sur le palier resté identique après deux corrections (`red-correction-limit.log`).
+- `node --test --test-name-pattern='exhaust two corrections|failed Claude reviewer' tests/ticket-loop.test.cjs` : vert, 2 tests après passage à deux corrections et actualisation du compte attendu (`green-correction-limit.log`).
+- Le premier lancement de cette dernière commande a révélé que le faux relecteur en échec fournissait bien `NON CORRIGÉS : 0` : ses trois relectures correspondent donc à la limite de deux corrections. L'attendu a été corrigé, sans changer les assertions du flux Claude.
+- Consignes du relecteur, des deux moteurs et documentation mises à jour dans le périmètre autorisé.
+
+### Mutation et suite de boucle
+
+- `node --test tests/ticket-loop.test.cjs` : vert, 140 tests, dont le flux Claude sans changement d'assertion (`ticket-loop.log`).
+- Mutation temporaire de `codex.mjs` : remplacement du compte lu par `const uncorrected = 0;` ; `node --test --test-name-pattern='Codex escalates immediately' tests/ticket-loop.test.cjs` échoue sur son assertion de palier, code 1 (`mutation-uncorrected.log`) :
+
+  ```text
+  ✖ Codex escalates immediately after an unresolved correction and starts a complete review on the next rung
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+    assert.ok(calls[2].args.includes('model_reasoning_effort="xhigh"'))
+  tests 1 ; pass 0 ; fail 1
+  ```
+
+- Mutation retirée dans un `finally` avant les contrôles finaux. La sortie du premier ajustement du compte des processus relecteurs est conservée dans `correction-limit-intermediate.log`.
+
+### Contrôles finaux
+
+- `node scripts/check.mjs --changed` : vert ; règles, format et cliquet verts, 140 tests JS réussis. ESLint non lancé : absent ou non configuré (`check-changed.log`). Ce contrôle après retrait de la mutation confirme le retour au vert.
+- `git diff --check` : aucune erreur d'espacement.
+- `node scripts/check.mjs` : vert ; règles, format et cliquet verts, 1 037 tests JS réussis dans 90 fichiers ; 84 tests Python, résultat OK avec un test ignoré. ESLint non lancé : absent ou non configuré (`check-full.log`).
+- Verdict d'implémentation TERMINÉ écrit dans le dossier d'état ; les vérifications non exécutées sont signalées dans `reste`. Aucun commit ni push ; la boucle conserve la responsabilité de la relecture et de l'intégration.
+
+### Reprise après relecture 1
+
+- Rapport `.harness-state/tickets/T161/relecture-1.md`, ticket et journal, écarts, `git status --short` et `git diff` relus. Travail existant repris ; exploration et précision de reprise consignées dans le dossier d'état.
+- Trois constats à corriger, sans contestation : reprise de `record`, chemins AD/RD dans l'index temporaire et complexité de `review`. L'ADR 0012 reste une réserve hors périmètre.
+- `node --test --test-name-pattern='record recovers' tests/ticket-loop.test.cjs` : rouge sur les quatre assertions de réussite, puis vert (4 tests). États corrompu, ancien et absent reconstruits ; interdiff disponible dès l'enregistrement suivant (`red-record-recovery.log`, `green-record-recovery.log`).
+- `node --test --test-name-pattern='Codex correction refuses a missing interdiff' tests/ticket-loop.test.cjs` : rouge (3 tests), exception `TypeError` observée au lieu du refus attendu (`red-correction-interdiff.log`).
+- `node --test --test-name-pattern='Codex correction refuses a missing interdiff|complete Codex review can restart|correction reviewer receives' tests/ticket-loop.test.cjs` : vert (5 tests). Refus nommé sans nouveau relecteur, première relecture complète possible avec l'ancien état, consigne de correction conservée (`green-correction-interdiff.log`).
+- Construction de la consigne extraite dans `reviewRequest`, ce qui retire ses branches de `review` (constat 3). Les tests passent par les processus de la boucle.
+- `node --test --test-name-pattern='record accepts a staged path|record names add' tests/ticket-loop.test.cjs` : rouge (3 tests). Échecs AD et RD confirmés par Git ; le diagnostic affichait `--literal-pathspecs` (`red-record-deleted-staged.log`).
+- `node --test --test-name-pattern='record accepts a staged path|record names add|record interdiff' tests/ticket-loop.test.cjs` : vert (4 tests). Arbres sans les cibles supprimées, index réel inchangé octet par octet, statut identique et diagnostic `add` vérifiés (`green-record-deleted-staged.log`).
+- `node scripts/check.mjs --changed` : vert ; règles, format et cliquet conformes, 151 tests JS réussis (`check-changed-correction.log`).
+- `node scripts/check.mjs` : vert ; 1 048 tests JS réussis dans 90 fichiers, 84 tests Python exécutés, résultat OK avec un test ignoré (`check-full-correction.log`). ESLint non lancé dans les deux contrôles : absent ou non configuré.
+- Les trois constats dans le périmètre sont corrigés. L'ADR 0012 annonce toujours trois corrections : réserve hors périmètre du nouveau verdict, pour un ticket ultérieur. Aucun commit ni push ; l'état relu et la nouvelle relecture restent à la charge de la boucle.
+
+### Reprise après relecture 2
+
+- Consignes, rapport `.harness-state/tickets/T161/relecture-2.md`, ticket et journal, écarts, `git status --short` et `git diff` relus ; exploration et écarts précisés avant implémentation.
+- Les quatre constats dans le périmètre seront corrigés, sans contestation. Les deux réserves (ADR 0012 et hook Claude) restent hors périmètre.
+
+- `node --test --test-name-pattern='record recovers' tests/ticket-loop.test.cjs` : rouge observé sur les objets absent et de type blob (code 2 au lieu de 0) et sur la création du fichier par `--output=…` (`red-record-tree-recovery.log`). Le premier scénario de diff en échec ne changeait aucun contenu : Git rendait un diff vide sans appeler l'outil externe ; le scénario a été corrigé en ajoutant un fichier avant comparaison.
+- `node --test --test-name-pattern='record recovers a diff-failure' tests/ticket-loop.test.cjs` : rouge sur le refus de `record` lorsque l'outil de diff externe échoue réellement (`red-record-diff-failure.log`).
+- `node --test --test-name-pattern='record recovers|record accepts a staged path' tests/ticket-loop.test.cjs` : vert, 10 tests (`green-record-tree-recovery.log`). Identifiant validé avant Git, objet arbre vérifié, reconstruction sans interdiff en cas d'historique inutilisable ou de comparaison en échec ; reprise vérifiée par l'interdiff suivant.
+- Constat 3 : les tests de reprise ne lisent plus les champs internes de l'état. Les scénarios AD/RD prouvent par les interdiffs suivants que les cibles supprimées et la source renommée étaient absentes de l'arbre relu ; statut et index réel restent vérifiés.
+- `node --test --test-name-pattern='record includes a force-added|record names add' tests/ticket-loop.test.cjs` : rouge sur l'ajout ignoré déjà forcé dans l'index ; le test indépendant du diagnostic `add`, avec filtre Git local requis en échec, est vert (`red-record-ignored-staged.log`).
+- `node --test --test-name-pattern='record includes a force-added|record names add|record recovers|record accepts a staged path|record interdiff' tests/ticket-loop.test.cjs` : vert, 13 tests après ajout de `-f` aux chemins sélectionnés (`green-record-relecture-2.log`). Le fichier forcé figure dans les diffs et interdiffs successifs ; le fichier ignoré non ajouté reste exclu ; index réel et statut inchangés.
+- Constat 4 : tableau des fichiers d'état complété avec `revue-<n>.interdiff` et l'arbre Git conservé dans `reviewed-state.json`.
+
+- `node scripts/check.mjs --changed` : vert, 156 tests JS réussis ; règles, format et cliquet conformes (`check-changed-relecture-2.log`). ESLint non lancé : absent ou non configuré.
+- Preuve de mutation existante `mutation-uncorrected.log` relue et conservée ; la mutation n'a pas été réappliquée pendant cette reprise, qui ne change pas la logique d'escalade.
+
+- `node scripts/check.mjs` : vert, 1 053 tests JS réussis dans 90 fichiers ; 84 tests Python exécutés, résultat OK avec un test ignoré (`check-full-relecture-2.log`). Règles, format et cliquet conformes ; ESLint non lancé, absent ou non configuré.
+- `git diff --check` : aucune erreur d'espacement. Les quatre constats bloquant et mineurs de la relecture 2 sont corrigés ; aucun test du flux Claude n'a changé d'assertion pendant cette reprise.
+- Nouveau verdict d'implémentation TERMINÉ écrit dans `.harness-state/tickets/T161/verdict.json`. Réserves : ADR 0012 annonçant trois corrections, hook Claude sans application mécanique de NON CORRIGÉS, et ESLint non lancé. Aucun commit ni push ; l'enregistrement de l'état relu et la nouvelle relecture restent à la charge de la boucle.
+
+### Réserves à la clôture
+
+- Relecture 2, constat 5 hors périmètre : docs/adr/0012-la-boucle-separe-codex-et-son-relecteur-claude.md annonce encore trois corrections ; à traiter dans un ticket ultérieur.
+- Relecture 2, constat 6 hors périmètre : .claude/hooks/record-review.mjs enregistre reviewVerdict seul ; dans le flux Claude, NON CORRIGÉS repose encore sur la skill, sans application mécanique par le hook. À traiter dans un ticket ultérieur.
+- ESLint non lancé par les contrôles : absent ou non configuré.
+- .harness-state/tickets/T161/relecture-3.md : L'ADR 0012 annonce toujours trois corrections (`docs/adr/0012-la-boucle-separe-codex-et-son-relecteur-claude.md:20`)
+
+  **Ce qui ne va pas.** L'ADR dit « dans la limite de trois corrections par tentative ». La boucle en autorise maintenant deux (`scripts/loop/codex.mjs:13`), et le README et les deux skills le disent. Le ticket ne liste pas l'ADR dans « À modifier » et précise « Pas d'ADR ».
+
+  **Attendu.** Une réserve, à traiter dans un ticket ultérieur : nouvel ADR, ou ADR 0012 mis à jour.
+
+  **Classe : hors périmètre.**
+- .harness-state/tickets/T161/relecture-3.md : Dans le flux Claude, rien n'applique mécaniquement `NON CORRIGÉS` (`.claude/hooks/record-review.mjs:14`)
+
+  **Ce qui ne va pas.** Le hook enregistre le verdict avec `reviewVerdict` seul. Une relecture de correction qui rendrait « accepté » avec `NON CORRIGÉS : 1`, ou sans cette ligne, serait enregistrée « accepté ». Côté Codex, le même rapport est enregistré « à corriger » et la tentative est refusée (`codex.mjs:193-195` et `:274-279`). Dans le flux Claude, la règle ne repose que sur la skill (`.claude/skills/ticket/SKILL.md:83-87`) et sur la consigne du relecteur. Le hook n'est pas dans « À modifier ».
+
+  **Attendu.** Une réserve, à traiter dans un ticket ultérieur.
+
+  **Classe : hors périmètre.**
+- .harness-state/tickets/T161/relecture-3.md : **Écart accepté, critères 5 et 7.** Les tests Codex qui comptaient quatre relectures et trois corrections en comptent trois et deux. Les rapports attendus des relectures de correction contiennent `NON CORRIGÉS : 0`. Les deux changements suivent la nouvelle règle sans assouplir la preuve : épuisement, escalade et absence de commit restent vérifiés. Aucune assertion du flux Claude ne change.
+- .harness-state/tickets/T161/relecture-3.md : **Écart accepté, critère 1 (précision).** Sans état précédent lisible et muni d'un arbre utilisable, `record` reconstruit l'état et omet seulement l'interdiff. Une relecture de correction Codex sans interdiff refuse alors la tentative en le disant. Le critère porte sur deux `record` séparés par une correction, et il est tenu.
