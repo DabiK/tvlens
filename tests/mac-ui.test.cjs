@@ -827,6 +827,77 @@ test('an observer that fails while drawing an answer has that failure told as th
   assert.deepEqual(log, [['start'], ['failure', drawing]]);
 });
 
+// ---- Requests of the chat: what the window sends to the models --------------------------------------
+
+test('the claim of a verification loses every recognised prefix, in any case, and keeps what is not one', async () => {
+  const { claimFrom } = await ui('chat-requests');
+  const prefixes = ['/verify', 'vérifie', 'verifie', 'vérifier', 'vérifie que', 'vérifie si', 'fact-check', 'fact check', 'factcheck'];
+  for (const prefix of prefixes) {
+    for (const separator of [' ', ': ', ' — ', ' - ', ':']) {
+      assert.equal(claimFrom(`${prefix}${separator}le chiffre est exact`), 'le chiffre est exact', `${prefix}${separator}`);
+      assert.equal(claimFrom(`${prefix.toUpperCase()}${separator}le chiffre est exact`), 'le chiffre est exact', `${prefix.toUpperCase()}${separator}`);
+    }
+  }
+  assert.equal(claimFrom('  le chiffre est exact \n'), 'le chiffre est exact');
+  assert.equal(claimFrom(''), '');
+  // A word that only starts like a prefix is a word of the claim.
+  assert.deepEqual(['vérifiez ce chiffre', 'verifiera demain', 'factchecker'].map(claimFrom), ['vérifiez ce chiffre', 'verifiera demain', 'factchecker']);
+});
+
+test('a prefix followed by que or si gives the claim after it, and only a whole que or si is taken for the conjunction', async () => {
+  const { claimFrom } = await ui('chat-requests');
+  assert.deepEqual(['vérifie que X', 'vérifie si: X', 'vérifie qu’il X'].map(claimFrom), ['X', 'X', 'qu’il X']);
+  // que and si are cut only as whole words, accented letters included.
+  assert.deepEqual(['vérifie quelque chose', 'vérifie simplement X', 'vérifie siège X'].map(claimFrom), ['quelque chose', 'simplement X', 'siège X']);
+});
+
+test('a bare reference such as ça is not a claim, but is kept when other words follow it', async () => {
+  const { claimFrom } = await ui('chat-requests');
+  const references = ['ça', 'cela', 'cette affirmation', 'ce qu\'il vient de dire', 'ce qu’il vient de dire'];
+  for (const reference of references) {
+    for (const ending of ['', '.', '!', '?']) {
+      assert.equal(claimFrom(`${reference}${ending}`), '', `${reference}${ending}`);
+      assert.equal(claimFrom(`vérifie ${reference}${ending}`), '', `vérifie ${reference}${ending}`);
+      assert.equal(claimFrom(`fact-check : ${reference}${ending}`), '', `fact-check : ${reference}${ending}`);
+    }
+    assert.equal(claimFrom(`${reference} est faux`), `${reference} est faux`);
+    assert.equal(claimFrom(`vérifie ${reference} est faux`), `${reference} est faux`);
+  }
+});
+
+test('a claim is cut at 2000 characters, after the prefix and the bare reference are dealt with', async () => {
+  const { claimFrom } = await ui('chat-requests');
+  assert.equal(claimFrom('a'.repeat(2500)).length, 2000);
+  assert.equal(claimFrom(`vérifie ${'b'.repeat(2500)}`), 'b'.repeat(2000));
+  assert.equal(claimFrom('c'.repeat(2000)), 'c'.repeat(2000));
+});
+
+test('a question stripped of its prefix equals its claim, except a bare reference, which only the claim empties', async () => {
+  const { claimFrom, withoutVerifyPrefix } = await ui('chat-requests');
+  const questions = ['vérifie que le chiffre est exact', '/verify: le chiffre est exact', '  fact check — le chiffre est exact ', 'le chiffre est exact'];
+  for (const question of questions) assert.equal(withoutVerifyPrefix(question), claimFrom(question), question);
+  assert.deepEqual([withoutVerifyPrefix('vérifie ça'), claimFrom('vérifie ça')], ['ça', '']);
+  // No cut: only the claim is limited to what the verification takes.
+  assert.equal(withoutVerifyPrefix(`vérifie ${'d'.repeat(2500)}`).length, 2500);
+});
+
+test('asking to go deeper repeats the first 1200 characters of the answer after its fixed wording', async () => {
+  const { deepenRequest } = await ui('chat-requests');
+  assert.equal(deepenRequest('Le chiffre est exact.'), 'Approfondis cette réponse : Le chiffre est exact.');
+  assert.equal(deepenRequest('e'.repeat(1200)), `Approfondis cette réponse : ${'e'.repeat(1200)}`);
+  assert.equal(deepenRequest('f'.repeat(1500)), `Approfondis cette réponse : ${'f'.repeat(1200)}`);
+});
+
+test('the window takes its claim, its question and its deepening request from the chat rules', () => {
+  // The window cannot be loaded without Electron, so its wiring is read through its shape (layout aside): the rules
+  // above are only worth something if the window calls them instead of a chain of its own.
+  const renderer = shaped('renderer.js');
+  assert.ok(holds(renderer, "import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';"), 'the window imports the chat rules');
+  assert.ok(holds(renderer, "$('claim').value = claimFrom(text);"), 'the claim offered comes from claimFrom');
+  assert.ok(holds(renderer, "if (withoutVerifyPrefix($('question').value) === claim)"), 'the question cleared comes from withoutVerifyPrefix');
+  assert.ok(holds(renderer, 'bridge.ask(deepenRequest(job.result.answer))'), 'the deepening request comes from deepenRequest');
+});
+
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------
 const rendererFiles = ['renderer.js', 'recording.js', ...fs.readdirSync(app('ui')).filter(name => /\.m?js$/.test(name)).map(name => `ui/${name}`)];
 const read = file => fs.readFileSync(app(file), 'utf8');

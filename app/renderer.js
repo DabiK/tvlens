@@ -14,6 +14,7 @@ import { KeyedList, isNearBottom, tail, olderPassagesLabel, trimMap, settledCoun
 import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
 import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
 import { sessionEntry } from './ui/sessions-dom.js';
+import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
 const bridge = window.tvlens;
@@ -29,7 +30,6 @@ const momentPreviews = new Map();
 let passages = new Map(), shownError = '', forceBottom = false, settled = -1;
 let quickBusy = false, selectedMoment = null, momentCheckpoint = Promise.resolve();
 const cancelling = new Set();
-const verifyPrefix = /^(?:\/verify\b|v[ée]rifie(?:r)?\b(?:\s+(?:que|si))?|fact[- ]?check\b)\s*[:—-]?\s*/i;
 const flushes = new Map();
 const reason = error => cleanError(error);
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
@@ -286,9 +286,7 @@ const scheduleChat = batched(drawChat);
 function openVerification(text = '') {
   if (verificationState.busy) return notice('Une vérification est déjà en cours. Tu peux toujours poser une question sur la vidéo.');
   if (!configuration?.verificationAvailable) return notice('Codex CLI est introuvable sur ce Mac.');
-  let claim = text.trim().replace(verifyPrefix, '').trim();
-  if (/^(?:ça|cela|cette affirmation|ce qu['’]il vient de dire)[.!?]?$/i.test(claim)) claim = '';
-  $('claim').value = claim.slice(0, 2000); $('verify-error').textContent = '';
+  $('claim').value = claimFrom(text); $('verify-error').textContent = '';
   $('verify-dialog').showModal(); $('claim').focus();
 }
 $('verify').onclick = () => openVerification($('question').value);
@@ -297,7 +295,7 @@ $('verify-form').onsubmit = async event => {
   event.preventDefault(); const claim = $('claim').value.trim();
   if (!claim || verificationState.busy) return;
   $('verify-dialog').close(); notice('');
-  if ($('question').value.trim().replace(verifyPrefix, '').trim() === claim) $('question').value = '';
+  if (withoutVerifyPrefix($('question').value) === claim) $('question').value = '';
   try { await bridge.verify(claim); }
   catch (error) { notice(reason(error)); }
 };
@@ -334,7 +332,7 @@ const actions = {
   replay: data => replayAt(data.id, data.start === undefined ? NaN : Number(data.start)),
   'job-cancel': async data => { cancelling.add(data.id); drawChat(); try { await bridge.cancelDeep(data.id); } finally { cancelling.delete(data.id); scheduleChat(); } },
   'job-reask': data => { const job = jobOf(data.id); if (job) { $('question').value = job.question; $('question').focus(); updateButtons(); } },
-  'job-more': data => { const job = jobOf(data.id); return job?.result && bridge.ask(`Approfondis cette réponse : ${job.result.answer.slice(0, 1200)}`); },
+  'job-more': data => { const job = jobOf(data.id); return job?.result && bridge.ask(deepenRequest(job.result.answer)); },
   'job-verify': data => { const job = jobOf(data.id); if (job?.result) openVerification(job.result.answer); },
   'job-reexamine': data => { const job = jobOf(data.id); return job && (job.intent ? bridge.reexamineMoment(job.id) : bridge.deepen(job.question)); },
   'chat-source': data => bridge.openChatSource(data.job, Number(data.index)),

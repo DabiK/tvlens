@@ -1,7 +1,7 @@
 ---
 id: T127
 titre: Name and test the request rules of the Mac chat in a pure module
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -114,3 +114,26 @@ observé et l'écart est noté au journal ; s'il fallait changer un texte ou une
 verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+- Exploration : aucune contradiction avec le ticket (T157 terminé, lignes de `app/renderer.js` décalées de +2) ;
+  rapport dans `.harness-state/tickets/T127/exploration.md`.
+- Implémentation, tests avant correction : `node --test tests/mac-ui.test.cjs` → 29 tests, 1 échec, celui des cas
+  que/si : `'lque chose'`, `'mplement X'`, `'ège X'` au lieu de `'quelque chose'`, `'simplement X'`, `'siège X'`.
+  Tout le reste vert sur l'expression d'avant : aucun écart avec la lecture du ticket.
+- Correction : `(?:\s+(?:que|si)(?!\p{L}))?` avec le drapeau `u` ; 29 tests verts. Module
+  `app/ui/chat-requests.mjs` (`claimFrom`, `withoutVerifyPrefix`, `deepenRequest`, constantes `CLAIM_LIMIT` et
+  `DEEPEN_LIMIT`), branché dans `app/renderer.js`.
+- Faute injectée (critère 3) : appel de `deepenRequest` remplacé par la chaîne d'avant → `the deepening request
+  comes from deepenRequest`, 30 tests, 29 pass, 1 fail ; faute défaite à la main, relance : 30 pass, 0 fail.
+- `grep -cE "verifyPrefix|Approfondis|cette affirmation" app/renderer.js` : 5 → 0. `grep -c "^\s*test("
+  tests/mac-ui.test.cjs` : 23 → 30. Lignes de plus de 160 caractères de `app/renderer.js` : 56 → 56.
+- Relecture 1 : accepté, 0 bloquant, 0 mineur, 1 hors périmètre (borne de 2 000 caractères répétée de
+  `core/verification.cjs`, que le ticket interdit de toucher).
+- `node scripts/check.mjs` : vert ; règles, cliquet (cas_de_test 740 → 747), tests JS 790/790, tests Python
+  84 OK (1 ignoré) ; format et lint non lancés (Prettier et ESLint non installés).
+
+### Réserves à la clôture
+
+- Hors périmètre : CLAIM_LIMIT (2 000) de app/ui/chat-requests.mjs répète la borne de core/verification.cjs ; un ticket futur pourrait la dériver du cœur.
+- Non vérifié : format (Prettier) et lint (ESLint) non lancés, non installés ; la fenêtre Electron n'a pas été lancée, le branchement est prouvé par la garde de forme.
+- Le drapeau u ajouté à l'expression du préfixe change le pliage de casse à la marge (ſ, signe Kelvin), sans effet sur les cas du ticket.
