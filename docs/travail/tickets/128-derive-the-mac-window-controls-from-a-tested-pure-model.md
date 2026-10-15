@@ -1,7 +1,7 @@
 ---
 id: T128
 titre: Derive the Mac window controls from a tested pure model
-statut: a-faire
+statut: termine
 bloque_par: T157
 adr: non
 installe: non
@@ -96,3 +96,31 @@ observé et l'écart est noté au journal. Si l'extraction oblige à changer un 
 ou `shell.js` : verdict BLOQUÉ, avec l'écart constaté.
 
 ## Journal
+
+- Cadrage : T157 terminé ; pas de reprise. Exploration (`.harness-state/tickets/T128/exploration.md`) : pas de
+  contradiction avec le ticket ; numéros de ligne de `app/renderer.js` décalés de +2, ceux de
+  `tests/mac-ui.test.cjs` périmés ; `updateButtons` est l.67-87.
+- Écarts déclarés (`ecarts.md`) et acceptés par le relecteur : une session sans `segments` fait lever le modèle comme
+  l'original (l'original avait déjà écrit une partie des commandes avant de lever ; états que l'hôte ne produit pas),
+  figé par `assert.throws` ; `verify` rendu en booléen (même état DOM) ; `archive-new` calculé au lieu de relire
+  `$('new-session').disabled`.
+- Implémentation : `app/ui/controls-view.mjs` (`describeControls`), `updateButtons` branché, quatre tables de phrases
+  dans `app/renderer.js`. Table de cas vue rouge (`ERR_MODULE_NOT_FOUND`) avant le module, puis 34 tests verts.
+- Nombre de tests de `tests/mac-ui.test.cjs` (`grep -c "^\s*test("`) : 30 avant, 34 après.
+- Faute injectée (critère 4) : `$('send').disabled = !canAsk;` dans `updateButtons` →
+  `AssertionError: a command is switched off from a state of the window` (`+ actual [ '!canAsk' ]`), 33 pass / 1 fail ;
+  défaite à la main, `grep canAsk app/renderer.js` ne trouve plus rien, relance : 34 pass / 0 fail.
+- Relecture 1 : à corriger, un mineur (la garde comptait la lecture de `$('source').value` sans prouver qu'elle
+  construit l'entrée). Corrigé ; mutation (`source: ''` avec la lecture déplacée) → 33 pass / 1 fail sur la nouvelle
+  assertion, défaite, 34 pass.
+- Relecture 2 (relecteur neuf) : accepté, 0 constat.
+- `node scripts/check.mjs` : vert (794 tests JS, 0 échec ; Python 84 tests OK, 1 ignoré). Cliquet :
+  `lignes_longues_prod` 542 → 539, `cas_de_test` 747 → 751. Format et lint : non lancé (Prettier et ESLint non
+  installés). Smoke Electron : non lancé (hors boucle).
+
+### Réserves à la clôture
+
+- Écart accepté, critère 1 : une session sans segments fait lever le modèle comme l'original, mais sans écriture partielle préalable des commandes ; état que l'hôte ne produit pas, figé par assert.throws.
+- Écart accepté : verify est rendu en booléen par le modèle (la propriété DOM le coerce déjà) et archive-new reçoit la valeur de new-session au lieu de relire le DOM.
+- Non vérifié : format et lint (Prettier et ESLint non installés) ; smoke Electron non lancé (hors boucle) ; la règle ESLint complexity/max-lines-per-function sur controls-view.mjs ne pourra être contrôlée qu'avec l'installation de l'outil.
+- design/continuous-context/ et experiments/ sont des fichiers non suivis étrangers au ticket : ne pas les intégrer avec ce commit.

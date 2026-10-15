@@ -15,6 +15,7 @@ import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
 import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
 import { sessionEntry } from './ui/sessions-dom.js';
 import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
+import { describeControls } from './ui/controls-view.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
 const bridge = window.tvlens;
@@ -64,26 +65,38 @@ function setConfig(value) {
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';
   scheduleState(); updateButtons();
 }
+// The model of ui/controls-view.mjs says which mode applies; the sentences stay here.
+const FLOAT_STATUS = { live: 'En direct', archive: 'Archive en lecture seule', paused: 'En pause', ready: 'Prêt' };
+const RECORD_TITLE = {
+  recording: 'Mettre en pause ; mémoire et fil Codex conservés',
+  archive: 'Reprendre la capture dans cette archive',
+  idle: 'Choisir une source puis lancer la capture et l’analyse',
+};
+const OBSERVE_LABEL = {
+  recording: 'Observation en cours',
+  archive: 'Reprendre la capture…',
+  paused: 'Reprendre l’observation',
+  idle: 'Lancer l’observation',
+};
+const ASK_STATUS = {
+  answering: 'Réponse en cours · Tu peux ajouter une question.',
+  archive: 'Archive · Tu peux poser des questions sur ce qui a été enregistré.',
+  ready: 'Entrée pour envoyer · Maj+Entrée pour une ligne',
+  waiting: 'Les premiers passages arrivent bientôt.',
+  idle: 'Choisis une source et lance TVLens.',
+};
 function updateButtons() {
-  const archive = Boolean(currentState?.readOnly);
   shell.observation(currentState, Boolean(recorder));
-  $('float-status').textContent = recorder ? 'En direct' : archive ? 'Archive en lecture seule' : currentState?.id ? 'En pause' : 'Prêt';
-  $('new-session').disabled=Boolean(stream)||Boolean(currentState?.analyzing)||stopping;
-  $('float-record').disabled = floatingCaptureBusy || stopping;
-  $('float-record').classList.toggle('recording',Boolean(recorder));
-  $('float-record').title = recorder ? 'Mettre en pause ; mémoire et fil Codex conservés' : archive ? 'Reprendre la capture dans cette archive' : 'Choisir une source puis lancer la capture et l’analyse';
-  $('observe').disabled = !configuration?.canObserve || !$('source').value || Boolean(recorder) || floatingCaptureBusy || stopping;
-  $('observe').textContent = recorder ? 'Observation en cours' : archive ? 'Reprendre la capture…' : currentState?.id ? 'Reprendre l’observation' : 'Lancer l’observation';
-  $('archive-resume').disabled = Boolean(recorder) || floatingCaptureBusy || stopping;
-  $('archive-new').disabled = $('new-session').disabled;
-  const canAsk = Boolean(currentState?.segments.length || currentState?.history.length);
-  for (const id of ['float-explain', 'explain-moment', 'catch-up', 'mark-attention']) $(id).disabled = !currentState?.id || stopping || quickBusy;
-  for (const id of ['moment-summarize', 'moment-explain', 'moment-send']) $(id).disabled = quickBusy;
-  $('keep-moment').disabled = $('float-keep').disabled = !currentState?.segments.some(segment => segment.available) || stopping;
-  $('question').disabled = false;
-  $('verify').disabled = !configuration?.verificationAvailable || verificationState.busy;
-  $('send').disabled = !canAsk || Boolean(pendingQuestion);
-  $('ask-status').textContent = currentState?.asking ? 'Réponse en cours · Tu peux ajouter une question.' : archive && canAsk ? 'Archive · Tu peux poser des questions sur ce qui a été enregistré.' : canAsk ? 'Entrée pour envoyer · Maj+Entrée pour une ligne' : currentState?.id ? 'Les premiers passages arrivent bientôt.' : 'Choisis une source et lance TVLens.';
+  const controls = describeControls({
+    session: currentState, recording: Boolean(recorder), previewOpen: Boolean(stream), stopping, captureBusy: floatingCaptureBusy, quickBusy,
+    configuration, verificationBusy: verificationState.busy, pendingQuestion, source: $('source').value,
+  });
+  for (const [id, disabled] of Object.entries(controls.disabled)) $(id).disabled = disabled;
+  $('float-record').classList.toggle('recording', controls.recording);
+  $('float-status').textContent = FLOAT_STATUS[controls.floatStatus];
+  $('float-record').title = RECORD_TITLE[controls.recordTitle];
+  $('observe').textContent = OBSERVE_LABEL[controls.observeLabel];
+  $('ask-status').textContent = ASK_STATUS[controls.askStatus];
 }
 async function startPreview() {
   $('start').disabled = true;

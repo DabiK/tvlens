@@ -898,6 +898,153 @@ test('the window takes its claim, its question and its deepening request from th
   assert.ok(holds(renderer, 'bridge.ask(deepenRequest(job.result.answer))'), 'the deepening request comes from deepenRequest');
 });
 
+// ---- Controls of the window: which command is off, and which wording it takes ------------------------
+
+const COMMANDS = {
+  capture: ['new-session', 'float-record', 'observe', 'archive-resume', 'archive-new'],
+  quick: ['float-explain', 'explain-moment', 'catch-up', 'mark-attention'],
+  moment: ['moment-summarize', 'moment-explain', 'moment-send'],
+  keep: ['keep-moment', 'float-keep'],
+  chat: ['question', 'verify', 'send'],
+};
+const ALL_COMMANDS = Object.values(COMMANDS).flat();
+const passage = { available: true };
+// A session opened and paused, with one replayable passage, on a configured host with a source chosen.
+const pausedSession = { id: 'session-1', readOnly: false, analyzing: false, asking: false, segments: [passage], history: [] };
+const idleInput = {
+  session: pausedSession, recording: false, previewOpen: false, stopping: false, captureBusy: false, quickBusy: false,
+  configuration: { canObserve: true, verificationAvailable: true }, verificationBusy: false, pendingQuestion: '', source: 'screen:1',
+};
+// The expected `disabled` object whole: every command of the window, true for the ones listed and false for the others.
+const disabledOnly = (...ids) => Object.fromEntries(ALL_COMMANDS.map(id => [id, ids.flat(Infinity).includes(id)]));
+const session = overrides => ({ ...pausedSession, ...overrides });
+
+const controlCases = [
+  { name: 'a session open and paused, with a passage to ask about and to keep', input: {},
+    disabled: [],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'no session', input: { session: null },
+    disabled: [COMMANDS.quick, COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'ready', recordTitle: 'idle', observeLabel: 'idle', askStatus: 'idle' },
+  { name: 'no session and no host configuration', input: { session: null, configuration: undefined },
+    disabled: [COMMANDS.quick, COMMANDS.keep, 'send', 'observe', 'verify'],
+    recording: false, floatStatus: 'ready', recordTitle: 'idle', observeLabel: 'idle', askStatus: 'idle' },
+  { name: 'a session open without a passage', input: { session: session({ segments: [], history: [] }) },
+    disabled: [COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'waiting' },
+  { name: 'a session live: the capture runs and the preview is open', input: { recording: true, previewOpen: true },
+    disabled: ['new-session', 'archive-new', 'observe', 'archive-resume'],
+    recording: true, floatStatus: 'live', recordTitle: 'recording', observeLabel: 'recording', askStatus: 'ready' },
+  { name: 'an archive with history and no passage to replay', input: { session: session({ readOnly: true, segments: [], history: [{ id: 'old' }] }) },
+    disabled: [COMMANDS.keep],
+    recording: false, floatStatus: 'archive', recordTitle: 'archive', observeLabel: 'archive', askStatus: 'archive' },
+  { name: 'an archive with neither passage nor history', input: { session: session({ readOnly: true, segments: [], history: [] }) },
+    disabled: [COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'archive', recordTitle: 'archive', observeLabel: 'archive', askStatus: 'waiting' },
+  { name: 'an archive that carries no id is an archive all the same', input: { session: { readOnly: true, segments: [], history: [] } },
+    disabled: [COMMANDS.quick, COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'archive', recordTitle: 'archive', observeLabel: 'archive', askStatus: 'idle' },
+  { name: 'a capture running in an archive: the capture wins the three wordings, the archive keeps the question line',
+    input: { recording: true, session: session({ readOnly: true }) },
+    disabled: ['observe', 'archive-resume'],
+    recording: true, floatStatus: 'live', recordTitle: 'recording', observeLabel: 'recording', askStatus: 'archive' },
+  { name: 'a stop under way', input: { stopping: true },
+    disabled: [COMMANDS.capture, COMMANDS.quick, COMMANDS.keep],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'an analysis under way', input: { session: session({ analyzing: true }) },
+    disabled: ['new-session', 'archive-new'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a preview open with an analysis under way', input: { previewOpen: true, session: session({ analyzing: true }) },
+    disabled: ['new-session', 'archive-new'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a preview open before any session', input: { previewOpen: true, session: null },
+    disabled: ['new-session', 'archive-new', COMMANDS.quick, COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'ready', recordTitle: 'idle', observeLabel: 'idle', askStatus: 'idle' },
+  { name: 'the floating bar is busy capturing', input: { captureBusy: true },
+    disabled: ['float-record', 'observe', 'archive-resume'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a quick command is busy', input: { quickBusy: true },
+    disabled: [COMMANDS.quick, COMMANDS.moment],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a host that cannot observe', input: { configuration: { canObserve: false, verificationAvailable: true } },
+    disabled: ['observe'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a host without verification', input: { configuration: { canObserve: true, verificationAvailable: false } },
+    disabled: ['verify'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a verification under way', input: { verificationBusy: true },
+    disabled: ['verify'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'a question waiting for its answer', input: { pendingQuestion: 'Qui parle ?' },
+    disabled: ['send'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'an answer under way: the line says so before anything else', input: { session: session({ asking: true }) },
+    disabled: [],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'answering' },
+  { name: 'an answer under way in an archive', input: { session: session({ asking: true, readOnly: true }) },
+    disabled: [],
+    recording: false, floatStatus: 'archive', recordTitle: 'archive', observeLabel: 'archive', askStatus: 'answering' },
+  { name: 'an answer under way before any passage', input: { session: session({ asking: true, segments: [], history: [] }) },
+    disabled: [COMMANDS.keep, 'send'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'answering' },
+  { name: 'no source chosen', input: { source: '' },
+    disabled: ['observe'],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'no passage available to keep', input: { session: session({ segments: [{ available: false }] }) },
+    disabled: [COMMANDS.keep],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+  { name: 'the passages of the history are enough to ask, not to keep', input: { session: session({ segments: [], history: [{ id: 'older' }] }) },
+    disabled: [COMMANDS.keep],
+    recording: false, floatStatus: 'paused', recordTitle: 'idle', observeLabel: 'paused', askStatus: 'ready' },
+];
+
+test('each state of the window gives its whole set of disabled commands, the recording class and the four wording modes', async () => {
+  const { describeControls } = await ui('controls-view');
+  for (const { name, input, disabled, recording, floatStatus, recordTitle, observeLabel, askStatus } of controlCases) {
+    const expected = { disabled: disabledOnly(disabled), recording, floatStatus, recordTitle, observeLabel, askStatus };
+    assert.deepEqual(describeControls({ ...idleInput, ...input }), expected, name);
+  }
+});
+
+test('a session state without its passages makes the controls throw, as the window did, and never answers by guessing', async () => {
+  const { describeControls } = await ui('controls-view');
+  // The states of the host always carry segments and history: this pins what happens to one that does not.
+  assert.throws(() => describeControls({ ...idleInput, session: { id: 'session-1' } }), TypeError);
+  assert.throws(() => describeControls({ ...idleInput, session: { id: 'session-1', segments: [] } }), TypeError);
+  assert.doesNotThrow(() => describeControls({ ...idleInput, session: { id: 'session-1', segments: [passage] } }));
+});
+
+test('every command the controls switch off is an element of the window', async () => {
+  const { describeControls } = await ui('controls-view');
+  const ids = new Set([...fs.readFileSync(app('index.html'), 'utf8').matchAll(/\sid="([^"]+)"/g)].map(match => match[1]));
+  const switched = Object.keys(describeControls(idleInput).disabled);
+  assert.equal(switched.length, 17);
+  assert.deepEqual(switched.filter(id => !ids.has(id)), []);
+});
+
+test('the window switches its commands off from the controls model alone, and reads the chosen source once', () => {
+  // The window cannot be loaded without Electron, so its wiring is read through its shape (layout aside): the table
+  // of cases above is worth something only if updateButtons applies what the model says instead of a chain of its own.
+  const renderer = shaped('renderer.js');
+  assert.ok(holds(renderer, "import { describeControls } from './ui/controls-view.mjs';"), 'the window imports the controls model');
+  const from = renderer.indexOf(shape('function updateButtons(')), to = renderer.indexOf(shape('async function startPreview('));
+  assert.ok(from >= 0 && to > from, 'updateButtons is no longer declared before startPreview');
+  const body = renderer.slice(from, to);
+  assert.ok(body.includes(shape('describeControls(')), 'updateButtons asks the model');
+  assert.ok(body.includes(shape('Object.entries(controls.disabled)')), 'the commands switched off are the ones of the model');
+  // The right-hand side of every `.disabled` assignment is what the loop reads from the model, nothing computed here.
+  const assigned = [...body.matchAll(/\.disabled=(?=([^\s]*))/g)].map(match => match[1]);
+  assert.ok(assigned.length > 0, 'updateButtons no longer assigns .disabled');
+  assert.deepEqual(assigned.filter(value => value !== 'disabled'), [], 'a command is switched off from a state of the window');
+  assert.equal([...body.matchAll(/\$\('source'\)\.value/g)].length, 1, 'the source is read once in updateButtons');
+  // That single read is the `source` of the input handed to the model, in the very call that asks for the controls.
+  const call = body.slice(body.indexOf(shape('describeControls(')));
+  const input = call.slice(0, call.indexOf('})') + 1);
+  const sourceRead = shape("$('source').value");
+  assert.ok(new RegExp(`[{,]source:${sourceRead.replace(/[$().]/g, '\\$&')}(?=[,}])`).test(input),
+    "the source of the input handed to describeControls is the value of the source element, read in that call");
+});
+
 // ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------
 const rendererFiles = ['renderer.js', 'recording.js', ...fs.readdirSync(app('ui')).filter(name => /\.m?js$/.test(name)).map(name => `ui/${name}`)];
 const read = file => fs.readFileSync(app(file), 'utf8');
