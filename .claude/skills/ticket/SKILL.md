@@ -58,9 +58,10 @@ toucher à l'index réel ni à l'arbre de travail. À partir du deuxième état,
 La première relecture de chaque tentative reste complète : donne au relecteur le chemin du ticket,
 les deux fichiers `revue-<n>` (diff et liste) et `.harness-state/tickets/<ID>/ecarts.md` quand il existe.
 Pour une relecture de correction, ajoute le rapport précédent `relecture-<n>.md` et l'interdiff
-affiché par `record`, et demande explicitement une relecture de correction. Ton avis
-ne lui parvient que par `ecarts.md` (un écart déclaré, un constat contesté avec sa raison), jamais par
-ton message ; le compte rendu de l'implémenteur ne lui est pas donné. Lance-le au premier plan et ne lui
+affiché par `record`, et commence le prompt par la ligne exacte `Fais une relecture de correction.`.
+Le hook reconnaît cette demande et enregistre « à corriger » si `NON CORRIGÉS` est positif, absent ou illisible.
+Ton avis ne lui parvient que par `ecarts.md` (un écart déclaré, un constat contesté avec sa raison),
+jamais par ton message ; le compte rendu de l'implémenteur ne lui est pas donné. Lance-le au premier plan et ne lui
 fixe pas de modèle : dans la boucle, un hook impose celui du palier et enregistre son verdict dans
 `relectures.jsonl`. Le hook lit ce verdict sur deux lignes du rapport, `VERDICT : …` et
 `CONSTATS : <n> bloquant, <n> mineur, <n> hors périmètre`. Un « accepté » qui compte un bloquant ou un

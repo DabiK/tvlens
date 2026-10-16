@@ -22,7 +22,9 @@ import { runCodex } from "./codex.mjs";
 import { BASELINE } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
 import { runRetro } from "./retro.mjs";
-import { ticketDir, unacceptedReview, unreviewedChange, untrackedPaths, writeUntrackedBefore } from "./reviewed-state.mjs";
+import {
+  readUntrackedBefore, ticketDir, UNTRACKED_BEFORE, unacceptedReview, unreviewedChange, untrackedPaths, writeUntrackedBefore,
+} from "./reviewed-state.mjs";
 import { awaitingDecision, describe, list, next, setStatus, spec, validate } from "./tickets.mjs";
 import { tuneInstructions } from "./tune.mjs";
 
@@ -309,17 +311,10 @@ function readVerdict(dir) {
 
 /** La référence en mémoire ne dépend pas d'un fichier que la session peut réécrire avant sa relecture. */
 function untrackedListChange(ticket, expected) {
-  const name = "untracked-before.json";
-  const file = path.join(ticketDir(root, ticket.id), name);
-  if (!fs.existsSync(file)) return `${name} est absent : la session a retiré la liste écrite par la boucle.`;
-  let paths;
-  try {
-    paths = JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch (error) {
-    // Une liste perdue interdit d'exclure des fichiers de la relecture et du commit.
-    return `${name} est illisible (${error.message}).`;
-  }
-  return JSON.stringify(paths) === JSON.stringify(expected) ? null : `${name} a été modifié depuis le démarrage de la boucle.`;
+  const before = readUntrackedBefore(ticketDir(root, ticket.id));
+  if (before.missing) return `${UNTRACKED_BEFORE} est absent : la session a retiré la liste écrite par la boucle.`;
+  if (before.unreadable) return `${before.unreadable}.`;
+  return JSON.stringify(before.paths) === JSON.stringify(expected) ? null : `${UNTRACKED_BEFORE} a été modifié depuis le démarrage de la boucle.`;
 }
 
 /** Contrôles de la boucle après une session qui se dit terminée. Renvoie la liste des refus. */

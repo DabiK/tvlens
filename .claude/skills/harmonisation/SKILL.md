@@ -1,6 +1,6 @@
 ---
 name: harmonisation
-description: Harmonise les consignes du harnais (skills et agents) à partir des problèmes que les rétrospectives relèvent sur plusieurs tickets — modification par l'harmoniseur, relecture par un relecteur neuf, contrôle complet, verdict. Lancée par la boucle tous les N tickets intégrés (--tune-every) ; ne touche jamais aux contrôles.
+description: Harmonise les consignes du harnais (skills Claude et Codex, agents Claude, dans .claude/skills/, .claude/agents/ et .agents/skills/) à partir des problèmes que les rétrospectives relèvent sur plusieurs tickets — modification par l'harmoniseur, relecture par un relecteur neuf, contrôle complet, verdict. Lancée par la boucle tous les N tickets intégrés (--tune-every) ; ne touche jamais aux contrôles.
 ---
 
 # Harmoniser les consignes
@@ -14,7 +14,8 @@ Dossier d'état : `.harness-state/tickets/<ID>/` (hors Git), où `<ID>` est l'id
 (`H` suivi d'un numéro). La boucle l'a créé et y a écrit `observations.json` et
 `untracked-before.json` ; tu ne modifies ni l'un ni l'autre.
 
-La session ne modifie que `.claude/skills/` et `.claude/agents/`, sauf `.claude/agents/relecteur.md`,
+La session ne modifie que les skills Claude (`.claude/skills/`), les agents Claude (`.claude/agents/`)
+et les skills Codex (`.agents/skills/`), sauf `.claude/agents/relecteur.md`,
 `.claude/agents/harmoniseur.md` et `.claude/skills/harmonisation/` : le relecteur et la marche de
 l'harmonisation sont ses arbitres. Ces fichiers, les contrôles (`scripts/check.mjs`, `scripts/quality/`,
 `scripts/loop/`, `.claude/hooks/`, `.claude/settings.json`), les tickets, `CLAUDE.md` et

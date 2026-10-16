@@ -253,6 +253,64 @@ test("in a ticket session, each reviewer verdict is recorded against the review 
   assert.throws(() => report(4), { code: "ENOENT" });
 });
 
+const acceptedReport = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
+const correctionPrompt = "Fais une relecture de correction.\nLis relecture-1.md et revue-2.interdiff.";
+
+for (const form of ["handbackReport", "content"]) {
+  for (const [count, expected] of [["1", "à corriger"], [null, "à corriger"], ["inconnu", "à corriger"], ["0", "accepté"]]) {
+    test(`the review hook enforces the explicit correction count and preserves the ${form} report: ${count}`, (t) => {
+      const repo = harnessRepo();
+      t.after(repo.cleanup);
+      const report = acceptedReport + (count === null ? "" : `\nNON CORRIGÉS : ${count}`) + "\nDétail intégral du rapport.\n";
+      const response = form === "handbackReport" ? { handbackReport: { text: report } } : { content: [{ type: "text", text: report }] };
+      response.resolvedModel = "claude-opus-5-5";
+      const input = { tool_input: { subagent_type: "relecteur", prompt: correctionPrompt }, tool_response: response };
+      hook(repo, "record-review", input, LOOP);
+      const dir = ".harness-state/tickets/T001/";
+      const entry = JSON.parse(repo.read(dir + "relectures.jsonl"));
+      assert.equal(entry.verdict, expected);
+      assert.equal(entry.modele, "claude-opus-5-5");
+      assert.equal(repo.read(dir + "relecture-1.md"), report);
+    });
+  }
+}
+
+for (const [report, expected] of [
+  ["Rapport illisible.", "illisible"],
+  ["VERDICT : accepté\nCONSTATS : illisibles", "illisible"],
+  ["VERDICT : accepté\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre", "à corriger"],
+  ["VERDICT : accepté\nCONSTATS : 0 bloquant, 1 mineur, 0 hors périmètre", "à corriger"],
+]) {
+  test(`a resolved correction cannot accept invalid verdicts or counted findings: ${report}`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    hook(repo, "record-review", {
+      tool_input: { subagent_type: "relecteur", prompt: correctionPrompt },
+      tool_response: { handbackReport: { text: report + "\nNON CORRIGÉS : 0" } },
+    }, LOOP);
+    assert.equal(JSON.parse(repo.read(".harness-state/tickets/T001/relectures.jsonl")).verdict, expected);
+  });
+}
+
+for (const mode of [LOOP, TUNE]) {
+  test(`a complete review after an earlier report ignores its rank, interdiff and response count: ${mode.TVLENS_TICKET}`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    const dir = `.harness-state/tickets/${mode.TVLENS_TICKET}/`;
+    repo.write(dir + "reviewed-state.json", JSON.stringify({ revue: "revue-3.diff", fichiers: {} }));
+    repo.write(dir + "relectures.jsonl", JSON.stringify({ verdict: "à corriger" }) + "\n");
+    repo.write(dir + "revue-3.interdiff", "old interdiff");
+    for (const suffix of ["", "\nNON CORRIGÉS : 1"]) {
+      hook(repo, "record-review", {
+        tool_input: { subagent_type: "relecteur", prompt: "Fais une relecture complète. Lis revue-3.diff et revue-3.interdiff." },
+        tool_response: { handbackReport: { text: acceptedReport + suffix } },
+      }, mode);
+    }
+    const entries = repo.read(dir + "relectures.jsonl").trim().split("\n").map(JSON.parse);
+    assert.deepEqual(entries.map(entry => entry.verdict), ["à corriger", "accepté", "accepté"]);
+  });
+}
+
 test("after an edit, a file that breaks a rule is reported back and a clean one is silent", (t) => {
   const repo = harnessRepo({ "core/a.cjs": "const a = 1;\n" });
   t.after(repo.cleanup);
@@ -409,6 +467,8 @@ for (const [name, engine, claudeRoot, skill] of [
     const input = { cwd: repo.root, session_id: "engine-skill" };
     const context = hook(repo, "session-context", input, { ...INTERACTIVE, ...env }).hookSpecificOutput.additionalContext;
     assert.ok(context.includes(`skill ${skill}`), context);
+    const loopContext = hook(repo, "session-context", input, { ...LOOP, ...env }).hookSpecificOutput.additionalContext;
+    assert.ok(loopContext.includes(`skill ${skill}`), loopContext);
     const stopped = hook(repo, "stop-gate", input, { ...LOOP, ...env });
     assert.equal(stopped.decision, "block");
     assert.ok(stopped.reason.includes(`skill ${skill}`), stopped.reason);

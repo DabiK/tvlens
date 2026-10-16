@@ -13,7 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { list } from "./tickets.mjs";
 
-const UNTRACKED_BEFORE = "untracked-before.json";
+export const UNTRACKED_BEFORE = "untracked-before.json";
 const REVIEWED_STATE = "reviewed-state.json";
 const REVIEWS = "relectures.jsonl";
 // Le rapport de chaque relecteur, numéroté comme sa ligne dans REVIEWS.
@@ -57,16 +57,18 @@ const isRecordedState = (value) =>
   typeof value?.revue === "string" && typeof value.fichiers === "object" && value.fichiers !== null && !Array.isArray(value.fichiers);
 
 /**
- * Les non suivis d'avant la session, ou `problem` si leur liste est illisible. Sans cette liste, l'exclusion
- * ne peut pas s'appliquer : on refuse plutôt que de montrer au relecteur des fichiers qui ne sont pas du ticket.
+ * Les non suivis d'avant la session ; `missing` distingue une absence permise hors boucle.
+ * Une liste illisible rend `problem` et son diagnostic `unreadable` : son exclusion ne peut pas s'appliquer,
+ * on refuse plutôt que de montrer au relecteur des fichiers qui ne sont pas du ticket.
  */
-function readUntrackedBefore(dir) {
+export function readUntrackedBefore(dir) {
   const read = readStateFile(dir, UNTRACKED_BEFORE, isPathList);
+  if (read.missing) return { paths: [], missing: true };
   if (!read.unreadable) return { paths: read.value || [] };
   const problem =
     `La liste des fichiers non suivis d'avant la session est perdue : ${read.unreadable}.` +
     " La boucle l'écrit au début du ticket ; une session n'y touche pas.";
-  return { problem };
+  return { problem, unreadable: read.unreadable };
 }
 
 /** Entrées de `git status -z` : chemins bruts, sans guillemets ni échappement, même hors ASCII. */

@@ -76,8 +76,9 @@ const record = () => {
   if (result.status !== 0) throw new Error("record failed: " + result.stdout + result.stderr);
 };
 // Le relecteur rend la main : Claude Code passe son rapport au hook qui en enregistre le verdict.
-const handBack = (text) => {
-  const input = { tool_name: "Agent", tool_input: { subagent_type: "relecteur" }, tool_response: { handbackReport: { text } } };
+const handBack = (text, prompt = "Fais une relecture complète.") => {
+  const input = { tool_name: "Agent", tool_input: { subagent_type: "relecteur", prompt },
+    tool_response: { handbackReport: { text }, resolvedModel: "claude-opus-5-5" } };
   const result = spawnSync(process.execPath, [".claude/hooks/record-review.mjs"], { input: JSON.stringify(input), encoding: "utf8" });
   if (result.status !== 0) throw new Error("review hook failed: " + result.stdout + result.stderr);
 };
@@ -299,6 +300,11 @@ const scenarios = {
     review();
     verdict("TERMINÉ");
   },
+  "rejected-then-complete"() {
+    greeting();
+    review(attempt === 1 ? "VERDICT : à corriger\\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre" : undefined);
+    verdict(attempt === 1 ? "PARTIEL" : "TERMINÉ");
+  },
   "reviewed-then-partial"() {
     greeting();
     if (attempt === 1) review();
@@ -313,6 +319,16 @@ const scenarios = {
     greeting();
     review("VERDICT : à corriger\\nCONSTATS : 0 bloquant, 1 mineur, 0 hors périmètre\\n- name the greeting");
     review();
+    verdict("TERMINÉ");
+  },
+  "correction-review"() {
+    greeting();
+    review("VERDICT : à corriger\\nCONSTATS : 1 bloquant, 0 mineur, 0 hors périmètre");
+    record();
+    const count = process.env.FAKE_UNCORRECTED;
+    const report = "VERDICT : accepté\\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre" +
+      (count === "missing" ? "" : "\\nNON CORRIGÉS : " + count);
+    handBack(report, "Fais une relecture de correction.\\nLis relecture-1.md et revue-2.interdiff.");
     verdict("TERMINÉ");
   },
   "review-stale"() {
@@ -1299,6 +1315,38 @@ test("a session whose final change is the one last reviewed is committed, even w
   assert.match(repo.git("show", "HEAD:docs/travail/tickets/001-add-greeting.md").stdout, /review accepted/);
 });
 
+for (const count of ["1", "missing", "inconnu", "0"]) {
+  test(`Claude cannot integrate an unresolved correction despite a finished implementation verdict: ${count}`, (t) => {
+    const repo = loopRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop("correction-review", ["--attempts", "1", "--no-retro"], { FAKE_UNCORRECTED: count });
+    const resolved = count === "0";
+    assert.equal(result.code, resolved ? 0 : 2, result.out);
+    const dir = ".harness-state/tickets/T001/";
+    assert.equal(JSON.parse(repo.read(dir + "verdict.json")).statut, "TERMINÉ");
+    const reviews = repo.read(dir + "relectures.jsonl").trim().split("\n").map(JSON.parse);
+    assert.deepEqual(reviews.map(review => review.verdict), ["à corriger", resolved ? "accepté" : "à corriger"]);
+    assert.equal(reviews[1].modele, "claude-opus-5-5");
+    assert.equal(repo.read(dir + "relecture-2.md"), acceptedReview + (count === "missing" ? "" : `\nNON CORRIGÉS : ${count}`));
+    assert.equal(fs.existsSync(path.join(repo.root, dir + "revue-2.interdiff")), true);
+    if (resolved) assert.equal(repo.commits()[0], "T001: Add the greeting");
+    else {
+      assert.match(repo.failure(), /dernier relecteur n'a pas accepté.*à corriger/);
+      assert.deepEqual(repo.commits(), ["init"]);
+    }
+  });
+}
+
+test("a complete Claude review after a rejected attempt accepts without a correction count", (t) => {
+  const repo = loopRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("rejected-then-complete", ["--attempts", "2", "--no-retro"]);
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.attempts(), "2");
+  assert.equal(repo.read(".harness-state/tickets/T001/relecture-2.md"), acceptedReview);
+  assert.equal(repo.commits()[0], "T001: Add the greeting");
+});
+
 test("a review recorded by an earlier attempt still counts for the next one", (t) => {
   const repo = loopRepo();
   t.after(repo.cleanup);
@@ -1310,7 +1358,7 @@ test("a review recorded by an earlier attempt still counts for the next one", (t
 
 for (const [what, scenario, expected] of [
   ["reviewed state", "corrupts-review", /Aucune relecture lisible n'est enregistrée/],
-  ["list of files untracked before the session", "corrupts-untracked-list", /untracked-before\.json est illisible/],
+  ["list of files untracked before the session", "corrupts-untracked-list", /^untracked-before\.json est illisible/m],
 ]) {
   test(`a session that leaves an unreadable ${what} is refused with a report, not a crash`, (t) => {
     const repo = loopRepo();
@@ -1813,11 +1861,27 @@ for (const engine of ["claude", "codex"]) {
         : repo.loop("changes-untracked-list", ["--attempts", "1"], env);
       assert.equal(result.code, 2, result.out);
       assert.match(repo.failure(), /untracked-before\.json/);
-      assert.match(repo.failure(), /modifi|absen/);
+      const diagnostic = change === "delete" ? /untracked-before\.json est absent/ : /a été modifié depuis le démarrage/;
+      assert.match(repo.failure(), diagnostic);
       assert.equal(jsonLines(repo, "relectures.jsonl").at(-1).verdict, "accepté");
       assert.deepEqual(repo.commits(), ["init"]);
     });
   }
+}
+
+for (const engine of ["claude", "codex"]) {
+  test(`the gates accept ${engine} when its session rewrites an identical untracked list`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    repo.write("notes/personal.md", "mine\n");
+    const env = { FAKE_UNTRACKED_CHANGE: "same" };
+    const args = ["--attempts", "1", "--no-retro"];
+    const result = engine === "codex" ? repo.codex(args, env) : repo.loop("changes-untracked-list", args, env);
+    assert.equal(result.code, 0, result.out);
+    assert.equal(repo.commits()[0], "T001: Add the greeting");
+    assert.doesNotMatch(repo.git("show", "--name-only", "--format=", "HEAD").stdout, /notes\/personal/);
+    assert.equal(repo.read("notes/personal.md"), "mine\n");
+  });
 }
 
 test("the last accepted Codex review carries both out-of-scope findings into the committed journal and reserve count", (t) => {

@@ -15,6 +15,12 @@ export function readInput() {
 
 export const loopMode = process.env.TVLENS_LOOP === "1";
 
+/** Sans racine Claude, les hooks partagés sont reçus par Codex, même en interactif. */
+export function ticketSkill() {
+  const codex = process.env.TVLENS_ENGINE === "codex" || !process.env.CLAUDE_PROJECT_DIR;
+  return codex ? ".agents/skills/ticket-codex/SKILL.md" : "ticket";
+}
+
 export function projectDir(input) {
   return process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
 }

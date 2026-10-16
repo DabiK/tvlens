@@ -1,7 +1,7 @@
 ---
 id: T200
 titre: Name the skill of each engine in one hook helper and enforce NOT FIXED in the Claude review hook
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -112,3 +112,75 @@ prétend pas que le hook, à lui seul, peut empêcher un orchestrateur de lancer
 il doit empêcher une correction non résolue d'être enregistrée comme acceptée et intégrée.
 
 ## Journal
+
+### Exploration
+
+Lecture des consignes, hooks, lecteurs d’état, boucle et bancs concernés ; état initial limité au statut du ticket et aux deux dossiers personnels non suivis. Le hook Claude ignore encore le compte des corrections ; la portée des skills Codex est déjà ouverte. L’ADR 0012 dit déjà « deux corrections par tentative » et reste inchangé. Exploration et absence d’écart consignées dans `.harness-state/tickets/T200/`.
+
+### Hook de correction
+
+- `node --test --test-concurrency=1 --test-name-pattern='review hook enforces' tests/agent-guards.test.cjs` : rouge observé, six acceptations indues sur les assertions (compte positif, absent ou illisible dans les deux formats). Sortie : `hook-red.log`.
+- `node --test --test-concurrency=1 --test-name-pattern='review hook enforces|resolved correction|complete review after' tests/agent-guards.test.cjs` : vert, 14 cas. Sortie : `hook-green.log`.
+- `node --test --test-concurrency=1 --test-name-pattern='Claude cannot integrate|complete Claude review after' tests/ticket-loop.test.cjs` : vert, 5 cas. La vraie boucle refuse les corrections non résolues malgré TERMINÉ, sans commit ; le compte zéro et une nouvelle tentative complète s’intègrent dans les dépôts jetables. Sortie : `loop-correction-green.log`.
+- `node --test --test-concurrency=1 tests/reviewed-state.test.cjs` : vert, 27 cas, lecteur partagé et comptes conservateurs. Sortie : `reader-green.log`.
+
+Les sorties citées sont conservées dans `.harness-state/tickets/T200/`. La sélection moteur/skill est extraite dans un helper ; les consignes décrivent les trois dossiers et gardent les exclusions et les trois tours propres à l’harmonisation.
+
+### Régressions ciblées
+
+`node --test --test-concurrency=1 tests/agent-guards.test.cjs tests/ticket-loop.test.cjs tests/reviewed-state.test.cjs` : vert, 282 tests, zéro échec (`targeted.log`). Les refus de liste initiale absente/illisible/modifiée et les refus/escalades Codex existants passent. Deux cas complémentaires prouvent ensuite la réécriture identique de la liste initiale pour les deux moteurs ; ils sont inclus dans les contrôles suivants.
+
+`node scripts/check.mjs --changed --no-tests` : règles, format, lint, gel et cliquet verts (`static.log`) ; aucun test lancé par cette commande.
+
+### Contrôle des fichiers modifiés
+
+`node scripts/check.mjs --changed` : vert, règles, format, lint, gel, cliquet et 284 tests JS réussis, zéro échec (`check-changed.log`). Les deux cas de liste identique passent. Le plancher du cliquet n’est pas modifié à la main.
+
+### Contrôle complet et remise à la boucle
+
+`node scripts/check.mjs` : vert, règles, format, lint, gel et cliquet ; 2 017 tests JavaScript sur 128 fichiers, zéro échec ; 22 tests Python réussis (`check-full.log`). `git diff --check` est également vert.
+
+Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T200/verdict.json`. Aucun écart ni réserve propre à l’implémentation. Aucun commit ni push ; relecture et intégration laissées à la boucle. Les dossiers personnels non suivis sont préservés.
+
+### Reprise après la première relecture
+
+Rapport `relecture-1.md`, ticket, journal, écarts, `git status` et `git diff` relus. Les deux constats
+mineurs sont acceptés : préciser les diagnostics attendus dans les tests de la vraie boucle et rétablir
+les apostrophes droites de l'agent harmoniseur. Exploration et absence d'écart consignées avant correction.
+
+### Preuves rouges des diagnostics
+
+Les assertions sont renforcées avant toute autre correction : suppression de la liste → « est absent »,
+ajout ou retrait d'une entrée → « a été modifié depuis le démarrage », corruption → « est illisible »
+en début de ligne, pour distinguer la porte du diagnostic secondaire de l'état relu.
+
+- `node .harness-state/tickets/T200/correction-diagnostic-mutations.cjs` : dans une copie jetable,
+  retrait de la branche `before.missing` ; les deux tests Claude et Codex échouent bien sur l'assertion
+  « est absent », avec « a été modifié » reçu (`correction-missing-red.log`, tests : code 1).
+  Le script de collecte s'est ensuite arrêté parce qu'il attendait le résumé TAP alors que Node rendait
+  le format spec ; son lecteur de résumé a été corrigé, sans relancer ces deux tests.
+- `node .harness-state/tickets/T200/correction-diagnostic-mutations.cjs unreadable` : dans une seconde
+  copie jetable, retrait de la branche `before.unreadable` ; un échec sur l'assertion ancrée est observé,
+  bien que le diagnostic secondaire reste dans le rapport (`correction-unreadable-red.log`, tests : code 1,
+  collecte des résultats attendus : code 0). Les copies sont supprimées ; aucun code de production muté dans l'arbre.
+
+Les deux apostrophes droites de `.claude/agents/harmoniseur.md` sont rétablies et vérifiées par
+`rg -n "l'harmonisation" .claude/agents/harmoniseur.md` (lignes 3 et 10). Aucun test de texte source ajouté.
+
+### Régressions de la correction
+
+`node --test --test-concurrency=1 tests/agent-guards.test.cjs tests/ticket-loop.test.cjs tests/reviewed-state.test.cjs` :
+vert, 284 tests réussis, zéro échec (`correction-targeted.log`). Les diagnostics précis passent dans la
+vraie boucle et les autres critères du ticket restent couverts. `git diff --check` est vert.
+
+`node scripts/check.mjs --changed` : vert, règles, format, lint, gel, cliquet et 284 tests JS réussis,
+zéro échec (`correction-check-changed.log`). Le plancher du cliquet reste inchangé.
+
+### Contrôle complet après correction et nouveau verdict
+
+`node scripts/check.mjs` : vert, règles, format, lint, gel et cliquet ; 2 017 tests JavaScript réussis
+sur 128 fichiers, zéro échec, puis 22 tests Python réussis (`correction-check-full.log`).
+
+Les deux constats mineurs de `relecture-1.md` sont corrigés. Nouveau verdict `TERMINÉ` dans
+`.harness-state/tickets/T200/verdict.json`, sans réserve propre ni écart. Aucun commit ni push ;
+la boucle garde la responsabilité de la relecture et de l'intégration.
