@@ -80,3 +80,49 @@ test('a failed shutdown journal leaves the shutdown failure accessible in the la
   assert.equal(runtime.snapshot().session, null);
   assert.equal(logs, 1);
 });
+
+for (const brokenLog of [false, true]) {
+  test(`a failed state subscriber preserves later deliveries and the current revision (journal throws: ${brokenLog})`, async t => {
+    const logs = [], received = [];
+    const runtime = await host(t, { log: line => {
+      logs.push(JSON.parse(line));
+      if (brokenLog) throw Error('journal indisponible');
+    } });
+    const session = await runtime.start();
+    const revision = runtime.snapshot().revision, tag = runtime.etag();
+    runtime.listeners.add(() => { throw Object.assign(Error('abonné indisponible'), { code: 'SUBSCRIBER_FAILED' }); });
+    runtime.listeners.add(state => received.push(state));
+    assert.doesNotThrow(() => runtime.emit());
+    assert.equal(received.length, 1);
+    assert.equal(received[0].session.id, session.id);
+    assert.equal(received[0].revision, revision + 1);
+    assert.notEqual(runtime.etag(), tag);
+    await runtime.pause();
+    assert.equal(received.at(-1).session.accepting, false);
+    assert.equal(runtime.snapshot().session.accepting, false);
+    assert.equal(runtime.snapshot().revision, received.at(-1).revision);
+    assert.equal(logs.length, received.length);
+    assert.ok(logs.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+      && event.origin === 'headless-runtime' && event.sessionId === session.id && event.error.code === 'SUBSCRIBER_FAILED'));
+    runtime.listeners.clear();
+  });
+}
+
+test('the server composition reports session and question publication failures through its journal', async t => {
+  const logs = [];
+  const runtime = await host(t, {
+    log: line => logs.push(JSON.parse(line)),
+    agent: { answer: async () => ({ answer: 'Réponse.', kind: 'explanation', citations: [], limits: [] }) },
+  });
+  const session = await runtime.start();
+  t.mock.method(runtime, 'published', () => { throw Error('publication session refusée'); });
+  await runtime.pause();
+  t.mock.method(runtime.deep, 'onChange', () => { throw Error('publication question refusée'); });
+  const { id } = runtime.ask({ question: 'Une question ?', sessionId: session.id, anchorMs: 0 });
+  await runtime.deep.jobs[0].done;
+  assert.equal(runtime.snapshot().chat.jobs[0].status, 'done');
+  assert.ok(logs.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+    && event.origin === 'watch-session' && event.sessionId === session.id));
+  assert.ok(logs.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+    && event.origin === 'deep-ask' && event.sessionId === session.id && event.jobId === id));
+});

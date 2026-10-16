@@ -8,6 +8,8 @@ const {
   openArchivedSession,
 } = require("./session-runtime.cjs");
 const { createConversationRuntime } = require("./conversation-runtime.cjs");
+const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
+const { publishState } = require("../core/state-publication.cjs");
 const { createSurveillanceRuntime } = require("./surveillance-runtime.cjs");
 const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
@@ -91,6 +93,7 @@ class HeadlessRuntime {
     this.auxRevision = 0;
     // Journal of the host; a test hands its own.
     this.log = options.log || ((line) => console.error(line));
+    this.onPublicationError = options.onPublicationError || createPublicationDiagnostic(line => this.log(line));
     this.sessionState = null;
     this.derived = null;
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
@@ -111,6 +114,7 @@ class HeadlessRuntime {
     });
     const conversation = createConversationRuntime({
       ...options,
+      onPublicationError: this.onPublicationError,
       quota: this.quota,
       getSession: () => this.session,
       // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the
@@ -243,7 +247,11 @@ class HeadlessRuntime {
     // answered without a body.
     this.revision++;
     this.storageKey = JSON.stringify(this.storage());
-    for (const listener of this.listeners) listener(this.snapshot());
+    for (const listener of this.listeners) {
+      publishState(() => listener(this.snapshot()), this.onPublicationError, {
+        origin: "headless-runtime", sessionId: this.session?.id, revision: this.revision,
+      });
+    }
   }
   // Session onChange. A session that is no longer the one in memory publishes nothing.
   published(state) {
@@ -366,6 +374,7 @@ class HeadlessRuntime {
       guard: this.guard,
       quota: this.quota,
       onChange: (state) => this.published(state),
+      onPublicationError: this.onPublicationError,
     };
   }
   adopt(session, jobs) {

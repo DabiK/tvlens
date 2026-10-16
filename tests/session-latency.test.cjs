@@ -210,7 +210,7 @@ test('visionDuringAsk lets vision run during a question, still one call at a tim
   legacy.watch.asking = true; await legacy.add(0);
   assert.equal(observed, 0); assert.equal(legacy.watch.segments[0].status, 'queued');
 });
-test('a failed media removal or a rejected sweep never poisons later prunes and ingests', async () => {
+test('a failed media removal or publication never poisons later prunes and ingests', async () => {
   const f = fixture({ transcribe, observeVisual: visual }, { retentionMs: 1000 });
   await f.add(0); await f.add(1);
   const remove = f.media.remove; let attempts = 0;
@@ -223,8 +223,15 @@ test('a failed media removal or a rejected sweep never poisons later prunes and 
   // The removal is tried again at the next sweep: no raw media stays beyond the rolling window.
   assert.equal(attempts, 3); assert.equal(f.files.has('moment-1'), false); assert.equal(f.watch.segments[0].status, 'ready');
   let boom = true;
-  f.watch.onChange = () => { if (boom) { boom = false; throw Error('boom'); } };
-  await assert.rejects(f.watch.prune(), /boom/);
+  const diagnostics = [], refusal = Object.assign(Error('observer failed'), { code: 'OBSERVER_FAILED' });
+  f.watch.onChange = () => { if (boom) { boom = false; throw refusal; } };
+  f.watch.onPublicationError = event => diagnostics.push(event);
+  await assert.doesNotReject(f.watch.prune());
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0].code, 'TVLENS_STATE_PUBLICATION_FAILED');
+  assert.equal(diagnostics[0].origin, 'watch-session');
+  assert.equal(diagnostics[0].sessionId, 's');
+  assert.equal(diagnostics[0].error, refusal);
   await f.watch.prune(); assert.equal(await f.add(11), 'moment-4');
 });
 test('overlapping ingests are admitted in call order; a rejected one does not block the next', async () => {

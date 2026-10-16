@@ -2,8 +2,160 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { DeepAsk } = require('../core/deep-ask.cjs');
 const { VirtualClock } = require('./helpers/clock.cjs');
+const { deferred } = require('./helpers/wait.cjs');
 
 const tools = () => ({ sessionId: 's1', anchorMs: 9000, observations: [], hypotheses: [], limits: [], memoryEvidence: [{ id: 'moment-1', startMs: 0, endMs: 8000 }], transcriptEvidence: [] });
+
+test('a publication accepts diagnostic identity without a question job', () => {
+  const diagnostics = [], snapshots = [], refusal = Error('observer failed');
+  const deep = new DeepAsk({
+    onChange: state => { snapshots.push(state); throw refusal; },
+    onPublicationError: event => diagnostics.push(event),
+  });
+  const context = { sessionId: 'ended-session', jobId: 'finished-question' };
+  assert.doesNotThrow(() => deep.emit(context));
+  assert.deepEqual(diagnostics, [{
+    code: 'TVLENS_STATE_PUBLICATION_FAILED', origin: 'deep-ask', ...context, error: refusal,
+  }]);
+  assert.doesNotThrow(() => deep.emit({ sessionId: 'ended-session' }));
+  assert.equal(diagnostics[1].sessionId, 'ended-session');
+  assert.equal(diagnostics[1].jobId, undefined);
+  assert.deepEqual(snapshots, [{ jobs: [] }, { jobs: [] }]);
+  assert.deepEqual(deep.snapshot(), { jobs: [] });
+});
+
+for (const brokenDiagnostic of [false, true]) {
+  test(`failed publications preserve queued answers, timers and tool release (diagnostic throws: ${brokenDiagnostic})`, async t => {
+    const clock = new VirtualClock().install();
+    t.after(() => clock.uninstall());
+    const gates = [deferred(), deferred()], calls = [], released = [], attempted = [], diagnostics = [];
+    const refusal = Error('observateur indisponible');
+    const deep = new DeepAsk({
+      makeTools: () => {
+        const value = tools();
+        value.release = () => released.push(value);
+        return value;
+      },
+      now: () => clock.t,
+      progressMs: 10,
+      timeoutMs: 100,
+      onChange: state => { attempted.push(structuredClone(state)); throw refusal; },
+      onPublicationError: event => {
+        diagnostics.push(event);
+        if (brokenDiagnostic) throw Error('journal indisponible');
+      },
+      agent: { answer: async input => {
+        const gate = gates[calls.length];
+        calls.push(input);
+        input.onProgress({ message: 'Recherche…', preview: 'Brouillon' });
+        await gate.promise;
+        return { answer: input.question, kind: 'explanation', citations: [], limits: [] };
+      } },
+    });
+    assert.doesNotThrow(() => deep.start('Première ?', { mode: 'chat' }));
+    assert.doesNotThrow(() => deep.emit());
+    assert.equal(diagnostics.at(-1).jobId, 'deep-1', 'an omitted context uses the active question');
+    assert.doesNotThrow(() => deep.start('Suivante ?', { mode: 'chat' }));
+    assert.equal(diagnostics.at(-1).jobId, 'deep-2', 'a queued publication identifies the queued job while another is active');
+    assert.deepEqual(deep.snapshot().jobs.map(job => job.status), ['running', 'queued']);
+    await clock.runUntil(10);
+    assert.ok(deep.snapshot().jobs[0].message.includes('La recherche continue'));
+    gates[0].resolve();
+    await clock.runUntil(10);
+    await deep.jobs[0].done;
+    assert.deepEqual(calls.map(input => input.question), ['Première ?', 'Suivante ?']);
+    gates[1].resolve();
+    await clock.runUntil(10);
+    await deep.jobs[1].done;
+    assert.deepEqual(deep.snapshot().jobs.map(job => [job.status, job.result.answer]), [
+      ['done', 'Première ?'], ['done', 'Suivante ?'],
+    ]);
+    assert.equal(deep.active, null);
+    assert.equal(clock.timers.size, 0);
+    assert.deepEqual(released, calls.map(input => input.tools));
+    assert.equal(diagnostics.length, attempted.length);
+    assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+      && event.origin === 'deep-ask' && event.sessionId === 's1' && event.error === refusal));
+    assert.deepEqual([...new Set(diagnostics.map(event => event.jobId))].sort(), ['deep-1', 'deep-2']);
+    assert.equal(diagnostics.at(-1).jobId, 'deep-2');
+    assert.ok(attempted.some(state => state.jobs[0].status === 'queued'));
+    assert.ok(attempted.some(state => state.jobs[1]?.status === 'running'));
+    assert.ok(attempted.some(state => state.jobs[1]?.metrics));
+  });
+}
+
+for (const ending of ['cancelled', 'timeout']) {
+  test(`failed publications preserve ${ending} results and release late tools only after the agent returns`, async t => {
+    const clock = new VirtualClock().install();
+    t.after(() => clock.uninstall());
+    const gate = deferred(), released = [], attempts = [], diagnostics = [], inputs = [];
+    let sequence = 0;
+    const deep = new DeepAsk({
+      now: () => clock.t,
+      timeoutMs: 50,
+      progressMs: 10,
+      makeTools: () => {
+        const id = ++sequence;
+        return { ...tools(), observations: [{ id: 'moment-1', startMs: 0, endMs: 1000, text: 'Observation acquise.' }],
+          release: () => released.push(id) };
+      },
+      onChange: state => { attempts.push(state); throw Error('observer failed'); },
+      onPublicationError: event => { diagnostics.push(event); throw Error('diagnostic failed'); },
+      agent: { answer: async input => {
+        inputs.push(input);
+        if (input.question === 'Lente ?') await gate.promise;
+        return { answer: 'Réponse tardive.', kind: 'explanation', citations: [], limits: [] };
+      } },
+    });
+    const first = deep.start('Lente ?', { mode: 'chat' });
+    const queued = deep.start('À annuler ?', { mode: 'chat' });
+    deep.start('Suivante ?', { mode: 'chat' });
+    assert.doesNotThrow(() => deep.cancel('Annulée en attente.', queued.id));
+    await deep.jobs[1].done;
+    assert.deepEqual(released, [2]);
+    if (ending === 'cancelled') assert.doesNotThrow(() => deep.cancel('Annulée.', first.id));
+    await clock.runUntil(ending === 'timeout' ? 50 : 0);
+    await Promise.all(deep.jobs.map(job => job.done));
+    const state = deep.snapshot();
+    assert.deepEqual(state.jobs.map(job => job.status), [ending, 'cancelled', 'done']);
+    assert.equal(state.jobs[0].result.answer, 'Observation acquise.');
+    assert.equal(inputs[0].signal.aborted, true);
+    assert.deepEqual(inputs.map(input => input.question), ['Lente ?', 'Suivante ?']);
+    assert.deepEqual(released, [2, 3], 'the late agent still owns its tools');
+    assert.equal(deep.active, null);
+    assert.equal(clock.timers.size, 0);
+    gate.resolve();
+    await clock.runUntil(clock.t);
+    assert.deepEqual(released, [2, 3, 1]);
+    assert.deepEqual(deep.snapshot(), state, 'a late answer cannot replace the acquired outcome');
+    assert.equal(diagnostics.length, attempts.length);
+    assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+      && event.origin === 'deep-ask' && event.sessionId === 's1' && event.jobId));
+  });
+}
+
+test('a real agent rejection retains its own diagnostic when state publications fail', async t => {
+  const clock = new VirtualClock().install();
+  t.after(() => clock.uninstall());
+  const diagnostics = [], refusal = Object.assign(Error('provider refused'), { code: 'PROVIDER_FAILED' });
+  const deep = new DeepAsk({
+    makeTools: tools,
+    onChange: () => { throw Error('observer failed'); },
+    onPublicationError: event => diagnostics.push(event),
+    serializeError: error => ({ code: error.code }),
+    agent: { answer: async () => { throw refusal; } },
+  });
+  deep.start('Question ?', { mode: 'chat' });
+  await clock.runUntil(0);
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.status, 'error');
+  assert.equal(job.message, refusal.message);
+  assert.deepEqual(job.errorDetail, { code: 'PROVIDER_FAILED' });
+  assert.ok(diagnostics.length > 0);
+  assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED' && event.error !== refusal));
+  assert.equal(clock.timers.size, 0);
+});
 
 test('restored questions come back finished, interrupted ones are settled and new ids never collide', async () => {
   const states = [];

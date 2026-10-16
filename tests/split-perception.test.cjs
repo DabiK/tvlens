@@ -4,7 +4,7 @@ const { WatchSession } = require('../core/session.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { sessionTimeline } = require('../core/session-timeline.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
-const { tick, deferred } = require('./helpers/wait.cjs');
+const { tick, deferred, until } = require('./helpers/wait.cjs');
 function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [];
@@ -16,6 +16,135 @@ function fixture(perception, options = {}) {
 }
 const transcribe = async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 10 });
 const visual = async s => ({ observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 20 });
+
+const publicationStages = [
+  ['audio start', s => s.audioStatus === 'analyzing'],
+  ['transcript', s => s.audioStatus === 'ready' && s.visionStatus === 'queued'],
+  ['vision start', s => s.visionStatus === 'analyzing' && !s.stage],
+  ['vision progress', s => s.stage === 'Description…'],
+  ['vision completion', s => s.visionStatus === 'ready'],
+];
+for (const [stage, matches] of publicationStages) {
+  test(`a failed ${stage} publication leaves perception results and losses intact`, async () => {
+    const diagnostics = [];
+    let attempts = 0;
+    const f = fixture({ transcribe, observeVisual: async s => { s.onProgress('Description…'); return visual(s); } }, {
+      onChange: state => {
+        if (!state.segments[0] || !matches(state.segments[0])) return;
+        attempts++;
+        throw Error('observer failed');
+      },
+      onPublicationError: event => diagnostics.push(event),
+    });
+    await f.add(0);
+    const state = f.watch.snapshot();
+    assert.equal(state.segments[0].status, 'ready');
+    assert.equal(state.segments[0].observation.transcript, 'Paroles moment-1');
+    assert.equal(state.segments[0].observation.summary, 'Images moment-1');
+    assert.deepEqual([state.coverage.audioError, state.coverage.visionError, state.lastError], [0, 0, null]);
+    assert.ok(attempts > 0, `the ${stage} notification was attempted`);
+    assert.equal(diagnostics.length, attempts);
+    await f.watch.close();
+  });
+}
+
+for (const lane of ['audio', 'vision']) {
+  test(`a real ${lane} rejection keeps its own reason when every publication fails`, async () => {
+    const diagnostics = [], refusal = Error(`provider refused ${lane}`);
+    const f = fixture({
+      transcribe: async s => { if (lane === 'audio') throw refusal; return transcribe(s); },
+      observeVisual: async s => { s.onProgress('Description…'); if (lane === 'vision') throw refusal; return visual(s); },
+    }, {
+      onChange: () => { throw Error('observer failed'); },
+      onPublicationError: event => diagnostics.push(event),
+    });
+    await f.add(0);
+    const state = f.watch.snapshot(), passage = state.segments[0];
+    assert.equal(passage.status, 'partial');
+    assert.equal(passage[`${lane}Error`], refusal.message);
+    assert.equal(state.lastError, refusal.message);
+    assert.deepEqual([state.coverage.audioError, state.coverage.visionError], lane === 'audio' ? [1, 0] : [0, 1]);
+    assert.deepEqual([state.analyzing, state.pending], [false, 0]);
+    assert.ok(diagnostics.length > 0);
+    assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED' && event.error !== refusal));
+    await f.watch.close();
+  });
+}
+
+test('failed pause, resume and save outcome publications preserve their state and disk barriers', async () => {
+  const diagnostics = [], saves = [], attempts = [];
+  let gate = deferred(), refuse = true;
+  const f = fixture({ transcribe, observeVisual: visual }, {
+    onChange: state => { attempts.push(state); throw Error('observer failed'); },
+    onPublicationError: event => diagnostics.push(event),
+    archive: { save: async state => {
+      saves.push(state);
+      await gate.promise;
+      if (refuse) throw Object.assign(Error('disk refused'), { code: 'EIO' });
+    } },
+  });
+  let settled = false;
+  const pausing = f.watch.stop().then(() => { settled = true; });
+  assert.equal(f.watch.snapshot().accepting, false);
+  assert.equal(settled, false);
+  assert.equal(saves.length, 1);
+  gate.resolve();
+  await pausing;
+  const saveError = f.watch.snapshot().lastError;
+  assert.ok(saveError);
+  assert.equal(attempts.at(-1).lastError, saveError);
+  gate = deferred();
+  refuse = false;
+  settled = false;
+  const resuming = f.watch.resume().then(() => { settled = true; });
+  assert.equal(f.watch.snapshot().accepting, true);
+  assert.equal(f.watch.snapshot().lastError, saveError);
+  assert.equal(settled, false);
+  assert.equal(saves.length, 2);
+  gate.resolve();
+  await resuming;
+  assert.equal(f.watch.snapshot().lastError, null);
+  assert.equal(attempts.at(-1).lastError, null);
+  assert.equal(diagnostics.length, attempts.length);
+  assert.equal(attempts.length, 4);
+  await f.watch.close();
+});
+
+for (const brokenDiagnostic of [false, true]) {
+  test(`failed publications preserve both perception lanes and persistence (diagnostic throws: ${brokenDiagnostic})`, async () => {
+    const calls = [], saves = [], diagnostics = [];
+    const refusal = Object.assign(Error('observateur indisponible'), { code: 'OBSERVER_FAILED' });
+    let attempts = 0;
+    const f = fixture({
+      transcribe: async s => { calls.push(['audio', s.id]); return transcribe(s); },
+      observeVisual: async s => { calls.push(['vision', s.id]); s.onProgress('Description…'); return visual(s); },
+    }, {
+      onChange: () => { attempts++; throw refusal; },
+      onPublicationError: event => {
+        diagnostics.push(event);
+        if (brokenDiagnostic) throw Error('journal indisponible');
+      },
+      archive: { save: async state => saves.push(structuredClone(state)) },
+    });
+    await assert.doesNotReject(f.add(0));
+    await assert.doesNotReject(f.add(1));
+    await until(() => saves.some(state => state.segments.length === 2 && state.segments.every(s => s.status === 'ready')),
+      'both passages saved after failed notifications');
+    const state = f.watch.snapshot();
+    assert.deepEqual(calls, [['audio', 'moment-1'], ['vision', 'moment-1'], ['audio', 'moment-2'], ['vision', 'moment-2']]);
+    assert.deepEqual(state.segments.map(s => [s.audioStatus, s.visionStatus, s.observation.transcript, s.observation.summary]), [
+      ['ready', 'ready', 'Paroles moment-1', 'Images moment-1'],
+      ['ready', 'ready', 'Paroles moment-2', 'Images moment-2'],
+    ]);
+    assert.deepEqual([state.analyzing, state.pending, state.audioPending, state.visionPending], [false, 0, 0, 0]);
+    assert.deepEqual([state.coverage.audioError, state.coverage.visionError, state.lastError], [0, 0, null]);
+    assert.ok(attempts > 0);
+    assert.equal(diagnostics.length, attempts);
+    assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+      && event.origin === 'watch-session' && event.sessionId === 's' && event.error === refusal));
+    await f.watch.close();
+  });
+}
 test('speech is published and next audio processed during blocked vision; context is frozen and labelled partial', async () => {
   const gate = deferred(), seen = [];
   const f = fixture({ transcribe, observeVisual: async s => { seen.push(s.id); await gate.promise; return visual(s); } });

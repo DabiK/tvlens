@@ -24,6 +24,7 @@ const {
   MANIFEST_EVERY_MS,
 } = require("./session-manifest.cjs");
 const { createSessionLifecycle } = require("./session-lifecycle.cjs");
+const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -41,6 +42,7 @@ function createSessionRuntime({
   // Media are kept until the session is deleted; a finite value brings the rolling window back.
   retentionMs = Infinity,
   onChange = () => {},
+  onPublicationError = createPublicationDiagnostic(),
   readClock = () => performance.now(),
   wallClock = Date.now,
   host = null,
@@ -173,6 +175,7 @@ function createSessionRuntime({
     thumbnails,
     storage,
     visionDuringAsk: config.visionDuringAsk === true,
+    onPublicationError,
     onChange: (state) => {
       if (!state.readOnly) feedIndex?.(state);
       manifest.publish(state);

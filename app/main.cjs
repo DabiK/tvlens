@@ -8,6 +8,7 @@ const { createSessionRuntime, validateSegment } = require('../runtime/session-ru
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
 const { createQuestionCheckpoint } = require('../runtime/question-checkpoint.cjs');
+const { createPublicationDiagnostic } = require('../runtime/publication-diagnostic.cjs');
 const { warmUp } = require('../runtime/session-warm-up.cjs');
 const { activeInstruction } = require('../runtime/active-instruction.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
@@ -126,6 +127,7 @@ app.whenReady().then(async () => {
   handle('window:mode', value => windowMode(value));
   const codexBinary = await findCodex();
   const quota=new CodexQuota();
+  const onPublicationError = createPublicationDiagnostic(line => console.error(line));
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
@@ -144,22 +146,27 @@ app.whenReady().then(async () => {
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
     getInstruction: () => activeInstruction(surveillance, loaded?.runtime.watch.id),
     agent: videoAgent, codexBinary, config, selectedModels, quota,
+    onPublicationError,
     onChange: state => {
-      if (loaded) {
-        const busy = state.jobs.some(j => j.sessionId === loaded.runtime.watch.id && ['running', 'queued'].includes(j.status));
-        if (loaded.runtime.watch.asking !== busy) {
-          loaded.runtime.watch.asking = busy;
-          loaded.runtime.watch.emit();
-          if (!busy) queueMicrotask(() => loaded?.runtime.watch.drain());
+      try {
+        if (loaded) {
+          const busy = state.jobs.some(j => j.sessionId === loaded.runtime.watch.id && ['running', 'queued'].includes(j.status));
+          if (loaded.runtime.watch.asking !== busy) {
+            loaded.runtime.watch.asking = busy;
+            loaded.runtime.watch.emit();
+            if (!busy) queueMicrotask(() => loaded?.runtime.watch.drain());
+          }
         }
+        if (state.jobs.some(j => ['running', 'queued'].includes(j.status))) recap?.tick({ busy: true });
+        if (!window.isDestroyed()) window.webContents.send('deep:state', state);
+      } finally {
+        // La sauvegarde est tentée même quand la fenêtre refuse la notification.
+        // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
+        if (loaded) questionSaves.checkpoint(loaded.runtime.store, {
+          ...state,
+          jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === loaded.runtime.watch.id),
+        });
       }
-      if (state.jobs.some(j => ['running', 'queued'].includes(j.status))) recap?.tick({ busy: true });
-      if (!window.isDestroyed()) window.webContents.send('deep:state', state);
-      // Only the questions of the loaded session go into its folder: nothing leaks from one session to another.
-      if (loaded) questionSaves.checkpoint(loaded.runtime.store, {
-        ...state,
-        jobs: state.jobs.filter(j => j.sessionId === undefined || j.sessionId === loaded.runtime.watch.id),
-      });
     },
   });
   videoAgent = conversation.agent;
@@ -296,6 +303,7 @@ app.whenReady().then(async () => {
   const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
     smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
+    onPublicationError,
     onChange: state => {
       if (!closing && !switching) recap.observe(state);
       surveillance.observe(state);
@@ -371,7 +379,10 @@ app.whenReady().then(async () => {
           loaded = null;
           // Nothing of this session waits past this point: a timer left behind would have nothing to write.
           questionSaves.forget();
-          viewingActions.reset(); deep.jobs = []; deep.emit(); recap.reset();
+          viewingActions.reset();
+          deep.jobs = [];
+          deep.emit({ sessionId: ended?.id });
+          recap.reset();
         },
         log: line => console.error(line),
       });

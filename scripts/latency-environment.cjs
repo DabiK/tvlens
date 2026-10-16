@@ -1,5 +1,6 @@
 const { readFileSync } = require("node:fs");
 const vm = require("node:vm");
+const { createRequire } = require("node:module");
 const { manualClock } = require("../tests/helpers/clock.cjs");
 const { deferred } = require("../tests/helpers/wait.cjs");
 
@@ -72,6 +73,7 @@ function controlledModule(filename, globals) {
     readFileSync(require.resolve(filename), "utf8"),
     {
       module,
+      require: createRequire(require.resolve(filename)),
       ...globals,
     },
     { filename },

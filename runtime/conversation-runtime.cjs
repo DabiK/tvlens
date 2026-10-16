@@ -2,6 +2,7 @@ const { DeepAsk, QUESTION_TIMEOUT_MS } = require("../core/deep-ask.cjs");
 const { VideoTools } = require("../core/video-tools.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
+const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 
 // A host may only lower the processing ceiling of a question (rollback, tests): the product contract
 // is five minutes. A mistyped value is refused at start instead of running under another limit.
@@ -21,6 +22,7 @@ function createConversationRuntime({
   selectedModels,
   quota,
   onChange,
+  onPublicationError = createPublicationDiagnostic(),
   // Late-bound by the host: the surveillance runtime is composed after the conversation.
   getInstruction,
 }) {
@@ -60,6 +62,7 @@ function createConversationRuntime({
       agent: conversationAgent,
       makeTools,
       onChange,
+      onPublicationError,
       timeoutMs,
       onTrace: trace,
       serializeError: safeError,

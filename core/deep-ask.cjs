@@ -1,3 +1,4 @@
+const { publishState } = require('./state-publication.cjs');
 // Core must not import adapters: tracing and error serialization are injected by the runtime.
 // An answer is plain text: its pages travel in `sources`, shown apart by every client. A model that still writes a
 // Markdown link keeps its words and loses the address; nothing else of the answer is touched.
@@ -5,6 +6,7 @@ const plainAnswer=text=>typeof text==='string'?text.replace(/\[([^\]\n]{1,200})\
 // Product decision 1: one processing ceiling for a question on every host. It runs from the moment the
 // question leaves the queue; the wait before that is measured apart and never counted against it.
 const QUESTION_TIMEOUT_MS=300000,QUESTION_PROGRESS_MS=30000;
+const publicationContext = job => ({ sessionId: job?.sessionId, jobId: job?.id });
 // Wording of a ceiling for the viewer, derived from the value really enforced: whole minutes when exact,
 // otherwise seconds rounded up so that the announced limit is never shorter than the real one.
 function limitLabel(ms){
@@ -12,8 +14,14 @@ function limitLabel(ms){
   const seconds=Math.max(1,Math.ceil(ms/1000));return `${seconds} seconde${seconds>1?'s':''}`;
 }
 class DeepAsk {
-  constructor({ makeTools, agent, onChange=()=>{}, now=Date.now, timeoutMs=QUESTION_TIMEOUT_MS, progressMs=QUESTION_PROGRESS_MS, onTrace=()=>{}, serializeError=()=>({}), getInstruction=()=>undefined }) {
-    Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs,onTrace,serializeError,getInstruction}); this.jobs=[]; this.sequence=0; this.active=null;
+  constructor({ makeTools, agent, onChange = () => {}, onPublicationError = () => {}, now = Date.now,
+    timeoutMs = QUESTION_TIMEOUT_MS, progressMs = QUESTION_PROGRESS_MS,
+    onTrace = () => {}, serializeError = () => ({}), getInstruction = () => undefined }) {
+    Object.assign(this, { makeTools, agent, onChange, onPublicationError, now, timeoutMs,
+      progressMs, onTrace, serializeError, getInstruction });
+    this.jobs = [];
+    this.sequence = 0;
+    this.active = null;
   }
   // Diagnostics can never fail a job: both hooks are guarded and default to noop / empty detail.
   trace(event,fields={}){try{this.onTrace(event,fields);}catch{
@@ -22,13 +30,22 @@ class DeepAsk {
   describeError(error){try{const d=this.serializeError(error);return d&&typeof d==='object'?{...d}:{};}catch{return {};}
   }
   snapshot() { return { jobs:this.jobs.map(({controller,tools,done,_finish,...j})=>({...j})) }; }
-  emit() { this.onChange(this.snapshot()); }
+  emit({ sessionId, jobId } = publicationContext(this.active)) {
+    publishState(() => this.onChange(this.snapshot()), this.onPublicationError, {
+      origin: 'deep-ask', sessionId, jobId,
+    });
+  }
   cancel(reason='Recherche annulée.',id) {
     const job=id?this.jobs.find(j=>j.id===id):this.active;if(!job||!['queued','running'].includes(job.status))return;
     const queued=job.status==='queued';job.status='cancelled';job.message=reason;job.finishedAt=this.now();
     if(job.tools.observations.length)job.result=this.partial(job.tools,job.mode);
     // A question cancelled in the queue never reached the agent: nothing can still be using its tools.
-    job.controller.abort(new Error(reason));if(queued){job._finish();this.release(job);}this.emit();
+    job.controller.abort(new Error(reason));
+    if (queued) {
+      job._finish();
+      this.release(job);
+    }
+    this.emit(publicationContext(job));
   }
   // A finished question keeps its answer, not its working context. A moment action keeps the passages of its own
   // interval, which the host reads to re-examine that moment. Housekeeping: tools that cannot be released (restored
@@ -70,25 +87,45 @@ class DeepAsk {
       // Le champ availability reste absent ; l'agent utilise ses outils et aucune plage consultable n'est inventée.
     }
     if(mode==="chat")this.trace("job.accepted",{jobId:job.id,sessionId:job.sessionId,questionLength:question.length,mode,intent,anchorMs:job.anchorMs});
-    job.done=new Promise(resolve=>{job._finish=resolve;});this.jobs.push(job);this.emit();this.drain();
+    job.done = new Promise(resolve => { job._finish = resolve; });
+    this.jobs.push(job);
+    this.emit(publicationContext(job));
+    this.drain();
     return {id:job.id};
   }
   drain(){
     if(this.active)return;const job=this.jobs.find(j=>j.status==='queued');if(!job)return;
-    this.active=job;job.status='running';job.startedAt=this.now();job.message='Question reçue…';job.activity.push({message:job.message,at:job.startedAt});this.emit();
+    this.active = job;
+    job.status = 'running';
+    job.startedAt = this.now();
+    job.message = 'Question reçue…';
+    job.activity.push({ message: job.message, at: job.startedAt });
+    this.emit(publicationContext(job));
     this.run(job).finally(()=>{if(this.active===job)this.active=null;job._finish();this.drain();});
+  }
+  setDeadline(job, finish) {
+    return setTimeout(() => {
+      if (job.status !== 'running') return;
+      if (job.mode === 'chat') this.trace('job.timeout', { jobId: job.id, sessionId: job.sessionId });
+      job.status = 'timeout';
+      job.message = `Limite de ${limitLabel(job.timeoutMs)} atteinte.`;
+      job.result = this.partial(job.tools, job.mode);
+      job.finishedAt = this.now();
+      job.controller.abort(new Error('Délai maximal atteint.'));
+      this.emit(publicationContext(job));
+      finish();
+    }, job.timeoutMs);
   }
   async run(job) {
     let timer,progress,onAbort,work;
     if(job.mode==="chat")this.trace("job.started",{jobId:job.id,sessionId:job.sessionId});
     const cancelled=new Promise(resolve=>{onAbort=resolve;job.controller.signal.addEventListener('abort',onAbort,{once:true});});
-    const timeout=new Promise(resolve=>{timer=setTimeout(()=>{
-      if(job.status!=='running') return;
-      if(job.mode==="chat")this.trace("job.timeout",{jobId:job.id,sessionId:job.sessionId});
-      job.status='timeout';job.message=`Limite de ${limitLabel(job.timeoutMs)} atteinte.`;job.result=this.partial(job.tools,job.mode);job.finishedAt=this.now();
-      job.controller.abort(new Error('Délai maximal atteint.')); this.emit();resolve();
-    },job.timeoutMs);});
-    progress=setTimeout(()=>{if(job.status==='running'){job.message=`La recherche continue · arrêt au plus tard à ${limitLabel(job.timeoutMs)}.`;this.emit();}},this.progressMs);
+    const timeout = new Promise(resolve => { timer = this.setDeadline(job, resolve); });
+    progress = setTimeout(() => {
+      if (job.status !== 'running') return;
+      job.message = `La recherche continue · arrêt au plus tard à ${limitLabel(job.timeoutMs)}.`;
+      this.emit(publicationContext(job));
+    }, this.progressMs);
     try {
       // `work` is the agent's own use of the tools, apart from the race: a ceiling or a cancellation ends the
       // question for the viewer while the agent may still be running.
@@ -152,7 +189,8 @@ class DeepAsk {
           // Redacted diagnostic kept on the job (sent in the snapshot): the fallback result is not an evidence verdict.
           job.status='error';job.message=error.message;job.errorDetail=this.describeError(error);job.result=this.partial(job.tools,job.mode);
         }
-        job.finishedAt=this.now();this.emit();
+        job.finishedAt = this.now();
+        this.emit(publicationContext(job));
       })()]);
     } finally {clearTimeout(timer);clearTimeout(progress);job.controller.signal.removeEventListener('abort',onAbort);
       const end=job.finishedAt??this.now();
@@ -164,7 +202,7 @@ class DeepAsk {
       job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,firstAgentMs:job.firstAgentAt===undefined?null:job.firstAgentAt-job.startedAt,firstTextMs:job.firstTextAt===undefined?null:job.firstTextAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])],
         evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};
       if(job.mode==="chat")this.trace("job.finished",{jobId:job.id,sessionId:job.sessionId,status:job.status,totalMs:job.metrics.totalMs});
-      this.emit();
+      this.emit(publicationContext(job));
       // After the last read and the last publication, and only once the agent has really returned: at once for an
       // answer or an error, later after a ceiling or a cancellation, never if the agent never returns. No timer.
       work.then(()=>this.release(job),()=>this.release(job));
@@ -175,7 +213,7 @@ class DeepAsk {
     if(value.message){if(job.firstProgressAt===undefined)job.firstProgressAt=this.now();job.message=value.message;if(job.activity.at(-1)?.message!==value.message){job.activity.push({message:value.message,at:this.now()});job.activity=job.activity.slice(-12);}}
     if(typeof value.provisional==='string'&&value.provisional.trim()){job.provisional=value.provisional;if(job.firstUsefulAt===undefined)job.firstUsefulAt=this.now();}
     if(typeof value.preview==='string'&&value.preview.trim()){job.preview=value.preview.slice(0,12000);if(job.firstTextAt===undefined)job.firstTextAt=this.now();if(job.firstUsefulAt===undefined)job.firstUsefulAt=this.now();}
-    this.emit();
+    this.emit(publicationContext(job));
   }
   partial(tools,mode='inspect') {
     return {answer:tools.observations.length ? tools.observations.map(o=>o.text).join('\n') : 'Je n’ai pas obtenu de preuve suffisante pour répondre.',kind:tools.observations.length?'observation':'insufficient',citations:tools.observations.map(({id,startMs,endMs})=>({id,startMs,endMs})),observations:[...tools.observations],hypotheses:[...tools.hypotheses],limits:[...tools.limits,'Résultat limité aux observations déjà obtenues.']};

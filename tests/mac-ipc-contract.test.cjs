@@ -853,6 +853,46 @@ test('a question is at rest on disk once the write that carries its figures has 
 
 const CHAT_ANSWER = { answer: 'Ok.', kind: 'explanation', citations: [], limits: [] };
 
+test('the Mac composition journals failed state deliveries and still saves completed questions', async t => {
+  const { launch } = await stage(t), saves = [];
+  const host = await launch({ wrap: {
+    conversation: built => {
+      built.agent.answer = async input => { input.onProgress({ message: 'Recherche…' }); return CHAT_ANSWER; };
+      return built;
+    },
+    session: runtime => {
+      runtime.perception.observe = async input => {
+        input.onProgress('Description…');
+        return { observation: { summary: 'Un plateau.', transcript: 'Bonjour.' } };
+      };
+      const save = runtime.store.saveResearch.bind(runtime.store);
+      runtime.store.saveResearch = state => { saves.push(structuredClone(state)); return save(state); };
+      return runtime;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const unwatch = host.onState(() => { throw Error('fenêtre indisponible pour la session'); });
+  const unchat = host.onDeepState(() => { throw Error('fenêtre indisponible pour les questions'); });
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, analysed(host, 1), 'analysis completed despite failed state delivery');
+  const { id } = await host.ask('Une question ?');
+  await until(t, async () => (await host.deepState()).jobs[0]?.status === 'done', 'answer completed despite failed state delivery');
+  assert.ok(saves.some(state => state.jobs[0]?.status === 'done' && state.jobs[0]?.metrics), 'the final answer is handed to storage');
+  assert.equal((await host.state()).asking, false);
+  await host.stop();
+  assert.equal(await host.newSession(), true);
+  assert.deepEqual((await host.deepState()).jobs, []);
+  const diagnostics = host.failures.map(line => JSON.parse(line));
+  assert.ok(diagnostics.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+    && event.origin === 'watch-session' && event.sessionId === session.id));
+  assert.ok(diagnostics.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+    && event.origin === 'deep-ask' && event.sessionId === session.id && event.jobId === id));
+  assert.ok(diagnostics.every(event => event.sessionId === session.id), 'reset diagnostics still identify the session being left');
+  unwatch();
+  unchat();
+});
+
 test('on the Mac host a question raises the asking flag of the session, holds the passages that arrive meanwhile and analyses them after', async t => {
   const { launch } = await stage(t), turn = {};
   // A chat agent the test drives: its answer ends when the test says so, or when the question is cancelled.

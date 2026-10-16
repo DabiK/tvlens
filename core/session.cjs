@@ -4,6 +4,7 @@ const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
 const { holdsMedia } = require('./clip-container.cjs');
+const { publishState } = require('./state-publication.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
 // Set as `code` by a perception adapter on a failed description it knows to be passing (a connection that gave
 // way, its own deadline): the only failure a passage may be described a second time for.
@@ -45,11 +46,13 @@ function withOverlayNote(observation, segment, images) {
 }
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
-  constructor({ id, now, perception, answer, media, archive, thumbnails, storage, onChange = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
+  constructor({ id, now, perception, answer, media, archive, thumbnails, storage,
+    onChange = () => {}, onPublicationError = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
     // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
     // carries null for "no expiry" (JSON has no Infinity): it is normalised here, never used in arithmetic.
     retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
-    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, storage, onChange, retentionMs, maxPending, visionDuringAsk });
+    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, storage,
+      onChange, onPublicationError, retentionMs, maxPending, visionDuringAsk });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
     this.closed = false; this.controller = new AbortController();
@@ -503,7 +506,10 @@ class WatchSession {
       storage: this.storage ? this.storage() : null,
       segments: this.segments.map(s => ({ ...s })) };
   }
-  emit() { if (!this.closed) this.onChange(this.snapshot()); }
+  emit() {
+    if (this.closed) return;
+    publishState(() => this.onChange(this.snapshot()), this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
+  }
   async persist(explicit = false) {
     // Opening, pausing or closing a reopened archive leaves its files untouched.
     if (this.readOnly && !explicit) return;
