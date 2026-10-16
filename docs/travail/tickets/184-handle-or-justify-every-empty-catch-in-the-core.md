@@ -1,7 +1,7 @@
 ---
 id: T184
 titre: Handle or justify every empty catch in the core
-statut: a-faire
+statut: termine
 bloque_par: T177
 adr: non
 installe: non
@@ -125,3 +125,97 @@ refactor a traité les six cas. Le périmètre explicite les contrats existants 
 Aucun résultat d’exécution ni incident matériel n’est déduit de la seule lecture de ces repères.
 
 ## Journal
+
+- Exploration à `3c966d3` : les six repères sont encore actifs, sans déplacement ni
+  disparition. `emptyCatches` inchangé donne `core/deep-ask.cjs: 5`,
+  `core/moment-search.cjs: 1`, tous les autres fichiers du cœur à 0 ; cœur 6,
+  produit 6. Les prédécesseurs ont donc laissé uniquement les six cas du cœur.
+  Exploration et portée réelle des assertions existantes consignées dans
+  `.harness-state/tickets/T184/exploration.md` ; aucun écart prévu (`ecarts.md`).
+  Les protections existent déjà : commentaires précis et tests des contrats conservés,
+  sans ajout de gestion ni nouvelle politique.
+- Rapprochement des six repères avec le code courant :
+
+  | Repère initial | Traitement livré et preuve |
+  | --- | --- |
+  | `deep-ask:22`, `trace` | Poursuite justifiée : le callback ne conditionne ni réponse ni file. `deep-ask-restore` provoque son erreur et observe deux réponses publiées `done`, dont la seconde était en attente. `chat-trace` conserve sa preuve sur une question déjà en erreur. |
+  | `deep-ask:37`, `release` | Contrat conservé et limite explicitée : réponse et file continuent, sans nouvel essai ni garantie de libération effective. Tests de refus synchrone après réponse et lors d'une annulation en file ; les questions suivantes aboutissent. Réserve mémoire ci-dessous. |
+  | `deep-ask:67`, `availability` | Poursuite justifiée : champ absent dans toutes les publications, outils encore remis à l'agent, deux questions terminées. Aucun intervalle fabriqué. |
+  | `deep-ask:113`, `getInstruction` | Poursuite justifiée : aucun champ instruction transmis à l'agent ; deux réponses publiées aboutissent. Le test existant des consignes normales, tronquées, absentes et du mode inspect est conservé. |
+  | `deep-ask:148`, `freshness` | Poursuite justifiée : champs finaux absents, durées et état des preuves au démarrage conservés, puis question suivante terminée. Doublure avec contexte de départ fixe, sans fraîcheur finale inventée. |
+  | `moment-search:129`, `passageVector` | Poursuite justifiée : score lexical conservé, seul le vecteur du passage rejeté manque. Index injecté, passages fixes : classement et scores, compteurs partiels, avertissement hybride ; en panne de requête aussi, réponse lexicale et avertissement existant. Une recherche suivante aboutit. Le refus d'annulation avant classement est conservé ; le test existant d'annulation pendant settle reste intact. |
+
+- Tests écrits avant les commentaires :
+  `node --test --test-concurrency=1 tests/deep-ask-restore.test.cjs tests/moment-index.test.cjs`
+  → 35/35 verts sur le code de départ (`tests-before-comments.log`). Neuf tests
+  complémentaires caractérisent les protections déjà présentes ; aucun nouveau
+  traitement d'erreur n'est revendiqué. Horloge/minuteries virtuelles pour DeepAsk,
+  minuteries injectées pour MomentSearch ; aucune attente de délai ni fournisseur réel.
+- Sensibilité causale : `python3 -B .harness-state/tickets/T184/mutations.py` retire
+  chaque protection existante séparément puis restaure immédiatement le fichier.
+  Les commandes Node exactes et sorties sont dans `red-*.log` : trace, release lors
+  de l'annulation, availability et instruction échouent sur leurs assertions ; les
+  deux cas de cache rejeté échouent sur `doesNotReject`. Le retrait de la protection
+  freshness fait remonter l'erreur injectée depuis le finally (rouge d'exécution,
+  pas une assertion rouge). Cela ne constitue pas un rouge causé par un commentaire.
+  Après restauration/commentaires, même commande de tests → 35/35 verts
+  (`tests-after-comments.log`).
+- Le contrôle rapide des éditions a signalé les suppressions `no-empty` devenues
+  inutiles. `node_modules/.bin/eslint --prune-suppressions core/deep-ask.cjs core/moment-search.cjs`
+  → sortie 0 ; seuls les comptes 5 et 1 de cette règle sont retirés du gel, selon
+  `docs/standards.md`. Aucun changement du harnais ni du plancher.
+- `node .harness-state/tickets/T184/inventory.mjs` avant/après, avec la définition
+  `emptyCatches` inchangée : `deep-ask` 5 → 0, `moment-search` 1 → 0 ; chacun des
+  22 autres fichiers du cœur 0 → 0 ; cœur 6 → 0, produit 6 → 0. Détail complet
+  par fichier conservé dans `inventory-before.log` et `inventory-after.log`.
+  Aucun déplacement ni remplacement par un callback de rejet.
+- `node scripts/check.mjs --changed` → vert : règles, format, lint, gel, cliquet et
+  35/35 tests de deux fichiers ; `catch_vides_prod` 6 → 0 et cas statiques 1254 → 1263.
+  Sortie complète dans `.harness-state/tickets/T184/check-changed.log`.
+- Réserve nommée — `core/deep-ask.cjs`, `release(job)` : un refus synchrone n'empêche
+  pas la réponse ni la file (prouvé par doublure), mais peut laisser retenus le
+  préfixe copié et les dépendances des outils. Le catch ne réessaie pas et n'atteste
+  pas la réussite du nettoyage. Preuves manquantes : devenir des références après
+  une libération partielle et mesure de mémoire réelle. Travail requis : définir
+  puis tester séparément un contrat de reprise/diagnostic du nettoyage. Aucune
+  panne matérielle ni absence de fuite n'est déduite de ces tests. Cette limite
+  est conservée selon l'ADR 0004, sans la masquer par une justification générique.
+- `node scripts/check.mjs` → vert en séquentiel : règles, format, lint, gel et
+  cliquet ; 1452/1452 tests JS dans 115 fichiers (gardes d'architecture et suites
+  protectrices comprises), puis 22/22 tests Python. Sortie complète dans
+  `.harness-state/tickets/T184/check-full.log`. `git diff --check` → sortie 0.
+  Aucun test supprimé ni assertion affaiblie ; aucun fournisseur réel, appareil,
+  installation, commit ou push. Verdict `TERMINÉ` remis à la boucle, avec la réserve
+  de libération ci-dessus ; la relecture et le resserrement du plancher lui reviennent.
+- Reprise après `relecture-1.md` : constat mineur 1 accepté. L'horloge immobile ne
+  prouvait pas la conservation des durées annoncée pour le refus de freshness.
+  Correction prévue : première réponse en 120 ms, seconde en 45 ms après 120 ms
+  d'attente dans la file ; assertions exactes sur les métriques publiées. Aucun
+  écart ni changement de comportement produit. Exploration de reprise consignée
+  dans `.harness-state/tickets/T184/exploration-correction-1.md`.
+- Correction du constat 1, tests d'abord :
+  `node --test --test-concurrency=1 --test-name-pattern='unreadable freshness' tests/deep-ask-restore.test.cjs`
+  → assertion rouge après renforcement des attentes (durées effectives encore
+  toutes à zéro), puis 1/1 vert après avance de l'horloge dans l'agent contrôlé.
+  La première question part immédiatement : `(waitMs,totalMs) = (0,120)` ; la
+  seconde, créée pendant cette réponse, attend puis s'exécute : `(120,45)`.
+  Les deux réponses terminées et l'objet evidence exact restent vérifiés.
+  Sorties dans `correction-1-red-clock.log` et `correction-1-green-clock.log`.
+- `python3 -B .harness-state/tickets/T184/check-timing-mutations.py` → les deux
+  mutations indépendantes du calcul produit (`waitMs:0`, puis `totalMs:0`) font
+  échouer ce test sur son assertion ; restauration immédiate après chaque essai.
+  Commandes et sorties dans `correction-1-red-waitMs.log` et
+  `correction-1-red-totalMs.log`. Aucun changement produit livré lors de la reprise.
+- `node scripts/check.mjs --changed` après restauration → vert, 35/35 tests de
+  deux fichiers, règles, format, lint, gel et cliquet verts ; sortie conservée
+  dans `.harness-state/tickets/T184/correction-1-check-changed.log`.
+- `node scripts/check.mjs` après correction → vert en séquentiel : 1452/1452
+  tests JS dans 115 fichiers et 22/22 tests Python ; règles, format, lint, gel et
+  cliquet verts (`correction-1-check-full.log`). `git diff --check` → sortie 0.
+  Constat mineur 1 corrigé, aucune contestation ; nouveau verdict `TERMINÉ`, avec
+  la réserve de libération initiale conservée. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- Réserve initiale conservée : core/deep-ask.cjs, release(job). Un refus synchrone préserve réponse/annulation et file mais peut laisser retenus préfixe et dépendances ; aucun nouvel essai ni succès du nettoyage n'est attesté. Manquent le devenir des références après libération partielle et une mesure mémoire réelle. Travail distinct requis : définir puis tester un contrat de reprise/diagnostic du nettoyage (ADR 0004). Les doublures ne prouvent aucune panne matérielle ni absence de fuite.
+- Relecture de correction et resserrement du plancher réservés à la boucle.

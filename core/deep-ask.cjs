@@ -16,7 +16,9 @@ class DeepAsk {
     Object.assign(this,{makeTools,agent,onChange,now,timeoutMs,progressMs,onTrace,serializeError,getInstruction}); this.jobs=[]; this.sequence=0; this.active=null;
   }
   // Diagnostics can never fail a job: both hooks are guarded and default to noop / empty detail.
-  trace(event,fields={}){try{this.onTrace(event,fields);}catch{}}
+  trace(event,fields={}){try{this.onTrace(event,fields);}catch{
+    // Le diagnostic est perdu ; la réponse et le passage à la question suivante ne dépendent pas de ce callback.
+  }}
   describeError(error){try{const d=this.serializeError(error);return d&&typeof d==='object'?{...d}:{};}catch{return {};}
   }
   snapshot() { return { jobs:this.jobs.map(({controller,tools,done,_finish,...j})=>({...j})) }; }
@@ -31,7 +33,10 @@ class DeepAsk {
   // A finished question keeps its answer, not its working context. A moment action keeps the passages of its own
   // interval, which the host reads to re-examine that moment. Housekeeping: tools that cannot be released (restored
   // copies, test doubles) stay as they are, and a failure here never reaches the question nor the queue.
-  release(job){try{job.tools.release?.({keepPassages:Boolean(job.intent)});}catch{}}
+  release(job){try{job.tools.release?.({keepPassages:Boolean(job.intent)});}catch{
+    // La réponse acquise et la file continuent sans nouvel essai ; les références des outils peuvent rester retenues.
+    // Ce contrat ne garantit pas la libération effective après un échec du nettoyage (ADR 0004).
+  }}
   cancelAll(reason='Session terminée.') {
     for(const job of this.jobs.filter(j=>j.status==='queued'))this.cancel(reason,job.id);
     this.cancel(reason);
@@ -61,7 +66,9 @@ class DeepAsk {
     if(anchorMs!==undefined||startMs!==undefined)job.tools.scope?.({anchorMs,startMs});
     job.sessionId=job.tools.sessionId;job.anchorMs=job.tools.anchorMs;
     // Freshness shown to the viewer: what was consultable when the question froze. Times and counts only.
-    try{const available=job.tools.availability?.();if(available)job.availability={...available};}catch{}
+    try{const available=job.tools.availability?.();if(available)job.availability={...available};}catch{
+      // Le champ availability reste absent ; l'agent utilise ses outils et aucune plage consultable n'est inventée.
+    }
     if(mode==="chat")this.trace("job.accepted",{jobId:job.id,sessionId:job.sessionId,questionLength:question.length,mode,intent,anchorMs:job.anchorMs});
     job.done=new Promise(resolve=>{job._finish=resolve;});this.jobs.push(job);this.emit();this.drain();
     return {id:job.id};
@@ -107,7 +114,15 @@ class DeepAsk {
           }
           // The viewer's standing instruction (active surveillance) reaches the chat turn as a trusted field, apart from
           // the untrusted data. A host that cannot say it, or a failing provider, changes nothing.
-          let instruction;if(job.mode==='chat'){try{const value=this.getInstruction(job);if(typeof value==='string'&&value.trim())instruction=value.trim().slice(0,1500);}catch{}}
+          let instruction;
+          if(job.mode==='chat'){
+            try{
+              const value=this.getInstruction(job);
+              if(typeof value==='string'&&value.trim())instruction=value.trim().slice(0,1500);
+            }catch{
+              // L'agent reçoit question et contexte sans champ instruction, comme en l'absence de consigne de l'hôte.
+            }
+          }
           const result=await this.agent.answer({jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,...(instruction&&{instruction}),onProgress:value=>{if(job.firstAgentAt===undefined)job.firstAgentAt=this.now();this.progress(job,value);}});
           if(job.status!=='running')return;
           // Only observed, validated evidence issued by our tool can justify a video answer.
@@ -142,7 +157,9 @@ class DeepAsk {
     } finally {clearTimeout(timer);clearTimeout(progress);job.controller.signal.removeEventListener('abort',onAbort);
       const end=job.finishedAt??this.now();
       // Freshness is a diagnostic: a tool set that cannot report it must not fail the job.
-      let fresh;try{fresh={...job.tools.freshness?.()};}catch{}
+      let fresh;try{fresh={...job.tools.freshness?.()};}catch{
+        // Les champs de fraîcheur finale restent absents ; durées et preuves de départ sont encore publiées ci-dessous.
+      }
       const lagAtStartMs=job.anchorMs-job.evidenceAtStart?.contextThroughMs;
       job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,firstAgentMs:job.firstAgentAt===undefined?null:job.firstAgentAt-job.startedAt,firstTextMs:job.firstTextAt===undefined?null:job.firstTextAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])],
         evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};

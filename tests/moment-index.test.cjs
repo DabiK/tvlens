@@ -165,6 +165,61 @@ test('close cancels pending and in-flight work, ignores the late response and tu
 
 const scene = [passage(1, 'Un chien court dans le jardin.'), passage(2, 'Une voiture s’arrête.')];
 
+test('a rejected passage vector preserves lexical ranking, partial semantic counts and the next search', async () => {
+  const clock = manualClock();
+  const index = {
+    ensure: async () => {},
+    queryVector: async () => [1, 0],
+    passageVector: async segment => {
+      if (segment.id === 'moment-1') throw Error('cache illisible');
+      return [0, 1];
+    },
+  };
+  const search = new MomentSearch({ index, ...clock.io });
+  const input = { query: 'chien', segments: scene, anchorMs: 16000 };
+  let result;
+  await assert.doesNotReject(async () => { result = await search.search(input); });
+  assert.equal(result.mode, 'hybrid');
+  assert.deepEqual(result.moments.map(moment => [moment.id, moment.score]), [['moment-1', 0.55], ['moment-2', 0]]);
+  assert.deepEqual(result.semantic, { eligible: 2, indexed: 1, pending: 1 });
+  assert.deepEqual(result.warnings, ['1 passage(s) pas encore indexé(s) : classement textuel pour eux.']);
+  assert.deepEqual(await search.search(input), result);
+  assert.equal(clock.armed, 0);
+});
+
+test('a rejected passage vector keeps the lexical fallback warning when the query vector also fails', async () => {
+  const clock = manualClock();
+  const search = new MomentSearch({ ...clock.io, index: {
+    ensure: async () => {},
+    queryVector: async () => { throw Error('fournisseur indisponible'); },
+    passageVector: async () => { throw Error('cache illisible'); },
+  } });
+  let result;
+  await assert.doesNotReject(async () => {
+    result = await search.search({ query: 'chien', segments: scene, anchorMs: 16000 });
+  });
+  assert.equal(result.mode, 'lexical');
+  assert.deepEqual(result.moments.map(moment => [moment.id, moment.score]), [['moment-1', 0.55], ['moment-2', 0]]);
+  assert.deepEqual(result.semantic, { eligible: 2, indexed: 0, pending: 2 });
+  assert.deepEqual(result.warnings, [UNAVAILABLE]);
+  assert.equal(clock.armed, 0);
+});
+
+test('an aborted search still rejects before reading an unreadable passage cache', async () => {
+  const clock = manualClock(), controller = new AbortController();
+  const reason = Object.assign(Error('Recherche annulée.'), { code: 'SEARCH_CANCELLED' });
+  let reads = 0;
+  const search = new MomentSearch({ ...clock.io, index: {
+    ensure: async () => {},
+    queryVector: async () => { controller.abort(reason); throw reason; },
+    passageVector: async () => { reads++; throw Error('cache illisible'); },
+  } });
+  await assert.rejects(search.search({ query: 'chien', segments: scene, anchorMs: 16000, signal: controller.signal }),
+    error => error === reason && error.code === 'SEARCH_CANCELLED');
+  assert.equal(reads, 0);
+  assert.equal(clock.armed, 0);
+});
+
 test('a provider slower than the budgets gives a lexical answer at the budget and the background work goes on', async () => {
   const { clock, embeddings, index, search } = setup({ embeddings: provider({ manual: true }) });
   const input = { query: 'chien', segments: scene, anchorMs: 16000 };

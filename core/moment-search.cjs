@@ -126,7 +126,10 @@ class MomentSearch {
         // An unreadable cache only costs the semantic part of this passage.
         try {
           if (this.index) known = await this.index.passageVector(s);
-        } catch {}
+        } catch {
+          // known reste null : score lexical conservé, indexed inchangé ; pending alimente l'avertissement si vector existe.
+          // L'annulation de l'attente de l'index et de la requête reste propagée avant ce classement.
+        }
         if (known) indexed++;
       }
       const semantic = vector ? Math.max(0, cosine(vector, known)) : 0;

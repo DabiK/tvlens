@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { DeepAsk } = require('../core/deep-ask.cjs');
+const { VirtualClock } = require('./helpers/clock.cjs');
 
 const tools = () => ({ sessionId: 's1', anchorMs: 9000, observations: [], hypotheses: [], limits: [], memoryEvidence: [{ id: 'moment-1', startMs: 0, endMs: 8000 }], transcriptEvidence: [] });
 
@@ -68,4 +69,137 @@ test('the viewer\'s active instruction reaches a chat turn as its own field, nev
   assert.equal(seen[4][1].length, 1500);
   // The published question never carries the instruction as data of its own.
   assert.equal(JSON.stringify(deep.snapshot()).includes('Vérifie tous les chiffres'), false);
+});
+
+async function queuedQuestions(t, options = {}, { firstAnswerMs = 0, nextAnswerMs = 0 } = {}) {
+  const clock = new VirtualClock().install();
+  t.after(() => clock.uninstall());
+  let finishFirst;
+  const first = new Promise(resolve => { finishFirst = resolve; });
+  const states = [], inputs = [];
+  const deep = new DeepAsk({
+    makeTools: tools,
+    now: () => clock.t,
+    ...options,
+    onChange: state => states.push(structuredClone(state)),
+    agent: { answer: async input => {
+      inputs.push(input);
+      if (input.question === 'Première ?') await first;
+      clock.t += input.question === 'Première ?' ? firstAnswerMs : nextAnswerMs;
+      return { answer: input.question, kind: 'explanation', citations: [], limits: [] };
+    } },
+  });
+  assert.doesNotThrow(() => deep.start('Première ?', { mode: 'chat' }));
+  assert.doesNotThrow(() => deep.start('Suivante ?', { mode: 'chat' }));
+  assert.deepEqual(deep.snapshot().jobs.map(job => job.status), ['running', 'queued']);
+  finishFirst();
+  await clock.runUntil(firstAnswerMs + nextAnswerMs);
+  const published = deep.snapshot().jobs;
+  assert.deepEqual(published.map(job => [job.status, job.result?.answer]), [
+    ['done', 'Première ?'], ['done', 'Suivante ?'],
+  ]);
+  assert.equal(clock.timers.size, 0);
+  return { states, inputs, published };
+}
+
+test('a failing trace callback preserves successful published answers and the next queued question', async t => {
+  const diagnostics = [];
+  const { published } = await queuedQuestions(t, {
+    onTrace: (event, fields) => {
+      diagnostics.push({ event, ...fields });
+      throw Error('diagnostic indisponible');
+    },
+  });
+  for (const job of published) {
+    assert.ok(diagnostics.some(item => item.event === 'job.finished' && item.jobId === job.id && item.status === 'done'));
+    assert.equal(Object.hasOwn(job, 'errorDetail'), false);
+  }
+});
+
+test('a synchronous release failure preserves the answer and lets the next queued question finish', async t => {
+  let attempts = 0;
+  const { published } = await queuedQuestions(t, {
+    makeTools: () => ({ ...tools(), release: () => {
+      attempts++;
+      throw Error('libération incomplète');
+    } }),
+  });
+  assert.equal(attempts, 2);
+  assert.ok(published.every(job => Object.hasOwn(job, 'finishedAt')));
+});
+
+test('a release failure on queued cancellation does not prevent another question from running', async t => {
+  const clock = new VirtualClock().install();
+  t.after(() => clock.uninstall());
+  let finishFirst, attempts = 0;
+  const gate = new Promise(resolve => { finishFirst = resolve; });
+  const seen = [], states = [];
+  const deep = new DeepAsk({
+    now: () => clock.t,
+    makeTools: () => ({ ...tools(), release: () => { attempts++; throw Error('libération incomplète'); } }),
+    onChange: state => states.push(structuredClone(state)),
+    agent: { answer: async ({ question }) => {
+      seen.push(question);
+      await gate;
+      return { answer: question, kind: 'explanation', citations: [], limits: [] };
+    } },
+  });
+  deep.start('En cours ?', { mode: 'chat' });
+  const cancelled = deep.start('À annuler ?', { mode: 'chat' });
+  deep.start('Suivante ?', { mode: 'chat' });
+  assert.doesNotThrow(() => deep.cancel('Annulée.', cancelled.id));
+  finishFirst();
+  await clock.runUntil(0);
+  assert.deepEqual(states.at(-1).jobs.map(job => job.status), ['done', 'cancelled', 'done']);
+  assert.deepEqual(seen, ['En cours ?', 'Suivante ?']);
+  assert.equal(attempts, 3);
+  assert.equal(clock.timers.size, 0);
+});
+
+test('unreadable availability stays absent in every publication while queued questions finish', async t => {
+  let attempts = 0;
+  const { states } = await queuedQuestions(t, {
+    makeTools: () => ({ ...tools(), availability: () => {
+      attempts++;
+      throw Error('disponibilité illisible');
+    } }),
+  });
+  assert.equal(attempts, 2);
+  assert.ok(states.every(state => state.jobs.every(job => !Object.hasOwn(job, 'availability'))));
+});
+
+test('unreadable freshness omits its fields but preserves measured timings and the next question', async t => {
+  let attempts = 0;
+  const { published } = await queuedQuestions(t, {
+    makeTools: () => ({ ...tools(),
+      context: () => ({ contextThroughMs: 6000, analyzedThroughMs: 5000, pendingCount: 1, partialCount: 2, unanalyzedTailMs: 3000 }),
+      freshness: () => {
+        attempts++;
+        throw Error('fraîcheur illisible');
+      },
+    }),
+  }, { firstAnswerMs: 120, nextAnswerMs: 45 });
+  assert.equal(attempts, 2);
+  assert.deepEqual(published.map(job => ({ waitMs: job.metrics.waitMs, totalMs: job.metrics.totalMs })), [
+    { waitMs: 0, totalMs: 120 },
+    { waitMs: 120, totalMs: 45 },
+  ]);
+  for (const job of published) {
+    assert.deepEqual(job.metrics.evidence, {
+      contextThroughMs: 6000, analyzedThroughMs: 5000, pendingCount: 1, partialCount: 2, unanalyzedTailMs: 3000, lagAtStartMs: 3000,
+    });
+  }
+});
+
+test('an unreadable instruction is absent at the agent and published questions still finish', async t => {
+  let attempts = 0;
+  const { inputs, states } = await queuedQuestions(t, {
+    getInstruction: () => {
+      attempts++;
+      throw Error('consigne illisible');
+    },
+  });
+  assert.equal(attempts, 2);
+  assert.ok(inputs.every(input => !Object.hasOwn(input, 'instruction')));
+  assert.ok(states.every(state => state.jobs.every(job => !Object.hasOwn(job, 'instruction'))));
 });
