@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { until, pause } = require('./helpers/wait.cjs');
+const { until, deferred, bounded } = require('./helpers/wait.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 
@@ -42,13 +42,17 @@ test('the instruction of the active surveillance reaches the chat agent of the h
 
 test('a passage still landing when the host ends the session is kept but never analysed for nothing', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-ending-'));
-  let clock = 0, release, described = 0;
-  const held = new Promise(resolve => { release = resolve; });
+  let clock = 0, described = 0;
+  const held = deferred(), entered = deferred();
   // The media store of the session is slowed on the second passage: the end of the session arrives while it is being written.
   const perception = { transcribe: async () => { described++; return { observation: { transcript: 'Paroles.' }, elapsedMs: 1 }; }, observeVisual: async () => { described++; return { observation: { summary: 'Image.' }, elapsedMs: 1 }; } };
   const runtime = new HeadlessRuntime({ userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true,
     agent: { answer: async () => ({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [] }) }, surveillanceAgent: new SimulatedSurveillanceAgent(), readClock: () => clock, overrides: { perception } });
-  t.after(async () => { release(); await runtime.close(); await fs.rm(root, { recursive: true, force: true }); });
+  t.after(async () => {
+    held.resolve();
+    await runtime.close();
+    await fs.rm(root, { recursive: true, force: true });
+  });
   const { id } = await runtime.start();
   const passage = (startMs, endMs) => ({ sessionId: id, startMs, endMs, clip: Buffer.from('fixture'), frames: [{ atMs: startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null });
   clock = 8000; await runtime.ingest(passage(0, 8000));
@@ -58,13 +62,21 @@ test('a passage still landing when the host ends the session is kept but never a
     { timeoutMs: CHAT_TIMEOUT_MS },
   );
   const before = described, store = runtime.session.store, put = store.put.bind(store);
-  store.put = async (...args) => { await held; return put(...args); };
-  clock = 16000; const landing = runtime.ingest(passage(8000, 16000));
+  store.put = async (...args) => {
+    entered.resolve(args[0]);
+    await held.promise;
+    return put(...args);
+  };
+  clock = 16000;
+  const landing = runtime.ingest(passage(8000, 16000));
+  assert.equal(await bounded(entered.promise), 'moment-2', 'the second write has actually entered the store');
+  const watch = runtime.session.watch;
   const ending = runtime.end();
-  // The host is now waiting for that write, with the flag already raised: nothing may start once it lands.
-  await pause(20);
-  release();
-  const [landed, ended] = await Promise.all([landing, ending]);
+  await until(() => watch.ending, 'the host raised watch.ending while the second write is held');
+  held.resolve();
+  const results = await bounded(Promise.all([landing, ending]));
+  assert.ok(Array.isArray(results), 'the admitted write and session end settled');
+  const [landed, ended] = results;
   assert.equal(landed, 'moment-2');
   assert.equal(ended.archived, true);
   assert.equal(described, before, 'no transcription and no description were started for the passage that landed during the end');

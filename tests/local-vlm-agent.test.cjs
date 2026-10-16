@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const { inspect } = require('node:util');
+const { bounded, failure } = require('./helpers/wait.cjs');
 const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 
@@ -96,18 +97,18 @@ test('caller abort rejects promptly with its reason, drops the connection and le
   const inFlight = new Promise((resolve) => (arrived = resolve));
   const server = await backend(t, (request, res, n) => (n === 1 ? arrived(request) : reply(res, { ok: true })));
   const agent = new LocalVlmAgent({ url: server.url, model: MODEL });
+  t.after(() => agent.close());
   const controller = new AbortController(), reason = Error('Nouvelle question');
   const pending = agent.answer({ instructions: 'lent', signal: controller.signal });
   pending.catch(() => {});
-  const request = await inFlight;
-  const abortedAt = Date.now();
+  const request = await bounded(inFlight);
+  assert.ok(server.requests.includes(request), 'the backend received the held request');
   controller.abort(reason);
-  await assert.rejects(pending, (error) => error === reason);
-  assert.ok(Date.now() - abortedAt < 1000, 'rejection does not wait for the backend or the timeout');
-  assert.equal(await request.closed, false, 'the backend sees the connection close before any response');
-  await assert.rejects(agent.answer({ instructions: 'jamais envoyé', signal: controller.signal }), (error) => error === reason);
+  assert.equal(await bounded(failure(pending)), reason, 'rejection carries the caller reason before any backend response');
+  assert.equal(await bounded(request.closed), false, 'the backend sees the connection close before any response');
+  assert.equal(await bounded(failure(agent.answer({ instructions: 'jamais envoyé', signal: controller.signal }))), reason);
   assert.equal(server.requests.length, 1);
-  assert.equal((await agent.answer({ instructions: 'suite' })).ok, true);
+  assert.equal((await bounded(agent.answer({ instructions: 'suite' }))).ok, true);
 });
 
 test('timeout, HTTP error and dropped connection reject with stable messages', { timeout: 10000 }, async (t) => {

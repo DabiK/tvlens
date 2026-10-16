@@ -1,7 +1,7 @@
 ---
 id: T069
 titre: Order abandoned-run and held-write tests by a signal instead of a delay
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -113,3 +113,52 @@ T057/T058/T059/T063/T064 ne sont plus requis.
 Le test ne mesure ni une vitesse Whisper réelle ni une fréquence d'intermittence.
 
 ## Journal
+
+- Exploration : coutures confirmées sur les instances réelles, sans API produit nouvelle. Plan et écarts
+  dans `.harness-state/tickets/T069/`. Comparaison des mutations sur tests initiaux puis réécrits,
+  dix exécutions séquentielles fixées à l'avance, puis contrôles changed et complet.
+- Rouge/vert : `python3 .harness-state/tickets/T069/mutations.py initial`, puis `causal`, dans des
+  copies temporaires supprimées. Initial : registre rouge (3 lancements), kill rouge (2 end),
+  fermeture verte, signal refusé par timeout du test (10 s). Réécrit : quatre rouges sur les assertions
+  ciblées (3 lancements, PID vivant, ending absent, sentinelle refusée au lieu de la raison).
+  Journaux `initial-*.log` et `causal-*.log` conservés dans le dossier d'état.
+- Diagnostic de fixture : première exécution saine rouge sur texte vide ; le faux enfant avec fs.watch
+  quittait sur EMFILE (observé sur stderr). Remplacement par sondage du fichier de libération,
+  sans libération temporelle. Détail dans `fixture-diagnostic.md` ; les premières mutations
+  `rewritten-*` ne servent pas de preuve pour cette fixture défectueuse.
+- Vert : `node --test --test-concurrency=1 tests/review-regressions.test.cjs tests/transcriber-sharing.test.cjs tests/chat-instruction.test.cjs tests/local-vlm-agent.test.cjs`
+  donne 33/33 (`green.log`). `node scripts/check.mjs --changed` : vert, 33/33 (`check-changed.log`).
+- Série fixée : `python3 .harness-state/tickets/T069/repeat.py` : dix exécutions séquentielles,
+  chacune à 33/33, aucun échec (`series-01.log` à `series-10.log`).
+- Nettoyage après assertion échouée : `python3 .harness-state/tickets/T069/cleanup.py`, copies isolées
+  supprimées après observation. Troisième lancement tardif (mutation du registre), assertion forcée
+  avec remplaçant retenu, puis enfant ignorant la libération (kill de secours) : échecs attendus,
+  respectivement 3, 2 et 2 PID enregistrés, aucun vivant au retour, aucun répertoire de fixture restant
+  (`cleanup.json`, `cleanup-*.log`). Les attentes de disparition précèdent la suppression.
+- Contrôle final : `node scripts/check.mjs` : vert, 120 fichiers JS, 1 652 tests JS réussis,
+  22 tests Python réussis (`check-full.log`). `git diff --check` : vert.
+- Livraison : pauses du périmètre et abortedAt remplacés par signaux bornés ; processus libérés et
+  disparition des PID vérifiée avant suppression, y compris après assertion échouée. Aucun changement
+  du code produit ou du harnais, aucun commit/push. La cause de l'incident historique reste inconnue.
+- Reprise de relecture 1 : trois mineurs acceptés. Préparation d'une preuve isolée de règlement trop
+  précoce, observation du journal depuis la promesse réelle, déplacement de la fixture vers helpers
+  et séparation des instructions. Aucun changement du périmètre, aucune contestation.
+- Correction 1, preuve rouge/verte : `python3 .harness-state/tickets/T069/settlement-proof.py correction-before`
+  laisse passer le règlement forcé avant le remplaçant (exit 0) ; `correction-after` le refuse sur
+  « the abandoned result is still held while the replacement is alive » (exit 1). Le journal observe
+  désormais le finally de la promesse abandonnée ; la libération est inscrite après son écriture.
+- Correction 2 : fixture déplacée dans `tests/helpers/held-whisper.cjs`, imports ajustés.
+  `node_modules/.bin/eslint --max-warnings=0 tests/fixtures/held-whisper.cjs` refusait l'avertissement
+  de fichier ignoré (exit 1) ; sur `tests/helpers/held-whisper.cjs`, exit 0 sans avertissement.
+  Correction 3 : instructions séparées dans les deux rejets, le put tenu et le try de alive.
+- Vérifications de correction : les quatre fichiers donnent 33/33 (`correction-green.log`).
+  `python3 .harness-state/tickets/T069/correction-mutations.py correction` : quatre rouges ciblés.
+  `python3 .harness-state/tickets/T069/correction-cleanup.py` : trois échecs forcés, 3/2/2 PID tous
+  disparus, aucun répertoire restant. Toutes ces perturbations sont restées dans des copies supprimées.
+- Nouvelle série fixée : `python3 .harness-state/tickets/T069/correction-repeat.py`, dix passages
+  séquentiels à 33/33, aucun échec (`correction-series-*.log`). `node scripts/check.mjs --changed` :
+  vert, 33/33 (`correction-check-changed.log`).
+- Contrôle complet après correction : `node scripts/check.mjs` vert, 1 652/1 652 tests JS et
+  22 tests Python réussis (`correction-check-full.log`). `git diff --check` : vert. Les trois
+  constats de la relecture 1 sont corrigés ; nouveau verdict TERMINÉ, sans réserve propre.
+  La cause de l'incident Whisper historique reste inconnue. Aucun commit ni push.

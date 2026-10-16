@@ -3,12 +3,12 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { turns, until, pause } = require('./helpers/wait.cjs');
+const { turns, until, deferred, bounded } = require('./helpers/wait.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
 const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
-const { LocalTranscriber } = require('../adapters/local-transcriber.cjs');
+const { heldWhisper } = require('./helpers/held-whisper.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
 const { MomentIndex } = require('../core/moment-index.cjs');
 const { MomentSearch } = require('../core/moment-search.cjs');
@@ -110,27 +110,54 @@ test('after the agent reconnected, a description is the first turn of its thread
 });
 
 test('an abandoned Whisper run settling late does not unregister the run that replaced it', async t => {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-run-registry-'));
-  t.after(() => fs.rm(dir, { recursive: true, force: true }));
-  const log = path.join(dir, 'starts.log'), model = path.join(dir, 'model.bin'), binary = path.join(dir, 'whisper.cjs');
-  await fs.writeFile(model, 'm');
-  await fs.writeFile(binary, `#!${process.execPath}
-const fs = require('node:fs'), args = process.argv.slice(2), out = args[args.indexOf('-of') + 1];
-fs.appendFileSync(${JSON.stringify(log)}, 'start\\n');
-setTimeout(() => fs.writeFileSync(out + '.json', JSON.stringify({ transcription: [{ text: 'Bonjour' }] })), 400);
-`, { mode: 0o700 });
-  const transcriber = new LocalTranscriber({ binary, model, threads: 1, getLanguage: () => 'fr' });
+  const releaseFirst = deferred(), firstFinished = deferred();
+  t.after(() => releaseFirst.resolve());
+  const f = await heldWhisper(t), transcriber = f.transcriber;
+  const run = transcriber.run.bind(transcriber), events = [];
+  let launches = 0;
+  transcriber.run = async (...args) => {
+    const first = ++launches === 1;
+    try { return await run(...args); }
+    finally {
+      if (first) {
+        firstFinished.resolve(true);
+        await releaseFirst.promise;
+      }
+    }
+  };
   const audio = Buffer.from('eight seconds'), leaving = new AbortController();
-  const starts = async () => (await fs.readFile(log, 'utf8').catch(() => '')).split('\n').filter(Boolean).length;
   const gone = transcriber.transcribe(audio, leaving.signal);
-  await until(starts, 'abandoned Whisper process started');
+  const firstPid = await f.started(1);
+  const abandoned = [...transcriber.running.values()][0];
+  const abandonedSettled = abandoned.result.finally(() => events.push('first settled'));
+  abandonedSettled.catch(() => {});
   leaving.abort(new Error('annulé'));
-  await assert.rejects(gone, /annulé/);
-  const second = transcriber.transcribe(audio); // registered while the first process is still dying
-  await pause(120); // the abandoned run has settled by now
+  await assert.rejects(bounded(gone), /annulé/);
+  events.push('first abandoned');
+  const second = transcriber.transcribe(audio);
+  const secondPid = await f.started(2);
+  assert.notEqual(firstPid, secondPid);
+  assert.equal(transcriber.running.size, 1);
+  const replacement = [...transcriber.running.values()][0];
+  assert.notEqual(replacement, abandoned);
+  events.push('replacement alive');
+  assert.equal(events.includes('first settled'), false, 'the abandoned result is still held while the replacement is alive');
+  await f.exited(firstPid);
+  assert.equal(await bounded(firstFinished.promise), true, 'the abandoned run reached its settlement gate');
+  releaseFirst.resolve();
+  // result porte le finally du registre, contrairement au rejet déjà rendu à l'appelant parti.
+  await assert.rejects(bounded(abandonedSettled), /annulé/);
+  assert.equal(transcriber.cache.size, 0, 'no cached transcript can satisfy the third caller');
   const third = transcriber.transcribe(audio);
-  assert.deepEqual([(await second).text, (await third).text], ['Bonjour', 'Bonjour']);
-  assert.equal(await starts(), 2, 'the third caller shares the second run instead of spawning its own');
+  events.push('third call');
+  assert.equal(launches, 2, 'the third caller shares the second run instead of spawning its own');
+  assert.deepEqual((await f.records()).map(row => row.event), ['start', 'start']);
+  await f.release(secondPid);
+  events.push('replacement released');
+  assert.deepEqual(await bounded(Promise.all([second, third]).then(results => results.map(result => result.text))), ['Bonjour', 'Bonjour']);
+  await f.exited(secondPid);
+  assert.equal((await f.records()).filter(row => row.event === 'start').length, 2);
+  assert.deepEqual(events, ['first abandoned', 'replacement alive', 'first settled', 'third call', 'replacement released']);
 });
 
 const memoryCache = () => { const values = new Map(); return { values, get: async (id, text) => values.get(id + '\n' + text) || null, putMany: async items => { for (const { id, text, vector } of items) values.set(id + '\n' + text, vector); } }; };

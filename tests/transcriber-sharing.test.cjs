@@ -3,7 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { until } = require('./helpers/wait.cjs');
+const { until, bounded } = require('./helpers/wait.cjs');
+const { heldWhisper } = require('./helpers/held-whisper.cjs');
 const { LocalTranscriber } = require('../adapters/local-transcriber.cjs');
 
 // Stands for whisper-cli: logs each start, waits, then writes the transcript where -of points.
@@ -44,14 +45,24 @@ test('a caller giving up does not take the shared run away from the other one', 
 });
 
 test('a run abandoned by every caller is killed, and a later request starts its own', async t => {
-  const f = await fixture(t, 600);
+  const f = await heldWhisper(t);
   const a = new AbortController(), b = new AbortController();
   const first = f.transcriber.transcribe(audio, a.signal), second = f.transcriber.transcribe(audio, b.signal);
-  await until(async () => (await f.events()).includes('start'), 'Whisper process started');
-  a.abort(new Error('A')); b.abort(new Error('B'));
-  await assert.rejects(first, /A/); await assert.rejects(second, /B/);
-  const fresh = await f.transcriber.transcribe(audio);
-  assert.equal(fresh.text, 'Bonjour');
-  assert.equal(fresh.cacheHit, false);
-  assert.deepEqual(await f.events(), ['start', 'start', 'end'], 'the abandoned process never finished; the new request ran its own');
+  const abandonedPid = await f.started(1);
+  a.abort(new Error('A'));
+  b.abort(new Error('B'));
+  await assert.rejects(bounded(first), /A/);
+  await assert.rejects(bounded(second), /B/);
+  const fresh = f.transcriber.transcribe(audio);
+  const freshPid = await f.started(2);
+  assert.notEqual(freshPid, abandonedPid);
+  await f.exited(abandonedPid);
+  assert.deepEqual((await f.records()).map(row => row.event), ['start', 'start'], 'the new child is still held');
+  await f.release(freshPid);
+  const result = await bounded(fresh);
+  assert.equal(result.text, 'Bonjour');
+  assert.equal(result.cacheHit, false);
+  await f.exited(freshPid);
+  assert.deepEqual((await f.records()).map(row => row.event), ['start', 'start', 'end'],
+    'the abandoned process never finished; the new request ran its own');
 });
