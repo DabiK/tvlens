@@ -1,7 +1,7 @@
 ---
 id: T171
 titre: Keep TV chat cards and submission state inside one view
-statut: a-faire
+statut: termine
 bloque_par: T170, T185
 adr: oui
 installe: non
@@ -114,3 +114,28 @@ réel de la TV. En cas de refus ambient, le recadrage de dépendance nommé par 
 le banc de T185 reste disponible indépendamment de cette décision.
 
 ## Journal
+
+- Exploration : règles, skill de tests, companion, modèles, contrôleur, banc et ADR 0011/0026 lus. Témoin hooks présent. État initial et interface prévue consignés dans `.harness-state/tickets/T171/exploration.md` ; aucun écart prévu.
+- Cartes puis progression : `node --test tests/tv-chat-view.test.cjs`, rouges observés sur la fabrique absente puis les libellés de progression ; verts après extraction (1 puis 6 tests). Sorties `cards-{red,green}.log` et `progress-{red,green}.log` dans le dossier d'état.
+- Envoi puis cycle de vie : même commande, rouges observés avant ajout des opérations et sur cartes non réinitialisées, annulation cachée et défilement absent ; verts à 9 puis 15 tests. Sorties `submission-{red,green}.log` et `lifecycle-{red,green}.log`. La comparaison des arguments entre VM et Node passe par `structuredClone` pour comparer leurs valeurs.
+- Branchement : `node --test --test-name-pattern='paired form' tests/tv-chat-view.test.cjs` rouge : un accusé d'ancienne session vidait encore la saisie. Après délégation à la vue, `node --test --test-concurrency=1 tests/tv-chat-view.test.cjs tests/tv-paired-page.test.cjs` vert, 30/30. Le scénario 304 amorce chaque ressource HTTP avant sa revalidation, conformément au cache par URL du client.
+- Citations : `node --test --test-name-pattern='citation sends' tests/tv-chat-view.test.cjs` rouge sur l'absence de commande ; délégation à la navigation injectée et cas appairé réel ajoutés. `node --test tests/tv-chat-view.test.cjs` vert, 20/20 ; moment sélectionné, bornes figées, clavier libéré et polling accéléré vérifiés.
+- Gel : `node_modules/.bin/eslint --prune-suppressions tv/app/companion.js`, sortie sans erreur ; retrait d'une suppression de complexité et d'une suppression de longueur de fonction devenues inutiles. Premier `node scripts/check.mjs --changed` vert (36 tests, avant les deux derniers cas appairés).
+- Mutation : retrait temporaire de `context.cards[id]` dans l'accusé d'envoi ; `node --test --test-name-pattern="when polling creates the job before acknowledgement" tests/tv-chat-view.test.cjs` rouge sur « only the confirmed job remains », 2 articles au lieu de 1. Sortie `deduplication-mutation-red.log` ; fichier restauré dans un `finally`. ADR 0027 rédigé.
+- Régressions après restauration : `node --test --test-concurrency=1 tests/tv-chat-view.test.cjs tests/tv-chat-model.test.cjs tests/tv-panel.test.cjs tests/tv-poll-controller.test.cjs tests/tv-paired-page.test.cjs tests/tv-remote-navigation.test.cjs tests/chat-error-ui.test.cjs tests/tv-app-compat.test.cjs` vert, 104/104 (`regression-sequential.log`).
+- Validation finale : `node scripts/check.mjs` code 0, vert : 1507/1507 tests JS (119 fichiers) et 22 tests Python ; règles, format, lint, gel et cliquet verts (`check-full.log`). `node scripts/check.mjs --changed` final code 0, vert : 38/38 tests (`check-changed-final.log`). `git diff --check` code 0, aucune erreur. Verdict `TERMINÉ` écrit ; aucun commit ni push, relecture laissée à la boucle.
+- Reprise de relecture 1 : rapport, ticket/journal, écarts, `git status` et `git diff` relus ; nouveau témoin hooks présent. Les deux bloquants et le mineur sont acceptés. Écart de citation déclaré avant correction dans `ecarts.md` ; retrait des deux seuls tests de navigation nouveaux demandé explicitement par la relecture et la consigne de correction.
+- Correction 1, constat 1 : `node --test --test-name-pattern="a repeated job" tests/tv-chat-view.test.cjs` rouge sur « the citation remains a small text line », puis vert après retour à `small`, retrait de `navigateCitation` et des deux tests nouveaux associés. Sorties `correction-1-citations-{red,green}.log` ; ADR 0027 et écarts alignés.
+- Correction 1, constat 2 : `node --test --test-name-pattern="sending shows its echo" tests/tv-chat-view.test.cjs` rouge sur écho invisible (100 au lieu de 1000), puis rouge sur le rendu après accusé après correction du seul écho, puis vert avec suivi unique restauré dans la vue. Sorties `correction-1-echo-red.log`, `correction-1-acknowledgement-red.log`, `correction-1-scroll-green.log`. Les gardes lecture et focus (conversation/descendant) restent prioritaires.
+- Correction 1, constat 3 : commentaires explicatifs restaurés dans la vue (signature hors progression, écho réutilisé, médias, fraîcheur, cible d’annulation, kick et refus), sans test de texte du code. `node --test tests/tv-chat-view.test.cjs` vert, 22/22, avec quatre cas supplémentaires de lecture/focus pendant le suivi (`correction-1-view-green.log`).
+- Correction 1, régressions : `node --test --test-concurrency=1 tests/tv-chat-view.test.cjs tests/tv-chat-model.test.cjs tests/tv-panel.test.cjs tests/tv-poll-controller.test.cjs tests/tv-paired-page.test.cjs tests/tv-remote-navigation.test.cjs tests/chat-error-ui.test.cjs tests/tv-app-compat.test.cjs` vert, 106/106 (`correction-1-regression-sequential.log`). `node scripts/check.mjs --changed` vert, 40/40 tests et contrôles statiques verts (`correction-1-check-changed.log`). `git diff --check` sans erreur.
+- Correction 1, validation complète : `node scripts/check.mjs` code 0, vert : 1509/1509 tests JS (119 fichiers), 22 tests Python, règles, format, lint, gel et cliquet verts (`correction-1-check-full.log`). Les trois constats sont corrigés ; nouveau verdict `TERMINÉ` écrit avec l’écart de citation déclaré pour la relecture. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- Écart déclaré pour relecture dans ecarts.md, conformément au constat 1 : aucune navigation de citation n’existait à injecter ; les citations restent du texte. Une navigation future relève d’un ticket produit.
+- .harness-state/tickets/T171/relecture-2.md : **Écart accepté, périmètre (« actions injectées … navigation vers les citations ») :**
+    - Au départ, aucune navigation depuis une citation n'existait : les citations étaient des lignes `small` sans action.
+    - En injecter une modifierait le contenu affiché, la navigation globale et la frise, que le ticket interdit de toucher.
+    - La preuve qui remplace la navigation est l'assertion de `tests/tv-chat-view.test.cjs:48-50` : ligne `small`, même libellé, aucun bouton.
+    - Le retrait des deux tests propres à cette navigation ne contredit pas « Ne supprimer aucun test existant », puisqu'ils n'existaient pas à HEAD.

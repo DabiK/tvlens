@@ -80,7 +80,7 @@ test('the freshness of a question comes from job.availability and is never widen
 test('no duration literal is left in the panel: every ceiling shown is derived', () => {
   const app = path.resolve(__dirname, '../tv/app');
   for (const name of [
-    'companion.js', 'chat-model.js', 'index.html', 'timeline-view.js', 'capture-control.js',
+    'companion.js', 'chat-model.js', 'chat-view.js', 'index.html', 'timeline-view.js', 'capture-control.js',
     'surveillance-view.js', 'sessions-view.js', 'remote-client.js',
   ]) {
     const source = fs.readFileSync(path.join(app, name), 'utf8');

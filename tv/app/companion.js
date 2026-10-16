@@ -2,14 +2,12 @@
 // Ces dépendances sont résolues au chargement : une balise manquante doit faire échouer la page.
 var tvlensText = typeof module === "object" && module && module.exports ? module.require("./text.js") : window.TVLensText;
 var tvlensChatModel = typeof module === "object" && module && module.exports ? module.require("./chat-model.js") : window.TVLensChatModel;
-var tvlensFinite = tvlensText.finite,
-  tvlensClock = tvlensText.clock,
+var tvlensClock = tvlensText.clock,
   tvlensPlural = tvlensText.plural;
 var describeJob = tvlensChatModel.describeJob,
   describeJobProgress = tvlensChatModel.describeJobProgress,
   describeJobFreshness = tvlensChatModel.describeJobFreshness,
   describeJobFreshnessShort = tvlensChatModel.describeJobFreshnessShort,
-  tvlensJobActive = tvlensChatModel.jobActive,
   tvlensCancelTarget = tvlensChatModel.cancelTarget,
   tvlensPollPolicy = tvlensChatModel.pollPolicy,
   TvlensPollPlan = tvlensChatModel.PollPlan,
@@ -58,9 +56,6 @@ var describeJob = tvlensChatModel.describeJob,
     receivedAt = 0,
     online = true,
     anchor,
-    submitting = false,
-    cards = {},
-    followLatest = true,
     keyboardVisible = false,
     // A session change the viewer asked for (open, resume, end, delete) is not announced as a surprise.
     expectedUntil = 0;
@@ -483,13 +478,6 @@ var describeJob = tvlensChatModel.describeJob,
         (state.session.accepting ? performance.now() - receivedAt : 0),
     };
   }
-  // Clock of the server stamps, carried forward with a monotonic delta since the body was received:
-  // a 304 keeps the body, and the wall clock of the TV is never involved.
-  function serverNow() {
-    return state && tvlensFinite(state.serverNowMs)
-      ? state.serverNowMs + (performance.now() - receivedAt)
-      : null;
-  }
   // Freeze when dictation/text composition starts, not after waiting for a previous answer.
   el("question").addEventListener("focus", function () {
     if (!anchor) anchor = point();
@@ -497,172 +485,7 @@ var describeJob = tvlensChatModel.describeJob,
   el("question").addEventListener("input", function () {
     if (!anchor) anchor = point();
   });
-  function text(parent, tag, value) {
-    var node = document.createElement(tag);
-    node.textContent = value;
-    parent.appendChild(node);
-    return node;
-  }
-  // Why the video of a cited passage can or cannot be replayed, in the viewer's words.
-  function mediaLabel(id) {
-    var s = state.session,
-      segment = (s.segments || []).find(function (item) {
-        return item.id === id;
-      }),
-      // A light view lists what is not replayable; the complete state says it passage by passage.
-      missing = s.unavailableIds
-        ? s.unavailableIds.indexOf(id) >= 0
-        : !(segment && segment.available);
-    if (!missing) return "passage conservé";
-    return (
-      // "unreadable": the recorder received no image for this passage; its summary and its images are kept.
-      { "not-kept": "vidéo non conservée", missing: "vidéo introuvable", expired: "vidéo expirée", unreadable: "vidéo illisible" }[
-        segment && segment.mediaReason
-      ] || (s.retention === "rolling" ? "vidéo expirée" : "vidéo indisponible")
-    );
-  }
-  function renderJob(job) {
-    var cited = ((job.result && job.result.citations) || []).map(function (c) {
-        return mediaLabel(c.id);
-      }),
-      serialized = JSON.stringify([job, cited]),
-      card = cards[job.id];
-    if (card && card.serialized === serialized) return;
-    if (!card) {
-      card = cards[job.id] = { node: document.createElement("article") };
-      card.node.dataset.job = job.id;
-      el("conversation").appendChild(card.node);
-    }
-    card.serialized = serialized;
-    var node = card.node,
-      focused = node.contains(document.activeElement),
-      view = describeJob(job);
-    node.removeAttribute("data-pending");
-    node.replaceChildren();
-    text(node, "h2", job.question).className = "chat-question";
-    // A moving question tells its state in the live line below (queue position, elapsed / ceiling).
-    // That line is filled by renderProgress, outside the signature above, so that a second passing
-    // never rebuilds the card or moves the focus.
-    text(
-      node,
-      "small",
-      "Moment " + time(job.anchorMs) + (tvlensJobActive(job) ? "" : " · " + view.statusLabel),
-    );
-    card.progress = tvlensJobActive(job) ? text(node, "small", view.statusLabel) : null;
-    if (card.progress) card.progress.className = "job-progress";
-    if (view.freshness) {
-      var fresh = text(node, "small", "");
-      fresh.className = "job-freshness";
-      if (tvlensJobActive(job)) fresh.textContent = view.freshness;
-      else {
-        // An answer that is over keeps the short label; the whole sentence takes its place while the
-        // messages are being read (OK on the conversation), and names the label.
-        text(fresh, "span", view.freshnessShort).className = "fresh-short";
-        text(fresh, "span", view.freshness).className = "fresh-detail";
-        fresh.title = view.freshness;
-      }
-    }
-    if (job.metrics)
-      text(
-        node,
-        "small",
-        "Attente " +
-          (job.metrics.waitMs / 1000).toFixed(1) +
-          " s · traitement " +
-          (job.metrics.totalMs / 1000).toFixed(1) +
-          " s",
-      );
-    if (view.error) {
-      text(
-        node,
-        "small",
-        view.authRequired ? "Reconnexion Codex requise" : "Erreur technique",
-      ).className = "answer-kind";
-      text(node, "p", view.error).className = "chat-answer";
-      if (view.errorDetail) text(node, "small", view.errorDetail);
-    }
-    if (view.answer !== null) {
-      text(node, "small", view.kindLabel).className = "answer-kind";
-      text(node, "p", view.answer).className = "chat-answer";
-      (view.result.hypotheses || []).forEach(function (h) {
-        text(node, "small", "Hypothèse : " + (h.text || h));
-      });
-      (view.result.citations || []).forEach(function (c, index) {
-        text(node, "small", time(c.startMs) + "–" + time(c.endMs) + " · " + cited[index]);
-      });
-      (view.result.sources || []).forEach(function (s) {
-        text(node, "p", (s.title || "Source") + "\n" + s.url).className = "source-card";
-      });
-      view.limits.forEach(function (v) {
-        text(node, "small", v);
-      });
-    }
-    if (view.preview) {
-      text(node, "small", view.previewLabel);
-      text(node, "p", view.preview);
-    }
-    if (view.provisional) {
-      text(node, "small", view.provisionalLabel);
-      text(node, "p", view.provisional);
-    }
-    if (view.message !== null) text(node, "small", view.message);
-    if (tvlensJobActive(job)) {
-      var cancel = document.createElement("button");
-      cancel.textContent = "Annuler cette question";
-      cancel.onclick = function () {
-        client.cancel(job.id).then(kickPoll, showError);
-      };
-      node.appendChild(cancel);
-      if (focused) cancel.focus();
-    } else if (focused) el("dictate").focus();
-  }
-  // Elapsed time and queue position, written into the live line of each moving card.
-  function renderProgress() {
-    if (!state || !state.chat) return;
-    var jobs = state.chat.jobs,
-      now = serverNow();
-    jobs.forEach(function (job) {
-      var card = cards[job.id];
-      if (!card || !card.progress) return;
-      if (job.status === "running" && card.runningSince === undefined)
-        card.runningSince = performance.now();
-      var live = describeJobProgress(job, {
-        jobs: jobs,
-        serverNowMs: now,
-        timeoutMs: state.chat.timeoutMs,
-        localElapsedMs:
-          card.runningSince === undefined ? null : performance.now() - card.runningSince,
-      });
-      if (live) set(card.progress, live.label);
-    });
-  }
-  // Fixed button, in the focus graph: cancels the running question, otherwise the last one queued.
-  function renderCancel() {
-    var target = state && state.chat ? tvlensCancelTarget(state.chat.jobs) : null,
-      button = el("cancel-question"),
-      focused = document.activeElement === button;
-    set(
-      button,
-      target && target.status === "queued"
-        ? "Retirer la question en file"
-        : "Annuler la question en cours",
-    );
-    flag(button, "hidden", !target);
-    if (!target && focused) el("dictate").focus();
-  }
-  el("cancel-question").onclick = function () {
-    var target = state && state.chat ? tvlensCancelTarget(state.chat.jobs) : null;
-    if (!target) return;
-    client.cancel(target.id).then(function (answer) {
-      if (answer && answer.cancelled === false)
-        el("error").textContent = "Cette question était déjà terminée.";
-      kickPoll();
-    }, showError);
-  };
-  function showError(error) {
-    el("error").textContent = error.message;
-  }
-  // Connection line and send button. Recomputed every second from the extrapolated session clock: a
+  // Connection line. Recomputed every second from the extrapolated session clock: a
   // capture that stops publishes nothing, so no new body would ever say "no recent capture".
   function renderStatus() {
     if (!online) return;
@@ -684,7 +507,6 @@ var describeJob = tvlensChatModel.describeJob,
                 ? "Aucune capture récente · mémoire disponible"
                 : "Capture reçue",
     );
-    flag(el("send"), "disabled", !s || submitting);
   }
   function render() {
     var s = state.session;
@@ -707,11 +529,8 @@ var describeJob = tvlensChatModel.describeJob,
       el("storage-state").dataset.state = storage.state;
     set(el("storage-state"), storage.banner || "");
     if (s) {
-      var list = el("conversation"),
-        nearBottom =
-          list.scrollHeight - list.clientHeight - list.scrollTop < 80,
-        // The light views count the gaps; the complete state lists them.
-        gaps = s.gapCount !== undefined ? s.gapCount : (s.gaps || []).length,
+      // The light views count the gaps; the complete state lists them.
+      var gaps = s.gapCount !== undefined ? s.gapCount : (s.gaps || []).length,
         interruptions =
           state.captureGapCount !== undefined
             ? state.captureGapCount
@@ -731,17 +550,8 @@ var describeJob = tvlensChatModel.describeJob,
               tvlensPlural(interruptions, "interruption de capture", "interruptions de capture")
             : ""),
       );
-      state.chat.jobs.forEach(renderJob);
-      renderProgress();
-      if (
-        !reading &&
-        document.activeElement !== list &&
-        (nearBottom || followLatest)
-      )
-        list.scrollTop = list.scrollHeight;
-      followLatest = false;
     }
-    renderCancel();
+    chatView.receive(state, receivedAt);
     overlay.update(state);
     surveillance.update();
     renderBadge();
@@ -751,9 +561,7 @@ var describeJob = tvlensChatModel.describeJob,
     var before = state && state.session ? state.session.id : null,
       after = next.session ? next.session.id : null;
     if (state && before !== after) {
-      cards = {};
       clearMoment();
-      el("conversation").replaceChildren();
       surveillance.reset();
       if (before && performance.now() > expectedUntil)
         el("error").textContent =
@@ -783,10 +591,12 @@ var describeJob = tvlensChatModel.describeJob,
     viewRetryMs: config.viewRetryMs,
     onReceive: function (value, viewName) {
       online = true;
+      chatView.setOnline(true);
       receive(value, viewName);
     },
     onNotModified: function () {
       online = true;
+      chatView.setOnline(true);
       renderStatus();
     },
     onError: function (error) {
@@ -796,69 +606,38 @@ var describeJob = tvlensChatModel.describeJob,
         error.status === 401
           ? "Appairage refusé par le serveur · vérifie le jeton de cette TV."
           : "Serveur inaccessible · reconnexion…";
-      el("send").disabled = true;
+      chatView.setOnline(false);
     },
   });
   var stats = pollController.stats;
   function kickPoll() {
     pollController.request();
   }
-  // Immediate echo: the question is on screen before the network answers. Its node becomes the card
-  // of the job once the server names it, so the first poll redraws it in place.
-  function addPendingCard(question, anchorMs) {
-    var list = el("conversation"),
-      node = document.createElement("article");
-    node.dataset.pending = "true";
-    text(node, "h2", question).className = "chat-question";
-    text(node, "small", "Moment " + time(anchorMs) + " · Envoi…");
-    list.appendChild(node);
-    if (!reading && document.activeElement !== list)
-      list.scrollTop = list.scrollHeight;
-    return node;
-  }
-  el("ask").onsubmit = async function (event) {
+  var chatView = window.TVLensChatView.createChatView({
+    document: document,
+    elements: el,
+    model: tvlensChatModel,
+    text: tvlensText,
+    now: function () { return performance.now(); },
+    isReading: function () { return reading; },
+    actions: {
+      ask: function (question, sessionId, ms, range) { return client.ask(question, sessionId, ms, range); },
+      cancel: function (id) { return client.cancel(id); },
+      kick: kickPoll,
+      onSubmit: function () {
+        keyboardVisible = false;
+        anchor = null;
+      },
+    },
+  });
+  el("ask").onsubmit = function (event) {
     event.preventDefault();
-    var question = el("question").value.trim(),
-      at = selectedMoment
-        ? { sessionId: selectedMoment.sessionId, ms: selectedMoment.endMs }
-        : anchor || point();
-    if (!question || !at || submitting) return;
-    submitting = true;
-    el("send").disabled = true;
-    el("error").textContent = "";
-    // Release the IME immediately, including submissions made with the keyboard's Enter.
-    // Do not wait for HTTP or move focus again when the answer arrives.
-    el("question").blur();
-    keyboardVisible = false;
-    el("dictate").focus();
-    anchor = null;
-    var pending = addPendingCard(question, at.ms);
-    try {
-      var answer = await client.ask(
-        question,
-        at.sessionId,
-        at.ms,
-        selectedMoment ? { firstId: selectedMoment.segmentIds[0], lastId: selectedMoment.segmentIds[selectedMoment.segmentIds.length - 1] } : undefined,
-      );
-      var id = answer && answer.id;
-      if (!id || cards[id] || !pending.isConnected) pending.remove();
-      else {
-        pending.dataset.job = id;
-        pending.lastChild.textContent = "Moment " + time(at.ms) + " · Reçue par le serveur…";
-        cards[id] = { node: pending, serialized: "" };
-      }
-      if (el("question").value.trim() === question) el("question").value = "";
-      followLatest = true;
-      // The answer starts on the server now: read it at once instead of waiting for the next turn.
-      kickPoll();
-    } catch (error) {
-      // Not sent: the echo goes, the text stays in the field.
-      pending.remove();
-      showError(error);
-    } finally {
-      submitting = false;
-      renderStatus();
-    }
+    var at = selectedMoment
+      ? { sessionId: selectedMoment.sessionId, ms: selectedMoment.endMs, range: {
+        firstId: selectedMoment.segmentIds[0], lastId: selectedMoment.segmentIds[selectedMoment.segmentIds.length - 1],
+      } }
+      : anchor || point();
+    return chatView.submit(at);
   };
   // Local clocks. The card on screen leaves at its deadline and the elapsed times advance even when
   // the server answers 304 or does not answer at all.
@@ -867,7 +646,7 @@ var describeJob = tvlensChatModel.describeJob,
   }, 250);
   setInterval(function () {
     renderStatus();
-    renderProgress();
+    chatView.tick();
   }, 1000);
   // Read by the smokes and handy on a bench: what the poll loop really did.
   window.tvlensPanel = {
