@@ -118,7 +118,10 @@ avant/après. Les scénarios de perception de T193 continuent d'exercer les deux
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : supprimer ces chemins et leurs tests propres, en abaissant le
+Décision du propriétaire, le 16/10 (« Oui, supprimer », en réponse à la question posée) : oui. Supprimer ces chemins et leurs tests propres, et abaisser le plancher `cas_de_test` du nombre exact de cas supprimés, avec `harnais: oui` limité à cette ligne, comme pour T139. Si T196 a déjà séparé le cliquet, c'est le
+plancher des tests du produit qui baisse, et lui seul.
+
+Question posée : supprimer ces chemins et leurs tests propres, en abaissant le
 plancher `cas_de_test` du nombre exact de cas supprimés, avec `harnais: oui` limité à cette ligne,
 comme pour T139 ? Recommandation : oui.
 

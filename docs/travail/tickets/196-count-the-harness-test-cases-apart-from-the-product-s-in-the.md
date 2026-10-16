@@ -98,7 +98,9 @@ viennent de `measure` et du JSON du vrai contrôle. Le test de boucle vérifie l
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : séparer les deux mesures du cliquet, chacune avec son plancher ?
+Décision du propriétaire, le 16/10 (« Oui, séparer », en réponse à la question posée) : oui. Le cliquet compte à part les tests du produit et ceux du harnais, chacun avec son plancher.
+
+Question posée : séparer les deux mesures du cliquet, chacune avec son plancher ?
 Recommandation : oui.
 
 La classification et la migration proposées sont celles de ce ticket. Elles ne donnent aucune

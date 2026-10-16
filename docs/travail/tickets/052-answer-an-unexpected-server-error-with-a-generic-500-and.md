@@ -90,7 +90,9 @@ transports réels, les réponses et minuteries contrôlées.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : répondre 500, avec un message générique et la cause au journal,
+Décision du propriétaire, le 16/10 (« Oui, 500 », en réponse à la question posée) : oui. Une erreur sans statut HTTP valide après traduction des codes métier reçoit 500, un message générique et sa cause au journal ; la TV renvoie alors le bloc pendant sa durée de vie.
+
+Question posée : répondre 500, avec un message générique et la cause au journal,
 à toute erreur sans statut HTTP valide après traduction des codes métier, au lieu de 400 avec son message brut ?
 Conséquence : la TV renvoie le bloc pendant sa durée de vie au lieu de le jeter.
 Recommandation : oui.
