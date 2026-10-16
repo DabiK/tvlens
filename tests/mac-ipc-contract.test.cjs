@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { pause, deferred } = require('./helpers/wait.cjs');
+const { pause, deferred, until: waitUntil, bounded, tick } = require('./helpers/wait.cjs');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
@@ -12,9 +12,8 @@ const sharp = require('sharp');
 const { shape } = require('./helpers/source-shape.cjs');
 const { emptyArchive } = require('./helpers/empty-archive.cjs');
 
-// The Mac host without Electron. First the contract read statically from the two files; then the real
-// app/main.cjs and app/preload.cjs wired to each other through a stand-in for Electron (simulated agents,
-// temporary user data, virtual timers). The native window, capture and renderer are not covered here.
+// Le vrai hôte et le vrai preload communiquent avec Electron simulé : agents contrôlés, disque temporaire
+// et minuteries virtuelles. La fenêtre native, la capture matérielle et le renderer ne sont pas exercés.
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const mainSource = read('app/main.cjs'), preloadSource = read('app/preload.cjs');
@@ -84,46 +83,61 @@ test('the bridge exposes exactly the names of the contract, on its channels, and
   await assert.rejects(untouched.tvlens.sessions(), error => error.message === 'Détail : Error: conservé tel quel.');
 });
 
-test('every bridge call has its handler, every event its listener, and the host no longer purges, preempts or knows Auto', () => {
-  const all = (source, pattern) => [...new Set([...source.matchAll(pattern)].map(match => match[1]))].sort();
-  // The host is read through its shape, so that the layout of its code is not what the test checks: quotes, spaces
-  // and line breaks are gone, hence the patterns below write no space around punctuation. A fragment is shaped like the text.
-  const main = shape(mainSource);
-  const has = fragment => main.includes(shape(fragment));
-  const between = (from, to) => {
-    const start = main.indexOf(shape(from)), end = main.indexOf(shape(to));
-    assert.ok(start >= 0 && end >= 0, `app/main.cjs still contains ${from} and ${to}`);
-    return main.slice(start, end);
-  };
+function bridgeChannels() {
   const bridge = loadBridge();
-  // Call every method once: the channels are those the preload really uses, not a reading of its text.
+  // Les appels découvrent le protocole du vrai preload, sans envoyer d'arguments factices aux commandes de l'hôte.
   for (const api of [bridge.tvlens, bridge.capture]) for (const method of Object.values(api)) method(() => {});
-  const invoked = [...new Set(bridge.invoked.map(call => call.channel))].sort(), listened = [...bridge.listeners.keys()].sort();
-  // handle('…') is the guarded IPC registration of the host (protocol.handle is not IPC); send('…') covers both
-  // its guarded helper and direct webContents.send calls.
-  const handled = all(main, /(?<![.\w])handle\(\s*'([^']+)'/g), sent = all(main, /\bsend\(\s*'([^']+)'/g);
+  return { invoked: [...new Set(bridge.invoked.map(call => call.channel))].sort(), listened: [...bridge.listeners.keys()].sort() };
+}
+
+test('every bridge call has its handler, every event its listener, and the host no longer purges, preempts or knows Auto', async t => {
+  const { launch } = await stage(t), sweeping = deferred(), sweepEntered = deferred();
+  t.after(() => sweeping.resolve());
+  const host = await launch({
+    shortcuts: true, sweep: (...args) => { sweepEntered.resolve(args); return sweeping.promise; },
+    wrap: { verifier: adapter => ({ ...adapter, verify: async input => {
+      // Une entrée différée interdit au scénario de dépendre de l'armement synchrone du délai simulé.
+      await tick();
+      return adapter.verify(input);
+    } }) },
+  });
+  assert.equal(host.started, true, host.failures.join(' '));
+  assert.deepEqual(await bounded(sweepEntered.promise), [], 'the controlled Codex sweep receives no real root');
+  assert.deepEqual(host.sweeps, [[]], 'one Codex sweep at start, without delaying the window');
+  sweeping.reject(Object.assign(new Error('Balayage refusé.'), { code: 'EACCES' }));
+  assert.equal(await host.state(), null, 'a failed Codex sweep does not fail the host');
+  assert.deepEqual(host.failures, []);
+  const { invoked, listened } = bridgeChannels(), handled = [...host.handlers.keys()].sort();
   assert.deepEqual(invoked, handled, 'bridge calls and host handlers are the same set: no dead channel on either side');
+  // Les deux raccourcis sont les callbacks enregistrés auprès de notre doublure, sans accès au clavier du Mac.
+  host.pressShortcut((await host.viewingSettings()).bookmarkShortcut);
+  await waitUntil(() => host.sent.includes('saved:error'), 'the bookmark shortcut reports the missing session');
+  const session = await host.start();
+  await capture(host, session.id);
+  await waitUntil(analysed(host, 1), 'the passage ready for bookmark and explanation');
+  await host.keepMoment();
+  host.pressShortcut((await host.momentShortcuts()).explainShortcut);
+  await host.startSurveillance({ instruction: 'Vérifie les chiffres annoncés.' });
+  await waitUntil(async () => (await host.surveillanceState()).registry.ready, 'surveillance ready to stop');
+  assert.equal((await host.stopSurveillance()).enabled, false, 'the explicit stop channel stops surveillance');
+  const verifying = host.verify('Apollo 11 a aluni en 1970.');
+  await until(t, async () => (await host.verificationState()).jobs.at(-1)?.status === 'done', 'the simulated verification completes', 500);
+  assert.equal((await bounded(verifying)).assessment, 'contradicted');
+  await host.stop();
+  await host.newSession();
+  await host.deleteSession(session.id);
+  await waitUntil(() => host.sent.includes('storage:state'), 'storage published after deletion');
+  await host.quit();
+  assert.deepEqual(host.sweeps, [[]], 'session commands and quit do not repeat the initial Codex sweep');
+  const sent = [...new Set(host.sent)].sort();
   assert.deepEqual(sent, listened, 'host events and bridge listeners are the same set');
   for (const channel of [...handled, ...sent]) assert.doesNotMatch(channel, /^auto:/, channel);
   for (const channel of ['surveillance:state', 'surveillance:history', 'surveillance:start', 'surveillance:stop', 'surveillance:retry', 'surveillance:open-source',
     'sessions:list', 'sessions:open', 'sessions:resume', 'sessions:delete', 'sessions:storage']) assert.ok(handled.includes(channel), channel);
   for (const channel of ['surveillance:state', 'sessions:changed', 'storage:state', 'watch:state', 'watch:reset']) assert.ok(sent.includes(channel), channel);
-  // Durable sessions: no general sweep at start, at a new session or at quit. Decision 8: nothing manual
-  // suspends or cancels the surveillance, and a question no longer cancels the manual verification.
-  for (const gone of ['cleanupRawMedia', 'prioritizeManual', 'auto-monitor', 'AutoMonitor', 'autoAgent', 'saveAuto', 'retentionMs: 300000', 'retentionMs:300000'])
-    assert.ok(!has(gone), `app/main.cjs still contains ${gone}`);
   assert.equal(fs.existsSync(path.join(root, 'core', 'auto-monitor.cjs')), false, 'core/auto-monitor.cjs is removed');
-  assert.equal([...main.matchAll(/verifierAdapter\??\.cancel\?\.\(\)/g)].length, 2, 'the manual verification is cancelled by its own button and at quit, nowhere else');
-  assert.ok(has("handle('verify:cancel', () => verifierAdapter.cancel?.())"), 'the manual verification is cancelled by its own channel');
-  assert.equal([...main.matchAll(/surveillance\.stop\(/g)].length, 1, 'only the explicit stop channel stops the surveillance');
-  assert.ok(has("handle('surveillance:stop', () => surveillance.stop("), 'the surveillance is stopped by its own channel');
-  // The surveillance agent is its own: never the chat agent, never the manual verification adapter.
-  const composition = between('createSurveillanceRuntime({', 'surveillanceTimer = setInterval');
-  assert.match(composition, /agent:smoke&&[^,]*new SimulatedSurveillanceAgent\(/);
-  assert.doesNotMatch(composition, /videoAgent|verifierAdapter/);
-  assert.match(main, /sweepStaleContexts\(\)\)\.catch\(/, 'stale Codex contexts are swept once at start, without failing it');
-  // A question may run five minutes: like production, the simulated and the fallback configuration let vision go on meanwhile.
-  assert.ok(has("model: 'test/fake', visionDuringAsk: true }"), 'the simulated configuration lets vision go on');
+  // Seule exception de contenu : launch force smoke ; ce repli exige live-inspection et une configuration illisible.
+  const has = fragment => shape(mainSource).includes(shape(fragment));
   assert.ok(has("audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }"), 'the fallback configuration lets vision go on');
 });
 
@@ -148,11 +162,15 @@ const HOST_SETTINGS = ['TVLENS_QUESTION_TIMEOUT_MS', 'TVLENS_SURVEILLANCE_WORKER
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
 // and, when `disk` is given, the free space measured by the real DiskGuard (its documented `freeBytes` option).
 // `wrap` expose les compositions et leur diagnostic pour injecter une panne aux frontières du vrai hôte.
-async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {} } = {}) {
-  const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [];
+async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false } = {}) {
+  const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
+  const registeredShortcuts = new Map();
   let bridge, finished, loaded;
   const quitting = new Promise(resolve => { finished = resolve; }), ready = new Promise(resolve => { loaded = resolve; });
-  const webContents = { mainFrame: {}, setWindowOpenHandler() {}, on() {}, send: (channel, value) => bridge.deliver(channel, value === undefined ? undefined : structuredClone(value)) };
+  const webContents = { mainFrame: {}, setWindowOpenHandler() {}, on() {}, send: (channel, value) => {
+    sent.push(channel);
+    bridge.deliver(channel, value === undefined ? undefined : structuredClone(value));
+  } };
   class BrowserWindow {
     constructor() { this.webContents = webContents; }
     isDestroyed() { return false; } getBounds() { return { x: 0, y: 0, width: 1340, height: 920 }; } getContentBounds() { return { x: 0, y: 0, width: 1340, height: 892 }; }
@@ -163,7 +181,10 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     quit() { const event = { prevented: false, preventDefault() { this.prevented = true; } }; app.emit('before-quit', event); if (!event.prevented) { finished(); loaded(false); } } });
   const electron = { app, BrowserWindow, ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
     protocol: { registerSchemesAsPrivileged() {}, handle: (scheme, handler) => schemes.set(scheme, handler) },
-    globalShortcut: { register: () => true, unregister() {}, unregisterAll() {} }, desktopCapturer: { getSources: async () => [] },
+    globalShortcut: {
+      register: (key, callback) => { registeredShortcuts.set(key, callback); return true; },
+      unregister: key => registeredShortcuts.delete(key), unregisterAll: () => registeredShortcuts.clear(),
+    }, desktopCapturer: { getSources: async () => [] },
     session: { defaultSession: { setDisplayMediaRequestHandler() {} } }, systemPreferences: { getMediaAccessStatus: () => 'granted' },
     shell: { openExternal: async url => { opened.push(url); } }, dialog: { showErrorBox() {}, showOpenDialog: async () => ({ canceled: true }) },
     safeStorage: { isEncryptionAvailable: () => false }, screen: { getDisplayMatching: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) } };
@@ -176,12 +197,15 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
   const restore = () => { process.argv.splice(0, process.argv.length, ...argv); for (const name of HOST_SETTINGS) if (saved[name] === undefined) delete process.env[name]; else process.env[name] = saved[name]; console.error = consoleError; };
   for (const name of HOST_SETTINGS) delete process.env[name];
   Object.assign(process.env, env); process.argv.push('--smoke-test');
+  if (shortcuts) process.argv.push('--live-shortcut');
   console.error = error => failures.push(String(error?.message || error));
   Module._load = function (request, parent, ...rest) {
     if (request === 'electron') return electron;
     const loaded = load.call(this, request, parent, ...rest);
     if (!parent?.filename?.endsWith(path.join('app', 'main.cjs'))) return loaded;
-    if (request === '../adapters/codex-confinement.cjs') return { ...loaded, sweepStaleContexts: (...args) => { sweeps.push(args); return sweep(); } };
+    if (request === '../adapters/codex-confinement.cjs') return { ...loaded, sweepStaleContexts: (...args) => { sweeps.push(args); return sweep(...args); } };
+    if (request === '../adapters/simulated-providers.cjs' && wrap.verifier)
+      return { ...loaded, simulatedVerifier: (...args) => wrap.verifier(loaded.simulatedVerifier(...args)) };
     // Measured afresh at every check, so that a change of free space is seen at once instead of five seconds later.
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
     const factories = {
@@ -202,7 +226,8 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
   finally { Module._load = load; }
   const started = await ready;
   let stopped;
-  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, events: [],
+  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, events: [],
+    pressShortcut: key => registeredShortcuts.get(key)(),
     fetch: (url, headers = {}) => schemes.get('tvlens-media')(new Request(url, { headers })),
     quit: () => (stopped ||= (async () => { app.quit(); await quitting; restore(); })()) };
   if (!started) restore();
@@ -216,7 +241,20 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
 async function stage(t) {
   t.mock.timers.enable({ apis: ['setTimeout', 'setInterval'] });
   const userData = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-mac-host-')), hosts = [];
-  t.after(async () => { for (const host of hosts) await host.quit().catch(() => {}); await fsp.rm(userData, { recursive: true, force: true }); });
+  t.after(async () => {
+    try {
+      for (const host of hosts) await host.quit().catch(() => {
+        // Un refus ne doit pas laisser les hôtes suivants actifs sur le dossier qui va être supprimé.
+      });
+      const { listened } = bridgeChannels();
+      for (const host of hosts) {
+        for (const channel of new Set(host.sent)) {
+          assert.ok(listened.includes(channel), `published host event has a preload listener: ${channel}`);
+          assert.doesNotMatch(channel, /^auto:/, channel);
+        }
+      }
+    } finally { await fsp.rm(userData, { recursive: true, force: true }); }
+  });
   return { userData, folder: id => path.join(userData, 'sessions', id), launch: async options => { const host = await launch(userData, options); hosts.push(host); return host; } };
 }
 // Virtual time moves in steps while real I/O (disk, images) settles in between: bounded on both clocks.
@@ -501,7 +539,19 @@ test('a Mac session is archived instead of purged, listed, reopened read-only wi
 
 test('a question neither suspends nor cancels the surveillance; quitting archives, and the next start finds the session and its registry', async t => {
   const { folder: sessionFolder, launch } = await stage(t);
-  let host = await launch();
+  const manualTurns = [], cancellations = [];
+  let host = await launch({ wrap: { verifier: adapter => ({
+    ...adapter,
+    verify: input => {
+      const turn = { ...deferred(), claim: input.claim };
+      manualTurns.push(turn);
+      return turn.promise;
+    },
+    cancel: () => {
+      cancellations.push(manualTurns.length);
+      manualTurns.at(-1)?.reject(new Error('Vérification annulée.'));
+    },
+  }) } });
   assert.equal(host.started, true, host.failures.join(' '));
   await assert.rejects(host.startSurveillance({ instruction: 'Vérifie les chiffres annoncés.' }), /Démarre une session/);
   const session = await host.start();
@@ -511,6 +561,9 @@ test('a question neither suspends nor cancels the surveillance; quitting archive
   assert.deepEqual([watching.enabled, watching.sessionId, watching.activity.state, watching.registry.ready, watching.activation.id], [true, session.id, 'restoring', false, null]);
   watching = await until(t, async () => { const s = await host.surveillanceState(); return s.registry.ready && s; }, 'the session folder read');
   assert.deepEqual([watching.enabled, watching.activity.state, watching.registry.status, watching.activation.id], [true, 'listening', 'ready', 'act-1']);
+  const verifying = host.verify('Apollo 11 a aluni en 1970.').then(result => ({ result }), error => ({ error }));
+  await waitUntil(() => manualTurns.length === 1, 'the controlled manual verifier entered');
+  assert.equal((await host.verificationState()).busy, true);
   // The simulated perception describes a passage by its number of images and the simulated research derives a
   // stable verdict from the claim: take a number whose verdict has a source (one in five has none).
   const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs'), simulated = new SimulatedSurveillanceAgent();
@@ -533,6 +586,20 @@ test('a question neither suspends nor cancels the surveillance; quitting archive
   await until(t, async () => (await host.deepState()).jobs.at(-1).status === 'running', 'a running question');
   watching = await host.surveillanceState();
   assert.deepEqual([watching.enabled, watching.activity.state, watching.counts.running, watching.counts.cancelled], [true, 'verifying', 1, 0], 'the question did not preempt the verification');
+  assert.deepEqual([(await host.verificationState()).busy, cancellations], [true, []], 'capture, surveillance and question leave manual verification running');
+  manualTurns[0].resolve({
+    normalizedClaim: manualTurns[0].claim, assessment: 'insufficient', conclusion: 'Recherche terminée sans preuve.', sources: [], limitations: [],
+  });
+  assert.equal((await bounded(verifying)).result?.assessment, 'insufficient', 'manual verification finishes normally during the question');
+  assert.deepEqual((await host.verificationState()).jobs.map(job => job.status), ['done']);
+  assert.equal((await host.deepState()).jobs.at(-1).status, 'running');
+  const cancelled = assert.rejects(host.verify('Une autre affirmation.'), /Vérification annulée/);
+  await waitUntil(() => manualTurns.length === 2, 'another manual verification entered');
+  await host.cancelVerification();
+  assert.equal(await bounded(cancelled), undefined);
+  assert.deepEqual([(await host.verificationState()).busy, cancellations], [false, [2]], 'the explicit cancel channel reaches the manual verifier');
+  assert.equal((await host.surveillanceState()).enabled, true, 'manual cancellation leaves surveillance enabled');
+  assert.equal((await host.deepState()).jobs.at(-1).status, 'running', 'manual cancellation leaves the question running');
   // The verification completes while the question is still running: both really overlap.
   const withCard = await until(t, async () => { const s = await host.surveillanceState(); return s.overlay.cards.length === 1 && s; }, 'a sourced card', 100);
   assert.equal((await host.deepState()).jobs.at(-1).status, 'running', 'the card arrived during the question');
@@ -552,7 +619,11 @@ test('a question neither suspends nor cancels the surveillance; quitting archive
   await assert.rejects(host.retrySurveillanceClaim('claim-1'), /ne peut pas être relancé/);
 
   // Quit while capturing: the session is archived whole, with the last surveillance states.
+  const cancelledAtQuit = assert.rejects(host.verify('Encore une affirmation.'), /Vérification annulée/);
+  await waitUntil(() => manualTurns.length === 3, 'a manual verification still running at quit');
   await host.quit();
+  assert.equal(await bounded(cancelledAtQuit), undefined);
+  assert.deepEqual(cancellations, [2, 3], 'manual verification is cancelled by its own button and at quit, nowhere else');
   const folder = sessionFolder(session.id);
   assert.equal(JSON.parse(await fsp.readFile(path.join(folder, 'manifest.json'), 'utf8')).state, 'archived');
   assert.equal(await fsp.readFile(path.join(folder, 'media', 'moment-1.webm'), 'utf8'), first.clip);
@@ -1193,7 +1264,7 @@ for (const visionDuringAsk of [false, true]) {
     assert.equal((await host.state()).asking, true);
     await capture(host, session.id, { audio: new Uint8Array([1]) });
     await audioPublished.promise;
-    if (visionDuringAsk) await completed.promise;
+    if (visionDuringAsk) assert.equal(await bounded(completed.promise), undefined, 'vision completes during the pending question');
     const during = await host.state(), passage = during.segments[1];
     assert.equal(during.asking, true, 'perception never finishes the pending question');
     assert.deepEqual([passage.id, passage.status, passage.audioStatus, passage.visionStatus],
@@ -1228,7 +1299,7 @@ test('on the Mac host a question reaches the chat agent with the instruction of 
   await host.startSurveillance({ instruction });
   await until(t, async () => (await host.surveillanceState()).registry.ready, 'the session folder read by the surveillance');
   await question('Pendant la surveillance ?');
-  await host.stopSurveillance();
+  assert.equal((await host.stopSurveillance()).enabled, false, 'the explicit stop channel stops surveillance');
   await question('Après l’arrêt ?');
   assert.deepEqual(seen, [['Avant toute consigne ?', undefined], ['Pendant la surveillance ?', instruction], ['Après l’arrêt ?', undefined]]);
 });
