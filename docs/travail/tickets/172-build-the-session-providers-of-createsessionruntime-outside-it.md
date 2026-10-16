@@ -1,7 +1,7 @@
 ---
 id: T172
 titre: Build the session providers of createSessionRuntime outside it
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: oui
 installe: non
@@ -107,3 +107,61 @@ ses fabriques et relire les repères déplacés. Ne pas réécrire ces faux ni l
 Les modules restent à plat dans `runtime/`, compatibles avec la garde d'architecture actuelle.
 
 ## Journal
+
+- Exploration : règles, skill et contrats lus ; état initial et répartition des propriétaires consignés
+  dans `.harness-state/tickets/T172/exploration.md`, aucun écart prévu dans `ecarts.md`.
+  `wc -l runtime/session-runtime.cjs` : 579 lignes avant extraction. Les fabriques simulées existantes
+  sont réutilisées. Le runtime conserve le fait de fin confirmée de cette vie et le protocole de fermeture.
+- Fournisseurs : `node --test tests/session-providers.test.cjs`, rouges observés sur assertions de
+  transcription, inspection, perception puis index (`providers-*-red.log` dans le dossier d'état).
+  Verts observés après chaque extraction ; dernier relevé `providers-contracts-green.log` : 9/9.
+  Constructeurs enregistrés, aucune inférence réelle ; défauts, overrides, modèles, partage du
+  transcripteur, cache/révocation et alimentation bornée couverts.
+- Manifeste : `node --test tests/session-manifest.test.cjs`, rouges observés sur assertions de
+  construction, cadence, lecture seule, reprise et refus courant (`manifest-*-red.log`). Verts après
+  chaque étape ; `manifest-contracts-green.log` : 7/7. Deux horloges conduites, store différé, borne
+  de 100 captures, refus final transmis et fin confirmée propre à chaque vie couverts.
+- Assemblage raccordé aux deux modules. `node_modules/.bin/eslint --prune-suppressions runtime/session-runtime.cjs`
+  : code 0 ; suppression `max-lines` retirée, compteur `complexity` de 2 à 1. Aucun compteur ajouté
+  ni plancher modifié. ADR 0019 ajouté.
+- `node scripts/check.mjs --changed` : code 0, vert ; 16/16 tests des deux nouveaux fichiers
+  (`.harness-state/tickets/T172/check-changed.log`).
+- Relevé structurel :
+  `grep -nE "new (LocalTranscriber|CodexPerception|ClipInspector|RevocableInspector|CachedInspector|OpenRouterEmbeddings|EmbeddingStore|MomentIndex)|saveManifest[[:space:]]*\(" runtime/session-runtime.cjs`
+  : sortie vide, code 1 observé (`provider-scan.log`).
+  `wc -l runtime/session-runtime.cjs runtime/session-providers.cjs runtime/session-manifest.cjs` :
+  respectivement 417, 216 et 102 lignes physiques, contre 579 pour le runtime avant extraction.
+  Fabriques déplacées : `createSessionTranscriber`, `createSessionInspection`, `createSessionPerception`
+  (avec `localVlmAgent`), `createSessionIndex` (budget, embeddings, vecteurs, recherche et alimentation
+  bornée). `createSessionManifest` possède l'unique politique de manifeste. Le relevé `rg` des
+  définitions ne trouve chacune de ces fonctions qu'une fois, dans son nouveau module.
+- Périmètre des tests : `git diff --exit-code -- tests/` : code 0, sortie vide ;
+  `git ls-files --others --exclude-standard -- tests/` ne liste que `session-manifest.test.cjs`
+  et `session-providers.test.cjs`. Les assertions existantes sont inchangées.
+- Contrôle final : `node scripts/check.mjs` : code 0, vert ; 107 fichiers JavaScript exécutés en
+  séquentiel, 1328/1328 tests réussis ; Python : 33 tests, OK, dont 1 ignoré. Sortie conservée dans
+  `.harness-state/tickets/T172/check-full.log`. Les bancs durables, disque, révocation, IPC Mac et
+  sessions/vues HTTP font partie de ce contrôle complet.
+- `git diff --check` : code 0. `git diff --exit-code -- .claude/ .codex/ .agents/ scripts/check.mjs scripts/quality/ scripts/loop/`
+  : code 0, sortie vide. Aucun harnais ni plancher modifié. Verdict `TERMINÉ` écrit dans le dossier
+  d'état ; relecture et intégration laissées à la boucle, sans commit ni push.
+- Reprise après `relecture-1.md` : constat mineur accepté, limité aux commentaires explicatifs
+  perdus lors du déplacement. Rapport, journal, écarts, état et diff relus ; exploration complétée.
+  Avant correction, `node --test --test-concurrency=1 tests/session-providers.test.cjs tests/session-manifest.test.cjs`
+  : code 0, 16/16 (`correction-1-tests-before.log`). Aucun changement de comportement attendu ;
+  aucun test textuel ajouté, conformément aux standards. Adaptation de méthode consignée dans `ecarts.md`.
+- Constat 1 corrigé : explications rétablies près de `MANIFEST_EVERY_MS`, `publish`, la garde de
+  lecture seule, `final` et `final || hasConfirmedEnd()`, ainsi que de `REVOKED`, de l'inspecteur
+  conservé par une question ou un contexte MCP et de `feedIndex`. Seuls des commentaires ont changé
+  dans ces deux modules ; code exécutable et fichiers de tests inchangés depuis la relecture.
+- `node scripts/check.mjs --changed` après correction : code 0, vert, 16/16
+  (`correction-1-check-changed.log`). Le grep exact du critère 4 rend encore une sortie vide et le
+  code 1 ; commande, sortie et code sont cette fois conservés dans `correction-1-provider-scan.json`.
+  `wc -l runtime/session-runtime.cjs runtime/session-providers.cjs runtime/session-manifest.cjs` :
+  417, 221 et 108 lignes physiques après rétablissement des commentaires.
+- `git diff --check` et `git diff --exit-code -- tests/ .claude/ .codex/ .agents/ scripts/check.mjs scripts/quality/ scripts/loop/`
+  : codes 0, sorties vides. Aucun test existant, harnais ni plancher modifié.
+- Contrôle complet de cette correction : `node scripts/check.mjs` : code 0, vert ; 107 fichiers JS
+  séquentiels, 1328/1328 tests réussis ; Python : 33 tests, OK, dont 1 ignoré
+  (`correction-1-check-full.log`). `git diff --check` final : code 0. Constat 1 corrigé, aucune
+  contestation ni réserve ; nouveau verdict `TERMINÉ` écrit, relecture laissée à la boucle.

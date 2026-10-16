@@ -1,55 +1,28 @@
-const {
-  simulatedInspectionModel,
-  simulatedInspector,
-  simulatedPerception,
-} = require("../adapters/simulated-providers.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
 const { WatchSession, restorable } = require("../core/session.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
-const { CachedInspector } = require("../core/cached-inspector.cjs");
-const { RevocableInspector } = require("../core/revocable-inspector.cjs");
-const { MomentIndex } = require("../core/moment-index.cjs");
-const { MomentSearch } = require("../core/moment-search.cjs");
 const {
   LocalSessionStore,
   THUMBS_DIR,
   LEGACY_THUMBS_DIR,
 } = require("../adapters/local-store.cjs");
 const { DiskGuard } = require("../adapters/disk-guard.cjs");
+const { readableManifest } = require("../adapters/session-library.cjs");
 const {
-  sessionTitle,
-  readableManifest,
-  MANIFEST_FORMAT,
-  MANIFEST_VERSION,
-} = require("../adapters/session-library.cjs");
-const { UsageLedger } = require("../adapters/trial-budget.cjs");
+  createSessionIndex,
+  createSessionTranscriber,
+  createSessionInspection,
+  createSessionPerception,
+  INDEX_FLUSH_MS,
+  INDEX_MAX_PENDING,
+  INDEX_OBSERVE_TAIL,
+} = require("./session-providers.cjs");
 const {
-  OpenRouterEmbeddings,
-  EMBEDDING_MODEL,
-} = require("../adapters/openrouter-embeddings.cjs");
-const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
-const { LocalTranscriber } = require("../adapters/local-transcriber.cjs");
-const { CodexPerception } = require("../adapters/codex-perception.cjs");
-const { ClipInspector } = require("../adapters/clip-inspector.cjs");
-const { inspectionStrategy } = require("../adapters/inspection-strategies.cjs");
-const { LocalVlmAgent } = require("../adapters/local-vlm-agent.cjs");
-const { hasUsableObservation } = require("../core/passage-text.cjs");
-
-// Background sends are grouped per interval; the queue holds several hours of passages so that a late
-// first search can hand over its whole prefix instead of dropping most of it.
-const INDEX_FLUSH_MS = 30000,
-  INDEX_MAX_PENDING = 2048;
-// Media are kept for the whole session, so the passage list no longer empties itself: the background
-// index is only shown the tail the former five-minute window used to hold (48 passages of 8 s).
-const INDEX_OBSERVE_TAIL = 48;
-// The manifest carries what a session list needs; during capture it is rewritten at most this often.
-const MANIFEST_EVERY_MS = 30000,
-  MANIFEST_MAX_CAPTURES = 100;
-// What a re-examination is answered once the runtime of its session has closed.
-const REVOKED =
-  "Session terminée : ses passages ne peuvent plus être réexaminés.";
+  createSessionManifest,
+  MANIFEST_EVERY_MS,
+} = require("./session-manifest.cjs");
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -74,7 +47,7 @@ function createSessionRuntime({
   restore = null,
   overrides = {},
 }) {
-  let store, search, inspector, inspectorModel, sessionClock, perception, watch;
+  let watch;
   if (restore && (!restore.snapshot || !restore.inventory))
     throw new Error("Archive incomplète : état et inventaire requis.");
   // Checked before anything is built on it: a saved state of another shape is refused in plain words.
@@ -112,113 +85,42 @@ function createSessionRuntime({
   // One measurement when a session is created or reopened, so its state says more than "unknown"
   // before the first write. check() never rejects.
   diskGuard?.check();
-  store = LocalSessionStore.forSession(path.join(sessionsRoot, id), {
+  const store = LocalSessionStore.forSession(path.join(sessionsRoot, id), {
     guard: diskGuard,
   });
   const thumbnails = new SessionThumbnails(path.join(store.root, THUMBS_DIR), {
     legacyRoot: path.join(store.root, LEGACY_THUMBS_DIR),
   });
-  const researchBudget = new UsageLedger(
-    config.researchBudgetFile || path.join(userData, "research-budget.json"),
-  );
-  const embeddings =
-    overrides.embeddings ||
-    ((smoke && !liveInspection) || !config.apiKey
-      ? null
-      : new OpenRouterEmbeddings({
-          apiKey: config.apiKey,
-          budget: researchBudget,
-        }));
-  const vectors = embeddings
-    ? new EmbeddingStore(
-        path.join(store.root, "embeddings.json"),
-        EMBEDDING_MODEL,
-      )
-    : null;
-  const index = embeddings
-    ? new MomentIndex({
-        embeddings,
-        cache: vectors,
-        // Background sends are grouped; a search still gets its own passages at once.
-        flushMs: INDEX_FLUSH_MS,
-        maxPending: INDEX_MAX_PENDING,
-      })
-    : null;
-  search = new MomentSearch({ index });
-  const transcriber = new LocalTranscriber({
-    binary: config.whisperBinary,
-    threads: config.whisperThreads,
-    getLanguage: () => config.transcriptionLanguage || "auto",
-    // Reduced encoder context is an explicit opt-in: unvalidated on real programme audio.
-    ...(config.whisperAudioCtx === undefined
-      ? {}
-      : { audioCtx: config.whisperAudioCtx }),
-    model:
-      config.whisperModel ||
-      path.join(
-        path.dirname(
-          config.researchBudgetFile ||
-            path.join(process.cwd(), ".local", "research-budget.json"),
-        ),
-        "models",
-        "ggml-base.bin",
-      ),
+  const providerOptions = {
+    id,
+    config,
+    selectedModels,
+    codexBinary,
+    quota,
+    smoke,
+    liveInspection,
+    localInspection,
+    liveObservation,
+    strategy,
+    overrides,
+    store,
+    userData,
+  };
+  const { vectors, index, search, feedIndex } =
+    createSessionIndex(providerOptions);
+  const transcriber = createSessionTranscriber(providerOptions);
+  const { inspector, inspectorModel } = createSessionInspection({
+    ...providerOptions,
+    transcriber,
   });
-  const inspectionModel = (inspectorModel = localInspection
-    ? simulatedInspectionModel()
-    : new CodexPerception({
-        binary: codexBinary,
-        authHome: config.codexAuthHome,
-        model: selectedModels.inspectionModel,
-        transcriber,
-        quota,
-        sessionId: id + "-inspect",
-      }));
-  inspector =
-    smoke && !liveInspection && !localInspection
-      ? simulatedInspector()
-      : new ClipInspector({
-          media: store,
-          model: inspectionModel,
-          ffmpeg: config.ffmpeg,
-          strategy: inspectionStrategy(smoke ? strategy : "sheets-diverse"),
-        });
-  inspector = new CachedInspector(inspector);
-  // The inspector outlives this runtime in whatever was handed it: a question, an external MCP context. Once
-  // the runtime has closed it serves nothing more, cached or not: a late re-examination would reconnect an
-  // inspection model that nobody owns any more. One still running is told through its signal, before it
-  // reaches that model, and what it brings back all the same is neither answered nor left in the cache.
-  inspector = new RevocableInspector(inspector, REVOKED);
-  sessionClock = new SessionClock(
+  const sessionClock = new SessionClock(
     readClock,
     restore ? { elapsedMs: restore.snapshot.elapsedMs, paused: true } : {},
   );
-  const adapter = (perception =
-    overrides.perception ||
-    (smoke && !liveObservation
-      ? simulatedPerception()
-      : new CodexPerception({
-          binary: codexBinary,
-          authHome: config.codexAuthHome,
-          model: selectedModels.observationModel,
-          transcriber,
-          quota,
-          sessionId: id + "-observe",
-          // A local model only replaces inference: prompt, context and validation stay shared.
-          ...(config.perceptionBackend === "local"
-            ? { agent: localVlmAgent(config.localVlm) }
-            : {}),
-        })));
-  // Published passages feed the bounded background index; a search never waits for a full catch-up.
-  const feedIndex =
-    index?.observe && config.backgroundIndex !== false
-      ? (state) =>
-          index.observe(
-            state.segments
-              .slice(-INDEX_OBSERVE_TAIL)
-              .filter(hasUsableObservation),
-          )
-      : null;
+  const perception = createSessionPerception({
+    ...providerOptions,
+    transcriber,
+  });
   // Figures already in memory: the free space last measured by the guard and the volume accumulated
   // write by write. Read at every state emission, so it must never touch the disk.
   const storage = () => {
@@ -248,16 +150,23 @@ function createSessionRuntime({
           : null,
     };
   };
-  const captures = restore
-    ? [...(restore.manifest?.captures || [])]
-    : [{ startedAt: wallClock(), fromMs: 0 }];
-  let manifestAt = -Infinity,
-    ending = null,
+  let ending = null,
     // True once the end of this runtime is on disk, last states and manifest. Its own fact: what an
     // earlier life of the session left in the manifest says nothing of this one.
     archived = false,
     // Why that end is not confirmed, once asked for: the write that was refused.
     unconfirmed = null;
+  const manifest = createSessionManifest({
+    id,
+    host,
+    store,
+    thumbnails,
+    restore,
+    readClock,
+    wallClock,
+    readOnly: () => watch.readOnly,
+    hasConfirmedEnd: () => archived,
+  });
   // What failed while this runtime was closing, one line per step: kept for the host, never swallowed.
   const closeErrors = [];
   // Every closing step is attempted whatever the others did: one adapter that fails to close neither
@@ -271,79 +180,20 @@ function createSessionRuntime({
       );
     }
   };
-  // Wall-clock facts and totals a list needs without opening the saved state. Never for a reopened
-  // archive that was not resumed: opening and closing one leaves its directory as it was.
-  // `final` is the end of the session, once its last states are on disk: the only write that says
-  // "archived".
-  const recordManifest = (state, patch = {}, final = false) => {
-    if (watch.readOnly) return Promise.resolve();
-    manifestAt = readClock();
-    // Once on disk it stays: a late pause cannot make a closed session look interrupted again, nor one
-    // whose end the disk refused look archived.
-    const closed = final || archived;
-    const passages = [...state.history, ...state.segments],
-      stored = state.segments.filter((s) => s.available).length,
-      createdAt =
-        store.manifest?.createdAt ??
-        restore?.createdAt ??
-        captures[0]?.startedAt ??
-        wallClock();
-    return store
-      .saveManifest({
-        format: MANIFEST_FORMAT,
-        version: MANIFEST_VERSION,
-        id,
-        host: store.manifest?.host ?? host,
-        createdAt,
-        updatedAt: wallClock(),
-        closedAt: closed ? (store.manifest?.closedAt ?? wallClock()) : null,
-        state: closed ? "archived" : "live",
-        title: store.manifest?.title || sessionTitle(createdAt),
-        firstTopic:
-          store.manifest?.firstTopic ||
-          passages.find((p) => p.observation?.topic)?.observation.topic ||
-          null,
-        elapsedMs: state.elapsedMs,
-        capturedThroughMs: state.capturedThroughMs,
-        passages: passages.length,
-        media: {
-          stored,
-          missing: passages.length - stored,
-          bytes: store.bytes + thumbnails.bytes,
-          retention: state.retention,
-        },
-        captures,
-        ...patch,
-      })
-      .catch((error) => {
-        // While the session lives a refused manifest is only late, and the next one says it all again.
-        // The one that ends it is handed back: nothing else would say that the archive is not on disk.
-        if (final) throw error;
-      });
-  };
   watch = new WatchSession({
     id,
     retentionMs: retentionMs,
     now: () => sessionClock.now(),
-    perception: adapter,
-    answer: adapter,
+    perception,
+    answer: perception,
     media: store,
     archive: store,
     thumbnails,
     storage,
     visionDuringAsk: config.visionDuringAsk === true,
     onChange: (state) => {
-      if (!state.readOnly) {
-        feedIndex?.(state);
-        // First stored passage, then a bounded cadence: the manifest of a session cut short is at most
-        // this old.
-        if (
-          state.accepting &&
-          state.coverage.passages &&
-          readClock() - manifestAt >= MANIFEST_EVERY_MS
-        )
-          recordManifest(state);
-      }
+      if (!state.readOnly) feedIndex?.(state);
+      manifest.publish(state);
       onChange(state);
     },
   });
@@ -402,7 +252,7 @@ function createSessionRuntime({
     async pause() {
       sessionClock.pause();
       await watch.stop();
-      await recordManifest(watch.snapshot());
+      await manifest.record(watch.snapshot());
     },
     async resume() {
       // Refused on a fresh measurement before anything changes, with the message of a refused write.
@@ -410,9 +260,8 @@ function createSessionRuntime({
       const fromMs = sessionClock.now();
       sessionClock.resume();
       await watch.resume();
-      captures.push({ startedAt: wallClock(), fromMs });
-      captures.splice(0, captures.length - MANIFEST_MAX_CAPTURES);
-      await recordManifest(watch.snapshot());
+      manifest.captureResumed(fromMs);
+      await manifest.record(watch.snapshot());
     },
     // Ends the work of this runtime and keeps the session whole on disk. `purge` is the former
     // behaviour, on request only: raw media and thumbnails of this session are erased, its text stays.
@@ -423,7 +272,7 @@ function createSessionRuntime({
         throw new Error(
           "Session ouverte en lecture seule : ses médias ne s’effacent qu’avec la suppression de la session.",
         );
-      // No re-examination from here on, and none kept: see the inspector above.
+      // No re-examination from here on, cached results included.
       inspector.revoke();
       ending ||= (async () => {
         // No new passage from here, and one whose write is under way lands first, thumbnail included:
@@ -460,7 +309,7 @@ function createSessionRuntime({
           // Refused before it ever reached the store: the session itself is the one that knows.
           if (watch.saveError) throw new Error(watch.saveError);
           return purge || !archived
-            ? recordManifest(
+            ? manifest.record(
                 state,
                 purge
                   ? {
@@ -521,17 +370,6 @@ async function openArchivedSession({ library, id, ...options }) {
     },
   });
   return { session, archive };
-}
-function localVlmAgent(settings = {}) {
-  return new LocalVlmAgent({
-    url: settings.url,
-    model: settings.model,
-    numCtx: settings.numCtx,
-    ...(settings.keepAlive ? { keepAlive: settings.keepAlive } : {}),
-    ...(settings.token
-      ? { headers: { Authorization: "Bearer " + settings.token } }
-      : {}),
-  });
 }
 function validateSegment(input, now) {
   if (
