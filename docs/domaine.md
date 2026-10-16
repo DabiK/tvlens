@@ -35,7 +35,7 @@ autre application (Netflix) s'ajouteront par une fiche de source, sans abstracti
 | Mémoire | **cœur, fondation** | Les deux cœurs ne valent que ce que vaut la mémoire ; tous les contextes la lisent |
 | Capture | support stratégique | Indispensable, mais sans règle métier propre au-delà de l'admission et des pertes |
 | Bibliothèque | support | Cycle de vie et rangement des sessions |
-| Inférence, parole, média, disque, embeddings | générique | Codex, Whisper, ffmpeg et sharp, fichiers, OpenRouter : derrière des adaptateurs |
+| Inférence, parole, média, disque, embeddings | générique | Codex et Ollama (inférence locale), Whisper, ffmpeg et sharp, fichiers, OpenRouter : derrière des adaptateurs |
 
 ## 3. Les contextes
 
@@ -187,8 +187,10 @@ flowchart LR
   (`tv/controller.py`). Elle seule atteint les deux.
 - **Les langages publiés** sont versionnés : le fil `/v1` entre la page TV et le serveur, le bloc et le rapport de la
   capture Python.
-- **Les couches anti-corruption** (Codex, Whisper, ffmpeg et sharp, Luna, disque) traduisent les fournisseurs en
-  ports du domaine. Aucun message ni statut d'un fournisseur ne remonte tel quel.
+- **Les couches anti-corruption** (Codex, Ollama, Whisper, ffmpeg et sharp, Luna, disque) traduisent les fournisseurs
+  en ports du domaine. Aucun message ni statut d'un fournisseur ne remonte tel quel. Ollama sert l'inférence locale de
+  la perception (`TVLENS_PERCEPTION_BACKEND=local`, `adapters/local-vlm-agent.cjs`) : il remplit le même contrat d'agent
+  d'analyse que Codex, seule l'inférence change, et ses refus portent les codes `TVLENS_LOCAL_VLM_*`.
 
 ## 5. Les couches
 
@@ -237,8 +239,8 @@ contrat**, ou **relecture**.
 3. `runtime/<contexte>/` importe son domaine, le noyau et les modules publics des autres contextes. Jamais `adapters/`,
    jamais `runtime/compose/`. — *garde*
 4. `runtime/compose/` n'est importé que par les hôtes. — *garde*
-5. `adapters/` n'importe ni `runtime/`, ni `app/`, ni `server/`. Un adaptateur de rôle n'importe pas un autre rôle.
-   — *garde*
+5. `adapters/` n'importe ni `runtime/`, ni `app/`, ni `server/`. Un adaptateur de rôle importe les plateformes sur
+   lesquelles il tourne (`codex/`, `ollama/`), jamais un autre rôle. — *garde*
 6. Le domaine et l'application ne produisent aucun statut HTTP. Les hôtes et les adaptateurs de réponse média
    traduisent leurs résultats en réponses de transport, y compris pour les protocoles Electron
    (`adapters/local-store.cjs:234-257`). — *garde*
@@ -249,7 +251,7 @@ contrat**, ou **relecture**.
 9. Les étapes obligatoires de la fin sont appelées par le coordinateur, jamais confiées à un abonné. — *test de
    contrat et relecture*
 10. Electron seulement dans `app/`. `sharp` et `ffmpeg` seulement dans les adaptateurs média. Le client Codex
-    seulement dans ses adaptateurs. — *garde*
+    seulement dans `adapters/codex/`, le client HTTP d'Ollama seulement dans `adapters/ollama/`. — *garde*
 11. Page TV : scripts classiques (ADR 0011), `fetch` seulement dans `remote-client.js`, libellés indexés par codes.
     — *garde*
 12. Python : seul `tv/luna.py` appelle `luna-send`, seul `tv/sources.py` nomme une application. — *garde*
@@ -272,10 +274,18 @@ core/verification/   ClaimRegistry, clé d'affirmation, détection, verdicts, ca
 core/library/        SessionRecord, règles de session (vide, disque plein), moments gardés
 runtime/<contexte>/  services d'application du contexte ; runtime/library/ porte le coordinateur
 runtime/compose/     compositions partagées par les deux hôtes
-adapters/            par famille : codex/, speech/, media/, storage/, embeddings/, simulated/
+adapters/            plateformes d'inférence, nommées d'après leur fournisseur : codex/, ollama/ ;
+                     rôles, nommés d'après leur fonction : perception/, speech/, media/, storage/, embeddings/,
+                     simulated/
 server/              HTTP /v1, routes, projections du fil
 app/                 Electron : composition Mac, tables IPC par contexte, contrôleurs de la fenêtre
 ```
+
+Une plateforme d'inférence porte le client d'un fournisseur ; un rôle porte ce que TVLens en fait. **Un rôle qui
+tourne sur plusieurs plateformes vit dans sa famille de rôle et reçoit sa plateforme par injection.** C'est le cas de
+la perception : `adapters/codex-perception.cjs` porte le prompt, le contexte, la validation et la classification des
+erreurs pour Codex comme pour Ollama (`runtime/session-providers.cjs:160-165`). Il va donc dans `perception/`, ni dans
+`codex/` ni dans `ollama/` ; son nom actuel est historique. `adapters/local-vlm-agent.cjs` va dans `ollama/`.
 
 Le code nouveau naît dans ces dossiers. Un gros fichier se vide module par module et reste une façade tant qu'il
 sert. Le code extrait arrive dans son nouveau fichier sans infraction : le ticket corrige celles du code qu'il déplace,

@@ -20,7 +20,10 @@ sens. Deux analyses indépendantes, au commit `ea6ce06`, concluent au même déc
   fondation.
 - **Hexagone par contexte, dans les dossiers actuels** : `core/<contexte>/` pour le domaine, `runtime/<contexte>/` pour
   les cas d'usage, `core/shared/` pour le noyau partagé, `runtime/compose/` pour les compositions, `adapters/` par
-  famille de fournisseur. Les hôtes (`app/`, `server/`, le pont MCP) composent et pilotent.
+  famille. Les hôtes (`app/`, `server/`, le pont MCP) composent et pilotent.
+- **Les familles d'`adapters/`** : une plateforme d'inférence se nomme d'après son fournisseur (`codex/`, `ollama/`),
+  un rôle d'après sa fonction (`perception/`, `speech/`, `media/`…). Un rôle qui tourne sur plusieurs plateformes,
+  comme la perception sur Codex ou Ollama, vit dans sa famille de rôle et reçoit sa plateforme par injection.
 - **Les ports sont des types JSDoc** déclarés dans le domaine. Un adaptateur les satisfait par sa forme, reçoit ses
   dépendances par injection et n'importe jamais `runtime/`.
 - **Le domaine d'un contexte n'importe jamais celui d'un autre.** L'application lit un autre contexte par son module
