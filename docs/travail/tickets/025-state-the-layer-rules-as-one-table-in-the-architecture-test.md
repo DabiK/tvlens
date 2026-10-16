@@ -58,6 +58,12 @@ tests de comportement rejoignent cette garde, sans perdre leurs assertions compo
 
   Un import relatif qui sort de ces six racines est refusé. Un chemin parent qui reste dans sa
   couche est permis, y compris dans `core/`. Les imports externes du cœur restent interdits.
+- La table est une donnée : une liste de zones, chacune désignée par un motif de chemin (`core/**`,
+  `adapters/**`…), avec les zones qu'elle peut importer. Une sous-zone plus précise (par exemple
+  `core/memory/**`, ou `core/shared/**` comme noyau partagé) s'ajoute plus tard par une ligne de table,
+  sans réécrire le relevé ni les gardes. La zone d'un fichier est le motif le plus précis qui le
+  contient. Aujourd'hui, la table ne contient que les six couches ci-dessus : aucune sous-zone n'est créée.
+  Un test vérifie ce mécanisme sur un arbre temporaire, avec une sous-zone de fixture et une arête refusée.
 - Garder les interdictions de globales du cœur, d'Electron dans runtime/serveur, les drapeaux et les
   rôles Codex. La règle des services du cœur vise le module session après résolution, y compris
   depuis un sous-dossier ; adapter sa fixture au vrai chemin vers ce module.
@@ -98,6 +104,8 @@ Le banc ne lit pas le texte du parcours pour deviner son comportement.
 Aucune décision n'est attendue.
 
 T199 implique T178. T023 n'est plus un prérequis : parcours et banc sont déjà livrés.
+La table extensible par sous-zone vient de l'analyse de conception du 16/10 (Opus et Astra) : la cible découpera
+l'intérieur de `core/`, `runtime/` et `adapters/` par contexte. Ce ticket prépare ce mécanisme, sans rien découper.
 Les chemins dynamiques restent une limite nommée du relevé. Une arête produit contredisant la table
 est signalée avant toute extension de la table ou modification produit.
 
