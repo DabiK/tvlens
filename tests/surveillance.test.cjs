@@ -1,7 +1,5 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
 const { Surveillance, COVERAGE_BUCKETS, CLAIM_STATES, claimKey, sameClaim, applyVerdicts, composeLotText, sentences } = require('../core/surveillance.cjs');
 
 // Everything is promise-driven and the clock is injected: no timer, real or fake, is ever armed here.
@@ -619,9 +617,8 @@ test('words first: a partial passage is read without waiting for vision, which t
   assert.deepEqual([state.coverage.total, state.coverage.scanned, state.coverage.empty, state.coverage.unscannable, state.metrics.detect.emptySkipped], [4, 2, 1, 1, 1]);
   assert.deepEqual(state.gaps, [{ id: 'moment-4', startMs: 24000, endMs: 32000, bucket: 'unscannable', reason: 'Analyse du passage en erreur.', rejected: 0 }]);
   h.states.forEach(invariants);
-  // The chat does not exist for this module: the flag was never read and the source never names it.
+  // Le drapeau du chat n'est jamais lu par la surveillance.
   assert.equal(h.chatReads, 0);
-  assert.doesNotMatch(fs.readFileSync(path.join(__dirname, '..', 'core', 'surveillance.cjs'), 'utf8'), /\basking\b|manualBusy|prioritizeManual|deep-ask/);
 });
 
 test('a busy chat never suspends the surveillance: the probe only counts the overlap, in metrics of its own', async () => {

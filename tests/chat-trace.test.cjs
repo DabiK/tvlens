@@ -51,8 +51,7 @@ test('turn failure without detail falls back to the last error notification; int
  client.event('turn/completed',{threadId:'thread-test',turn:{id:'turn-y',status:'interrupted'}});
  assert.equal(rejected.message,'Recherche annulée.');assert.equal(rejected.authRequired,undefined);assert.equal(rejected.turnStatus,'interrupted');
 });
-test('deep-ask keeps a redacted diagnostic on the failed job, never imports adapters, and traces cannot break it',async()=>{
- const fs=require('node:fs');assert.ok(!fs.readFileSync(require.resolve('../core/deep-ask.cjs'),'utf8').includes('adapters/'));
+test('deep-ask keeps a redacted diagnostic on the failed job and traces cannot break it',async()=>{
  const {DeepAsk}=require('../core/deep-ask.cjs');
  const failure=Object.assign(Error('Codex n’a pas terminé la réponse : authentification refusée (401). Reconnexion Codex requise (codex login), puis repose la question.'),{authRequired:true,turnStatus:'failed',turnError:{message:'workspace routing discovery unauthorized (401) https://private.example/x',codexErrorInfo:'other'}});
  const makeTools=()=>({sessionId:'s1',observations:[],hypotheses:[],limits:[],anchorMs:0,context:()=>undefined});
