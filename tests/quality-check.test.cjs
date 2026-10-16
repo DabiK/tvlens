@@ -7,6 +7,8 @@ const { harnessRepo } = require("./helpers/harness-repo.cjs");
 
 const load = (rel) => import(pathToFileURL(path.join(__dirname, "..", rel)).href);
 const LONG = "const value = '" + "x".repeat(170) + "';\n";
+const testSource = (count) => "const { test } = require('node:test');\n" +
+  Array.from({ length: count }, (_, index) => `test('case ${index}', () => {});\n`).join("");
 
 for (const mode of [[], ["--changed"]]) {
   const label = mode.length ? "changed" : "full";
@@ -100,6 +102,51 @@ for (const mode of [[], ["--changed"]]) {
     assert.ok(freeze.detail.includes("core/legacy.cjs : complexity : 0 → 3"), freeze.detail);
     assert.ok(freeze.detail.includes("core/legacy.cjs : no-empty : 0 → 1"), freeze.detail);
   });
+
+  test(`the ${label} check refuses an unknown baseline key instead of dropping its protection`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    assert.equal(repo.node("scripts/quality/ratchet.mjs", ["--init"]).code, 0);
+    const baseline = JSON.parse(repo.read("scripts/quality/baseline.json"));
+    repo.write("scripts/quality/baseline.json", JSON.stringify({ ...baseline, cas_de_test: 1 }));
+    const result = repo.node("scripts/check.mjs", [...mode, "--json"]);
+    assert.equal(result.code, 1, result.out);
+    const ratchet = JSON.parse(result.out).steps.find((step) => step.name === "cliquet");
+    assert.equal(ratchet.status, "ko");
+    assert.match(ratchet.detail, /Mesures inconnues du plancher : cas_de_test/);
+  });
+
+  for (const [lost, family] of [["produit", "product"], ["harnais", "harness"]]) {
+    test(`the ${label} check refuses a lost ${family} case compensated by the other family`, async (t) => {
+      const { measure } = await load("scripts/quality/metrics.mjs");
+      const repo = harnessRepo({
+        "tests/session.test.cjs": testSource(1),
+        "tests/quality-check.test.cjs": testSource(2),
+      });
+      t.after(repo.cleanup);
+      const initial = repo.node("scripts/quality/ratchet.mjs", ["--init"]);
+      assert.equal(initial.code, 0, initial.out);
+      const before = JSON.parse(initial.out);
+      assert.equal(before.cas_de_test_produit, 2);
+      assert.equal(before.cas_de_test_harnais, 2);
+      const green = repo.node("scripts/check.mjs", [...mode, "--json"]);
+      assert.equal(green.code, 0, green.out);
+      assert.equal(JSON.parse(green.out).steps.find((step) => step.name === "cliquet").status, "ok");
+      const product = lost === "produit" ? 1 : 3;
+      const harness = 4 - product;
+      repo.write("tests/session.test.cjs", testSource(product - 1));
+      repo.write("tests/quality-check.test.cjs", testSource(harness));
+      const current = measure(repo.root);
+      assert.equal(current.cas_de_test_produit, product);
+      assert.equal(current.cas_de_test_harnais, harness);
+      assert.equal(current.cas_de_test_produit + current.cas_de_test_harnais, 4);
+      const red = repo.node("scripts/check.mjs", [...mode, "--json"]);
+      assert.equal(red.code, 1, red.out);
+      const ratchet = JSON.parse(red.out).steps.find((step) => step.name === "cliquet");
+      assert.equal(ratchet.status, "ko");
+      assert.equal(ratchet.detail, `Mesures dégradées :\ncas_de_test_${lost} : 2 → 1`);
+    });
+  }
 }
 
 test("measures count long lines, empty catches, env reads, innerHTML, ticket-named tests and test cases", async (t) => {
@@ -120,25 +167,77 @@ test("measures count long lines, empty catches, env reads, innerHTML, ticket-nam
     tests_nommes_par_chantier: 1,
     process_env_hors_config: 1,
     inner_html: 1,
-    cas_de_test: 4,
+    cas_de_test_produit: 4,
+    cas_de_test_harnais: 0,
   });
 });
 
 test("a measure that gets worse is a regression whichever way it is meant to move", async () => {
   const { compare } = await load("scripts/quality/ratchet.mjs");
-  const worse = compare({ catch_vides_prod: 2, cas_de_test: 10 }, { catch_vides_prod: 3, cas_de_test: 9 });
-  assert.deepEqual(worse.regressions.map((r) => r.key), ["catch_vides_prod", "cas_de_test"]);
-  const better = compare({ catch_vides_prod: 2, cas_de_test: 10 }, { catch_vides_prod: 1, cas_de_test: 12 });
+  const baseline = { catch_vides_prod: 2, cas_de_test_produit: 10, cas_de_test_harnais: 5 };
+  const worse = compare(baseline, { catch_vides_prod: 3, cas_de_test_produit: 9, cas_de_test_harnais: 4 });
+  assert.deepEqual(worse.regressions.map((r) => r.key), ["catch_vides_prod", "cas_de_test_produit", "cas_de_test_harnais"]);
+  const better = compare(baseline, { catch_vides_prod: 1, cas_de_test_produit: 12, cas_de_test_harnais: 6 });
   assert.equal(better.regressions.length, 0);
-  assert.deepEqual(better.improvements.map((r) => r.key), ["catch_vides_prod", "cas_de_test"]);
+  assert.deepEqual(better.improvements.map((r) => r.key), ["catch_vides_prod", "cas_de_test_produit", "cas_de_test_harnais"]);
+  for (const [product, harness, lost, gained] of [[9, 6, "produit", "harnais"], [11, 4, "harnais", "produit"]]) {
+    const result = compare(baseline, { cas_de_test_produit: product, cas_de_test_harnais: harness });
+    const key = `cas_de_test_${lost}`;
+    assert.deepEqual(result.regressions, [{ key, before: baseline[key], now: lost === "produit" ? 9 : 4, direction: "min" }]);
+    assert.deepEqual(result.improvements.map((r) => r.key), [`cas_de_test_${gained}`]);
+  }
 });
 
 test("the baseline only ever tightens, never loosens", async () => {
   const { tighten } = await load("scripts/quality/ratchet.mjs");
-  const next = tighten({ catch_vides_prod: 5, cas_de_test: 10 }, { catch_vides_prod: 7, cas_de_test: 8 });
-  assert.deepEqual(next, { catch_vides_prod: 5, cas_de_test: 10 });
-  const improved = tighten({ catch_vides_prod: 5, cas_de_test: 10 }, { catch_vides_prod: 3, cas_de_test: 14 });
-  assert.deepEqual(improved, { catch_vides_prod: 3, cas_de_test: 14 });
+  const baseline = { catch_vides_prod: 5, cas_de_test_produit: 10, cas_de_test_harnais: 5 };
+  const next = tighten(baseline, { catch_vides_prod: 7, cas_de_test_produit: 8, cas_de_test_harnais: 4 });
+  assert.deepEqual(next, baseline);
+  const improved = tighten(baseline, { catch_vides_prod: 3, cas_de_test_produit: 14, cas_de_test_harnais: 7 });
+  assert.deepEqual(improved, { catch_vides_prod: 3, cas_de_test_produit: 14, cas_de_test_harnais: 7 });
+  assert.deepEqual(tighten(baseline, { cas_de_test_produit: 9, cas_de_test_harnais: 6 }), { ...baseline, cas_de_test_harnais: 6 });
+  assert.deepEqual(tighten(baseline, { cas_de_test_produit: 11, cas_de_test_harnais: 4 }), { ...baseline, cas_de_test_produit: 11 });
+  assert.deepEqual(tighten({}, baseline), baseline);
+});
+
+test("test case measures classify declared harness paths and default unknown and nested files to product", async (t) => {
+  const { measure } = await load("scripts/quality/metrics.mjs");
+  const harnessNames = [
+    "ticket-loop", "loop-view", "loop-view-codex", "loop-view-events", "loop-view-state", "loop-view-feed",
+    "loop-web", "loop-web-model", "watch-loop", "watch-loop-render", "agent-guards", "coverage-report",
+    "quality-check", "npm-scripts", "reviewed-state",
+  ];
+  const files = Object.fromEntries(harnessNames.map((name, index) => [`tests/${name}.test.cjs`, testSource(index + 1)]));
+  Object.assign(files, {
+    "tests/new-feature.test.cjs": testSource(2),
+    "tests/nested/deeper/session.test.mjs": "  test('a', () => {});\n\ttest('b', () => {});\ntest(\n'c', () => {});\n",
+    "tests/nested/ticket-loop.test.cjs": testSource(4),
+    "tests/architecture.test.cjs": testSource(5),
+    "tests/new-feature.test.js": testSource(6),
+    "tests/quality-check.test.mjs": testSource(7),
+    "tests/helpers/helper.js": testSource(8),
+    "tests/nested/notes.test.py": testSource(9),
+    "tests/nested/ignored.test.ts": testSource(10),
+  });
+  const repo = harnessRepo(files);
+  t.after(repo.cleanup);
+  const current = measure(repo.root);
+  assert.equal(current.cas_de_test_produit, 28);
+  assert.equal(current.cas_de_test_harnais, 120);
+  const oldTotal = 1 + Object.entries(files).filter(([file]) => /\.test\.(cjs|mjs|js)$/.test(file))
+    .reduce((sum, [, source]) => sum + (source.match(/^\s*test\(/gm) || []).length, 0);
+  assert.equal(current.cas_de_test_produit + current.cas_de_test_harnais, oldTotal);
+  assert.equal(Object.hasOwn(current, "cas_de_test"), false);
+});
+
+test("writing and reading the baseline preserves both independent test case floors", async (t) => {
+  const { readBaseline, writeBaseline } = await load("scripts/quality/ratchet.mjs");
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  const values = { catch_vides_prod: 0, cas_de_test_produit: 12, cas_de_test_harnais: 7 };
+  writeBaseline(repo.root, values);
+  assert.deepEqual(readBaseline(repo.root), values);
+  assert.deepEqual(JSON.parse(repo.read("scripts/quality/baseline.json")), values);
 });
 
 test("the check tolerates long lines already committed and refuses a new one", (t) => {

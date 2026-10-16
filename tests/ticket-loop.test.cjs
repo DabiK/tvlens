@@ -327,6 +327,19 @@ const scenarios = {
     review();
     verdict("TERMINÉ");
   },
+  "adds-test-case"() {
+    fs.appendFileSync(process.env.FAKE_TEST_FILE, "test('an added case', () => {});\\n");
+    review();
+    verdict("TERMINÉ");
+  },
+  "migrates-test-measures"() {
+    if (process.env.TVLENS_HARNESS !== "1") throw new Error("harness permission required");
+    fs.copyFileSync(".harness-state/current-metrics.mjs", "scripts/quality/metrics.mjs");
+    write("scripts/quality/baseline.json", process.env.FAKE_MIGRATED_BASELINE);
+    fs.appendFileSync("tests/quality-check.test.cjs", "test('an added case', () => {});\\n");
+    review();
+    verdict("TERMINÉ");
+  },
 };
 scenarios[scenario]();
 `;
@@ -566,6 +579,71 @@ test("a ticket that improves a measure tightens the baseline in its own commit",
   assert.equal(result.code, 0, result.out);
   assert.equal(JSON.parse(repo.read("scripts/quality/baseline.json")).catch_vides_prod, 0);
   assert.match(repo.git("show", "--stat", "--format=", "HEAD").stdout, /scripts\/quality\/baseline\.json/);
+});
+
+for (const [family, label, file] of [["produit", "product", "tests/sample.test.cjs"], ["harnais", "harness", "tests/quality-check.test.cjs"]]) {
+  test(`integrating an added ${label} test case commits its tighter floor and preserves the other`, (t) => {
+    const repo = loopRepo({
+      "tests/quality-check.test.cjs": "const { test } = require('node:test');\ntest('quality passes', () => {});\n",
+    });
+    t.after(repo.cleanup);
+    const initial = repo.node("scripts/quality/ratchet.mjs", ["--init"]);
+    assert.equal(initial.code, 0, initial.out);
+    const before = JSON.parse(repo.read("scripts/quality/baseline.json"));
+    assert.equal(before.cas_de_test_produit, 1);
+    assert.equal(before.cas_de_test_harnais, 1);
+    assert.equal(repo.git("add", "-A").code, 0);
+    assert.equal(repo.git("commit", "-q", "-m", "baseline").code, 0);
+    const result = repo.loop("adds-test-case", ["--no-retro"], { FAKE_TEST_FILE: file });
+    assert.equal(result.code, 0, result.out);
+    assert.equal(repo.status(), "termine");
+    const key = `cas_de_test_${family}`;
+    const expected = { ...before, [key]: before[key] + 1 };
+    assert.deepEqual(JSON.parse(repo.read("scripts/quality/baseline.json")), expected);
+    const committed = repo.git("show", "HEAD:scripts/quality/baseline.json");
+    assert.equal(committed.code, 0, committed.out);
+    assert.deepEqual(JSON.parse(committed.stdout), expected);
+    assert.equal(repo.git("status", "--porcelain").stdout, "");
+  });
+}
+
+test("integration uses the measure definitions migrated by an authorized harness session", (t) => {
+  const repo = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({ harnais: "oui" }),
+    "tests/quality-check.test.cjs": "const { test } = require('node:test');\ntest('quality passes', () => {});\n",
+  });
+  t.after(repo.cleanup);
+  fs.copyFileSync(path.join(repo.root, "scripts/quality/metrics.mjs"), path.join(repo.root, ".harness-state/current-metrics.mjs"));
+  // L'ancienne définition est chargée au démarrage ; la session migrera ensuite le module sur disque.
+  repo.write("scripts/quality/metrics.mjs", [
+    'export { PROD_DIRS, TICKET_NAMED_TEST, measureText } from "../../.harness-state/current-metrics.mjs";',
+    'import { DIRECTIONS as independent, measure as count } from "../../.harness-state/current-metrics.mjs";',
+    'const { cas_de_test_produit, cas_de_test_harnais, ...other } = independent;',
+    'export const DIRECTIONS = { ...other, cas_de_test: "min" };',
+    'export function measure(root) {',
+    '  const { cas_de_test_produit, cas_de_test_harnais, ...other } = count(root);',
+    '  return { ...other, cas_de_test: cas_de_test_produit + cas_de_test_harnais };',
+    '}',
+    '',
+  ].join("\n"));
+  const initial = repo.node("scripts/quality/ratchet.mjs", ["--init"]);
+  assert.equal(initial.code, 0, initial.out);
+  const { cas_de_test: oldTotal, ...other } = JSON.parse(repo.read("scripts/quality/baseline.json"));
+  assert.equal(oldTotal, 2);
+  assert.equal(repo.git("add", "-A").code, 0);
+  assert.equal(repo.git("commit", "-q", "-m", "baseline").code, 0);
+  const migrated = { ...other, cas_de_test_produit: 1, cas_de_test_harnais: 1 };
+  const result = repo.loop("migrates-test-measures", ["--no-retro", "--attempts", "1"], {
+    FAKE_MIGRATED_BASELINE: JSON.stringify(migrated),
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.status(), "termine");
+  const expected = { ...migrated, cas_de_test_harnais: 2 };
+  const committed = repo.git("show", "HEAD:scripts/quality/baseline.json");
+  assert.equal(committed.code, 0, committed.out);
+  assert.deepEqual(JSON.parse(committed.stdout), expected);
+  assert.deepEqual(JSON.parse(repo.read("scripts/quality/baseline.json")), expected);
+  assert.equal(repo.git("status", "--porcelain").stdout, "");
 });
 
 test("the loop caps the context of a ticket session and records what the session cost, compactions included", (t) => {

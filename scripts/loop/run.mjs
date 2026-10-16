@@ -19,8 +19,7 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { runCodex } from "./codex.mjs";
-import { measure } from "../quality/metrics.mjs";
-import { readBaseline, tighten, writeBaseline } from "../quality/ratchet.mjs";
+import { BASELINE } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
 import { runRetro } from "./retro.mjs";
 import { ticketDir, unacceptedReview, unreviewedChange, untrackedPaths, writeUntrackedBefore } from "./reviewed-state.mjs";
@@ -404,8 +403,11 @@ function pushBranch(branch, id) {
 /** Commit (et push) du ticket. Renvoie le code de sortie de la boucle : 0, 2 si le commit échoue, 3 si le push est refusé. */
 function integrate(ticket, branch, untracked, { step, verdict, history, reviewReserves = [] }) {
   const reserves = [verdict.reste, ...reviewReserves].flat().filter(Boolean);
-  const baseline = readBaseline(root);
-  if (baseline) writeBaseline(root, tighten(baseline, measure(root)));
+  if (fs.existsSync(path.join(root, BASELINE))) {
+    // Une session de harnais peut migrer les mesures : charger leurs définitions actuelles sur disque.
+    const tightened = sh(process.execPath, ["scripts/quality/ratchet.mjs", "--tighten"]);
+    if (tightened.code !== 0) return block(ticket, "Le resserrement du plancher a échoué :\n" + tightened.out, history);
+  }
   const file = path.join(root, ticket.file);
   fs.writeFileSync(file, withReserves(setStatus(fs.readFileSync(file, "utf8"), "termine"), reserves));
   const paths = statusEntries().flatMap((e) => e.paths).filter((p) => !untracked.has(p));

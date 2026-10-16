@@ -13,6 +13,24 @@ const EMPTY_CATCH = /catch\s*(\([^)]*\))?\s*\{\s*\}/g;
 export const TICKET_NAMED_TEST = /(^|[-_.])(f\d{2}|t\d{3}|(ticket|issue)-?\d+|review|refactor)([-_.]|$)/i;
 // Fichiers autorisés à lire process.env : la configuration et les deux points d'entrée des hôtes.
 const ENV_READERS = new Set(["adapters/config.cjs", "app/main.cjs", "server/main.cjs"]);
+// Classer la responsabilité des fichiers explicitement : un nouveau test reste produit par défaut.
+const HARNESS_TESTS = new Set([
+  "tests/agent-guards.test.cjs",
+  "tests/coverage-report.test.cjs",
+  "tests/loop-view.test.cjs",
+  "tests/loop-view-codex.test.cjs",
+  "tests/loop-view-events.test.cjs",
+  "tests/loop-view-feed.test.cjs",
+  "tests/loop-view-state.test.cjs",
+  "tests/loop-web.test.cjs",
+  "tests/loop-web-model.test.cjs",
+  "tests/npm-scripts.test.cjs",
+  "tests/quality-check.test.cjs",
+  "tests/reviewed-state.test.cjs",
+  "tests/ticket-loop.test.cjs",
+  "tests/watch-loop.test.cjs",
+  "tests/watch-loop-render.test.cjs",
+]);
 
 function walk(root, dir, out = []) {
   const abs = path.join(root, dir);
@@ -51,7 +69,8 @@ export const DIRECTIONS = {
   tests_nommes_par_chantier: "max",
   process_env_hors_config: "max",
   inner_html: "max",
-  cas_de_test: "min",
+  cas_de_test_produit: "min",
+  cas_de_test_harnais: "min",
 };
 
 export function measure(root) {
@@ -71,7 +90,8 @@ export function measure(root) {
     m.lignes_longues_tests += longLines(text);
     if (!/\.test\.(cjs|mjs|js)$/.test(rel)) continue;
     if (TICKET_NAMED_TEST.test(path.basename(rel))) m.tests_nommes_par_chantier++;
-    m.cas_de_test += (text.match(/^\s*test\(/gm) || []).length;
+    const family = HARNESS_TESTS.has(rel) ? "cas_de_test_harnais" : "cas_de_test_produit";
+    m[family] += (text.match(/^\s*test\(/gm) || []).length;
   }
   return m;
 }

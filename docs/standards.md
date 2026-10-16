@@ -42,8 +42,15 @@ est relue par le rôle `relecteur`. Le contrôle unique est `node scripts/check.
 | Aucun test ne compare le texte du code source (les gardes d'architecture mises à part) | relecture, puis règle ESLint avec liste d'exceptions |
 | Un fichier de test porte le nom d'un module ou d'un comportement | `check` : refus à la création, cliquet `tests_nommes_par_chantier` |
 | Temps, réseau, disque et fournisseurs sont maîtrisés, pas attendus | relecture ; méthode dans la skill `tests` |
-| Le nombre de cas de test ne baisse pas | cliquet `cas_de_test` |
+| Les nombres de cas produit et harnais ne baissent pas, chacun indépendamment | cliquets `cas_de_test_produit` et `cas_de_test_harnais` |
 | On ne relance pas un test instable jusqu'à ce qu'il passe | règle de travail |
+
+Ces deux compteurs reconnaissent les lignes commençant par `test(`, avec indentation éventuelle,
+dans les fichiers `.test.cjs`, `.test.mjs` et `.test.js` sous `tests/`, récursivement. Ils comptent
+des occurrences textuelles, pas les cas exécutés ni la couverture ; les tests Python en sont exclus.
+La classification suit la responsabilité : les tests de boucle, de ses vues, de hooks, de qualité,
+de couverture et de scripts npm sont déclarés comme harnais dans `scripts/quality/metrics.mjs`.
+Tout chemin non déclaré est produit par défaut, y compris les gardes d'architecture du produit.
 
 ## Interface
 

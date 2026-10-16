@@ -11,7 +11,7 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { measure, measureText, PROD_DIRS, TICKET_NAMED_TEST } from "./quality/metrics.mjs";
+import { DIRECTIONS, measure, measureText, PROD_DIRS, TICKET_NAMED_TEST } from "./quality/metrics.mjs";
 import { compare, readBaseline } from "./quality/ratchet.mjs";
 
 const root = process.cwd();
@@ -157,6 +157,8 @@ function lintFreeze() {
 function ratchet() {
   const baseline = readBaseline(root);
   if (!baseline) return step("cliquet", "skip", "aucun plancher (node scripts/quality/ratchet.mjs --init)");
+  const unknown = Object.keys(baseline).filter((key) => !Object.hasOwn(DIRECTIONS, key));
+  if (unknown.length) return step("cliquet", "ko", "Mesures inconnues du plancher : " + unknown.join(", ") + ". Migrer le plancher explicitement.");
   const { regressions, improvements } = compare(baseline, measure(root));
   const line = ({ key, before, now }) => `${key} : ${before} → ${now}`;
   if (regressions.length) return step("cliquet", "ko", "Mesures dégradées :\n" + regressions.map(line).join("\n"));
