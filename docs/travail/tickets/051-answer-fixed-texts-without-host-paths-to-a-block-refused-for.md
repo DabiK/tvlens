@@ -2,132 +2,95 @@
 id: T051
 titre: Answer fixed texts without host paths to a block refused for its content
 statut: a-faire
-bloque_par: T028, T038, T145
+bloque_par: T201
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: sensible
 ---
 
 ## Ce que le ticket livre
 
-Quand un bloc envoyé par la TV est refusé pour son contenu, la réponse 400 recopie parfois un message
-interne : la fin de la sortie de l'outil média (qui peut nommer un chemin temporaire du serveur),
-l'erreur brute de la bibliothèque d'images, ou un `TypeError` de JavaScript. Après ce ticket, ces
-trois cas répondent un texte fixe en français, le statut reste 400, et le détail d'origine reste
-attaché à l'erreur côté serveur. Deux textes lus par le client changent : le ticket le dit et le
-prouve.
+Un refus de contenu média répond un texte public fixe en français, sans sortie d'outil, chemin
+temporaire ou erreur brute de bibliothèque. Le détail original reste dans la cause côté serveur.
+Les trois cas concernés gardent le statut 400 et les codes stables livrés par T201.
 
 ## Sources
 
-- Constats : SEC-01
-- Le constat est P1 pour le standard « un message interne (chemin, sortie d'un outil) ne part pas vers
-  un client » (`docs/standards.md`, section Erreurs), pas pour une faille : la route exige le jeton
-  d'appareil. Ce ticket traite les refus de contenu ; le ticket suivant du lot traite les erreurs
-  inconnues.
-- Code vérifié à la version `0d5a954` (chercher par nom, les lignes bougeront) :
-  - `adapters/remote-media.cjs`, `command()` (l.49-65) : l.62,
-    `reject(Error('Préparation média échouée : '+err))`, où `err` est la fin de la sortie d'erreur de
-    l'outil.
-  - `adapters/remote-media.cjs`, `RemoteMedia.assemble(input, {signal})` (l.70) : dossier de travail
-    `fs.mkdtemp(path.join(os.tmpdir(),'tvlens-ingest-'))` (l.72) ; fonction locale `encode` (l.76-84),
-    `sharp(Buffer.from(frame.data,'base64'),{limitInputPixels:1920*1080})…toBuffer()` : l'erreur de la
-    bibliothèque sort telle quelle. Dans `encode`, `signal?.throwIfAborted()` et les écritures passées
-    par `scratch` (l.45, 503 `media-unavailable`) ont déjà leur traitement : seul l'appel à la
-    bibliothèque d'images (de `sharp(…)` à `toBuffer()`) est à envelopper.
-  - `adapters/remote-media.cjs`, `validateRemote(input)` (l.29-39) : boucle des images l.34,
-    `if(!Number.isFinite(f.atMs)||…)throw Error('Ordre des images invalide.')`. Une image `null` lève
-    avant ce contrôle.
-  - `server/http.cjs`, `catch` général de `RemoteServer.handle` (l.275-290) : une erreur sans statut
-    devient `400 { error: error.message }`.
-  - `tv/app/companion.js`, `tvlensViewRefusal` (l.240) : le panneau ne lit le texte d'un 400 que pour
-    y chercher « vue d'état inconnue », sur les lectures d'état ; il n'envoie pas de bloc.
-  - `tv/transport.py`, `refusal(error)` (l.22-29) rend `(status, code, message)` ; l'envoi d'un bloc
-    ignore le message (`status, code, _ = refusal(error)`) et abandonne le bloc quand
-    `status < 500 and status not in (408, 429)`, en notant `HTTP <status>`.
-- Comportement observé à la version `0d5a954` :
-
-  ```sh
-  node -e "const {validateRemote}=require('./adapters/remote-media.cjs');try{validateRemote({frames:[null]})}catch(e){console.log(e.name,'|',e.message)}"
-  ```
-
-  Sortie : `TypeError | Cannot read properties of null (reading 'atMs')`. Avec `frames:[{}]` ou
-  `frames:["x"]`, la sortie est `Error | Ordre des images invalide.`.
-- Test existant : `tests/architecture-f06.test.cjs`, « a media tool that does not end in time, cannot
-  be started, or has no temporary directory is answered 503 with a code and no path of the host, and
-  the same block is admitted again; a block that is itself wrong stays 400 with its message » (l.360).
-  Il épingle l.386 `notWav: invalid('Audio WAV requis.')`, `notAnImage: invalid('unsupported image
-  format')`, `incoherent: invalid('Déclaration d’images masquées incohérente.')`,
-  `toolRefused: invalid('Préparation média échouée : boom')` et `paths: false` ; la l.382 réduit le
-  message de la bibliothèque d'images à `unsupported image format`.
-- Second test qui épingle les deux textes, par `RemoteMedia.assemble` appelé directement :
-  `tests/media-asr-options.test.cjs`, « a failed frame waits for the running audio child before
-  cleanup and stays the reported error » (l.68) — `assert.rejects(…, /unsupported image format/)`
-  l.74 et l.77, `assert.rejects(…, /Préparation média échouée : /)` l.78 (faux outil qui écrit `boom`
-  et sort en échec). Sans mise à jour, ce test échoue dès que les textes changent.
-- Test du client de la TV : `tests/test_tv_control.py`,
-  `test_archive_open_read_only_stops_by_name_and_a_plain_conflict_stays_a_rejected_block` (l.131).
+- `docs/audit-architecture.md`, rapport A, B4 et D4 ; rapport B, B2.
+  Décision du propriétaire, le 16/10 : retirer les dépendances inutiles T028, T038 et T145 ;
+  attendre T201, puis T188/T124/T199/T178 transitivement. T038 n'est pas nécessaire : les vrais
+  bancs HTTP et le transport Python existants suffisent à prouver les refus de contenu.
+- Code vérifié à `8340014` : `adapters/remote-media.cjs:62` concatène stderr au message
+  « Préparation média échouée : … » ; `adapters/remote-media.cjs:76` laisse remonter l'erreur
+  d'encodage d'image ; `adapters/remote-media.cjs:34` déréférence chaque frame sans garde d'objet.
+  Pour un bloc autrement valide, une frame null atteint donc un TypeError avant le refus voulu.
+  C'est une déduction du contrôle de flux, distincte du TypeError Mac infirmé dans la synthèse.
+- `adapters/remote-media.cjs:43` et `adapters/remote-media.cjs:45` classent déjà les pannes
+  d'outil/espace temporaire en 503 media-unavailable. `adapters/remote-media.cjs:95` attend les
+  travaux commencés et conserve la première erreur ; `adapters/remote-media.cjs:114` nettoie
+  ensuite. Le ticket conserve ces garanties et la priorité de l'annulation.
+- L'appel passe désormais par `server/ingest-routes.cjs:7` ; le repli HTTP est à
+  `server/http.cjs:89`, plus aux anciennes lignes 275 à 290.
+- Tests qui épinglent les deux anciens textes : `tests/architecture-f06.test.cjs:360` et
+  `tests/media-asr-options.test.cjs:68`. `tests/architecture-f06.test.cjs:479` protège le
+  nettoyage et l'erreur primaire. Relire les adaptations de T188/T201 avant de renforcer ces attentes.
+- `tv/transport.py:76` lit statut/code ; `tv/transport.py:85` abandonne un 400 sans exploiter
+  le message. Test client existant : `tests/test_tv_control.py`, cas d'archive en lecture seule et
+  de conflit ordinaire. ADR 0006, 0021 et 0023 : possession du bloc et ordre du transport inchangés.
 
 ## Périmètre
 
-- À modifier : `adapters/remote-media.cjs`, `tests/architecture-f06.test.cjs`,
-  `tests/media-asr-options.test.cjs`, `tests/test_tv_control.py`, et le test de contrat livré par le
-  jalon `contrat-fil` s'il épingle l'un des deux textes.
-- Textes qui changent, tous deux lus par le client dans le champ `error` d'un 400 :
-  - « Préparation média échouée : » suivi de la sortie de l'outil devient « Préparation média
-    échouée. » ; la sortie de l'outil passe en `cause` de l'erreur.
-  - le message brut de la bibliothèque d'images devient « Image illisible. » ; l'erreur d'origine passe
-    en `cause`.
-- Texte ajouté à un cas qui n'en avait pas : une image `null` ou qui n'est pas un objet répond le
-  texte existant « Ordre des images invalide. ».
-- Dans le test existant, deux attentes sont remplacées par des textes fixes, plus stricts :
-  `notAnImage: invalid('Image illisible.')` et `toolRefused: invalid('Préparation média échouée.')` ;
-  la réduction de la l.382 n'a plus d'objet, et la fin du titre du test (« stays 400 with its
-  message ») peut être ajustée si elle devient inexacte. Aucune autre attente ne change, aucun cas
-  n'est retiré.
-- Dans `tests/media-asr-options.test.cjs`, les trois attentes du test l.68 sont remplacées par des
-  attentes plus strictes, au même endroit et dans le même ordre : l.74 et l.77, rejet dont le message
-  est exactement « Image illisible. » et dont `cause.message` correspond à
-  `/unsupported image format/` ; l.78, rejet dont le message est exactement « Préparation média
-  échouée. » et dont `cause` contient `boom`. Les autres assertions du test (journal de l'outil,
-  dossiers temporaires) ne changent pas : l'erreur de l'image reste celle qui est rapportée.
-- À ne pas toucher : le statut 400 de ces refus ; les réponses 503 `media-unavailable` et 507
-  `storage-full` ; l'annulation (`signal`) ; `server/http.cjs` (ticket suivant) ; `tv/transport.py` ;
-  aucun code d'erreur n'est ajouté ni renommé.
+- Modifier `adapters/remote-media.cjs` et ses preuves dans `tests/architecture-f06.test.cjs`,
+  `tests/media-asr-options.test.cjs`, `tests/remote-media.test.cjs` si nécessaire et
+  `tests/test_tv_control.py`. Réutiliser le refus explicite à statut/code introduit par T188,
+  avec les codes d'émetteur de T201.
+- Remplacer stderr concaténé par « Préparation média échouée. » ; le détail de l'outil reste dans
+  cause. Envelopper seulement la construction/transformation sharp jusqu'à toBuffer par
+  « Image illisible. », avec l'erreur d'origine en cause. Ne pas envelopper avec ce refus les
+  écritures scratch ni la raison d'annulation : elles gardent leur statut et leur identité.
+- Avant toute lecture des propriétés d'une frame, refuser null ou une valeur non objet par
+  « Ordre des images invalide. ». Ce refus est explicite, sans dépendre du repli générique du serveur.
+- Renforcer les deux attentes HTTP et les trois attentes directes qui épinglent les anciens textes :
+  message public exact, code de T201 conservé et cause originale contrôlée pour l'appel direct.
+  Retirer la réduction du message sharp à un fragment technique dans le test HTTP.
+- Garder audio WAV requis, déclarations d'images masquées tant qu'elles existent, statut 400,
+  réponses 503/507, annulation, réadmission et nettoyage. Pas de nouveau contrat de transport, de nouveau code ad hoc ou de
+  changement HTTP/TV produit ; T052 traite ensuite le repli inattendu et T189 les lecteurs TV.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
-
-1. `POST /v1/segments` avec une image qui n'en est pas une : `400 { error: 'Image illisible.' }`.
-2. Même route, outil média qui refuse (cas `toolRefused` du test existant) :
-   `400 { error: 'Préparation média échouée.' }` ; le corps ne contient ni `boom` ni chemin de l'hôte
-   (`paths: false` reste exigé).
-3. Même route avec `frames: [null]` : `400 { error: 'Ordre des images invalide.' }`.
-4. Inchangés et toujours exigés par le test existant : `Audio WAV requis.`, `Déclaration d’images
-   masquées incohérente.`, les réponses 503 avec leur code, et la réadmission du même bloc.
-5. `RemoteMedia.assemble` appelé directement sur les cas 1 et 2 rejette avec une erreur dont `cause`
-   porte le détail d'origine (erreur de la bibliothèque d'images, sortie de l'outil) : ce sont les
-   trois attentes mises à jour du test l.68 de `tests/media-asr-options.test.cjs`.
-6. Client de la TV : un bloc refusé par `400 {"error": "Image illisible."}` est abandonné sans nouvel
-   envoi et noté `HTTP 400`, comme tout refus de contenu. Cas ajouté dans `tests/test_tv_control.py` à
-   côté de `test_archive_open_read_only_stops_by_name_and_a_plain_conflict_stays_a_rejected_block`.
-7. `node --test --test-concurrency=1 tests/architecture-f06.test.cjs tests/media-asr-options.test.cjs tests/server-ingest-path.test.cjs`
-   passe ; `python3 -B -m unittest discover -s tests -p "test_tv_control.py"` passe ;
-   `node scripts/check.mjs` est vert.
+1. Par POST /v1/segments, une image indécodable répond 400 avec error exactement « Image illisible. »
+   et le code `image-unreadable` (`TVLENS_MEDIA_IMAGE_UNREADABLE`). Le refus d'outil répond 400
+   « Préparation média échouée. » avec `media-tool-refused` (`TVLENS_MEDIA_TOOL_REFUSED`).
+   Aucun corps ne contient stderr, le chemin fictif de test ou le détail sharp.
+2. Un bloc autrement valide avec frames contenant null ou une valeur non objet répond 400
+   « Ordre des images invalide. » avec `invalid-media-block` (`TVLENS_MEDIA_BLOCK_INVALID`), sans TypeError.
+3. L'appel direct à RemoteMedia.assemble garde la cause sharp ou la sortie de l'outil, sous le texte
+   public fixe. Si un nettoyage échoue aussi, l'erreur primaire reste la réponse.
+4. Les cas existants WAV, 503 media-unavailable, 507 storage-full, réadmission et annulation
+   gardent statut, code et attentes ; ceux de déclaration d'images masquées les gardent tant
+   qu'elle existe, T194 pouvant l'avoir déjà retirée. Tous les travaux commencés se règlent avant nettoyage.
+5. Le vrai transport Python devant son faux serveur abandonne le 400 image et note HTTP 400, sans
+   renvoi. Ni sa politique de reprise ni son code produit ne changent.
+6. À l'implémentation, exécuter architecture-f06, media-asr-options, remote-media et
+   server-ingest-path en séquentiel, puis la suite Python test_tv_control et `node scripts/check.mjs`.
+   Les seules attentes de texte remplacées sont nommées au journal ; les nouvelles sont plus strictes.
 
 ## Test d'acceptation attendu
 
-Le test existant de `tests/architecture-f06.test.cjs`, par la route `POST /v1/segments` d'un vrai
-`RemoteServer`, avec les deux textes fixes et le cas `frames: [null]` en plus ; le test l.68 de
-`tests/media-asr-options.test.cjs` pour la cause, par `RemoteMedia.assemble`. La preuve côté client
-est le cas ajouté dans `tests/test_tv_control.py`, par la boucle d'envoi réelle de `tv/transport.py`.
+Le cas HTTP existant d'architecture-f06 utilise le vrai RemoteServer et le vrai RemoteMedia avec
+un faux outil qui échoue. Les tests directs de media-asr-options vérifient les causes, que la réponse
+HTTP ne publie pas. Le cas Python prouve le maintien du rejet définitif d'un 400 de contenu.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Remplacer une attente par une attente plus stricte dans deux tests
-existants n'en retire aucune. Si le test de contrat du jalon `contrat-fil` ou un client de la TV lit
-le texte après « Préparation média échouée » pour décider quoi faire, ou si un autre test que les deux
-nommés ici épingle l'un des deux anciens textes : verdict BLOQUÉ, avec le fichier et la ligne.
+Aucune décision n'est attendue.
+
+T201 fournit les trois codes nommés ci-dessus et implique le transport T188. Ces refus restent
+explicitement des 400 après T052, sans classification de leurs messages. La présence possible de chemins dans stderr est établie comme voie de propagation ;
+aucune sortie réelle de ffmpeg contenant un chemin n'a été produite pendant ce rafraîchissement.
+Aucun jalon contrat-fil non livré n'est requis.
 
 ## Journal

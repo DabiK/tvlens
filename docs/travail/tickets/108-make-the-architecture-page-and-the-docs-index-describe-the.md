@@ -2,128 +2,117 @@
 id: T108
 titre: Make the architecture page and the docs index describe the current code
 statut: a-faire
-bloque_par: T107, T145
+bloque_par: T030, T202, T194
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
 
-`CLAUDE.md` envoie chaque session lire `docs/architecture.md`. Or la page s'ouvre sur une affirmation
-fausse (« ni commitée ni déployée ») et ignore la composition `runtime/session-closing.cjs`. Elle décrit
-aussi la file de perception de façon imprécise et ne renvoie à aucune des dix décisions de `docs/adr/`.
-L'index `docs/README.md` affirme « Rien n'est déployé ». Il range quatre rapports datés avec la référence,
-et sept documents n'y figurent pas. Après ce ticket, ces deux pages disent l'état du code sans nom de
-branche, sans état de déploiement et sans décompte de tests. L'architecture renvoie à chaque ADR, et
-l'index cite chaque document de premier niveau. Deux phrases fausses ou périmées sont aussi corrigées
-dans `docs/installation.md` et `README.md`. Un test garde l'index et les renvois.
+La page d'architecture décrit les propriétaires actuels, le chemin de perception réellement utilisé
+et les frontières vérifiées par les tests. L'index distingue référence et rapports datés, et permet
+de retrouver tous les documents de premier niveau et les décisions. Les affirmations périmées de
+déploiement ou de branche quittent ces pages de référence ; les faits historiques restent datés.
 
 ## Sources
 
-- Constats : DOC-02, DOC-03, DOC-07
-- Code et documents, à la version `0d5a954` :
-  - `docs/architecture.md`, paragraphe d'introduction (ligne 3) : il cite quatre des cinq fichiers de
-    `runtime/` et omet `runtime/session-closing.cjs` (commande : `ls runtime`). Ce fichier est appelé par `app/main.cjs` (`require`
-    ligne 4) et par `runtime/headless-runtime.cjs` (ligne 18). Son en-tête (lignes 1-7) dit son rôle :
-    la fin d'une session chargée, la même sur les deux hôtes.
-  - `docs/architecture.md`, bandeau « État du 13 octobre 2026 » (ligne 5) : il cite la branche
-    `codex/tvlens-night-features`, « ni commitée ni déployée ». Le code est committé.
-    `docs/night-features-delivery.md`, section 13 (ligne 966), relate une installation sur le VPS et la
-    TV le 13 octobre.
-  - `docs/architecture.md`, section « De la capture à la réponse », étape 3 (ligne 26) : « deux files
-    FIFO bornées (un travail actif et deux en attente chacune) ». Dans `core/session.cjs`, le
-    constructeur de `WatchSession` (ligne 47) pose `maxPending = 2`. En perception séparée, `shed()`
-    (lignes 147-155) saute la transcription des passages en attente au-delà de `maxPending`, puis abandonne
-    le plus ancien passage entier tant que la file dépasse `maxPending * 3` (ligne 151), soit six passages
-    en attente. `runtime/session-runtime.cjs` (ligne 383) construit `WatchSession` sans `maxPending` : la
-    valeur par défaut s'applique.
-  - `docs/architecture.md` : aucune occurrence de « adr », « session-closing », « scell », « révoqu »,
-    « redemand ». Commande : `grep -ciE "adr|session-closing|scell|révoqu|redemand" docs/architecture.md`
-    renvoie 0.
-  - `docs/README.md`, section « Comprendre, développer, vérifier », ligne 25 : la ligne du livrable de la
-    nuit finit par « Rien n'est déployé ». Les lignes 24 à 28 du tableau rangent avec la référence quatre
-    rapports datés : `night-features-delivery.md`, `backend-latency-optimization.md`,
-    `reinspection-transcript-reuse.md` et `publication-audit.md`.
-  - Documents de `docs/` de premier niveau absents de `docs/README.md` : `active-goal.md`,
-    `chat-overlay-validation.md`, `lg-companion-design.md`, `lg-pre-root-safety.md`,
-    `reexamen-contract-original.md`, `research-dgx-spark-qwen38-2026-10-12.md` et `standards.md`.
-    `docs/adr/`, `docs/diagrams/README.md` et `docs/architecture-improvements/index.md` n'y figurent pas
-    non plus. Commande :
-    `for f in $(git ls-files 'docs/*.md' | grep -v '/.*/'); do b=${f#docs/}; grep -q "]($b)" docs/README.md || echo $b; done`.
-  - `docs/validation.md` s'ouvre sur « État actuel — 4 octobre 2026 ». `docs/refactor-runtime.md`, rangé
-    sous « Rôles des agents », est titré « 30 septembre 2026 ».
-  - `docs/installation.md`, paragraphe qui suit le bloc de code du test réel (lignes 210-212) : il affirme
-    que `scripts/probe-video-chat-live.mjs` « appelle encore l'ancien pont Auto ». Le script appelle
-    `window.tvlens.startSurveillance` (ligne 28).
-  - `README.md`, section « Ce qui est prouvé, ce qui reste à mesurer », première puce (ligne 169) :
-    « 287 tests Node et 6 tests Python… avant ses changements ». C'est un décompte daté.
+- `docs/audit-architecture.md`, rapport A, B12 et D3 ; décision du propriétaire, le 16/10 :
+  attendre les gardes de T030/T202 et le retrait de T194 avant de décrire leur résultat.
+- Documents vérifiés à `8340014` : `docs/architecture.md:3` ne cite que trois compositions partagées ;
+  `docs/architecture.md:5` dit encore « ni commitée ni déployée » sur une ancienne branche.
+  `docs/architecture.md:26` décrit deux files de deux éléments et les adaptateurs historiques
+  `observe` ; `docs/architecture.md:61` annonce les variantes OpenRouter conservées.
+  L'ADR 0016 a pourtant retiré les adaptateurs d'évaluation.
+- Les nouveaux propriétaires sont câblés à `runtime/session-runtime.cjs:21`,
+  `runtime/session-runtime.cjs:25`, `runtime/session-runtime.cjs:26`,
+  `runtime/headless-runtime.cjs:12`, `runtime/headless-runtime.cjs:18`,
+  `runtime/headless-runtime.cjs:34`, `adapters/codex-session-client.cjs:5`,
+  `adapters/codex-session-client.cjs:6`, `app/renderer.js:5`,
+  `app/renderer.js:17`, `app/renderer.js:21` et `tv/app/index.html:196`.
+  Les ADR 0018 à 0027 en décrivent les coutures.
+- `core/session.cjs:159` contient `shed()` : en perception séparée, la file audio peut garder
+  jusqu'à `maxPending * 3` passages, tout en sautant la transcription des plus anciens au-delà de
+  `maxPending`. `core/session.cjs:179` borne séparément la file vision. Relire après T194.
+- `docs/README.md:25` dit encore « Rien n'est déployé » et classe plusieurs rapports avec la
+  référence ; `docs/README.md:13` présente encore l'ambient comme livré, alors que le retrait
+  est déjà expliqué à `docs/architecture.md:117` et `README.md:92`.
+- Inventaire disque de ce worktree : dix Markdown de premier niveau sont absents de l'index,
+  dont `standards.md` et les trois audits, audit d'architecture non suivi compris. L'ancienne liste
+  de sept absents est périmée. Sur les ADR 0001 à 0027, seule la décision 0017 est liée depuis
+  l'architecture ; « aucun ADR » et « dix ADR » sont donc tous deux périmés.
+- `docs/installation.md:211` annonce encore le pont Auto ; le script appelle la surveillance à
+  `scripts/probe-video-chat-live.mjs:28`. `README.md:177` conserve un décompte de tests daté.
+  Aucun `tests/documentation-links.test.cjs` ni test d'index documentaire n'existe dans cette base :
+  T107 ne doit pas être un prérequis implicite.
 
 ## Périmètre
 
-- À modifier :
-  - `docs/architecture.md` :
-    - l'introduction cite les cinq fichiers de `runtime/`, `session-closing.cjs` compris, chacun avec son
-      rôle en une demi-phrase ;
-    - le bandeau de la ligne 5 est retiré. Un lien vers ce qui est prouvé peut rester, sans date, sans
-      branche et sans état de déploiement ;
-    - l'étape 3 décrit la voie comme le fait `shed()` : deux en attente, et jusqu'à six passages en
-      perception séparée, le plus ancien abandonné au-delà ;
-    - une section « Décisions » est ajoutée, regroupée par thème : cycle de vie d'une session (0002, 0003,
-      0005, 0006, 0007), perception (0008), résumé (0009), relecture (0010), recherche et questions (0001,
-      0004). Une phrase par ADR reprend sa décision, avec un lien vers le fichier. Aucune règle nouvelle.
-  - `docs/README.md` :
-    - « Rien n'est déployé » est retiré ;
-    - une section « Rapports datés » reçoit les quatre rapports cités, chacun avec sa date ;
-    - une section « Règles et décisions » renvoie à `standards.md` et au dossier `adr/` ;
-    - les sept documents absents sont indexés dans la section qui convient, d'après leur premier titre ;
-      `diagrams/README.md` et `architecture-improvements/index.md` vont sous « Recherche et historique » ;
-    - la colonne « Contenu » de `validation.md` et de `refactor-runtime.md` donne leur date.
-  - `docs/installation.md`, lignes 210-212 : la moitié fausse de la phrase est corrigée. Le script lance
-    la surveillance par `startSurveillance`. Ce qui n'est pas vérifiable (« n'a pas été rejoué ») est
-    laissé tel quel.
-  - `README.md`, ligne 169 : le décompte daté est remplacé par la commande qui produit le décompte actuel,
-    `node scripts/check.mjs`. Le renvoi au livrable de la nuit reste. La ligne 170 et le bandeau de la
-    ligne 89 ne sont pas touchés : l'état de déploiement attend une décision du propriétaire (T140).
-  - À créer : `tests/documentation-index.test.cjs`. Il exige que :
-    - chaque fichier `.md` de premier niveau de `docs/` (hors `README.md`) et chaque
-      `docs/archive/*/README.md` soient liés depuis `docs/README.md` ;
-    - chaque `docs/adr/NNNN-*.md` (hors `0000-gabarit.md`) soit lié depuis `docs/architecture.md` ;
-    - `docs/architecture.md`, `docs/README.md` et `CONTRIBUTING.md` ne contiennent ni décompte de tests
-      (`/\b\d+ tests?\b/`), ni nom de branche entre accents graves après le mot « branche ».
-
-    L'univers des fichiers est celui de `tests/documentation-links.test.cjs`. Un ticket `adr: oui` de la
-    boucle ajoutera un ADR. Le message d'échec doit donc dire quoi faire : « ajouter une phrase et un lien
-    dans la section Décisions de docs/architecture.md ».
-- À ne pas toucher : le code de production, les ADR, `CLAUDE.md`, `docs/standards.md`. Aucun document
-  n'est déplacé ni renommé dans ce ticket.
+- Modifier `docs/architecture.md` : présenter les couches selon la table de T025 et les exceptions de T030/T202 ;
+  nommer les propriétaires session-providers, session-manifest, session-lifecycle, session-closing,
+  capture-intake, headless-session-lifecycle et state-views, avec leur responsabilité.
+  Décrire aussi les coutures Mac de capture/livraison d'état, les événements/tours Codex et
+  modèles/polling/vue de chat TV. Éviter un inventaire de chaque fonction.
+- Recaler le chemin capture → perception → question après T193/T194 : audio et vision distincts,
+  bornes et surcharge conformes au code livré, DeepAsk pour les questions. Distinguer données
+  `questions` des anciennes archives et API historique retirée. Ne pas annoncer le chemin série
+  simulé ou les adaptateurs supprimés comme des capacités présentes.
+- Expliquer le partage des règles entre les hôtes et leurs ordres de fin propres (ADR 0007).
+  Une section Décisions lie chaque ADR numéroté présent, hors gabarit, avec une phrase fidèle.
+  Les ADR historiques ne sont pas réécrits ; préciser lorsqu'une décision ultérieure les remplace.
+- Modifier `docs/README.md` : indexer tous les Markdown de premier niveau hors lui-même, les
+  éventuels `archive/*/README.md`, `adr/`, `diagrams/README.md` et
+  `architecture-improvements/index.md`. Séparer les rapports datés de la référence, classer les
+  documents d'après leur titre/contenu et dater les relevés historiques. Recaler l'entrée ambient
+  sur l'ADR 0017. L'audit peut être lié sans en recopier une affirmation non vérifiée.
+- Corriger uniquement la phrase sur le pont Auto dans `docs/installation.md`, et les anciennes
+  stratégies d'évaluation encore annoncées disponibles. Ne pas prétendre que la sonde live a été
+  rejouée. Dans `README.md`, remplacer le décompte daté par la commande de contrôle et son renvoi
+  au livrable ; conserver les faits datés de déploiement et les limites matérielles.
+- Créer `tests/documentation-index.test.cjs`, autonome, sans dépendre du futur T107 : énumération
+  locale des documents et ADR, vérification des liens attendus et de leurs cibles. Les diagnostics
+  disent quel lien ou quelle phrase ajouter. Il refuse dans architecture/index/CONTRIBUTING les
+  décomptes de tests et noms de branche présentés comme état courant.
+- Ne déplacer ni renommer de document. Ne modifier ni code produit, ni ADR, ni harnais, ni
+  `CLAUDE.md`, ni standards. Les recherches d'absence excluent audits, tickets et ADR historiques.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
-
-1. `node --test tests/documentation-index.test.cjs` échoue sur la version `0d5a954` des documents, en
-   nommant les sept documents non indexés et les dix ADR non liés. Il passe après les modifications.
-   Les deux sorties sont dans le journal.
-2. `grep -nE "codex/tvlens-night-features|ni commitée|Rien n.est déployé" docs/architecture.md docs/README.md`
-   ne renvoie rien.
-3. `grep -c "session-closing.cjs" docs/architecture.md` vaut au moins 1, et
-   `grep -nE "jusqu.à six|six passages" docs/architecture.md` renvoie une ligne.
-4. `grep -n "ancien pont Auto" docs/installation.md` ne renvoie rien, et
-   `grep -n "startSurveillance" docs/installation.md` renvoie une ligne.
-5. `grep -nE "287 tests|6 tests Python" README.md` ne renvoie rien.
-6. `node --test tests/documentation-links.test.cjs` passe.
-7. `node scripts/check.mjs --changed` est vert ; format et lint sont rapportés « non lancés » tels quels.
+1. Le nouveau test échoue sur les documents de début de session avec les chemins manquants,
+   puis passe après correction ; il n'épingle ni sept absents ni dix ADR. La liste effective au
+   démarrage du ticket et les sorties rouge/verte sont consignées au journal.
+2. Chaque document de premier niveau, chaque index d'archive présent et chaque ADR numéroté hors
+   gabarit sont liés par la page appropriée. Une fixture d'ADR ajouté sans lien échoue avec la
+   consigne d'ajouter une phrase et un lien à la section Décisions. Une cible absente échoue aussi.
+3. Architecture et index ne prétendent plus décrire une branche non commitée ou un état courant de
+   déploiement. Ils distinguent référence, preuves datées et limites. Le test ignore les documents
+   historiques pour ces interdictions.
+4. Le test documentaire exige dans la carte les sept noms `session-providers`, `session-manifest`,
+   `session-lifecycle`, `session-closing`, `capture-intake`, `headless-session-lifecycle` et `state-views`.
+   Une fixture retirant un de ces noms échoue avec le module manquant. La carte donne leur rôle et
+   leurs frontières ; files et cycle de session concordent avec T030/T202/T194 et l'ADR 0007.
+   Le journal donne les modules relus et la correspondance entre paragraphes et code.
+5. La phrase « ancien pont Auto » disparaît du guide ; `startSurveillance` y remplace cette
+   affirmation. Le README n'annonce plus les anciens nombres de tests. Aucun essai matériel,
+   exécution live ou déploiement n'est revendiqué.
+6. À l'implémentation, lancer le test documentaire puis `node scripts/check.mjs --changed` ;
+   rapporter exactement les étapes exécutées ou non lancées, sans supposer l'état des outils.
 
 ## Test d'acceptation attendu
 
-`tests/documentation-index.test.cjs`, par la frontière des fichiers publiés. Il lit les documents et la
-liste des fichiers Git, sans réseau.
+`tests/documentation-index.test.cjs` lit les documents publiés et leur arborescence, sans réseau.
+Ses fixtures prouvent qu'un document ou ADR oublié et une cible inexistante sont effectivement
+refusés. La fidélité du texte architectural se relit contre les modules et la table de garde.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Le ticket retire des pages de référence l'état de déploiement sans en
-affirmer un autre. Les phrases de `README.md` et de `SECURITY.md` qui le portent restent à T140.
+Aucune décision n'est attendue.
+
+T202 dépend de T030, qui implique T025, T199 et T178 ; T194 implique T193 et T190 et attend sa propre décision.
+T107 n'est plus nécessaire. L'état installé sur la TV ou le VPS n'est pas déduit du dépôt.
+Les décomptes de documents sont des repères d'exploration à recalculer après les dépendances,
+pas des valeurs à figer dans le test.
 
 ## Journal

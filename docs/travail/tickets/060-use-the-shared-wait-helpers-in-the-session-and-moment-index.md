@@ -1,92 +1,100 @@
 ---
 id: T060
-titre: Use the shared wait helpers in the session and moment index tests
+titre: Use the shared wait helpers in the protocol and Codex tests
 statut: a-faire
-bloque_par: T055, T145
+bloque_par: T199
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
 
-Huit fichiers de test redéfinissent chacun `tick`, `deferred` ou une boucle de tours comptés. Après ce
-ticket, ils les prennent dans `tests/helpers/wait.cjs`. C'est le premier des trois lots de migration ;
-aucun test ne change de sens.
+Premier lot : les protocoles et bancs Codex prennent leurs aides génériques dans le module partagé.
+Les attentes jusque-là bornées en tours réels deviennent des échéances nommées ; les scénarios et
+leurs résultats attendus sont conservés. T061 migre le lot suivant, puis T062 contracte l'inventaire.
 
 ## Sources
 
-- Constats : FLK-12, TSTA-02, TSTB-03
-- Définitions locales vérifiées à la version `0d5a954` (le nom d'abord, la ligne ensuite) :
-  - `tests/session.test.cjs` : `const tick`, ligne 4 ; `const deferred`, ligne 5 (8 tests) ;
-  - `tests/session-latency.test.cjs` : `const tick`, ligne 5 ; `const deferred`, ligne 6 (20 tests) ;
-  - `tests/split-perception.test.cjs` : `const tick`, ligne 7 ; `const deferred`, ligne 8 (10 tests) ;
-  - `tests/session-delete.test.cjs` : `const tick`, ligne 14 ; `const settle = async watch =>`,
-    ligne 15 ; `const deferred`, ligne 16 (3 tests) ;
-  - `tests/session-durable.test.cjs` : `const tick`, ligne 18 ; `const settle = async watch =>`,
-    ligne 19 ; `const deferred`, ligne 20 ; `const turns = async () =>` (20 tours), locale à un test,
-    ligne 1004 (24 tests) ;
-  - `tests/disk-guard.test.cjs` : `const tick`, ligne 14 ; `const settle = async watch =>`, ligne 15
-    (4 tests) ;
-  - `tests/clip-unreadable.test.cjs` : `const tick`, ligne 24 ; `const settle = async watch =>`,
-    ligne 25 (5 tests) ;
-  - `tests/moment-index.test.cjs` : `const tick`, ligne 15 ; `const settle = async () =>` (6 tours),
-    locale à un test, ligne 525 ; `const bounded = setup(…)`, ligne 93, est une variable de test sans
-    rapport avec l'aide `bounded` (22 tests).
-- `settle(watch)` (`do { await tick(); } while (watch.running)`) attend un vrai signal de la session
-  de visionnage : ce n'est pas une copie des `settle` à tours comptés.
-- Module partagé : `tests/helpers/wait.cjs`, créé par le ticket qui précède (`tick`, `turns`,
-  `deferred`, `pause`, `until`, `bounded`, `failure`).
+- `docs/audit-architecture.md`, rapport A, B8 et D14 ; rapport B, B7.
+  Décision du propriétaire, le 16/10 : trois lots successifs ; retirer T145 et T055, déjà terminé.
+- Les aides existent déjà dans `tests/helpers/wait.cjs:11` à `:82` : pause réelle capturée avant
+simulation, tick par setImmediate, turns avec nombre explicite, deferred avec resolve/reject,
+until nommé et séquentiel borné par horloge monotone (5 s par défaut), bounded qui relaie les
+rejets et retourne une sentinelle à l'échéance, failure pour un rejet attendu.
 
 ## Périmètre
 
-- À modifier : les huit fichiers ci-dessus, et eux seuls.
-  - `tick` et `deferred` viennent du module ; leurs définitions locales disparaissent ;
-  - `settle(watch)` reste défini dans ses quatre fichiers, sur le `tick` partagé ;
-  - la boucle locale de `tests/session-durable.test.cjs` (ligne 1004) devient `turns(20)` et celle de
-    `tests/moment-index.test.cjs` (ligne 525) devient `turns(6)`, avec le même nombre de tours ; cette
-    dernière appartient à une horloge écrite sur place dans un test : si le ticket des horloges
-    partagées est passé avant, elle a déjà disparu avec cette horloge et il n'y a rien à faire ;
-  - `manualClock` de `tests/moment-index.test.cjs` continue d'utiliser `tick`, où qu'elle soit définie
-    au moment où ce ticket est traité.
-- À ne pas toucher : le code de production ; `tests/helpers/wait.cjs` (si une aide manque, c'est un
-  écart à signaler, pas une variante à ajouter) ; les titres des tests, les valeurs attendues, les
-  nombres de tours.
-- Aucune ligne de plus de 160 caractères ajoutée.
+Chaque nom ci-dessous désigne le fichier `tests/<nom>.test.cjs`, seul périmètre modifiable du lot.
+La table donne les définitions actuelles et chaque changement de sémantique :
+
+| Fichier et repères vérifiés | Migration et contrat conservé ou changé |
+| --- | --- |
+| `tests/architecture-f04.test.cjs:13` | settle de quatre tours devient turns(4). |
+| `tests/architecture-f05.test.cjs:31` à `:40`, `:568` | pause/tick/deferred/bounded/failure partagés ; settle devient turns(10), ou le nombre explicite de l'appel. until de 400 pas de 5 ms devient une échéance 5 s nommée ; l'appel à 300 pas garde une borne au moins aussi longue. |
+| `tests/architecture-f06.test.cjs:26` à `:38` | pause/tick/deferred/bounded/failure partagés ; until de 600 pas de 5 ms devient une échéance 5 s nommée. eventually reste booléen. |
+| `tests/architecture-f07.test.cjs:23` à `:27` | pause/tick/deferred partagés ; until de 600 pas de 5 ms devient une échéance 5 s nommée, séquentielle et capable d'attendre un contrôle asynchrone. |
+| `tests/architecture-f08.test.cjs:16` à `:22` | tick/deferred/failure partagés ; settle devient turns(8), ou le nombre explicite ; until de 600 pas de 5 ms devient une échéance 5 s nommée. |
+| `tests/architecture-f10.test.cjs:18` à `:21` | tick/deferred partagés ; until de 600 pas de 5 ms devient une échéance 5 s nommée. |
+| `tests/codex-confinement.test.cjs:82`, `:137`, `:138`, `:760` | settle devient turns(10), ou le nombre explicite ; pause partagée ; until de 500 pas de 10 ms (5 s nominales) devient timeoutMs: 10000, allongement explicite prévu par la migration, avec attente nommée. bounded local garde son traitement historique distinct du rejet. |
+| `tests/codex-connect-race.test.cjs:8` | tick partagé, même tour d'événement. |
+| `tests/codex-handler-failure.test.cjs:9` | deferred partagé ; resolve reste identique, reject devient disponible sans être requis. |
+| `tests/codex-thread-rotation.test.cjs:10` et `:11` | tick/deferred partagés, avec résolution et rejet inchangés. |
+
+- Garder la boucle d'horloge simulée de `tests/architecture-f05.test.cjs:138` (50 ms, 40 pas,
+  assertion finale), distincte d'un until réel. Aucun export advanceUntil n'existe.
+- Garder `eventually` d'architecture-f06 (retour booléen) et son attente métier `f.settled`,
+  ainsi que celle de serverHost dans architecture-f07 et la boucle watch.running d'architecture-f10.
+  Seules leurs primitives équivalentes sont partagées.
+- La conversion du confinement en échéance réelle de 10 s reprend la cible de la fiche T062
+  relue : elle allonge explicitement sa borne nominale de 5 s, et se consigne comme telle au journal.
+- Les pauses réelles passent par le timer capturé de wait.cjs, y compris celles implémentées par
+  un intervalle à usage unique. Les bornes de sécurité de bounded gardent leurs valeurs.
+- Ne modifier ni produit, ni harnais, ni doubles App Server, ni `tests/helpers/wait.cjs` ou
+  `tests/helpers/clock.cjs`. Aucun titre, résultat attendu ou cas de test ne disparaît.
+- Les boucles métier et les flush de microtâches gardent leur sens. Aucun socket réel ne reçoit
+  une horloge globale simulée. Une sentinelle de bounded n'est jamais assimilée à un succès.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
+1. Consigner avant/après la sortie de cette commande exacte, sur les dix fichiers du lot,
+   hors ticket-loop, agent-guards et helpers/codex-session :
 
-1. `grep -nE "^(const|function|async function) (tick|deferred) ?[=(]" tests/session.test.cjs
-   tests/session-latency.test.cjs tests/split-perception.test.cjs tests/session-delete.test.cjs
-   tests/session-durable.test.cjs tests/disk-guard.test.cjs tests/clip-unreadable.test.cjs
-   tests/moment-index.test.cjs` ne sort rien.
-2. `grep -nE "const (turns|settle) = async \(\) =>" tests/session-durable.test.cjs tests/moment-index.test.cjs`
-   ne sort rien.
-3. `grep -c "helpers/wait.cjs"` vaut 1 dans chacun des huit fichiers.
-4. `grep -c "^\s*test(" ` donne toujours, dans l'ordre de la liste des sources : 8, 20, 10, 3, 24, 4,
-   5 et 22.
-5. `git diff -U0 HEAD -- <les huit fichiers> | grep -E "^-.*assert\."` ne sort rien. Sortie dans le
-   journal.
-6. Sonde disque lent (fichier de `docs/travail/tickets/001-resent-block-duplicate-without-race.md`,
-   section « Sonde de reproduction », enregistré dans `.harness-state/tickets/<id>/slow-fs.cjs`, hors
-   Git) : `FLK_MS=10 node --require ./.harness-state/tickets/<id>/slow-fs.cjs --test --test-concurrency=1
-   tests/<fichier>` est lancée une fois par fichier avant toute modification et une fois après. Un
-   fichier qui passait avant passe après. Décomptes `ℹ pass` et `ℹ fail` dans le journal.
-7. `node --test --test-concurrency=1` sur les huit fichiers passe, sans sonde.
-8. `node scripts/check.mjs` est vert.
+```sh
+rg -n --glob '*.cjs' \
+  --glob '!tests/ticket-loop.test.cjs' \
+  --glob '!tests/agent-guards.test.cjs' \
+  --glob '!tests/helpers/codex-session.cjs' \
+  -e '^\s*(async )?function (tick|deferred|turns|until|settle|settled|pause|bounded|failure|flush|eventually)\b' \
+  -e '^\s*(const|let) (tick|deferred|turns|until|settle|settled|pause|bounded|failure|flush|eventually)\s*=\s*(async\s+)?(\([^)\n]*\)|[A-Za-z_$][\w$]*)\s*=>' \
+  tests/{architecture-f04,architecture-f05,architecture-f06,architecture-f07,architecture-f08,architecture-f10,codex-confinement,codex-connect-race,codex-handler-failure,codex-thread-rotation}.test.cjs
+```
+
+   Après migration, elle ne rend que `eventually` d'architecture-f06 et `bounded` de codex-confinement,
+   exceptions sémantiques nommées ci-dessus. Les variables de fixtures homonymes ne sont pas des aides.
+2. Tous les until migrés ont un libellé, une échéance réelle et des contrôles séquentiels ; le délai
+   explicite de confinement vaut 10 s. Aucun compte explicite de turns ne change ; les défauts
+   4/10/8/10 de la table deviennent des arguments aux appels concernés.
+3. Comparer le diff des assertions, titres et cas par fichier au début de session : valeurs et
+   nombre de cas sont identiques. Le journal décrit imports, appels et changements de borne.
+4. À l'implémentation, exécuter les dix fichiers un par un, puis wait-helpers et
+   `node scripts/check.mjs`. La boucle simulée garde ses pas et sa preuve finale ; bounded
+   continue de distinguer résultat, rejet et échéance selon sa variante. Aucun test nouveau de forme.
 
 ## Test d'acceptation attendu
 
-Les tests existants des huit fichiers, sans changement d'exigence : ils prouvent que les aides
-partagées ont le sens des copies qu'elles remplacent. Aucun test nouveau.
+Les scénarios existants des dix fichiers et `tests/wait-helpers.test.cjs` prouvent les résultats.
+L'inventaire ci-dessus prouve la migration des copies, sans remplacer ces scénarios.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si un test change de résultat avec l'aide partagée, ou échoue sous
-sonde alors qu'il passait avant : verdict BLOQUÉ, avec le test et l'aide en cause. Un test n'est
-jamais relancé jusqu'à ce qu'il passe.
+Aucune décision n'est attendue.
+
+Les repères sont ceux du worktree à `8340014`, à relire après les dépendances. Une différence de
+contrat non prévue se consigne avant migration ; elle ne se masque pas en allongeant un délai.
+Au premier échec, conserver la sortie et diagnostiquer ; aucune relance jusqu'au vert ni ancienne
+sonde slow-fs non livrée n'est nécessaire.
 
 ## Journal

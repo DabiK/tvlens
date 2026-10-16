@@ -2,135 +2,101 @@
 id: T052
 titre: Answer an unexpected server error with a generic 500 and journal it
 statut: a-faire
-bloque_par: T036, T051, T145
+bloque_par: T051
 adr: oui
 installe: non
 harnais: non
 supprime_tests: non
+niveau: sensible
 ---
 
 ## Ce que le ticket livre
 
-Le serveur répond aujourd'hui 400 avec le message brut à toute erreur qu'il ne connaît pas : une
-erreur de programmation ou une erreur du système (chemin compris) part vers la TV comme un refus de la
-requête, et la TV abandonne un bloc que le serveur aurait pu accepter au tour suivant. Après ce
-ticket, une erreur inconnue répond `500` avec un texte et un code génériques, elle est écrite au
-journal avec son détail, et tout le reste répond comme avant. Un ADR fixe la règle.
+Sous réserve de la décision ci-dessous, une erreur serveur sans statut HTTP valide répond
+500 avec un texte et un code génériques ; son détail reste au journal interne, avec méthode et route.
+La TV peut ainsi renvoyer un bloc au lieu de le jeter comme un contenu invalide.
 
 ## Sources
 
-- Constats : SEC-01
-- Code vérifié à la version `0d5a954` (chercher par nom, les lignes bougeront) :
-  - `server/http.cjs`, classe `RemoteServer`, `constructor({ runtime, media, token })` (l.6), `catch`
-    général de `handle` (l.275-290), ici resserré :
-
-    ```js
-    } catch (error) {
-      if (res.headersSent) return res.end();
-      if (error?.code === STORAGE_FULL) return send(507, { error: error.message, code: "storage-full" });
-      const status = Number.isInteger(error?.status) && error.status >= 400 && error.status < 600 ? error.status : 400;
-      send(status, { error: error.message, ...(typeof error?.code === "string" && status !== 400 ? { code: error.code } : {}) });
-    }
-    ```
-
-    Une valeur levée qui vaut `null` ou `undefined` fait lever ce `catch` lui-même (`error.message`
-    sans garde).
-  - Erreurs voulues qui doivent garder leur réponse : les refus à statut du runtime
-    (`runtime/headless-runtime.cjs`, `refusal(status, message, code)` l.69), dont
-    `refusal(400, "Vue d’état inconnue.")` (l.448), le seul texte de 400 que le panneau de la TV
-    lit ; les refus des règles applicatives, des `Error` simples avec un message français et sans
-    statut (400) ; les erreurs à statut de l'assemblage (`adapters/remote-media.cjs`, `unavailable(message, cause)` l.43 : 503 `media-unavailable`) ;
-    `adapters/local-store.cjs`, `refusal(names, cause)` (l.11) : `Error` avec message français et
-    `code` d'errno, sans `syscall`.
-  - Clients de la TV : `tv/transport.py`, `refusal(error)` (l.22-29) et l'envoi d'un bloc — abandon
-    quand `status < 500 and status not in (408, 429)`, nouvel envoi sinon, jusqu'à l'échéance ;
-    `tv/app/companion.js`, `tvlensViewRefusal` (l.240-244) — 404, ou 400 dont le texte correspond à
-    `/vue d.état inconnue/i` : serveur sans vues ; tout autre 400 : refus passager, l'état complet est
-    lu à la place ; tout autre statut : panne, espacée par `TvlensPollPlan` ;
-    `tv/app/remote-client.js`, `refusal()` recopie `error` et `code`.
-  - Codes publiés par le serveur aujourd'hui, en minuscules avec tirets : `storage-full`,
-    `media-unavailable`, `read-only`, `session-closing`.
-- Tests modèles : `tests/architecture-f06.test.cjs` (vrai `RemoteServer`, test l.360) ;
-  `tests/test_tv_control.py`, `test_recovery_and_ambiguous_ack_retry_same_sequence` (l.105) et
-  `test_full_storage_is_an_answer_of_the_server_never_a_network_cut` (l.120), qui pose un refus sur
-  le faux serveur (`self.refuse`, l.121) puis le retire (l.128) ; `tests/tv-panel.test.cjs`,
-  « a passing 400 on a view is not a server without views… » (l.120) et « an outage backs the polls
-  off… » (l.145), avec l'aide `drivePolls` (l.107).
+- `docs/audit-architecture.md`, synthèse, rapport A, B4 et D4 ; rapport B, B2 et D2.
+  Décision du propriétaire, le 16/10 : la question du 500 reste bloquante ; T051 est le prérequis.
+- Code vérifié à `8340014` : `server/http.cjs:89` traite les erreurs ; `server/http.cjs:94` garde
+  un status entier de 400 à 599, sinon prend 400 ; `server/http.cjs:96` publie error.message.
+  null ou undefined relanceraient une exception dans ce traitement. Le catch des routes est à
+  `server/http.cjs:142`, après l'extraction de l'ADR 0021.
+- `server/http.cjs:102` ne reçoit aucun journal ; `server/main.cjs:46` construit le runtime,
+  `server/main.cjs:47` construit RemoteServer sans puits de journal.
+  `runtime/headless-runtime.cjs:92` dispose d'un callback log texte pour ses propres diagnostics.
+  Le port et les fichiers proposés par T036 ne sont pas livrés dans ce worktree.
+- `server/http.cjs:54` traite déjà contenu, taille et JSON invalide comme refus HTTP explicites.
+  Les refus métier doivent être devenus explicites grâce à T201, sur le transport T188 ; T051 préserve les 400 de contenu.
+- `tv/transport.py:76` lit le refus ; `tv/transport.py:85` abandonne les 4xx sauf 408/429 et
+  renvoie les 5xx jusqu'à l'échéance. `tv/app/remote-client.js:13` conserve status/code.
+  `tests/tv-panel.test.cjs:144` couvre le refus 401 ;
+  `tests/tv-poll-controller.test.cjs:163` couvre la panne 500.
+- Tests de frontière disponibles : `tests/remote-server.test.cjs`, `tests/server-routes.test.cjs`,
+  `tests/server-sessions.test.cjs`, `tests/server-state-views.test.cjs`,
+  `tests/test_tv_control.py`. Aucun futur test de contrat-fil n'est nécessaire.
 
 ## Périmètre
 
-- À modifier : `server/http.cjs` ; la composition qui construit `RemoteServer` pour lui passer le
-  journal livré par le jalon `journal` (`server/main.cjs` l.40, et tout autre appelant trouvé par
-  `grep -rn "new RemoteServer(" server runtime app mcp`) ; un fichier de test du serveur ;
-  `tests/test_tv_control.py` ; `tests/tv-panel.test.cjs` ; le test de contrat du jalon `contrat-fil`.
-- À créer : un ADR dans `docs/adr/`, numéro suivant (0011 à la version `0d5a954`), qui dit ce qu'est
-  une erreur inconnue, pourquoi elle répond 500 et ce que les clients en font.
-- Forme retenue. Une erreur est inconnue quand elle n'a pas de statut HTTP valide, n'est pas
-  `STORAGE_FULL`, et que l'une de ces conditions est vraie : ce n'est pas une instance d'`Error` ;
-  c'est un `TypeError`, un `RangeError`, un `ReferenceError` ou un `SyntaxError` ; elle porte un
-  `syscall` de type chaîne (erreur brute du système). Elle répond
-  `500 { error: "Erreur interne du serveur.", code: "internal-error" }` et le journal reçoit l'erreur
-  d'origine avec la méthode et la route. Toute autre erreur garde exactement sa réponse d'aujourd'hui.
-- Le code `internal-error` est un ajout dans la famille des codes publiés par le serveur ; aucun code
-  existant n'est renommé.
-- Conséquence acceptée, à écrire dans l'ADR : une requête dont le corps mal formé fait lever un
-  `TypeError` dans une méthode du runtime répondait 400 et répond désormais 500. Le client d'envoi de
-  la TV renvoie alors le bloc jusqu'à son échéance au lieu de l'abandonner tout de suite ; le panneau
-  tient une vue qui répond 500 pour une panne et espace ses lectures, au lieu de lire l'état complet
-  à la place.
-- À ne pas toucher : les réponses 400 des refus voulus et leurs textes ; 409, 429, 503, 507 ; la
-  lecture du corps (`JSON invalide.`) ; `tv/transport.py` et `tv/app/` (le ticket prouve leur
-  comportement, il ne le change pas).
+- Modifier `server/http.cjs`, `server/main.cjs` et les tests de serveur/clients cités selon les
+  cas ajoutés. Ajouter un ADR au prochain numéro disponible, sans réécrire les ADR historiques.
+- Conserver d'abord la traduction des codes métier en statuts HTTP livrée par T201 via T188, ainsi que
+  STORAGE_FULL → 507 storage-full. Les refus reconnus ou portant un status HTTP valide gardent
+  leurs codes et messages publics de T201/T051. Toute autre valeur levée
+  répond exactement 500 avec error « Erreur interne du serveur. » et code internal-error.
+  Le nom de classe, le message, errno ou syscall ne servent pas à deviner un refus métier.
+- Supprimer l'ancien tri envisagé par TypeError/RangeError/ReferenceError/SyntaxError/syscall :
+  une Error simple sans statut est elle aussi inattendue. Les refus voulus passent par leur
+  statut explicite ; ne pas maintenir une liste de messages autorisés.
+- Ajouter un callback de journal injecté à RemoteServer, recevant méthode, pathname et erreur
+  d'origine/cause. Le câbler vers stderr dans server/main, sans ajouter le chantier JournalPort
+  de T036 ni brancher implicitement le journal de fermeture du runtime.
+  La réponse publique ne contient jamais ces détails. Un puits qui lève ne bloque pas la réponse.
+- Le cas headersSent conserve sa terminaison existante : ne pas tenter un second envoi d'en-têtes.
+  Les tests de réponse 500 lèvent avant tout envoi.
+- Ne changer ni statuts/codes des refus explicites, ni limites et validation du corps, ni règles
+  métier, ni produit Python/TV. Les tests seuls prouvent retry du transport et backoff du panneau.
+  Toute ancienne attente sur un repli 400 inattendu à migrer est nommée dans les écarts et le journal.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
-
-1. Vrai `RemoteServer` devant un runtime de test dont une méthode lève un `TypeError` : la route
-   répond exactement `500 { error: 'Erreur interne du serveur.', code: 'internal-error' }` ; le corps
-   ne contient pas le message d'origine. Même réponse quand la méthode lève une valeur qui n'est pas
-   une `Error` (une chaîne, puis `null`).
-2. Même montage avec une erreur du système réelle (lecture d'un fichier absent, qui porte `syscall` et
-   un chemin) : même réponse 500 ; le corps ne contient pas le chemin.
-3. Dans les deux cas, le journal de test reçoit une entrée qui porte l'erreur d'origine, la méthode et
-   la route ; aucune entrée pour un refus voulu.
-4. Inchangés, exigés dans le même test : une `Error` simple sans statut répond 400 avec son message ;
-   une erreur de statut 503 avec code répond 503 avec ce code ; `STORAGE_FULL` répond 507
-   `storage-full` ; une erreur construite comme celle de `refusal` de `adapters/local-store.cjs`
-   (message français, `code: 'EACCES'`, pas de `syscall`) répond 400 avec son message ; une erreur
-   de statut 400 portant « Vue d’état inconnue. » répond 400 avec ce texte, que
-   `tvlensViewRefusal` reconnaît encore (`'unknown'`).
-5. Client d'envoi de la TV : un bloc qui reçoit `500 {"error": "Erreur interne du serveur.", "code":
-   "internal-error"}` puis 200 est renvoyé avec la même séquence et compté accepté. Cas ajouté dans
-   `tests/test_tv_control.py`, le refus étant posé puis retiré sur le faux serveur comme dans
-   `test_full_storage_is_an_answer_of_the_server_never_a_network_cut`.
-6. Panneau de la TV : une vue qui répond 500 avec le code `internal-error` est traitée comme une
-   panne (`tvlensViewRefusal` rend `null`, les lectures s'espacent), pas comme une vue inconnue. Cas
-   ajouté dans `tests/tv-panel.test.cjs`.
-7. Le test de contrat livré par le jalon `contrat-fil` exige la réponse du critère 1 (statut, texte
-   et code) parmi les réponses de `/v1`.
-8. `node --test --test-concurrency=1 tests/architecture-f06.test.cjs tests/server-sessions.test.cjs tests/server-state-views.test.cjs tests/remote-server.test.cjs tests/tv-panel.test.cjs`
-   passe sans qu'aucune assertion existante soit modifiée ;
-   `python3 -B -m unittest discover -s tests -p "test_tv_control.py"` passe ; `node scripts/check.mjs`
-   est vert.
+1. Vrai RemoteServer, runtime contrôlé : TypeError, Error simple sans statut, chaîne, null et undefined
+   répondent chacun exactement 500 internal-error avec le texte générique. Une erreur système
+   portant chemin et syscall, ainsi qu'un status hors intervalle, ont la même réponse.
+2. Un puits injecté reçoit l'erreur originale et sa cause, la méthode et le pathname pour chaque
+   erreur inattendue. Aucun détail interne ne paraît dans le corps. Un puits qui lève laisse le
+   client recevoir la même réponse ; le chemin de refus métier ne passe pas par ce journal d'erreur.
+3. Les refus explicites 400, 409, 429 et 503 gardent corps/code ; STORAGE_FULL reste 507
+   storage-full. JSON invalide reste un 400 explicite. Les refus de contenu média de T051
+   gardent leurs textes fixes ; aucune Error métier sans statut n'est réintroduite pour les préserver.
+4. Le transport Python reçoit 500 internal-error puis 200, renvoie la même séquence et compte le
+   bloc accepté ; un 400 explicite reste abandonné. Le panneau considère 500 comme panne et espace
+   ses lectures, sans déclarer une vue inconnue. Réutiliser les doubles actuels.
+5. L'ADR décrit la règle sans statut, le journal interne, la conservation des refus explicites et
+   la conséquence retry/backoff. Le journal du ticket distingue cette évolution du contrat d'un
+   simple refactor ; aucun essai TV réel n'est revendiqué.
+6. À l'implémentation, exécuter en séquentiel les suites serveur touchées et les tests panneau/polling,
+   puis test_tv_control en Python et `node scripts/check.mjs`. Les changements d'attentes prévus par
+   la décision sont déclarés ; aucune autre assertion ni aucun cas n'est retiré.
 
 ## Test d'acceptation attendu
 
-Un test du serveur par la frontière HTTP d'un vrai `RemoteServer` construit avec un runtime de test et
-un journal de test, dans le fichier que le jalon `contrat-fil` consacre au contrat `/v1` (à défaut,
-dans `tests/server-sessions.test.cjs`). Les preuves côté client sont les cas ajoutés dans
-`tests/test_tv_control.py` et `tests/tv-panel.test.cjs`.
+Dans `tests/remote-server.test.cjs` ou `tests/server-routes.test.cjs`, vrai HTTP local devant une
+méthode qui lève et un puits enregistré. Commencer par Error simple sans statut : ce cas différencie
+la règle retenue de l'ancien tri par classes d'exception. Les preuves clients utilisent leurs
+transports réels, les réponses et minuteries contrôlées.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. La forme est celle retenue par la relecture de l'audit (400 pour un
-refus voulu, 500 générique pour l'inconnu). Si un test existant exige 400 avec le message brut pour
-une erreur de programmation ou une erreur du système : verdict BLOQUÉ, avec le nom du test ; il n'est
-ni affaibli ni supprimé. De même, si l'exploration trouve une route où une erreur brute du système est
-l'issue d'un parcours normal du client (par exemple un média demandé qui n'existe plus) : verdict
-BLOQUÉ, avec la route ; la réponse voulue pour ce cas est une règle à décider, pas à inventer ici.
-Enfin, si le journal livré par le jalon `journal` ne peut pas être passé à `RemoteServer` par son
-constructeur, ou si le jalon `contrat-fil` n'a livré aucun test de contrat où ajouter la réponse 500 :
-verdict BLOQUÉ, avec l'écart constaté.
+Décision attendue du propriétaire : répondre 500, avec un message générique et la cause au journal,
+à toute erreur sans statut HTTP valide après traduction des codes métier, au lieu de 400 avec son message brut ?
+Conséquence : la TV renvoie le bloc pendant sa durée de vie au lieu de le jeter.
+Recommandation : oui.
+
+T051 implique T201, T188, T124, T199 et T178. T036 n'est plus un prérequis : le raccord de journal minimal
+est inclus ici. Si un parcours normal reste sans statut après ces dépendances, sa réponse voulue
+doit être établie avant de le convertir ; aucune règle métier ne se déduit de son message.
 
 ## Journal
