@@ -330,6 +330,8 @@ restent dans les en-têtes ; T037/T038 sortent de T145. La Bibliothèque attendr
 La boucle suit les dépendances, puis le numéro parmi les tickets prêts ; les coupes T221 à T227
 s'intercalent donc avant les tickets qu'elles débloquent.
 
+**Livraison du hackathon d'abord.** [T228](228-hold-the-structural-wave-until-the-hackathon-release-is-on-main.md) retient T205, donc tous les tickets structurels qui changent le produit, jusqu'à la livraison sur `main` de la version de fin de vague 1, recettée sur la TV et le Mac. T037, T038, T204 et T222, qui n'ajoutent que des tests, passent avant.
+
 ### Phase 0 — Filets et contrats
 
 - [T037](037-freeze-a-reference-session-archive-and-prove-the-current.md) — Freeze a reference session archive and prove the current code reads it (standard ; dépend de T193).
@@ -378,6 +380,7 @@ La boucle ne les lance pas : elle les nomme et passe aux tickets prêts (T003, c
 [ESSAI-06](../../audit-maintenabilite.md#ESSAI-06)). Le propriétaire tranche en remplaçant la question par sa décision, au début de la
 section « Hypothèses bloquantes » du ticket.
 
+- [T228](228-hold-the-structural-wave-until-the-hackathon-release-is-on-main.md) — Hold the structural wave until the hackathon release is on main. Décision attendue du propriétaire : la version de fin de vague 1 est-elle recettée sur la TV et le Mac, et livrée sur `main` ?
 - [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md) — Hold the full remediation queue until the owner reopens it. Décision attendue du propriétaire : rouvrir la file complète des tickets de dette, après le plan court, en relisant d'abord les tickets retenus contre le code du moment.
 - [T138](138-run-the-quality-check-on-github-actions-in-informative-mode.md) — Run the quality check on GitHub Actions in informative mode. Décision attendue du propriétaire : sous quelles conditions la CI tourne sur GitHub. Elle porte sur
 - [T140](140-state-what-runs-on-the-test-tv-and-the-server-in-one-place.md) — State what runs on the test TV and the server in one place. Décision attendue du propriétaire : la version de la nuit tourne-t-elle encore sur la TV de test et sur le

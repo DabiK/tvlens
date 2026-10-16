@@ -2,7 +2,7 @@
 id: T205
 titre: Guard context subzones, public entry points and temporary exceptions
 statut: a-faire
-bloque_par: T202
+bloque_par: T202, T228
 adr: oui
 installe: non
 harnais: non
