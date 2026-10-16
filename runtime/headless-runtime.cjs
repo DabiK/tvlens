@@ -9,11 +9,7 @@ const {
 } = require("./session-runtime.cjs");
 const { createConversationRuntime } = require("./conversation-runtime.cjs");
 const { createSurveillanceRuntime } = require("./surveillance-runtime.cjs");
-const {
-  closeSession,
-  settleQuestions,
-  attempt,
-} = require("./session-closing.cjs");
+const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
 const { warmUp } = require("./session-warm-up.cjs");
 const { activeInstruction } = require("./active-instruction.cjs");
@@ -52,6 +48,35 @@ function createHeadlessIntake(host) {
   });
 }
 
+function createHeadlessLifecycle(host, conversation) {
+  return createHeadlessSessionLifecycle({
+    library: host.library,
+    createSession: () => createSessionRuntime({ ...host.sessionOptions(), id: randomUUID() }),
+    openSession: (id, archive) => openArchivedSession({
+      ...host.sessionOptions(),
+      id,
+      library: { root: host.library.root, read: async () => archive },
+    }),
+    conversation,
+    surveillance: host.surveillance,
+    checkpoint: host.questionSaves,
+    // Les sondes de la façade observent encore les mêmes frontières de fermeture.
+    intake: {
+      get ingestions() { return host.ingestions; },
+      cancelPreparations: () => host.cancelPreparations(),
+      settleIngestions: (cancelled) => host.settleIngestions(cancelled),
+    },
+    warmUp,
+    guard: host.guard,
+    onAdopt: (_session, state) => {
+      host.sessionState = state;
+      host.emit();
+    },
+    publish: () => host.emit(),
+    log: (line) => host.log(line),
+  });
+}
+
 class HeadlessRuntime {
   constructor(options) {
     this.options = options;
@@ -64,18 +89,10 @@ class HeadlessRuntime {
     this.boot = randomBytes(4).toString("hex");
     this.revision = 0;
     this.auxRevision = 0;
-    // Grows whenever the capture that numbers its blocks may have changed (new session, opening,
-    // resume, every start, end, deletion): the transport forgets the former numbering.
-    this.captureEpoch = 0;
-    // Outcome of the last end of a session, closing failures included: { id, archived, errors }.
-    this.lastEnd = null;
     // Journal of the host; a test hands its own.
     this.log = options.log || ((line) => console.error(line));
-    this.transition = Promise.resolve();
-    this.session = null;
     this.sessionState = null;
     this.derived = null;
-    this.fresh = false;
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
     const { setTimer, clearTimer } = options;
     this.questionSaves = createQuestionCheckpoint({ setTimer, clearTimer });
@@ -137,6 +154,7 @@ class HeadlessRuntime {
       // Informative overlap counter only: nothing in the surveillance decides on it.
       probe: () => ({ chatBusy: this.deep.jobs.some(active) }),
     });
+    this.lifecycle = createHeadlessLifecycle(this, conversation);
     this.timer = setInterval(() => {
       const watch = this.session?.watch;
       // Durable retention has nothing to sweep between two passages (each ingest sweeps): an idle
@@ -163,11 +181,36 @@ class HeadlessRuntime {
       return { language };
     } finally { this.savingLanguage = false; }
   }
-  // Session changes run one at a time: an opening never interleaves with an ending or a deletion.
+  // Lectures de compatibilité : le coordinateur reste l'unique propriétaire de ces faits.
+  get session() {
+    return this.lifecycle?.session ?? null;
+  }
+  get captureEpoch() {
+    return this.lifecycle?.captureEpoch ?? 0;
+  }
+  get lastEnd() {
+    return this.lifecycle.lastEnd;
+  }
+  get closing() {
+    return this.lifecycle?.closing ?? false;
+  }
+  get fresh() {
+    return this.lifecycle.fresh;
+  }
+  get ending() {
+    return this.lifecycle.ending;
+  }
+  get releasing() {
+    return this.lifecycle.releasing;
+  }
+  get closed() {
+    return this.lifecycle.closed;
+  }
+  get transition() {
+    return this.lifecycle.transition;
+  }
   exclusive(work) {
-    const run = this.transition.then(work);
-    this.transition = run.catch(() => {});
-    return run;
+    return this.lifecycle.exclusive(work);
   }
   // Every second, without waiting for anything: surveillance deadlines and grace periods, then the
   // figures that move without an event of their own.
@@ -314,15 +357,7 @@ class HeadlessRuntime {
     });
   }
   described(session) {
-    const watch = session.watch;
-    return {
-      id: session.id,
-      elapsedMs: watch.now(),
-      retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null,
-      retention: Number.isFinite(watch.retentionMs) ? "rolling" : "until-deleted",
-      readOnly: watch.readOnly,
-      accepting: watch.accepting,
-    };
+    return this.lifecycle.described(session);
   }
   sessionOptions() {
     return {
@@ -333,22 +368,11 @@ class HeadlessRuntime {
       onChange: (state) => this.published(state),
     };
   }
-  // One synchronous step: the questions in memory always belong to the session in memory (R4: a late
-  // save can never write the answers of one session into another), and the transport is told that the
-  // block numbering may start again (R8).
-  adopt(session, jobs = []) {
-    // Nothing of the former session waits past this point: what it had to save was handed over when its
-    // questions were settled, and a timer left behind would have nothing to write.
-    this.questionSaves.forget();
-    this.deep.restore(jobs);
-    this.session = session;
-    this.sessionState = session ? session.watch.snapshot() : null;
-    this.fresh = false;
-    this.captureEpoch++;
-    this.emit();
+  adopt(session, jobs) {
+    return this.lifecycle.adopt(session, jobs);
   }
   moving() {
-    return Boolean(this.ending || this.releasing || this.closing);
+    return this.lifecycle.moving();
   }
   loaded(sessionId) {
     if (!this.session || sessionId !== this.session.id)
@@ -356,44 +380,10 @@ class HeadlessRuntime {
     return this.session;
   }
   start() {
-    return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
-      let session = this.session;
-      // Looking at an archive never adds capture to it: it is resumed explicitly, or left for a new one.
-      if (session?.readOnly) throw refusal(409, READ_ONLY, "read-only");
-      if (!session) {
-        // Refused on a fresh measurement, before a directory or a provider connection exists.
-        await this.guard?.assertRoom();
-        session = createSessionRuntime({
-          ...this.sessionOptions(),
-          id: randomUUID(),
-        });
-        this.adopt(session);
-        this.fresh = true;
-        // The first answer and the first description should not pay the connection. Never for an archive
-        // that is only being read.
-        warmUp({
-          chat: this.agent,
-          perception: session.perception,
-          sessionId: session.id,
-        });
-      } else {
-        const stopped = !session.watch.accepting;
-        if (stopped) await session.resume();
-        // Every successful start, even on a session that was still capturing: a TV that restarted its
-        // capture without sending a pause numbers its blocks from a lower origin. A block of the former
-        // capture replayed afterwards is still refused by the session, on observation order.
-        this.captureEpoch++;
-        if (stopped) this.emit();
-      }
-      return this.described(session);
-    });
+    return this.lifecycle.start();
   }
   pause() {
-    return this.exclusive(async () => {
-      await this.session?.pause();
-      this.emit();
-    });
+    return this.lifecycle.pause();
   }
   // Les bancs lisent les ensembles du propriétaire, jamais une copie de l'état d'ingestion.
   get admitted() {
@@ -454,89 +444,20 @@ class HeadlessRuntime {
     if (cancelled) this.deep.cancel("Question annulée.", id);
     return { cancelled, status: job?.status ?? null };
   }
-  // The end of the session in memory, by the protocol the Mac host follows too (session-closing.cjs):
-  // every closing step is attempted, the host lets go of the session whatever happened, and what failed
-  // is never swallowed: kept as the outcome of this end, and written to the journal. The order is this
-  // host's own, and it matters: capture stops, writes in flight land, questions and surveillance reach
-  // their final states and are written, and only then is the session archived. Neither announced as
-  // archived nor erased unless that step itself came back: the folder then keeps what was last confirmed,
-  // and the list goes on showing the session as the manifest on disk says, cut short when that manifest
-  // was written during a capture. `remove` is the explicit deletion: sealed, and only then erased.
-  async leave(session, reason, remove = false) {
-    this.releasing = true;
-    let cancelled = [];
-    try {
-      const outcome = await closeSession({
-        session,
-        library: this.library,
-        remove,
-        // A session that saw no passage and no question is not an archive worth listing. Only one this
-        // host started itself: an archive that was opened is never discarded for being short.
-        empty: () =>
-          this.fresh &&
-          !this.deep.jobs.length &&
-          !session.watch.questions.length &&
-          !session.watch.snapshot().coverage.passages,
-        // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
-        begin: [
-          "préparation média",
-          () => {
-            cancelled = this.cancelPreparations();
-          },
-        ],
-        steps: [
-          // A deletion is refused while its session captures: it has no capture left to stop.
-          ...(remove ? [] : [["capture", () => session.pause()]]),
-          ["préparation média", () => this.settleIngestions(cancelled)],
-          [
-            "questions",
-            () =>
-              settleQuestions(this.deep, reason, () =>
-                this.questionSaves.flush(),
-              ),
-          ],
-          ["surveillance", () => this.surveillance.reset(reason)],
-          ["agent de chat", () => this.agent.close?.()],
-        ],
-        // Whatever failed above, the host lets go of this session: a new one can start.
-        letGo: () => this.adopt(null),
-        log: (line) => this.log(line),
-      });
-      const { id, archived, errors } = outcome;
-      this.lastEnd = { id, archived, ...(errors.length ? { errors } : {}) };
-      return outcome;
-    } finally {
-      this.releasing = false;
-    }
+  leave(session, reason, remove) {
+    return this.lifecycle.leave(session, reason, remove);
   }
-  // Ends the work on the session in memory and keeps it whole on disk: nothing is purged. A session this
-  // host could not let go of is not said ended: whoever asked is told why, as the journal already is.
-  async release(reason = "Session terminée.") {
-    const session = this.session;
-    if (!session) return { id: null, archived: false };
-    const { refused } = await this.leave(session, reason);
-    if (refused) throw refused;
-    return this.lastEnd;
+  release(reason) {
+    return this.lifecycle.release(reason);
   }
-  // "Terminer la session" archives: nothing is purged. Coalesced: a second request shares the outcome.
   end() {
-    return (this.ending ||= this.exclusive(() => this.release()).finally(
-      () => {
-        this.ending = null;
-      },
-    ));
+    return this.lifecycle.end();
   }
-  // After dir() accepted the identifier, the only way folder() fails is a session that is not there.
-  async located(id) {
-    this.library.dir(id);
-    await this.library.folder(id).catch(() => {
-      throw refusal(404, "Session introuvable.", "not-found");
-    });
+  located(id) {
+    return this.lifecycle.located(id);
   }
   capturing(session = this.session) {
-    return Boolean(
-      session && ((session.watch.accepting && !session.readOnly) || this.ingestions.size),
-    );
+    return this.lifecycle.capturing(session);
   }
   // Listing reads manifests only, never a saved state. The session in memory is shown from its live
   // figures: its manifest is up to 30 s old, and absent before its first passage.
@@ -596,104 +517,14 @@ class HeadlessRuntime {
     const { storage } = await this.sessions();
     return { ...storage, session: this.session ? this.session.storage() : null };
   }
-  // Opens an archive stopped and read-only. Nothing is written into its directory, no provider is
-  // called (no warm-up, no indexing), and capture only comes back through resume().
   open(id) {
-    return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
-      this.library.dir(id);
-      const loaded = this.session;
-      if (loaded?.id === id && loaded.readOnly) return this.described(loaded);
-      if (loaded?.id !== id) await this.located(id);
-      if (this.capturing(loaded))
-        throw refusal(
-          409,
-          "Arrête la capture avant d’ouvrir une autre session.",
-          "capturing",
-        );
-      // Read before the session in memory is let go: an unreadable archive changes nothing. The
-      // session in memory itself is read once it is closed, so its last state is the one reopened.
-      let archive = loaded?.id === id ? null : await this.library.read(id);
-      await this.release("Session fermée.");
-      if (!archive) {
-        await this.located(id);
-        archive = await this.library.read(id);
-      }
-      // Same reopening as the Mac host, on the archive already read.
-      const { session } = await openArchivedSession({
-        ...this.sessionOptions(),
-        id,
-        library: { root: this.library.root, read: async () => archive },
-      });
-      this.adopt(session, archive.chat?.jobs || []);
-      // Read-only registry: what was still moving is shown cancelled, nothing is relaunched or rewritten.
-      this.surveillance.restore(archive.surveillance);
-      return this.described(session);
-    });
+    return this.lifecycle.open(id);
   }
-  // Explicit resume of the session in memory: an opened archive leaves read-only and captures again,
-  // on its own clock and numbering.
   resume(id) {
-    return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
-      this.library.dir(id);
-      const session = this.session;
-      if (session?.id !== id) {
-        await this.located(id);
-        throw refusal(
-          409,
-          "Ouvre cette session avant de reprendre la capture.",
-          "not-open",
-        );
-      }
-      if (!session.watch.accepting) {
-        // Refused by the guard, with its message, while the disk is below its floor.
-        await session.resume();
-        this.captureEpoch++;
-        // Same as at the start: never for an archive that is only being read.
-        warmUp({
-          chat: this.agent,
-          perception: session.perception,
-          sessionId: session.id,
-        });
-        this.emit();
-      }
-      return this.described(session);
-    });
+    return this.lifecycle.resume(id);
   }
-  // Deletes one session and nothing else. The one in memory is refused while it captures; otherwise its
-  // questions and surveillance are cancelled and its store is sealed before anything is erased, so
-  // that no late save, vector or thumbnail can bring the directory back.
   remove(id) {
-    return this.exclusive(async () => {
-      this.library.dir(id);
-      const session = this.session;
-      if (session?.id !== id) {
-        await this.located(id);
-        const removed = await this.library.remove(id);
-        this.emit();
-        return { deleted: true, id, freedBytes: removed.freedBytes };
-      }
-      if (this.capturing(session))
-        throw refusal(
-          409,
-          "Arrête la capture avant de supprimer cette session.",
-          "capturing",
-        );
-      // Same rules as an end: nothing new is analysed for a session that is going away, a block still
-      // being prepared for it is cancelled before its folder is erased, and an adapter that fails to
-      // close does not keep the session from going.
-      const { freedBytes, refused } = await this.leave(
-        session,
-        "Session supprimée.",
-        true,
-      );
-      // Not erased "whatever happens": nothing is unless the store is really sealed and this host has
-      // let go of the session. Otherwise its folder keeps what it held, and whoever asked is told why.
-      if (refused) throw refused;
-      this.emit();
-      return { deleted: true, id, freedBytes };
-    });
+    return this.lifecycle.remove(id);
   }
   startSurveillance({ sessionId, instruction } = {}) {
     if (this.moving()) throw Error("Session en cours de fermeture.");
@@ -731,39 +562,10 @@ class HeadlessRuntime {
     this.loaded(sessionId);
     return surveillanceDetail(this.surveillanceRegistry(), id);
   }
-  // Stopping the host keeps the session whole: it is found archived at the next start.
   close() {
-    this.closing = true;
     clearInterval(this.timer);
     clearInterval(this.ticker);
-    return (this.closed ||= this.exclusive(async () => {
-      const errors = [];
-      try {
-        const ended = await this.release();
-        // No session to end, yet a preparation cancelled by an earlier end may still not have let go:
-        // the host does not leave under it without the same bounded wait, and says so below.
-        if (ended.id === null)
-          await attempt(errors, "préparation média", () =>
-            this.settleIngestions(this.cancelPreparations()),
-          );
-      } finally {
-        // The surveillance role releases its provider processes whatever the end of the session did.
-        await attempt(errors, "surveillance", () => this.surveillance.close());
-        if (errors.length) {
-          this.lastEnd = {
-            id: null,
-            archived: false,
-            ...this.lastEnd,
-            errors: [...(this.lastEnd?.errors || []), ...errors],
-          };
-          try {
-            this.log(`TVLens — arrêt incomplet de l’hôte : ${errors.join(" ; ")}`);
-          } catch {
-            // lastEnd.errors contient déjà les échecs d'arrêt ; un journal indisponible ne doit pas remplacer ce résultat.
-          }
-        }
-      }
-    }));
+    return this.lifecycle.close();
   }
 }
 module.exports = {

@@ -1,7 +1,7 @@
 ---
 id: T180
 titre: Move headless session transitions into one coordinator
-statut: a-faire
+statut: termine
 bloque_par: T179
 adr: oui
 installe: non
@@ -111,3 +111,60 @@ des prérequis techniques : le coordinateur utilise sa façade publique. Le nive
 déplacement du cycle de vie et de ses transferts de possession, pas d'une nouvelle règle métier.
 
 ## Journal
+
+- Exploration : hôte à 774 lignes (`wc -l runtime/headless-runtime.cjs`). Le coordinateur possédera
+  `session`, `transition`, `fresh`, `ending`, `releasing`, `closing`, `closed`, `lastEnd` et `captureEpoch` ;
+  l'hôte les lira par délégation. L'ingestion garde ses ensembles et le protocole partagé garde le sort,
+  les erreurs et le journal de fin. Aucun écart prévu ; détails dans le dossier d'état T180.
+
+- Cycles ciblés : `node --test tests/headless-session-lifecycle.test.cjs` : assertions rouges observées
+  sur la fabrique puis les frontières de démarrage, fin, ouverture et suppression/arrêt ; verts observés
+  après chaque extraction. Journaux `01` à `13` dans le dossier d'état. La suite finale couvre 14 cas,
+  avec vrai protocole partagé, vraie ingestion, ressources différées et minuteries manuelles.
+- Intégration : premier `node scripts/check.mjs --changed` rouge : constructeur au-delà de 80 lignes
+  et sonde d'annulation contournée. Composition extraite dans une fonction dédiée ; l'ingestion est
+  injectée par les délégations de compatibilité. `node --test --test-name-pattern='closing steps of a session' tests/architecture-f07.test.cjs` : rouge observé puis 2/2 verts sur les hôtes Mac et serveur.
+- `node scripts/check.mjs --changed` : vert, 40/40 tests JS. Le diff des tests existants ne change
+  que les deux références à la cible headless de la garde finale ; aucune assertion comportementale modifiée.
+- Propriétaires finaux : `runtime/headless-session-lifecycle.cjs` écrit seul `session`, `transition`,
+  `fresh`, `ending`, `releasing`, `closing`, `closed`, `lastEnd` et `captureEpoch`. L'hôte ne conserve
+  qu'un instantané publié et lit les faits par getters. L'ingestion possède `admitted` et `ingestions` ;
+  `session-closing.cjs` possède le sort, les erreurs nommées et le journal de fin. ADR 0024 ajouté.
+- `wc -l runtime/headless-runtime.cjs runtime/headless-session-lifecycle.cjs` : hôte 774 → 576 lignes
+  physiques ; coordinateur 293 lignes. `git diff --check` : vert. Aucun écart de périmètre.
+- Premier contrôle complet `node scripts/check.mjs` : vert, 114 fichiers JS, 1429/1429 tests JS ;
+  Python : 33 tests, OK avec un ignoré (`18-check-full.log`).
+- Nettoyage final : formatage des deux nouveaux fichiers, explications locales sur l'adoption et
+  l'époque, et preuve supplémentaire qu'une pause attend un démarrage refusé puis que la file reprend.
+  `node scripts/check.mjs --changed` : vert, 41/41 tests (`19-check-changed-final.log`).
+  `wc -l` final : hôte 576 lignes, coordinateur 325 lignes après formatage ; l'hôte était à 774.
+- Contrôle final `node scripts/check.mjs` : vert, code 0, règles, format, lint, gel et cliquet verts ;
+  114 fichiers JS, 1430/1430 tests JS ; Python : 33 tests, OK avec un ignoré (`20-check-full-final.log`).
+- Trois mutations temporaires détectées : chaîne qui ne reprend plus après rejet, référence remplacée
+  avant restauration des questions, journal de fin recopié dans le coordinateur. Sources restaurées.
+  `git diff --check` : vert. Verdict `TERMINÉ` écrit dans le dossier d'état ; aucun commit ni push.
+
+- Reprise après `relecture-1.md` : constat mineur accepté. Les six justifications de `exclusive`,
+  `leave`, `located`, `open`, `remove` et `close` seront rétablies dans le coordinateur, en commentaires
+  uniquement. Le constat hors périmètre sur la garde de l'ancien hôte sera conservé dans `reste`.
+  Aucun test textuel de commentaires ni rouge comportemental artificiel ; banc existant lancé avant correction.
+- Avant correction : `node --test tests/headless-session-lifecycle.test.cjs` : vert, 15/15 tests,
+  code 0 (`correction-1-before.log`). Aucun rouge comportemental revendiqué pour ces commentaires.
+- Constat mineur 1 corrigé : six commentaires rétablis au-dessus des méthodes du coordinateur,
+  avec les justifications de sérialisation, ordre serveur, confirmation, lecture seule et scellement.
+  Comparaison avant/après hors lignes de commentaires : instructions strictement identiques.
+  `node scripts/check.mjs --changed` : vert, code 0, 41/41 tests (`correction-1-check-changed.log`).
+  `wc -l` : hôte inchangé à 576 lignes, coordinateur 340 lignes avec les explications rétablies.
+- `node scripts/check.mjs` après correction : vert, code 0 ; règles, format, lint, gel et cliquet verts ;
+  114 fichiers JS, 1430/1430 tests JS ; Python : 33 tests, OK avec un ignoré
+  (`correction-1-check-full.log`). `git diff --check` : vert. Nouveau verdict `TERMINÉ`, avec le
+  constat 2 hors périmètre dans `reste` ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- Constat 2 de relecture-1, hors périmètre : la garde finale de tests/architecture-f07.test.cjs ne scanne plus runtime/headless-runtime.cjs contre une réintroduction du journal de fin ou du protocole. À traiter dans un futur ticket ; le critère 6 actuel limite le diff des tests au changement de cible. La correction laisse cette garde inchangée.
+- .harness-state/tickets/T180/relecture-2.md : `tests/architecture-f07.test.cjs:580-589` (hors périmètre) — reste en réserve
+
+  Il n'y a pas de changement, et c'est normal : ce constat n'était pas à corriger dans le ticket. La garde finale ne surveille plus `runtime/headless-runtime.cjs`. Si quelqu'un réintroduisait dans l'hôte la phrase du journal de fin ou un `closeSession`, aucun test ne le signalerait.
+
+  **Ce qui est attendu.** Un ticket futur ajoute l'hôte à la liste des fichiers où cette phrase est interdite. Le critère 6 limite le diff sous `tests/` au seul changement de cible, d'où le classement hors périmètre.

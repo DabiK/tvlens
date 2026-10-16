@@ -577,7 +577,7 @@ test('Mac host (IPC) — a passage search still running is told that its session
 
 test('both hosts end a session through the shared protocol, which alone words the journal of an incomplete end and how a failed step is said, and which loads nothing', () => {
   const read = file => fs.readFileSync(path.join(root, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-  const hosts = ['app/main.cjs', 'runtime/headless-runtime.cjs'], shared = 'runtime/session-closing.cjs';
+  const hosts = ['app/main.cjs', 'runtime/headless-session-lifecycle.cjs'], shared = 'runtime/session-closing.cjs';
   const sources = Object.fromEntries([...hosts, shared, 'server/main.cjs', 'server/http.cjs'].map(file => [file, read(file)]));
   for (const host of hosts) {
     assert.match(sources[host], /require\(["'][./]+(?:runtime\/)?session-closing\.cjs["']\)/, host + ' loads the protocol');
@@ -585,7 +585,7 @@ test('both hosts end a session through the shared protocol, which alone words th
     assert.match(sources[host], /\bsettleQuestions\(/, host + ' settles its questions through it');
     assert.doesNotMatch(sources[host], /\.slice\(0, 200\)/, host + ' no longer words a failed step itself');
   }
-  assert.doesNotMatch(sources['runtime/headless-runtime.cjs'], /^\s*async (?:attempt|settleQuestions)\(/m, 'the server host keeps no closing helper of its own');
+  assert.doesNotMatch(sources['runtime/headless-session-lifecycle.cjs'], /^\s*async (?:attempt|settleQuestions)\(/m, 'the server host keeps no closing helper of its own');
   assert.deepEqual(Object.keys(sources).filter(file => sources[file].includes('fermeture incomplète de la session')), [shared]);
   assert.doesNotMatch(sources[shared], /\brequire\(|\b(?:setTimeout|setInterval|process|fetch)\b/, 'the protocol loads nothing: no disk, no timer, no transport');
 });
