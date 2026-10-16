@@ -43,19 +43,19 @@
   },
   "adapters/codex-session-client.cjs": {
     "complexity": {
-      "count": 5
+      "count": 3
     },
     "max-lines": {
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 3
+      "count": 1
     },
     "no-empty": {
-      "count": 3
+      "count": 2
     },
     "no-nested-ternary": {
-      "count": 2
+      "count": 1
     }
   },
   "adapters/companion-prompt.cjs": {

@@ -1,4 +1,10 @@
-const { trace, safeError, isAuthFailure } = require("./chat-trace.cjs");
+const {
+  dispatchEvent,
+  streamedAnswer,
+  sourceKey,
+} = require("./codex-session-events.cjs");
+const { runTurn } = require("./codex-session-run.cjs");
+const { trace, safeError } = require("./chat-trace.cjs");
 const fs = require("node:fs/promises");
 const { CodexRpc } = require("./codex-rpc.cjs");
 const {
@@ -20,8 +26,6 @@ const {
   LEGACY_BLOCKED_ITEMS,
   APPROVAL_REQUESTS,
   toolArgumentsAllowed,
-  validMediaInput,
-  openedPages,
 } = require("./codex-confinement.cjs");
 // The product transport: a real Codex process. Anything else is the test seam (see `rpcFactory`).
 const spawnRpc = (options) => new CodexRpc(options);
@@ -54,25 +58,6 @@ function report(message) {
   try {
     process.stderr.write(message + "\n");
   } catch {}
-}
-function sourceKey(value) {
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:" || url.username || url.password) return null;
-    url.hash = "";
-    return url.href;
-  } catch {
-    return null;
-  }
-}
-function streamedAnswer(json) {
-  const match = json.match(/"answer"\s*:\s*"((?:\\.|[^"\\])*)/);
-  if (!match) return "";
-  try {
-    return JSON.parse('"' + match[1] + '"');
-  } catch {
-    return "";
-  }
 }
 class CodexSessionClient {
   constructor({
@@ -561,274 +546,40 @@ class CodexSessionClient {
       };
     }
   }
-  event(method, p) {
-    const active = this.active;
-    if (["turn/started","turn/completed","error","connection/closed"].includes(method)) {
-      this.trace(method, {eventThreadId:p?.threadId,eventTurnId:p?.turn?.id || p?.turnId,
-        status:p?.turn?.status,error:safeError(p?.turn?.error || p?.error),willRetry:p?.willRetry,
-        active:Boolean(active),hadFinal:Boolean(active?.final),textChars:active?.text?.length || 0});
-    }
-    if (["item/started","item/completed"].includes(method) && p?.item?.type === "webSearch") {
-      this.trace(method,{eventThreadId:p.threadId,eventTurnId:p.turnId,itemId:p.item.id,
-        itemType:"webSearch",actionType:p.item.action?.type,status:p.item.status,error:safeError(p.item.error)});
-    }
-    if (method === "connection/closed") {
-      this.ready = null;
-      this.draining?.end();
-      active?.reject(
-        Error("Connexion Codex interrompue. Réessaie la question."),
-      );
-      return;
-    }
-    // Any notification naming a thread the host did not open, during a turn or between two turns:
-    // a sub-agent. Its items would be dropped by the filter below and so escape every guard.
-    const eventThread = p?.thread?.id || p?.threadId;
-    if (
-      this.itemGuard !== "legacy" &&
-      typeof eventThread === "string" &&
-      eventThread !== this.threadId &&
-      !this.threads.own.has(eventThread)
-    ) {
-      // One of the host's own thread/start is unanswered: startThread judges this id.
-      if (this.threads.starting) this.threads.announced.add(eventThread);
-      else this.foreignThread();
-      return;
-    }
-    // The end of a turn the guard refused frees the client for the next one.
-    const draining = this.draining;
-    if (
-      draining &&
-      method === "turn/completed" &&
-      p?.threadId === this.threadId &&
-      (!draining.turnId || draining.turnId === p.turn?.id)
-    )
-      draining.end();
-    if (!active || p?.threadId !== this.threadId) return;
-    if (method === "turn/started" && !active.turnId) active.turnId = p.turn.id;
-    if (p.turnId && active.turnId && p.turnId !== active.turnId) return;
-    if (method === "item/started" || method === "item/completed") {
-      const allowed =
-        this.itemGuard === "legacy"
-          ? method !== "item/started" ||
-            !LEGACY_BLOCKED_ITEMS.includes(p.item?.type)
-          : itemAllowed(this, p.item);
-      if (!allowed) {
-        this.refuse(active, p.item?.type, active.turnId || p.turnId);
-        // The item says a sub-agent exists, whatever its own thread shows or not: the process goes,
-        // as for a foreign thread. Interrupting the host turn alone would leave it running.
-        if (this.itemGuard !== "legacy" && SUB_AGENT_ITEMS.includes(p.item?.type)) this.foreignThread();
-        return;
-      }
-    }
-    // Codex reports failure detail (e.g. responseStreamDisconnected) in separate "error" notifications
-    // before turn/completed. Keep the last one, redacted, as fallback diagnostic for the turn outcome.
-    if (method === "error" && p.error) active.lastError = safeError(p.error);
-    if (method === "item/started") {
-      const item = p.item;
-      if (item.type === "webSearch")
-        active.onProgress?.({
-          message:
-            item.action?.type === "openPage"
-              ? "Consultation d’une source…"
-              : "Recherche sur Internet…",
-        });
-      else if (item.type === "agentMessage")
-        active.onProgress?.({ message: "Rédaction de la réponse…" });
-      else if (item.type === "reasoning")
-        active.onProgress?.({ message: "Codex examine le contexte…" });
-    }
-    // No raw reasoning is emitted. Only tool lifecycle, concise status and final-answer deltas.
-    if (method === "item/agentMessage/delta") {
-      active.text += p.delta;
-      const text = streamedAnswer(active.text);
-      if (text && Date.now() - active.lastPreview > 80) {
-        active.lastPreview = Date.now();
-        active.onProgress?.({
-          message: "Rédaction de la réponse…",
-          preview: text,
-        });
-      }
-    }
-    if (method === "item/completed") {
-      const item = p.item;
-      if (item.type === "webSearch") {
-        // One audit entry per page really opened: a single open may render several pages and the
-        // model cites any of them. A search opens nothing: it keeps one entry, credited no page.
-        const pages = openedPages(item);
-        (pages.length ? pages : [item.action?.url]).forEach((url, index) => {
-          const key = pages.length ? sourceKey(url) : null;
-          if (key) {
-            this.opened.add(key);
-            active.onProgress?.({
-              message: "Source consultée : " + new URL(url).hostname,
-            });
-          }
-          active.audit.push({
-            action: item.action?.type,
-            tool: "web_search",
-            url,
-            status: "completed",
-            ...(item.id ? { itemId: item.id } : {}),
-            // Stated by the client, whatever the action is called: this entry is a page really opened.
-            ...(key ? { opened: true } : {}),
-            // Further pages of the same call: not another search.
-            ...(index ? { grouped: true } : {}),
-          });
-        });
-      }
-      if (
-        item.type === "agentMessage" &&
-        item.phase === "commentary" &&
-        item.text
-      )
-        active.onProgress?.({ provisional: item.text.slice(0, 1600) });
-      if (item.type === "agentMessage" && item.phase !== "commentary")
-        active.final = item.text;
-    }
-    if (
-      method === "turn/completed" &&
-      (!active.turnId || p.turn.id === active.turnId)
-    ) {
-      if (p.turn.status !== "completed") {
-        // Keep the raw turn outcome, redacted, so the job can store a usable diagnostic.
-        const detail = safeError(p.turn.error) || active.lastError;
-        const authRequired =
-          p.turn.status !== "interrupted" && isAuthFailure(detail);
-        const error = Error(
-          p.turn.status === "interrupted"
-            ? "Recherche annulée."
-            : authRequired
-              ? "Codex n’a pas terminé la réponse : authentification refusée (401). Reconnexion Codex requise (codex login), puis repose la question."
-              : "Codex n’a pas terminé la réponse.",
-        );
-        error.turnStatus = p.turn.status;
-        if (detail) error.turnError = detail;
-        if (authRequired) error.authRequired = true;
-        active.reject(error);
-      } else active.resolve(active.final || active.text);
-    }
+  acceptItem(active, method, p) {
+    const allowed =
+      this.itemGuard === "legacy"
+        ? method !== "item/started" || !LEGACY_BLOCKED_ITEMS.includes(p.item?.type)
+        : itemAllowed(this, p.item);
+    if (allowed) return true;
+    this.refuse(active, p.item?.type, active.turnId || p.turnId);
+    // Interrupting the host turn alone would leave an announced sub-agent running.
+    if (this.itemGuard !== "legacy" && SUB_AGENT_ITEMS.includes(p.item?.type)) this.foreignThread();
+    return false;
   }
-  async run({
-    jobId,
-    sessionId,
-    instructions,
-    tools,
-    signal,
-    onProgress,
-    mediaInput = [],
-    outputSchema,
-  }) {
-    // A turn the guard refused is still ending inside Codex: wait for its end (bounded, see refuse),
-    // or for this turn's own cancellation, whichever comes first.
-    if (this.draining) await this.drained(signal);
-    signal.throwIfAborted();
-    // Checked before anything is connected or sent: a path or a remote URL never reaches turn/start.
-    if (!validMediaInput(mediaInput)) throw Error("Entrée média non autorisée.");
-    const started = Date.now();
-    // Cold when this turn has to wait for a connection: none yet, another session, or a reconnect still in flight.
-    const coldStart =
-      !this.ready || !this.threadId || this.sessionId !== sessionId;
-    onProgress?.({
-      message: this.ready
-        ? "Lecture du contexte de la session…"
-        : "Connexion à Codex…",
+  event(method, p) {
+    dispatchEvent(
+      this,
+      {
+        guardThreads: this.itemGuard !== "legacy",
+        acceptItem: (active, method, params) => this.acceptItem(active, method, params),
+        foreignThread: () => this.foreignThread(),
+        trace: (event, fields) => this.trace(event, fields),
+        now: Date.now,
+      },
+      method,
+      p,
+    );
+  }
+  async run(input) {
+    return runTurn(this, input, {
+      prepare: (sessionId) => this.prepare(sessionId),
+      drained: (signal) => this.drained(signal),
+      trace: (event, fields) => this.trace(event, fields),
+      now: Date.now,
+      setTimer: setTimeout,
+      clearTimer: clearTimeout,
     });
-    await this.prepare(sessionId);
-    const connectMs = coldStart ? Date.now() - started : 0;
-    signal.throwIfAborted();
-    // Informational only (see codex-quota): never awaited on the turn path, never able to fail the turn.
-    try {
-      Promise.resolve(this.quota?.check(this.rpc)).catch(() => {});
-    } catch {}
-    let resolve, reject;
-    const done = new Promise((a, b) => {
-      resolve = a;
-      reject = b;
-    });
-    done.catch(() => {});
-    const active = (this.active = {
-      jobId,
-      tools,
-      signal,
-      onProgress,
-      resolve,
-      reject,
-      audit: [],
-      text: "",
-      final: "",
-      lastPreview: 0,
-      turnId: null,
-    });
-    let abortedAt = 0;
-    const abort = () => {
-      abortedAt ||= Date.now();
-      this.trace("abort.requested",{error:safeError(signal.reason)});
-      onProgress?.({ message: "Annulation…" });
-      if (active.turnId)
-        this.rpc
-          .request("turn/interrupt", {
-            threadId: this.threadId,
-            turnId: active.turnId,
-          })
-          .catch(() => {});
-    };
-    signal.addEventListener("abort", abort, { once: true });
-    let watchdog;
-    try {
-      this.trace("turn.start.request",{model:this.model});
-      const response = await new Promise((acknowledge, fail) => {
-        // Écouter le premier rejet du tour avant que sa fermeture rejette aussi turn/start.
-        done.catch(fail);
-        this.rpc.request("turn/start", {
-          threadId: this.threadId,
-          input: [{ type: "text", text: instructions }, ...mediaInput],
-          model: this.model || null,
-          effort: this.reasoningEffort,
-          summary: "none",
-          outputSchema,
-        }).then(acknowledge, fail);
-      });
-      active.turnId = response.turn.id;
-      this.trace("turn.start.ack",{status:response.turn.status});
-      if (signal.aborted) abort();
-      const interrupted = new Promise((_, fail) => {
-        const check = () => {
-          watchdog = setTimeout(() => {
-            if (signal.aborted && Date.now() - abortedAt >= 3000) {
-              this.trace("watchdog.close");
-              this.rpc.close();
-              fail(signal.reason);
-            } else check();
-          }, 1000);
-          // The guard only matters while something else holds the host: a turn left in flight must not keep
-          // a process alive by itself, which a real transport never needs (its pipes hold the host).
-          watchdog.unref?.();
-        };
-        check();
-      });
-      const raw = await Promise.race([done, interrupted]);
-      signal.throwIfAborted();
-      const result = JSON.parse(raw);
-      return {
-        ...result,
-        audit: active.audit,
-        threadId: this.threadId,
-        elapsedMs: Date.now() - started,
-        coldStart,
-        connectMs,
-      };
-    } catch (error) {
-      this.trace("turn.rejected",{error:safeError(error),auditCount:active.audit.length});
-      // A 401 means the cached auth is stale: drop this session so the next question reconnects
-      // with refreshed credentials. No automatic retry of the failed turn.
-      if (error?.authRequired) this.ready = null;
-      throw error;
-    } finally {
-      this.trace("turn.finished",{aborted:signal.aborted});
-      clearTimeout(watchdog);
-      signal.removeEventListener("abort", abort);
-      if (this.active === active) this.active = null;
-    }
   }
   // Finishes what this client left: its transport is asked, again if need be, whether its process group
   // is gone, and only then is its private tree removed, never under a group that may still be running.

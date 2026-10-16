@@ -1,7 +1,7 @@
 ---
 id: T175
 titre: Split the event and run handling of the Codex session client
-statut: a-faire
+statut: termine
 bloque_par: T046
 adr: oui
 installe: non
@@ -140,3 +140,154 @@ Les événements énumérés viennent du code actuel et de ses tests ; ce ticket
 à des types supposés d'après une documentation externe.
 
 ## Journal
+
+- Exploration : T046 présent ; connect et sa barrière de génération conservés. Interfaces extraites avec état unique, effets explicites et temps injecté. Détail dans `.harness-state/tickets/T175/exploration.md` ; aucun écart prévu.
+
+- Mesure initiale : `node .harness-state/tickets/T175/measure.mjs --before` (script exact du ticket) : sortie 1, `event` 147 et `run` 122 lignes physiques. Relevé :
+
+```text
+adapters/codex-session-client.cjs event 564-710 147
+adapters/codex-session-client.cjs ArrowFunctionExpression 658-677 20
+adapters/codex-session-client.cjs run 711-832 122
+adapters/codex-session-client.cjs ArrowFunctionExpression 741-741 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 744-747 4
+adapters/codex-session-client.cjs ArrowFunctionExpression 748-748 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 763-774 12
+adapters/codex-session-client.cjs ArrowFunctionExpression 773-773 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 779-790 12
+adapters/codex-session-client.cjs ArrowFunctionExpression 794-808 15
+adapters/codex-session-client.cjs ArrowFunctionExpression 795-806 12
+adapters/codex-session-client.cjs ArrowFunctionExpression 796-802 7
+```
+
+- Tests d’abord : `node --test --test-concurrency=1 tests/codex-session-events.test.cjs tests/codex-session-run.test.cjs` : 2 rouges sur assertion, puis 2 verts ; 26 chemins supplémentaires rouges sur assertion, puis 28/28 verts après extraction. Sorties `red-initial.log`, `green-initial.log`, `red-paths.log`, `green-paths.log` et `green-refined.log` dans le dossier d’état.
+- Extraction : notifications nommées, répartiteur ordonné, exécution par étapes et temps injecté. `connect` comparé à HEAD : identique, y compris `onFault`. Deux cas supplémentaires couvrent la connexion remplacée et un outil différé annulé. ADR 0022 ajouté.
+- Tests protecteurs : `node --test --test-concurrency=1 tests/codex-handler-failure.test.cjs tests/chat-trace.test.cjs tests/session-optimization.test.cjs tests/codex-connect-race.test.cjs tests/codex-thread-rotation.test.cjs tests/codex-confinement.test.cjs tests/codex-abandoned-turn.test.cjs tests/review-regressions.test.cjs tests/architecture-f05.test.cjs tests/architecture-f08.test.cjs tests/codex-stream-decoding.test.cjs tests/refactor-boundaries.test.cjs` : 125/125 verts ; assertions existantes inchangées. Sortie `protectors.log`.
+- Lint : premier passage rouge (complexités 23 et 19 dans deux nouvelles fonctions), fonctions fractionnées puis `node_modules/.bin/eslint --prune-suppressions adapters/codex-session-client.cjs adapters/codex-session-events.cjs adapters/codex-session-run.cjs tests/codex-session-events.test.cjs tests/codex-session-run.test.cjs` vert. Six suppressions devenues inutiles retirées, aucune ajoutée.
+- `node scripts/check.mjs --changed` : vert, 30/30 tests ; règles, format, lint, gel et cliquet verts. Sortie `check-changed.log`. Harnais et plancher inchangés ; sous `tests/`, seuls les deux nouveaux fichiers sont ajoutés.
+- Mesure finale : `node --input-type=module - < .harness-state/tickets/T175/measure.mjs` : sortie 0, modules exigés présents, maximum 31 lignes physiques ; `event` 14 et `run` 10. Relevé :
+
+```text
+adapters/codex-session-client.cjs event 560-573 14
+adapters/codex-session-client.cjs ArrowFunctionExpression 565-565 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 566-566 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 567-567 1
+adapters/codex-session-client.cjs run 574-583 10
+adapters/codex-session-client.cjs ArrowFunctionExpression 576-576 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 577-577 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 578-578 1
+adapters/codex-session-events.cjs sourceKey 14-23 10
+adapters/codex-session-events.cjs streamedAnswer 25-33 9
+adapters/codex-session-events.cjs turnDiagnostic 35-43 9
+adapters/codex-session-events.cjs traceTurn 45-53 9
+adapters/codex-session-events.cjs traceEvent 55-68 14
+adapters/codex-session-events.cjs connectionClosed 70-76 7
+adapters/codex-session-events.cjs observeThread 79-91 13
+adapters/codex-session-events.cjs threadStarted 93-95 3
+adapters/codex-session-events.cjs threadStatusChanged 97-99 3
+adapters/codex-session-events.cjs endDrain 101-110 10
+adapters/codex-session-events.cjs turnStarted 112-114 3
+adapters/codex-session-events.cjs turnError 116-119 4
+adapters/codex-session-events.cjs failureMessage 121-130 10
+adapters/codex-session-events.cjs turnCompleted 132-146 15
+adapters/codex-session-events.cjs itemStarted 148-162 15
+adapters/codex-session-events.cjs agentMessageDelta 164-172 9
+adapters/codex-session-events.cjs auditWebSearch 174-196 23
+adapters/codex-session-events.cjs ArrowFunctionExpression 178-195 18
+adapters/codex-session-events.cjs itemCompleted 198-207 10
+adapters/codex-session-events.cjs dispatchActive 217-225 9
+adapters/codex-session-events.cjs dispatchEvent 228-237 10
+adapters/codex-session-run.cjs prepareTurn 7-20 14
+adapters/codex-session-run.cjs finishPreparation 22-31 10
+adapters/codex-session-run.cjs ArrowFunctionExpression 27-27 1
+adapters/codex-session-run.cjs installActivity 33-55 23
+adapters/codex-session-run.cjs ArrowFunctionExpression 35-38 4
+adapters/codex-session-run.cjs ArrowFunctionExpression 39-39 1
+adapters/codex-session-run.cjs installInterruption 57-75 19
+adapters/codex-session-run.cjs ArrowFunctionExpression 60-72 13
+adapters/codex-session-run.cjs ArrowFunctionExpression 70-70 1
+adapters/codex-session-run.cjs startTurn 77-96 20
+adapters/codex-session-run.cjs ArrowFunctionExpression 79-95 17
+adapters/codex-session-run.cjs acknowledgeStart 98-102 5
+adapters/codex-session-run.cjs watchInterruption 104-122 19
+adapters/codex-session-run.cjs ArrowFunctionExpression 105-121 17
+adapters/codex-session-run.cjs ArrowFunctionExpression 106-119 14
+adapters/codex-session-run.cjs ArrowFunctionExpression 107-116 10
+adapters/codex-session-run.cjs turnResult 124-135 12
+adapters/codex-session-run.cjs cleanupTurn 137-142 6
+adapters/codex-session-run.cjs runTurn 144-174 31
+```
+
+- Contrôle final : `node scripts/check.mjs` : vert. Règles, format, lint, gel et cliquet verts ; 1 387/1 387 tests JS sur 111 fichiers ; 33 tests Python, OK avec 1 ignoré. Sortie complète dans `.harness-state/tickets/T175/check-full.log`.
+- Verdict : `TERMINÉ`, enregistré dans `.harness-state/tickets/T175/verdict.json`. Relecture et intégration laissées à la boucle ; aucun commit ni push.
+
+- Reprise après `relecture-1.md` : 0 bloquant, 3 mineurs acceptés ; assertions de progression à renforcer avant les corrections de commentaires et de nommage. Le constat 4 (minuterie globale de drain) est conservé en réserve hors périmètre. Aucun écart ni contestation.
+
+- Correction du constat 1, tests d’abord : les séquences complètes de progression froid/chaud/annulation sont désormais comparées, ainsi que les objets entiers d’`itemStarted`. Le comportement étant déjà correct, quatre mutations temporaires en mémoire (message froid, message chaud, annulation supprimée, raisonnement ajouté) vérifient la force des assertions, sans modifier les fichiers de production. Pour chaque mode : `TVLENS_PROGRESS_MUTATION=<mode> node --require /Users/Dabi/Documents/ISN/tvlens/.harness-state/tickets/T175/progress-mutation.cjs --test --test-name-pattern=<motif> <fichier>` ; commandes exactes et échecs sur assertion conservés dans `red-progress-cold.log`, `red-progress-warm.log`, `red-progress-cancel.log`, `red-progress-reasoning.log`. Une première commande avait un chemin de préchargement incorrect (`progress-preload-path-error.log`), corrigé avant ces preuves ; elle ne compte pas comme rouge comportemental.
+- Sans mutation : `node --test --test-concurrency=1 tests/codex-session-events.test.cjs tests/codex-session-run.test.cjs` : 30/30 verts (`green-progress-correction.log`).
+- Constats 2 et 3 corrigés : explications de la validation avant connexion, du démarrage froid, de la confidentialité des progressions, du diagnostic expurgé et des champs `opened`/`grouped` et de la fin du drain rétablies ; paramètre de notification renommé `method`. Aucun changement de logique.
+- `node scripts/check.mjs --changed` : vert après corrections, 30/30 tests (`check-changed-correction-1.log`). `connect` et `onFault` comparés à HEAD : identiques ; aucun test déjà suivi, harnais ou plancher modifié (`scope-correction-1.log`).
+- `node --input-type=module - < .harness-state/tickets/T175/measure.mjs` : sortie 0 ; maximum 31 lignes physiques, `event` 14 et `run` 10. Relevé actualisé après commentaires :
+
+```text
+adapters/codex-session-client.cjs event 560-573 14
+adapters/codex-session-client.cjs ArrowFunctionExpression 565-565 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 566-566 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 567-567 1
+adapters/codex-session-client.cjs run 574-583 10
+adapters/codex-session-client.cjs ArrowFunctionExpression 576-576 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 577-577 1
+adapters/codex-session-client.cjs ArrowFunctionExpression 578-578 1
+adapters/codex-session-events.cjs sourceKey 14-23 10
+adapters/codex-session-events.cjs streamedAnswer 25-33 9
+adapters/codex-session-events.cjs turnDiagnostic 35-43 9
+adapters/codex-session-events.cjs traceTurn 45-53 9
+adapters/codex-session-events.cjs traceEvent 55-68 14
+adapters/codex-session-events.cjs connectionClosed 70-76 7
+adapters/codex-session-events.cjs observeThread 79-91 13
+adapters/codex-session-events.cjs threadStarted 93-95 3
+adapters/codex-session-events.cjs threadStatusChanged 97-99 3
+adapters/codex-session-events.cjs endDrain 101-111 11
+adapters/codex-session-events.cjs turnStarted 113-115 3
+adapters/codex-session-events.cjs turnError 117-120 4
+adapters/codex-session-events.cjs failureMessage 122-131 10
+adapters/codex-session-events.cjs turnCompleted 133-148 16
+adapters/codex-session-events.cjs itemStarted 151-165 15
+adapters/codex-session-events.cjs agentMessageDelta 167-175 9
+adapters/codex-session-events.cjs auditWebSearch 177-201 25
+adapters/codex-session-events.cjs ArrowFunctionExpression 181-200 20
+adapters/codex-session-events.cjs itemCompleted 203-212 10
+adapters/codex-session-events.cjs dispatchActive 222-230 9
+adapters/codex-session-events.cjs dispatchEvent 233-242 10
+adapters/codex-session-run.cjs prepareTurn 7-22 16
+adapters/codex-session-run.cjs finishPreparation 24-33 10
+adapters/codex-session-run.cjs ArrowFunctionExpression 29-29 1
+adapters/codex-session-run.cjs installActivity 35-57 23
+adapters/codex-session-run.cjs ArrowFunctionExpression 37-40 4
+adapters/codex-session-run.cjs ArrowFunctionExpression 41-41 1
+adapters/codex-session-run.cjs installInterruption 59-77 19
+adapters/codex-session-run.cjs ArrowFunctionExpression 62-74 13
+adapters/codex-session-run.cjs ArrowFunctionExpression 72-72 1
+adapters/codex-session-run.cjs startTurn 79-98 20
+adapters/codex-session-run.cjs ArrowFunctionExpression 81-97 17
+adapters/codex-session-run.cjs acknowledgeStart 100-104 5
+adapters/codex-session-run.cjs watchInterruption 106-124 19
+adapters/codex-session-run.cjs ArrowFunctionExpression 107-123 17
+adapters/codex-session-run.cjs ArrowFunctionExpression 108-121 14
+adapters/codex-session-run.cjs ArrowFunctionExpression 109-118 10
+adapters/codex-session-run.cjs turnResult 126-137 12
+adapters/codex-session-run.cjs cleanupTurn 139-144 6
+adapters/codex-session-run.cjs runTurn 146-176 31
+```
+
+- Contrôle complet après corrections : `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 1 387/1 387 tests JS sur 111 fichiers ; 33 tests Python OK, dont 1 ignoré (`check-full-correction-1.log`).
+- Nouveau verdict : `TERMINÉ`. Les trois constats mineurs de la relecture 1 sont corrigés, sans contestation. Réserve conservée dans `reste` : la minuterie du drain de `refuse` utilise les fonctions globales, hors du découpage de ce ticket. Relecture et intégration laissées à la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- Hors périmètre, relecture 1 constat 4 : refuse utilise encore setTimeout/clearTimeout globaux pour la minuterie de drain, alors que le module de tour reçoit ses minuteries par injection. Harmonisation à traiter séparément.
+- .harness-state/tickets/T175/relecture-2.md : `adapters/codex-session-client.cjs:486` — hors périmètre (réserve maintenue)
+
+  - **Problème :** `refuse` arme toujours la minuterie de drain avec les `setTimeout` et `clearTimeout` globaux (`:481`, `:486`). À l'inverse, `runTurn` reçoit ses minuteries par `effects.setTimer` et `effects.clearTimer`. Le client mélange donc encore les deux façons de faire.
+  - **Attendu :** injecter les minuteries du drain dans un ticket séparé. Ce ticket ne découpe que `event` et `run`, et la correction n'a pas touché ce code.
+  - **Suite :** réserve à reporter. La session la note déjà dans `ecarts.md`.
