@@ -3,7 +3,7 @@ const {
   settleQuestions,
   attempt,
 } = require("./session-closing.cjs");
-const { refusal } = require("./state-views.cjs");
+const { refusal } = require("./errors.cjs");
 const { READ_ONLY } = require("./capture-intake.cjs");
 
 class HeadlessSessionLifecycle {

@@ -137,7 +137,8 @@ test('polled views of a two-hour session stay small whatever its length, are ans
   const preflight = await fetch(server.url + '/v1/state?view=panel', { method: 'OPTIONS', headers: { Origin: 'null', 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'authorization,if-none-match' } });
   assert.match(preflight.headers.get('access-control-allow-headers'), /If-None-Match/);
   const cors = await fetch(server.url + '/v1/state?view=chat', { headers: { Authorization: 'Bearer ' + token, Origin: 'null', 'If-None-Match': 'W/' + (await get('/v1/state?view=chat')).etag } });
-  assert.deepEqual([cors.status, cors.headers.get('access-control-expose-headers'), cors.headers.get('access-control-allow-origin')], [304, 'ETag', 'null']);
+  assert.deepEqual([cors.status, cors.headers.get('access-control-expose-headers'), cors.headers.get('access-control-allow-origin')],
+    [304, 'ETag, X-TVLens-Error-Code', 'null']);
   const other = new HeadlessRuntime({ userData: root, sessionsRoot: path.join(root, 'other'), config: {}, selectedModels: {}, smoke: true, agent });
   t.after(() => other.close());
   other.revision = runtime.revision;

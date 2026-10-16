@@ -1,5 +1,6 @@
 const { sessionTimeline } = require("../core/session-timeline.cjs");
 const { CARD_LABELS } = require("../core/surveillance.cjs");
+const { refusal } = require("./errors.cjs");
 
 // Light views of the state. With durable sessions the complete state weighs megabytes after a film:
 // a poll gets a view that never carries the texts of every passage.
@@ -34,9 +35,6 @@ const HEADER = [
   "coverage",
 ];
 const active = (job) => job.status === "queued" || job.status === "running";
-// The transport turns `status` into the HTTP status and `code` into a reason a client can act on.
-const refusal = (status, message, code) =>
-  Object.assign(new Error(message), { status, code });
 const clip = (value, max) =>
   typeof value === "string" && value.length > max
     ? value.slice(0, max).trimEnd() + "…"
@@ -342,7 +340,6 @@ module.exports = {
   HEADER,
   active,
   clip,
-  refusal,
   lightPassage,
   lightJob,
   captureGapsOf,

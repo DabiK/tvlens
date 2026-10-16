@@ -1,5 +1,5 @@
 const { STORAGE_FULL } = require("../adapters/disk-guard.cjs");
-const { refusal } = require("./state-views.cjs");
+const { refusal } = require("./errors.cjs");
 const { validateSegment } = require("./session-runtime.cjs");
 
 const READ_ONLY =

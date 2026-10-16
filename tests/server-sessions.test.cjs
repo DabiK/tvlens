@@ -246,7 +246,8 @@ test('deleting a session over HTTP is refused during capture and for anything bu
   assert.deepEqual(await f.req(`/v1/sessions/${L}/delete`, {}), { status: 409, value: { error: 'Arrête la capture avant de supprimer cette session.', code: 'capturing' } });
   for (const bad of ['..%2F' + N, 'sessions', N.toUpperCase(), N + '%00', '%20' + N, 'moment-1'])
     for (const action of ['delete', 'open', 'resume'])
-      assert.deepEqual(await f.req(`/v1/sessions/${bad}/${action}`, {}), { status: 400, value: { error: 'Identifiant de session invalide.' } }, bad + ' ' + action);
+      assert.deepEqual(await f.req(`/v1/sessions/${bad}/${action}`, {}),
+        { status: 400, value: { error: 'Identifiant de session invalide.', code: 'unclassified-error' } }, bad + ' ' + action);
   // Dot segments are resolved before routing: they never reach a session route at all.
   for (const dots of ['..', '%2E%2E', `${N}/..`])
     assert.equal((await f.req(`/v1/sessions/${dots}/delete`, {})).status, 404, dots);
@@ -390,7 +391,7 @@ test('an archive kept until deletion keeps that contract on a host set to a roll
   assert.equal((await f.block(B.id, 1, 8000)).value.id, 'moment-1');
   f.clock += 600000;
   await f.runtime.session.watch.prune();
-  assert.deepEqual(await f.req(`/v1/media/${B.id}/moment-1`), { status: 410, value: { error: 'Média expiré.' } });
+  assert.deepEqual(await f.req(`/v1/media/${B.id}/moment-1`), { status: 410, value: { error: 'Média expiré.', code: 'media-expired' } });
   assert.deepEqual((await tree(mediaA)).filter(row => /moment-[12]\./.test(row[0])), start);
 });
 
@@ -596,7 +597,8 @@ test('a start renews the block numbering even when the session was still capturi
   assert.deepEqual((await f.block(id, 9000002, 16000)).value, { id: 'moment-2', duplicate: false });
   // Within one capture a lower number is still refused before anything is prepared.
   const assembled = f.calls.assemble;
-  assert.deepEqual([await f.block(id, 5, 24000), f.calls.assemble], [{ status: 409, value: { error: 'Séquence ancienne.' } }, assembled]);
+  assert.deepEqual([await f.block(id, 5, 24000), f.calls.assemble],
+    [{ status: 409, value: { error: 'Séquence ancienne.', code: 'stale-sequence' } }, assembled]);
 
   // The TV restarted: no pause was sent, the session still captures, and the new capture starts lower.
   const again = await f.req('/v1/session/start', {});
@@ -606,7 +608,8 @@ test('a start renews the block numbering even when the session was still capturi
   // A block of the former capture really replayed, byte for byte: its number says nothing any more,
   // but the session refuses it on observation order.
   const replayed = await f.block(id, 9000002, 16000);
-  assert.deepEqual(replayed, { status: 400, value: { error: 'Les segments doivent suivre l’ordre d’observation.' } });
+  assert.deepEqual(replayed,
+    { status: 400, value: { error: 'Les segments doivent suivre l’ordre d’observation.', code: 'unclassified-error' } });
   // Even after one more start has made the transport forget the block it has just accepted.
   await f.req('/v1/session/start', {});
   assert.equal((await f.block(id, 5, 24000)).status, 400);

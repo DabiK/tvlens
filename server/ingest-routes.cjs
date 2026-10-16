@@ -1,5 +1,6 @@
 const { createHash } = require("node:crypto");
 const { validateRemote } = require("../adapters/remote-media.cjs");
+const { refusal } = require("../runtime/errors.cjs");
 const SEGMENTS_PATH = "/v1/segments";
 const FUTURE_TOLERANCE_MS = 3000;
 const MAX_ACCEPTED_BLOCKS = 100;
@@ -9,7 +10,7 @@ async function ingestBlock({ runtime, media, transport }, { body, raw, send }) {
   // L'admission métier refuse avant tout assemblage : session obsolète, archive, capture arrêtée ou disque plein.
   const session = runtime.admit(body.sessionId);
   if (body.endMs > session.watch.now() + FUTURE_TOLERANCE_MS)
-    throw Error("Horodatage futur.");
+    throw refusal(400, "Horodatage futur.", "invalid-capture-time");
   // Une TV qui relance sa capture n'envoie pas de pause : sa nouvelle capture numérote depuis une autre origine,
   // même pour la même session. Un bloc de l'ancienne capture rejoué ensuite est refusé par la session elle-même,
   // selon l'ordre d'observation.
@@ -26,12 +27,12 @@ async function ingestBlock({ runtime, media, transport }, { body, raw, send }) {
       prior.hash === hash ? 200 : 409,
       prior.hash === hash
         ? { id: prior.id, duplicate: true }
-        : { error: "Séquence déjà utilisée avec un autre contenu." },
+        : { error: "Séquence déjà utilisée avec un autre contenu.", code: "sequence-conflict" },
     );
   if (body.sequence <= transport.lastSequence)
-    return send(409, { error: "Séquence ancienne." });
+    return send(409, { error: "Séquence ancienne.", code: "stale-sequence" });
   if (transport.ingesting)
-    return send(429, { error: "Préparation du passage précédent." });
+    return send(429, { error: "Préparation du passage précédent.", code: "preparation-busy" });
   // Le runtime possède le bloc avant sa préparation : la fin de sa session arrête l'outil média par ce signal.
   // La déconnexion du client ne l'annule pas : le bloc est stocké et un nouvel envoi est répondu comme doublon.
   const operation = runtime.accept(body.sessionId);

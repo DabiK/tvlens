@@ -514,7 +514,8 @@ test('server host (HTTP) — a session its host could not let go of is not said 
   const refused = await h.end();
   h.deep.cancelAll = cancelAll;
   assert.deepEqual({ refused, held: (await h.state())?.id, questions: (await h.jobs()).map(job => job.status), manifest: (await saved(h, id, 'manifest.json')).state, journal: h.journal, lastEnd: h.lastEnd() }, {
-    refused: { status: 400, value: { error: 'Une question est en cours.' } }, held: id, questions: ['running'], manifest: 'archived', journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: true, errors: UNCANCELLED } });
+    refused: { status: 400, value: { error: 'Une question est en cours.', code: 'unclassified-error' } },
+    held: id, questions: ['running'], manifest: 'archived', journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: true, errors: UNCANCELLED } });
   const ended = await h.end();
   h.chat.turn.finish(); await pause(60);
   const last = (await saved(h, id, 'deep-answers.json')).jobs.at(-1), rows = await h.rows(), next = await h.start();

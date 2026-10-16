@@ -1,7 +1,7 @@
 ---
 id: T188
 titre: Carry a stable code through every direct server refusal and media response
-statut: a-faire
+statut: termine
 bloque_par: T124
 adr: oui
 installe: non
@@ -99,3 +99,80 @@ des refus du domaine et des adaptateurs ; T051 assainit les messages média et T
 Les erreurs contenues dans un état de travail réussi en HTTP ne changent pas de format ici.
 
 ## Journal
+
+- Cadrage : consignes, skills, standards, code, appelants, sept suites citées et ADR concernés lus.
+  Base `8d032f2`, témoin de hooks présent ; trois entrées initiales du statut Git conservées.
+  Exploration et ajouts additifs prévus aux attentes dans `.harness-state/tickets/T188/exploration.md`
+  et `ecarts.md`. Aucun test encore exécuté ; aucun commit ni push prévu.
+- Refus HTTP communs : `node --test --test-name-pattern='unknown paths|HTTP common refusals|HTTP enforces|HTTP revalidation' tests/server-routes.test.cjs`
+  : 4 rouges sur assertions de code/CORS, puis 4/4 verts (`http-direct-red.log`, `http-direct-green.log`).
+  Authentification → unauthenticated, méthode → method-not-allowed, type → json-required,
+  tailles annoncée/lue sur les deux limites → request-too-large, JSON malformé/non objet → invalid-json,
+  chemins inconnus des cinq groupes → route-not-found. Aucun admit/assemble pour les corps refusés.
+- Erreurs levées : `node --test --test-name-pattern='HTTP carries recognized|HTTP leaves errno' tests/server-routes.test.cjs`
+  : 2 rouges sur absence d'identité, puis 2/2 verts (`error-translation-red.log`, `error-translation-green.log`).
+  Deux messages arbitraires par code, treize codes T124 et codes publics existants transmis ;
+  STORAGE_FULL → 507 storage-full ; errno, identités inconnues et phrases familières → unclassified-error.
+  Statuts valides conservés, statuts invalides repliés en 400. `refusal` extrait avec ses quatre imports.
+- Ingestion : `node --test --test-name-pattern='HTTP ingestion keeps|HTTP keeps one preparation|HTTP refuses a future' tests/server-routes.test.cjs`
+  : 3 rouges sur assertions de code, puis 3/3 verts (`ingestion-refusals-red.log`, `ingestion-refusals-green.log`).
+  Conflit de contenu → sequence-conflict, séquence ancienne → stale-sequence, créneau → preparation-busy,
+  horodatage futur → invalid-capture-time. La borne exacte de tolérance reste admise ; refus futur après
+  admit et avant accept/assemble. Doublons, renouvellement de capture et finish conservent leurs assertions.
+- Média JSON : `node --test --test-name-pattern='HTTP preserves JPEG|HTTP codes unavailable' tests/server-routes.test.cjs`
+  : 2 rouges sur assertions de code, puis 2/2 verts (`media-json-red.log`, `media-json-green.log`).
+  Session absente/étrangère (miniature et média) → session-ended ; lecture miniature refusée → thumbnail-unavailable ;
+  mediaReason expired/absent/inconnu → media-expired, missing/not-kept → media-missing,
+  unreadable → media-unreadable. Deux routes média exercées ; aucun appel au store pour un refus d'état.
+  Le contrôle rapide a signalé quatre imports encore inutilisés, retirés avant le rouge ; aucun test n'a été lancé sur cet état.
+- Média binaire : `node --test --test-name-pattern='HTTP preserves JPEG|HTTP media refusal headers' tests/server-routes.test.cjs`
+  : 2 rouges sur l'en-tête 416 absent (`media-binary-red.log`), puis 1 rouge sur l'en-tête 404 absent
+  après le seul ajout 416 (`media-missing-header-red.log`), puis 2/2 verts (`media-binary-green.log`).
+  Vrai store temporaire, deux routes, plages bornée/ouverte et trois formes de 416 : corps vide,
+  Content-Range, invalid-range et CORS vérifiés ensemble. 404 texte inchangé → en-tête media-missing,
+  prioritaire sur Range ; 200/206 conservent leurs octets et n'ont aucun en-tête d'erreur.
+- Attentes existantes ajustées uniquement par ajout de code et exposition CORS, conformément à ecarts.md.
+  ADR 0034 écrit sur les deux formes de transport, leurs propriétaires et le catalogue T201 restant.
+- Suites citées exécutées un fichier à la fois, toutes code 0 : `node --test tests/remote-server.test.cjs`
+  2/2 ; `node --test tests/server-routes.test.cjs` 19/19 ; `node --test tests/server-ingest-path.test.cjs`
+  5/5 ; `node --test tests/server-sessions.test.cjs` 15/15 ; `node --test tests/server-state-views.test.cjs`
+  1/1 ; `node --test tests/timeline-server.test.cjs` 2/2 ; `node --test tests/state-views.test.cjs` 5/5.
+  Soit 49 tests réussis, aucun ignoré ; sorties `acceptance-<nom>.log` dans le dossier d'état.
+- `node scripts/check.mjs --changed` : code 0, `check : vert` ; règles, format, lint, gel et cliquet verts,
+  40/40 tests JS sur les quatre fichiers de test modifiés (`check-changed.log`). `git diff --check` : code 0.
+- Premier contrôle complet : `node scripts/check.mjs` : code 1 (`check-full.log`). Règles, format,
+  lint, gel, cliquet verts ; 22 tests Python OK ; JS 1 722/1 729, sept échecs sur les seules propriétés
+  `code` supplémentaires des réponses HTTP. Pas d'échec intermittent observé.
+- Diagnostic séquentiel, code 1 chacun : `node --test tests/architecture-f06.test.cjs` (4 échecs),
+  `node --test tests/architecture-f07.test.cjs` (1), `node --test tests/architecture-f10.test.cjs` (1),
+  `node --test tests/server-surveillance.test.cjs` (1) ; sorties intégrales
+  `http-expectations-<nom>-red.log`. Ajouts attendus déclarés dans ecarts.md avant édition,
+  puis ajout des codes seulement : préparation occupée, validation média sans identité, conflit,
+  séquence ancienne, taille, session arrêtée, question active, authentification et session obsolète.
+  Aucun scénario, message, statut, comptage, délai, annulation ou assertion de nettoyage retiré.
+- Mêmes quatre commandes après les ajouts d'identité, exécutées une par une : 17/17, 26/26,
+  10/10 et 5/5 verts, code 0 chacun (`http-expectations-<nom>-green.log`). Les comptages de lecture
+  Range, les nettoyages, les courses de fermeture et le chevauchement chat/surveillance passent.
+- Contrôle final des fichiers modifiés : `node scripts/check.mjs --changed` : code 0, `check : vert`,
+  règles, format, lint, gel et cliquet verts ; 98/98 tests JS sur huit fichiers (`check-changed-final.log`).
+- Contrôle complet final : `node scripts/check.mjs` : code 0, `check : vert` ; règles, format, lint,
+  gel et cliquet verts ; 1 729/1 729 tests JS sur 123 fichiers, 22 tests Python OK
+  (`check-full-final.log`). Aucun test ignoré ni contrôle non lancé.
+- `git diff --check` : code 0. Vérification du diff : harnais, plancher, store, cœur, clients et messages
+  inchangés ; les deux dossiers non suivis initiaux restent hors périmètre. Les seules adaptations
+  des attentes existantes ajoutent codes/en-têtes, sans retirer d'assertion de comportement.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T188/verdict.json`, sans réserve restante.
+  Catalogue du domaine laissé à T201, repli 400 conservé. Aucun commit ni push ; la boucle garde
+  la relecture et l'intégration.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T188/relecture-1.md : **1. `server/http.cjs:23-30` : hors périmètre (réserve pour T201)**
+  - **Le problème.** Les huit codes publics déjà existants (`media-unavailable`, `read-only`, `session-closing`, `capture-changed`, `capturing`, `not-open`, `not-found`, `invalid-capture-time`) sont écrits deux fois : une fois chez leur émetteur (`runtime/capture-intake.cjs`, `runtime/headless-session-lifecycle.cjs`, `runtime/state-views.cjs`, `adapters/remote-media.cjs`, `server/ingest-routes.cjs`), une fois dans la liste `APPLICATION_CODES`. Si on renomme un code chez son émetteur, le serveur répondra `unclassified-error` sans erreur visible. Le test `HTTP carries recognized application codes…` utilise lui aussi des chaînes écrites en dur et ne le verrait pas. Les suites d'intégration (architecture-f06, server-sessions) attraperaient la plupart des cas.
+  - **Ce qui est attendu.** Chaque émetteur déclare et exporte son code, et `server/` l'importe, comme le prévoit T201.
+  - **Pourquoi hors périmètre.** T188 interdit de modifier les règles des appelants et les refus du cœur ou des adaptateurs.
+- .harness-state/tickets/T188/relecture-1.md : **Écart accepté, critère 5 (attentes HTTP additives).** Le ticket prescrit d'ajouter `code`, `unclassified-error`, l'exposition CORS et l'en-tête média. Le diff des attentes ne retire aucune assertion.
+- .harness-state/tickets/T188/relecture-1.md : **Écart accepté, périmètre (import dans `runtime/headless-session-lifecycle.cjs`).** C'est un appelant existant de `refusal`. Le ticket demande d'« adapter ses imports existants », et la liste des appelants citée n'était pas complète (« comprennent »). Seul l'import change, aucune règle.
+- .harness-state/tickets/T188/relecture-1.md : **Écart accepté, critère 5 (`tests/architecture-f06`, `-f07`, `-f10`, `tests/server-surveillance`).** Ces suites ne sont pas citées par le ticket, mais elles vérifient par HTTP réel les garanties des ADR 0006, 0007 et 0010, qu'il cite. Le changement de comportement demandé les fait forcément évoluer. J'ai vérifié que seuls `code` ou l'exposition CORS ont été ajoutés : scénarios, comptages, délais et nettoyages sont intacts.
+
+  Aucun constat contesté : c'est la première relecture.

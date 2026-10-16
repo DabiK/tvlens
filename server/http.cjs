@@ -1,19 +1,40 @@
 const http = require("node:http");
 const { timingSafeEqual } = require("node:crypto");
 const { STORAGE_FULL } = require("../adapters/disk-guard.cjs");
+const {
+  TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT, TVLENS_CODEX_REQUEST_CUT,
+} = require("../adapters/codex-rpc.cjs");
+const { TVLENS_CODEX_CONNECTION_LOST } = require("../adapters/codex-session-events.cjs");
+const { TVLENS_CODEX_INPUT_REFUSED } = require("../adapters/codex-session-run.cjs");
+const {
+  TVLENS_CODEX_SESSION_CLOSED, TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED,
+} = require("../adapters/codex-session-client.cjs");
+const { TVLENS_CODEX_ROLE_REFUSED } = require("../adapters/codex-confinement.cjs");
+const {
+  TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+} = require("../adapters/local-vlm-agent.cjs");
 const { createRoutes, dispatchRoute } = require("./routes.cjs");
 const { SEGMENTS_PATH } = require("./ingest-routes.cjs");
 const JSON_BODY_LIMIT = 12000;
 const SEGMENT_BODY_LIMIT = 13000000;
 const REQUEST_TIMEOUT_MS = 20000;
 const HEADERS_TIMEOUT_MS = 10000;
+// Seules les identités des émetteurs connus traversent le transport ; un errno garde le repli historique.
+const APPLICATION_CODES = new Set([
+  "invalid-capture-time", "media-unavailable", "read-only", "session-closing",
+  "capture-changed", "capturing", "not-open", "not-found",
+  TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT, TVLENS_CODEX_REQUEST_CUT,
+  TVLENS_CODEX_CONNECTION_LOST, TVLENS_CODEX_INPUT_REFUSED, TVLENS_CODEX_SESSION_CLOSED,
+  TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_ROLE_REFUSED,
+  TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+]);
 
 function setCors(req, res) {
   if (req.headers.origin !== "null") return;
   res.setHeader("Access-Control-Allow-Origin", "null");
   res.setHeader("Vary", "Origin");
-  // Le panneau doit pouvoir relire le tag qu'il présente à la revalidation suivante.
-  res.setHeader("Access-Control-Expose-Headers", "ETag");
+  // Le panneau doit pouvoir relire le tag de revalidation et le refus d'un corps média.
+  res.setHeader("Access-Control-Expose-Headers", "ETag, X-TVLens-Error-Code");
 }
 
 function sendJSON(res, status, value, headers = {}) {
@@ -53,12 +74,12 @@ function revalidate(req, res, send, tag, build) {
 
 async function readJSON(req, path, send) {
   if (!String(req.headers["content-type"] || "").startsWith("application/json")) {
-    send(415, { error: "JSON requis." });
+    send(415, { error: "JSON requis.", code: "json-required" });
     return null;
   }
   const limit = path === SEGMENTS_PATH ? SEGMENT_BODY_LIMIT : JSON_BODY_LIMIT;
   if (Number(req.headers["content-length"]) > limit) {
-    send(413, { error: "Requête trop volumineuse." });
+    send(413, { error: "Requête trop volumineuse.", code: "request-too-large" });
     return null;
   }
   let size = 0;
@@ -66,7 +87,7 @@ async function readJSON(req, path, send) {
   for await (const chunk of req) {
     size += chunk.length;
     if (size > limit) {
-      send(413, { error: "Requête trop volumineuse." });
+      send(413, { error: "Requête trop volumineuse.", code: "request-too-large" });
       return null;
     }
     chunks.push(chunk);
@@ -80,7 +101,7 @@ async function readJSON(req, path, send) {
   }
   // Chaque route lit les champs d'un objet : toute autre valeur est refusée ici, avec un message lisible.
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    send(400, { error: "JSON invalide." });
+    send(400, { error: "JSON invalide.", code: "invalid-json" });
     return null;
   }
   return { raw, body };
@@ -94,7 +115,7 @@ function sendError(error, res, send) {
   const status = Number.isInteger(error?.status) && error.status >= 400 && error.status < 600 ? error.status : 400;
   return send(status, {
     error: error.message,
-    ...(typeof error?.code === "string" && status !== 400 ? { code: error.code } : {}),
+    code: APPLICATION_CODES.has(error?.code) ? error.code : "unclassified-error",
   });
 }
 
@@ -125,10 +146,10 @@ class RemoteServer {
     const send = (status, value, headers) => sendJSON(res, status, value, headers);
     if (req.method === "OPTIONS") return preflight(res);
     if (!authenticated(req, this.token))
-      return send(401, { error: "Appareil non authentifié." });
+      return send(401, { error: "Appareil non authentifié.", code: "unauthenticated" });
     // Les lectures sont des GET sans corps ; le reste est un POST JSON : le panneau ne connaît aucun autre verbe.
     if (req.method !== "GET" && req.method !== "POST")
-      return send(405, { error: "Méthode non autorisée." }, { Allow: "GET, POST, OPTIONS" });
+      return send(405, { error: "Méthode non autorisée.", code: "method-not-allowed" }, { Allow: "GET, POST, OPTIONS" });
     try {
       // La query sélectionne une vue, jamais une autre route. Même une route inconnue valide son corps avant le 404.
       const url = new URL(req.url, "http://tvlens.local");
@@ -138,7 +159,7 @@ class RemoteServer {
         req, res, url, ...payload, send,
         revalidated: (tag, build) => revalidate(req, res, send, tag, build),
       });
-      if (!handled) send(404, { error: "Route inconnue." });
+      if (!handled) send(404, { error: "Route inconnue.", code: "route-not-found" });
     } catch (error) {
       sendError(error, res, send);
     }

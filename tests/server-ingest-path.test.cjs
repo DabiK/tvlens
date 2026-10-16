@@ -102,7 +102,7 @@ test('images cropped or withheld under a TV Lens card are bounded at the door, c
   assert.equal((await send(2, 16000, { frames: frames('cropped', 'cropped') })).status, 200);
   assert.equal((await send(3, 24000, { frames: frames(undefined, undefined) })).status, 200);
   const refused = await send(4, 32000, { frames: frames(undefined, undefined), overlay: { cropped: 3, withheld: 0 } });
-  assert.deepEqual([refused.status, refused.value], [400, { error: 'Déclaration d’images masquées incohérente.' }]);
+  assert.deepEqual([refused.status, refused.value], [400, { error: 'Déclaration d’images masquées incohérente.', code: 'unclassified-error' }]);
   const passages = (await f.req('/v1/state')).value.session.segments;
   assert.deepEqual(passages.map(p => [p.id, p.status, p.ingest.overlay, p.observation.uncertainty, p.observation.visual]), [
     ['moment-1', 'ready', { cropped: 1, withheld: 1 }, note(2, 4), '3 images reçues.'],

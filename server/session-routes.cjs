@@ -3,31 +3,34 @@ async function serveThumbnail(runtime, { params, res, send }) {
   // Seule la session chargée, en capture ou ouverte en archive, peut servir ses miniatures.
   const session = runtime.session;
   if (!session || session.id !== sessionId)
-    return send(410, { error: "Session terminée." });
+    return send(410, { error: "Session terminée.", code: "session-ended" });
   try {
     const bytes = await session.thumbnails.read(momentId);
     res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-store" });
     return res.end(bytes);
   } catch {
-    return send(410, { error: "Miniature indisponible." });
+    return send(410, { error: "Miniature indisponible.", code: "thumbnail-unavailable" });
   }
 }
 
 function unavailableMedia(reason) {
   if (reason === "unreadable")
-    return "Vidéo illisible : le fichier enregistré ne contient aucune image.";
-  if (["missing", "not-kept"].includes(reason)) return "Média indisponible.";
-  return "Média expiré.";
+    return { error: "Vidéo illisible : le fichier enregistré ne contient aucune image.", code: "media-unreadable" };
+  if (["missing", "not-kept"].includes(reason))
+    return { error: "Média indisponible.", code: "media-missing" };
+  return { error: "Média expiré.", code: "media-expired" };
 }
 
 async function serveMedia(runtime, { req, res, send }, sessionId, momentId) {
   const session = runtime.session;
   if (sessionId && session?.id !== sessionId)
-    return send(410, { error: "Session terminée." });
+    return send(410, { error: "Session terminée.", code: "session-ended" });
   const passage = session?.watch.segments.find((segment) => segment.id === momentId);
   if (!passage?.available)
-    return send(410, { error: unavailableMedia(passage?.mediaReason) });
+    return send(410, unavailableMedia(passage?.mediaReason));
   const response = await session.store.response(momentId, req.headers.range);
+  if (response.status === 416) res.setHeader("X-TVLens-Error-Code", "invalid-range");
+  if (response.status === 404) res.setHeader("X-TVLens-Error-Code", "media-missing");
   res.writeHead(response.status, Object.fromEntries(response.headers));
   return res.end(Buffer.from(await response.arrayBuffer()));
 }

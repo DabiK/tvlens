@@ -260,7 +260,7 @@ test('GET /v1/media answers one byte of a two-megabyte clip by reading one byte,
   // The gates before the store stand where they stood: no clip is opened for a request they refuse.
   d.reset();
   const unknown = await fetch(f.server.url + '/v1/media/moment-1', { headers: { Range: 'bytes=0-0' } });
-  assert.deepEqual([unknown.status, await unknown.json()], [401, { error: 'Appareil non authentifié.' }]);
+  assert.deepEqual([unknown.status, await unknown.json()], [401, { error: 'Appareil non authentifié.', code: 'unauthenticated' }]);
   assert.deepEqual([(await got(`/v1/media/${randomUUID()}/moment-1`, 'bytes=0-0')).status, (await got('/v1/media/moment-7', 'bytes=0-0')).status, (await got('/v1/media/..%2Fmoment-1', 'bytes=0-0')).status], [410, 410, 404]);
   f.clock = 301000; await f.runtime.session.watch.prune();
   assert.deepEqual([(await got('/v1/media/moment-1', 'bytes=0-0')).status, (await got('/v1/media/moment-1', 'bytes=x')).status], [410, 410], 'an expired passage is refused before its range is looked at');

@@ -18,6 +18,7 @@ const { activeInstruction } = require("./active-instruction.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard } = require("../adapters/disk-guard.cjs");
 const { createCaptureIntake, READ_ONLY } = require("./capture-intake.cjs");
+const { refusal } = require("./errors.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const {
   SimulatedSurveillanceAgent,
@@ -26,7 +27,6 @@ const {
 const {
   VIEWS,
   active,
-  refusal,
   captureGapsOf,
   surveillanceHistory,
   surveillanceDetail,
