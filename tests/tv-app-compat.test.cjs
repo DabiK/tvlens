@@ -44,7 +44,8 @@ function nested(css) {
 
 test('every tv/app script compiles as a classic script and stays under the proven engine floor', () => {
   const scripts = files('.js');
-  for (const expected of ['companion.js', 'remote-client.js', 'surveillance-overlay.js', 'timeline-view.js']) assert.ok(scripts.includes(expected), `${expected} is checked`);
+  for (const expected of ['companion.js', 'chat-model.js', 'remote-client.js', 'surveillance-overlay.js', 'timeline-view.js'])
+    assert.ok(scripts.includes(expected), `${expected} is checked`);
   for (const name of scripts) {
     // vm.Script parses with the Script goal: a static import or export is a syntax error here, as on the TV.
     assert.doesNotThrow(() => new vm.Script(read(name), { filename: name }), `${name} must load as a classic script`);

@@ -79,7 +79,10 @@ test('the freshness of a question comes from job.availability and is never widen
 
 test('no duration literal is left in the panel: every ceiling shown is derived', () => {
   const app = path.resolve(__dirname, '../tv/app');
-  for (const name of ['companion.js', 'index.html', 'timeline-view.js', 'capture-control.js', 'surveillance-view.js', 'sessions-view.js', 'remote-client.js']) {
+  for (const name of [
+    'companion.js', 'chat-model.js', 'index.html', 'timeline-view.js', 'capture-control.js',
+    'surveillance-view.js', 'sessions-view.js', 'remote-client.js',
+  ]) {
     const source = fs.readFileSync(path.join(app, name), 'utf8');
     assert.equal((/60\s*secondes|60\s*s\b|maximum\s+60|cinq minutes|supprimer les miniatures|média expiré/i.exec(source) || [null])[0], null, name);
   }

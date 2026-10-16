@@ -1,7 +1,7 @@
 ---
 id: T169
 titre: Expose TV chat models through a dedicated classic script
-statut: a-faire
+statut: termine
 bloque_par: T182
 adr: non
 installe: non
@@ -100,3 +100,21 @@ démarrent non appairés ; ils prouvent ici le chargement. T185 livre indépenda
 réutilisé par T170 et T171, sans attendre la décision ambient ; cette livraison ne s’ajoute pas à T169.
 
 ## Journal
+
+- Exploration : skill ticket-codex, méthode tests, standards et ADR 0011/0017 lus ; modèles, consommateurs et preuves existantes examinés. État initial et adaptations de lint consignés dans `.harness-state/tickets/T169/`.
+- Rouge avant extraction : `node --test tests/tv-remote-navigation.test.cjs` — 20 réussis, 1 échec sur l’assertion `TVLensChatModel` absent (`page-red.log`). `node --test tests/tv-chat-model.test.cjs` — 6 échecs sur les assertions de chargement du module absent (`models-red.log`).
+- Extraction : `chat-model.js` possède les modèles, la politique et `PollPlan` ; `companion.js` résout ses fonctions au chargement et garde ses douze exports. `text.js` reste l’unique définition de l’horloge. Les gardes incluent le nouveau fichier ; ESLint a élagué trois compteurs devenus inutiles ou réduits du companion, sans nouveau gel.
+- Vert ciblé : `node --test --test-concurrency=1 tests/tv-chat-model.test.cjs tests/tv-panel.test.cjs tests/chat-error-ui.test.cjs tests/tv-text.test.cjs tests/mac-ui.test.cjs tests/tv-remote-navigation.test.cjs tests/tv-app-compat.test.cjs` — 106 réussis, 0 échec (`models-green.log`). Les assertions existantes sont conservées.
+- Mutation exigée : suppression temporaire de la seule balise `chat-model.js`, puis `node --test tests/tv-remote-navigation.test.cjs` — code 1, 21 échecs au chargement sur `tvlensChatModel.describeJob` absent (`missing-script-red.log`). Balise rétablie dans un bloc `finally`, puis vert ciblé observé.
+- Contrôles intermédiaires : ESLint initial refusait la complexité 16 de la progression ; extraction de la priorité des plafonds, puis `node_modules/.bin/eslint --prune-suppressions tv/app/companion.js tv/app/chat-model.js` vert. Premier `node scripts/check.mjs --changed` rouge pour une liste ajoutée de plus de 160 caractères ; liste remise en forme sans changer les assertions. Nouveau `node scripts/check.mjs --changed` — vert, 48 tests réussis, lint et cliquet verts (`check-changed.log`).
+- Contrôle final : `node scripts/check.mjs` — vert ; règles, format, lint, gel et cliquet verts ; 1 467 tests JavaScript sur 117 fichiers et 22 tests Python réussis (`check-full.log`). `git diff --check` — code 0, aucune erreur. Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T169/verdict.json` ; remise à la boucle pour relecture, sans commit ni push.
+- Reprise après `relecture-1.md` : rapport, journal, écarts, état Git et diff relus. Seul mineur à corriger : rétablir le rappel original sur les globales du companion. Avant correction, `node --test --test-concurrency=1 tests/tv-chat-model.test.cjs tests/chat-error-ui.test.cjs tests/tv-remote-navigation.test.cjs` — 34 réussis (`correction-before.log`). Correction de commentaire sans nouveau comportement : aucun test comparant le texte source n’est ajouté, conformément aux standards. Constat sur l’ADR 0011 accepté comme réserve hors périmètre.
+- Correction du constat mineur 1 : commentaire original sur la portée globale et le préfixe `tvlens` rétabli en tête de `companion.js`, à côté du commentaire de résolution ; aucun comportement ni test modifié. `node scripts/check.mjs --changed` — vert, 48 tests réussis (`correction-check-changed.log`).
+- Contrôle complet après correction : `node scripts/check.mjs` — vert ; règles, format, lint, gel et cliquet verts ; 1 467 tests JavaScript sur 117 fichiers et 22 tests Python réussis (`correction-check-full.log`). `git diff --check` — code 0, aucune erreur. Aucun constat bloquant ou mineur non corrigé. Réserve hors périmètre : actualiser séparément l’ADR 0011 sur `module.require` et les 21 tests de navigation. Nouveau verdict `TERMINÉ` écrit pour la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- Réserve hors périmètre, constat 2 de relecture-1.md : actualiser séparément docs/adr/0011-un-script-partage-du-panneau-tv-est-une-iife-exposee-sur-la-page-et-par-commonjs.md pour documenter module.require dans les scripts touchés et le passage de vingt à vingt et un tests de navigation. Ticket adr: non ; ADR inchangé.
+- .harness-state/tickets/T169/relecture-2.md : `docs/adr/0011-un-script-partage-du-panneau-tv-est-une-iife-exposee-sur-la-page-et-par-commonjs.md:24` (hors périmètre)
+  - **Ce qui ne va pas :** l'ADR prescrit encore `require("./text.js")`, alors que `companion.js:3-4` et `chat-model.js` utilisent maintenant `module.require`. La section « Protégée par » parle aussi de vingt tests de navigation ; il y en a 21.
+  - **Ce qui est attendu :** mettre à jour l'ADR dans un ticket séparé, à reporter en réserve. Le ticket porte `adr: non`.

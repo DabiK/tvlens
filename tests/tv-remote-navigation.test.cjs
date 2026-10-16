@@ -2,6 +2,15 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { loadTvPage, KEYS } = require('./helpers/tv-page.cjs');
 
+test('the page loads the shared chat model between text helpers and the companion', () => {
+  const page = loadTvPage();
+  assert.equal(typeof page.window.TVLensChatModel, 'object');
+  assert.equal(typeof page.window.TVLensChatModel.describeJob, 'function');
+  const at = page.scripts.indexOf('chat-model.js');
+  assert.ok(page.scripts.indexOf('text.js') < at);
+  assert.ok(at < page.scripts.indexOf('companion.js'));
+});
+
 // The column of the chat panel with its buttons switched on, as a paired panel would leave them.
 function loadColumn() {
   const page = loadTvPage();
