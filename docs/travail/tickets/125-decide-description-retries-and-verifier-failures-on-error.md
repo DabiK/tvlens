@@ -37,6 +37,11 @@ gardent la politique de l'ADR 0008 ; un nouvel ADR remplace seulement sa classif
 
 - Modifier seulement les deux lecteurs, leurs tests cités et ajouter un ADR au prochain numéro
   disponible. Importer les constantes de leurs émetteurs livrés par T124, events/run compris.
+- Décision du propriétaire, le 16/10 (« Oui, motif exact », après le blocage de la première tentative) :
+  `tests/codex-confinement.test.cjs:490` peut aussi être modifié, et seulement cette ligne. Le motif du
+  réglage devient exact, `/\bTVLENS_CODEX_CONFINEMENT\b/`, sans changer les valeurs attendues : la garde
+  du réglage lu une seule fois reste entière, elle ne confond plus le code `TVLENS_CODEX_CONFINEMENT_REFUSED`
+  livré par T124 (`adapters/codex-session-client.cjs:33`).
 - Dans perception, garder l'ordre appelant → refus → échéance → passager et quatre niveaux de cause.
   La table cible est :
 
@@ -107,3 +112,9 @@ T124 est nécessaire pour les constantes et champs, et implique T199/T178. Si un
 d'assertion. La lecture textuelle ne reste pas comme repli silencieux.
 
 ## Journal
+
+- 16/10, orchestrateur : la première tentative s'est bloquée sur cette garde (contrôle complet rouge,
+  1661/1662). Son travail est archivé dans `.harness-state/archives/T125-bloque-1/` : `code.patch` (les deux
+  lecteurs et leurs tests), l'ADR 0031 rédigé, `ticket-journal.patch` (le journal de la tentative) et
+  `etat/` (preuves, `confinement-guard-proposal.patch`). Le réappliquer, le vérifier contre le code du
+  moment et le compléter par la seule ligne autorisée ci-dessus.
