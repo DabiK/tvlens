@@ -72,14 +72,14 @@ déploiement ou de branche quittent ces pages de référence ; les faits histori
   sur l'ADR 0017. L'audit peut être lié sans en recopier une affirmation non vérifiée.
 - Corriger uniquement la phrase sur le pont Auto dans `docs/installation.md`, et les anciennes
   stratégies d'évaluation encore annoncées disponibles. Ne pas prétendre que la sonde live a été
-  rejouée. Dans `README.md`, remplacer le décompte daté par la commande de contrôle et son renvoi
-  au livrable ; conserver les faits datés de déploiement et les limites matérielles.
+  rejouée. **Ne pas modifier `README.md`** : décision du propriétaire, le 16/10, le README de
+  présentation reste celui de `main` pour le hackathon. Son décompte daté reste tel quel.
 - Créer `tests/documentation-index.test.cjs`, autonome, sans dépendre du futur T107 : énumération
   locale des documents et ADR, vérification des liens attendus et de leurs cibles. Les diagnostics
   disent quel lien ou quelle phrase ajouter. Il refuse dans architecture/index/CONTRIBUTING les
   décomptes de tests et noms de branche présentés comme état courant.
 - Ne déplacer ni renommer de document. Ne modifier ni code produit, ni ADR, ni harnais, ni
-  `CLAUDE.md`, ni standards. Les recherches d'absence excluent audits, tickets et ADR historiques.
+  `CLAUDE.md`, ni standards, ni `README.md`. Les recherches d'absence excluent audits, tickets et ADR historiques.
 
 ## Critères d'acceptation
 
@@ -98,7 +98,7 @@ déploiement ou de branche quittent ces pages de référence ; les faits histori
    leurs frontières ; files et cycle de session concordent avec T030/T202/T194 et l'ADR 0007.
    Le journal donne les modules relus et la correspondance entre paragraphes et code.
 5. La phrase « ancien pont Auto » disparaît du guide ; `startSurveillance` y remplace cette
-   affirmation. Le README n'annonce plus les anciens nombres de tests. Aucun essai matériel,
+   affirmation. `git diff --exit-code -- README.md` est vide : le README n'est pas touché. Aucun essai matériel,
    exécution live ou déploiement n'est revendiqué.
 6. À l'implémentation, lancer le test documentaire puis `node scripts/check.mjs --changed` ;
    rapporter exactement les étapes exécutées ou non lancées, sans supposer l'état des outils.
