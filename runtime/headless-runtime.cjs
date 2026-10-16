@@ -174,7 +174,9 @@ class HeadlessRuntime {
   tick() {
     try {
       this.surveillance.tick();
-    } catch {}
+    } catch {
+      // Quota et disque doivent encore être actualisés. Le tick de surveillance a pu rester partiel, sans diagnostic ni reprise garantie.
+    }
     const aux = this.auxiliary();
     if (aux !== this.auxKey) {
       this.auxKey = aux;
@@ -846,7 +848,9 @@ class HeadlessRuntime {
           };
           try {
             this.log(`TVLens — arrêt incomplet de l’hôte : ${errors.join(" ; ")}`);
-          } catch {}
+          } catch {
+            // lastEnd.errors contient déjà les échecs d'arrêt ; un journal indisponible ne doit pas remplacer ce résultat.
+          }
         }
       }
     }));

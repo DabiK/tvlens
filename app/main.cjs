@@ -114,7 +114,11 @@ app.whenReady().then(async () => {
   const viewingSettings=new ViewingSettings(path.join(app.getPath('userData'),'viewing-settings.json'));
   let viewing=await viewingSettings.load(),registeredShortcut;
   const registerShortcut=value=>{if(smoke&&!process.argv.includes('--live-shortcut'))return;if(!globalShortcut.register(value,()=>keepMoment().catch(e=>window.webContents.send('saved:error',e.message))))throw Error('Raccourci indisponible : choisis une autre combinaison.');if(registeredShortcut&&registeredShortcut!==value)globalShortcut.unregister(registeredShortcut);registeredShortcut=value;};
-  try{registerShortcut(viewing.bookmarkShortcut);}catch{}
+  try {
+    registerShortcut(viewing.bookmarkShortcut);
+  } catch {
+    // Le raccourci peut être occupé : viewing:get expose shortcutRegistered=false et la bibliothèque permet de le changer.
+  }
   handle('viewing:get',()=>({...viewing,shortcutRegistered:(smoke&&!process.argv.includes('--live-shortcut'))||Boolean(registeredShortcut)}));
   handle('viewing:save',async value=>{if(typeof value?.bookmarkShortcut!=='string'||value.bookmarkShortcut.length>100)throw Error('Raccourci invalide.');if(value.bookmarkShortcut!==registeredShortcut)registerShortcut(value.bookmarkShortcut);viewing=await viewingSettings.save(value);return viewing;});
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
@@ -548,7 +552,14 @@ app.whenReady().then(async () => {
 });
 async function findCodex() {
   const candidates = [path.join(os.homedir(), '.local', 'bin', 'codex'), '/opt/homebrew/bin/codex', '/usr/local/bin/codex', ...(process.env.PATH || '').split(path.delimiter).filter(Boolean).map(dir => path.join(dir, 'codex'))];
-  for (const candidate of candidates) { try { await fs.access(candidate, require('node:fs').constants.X_OK); return candidate; } catch {} }
+  for (const candidate of candidates) {
+    try {
+      await fs.access(candidate, require('node:fs').constants.X_OK);
+      return candidate;
+    } catch {
+      // Un chemin absent ou non exécutable n'épuise pas la recherche ; sans candidat accessible, null désactive Codex dans l'interface.
+    }
+  }
   return null;
 }
 app.on('window-all-closed', () => app.quit());

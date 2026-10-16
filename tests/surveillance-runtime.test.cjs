@@ -113,6 +113,70 @@ function appServer(script) {
 const refuseTool = ({ options, threadId, turnId }, tool) => assert.rejects(options.onRequest('item/tool/call', { threadId, turnId, tool, arguments: { query: 'la suite du programme' } }), /non autorisé/);
 const source = url => ({ url, title: 'Titre de la page', publisher: 'Éditeur', publishedAt: null, evidence: 'La page donne ce chiffre.', relation: 'supports' });
 
+test('a failed host publication leaves the registry readable but does not retry the same persistence notice', async t => {
+  let clock = 0, refusing = true, attempts = 0;
+  const session = fakeSession(), notices = [];
+  const save = session.store.saveSurveillance;
+  session.store.saveSurveillance = async state => {
+    attempts++;
+    if (refusing) throw Object.assign(new Error('disque indisponible'), { code: 'EIO' });
+    return save(state);
+  };
+  const runtime = simulated(() => session, () => clock, state => {
+    notices.push(state.registry.status);
+    if (state.registry.status === 'write-failed')
+      throw Object.assign(new Error('publication refusée'), { code: 'PUBLICATION_FAILED' });
+  });
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await runtime.flush();
+  assert.equal(runtime.snapshot().registry.status, 'write-failed');
+  assert.deepEqual(notices, ['ready', 'write-failed']);
+  const failed = attempts;
+  clock = 1000;
+  runtime.tick();
+  await runtime.flush();
+  assert.ok(attempts > failed, 'the failed write is retried');
+  assert.equal(runtime.persistence.failures, attempts);
+  assert.equal(runtime.snapshot().enabled, true);
+  assert.equal(runtime.snapshot().registry.status, 'write-failed');
+  assert.deepEqual(notices, ['ready', 'write-failed'], 'the failed notice is not delivered again on a repeated disk failure');
+  refusing = false;
+  clock = 2000;
+  runtime.tick();
+  await runtime.flush();
+  assert.equal(session.writes.at(-1).sessionId, session.id);
+  assert.equal(runtime.snapshot().registry.status, 'ready');
+  assert.deepEqual(notices, ['ready', 'write-failed', 'ready']);
+});
+
+test('a failed host publication during core changes stays out of core errors while detection and persistence continue', async t => {
+  const session = fakeSession();
+  let refused = 0;
+  const runtime = simulated(() => session, () => 0, state => {
+    if (state.enabled) {
+      refused++;
+      throw Object.assign(new Error('publication refusée'), { code: 'PUBLICATION_FAILED' });
+    }
+  });
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  assert.ok(refused > 0, 'activation publishes through the throwing host callback');
+  assert.equal(runtime.snapshot().error, null, 'the host failure is not reported as a core error');
+  const before = refused;
+  runtime.observe(session.add(1, FIGURES[0]));
+  await until(() => runtime.snapshot().counts.sourced === 1);
+  await runtime.flush();
+  assert.ok(refused > before, 'the core keeps publishing while processing the passage');
+  assert.equal(runtime.snapshot().error, null);
+  assert.equal(runtime.snapshot().enabled, true);
+  assert.equal(runtime.agent.calls.detect, 1);
+  assert.equal(runtime.agent.calls.verify, 1);
+  assert.equal(session.writes.at(-1).sessionId, session.id);
+  assert.deepEqual(session.writes.at(-1).claims.map(claim => claim.status), ['sourced']);
+  assert.equal(session.writes.at(-1).error, null);
+});
+
 test('the shared runtime refuses to start without a session, writes the registry at most once per second and stops cleanly', async () => {
   let clock = 0, current = null;
   const published = [];

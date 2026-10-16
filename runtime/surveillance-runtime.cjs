@@ -162,7 +162,11 @@ function createSurveillanceRuntime({
     toldAs = tag(shown.registry);
     try {
       onChange(shown);
-    } catch {}
+    } catch {
+      // Le registre reste consultable par snapshot() et son écriture est indépendante du callback hôte.
+      // La notification est toutefois perdue : toldAs a avancé, announce() ne retente pas ce même statut de persistance.
+      // L'échec du callback reste aussi invisible au diagnostic du cœur : snapshot().error ne le reçoit pas.
+    }
   };
   // The way the registry is kept moves without the core (reading over, write failed or landed): said once.
   const announce = () => {

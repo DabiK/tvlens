@@ -128,7 +128,9 @@ async function closeSession({
       log(
         `TVLens — fermeture incomplète de la session ${outcome.id || "(aucune)"} : ${errors.join(" ; ")}`,
       );
-    } catch {}
+    } catch {
+      // Les erreurs et le refus d'origine sont déjà dans outcome ; le journal ne doit pas empêcher leur retour à l'hôte.
+    }
   return outcome;
 }
 module.exports = { closeSession, settleQuestions, attempt };

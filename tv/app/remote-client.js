@@ -53,7 +53,9 @@
     var value;
     try {
       value = await response.json();
-    } catch (_) {}
+    } catch (_) {
+      // Un corps vide ou non JSON ne remplace pas le refus HTTP ; pour un succès, l'absence de valeur devient « réponse illisible » ci-dessous.
+    }
     if (!response.ok) throw refusal(response, value);
     if (value === undefined) throw new Error("Réponse du serveur illisible");
     return value;

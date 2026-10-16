@@ -610,7 +610,9 @@ function tvlensMergeState(previous, next, view) {
     // Restore the currently visible geometry if the coordinator never acknowledged.
     await control
       .request("/panel/" + (timeline ? timeline.mode : "chat"), {})
-      .catch(function () {});
+      .catch(function () {
+        // La restauration n'est pas confirmée ; le refus de disposition ci-dessous reste rendu, même si ce dernier essai échoue.
+      });
     throw Error("Disposition TV non confirmée. Réessaie la bascule.");
   }
   function clearMoment() {
@@ -689,7 +691,9 @@ function tvlensMergeState(previous, next, view) {
     var stored = {};
     try {
       stored = JSON.parse(window.localStorage.getItem("tvlens.overlay") || "{}") || {};
-    } catch (_) {}
+    } catch (_) {
+      // Stockage refusé ou JSON illisible : les choix d'affichage repartent des valeurs par défaut, sans toucher l'état serveur.
+    }
     return {
       displayMs: Surveillance.displayChoice(stored.displayMs || config.overlayMs),
       alerts: stored.alerts !== false,
@@ -791,7 +795,9 @@ function tvlensMergeState(previous, next, view) {
           "tvlens.overlay",
           JSON.stringify({ displayMs: settings.displayMs, alerts: settings.alerts }),
         );
-      } catch (_) {}
+      } catch (_) {
+        // Le choix reste dans settings : le contrôleur est encore informé et overlay.tick() l'applique dans cette page.
+      }
       if (patch.displayMs) tell("/ambient/display/" + patch.displayMs / 1000);
       if (patch.alerts !== undefined) tell("/ambient/alerts/" + (patch.alerts ? "on" : "off"));
       overlay.tick();

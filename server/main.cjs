@@ -33,7 +33,14 @@ async function main(){
  config.transcriptionLanguage=await transcriptionSettings.load();
  const selectedModels=await new ModelSettings(path.join(root,'models.json')).load({observationModel:'gpt-6-luna',inspectionModel:'gpt-6-luna',codexModel:''});
  // Private Codex trees left behind by a crash still link to the credentials: swept once, and never a reason not to start.
- if(typeof confinement.sweepStaleContexts==='function')try{const removed=await confinement.sweepStaleContexts();if(removed.length)console.log('TVLens server — '+removed.length+' stale Codex context(s) removed');}catch{}
+ if (typeof confinement.sweepStaleContexts === 'function') {
+  try {
+   const removed = await confinement.sweepStaleContexts();
+   if (removed.length) console.log('TVLens server — ' + removed.length + ' stale Codex context(s) removed');
+  } catch {
+   // Ce balayage retire seulement les arbres privés de processus morts ; son échec laisse ces arbres, sans empêcher les nouvelles sessions.
+  }
+ }
  // Sessions are durable: nothing is swept at start, and a session cut short by the last stop is found listed, whole.
  const sessionsRoot=path.join(root,'sessions');
  const runtime=new HeadlessRuntime({userData:root,sessionsRoot,host:'server',guard:new DiskGuard({path:sessionsRoot,...host.disk}),retentionMs:host.retentionMs,config,transcriptionSettings,selectedModels,codexBinary:executable('codex', {override:process.env.TVLENS_CODEX_BINARY})});

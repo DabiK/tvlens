@@ -116,9 +116,6 @@
     },
     "max-lines-per-function": {
       "count": 1
-    },
-    "no-empty": {
-      "count": 2
     }
   },
   "app/moment-actions.cjs": {
@@ -132,9 +129,6 @@
     },
     "max-lines": {
       "count": 1
-    },
-    "no-empty": {
-      "count": 2
     }
   },
   "app/ui/job-card.js": {
@@ -290,18 +284,12 @@
     "no-console": {
       "count": 1
     },
-    "no-empty": {
-      "count": 2
-    },
     "no-nested-ternary": {
       "count": 1
     }
   },
   "runtime/session-closing.cjs": {
     "complexity": {
-      "count": 1
-    },
-    "no-empty": {
       "count": 1
     }
   },
@@ -329,9 +317,6 @@
       "count": 1
     },
     "max-lines-per-function": {
-      "count": 1
-    },
-    "no-empty": {
       "count": 1
     },
     "no-nested-ternary": {
@@ -472,11 +457,6 @@
       "count": 1
     }
   },
-  "server/main.cjs": {
-    "no-empty": {
-      "count": 1
-    }
-  },
   "tests/architecture-f05.test.cjs": {
     "no-console": {
       "count": 3
@@ -589,18 +569,10 @@
     "max-lines-per-function": {
       "count": 2
     },
-    "no-empty": {
-      "count": 2
-    },
     "no-nested-ternary": {
       "count": 9
     },
     "no-undef": {
-      "count": 1
-    }
-  },
-  "tv/app/remote-client.js": {
-    "no-empty": {
       "count": 1
     }
   },

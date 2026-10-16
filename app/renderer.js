@@ -514,12 +514,22 @@ setInterval(()=>bridge.quota().then(q=>{$('quota-status').textContent=q.windows.
 const PREFERENCES = 'tvlens.surveillance.display';
 function loadPreferences() {
   let saved = {};
-  try { saved = JSON.parse(localStorage.getItem(PREFERENCES) || '{}') || {}; } catch {}
+  try {
+    saved = JSON.parse(localStorage.getItem(PREFERENCES) || '{}') || {};
+  } catch {
+    // Stockage refusé ou JSON illisible : saved reste vide, seule la durée d'affichage prend sa valeur par défaut.
+  }
   // The only display choice is how long a card stays. What may become a card is not one: sourced verifications only.
   return { cardDurationMs: CARD_DURATIONS_MS.includes(saved.cardDurationMs) ? saved.cardDurationMs : DEFAULT_CARD_DURATION_MS };
 }
 const preferences = loadPreferences();
-const savePreferences = () => { try { localStorage.setItem(PREFERENCES, JSON.stringify(preferences)); } catch {} };
+const savePreferences = () => {
+  try {
+    localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
+  } catch {
+    // La durée choisie est déjà appliquée à cardQueue et conservée en mémoire ; seule sa reprise après rechargement est perdue.
+  }
+};
 let surveillanceState = null, surveillanceRegistry = null, registryKey = '', registryAt = 0, registryBusy = false, registryTimer;
 let watchFilter = 'all', historyLimit = HISTORY_STEP, seen = { overlay: 0, signal: 0 }, seenFor, syncedInstruction = '', watchBusy = false, stackTimer, watchPushes = 0;
 const cardQueue = new CardQueue({ durationMs: preferences.cardDurationMs });
