@@ -86,7 +86,7 @@ function showAction(root, item, started) {
   for (const action of actions) console.log(`[boucle] ${minutes}:${remainder}  ${action.replace(/\s+/g, " ").slice(0, MAX_ACTION_LENGTH)}`);
 }
 
-function consumeLine(root, line, state, started) {
+function consumeLine(root, line, state, started, stream) {
   let message;
   try {
     message = JSON.parse(line);
@@ -97,25 +97,29 @@ function consumeLine(root, line, state, started) {
   if (message.type === "thread.started") state.session = message.thread_id;
   if (message.type === "turn.started" || message.type === "turn.completed") state.turnStarted = true;
   if (message.type === "turn.completed") {
+    for (const reason of stream.errors) stream.reportRecovery(reason);
+    stream.errors = [];
     state.tours++;
     for (const field of TOKEN_FIELDS) state.jetons[field] += message.usage?.[field] || 0;
   }
-  if (message.type === "turn.failed" || message.type === "error") {
+  if (message.type === "error") stream.errors.push(`Codex : ${message.error?.message || message.message || "erreur du flux"}`);
+  if (message.type === "turn.failed") {
     state.problem = `Codex : ${message.error?.message || message.message || "échec du tour"}`;
   }
   if (message.type === "item.completed") showAction(root, message.item, started);
 }
 
-function streamSession(root, args, env, file, state, timeoutMs, started) {
+function streamSession(root, args, env, file, state, timeoutMs, started, reportRecovery) {
   return new Promise((resolve) => {
     const child = spawn(process.env.TVLENS_CODEX_BIN || "codex", args, { cwd: root, env, stdio: ["ignore", "pipe", "pipe"] });
     const timer = setTimeout(() => {
       state.problem = "Codex : délai maximal dépassé.";
       child.kill("SIGTERM");
     }, timeoutMs);
+    const stream = { errors: [], reportRecovery };
     let stderr = "";
     const lines = createInterface({ input: child.stdout });
-    lines.on("line", (line) => consumeLine(root, line, state, started));
+    lines.on("line", (line) => consumeLine(root, line, state, started, stream));
     child.stdout.on("data", (chunk) => fs.appendFileSync(file, chunk));
     child.stderr.setEncoding("utf8");
     child.stderr.on("data", (chunk) => (stderr += chunk));
@@ -123,6 +127,7 @@ function streamSession(root, args, env, file, state, timeoutMs, started) {
     child.on("close", (code) => {
       clearTimeout(timer);
       if (stderr) fs.appendFileSync(file + ".stderr", stderr);
+      state.problem ||= stream.errors.at(-1);
       if (code !== 0) state.problem ||= `Codex : processus en échec (code ${code}). ${stderr}`;
       resolve(state.problem ? 1 : 0);
     });
@@ -157,7 +162,8 @@ async function hookedSession(root, request, env, file, state, timeoutMs, started
     state.problem = error.message;
     return { code: 1, resumeImpossible: Boolean(request.session) };
   }
-  const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, file, state, timeoutMs, started);
+  const reportRecovery = (reason) => request.reportRecovery(run, reason);
+  const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, file, state, timeoutMs, started, reportRecovery);
   let marker;
   try {
     marker = JSON.parse(fs.readFileSync(markerFile, "utf8"));
@@ -244,44 +250,72 @@ function sessionVerdict(dir) {
   }
 }
 
-function findingTitle(line) {
-  if (!/[^\s`]+:\d+/u.test(line)) return false;
-  if (/^(?:#{1,6}\s+|\d+[.)]\s+|\*\*.+\*\*\s*$)/u.test(line)) return true;
-  return /^[-*+]\s+`?[^\s`]+:\d+/u.test(line);
+function locations(text) {
+  return text.match(/[^\s`]+:\d+/gu) || [];
 }
 
-/** Les champs et paragraphes d'un constat appartiennent au même bloc, même sans indentation. */
+function findingForm(line, section, current) {
+  if (/^#{1,2}\s+/u.test(line)) return (/^#{1,2}\s+\d+[.)]\s+/u.test(line) || locations(line).length > 0) && "title";
+  if (/^(?:#{3,6}\s+|\*\*(?:\d+[.)]\s+|constat\s+\d+\b))/iu.test(line)) return "title";
+  if (/^\d+[.)]\s+/u.test(line)) return (!current || current.form === "numbered") && "numbered";
+  const bullet = /^[-*+]\s+(.+)$/u.exec(line)?.[1];
+  if (!bullet || (current && current.form !== "bullet")) return false;
+  const located = locations(bullet).some(ref => bullet.replace(/^`/u, "").startsWith(ref));
+  if (located || /^(?:\(\d+\)\s+|hors\s+périmètre\b)/iu.test(bullet)) return "bullet";
+  if (!current && /^\*\*[^*:]+\*\*(?:\s|$)/u.test(bullet)) return "title";
+  return section === "reserves" && !current && "bullet";
+}
+
+function reviewSection(title) {
+  if (/^(?:\d+[.)]\s+|constat\s+\d+\b)/iu.test(title)) return null;
+  if (/(?:^|\s)[ée]carts\b/iu.test(title)) return "deviations";
+  if (/^réserves(?:\s+hors\s+périmètre|$)/iu.test(title)) return "reserves";
+  if (/^(?:suivi|synthèse|critères|régressions|code\s+changé)\b/iu.test(title)) return "other";
+  if (/^constats?\s+du\s+rapport\s+précédent\b/iu.test(title)) return "tracking";
+  if (/constats?\b/iu.test(title) && !/de\s+la\s+relecture/iu.test(title)) return "findings";
+  return null;
+}
+
+/** Les champs et paragraphes restent attachés au titre, même si le repère est dans le corps. */
 function reviewBlocks(report) {
   const blocks = [];
   let section = "findings";
   let current = null;
   for (const line of report.replace(/\r\n/g, "\n").split("\n")) {
-    if (/^\s*(?:VERDICT|CONSTATS)\s*:/iu.test(line)) continue;
+    if (/^\s*(?:VERDICT|CONSTATS|NON CORRIGÉS)\s*:/iu.test(line)) continue;
     const heading = /^#{1,6}\s+(.+)$/u.exec(line);
-    const title = line.replace(/^#{1,6}\s+/u, "").replace(/^(?:[-*+]|\d+[.)])\s+/u, "");
-    const finding = section === "findings" && findingTitle(line);
+    const nextSection = heading && reviewSection(heading[1]);
+    const title = line.replace(/^(?:#{1,6}|[-*+]|\d+[.)])\s+/u, "");
     const deviation = section !== "other" && /^(?:\*\*)?[ée]carts?\s+acceptés?(?!\p{L})/iu.test(title);
-    if (finding || deviation) {
-      current = { kind: finding ? "finding" : "deviation", lines: [title] };
+    const form = !nextSection && ["findings", "tracking", "reserves"].includes(section) && findingForm(line, section, current);
+    if (deviation || form) {
+      current = {
+        kind: deviation ? "deviation" : "finding", form, tracking: section === "tracking", listed: /^[-*+]\s/u.test(line), lines: [title],
+      };
       blocks.push(current);
     } else if (heading) {
       current = null;
-      section = "other";
-      if (/^constats\b/iu.test(heading[1])) section = "findings";
-      if (/(?:^|\s)[ée]carts\b/iu.test(heading[1])) section = "deviations";
-    } else if (current?.kind === "deviation" && /^(?:[-*+]|\d+[.)])\s/u.test(line)) {
+      section = nextSection || "other";
+    } else if (current?.kind === "deviation" && current.listed && /^(?:[-*+]|\d+[.)])\s/u.test(line)) {
       current = null;
     } else if (current) {
       current.lines.push(line);
     }
   }
-  return blocks.map(({ kind, lines }) => ({ kind, text: lines.join("\n").trim() }));
+  return blocks.map(({ kind, tracking, lines }) => ({ kind, tracking, text: lines.join("\n").trim() }));
+}
+
+function outOfScopeFindings(blocks) {
+  const findings = blocks.filter(block => block.kind === "finding" && /hors\s+périmètre/iu.test(block.text));
+  const references = findings.filter(block => !block.tracking).flatMap(block => locations(block.text));
+  // Un suivi peut rappeler un constat développé plus loin ; seule sa version complète est transmise.
+  return findings.filter(block => !block.tracking || !locations(block.text).some(ref => references.includes(ref)));
 }
 
 /** Les réserves du rapport accepté restent référencées sans réécrire le verdict ni l'état relu. */
 function reviewReserves(report, reference) {
   const blocks = reviewBlocks(report);
-  const findings = blocks.filter((block) => block.kind === "finding" && /hors\s+périmètre/iu.test(block.text));
+  const findings = outOfScopeFindings(blocks);
   const deviations = blocks.filter((block) => block.kind === "deviation").map((block) => block.text);
   const expected = Number(/^\s*CONSTATS\s*:.*?(\d+)\s+hors\s+périmètre/imu.exec(report)?.[1]);
   // Un compte discordant rend l'extraction incertaine : le rapport entier reste la référence des constats.
@@ -302,7 +336,11 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   event("session", { ticket: ticket.id, attempt, moteur: "codex", ...step });
   const file = path.join(dir, `codex-${attempt}.jsonl`);
   fs.writeFileSync(file, "");
-  let { code } = await hookedSession(root, { step, prompt }, env, file, state, timeoutMs, started, dir);
+  const reportRecovery = (invocation, raison) => {
+    event("reconnexion", { ticket: ticket.id, attempt, invocation, raison });
+    console.log(`[boucle] ${ticket.id} tentative ${attempt} invocation ${invocation} : reconnexion récupérée (${raison}).`);
+  };
+  let { code } = await hookedSession(root, { step, prompt, reportRecovery }, env, file, state, timeoutMs, started, dir);
   let relectures = 0;
   let reserves = [];
   for (let correction = 0; code === 0; correction++) {
@@ -331,7 +369,8 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
       ` Lis ${reportFile}, le ticket et son journal, les écarts, git status et git diff, puis reprends le travail présent dans l'arbre.` +
       ` Corrige chaque constat bloquant et mineur de cette relecture, tests d'abord, puis rends un nouveau verdict.\n\n${reviewed.report}`;
     const fallbackEvent = (phase, data) => event(phase, { ...data, attempt });
-    code = await correctionSession(root, { step, prompt: fix, session: state.session }, env, file, state, timeoutMs, started, dir, fallbackEvent);
+    const request = { step, prompt: fix, session: state.session, reportRecovery };
+    code = await correctionSession(root, request, env, file, state, timeoutMs, started, dir, fallbackEvent);
   }
   const { problem, turnStarted, ...usage } = state;
   const report = { ...usage, moteur: "codex", duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };

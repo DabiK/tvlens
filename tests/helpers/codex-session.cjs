@@ -24,9 +24,10 @@ if (args.includes("--help")) {
 }
 const scenario = process.env.FAKE_CODEX_SCENARIO;
 const resumeFailure = args[1] === "resume" && process.env.FAKE_CODEX_RESUME_FAILURE;
-const failure = resumeFailure === "after-turn" ? "exit" : process.env.FAKE_CODEX_FAILURE;
+let failure = resumeFailure === "after-turn" ? "exit" : process.env.FAKE_CODEX_FAILURE;
 const calls = path.join(dir, "fake-codex-calls");
 const rank = fs.existsSync(calls) ? fs.readFileSync(calls, "utf8").trim().split("\\n").length : 0;
+failure = JSON.parse(process.env.FAKE_CODEX_FAILURES || "null")?.[rank] ?? failure;
 const resumedSession = process.env.FAKE_CODEX_RESUME_SESSION || args[2];
 const session = args[1] === "resume" ? resumedSession : "codex-thread-" + (rank + 1);
 const blocked = scenario === "blocked" || (scenario === "blocked-after-correction" && rank > 0);
@@ -106,6 +107,14 @@ if (process.env.FAKE_CODEX_SCENARIO === "actions") {
     ] } },
   );
 }
+const reconnects = Number(JSON.parse(process.env.FAKE_CODEX_RECONNECTIONS || "[]")[rank] || 0);
+for (let i = 0; i < reconnects; i++) {
+  events.splice(2 + i, 0, { type: "error", message: "transport interrupted " + (i + 1) });
+}
+if (failure === "unfinished-error") {
+  events.splice(events.length - 1, 1, { type: "error", message: "transport never recovered" });
+}
+if (failure === "failed-then-completed") events.splice(events.length - 1, 0, { type: "turn.failed", error: { message: "explicit failure" } });
 if (["turn.failed", "error"].includes(failure)) events.push({ type: failure, error: { message: "simulated Codex failure" } });
 for (const event of events) console.log(JSON.stringify(event));
 if (failure === "exit") process.exitCode = 1;

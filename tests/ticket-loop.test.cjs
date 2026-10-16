@@ -2453,3 +2453,187 @@ test("a fixed Claude model dry run uses readable defaults for effort and reviewe
   assert.doesNotMatch(result.out, /effort null|relecteur null|undefined/);
   assert.equal(repo.git("status", "--porcelain").stdout, "");
 });
+
+for (const reconnects of [[1], [2, 1]]) {
+  test(`Codex integrates recovered stream errors and records each invocation: ${reconnects}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_RECONNECTIONS: JSON.stringify(reconnects),
+      FAKE_REVIEWS: JSON.stringify(reconnects.length === 1 ? [acceptedReview] : [rejectedReview, acceptedReview]),
+    });
+    assert.equal(result.code, 0, result.out);
+    assert.equal(repo.status(), "termine");
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, reconnects.length);
+    if (calls.length > 1) assert.deepEqual(calls[1].args.slice(0, 3), ["exec", "resume", calls[0].session]);
+    const recovered = repo.events().filter(e => e.phase === "reconnexion");
+    assert.deepEqual(recovered.map(e => [e.ticket, e.attempt, e.invocation]),
+      calls.flatMap((call, i) => Array.from({ length: reconnects[i] }, () => ["T001", 1, call.run])));
+    for (const call of calls) {
+      assert.ok(result.out.split("\n").some(line => line.startsWith("[boucle]") &&
+        line.includes(`T001 tentative 1 invocation ${call.run}`) && line.includes("reconnexion")), result.out);
+    }
+    const stream = jsonLines(repo, "codex-1.jsonl");
+    assert.equal(stream.filter(e => e.type === "error").length, reconnects.reduce((sum, n) => sum + n, 0));
+    assert.equal(stream.filter(e => e.type === "turn.completed").length, calls.length);
+    const ended = repo.events().find(e => e.phase === "session-terminee");
+    assert.equal(ended.code, 0);
+    assert.equal(ended.tours, calls.length);
+    assert.equal(ended.relectures, calls.length);
+    assert.deepEqual(ended.jetons, {
+      input_tokens: 10 * calls.length, cached_input_tokens: 4 * calls.length,
+      output_tokens: 5 * calls.length, reasoning_output_tokens: 2 * calls.length,
+    });
+    assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 1);
+  });
+}
+
+for (const failure of ["unfinished-error", "failed-then-completed", "error", "exit", "missing-hooks"]) {
+  test(`Codex recovery never hides a terminal failure: ${failure}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_RECONNECTIONS: "[1]",
+      FAKE_CODEX_FAILURE: failure === "missing-hooks" ? "" : failure,
+      FAKE_CODEX_HOOKS: failure === "missing-hooks" ? "missing" : "valid",
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 0);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  });
+}
+
+test("a recovered invocation cannot cover an unfinished error in a resumed correction", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_RECONNECTIONS: "[1,0]", FAKE_CODEX_FAILURES: JSON.stringify(["", "unfinished-error"]),
+    FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+  assert.deepEqual(repo.commits(), ["init"]);
+  assert.match(repo.failure(), /transport never recovered/);
+});
+
+const correctionReports = require("./helpers/correction-reports/expected.json");
+for (const fixture of correctionReports) {
+  test(`Codex carries complete findings from a historical correction report: ${fixture.file}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const report = fs.readFileSync(path.join(__dirname, "helpers/correction-reports", fixture.file), "utf8");
+    const ownReserve = "Validation manuelle restant à programmer.";
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_REVIEWS: JSON.stringify([rejectedReview, report]), FAKE_CODEX_RESERVES: JSON.stringify([ownReserve]),
+    });
+    assert.equal(result.code, 0, result.out);
+    const expected = [ownReserve, ...[...fixture.findings, ...fixture.deviations].map(lines =>
+      `${codexDir}relecture-2.md : ${lines.join("\n")}`)];
+    const kept = repo.events().find(e => e.phase === "integre").reserves;
+    assert.deepEqual(kept, expected);
+    assert.equal(fixture.findings.length, Number(/(\d+) hors périmètre/.exec(report)[1]));
+    const journal = committedTicket(repo).split("### Réserves à la clôture\n")[1];
+    assert.doesNotMatch(journal, /Nombre de constats discordant|relecture-1.md|preuve manquante|nom à préciser/);
+    for (const reserve of expected) {
+      const item = reserve.split("\n").map((line, i) => i && line ? `  ${line}` : line).join("\n");
+      assert.equal(journal.split(item).length - 1, 1, item);
+    }
+    assert.match(repo.git("log", "-1", "--format=%B").stdout,
+      new RegExp(`^Reserves: ${expected.length}, listed in the ticket journal\\.$`, "m"));
+    assert.deepEqual(JSON.parse(repo.read(codexDir + "verdict.json")).reste, [ownReserve]);
+    assert.equal(jsonLines(repo, "fake-review-calls").length, 2);
+  });
+}
+
+for (const title of [
+  "**1. Réserve sur le diagnostic**",
+  "- **Réserve sur le diagnostic**",
+  "- (1) Hors périmètre (réserve) : diagnostic",
+  "### 1. Réserve sur le diagnostic",
+  "## 1. Réserve sur le diagnostic",
+]) {
+  test(`Codex keeps a finding with its location and class in the body: ${title}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const body = "\n\n- Où : `core/legacy.cjs:8`.\n\n- Problème : diagnostic perdu.\n\n- Attendu : ajouter un code.\n- Classe : hors périmètre.";
+    const report = ["VERDICT : accepté", "CONSTATS : 0 bloquant, 0 mineur, 1 hors périmètre", "",
+      "## Réserves hors périmètre", "", title + body, "", "## Synthèse", "",
+      "- core/legacy.cjs:8 : hors périmètre, voir la réserve ci-dessus.", "", "## Critères", "",
+      "1. core/legacy.cjs:8 : hors périmètre cité pour rappel."].join("\n");
+    const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, report]) });
+    assert.equal(result.code, 0, result.out);
+    const kept = repo.events().find(e => e.phase === "integre").reserves;
+    const normalizedTitle = title.replace(/^(?:#{1,6}\s+|[-*+]\s+)/, "");
+    assert.deepEqual(kept, [`${codexDir}relecture-2.md : ${normalizedTitle}${body}`]);
+    assert.doesNotMatch(committedTicket(repo).split("### Réserves à la clôture\n")[1], /Synthèse|pour rappel|ci-dessus/);
+  });
+}
+
+for (const body of [
+  "- **Problème.** Le diagnostic est perdu.\n- **Attendu.** Ajouter un code.",
+  "- **Classe** : hors périmètre.\n- **Problème.** Le diagnostic est perdu.",
+  "1. Reproduire le diagnostic perdu.\n2. Vérifier le code d’erreur.",
+]) {
+  test(`Codex keeps fields and numbered steps inside the current finding: ${body.split("\n")[0]}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const findings = [
+      `1. \`core/legacy.cjs:8\` — hors périmètre\n\n${body}\n\nLa suite reste dans le même constat.`,
+      "2. `docs/notes.md:3` — hors périmètre\n\n- Attendu : actualiser l’exemple.",
+    ];
+    const report = ["VERDICT : accepté", "CONSTATS : 0 bloquant, 0 mineur, 2 hors périmètre", "",
+      "## Constats", "", ...findings.map(finding => `### ${finding}`), "", "## Critères", "", "1. Critère couvert."].join("\n");
+    const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, report]) });
+    assert.equal(result.code, 0, result.out);
+    const expected = findings.map(finding => `${codexDir}relecture-2.md : ${finding}`);
+    assert.deepEqual(repo.events().find(e => e.phase === "integre").reserves, expected);
+    const journal = committedTicket(repo).split("### Réserves à la clôture\n")[1];
+    for (const reserve of expected) {
+      const item = reserve.split("\n").map((line, i) => i && line ? `  ${line}` : line).join("\n");
+      assert.equal(journal.split(item).length - 1, 1, journal);
+    }
+    assert.match(repo.git("log", "-1", "--format=%B").stdout, /^Reserves: 2, listed in the ticket journal\.$/m);
+  });
+}
+
+for (const title of ["### 1. Réserve sur le diagnostic — hors périmètre", "**1. Réserve — hors périmètre**", "- **Réserve hors périmètre**"]) {
+  for (const marker of ["-", "1."]) {
+    test(`Codex keeps location lists inside a finding body: ${title}, ${marker}`, (t) => {
+      const repo = codexRepo();
+      t.after(repo.cleanup);
+      const body = ["**Où :**", `${marker} \`core/legacy.cjs:8\``, `${marker === "-" ? "-" : "2."} docs/notes.md:3 : exemple périmé.`,
+        "", "**Ce qui ne va pas.** Le diagnostic est perdu.", "", "**Attendu.** Ajouter un code.",
+        "", "Le paragraphe final appartient au même constat."].join("\n");
+      const finding = `${title.replace(/^(?:#{1,6}|[-*+])\s+/, "")}\n\n${body}`;
+      const report = ["VERDICT : accepté", "CONSTATS : 0 bloquant, 0 mineur, 1 hors périmètre", "",
+        "## Constats", "", title, "", body, "", "## Synthèse", "", "Un constat hors périmètre."].join("\n");
+      const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, report]) });
+      assert.equal(result.code, 0, result.out);
+      const expected = `${codexDir}relecture-2.md : ${finding}`;
+      assert.deepEqual(repo.events().find(e => e.phase === "integre").reserves, [expected]);
+      const journal = committedTicket(repo).split("### Réserves à la clôture\n")[1];
+      const item = expected.split("\n").map((line, i) => i && line ? `  ${line}` : line).join("\n");
+      assert.equal(journal.split(item).length - 1, 1, journal);
+      assert.match(repo.git("log", "-1", "--format=%B").stdout, /^Reserves: 1, listed in the ticket journal\.$/m);
+    });
+  }
+}
+
+for (const section of ["### Synthèse", "#### Critères d'acceptation", "### Suivi des constats"]) {
+  test(`Codex excludes finding reminders below a nested review section: ${section}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const finding = "`core/legacy.cjs:8` — hors périmètre\n\n- Problème : diagnostic perdu.\n- Attendu : ajouter un code.";
+    const report = ["VERDICT : accepté", "CONSTATS : 0 bloquant, 0 mineur, 1 hors périmètre", "",
+      "## Constats", "", `### ${finding}`, "", section, "",
+      "1. core/legacy.cjs:8 : hors périmètre cité pour rappel.", "",
+      "| Constat | Classe |", "| --- | --- |", "| diagnostic | hors périmètre |"].join("\n");
+    const result = repo.codex(["--attempts", "1"], { FAKE_REVIEWS: JSON.stringify([rejectedReview, report]) });
+    assert.equal(result.code, 0, result.out);
+    assert.deepEqual(repo.events().find(e => e.phase === "integre").reserves,
+      [`${codexDir}relecture-2.md : ${finding}`]);
+  });
+}

@@ -52,8 +52,9 @@ La consigne nomme le ticket et le chemin du rapport `relecture-<n>.md` à corrig
 contenu complet. Lis ce rapport, le ticket et son journal, les écarts, puis `git status` et `git diff`.
 En repli sur une session neuve, relis aussi les consignes : le travail précédent est présent dans l'arbre.
 Reprends ce travail et corrige chaque constat bloquant et mineur, tests d'abord. Une contestation se déclare
-avec sa raison dans `ecarts.md` ; le relecteur suivant tranche. Les constats hors périmètre deviennent
-des réserves dans `reste`. Mets le journal à jour et rends un nouveau verdict.
+avec sa raison dans `ecarts.md` ; le relecteur suivant tranche. Garde dans `reste` uniquement tes propres
+réserves. La boucle extrait les constats hors périmètre du rapport accepté du relecteur : ne les recopie
+pas dans `reste` et ne modifie pas ses rapports. Mets le journal à jour et rends un nouveau verdict.
 N'enregistre pas toi-même l'état relu et ne lance pas de relecteur : la boucle s'en charge après toi.
 
 La première relecture d'une tentative reste complète. Les suivantes sont des relectures de
@@ -85,5 +86,6 @@ Un contrôle rouge se corrige avec son test avant de conclure ; ne déclare jama
 la responsabilité de la boucle. `PARTIEL` indique le travail utile livré et ce qui manque.
 `BLOQUÉ` nomme la décision sans laquelle avancer est impossible. Un fichier refusé par le bac à sable
 reste manquant : ne contourne pas la protection et ne le déclare pas livré.
-Les réserves nomment les constats hors périmètre, les écarts à trancher et les vérifications manquantes.
+Tes réserves dans `reste` nomment tes propres constats hors périmètre, les écarts à trancher et les
+vérifications manquantes. Les constats du relecteur sont transmis par la boucle depuis son rapport accepté.
 La boucle conserve ton verdict, enregistre le changement, fait relire, puis décide de l'intégration.
