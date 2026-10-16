@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { tick, deferred, until } = require('./helpers/wait.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -15,10 +16,6 @@ const { RemoteServer } = require('../server/http.cjs');
 // byte by byte. Nothing here measures a latency or a memory footprint, and an answer without a range, or with an
 // open-ended one, still reads every byte it carries.
 const MIB = 1024 ** 2, GONE = 'Passage expiré ou indisponible.', token = 'f'.repeat(64);
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
-// Real files and real sockets are on the way: wait for the state itself, and fail instead of hanging.
-const until = async (check, what) => { for (let i = 0; i < 600; i++) { if (check()) return; await new Promise(resolve => setTimeout(resolve, 5)); } assert.fail(`still waiting: ${what}`); };
 // Bytes no decoder takes for a video, each of which tells where it sits in the clip.
 const pattern = (length, seed = 0) => { const bytes = Buffer.alloc(length); for (let i = 0; i < length; i++) bytes[i] = (i + seed) % 251; return bytes; };
 const MEDIA = { 'content-type': 'video/webm', 'accept-ranges': 'bytes', 'cache-control': 'no-store' };

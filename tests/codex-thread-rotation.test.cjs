@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause, tick, deferred } = require('./helpers/wait.cjs');
 const path = require('node:path');
 const os = require('node:os');
 const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
@@ -7,8 +8,6 @@ const { CodexAnalysisAgent } = require('../adapters/codex-analysis-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { CodexQuota } = require('../adapters/codex-quota.cjs');
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve, reject; const promise = new Promise((a, b) => { resolve = a; reject = b; }); return { promise, resolve, reject }; };
 const never = () => new Promise(() => {});
 // Never an existing directory: connect() must not link real credentials during tests.
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
@@ -247,7 +246,7 @@ test('quota read is off the turn path: a pending read does not delay the turn, a
 });
 
 test('run reports a cold start with its connection time, then warm turns', async () => {
-  const f = fixture({ handle: method => method === 'initialize' ? new Promise(resolve => setTimeout(() => resolve({}), 25)) : undefined,
+  const f = fixture({ handle: method => method === 'initialize' ? pause(25).then(() => ({})) : undefined,
     answer: () => ({ coldStart: 'spoofed', connectMs: -1 }) });
   try {
     const first = await f.turn();

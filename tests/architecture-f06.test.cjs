@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause, tick, deferred, until, bounded, failure } = require('./helpers/wait.cjs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -23,19 +24,8 @@ const CLOSING = { error: 'Session en cours de fermeture.', code: 'session-closin
 const CHANGED = { error: 'La capture a changé pendant la préparation de ce bloc.', code: 'capture-changed' };
 const UNAVAILABLE = 'media-unavailable';
 const LATE = ms => `préparation média : arrêt non confirmé après ${ms} ms, bloc refusé, préparation suivante en attente`;
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
-// Real sockets, files and processes are on the way: wait for the fact itself, and fail instead of hanging.
-const until = async (check, what, rounds = 600) => { for (let i = 0; i < rounds; i++) { if (await check()) return; await pause(5); } assert.fail('never reached: ' + what); };
 // Whether it came true within the bound: for a fact a test reports with the others instead of stopping on it.
 const eventually = async (check, rounds = 300) => { for (let i = 0; i < rounds; i++) { if (await check()) return true; await pause(5); } return false; };
-// A promise that never settles is reported as such instead of holding its test.
-const bounded = (promise, ms = 5000) => new Promise((resolve, reject) => {
-  const timer = setTimeout(() => resolve(`nothing after ${ms} ms`), ms);
-  promise.then(value => { clearTimeout(timer); resolve(value); }, error => { clearTimeout(timer); reject(error); });
-});
-const failure = promise => promise.then(() => assert.fail('should have failed'), error => error);
 const alive = pid => { try { process.kill(pid, 0); return true; } catch (error) { return error.code !== 'ESRCH'; } };
 // What the owner of a block did with its signal: null when the assembly was handed none.
 const cancelled = call => (call.signal ? call.signal.aborted : null);

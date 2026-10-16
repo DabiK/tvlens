@@ -1,7 +1,7 @@
 ---
 id: T060
 titre: Use the shared wait helpers in the protocol and Codex tests
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -98,3 +98,92 @@ Au premier échec, conserver la sortie et diagnostiquer ; aucune relance jusqu'a
 sonde slow-fs non livrée n'est nécessaire.
 
 ## Journal
+
+- Exploration : dix fichiers, aides partagées et ADR concernés lus. État initial conservé dans
+  `.harness-state/tickets/T060/before/` ; diff initial, exploration et écarts prévus enregistrés.
+  La commande exacte du critère 1 est conservée dans `inventory-command.sh` ; exécutée avec
+  `zsh .harness-state/tickets/T060/inventory-command.sh`, code 0, sortie dans `inventory-before.log`.
+  Les copies attendues sont présentes. Les deux exceptions sémantiques et les boucles métier
+  seront conservées. Aucun nouveau cas de forme ; pas de rouge artificiel pour cette migration
+  des scénarios existants (justification préalable dans `ecarts.md`).
+- Avant migration : `python3 .harness-state/tickets/T060/run-tests.py before` exécute
+  `node --test tests/<nom>.test.cjs` pour chaque fichier du périmètre, un par un :
+  8/15/17/26/19/10/17/2/19/14 cas, tous verts (147 au total). Chaque commande et sa sortie
+  sont conservées dans `before-<nom>.log`, sans échec ni relance.
+- Migration : imports depuis `./helpers/wait.cjs` avant toute simulation des minuteries.
+  `settle()` devient `turns(4)` dans architecture-f04, `turns(10)` dans architecture-f05
+  et codex-confinement, `turns(8)` dans architecture-f08. Aucun compte explicite n'a changé.
+  Les `until` nommés prennent désormais l'échéance réelle partagée de 5 s, avec contrôles
+  séquentiels et asynchrones ; l'ancien appel à 300 pas de 5 ms reçoit aussi ces 5 s.
+  Dans codex-confinement, les cinq appels portent explicitement `{ timeoutMs: 10000 }` :
+  allongement prévu de l'ancienne borne nominale de 5 s à 10 s.
+  Les pauses, y compris celles auparavant faites par intervalle à usage unique, utilisent
+  le timer réel capturé de l'aide partagée. Le handshake de codex-thread-rotation conserve
+  ses 25 ms et sa réponse vide avec `pause(25).then(() => ({}))`.
+  Les bornes et sentinelles de `bounded` sont conservées ; sa variante locale du confinement
+  garde son traitement distinct du rejet. `eventually`, les attentes métier et la boucle
+  simulée de 40 pas de 50 ms avec assertion finale sont inchangés.
+- Après migration : `python3 .harness-state/tickets/T060/run-tests.py after` exécute les dix
+  mêmes commandes une par une, puis `node --test tests/wait-helpers.test.cjs` : 147/147
+  et 13/13 verts, aucun cas annulé ou ignoré. Sorties dans `after-<nom>.log`.
+  `zsh .harness-state/tickets/T060/inventory-command.sh` : code 0, sortie conservée dans
+  `inventory-after.log`, uniquement `eventually` d'architecture-f06 et `bounded` du confinement.
+- Comparaison avec les copies du début de session :
+  `node .harness-state/tickets/T060/compare.cjs` : code 0, sortie dans `comparison.log`.
+  Les 825 assertions des scénarios, les titres et déclarations de cas, les prédicats et
+  libellés des attentes, les comptes de tours, les doubles App Server et les boucles
+  spécifiques sont identiques. Les aides supprimées sont exclues du comptage des assertions.
+  `git diff --check` : code 0.
+- `node scripts/check.mjs --changed` : code 0, règles, format, lint, gel du lint, cliquet
+  et 147 tests sur les dix fichiers verts ; sortie dans `check-changed.log`.
+- `node scripts/check.mjs` : code 0, règles, format, lint, gel du lint et cliquet verts,
+  1 652/1 652 tests JavaScript sur 120 fichiers et 22 tests Python verts ; sortie dans
+  `check-full.log`. Aucun contrôle non lancé. Verdict `TERMINÉ` écrit dans le dossier d'état ;
+  la boucle garde la responsabilité de la relecture et de l'intégration, sans commit ni push ici.
+- Reprise après `relecture-1.md` : constat mineur accepté, cinq répétitions du délai à nommer
+  et motif de l'allongement à préciser. Exploration et écarts complétés avant correction.
+  Comparateur existant adapté d'abord pour vérifier une constante commune de 10 s :
+  `node .harness-state/tickets/T060/compare.cjs`, code 1 attendu sur l'assertion
+  `confinement waits use named options` (`ObjectExpression` au lieu d'`Identifier`).
+  Sortie conservée dans `correction-1/comparison-red.log`. Aucun cas ajouté dans la suite.
+- Correction : les cinq appels utilisent `PROCESS_WAIT`, défini une seule fois avec
+  `{ timeoutMs: 10000 }`. Le commentaire explique l'observation de processus réels,
+  l'allongement nominal de 5 s à 10 s et l'échec de l'attente à l'expiration.
+  `node .harness-state/tickets/T060/compare.cjs` : vert, assertions et scénarios conservés,
+  cinq références à la constante de 10 s vérifiées par AST (`correction-1/comparison-green.log`).
+  `zsh .harness-state/tickets/T060/inventory-command.sh` : uniquement les deux exceptions
+  autorisées (`correction-1/inventory-after.log`). `git diff --check` : code 0.
+  `node --test tests/codex-confinement.test.cjs` : code 0, 17/17 verts, aucun cas annulé ou
+  ignoré (`correction-1/confinement.log`).
+- Validation de la correction : `node scripts/check.mjs --changed`, code 0, tous les
+  contrôles verts et 147/147 tests JS (`correction-1/check-changed.log`), puis
+  `node scripts/check.mjs`, code 0, tous les contrôles verts, 1 652/1 652 tests JS sur
+  120 fichiers et 22 tests Python (`correction-1/check-full.log`). Exécutions séquentielles,
+  aucun contrôle non lancé. Nouveau verdict `TERMINÉ`, constat 1 corrigé, aucune réserve.
+- Reprise après `relecture-2.md` : nouveau constat mineur accepté, limité au commentaire
+  de `PROCESS_WAIT`. Exploration et écarts complétés avant correction ; aucun nouveau cas
+  de forme ni rouge artificiel pour cette reformulation sans changement exécutable.
+  `node .harness-state/tickets/T060/compare.cjs` avant correction : code 0,
+  sortie dans `correction-2/comparison-before.log`.
+- Correction du commentaire : raison et comportement actuels conservés (processus réels,
+  borne de 10 s au-delà du défaut des aides et échec du test à l'expiration), sans référence
+  à un chantier ni à l'ancienne borne. L'historique de l'allongement reste au journal.
+  Comparaison de l'AST entier avant/après, positions exclues : identique
+  (`correction-2/ast-comparison.log`). `compare.cjs` est inchangé.
+  `node .harness-state/tickets/T060/compare.cjs` après correction : code 0,
+  `zsh .harness-state/tickets/T060/inventory-command.sh` : code 0, les deux exceptions
+  autorisées uniquement ; sorties dans `correction-2/comparison-after.log` et
+  `correction-2/inventory-after.log`. `git diff --check` : code 0.
+  `node scripts/check.mjs --changed` : code 0, tous les contrôles verts et 147/147 tests JS
+  (`correction-2/check-changed.log`).
+- Validation finale : `node scripts/check.mjs`, code 0, règles, format, lint, gel du lint
+  et cliquet verts, 1 652/1 652 tests JS sur 120 fichiers et 22 tests Python verts
+  (`correction-2/check-full.log`). Aucun contrôle non lancé. Nouveau verdict `TERMINÉ`,
+  constat 1 de la relecture 2 corrigé, aucune réserve ; relecture et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T060/relecture-3.md : **Écart accepté, ticket entier : pas de cycle rouge/vert ni de test de forme.** Le ticket interdit d'ajouter des tests de forme. Il prend pour preuve les scénarios existants, lancés avant et après la migration, et la comparaison des assertions, titres et cas. Ces preuves sont fournies.
+- .harness-state/tickets/T060/relecture-3.md : **Écart accepté, critère 2 : la borne du confinement passe de 500 × 10 ms à 10 s.** C'est l'allongement que le ticket prévoit explicitement (l. 41 et 51-52), et il est consigné au journal.
+- .harness-state/tickets/T060/relecture-3.md : **Écart accepté, correction de la relecture 1 : aucun nouveau cas pour l'extraction de la constante.** Le comportement observable ne change pas. Le comparateur hors dépôt a d'abord échoué, puis il est passé.
+- .harness-state/tickets/T060/relecture-3.md : **Écart accepté, correction de la relecture 2 : ni nouveau cas ni rouge artificiel.** Seul le commentaire change, et l'interdiff montre qu'aucune ligne exécutable n'est touchée.

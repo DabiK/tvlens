@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { turns } = require('./helpers/wait.cjs');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
 
@@ -10,7 +11,6 @@ const span = n => ({ startMs: (n - 1) * BLOCK_MS, endMs: n * BLOCK_MS });
 const cite = n => ({ id: `moment-${n}`, ...span(n) });
 const passage = (n, extra = {}) => ({ ...cite(n), status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true, revision: 1,
   observation: { summary: `Résumé du passage ${n}.`, visual: `Plan ${n}.`, transcript: `Paroles du passage ${n}. `.repeat(12) }, ...extra });
-const settle = async () => { for (let i = 0; i < 4; i++) await new Promise(resolve => setImmediate(resolve)); };
 const bytes = value => Buffer.byteLength(JSON.stringify(value));
 const NOTHING = { passages: 0, dependencies: 0 }, EVERYTHING = { passages: 100, dependencies: 3 };
 
@@ -107,10 +107,12 @@ test('a question stopped at its ceiling keeps its context until its agent has re
   const published = structuredClone(s.deep.snapshot()), emitted = s.changes.length;
 
   // The agent gives the hand back first: its inspection still runs, so nothing is let go yet.
-  finishAgent({ answer: 'Trop tard.', kind: 'observation', citations: [cite(100)], limits: [] }); await settle();
+  finishAgent({ answer: 'Trop tard.', kind: 'observation', citations: [cite(100)], limits: [] });
+  await turns(4);
   assert.deepEqual([s.holds(long), s.used.held], [EVERYTHING, 1]);
   // Then the inspection returns: its lease is given back once, what it saw is dropped, and the context goes.
-  finishInspection({ observations: [{ ...cite(100), text: 'Vu trop tard.' }], hypotheses: [], limits: [] }); await settle();
+  finishInspection({ observations: [{ ...cite(100), text: 'Vu trop tard.' }], hypotheses: [], limits: [] });
+  await turns(4);
   assert.deepEqual([s.used.held, s.used.leases.length, s.used.inspections.length, long.tools.observations], [0, 1, 1, []]);
   assert.deepEqual(s.holds(long), NOTHING);
   assert.deepEqual([long.status, long.result.kind, structuredClone(s.deep.snapshot()), s.changes.length], ['timeout', 'insufficient', published, emitted]);
@@ -141,7 +143,8 @@ test('a question cancelled in the queue gives its context back at once; one canc
   assert.deepEqual([s.holds(first), s.holds(third)], [EVERYTHING, NOTHING]);
   const published = structuredClone(s.deep.snapshot()), emitted = s.changes.length;
   // A real agent rejects once its interrupted turn has ended.
-  fail(Error('Recherche annulée.')); await settle();
+  fail(Error('Recherche annulée.'));
+  await turns(4);
   assert.deepEqual([s.holds(s.deep.jobs), first.status, first.result], [NOTHING, 'cancelled', null]);
   assert.deepEqual([structuredClone(s.deep.snapshot()), s.changes.length], [published, emitted]);
   assert.deepEqual([third.result.citations, third.validation.acceptedCitations], [[cite(100)], 1]);

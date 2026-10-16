@@ -1,5 +1,6 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause, tick, turns, deferred, until, bounded, failure } = require('./helpers/wait.cjs');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
@@ -27,17 +28,6 @@ const STILL_THERE = 'Arrêt du processus Codex précédent non confirmé : conne
 const REVOKED = 'Session terminée : ses passages ne peuvent plus être réexaminés.';
 const CONTEXT_REVOKED = 'Contexte MCP révoqué : session terminée.';
 const OPEN_FIRST = 'Commence par search_moments pour ouvrir un contexte de 5 minutes.';
-// Real time, on a timer API no test below mocks.
-const pause = ms => new Promise(resolve => { const timer = setInterval(() => { clearInterval(timer); resolve(); }, ms); });
-const until = async (check, what, rounds = 400) => { for (let i = 0; i < rounds; i++) { if (await check()) return; await pause(5); } assert.fail('never reached: ' + what); };
-// A promise that never settles fails its test instead of holding it.
-const bounded = (promise, ms = 5000) => new Promise((resolve, reject) => {
-  const timer = setInterval(() => { clearInterval(timer); resolve(`nothing after ${ms} ms`); }, ms);
-  promise.then(value => { clearInterval(timer); resolve(value); }, error => { clearInterval(timer); reject(error); });
-});
-const settle = async (rounds = 10) => { for (let i = 0; i < rounds; i++) await new Promise(resolve => setImmediate(resolve)); };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
-const failure = promise => promise.then(() => assert.fail('should have failed'), error => error);
 const alive = pid => { try { process.kill(pid, 0); return true; } catch (error) { return error.code !== 'ESRCH'; } };
 // Never an existing directory: connect() must not link real credentials during tests.
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
@@ -125,7 +115,7 @@ test('a launcher that dies leaves what it started to the owner of its group: SIG
   assert.ok(pid > 0 && alive(pid), 'what it started outlives it');
   assert.deepEqual(events, ['connection/closed'], 'the connection is told closed, as it always was');
   // Nobody closed anything: the exit of the launcher alone makes the owner of the group end what is left of it.
-  await until(() => fs.existsSync(term), 'SIGTERM reaches what the launcher left behind', 300);
+  await until(() => fs.existsSync(term), 'SIGTERM reaches what the launcher left behind');
   assert.equal(alive(pid), true, 'which ignores it');
   t.mock.timers.tick(2999);
   await pause(50);
@@ -167,13 +157,13 @@ test('a group still there after the kill is said as such, within the bound; aske
   Promise.resolve(rpc.close()).then(value => { answer = value; });
   assert.deepEqual(sent, [[-NOBODY, 'SIGTERM']], 'SIGTERM is sent before close() returns, to the group it owns');
   t.mock.timers.tick(2999);
-  await settle();
+  await turns(10);
   assert.deepEqual([sent.length, answer], [1, 'pending']);
   t.mock.timers.tick(1);
-  await settle();
+  await turns(10);
   assert.deepEqual([sent.at(-1), answer], [[-NOBODY, 'SIGKILL'], 'pending']);
   t.mock.timers.tick(1000);
-  await settle();
+  await turns(10);
   assert.equal(answer, false, 'not seen gone: said so, never passed off as an exit');
   const signalled = sent.length;
   t.mock.timers.tick(600000);
@@ -313,7 +303,7 @@ test('every way a transport is left holds the reconnection until its group is go
   } });
   const refused = drained.turn(), queued = drained.turn();
   await assert.rejects(refused, /hors du périmètre TVLens/);
-  await settle();
+  await turns(10);
   const [stuck] = drained.processes;
   assert.equal(stuck.closed, 0, 'left the time to report the end of the refused turn');
   t.mock.timers.tick(3000);
@@ -324,9 +314,12 @@ test('every way a transport is left holds the reconnection until its group is go
   const watched = connection(t, { interrupted: () => {}, script: ({ id }) => { if (!hang) return { ok: id }; hang = false; return new Promise(() => {}); } });
   const cancel = new AbortController(), cancelled = failure(watched.turn({ signal: cancel.signal }));
   await until(() => watched.processes[0]?.requests.includes('turn/start'), 'the turn is running');
-  await settle();
+  await turns(10);
   cancel.abort(Error('Question annulée.'));
-  for (let i = 0; i < 4; i++) { t.mock.timers.tick(1000); await settle(); }
+  for (let i = 0; i < 4; i++) {
+    t.mock.timers.tick(1000);
+    await turns(10);
+  }
   assert.ok((await bounded(cancelled)) instanceof Error, 'the cancelled turn is answered');
   assert.equal(watched.processes[0].closed, 1, 'closed by the watchdog');
   await held(watched, watched.processes[0], watched.turn());
@@ -341,7 +334,7 @@ test('a close landing while a reconnection waits leaves neither a process nor a 
   first.exit.resolve(true);
   await Promise.all([closing, again]);
   assert.equal((await waiting).message, 'Connexion obsolète.');
-  await settle();
+  await turns(10);
   assert.deepEqual([f.started(), f.client.rpc, f.client.ready, await remaining()], [1, null, null, []]);
   assert.ok(await f.client.prepare('s'));
   assert.deepEqual([f.started(), (await remaining()).length], [2, 1], 'closing is a recycling: the same client connects again');
@@ -565,7 +558,6 @@ test('the external MCP contexts opened on a session are revoked at once: a call 
   assert.equal(bridge.external.size, 0);
 });
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
 let still;
 const jpeg = async () => (still ||= 'data:image/jpeg;base64,' + (await sharp({ create: { width: 64, height: 36, channels: 3, background: { r: 23, g: 57, b: 82 } } }).jpeg().toBuffer()).toString('base64'));
 

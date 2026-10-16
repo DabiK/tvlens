@@ -1,11 +1,11 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { tick } = require('./helpers/wait.cjs');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const os = require('node:os');
 const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 // Other test files create session directories in the same temp root: follow only the ones made here.
 function created(t) {

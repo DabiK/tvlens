@@ -1,18 +1,11 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const { deferred } = require("./helpers/wait.cjs");
 const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const { CodexRpc } = require("../adapters/codex-rpc.cjs");
 const { CodexSessionClient } = require("../adapters/codex-session-client.cjs");
-
-function deferred() {
-  let resolve;
-  const promise = new Promise((done) => {
-    resolve = done;
-  });
-  return { promise, resolve };
-}
 
 async function transport(t, messages, handlers) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-handler-"));

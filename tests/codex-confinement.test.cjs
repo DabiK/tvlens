@@ -1,5 +1,6 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause, turns, until } = require('./helpers/wait.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -16,6 +17,9 @@ const { DISABLED_FEATURES, ENABLED_FEATURES, SUB_AGENT_CONTROLS, SUB_AGENT_MEASU
 // refuses; what Codex really exposes to a model is measured by scripts/probe-confinement.cjs.
 
 const ENVIRONMENT = ['PATH', 'HOME', 'CODEX_HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'SSL_CERT_FILE', 'SSL_CERT_DIR'];
+// Les processus réels démarrent et disparaissent à leur rythme : ces attentes ont une borne de 10 s,
+// au-delà des 5 s par défaut des aides ; un processus qui ne disparaît pas fait échouer son test.
+const PROCESS_WAIT = { timeoutMs: 10000 };
 const absentAuthHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 const disabled = args => args.flatMap((arg, index) => (arg === '--disable' ? [args[index + 1]] : []));
 // What App Server 0.160.1 answers to a confined thread/start (fields the client reads).
@@ -79,7 +83,6 @@ function appServer({ start = () => confirmed(), script = async () => ({ ok: true
   return { rpcFactory, requests, processes, sent: method => requests.filter(request => request.method === method) };
 }
 const turn = (client, extra = {}) => client.answer({ sessionId: 's', instructions: 'Décris.', signal: AbortSignal.timeout(5000), ...extra });
-const settle = async (rounds = 10) => { for (let i = 0; i < rounds; i++) await new Promise(resolve => setImmediate(resolve)); };
 const videoTools = { sessionId: 's', anchorMs: 1000, call: async name => ({ served: name }) };
 // The program of a fake installed Codex, run as a real executable (its source is written to a file).
 // `--version` prints a label. `features list` prints the flag table, and exits like the real one on a
@@ -133,9 +136,6 @@ async function fakeCodex(dir, name, { names = [...DISABLED_FEATURES, ...ENABLED_
   return file;
 }
 const logged = async binary => (await fs.readFile(binary + '.log', 'utf8').catch(() => '')).split('\n').filter(Boolean);
-// Real time, on a timer API the tests below never mock: a process that does not die fails its test.
-const pause = ms => new Promise(resolve => { const timer = setInterval(() => { clearInterval(timer); resolve(); }, ms); });
-const until = async (check, what) => { for (let i = 0; i < 500; i++) { if (await check()) return; await pause(10); } assert.fail('never reached: ' + what); };
 const gone = pid => { try { process.kill(pid, 0); return false; } catch (error) { return error.code === 'ESRCH'; } };
 const CONTROL_KEYS = SUB_AGENT_CONTROLS.map(([key]) => key), CONTROL_ARGS = SUB_AGENT_CONTROLS.map(([key, value]) => `${key}=${value}`);
 const controls = args => args.filter((arg, index) => args[index - 1] === '-c' && CONTROL_KEYS.includes(arg.split('=')[0]));
@@ -364,10 +364,13 @@ test('on the real launch path, the default refuses a connection whose sub-agent 
     const { subAgents, subAgentControls, confined, verified, reasons } = client.confinement;
     const report = { error: error?.message, state: [subAgents, subAgentControls, confined, verified, reasons], received: seen.filter(line => !/^(?:list|spawn)\b/.test(line)), started: Boolean(pid), left: [client.rpc, client.dir, client.threadId].filter(Boolean).length };
     // A refused connection has closed its process and removed its tree by itself, before anyone closes the client.
-    if (error) { if (pid) await until(() => gone(pid), 'the process of a refused connection is gone'); report.directories = await remaining(); }
+    if (error) {
+      if (pid) await until(() => gone(pid), 'the process of a refused connection is gone', PROCESS_WAIT);
+      report.directories = await remaining();
+    }
     else assert.equal(gone(pid), false, 'a connection that succeeds keeps its process');
     await client.close();
-    if (pid) await until(() => gone(pid), 'the process of a closed client is gone');
+    if (pid) await until(() => gone(pid), 'the process of a closed client is gone', PROCESS_WAIT);
     return report;
   };
   const refusing = await fakeCodex(dir, 'codex-refusing');
@@ -398,7 +401,12 @@ test('on the real launch path, the default refuses a connection whose sub-agent 
   await codexVersion(silent);
   t.mock.timers.enable({ apis: ['setTimeout'] });
   try {
-    refused(await launch(silent, {}, async received => { await until(() => received('config/read'), 'config/read reaches the App Server'); await pause(30); assert.equal(await received('thread/start'), false, 'the thread waits for the answer'); t.mock.timers.tick(2000); }), /n’a pas répondu à config\/read/, late('unknown'));
+    refused(await launch(silent, {}, async received => {
+      await until(() => received('config/read'), 'config/read reaches the App Server', PROCESS_WAIT);
+      await pause(30);
+      assert.equal(await received('thread/start'), false, 'the thread waits for the answer');
+      t.mock.timers.tick(2000);
+    }), /n’a pas répondu à config\/read/, late('unknown'));
   } finally { t.mock.timers.reset(); }
 
   // 4. Nominal: both settings accepted, passed and read back. Every role connects and opens its thread, after the read.
@@ -513,11 +521,11 @@ test('a Codex that ignored SIGTERM does not survive a host that exits right afte
   };
   // The host is gone, and its timer with it: only what it did while exiting can have killed this process.
   const stubborn = await closedByHost("process.on('SIGTERM', () => {}); setInterval(() => {}, 1000); console.log('ready');");
-  await until(() => gone(stubborn), 'the Codex is gone once its host has exited');
+  await until(() => gone(stubborn), 'the Codex is gone once its host has exited', PROCESS_WAIT);
   // A Codex that ends on SIGTERM, as the real one does within milliseconds, is not cut short by the kill.
   const ended = path.join(dir, 'ended');
   const polite = await closedByHost(`process.on('SIGTERM', () => setTimeout(() => { require('node:fs').writeFileSync(${JSON.stringify(ended)}, 'by itself'); process.exit(0); }, 40)); setInterval(() => {}, 1000); console.log('ready');`);
-  await until(() => gone(polite), 'the polite Codex is gone too');
+  await until(() => gone(polite), 'the polite Codex is gone too', PROCESS_WAIT);
   assert.equal(await fs.readFile(ended, 'utf8'), 'by itself');
 });
 
@@ -708,7 +716,7 @@ test('after a turn the guard refused, the next turn waits for the end of the ref
   try {
     const first = turn(client, { tools: videoTools }), second = turn(client, { tools: videoTools });
     await assert.rejects(first, /hors du périmètre TVLens \(commandExecution\)/);
-    await settle();
+    await turns(10);
     // The refused turn is still running inside Codex: nothing is sent for the next one yet.
     assert.deepEqual([server.sent('turn/interrupt').length, server.sent('turn/start').length], [1, 1]);
     end();
@@ -724,7 +732,7 @@ test('after a turn the guard refused, the next turn waits for the end of the ref
   try {
     const first = turn(stuck, { tools: videoTools, signal }), second = turn(stuck, { tools: videoTools, signal });
     await assert.rejects(first, /hors du périmètre TVLens/);
-    await settle();
+    await turns(10);
     assert.deepEqual([silent.sent('turn/start').length, silent.processes[0].closed], [1, false]);
     t.mock.timers.tick(3000);
     assert.deepEqual(await second.then(result => [result.ok, silent.processes[0].closed, silent.processes.length]), ['turn-2', true, 2]);
@@ -739,12 +747,12 @@ test('after a turn the guard refused, the next turn waits for the end of the ref
   try {
     const first = turn(held, { tools: videoTools, signal }), second = turn(held, { tools: videoTools, signal: cancel.signal }), third = turn(held, { tools: videoTools, signal });
     await assert.rejects(first, /hors du périmètre TVLens/);
-    await settle();
+    await turns(10);
     // Read without awaiting `second`: were the wait deaf to the signal, the test must fail, not hang.
     let answered = 'still waiting';
     second.then(() => { answered = 'answered'; }, error => { answered = error.message; });
     cancel.abort(Error('Question annulée.'));
-    await settle();
+    await turns(10);
     assert.equal(answered, 'Question annulée.', 'no timer was advanced: the wait listens to the turn’s own signal');
     assert.deepEqual([holding.sent('turn/start').length, holding.processes[0].closed], [1, false]);
     t.mock.timers.tick(3000);
@@ -768,7 +776,7 @@ test('closing the transport kills a Codex that ignores SIGTERM, and leaves no ti
   assert.equal(await bounded(ignored), undefined);
   assert.deepEqual([child.exitCode, child.signalCode], [null, null], 'SIGTERM was received and ignored');
   t.mock.timers.tick(2999);
-  await settle();
+  await turns(10);
   assert.deepEqual([child.exitCode, child.signalCode], [null, null]);
   t.mock.timers.tick(1);
   assert.equal(await bounded(gone), 'SIGKILL');

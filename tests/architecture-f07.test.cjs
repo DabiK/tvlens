@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause, tick, deferred, until } = require('./helpers/wait.cjs');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
@@ -18,13 +19,6 @@ const { RemoteServer } = require('../server/http.cjs');
 // TV. Answers, files, journal lines and the order of closing steps are compared: nothing here measures a latency.
 const root = path.join(__dirname, '..');
 const protocol = () => require('../runtime/session-closing.cjs');
-// Real time, whatever a test does to the timers of the host it runs.
-const realTimeout = globalThis.setTimeout;
-const pause = ms => new Promise(resolve => realTimeout(resolve, ms));
-const tick = () => new Promise(resolve => setImmediate(resolve));
-// Real sockets and files are on the way: wait for the fact itself, and fail instead of hanging.
-const until = async (check, what, rounds = 600) => { for (let i = 0; i < rounds; i++) { const value = await check(); if (value) return value; await pause(5); } assert.fail('never reached: ' + what); };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const there = target => fsp.access(target).then(() => true, () => false);
 // Every file under a directory with the hash of its content: equal only when nothing was added, removed or rewritten.
 async function tree(dir, base = dir) {
