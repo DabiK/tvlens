@@ -4,9 +4,6 @@
 Put this directory ahead in PATH and point TVLENS_FAKE_LUNA at a scenario directory:
 - calls.jsonl      every call is appended: {"endpoint", "payload", "mono", "n"} (n counts calls per endpoint, from 1)
 - replies.json     optional {"<endpoint>": reply | [reply for call 1, reply for call 2, ... last one repeats]}
-- oneshot.json     optional {"<n>": {"gate": {...}}}: during the n-th executeOneShot, the gate file named by
-                   TVLENS_FAKE_GATE (default <TVLENS_AMBIENT_RUN>/tvlens-ambient-gate.json) is replaced by that
-                   record, as if a card appeared or left while the frame was being taken
 - windows.json     optional list of application identifiers in the foreground; launch appends its id unless
                    replies.json says the launch is refused, closeByAppId removes it
 The answer has the shape the TV really gives: on stderr, "timingServiceResponse: {json on several lines}" then
@@ -52,10 +49,6 @@ def main():
             if endpoint.endswith('/launch') and (reply or {}).get('returnValue', True) and payload.get('id') not in windows: store(windows_path, windows + [payload.get('id')])
             if endpoint.endswith('/closeByAppId') and payload.get('id') in windows: store(windows_path, [w for w in windows if w != payload.get('id')])
             if endpoint.endswith('/getForegroundWindowInfo') and reply is None: reply = {'returnValue': True, 'windows': [{'appId': w} for w in load(windows_path, [])]}
-            if endpoint.endswith('/executeOneShot'):
-                action = load(os.path.join(root, 'oneshot.json'), {}).get(str(count)) or {}
-                if 'gate' in action:
-                    store(os.environ.get('TVLENS_FAKE_GATE') or os.path.join(os.environ.get('TVLENS_AMBIENT_RUN') or '/tmp', 'tvlens-ambient-gate.json'), action['gate'])
     if reply is None:
         reply = {'returnValue': True, 'video': [VIDEO]} if endpoint.endswith('/getStatus') else {'returnValue': True}
     if endpoint.endswith('/executeOneShot') and reply.get('returnValue') and payload.get('path'):
