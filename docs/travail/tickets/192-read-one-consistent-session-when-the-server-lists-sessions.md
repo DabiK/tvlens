@@ -1,7 +1,7 @@
 ---
 id: T192
 titre: Read one consistent session when the server lists sessions during a switch
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: oui
 installe: non
@@ -92,3 +92,57 @@ La course est établie par lecture, sans reproduction exécutée au découpage. 
 infirmé par la synthèse n'est pas utilisé comme preuve.
 
 ## Journal
+
+- 16/10/2026 — Exploration : course confirmée à la lecture de `sessions()` et
+  `storageUsage()` ; adoption synchrone conservée et projection partagée de T191 réutilisée.
+  Périmètre et preuves consignés dans `.harness-state/tickets/T192/exploration.md` ; aucun écart prévu.
+- 16/10/2026 — Rouge observé :
+  `node --test --test-concurrency=1 --test-name-pattern='HTTP session listing keeps the entry session facts' tests/server-sessions.test.cjs`
+  échoue sur l'assertion : la ligne de A porte les deux passages de B et les flags de A après fermeture.
+  Après capture synchrone des faits utiles, même commande : 1 test vert.
+  Sorties : `list-replacement-red.log` et `list-replacement-green.log` dans le dossier d'état.
+- 16/10/2026 — Rouge observé :
+  `node --test --test-concurrency=1 --test-name-pattern='HTTP storage keeps the entry session volume' tests/server-sessions.test.cjs`
+  échoue sur l'assertion : `session` porte 1562 octets de B au lieu des 776 octets capturés pour A.
+  Après réutilisation de la lecture d'entrée dans `storageUsage()`,
+  `node --test --test-concurrency=1 --test-name-pattern='HTTP storage keeps the entry session volume|HTTP session listing keeps the entry session facts' tests/server-sessions.test.cjs`
+  donne 2 tests verts. Sorties : `storage-usage-red.log` et `storage-usage-green.log`.
+- 16/10/2026 — Compléments de couverture par HTTP réel :
+  `node --test --test-concurrency=1 --test-name-pattern='HTTP (session listing|storage keeps|/v1/)' tests/server-sessions.test.cjs`
+  donne 12 tests verts, sans sommeil pour ordonner les courses (`http-races-complete.log`).
+  `node scripts/check.mjs --changed` : vert à la première étape, 27 tests, 0 échec
+  (`check-changed-first.log`). ADR 0037 ajouté ; aucun changement du protocole d'adoption.
+- 16/10/2026 — Validation finale :
+  `node --test --test-concurrency=1 tests/server-sessions.test.cjs tests/server-state-views.test.cjs tests/headless-session-lifecycle.test.cjs tests/server-routes.test.cjs`
+  donne 64 tests verts, 0 échec (`required-suites.log`).
+  `node scripts/check.mjs --changed` : vert, 29 tests, 0 échec (`check-changed-final.log`).
+  `node scripts/check.mjs` : vert, 1924 tests JS dans 126 fichiers et 22 tests Python ;
+  règles, format, lint, gel et cliquet verts (`check-full.log`). Aucune assertion existante affaiblie,
+  aucun compteur ni gel modifié. Verdict `TERMINÉ` remis à la boucle pour relecture ; aucun commit ni push.
+- 16/10/2026 — Reprise après `relecture-1.md` : constat mineur de lisibilité confirmé dans
+  `holdLibrary`, sans changement de comportement demandé. Avant correction,
+  `node --test --test-concurrency=1 --test-name-pattern='HTTP (session listing|storage keeps|/v1/)' tests/server-sessions.test.cjs`
+  donne 12 tests verts (`correction-1-before.log`). Pas de nouveau test de texte source ;
+  méthode de vérification de cette correction de forme consignée dans `ecarts.md`.
+- 16/10/2026 — Correction du constat mineur : corps `releaseHeld` sur plusieurs lignes,
+  une instruction par ligne, ordre et assertions conservés. `node scripts/check.mjs --changed` :
+  vert, 29 tests JS, 0 échec (`correction-1-check-changed.log`).
+  `node scripts/check.mjs` : vert, 1924 tests JS dans 126 fichiers et 22 tests Python ;
+  règles, format, lint, gel et cliquet verts (`correction-1-check-full.log`).
+  Nouveau verdict `TERMINÉ` remis à la boucle pour relecture ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T192/relecture-2.md : 1. `adapters/session-library.cjs:39`, avec `runtime/headless-runtime.cjs:489` (hors périmètre, réserve reprise du rapport précédent)
+
+  - **Ce qui se passe :**
+    - la bibliothèque est lue après l'attente, avec l'identifiant capturé à l'entrée ;
+    - `describe()` classe donc `interrupted` une session B adoptée pendant l'attente dont le manifeste dit `live` ;
+    - je l'ai confirmé en relisant `describe()`, ligne 39 : `id === current ? 'live' : 'interrupted'`.
+  - **Pourquoi ce n'est pas à corriger ici :**
+    - le comportement existait avant ce ticket ;
+    - il suit le contrat retenu (la réponse décrit la session présente à l'entrée) ;
+    - le changer toucherait aux règles de bibliothèque, que le ticket demande de préserver ;
+    - la correction n'a pas touché ce code.
+  - **Ce qui est attendu :** le noter dans les réserves. Il faut soit le documenter explicitement dans l'ADR 0037, soit ouvrir un ticket de suite si l'interface TV ne doit pas afficher une session vivante comme interrompue.
+- .harness-state/tickets/T192/relecture-2.md : **Écart accepté, méthode de vérification de la correction** (`ecarts.md`, « Reprise après la première relecture ») : il n'y a pas de nouveau test rouge pour une correction de forme. C'est justifié : la correction ne change aucun comportement, et un test sur le texte source irait contre les standards. Les preuves rouge puis vert de l'implémentation restent dans le dossier d'état. Cet écart ne remplace aucun critère d'acceptation.

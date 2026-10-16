@@ -464,20 +464,37 @@ class HeadlessRuntime {
   capturing(session = this.session) {
     return this.lifecycle.capturing(session);
   }
+  sessionListingRead() {
+    const loaded = this.session;
+    if (!loaded) return { current: null, snapshot: null, capturing: false, storage: null };
+    // L'état publié et la référence sont transférés ensemble ; aucun objet mutable ne traverse l'attente.
+    const state = this.sessionState?.id === loaded.id ? this.sessionState : loaded.watch.snapshot();
+    return {
+      current: { ...this.described(loaded), title: loaded.manifest()?.title || null },
+      snapshot: {
+        id: loaded.id,
+        coverage: { passages: state.coverage.passages },
+        segments: state.segments.map(segment => ({ available: segment.available })),
+      },
+      capturing: this.capturing(loaded),
+      storage: { ...loaded.storage() },
+    };
+  }
   // Listing reads manifests only, never a saved state. The session in memory is shown from its live
   // figures: its manifest is up to 30 s old, and absent before its first passage.
-  async sessions() {
-    const loaded = this.session,
-      current = loaded?.id || null,
-      listed = await this.library.list({ current });
-    const projected = sessionRows(listed, this.sessionState, {
-      current: loaded ? { ...this.described(loaded), title: loaded.manifest()?.title || null } : null,
-      capturing: this.capturing(loaded),
+  sessions() {
+    return this.listSessions(this.sessionListingRead());
+  }
+  async listSessions(read) {
+    const listed = await this.library.list({ current: read.current?.id || null });
+    const projected = sessionRows(listed, read.snapshot, {
+      current: read.current,
+      capturing: read.capturing,
       fallback: {
-        title: loaded?.manifest()?.title || "Session en cours",
+        title: read.current?.title || "Session en cours",
         host: "server", createdAt: null, updatedAt: null,
       },
-      live: loaded ? { elapsedMs: loaded.watch.now(), sessionBytes: loaded.storage().sessionBytes } : {},
+      live: read.current ? { elapsedMs: read.current.elapsedMs, sessionBytes: read.storage.sessionBytes } : {},
     });
     const sessions = projected.sessions;
     return {
@@ -488,8 +505,9 @@ class HeadlessRuntime {
     };
   }
   async storageUsage() {
-    const { storage } = await this.sessions();
-    return { ...storage, session: this.session ? this.session.storage() : null };
+    const read = this.sessionListingRead();
+    const { storage } = await this.listSessions(read);
+    return { ...storage, session: read.storage };
   }
   open(id) {
     return this.lifecycle.open(id);

@@ -117,6 +117,195 @@ async function fixture(t, { chat, runtimeOptions = () => ({}) } = {}) {
   return f;
 }
 
+function holdLibrary(t, library, method) {
+  const entered = deferred(), release = deferred();
+  const original = library[method].bind(library);
+  const mock = t.mock.method(library, method, async (...args) => {
+    entered.resolve();
+    await release.promise;
+    return original(...args);
+  });
+  t.after(() => release.resolve());
+  const releaseHeld = () => {
+    mock.mock.restore();
+    release.resolve();
+  };
+  return { entered: entered.promise, release: releaseHeld };
+}
+
+function currentFacts(list) {
+  const row = list.sessions.find(item => item.current);
+  return {
+    current: list.current,
+    row: row ? {
+      id: row.id, title: row.title, state: row.state, elapsedMs: row.elapsedMs,
+      passages: row.passages, media: row.media, current: row.current, readOnly: row.readOnly, capturing: row.capturing,
+    } : null,
+  };
+}
+
+test('HTTP session listing keeps the entry session facts while the library waits across a replacement', async t => {
+  const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+  const A = (await f.req('/v1/session/start', {})).value.id;
+  await f.block(A, 1, 8000);
+  const before = currentFacts((await f.req('/v1/sessions')).value);
+  assert.deepEqual([before.current.id, before.current.accepting, before.row.passages, before.row.media.stored], [A, true, 1, 1]);
+  const held = holdLibrary(t, f.runtime.library, 'list');
+  const pending = f.req('/v1/sessions');
+  await held.entered;
+  try {
+    assert.equal((await f.req('/v1/session/end', {})).status, 200);
+    f.wall += 120000;
+    const B = (await f.req('/v1/session/start', {})).value.id;
+    assert.notEqual(B, A);
+    await f.block(B, 1, 8000);
+    await f.block(B, 2, 16000);
+    assert.equal((await f.req('/v1/session/pause', {})).status, 200);
+  } finally { held.release(); }
+  const reply = await pending;
+  assert.equal(reply.status, 200);
+  assert.deepEqual(currentFacts(reply.value), before);
+});
+
+test('HTTP storage keeps the entry session volume while library usage waits across a replacement', async t => {
+  const f = await fixture(t, { runtimeOptions: f => ({
+    guard: new DiskGuard({ path: f.sessionsRoot, freeBytes: async () => f.free ?? 50 * GIB, now: () => f.wall }),
+  }) });
+  const A = (await f.req('/v1/session/start', {})).value.id;
+  await f.block(A, 1, 8000);
+  const before = (await f.req('/v1/storage')).value;
+  assert.ok(before.session.sessionBytes > 0);
+  const held = holdLibrary(t, f.runtime.library, 'usage');
+  const pending = f.req('/v1/storage');
+  await held.entered;
+  try {
+    assert.equal((await f.req('/v1/session/end', {})).status, 200);
+    const B = (await f.req('/v1/session/start', {})).value.id;
+    await f.block(B, 1, 8000);
+    await f.block(B, 2, 16000);
+    assert.equal((await f.req('/v1/session/pause', {})).status, 200);
+    f.free = 40 * GIB;
+    f.wall += 6000;
+  } finally { held.release(); }
+  const reply = await pending;
+  assert.equal(reply.status, 200);
+  assert.deepEqual(reply.value.session, before.session);
+  assert.deepEqual([reply.value.sessions, reply.value.bytes, reply.value.freeBytes], [1, before.bytes, 40 * GIB]);
+});
+
+for (const route of ['/v1/sessions', '/v1/storage']) {
+  for (const transition of ['close', 'open archive']) {
+    test(`HTTP ${route} keeps A while the library waits across ${transition}`, async t => {
+      const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+      const archive = await emptyArchive(f.sessionsRoot, 'server');
+      const A = (await f.req('/v1/session/start', {})).value.id;
+      await f.block(A, 1, 8000);
+      const before = (await f.req(route)).value;
+      const held = holdLibrary(t, f.runtime.library, 'list');
+      const pending = f.req(route);
+      await held.entered;
+      try {
+        assert.equal((await f.req('/v1/session/end', {})).status, 200);
+        if (transition === 'open archive') {
+          const opened = await f.req(`/v1/sessions/${archive.id}/open`, {});
+          assert.deepEqual([opened.status, opened.value.readOnly, opened.value.retention], [200, true, 'until-deleted']);
+        }
+      } finally { held.release(); }
+      const reply = await pending;
+      assert.equal(reply.status, 200);
+      if (route === '/v1/sessions') {
+        assert.deepEqual(currentFacts(reply.value), currentFacts(before));
+        assert.ok(reply.value.sessions.every(row => row.id));
+        const archived = reply.value.sessions.find(row => row.id === archive.id);
+        assert.deepEqual([archived.state, archived.current, archived.readOnly, archived.capturing], ['archived', false, false, false]);
+      } else {
+        assert.deepEqual(reply.value.session, before.session);
+        assert.deepEqual([reply.value.sessions, reply.value.bytes], [before.sessions, before.bytes]);
+      }
+    });
+  }
+
+  test(`HTTP ${route} keeps an absent entry session while a session arrives during the library wait`, async t => {
+    const f = await fixture(t);
+    const held = holdLibrary(t, f.runtime.library, 'list');
+    const pending = f.req(route);
+    await held.entered;
+    try {
+      const B = (await f.req('/v1/session/start', {})).value.id;
+      assert.equal((await f.block(B, 1, 8000)).status, 200);
+    } finally { held.release(); }
+    const reply = await pending;
+    assert.equal(reply.status, 200);
+    if (route === '/v1/sessions') {
+      assert.equal(reply.value.current, null);
+      assert.equal(reply.value.sessions.length, 1);
+      assert.ok(reply.value.sessions.every(row => row.id && !row.current && !row.capturing && !row.readOnly));
+    } else {
+      assert.equal(reply.value.session, null);
+      assert.equal(reply.value.sessions, 1);
+      assert.ok(reply.value.bytes > 0);
+    }
+  });
+
+  test(`HTTP ${route} freezes flags and figures while the same session captures more and pauses`, async t => {
+    const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+    const A = (await f.req('/v1/session/start', {})).value.id;
+    await f.block(A, 1, 8000);
+    const before = (await f.req(route)).value;
+    const held = holdLibrary(t, f.runtime.library, 'list');
+    const pending = f.req(route);
+    await held.entered;
+    try {
+      assert.equal((await f.block(A, 2, 16000)).status, 200);
+      assert.equal((await f.req('/v1/session/pause', {})).status, 200);
+    } finally { held.release(); }
+    const reply = await pending;
+    assert.equal(reply.status, 200);
+    if (route === '/v1/sessions') assert.deepEqual(currentFacts(reply.value), currentFacts(before));
+    else assert.deepEqual(reply.value.session, before.session);
+  });
+}
+
+test('HTTP session listing owns the published figures even if their input objects change during the wait', async t => {
+  const f = await fixture(t);
+  const A = (await f.req('/v1/session/start', {})).value.id;
+  await f.block(A, 1, 8000);
+  const published = f.runtime.session.watch.snapshot();
+  f.runtime.published(published);
+  const before = currentFacts((await f.req('/v1/sessions')).value);
+  const held = holdLibrary(t, f.runtime.library, 'list');
+  const pending = f.req('/v1/sessions');
+  await held.entered;
+  published.coverage.passages = 7;
+  published.segments[0].available = false;
+  held.release();
+  const reply = await pending;
+  assert.equal(reply.status, 200);
+  assert.deepEqual(currentFacts(reply.value), before);
+});
+
+test('HTTP session listing preserves library order and counts storage before the fifty row limit', async t => {
+  const f = await fixture(t);
+  const A = (await f.req('/v1/session/start', {})).value.id;
+  await f.block(A, 1, 8000);
+  const before = (await f.req('/v1/storage')).value;
+  const listed = Array.from({ length: 51 }, (_, index) => ({
+    id: randomUUID(), title: `Archive ${index}`, state: 'archived', updatedAt: 1000 - index,
+    elapsedMs: 1000, passages: 1, media: { stored: 1, missing: 0, bytes: index + 1 },
+  }));
+  listed.push({ ...listed[0], id: A, title: 'Titre de bibliothèque', media: { stored: 0, missing: 9, bytes: 999999 } });
+  t.mock.method(f.runtime.library, 'list', async () => listed);
+  const expectedBytes = before.session.sessionBytes + 51 * 52 / 2;
+  const list = await f.req('/v1/sessions');
+  assert.equal(list.status, 200);
+  assert.deepEqual(Object.keys(list.value).sort(), ['current', 'sessions', 'storage', 'total']);
+  assert.equal(list.value.current.id, A);
+  assert.deepEqual(list.value.sessions.map(row => row.id), listed.slice(0, 50).map(row => row.id));
+  assert.deepEqual([list.value.total, list.value.storage.sessions, list.value.storage.bytes], [52, 52, expectedBytes]);
+  const storage = await f.req('/v1/storage');
+  assert.deepEqual(storage, { status: 200, value: { ...before, sessions: 52, bytes: expectedBytes } });
+});
+
 for (const resume of [false, true]) {
   test(`an empty server archive survives closing ${resume ? 'after explicit resume and pause' : 'without resume or archive writes'}`, async t => {
     const f = await fixture(t);
