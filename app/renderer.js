@@ -6,29 +6,27 @@ import { createBrowserCaptureController } from './ui/browser-capture.mjs';
 import { bindCaptureActions } from './ui/capture-actions.mjs';
 import { bindMomentActions } from './ui/moment-actions.mjs';
 import { renderCaptureControls } from './ui/capture-controls.mjs';
-import { agree, agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
+import { agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
 import { describeSurveillance, isRestoring, nextSeen, sequences, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
 import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
 import { replayTarget } from './ui/search-view.mjs';
 import { createSearchController } from './ui/search-controller.mjs';
 import { CardQueue, CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
-import { KeyedList, isNearBottom, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
-import { jobEntry, verificationEntry, pendingEntry } from './ui/job-card.js';
+import { KeyedList, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
+import { createChatView } from './ui/chat-view.mjs';
 import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
 import { sessionEntry } from './ui/sessions-dom.js';
 import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
-import { createFreshness } from './ui/freshness.mjs';
+import { createStateDelivery, bindPushedStates, FALLBACK_MS } from './ui/state-delivery.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
 const bridge = window.tvlens;
 // Reversible display bounds: a film is hundreds of passages, the window draws the recent ones.
-const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, STICK_PX = 80, HISTORY_STEP = 200, REGISTRY_EVERY_MS = 2000;
+const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, HISTORY_STEP = 200, REGISTRY_EVERY_MS = 2000;
 let configuration, currentState = null, pendingQuestion = '';
 let verificationState = { busy: false, jobs: [] }, pendingQuestionAt = 0;
 let deepState = { jobs: [] };
-const deepFreshness = createFreshness();
-const verificationFreshness = createFreshness();
 let recapState = null, recapRevision = 0, recapKey = '';
 const momentPreviews = new Map();
 // Passages of the loaded session by id, rebuilt once per state: cards and citations look them up, never scan.
@@ -42,7 +40,7 @@ const notice = text => { $('notice').textContent = text || ''; };
 function batched(run) {
   let queued = false, timer;
   const fire = () => { if (!queued) return; queued = false; clearTimeout(timer); run(); };
-  return () => { if (queued) return; queued = true; timer = setTimeout(fire, 100); requestAnimationFrame(fire); };
+  return () => { if (queued) return; queued = true; timer = setTimeout(fire, FALLBACK_MS); requestAnimationFrame(fire); };
 }
 
 async function refresh() {
@@ -168,7 +166,9 @@ const previewOf = id => momentPreviews.get(id) || (passages.get(id)?.thumbnailAv
 
 // ---- Loaded session --------------------------------------------------------------------------
 function receiveState(state) {
-  if (!state) return;
+  if (state) stateDelivery.receive('session', state);
+}
+function adoptState(state) {
   if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; search.clear(); }
   currentState = state;
   passages = new Map();
@@ -176,7 +176,6 @@ function receiveState(state) {
   if (state.storage) storageState = { ...storageState, ...state.storage };
   // The session no longer accepts passages (disk full, pause decided by the host): the recorder stops with it.
   captureActions.pauseIfUnavailable({ accepting: state.accepting });
-  scheduleState();
 }
 const PASSAGE_LABELS = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Vidéo expirée avant l’analyse' };
 const timelineList = new KeyedList($('timeline'));
@@ -198,7 +197,20 @@ function drawState() {
   shownError = state.lastError || '';
   drawTimeline(); drawChat(); drawSurveillance(); updateButtons();
 }
-const scheduleState = batched(drawState);
+const stateDelivery = createStateDelivery({
+  sources: {
+    session: { group: 'session', adopt: adoptState },
+    deep: { group: 'chat', adopt: state => { deepState = state; } },
+    verification: { group: 'chat', adopt: state => { verificationState = state; } },
+  },
+  draws: { session: drawState, chat: drawChat },
+  now: () => performance.now(),
+  requestFrame: callback => requestAnimationFrame(callback),
+  cancelFrame: id => cancelAnimationFrame(id),
+  setTimer: (callback, delay) => setTimeout(callback, delay),
+  clearTimer: id => clearTimeout(id),
+});
+const scheduleState = () => stateDelivery.schedule('session');
 function drawTimeline() {
   const state = currentState, { items, olderCount } = tail(state?.segments, RAIL_LIMIT);
   const entries = items.slice().reverse().map(segment => {
@@ -238,33 +250,21 @@ function drawBanners() {
 function receiveStorage(storage) { if (!storage) return; storageState = { ...storage }; drawBanners(); }
 
 // ---- Conversation: one card per question, only what changed is redrawn -----------------------
-const chatList = new KeyedList($('message-list'));
+const drawChatCards = createChatView({ list: $('message-list'), box: $('messages'), intro: $('chat-intro'), queueStatus: $('queue-status') });
 function chatContext() {
   return { now: Date.now(), timeoutMs: configuration?.questionTimeoutMs ?? null, queuedIds: deepState.jobs.filter(job => job.status === 'queued').map(job => job.id),
     capturing: Boolean(currentState?.accepting), session: currentState, passage: id => passages.get(id), preview: previewOf, cancelling,
     verifyAvailable: Boolean(configuration?.verificationAvailable), verifyBusy: verificationState.busy };
 }
 function drawChat() {
-  const context = chatContext(), waiting = context.queuedIds.length, limit = configuration?.questionQueueLimit;
-  $('queue-status').textContent = waiting ? `${plural(waiting, 'question')} en attente · ${agree(waiting, 'traitée')} dans l’ordre${limit ? `, ${limit} au plus` : ''}` : '';
-  // The echo covers the instant between sending and the host accepting the question.
-  const echo = pendingQuestion && !deepState.jobs.some(job => job.question === pendingQuestion && job.createdAt >= pendingQuestionAt - 1000);
-  const entries = [
-    ...verificationState.jobs.map(job => ({ at: job.createdAt, entry: verificationEntry(job, context) })),
-    ...deepState.jobs.map(job => ({ at: job.createdAt, entry: jobEntry(job, context) })),
-    ...(echo ? [{ at: pendingQuestionAt, entry: pendingEntry(pendingQuestion) }] : []),
-  ].sort((a, b) => a.at - b.at).map(item => item.entry);
-  // Follow the answer only if the reader was at the bottom: reading an earlier answer is never interrupted.
-  const box = $('messages'), stick = forceBottom || isNearBottom(box, STICK_PX);
-  const changes = chatList.sync(entries);
-  $('chat-intro').hidden = entries.length > 0;
-  if (stick && (forceBottom || changes.created || changes.updated || changes.removed)) box.scrollTop = box.scrollHeight;
+  drawChatCards({ context: chatContext(), deepState, verificationState, pendingQuestion, pendingQuestionAt,
+    forceBottom, limit: configuration?.questionQueueLimit });
   forceBottom = false;
   // The budget file is read again when a question finishes, not at each fragment of an answer.
   const finished = settledCount(deepState.jobs);
   if (finished !== settled) { settled = finished; refreshResearchBudget(); }
 }
-const scheduleChat = batched(drawChat);
+const scheduleChat = () => stateDelivery.schedule('chat');
 function openVerification(text = '') {
   if (verificationState.busy) return notice('Une vérification est déjà en cours. Tu peux toujours poser une question sur la vidéo.');
   if (!configuration?.verificationAvailable) return notice('Codex CLI est introuvable sur ce Mac.');
@@ -281,32 +281,11 @@ $('verify-form').onsubmit = async event => {
   try { await bridge.verify(claim); }
   catch (error) { notice(reason(error)); }
 };
-bridge.onVerificationState(state => {
-  verificationFreshness.pushed();
-  verificationState = state;
-  scheduleChat();
-  updateButtons();
-});
 function refreshResearchBudget() { bridge.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
-bridge.onDeepState(state => {
-  deepFreshness.pushed();
-  deepState = state;
-  scheduleChat();
-  updateButtons();
+const pushedStates = bindPushedStates({
+  bridge, delivery: stateDelivery, changed: updateButtons, onError: error => notice(reason(error)),
 });
-const initialDeepFresh = deepFreshness.beginRead();
-bridge.deepState().then(state => {
-  if (!initialDeepFresh()) return;
-  deepState = state;
-  scheduleChat();
-}).catch(error => notice(reason(error)));
-const initialVerificationFresh = verificationFreshness.beginRead();
-bridge.verificationState().then(state => {
-  if (!initialVerificationFresh()) return;
-  verificationState = state;
-  scheduleChat();
-  updateButtons();
-}).catch(error => notice(reason(error)));
+window.addEventListener('beforeunload', () => pushedStates.release());
 $('ask-form').onsubmit = async event => {
   event.preventDefault(); const question = $('question').value.trim();
   // Enter goes through the same gate as the button: no request the host can only refuse.
@@ -366,7 +345,6 @@ $('close-replay').onclick = () => $('replay-dialog').close();
 $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttribute('src'); $('replay').load(); };
 $('replay').onvolumechange = () => { if (currentState?.accepting) $('replay').muted = true; };
 $('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
-bridge.onState(receiveState);
 bridge.config().then(setConfig).catch(error => notice(reason(error)));
 // A reloaded window finds the session the host still holds.
 bridge.state().then(receiveState).catch(() => {});
@@ -417,7 +395,7 @@ async function pullSession() {
   const state = await bridge.state();
   if (!state) return clearSession();
   receiveState(state);
-  const deepIsFresh = deepFreshness.beginRead();
+  const deepIsFresh = pushedStates.beginDeepRead();
   const [deep, recap, surveillance] = await Promise.all([bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)]);
   if (deepIsFresh()) deepState = deep;
   if (recap) receiveRecap(recap);

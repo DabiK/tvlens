@@ -1,7 +1,7 @@
 ---
 id: T183
 titre: Deliver the pushed state of the Mac window through one tested seam
-statut: a-faire
+statut: termine
 bloque_par: T168, T058
 adr: oui
 installe: non
@@ -95,3 +95,104 @@ couture d’ordonnancement et d’application, sans mesure physique de pixels ou
 Le scénario de mesure et sa corrélation serveur/TV restent dans T178.
 
 ## Journal
+
+### Exploration
+
+- Lecture des consignes, règles, ADR 0003/0018, renderer, cartes, réconciliation, fraîcheur et horloge commune.
+- État initial : seul le statut du ticket est modifié ; deux dossiers non suivis préexistants conservés.
+- Exploration et absence d’écart consignées dans `.harness-state/tickets/T183/`.
+- Prévu : ordonnanceur par dessin session/chat, adoption immédiate, observations locales et libération ;
+  composition des cartes extraite sans changer leurs constructeurs ni les règles de fraîcheur.
+
+### Couture et cartes
+
+- `node --test tests/state-delivery.test.cjs` : rouge observé sur l’assertion d’adoption du dernier
+  état (`red-burst.log`), puis 1/1 vert (`green-burst.log`). Les imports réussissent sans DOM.
+- Même commande : rouges sur le secours absent et sa concurrence avec la frame (`red-fallback.log`),
+  puis 3/3 verts (`green-fallback.log`). Horloge T058 et frames conduites ; cartes réelles dessinées.
+- Même commande : rouge sur l’abonnement du bridge absent (`red-bridge.log`), puis 5/5 verts
+  (`green-bridge.log`). Rouges sur les lectures initiales et la garde d’archive (`red-freshness.log`),
+  puis 8/8 verts (`green-freshness.log`).
+- Même commande : rouge sur une session absente qui était adoptée (`red-null-session.log`), puis
+  10/10 verts (`green-release.log`). La libération annule les deux groupes, abonnements et lectures.
+- `node --test --test-name-pattern='the window tracks pushes' tests/mac-ui.test.cjs` : rouge observé
+  sur la garde de composition avant branchement (`red-renderer.log`).
+- `node --test --test-concurrency=1 tests/state-delivery.test.cjs tests/mac-ui.test.cjs` : 52/52 verts
+  après branchement (`green-renderer.log`). Les six scénarios de fraîcheur existants restent inchangés.
+- `node scripts/check.mjs --changed` : premier passage rouge uniquement pour l’import `agree` devenu
+  inutilisé (`check-changed-first.log`), import retiré ; second passage vert, 54/54 tests JS
+  (`check-changed-second.log`). Aucun assouplissement des règles ni du gel.
+- `node --test tests/state-delivery.test.cjs` : 13/13 verts (`card-application.log`), dont effets d’une
+  session sur les boutons des vraies citations, erreur du vrai dessin sans observation d’application
+  et lecture initiale de vérification acceptée. Les cas finissent avec `armed = 0`.
+
+### Mutation exigée
+
+- Mutation temporaire : retrait de la comparaison d’identité du lot dans `fire`, permettant à une
+  ancienne frame de redessiner après le secours.
+- `node --test --test-name-pattern='the timer wins once' tests/state-delivery.test.cjs` : rouge,
+  assertion `old callbacks must not consume a new batch`, trois dessins au lieu d’un. Sortie complète :
+  `.harness-state/tickets/T183/mutation-duplicate-after-fallback.log`.
+- Mutation retirée, même module restauré ; `node --test tests/state-delivery.test.cjs` : 10/10 verts
+  (`green-after-mutation.log`), avant les trois cas supplémentaires de cartes.
+
+### Interface réutilisable et chemins traversés
+
+- `createStateDelivery({ sources, draws, now, requestFrame, cancelFrame, setTimer, clearTimer,
+  onReceived?, onApplied? })` expose `receive(source, state)`, `schedule(group)` et `release()`.
+  Chaque source fournit `adopt` et son `group` ; chaque groupe fournit un vrai dessin synchrone.
+  Les observations portent `{ source, emissionId, receivedAt }`, puis aussi `appliedAt` au retour du
+  dessin. Les états remplacés avant dessin ne sont pas annoncés comme appliqués.
+- `bindPushedStates({ bridge, delivery, changed, onError })` expose `beginDeepRead()` et `release()`.
+  Les gardes de fraîcheur sont toujours celles de `freshness.mjs` ; l’archive vérifie sa garde après
+  toutes ses lectures. Le déchargement de page retire les abonnements et libère les attentes.
+- `createChatView({ list, box, intro, queueStatus })` renvoie le dessin des cartes à partir du contexte,
+  des états deep/vérification et de l’écho de question. Réutilisable par T178 avec les observateurs.
+- Rendu traversé : `renderer.js` compose `state-delivery.mjs` et `chat-view.mjs` ; les tests de page
+  minimale traversent le même branchement, `job-card.js`, `job-view.mjs`, `format.js`, `list-view.mjs`
+  et les modèles de présentation associés. Aucun source du renderer n’est réécrit pour l’exécuter.
+- ADR ajouté : `docs/adr/0025-la-livraison-des-etats-mac-possede-ses-dessins-et-ses-attentes.md`.
+
+### Validation finale
+
+- `node --test --test-concurrency=1 tests/state-delivery.test.cjs tests/mac-ui.test.cjs tests/mac-capture-actions.test.cjs tests/mac-ipc-contract.test.cjs tests/capture-controller.test.cjs tests/recording.test.cjs` :
+  128/128 verts, sans Electron natif ni fournisseur réel (`mac-sequential.log`).
+- `node scripts/check.mjs --changed` : vert, 57/57 tests JS ; règles, format, lint, gel et cliquet verts
+  (`check-changed.log`).
+- `git diff --check` : code de sortie 0.
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 115 fichiers JS,
+  1 443/1 443 tests JS et 22/22 tests Python (`.harness-state/tickets/T183/check-full.log`).
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T183/verdict.json`. Relecture et intégration
+  laissées à la boucle ; aucun commit ni push. Les dossiers non suivis préexistants restent intacts.
+
+### Reprise après relecture 1
+
+- Rapport `.harness-state/tickets/T183/relecture-1.md`, ticket/journal, écarts, `git status --short`
+  et `git diff` relus. Trois mineurs confirmés : secours dupliqué, nom du test de garde d’archive
+  trop large et tolérance de l’écho non nommée. Aucun constat contesté ni nouvel écart.
+- Les corrections conservent les valeurs et toutes les assertions ; tests existants lancés d’abord.
+- `node --test --test-concurrency=1 tests/state-delivery.test.cjs tests/mac-ui.test.cjs` avant
+  correction : 57/57 verts (`correction-1-before.log`).
+- Constat 1 corrigé : `FALLBACK_MS` exporté par la couture, importé et utilisé par `batched` ;
+  définition unique à 100 ms, mêmes consommateurs. ADR 0025 précisé. La garde de composition
+  existante attend cet import partagé avant l’édition de production :
+  `node --test --test-name-pattern='the window tracks pushes' tests/mac-ui.test.cjs` rouge sur
+  son assertion d’import (`correction-1-red-import.log`).
+- Constat 2 corrigé : test renommé en
+  `an archive deep-read guard is overtaken by a later deep read or deep push, not by a verification push`.
+  Corps et assertions inchangés ; l’ordre dans le renderer reste couvert par la garde existante.
+- Constat 3 corrigé : la tolérance d’écho utilise `ECHO_TOLERANCE_MS = 1000`, au même endroit que
+  `STICK_PX`. Extraction de littéral sans changement de comportement ; aucun faux rouge ajouté.
+- `node --test --test-concurrency=1 tests/state-delivery.test.cjs tests/mac-ui.test.cjs` après
+  correction : 57/57 verts (`correction-1-after.log`).
+- `node scripts/check.mjs --changed` : vert, 57/57 tests JS, règles, format, lint, gel et cliquet
+  verts (`correction-1-check-changed.log`).
+- `git diff --check` : code de sortie 0. Aucun test ajouté, supprimé ou assoupli pour ces corrections.
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 115 fichiers JS,
+  1 443/1 443 tests JS et 22/22 tests Python (`correction-1-check-full.log`).
+- Les trois constats mineurs de la relecture 1 sont corrigés. Nouveau verdict `TERMINÉ` écrit ;
+  aucun commit, push ou lancement de relecteur. Relecture de correction laissée à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T183/relecture-2.md : **Écart accepté (helper de document) :** `ecarts.md` ne déclare aucun écart aux critères. La note sur le helper `tests/helpers/mac-document.cjs` reste acceptée, pour la même raison qu'en relecture 1 : le helper TV ne fournit pas les opérations DOM dont `KeyedList` a besoin.

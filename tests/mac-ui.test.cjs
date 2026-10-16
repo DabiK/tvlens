@@ -795,39 +795,26 @@ test('a rejected state read propagates its failure and leaves the next read fres
 });
 
 test('the window tracks pushes and guards all three deep and verification reads with their own freshness source', () => {
-  // Exception de branchement : renderer ne se charge pas sans Electron ; shape ignore sa mise en page.
+  // Garde de composition ; les lectures et cartes réelles sont exercées dans state-delivery.test.cjs.
   const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, "import { createFreshness } from './ui/freshness.mjs';"), 'the window imports the freshness rule');
-  for (const source of ['deep', 'verification']) {
-    assert.ok(holds(renderer, `const ${source}Freshness = createFreshness();`), `${source} owns a separate source`);
-  }
-  assert.ok(holds(renderer, `bridge.onDeepState(state => {
-    deepFreshness.pushed(); deepState = state; scheduleChat(); updateButtons();
-  });`), 'a deep push invalidates pending deep reads before applying its state');
-  assert.ok(holds(renderer, `bridge.onVerificationState(state => {
-    verificationFreshness.pushed(); verificationState = state; scheduleChat(); updateButtons();
-  });`), 'a verification push invalidates pending verification reads before applying its state');
-  assert.ok(holds(renderer, `const initialDeepFresh = deepFreshness.beginRead();
-    bridge.deepState().then(state => {
-      if (!initialDeepFresh()) return;
-      deepState = state; scheduleChat();
-    }).catch(error => notice(reason(error)));`),
-  'the initial deep read checks freshness before applying or drawing, with its existing error notice');
-  assert.ok(holds(renderer, `const initialVerificationFresh = verificationFreshness.beginRead();
-    bridge.verificationState().then(state => {
-      if (!initialVerificationFresh()) return;
-      verificationState = state; scheduleChat(); updateButtons();
-    }).catch(error => notice(reason(error)));`),
-  'the initial verification read checks freshness before applying or drawing, with its existing error notice');
+  assert.ok(holds(renderer, "import { createStateDelivery, bindPushedStates, FALLBACK_MS } from './ui/state-delivery.mjs';"));
+  assert.ok(holds(renderer, "session: { group: 'session', adopt: adoptState }"));
+  assert.ok(holds(renderer, "deep: { group: 'chat', adopt: state => { deepState = state; } }"));
+  assert.ok(holds(renderer, "verification: { group: 'chat', adopt: state => { verificationState = state; } }"));
+  assert.ok(holds(renderer, 'draws: { session: drawState, chat: drawChat }'));
+  assert.ok(holds(renderer, `const pushedStates = bindPushedStates({
+    bridge, delivery: stateDelivery, changed: updateButtons, onError: error => notice(reason(error)),
+  });`));
+  assert.ok(holds(renderer, "window.addEventListener('beforeunload', () => pushedStates.release());"));
   const start = renderer.indexOf(shape('async function pullSession()'));
   const end = renderer.indexOf(shape('async function openArchive('));
   assert.ok(start >= 0 && end > start, 'pullSession is declared before openArchive');
   const pull = renderer.slice(start, end);
-  assert.ok(holds(pull, `const deepIsFresh = deepFreshness.beginRead();
+  assert.ok(holds(pull, `const deepIsFresh = pushedStates.beginDeepRead();
     const [deep, recap, surveillance] = await Promise.all([
       bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)
     ]);
-    if (deepIsFresh()) deepState = deep;`), 'the archive read starts its guard before the read and applies deep state only while fresh');
+    if (deepIsFresh()) deepState = deep;`), 'the archive guard is checked after all reads');
   assert.ok(holds(pull, `if (recap) receiveRecap(recap);
     if (surveillance) receiveSurveillance(surveillance);
     forceBottom = true; scheduleState();`), 'the other archive states and their drawing remain unconditional');
