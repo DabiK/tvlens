@@ -4,6 +4,11 @@ const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 
+function hasPendingQuestion(jobs, sessionId) {
+  return Boolean(sessionId) && jobs.some(job => job.sessionId === sessionId
+    && (job.status === 'queued' || job.status === 'running'));
+}
+
 // A host may only lower the processing ceiling of a question (rollback, tests): the product contract
 // is five minutes. A mistyped value is refused at start instead of running under another limit.
 function questionTimeout(value) {
@@ -70,4 +75,4 @@ function createConversationRuntime({
     }),
   };
 }
-module.exports = { createConversationRuntime };
+module.exports = { createConversationRuntime, hasPendingQuestion };

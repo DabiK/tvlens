@@ -7,7 +7,7 @@ const { VirtualClock } = require('./helpers/clock.cjs');
 const { until } = require('./helpers/wait.cjs');
 const { WatchSession } = require('../core/session.cjs');
 const { DeepAsk, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel } = require('../core/deep-ask.cjs');
-const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
 
@@ -36,11 +36,7 @@ function stage(clock, config, answers) {
   const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, answer: perception, media, archive: { save: async () => {} }, retentionMs: 3600000, visionDuringAsk: config.visionDuringAsk === true });
   const agent = scriptedAgent(answers);
   const { deep } = createConversationRuntime({ agent, config, selectedModels: {}, getSession: () => ({ watch, search: {}, inspector: {}, store: media }),
-    // Same glue as both hosts: the session knows a question is pending for as long as one is queued or running.
-    onChange: state => {
-      const busy = state.jobs.some(j => ['queued', 'running'].includes(j.status));
-      if (watch.asking !== busy) { watch.asking = busy; watch.emit(); if (!busy) queueMicrotask(() => watch.drain()); }
-    } });
+    onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });
   let index = 0;
   const feed = setInterval(() => {
     const startMs = index++ * BLOCK_MS;

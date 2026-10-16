@@ -7,7 +7,7 @@ const {
   createSessionRuntime,
   openArchivedSession,
 } = require("./session-runtime.cjs");
-const { createConversationRuntime } = require("./conversation-runtime.cjs");
+const { createConversationRuntime, hasPendingQuestion } = require("./conversation-runtime.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { publishState } = require("../core/state-publication.cjs");
 const { createSurveillanceRuntime, tickSurveillance } = require("./surveillance-runtime.cjs");
@@ -127,12 +127,8 @@ class HeadlessRuntime {
           const watch = session.watch;
           // Manual questions only. Surveillance never goes through this queue and never sets this flag:
           // a question does not hold it back, and its work does not hold a question back.
-          const busy = this.closing || state.jobs.some(active);
-          if (watch.asking !== busy) {
-            watch.asking = busy;
-            watch.emit();
-            if (!busy) queueMicrotask(() => watch.drain());
-          }
+          const busy = this.closing || hasPendingQuestion(state.jobs, session.id);
+          watch.setQuestionPending(busy);
           // The questions in memory are those of this session and no other: adopt() replaces both together.
           this.questionSaves.checkpoint(session.store, state);
         }

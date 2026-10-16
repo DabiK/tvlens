@@ -1,5 +1,6 @@
 const { WatchSession } = require("../core/session.cjs");
 const { VideoTools } = require("../core/video-tools.cjs");
+const { hasPendingQuestion } = require("../runtime/conversation-runtime.cjs");
 const {
   createQuestionCheckpoint,
 } = require("../runtime/question-checkpoint.cjs");
@@ -91,16 +92,7 @@ function createModel({ env, delays, views, record }) {
       }),
     agent: createAgent(env, delays, tools),
     onChange: (s) => {
-      const busy = s.jobs.some(
-        (job) =>
-          job.sessionId === session.id &&
-          (job.status === "running" || job.status === "queued"),
-      );
-      if (session.asking !== busy) {
-        session.asking = busy;
-        session.emit();
-        if (!busy) queueMicrotask(() => session.drain());
-      }
+      session.setQuestionPending(hasPendingQuestion(s.jobs, session.id));
       publish("deep", s);
       checkpoint.checkpoint(store, s);
     },

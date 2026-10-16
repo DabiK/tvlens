@@ -3,7 +3,7 @@ const {
   simulatedVerifier,
   simulatedRecap,
 } = require("../adapters/simulated-providers.cjs");
-const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
@@ -149,14 +149,8 @@ app.whenReady().then(async () => {
     onPublicationError,
     onChange: state => {
       try {
-        if (loaded) {
-          const busy = state.jobs.some(j => j.sessionId === loaded.runtime.watch.id && ['running', 'queued'].includes(j.status));
-          if (loaded.runtime.watch.asking !== busy) {
-            loaded.runtime.watch.asking = busy;
-            loaded.runtime.watch.emit();
-            if (!busy) queueMicrotask(() => loaded?.runtime.watch.drain());
-          }
-        }
+        const watch = loaded?.runtime.watch;
+        if (watch) watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id));
         if (state.jobs.some(j => ['running', 'queued'].includes(j.status))) recap?.tick({ busy: true });
         if (!window.isDestroyed()) window.webContents.send('deep:state', state);
       } finally {

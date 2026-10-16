@@ -92,7 +92,7 @@ async function runScenario(root, name, seed, variant = {}) {
   const { CachedInspector } = load('core/cached-inspector.cjs');
   const { MomentIndex } = load('core/moment-index.cjs');
   const { MomentSearch } = load('core/moment-search.cjs');
-  const { createConversationRuntime } = load('runtime/conversation-runtime.cjs');
+  const { createConversationRuntime, hasPendingQuestion } = load('runtime/conversation-runtime.cjs');
   const { hasUsableObservation } = load('core/passage-text.cjs');
   const started = performance.now();
   const clock = new VirtualClock().install();
@@ -276,8 +276,7 @@ async function runScenario(root, name, seed, variant = {}) {
         }
       } };
     conversation = createConversationRuntime({ getSession: () => ({ watch, search, inspector, store: media }), agent: chatAgent,
-      // Same glue as both hosts: a queued or running question marks the session as asking.
-      onChange: state => { const busy = state.jobs.some(j => ['queued', 'running'].includes(j.status)); if (watch.asking !== busy) { watch.asking = busy; watch.emit(); if (!busy) queueMicrotask(() => watch.drain()); } } });
+      onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });
     const deep = conversation.deep;
 
     // Capture feed.

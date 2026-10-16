@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession } = require('../core/session.cjs');
+const { tick, deferred } = require('./helpers/wait.cjs');
 
 function fixture(split) {
   const publications = [];
@@ -113,4 +114,68 @@ test('closeIntake silently refuses new passages and questions while preserving t
     assert.deepEqual([watch.snapshot().segments, files.size, calls], [[], 0, []], state);
     assert.deepEqual([publications.length, saves.length], [published, saved], state);
   }
+});
+
+for (const split of [false, true]) {
+  for (const ending of ['ending', 'closed']) {
+    test(`question resumption starts no analysis or publication after ${ending} (${split ? 'split' : 'single'} perception)`, async () => {
+      const { watch, publications, calls } = fixture(split);
+      watch.visionDuringAsk = false;
+      watch.setQuestionPending(true);
+      await watch.ingest(block());
+      await tick();
+      const before = calls.slice();
+      watch.setQuestionPending(false);
+      if (ending === 'ending') watch.beginEnding();
+      const closing = ending === 'closed' ? watch.close() : null;
+      const published = publications.length;
+      await tick();
+      assert.deepEqual(calls, before, 'the deferred resumption cannot start a provider');
+      assert.equal(publications.length, published);
+      watch.setQuestionPending(true);
+      assert.equal(watch.snapshot().asking, true, 'late notifications still update the readable state');
+      watch.setQuestionPending(false);
+      assert.equal(watch.snapshot().asking, false);
+      await tick();
+      assert.equal(publications.length, published, 'late question notifications stay silent');
+      assert.deepEqual(calls, before);
+      await closing;
+      await watch.close();
+    });
+  }
+}
+
+test('a question completion cannot reopen the intake closed silently during session teardown', async () => {
+  const { watch, publications, calls, saves } = fixture(true);
+  watch.setQuestionPending(true);
+  watch.closeIntake();
+  const published = publications.length;
+  watch.setQuestionPending(false);
+  await tick();
+  assert.deepEqual([watch.snapshot().asking, watch.snapshot().accepting], [true, false]);
+  await assert.rejects(watch.ask('Que voit-on ?'), { message: 'Une réponse est déjà en cours.' });
+  await assert.rejects(watch.ingest(block()), { message: 'La session est arrêtée.' });
+  assert.deepEqual([publications.length, calls, saves.length], [published, [], 0]);
+  await watch.close();
+});
+
+test('an ending session still refuses a second question while its first answer is pending', async t => {
+  const { watch } = fixture(false), reply = deferred();
+  t.after(() => watch.close());
+  await watch.ingest(block());
+  await tick();
+  watch.answer.ask = async () => {
+    await reply.promise;
+    return { answer: 'Ok.', kind: 'explanation', citations: [], limits: [] };
+  };
+  watch.beginEnding();
+  const first = watch.ask('Que voit-on ?');
+  try {
+    assert.equal(watch.snapshot().asking, true);
+    await assert.rejects(watch.ask('Une autre question ?'), { message: 'Une réponse est déjà en cours.' });
+  } finally {
+    reply.resolve();
+    await first;
+  }
+  assert.equal(watch.snapshot().asking, false);
 });

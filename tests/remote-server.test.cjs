@@ -2,7 +2,43 @@ const {test}=require('node:test');const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');const os=require('node:os');const path=require('node:path');
 const {HeadlessRuntime}=require('../runtime/headless-runtime.cjs');
 const {RemoteServer}=require('../server/http.cjs');
+const { deferred } = require('./helpers/wait.cjs');
 const token='a'.repeat(64);
+
+test('the server ignores foreign question publications and keeps its closing lock without active jobs', async t => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-question-ownership-'));
+  const gate = deferred();
+  const runtime = new HeadlessRuntime({
+    userData: dir, sessionsRoot: path.join(dir, 'sessions'), config: {}, selectedModels: {}, smoke: true,
+    agent: { answer: async () => ({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [] }) },
+  });
+  t.after(async () => { gate.resolve(); await runtime.close(); await fs.rm(dir, { recursive: true, force: true }); });
+  const session = await runtime.start();
+  const published = [];
+  runtime.listeners.add(state => published.push(state.session?.asking));
+  for (const status of ['queued', 'running']) {
+    runtime.deep.onChange({ jobs: [{ id: 'foreign', sessionId: 'other-session', status }] });
+    assert.equal(runtime.snapshot().session.asking, false, 'foreign publication');
+    runtime.deep.onChange({ jobs: [{ id: 'historical', status }] });
+    assert.equal(runtime.snapshot().session.asking, false, 'missing session identity');
+    runtime.deep.onChange({ jobs: [{ id: 'own', sessionId: session.id, status }] });
+    assert.equal(runtime.snapshot().session.asking, true, status);
+    runtime.deep.onChange({ jobs: [{ id: 'own', sessionId: session.id, status: 'done' }] });
+    assert.equal(runtime.snapshot().session.asking, false);
+  }
+  assert.ok(published.includes(true));
+  const entered = deferred(), pause = runtime.session.pause;
+  runtime.session.pause = async () => { entered.resolve(); await gate.promise; return pause(); };
+  const closing = runtime.close();
+  runtime.deep.onChange({ jobs: [] });
+  assert.equal(runtime.snapshot().session.asking, true, 'closing is a separate lock');
+  await entered.promise;
+  runtime.deep.onChange({ jobs: [] });
+  assert.equal(runtime.snapshot().session.asking, true, 'an empty publication cannot release the closing lock');
+  gate.resolve();
+  runtime.listeners.clear();
+  await closing;
+});
 test('authenticated remote session: ingest dedupe, anchored FIFO, targeted cancel, pause/resume',async t=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-remote-test-'));let finishFirst;let clock=0;
  const first=new Promise(resolve=>finishFirst=resolve);let started;

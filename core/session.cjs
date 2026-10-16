@@ -46,6 +46,9 @@ function withOverlayNote(observation, segment, images) {
 }
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
+  #questionPending = false;
+  #questionIntakeClosed = false;
+
   constructor({ id, now, perception, answer, media, archive, thumbnails, storage,
     onChange = () => {}, onPublicationError = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
     // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
@@ -66,7 +69,7 @@ class WatchSession {
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
     this.unremoved = new Set();
     this.visionBlockedMs = 0; this.visionHeldSince = null;
-    this.sequence = 0; this.accepting = true; this.running = false; this.asking = false;
+    this.sequence = 0; this.accepting = true; this.running = false;
     this.readOnly = false; this.storageError = null;
     // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
     // successful, says that the state is on disk.
@@ -76,9 +79,17 @@ class WatchSession {
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve(); this.ingestChain = Promise.resolve();
   }
 
-  // Hosts assign `asking` directly: the end of a question also ends the time charged to its vision gate.
-  get asking() { return this.questionActive; }
-  set asking(value) { this.questionActive = value; if (!value) this.endVisionHold(); }
+  get asking() { return this.#questionPending; }
+
+  setQuestionPending(busy) {
+    if (this.#questionIntakeClosed || this.#questionPending === busy) return;
+    this.#questionPending = busy;
+    if (!busy) this.endVisionHold();
+    if (this.closed || this.ending) return;
+    this.emit();
+    if (!busy) queueMicrotask(() => this.drain());
+  }
+
   endVisionHold() {
     if (this.visionHeldSince === null) return;
     this.visionBlockedMs += Math.max(0, this.now() - this.visionHeldSince); this.visionHeldSince = null;
@@ -91,7 +102,9 @@ class WatchSession {
 
   // Empêche une nouvelle question ou un nouveau passage pendant l'attente des écritures déjà admises.
   closeIntake() {
-    this.asking = true;
+    // Le refus des questions survit à une notification de fin arrivée pendant la fermeture.
+    this.#questionIntakeClosed = true;
+    this.#questionPending = true;
     this.accepting = false;
   }
 
@@ -389,7 +402,7 @@ class WatchSession {
   async ask(question) {
     if (typeof question !== 'string' || !question.trim() || question.length > 2000) throw new Error('Écris une question de 1 à 2 000 caractères.');
     if (this.asking) throw new Error('Une réponse est déjà en cours.');
-    this.asking = true; this.emit();
+    this.setQuestionPending(true);
     try {
       await this.prune();
       const anchorMs = this.segments.at(-1)?.endMs ?? this.history.at(-1)?.endMs ?? 0;
@@ -423,7 +436,7 @@ class WatchSession {
       await this.persist(true);
       return response;
     } finally {
-      this.asking = false; this.emit(); this.drain();
+      this.setQuestionPending(false);
     }
   }
 

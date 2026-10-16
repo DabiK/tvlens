@@ -153,7 +153,7 @@ test('a session closed during the second call publishes nothing more and reopens
 });
 
 test('what allows the second call is checked again once the media have been read again', async () => {
-  const changes = { ending: f => { f.watch.ending = true; }, question: f => { f.watch.asking = true; }, queue: f => f.add(1),
+  const changes = { ending: f => { f.watch.ending = true; }, question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
     expiry: async f => { f.setTime(5000); await f.watch.prune(); }, closed: f => f.watch.close() };
   for (const [name, change] of Object.entries(changes)) {
     const reread = deferred(), calls = []; let reads = 0;
@@ -207,13 +207,12 @@ test('the second call only takes a free lane: not while a passage waits behind i
   const held = deferred(); let asked = 0;
   const g = fixture({ transcribe, observeVisual: async s => { if (++asked === 1) { await held.promise; throw passing(); } return visual(s); } });
   await g.add(0);
-  g.watch.asking = true;
+  g.watch.setQuestionPending(true);
   held.resolve();
   await turns(8);
   assert.deepEqual([asked, g.watch.segments[0].visionStatus], [1, 'error']);
   assert.deepEqual(g.watch.snapshot().coverage, { passages: 1, ...BASE, visionError: 1 }, 'lost and counted as such: nothing waits for the end of the question');
-  g.watch.asking = false;
-  g.watch.drain();
+  g.watch.setQuestionPending(false);
   await turns(8);
   assert.equal(asked, 1, 'and nothing is tried once the question has ended');
 });
@@ -221,7 +220,7 @@ test('the second call only takes a free lane: not while a passage waits behind i
 test('where vision is allowed during a question, a second call runs during the question like any description', async () => {
   let calls = 0;
   const f = fixture({ transcribe, observeVisual: async s => { if (++calls === 1) throw passing(); return visual(s); } }, { visionDuringAsk: true });
-  f.watch.asking = true; await f.add(0);
+  f.watch.setQuestionPending(true); await f.add(0);
   assert.deepEqual([calls, f.watch.asking, f.watch.segments[0].status, f.watch.segments[0].visionStatus], [2, true, 'ready', 'ready']);
   assert.deepEqual(f.watch.snapshot().coverage, { passages: 1, ...BASE, visionRetried: 1, visionRecovered: 1 });
 });

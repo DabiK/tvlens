@@ -474,6 +474,7 @@ test('a question neither suspends nor cancels the surveillance; quitting archive
   // The simulated agent takes 200 ms to read and 1.5 s to check: a verification lot is now in flight.
   watching = await until(t, async () => { const s = await host.surveillanceState(); return s.activity.running === 1 && s; }, 'a verification in flight', 100);
   assert.deepEqual([watching.activity.state, watching.counts.running, watching.overlay.cards.length], ['verifying', 1, 0]);
+  assert.equal((await host.state()).asking, false, 'surveillance alone never marks a question pending');
   // A question arrives meanwhile (the simulated chat agent takes 2.5 s).
   const asked = await host.ask('Que voit-on maintenant ?');
   await until(t, async () => (await host.deepState()).jobs.at(-1).status === 'running', 'a running question');
@@ -920,6 +921,79 @@ test('a question is at rest on disk once the write that carries its figures has 
 });
 
 const CHAT_ANSWER = { answer: 'Ok.', kind: 'explanation', citations: [], limits: [] };
+
+test('Mac chat overlap still counts an active question of another session without raising asking', async t => {
+  const { launch } = await stage(t);
+  let deep;
+  const host = await launch({ wrap: {
+    conversation: built => { deep = built.deep; return built; },
+    surveillance: built => { built.agent.detect = async () => ({ claims: [] }); return built; },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  const watching = await host.startSurveillance({ instruction: 'Vérifie les chiffres annoncés.' });
+  await until(t, async () => (await host.surveillanceState()).registry.ready, 'the surveillance registry read');
+  deep.jobs.push({ id: 'foreign', sessionId: 'other-session', status: 'running' });
+  try {
+    await capture(host, session.id, { after: Math.ceil(watching.activation.t0Ms) + 1 });
+    const state = await until(t, async () => {
+      const seen = await host.surveillanceState();
+      return seen.metrics.detect.calls === 1 && seen;
+    }, 'a surveillance reading while the foreign question is active');
+    assert.equal(state.metrics.overlap.detectsDuringChat, 1, 'the informative overlap counts every active question');
+    assert.equal((await host.state()).asking, false);
+  } finally {
+    deep.jobs = [];
+  }
+});
+
+test('Mac question publications only mark the identified session as pending', async t => {
+  const { launch } = await stage(t);
+  let publish;
+  const host = await launch({ wrap: {
+    conversation: built => { publish = built.deep.onChange; return built; },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  for (const status of ['queued', 'running']) {
+    publish({ jobs: [{ id: 'foreign', sessionId: 'other-session', status }] });
+    assert.equal((await host.state()).asking, false);
+    publish({ jobs: [{ id: 'historical', status }] });
+    assert.equal((await host.state()).asking, false);
+    publish({ jobs: [{ id: 'own', sessionId: session.id, status }] });
+    assert.equal((await host.state()).asking, true);
+    publish({ jobs: [{ id: 'own', sessionId: session.id, status: 'done' }] });
+    assert.equal((await host.state()).asking, false);
+  }
+});
+
+test('releasing a Mac question keeps its deferred resumption on A after the host adopts B', async t => {
+  const { launch } = await stage(t), runtimes = [], scheduled = [];
+  let publish;
+  const host = await launch({ wrap: {
+    conversation: built => { publish = built.deep.onChange; return built; },
+    session: runtime => { runtimes.push(runtime); return runtime; },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  publish({ jobs: [{ id: 'own', sessionId: a.id, status: 'running' }] });
+  assert.equal((await host.state()).asking, true);
+  const microtasks = t.mock.method(globalThis, 'queueMicrotask', callback => scheduled.push(callback));
+  publish({ jobs: [] });
+  microtasks.mock.restore();
+  assert.equal((await host.state()).asking, false);
+  assert.equal(scheduled.length, 1);
+  await host.stop();
+  await host.newSession();
+  const b = await host.start();
+  assert.notEqual(b.id, a.id);
+  assert.equal(runtimes[0].watch.closed, true);
+  const drain = t.mock.method(runtimes[1].watch, 'drain');
+  scheduled.shift()();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(drain.mock.callCount(), 0, 'A cannot ask the newly adopted B to drain');
+  assert.equal((await host.state()).id, b.id);
+});
 
 test('the Mac composition journals failed state deliveries and still saves completed questions', async t => {
   const { launch } = await stage(t), saves = [];

@@ -85,7 +85,7 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
     perception: {},
     retentionMs: 10000,
   });
-  watch.asking = true;
+  watch.setQuestionPending(true);
   try {
     await watch.ingest({
       startMs: 0,

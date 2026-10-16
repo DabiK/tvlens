@@ -187,7 +187,7 @@ test('ending waits for an in-flight ingestion, then keeps its media and thumbnai
     readClock:()=>clock,agent:{answer:async()=>({answer:'test',kind:'explanation',citations:[],limits:[]})}});
   t.after(async()=>{releaseWrite();await runtime.close();await fs.rm(root,{recursive:true,force:true});});
   const session = await runtime.start();
-  runtime.session.watch.asking = true;
+  runtime.session.watch.setQuestionPending(true);
   const store = runtime.session.store, originalPut = store.put.bind(store);
   store.put = async (...args) => { entered();await writeGate;return originalPut(...args); };
   const jpeg = await sharp({create:{width:64,height:36,channels:3,background:'#264136'}}).jpeg().toBuffer();

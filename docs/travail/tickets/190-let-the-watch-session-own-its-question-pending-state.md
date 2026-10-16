@@ -1,7 +1,7 @@
 ---
 id: T190
 titre: Let the watch session own its question-pending state
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: oui
 installe: non
@@ -98,3 +98,21 @@ Hypothèse de course à prouver : le drainage différé Mac peut atteindre B apr
 puisque son callback relit `loaded`. Aucune reproduction n'a été exécutée au découpage.
 
 ## Journal
+
+- Exploration : règles, skill, code, appelants, tests et ADR examinés. Le callback Mac relit bien `loaded` ; le serveur ne filtre pas les jobs par session. Plan de preuves et absence d'écart consignés dans `.harness-state/tickets/T190/`.
+- Rouge/vert : commande (`node --test --test-name-pattern='question pending publishes' tests/split-perception.test.cjs`) puis fermeture (`node --test tests/watch-session-ending.test.cjs`) et filtre (`node --test tests/conversation-runtime.test.cjs`) observés. Sorties conservées dans le dossier d'état.
+- Les nouveaux tests des hôtes exécutés avec le cœur de HEAD ont reproduit deux échecs d'assertion : publication étrangère côté serveur et drainage de B après relâchement de A côté Mac. Après migration, `node --test --test-name-pattern='server ignores foreign' tests/remote-server.test.cjs` et `node --test --test-name-pattern='Mac question publications|releasing a Mac question' tests/mac-ipc-contract.test.cjs` sont verts.
+- `node --test --test-concurrency=1 tests/split-perception.test.cjs tests/session-latency.test.cjs tests/watch-session-ending.test.cjs tests/conversation-runtime.test.cjs tests/question-ceiling.test.cjs tests/architecture-f08.test.cjs tests/timeline-server.test.cjs tests/session-timeline.test.cjs tests/mac-ipc-contract.test.cjs tests/remote-server.test.cjs tests/session.test.cjs` : 117 tests réussis, aucun échec. Premier `node scripts/check.mjs --changed` : vert, 109 tests réussis.
+- Inventaire complémentaire : `scripts/latency-model.cjs` utilisait aussi le mutateur via l'alias `session`. Migration consignée dans `ecarts.md` avant modification ; `node --test tests/capture-display-latency.test.cjs` a montré deux assertions rouges avant sa correction, sans changement des attendus.
+- `node --test --test-concurrency=1 tests/capture-display-latency.test.cjs tests/stream-simulation.test.cjs` : 34 tests réussis, aucun échec. ADR 0035 ajouté sur la propriété de la transition.
+- Inventaire final : `rg -n --pcre2 '\.asking\s*=(?!=)' core runtime app scripts tests --glob '*.{cjs,js,mjs}'` ne trouve que la chaîne de fixture de `tests/architecture-guard.test.cjs`. Aucun callback de drainage ne reste dans les hôtes et les deux simulateurs ; `git diff --check` est sans diagnostic.
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet réussis, 1 739 tests JavaScript réussis dans 124 fichiers et 22 tests Python réussis. Harnais et plancher inchangés. Verdict `TERMINÉ` consigné dans `.harness-state/tickets/T190/verdict.json` ; relecture et intégration laissées à la boucle.
+- Reprise après `relecture-1.md` : les deux constats sont acceptés. Garde de publication/drainage à séparer de la mise à jour d'état et du terme de retenue pendant ending ; compteur Mac `chatBusy` à rétablir. Tests de régression préparés avant correction, sans retrait d'assertion.
+- Correction du constat bloquant : `node --test --test-concurrency=1 --test-name-pattern='question released during ending|question resumption|ending session still refuses' tests/session-latency.test.cjs tests/watch-session-ending.test.cjs` a montré six assertions rouges, dont 8 000 ms facturées au lieu de 2 500 ms après relâchement. La garde ending/closed est maintenant placée après la mise à jour d'état et `endVisionHold()`, avant publication/drainage. `node --test --test-concurrency=1 tests/session-latency.test.cjs tests/watch-session-ending.test.cjs` : 31 tests réussis. Les assertions de silence existantes restent intactes ; états tardifs et refus d'une question concurrente sont aussi couverts. ADR 0035 rectifié.
+- Correction du constat mineur : `node --test --test-name-pattern='Mac chat overlap still counts' tests/mac-ipc-contract.test.cjs` a échoué sur le compteur public de chevauchement (0 au lieu de 1). La règle initiale de `questionPending` est rétablie. `node --test --test-name-pattern='Mac chat overlap still counts|Mac question publications|releasing a Mac question' tests/mac-ipc-contract.test.cjs` : 3 tests réussis ; le filtre du seul drapeau asking et la course A/B restent couverts.
+- `node scripts/check.mjs --changed` après corrections : vert ; règles, format, lint, gel et cliquet réussis, 112 tests JavaScript réussis dans 10 fichiers. Recherche des affectations asking et `git diff --check` sans nouvelle anomalie.
+- `node scripts/check.mjs` après corrections de relecture 1 : vert ; règles, format, lint, gel et cliquet réussis ; 1 742 tests JavaScript réussis dans 124 fichiers, aucun échec ; 22 tests Python réussis. Les deux constats sont corrigés sans contestation ni retrait d'assertion. Nouveau verdict `TERMINÉ` écrit ; relecture et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T190/relecture-2.md : **Écart accepté, migration de `scripts/latency-model.cjs`.** Ce fichier est un appelant qui recopiait la séquence, et le ticket exige « aucun appelant ne recopie ». Ses attendus sont inchangés : rouge avant la migration, vert après.

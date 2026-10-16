@@ -94,7 +94,7 @@ test('a skip while a vision call is in flight is a backlog even during a questio
   const gate = deferred();
   const f = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } });
   for (let i = 0; i < 4; i++) await f.add(i);
-  f.watch.asking = true; await f.add(4);
+  f.watch.setQuestionPending(true); await f.add(4);
   assert.deepEqual(f.watch.segments.map(s => [s.status, s.visionStatus, s.visionSkipReason]),
     [['partial', 'analyzing', undefined], ['partial', 'skipped', 'backlog'], ['partial', 'skipped', 'backlog'], ['partial', 'queued', undefined], ['partial', 'queued', undefined]]);
   const state = f.watch.snapshot();
@@ -103,14 +103,14 @@ test('a skip while a vision call is in flight is a backlog even during a questio
   // The question holds nothing here: the lane is busy, so it is not charged with the loss.
   assert.deepEqual(state.coverage, { passages: 5, audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 2, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0, visionBlockedMs: 0 });
   assert.equal(f.watch.segments[1].observation.transcript, 'Paroles moment-2');
-  gate.resolve(); f.watch.asking = false; f.watch.drain(); await tick();
+  gate.resolve(); f.watch.setQuestionPending(false); await tick();
   assert.deepEqual(f.watch.segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
   assert.equal(f.watch.snapshot().visionGaps.length, 2);
 });
 test('audio drops, audio errors and expired vision are counted where they happen and reach history', async () => {
   const gate = deferred();
   const f = fixture({ transcribe: async s => { await gate.promise; if (s.id === 'moment-1') throw Error('speech failed'); return transcribe(s); }, observeVisual: visual }, { retentionMs: 3000 });
-  f.watch.asking = true;
+  f.watch.setQuestionPending(true);
   for (let i = 0; i < 4; i++) await f.add(i);
   assert.equal(f.watch.losses.audioSkipped, 1); assert.equal(f.watch.segments[1].audioStatus, 'skipped');
   gate.resolve(); await tick();
@@ -155,37 +155,67 @@ test('visionBlockedMs only accumulates while a question alone holds queued visio
   const vision = gates();
   const f = fixture({ transcribe, observeVisual: async s => { await vision(s.id).promise; return visual(s); } });
   const blocked = () => f.watch.snapshot().coverage.visionBlockedMs;
-  f.watch.asking = true; await f.add(0);
+  f.watch.setQuestionPending(true); await f.add(0);
   assert.equal(blocked(), 0); f.setTime(3000); assert.equal(blocked(), 2000);
   // The question ends at 3000: nothing is charged afterwards, even before the next drain.
-  f.watch.asking = false; f.setTime(5000);
+  f.watch.setQuestionPending(false); f.setTime(5000);
   assert.equal(blocked(), 2000); assert.equal(f.watch.visionBlockedMs, 2000);
-  f.watch.drain(); await tick();
+  await tick();
   assert.equal(f.watch.segments[0].visionStartedMs, 5000);
   // Queued behind the call in flight, not behind the question.
-  f.watch.asking = true; await f.add(5); f.setTime(7000);
+  f.watch.setQuestionPending(true); await f.add(5); f.setTime(7000);
   assert.equal(f.watch.visionQueue.length, 1); assert.equal(blocked(), 2000);
   vision('moment-1').resolve(); await tick();
   f.setTime(7500); assert.equal(blocked(), 2500);
-  f.watch.asking = false; f.watch.drain(); await tick();
+  f.watch.setQuestionPending(false); await tick();
   f.setTime(9000); assert.equal(blocked(), 2500);
   assert.equal(f.watch.segments[1].visionStartedMs, 7500); assert.equal(passageLatency(f.watch.segments[1]).visionWaitMs, 1500);
   vision('moment-2').resolve(); await tick();
   assert.equal(f.watch.segments[1].status, 'ready'); assert.equal(blocked(), 2500);
 });
+
+test('a question released during ending stops charging held vision without publishing or scheduling work', async t => {
+  const audio = deferred(), scheduled = [], saves = [];
+  let descriptions = 0;
+  const f = fixture({
+    transcribe: async s => { await audio.promise; return transcribe(s); },
+    observeVisual: async s => { descriptions++; return visual(s); },
+  }, { archive: { save: async state => saves.push(state) } });
+  t.after(() => f.watch.close());
+  f.watch.setQuestionPending(true);
+  await f.add(0);
+  audio.resolve();
+  await tick();
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.audioStatus, s.visionStatus]), [['ready', 'queued']]);
+  f.setTime(3000);
+  f.watch.beginEnding();
+  const published = f.snapshots.length;
+  t.mock.method(globalThis, 'queueMicrotask', callback => scheduled.push(callback));
+  f.setTime(3500);
+  f.watch.setQuestionPending(false);
+  f.setTime(9000);
+  await tick();
+  const state = f.watch.snapshot();
+  assert.equal(state.coverage.visionBlockedMs, 2500, 'teardown time after question release is not charged');
+  assert.equal(state.asking, false);
+  assert.deepEqual([f.snapshots.length, scheduled.length, descriptions], [published, 0, 0]);
+  await f.watch.close();
+  assert.equal(saves.at(-1).coverage.visionBlockedMs, 2500, 'the archive keeps the release-time duration');
+});
+
 test('the hold ends when the held queue empties by expiry and when the session closes', async () => {
   const f = fixture({ transcribe, observeVisual: visual }, { retentionMs: 1000 });
-  f.watch.asking = true; await f.add(0);
+  f.watch.setQuestionPending(true); await f.add(0);
   f.setTime(2500); await f.watch.prune();
   f.setTime(9000);
   assert.equal(f.watch.snapshot().coverage.visionBlockedMs, 1500); assert.equal(f.watch.losses.visionExpired, 1);
   const g = fixture({ transcribe, observeVisual: visual });
-  g.watch.asking = true; await g.add(0);
+  g.watch.setQuestionPending(true); await g.add(0);
   g.setTime(1800); await g.watch.close(); g.setTime(5000);
   assert.equal(g.watch.snapshot().coverage.visionBlockedMs, 800);
   // A vision call that starts while the question is still running is no longer charged to the gate.
   const gate = deferred(), h = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } });
-  h.watch.asking = true; await h.add(0);
+  h.watch.setQuestionPending(true); await h.add(0);
   h.setTime(1600); h.watch.visionDuringAsk = true; h.watch.drain(); await tick();
   h.setTime(4000);
   assert.equal(h.watch.segments[0].visionStartedMs, 1600); assert.equal(h.watch.snapshot().coverage.visionBlockedMs, 600);
@@ -194,7 +224,7 @@ test('the hold ends when the held queue empties by expiry and when the session c
 test('visionDuringAsk lets vision run during a question, still one call at a time on a bounded queue', async () => {
   const gate = deferred(); let active = 0, max = 0, started = 0;
   const f = fixture({ transcribe, observeVisual: async s => { started++; max = Math.max(max, ++active); await gate.promise; active--; return visual(s); } }, { visionDuringAsk: true });
-  f.watch.asking = true;
+  f.watch.setQuestionPending(true);
   for (let i = 0; i < 5; i++) await f.add(i);
   assert.equal(started, 1); assert.equal(f.watch.segments[0].visionStatus, 'analyzing');
   assert.equal(f.watch.visionQueue.length, 2);
@@ -207,7 +237,7 @@ test('visionDuringAsk lets vision run during a question, still one call at a tim
   // The legacy single lane keeps its barrier.
   let observed = 0;
   const legacy = fixture({ observe: async () => { observed++; return { observation: { summary: 'Image' } }; } }, { visionDuringAsk: true });
-  legacy.watch.asking = true; await legacy.add(0);
+  legacy.watch.setQuestionPending(true); await legacy.add(0);
   assert.equal(observed, 0); assert.equal(legacy.watch.segments[0].status, 'queued');
 });
 test('a failed media removal or publication never poisons later prunes and ingests', async () => {

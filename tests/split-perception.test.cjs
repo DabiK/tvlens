@@ -17,6 +17,42 @@ function fixture(perception, options = {}) {
 const transcribe = async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 10 });
 const visual = async s => ({ observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 20 });
 
+test('question pending publishes each transition once and resumes held vision while audio continues', async t => {
+  const audio = deferred(), vision = deferred(), scheduled = [], described = [];
+  const f = fixture({
+    transcribe: async s => { await audio.promise; return transcribe(s); },
+    observeVisual: async s => { described.push(s.id); await vision.promise; return visual(s); },
+  });
+  t.after(() => f.watch.close());
+  t.mock.method(globalThis, 'queueMicrotask', callback => scheduled.push(callback));
+  assert.equal(typeof f.watch.setQuestionPending, 'function');
+  f.watch.setQuestionPending(false);
+  assert.deepEqual([f.snapshots.length, scheduled.length], [0, 0]);
+  f.watch.setQuestionPending(true);
+  f.watch.setQuestionPending(true);
+  assert.deepEqual(f.snapshots.map(s => s.asking), [true]);
+  assert.equal(scheduled.length, 0);
+  await f.add(0);
+  audio.resolve();
+  await tick();
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.audioStatus, s.visionStatus]), [['ready', 'queued']]);
+  assert.deepEqual(described, []);
+  const published = f.snapshots.length;
+  f.watch.setQuestionPending(false);
+  f.watch.setQuestionPending(false);
+  assert.equal(f.snapshots.length, published + 1);
+  assert.equal(f.snapshots.at(-1).asking, false);
+  assert.equal(scheduled.length, 1);
+  assert.deepEqual(described, [], 'resumption is deferred');
+  scheduled.shift()();
+  await tick();
+  assert.deepEqual(described, ['moment-1']);
+  vision.resolve();
+  await tick();
+  assert.equal(f.watch.snapshot().segments[0].status, 'ready');
+  assert.equal(Reflect.set(f.watch, 'asking', true), false, 'asking is a read-only view');
+});
+
 const publicationStages = [
   ['audio start', s => s.audioStatus === 'analyzing'],
   ['transcript', s => s.audioStatus === 'ready' && s.visionStatus === 'queued'],
@@ -196,9 +232,9 @@ test('both lane backlogs are bounded and skipped vision keeps speech', async () 
 test('manual question blocks new vision but lets audio progress; close prevents late publication', async () => {
   const gate = deferred(); let visions = 0, signal;
   const f = fixture({ transcribe, observeVisual: async s => { visions++; signal = s.signal; await gate.promise; return visual(s); } });
-  f.watch.asking = true; await f.add(0);
+  f.watch.setQuestionPending(true); await f.add(0);
   assert.equal(visions, 0); assert.equal(f.watch.segments[0].audioStatus, 'ready');
-  f.watch.asking = false; f.watch.drain(); await tick();
+  f.watch.setQuestionPending(false); await tick();
   await f.watch.stop(); await f.watch.resume();
   assert.equal(f.watch.segments[0].observation.transcript, 'Paroles moment-1');
   await f.watch.close(); const count = f.snapshots.length;
@@ -235,17 +271,17 @@ test('vision success cannot clear concurrent newer audio failure or its own part
   const gate = deferred();
   const f = fixture({ transcribe: async s => { if (s.id === 'moment-2') throw Error('new audio failure'); return transcribe(s); },
     observeVisual: async s => { await gate.promise; return visual(s); } });
-  await f.add(0); await f.add(1); f.watch.asking = true;
+  await f.add(0); await f.add(1); f.watch.setQuestionPending(true);
   gate.resolve(); await tick();
   assert.equal(f.watch.segments[0].status, 'ready'); assert.equal(f.watch.lastError, 'new audio failure');
-  f.watch.asking = false; f.watch.drain(); await tick();
+  f.watch.setQuestionPending(false); await tick();
   assert.equal(f.watch.segments[1].status, 'partial'); assert.equal(f.watch.lastError, 'new audio failure');
   await f.add(2); assert.equal(f.watch.lastError, null);
   assert.equal(f.watch.segments[1].audioError, 'new audio failure');
 });
 test('empty successful audio and expired queued vision never turn the archived placeholder into evidence', async () => {
   const f = fixture({ transcribe: async () => ({ observation: { transcript: '' } }), observeVisual: visual }, { retentionMs: 1000 });
-  f.watch.asking = true; await f.add(0);
+  f.watch.setQuestionPending(true); await f.add(0);
   assert.equal(f.watch.segments[0].audioStatus, 'ready');
   f.setTime(5000); await f.watch.prune();
   assert.equal(f.watch.history[0].summary, 'Passage non analysé.');
