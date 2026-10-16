@@ -39,6 +39,10 @@ function isAuthFailure(detail) {
 }
 function trace(event, fields = {}) {
   if (process.env.TVLENS_CODEX_TRACE !== '1') return;
-  try { process.stderr.write(JSON.stringify({trace:VERSION,t:new Date().toISOString(),pid:process.pid,event,...fields})+'\n'); } catch {}
+  try { process.stderr.write(JSON.stringify({trace:VERSION,t:new Date().toISOString(),pid:process.pid,event,...fields})+'\n'); }
+  catch {
+    // Une trace non sérialisable ou un stderr indisponible perd ce diagnostic seulement :
+    // le résultat ou le refus du tour reste porté par les promesses du client, indépendamment des traces.
+  }
 }
 module.exports={trace,safeError,isAuthFailure,VERSION};

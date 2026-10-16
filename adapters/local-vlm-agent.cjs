@@ -11,7 +11,9 @@ class LocalVlmAgent {
   constructor({ url, model, numCtx, keepAlive = '10m', timeoutMs = 45000, headers = {}, fetchImpl = fetch } = {}) {
     if (!url || !model) throw Error('Backend local : URL et modèle requis.');
     if (numCtx !== undefined && !(Number.isInteger(numCtx) && numCtx > 0)) throw Error('Backend local : taille de contexte invalide (entier positif).');
-    let endpoint; try { endpoint = new URL(url); } catch {}
+    let endpoint; try { endpoint = new URL(url); } catch {
+      // La validation juste après refuse endpoint absent sans exposer l'URL fournie.
+    }
     // fetch refuses a URL that embeds credentials: they belong in headers.
     if (!/^https?:$/.test(endpoint?.protocol) || endpoint.username || endpoint.password) throw Error('Backend local : URL http(s) sans identifiants requise.');
     endpoint.pathname = endpoint.pathname.replace(/\/+$/, '') + '/api/chat';
@@ -44,7 +46,10 @@ class LocalVlmAgent {
       response = await this.fetchImpl(this.#endpoint, { method: 'POST', headers: this.#headers, signal: aborted,
         body: JSON.stringify({ model, stream: false, format: outputSchema, keep_alive: this.keepAlive, options: { temperature: 0, ...(this.numCtx ? { num_ctx: this.numCtx } : {}) }, messages: [{ role: 'user', content: instructions, images }] }) });
       text = await response.text();
-    } catch {}
+    } catch {
+      // Le refus est transformé juste après : raison d'abandon prioritaire, sinon erreur
+      // « injoignable ». Le détail du transport peut contenir URL ou en-têtes privés.
+    }
     // Checked after the body as well: a result landing after cancellation, timeout or close is never returned.
     if (aborted.aborted) throw aborted.reason;
     // Transport errors can quote the URL or a header value: never forwarded.

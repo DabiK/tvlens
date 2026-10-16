@@ -14,7 +14,12 @@ let exitHooked=false;
 // 3 to 18 ms) and must be left to: what was just closed gets EXIT_GRACE_MS, waited for synchronously, then the kill.
 function atHostExit(){
  const due=[...escalations];if(!due.length)return;
- const until=Date.now()+EXIT_GRACE_MS;let cell;try{cell=new Int32Array(new SharedArrayBuffer(4));}catch{}
+ const until=Date.now()+EXIT_GRACE_MS;let cell;
+ try{cell=new Int32Array(new SharedArrayBuffer(4));}
+ catch{
+  // Sans cellule d'attente, la sortie de l'hôte saute la grâce synchrone ;
+  // la boucle finale envoie quand même SIGKILL aux groupes encore inscrits.
+ }
  while(cell&&Date.now()<until&&due.some(entry=>entry.alive())){try{Atomics.wait(cell,0,0,10);}catch{break;}}
  for(const entry of due)entry.kill();
 }

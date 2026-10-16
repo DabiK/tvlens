@@ -14,7 +14,11 @@ class EmbeddingStore {
       for (const { id, text, vector } of items) if (typeof id === 'string' && typeof text === 'string' && Array.isArray(vector)) this.remember(id, text, vector);
       // A torn last line (crash, full disk) would glue itself to the next append: rewrite the log once instead.
       this.restart = Boolean(head.entries) || !raw.endsWith('\n');
-    } catch {}
+    } catch {
+      // Ce cache dérivé ne doit pas empêcher la recherche : get rend null pour les vecteurs
+      // manquants, que MomentIndex redemande au fournisseur. Les entrées déjà lues restent
+      // en mémoire et restart impose une réécriture au prochain put ; le refus n'est pas signalé.
+    }
   }
   remember(id, text, vector) { this.entries[id] = { text, vector }; this.byText.set(text, vector); }
   async get(id, text) { await this.loaded; return this.entries[id]?.text === text ? this.entries[id].vector : this.byText.get(text)||null; }

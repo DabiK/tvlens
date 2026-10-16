@@ -57,7 +57,10 @@ function reportOnce(message) {
 function report(message) {
   try {
     process.stderr.write(message + "\n");
-  } catch {}
+  } catch {
+    // Un stderr indisponible perd le diagnostic, sans interrompre la décision du client :
+    // les contrôles de confinement et la barrière d'arrêt ne dépendent pas de cette écriture.
+  }
 }
 class CodexSessionClient {
   constructor({
@@ -210,7 +213,11 @@ class CodexSessionClient {
       // Best effort, off the critical path: other App Server versions may not know this method.
       try {
         rpc.request("thread/unsubscribe", { threadId: old }).catch(() => {});
-      } catch {}
+      } catch {
+        // Le nouveau fil est déjà contrôlé et installé ; les événements de l'ancien sont filtrés.
+        // Un désabonnement indisponible ne doit pas annuler la rotation : maxRotations limite
+        // les rotations avant recyclage du processus qui conserve cet ancien abonnement.
+      }
     } catch {
       // Any failure falls back to the former behaviour: close, and the next turn reconnects.
       if (this.rpc === rpc) await this.close().catch(() => {});

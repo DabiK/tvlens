@@ -112,7 +112,17 @@ class RemoteMedia {
     // The directory goes whatever happened. A removal the system refuses is the host's doing only when nothing else went
     // wrong: a block refused for what it is, or given up by its owner, keeps its own answer and carries that failure.
     try{await fs.rm(dir,{recursive:true,force:true});}
-    catch(cause){if(!failed)throw unavailable('Espace temporaire média indisponible.',cause);try{primary.cleanup=cause;}catch{}}
+    catch(cause){
+      if(!failed)throw unavailable('Espace temporaire média indisponible.',cause);
+      try{primary.cleanup=cause;}
+      catch{
+        // Cette méthode de classe est stricte même sans directive dans le fichier : une primitive
+        // (dont null/undefined) ou un objet gelé peut faire lever l'affectation de cleanup,
+        // comme un accesseur ou un Proxy qui lève ; il n'y a pas d'échec silencieux dans ces cas.
+        // Le refus média ou l'abandon initial reste prioritaire et sera relancé ci-dessous ;
+        // l'échec du nettoyage est alors perdu, sans garantir la suppression du répertoire.
+      }
+    }
     if(failed)throw primary;
     // Carried to the passage: the session says by itself that such a scene was not seen whole. Absent when nothing was hidden.
     const overlay=declaredOverlay(input);

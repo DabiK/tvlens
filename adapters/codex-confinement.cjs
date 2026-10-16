@@ -258,7 +258,12 @@ async function createContext(prefix, authHome, root = os.tmpdir()) {
           path.join(source, name),
           path.join(tree.codexHome, name),
         );
-      } catch {}
+      } catch {
+        // Le démarrage accepte l'absence de ces fichiers hors du contexte de travail ;
+        // Codex peut ensuite refuser l'authentification sans auth.json utilisable.
+        // Limite conservée : un refus d'accès ou de lien est aussi toléré, sans diagnostic
+        // distinct d'une absence ; aucun accès de remplacement n'est accordé ici.
+      }
     }
     return tree;
   } catch (error) {
@@ -303,7 +308,11 @@ async function sweepStaleContexts(
       // Removes the links, never the credential files they point to.
       await fs.rm(dir, { recursive: true, force: true });
       removed.push(name);
-    } catch {}
+    } catch {
+      // Un candidat disparu ou non supprimable ne doit pas empêcher le balayage des suivants.
+      // Seules les suppressions réussies sont rendues dans removed ; un résidu peut rester,
+      // avec ses liens privés, jusqu'à un autre balayage. Le refus n'est pas diagnostiqué ici.
+    }
   }
   return removed;
 }

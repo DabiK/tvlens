@@ -8,7 +8,19 @@ class SavedMomentStore {
    await fs.writeFile(path.join(temp,'saved.json'),JSON.stringify(value,null,2),{mode:0o600});await fs.rename(temp,dir);return value;
   }catch(e){await fs.rm(temp,{recursive:true,force:true});throw e;}
  }
- async list(){const dirs=await fs.readdir(this.root,{withFileTypes:true}).catch(()=>[]);const out=[];for(const d of dirs)if(d.isDirectory()&&/^[a-f0-9-]{36}$/.test(d.name)){try{out.push(JSON.parse(await fs.readFile(path.join(this.root,d.name,'saved.json'),'utf8')));}catch{}}return out.sort((a,b)=>b.createdAt-a.createdAt);}
+ async list(){
+  const dirs=await fs.readdir(this.root,{withFileTypes:true}).catch(()=>[]);
+  const out=[];
+  for(const d of dirs)if(d.isDirectory()&&/^[a-f0-9-]{36}$/.test(d.name)){
+   try{out.push(JSON.parse(await fs.readFile(path.join(this.root,d.name,'saved.json'),'utf8')));}
+   catch{
+    // La liste reste disponible pour les autres éléments si ce saved.json est absent,
+    // illisible ou invalide. Ses fichiers ne sont pas supprimés : une lecture ultérieure
+    // pourra le retrouver. Limite du contrat actuel : l'omission n'est pas signalée au client.
+   }
+  }
+  return out.sort((a,b)=>b.createdAt-a.createdAt);
+ }
  async remove(id){await fs.rm(this.dir(id),{recursive:true,force:true});}
  // Kept copies sit at the root of their own folder, not in the media/ folder of a session.
  response(id,moment,range){return new LocalSessionStore(this.dir(id),{mediaDir:''}).response(moment,range);}

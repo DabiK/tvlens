@@ -1,9 +1,4 @@
 {
-  "adapters/chat-trace.cjs": {
-    "no-empty": {
-      "count": 1
-    }
-  },
   "adapters/clip-inspector.cjs": {
     "complexity": {
       "count": 1
@@ -15,9 +10,6 @@
   "adapters/codex-confinement.cjs": {
     "complexity": {
       "count": 1
-    },
-    "no-empty": {
-      "count": 2
     }
   },
   "adapters/codex-perception.cjs": {
@@ -25,11 +17,6 @@
       "count": 2
     },
     "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "adapters/codex-rpc.cjs": {
-    "no-empty": {
       "count": 1
     }
   },
@@ -50,9 +37,6 @@
     },
     "max-lines-per-function": {
       "count": 1
-    },
-    "no-empty": {
-      "count": 2
     },
     "no-nested-ternary": {
       "count": 1
@@ -76,11 +60,6 @@
       "count": 2
     }
   },
-  "adapters/embedding-store.cjs": {
-    "no-empty": {
-      "count": 1
-    }
-  },
   "adapters/frame-selection.cjs": {
     "complexity": {
       "count": 1
@@ -97,24 +76,13 @@
   "adapters/local-vlm-agent.cjs": {
     "complexity": {
       "count": 2
-    },
-    "no-empty": {
-      "count": 2
     }
   },
   "adapters/remote-media.cjs": {
     "complexity": {
       "count": 1
     },
-    "no-empty": {
-      "count": 1
-    },
     "no-nested-ternary": {
-      "count": 1
-    }
-  },
-  "adapters/saved-moment-store.cjs": {
-    "no-empty": {
       "count": 1
     }
   },
