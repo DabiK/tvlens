@@ -555,6 +555,153 @@ test('EmbeddingStore reads the former single-object file and continues it as a l
     assert.deepEqual(await reloaded.get('moment-2', 'Nouveau'), [3, 4]);
   } finally { await fsp.rm(dir, { recursive: true, force: true }); }
 });
+
+async function diagnosticCache(t, raw, options = {}) {
+  const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-cache-diagnostic-'));
+  t.after(() => fsp.rm(dir, { recursive: true, force: true }));
+  const file = path.join(dir, 'private-cache.json'), diagnostics = [];
+  if (raw !== undefined) await fsp.writeFile(file, raw);
+  const cache = new EmbeddingStore(file, 'model', { onDiagnostic: event => diagnostics.push(event), ...options });
+  return { file, cache, diagnostics };
+}
+
+test('an unreadable embedding header announces necessary rebuilding once and search can retain newly requested vectors', async t => {
+  const { file, cache, diagnostics } = await diagnosticCache(t, '{private-header');
+  assert.equal(await cache.get('moment-1', 'contenu privé'), null);
+  assert.equal(diagnostics.length, 1, 'loading must announce the missing cache before any provider work');
+  assert.deepEqual(diagnostics[0], {
+    code: 'TVLENS_EMBEDDING_CACHE_LOAD', cause: 'invalid-header', rebuild: 'total', providerCallsPossible: true,
+    message: 'Cache d’embeddings inutilisable : reconstruction nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.',
+  });
+  const { embeddings, index, search } = setup({ cache });
+  t.after(() => index.close());
+  assert.equal(embeddings.calls.length, 0);
+  const input = { query: 'chien', segments: scene, anchorMs: 16000 };
+  const result = await search.search(input);
+  assert.equal(result.mode, 'hybrid');
+  assert.deepEqual(result.semantic, { eligible: 2, indexed: 2, pending: 0 });
+  assert.deepEqual(embeddings.calls.map(call => call.texts), [scene.map(passageText), ['chien']]);
+  assert.deepEqual(await search.search(input), result);
+  assert.equal(embeddings.calls.length, 2);
+  assert.deepEqual(await new EmbeddingStore(file, 'model').get(scene[0].id, passageText(scene[0])), vector(passageText(scene[0])));
+  assert.equal(diagnostics.length, 1, 'get and put do not repeat the load diagnostic');
+});
+
+test('an injected embedding read refusal announces its stable cause without exposing the disk error and search stays available', async t => {
+  let reads = 0;
+  const { file, cache, diagnostics } = await diagnosticCache(t, undefined, {
+    readFile: async () => {
+      reads++;
+      throw Object.assign(Error('secret-key /private/path contenu privé [9123,4567]'), { code: 'EACCES' });
+    },
+  });
+  assert.equal(await cache.get('moment-1', 'contenu privé'), null);
+  assert.equal(diagnostics[0]?.cause, 'read-failed');
+  assert.equal(diagnostics[0].code, 'TVLENS_EMBEDDING_CACHE_LOAD');
+  assert.equal(diagnostics[0].rebuild, 'total');
+  assert.equal(diagnostics[0].providerCallsPossible, true);
+  assert.doesNotMatch(JSON.stringify(diagnostics), /secret-key|private\/path|contenu privé|9123|4567/);
+  const { embeddings, index, search } = setup({ cache });
+  t.after(() => index.close());
+  assert.equal(embeddings.calls.length, 0);
+  const input = { query: 'chien', segments: scene, anchorMs: 16000 };
+  assert.equal((await search.search(input)).mode, 'hybrid');
+  assert.equal((await search.search(input)).mode, 'hybrid');
+  assert.deepEqual(embeddings.calls.map(call => call.texts), [scene.map(passageText), ['chien']]);
+  assert.deepEqual(await new EmbeddingStore(file, 'model').get(scene[0].id, passageText(scene[0])), vector(passageText(scene[0])));
+  assert.equal(reads, 1);
+  assert.equal(diagnostics.length, 1);
+});
+
+test('a structurally interrupted embedding log reports partial recovery and only missing vectors are requested before a readable rewrite', async t => {
+  const kept = { id: scene[0].id, text: passageText(scene[0]), vector: [0, 1] };
+  const late = { id: scene[1].id, text: passageText(scene[1]), vector: [1, 0] };
+  const raw = [JSON.stringify({ model: 'model' }), JSON.stringify(kept), 'null', JSON.stringify(late), ''].join('\n');
+  const { file, cache, diagnostics } = await diagnosticCache(t, raw);
+  assert.deepEqual(await cache.get(kept.id, kept.text), kept.vector);
+  assert.equal(await cache.get(late.id, late.text), null, 'the existing structural interruption does not salvage later rows');
+  assert.equal(diagnostics[0]?.cause, 'invalid-entry');
+  assert.equal(diagnostics[0].rebuild, 'partial');
+  assert.equal(diagnostics[0].providerCallsPossible, true);
+  assert.match(diagnostics[0].message, /Récupération partielle/);
+  const { embeddings, index } = setup({ cache });
+  t.after(() => index.close());
+  assert.equal(embeddings.calls.length, 0, 'loading does not initiate rebuilding');
+  assert.equal(await fsp.readFile(file, 'utf8'), raw, 'loading does not rewrite the file');
+  await index.ensure(scene);
+  await index.ensure(scene);
+  assert.deepEqual(embeddings.calls.map(call => call.texts), [[late.text]]);
+  assert.equal(diagnostics.length, 1);
+  const lines = (await fsp.readFile(file, 'utf8')).trim().split('\n').map(line => JSON.parse(line));
+  assert.deepEqual(lines, [{ model: 'model' }, kept, late]);
+  const reloaded = new EmbeddingStore(file, 'model');
+  assert.deepEqual(await reloaded.get(kept.id, kept.text), kept.vector);
+  assert.deepEqual(await reloaded.get(late.id, late.text), late.vector);
+});
+
+test('embedding cache loading distinguishes normal creation, incompatible models, migration and tolerated damaged rows', async t => {
+  const entry = { id: 'moment-1', text: 'texte confidentiel', vector: [9123, 4567] };
+  const header = JSON.stringify({ model: 'model' });
+  const log = header + '\n' + JSON.stringify(entry) + '\n';
+  const cases = [
+    { name: 'missing file', raw: undefined, cause: 'missing', rebuild: 'total', kept: false },
+    { name: 'valid log', raw: log, kept: true },
+    { name: 'valid log without final newline', raw: log.trimEnd(), kept: true },
+    { name: 'torn last row', raw: log + '{"secret-key', cause: 'invalid-json-line', rebuild: 'partial', kept: true },
+    { name: 'different model', raw: log.replace('model"}', 'other"}'), cause: 'model-mismatch', rebuild: 'total', kept: false },
+    {
+      name: 'former object format', raw: JSON.stringify({ model: 'model', entries: { 'moment-1': entry } }),
+      cause: 'legacy-format', rebuild: 'rewrite', kept: true,
+    },
+    { name: 'null header', raw: 'null\n', cause: 'invalid-header', rebuild: 'total', kept: false },
+    { name: 'header without model', raw: '{}\n', cause: 'invalid-header', rebuild: 'total', kept: false },
+    { name: 'empty file', raw: '', cause: 'invalid-header', rebuild: 'total', kept: false },
+    { name: 'invalid first row', raw: header + '\nnull\n', cause: 'invalid-entry', rebuild: 'total', kept: false },
+    { name: 'skipped malformed row', raw: log + '{}\n', cause: 'invalid-entry', rebuild: 'partial', kept: true },
+  ];
+  for (const sample of cases) {
+    await t.test(sample.name, async child => {
+      const { file, cache, diagnostics } = await diagnosticCache(child, sample.raw);
+      assert.deepEqual(await cache.get(entry.id, entry.text), sample.kept ? entry.vector : null);
+      if (sample.cause) {
+        assert.equal(diagnostics.length, 1);
+        assert.deepEqual(Object.keys(diagnostics[0]).sort(), ['cause', 'code', 'message', 'providerCallsPossible', 'rebuild']);
+        assert.equal(diagnostics[0].code, 'TVLENS_EMBEDDING_CACHE_LOAD');
+        assert.equal(diagnostics[0].cause, sample.cause);
+        assert.equal(diagnostics[0].rebuild, sample.rebuild);
+        assert.equal(diagnostics[0].providerCallsPossible, sample.rebuild !== 'rewrite');
+        assert.doesNotMatch(JSON.stringify(diagnostics), /texte confidentiel|9123|4567|secret-key|private-cache/);
+        if (sample.cause === 'missing') {
+          assert.match(diagnostics[0].message, /création normale/);
+          assert.doesNotMatch(diagnostics[0].message, /inutilisable|corrompu/);
+        }
+      } else assert.deepEqual(diagnostics, []);
+      const count = diagnostics.length;
+      await cache.put('moment-2', 'Nouveau', [3, 4]);
+      const reloaded = new EmbeddingStore(file, 'model');
+      assert.deepEqual(await reloaded.get('moment-2', 'Nouveau'), [3, 4]);
+      assert.deepEqual(await reloaded.get(entry.id, entry.text), sample.kept ? entry.vector : null);
+      assert.equal(diagnostics.length, count);
+    });
+  }
+});
+
+test('a failed embedding diagnostic cannot reject cache loading or prevent a requested vector from being stored', async t => {
+  let announcements = 0;
+  const { cache } = await diagnosticCache(t, '{invalid', {
+    onDiagnostic: () => {
+      announcements++;
+      throw Error('journal indisponible');
+    },
+  });
+  await assert.doesNotReject(async () => assert.equal(await cache.get('moment-1', 'Un'), null));
+  const { embeddings, index } = setup({ cache });
+  t.after(() => index.close());
+  await index.ensure([passage(1, 'Un')]);
+  assert.deepEqual(await cache.get('moment-1', 'Un'), [1, 0]);
+  assert.equal(embeddings.calls.length, 1);
+  assert.equal(announcements, 1);
+});
 test('a steady stream is sent as a few passages per request once a flush interval is set, and a question never waits for it', async () => {
   const clock = manualClock({ turns: 6 });
   const batches = [], values = new Map();

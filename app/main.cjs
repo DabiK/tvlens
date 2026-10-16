@@ -302,6 +302,7 @@ app.whenReady().then(async () => {
   const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
     smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
+    log: line => console.error(line),
     onPublicationError,
     onChange: state => {
       if (!closing && !switching) recap.observe(state);

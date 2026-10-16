@@ -1,7 +1,7 @@
 ---
 id: T197
 titre: Say when the embeddings index is rebuilt from scratch instead of rebuilding it in silence
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -106,3 +106,54 @@ des reconstructions et le nombre de vecteurs perdus sur des sessions réelles ne
 Le diagnostic ne doit pas annoncer un montant ni une reconstruction totale lorsque le cache reste partiel.
 
 ## Journal
+
+- Exploration : consignes, code du store/index, compositions, appelants, tests et ADR concernés lus.
+  Le cache conserve déjà les entrées précédant une structure invalide ; le travail porte sur son
+  diagnostic et le journal des deux hôtes. Détails et absence d'écarts :
+  `.harness-state/tickets/T197/exploration.md` et `ecarts.md`. Aucun test lancé à ce stade.
+- Store/index : rouges observés sur les assertions de diagnostic, puis verts pour en-tête illisible,
+  refus de lecture injecté, récupération structurelle partielle, classification des formats et
+  journal défaillant. Commandes `node --test --test-name-pattern='<comportement>' tests/moment-index.test.cjs`
+  et sorties exactes conservées dans les fichiers `*-red.log` / `*-green.log` du dossier d'état.
+  `node --test tests/moment-index.test.cjs` : 41 tests réussis, 0 échec (`store-green.log`).
+- Composition : `node --test --test-name-pattern='shared index composition' tests/session-providers.test.cjs`
+  échoue d'abord sur l'absence de journal, émission pendant construction comprise.
+  `node --test tests/session-providers.test.cjs` devient vert : 12/12 (`composition-green.log`).
+- Serveur : `node --test --test-name-pattern='server session options deliver embedding load diagnostics' tests/server-state-views.test.cjs`
+  rouge sur le journal absent, puis vert : 3/3. Le refus disque synchrone arrive au journal avant
+  adoption de la session ; aucune donnée privée ni appel fournisseur initié au chargement.
+- Suites exécutées séquentiellement : `node --test tests/moment-index.test.cjs` (41/41),
+  `node --test tests/session-providers.test.cjs` (12/12), `node --test tests/session-lifecycle.test.cjs`
+  (15/15), `node --test tests/server-state-views.test.cjs` (4/4). Sorties `*-final.log` dans l'état.
+  Premier `node scripts/check.mjs --changed` vert : 57/57 tests JS.
+- Premier `node scripts/check.mjs` : 1953/1958 tests JS réussis, 5 échecs ; 22/22 tests Python réussis.
+  Reproduction avec `node --test --test-name-pattern='ending a session archives|an end the disk refuses|a session whose manifest|stopping the host|the draft of an answer is' tests/server-sessions.test.cjs`
+  : les cinq assertions de journal constatent uniquement le nouveau diagnostic normal de cache absent.
+  Leurs attentes sont complétées avec ce message exact et conservent les erreurs de fermeture attendues.
+  Sorties : `check-full-first.log` et `server-journal-red.log`.
+- Après adaptation des attentes : `node --test tests/server-sessions.test.cjs` vert, 29/29 ;
+  `node scripts/check.mjs --changed` vert, 86/86 tests JS ; `node scripts/check.mjs` vert,
+  1958/1958 tests JS (127 fichiers) et 22/22 tests Python. Règles, format, lint, gel et cliquet verts.
+  Sorties : `server-journal-green.log`, `check-changed-final.log`, `check-full-final.log`.
+  Commandes exactes des cycles et preuves : `.harness-state/tickets/T197/commandes.md`.
+  Verdict `TERMINÉ` enregistré dans le dossier d'état ; relecture et intégration rendues à la boucle.
+- Reprise après `relecture-1.md` : constat mineur accepté. Le test serveur transmet actuellement
+  `log` par les options, ce qui masque le raccord explicite de `sessionOptions()`. Le scénario sera
+  repris sans option `log`, avec interception de `console.error` ; toutes ses assertions restent
+  conservées. Une suppression temporaire du raccord servira à observer le rouge, puis sera restaurée.
+- Preuve de correction : `node --test --test-name-pattern='server session options deliver embedding load diagnostics' tests/server-state-views.test.cjs`
+  passe avec l'ancien test malgré le raccord retiré (`default-journal-old-test-mutant.log`), puis
+  échoue sur l'assertion de journal avec le test renforcé (`default-journal-red.log`, deux sous-cas).
+  Après restauration du raccord à l'identique, la même commande est verte : 3/3
+  (`default-journal-green.log`). Les assertions sur l'adoption, le fournisseur et la confidentialité
+  restent identiques. `cmp runtime/headless-runtime.cjs .harness-state/tickets/T197/headless-runtime-before-correction.cjs`
+  réussit : aucun changement de production durable dans cette correction.
+- Suites de correction exécutées séquentiellement : `node --test tests/moment-index.test.cjs`
+  (41/41), `node --test tests/session-providers.test.cjs` (12/12),
+  `node --test tests/session-lifecycle.test.cjs` (15/15),
+  `node --test tests/server-state-views.test.cjs` (4/4). Sorties `*-correction.log` dans l'état.
+- Contrôles après correction : `node scripts/check.mjs --changed` vert (86/86 tests JS), puis
+  `node scripts/check.mjs` vert (1958/1958 tests JS, 127 fichiers ; 22/22 tests Python).
+  Règles, format, lint, gel et cliquet verts. Sorties : `check-changed-correction.log` et
+  `check-full-correction.log`. Constat mineur corrigé ; nouveau verdict `TERMINÉ` enregistré
+  pour la relecture de correction par la boucle.

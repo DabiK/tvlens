@@ -370,6 +370,7 @@ class HeadlessRuntime {
       guard: this.guard,
       quota: this.quota,
       onChange: (state) => this.published(state),
+      log: (line) => this.log(line),
       onPublicationError: this.onPublicationError,
     };
   }

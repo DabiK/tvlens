@@ -167,7 +167,7 @@ function createSessionPerception(
 }
 
 function createSessionIndex(
-  { config, userData, store, smoke, liveInspection, overrides },
+  { config, userData, store, smoke, liveInspection, overrides, log = () => {} },
   dependencies = {},
 ) {
   const make = { ...indexProviders, ...dependencies };
@@ -186,6 +186,7 @@ function createSessionIndex(
     ? new make.EmbeddingStore(
         path.join(store.root, "embeddings.json"),
         EMBEDDING_MODEL,
+        { onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)) },
       )
     : null;
   const index = embeddings

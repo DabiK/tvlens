@@ -6,6 +6,7 @@ const path = require('node:path');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
+const { emptyArchive } = require('./helpers/empty-archive.cjs');
 
 const token = 'e'.repeat(64);
 const { tick } = require('./helpers/wait.cjs');
@@ -16,6 +17,68 @@ const filler = (seed, length) => {
   for (let i = seed; text.length < length; i++) text += words[(i * 7 + seed) % words.length] + ' ';
   return text.slice(0, length).trim();
 };
+
+test('server session options deliver embedding load diagnostics even before a session is adopted without starting provider work', async t => {
+  for (const cause of ['invalid-header', 'read-failed']) {
+    await t.test(cause, async child => {
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-server-embedding-diagnostic-'));
+      const sessionsRoot = path.join(root, 'sessions');
+      const archive = await emptyArchive(sessionsRoot, 'server');
+      const file = path.join(archive.dir, 'embeddings.json');
+      await fs.writeFile(file, '{secret-header');
+      const journal = [], adopted = [];
+      let calls = 0;
+      const runtime = new HeadlessRuntime({
+        userData: root, sessionsRoot, config: { apiKey: 'secret-key' }, selectedModels: {}, smoke: true,
+        agent: { answer: async () => ({}) },
+        overrides: { embeddings: { embed: async () => {
+          calls++;
+          return [1, 0];
+        } } },
+      });
+      child.mock.method(console, 'error', line => {
+        journal.push(line);
+        adopted.push(runtime.session?.id ?? null);
+      });
+      const server = await new RemoteServer({ runtime, token }).listen(0, '127.0.0.1');
+      child.after(async () => {
+        await server.close();
+        await runtime.close();
+        await fs.rm(root, { recursive: true, force: true });
+      });
+      if (cause === 'read-failed') {
+        const readFile = fs.readFile;
+        child.mock.method(fs, 'readFile', (target, ...args) => {
+          if (target === file) throw Object.assign(Error('EIO secret-key /private/path [9123,4567]'), { code: 'EIO' });
+          return readFile(target, ...args);
+        });
+      }
+      const opened = await fetch(server.url + `/v1/sessions/${archive.id}/open`, {
+        method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: '{}',
+      });
+      assert.equal(opened.status, 200);
+      assert.equal((await opened.json()).readOnly, true);
+      const index = runtime.session.search.index;
+      assert.equal(await index.passageVector({ id: 'moment-1', observation: { summary: 'texte privé' } }), null);
+      assert.equal(journal.length, 1, 'the journal is wired through sessionOptions and the shared composition');
+      const diagnostic = JSON.parse(journal[0]);
+      assert.equal(diagnostic.code, 'TVLENS_EMBEDDING_CACHE_LOAD');
+      assert.equal(diagnostic.cause, cause);
+      assert.equal(diagnostic.rebuild, 'total');
+      assert.equal(diagnostic.providerCallsPossible, true);
+      if (cause === 'read-failed') assert.deepEqual(adopted, [null], 'a synchronous read refusal is logged during construction');
+      assert.equal(calls, 0, 'opening the archive and reporting its cache do not call the provider');
+      await index.ensure([{ id: 'moment-1', observation: { summary: 'texte privé' } }]);
+      await index.ensure([{ id: 'moment-1', observation: { summary: 'texte privé' } }]);
+      assert.equal(calls, 1);
+      assert.equal(journal.length, 1);
+      assert.doesNotMatch(journal[0], /secret-key|private\/path|secret-header|texte privé|9123|4567/);
+      const state = await fetch(server.url + '/v1/state', { headers: { Authorization: 'Bearer ' + token } });
+      assert.equal(state.status, 200);
+      assert.doesNotMatch(await state.text(), /TVLENS_EMBEDDING_CACHE_LOAD|providerCallsPossible/);
+    });
+  }
+});
 // A passage as a durable session keeps it: analysed, stamped, with its per-call metrics and its media.
 function passage(i) {
   const startMs = i * 8000, endMs = startMs + 8000, first = Math.floor(i / 12) * 12;

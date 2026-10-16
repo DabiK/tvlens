@@ -5,6 +5,7 @@ const providers = require("../runtime/session-providers.cjs");
 const fs = require("node:fs/promises");
 const os = require("node:os");
 const { createSessionRuntime } = require("../runtime/session-runtime.cjs");
+const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { deferred } = require("./helpers/wait.cjs");
 
 test("default smoke ingestion publishes speech before vision and keeps the next audio independent", async (t) => {
@@ -288,10 +289,12 @@ test("indexing selects embeddings by smoke mode and key and shares its vector ca
     assert.equal(index.flushMs, 30000);
     assert.equal(index.maxPending, 2048);
     assert.equal(index.cache, built.vectors);
-    assert.deepEqual(built.vectors.args, [
+    assert.deepEqual(built.vectors.args.slice(0, 2), [
       "/sessions/session/embeddings.json",
       "openai/text-embedding-3-small",
     ]);
+    assert.equal(built.vectors.args.length, 3);
+    assert.equal(typeof built.vectors.args[2].onDiagnostic, "function");
     const [embedding] = index.embeddings.args;
     assert.equal(embedding.apiKey, "test-key");
     assert.deepEqual(embedding.budget.args, ["/data/research-budget.json"]);
@@ -415,6 +418,54 @@ test("embeddings overrides bypass smoke and key selection and background indexin
     budgets.map((budget) => budget.args),
     Array(3).fill(["/custom/budget.json"]),
   );
+});
+
+test("shared index composition sends the real cache load diagnostic to the injected journal before provider work", async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-index-diagnostic-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  await fs.writeFile(path.join(root, "embeddings.json"), "{private-header");
+  const journal = [], calls = [];
+  const built = providers.createSessionIndex(sessionOptions({
+    userData: root, store: { root }, smoke: true, log: line => journal.push(line),
+    overrides: { embeddings: { embed: async text => {
+      calls.push(text);
+      return [1, 0];
+    } } },
+  }));
+  t.after(async () => {
+    built.index.close();
+    await built.vectors.seal();
+  });
+  assert.ok(built.vectors instanceof EmbeddingStore);
+  assert.equal(await built.vectors.get("moment-1", "texte privé"), null);
+  assert.equal(journal.length, 1);
+  const diagnostic = JSON.parse(journal[0]);
+  assert.equal(diagnostic.code, "TVLENS_EMBEDDING_CACHE_LOAD");
+  assert.equal(diagnostic.cause, "invalid-header");
+  assert.equal(diagnostic.rebuild, "total");
+  assert.equal(diagnostic.providerCallsPossible, true);
+  assert.deepEqual(calls, []);
+  await built.index.ensure([{ id: "moment-1", observation: { summary: "texte privé" } }]);
+  assert.deepEqual(calls, ["texte privé"]);
+  assert.equal(journal.length, 1);
+  assert.doesNotMatch(journal[0], /private-header|texte privé|embeddings.json/);
+});
+
+test("shared index composition installs the journal before the cache constructor emits a load diagnostic", () => {
+  const journal = [];
+  const diagnostic = {
+    code: "TVLENS_EMBEDDING_CACHE_LOAD", cause: "read-failed", rebuild: "total", providerCallsPossible: true,
+  };
+  providers.createSessionIndex(sessionOptions({
+    userData: "/data", smoke: true, overrides: { embeddings: {} }, log: line => journal.push(line),
+  }), indexDependencies({
+    EmbeddingStore: class {
+      constructor(_file, _model, { onDiagnostic = () => {} } = {}) {
+        onDiagnostic(diagnostic);
+      }
+    },
+  }));
+  assert.deepEqual(journal.map(line => JSON.parse(line)), [diagnostic]);
 });
 
 test("the exposed inspector caches results and refuses cached and in-flight calls after revocation", async () => {

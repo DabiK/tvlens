@@ -15,6 +15,10 @@ const { emptyArchive } = require('./helpers/empty-archive.cjs');
 
 const token = 's'.repeat(64), GIB = 1024 ** 3;
 const READ_ONLY = 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.';
+const CACHE_CREATION_LOG = JSON.stringify({
+  code: 'TVLENS_EMBEDDING_CACHE_LOAD', cause: 'missing', rebuild: 'total', providerCallsPossible: true,
+  message: 'Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.',
+});
 const exists = target => fs.lstat(target).then(() => true, () => false);
 // The disk refuses the files named, as on EIO or in a directory that is no longer writable: their temporary
 // file is never written, so each keeps what it held. Media, thumbnails and every other file still land.
@@ -625,7 +629,8 @@ test('ending a session archives it and closes its runtime even when adapters fai
   assert.deepEqual(ended, { status: 200, value: { ended: true, id: A, archived: true, errors } });
   assert.deepEqual(closed, ['agent de chat', 'index', 'miniatures', 'perception', 'modèle d’inspection'], 'no closing was skipped because another one failed');
   assert.deepEqual([session.watch.closed, session.closeErrors, f.runtime.lastEnd], [true, errors.slice(1), { id: A, archived: true, errors }]);
-  assert.deepEqual(journal, [`TVLens — fermeture incomplète de la session ${A} : ${errors.join(' ; ')}`], 'kept in the journal, not swallowed');
+  assert.deepEqual(journal, [CACHE_CREATION_LOG, `TVLens — fermeture incomplète de la session ${A} : ${errors.join(' ; ')}`],
+    'kept in the journal, not swallowed');
   // Archived whole: listed as an archive, never as a session cut short, with its registry in its final state.
   assert.deepEqual([(await f.saved(A, 'manifest.json')).state, (await f.saved(A, 'session.json')).segments.map(s => s.id), (await f.saved(A, 'surveillance.json')).enabled], ['archived', ['moment-1'], false]);
   const state = (await f.req('/v1/state')).value;
@@ -662,7 +667,10 @@ test('an end the disk refuses is never announced as archived: with the state, th
 
     const refusal = `archive : Écriture refusée par le disque (${file}) : EIO`;
     assert.deepEqual(await f.req('/v1/session/end', {}), { status: 200, value: { ended: true, id, archived: false, errors: [refusal] } });
-    assert.deepEqual([f.runtime.lastEnd, journal], [{ id, archived: false, errors: [refusal] }, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]], 'kept as the outcome of the end and in the journal');
+    assert.deepEqual([f.runtime.lastEnd, journal], [
+      { id, archived: false, errors: [refusal] },
+      [CACHE_CREATION_LOG, `TVLens — fermeture incomplète de la session ${id} : ${refusal}`],
+    ], 'kept as the outcome of the end and in the journal');
     assert.deepEqual([session.watch.closed, closed], [true, ['index', 'miniatures', 'perception', 'modèle d’inspection']], 'the resources are released whatever the disk did');
     assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await fs.readFile(path.join(dir, file), 'utf8') === kept], ['live', true], 'nothing on disk says archived, and the refused file is the last one confirmed');
     restore();
@@ -745,7 +753,7 @@ test('a session whose manifest the disk never took is not listed as an archive o
   assert.deepEqual(await rows(), [[id, 'live', false, null, true, 1, 1]], 'the session in memory, saved state on disk and no manifest');
   const refusal = 'archive : Écriture refusée par le disque (manifest.json) : EIO';
   assert.deepEqual(await f.req('/v1/session/end', {}), { status: 200, value: { ended: true, id, archived: false, errors: [refusal] } });
-  assert.deepEqual(journal, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]);
+  assert.deepEqual(journal, [CACHE_CREATION_LOG, `TVLens — fermeture incomplète de la session ${id} : ${refusal}`]);
   restore();
   assert.deepEqual([await exists(path.join(dir, 'manifest.json')), await exists(path.join(dir, 'session.json'))], [false, true]);
   assert.deepEqual(await rows(), [[id, 'interrupted', false, null, false, 1, 1]], 'what the answer said is what the list shows');
@@ -784,7 +792,10 @@ test('stopping the host while the disk refuses the state leaves no archive that 
   const stopped = f.hosts[0];
   await stopped.stop();
   const refusal = 'archive : Écriture refusée par le disque (session.json) : EIO';
-  assert.deepEqual([stopped.runtime.lastEnd, journal], [{ id, archived: false, errors: [refusal] }, [`TVLens — fermeture incomplète de la session ${id} : ${refusal}`]]);
+  assert.deepEqual([stopped.runtime.lastEnd, journal], [
+    { id, archived: false, errors: [refusal] },
+    [CACHE_CREATION_LOG, `TVLens — fermeture incomplète de la session ${id} : ${refusal}`],
+  ]);
   restore();
   assert.deepEqual([(await f.saved(id, 'manifest.json')).state, await fs.readFile(path.join(dir, 'session.json'), 'utf8') === confirmed], ['live', true]);
 
@@ -975,7 +986,9 @@ test('the draft of an answer is published each time it moves and saved at most o
   await assert.rejects(sessionA.store.flush(), /deep-answers\.json/);
   const refusal = 'archive : Écriture refusée par le disque (deep-answers.json) : EIO';
   assert.deepEqual((await f.req('/v1/session/end', {})).value, { ended: true, id: A, archived: false, errors: [refusal] });
-  assert.deepEqual([journal, (await onDisk(A)).preview, (await onDisk(A)).status], [[`TVLens — fermeture incomplète de la session ${A} : ${refusal}`], draft(200), 'running'], 'the folder keeps the last draft the disk confirmed');
+  assert.deepEqual([journal, (await onDisk(A)).preview, (await onDisk(A)).status], [
+    [CACHE_CREATION_LOG, `TVLens — fermeture incomplète de la session ${A} : ${refusal}`], draft(200), 'running',
+  ], 'the folder keeps the last draft the disk confirmed');
   held.refuse = false;
 
   // B ends with a draft still waiting for its second: its final state is saved at once and nothing is written later.

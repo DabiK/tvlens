@@ -42,6 +42,7 @@ function createSessionRuntime({
   // Media are kept until the session is deleted; a finite value brings the rolling window back.
   retentionMs = Infinity,
   onChange = () => {},
+  log = () => {},
   onPublicationError = createPublicationDiagnostic(),
   readClock = () => performance.now(),
   wallClock = Date.now,
@@ -108,6 +109,7 @@ function createSessionRuntime({
     overrides,
     store,
     userData,
+    log,
   };
   const { vectors, index, search, feedIndex } =
     createSessionIndex(providerOptions);
