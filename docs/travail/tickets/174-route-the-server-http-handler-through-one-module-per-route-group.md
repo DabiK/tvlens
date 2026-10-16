@@ -1,7 +1,7 @@
 ---
 id: T174
 titre: Route the server HTTP handler through one module per route group
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: oui
 installe: non
@@ -128,3 +128,87 @@ T150 couvre le plan court. Aucune amélioration de sécurité ou de politique d'
 de ce déplacement ; un défaut découvert est consigné séparément.
 
 ## Journal
+
+- Exploration : lecture du transport, de son point d'entrée, des huit suites citées
+  et des ADR de possession, fermeture et Range. `git status --short` et `git diff`
+  observés : seul le statut du ticket est modifié, deux dossiers non suivis préexistants.
+  `wc -l server/http.cjs` : **297 lignes** avant extraction. Détails et plan de preuve
+  dans `.harness-state/tickets/T174/exploration.md` ; aucun écart prévu (`ecarts.md`).
+- Interfaces de groupe : échafaudages vides puis rouge sur l'assertion `matched`
+  pour état, questions, surveillance, sessions et ingestion. Commandes :
+  `node --test tests/server-routes.test.cjs` (état), puis
+  `node --test --test-name-pattern='question routes' tests/server-routes.test.cjs`,
+  mêmes commandes filtrées sur `surveillance routes`, `session routes` et `ingestion routes`.
+  Chaque rouge est suivi de `node --test tests/server-routes.test.cjs` vert :
+  successivement **1, 2, 3, 4 puis 5 tests passés**. Sorties `*-red.log` et
+  `*-green.log` conservées dans le dossier d'état. Les assertions couvrent les
+  arguments, réponses et routes inconnues ; l'ingestion vérifie opération et signal.
+- Caractérisation HTTP avant raccordement : `node --test tests/server-routes.test.cjs`
+  **13/13 verts** (`http-characterization-complete.log`). Limites exactes, annonces
+  et flux dépassés, refus ordonnés, ETag sans snapshot, JPEG/Range, conflits,
+  renouvellement de capture, créneau par serveur et libération sur succès/échec.
+  Table vide : `node --test --test-name-pattern='composed table' tests/server-routes.test.cjs`
+  **rouge observé, 0 entrée au lieu de 26** (`table-red.log`). Composition puis
+  raccordement de `handle` : `node --test tests/server-routes.test.cjs` **14/14 verts**
+  (`table-green.log`, `http-table-green.log`).
+- Répartition livrée (mêmes paramètres et motifs ancrés que le ticket) :
+  - état : GET `/v1/session`, GET `/v1/state`, POST `/v1/settings/transcription` ;
+  - surveillance : GET `/v1/surveillance/overlay`, GET `/v1/surveillance`, POST
+    `/v1/surveillance/{start,stop,retry,history,detail}` ;
+  - sessions : GET `/v1/sessions`, GET `/v1/storage`, GET
+    `/v1/thumbnail/:sessionId/:momentId`, GET `/v1/media/:sessionId/:momentId`,
+    GET `/v1/media/:momentId`, POST `/v1/session/{start,pause,end}`, POST
+    `/v1/sessions/close`, POST `/v1/sessions/:id/{open,resume,delete}` ;
+  - questions : POST `/v1/moments/detail`, POST `/v1/questions`, POST
+    `/v1/questions/:id/cancel` ; ingestion : POST `/v1/segments`.
+  Chaque paire méthode/route a un seul propriétaire (9 GET, 17 POST).
+- `wc -l` après extraction : `server/http.cjs` **147** (avant : 297), `routes.cjs`
+  **31**, `session-routes.cjs` **81**, `ingest-routes.cjs` **58**,
+  `question-routes.cjs` **13**, `surveillance-routes.cjs` **17**, `state-routes.cjs`
+  **32**. La répartition ajoute des interfaces ; aucune mesure de performance annoncée.
+- `node_modules/.bin/eslint --prune-suppressions server/http.cjs` : sortie 0,
+  quatre gels devenus inutiles retirés, aucune suppression ajoutée.
+  `node scripts/check.mjs --changed` : **vert**, 14 tests passés, catch vide de
+  production 32 → 31 (`check-changed.log`). ADR 0021 rédigé.
+- Régressions :
+  `node --test --test-concurrency=1 tests/remote-server.test.cjs tests/server-ingest-path.test.cjs tests/server-sessions.test.cjs tests/server-state-views.test.cjs tests/server-surveillance.test.cjs tests/timeline-server.test.cjs tests/architecture-f06.test.cjs tests/architecture-f07.test.cjs`
+  **70/70 tests passés**, sortie 0 (`http-regressions.log`). Les huit fichiers sont
+  identiques octet pour octet à HEAD (`http-suites-unchanged.log`). Sous `tests/`,
+  seul `tests/server-routes.test.cjs` est ajouté.
+- Contrôle final : `node scripts/check.mjs` **vert**, sortie 0, **1 357/1 357 tests
+  JS** dans 109 fichiers en séquentiel ; Python **OK, 33 cas dont 1 ignoré**
+  (`check-full.log`). Dernière mise en forme limitée au nouveau test :
+  `node_modules/.bin/prettier --ignore-path /dev/null --write tests/server-routes.test.cjs`,
+  puis `node scripts/check.mjs --changed` **vert, 14/14 tests passés**
+  (`check-changed-final.log`). `git diff --check` sans erreur.
+- Verdict d'implémentation : **TERMINÉ**, preuves dans
+  `.harness-state/tickets/T174/verdict.json`. Relecture et intégration rendues à la
+  boucle ; aucun commit ni push.
+
+- Reprise après `relecture-1.md` : rapport, ticket, journal, écarts, `git status --short`
+  et `git diff` relus. Constat mineur 1 accepté : restaurer les commentaires de raison
+  à six emplacements, sans modifier les instructions ni les tests. Vérification par
+  les tests existants avant édition ; aucun rouge comportemental annoncé pour des
+  commentaires et aucun test du texte source ajouté. Constat hors périmètre 2
+  conservé en réserve ; la suite d'architecture interdite de modification reste intacte.
+- Correction du constat mineur 1 : `node --test tests/server-routes.test.cjs`
+  **14/14 verts avant édition** (`correction-1-before.log`). Six explications remises
+  en français : verbes du panneau, publication des ETag, refus 507, corps objet,
+  redémarrage de capture sans pause et refus des anciens blocs, arrêt de l'outil
+  média par le signal à la fin de session. Empreintes des instructions hors lignes
+  de commentaires identiques avant/après ; détails dans `correction-1.md`.
+  `node scripts/check.mjs --changed` : **vert, 14/14 tests**, sortie 0
+  (`correction-1-check-changed.log`). `git diff --check` : sortie 0.
+  `wc -l` actualisé : HTTP **151**, ingestion **61**, seuls commentaires ajoutés.
+- Contrôle complet de la correction : `node scripts/check.mjs` **vert**, sortie 0 ;
+  **1 357/1 357 tests JS** dans 109 fichiers en séquentiel ; Python **OK, 33 cas
+  dont 1 ignoré** (`correction-1-check-full.log`). Constat mineur 1 corrigé sans
+  modification d'instruction ni de test. Nouveau verdict **TERMINÉ**, avec le
+  constat hors périmètre 2 en réserve dans `reste` ; relecture rendue à la boucle,
+  aucun commit ni push.
+
+### Réserves à la clôture
+
+- Hors périmètre, relecture 1 constat 2 : la garde du message de fermeture dans tests/architecture-f07.test.cjs ne lit que server/http.cjs côté transport serveur ; les nouveaux server/*-routes.cjs échappent à cette garde. Elle reste vraie aujourd'hui et la suite reste inchangée conformément au ticket.
+- .harness-state/tickets/T174/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
+- .harness-state/tickets/T174/relecture-2.md : **Écart accepté, `eslint-suppressions.json` (élagage, sans numéro de critère).** Décision inchangée depuis la relecture 1 : `docs/standards.md` impose de retirer une suppression devenue inutile, et aucun gel n'est ajouté.
