@@ -12,16 +12,18 @@ niveau:
 
 ## Ce que le ticket livre
 
-Ce ticket ne se traite pas en session : il retient la file. Le 16/10, le propriétaire a choisi de livrer sur
-`main`, pour les jurés du hackathon, la version de fin de vague 1, recettée à la main sur la TV et le Mac. Tant
-que ce ticket n'est pas terminé, T205 attend : aucun ticket de la vague structurelle qui change le produit ne
-démarre. La boucle finit la vague 1 et les tickets de tests seuls (T037, T038, T204, T222), puis s'arrête
-d'elle-même, faute de ticket prêt. Le code est alors gelé pour la recette.
+Ce ticket ne se traite pas en session : il marque la fin de la vague 1. Le 16/10, le propriétaire a choisi de
+recetter sur la TV et le Mac la version de fin de vague 1, à partir d'un tag, puis de la livrer sur `main` pour
+les jurés du hackathon. Tant que ce ticket n'est pas terminé, T205 attend : aucun ticket structurel qui change le
+produit ne démarre. La boucle finit la vague 1 et les tickets de tests seuls (T037, T038, T204, T222), puis
+s'arrête d'elle-même, faute de ticket prêt. Le code de ce moment reçoit le tag. **La boucle n'attend pas la
+recette** : ce ticket est terminé dès le tag posé, et la boucle repart.
 
 ## Sources
 
-- Décision du propriétaire, le 16/10 : livraison sur `main` en fin de vague 1, après une recette rapide sur la
-  TV et le Mac ; le `README.md` de `main` ne change pas.
+- Décision du propriétaire, le 16/10 : tag en fin de vague 1, recette au réveil à partir du tag, puis fusion du
+  tag sur `main` ; correctifs éventuels sur `main`, puis ramenés sur la branche de travail ; le `README.md` de
+  `main` ne change pas.
 - `main` (`3d2e320`) est un ancêtre de `refactor/maintenabilite` : la livraison se fait en avance rapide.
 - Les tickets structurels qui changent le produit dépendent tous de T205, directement ou non : T206 à T221 et
   T223 à T227. T037, T038, T204 et T222 n'ajoutent que des tests, des fixtures et une règle écrite.
@@ -29,12 +31,13 @@ d'elle-même, faute de ticket prêt. Le code est alors gelé pour la recette.
 ## Périmètre
 
 - À modifier : rien. Ce ticket n'est pas lancé par la boucle, puisqu'il attend une décision.
-- Pour libérer la file, hors boucle :
-  1. la boucle s'est arrêtée seule, faute de ticket prêt ; le dernier commit intégré est la version candidate ;
-  2. le propriétaire déploie cette version sur la TV de test et le VPS, et fait la recette Mac et TV ;
-  3. une branche de livraison part de ce commit, avec un seul commit qui remet `README.md` tel qu'il est sur
-     `main` ; `main` avance jusqu'à elle en `--ff-only`, et n'est poussée qu'avec l'accord du propriétaire ;
-  4. le statut de ce ticket passe à `termine`, et la boucle est relancée.
+- Hors boucle, quand elle s'est arrêtée seule faute de ticket prêt :
+  1. l'orchestrateur pose le tag annoté `hackathon-rc` sur le dernier commit intégré, et le pousse ;
+  2. il passe le statut de ce ticket à `termine`, committe ce seul fichier, et relance la boucle ;
+  3. le propriétaire recette le tag sur la TV, le VPS et le Mac ; si tout est bon, `main` avance jusqu'au tag en
+     `--ff-only`, plus un commit qui remet `README.md` tel qu'il est sur `main`, poussé avec son accord ;
+  4. un correctif éventuel se fait sur `main`, puis `main` est fusionnée dans `refactor/maintenabilite` entre deux
+     tickets, sans réécrire l'historique de la branche de travail.
 
 ## Critères d'acceptation
 
@@ -48,7 +51,7 @@ Aucun test : ce ticket ne change ni le code ni le harnais. Le critère 1 se vér
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : la version de fin de vague 1 est-elle recettée sur la TV et le Mac, et
-livrée sur `main` ?
+Décision attendue du propriétaire : le tag `hackathon-rc` est-il posé sur la fin de la vague 1 ? Le
+propriétaire a décidé le 16/10 que l'orchestrateur ferme ce ticket dès que le tag est posé.
 
 ## Journal
