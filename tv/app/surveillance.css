@@ -31,7 +31,7 @@
 #surv-toggle:focus { background: #e0ffb5; }
 #surv-message { color: #f1ba9d; font-size: 15px; }
 #surv-message:empty { display: none; }
-#surv-ambient { font-size: 14px; line-height: 1.4; color: var(--muted); }
+#surv-overlay { font-size: 14px; line-height: 1.4; color: var(--muted); }
 #surv-list, #surv-detail { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
 #surv-list-status { flex-shrink: 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
 #surv-items { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 3px; outline: none; }

@@ -270,3 +270,153 @@ test('manually driving a poll consumes its injected timeout registration before 
   assert.equal(page.timers.pending.size, 0);
   assert.equal(timers.pending.size, 0, 'no consumed timeout remains owned by the injected scheduler');
 });
+
+
+test('the open panel controls server surveillance and local cards without ambient requests', async t => {
+  const net = network();
+  net.state.surveillance.enabled = false;
+  net.state.surveillance.activation = null;
+  net.state.surveillance.activity = { state: 'idle', label: 'Surveillance inactive.' };
+  let now = 0;
+  const page = loadTvPage({
+    config: CONFIG, now: () => now,
+    fetch: async (url, init) => {
+      const route = new URL(url).pathname;
+      if (!['/v1/surveillance/start', '/v1/surveillance/stop'].includes(route)) return net.fetch(url, init);
+      net.calls.push({ url, ...init });
+      const enabled = route.endsWith('/start');
+      Object.assign(net.state.surveillance, {
+        enabled,
+        activation: { instruction: 'Vérifie les chiffres.', t0Ms: 16000 },
+        activity: enabled
+          ? { state: 'verifying', label: 'Vérification en cours…', waiting: 2 }
+          : { state: 'stopped', label: 'Surveillance arrêtée.' },
+      });
+      return response({ surveillance: net.state.surveillance });
+    },
+  });
+  t.after(() => page.cleanup());
+  const noAmbient = () => assert.deepEqual(net.calls.filter(call => new URL(call.url).pathname.startsWith('/ambient')), []);
+  await settle();
+  noAmbient();
+  page.el('show-surveillance').click();
+  await settle();
+  assert.equal(page.el('surveillance-view').hidden, false);
+  assert.equal(page.el('surv-status').textContent, 'Surveillance inactive.');
+  noAmbient();
+  page.input('surv-instruction', 'Vérifie les chiffres.');
+  page.el('surv-toggle').click();
+  await settle();
+  assert.equal(page.el('surv-toggle').textContent, 'Arrêter la surveillance');
+  assert.match(page.el('surv-status').textContent, /^Vérification en cours/);
+  noAmbient();
+  const tick = [...page.timers.pending].find(([, timer]) => timer.repeat && timer.delay === 250)[0];
+  const second = [...page.timers.pending].find(([, timer]) => timer.repeat && timer.delay === 1000)[0];
+  page.timers.run(tick);
+  assert.equal(page.el('overlay-activity').hidden, false);
+  assert.equal(page.el('overlay-activity').querySelector('.tvl-pill-label').textContent, 'Vérification en cours… · 2 en attente');
+  page.el('surv-duration').click();
+  assert.equal(page.el('surv-duration').textContent, 'Durée des alertes · 20 s');
+  page.el('surv-duration').click();
+  assert.equal(page.el('surv-duration').textContent, 'Durée des alertes · 8 s');
+  page.el('surv-alerts').click();
+  assert.equal(page.el('surv-alerts').textContent, 'Alertes à l’écran · non');
+  assert.deepEqual(JSON.parse(page.localStorage.getItem('tvlens.overlay')), { displayMs: 8000, alerts: false });
+  net.state.surveillance.overlay = { seq: 1, cards: [{
+    id: 'lot-1', seq: 1, kind: 'verification', text: 'Le chiffre concorde avec la publication.',
+    interval: { startMs: 8000, endMs: 16000 }, finishedAt: SERVER_NOW,
+    sources: [{ title: 'Publication', url: 'https://www.insee.fr/statistiques/1' }],
+  }] };
+  page.window.tvlensPanel.kick();
+  await settle();
+  page.timers.run(tick);
+  assert.equal(page.el('overlay-card').hidden, true);
+  assert.equal(page.el('overlay-activity').hidden, true);
+  page.el('show-surveillance').click();
+  assert.equal(page.el('show-surveillance').textContent, 'Surveillance (1)');
+  page.el('show-surveillance').click();
+  page.el('surv-alerts').click();
+  const card = page.el('overlay-card');
+  assert.equal(card.hidden, false);
+  assert.equal(card.querySelector('.tvl-card-text').textContent, 'Le chiffre concorde avec la publication.');
+  assert.equal(card.querySelector('.tvl-card-sources').textContent, 'Sources : insee.fr');
+  assert.equal(page.el('overlay-activity').hidden, true);
+  for (let i = 0; i < 5; i++) {
+    now += 1000;
+    page.timers.run(second);
+    await settle();
+  }
+  noAmbient();
+  now = 7999;
+  page.timers.run(tick);
+  assert.equal(card.hidden, false);
+  now = 8000;
+  page.timers.run(tick);
+  assert.equal(card.hidden, true, 'the locally chosen duration is enforced');
+  assert.equal(page.el('overlay-activity').hidden, false);
+  page.el('show-surveillance').click();
+  assert.equal(page.el('show-surveillance').textContent, 'Surveillance', 'the shown card updates the local count');
+  page.el('show-surveillance').click();
+  page.el('surv-toggle').click();
+  await settle();
+  page.timers.run(tick);
+  assert.equal(page.el('surv-toggle').textContent, 'Activer la surveillance');
+  assert.equal(page.el('surv-status').textContent, 'Surveillance arrêtée.');
+  assert.equal(page.el('overlay-activity').hidden, true);
+  const actions = net.calls.filter(call => call.method === 'POST');
+  assert.deepEqual(actions.map(call => [call.url, JSON.parse(call.body)]), [
+    [CONFIG.url + '/v1/surveillance/start', { sessionId: SESSION_ID, instruction: 'Vérifie les chiffres.' }],
+    [CONFIG.url + '/v1/surveillance/stop', { sessionId: SESSION_ID }],
+  ]);
+  assert.ok(actions.every(call => call.headers.Authorization === 'Bearer ' + CONFIG.token));
+  assert.deepEqual(JSON.parse(page.localStorage.getItem('tvlens.overlay')), { displayMs: 8000, alerts: true });
+  noAmbient();
+});
+
+test('an open overlay reports only its card once per session even after an interruption', t => {
+  let now = 0;
+  const page = loadTvPage({ now: () => now });
+  t.after(() => page.cleanup());
+  let paused = false;
+  const shown = [];
+  const overlay = new page.window.TVLensSurveillance.Overlay({
+    settings: () => ({ displayMs: 8000, alerts: true }),
+    paused: () => paused,
+    suspended: () => false,
+    onShown: (...args) => shown.push(structuredClone(args)),
+  });
+  const state = serverState();
+  overlay.update(state);
+  overlay.tick();
+  assert.deepEqual(shown, []);
+  const card = {
+    id: 'lot-1', seq: 1, kind: 'verification', text: 'Le chiffre concorde avec la publication.',
+    interval: { startMs: 8000, endMs: 16000 }, finishedAt: SERVER_NOW,
+    sources: [{ title: 'Publication', url: 'https://www.insee.fr/statistiques/1' }],
+  };
+  state.surveillance.overlay = { seq: 1, cards: [card] };
+  overlay.update(state);
+  overlay.tick();
+  assert.equal(page.el('overlay-card').hidden, false);
+  assert.deepEqual(shown, [[card]], 'the callback receives only the drawn card');
+  paused = true;
+  overlay.tick();
+  assert.equal(page.el('overlay-card').hidden, true);
+  paused = false;
+  overlay.tick();
+  overlay.update(state);
+  overlay.tick();
+  assert.equal(page.el('overlay-card').hidden, false);
+  assert.deepEqual(shown, [[card]], 'redrawing the same card must not count it twice');
+  state.session.id = '22222222-2222-4222-8222-222222222222';
+  state.surveillance.overlay = { seq: 0, cards: [] };
+  overlay.update(state);
+  overlay.tick();
+  assert.equal(page.el('overlay-card').hidden, true);
+  now = 8000;
+  state.surveillance.overlay = { seq: 1, cards: [card] };
+  overlay.update(state);
+  overlay.tick();
+  assert.equal(page.el('overlay-card').hidden, false);
+  assert.deepEqual(shown, [[card], [card]], 'the same sequence in a new session counts again');
+});

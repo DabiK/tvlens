@@ -23,8 +23,6 @@ var TVLENS_STATUS_LABELS = {
 // viewRetryMs: how long the complete state stands in after a light view was refused in passing.
 // backoffMaxMs: the longest wait between two polls while the server does not answer.
 var TVLENS_POLL = { activeMs: 250, idleMs: 1000, panelEvery: 4, timeoutMs: 300000, viewRetryMs: 10000, backoffMaxMs: 8000 };
-// Session identifiers are the server's randomUUID(): the local controller takes nothing else.
-var TVLENS_SESSION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 // The top of this file is not wrapped: a name added here becomes a global of the page and takes the tvlens prefix.
 var tvlensText = typeof module === "object" && module && module.exports ? require("./text.js") : window.TVLensText;
 var tvlensFinite = tvlensText.finite,
@@ -686,7 +684,7 @@ function tvlensMergeState(previous, next, view) {
     },
   });
   // Display choices of this TV: how long a card stays, and whether cards appear at all. Kept on the TV
-  // (local storage, never required), and passed on to the closed-panel display of the local controller.
+  // (local storage, never required).
   var settings = (function () {
     var stored = {};
     try {
@@ -697,29 +695,8 @@ function tvlensMergeState(previous, next, view) {
     return {
       displayMs: Surveillance.displayChoice(stored.displayMs || config.overlayMs),
       alerts: stored.alerts !== false,
-      chosen: stored.displayMs !== undefined || stored.alerts !== undefined,
     };
   })();
-  var ambientKnown = true;
-  function ambient(route, body) {
-    return control.request(route, body).then(
-      function (value) {
-        ambientKnown = !!(value && value.supported);
-        return value;
-      },
-      function (error) {
-        if (error.status === 404) ambientKnown = false;
-        throw error;
-      },
-    );
-  }
-  // Best effort towards the local controller: an older one answers 404 and nothing here depends on it.
-  function tell(route) {
-    if (ambientKnown)
-      control.request(route, {}).catch(function (error) {
-        if (error.status === 404) ambientKnown = false;
-      });
-  }
   var badge = null;
   function registryMarks() {
     return tvlensRegistryMarks(state);
@@ -763,18 +740,13 @@ function tvlensMergeState(previous, next, view) {
     video: function () {
       return videoRect;
     },
-    onShown: function (card, sessionId) {
+    onShown: function () {
       if (badge) badge.shown++;
       renderBadge();
-      // The closed-panel display must not show again what was read here. The numbering starts over
-      // with each session: the declaration names the session whose card was shown.
-      if (tvlensFinite(card.seq) && TVLENS_SESSION_ID.test(sessionId || ""))
-        tell("/ambient/seen/" + sessionId + "/overlay/" + card.seq);
     },
   });
   surveillance = new Surveillance.View({
     client: client,
-    ambient: ambient,
     getState: function () {
       return state;
     },
@@ -787,26 +759,18 @@ function tvlensMergeState(previous, next, view) {
     overlayCovered: function () {
       return overlay.covered;
     },
-    // Viewer action: remembered on the TV, and passed on to the closed-panel display.
+    // Viewer action: remembered on the TV and applied to the open panel.
     setSettings: function (patch) {
-      Object.assign(settings, patch, { chosen: true });
+      Object.assign(settings, patch);
       try {
         window.localStorage.setItem(
           "tvlens.overlay",
           JSON.stringify({ displayMs: settings.displayMs, alerts: settings.alerts }),
         );
       } catch (_) {
-        // Le choix reste dans settings : le contrôleur est encore informé et overlay.tick() l'applique dans cette page.
+        // Le choix reste dans settings et overlay.tick() l'applique dans cette page.
       }
-      if (patch.displayMs) tell("/ambient/display/" + patch.displayMs / 1000);
-      if (patch.alerts !== undefined) tell("/ambient/alerts/" + (patch.alerts ? "on" : "off"));
       overlay.tick();
-    },
-    // Without a choice made on this panel, the choices kept by the local controller apply.
-    adoptSettings: function (remote) {
-      if (settings.chosen) return;
-      if (typeof remote.alerts === "boolean") settings.alerts = remote.alerts;
-      if (remote.displayMs) settings.displayMs = Surveillance.displayChoice(remote.displayMs);
     },
     onSurveillance: function (compact) {
       if (state && compact) {
@@ -1242,7 +1206,6 @@ function tvlensMergeState(previous, next, view) {
   setInterval(function () {
     renderStatus();
     renderProgress();
-    surveillance.second();
   }, 1000);
   // Read by the smokes and handy on a bench: what the poll loop really did.
   window.tvlensPanel = {

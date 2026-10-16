@@ -107,13 +107,19 @@ Les chemins LG → Mac et LG → VPS utilisent la même ingestion HTTP authentif
 
 `core/session-timeline.cjs` projette les passages en cartes contiguës par sujet. `SessionThumbnails` conserve des JPEG réduits dans le dossier `thumbs/` de la session ; ils restent jusqu’à sa suppression. Les questions attachées à une carte gardent leurs bornes malgré de nouvelles captures.
 
-**État interrogé par la TV.** Avec la conservation durable, l’état complet grossit avec la session. `GET /v1/state` reste compatible ; `GET /v1/state?view=chat` et `?view=panel` rendent des vues légères, et `GET /v1/surveillance/overlay` l’essentiel pour l’affichage panneau fermé. Chaque réponse porte un `ETag` qui ne change qu’avec un changement publié : une requête avec `If-None-Match` égal reçoit un `304` sans corps. Aucune de ces interrogations ne lit le disque. Le gain mesuré est un gain de transport, sur banc synthétique ; un client TV non mis à jour continue de télécharger l’état complet.
+**État interrogé par la TV.** Avec la conservation durable, l’état complet grossit avec la session. `GET /v1/state` reste compatible ; `GET /v1/state?view=chat` et `?view=panel` rendent des vues légères, et `GET /v1/surveillance/overlay` conserve sa projection compacte, ses champs et son contrat
+d’ETags ; son retrait est différé selon l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md). Chaque réponse porte un `ETag` qui ne change qu’avec un changement publié : une requête avec `If-None-Match` égal reçoit un `304` sans corps. Aucune de ces interrogations ne lit le disque. Le gain mesuré est un gain de transport, sur banc synthétique ; un client TV non mis à jour continue de télécharger l’état complet.
 
 Le serveur Linux exécute `server/main.cjs` sans Electron, sous utilisateur dédié et systemd. Il écoute exclusivement sur l’adresse Tailscale du VPS. Les fournisseurs IA restent distants ; Tailscale protège le transport TV/hôte, pas une promesse d’inférence locale. Les premiers essais séquentiels prenaient 15–22 s par tranche de 8 s. Après séparation et langue française, un essai court de neuf passages mesure 5,18 s de transcription moyenne pour environ 8 s de son, hors vision et attente. Cela ne valide pas un débit soutenu sur une longue session ; voir [validation](validation.md).
 
 La parité d’interface n’est pas complète : marque-pages durables, recherche dédiée, résumé progressif et relecture restent côté Mac. La surveillance et les sessions archivées partagent le même cœur et les mêmes routes ; leurs écrans TV sont écrits dans `tv/app/`, pas encore déployés ni validés sur l’appareil. Les outils de recherche du chat TV utilisent le runtime commun. Une session n’est pas migrée entre les hôtes. Après un redémarrage, l’hôte retrouve ses sessions sur disque, archivées, ou marquées interrompues après un arrêt brutal.
 
-**Alertes panneau fermé sur la TV.** Aucun JavaScript ne tourne panneau fermé : un superviseur natif (`tv/ambient.py`) interroge le serveur et lance une page minuscule qui dessine une carte. Ce chemin est livré avec un profil `off` : rien ne s’affiche tant qu’il n’est pas validé sur la TV. Voir [LG : alertes panneau fermé](lg-ambient.md).
+**Affichage TV.** L’affichage ambient panneau fermé est retiré du dépôt conformément à l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md).
+Les quatre étapes ont retiré page et outils, superviseur et relais, gate de capture, puis intégrations
+de page et documents. Le panneau ouvert conserve les cartes sourcées, la file, l’activité, les compteurs
+locaux et les réglages `alerts`/`displayMs`, sans appel local `/ambient`. La surveillance démarre et
+s’arrête sur le serveur. Ce retrait n’annonce aucun déploiement ; les faits datés restent dans
+[LG : retrait et historique](lg-ambient.md).
 
 **Cloisonnement des agents.** Les fils Codex sont ouverts sans environnement d’exécution, dans des dossiers séparés des identifiants, avec une liste blanche d’éléments par rôle ; le vérificateur manuel suit la même voie. Ce cloisonnement n’est pas absolu et n’est mesuré que sur Mac : voir [SECURITY.md](../SECURITY.md).
 

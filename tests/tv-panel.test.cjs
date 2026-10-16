@@ -211,7 +211,7 @@ test('the transport revalidates with If-None-Match, keeps the body on 304 and ne
   replies.push(reply(404, { error: 'Route inconnue.' }), reply(507, { error: 'Espace disque insuffisant.', code: 'storage-full' }), reply(404, undefined));
   await assert.rejects(client.state('panel'), error => error.status === 404 && error.message === 'Route inconnue.');
   await assert.rejects(client.sessionAction('11111111-1111-4111-8111-111111111111', 'resume'), error => error.status === 507 && error.code === 'storage-full' && /insuffisant/.test(error.message));
-  await assert.rejects(client.request('/ambient'), error => error.status === 404 && error.message === 'Serveur indisponible');
+  await assert.rejects(client.request('/unknown'), error => error.status === 404 && error.message === 'Serveur indisponible');
   assert.equal(calls.at(-2).url, 'http://server.test/v1/sessions/11111111-1111-4111-8111-111111111111/resume');
   // An unreachable host has no status, and is worded by the panel rather than by the engine.
   const down = new RemoteClient({ url: 'http://server.test', token: 't' }, async () => { throw new TypeError('Failed to fetch'); });
@@ -411,30 +411,6 @@ test('detail: claims with quote and timing, state in plain words, sources as tex
   assert.equal(surveillance.describeDetail({ id: 'claim-1', kind: 'claim', lot: null, claims: [{ id: 'claim-1', status: 'queued', statement: 'S.', origin: {} }] }).moment, null, 'no passage, nothing to question');
 });
 
-test('ambient display, read on the local controller, is told in plain words', () => {
-  const state = (extra = {}) => ({ value: { supported: true, active: true, stopping: false, settings: { alerts: true, displayMs: 14000 }, state: { status: 'idle', reason: null, focus: 'relay', counts: {}, capture: {}, ...extra } } });
-  assert.deepEqual([surveillance.describeAmbient(null).supported, surveillance.describeAmbient(null).line], [false, 'Affichage panneau fermé : lecture de l’état…']);
-  assert.equal(surveillance.describeAmbient({ status: 404, error: true }).line, 'Alertes panneau fermé : contrôleur TV à mettre à jour.');
-  assert.equal(surveillance.describeAmbient({ value: { active: false, stopping: false, report: {} } }).line, 'Alertes panneau fermé : contrôleur TV à mettre à jour.', 'an answer that is not the ambient status is an older controller too');
-  assert.equal(surveillance.describeAmbient({ error: true }).line, 'Alertes panneau fermé : contrôleur TV inaccessible.');
-  const off = surveillance.describeAmbient(state({ status: 'disabled', reason: 'profile-off', focus: 'off', counts: { notShown: 3, skippedStale: 1 } }));
-  assert.equal(off.supported, true);
-  assert.equal(off.line, 'Affichage panneau fermé non activé sur cette TV : les résultats s’affichent panneau ouvert et restent dans l’historique.');
-  assert.deepEqual([off.details, off.notShown], [['4 résultats non montrés panneau fermé : à lire dans l’historique.'], 3]);
-  // Alerts switched off by the viewer are a different thing from a display never enabled on this TV.
-  assert.equal(surveillance.describeAmbient(state({ status: 'disabled', reason: 'alerts-off' })).line, 'Alertes à l’écran coupées : la surveillance continue, les résultats restent dans l’historique.');
-  assert.equal(surveillance.describeAmbient(state({ status: 'disabled', reason: 'server-unsupported' })).line, 'Affichage panneau fermé désactivé : serveur à mettre à jour.');
-  assert.equal(surveillance.describeAmbient(state({ status: 'disabled', reason: 'inconnue', message: 'Phrase du contrôleur' })).line, 'Affichage panneau fermé désactivé : Phrase du contrôleur.');
-  assert.equal(surveillance.describeAmbient(state({ status: 'paused', reason: 'panel' })).line, 'Affichage panneau fermé en pause : panneau ouvert.');
-  assert.equal(surveillance.describeAmbient(state({ status: 'paused', reason: 'media-transition' })).line, 'Affichage panneau fermé en pause : publicité ou changement de vidéo.');
-  assert.equal(surveillance.describeAmbient(state()).line, 'Affichage panneau fermé actif.');
-  assert.equal(surveillance.describeAmbient(state({ trial: true })).line, 'Affichage panneau fermé actif. Mode d’essai.');
-  assert.equal(surveillance.describeAmbient({ value: { ...state().value, active: false } }).line, 'Affichage panneau fermé arrêté.');
-  assert.deepEqual(surveillance.describeAmbient(state({ capture: { overlay: { cropped: 5, withheld: 1 }, gateStale: true } })).details,
-    ['Capture : 5 images recadrées, 1 image retenue pendant une alerte.', 'Porte de capture restée fermée : les images sont recadrées par précaution.']);
-  assert.deepEqual(surveillance.describeAmbient(state()).settings, { alerts: true, displayMs: 14000 });
-});
-
 test('sessions: title, duration, volume, media state, and what each row allows', () => {
   const library = {
     current: { id: 'a', readOnly: false, accepting: true, title: 'Session du 13 oct., 21:04' },
@@ -514,7 +490,6 @@ test('capture button: every end of capture comes with its cause, and an open arc
   assert.equal(stopped({ stopReason: 'stopped' }).label, 'Capture arrêtée · contexte conservé');
   assert.equal(stopped({ stopReason: 'stopped', stopMessage: 'Capture arrêtée à la demande.', errors: ['Capture arrêtée à la demande.'] }).label, 'Capture arrêtée · contexte conservé', 'a stop the viewer asked for is not shown as an error');
   assert.deepEqual([stopped({ stopReason: 'nouvelle-cause', stopMessage: 'Phrase de la capture.' }).label, stopped({ stopReason: 'nouvelle-cause', stopMessage: 'Phrase de la capture.' }).ended], ['Capture arrêtée : Phrase de la capture.', 'nouvelle-cause'], 'an unknown cause is still told, in the words of the capture');
-  assert.match(stopped({ stopReason: 'stopped', gateStale: true }).label, /porte de capture restée fermée : images recadrées par précaution$/);
   assert.deepEqual([stopped({ stopReason: 'session-changed' }).ended, stopped({ connection: 'session-changed' }).label], ['session-changed', 'Serveur redémarré ou session changée · redémarre l’analyse.']);
   assert.equal(stopped({ stopReason: 'parent' }).label, 'Capture arrêtée : contrôleur TV redémarré. Elle ne reprend pas seule.');
   // Storage: the server state, the reason of the capture or a bare 507 all say the same thing in plain words.
@@ -529,9 +504,9 @@ test('capture button: every end of capture comes with its cause, and an open arc
   assert.equal(stopped({ errors: ['Contrôleur arrêté.'] }).label, 'Capture arrêtée · Contrôleur arrêté.');
   assert.equal(sessions.describeCapture({ active: false, exitCode: 1, report: {} }, {}).label, 'Capture interrompue · tu peux réessayer.');
   assert.equal(sessions.describeCapture({ active: false, exitCode: null, report: {} }, {}).label, 'Capture arrêtée · contexte conservé');
-  // Nothing lost or masked in silence: blocks dropped with their cause, frames cut or held back under a card.
-  assert.equal(stopped({ stopReason: 'stopped', dropped: 3, dropReasons: { foreignApp: 2, overlayVisible: 1 }, framesCropped: 4, framesWithheld: 1 }).label,
-    'Capture arrêtée · contexte conservé · 3 passages non envoyés (autre application à l’écran 2, alerte à l’écran 1) · 4 images recadrées, 1 retenue sous une alerte');
+  // Dropped blocks keep their cause alongside their total.
+  assert.equal(stopped({ stopReason: 'stopped', dropped: 2, dropReasons: { foreignApp: 2 } }).label,
+    'Capture arrêtée · contexte conservé · 2 passages non envoyés (autre application à l’écran 2)');
   assert.equal(stopped({ stopReason: 'stopped', dropped: 1, dropReasons: { inconnu: 1 } }).label, 'Capture arrêtée · contexte conservé · 1 passage non envoyé (inconnu 1)');
   assert.equal(sessions.describeCapture({ active: true, report: { connection: 'connected', sent: 1 } }, {}).label, 'Capture active · 1 passage envoyé');
   // Every cause the capture counts has its words: none reaches the screen as an identifier.

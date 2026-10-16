@@ -1,9 +1,7 @@
 // Pure view model of the surveillance overlay: the bottom-left card and the discreet activity pill.
-// Two hosts load it. With the panel open, the page runs the queue itself (OverlayQueue). With the panel
-// closed, the native supervisor owns the queue and the ambient page only validates what it was launched
-// with (parseAmbientParams) and draws it. Nothing here reaches the network, a storage or a clock of its
-// own: time is injected. The overlay is reserved to sourced web results (contract F3): a video signal, an
-// unsourced lot or an unknown kind is refused here, whatever the caller does.
+// The open panel runs the queue (OverlayQueue). Nothing here reaches the network, storage or a clock
+// of its own: time is injected. Only sourced web results enter the queue; video signals, unsourced
+// lots and unknown kinds are refused, whatever the caller does.
 // Classic script on webOS (globals below); exposed through CommonJS for tests.
 var TVLensOverlay = (function () {
   "use strict";
@@ -15,11 +13,9 @@ var TVLensOverlay = (function () {
     MAX_QUEUE = 4,
     STALE_MS = 180000,
     MAX_SEQ = 999999999,
-    MAX_TEXT = 600,
     MAX_HOSTS = 2,
     // Above this a number is a wall-clock reading (1973 onwards), below it a session clock.
     WALL_CLOCK_FLOOR_MS = 100000000000,
-    SCREEN = { width: 1920, height: 1080 },
     ACTIVE_STATES = ["detecting", "verifying", "late"],
     ACTIVITY_LABELS = {
       detecting: "Lecture des nouveaux passages…",
@@ -345,81 +341,6 @@ var TVLensOverlay = (function () {
     };
   };
 
-  function line(value, max) {
-    return typeof value === "string" && value.length <= max ? value.replace(/\s+/g, " ").trim() : "";
-  }
-  // Launch parameters of the ambient page, rebuilt field by field: a field that is not listed here does not
-  // exist for the page, so nothing in a launch can switch on a test path. null = paint nothing and close.
-  function parseAmbientParams(raw) {
-    var input = raw,
-      box,
-      port,
-      card = null,
-      activity = null,
-      text,
-      hosts,
-      interval;
-    if (typeof input === "string") {
-      if (!input || input.length > 16000) return null;
-      try {
-        input = JSON.parse(input);
-      } catch (_) {
-        return null;
-      }
-    }
-    if (!plain(input) || input.v !== 1) return null;
-    // Exactly what the supervisor produced and the controller compares: taken as it is, never rewritten.
-    if (typeof input.nonce !== "string" || !/^[0-9a-f]{32}$/.test(input.nonce)) return null;
-    // The page only ever talks to the local controller: a loopback origin, nothing else.
-    port = typeof input.control === "string" ? /^http:\/\/127\.0\.0\.1:([1-9]\d{0,4})$/.exec(input.control) : null;
-    if (!port || Number(port[1]) > 65535) return null;
-    if (["card", "pill", "notice"].indexOf(input.element) < 0) return null;
-    if (["relay", "passthrough"].indexOf(input.profile) < 0) return null;
-    box = input.box;
-    if (!plain(box) || !integer(box.x, 0, SCREEN.width) || !integer(box.y, 0, SCREEN.height)) return null;
-    if (!integer(box.width, 16, SCREEN.width) || !integer(box.height, 16, SCREEN.height)) return null;
-    if (box.x + box.width > SCREEN.width || box.y + box.height > SCREEN.height) return null;
-    if (plain(input.activity)) {
-      text = line(input.activity.label, 160);
-      if (text) activity = { label: text, waiting: integer(input.activity.waiting, 0, 999) ? input.activity.waiting : 0, late: input.activity.late === true };
-    }
-    if (input.element === "pill") {
-      if (!activity) return null;
-    } else {
-      if (!plain(input.card) || typeof input.card.text !== "string" || input.card.text.length > MAX_TEXT) return null;
-      text = tidy(input.card.text);
-      if (!text) return null;
-      // A notice is a local message; a card is a sourced verification. A signal is neither, and is refused.
-      if (input.element === "notice" ? input.card.kind !== undefined && input.card.kind !== "notice" : input.card.kind !== "verification") return null;
-      hosts = input.element === "notice" ? [] : sourceHosts(input.card.sources).slice(0, 3);
-      if (input.element === "card" && !hosts.length) return null;
-      interval = range(input.card.interval) ? { startMs: input.card.interval.startMs, endMs: input.card.interval.endMs } : null;
-      card = {
-        id: line(input.card.id, 80),
-        kind: input.element === "notice" ? "notice" : "verification",
-        label: line(input.card.label, 60),
-        text: text,
-        interval: interval,
-        sources: hosts.map(function (host) {
-          return { host: host };
-        }),
-        claimCount: integer(input.card.claimCount, 0, 99) ? input.card.claimCount : 0,
-        more: integer(input.card.more, 0, 99) ? input.card.more : 0,
-      };
-    }
-    return {
-      v: 1,
-      nonce: input.nonce,
-      control: input.control,
-      element: input.element,
-      profile: input.profile,
-      box: { x: box.x, y: box.y, width: box.width, height: box.height },
-      displayMs: displayMs(input.displayMs),
-      card: card,
-      activity: activity,
-    };
-  }
-
   function clear(node) {
     while (node.firstChild) node.removeChild(node.firstChild);
   }
@@ -483,7 +404,6 @@ var TVLensOverlay = (function () {
     describeCard: describeCard,
     describeActivity: describeActivity,
     describePill: describePill,
-    parseAmbientParams: parseAmbientParams,
     renderCard: renderCard,
     renderActivity: renderActivity,
     DISPLAY_CHOICES: DISPLAY_CHOICES,

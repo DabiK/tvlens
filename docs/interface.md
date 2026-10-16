@@ -79,9 +79,18 @@ Le code du 13 octobre ajoute au panneau, sans qu’aucun de ces écrans n’ait 
 
 - **Sessions**, depuis la frise : ouvrir en lecture seule, reprendre la capture, supprimer, nouvelle session, état du stockage. Lancer la capture sur une archive ouverte demande de choisir entre « Reprendre ici » et « Nouvelle session ».
 - **Surveillance** : activer, arrêter, historique, détail et sources en texte ; durée des alertes de 8, 14 ou 20 secondes.
-- **Alertes en bas à gauche**, panneau ouvert : la carte d’un résultat sourcé, hors du rectangle de la vidéo. Panneau fermé, l’affichage dépend du [mode ambiant](lg-ambient.md), **désactivé par défaut**.
+- **Alertes en bas à gauche**, panneau ouvert : la carte d’un résultat sourcé, hors du rectangle de la vidéo.
+  L’affichage panneau fermé décrit dans la livraison du 13 octobre est désormais retiré du dépôt (voir ci-dessous).
 - **Question de cinq minutes** : écoulé sur plafond calculé à l’heure du serveur, bouton fixe « Annuler la question en cours » dans le parcours des flèches.
 - **Sondage allégé** : vues légères de l’état et réponses `304` quand rien n’a changé.
+
+**État du dépôt au 16 octobre 2026.** L’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md) retire l’affichage ambient panneau fermé :
+page et outils, superviseur et relais, gate de capture, puis intégrations de page et documents.
+La surveillance serveur et les cartes du panneau ouvert restent utilisables, avec activité, compteur
+local des cartes vues, alertes et durée enregistrées sur cette TV. Le panneau ne lit plus d’état fermé
+et ne synchronise plus ses choix avec le contrôleur. Les signalements restent dans l’historique.
+Ces changements sont exercés dans le banc de page appairée ; ils n’établissent aucun état installé
+ni rendu physique de la TV. Voir [le retrait et ses preuves datées](lg-ambient.md).
 
 Les marques-pages durables, le résumé progressif et la recherche dédiée du Mac ne sont pas portés dans le panneau TV.
 

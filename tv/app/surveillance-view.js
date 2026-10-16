@@ -398,96 +398,6 @@
     };
   }
 
-  var AMBIENT_PAUSED = {
-    panel: "panneau ouvert",
-    "not-fullscreen": "vidéo hors plein écran",
-    "foreign-app": "autre application au premier plan",
-    "media-transition": "publicité ou changement de vidéo",
-    "recent-key": "télécommande utilisée à l’instant",
-    "key-held": "touche tenue",
-    "server-unreachable": "serveur inaccessible",
-  };
-  var AMBIENT_DISABLED = {
-    "app-missing": "application d’alerte non installée sur la TV",
-    "launch-unconfirmed": "lancement de l’alerte non confirmé",
-    "no-relay": "relais de télécommande absent",
-    "panel-outdated": "lanceur du panneau à mettre à jour",
-    "relay-failed": "relais de télécommande en échec",
-    "key-lost-at-launch": "une touche a été perdue au lancement",
-    "relay-lossy": "le relais a perdu des touches",
-    "stuck-window": "fenêtre d’alerte restée ouverte",
-    "server-unsupported": "serveur à mettre à jour",
-    "capture-not-gated": "capture TV à mettre à jour",
-  };
-  /**
-   * Ambient display (card shown with the panel closed), read on the local controller with GET /ambient.
-   * @param {{value?:object,status?:number,error?:boolean}|null} reading null while the first read is pending
-   */
-  function describeAmbient(reading) {
-    var view = { supported: false, line: "", details: [], notShown: 0, settings: null };
-    if (!reading) {
-      view.line = "Affichage panneau fermé : lecture de l’état…";
-      return view;
-    }
-    var value = reading.value;
-    if (!value || value.supported !== true) {
-      view.line =
-        reading.status === 404 || (value && value.supported !== true)
-          ? "Alertes panneau fermé : contrôleur TV à mettre à jour."
-          : "Alertes panneau fermé : contrôleur TV inaccessible.";
-      return view;
-    }
-    view.supported = true;
-    var state = value.state || {},
-      settings = value.settings || {},
-      counts = state.counts || {},
-      capture = state.capture || {},
-      reason = state.reason || null;
-    view.settings = settings;
-    if (reason === "profile-off" || state.focus === "off")
-      view.line =
-        "Affichage panneau fermé non activé sur cette TV : les résultats s’affichent panneau ouvert et restent dans l’historique.";
-    else if (reason === "alerts-off" || settings.alerts === false)
-      view.line =
-        "Alertes à l’écran coupées : la surveillance continue, les résultats restent dans l’historique.";
-    else if (state.status === "disabled")
-      view.line =
-        "Affichage panneau fermé désactivé : " +
-        (AMBIENT_DISABLED[reason] || state.message || reason || "cause inconnue") +
-        ".";
-    else if (state.status === "paused")
-      view.line =
-        "Affichage panneau fermé en pause : " +
-        (AMBIENT_PAUSED[reason] || state.message || reason || "cause inconnue") +
-        ".";
-    else if (!value.active || state.status === "stopped")
-      view.line = "Affichage panneau fermé arrêté.";
-    else view.line = "Affichage panneau fermé actif.";
-    if (state.trial) view.line += " Mode d’essai.";
-    view.notShown = counts.notShown || 0;
-    var missed =
-      (counts.notShown || 0) + (counts.skippedStale || 0) + (counts.skippedOverflow || 0);
-    if (missed)
-      view.details.push(
-        plural(missed, "résultat non montré", "résultats non montrés") +
-          " panneau fermé : à lire dans l’historique.",
-      );
-    var masked = capture.overlay || {};
-    if (masked.cropped || masked.withheld)
-      view.details.push(
-        "Capture : " +
-          plural(masked.cropped || 0, "image recadrée", "images recadrées") +
-          ", " +
-          plural(masked.withheld || 0, "image retenue", "images retenues") +
-          " pendant une alerte.",
-      );
-    if (capture.gateStale)
-      view.details.push(
-        "Porte de capture restée fermée : les images sont recadrées par précaution.",
-      );
-    return view;
-  }
-
   /**
    * Status line of the history list. A result groups several claims: the line gives both numbers when
    * they differ, so that it never contradicts the "N affirmations" of the button that opened it.
@@ -525,7 +435,6 @@
     describeSurveillance: describeSurveillance,
     describeHistoryItem: describeHistoryItem,
     describeDetail: describeDetail,
-    describeAmbient: describeAmbient,
     describeHistoryStatus: describeHistoryStatus,
     displayChoice: displayChoice,
     nextDisplay: nextDisplay,
@@ -556,7 +465,7 @@
    * and sits outside the video rectangle of both layouts.
    * @param {{settings:Function, paused:Function, suspended:Function, video?:Function, onShown?:Function}} options
    *   video: the rectangle the picture occupies, as the local controller publishes it, or null when unknown.
-   *   onShown(card, sessionId): a card was drawn; sessionId is the session it belongs to.
+   *   onShown(card) : première apparition de cette carte dans la session, pour le compteur local.
    */
   function Overlay(options) {
     var lib = root.TVLensOverlay || {};
@@ -581,7 +490,7 @@
     this.sessionId = null;
     this.shown = null;
     this.more = 0;
-    this.declared = {};
+    this.countedSequences = {};
     this.activity = null;
     this.activityKey = "";
     this.covered = false;
@@ -621,7 +530,7 @@
     if (!this.available) return;
     if (sessionId !== this.sessionId) {
       this.sessionId = sessionId;
-      this.declared = {};
+      this.countedSequences = {};
     }
     this.queue.ingest({
       sessionId: sessionId,
@@ -658,10 +567,10 @@
       this.shown = view ? card : null;
       if (view) {
         this.cardNode.dataset.id = card.id;
-        if (!this.declared[card.seq]) {
-          this.declared[card.seq] = true;
-          // The card belongs to the session the queue reads: the declaration that follows names it.
-          if (this.options.onShown) this.options.onShown(card, this.queue.sessionId);
+        if (!this.countedSequences[card.seq]) {
+          this.countedSequences[card.seq] = true;
+          // Une carte réaffichée après une interruption ne doit pas incrémenter le compteur local.
+          if (this.options.onShown) this.options.onShown(card);
         }
       } else delete this.cardNode.dataset.id;
     }
@@ -694,17 +603,14 @@
     this.nodes = {};
     // One counter per kind of request: a late answer of a closed view, an older page or a detail the
     // viewer already left is dropped.
-    this.epoch = 0;
     this.listRun = 0;
     this.detailRun = 0;
     this.detail = null;
-    this.ambient = null;
     this.example = -1;
     this.busy = false;
     this.keyboardVisible = false;
     this.listKey = "";
     this.stale = false;
-    this.seconds = 0;
     var self = this;
     el("surv-dictate").onclick = function () {
       el("surv-instruction").focus();
@@ -751,11 +657,9 @@
   View.prototype.open = function () {
     this.setLevel("commands");
     this.render();
-    this.readAmbient();
     this.focusCommands();
   };
   View.prototype.close = function () {
-    this.epoch++;
     this.listRun++;
     this.detailRun++;
     this.level = null;
@@ -816,10 +720,6 @@
         ])
       : "";
   };
-  // Once per second while the view is open: the ambient state is re-read now and then, never written.
-  View.prototype.second = function () {
-    if (this.level === "commands" && ++this.seconds % 5 === 0) this.readAmbient();
-  };
   View.prototype.render = function () {
     var focused = document.activeElement,
       inside = el("surveillance-view").contains(focused),
@@ -827,7 +727,6 @@
       session = state && state.session,
       model = describeSurveillance(state && state.surveillance, { session: session }),
       settings = this.options.settings(),
-      ambient = describeAmbient(this.ambient),
       set = function (id, value) {
         if (el(id).textContent !== value) el(id).textContent = value;
       },
@@ -841,19 +740,12 @@
     // Same colour for a lateness and for a registry that is not saved: both are to be read.
     if (el("surv-counts").dataset.late !== String(model.late || !!model.notice))
       el("surv-counts").dataset.late = String(model.late || !!model.notice);
-    set(
-      "surv-ambient",
-      [ambient.line]
-        .concat(ambient.details)
-        .concat(
-          !this.options.overlayAvailable()
-            ? ["Alertes panneau ouvert indisponibles dans ce paquet."]
-            : this.options.overlayCovered()
-              ? ["Alertes panneau ouvert masquées : la vidéo occupe leur emplacement dans cette disposition."]
-              : [],
-        )
-        .join(" "),
-    );
+    var overlayNotice = "";
+    if (!this.options.overlayAvailable())
+      overlayNotice = "Alertes panneau ouvert indisponibles dans ce paquet.";
+    else if (this.options.overlayCovered())
+      overlayNotice = "Alertes panneau ouvert masquées : la vidéo occupe leur emplacement dans cette disposition.";
+    set("surv-overlay", overlayNotice);
     set("surv-toggle", this.busy ? "Un instant…" : model.toggleLabel);
     // Busy is not "disabled": a disabled button would drop the focus the viewer left on it.
     able("surv-toggle", !(model.canStart || model.canStop));
@@ -876,8 +768,7 @@
   View.prototype.say = function (message) {
     el("surv-message").textContent = message || "";
   };
-  // Viewer action, and the only place that starts or stops anything: the server first, then the
-  // closed-panel display of this TV. A controller that does not know /ambient changes nothing here.
+  // Only an explicit viewer action starts or stops the server surveillance.
   View.prototype.toggle = async function () {
     var model = this.model,
       sessionId = this.sessionId(),
@@ -895,16 +786,6 @@
         ? await this.options.client.stopSurveillance(sessionId)
         : await this.options.client.startSurveillance(sessionId, instruction);
       this.options.onSurveillance(answer && answer.surveillance);
-      this.ambient = await this.options
-        .ambient(stopping ? "/ambient/stop" : "/ambient/start", {})
-        .then(
-          function (value) {
-            return { value: value };
-          },
-          function (error) {
-            return { status: error.status, error: true };
-          },
-        );
     } catch (error) {
       this.say(error.message);
     } finally {
@@ -913,23 +794,6 @@
       if (document.activeElement === document.body || !usable(document.activeElement))
         self.focusCommands();
     }
-  };
-  // Read-only: stating the ambient mode never starts or stops it.
-  View.prototype.readAmbient = async function () {
-    var epoch = this.epoch,
-      reading = await this.options.ambient("/ambient").then(
-        function (value) {
-          return { value: value };
-        },
-        function (error) {
-          return { status: error.status, error: true };
-        },
-      );
-    if (epoch !== this.epoch) return;
-    this.ambient = reading;
-    var view = describeAmbient(reading);
-    if (view.settings) this.options.adoptSettings(view.settings);
-    if (this.isOpen()) this.render();
   };
   View.prototype.openList = function () {
     this.setLevel("list");

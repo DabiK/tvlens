@@ -173,8 +173,8 @@ async function copyPanel(workdir) {
   return pathToFileURL(path.join(copy, "index.html")).href;
 }
 
-// The local controller of the TV, reduced to what the panel asks of it: the layout it confirms, a capture
-// that is not running. Anything else (the ambient display) is answered as an older controller would.
+// Le contrôleur local confirme la disposition et annonce une capture arrêtée.
+// Les routes /ambient retirées gardent une réponse 404 ; le panneau ne les appelle plus.
 async function interceptController(page) {
   const controller = { mode: "chat", requestId: null, calls: [] };
   await page.route("http://127.0.0.1:8788/**", (route) => {

@@ -147,7 +147,16 @@ Déployer une révision Git identifiée après validation. Avant de mettre à jo
 
 Les changements du serveur et ceux de `tv/app` se déploient séparément. Mettre à jour le panneau en préservant `connection.js`, puis le fermer et le rouvrir. L’installation Mac packagée doit également être reconstruite séparément.
 
-Pour le code du 13 octobre 2026, deux précautions de plus. Les sessions créées avant la mise à jour apparaissent ensuite « texte seul » : leurs médias n’avaient pas été gardés, et rien n’est migré ni effacé. Et le mode ambiant de la TV (alertes panneau fermé) se déploie à part et reste désactivé tant que le protocole de [LG : alertes panneau fermé](lg-ambient.md) n’est pas passé.
+Pour le code du 13 octobre 2026, les sessions créées avant la mise à jour apparaissent ensuite
+« texte seul » : leurs médias n’avaient pas été gardés, et rien n’est migré ni effacé.
+
+L’affichage ambient panneau fermé est retiré de l’arbre actuel selon l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md).
+Les étapes ont retiré page et outils, superviseur et relais, gate de capture, puis intégrations de page
+et documents ; aucun paquet ni protocole ambient n’est à déployer. La surveillance serveur et les
+cartes du panneau ouvert restent disponibles, avec activité et réglages locaux d’alertes et de durée.
+`GET /v1/surveillance/overlay`, sa projection, ses champs et ses ETags restent compatibles ; leur retrait
+est différé. Les installations et essais du 13 octobre restent des faits datés dans
+[LG : retrait et historique](lg-ambient.md). Ce retrait du dépôt n’annonce aucune mise à jour de la TV ou du VPS.
 
 ## Appairage et validation
 

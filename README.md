@@ -86,7 +86,15 @@ Les miniatures apparaissent dès réception ; titres et résumés arrivent avec 
 
 Le companion s’ouvre avec **Rakuten** sur la télécommande configurée. La capture démarre manuellement ; **Arrêter / Reprendre** conserve le contexte. Retour ferme le panneau. Le bouton micro physique direct reste une fonction LG : la dictée TVLens passe par le clavier.
 
-> **Version installée sur la TV de test.** Les changements du 13 octobre 2026 (questions de cinq minutes, sessions conservées, surveillance, alertes en bas à gauche) ont été installés sur la TV de test et sur le VPS le 13 octobre 2026 au matin, par la supervision et avec l’autorisation de Dabi, puis essayés par quelques parcours réels courts : cela ne vaut pas validation. L’affichage d’alertes panneau fermé est désactivé par défaut tant qu’il n’est pas validé sur la TV. Voir [le livrable de la nuit](docs/night-features-delivery.md) et [les alertes panneau fermé](docs/lg-ambient.md).
+> **Version installée sur la TV de test.** Les changements du 13 octobre 2026 (questions de cinq minutes, sessions conservées, surveillance, alertes en bas à gauche) ont été installés sur la TV de test et sur le VPS le 13 octobre 2026 au matin, par la supervision et avec l’autorisation de Dabi, puis essayés par quelques parcours réels courts : cela ne vaut pas validation. À cette date, l’affichage d’alertes panneau fermé était désactivé par défaut, sans validation native.
+> Voir [le livrable de la nuit](docs/night-features-delivery.md) et [l’historique des alertes panneau fermé](docs/lg-ambient.md).
+
+**État du dépôt au 16 octobre 2026.** L’affichage ambient panneau fermé est retiré selon
+l’[ADR 0017](docs/adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md) : page et outils, superviseur
+et relais, gate de capture, puis intégrations de page et documents. Le panneau ouvert conserve
+surveillance, activité et cartes sourcées ; alertes et durée (8, 14 ou 20 secondes) restent des choix
+locaux. L’API overlay serveur et ses ETags sont conservés, avec retrait différé. Ce travail ne décrit
+aucun déploiement ni désinstallation sur la TV ou le VPS.
 
 → [Navigation et frise](docs/lg-timeline.md) · [Capture et reprise](docs/lg-capture-control.md)
 
@@ -196,7 +204,7 @@ node scripts/smoke-tv-timeline.mjs
 
 L’usage et les interfaces existent. L’objectif du challenge **ASUS Ascent GX10** est de remplacer les adaptateurs cloud par des modèles locaux, puis de mesurer une hypothèse précise : **peut-on suivre un visionnage continu tout en répondant aux questions, sans envoyer les images et les paroles à un fournisseur d’inférence ?**
 
-À explorer ensuite : caméra + micro pour une TV non modifiée, analyse des actions rapides, embeddings multimodaux, validation sur la TV de la surveillance et des alertes panneau fermé, et expérimentation d’un moteur embarqué webOS. Ces pistes restent des travaux futurs.
+À explorer ensuite : caméra + micro pour une TV non modifiée, analyse des actions rapides, embeddings multimodaux, validation sur la TV de la surveillance et des cartes du panneau ouvert, et expérimentation d’un moteur embarqué webOS. Ces pistes restent des travaux futurs.
 
 ---
 

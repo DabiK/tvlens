@@ -92,12 +92,6 @@ function makeController(options = {}) {
     calls: [], capture: { active: false, stopping: false, exitCode: null, report: {} },
     // video: rectangle of the picture per layout, as a recent panel launcher publishes it (absent: older launcher).
     panel: { active: true, mode: "chat", requestId: null, pending: null, hold: false, video: options.video || null },
-    // null: an older controller, which answers 404 to every /ambient route.
-    ambient: options.ambient === undefined ? {
-      supported: true, active: false, stopping: false, exitCode: null, settings: { alerts: true, displayMs: 14000, activity: true, position: "raised" },
-      state: { v: 2, status: "disabled", reason: "profile-off", message: "Affichage panneau fermé non activé sur cette TV : validation native requise.", focus: "off", mode: "off", trial: false,
-        counts: { shown: 0, notShown: 3, skippedStale: 0, skippedOverflow: 0 }, capture: { active: false, gated: true, stopReason: null, overlay: { cropped: 0, withheld: 0 }, gateStale: false } },
-    } : options.ambient,
   };
 }
 
@@ -120,16 +114,7 @@ async function open(browser, options = {}) {
     const request = route.request(), url = new URL(request.url()), method = request.method(), name = url.pathname;
     controller.calls.push(method + " " + name);
     const send = (status, json) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(json) });
-    if (name.startsWith("/ambient")) {
-      if (!controller.ambient) return send(404, {});
-      if (name === "/ambient/start") Object.assign(controller.ambient, { active: true });
-      if (name === "/ambient/stop") Object.assign(controller.ambient, { active: false });
-      const display = /^\/ambient\/display\/(8|14|20)$/.exec(name), alerts = /^\/ambient\/alerts\/(on|off)$/.exec(name);
-      if (display) controller.ambient.settings.displayMs = Number(display[1]) * 1000;
-      if (alerts) controller.ambient.settings.alerts = alerts[1] === "on";
-      if (name.startsWith("/ambient/seen/")) return send(200, {});
-      return send(200, controller.ambient);
-    }
+    if (name.startsWith("/ambient")) return send(404, {});
     if (name.startsWith("/panel/")) {
       const request = { id: "request-" + controller.calls.length, mode: name.split("/").pop() };
       if (controller.panel.hold) controller.panel.pending = request;
@@ -243,7 +228,7 @@ async function open(browser, options = {}) {
   return tools;
 }
 const intersects = (a, b) => a.left < b.x + b.width && a.right > b.x && a.top < b.y + b.height && a.bottom > b.y;
-const STARTERS = /POST \/(ambient\/(start|stop)|capture\/start)$/;
+const STARTERS = /POST \/capture\/start$/;
 const done = [];
 
 const browser = await chromium.launch({ executablePath: process.env.TVLENS_CHROME || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
@@ -269,8 +254,9 @@ try {
     assert.equal(after.renders, before.renders, "a 304 redraws nothing");
     assert.deepEqual(await page.evaluate(() => window.__mutations), [], "no DOM mutation while the server answers 304");
     assert.equal(await page.locator("#surveillance-overlay .tvl-card").count(), 0, "a result published before the panel opened is not replayed");
-    // Nothing starts by itself: a surveillance already enabled does not start the ambient display, and no capture.
-    assert.deepEqual(t.controllerCalls(STARTERS), [], "no /ambient/start, /ambient/stop or /capture/start without a viewer action");
+    // A surveillance already enabled starts no local capture.
+    assert.deepEqual(t.controllerCalls(STARTERS), [], "no capture start without a viewer action");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
     assert.deepEqual(server.posts, [], "no POST to the server without a viewer action");
     // A published change (storage running low) is fetched with a body and drawn.
     server.publish(() => { server.storage = { ...server.storage, state: "low", freeBytes: 1.6 * 1024 ** 3 }; server.session.capturedThroughMs = 778000; });
@@ -355,7 +341,7 @@ try {
     // A click at the card's coordinates falls through: the overlay is not a target.
     await page.mouse.click(box.left + box.width / 2, box.top + box.height / 2);
     assert.equal(await t.focused(), focusBefore, "clicking the card moves no focus");
-    assert.deepEqual(t.controllerCalls(/\/ambient\/seen\//), ["POST /ambient/seen/" + SESSION + "/overlay/4"], "the card shown is declared to the closed-panel display, with the session it belongs to");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), [], "showing a card sends no local declaration");
     assert.equal(await t.text("#show-surveillance"), "Surveillance (2)", "signal and undetermined claim wait in the history, counted on the header button");
     await t.shot("overlay-chat", "chat");
     // Layout switch while the card is on screen: hidden until the new layout is confirmed, then re-anchored.
@@ -374,7 +360,7 @@ try {
     assert.ok(box.right <= 320 && box.bottom <= 720 && box.left >= 0 && box.top >= 0, "timeline layout: left of the picture, above the band " + JSON.stringify(box));
     assert.equal(intersects(box, VIDEO.timeline), false, "timeline layout: no pixel of the card over the video rectangle");
     assert.equal(await t.text("#overlay-card .tvl-card-text"), lotText);
-    assert.equal(t.controllerCalls(/\/ambient\/seen\//).length, 1, "the same card is declared once");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), [], "showing the card again sends no local declaration");
     await t.shot("overlay-frise", "timeline");
     // A dialog owns the screen: the card is withdrawn meanwhile and comes back whole afterwards.
     await page.locator("#timeline-end").focus();
@@ -414,7 +400,8 @@ try {
     assert.equal(await page.locator("#overlay-activity .tvl-pill").count(), 0, "no activity pill there either");
     await page.locator("#show-surveillance").focus();
     await t.press("Enter");
-    assert.match(await t.text("#surv-ambient"), /Alertes panneau ouvert masquées : la vidéo occupe leur emplacement dans cette disposition\./, "and the panel says why");
+    assert.match(await t.text("#surv-overlay"),
+      /Alertes panneau ouvert masquées : la vidéo occupe leur emplacement dans cette disposition\./, "and the panel says why");
     await t.back();
     await page.locator("#show-timeline").focus();
     await t.press("Enter");
@@ -473,14 +460,16 @@ try {
     assert.doesNotMatch(await page.evaluate(() => document.body.innerText), /\b0 (?:en attente|affirmation)|en retard ·/);
     await t.back();
     assert.equal(await t.text("#show-surveillance"), "Surveillance", "seven restored results are not counted as new on the header button");
-    // The eighth is published now: it is news, shown, and declared with its session.
+    // The eighth is published now: it is news and shown in this panel.
     server.publish(() => { server.surveillance = { ...surveillanceOn(8, [...restored, card(8, "Résultat publié après la restauration.", SOURCES, server.nowMs)]), ...failing }; });
     await t.until(() => !!document.querySelector("#overlay-card .tvl-card"), "nouveau résultat affiché");
     assert.equal(await t.text("#overlay-card .tvl-card-text"), "Résultat publié après la restauration.");
-    assert.deepEqual(t.controllerCalls(/\/ambient\/seen\//), ["POST /ambient/seen/" + SESSION + "/overlay/8"]);
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
     assert.deepEqual(t.errors, []);
     await page.close();
-    done.push("registre restauré : état dit avec ses mots (restauration, lecture en échec et passages non lus, vérification seule en retard sans « 0 en attente »), registre non enregistré signalé, historique restauré ni affiché ni compté, résultat suivant affiché et déclaré avec sa session");
+    done.push("registre restauré : état dit avec ses mots (restauration, lecture en échec et passages non lus, " +
+      "vérification seule en retard sans « 0 en attente »), registre non enregistré signalé, " +
+      "historique restauré ni affiché ni compté, résultat suivant affiché sans déclaration au contrôleur");
   }
 
   // ---- 4. Surveillance view with the remote: commands, history, detail, Back by levels -----------
@@ -515,9 +504,7 @@ try {
     assert.equal(await page.locator("#surveillance-view").isVisible(), true);
     assert.equal(await page.locator("#chat-view").isVisible(), false);
     assert.equal(await t.text("#surv-status"), "Surveillance inactive.");
-    await t.until(() => /non activé/.test(document.querySelector("#surv-ambient").textContent), "état ambiant lu");
-    assert.match(await t.text("#surv-ambient"), /^Affichage panneau fermé non activé sur cette TV : les résultats s’affichent panneau ouvert et restent dans l’historique\. 3 résultats non montrés panneau fermé : à lire dans l’historique\./);
-    assert.deepEqual(t.controllerCalls(/ambient/), ["GET /ambient"], "the ambient state is read, never started, when the view opens");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), [], "opening surveillance reads no removed local state");
     // Activation refused without an instruction, then with an example chosen with the remote.
     assert.equal(await t.focused(), "surv-toggle");
     await t.press("Enter");
@@ -538,7 +525,7 @@ try {
     await t.press("Enter");
     await t.until(() => document.querySelector("#surv-toggle").textContent === "Arrêter la surveillance", "surveillance activée");
     assert.deepEqual(t.serverPosts("/v1/surveillance/start").map((p) => p.body), [{ sessionId: SESSION, instruction: "Vérifie les chiffres annoncés." }]);
-    assert.deepEqual(t.controllerCalls(/POST \/ambient\/(start|stop)/), ["POST /ambient/start"], "the closed-panel display is started by the viewer's activation, after the server");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
     assert.match(await t.text("#surv-status"), /^Surveillance active\. Depuis 12:5\d\.$/);
     assert.equal(await t.focused(), "surv-toggle", "the activation keeps the focus where it was");
     // Display choices, local to the TV.
@@ -549,24 +536,20 @@ try {
     assert.equal(await t.text("#surv-duration"), "Durée des alertes · 20 s");
     await t.press("Enter");
     assert.equal(await t.text("#surv-duration"), "Durée des alertes · 8 s");
-    assert.deepEqual(t.controllerCalls(/display/), ["POST /ambient/display/20", "POST /ambient/display/8"]);
+    assert.deepEqual(t.controllerCalls(/display/), [], "duration stays local");
     assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem("tvlens.overlay"))), { displayMs: 8000, alerts: true });
     await t.press("ArrowRight");
     assert.equal(await t.focused(), "surv-alerts");
     await t.press("Enter");
     assert.equal(await t.text("#surv-alerts"), "Alertes à l’écran · non");
-    assert.deepEqual(t.controllerCalls(/alerts/), ["POST /ambient/alerts/off"]);
+    assert.deepEqual(t.controllerCalls(/alerts/), [], "alerts stay local");
     // With alerts off, a sourced result is not drawn; it stays for the history.
     server.publish(() => { server.surveillance = { ...server.surveillance, overlay: { seq: 1, cards: [card(1, "Résultat arrivé alertes coupées.", SOURCES, server.nowMs)] }, counts: { ...server.surveillance.counts, sourced: 1 } }; });
     await t.advance(2500);
     assert.equal(await page.locator("#overlay-card .tvl-card").count(), 0, "alerts off: nothing bottom-left");
     assert.equal(await page.locator("#surveillance-overlay").isVisible(), false);
-    // The ambient state is read again now and then (never written): the profile left off on this TV stays
-    // told as such, distinct from the alerts the viewer switched off (the button says that part).
-    const reads = t.controllerCalls(/^GET \/ambient$/).length;
     await t.advance(6000);
-    assert.ok(t.controllerCalls(/^GET \/ambient$/).length > reads, "the ambient state is re-read while the view is open");
-    assert.match(await t.text("#surv-ambient"), /^Affichage panneau fermé non activé sur cette TV/);
+    assert.deepEqual(t.controllerCalls(/\/ambient/), [], "time passing reads no removed local state");
     await t.press("Enter");
     assert.equal(await t.text("#surv-alerts"), "Alertes à l’écran · oui");
     // Alerts back on: the result, still fresh, is shown for the duration chosen above (8 s), then leaves.
@@ -671,28 +654,27 @@ try {
     assert.equal(await page.evaluate(() => window.__closed), closedBefore, "no level closed the panel");
     await t.back();
     assert.equal(await page.evaluate(() => window.__closed), closedBefore + 1, "Back 4: the panel closes");
-    // Stop, by the viewer: the server, then the closed-panel display.
+    // The viewer explicitly stops the server surveillance.
     await page.locator("#show-surveillance").focus();
     await t.press("Enter");
     assert.equal(await t.focused(), "surv-toggle");
     await t.press("Enter");
     await t.until(() => document.querySelector("#surv-toggle").textContent === "Activer la surveillance", "surveillance arrêtée");
     assert.equal(t.serverPosts("/v1/surveillance/stop").length, 1);
-    assert.deepEqual(t.controllerCalls(/POST \/ambient\/(start|stop)/), ["POST /ambient/start", "POST /ambient/stop"]);
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
     assert.equal(await page.evaluate(() => window.__media), 0);
     assert.deepEqual(t.errors, []);
     await page.close();
     done.push("vue Surveillance aux flèches : activer avec exemple, durée 8/14/20, alertes, historique paginé, détails (vérification, signalement, indéterminée), Questionner ce moment, Retour par niveaux, arrêter");
   }
 
-  // ---- 5. Older controller: 404 on /ambient is said, and changes nothing else -------------------
+  // ---- 5. A controller without the removed API still allows server surveillance ----------------
   {
-    const t = await open(browser, { ambient: null });
+    const t = await open(browser);
     const { page } = t;
     await page.locator("#show-surveillance").focus();
     await t.press("Enter");
-    await t.until(() => /contrôleur TV à mettre à jour/.test(document.querySelector("#surv-ambient").textContent), "contrôleur ancien signalé");
-    assert.match(await t.text("#surv-ambient"), /^Alertes panneau fermé : contrôleur TV à mettre à jour\./);
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
     await t.press("ArrowUp");
     await t.press("ArrowRight");
     await t.press("Enter");
@@ -702,7 +684,8 @@ try {
     assert.equal(await t.text("#surv-message"), "", "the server-side surveillance starts all the same");
     assert.deepEqual(t.errors, []);
     await page.close();
-    done.push("contrôleur ancien (404 sur /ambient) dit en clair, surveillance activable quand même");
+    assert.deepEqual(t.controllerCalls(/\/ambient/), []);
+    done.push("surveillance activable sans API locale ambient");
   }
 
   // ---- 6. Long question: immediate echo, poll at once, elapsed / ceiling, cancel with the arrows ---
@@ -910,10 +893,13 @@ try {
     assert.match(await t.text("#capture-state"), /arrêt automatique après 6 h ou après 10 min sans lecture/, "the bounds of the capture are told while it runs");
     await t.until(() => document.querySelector("#archive-banner").hidden, "bandeau d’archive retiré");
     // End of capture and its cause; nothing restarts by itself.
-    Object.assign(controller.capture, { active: false, exitCode: 0, report: { stopped: true, sent: 412, stopReason: "duration", limits: { seconds: 21600, idleSeconds: 600 }, framesCropped: 3, framesWithheld: 1 } });
+    Object.assign(controller.capture, { active: false, exitCode: 0,
+      report: { stopped: true, sent: 412, stopReason: "duration", limits: { seconds: 21600, idleSeconds: 600 } },
+    });
     await t.until(() => /limite/.test(document.querySelector("#capture-state").textContent), "fin de capture par durée");
-    assert.equal(await t.text("#capture-state"), "Capture terminée : limite de 6 h atteinte. Elle ne reprend pas seule : relance-la pour continuer. · 3 images recadrées, 1 retenue sous une alerte");
-    Object.assign(controller.capture.report, { stopReason: "idle", framesCropped: 0, framesWithheld: 0 });
+    assert.equal(await t.text("#capture-state"),
+      "Capture terminée : limite de 6 h atteinte. Elle ne reprend pas seule : relance-la pour continuer.");
+    Object.assign(controller.capture.report, { stopReason: "idle" });
     await t.until(() => /sans lecture/.test(document.querySelector("#capture-state").textContent), "fin de capture par inactivité");
     assert.equal(await t.text("#capture-state"), "Capture arrêtée : 10 min sans lecture YouTube. Elle ne reprend pas seule.");
     await t.advance(5000);
@@ -980,7 +966,12 @@ try {
       page.on("pageerror", (error) => errors.push(error.message));
       page.on("response", (response) => { const request = response.request(); if (request.url().startsWith(live.url + "/v1/state")) seen.push({ method: request.method(), url: request.url().slice(live.url.length), tag: request.headers()["if-none-match"] || null, status: response.status() }); });
       await page.addInitScript((config) => { window.TVLENS_REMOTE = config; window.close = () => {}; }, { url: live.url, token });
-      await page.route("http://127.0.0.1:8788/**", (route) => { const name = new URL(route.request().url()).pathname; return name.startsWith("/ambient") ? route.fulfill({ status: 404, contentType: "application/json", body: "{}" }) : route.fulfill({ json: { active: false, stopping: false, exitCode: null, report: {} } }); });
+      await page.route("http://127.0.0.1:8788/**", (route) => {
+        const name = new URL(route.request().url()).pathname;
+        return name.startsWith("/ambient")
+          ? route.fulfill({ status: 404, contentType: "application/json", body: "{}" })
+          : route.fulfill({ json: { active: false, stopping: false, exitCode: null, report: {} } });
+      });
       await page.goto(index);
       await page.waitForFunction(() => window.tvlensPanel && window.tvlensPanel.stats.notModified >= 3, null, { timeout: 15000 });
       const reads = seen.filter((r) => r.method === "GET");
@@ -1011,7 +1002,7 @@ try {
       await page.waitForFunction(() => document.querySelector("#surv-toggle").textContent === "Arrêter la surveillance", null, { timeout: 10000 });
       assert.equal(runtime.snapshot("chat").surveillance.enabled, true, "the real runtime runs the surveillance the remote asked for");
       assert.match(await page.locator("#surv-status").textContent(), /^Surveillance active\./);
-      assert.match(await page.locator("#surv-ambient").textContent(), /contrôleur TV à mettre à jour/);
+      assert.equal(await page.locator("#surv-overlay").textContent(), "");
       await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowDown");
       assert.equal(await page.evaluate(() => document.activeElement.id), "surv-history-open");

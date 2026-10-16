@@ -227,7 +227,6 @@
     deliveryRejected: "envoi refusé",
     stopped: "arrêt",
     leftAtStop: "restés à l’arrêt",
-    overlayVisible: "alerte à l’écran",
     storageFull: "stockage plein",
     readOnly: "session en lecture seule",
     deliveryError: "erreur d’envoi",
@@ -334,16 +333,6 @@
         plural(report.dropped, "passage non envoyé", "passages non envoyés") +
         (causes ? " (" + causes + ")" : "");
     }
-    // Frames cut or held back because a card was on screen are declared, never silent.
-    if (report.framesCropped || report.framesWithheld)
-      view.label +=
-        " · " +
-        plural(report.framesCropped || 0, "image recadrée", "images recadrées") +
-        ", " +
-        plural(report.framesWithheld || 0, "retenue", "retenues") +
-        " sous une alerte";
-    if (report.gateStale)
-      view.label += " · porte de capture restée fermée : images recadrées par précaution";
     return view;
   }
 

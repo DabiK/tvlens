@@ -1,6 +1,6 @@
 # LG : retrait des alertes panneau fermé
 
-**État du dépôt au 15 octobre 2026 : la page ambient, son paquet et ses outils dédiés sont retirés.**
+**État du dépôt au 16 octobre 2026 : le retrait de l’affichage ambient panneau fermé est achevé.**
 La décision écrite du propriétaire abandonne l’affichage panneau fermé. Les cartes sourcées,
 la file, l’activité et les vues du panneau ouvert restent disponibles, ainsi que la surveillance serveur.
 La décision complète figure dans l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md).
@@ -13,23 +13,28 @@ et `scripts/probe-tv-ambient-capture.mjs`, ne sont plus disponibles. Les ancienn
 mentionnent ci-dessous sont des traces datées, plus des instructions applicables à cet arbre.
 L’empaqueteur générique `prototypes/lg-sidebar/package.py` et `scripts/smoke-tv-overlay.mjs` restent.
 
-Le retrait se déroule en quatre étapes :
+Les quatre étapes prévues par l’ADR sont réalisées dans cet arbre :
 
 | Étape | État et périmètre |
 | --- | --- |
 | T165, page et outils | Retirés dans cet arbre, avec les huit cas JavaScript exclusivement dédiés |
-| T166, superviseur et relais | Encore présents : superviseur, routes locales `/ambient/*`, relais des touches et coordination native du panneau ; leur retrait conservera provisoirement les primitives lues par la capture |
-| T181, gate de capture | Encore présent : lecture du gate, recadrage d’occultation et métadonnées associées ; retrait après le superviseur |
-| T182, intégrations de page et documents | Encore présentes : appels locaux et réglages d’état fermé, `parseAmbientParams` et ses exports, présentation des compteurs de gate ; nettoyage après les étapes précédentes |
+| T166, superviseur et relais | Retirés : superviseur, routes locales `/ambient/*`, relais des touches et coordination native ambient |
+| T181, gate de capture | Retirés : lecture du gate, recadrage d’occultation, métadonnées et primitives résiduelles |
+| T182, intégrations de page et documents | Retirés : appels locaux, déclarations `seen` au contrôleur, réglages d’état fermé, `parseAmbientParams` et compteurs de gate |
 
-`tv/app/surveillance-overlay.js` reste partagé avec le panneau ouvert. Ses modèles, sa file et ses
+Le panneau ouvert garde ses réglages locaux `alerts` et `displayMs` (8, 14 ou 20 secondes),
+son compteur de cartes vues, son activité et le démarrage/arrêt de la surveillance serveur.
+Le banc `tests/tv-paired-page.test.cjs` charge ses vrais scripts et observe ces actions et les cartes
+sourcées sans appel `/ambient`, avec réseau, document et temps contrôlés.
+
+`tv/app/surveillance-overlay.js` reste utilisé par le panneau ouvert. Ses modèles, sa file et ses
 rendus ne disparaissent pas. `/v1/surveillance/overlay`, sa projection runtime, ses champs et ses ETags
 restent aussi : leur retrait attend un cadrage distinct, sans présumer l’absence d’autres consommateurs.
 
 Le reste de cette page conserve l’historique du 13 octobre et le protocole natif alors proposé.
 **Ce protocole est abandonné avec la capacité ; il n’a pas été exécuté.** Les simulations et tests datés
 ne deviennent pas des validations matérielles. Les mentions d’installation ci-dessous sont des faits
-rapportés à cette date, sans nouvelle vérification ni déploiement annoncé le 15 octobre.
+rapportés à cette date, sans nouvelle vérification ni déploiement annoncé par ce retrait.
 
 ---
 

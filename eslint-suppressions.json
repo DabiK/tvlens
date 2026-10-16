@@ -589,10 +589,7 @@
   },
   "tv/app/surveillance-overlay.js": {
     "complexity": {
-      "count": 5
-    },
-    "max-lines": {
-      "count": 1
+      "count": 4
     },
     "no-nested-ternary": {
       "count": 1
@@ -603,7 +600,7 @@
   },
   "tv/app/surveillance-view.js": {
     "complexity": {
-      "count": 9
+      "count": 8
     },
     "max-lines": {
       "count": 1
@@ -612,7 +609,7 @@
       "count": 2
     },
     "no-nested-ternary": {
-      "count": 10
+      "count": 9
     },
     "no-undef": {
       "count": 1

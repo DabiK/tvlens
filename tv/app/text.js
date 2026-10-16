@@ -1,6 +1,6 @@
 // Wording shared by the views of the TV panel: a position in the video and a counted noun. A classic
 // script, not a module: index.html loads it before its first consumer, and Node tests read it through
-// CommonJS. The ambient page loads none of the panel's shared scripts and keeps its own copies.
+// CommonJS.
 (function (root) {
   "use strict";
   function finite(value) {
