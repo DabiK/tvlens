@@ -1,5 +1,14 @@
 const { validSummary, MAX_TOPIC_SUMMARY } = require('../core/topic-summary.cjs');
 const { CodexAnalysisAgent } = require("./codex-analysis-agent.cjs");
+const { TVLENS_CODEX_CONNECTION_LOST } = require("./codex-session-events.cjs");
+const { TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT } = require("./codex-rpc.cjs");
+const {
+  TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+} = require("./local-vlm-agent.cjs");
+const { TVLENS_CODEX_INPUT_REFUSED } = require("./codex-session-run.cjs");
+const {
+  TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_SESSION_CLOSED,
+} = require("./codex-session-client.cjs");
 const observationSchema = {
   type: "object",
   additionalProperties: false,
@@ -14,42 +23,28 @@ const observationSchema = {
 const VISUAL_TIMEOUT_MS = 45000;
 // Set as `code` on a failed description the session may ask for once more (core/session.cjs).
 const VISION_TRANSIENT = "TVLENS_VISION_TRANSIENT";
-// A connection that gave way, by the exact message its adapter writes: Codex lost during a turn
-// (codex-session-client), a dead pipe or a handshake left unanswered (codex-rpc), a local backend out of
-// reach or answering 5xx (local-vlm-agent). Two are left out on purpose: the plain "Connexion Codex
-// interrompue." of a pending request, which a process closed by the confinement guard answers too, and a
-// turn/start left unanswered, whose turn may be running. Anything else, a failed turn and the detail its
-// provider gives included, is no reason to describe a passage again.
-const CONNECTION_LOST = new Set([
-  "Connexion Codex interrompue. Réessaie la question.",
-  "Codex déconnecté.",
-  "Codex : délai de connexion dépassé (initialize).",
-  "Codex : délai de connexion dépassé (thread/start).",
-  "Backend local injoignable.",
+// A pending request cut by the guard and an unacknowledged turn/start may still hide a running turn.
+const TRANSIENT_CODES = new Set([
+  TVLENS_CODEX_CONNECTION_LOST,
+  TVLENS_CODEX_DISCONNECTED,
+  TVLENS_LOCAL_VLM_UNREACHABLE,
 ]);
-const LOCAL_UNAVAILABLE = /^Backend local indisponible \(HTTP 5\d\d\)\.$/;
-// Never described again, whatever else is true of the call: an authentication Codex refused, a confinement
-// or an input the client refused, a request the local backend refused (HTTP 4xx), a client or a backend
-// that was closed.
-const REFUSED = new Set([
-  "Entrée média non autorisée.",
-  "Backend local : image invalide.",
-  "Session Codex fermée.",
-  "Backend local fermé.",
+function localStatus(error, first, last) {
+  return error?.code === TVLENS_LOCAL_VLM_UNAVAILABLE && Number.isInteger(error.httpStatus) &&
+    error.httpStatus >= first && error.httpStatus <= last;
+}
+const REFUSED_CODES = new Set([
+  TVLENS_CODEX_INPUT_REFUSED,
+  TVLENS_CODEX_CONFINEMENT_REFUSED,
+  TVLENS_CODEX_TOOL_REFUSED,
+  TVLENS_CODEX_SESSION_CLOSED,
+  TVLENS_LOCAL_VLM_INPUT_REFUSED,
+  TVLENS_LOCAL_VLM_CLOSED,
 ]);
-const REFUSED_PREFIXES = ["Confinement Codex non confirmé", "Outil hors du périmètre TVLens"];
-const LOCAL_REFUSED = /^Backend local indisponible \(HTTP 4\d\d\)\.$/;
 // Looked for on the failure and on what it names as its cause.
 function refused(error) {
   for (let depth = 0; depth < 4 && error && typeof error === "object"; depth++, error = error.cause) {
-    const message = typeof error.message === "string" ? error.message : "";
-    if (
-      error.authRequired === true ||
-      REFUSED.has(message) ||
-      LOCAL_REFUSED.test(message) ||
-      REFUSED_PREFIXES.some((prefix) => message.startsWith(prefix))
-    )
-      return true;
+    if (error.authRequired === true || REFUSED_CODES.has(error.code) || localStatus(error, 400, 499)) return true;
   }
   return false;
 }
@@ -57,17 +52,17 @@ function refused(error) {
 // caller and a refusal come first and always win.
 function passing(error, caller, deadline) {
   if (caller?.aborted || refused(error)) return false;
-  const message = error?.message;
   // The deadline shows as the very reason of its signal, which the client and the local agent hand back as
   // it is, or as the turn Codex confirms it interrupted with no failure of its own to report. A deadline
   // that expired beside any other failure proves nothing, and neither does a timeout that is not this one.
   if (
     deadline.aborted &&
     (error === deadline.reason ||
-      (message === "Recherche annulée." && error.turnStatus === "interrupted" && error.turnError === undefined))
+      (error?.turnStatus === "interrupted" && error.turnError === undefined))
   )
     return true;
-  return CONNECTION_LOST.has(message) || LOCAL_UNAVAILABLE.test(message);
+  return TRANSIENT_CODES.has(error?.code) || localStatus(error, 500, 599) ||
+    (error?.code === TVLENS_CODEX_REQUEST_TIMEOUT && ["initialize", "thread/start"].includes(error.method));
 }
 class CodexPerception {
   constructor({

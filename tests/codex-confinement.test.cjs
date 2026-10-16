@@ -487,7 +487,7 @@ test('no product code injects a transport or a feature answer, nor passes a weak
   assert.deepEqual(using(/\benvironmentAccess\b/), [confinement, client, verifier]);
   assert.ok(!/environmentAccess\s*:\s*(?!\s|false\b)/.test(sources[verifier]), 'the verifier only ever narrows the environment');
   // The mode has one source, the environment of the host, read once and never written by the product.
-  assert.deepEqual(using(/TVLENS_CODEX_CONFINEMENT/), [confinement, client]);
+  assert.deepEqual(using(/\bTVLENS_CODEX_CONFINEMENT\b/), [confinement, client]);
   assert.deepEqual(Object.values(sources).join('\n').match(/[\w.]*TVLENS_CODEX_CONFINEMENT\W{1,6}\w*/g).filter(use => /env/.test(use)), ['process.env.TVLENS_CODEX_CONFINEMENT || "enforce'], 'read once, as the default of the option');
   for (const file of ['deploy/runtime.env.example', 'deploy/server.env.example', 'deploy/tvlens.service'])
     assert.ok(!/^\s*(?:Environment=)?TVLENS_CODEX_(?:CONFINEMENT|ITEM_GUARD|REAL_HOME)=/m.test(await fs.readFile(path.join(root, file), 'utf8')), file + ' sets no weaker control');

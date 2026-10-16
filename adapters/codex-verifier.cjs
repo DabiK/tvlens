@@ -1,4 +1,5 @@
-const { CodexSessionClient } = require('./codex-session-client.cjs');
+const { CodexSessionClient, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_CONFINEMENT_REFUSED } = require('./codex-session-client.cjs');
+const { TVLENS_CODEX_ROLE_REFUSED } = require('./codex-confinement.cjs');
 const { untrustedBlock } = require('./companion-prompt.cjs');
 
 const schema = {
@@ -22,10 +23,9 @@ const verificationPrompt = request => `Vérifie l’affirmation donnée dans le 
 
 // What the user reads when a verification fails. Client messages are already redacted and in French.
 function failure(error) {
-  const message = String(error?.message || '');
-  if (message.startsWith('Outil hors du périmètre TVLens')) return new Error('L’agent a tenté un outil hors du périmètre de vérification web.');
+  if (error?.code === TVLENS_CODEX_TOOL_REFUSED) return new Error('L’agent a tenté un outil hors du périmètre de vérification web.');
   // A refused connection explains itself (what is not confirmed, on which Codex, what to do): kept as is.
-  if (error?.authRequired || message.startsWith('Confinement Codex') || message.startsWith('Rôle Codex')) return error;
+  if (error?.authRequired || error?.code === TVLENS_CODEX_CONFINEMENT_REFUSED || error?.code === TVLENS_CODEX_ROLE_REFUSED) return error;
   if (error instanceof SyntaxError) return new Error('Codex n’a pas rendu un résultat de vérification lisible.');
   return new Error('Codex n’a pas terminé la vérification. Vérifie la connexion et la disponibilité du CLI.');
 }

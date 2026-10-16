@@ -1,7 +1,7 @@
 ---
 id: T125
 titre: Decide description retries and verifier failures on error codes, not wording
-statut: a-faire
+statut: termine
 bloque_par: T124
 adr: oui
 installe: non
@@ -118,3 +118,58 @@ d'assertion. La lecture textuelle ne reste pas comme repli silencieux.
   lecteurs et leurs tests), l'ADR 0031 rédigé, `ticket-journal.patch` (le journal de la tentative) et
   `etat/` (preuves, `confinement-guard-proposal.patch`). Le réappliquer, le vérifier contre le code du
   moment et le compléter par la seule ligne autorisée ci-dessus.
+- Reprise Codex : consignes, ticket amendé, patch et preuves archivées relus ; témoin de hooks
+  présent. `git apply --check .harness-state/archives/T125-bloque-1/code.patch` : statut 0.
+  Exploration et écarts consignés dans `.harness-state/tickets/T125/{exploration,ecarts}.md`.
+  Aucun écart prévu ; le motif exact de la garde est désormais autorisé. Les dossiers non suivis
+  préexistants `design/continuous-context/` et `experiments/` restent hors intervention.
+- Reprise des tests archivés avant les lecteurs :
+  `node --test --test-name-pattern='description retries depend on transport codes' tests/architecture-f08.test.cjs`
+  puis `node --test --test-name-pattern='verifier failure diagnostics follow codes' tests/verification.test.cjs` :
+  deux rouges observés sur assertion (ancien message sans code marqué, TOOL_REFUSED reformulé mal rendu).
+  Sorties `red-transport.log`, `red-verifier.log` dans le dossier d’état courant. Les cycles fins
+  refus/échéance de la première tentative restent dans l’archive (`red-refusals.log`, `red-deadline.log`
+  et leurs verts) ; ils ne sont pas présentés comme de nouvelles exécutions.
+- Lecteurs archivés réappliqués :
+  `node --test --test-name-pattern='description retries depend on transport codes|coded refusals override every transient|the description deadline is proved' tests/architecture-f08.test.cjs`
+  : 3/3 verts ; commande ciblée du vérificateur ci-dessus : 1/1 vert.
+  Sorties `green-perception.log`, `green-verifier.log`.
+- Garde : `node --test --test-name-pattern='no product code injects' tests/codex-confinement.test.cjs`
+  reproduit le rouge ligne 490 (quatre fichiers trouvés, deux attendus), sortie `red-confinement-guard.log`.
+  Application ensuite du seul motif exact autorisé ; les valeurs attendues et la vérification
+  de lecture unique restent identiques.
+- Après correction : même commande ciblée de la garde, 1/1 vert, `green-confinement-guard.log`.
+  ADR 0031 archivé repris au numéro toujours disponible : il remplace la classification textuelle
+  de l’ADR 0008 et conserve ses conditions de redemande.
+- Diff des tests existants relu : aucun cas supprimé, aucune valeur attendue modifiée. Dans
+  architecture-f08, les fixtures de refus, coupure RPC et transports extérieurs reçoivent les
+  `code` et `httpStatus` de leurs émetteurs ; chaque message existant reste identique.
+  Quatre assertions ne changent que leur construction d’erreur (deux causes imbriquées, auth sur
+  coupure, cause inconnue), avec leurs attentes `false`, `false`, `false`, `true` conservées.
+  Les vrais émetteurs et toutes les assertions existantes de verification sont inchangés.
+  Seul le motif autorisé change dans confinement, sans changement des attentes. Trois cas de
+  perception et un cas de vérificateur sont ajoutés aux frontières publiques.
+- `python3 .harness-state/tickets/T125/mutation-check.py` : deux copies isolées, chacune
+  verte avant retrait de TOOL_REFUSED, rouge sur assertion après retrait, verte après restauration.
+  Perception : refus imbriqué sous CONNECTION_LOST marqué à tort ; vérificateur : diagnostic
+  générique au lieu du texte fixe. Copies restaurées puis supprimées, dépôt jamais muté.
+  Commandes et statuts : `mutation-summary.log` ; sorties `mutation-*-{before,mutated,restored}.log`.
+- Les deux commandes `grep -cE` exactes du critère 6 affichent chacune `0`, statut 1 attendu
+  pour absence de correspondance ; `absence-perception.log`, `absence-verifier.log`.
+- Exécutions séquentielles : `node --test tests/architecture-f08.test.cjs` : 23/23 verts, puis
+  `node --test tests/verification.test.cjs` : 11/11 verts ; `final-perception.log`, `final-verifier.log`.
+  `node scripts/check.mjs --changed` : vert, règles/format/lint/gel/cliquet et 56/56 tests JS
+  des trois fichiers modifiés ; `check-changed.log`.
+- `node scripts/check.mjs` : vert, règles/format/lint/gel/cliquet, 1 688/1 688 tests JS
+  (123 fichiers, séquentiels) et 22/22 tests Python ; sortie courante `check-full.log`.
+  Le blocage archivé est levé. Contrôle de périmètre : seule la ligne 490 autorisée change
+  dans confinement, et rien au-dessus du journal hors statut préexistant (`scope-check.log`).
+  Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T125/verdict.json` ; relecture laissée
+  à la boucle, aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T125/relecture-1.md : **`tests/architecture-f08.test.cjs:450`** : hors périmètre
+     - **Ce qui ne va pas :** le nom du test dit encore « the messages the adapter relies on are the ones the Codex pipe really writes ». Après ce ticket, l'adaptateur ne s'appuie plus sur les messages mais sur les codes et sur `method`. Le test vérifie d'ailleurs déjà les deux, lignes 467 à 478. Le nom ne décrit donc plus ce qu'il protège.
+     - **Ce qui est attendu :** un nom qui parle des codes et des champs que le vrai tuyau Codex écrit.
+     - **Pourquoi hors périmètre :** la ligne n'est pas dans le diff. Le ticket limite les retouches des tests existants aux fixtures et à l'ajout de contre-épreuves (« Ne changer aucune valeur attendue des scénarios existants »). Je le laisse en réserve.

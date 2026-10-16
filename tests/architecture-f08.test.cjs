@@ -6,8 +6,17 @@ const path = require('node:path');
 const { WatchSession } = require('../core/session.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { CodexAnalysisAgent } = require('../adapters/codex-analysis-agent.cjs');
-const { CodexRpc } = require('../adapters/codex-rpc.cjs');
-const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
+const {
+  CodexRpc, TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT, TVLENS_CODEX_REQUEST_CUT,
+} = require('../adapters/codex-rpc.cjs');
+const {
+  LocalVlmAgent, TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+} = require('../adapters/local-vlm-agent.cjs');
+const { TVLENS_CODEX_CONNECTION_LOST } = require('../adapters/codex-session-events.cjs');
+const { TVLENS_CODEX_INPUT_REFUSED } = require('../adapters/codex-session-run.cjs');
+const {
+  TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_SESSION_CLOSED,
+} = require('../adapters/codex-session-client.cjs');
 
 // F08: a description that failed on a passing error is asked for once more, in line, and only then.
 // Offline: perception doubles, a fake App Server behind the real Codex client, a fetch double behind the real
@@ -255,6 +264,123 @@ const impatient = (agent, timeoutMs = 15) => { const perception = new CodexPerce
 // An agent that answers nothing, and fails with `reason(signal)` once the signal it was given aborts.
 const afterAbort = reason => ({ answer: ({ signal }) => new Promise((_, reject) => signal.addEventListener('abort', () => reject(reason(signal)), { once: true })) });
 const marked = async (error, timeoutMs) => (await failure(new CodexPerception({ agent: { answer: () => Promise.reject(error) }, timeoutMs }).observeVisual(passage()))).code === TRANSIENT;
+const coded = (message, code, fields = {}) => Object.assign(Error(message), { code, ...fields });
+
+test('description retries depend on transport codes and fields regardless of their wording', async t => {
+  const deadline = new AbortController();
+  t.mock.method(AbortSignal, 'timeout', () => deadline.signal);
+  const transient = [
+    ['Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_CONNECTION_LOST],
+    ['Codex déconnecté.', TVLENS_CODEX_DISCONNECTED],
+    ['Codex : délai de connexion dépassé (initialize).', TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'initialize' }],
+    ['Codex : délai de connexion dépassé (thread/start).', TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'thread/start' }],
+    ['Backend local injoignable.', TVLENS_LOCAL_VLM_UNREACHABLE],
+    ['Backend local indisponible (HTTP 503).', TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus: 503 }],
+  ];
+  for (const [message, code, fields] of transient) {
+    assert.equal(await marked(Error(message)), false, `uncoded: ${message}`);
+    for (const wording of [message, 'Diagnostic reformulé.']) {
+      const error = coded(wording, code, fields);
+      const result = await failure(new CodexPerception({ agent: { answer: async () => { throw error; } } }).observeVisual(passage()));
+      assert.deepEqual([result.code, result.message, result.cause], [TRANSIENT, wording, error], `${code}: ${wording}`);
+    }
+  }
+  const final = [
+    coded('Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_REQUEST_CUT),
+    coded('Codex déconnecté.', TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'turn/start' }),
+    coded('Codex déconnecté.', TVLENS_CODEX_REQUEST_TIMEOUT),
+    coded('Codex déconnecté.', TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'initialize/other' }),
+    coded('Codex déconnecté.', 'UNKNOWN'),
+    Error('Diagnostic inconnu.'),
+  ];
+  for (const httpStatus of [undefined, null, '503', 399, 503.5, 600, NaN, Infinity]) {
+    final.push(coded('Backend local indisponible (HTTP 503).', TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus }));
+  }
+  for (const error of final) assert.equal(await marked(error), false, `${error.code}: ${error.method ?? error.httpStatus}`);
+  for (const httpStatus of [500, 599]) {
+    assert.equal(await marked(coded('Diagnostic reformulé.', TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus })), true, `${httpStatus}`);
+  }
+});
+
+test('coded refusals override every transient transport through four cause levels even after the deadline', async t => {
+  let deadline;
+  t.mock.method(AbortSignal, 'timeout', () => deadline.signal);
+  const refusals = [
+    Object.assign(Error('Authentification reformulée.'), { authRequired: true }),
+    ...[TVLENS_CODEX_INPUT_REFUSED, TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED,
+      TVLENS_CODEX_SESSION_CLOSED, TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_CLOSED]
+      .map(code => coded('Refus reformulé.', code)),
+    ...[400, 404, 499].map(httpStatus => coded('Refus HTTP reformulé.', TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus })),
+  ];
+  const transports = [
+    [TVLENS_CODEX_CONNECTION_LOST], [TVLENS_CODEX_DISCONNECTED], [TVLENS_LOCAL_VLM_UNREACHABLE],
+    [TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'initialize' }],
+    [TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'thread/start' }],
+    [TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus: 503 }],
+  ];
+  for (const expired of [false, true]) {
+    deadline = new AbortController();
+    if (expired) deadline.abort(Error('Échéance expirée.'));
+    for (const [code, fields] of transports) {
+      const outer = cause => coded('Transport reformulé.', code, { ...fields, cause });
+      assert.equal(await marked(outer()), true, `outer alone: ${code}, expired: ${expired}`);
+      for (const refusal of refusals) {
+        for (let depth = 0; depth < 4; depth++) {
+          let error = refusal;
+          for (let level = 1; level < depth; level++) error = Error('Enveloppe.', { cause: error });
+          if (depth > 0) error = outer(error);
+          const result = await failure(new CodexPerception({ agent: { answer: async () => { throw error; } } }).observeVisual(passage()));
+          assert.equal(result, error, `${refusal.code ?? 'authRequired'}, depth: ${depth}, outer: ${code}, expired: ${expired}`);
+        }
+      }
+      let distant = refusals[0];
+      for (let depth = 1; depth < 4; depth++) distant = Error('Enveloppe.', { cause: distant });
+      assert.equal(await marked(outer(distant)), true, 'a fifth cause level is outside the refusal search');
+      const cancelled = AbortSignal.abort(Error('Appelant annulé.')), error = outer();
+      const result = await failure(new CodexPerception({ agent: { answer: async () => { throw error; } } })
+        .observeVisual(passage({ signal: cancelled })));
+      assert.equal(result, error, `caller cancelled: ${code}`);
+    }
+  }
+});
+
+test('the description deadline is proved by its reason or interrupted turn fields independently of the message', async t => {
+  let deadline;
+  t.mock.method(AbortSignal, 'timeout', () => deadline.signal);
+  const outcome = (error, { expired = false, reason = Error('Échéance.'), signal } = {}) => {
+    deadline = new AbortController();
+    const agent = { answer: async () => { if (expired) deadline.abort(reason); throw error; } };
+    return failure(new CodexPerception({ agent }).observeVisual(passage({ signal })));
+  };
+  const reason = Error('Raison propre reformulée.');
+  assert.equal(await outcome(reason), reason, 'the deadline has not expired');
+  const own = await outcome(reason, { expired: true, reason });
+  assert.deepEqual([own.code, own.cause], [TRANSIENT, reason]);
+  for (const message of ['Recherche annulée.', 'Diagnostic de tour reformulé.']) {
+    const interrupted = Object.assign(Error(message), { turnStatus: 'interrupted' });
+    assert.equal(await outcome(interrupted), interrupted, 'an interrupted turn without an expired deadline is final');
+    const confirmed = await outcome(interrupted, { expired: true });
+    assert.deepEqual([confirmed.code, confirmed.message, confirmed.cause], [TRANSIENT, message, interrupted]);
+    for (const turnError of [{ codexErrorInfo: 'responseStreamDisconnected' }, null, false]) {
+      const detailed = Object.assign(Error(message), { turnStatus: 'interrupted', turnError });
+      assert.equal(await outcome(detailed, { expired: true }), detailed, 'a reported turn error remains final');
+    }
+    const signal = AbortSignal.abort(Error('Appelant annulé.'));
+    assert.equal(await outcome(interrupted, { expired: true, signal }), interrupted);
+    assert.equal(await outcome(reason, { expired: true, reason, signal }), reason);
+  }
+  const unknown = [
+    Error('Connexion Codex interrompue. Réessaie la question.'), Error('Codex déconnecté.'),
+    Error('Codex : délai de connexion dépassé (initialize).'), Error('Codex : délai de connexion dépassé (thread/start).'),
+    Error('Backend local injoignable.'), Error('Backend local indisponible (HTTP 503).'),
+    Error('Diagnostic inconnu.'), Object.assign(Error('Recherche annulée.'), { turnStatus: 'failed' }),
+    coded('Recherche annulée.', TVLENS_CODEX_REQUEST_TIMEOUT, { method: 'turn/start' }),
+    coded('Recherche annulée.', TVLENS_CODEX_REQUEST_CUT),
+  ];
+  for (const error of unknown) assert.equal(await outcome(error, { expired: true }), error, error.message);
+  const refused = Error('Échéance avec refus.', { cause: coded('Refus reformulé.', TVLENS_CODEX_TOOL_REFUSED) });
+  assert.equal(await outcome(refused, { expired: true, reason: refused }), refused, 'a refusal wins even over the deadline reason itself');
+});
 
 test('the deadline of a description is 45 s unless a shorter one is asked for, never a longer or an unbounded one', () => {
   const agent = { answer: async () => described };
@@ -284,26 +410,36 @@ test('the adapter marks its own expired deadline, on the reason of its signal or
 test('a refusal is never marked, even with the deadline already expired, a lost connection as its outer message or a caller that cancelled', { timeout: 20000 }, async () => {
   const unauthorized = Object.assign(Error('Codex n’a pas terminé la réponse : authentification refusée (401). Reconnexion Codex requise (codex login), puis repose la question.'), { authRequired: true, turnStatus: 'failed' });
   // Authentication, confinement, input, a request the local backend refused, a client or a backend that was closed.
-  const refusals = [unauthorized, Error('Confinement Codex non confirmé (environnement).'), Error('Confinement Codex non confirmé (sous-agents) : connexion refusée.'),
-    Error('Outil hors du périmètre TVLens (fil étranger).'), Error('Outil hors du périmètre TVLens (commandExecution).'), Error('Entrée média non autorisée.'), Error('Backend local : image invalide.'),
-    Error('Backend local indisponible (HTTP 404).'), Error('Session Codex fermée.'), Error('Backend local fermé.')];
+  const refusals = [unauthorized,
+    coded('Confinement Codex non confirmé (environnement).', TVLENS_CODEX_CONFINEMENT_REFUSED),
+    coded('Confinement Codex non confirmé (sous-agents) : connexion refusée.', TVLENS_CODEX_CONFINEMENT_REFUSED),
+    coded('Outil hors du périmètre TVLens (fil étranger).', TVLENS_CODEX_TOOL_REFUSED),
+    coded('Outil hors du périmètre TVLens (commandExecution).', TVLENS_CODEX_TOOL_REFUSED),
+    coded('Entrée média non autorisée.', TVLENS_CODEX_INPUT_REFUSED),
+    coded('Backend local : image invalide.', TVLENS_LOCAL_VLM_INPUT_REFUSED),
+    coded('Backend local indisponible (HTTP 404).', TVLENS_LOCAL_VLM_UNAVAILABLE, { httpStatus: 404 }),
+    coded('Session Codex fermée.', TVLENS_CODEX_SESSION_CLOSED), coded('Backend local fermé.', TVLENS_LOCAL_VLM_CLOSED)];
   // Unknown, or a failed turn with a provider detail: final too, deadline or not.
-  const unknown = [Error('boom'), Object.assign(Error('Codex n’a pas terminé la réponse.'), { turnStatus: 'failed', turnError: { codexErrorInfo: 'responseStreamDisconnected' } }), Error('Connexion Codex interrompue.'), Error('Connexion obsolète.')];
+  const unknown = [Error('boom'),
+    Object.assign(Error('Codex n’a pas terminé la réponse.'), { turnStatus: 'failed', turnError: { codexErrorInfo: 'responseStreamDisconnected' } }),
+    coded('Connexion Codex interrompue.', TVLENS_CODEX_REQUEST_CUT), Error('Connexion obsolète.')];
   for (const final of [...refusals, ...unknown]) {
     assert.equal(await failure(impatient(afterAbort(() => final)).observeVisual(passage())), final, `deadline expired: ${final.message}`);
     assert.equal(await marked(final), false, final.message);
   }
   // What a failure names as its cause refuses too, whatever its own message says, and two levels down as well.
   for (const refusal of refusals) {
-    assert.equal(await marked(Error('Connexion Codex interrompue. Réessaie la question.', { cause: refusal })), false, `cause: ${refusal.message}`);
-    assert.equal(await marked(Error('Backend local indisponible (HTTP 503).', { cause: Error('enveloppe', { cause: refusal }) })), false, `cause of the cause: ${refusal.message}`);
+    assert.equal(await marked(coded('Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_CONNECTION_LOST,
+      { cause: refusal })), false, `cause: ${refusal.message}`);
+    assert.equal(await marked(coded('Backend local indisponible (HTTP 503).', TVLENS_LOCAL_VLM_UNAVAILABLE,
+      { httpStatus: 503, cause: Error('enveloppe', { cause: refusal }) })), false, `cause of the cause: ${refusal.message}`);
   }
-  assert.equal(await marked(Object.assign(Error('Connexion Codex interrompue. Réessaie la question.'), { authRequired: true })), false);
+  assert.equal(await marked(coded('Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_CONNECTION_LOST, { authRequired: true })), false);
   // A cause nobody knows refuses nothing: the lost connection is still one.
-  assert.equal(await marked(Error('Connexion Codex interrompue. Réessaie la question.', { cause: Error('boom') })), true);
+  assert.equal(await marked(coded('Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_CONNECTION_LOST, { cause: Error('boom') })), true);
   // The caller cancelled: neither a lost connection, nor the deadline that expired first, is a reason any more.
   const closed = AbortSignal.abort(Error('Session fermée.'));
-  const lost = Error('Connexion Codex interrompue. Réessaie la question.');
+  const lost = coded('Connexion Codex interrompue. Réessaie la question.', TVLENS_CODEX_CONNECTION_LOST);
   assert.equal(await failure(new CodexPerception({ agent: { answer: () => Promise.reject(lost) } }).observeVisual(passage({ signal: closed }))), lost);
   const closing = new AbortController();
   const both = { answer: ({ signal }) => new Promise((_, reject) => signal.addEventListener('abort', () => { const reason = signal.reason; closing.abort(Error('Session fermée.')); reject(reason); }, { once: true })) };
@@ -350,7 +486,7 @@ function appServer(script, { detail = null } = {}) {
     return { start() {}, send() {}, close() { closed = true; },
       request(method, params) {
         requests.push(method);
-        if (closed) return Promise.reject(Error('Connexion Codex interrompue.'));
+        if (closed) return Promise.reject(coded('Connexion Codex interrompue.', TVLENS_CODEX_REQUEST_CUT));
         if (method === 'thread/start') return Promise.resolve({ thread: { id: `thread-${n}` } });
         const threadId = params?.threadId;
         // Codex confirms the end of a turn it was asked to interrupt, after the failure it may have met itself.

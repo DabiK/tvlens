@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { turns } = require('./helpers/wait.cjs');
+const { turns, failure } = require('./helpers/wait.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -9,6 +9,8 @@ const { CodexVerifier, verifierRole, schema } = require('../adapters/codex-verif
 const { DISABLED_FEATURES, ENABLED_FEATURES, SUB_AGENT_CONTROLS, childEnvironment } = require('../adapters/codex-confinement.cjs');
 const { dynamicTools } = require('../adapters/codex-tool-definitions.cjs');
 const { safeExternalUrl } = require('../adapters/external-links.cjs');
+const { TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_CONFINEMENT_REFUSED } = require('../adapters/codex-session-client.cjs');
+const { TVLENS_CODEX_ROLE_REFUSED } = require('../adapters/codex-confinement.cjs');
 const evidence = { url: 'https://www.nasa.gov/mission/apollo-11/', title: 'Apollo 11', publisher: 'NASA', publishedAt: null, evidence: 'Date de la mission.', relation: 'contradicts' };
 function verifier(result) { return new VerificationService({ verifier: { verify: async () => result } }); }
 test('verification without external research or sources must abstain', async () => {
@@ -54,6 +56,39 @@ test('verification publishes progress and archives the final evidence', async ()
 test('source links must be public HTTPS URLs, never local files or actions', () => {
   assert.equal(safeExternalUrl(evidence.url), evidence.url);
   for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://localhost/', 'https://127.0.0.1/', 'https://[::1]/', 'https://host.local/', 'https://user:pass@example.com/', 'https://example.com:8443/']) assert.equal(safeExternalUrl(url), null, url);
+});
+
+test('verifier failure diagnostics follow codes and preserve refusal identity regardless of wording', async () => {
+  const outcome = error => failure(new CodexVerifier({
+    clientFactory: () => ({ answer: async () => { throw error; }, close: async () => {} }),
+    setTimer: () => null, clearTimer: () => {},
+  }).verify({ claim: 'Une affirmation.' }));
+  const toolMessage = 'L’agent a tenté un outil hors du périmètre de vérification web.';
+  const defaultMessage = 'Codex n’a pas terminé la vérification. Vérifie la connexion et la disponibilité du CLI.';
+  for (const message of ['Outil hors du périmètre TVLens (commandExecution).', 'Diagnostic reformulé.']) {
+    const error = Object.assign(Error(message), { code: TVLENS_CODEX_TOOL_REFUSED });
+    assert.equal((await outcome(error)).message, toolMessage);
+    assert.equal((await outcome(Object.assign(error, { authRequired: true }))).message, toolMessage, 'tool refusal has priority');
+  }
+  for (const [code, original] of [
+    [TVLENS_CODEX_CONFINEMENT_REFUSED, 'Confinement Codex non confirmé (environnement).'],
+    [TVLENS_CODEX_ROLE_REFUSED, 'Rôle Codex inconnu : autre.'],
+  ]) {
+    for (const message of [original, 'Diagnostic reformulé.']) {
+      const error = Object.assign(Error(message), { code });
+      assert.equal(await outcome(error), error, `${code}: ${message}`);
+    }
+  }
+  const auth = Object.assign(Error('Authentification reformulée.'), { authRequired: true });
+  assert.equal(await outcome(auth), auth);
+  for (const message of [
+    'Outil hors du périmètre TVLens (commandExecution).', 'Confinement Codex non confirmé (environnement).',
+    'Rôle Codex inconnu : autre.', 'Diagnostic inconnu.',
+  ]) {
+    assert.equal((await outcome(Error(message))).message, defaultMessage, `uncoded: ${message}`);
+    assert.equal((await outcome(Object.assign(Error(message), { code: 'UNKNOWN' }))).message, defaultMessage);
+  }
+  assert.equal((await outcome(new SyntaxError('JSON incorrect.'))).message, 'Codex n’a pas rendu un résultat de vérification lisible.');
 });
 
 // The manual verifier on the lane of the chat and the surveillance: a client without tool and without
