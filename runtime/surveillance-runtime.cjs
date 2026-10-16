@@ -1,4 +1,6 @@
 const { Surveillance } = require("../core/surveillance.cjs");
+const { publishState } = require("../core/state-publication.cjs");
+const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const {
   CodexSurveillanceAgent,
 } = require("../adapters/codex-surveillance-agent.cjs");
@@ -25,6 +27,18 @@ const REGISTRY_MESSAGES = Object.freeze({
     "Écriture du suivi en échec. Historique en mémoire seulement : il ne sera pas enregistré tant que l’écriture échoue.",
 });
 
+function tickSurveillance(runtime, onPublicationError, context) {
+  try {
+    runtime.tick();
+  } catch (error) {
+    try {
+      onPublicationError({ code: "TVLENS_SURVEILLANCE_TICK_FAILED", ...context, error });
+    } catch {
+      // Le journal ne possède pas la maintenance ; le prochain intervalle reste la seule reprise du tick.
+    }
+  }
+}
+
 // Shared composition for both hosts, like the conversation runtime. The host supplies the current
 // session ({ watch, store }), forwards session changes to observe() and calls tick() every second:
 // no timer lives here. Nothing in this file knows about the chat; `probe` only feeds an informative
@@ -48,6 +62,7 @@ function createSurveillanceRuntime({
   selectedModels = {},
   quota,
   onChange = () => {},
+  onPublicationError = createPublicationDiagnostic(),
   now = Date.now,
   probe,
 }) {
@@ -95,8 +110,10 @@ function createSurveillanceRuntime({
     overdue = null,
     // The session whose last write failed, until one lands.
     failing = null,
-    // The registry block the host was last told.
+    // Confirmation et refus concernent seulement l'état courant ; aucun instantané n'attend une livraison.
     toldAs = "",
+    refusedAs = null,
+    publications = 0,
     writing = Promise.resolve(),
     releasing = Promise.resolve();
   const persistence = { writes: 0, failures: 0, lastError: null };
@@ -159,18 +176,27 @@ function createSurveillanceRuntime({
   const publish = (state) => {
     if (hushed) return;
     const shown = told(state);
-    toldAs = tag(shown.registry);
-    try {
+    const attempt = ++publications, scope = epoch;
+    let delivered = false;
+    publishState(() => {
       onChange(shown);
-    } catch {
-      // Le registre reste consultable par snapshot() et son écriture est indépendante du callback hôte.
-      // La notification est toutefois perdue : toldAs a avancé, announce() ne retente pas ce même statut de persistance.
-      // L'échec du callback reste aussi invisible au diagnostic du cœur : snapshot().error ne le reçoit pas.
+      delivered = true;
+    }, onPublicationError, {
+      origin: "surveillance-runtime", sessionId: shown.sessionId,
+    });
+    // Un callback peut remplacer la session : son ancien envoi ne confirme rien de la nouvelle.
+    if (scope !== epoch || attempt !== publications) return;
+    if (delivered) {
+      toldAs = tag(shown.registry);
+      refusedAs = null;
+    } else {
+      // Seul l'état courant sera retenté, au prochain tick ; aucune copie d'état ne s'accumule.
+      refusedAs = tag(shown.registry);
     }
   };
   // The way the registry is kept moves without the core (reading over, write failed or landed): said once.
   const announce = () => {
-    if (tag(registry()) !== toldAs) publish(surveillance.snapshot());
+    if (tag(registry()) !== (refusedAs ?? toldAs)) publish(surveillance.snapshot());
   };
   // The store method arrives with durable sessions: until then a store without it is simply not written.
   // Never over a registry that is still being read, or that could not be read, and only ever the registry of
@@ -276,6 +302,8 @@ function createSurveillanceRuntime({
   const expire = () => {
     epoch++;
     dirty = false;
+    toldAs = "";
+    refusedAs = null;
   };
   // The folder is let go, and what it did not take goes with it. An activation that was still waiting for the
   // registry its folder holds was provisional: it is never written, there or anywhere else. What was held
@@ -445,12 +473,15 @@ function createSurveillanceRuntime({
             : null;
       adopting = pending;
       let state;
+      const previousRefusal = refusedAs;
+      if (formerly !== bound) refusedAs = null;
       try {
         state = surveillance.start({ instruction }, snapshot);
       } catch (error) {
         store = previous;
         bound = formerly;
         adopting = waiting;
+        refusedAs = previousRefusal;
         throw error;
       }
       released = false;
@@ -484,12 +515,18 @@ function createSurveillanceRuntime({
       if (!adopting) surveillance.observe(snapshot);
     },
     tick() {
-      if (adopting) {
-        if (now() - adopting.since >= ADOPT_TIMEOUT_MS) outwaited(adopting);
-        return;
+      const before = publications;
+      try {
+        if (adopting) {
+          if (now() - adopting.since >= ADOPT_TIMEOUT_MS) outwaited(adopting);
+          return;
+        }
+        surveillance.tick();
+      } finally {
+        writeIfDue();
+        if (refusedAs !== null && publications === before)
+          publish(surveillance.snapshot());
       }
-      surveillance.tick();
-      writeIfDue();
     },
     retry(id) {
       return told(surveillance.retry(id));
@@ -551,6 +588,7 @@ function createSurveillanceRuntime({
 }
 module.exports = {
   createSurveillanceRuntime,
+  tickSurveillance,
   saveIntervalMs,
   REGISTRY_MESSAGES,
 };

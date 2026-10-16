@@ -1,7 +1,7 @@
 ---
 id: T187
 titre: Guard the surveillance tick on both hosts and never mark a refused publication as told
-statut: a-faire
+statut: termine
 bloque_par: T186
 adr: oui
 installe: non
@@ -93,3 +93,52 @@ nouvelle tentative au tick suivant, pas une garantie que les effets partiels d'u
 annulés. La panne Mac est établie par lecture ; aucune panne matérielle n'a été reproduite au découpage.
 
 ## Journal
+
+- Exploration sur `c0bdaec` : consignes, trois compositions, tests et ADR 0003/0007/0015/0024/0030/0032 lus.
+  `git status --short` et `git diff` : seul le statut du ticket était modifié ; dossiers
+  `design/continuous-context/` et `experiments/` préexistants. Témoin de hooks présent.
+  Exploration et évolution autorisée des caractérisations consignées dans
+  `.harness-state/tickets/T187/{exploration,ecarts}.md` avant implémentation.
+
+- Tests d'abord, sorties conservées dans `.harness-state/tickets/T187/` :
+  `node --test --test-name-pattern='a refused persistence notice' tests/surveillance-runtime.test.cjs`
+  rouge sur l'absence de livraison au tick suivant, puis vert (1/1).
+  Seule attente existante changée : la caractérisation auparavant nommée
+  `a failed host publication leaves the registry readable but does not retry the same persistence notice`,
+  conformément à `ecarts.md`. La caractérisation des erreurs du cœur conserve ses assertions.
+- `node --test --test-name-pattern='a failed core tick still' tests/surveillance-runtime.test.cjs` :
+  rouge sur l'écriture due omise, puis vert (1/1). Le test final ajoute des refus de notification et de
+  diagnostic et reste vert. `node --test --test-name-pattern='persistent delivery failures' tests/surveillance-runtime.test.cjs` :
+  rouge sur l'absence de diagnostic, puis vert (1/1) ; quatre ticks conduits, quatre rattrapages,
+  deux écritures supplémentaires aux échéances, aucune nouvelle minuterie ni tentative récursive.
+- `node --test --test-name-pattern='the Mac surveillance interval' tests/mac-ipc-contract.test.cjs` :
+  rouge sur l'exception qui sort du callback, puis vert (3/3, sous-tests compris).
+  `node --test --test-name-pattern='the server interval diagnoses' tests/server-surveillance.test.cjs` :
+  rouge sur le diagnostic absent, puis vert (3/3). Diagnostic normal et diagnostic qui lève conduits
+  sur chaque hôte ; quota, vérification disque et publication de sa nouvelle mesure continuent côté serveur.
+  L'extension du banc IPC a d'abord dépassé la complexité autorisée ; ses coutures sont regroupées
+  dans une table de fabriques, sans assouplir le lint.
+- Preuves complémentaires sur la correction :
+  `node --test --test-name-pattern='a refused core change|catch-up publishes|reset, restore|a refused restoring' tests/surveillance-runtime.test.cjs`
+  vert (7/7) : état courant sous `ready`, retour du disque, reset, restauration, remplacement et lecture en attente.
+  `node --test --test-name-pattern='the Mac composition journals a refused surveillance' tests/mac-ipc-contract.test.cjs`
+  vert (1/1) : journal réel de l'hôte et livraison après rétablissement du seul abonné fenêtre.
+  `node --test --test-name-pattern='a failed core tick still|reset, restore' tests/surveillance-runtime.test.cjs`
+  vert (5/5) après invalidation explicite du marqueur et ajout du diagnostic défaillant à l'écriture due.
+- Premier `node scripts/check.mjs --changed` : vert, règles/format/lint/gel/cliquet et 49 tests JS
+  dans les trois fichiers modifiés. ADR 0033 rédigé sur confirmation et reprise bornée.
+- Contrôle final `node scripts/check.mjs` : vert, code de sortie 0 ; règles, format, lint, gel et
+  cliquet validés ; 1 724/1 724 tests JS dans 123 fichiers et 22 tests Python réussis.
+  Les suites surveillance, vues serveur et IPC Mac ont donc été exécutées en séquentiel.
+  Sortie conservée dans `.harness-state/tickets/T187/check-full.log`.
+  `git diff --check` : aucune erreur. Verdict `TERMINÉ` écrit pour la boucle ; aucun commit,
+  push, fournisseur réel, lancement d'Electron ni intervention TV/VPS.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T187/relecture-1.md : **Écart accepté, critère 3 et 7 :** la caractérisation `a failed host publication … does not retry the same persistence notice` évolue. Le ticket l'ordonne au périmètre, et ce qu'elle ne prouve plus est toujours prouvé ailleurs (voir critère 7).
+- .harness-state/tickets/T187/relecture-1.md : **Écart accepté, critère 5 :** la caractérisation des changements du cœur dont la publication échoue est conservée telle quelle (`:310`), et une preuve complémentaire sous `ready` est ajoutée (`:196`).
+- .harness-state/tickets/T187/relecture-1.md : **Écart accepté, critère 1 :** le banc IPC `launch` est étendu par une table de fabriques. Les remplacements existants de conversation et de session se comportent comme avant (mêmes arguments, même condition). Le ticket autorise l'extension des coutures.
+- .harness-state/tickets/T187/relecture-1.md : **Écart accepté, critère 1 :** la garde est exportée par `runtime/surveillance-runtime.cjs`. Ce fichier est dans le périmètre, et la règle demande d'écrire une seule fois la logique commune aux hôtes.
+
+  Il n'y avait aucun constat contesté : c'est une première relecture.

@@ -47,7 +47,10 @@ const FIGURES = ['Le chômage des jeunes est à 17 % en France.', 'La dette dép
 const MEMORY_ONLY = 'Historique en mémoire seulement : il ne sera pas enregistré dans cette session.';
 const UNREAD = 'Registre de surveillance existant illisible : l’historique précédent n’est ni repris ni remplacé.';
 const SAVED = { ready: true, persisted: true, status: 'ready', message: null };
-const simulated = (getSession, now, onChange) => createSurveillanceRuntime({ getSession, agent: new SimulatedSurveillanceAgent({ verdict: () => 'supported' }), now, onChange, config: { surveillance: { visionGraceMs: 0 } } });
+const simulated = (getSession, now, onChange, onPublicationError) => createSurveillanceRuntime({
+  getSession, agent: new SimulatedSurveillanceAgent({ verdict: () => 'supported' }),
+  now, onChange, onPublicationError, config: { surveillance: { visionGraceMs: 0 } },
+});
 // A durable session whose folder already holds a history (claim-1 sourced, lot-1, act-1 ended), as an earlier
 // life of the process left it. `saved` is that file, to compare with later.
 async function archived(id, now = () => 0) {
@@ -114,8 +117,8 @@ function appServer(script) {
 const refuseTool = ({ options, threadId, turnId }, tool) => assert.rejects(options.onRequest('item/tool/call', { threadId, turnId, tool, arguments: { query: 'la suite du programme' } }), /non autorisé/);
 const source = url => ({ url, title: 'Titre de la page', publisher: 'Éditeur', publishedAt: null, evidence: 'La page donne ce chiffre.', relation: 'supports' });
 
-test('a failed host publication leaves the registry readable but does not retry the same persistence notice', async t => {
-  let clock = 0, refusing = true, attempts = 0;
+test('a refused persistence notice is delivered on the next tick when only the observer recovers, without duplicates', async t => {
+  let clock = 0, refusing = true, rejectingPublication = true, attempts = 0;
   const session = fakeSession(), notices = [];
   const save = session.store.saveSurveillance;
   session.store.saveSurveillance = async state => {
@@ -125,7 +128,7 @@ test('a failed host publication leaves the registry readable but does not retry 
   };
   const runtime = simulated(() => session, () => clock, state => {
     notices.push(state.registry.status);
-    if (state.registry.status === 'write-failed')
+    if (rejectingPublication && state.registry.status === 'write-failed')
       throw Object.assign(new Error('publication refusée'), { code: 'PUBLICATION_FAILED' });
   });
   t.after(() => runtime.close());
@@ -134,21 +137,174 @@ test('a failed host publication leaves the registry readable but does not retry 
   assert.equal(runtime.snapshot().registry.status, 'write-failed');
   assert.deepEqual(notices, ['ready', 'write-failed']);
   const failed = attempts;
-  clock = 1000;
+  rejectingPublication = false;
+  clock = 1;
   runtime.tick();
-  await runtime.flush();
-  assert.ok(attempts > failed, 'the failed write is retried');
+  assert.equal(attempts, failed, 'the disk has not been retried and still refuses writes');
   assert.equal(runtime.persistence.failures, attempts);
   assert.equal(runtime.snapshot().enabled, true);
   assert.equal(runtime.snapshot().registry.status, 'write-failed');
-  assert.deepEqual(notices, ['ready', 'write-failed'], 'the failed notice is not delivered again on a repeated disk failure');
+  assert.deepEqual(notices, ['ready', 'write-failed', 'write-failed'], 'the current notice is retried after the observer recovers');
+  clock = 2;
+  runtime.tick();
+  assert.deepEqual(notices, ['ready', 'write-failed', 'write-failed'], 'a successful notice is not repeated');
   refusing = false;
   clock = 2000;
   runtime.tick();
   await runtime.flush();
   assert.equal(session.writes.at(-1).sessionId, session.id);
   assert.equal(runtime.snapshot().registry.status, 'ready');
-  assert.deepEqual(notices, ['ready', 'write-failed', 'ready']);
+  assert.deepEqual(notices, ['ready', 'write-failed', 'write-failed', 'ready']);
+});
+
+test('persistent delivery failures are diagnosed once per tick even when diagnostics throw and disk writes keep failing', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout', 'setInterval'] });
+  let clock = 0, attempts = 0;
+  const session = fakeSession(), diagnostics = [];
+  session.store.saveSurveillance = async () => { throw Object.assign(new Error('disque'), { code: 'EIO' }); };
+  const failure = Object.assign(new Error('notification'), { code: 'OBSERVER_FAILED' });
+  const runtime = simulated(() => session, () => clock, state => {
+    if (state.registry.status === 'write-failed') {
+      attempts++;
+      throw failure;
+    }
+  }, event => { diagnostics.push(event); throw Error('journal indisponible'); });
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await runtime.flush();
+  assert.equal(attempts, 1);
+  assert.equal(diagnostics.length, 1, 'the initial refused delivery is diagnosed');
+  assert.deepEqual(diagnostics[0], {
+    code: 'TVLENS_STATE_PUBLICATION_FAILED', origin: 'surveillance-runtime', sessionId: session.id, error: failure,
+  });
+  const writes = runtime.persistence.writes;
+  const timeout = t.mock.method(global, 'setTimeout'), interval = t.mock.method(global, 'setInterval');
+  for (const [index, time] of [999, 1000, 1999, 2000].entries()) {
+    clock = time;
+    assert.doesNotThrow(() => runtime.tick());
+    await turns(20);
+    assert.equal(attempts, index + 2, 'one catch-up attempt per driven tick, including repeated disk failures');
+    assert.equal(diagnostics.length, attempts);
+    assert.equal(runtime.snapshot().error, null);
+    assert.equal(runtime.snapshot().registry.status, 'write-failed');
+  }
+  assert.equal(runtime.persistence.writes, writes + 2, 'writes keep their one-second cadence');
+  assert.equal(runtime.persistence.failures, runtime.persistence.writes);
+  assert.deepEqual([timeout.mock.callCount(), interval.mock.callCount()], [0, 0], 'catch-up adds no timer');
+});
+
+test('a refused core change is retried under ready even though the persistence status never changed', async t => {
+  const session = fakeSession(), notices = [], diagnostics = [];
+  let rejecting = true;
+  const runtime = simulated(() => session, () => 0, state => {
+    if (rejecting) throw Error('publication refusée');
+    notices.push(state);
+  }, event => diagnostics.push(event));
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await runtime.flush();
+  assert.equal(runtime.snapshot().registry.status, 'ready');
+  assert.equal(diagnostics.length, 1);
+  assert.equal(notices.length, 0);
+  rejecting = false;
+  runtime.tick();
+  assert.deepEqual(notices.map(state => [state.sessionId, state.enabled, state.registry.status]), [[session.id, true, 'ready']]);
+  runtime.tick();
+  assert.equal(notices.length, 1);
+});
+
+test('catch-up publishes the current ready state after disk recovery without replaying the refused failure notice', async t => {
+  let clock = 0, rejecting = true, diskFailed = true;
+  const session = fakeSession(), notices = [], save = session.store.saveSurveillance;
+  session.store.saveSurveillance = async state => {
+    if (diskFailed) throw Error('disque indisponible');
+    return save(state);
+  };
+  const runtime = simulated(() => session, () => clock, state => {
+    if (rejecting) throw Error('publication refusée');
+    notices.push(state.registry.status);
+  }, () => {});
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await runtime.flush();
+  assert.equal(runtime.snapshot().registry.status, 'write-failed');
+  diskFailed = false;
+  clock = 1000;
+  runtime.tick();
+  await runtime.flush();
+  assert.equal(runtime.snapshot().registry.status, 'ready');
+  assert.deepEqual(notices, []);
+  rejecting = false;
+  runtime.tick();
+  runtime.tick();
+  assert.deepEqual(notices, ['ready']);
+});
+
+test('reset, restore and session replacement discard the old refused state and retry only the current session', async t => {
+  for (const transition of ['reset', 'restore', 'replace']) await t.test(transition, async t => {
+    let session = fakeSession('old-session'), rejecting = true;
+    const notices = [];
+    session.store.saveSurveillance = async () => { throw Error('ancien disque indisponible'); };
+    const runtime = simulated(() => session, () => 0, state => {
+      if (rejecting) throw Error('publication refusée');
+      notices.push(state);
+    }, () => {});
+    t.after(() => runtime.close());
+    runtime.start({ instruction: 'Vérifie les chiffres.' });
+    await runtime.flush();
+    assert.equal(runtime.snapshot().registry.status, 'write-failed');
+    session = fakeSession('new-session');
+    if (transition === 'reset') await runtime.reset();
+    if (transition === 'restore') runtime.restore({ version: 1, sessionId: session.id, claims: [], lots: [] });
+    if (transition === 'replace') runtime.start({ instruction: 'Vérifie les dates.' });
+    await runtime.flush();
+    const expected = runtime.snapshot();
+    rejecting = false;
+    runtime.tick();
+    assert.deepEqual(notices.map(state => [state.sessionId, state.registry.status, state.enabled]), [
+      [expected.sessionId, 'ready', expected.enabled],
+    ]);
+    runtime.tick();
+    assert.equal(notices.length, 1, 'no old notice and no duplicate');
+  });
+});
+
+test('a refused restoring notice is retried on a later tick while its folder has not answered', async t => {
+  const session = held(durableSession()), notices = [];
+  let rejecting = true;
+  const runtime = simulated(() => session, () => 0, state => {
+    if (rejecting) throw Error('publication refusée');
+    notices.push(state);
+  }, () => {});
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  assert.equal(runtime.snapshot().registry.status, 'restoring');
+  rejecting = false;
+  runtime.tick();
+  runtime.tick();
+  assert.deepEqual(notices.map(state => [state.registry.status, state.activation.id]), [['restoring', null]]);
+});
+
+test('a failed core tick still hands the due registry to its store', async t => {
+  let clock = 0;
+  const session = fakeSession(), diagnostics = [];
+  const runtime = simulated(() => session, () => clock,
+    () => { throw Error('publication refusée'); },
+    event => { diagnostics.push(event); throw Error('journal indisponible'); });
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await runtime.flush();
+  runtime.start({ instruction: 'Vérifie les dates.' });
+  const written = session.writes.length;
+  const failure = Object.assign(new Error('tick interrompu'), { code: 'CORE_TICK_FAILED' });
+  t.mock.method(runtime.surveillance, 'tick', () => { throw failure; });
+  clock = 1000;
+  assert.throws(() => runtime.tick(), error => error === failure);
+  assert.equal(session.writes.length, written + 1, 'the due write is attempted despite the core exception');
+  assert.equal(session.writes.at(-1).activation.instruction, 'Vérifie les dates.');
+  assert.equal(runtime.snapshot().enabled, true);
+  assert.equal(runtime.snapshot().error, null);
+  assert.ok(diagnostics.length > 1, 'publication and diagnostic failures do not prevent the due write');
 });
 
 test('a failed host publication during core changes stays out of core errors while detection and persistence continue', async t => {

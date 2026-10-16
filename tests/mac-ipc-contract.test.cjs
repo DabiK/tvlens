@@ -146,7 +146,7 @@ const HOST_SETTINGS = ['TVLENS_QUESTION_TIMEOUT_MS', 'TVLENS_SURVEILLANCE_WORKER
 // structured-cloned both ways and with Electron's error prefix, as between two processes. Two things of the
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
 // and, when `disk` is given, the free space measured by the real DiskGuard (its documented `freeBytes` option).
-// `wrap` hands a test what the host composes ({ conversation, session }): to make an adapter fail, or to see it closed.
+// `wrap` expose les compositions et leur diagnostic pour injecter une panne aux frontières du vrai hôte.
 async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {} } = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [];
   let bridge, finished, loaded;
@@ -183,8 +183,17 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     if (request === '../adapters/codex-confinement.cjs') return { ...loaded, sweepStaleContexts: (...args) => { sweeps.push(args); return sweep(); } };
     // Measured afresh at every check, so that a change of free space is seen at once instead of five seconds later.
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
-    if (request === '../runtime/conversation-runtime.cjs' && wrap.conversation) return { ...loaded, createConversationRuntime: options => wrap.conversation(loaded.createConversationRuntime(options)) };
-    if (request === '../runtime/session-runtime.cjs' && wrap.session) return { ...loaded, createSessionRuntime: options => wrap.session(loaded.createSessionRuntime(options)) };
+    const factories = {
+      '../runtime/conversation-runtime.cjs': ['createConversationRuntime', wrap.conversation],
+      '../runtime/session-runtime.cjs': ['createSessionRuntime', wrap.session],
+      '../runtime/surveillance-runtime.cjs': ['createSurveillanceRuntime', wrap.surveillance],
+      '../runtime/publication-diagnostic.cjs': ['createPublicationDiagnostic', wrap.diagnostic],
+    };
+    const factory = factories[request];
+    if (factory?.[1]) {
+      const [name, wrapFactory] = factory;
+      return { ...loaded, [name]: (...args) => wrapFactory(loaded[name](...args)) };
+    }
     return loaded;
   };
   try { delete require.cache[require.resolve('../app/main.cjs')]; require('../app/main.cjs'); }
@@ -232,6 +241,65 @@ async function capture(host, sessionId, { after = 0, frames = 1 } = {}) {
 }
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
+
+test('the Mac surveillance interval diagnoses a refused runtime tick and calls the next tick even if its journal throws', async t => {
+  for (const failingDiagnostic of [false, true]) await t.test(`throwing diagnostic: ${failingDiagnostic}`, async t => {
+    const { launch } = await stage(t);
+    let calls = 0;
+    const host = await launch({ wrap: {
+      surveillance: built => {
+        const tick = built.tick.bind(built);
+        built.tick = () => {
+          calls++;
+          if (calls === 1) throw Object.assign(new Error('tick refusé'), { code: 'RUNTIME_TICK_FAILED' });
+          return tick();
+        };
+        return built;
+      },
+      diagnostic: report => event => {
+        report(event);
+        if (failingDiagnostic) throw Error('journal indisponible');
+      },
+    } });
+    assert.equal(host.started, true, host.failures.join(' '));
+    const session = await host.start();
+    assert.doesNotThrow(() => t.mock.timers.tick(1000), 'the real periodic callback absorbs the failure');
+    const diagnostics = host.failures.map(line => JSON.parse(line));
+    assert.deepEqual(diagnostics.map(({ code, origin, sessionId, error }) => [code, origin, sessionId, error.code]), [
+      ['TVLENS_SURVEILLANCE_TICK_FAILED', 'mac', session.id, 'RUNTIME_TICK_FAILED'],
+    ]);
+    assert.doesNotThrow(() => t.mock.timers.tick(1000));
+    assert.equal(calls, 2, 'no immediate retry, and the next interval still runs');
+    assert.equal(host.failures.length, 1);
+    assert.equal((await host.surveillanceState()).error, null);
+  });
+});
+
+test('the Mac composition journals a refused surveillance state and delivers its current state after the window recovers', async t => {
+  const { launch } = await stage(t);
+  let surveillance;
+  const host = await launch({ wrap: { surveillance: built => { surveillance = built; return built; } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start(), received = [];
+  const unsubscribe = host.onSurveillance(() => {
+    throw Object.assign(new Error('fenêtre indisponible'), { code: 'WINDOW_UNAVAILABLE' });
+  });
+  host.onSurveillance(state => received.push(state));
+  await host.startSurveillance({ instruction: 'Vérifie les chiffres.' });
+  await surveillance.ready();
+  await surveillance.flush();
+  assert.deepEqual(received, []);
+  const diagnostics = host.failures.map(line => JSON.parse(line));
+  assert.ok(diagnostics.length > 0);
+  assert.ok(diagnostics.every(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
+    && event.origin === 'surveillance-runtime' && event.sessionId === session.id && event.error.code === 'WINDOW_UNAVAILABLE'));
+  unsubscribe();
+  assert.doesNotThrow(() => t.mock.timers.tick(1000));
+  assert.deepEqual(received.map(state => [state.sessionId, state.enabled, state.registry.status]), [[session.id, true, 'ready']]);
+  t.mock.timers.tick(1000);
+  assert.equal(received.length, 1);
+  assert.equal((await host.surveillanceState()).error, null);
+});
 
 test('a Mac session is archived instead of purged, listed, reopened read-only without a write, resumed only explicitly, and deleted alone', async t => {
   const { folder, launch } = await stage(t), host = await launch();

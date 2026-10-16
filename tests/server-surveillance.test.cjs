@@ -24,6 +24,49 @@ const SPOKEN = {
   'moment-6': 'Le budget augmente de 4 milliards d’euros.',
 };
 
+test('the server interval diagnoses a refused surveillance tick and keeps quota and disk maintenance running even if its journal throws', async t => {
+  for (const failingDiagnostic of [false, true]) await t.test(`throwing diagnostic: ${failingDiagnostic}`, async t => {
+    t.mock.timers.enable({ apis: ['setInterval'] });
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-surveillance-tick-'));
+    let calls = 0, checks = 0;
+    let disk = { state: 'blocked', freeBytes: 0, minFreeBytes: 1 };
+    const diagnostics = [];
+    const guard = {
+      snapshot: () => disk,
+      check: () => {
+        checks++;
+        if (checks > 1) disk = { ...disk, state: 'ok', freeBytes: 10 };
+        return Promise.resolve(disk);
+      },
+    };
+    const runtime = new HeadlessRuntime({
+      userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true, guard,
+      log: line => { diagnostics.push(JSON.parse(line)); if (failingDiagnostic) throw Error('journal indisponible'); },
+    });
+    t.after(async () => { await runtime.close(); await fs.rm(root, { recursive: true, force: true }); });
+    const tick = runtime.surveillance.tick.bind(runtime.surveillance);
+    t.mock.method(runtime.surveillance, 'tick', () => {
+      calls++;
+      if (calls === 1) throw Object.assign(new Error('tick refusé'), { code: 'RUNTIME_TICK_FAILED' });
+      return tick();
+    });
+    t.mock.method(runtime.quota, 'snapshot', () => ({ changed: true }));
+    const revision = runtime.auxRevision, changes = [];
+    runtime.listeners.add(state => changes.push(state));
+    assert.doesNotThrow(() => t.mock.timers.tick(1000));
+    assert.deepEqual(diagnostics.map(({ code, origin, error }) => [code, origin, error.code]), [
+      ['TVLENS_SURVEILLANCE_TICK_FAILED', 'headless-runtime', 'RUNTIME_TICK_FAILED'],
+    ]);
+    assert.equal(runtime.auxRevision, revision + 1, 'quota changes are still observed');
+    assert.equal(checks, 2, 'the blocked disk is checked again');
+    assert.equal(changes.at(-1).storage.state, 'ok', 'the new disk state is still published');
+    assert.doesNotThrow(() => t.mock.timers.tick(1000));
+    assert.equal(calls, 2, 'no immediate retry, and the next interval still runs');
+    assert.equal(diagnostics.length, 1);
+    assert.equal(runtime.snapshot().surveillance.error, null);
+  });
+});
+
 test('chat and surveillance overlap on the server host: neither holds the other back, their measures stay apart, and the registry ends in final states', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-server-surveillance-')), sessionsRoot = path.join(root, 'sessions');
   let clock = 0, wall = 1790000000000, chatGate = gate(), verifyGate = null, assembled = 0;

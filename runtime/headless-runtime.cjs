@@ -10,7 +10,7 @@ const {
 const { createConversationRuntime } = require("./conversation-runtime.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { publishState } = require("../core/state-publication.cjs");
-const { createSurveillanceRuntime } = require("./surveillance-runtime.cjs");
+const { createSurveillanceRuntime, tickSurveillance } = require("./surveillance-runtime.cjs");
 const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
 const { warmUp } = require("./session-warm-up.cjs");
@@ -154,6 +154,7 @@ class HeadlessRuntime {
       selectedModels: options.selectedModels,
       quota: this.quota,
       now: this.wallClock,
+      onPublicationError: this.onPublicationError,
       onChange: () => this.emit(),
       // Informative overlap counter only: nothing in the surveillance decides on it.
       probe: () => ({ chatBusy: this.deep.jobs.some(active) }),
@@ -219,11 +220,9 @@ class HeadlessRuntime {
   // Every second, without waiting for anything: surveillance deadlines and grace periods, then the
   // figures that move without an event of their own.
   tick() {
-    try {
-      this.surveillance.tick();
-    } catch {
-      // Quota et disque doivent encore être actualisés. Le tick de surveillance a pu rester partiel, sans diagnostic ni reprise garantie.
-    }
+    tickSurveillance(this.surveillance, this.onPublicationError, {
+      origin: "headless-runtime", sessionId: this.session?.id,
+    });
     const aux = this.auxiliary();
     if (aux !== this.auxKey) {
       this.auxKey = aux;

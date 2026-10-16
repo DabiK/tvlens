@@ -5,7 +5,7 @@ const {
 } = require("../adapters/simulated-providers.cjs");
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
-const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
+const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
 const { createQuestionCheckpoint } = require('../runtime/question-checkpoint.cjs');
 const { createPublicationDiagnostic } = require('../runtime/publication-diagnostic.cjs');
@@ -184,11 +184,14 @@ app.whenReady().then(async () => {
     agent: smoke && !process.argv.includes('--live-surveillance') ? new SimulatedSurveillanceAgent({ detectDelayMs: 200, verifyDelayMs: 1500 }) : undefined,
     codexBinary, config, selectedModels, quota,
     probe: () => ({ chatBusy: questionPending() }),
+    onPublicationError,
     onChange: state => send('surveillance:state', state),
   });
   // The surveillance role owns its Codex clients; a new thread picks up a changed model or account.
   const surveillanceClients = () => [surveillance.agent.detector, ...(surveillance.agent.researchers || []).map(worker => worker.client)].filter(Boolean);
-  surveillanceTimer = setInterval(() => surveillance.tick(), 1000);
+  surveillanceTimer = setInterval(() => tickSurveillance(surveillance, onPublicationError, {
+    origin: 'mac', sessionId: loaded?.runtime.id,
+  }), 1000);
   handle('surveillance:state', () => surveillance.snapshot());
   handle('surveillance:history', () => surveillance.snapshot({ full: true }));
   // Queued behind any session transition: an activation never binds to a session that is being closed.
