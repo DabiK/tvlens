@@ -114,15 +114,28 @@ test('caller abort rejects promptly with its reason, drops the connection and le
 test('timeout, HTTP error and dropped connection reject with stable messages', { timeout: 10000 }, async (t) => {
   const server = await backend(t, (request, res) => {
     const mode = request.body.messages[0].content;
-    if (mode === '500') { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'détail interne ' + request.headers.authorization })); }
+    if (['500', '404'].includes(mode)) {
+      res.writeHead(Number(mode), { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'détail interne ' + request.headers.authorization }));
+    }
     else if (mode === 'coupure') res.socket.destroy();
   });
   const impatient = new LocalVlmAgent({ url: server.url, model: MODEL, timeoutMs: 40 });
   await assert.rejects(impatient.answer({ instructions: 'silence' }), { name: 'TimeoutError' });
   assert.equal(await server.requests[0].closed, false, 'the timed-out request is dropped, not left pending on the backend');
   const agent = new LocalVlmAgent({ url: server.url, model: MODEL, headers: { Authorization: SECRET } });
-  await assert.rejects(agent.answer({ instructions: '500' }), (error) => error.message === 'Backend local indisponible (HTTP 500).');
-  await assert.rejects(agent.answer({ instructions: 'coupure' }), (error) => error.message === 'Backend local injoignable.' && error.cause === undefined);
+  for (const status of [500, 404]) {
+    const error = await failure(agent.answer({ instructions: String(status) }));
+    assert.equal(error.message, `Backend local indisponible (HTTP ${status}).`);
+    assert.equal(error.code, 'TVLENS_LOCAL_VLM_UNAVAILABLE');
+    assert.equal(require('../adapters/local-vlm-agent.cjs').TVLENS_LOCAL_VLM_UNAVAILABLE, error.code);
+    assert.equal(error.httpStatus, status);
+    assert.equal('status' in error, false);
+  }
+  const unreachable = await failure(agent.answer({ instructions: 'coupure' }));
+  assert.deepEqual([unreachable.message, unreachable.cause], ['Backend local injoignable.', undefined]);
+  assert.equal(unreachable.code, 'TVLENS_LOCAL_VLM_UNREACHABLE');
+  assert.equal(require('../adapters/local-vlm-agent.cjs').TVLENS_LOCAL_VLM_UNREACHABLE, unreachable.code);
 });
 
 test('a body that is not JSON, has no string content or no JSON object is rejected as invalid', { timeout: 10000 }, async (t) => {
@@ -139,7 +152,10 @@ test('anything but a base64 image data URL is refused before any request', { tim
   const agent = new LocalVlmAgent({ url: server.url, model: MODEL });
   for (const item of [{ type: 'image', url: 'https://exemple.invalid/a.jpg' }, { type: 'image', url: 'data:image/jpeg;base64,' }, { type: 'image', url: 'data:image/jpeg;base64,QUJD\nREVG' },
     { type: 'image', url: 'data:text/plain;base64,QUJD' }, { type: 'image', url: 'data:image/jpeg,QUJD' }, { type: 'image' }, { type: 'text', text: 'QUJD' }, { type: 'video', url: 'data:image/jpeg;base64,QUJD' }, null])
-    await assert.rejects(agent.answer({ instructions: 'x', mediaInput: [image('QUJD'), item] }), (error) => error.message === 'Backend local : image invalide.', JSON.stringify(item));
+    await assert.rejects(agent.answer({ instructions: 'x', mediaInput: [image('QUJD'), item] }), {
+      message: 'Backend local : image invalide.', code: 'TVLENS_LOCAL_VLM_INPUT_REFUSED',
+    }, JSON.stringify(item));
+  assert.equal(require('../adapters/local-vlm-agent.cjs').TVLENS_LOCAL_VLM_INPUT_REFUSED, 'TVLENS_LOCAL_VLM_INPUT_REFUSED');
   assert.equal(server.requests.length, 0);
 });
 
@@ -152,10 +168,11 @@ test('close aborts the request in flight and refuses every later answer', { time
   pending.catch(() => {}); queued.catch(() => {});
   const request = await inFlight;
   await agent.close();
-  await assert.rejects(pending, (error) => error.message === 'Backend local fermé.');
-  await assert.rejects(queued, (error) => error.message === 'Backend local fermé.');
+  await assert.rejects(pending, { message: 'Backend local fermé.', code: 'TVLENS_LOCAL_VLM_CLOSED' });
+  await assert.rejects(queued, { message: 'Backend local fermé.', code: 'TVLENS_LOCAL_VLM_CLOSED' });
   assert.equal(await request.closed, false);
-  await assert.rejects(agent.answer({ instructions: 'après' }), (error) => error.message === 'Backend local fermé.');
+  await assert.rejects(agent.answer({ instructions: 'après' }), { message: 'Backend local fermé.', code: 'TVLENS_LOCAL_VLM_CLOSED' });
+  assert.equal(require('../adapters/local-vlm-agent.cjs').TVLENS_LOCAL_VLM_CLOSED, 'TVLENS_LOCAL_VLM_CLOSED');
   await agent.close();
   assert.equal(server.requests.length, 1);
 });

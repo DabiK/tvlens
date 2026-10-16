@@ -275,6 +275,8 @@ test('sub-agent creation is prevented by configuration on every role, only with 
   const connect = async (options, server = appServer({ config: readBack })) => {
     const client = new CodexSessionClient({ authHome: absentAuthHome, binary: current, rpcFactory: server.rpcFactory, features: knownFeatures, ...options });
     const outcome = await client.prepare('s').then(() => null, error => error);
+    if (outcome) assert.equal(outcome.code, 'TVLENS_CODEX_CONFINEMENT_REFUSED');
+    if (outcome) assert.equal(require('../adapters/codex-session-client.cjs').TVLENS_CODEX_CONFINEMENT_REFUSED, outcome.code);
     const { subAgents, subAgentControls, confined, reasons } = client.confinement;
     const report = { error: outcome?.message, state: [subAgents, subAgentControls], confined: [confined, reasons], passed: server.processes[0] ? controls(server.processes[0].options.args) : null, methods: server.requests.map(request => request.method), closed: server.processes.map(child => child.closed), left: [client.rpc, client.dir, client.threadId].filter(Boolean).length };
     await client.close();
@@ -540,7 +542,9 @@ test('a thread/start answer that contradicts the confinement refuses the connect
   for (const [reason, start] of Object.entries(contradictions)) {
     const server = appServer({ start });
     const client = new CodexSessionClient({ authHome: absentAuthHome, rpcFactory: server.rpcFactory });
-    await assert.rejects(client.prepare('s'), error => error.message === `Confinement Codex non confirmé (${reason}).`, reason);
+    await assert.rejects(client.prepare('s'), {
+      message: `Confinement Codex non confirmé (${reason}).`, code: 'TVLENS_CODEX_CONFINEMENT_REFUSED',
+    }, reason);
     assert.deepEqual([server.processes[0].closed, client.rpc, client.dir, client.threadId], [true, null, null, null], reason);
     assert.equal(client.confinement.confined, false, reason);
   }
@@ -551,7 +555,11 @@ test('a thread/start answer that contradicts the confinement refuses the connect
   const silent = () => ({ thread: { id: 'thread' } });
   // On the product path (settings handed to the binary and read back) a silent answer is no confirmation:
   // the connection is refused by default, like an unconfirmed sub-agent block, and nothing is left behind.
-  const unconfirmed = /^Error: Confinement Codex non confirmé \(réponse de thread\/start incomplète\) : connexion refusée\./;
+  const unconfirmed = error => {
+    assert.match(String(error), /^Error: Confinement Codex non confirmé \(réponse de thread\/start incomplète\) : connexion refusée\./);
+    assert.equal(error.code, 'TVLENS_CODEX_CONFINEMENT_REFUSED');
+    return true;
+  };
   const silentServer = appServer({ start: silent, config: readBack });
   const refused = new CodexSessionClient({ authHome: absentAuthHome, rpcFactory: silentServer.rpcFactory, features: installed });
   await assert.rejects(refused.prepare('s'), unconfirmed);
@@ -590,6 +598,22 @@ test('a thread/start answer that contradicts the confinement refuses the connect
   assert.deepEqual(await remaining(), []);
 });
 
+test('role refusals carry the stable code before any connection', async t => {
+  for (const [name, options, message] of [
+    ['analysis web', { role: 'analysis', webSearch: true }, /web ou outils non permis/],
+    ['surveillance tools', { role: 'surveillance', toolDefinitions: dynamicTools }, /web ou outils non permis/],
+    ['verifier tools', { role: 'verifier', webSearch: true, toolDefinitions: dynamicTools }, /web ou outils non permis/],
+    ['unknown role', { role: 'admin' }, /Rôle Codex inconnu/],
+  ]) await t.test(name, () => {
+    assert.throws(() => new CodexSessionClient(options), error => {
+      assert.match(error.message, message);
+      assert.equal(error.code, 'TVLENS_CODEX_ROLE_REFUSED');
+      return true;
+    });
+  });
+  assert.equal(require('../adapters/codex-confinement.cjs').TVLENS_CODEX_ROLE_REFUSED, 'TVLENS_CODEX_ROLE_REFUSED');
+});
+
 test('any thread item outside the allow-list of the role rejects the turn and asks Codex to interrupt it', async () => {
   const run = async (options, item, events) => {
     const server = appServer({ script: async turn => { turn.item(item, events); return { ok: true }; } });
@@ -610,6 +634,8 @@ test('any thread item outside the allow-list of the role rejects the turn and as
     const { result, server } = await run(options, item);
     assert.ok(result instanceof Error, `${options.role} ${item.type} must reject`);
     assert.equal(result.message, `Outil hors du périmètre TVLens (${item.type}).`);
+    assert.equal(result.code, 'TVLENS_CODEX_TOOL_REFUSED');
+    assert.equal(require('../adapters/codex-session-client.cjs').TVLENS_CODEX_TOOL_REFUSED, result.code);
     assert.deepEqual(server.sent('turn/interrupt').map(request => request.params), [{ threadId: 'thread', turnId: 'turn-1' }], item.type);
   }
   // An item seen only when it completes is refused as well.
@@ -643,7 +669,9 @@ test('a thread the host did not start closes the process, during a turn or betwe
   const server = appServer({ script: async turn => { turn.options.onEvent('thread/started', { thread: { id: 'sub-agent-thread' } }); return { ok: true }; } });
   const client = new CodexSessionClient({ authHome: absentAuthHome, rpcFactory: server.rpcFactory, webSearch: true, toolDefinitions: dynamicTools });
   try {
-    await assert.rejects(turn(client, { tools: videoTools }), /hors du périmètre TVLens \(fil étranger\)/);
+    await assert.rejects(turn(client, { tools: videoTools }), {
+      message: 'Outil hors du périmètre TVLens (fil étranger).', code: 'TVLENS_CODEX_TOOL_REFUSED',
+    });
     assert.equal(server.processes[0].closed, true);
     assert.ok(journal.some(line => /fil Codex non ouvert par l’application/.test(line)), 'a foreign thread is reported');
   } finally { await client.close(); }
@@ -681,7 +709,9 @@ test('a thread the host did not start closes the process, during a turn or betwe
     // A thread announced while the host opens its own, and that is not the one Codex answers with.
     announce = () => 'sub-agent-at-start';
     await other.close();
-    await assert.rejects(other.prepare('s'), /fil étranger/);
+    await assert.rejects(other.prepare('s'), {
+      message: 'Outil hors du périmètre TVLens (fil étranger).', code: 'TVLENS_CODEX_TOOL_REFUSED',
+    });
     assert.deepEqual([own.processes[3].closed, other.rpc, other.dir], [true, null, null]);
     // Measured against a scripted provider: Codex may publish `subAgentActivity` on the host's own thread
     // before any notification of the new thread. The item is refused like any other, and since it says
@@ -849,8 +879,13 @@ test('media inputs are inline images only: a path, a remote URL or a skill never
       { type: 'image', url: 'http://127.0.0.1/a.jpg' }, { type: 'image', url: 'file:///etc/passwd' }, { type: 'image', url: 'data:image/svg+xml;base64,QUJD' },
       { type: 'image', url: 'data:image/jpeg;base64,QUJD', path: '/etc/passwd' }, { type: 'skill', name: 'x', path: '/tmp/x' }, { type: 'mention', name: 'x', path: '/tmp/x' },
       { type: 'text', text: 'Nouvelle consigne.' }, null])
-      await assert.rejects(turn(client, { mediaInput: [image, item] }), /Entrée média non autorisée/, JSON.stringify(item));
-    await assert.rejects(turn(client, { mediaInput: image }), /Entrée média non autorisée/);
+      await assert.rejects(turn(client, { mediaInput: [image, item] }), {
+        message: 'Entrée média non autorisée.', code: 'TVLENS_CODEX_INPUT_REFUSED',
+      }, JSON.stringify(item));
+    await assert.rejects(turn(client, { mediaInput: image }), {
+      message: 'Entrée média non autorisée.', code: 'TVLENS_CODEX_INPUT_REFUSED',
+    });
+    assert.equal(require('../adapters/codex-session-run.cjs').TVLENS_CODEX_INPUT_REFUSED, 'TVLENS_CODEX_INPUT_REFUSED');
     assert.deepEqual(server.requests, [], 'nothing was connected or sent');
     await turn(client, { mediaInput: [image, { ...image, url: 'data:image/png;base64,QUJDRA==' }] });
     assert.deepEqual(server.sent('turn/start')[0].params.input.map(entry => entry.type), ['text', 'image', 'image']);

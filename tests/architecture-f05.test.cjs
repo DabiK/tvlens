@@ -183,22 +183,30 @@ test('a spawn the system refuses ends as a closed connection, never as an except
   const child = bare(), events = [];
   const rpc = new (transportOn(t, () => child))({ binary: 'codex', args: [], onEvent: method => events.push(method) });
   assert.doesNotThrow(() => rpc.start(), 'no pipe is read before it is known to exist');
-  assert.equal((await failure(rpc.request('initialize'))).message, 'Codex déconnecté.');
+  const disconnected = await failure(rpc.request('initialize'));
+  assert.equal(disconnected.message, 'Codex déconnecté.');
+  assert.equal(disconnected.code, 'TVLENS_CODEX_DISCONNECTED');
   assert.doesNotThrow(() => child.emit('error', Object.assign(new Error('spawn EMFILE'), { code: 'EMFILE' })), 'the refusal reported afterwards is heard');
   assert.deepEqual(events, ['connection/closed']);
   assert.equal(await rpc.close(), true);
   // A spawn that throws is its caller's to hear, as before; the transport it leaves is closed without harm.
   const thrown = new (transportOn(t, () => { throw Object.assign(new Error('spawn EINVAL'), { code: 'EINVAL' }); }))({ binary: 'codex', args: [], onEvent() {} });
   assert.throws(() => thrown.start(), /EINVAL/);
-  assert.deepEqual([(await failure(thrown.request('initialize'))).message, await thrown.close()], ['Codex déconnecté.', true]);
+  const invalidSpawn = await failure(thrown.request('initialize'));
+  assert.deepEqual([invalidSpawn.message, await thrown.close()], ['Codex déconnecté.', true]);
+  assert.equal(invalidSpawn.code, 'TVLENS_CODEX_DISCONNECTED');
   // The real spawn of a binary that is not there: pipes, no pid, the error on the next tick.
   const seen = [], absent = new CodexRpc({ binary: path.join(os.tmpdir(), 'tvlens-f05-absent-codex'), args: [], cwd: os.tmpdir(), env: {}, onEvent: method => seen.push(method) }).start();
   await until(() => seen.length, 'the refusal is reported');
-  assert.deepEqual([[...seen], (await failure(absent.request('initialize'))).message, await absent.close()], [['connection/closed'], 'Codex déconnecté.', true]);
+  const absentBinary = await failure(absent.request('initialize'));
+  assert.deepEqual([[...seen], absentBinary.message, await absent.close()], [['connection/closed'], 'Codex déconnecté.', true]);
+  assert.equal(absentBinary.code, 'TVLENS_CODEX_DISCONNECTED');
   // Behind the client: the connection is refused in the words of a lost one, and neither a process nor a private tree is left.
   const remaining = created(t), Transport = transportOn(t, bare);
   const client = new CodexSessionClient({ authHome, rpcFactory: options => new Transport(options) });
-  assert.equal((await failure(client.prepare('s'))).message, 'Codex déconnecté.');
+  const clientError = await failure(client.prepare('s'));
+  assert.equal(clientError.message, 'Codex déconnecté.');
+  assert.equal(clientError.code, 'TVLENS_CODEX_DISCONNECTED');
   assert.deepEqual([client.rpc, client.ready, await remaining()], [null, null, []]);
 });
 

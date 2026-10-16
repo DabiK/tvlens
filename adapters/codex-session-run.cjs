@@ -1,6 +1,7 @@
 const { safeError } = require("./chat-trace.cjs");
 const { validMediaInput } = require("./codex-confinement.cjs");
 
+const TVLENS_CODEX_INPUT_REFUSED = "TVLENS_CODEX_INPUT_REFUSED";
 const WATCHDOG_INTERVAL_MS = 1000;
 const INTERRUPT_GRACE_MS = 3000;
 
@@ -8,7 +9,8 @@ function prepareTurn(state, input, effects) {
   const { signal, sessionId, onProgress, mediaInput = [] } = input;
   signal.throwIfAborted();
   // Checked before anything is connected or sent: a path or remote URL must never reach turn/start.
-  if (!validMediaInput(mediaInput)) throw Error("Entrée média non autorisée.");
+  if (!validMediaInput(mediaInput))
+    throw Object.assign(Error("Entrée média non autorisée."), { code: TVLENS_CODEX_INPUT_REFUSED });
   const started = effects.now();
   // Cold when this turn must await a connection: none yet, another session, or a reconnect still in flight.
   const coldStart =
@@ -175,4 +177,4 @@ async function runTurn(state, input, effects) {
   }
 }
 
-module.exports = { runTurn };
+module.exports = { runTurn, TVLENS_CODEX_INPUT_REFUSED };

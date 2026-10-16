@@ -29,6 +29,9 @@ const {
 } = require("./codex-confinement.cjs");
 // The product transport: a real Codex process. Anything else is the test seam (see `rpcFactory`).
 const spawnRpc = (options) => new CodexRpc(options);
+const TVLENS_CODEX_SESSION_CLOSED = "TVLENS_CODEX_SESSION_CLOSED";
+const TVLENS_CODEX_CONFINEMENT_REFUSED = "TVLENS_CODEX_CONFINEMENT_REFUSED";
+const TVLENS_CODEX_TOOL_REFUSED = "TVLENS_CODEX_TOOL_REFUSED";
 // How long Codex gets to confirm the end of a turn the guard refused, before its process goes.
 const DRAIN_MS = 3000;
 // What a connection is refused with while the process group of the one it replaces is not seen gone.
@@ -380,7 +383,7 @@ class CodexSessionClient {
     threads.announced.clear();
     if (foreign && this.rpc === rpc) {
       this.foreignThread();
-      throw Error("Outil hors du périmètre TVLens (fil étranger).");
+      throw Object.assign(Error("Outil hors du périmètre TVLens (fil étranger)."), { code: TVLENS_CODEX_TOOL_REFUSED });
     }
     return result;
   }
@@ -389,7 +392,7 @@ class CodexSessionClient {
   foreignThread() {
     this.trace("guard.refused", {kind:"thread"});
     reportOnce("TVLens : fil Codex non ouvert par l’application (sous-agent), processus fermé.");
-    this.active?.reject(Error("Outil hors du périmètre TVLens (fil étranger)."));
+    this.active?.reject(Object.assign(Error("Outil hors du périmètre TVLens (fil étranger)."), { code: TVLENS_CODEX_TOOL_REFUSED }));
     this.ready = null;
     this.rpc?.close();
   }
@@ -428,10 +431,16 @@ class CodexSessionClient {
       this.confinementMode !== "report" &&
       (!report.confined || this.confinementMode === "strict" || !this.transportDouble)
     )
-      throw Error(
-        report.confined
-          ? "Confinement Codex non confirmé (réponse de thread/start incomplète) : connexion refusée. Cette version de Codex ne confirme pas l’absence d’environnement d’exécution du fil. Mets Codex à jour (comportement mesuré sur 0.160.1), ou active explicitement le mode diagnostic TVLENS_CODEX_CONFINEMENT=report, qui n’est pas confiné."
-          : `Confinement Codex non confirmé (${report.reasons.join(", ")}).`,
+      throw Object.assign(
+        Error(
+          report.confined
+            ? "Confinement Codex non confirmé (réponse de thread/start incomplète) : connexion refusée. " +
+              "Cette version de Codex ne confirme pas l’absence d’environnement d’exécution du fil. " +
+              "Mets Codex à jour (comportement mesuré sur 0.160.1), ou active explicitement le mode diagnostic " +
+              "TVLENS_CODEX_CONFINEMENT=report, qui n’est pas confiné."
+            : `Confinement Codex non confirmé (${report.reasons.join(", ")}).`,
+        ),
+        { code: TVLENS_CODEX_CONFINEMENT_REFUSED },
       );
   }
   // Passing a setting is not the proof either: the App Server states the configuration it runs with.
@@ -469,7 +478,7 @@ class CodexSessionClient {
     }
     const message = subAgentRefusal(finding);
     reportOnce(`TVLens : ${message}`);
-    throw Error(message);
+    throw Object.assign(Error(message), { code: TVLENS_CODEX_CONFINEMENT_REFUSED });
   }
   // Ends the turn on anything outside the role and asks Codex to stop it. Once per turn.
   refuse(active, kind, turnId = active.turnId) {
@@ -477,7 +486,7 @@ class CodexSessionClient {
     active.refused = true;
     const label = String(kind).replace(/[^A-Za-z0-9_./-]/g, "").slice(0, 60);
     this.trace("guard.refused", {kind:label});
-    active.reject(Error(`Outil hors du périmètre TVLens (${label}).`));
+    active.reject(Object.assign(Error(`Outil hors du périmètre TVLens (${label}).`), { code: TVLENS_CODEX_TOOL_REFUSED }));
     // The caller is answered now, but the turn is still running inside Codex. Until Codex reports
     // its end, no other turn starts on this client: with no turn id of its own yet, the next turn
     // would take the late `turn/completed (interrupted)` of this one for its own outcome.
@@ -627,7 +636,7 @@ class CodexSessionClient {
   // that the group is not seen gone. It never rejects for that, so that a session can still be archived.
   async close() {
     this.generation = (this.generation || 0) + 1;
-    this.active?.reject(Error("Session Codex fermée."));
+    this.active?.reject(Object.assign(Error("Session Codex fermée."), { code: TVLENS_CODEX_SESSION_CLOSED }));
     this.draining?.end();
     const rpc = this.rpc,
       dir = this.dir;
@@ -642,4 +651,11 @@ class CodexSessionClient {
     if (this.leaving) await this.finish();
   }
 }
-module.exports = { CodexSessionClient, streamedAnswer, sourceKey };
+module.exports = {
+  CodexSessionClient,
+  streamedAnswer,
+  sourceKey,
+  TVLENS_CODEX_SESSION_CLOSED,
+  TVLENS_CODEX_CONFINEMENT_REFUSED,
+  TVLENS_CODEX_TOOL_REFUSED,
+};

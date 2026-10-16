@@ -1,7 +1,7 @@
 ---
 id: T124
 titre: Put a stable code on every Codex and local vision error a retry reads
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -114,3 +114,28 @@ avant toute modification de son attente. Les repères sont à relire après T199
 contrat-fil ou un port de journal non livrés.
 
 ## Journal
+
+- Cadrage : consignes, skills, ADR 0005/0008/0022, émetteurs, appelants, tests et diff initial lus. Exploration et absence d’écart consignées dans `.harness-state/tickets/T124/`. Les deux dossiers non suivis préexistants restent hors périmètre. Tests et contrôles à venir, aucun résultat annoncé.
+
+- RPC, tests d’abord : `node --test --test-name-pattern='messages the adapter relies on' tests/architecture-f08.test.cjs` : rouge sur assertion, `undefined` au lieu de `TVLENS_CODEX_DISCONNECTED` (`rpc-red.log`), puis 1/1 vert (`rpc-green.log`). Le vrai RPC vérifie message/code/method pour initialize, thread/start et turn/start, puis REQUEST_CUT ; horloge pilotée. Les trois constantes sont vérifiées sur l’export de leur émetteur.
+- Tour actif et fermeture : `node --test --test-name-pattern='connection lost during the turn|closing the real Codex client' tests/architecture-f08.test.cjs` : 2/2 rouges sur absence des codes (`turn-errors-red.log`), puis 2/2 verts (`turn-errors-green.log`). CONNECTION_LOST reste sur la cause du marquage vision ; fermer un tour stalled avec le seul double App Server existant rend « Session Codex fermée. » et SESSION_CLOSED, sans redemande.
+- Refus, tests d’abord : `node --test --test-name-pattern='sub-agent creation is prevented|thread/start answer that contradicts|any thread item|a thread the host did not start|media inputs are' tests/codex-confinement.test.cjs` : 5/5 rouges sur assertions de codes (`refusals-red.log`). L’assertion d’export des sous-agents a ensuite été placée uniquement sur l’issue refusée pour observer l’erreur réelle. `node --test --test-name-pattern='sub-agent creation is prevented|role refusals carry' tests/codex-confinement.test.cjs` : rouge sur les codes émis, dont les quatre variantes de rôle (`subagents-role-red.log`). `node --test --test-name-pattern='sub-agent creation is prevented|thread/start answer that contradicts|role refusals carry|any thread item|a thread the host did not start|media inputs are' tests/codex-confinement.test.cjs` : 10/10 verts (`refusals-green.log`). Les assertions de message et de nettoyage restent présentes ; exports vérifiés pour chaque émetteur.
+- Backend local, tests d’abord : `node --test --test-name-pattern='timeout, HTTP|anything but|close aborts' tests/local-vlm-agent.test.cjs` : 3/3 rouges sur absence de code (`local-errors-red.log`). Après ajout du code HTTP, `node --test --test-name-pattern='timeout, HTTP' tests/local-vlm-agent.test.cjs` reste rouge sur UNREACHABLE (`local-unreachable-red.log`). Après correction, première commande : 3/3 verts (`local-errors-green.log`). Le serveur de boucle locale prouve HTTP 500/404, httpStatus numérique exact, absence de status, entrée refusée et fermeture des appels actif, en file et ultérieur ; les quatre exports sont vérifiés.
+- Implémentation : treize constantes définies et exportées par les six émetteurs ; ajout des champs sans migration des lecteurs, sans cycle des modules extraits vers le client, sans modification de core/HTTP/IPC/TV. Les messages et les causes restent inchangés. Les cas de spawn refusé d’architecture-f05 vérifient aussi le code de déconnexion. Le cas existant chat-error-ui porte désormais un code au premier niveau et conserve exactement « Codex · failed · rate_limit ».
+- Premier contrôle : `node scripts/check.mjs --changed` : code 0, règles, format, lint, gel et cliquet verts, 73/73 tests JS sur 5 fichiers (`check-changed.log`). Le message long de confinement a ensuite été découpé par concaténation sans changer son texte ; les bancs et contrôles finaux portent sur cette version.
+- Bancs d’acceptation exécutés un par un, tous code 0 : `node --test tests/architecture-f08.test.cjs` : 20/20 ; `node --test tests/architecture-f05.test.cjs` : 15/15 ; `node --test tests/local-vlm-agent.test.cjs` : 9/9 ; `node --test tests/codex-confinement.test.cjs` : 22/22 ; `node --test tests/chat-error-ui.test.cjs` : 7/7. Sorties intégrales dans `acceptance-<nom>.log`, soit 73 tests réussis, aucun ignoré. Aucun fournisseur réel appelé.
+- Mutations : `python3 .harness-state/tickets/T124/run-mutations.py` : code 0 (`mutations.log`). Dans deux copies isolées sous /private/tmp, remplacement du champ REQUEST_CUT par CONNECTION_LOST, puis retrait du code de la raison close locale. `node --test --test-name-pattern='messages the adapter relies on' tests/architecture-f08.test.cjs` et `node --test --test-name-pattern='close aborts' tests/local-vlm-agent.test.cjs` : chacune rouge, code 1, sur l’assertion attendue (`mutation-rpc.log`, `mutation-local-closure.log`, diffs associés). Restaurations des copies vérifiées par SHA-256, mêmes commandes ensuite vertes 1/1, code 0 (`restored-rpc.log`, `restored-local-closure.log`) ; copies supprimées. SHA-256 des deux sources du dépôt identiques avant/après ; aucune mutation dans le dépôt de travail.
+
+- Contrôle final des fichiers modifiés : `node scripts/check.mjs --changed` : code 0, `check : vert`, règles, format, lint, gel et cliquet verts ; 73/73 tests JS (`check-changed-final.log`). Aucun contrôle ignoré.
+- Contrôle complet final : `node scripts/check.mjs` : code 0, `check : vert` ; règles, format, lint, gel et cliquet verts ; 1 658/1 658 tests JS sur 120 fichiers, 22 tests Python OK (`check-full.log`). `git diff --check` : code 0. Aucun fournisseur réel appelé. Aucun test supprimé ni assertion de message affaiblie ; harnais et plancher inchangés.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T124/verdict.json`, sans réserve ni écart restant. Aucun commit ni push ; la relecture et l’intégration sont laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T124/relecture-1.md : **1. `adapters/codex-perception.cjs:17-18`, hors périmètre**
+  - **Problème :** le commentaire du lecteur attribue encore la perte en plein tour à `codex-session-client`. Depuis l'ADR 0022, c'est `codex-session-events.cjs:71` (`connectionClosed`) qui l'émet. Le ticket dit lui-même que cette attribution est périmée.
+  - **Attendu :** corriger l'attribution quand T125 migrera ce lecteur vers les codes. Ce ticket interdit de toucher aux lecteurs.
+- .harness-state/tickets/T124/relecture-1.md : **2. `adapters/chat-trace.cjs:21`, hors périmètre**
+  - **Problème :** `safeError` laisse déjà passer `code`. Les erreurs codées font donc apparaître un `errorDetail.code` de premier niveau dans l'instantané des travaux (`core/deep-ask.cjs:153`), envoyé au Mac et à la TV.
+  - **Effet aujourd'hui :** aucun. Aucun lecteur ne l'utilise : `app/ui/job-view.mjs:93-98` et `tv/app/chat-model.js:122-128` ne lisent que `turnError.code`. Le critère 5 avait prévu ce cas, et le test chat-error-ui le couvre.
+  - **Attendu :** que T188 et T189 en tiennent compte.

@@ -1,4 +1,7 @@
 const {spawn}=require('node:child_process');
+const TVLENS_CODEX_DISCONNECTED = 'TVLENS_CODEX_DISCONNECTED';
+const TVLENS_CODEX_REQUEST_TIMEOUT = 'TVLENS_CODEX_REQUEST_TIMEOUT';
+const TVLENS_CODEX_REQUEST_CUT = 'TVLENS_CODEX_REQUEST_CUT';
 const KILL_AFTER_MS=3000;
 const EXIT_GRACE_MS=300;
 // Once its launcher has left, nothing reports the end of what is left of a group: it is looked at every WATCH_MS.
@@ -92,8 +95,28 @@ class CodexRpc {
   child.stderr?.on('data',()=>{});child.stdin?.on('error',()=>{});
   return this;
  }
- send(value){if(!this.child?.stdin?.writable)throw Error('Codex déconnecté.');this.child.stdin.write(JSON.stringify(value)+'\n');}
- request(method,params={},timeoutMs=15000){const id=++this.sequence;return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(id);reject(Error(`Codex : délai de connexion dépassé (${method}).`));},timeoutMs);this.pending.set(id,{resolve,reject,timer});try{this.send({id,method,params});}catch(e){clearTimeout(timer);this.pending.delete(id);reject(e);}});}
+ send(value) {
+  if (!this.child?.stdin?.writable)
+   throw Object.assign(Error('Codex déconnecté.'), { code: TVLENS_CODEX_DISCONNECTED });
+  this.child.stdin.write(JSON.stringify(value) + '\n');
+ }
+ request(method, params = {}, timeoutMs = 15000) {
+  const id = ++this.sequence;
+  return new Promise((resolve, reject) => {
+   const timer = setTimeout(() => {
+    this.pending.delete(id);
+    reject(Object.assign(Error(`Codex : délai de connexion dépassé (${method}).`), { code: TVLENS_CODEX_REQUEST_TIMEOUT, method }));
+   }, timeoutMs);
+   this.pending.set(id, { resolve, reject, timer });
+   try {
+    this.send({ id, method, params });
+   } catch (error) {
+    clearTimeout(timer);
+    this.pending.delete(id);
+    reject(error);
+   }
+  });
+ }
  receive(message){
   if(!message||typeof message!=='object')return;
   if(message.method&&message.id!==undefined){
@@ -123,7 +146,14 @@ class CodexRpc {
   }
   const pending=this.pending.get(message.id);if(!pending)return;this.pending.delete(message.id);clearTimeout(pending.timer);if(message.error)pending.reject(Error('Codex : requête refusée. Vérifie le modèle sélectionné et la connexion.'));else pending.resolve(message.result);
  }
- fail(){for(const p of this.pending.values()){clearTimeout(p.timer);p.reject(Error('Connexion Codex interrompue.'));}this.pending.clear();this.onEvent?.('connection/closed',{});}
+ fail() {
+  for (const p of this.pending.values()) {
+   clearTimeout(p.timer);
+   p.reject(Object.assign(Error('Connexion Codex interrompue.'), { code: TVLENS_CODEX_REQUEST_CUT }));
+  }
+  this.pending.clear();
+  this.onEvent?.('connection/closed', {});
+ }
  // Ends the process group this transport started (see own) and answers whether it was seen gone. The signal is sent
  // and the pending requests are rejected before this returns; the answer comes once the group has left, within the
  // bound. Closed again, it answers for the same group.
@@ -136,4 +166,4 @@ class CodexRpc {
   return gone;
  }
 }
-module.exports={CodexRpc};
+module.exports={CodexRpc,TVLENS_CODEX_DISCONNECTED,TVLENS_CODEX_REQUEST_TIMEOUT,TVLENS_CODEX_REQUEST_CUT};

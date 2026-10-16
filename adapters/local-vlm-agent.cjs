@@ -2,6 +2,10 @@
 // Prompt, bounded context and observation validation stay in CodexPerception.
 // Contract-tested against a fake server only: no real backend has been exercised from here.
 const CLOSED = 'Backend local fermé.', INVALID = 'Réponse du modèle local invalide.';
+const TVLENS_LOCAL_VLM_INPUT_REFUSED = 'TVLENS_LOCAL_VLM_INPUT_REFUSED';
+const TVLENS_LOCAL_VLM_UNREACHABLE = 'TVLENS_LOCAL_VLM_UNREACHABLE';
+const TVLENS_LOCAL_VLM_UNAVAILABLE = 'TVLENS_LOCAL_VLM_UNAVAILABLE';
+const TVLENS_LOCAL_VLM_CLOSED = 'TVLENS_LOCAL_VLM_CLOSED';
 const IMAGE = /^data:image\/[\w.+-]+;base64,([A-Za-z0-9+/]+=*)$/;
 // Ollama reports durations in nanoseconds.
 const TIMINGS = [['totalMs', 'total_duration', 1e6], ['loadMs', 'load_duration', 1e6], ['promptEvalMs', 'prompt_eval_duration', 1e6], ['evalMs', 'eval_duration', 1e6], ['promptTokens', 'prompt_eval_count', 1], ['evalTokens', 'eval_count', 1]];
@@ -36,7 +40,7 @@ class LocalVlmAgent {
     signal?.throwIfAborted();
     const images = mediaInput.map((item) => {
       const match = item?.type === 'image' && typeof item.url === 'string' && IMAGE.exec(item.url);
-      if (!match) throw Error('Backend local : image invalide.');
+      if (!match) throw Object.assign(Error('Backend local : image invalide.'), { code: TVLENS_LOCAL_VLM_INPUT_REFUSED });
       return match[1];
     });
     const started = Date.now(), model = this.model;
@@ -53,8 +57,10 @@ class LocalVlmAgent {
     // Checked after the body as well: a result landing after cancellation, timeout or close is never returned.
     if (aborted.aborted) throw aborted.reason;
     // Transport errors can quote the URL or a header value: never forwarded.
-    if (typeof text !== 'string') throw Error('Backend local injoignable.');
-    if (!response.ok) throw Error(`Backend local indisponible (HTTP ${response.status}).`);
+    if (typeof text !== 'string') throw Object.assign(Error('Backend local injoignable.'), { code: TVLENS_LOCAL_VLM_UNREACHABLE });
+    if (!response.ok) throw Object.assign(Error(`Backend local indisponible (HTTP ${response.status}).`), {
+      code: TVLENS_LOCAL_VLM_UNAVAILABLE, httpStatus: response.status,
+    });
     let data, output;
     try { data = JSON.parse(text); output = typeof data.message.content === 'string' ? JSON.parse(data.message.content) : null; } catch { throw Error(INVALID); }
     if (!output || typeof output !== 'object' || Array.isArray(output)) throw Error(INVALID);
@@ -65,8 +71,11 @@ class LocalVlmAgent {
     return { ...output, elapsedMs: Date.now() - started, coldStart: false, connectMs: 0, backend: { kind: 'ollama', model, host: this.host, ...(this.numCtx ? { numCtx: this.numCtx } : {}) }, providerTimings };
   }
   close() {
-    this.#closing.abort(Error(CLOSED));
+    this.#closing.abort(Object.assign(Error(CLOSED), { code: TVLENS_LOCAL_VLM_CLOSED }));
     return Promise.resolve();
   }
 }
-module.exports = { LocalVlmAgent };
+module.exports = {
+  LocalVlmAgent,
+  TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+};

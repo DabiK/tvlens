@@ -7,6 +7,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const { execFile } = require("node:child_process");
+const TVLENS_CODEX_ROLE_REFUSED = "TVLENS_CODEX_ROLE_REFUSED";
 
 // One list for the App Server roles and `codex exec`. The model catalog decides most of the tool
 // surface: `unified_exec` and `multi_agent` stay exposed whatever is passed here. These flags only
@@ -366,9 +367,10 @@ const ROLES = {
 };
 function assertRole({ role, webSearch = false, toolDefinitions = [] }) {
   const ceiling = ROLES[role];
-  if (!ceiling) throw Error(`Rôle Codex inconnu : ${String(role).slice(0, 40)}.`);
+  if (!ceiling)
+    throw Object.assign(Error(`Rôle Codex inconnu : ${String(role).slice(0, 40)}.`), { code: TVLENS_CODEX_ROLE_REFUSED });
   if ((webSearch && !ceiling.web) || (toolDefinitions.length && !ceiling.tools))
-    throw Error(`Rôle Codex ${role} : web ou outils non permis.`);
+    throw Object.assign(Error(`Rôle Codex ${role} : web ou outils non permis.`), { code: TVLENS_CODEX_ROLE_REFUSED });
 }
 // Item types that carry no capability. Everything else must be earned below.
 const BASE_ITEMS = [
@@ -470,6 +472,7 @@ function openedPages(item) {
 }
 
 module.exports = {
+  TVLENS_CODEX_ROLE_REFUSED,
   DISABLED_FEATURES,
   ENABLED_FEATURES,
   SUB_AGENT_CONTROLS,

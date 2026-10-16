@@ -1,6 +1,7 @@
 const { safeError, isAuthFailure } = require("./chat-trace.cjs");
 const { openedPages } = require("./codex-confinement.cjs");
 
+const TVLENS_CODEX_CONNECTION_LOST = "TVLENS_CODEX_CONNECTION_LOST";
 const PREVIEW_INTERVAL_MS = 80;
 const PROVISIONAL_MAX_CHARS = 1600;
 const TURN_EVENTS = [
@@ -71,7 +72,9 @@ function connectionClosed(state) {
   state.ready = null;
   state.draining?.end();
   state.active?.reject(
-    Error("Connexion Codex interrompue. Réessaie la question."),
+    Object.assign(Error("Connexion Codex interrompue. Réessaie la question."), {
+      code: TVLENS_CODEX_CONNECTION_LOST,
+    }),
   );
 }
 
@@ -242,6 +245,7 @@ function dispatchEvent(state, effects, method, p) {
 }
 
 module.exports = {
+  TVLENS_CODEX_CONNECTION_LOST,
   dispatchEvent,
   connectionClosed,
   threadStarted,

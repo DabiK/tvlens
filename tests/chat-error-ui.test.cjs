@@ -59,7 +59,8 @@ test('a failed job keeps the streamed preview and the memory summary apart with 
 });
 
 test('generic technical error shows the redacted Codex diagnostic', () => {
-  const view = describeJob({ status: 'error', message: 'Codex n’a pas terminé la réponse.', errorDetail: { turnStatus: 'failed', turnError: { code: 'rate_limit' } }, result: insufficient });
+  const view = describeJob({ status: 'error', message: 'Codex n’a pas terminé la réponse.',
+    errorDetail: { code: 'TVLENS_CODEX_REQUEST_CUT', turnStatus: 'failed', turnError: { code: 'rate_limit' } }, result: insufficient });
   assert.equal(view.authRequired, false);
   assert.equal(view.error, 'Codex n’a pas terminé la réponse.');
   assert.equal(view.errorDetail, 'Codex · failed · rate_limit');

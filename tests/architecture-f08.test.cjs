@@ -311,17 +311,33 @@ test('a refusal is never marked, even with the deadline already expired, a lost 
   assert.deepEqual([raced.name, raced.code === TRANSIENT, closing.signal.aborted], ['TimeoutError', false, true]);
 });
 
-test('the messages the adapter relies on are the ones the Codex pipe really writes; the one a closed process also answers is left out', { timeout: 20000 }, async () => {
+test('the messages the adapter relies on are the ones the Codex pipe really writes; the one a closed process also answers is left out', { timeout: 20000 }, async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
   const dead = await failure(new CodexRpc({}).request('turn/start'));
   // A live process that answers nothing, then goes with a request pending.
   const rpc = new CodexRpc({ binary: process.execPath, args: ['-e', 'setInterval(() => {}, 1000)'], env: process.env }).start();
   const gone = new Promise(resolve => rpc.child.once('exit', resolve));
-  const silent = await failure(rpc.request('initialize', {}, 30)), started = await failure(rpc.request('turn/start', {}, 30));
+  t.after(() => rpc.close());
+  const timeouts = [];
+  for (const method of ['initialize', 'thread/start', 'turn/start']) {
+    const timed = failure(rpc.request(method, {}, 30));
+    t.mock.timers.tick(30);
+    timeouts.push(await timed);
+  }
+  const [silent, thread, started] = timeouts;
   const pending = failure(rpc.request('thread/start'));
   rpc.close();
   const cut = await pending; await gone;
   assert.deepEqual([dead.message, silent.message, started.message, cut.message], ['Codex déconnecté.', 'Codex : délai de connexion dépassé (initialize).', 'Codex : délai de connexion dépassé (turn/start).', 'Connexion Codex interrompue.']);
-  assert.deepEqual([await marked(dead), await marked(silent), await marked(Error('Codex : délai de connexion dépassé (thread/start).'))], [true, true, true]);
+  assert.equal(dead.code, 'TVLENS_CODEX_DISCONNECTED');
+  for (const [index, method] of ['initialize', 'thread/start', 'turn/start'].entries()) {
+    assert.deepEqual([timeouts[index].message, timeouts[index].code, timeouts[index].method],
+      [`Codex : délai de connexion dépassé (${method}).`, 'TVLENS_CODEX_REQUEST_TIMEOUT', method]);
+  }
+  assert.equal(cut.code, 'TVLENS_CODEX_REQUEST_CUT');
+  const codes = require('../adapters/codex-rpc.cjs');
+  for (const code of [dead.code, silent.code, cut.code]) assert.equal(codes[code], code);
+  assert.deepEqual([await marked(dead), await marked(silent), await marked(thread)], [true, true, true]);
   // A turn Codex never acknowledged may be running; a pending request of a process the guard closed reads the same.
   assert.deepEqual([await marked(started), await marked(cut)], [false, false]);
 });
@@ -366,6 +382,8 @@ test('behind the real Codex client: a connection lost during the turn is marked 
   const lost = codex(t, n => (n === 1 ? 'lost' : 'described'));
   const error = await failure(lost.perception.observeVisual(passage()));
   assert.deepEqual([error.code, error.message, error.cause?.message], [TRANSIENT, 'Connexion Codex interrompue. Réessaie la question.', 'Connexion Codex interrompue. Réessaie la question.']);
+  assert.equal(error.cause.code, 'TVLENS_CODEX_CONNECTION_LOST');
+  assert.equal(require('../adapters/codex-session-events.cjs').TVLENS_CODEX_CONNECTION_LOST, error.cause.code);
   const again = await lost.perception.observeVisual(passage());
   assert.deepEqual([again.observation.summary, lost.server.processes(), lost.server.sent('turn/start')], ['Résumé', 2, 2]);
   for (const [act, message] of [['unauthorized', /authentification refusée \(401\)/], ['failed', /^Codex n’a pas terminé la réponse\.$/]]) {
@@ -373,6 +391,17 @@ test('behind the real Codex client: a connection lost during the turn is marked 
     const final = await failure(refused.perception.observeVisual(passage()));
     assert.match(final.message, message); assert.equal(final.code, undefined, act);
   }
+});
+
+test('closing the real Codex client during a stalled turn preserves the explicit session closure', { timeout: 20000 }, async t => {
+  const closed = codex(t, () => 'stalled');
+  const pending = failure(closed.perception.observeVisual(passage()));
+  await until(() => closed.server.sent('turn/start') === 1, 'the stalled turn to start');
+  await closed.agent.close();
+  const error = await pending;
+  assert.deepEqual([error.message, error.code], ['Session Codex fermée.', 'TVLENS_CODEX_SESSION_CLOSED']);
+  assert.equal(require('../adapters/codex-session-client.cjs').TVLENS_CODEX_SESSION_CLOSED, error.code);
+  assert.equal(closed.server.sent('turn/start'), 1);
 });
 
 test('behind the real Codex client: the deadline of the adapter, confirmed as an interrupted turn, is marked; the same turn interrupted for its caller, or with a failure of its own, is not', { timeout: 20000 }, async t => {
