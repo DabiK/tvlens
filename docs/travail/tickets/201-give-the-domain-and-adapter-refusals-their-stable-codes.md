@@ -22,6 +22,7 @@ de contenu média nécessaires à T051, pour qu'ils restent des 400 explicites a
   Décision du propriétaire, le 16/10 : deuxième lot après T188, avant T051 et T189.
   Décision du propriétaire, le 16/10, à la conception du domaine (Q13) : des codes par contexte sur une petite
   base partagée, et aucun catalogue central à redécouper quand le code sera rangé par contexte.
+  La base vit dans `core/shared/`, le noyau partagé de la cible (`docs/domaine.md`, ADR 0029).
 - Code vérifié à `8340014` : refus de question à `core/deep-ask.cjs:58` à `:61`, sélection de moment
   à `core/session-timeline.cjs:79` à `:99`, langue à `core/transcription-language.cjs:3` ;
   `core/session.cjs:96`, `:97` et `:112` refusent arrêt, horodatage et ordre de passage.
@@ -47,7 +48,7 @@ de contenu média nécessaires à T051, pour qu'ils restent des 400 explicites a
   propres codes, sans import externe ni statut HTTP : `core/deep-ask.cjs` ceux des questions,
   `core/session.cjs` ceux de la capture et de l'arrêt, `core/session-timeline.cjs` ceux des moments,
   `core/transcription-language.cjs` celui de la langue, `core/surveillance.cjs` ceux de la surveillance.
-  Seule une base minimale est partagée : ajouter `core/domain-error.cjs`, qui fabrique une erreur portant `code`
+  Seule une base minimale est partagée : ajouter `core/shared/domain-error.cjs`, qui fabrique une erreur portant `code`
   et `cause`, et ne déclare aucun code. Aucun fichier ne réunit les codes de plusieurs modules : quand
   le code sera rangé par contexte, chaque code suivra son module. Les codes propres aux adaptateurs sont
   définis/exportés chez eux ; les compositions utilisent `runtime/errors.cjs` livré par T188.
@@ -97,7 +98,7 @@ de contenu média nécessaires à T051, pour qu'ils restent des 400 explicites a
 ## Critères d'acceptation
 
 1. Un test de vrai émetteur par famille du catalogue prouve code importable depuis son module
-   émetteur, message conservé et cause utile. `core/domain-error.cjs` n'exporte aucun code.
+   émetteur, message conservé et cause utile. `core/shared/domain-error.cjs` n'exporte aucun code.
    Les refus du cœur n'ont aucun statut HTTP ; deux formulations d'un code gardent
    sa classification, et un message connu sans code ne devient jamais un refus reconnu.
 2. Le vrai RemoteServer devant les émetteurs couvre chaque famille atteignable par ses cinq groupes

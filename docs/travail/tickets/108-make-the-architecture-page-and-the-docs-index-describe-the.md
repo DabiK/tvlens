@@ -21,6 +21,7 @@ déploiement ou de branche quittent ces pages de référence ; les faits histori
 
 - `docs/audit-architecture.md`, rapport A, B12 et D3 ; décision du propriétaire, le 16/10 :
   attendre les gardes de T030/T202 et le retrait de T194 avant de décrire leur résultat.
+  Cible du domaine figée le 16/10 dans `docs/domaine.md` (ADR 0029 et 0030).
 - Documents vérifiés à `8340014` : `docs/architecture.md:3` ne cite que trois compositions partagées ;
   `docs/architecture.md:5` dit encore « ni commitée ni déployée » sur une ancienne branche.
   `docs/architecture.md:26` décrit deux files de deux éléments et les adaptateurs historiques
@@ -59,6 +60,8 @@ déploiement ou de branche quittent ces pages de référence ; les faits histori
   bornes et surcharge conformes au code livré, DeepAsk pour les questions. Distinguer données
   `questions` des anciennes archives et API historique retirée. Ne pas annoncer le chemin série
   simulé ou les adaptateurs supprimés comme des capacités présentes.
+- La page décrit l'état actuel. Pour la cible, elle renvoie à `docs/domaine.md` et aux ADR 0029 et 0030,
+  sans recopier la cible ni la présenter comme livrée.
 - Expliquer le partage des règles entre les hôtes et leurs ordres de fin propres (ADR 0007).
   Une section Décisions lie chaque ADR numéroté présent, hors gabarit, avec une phrase fidèle.
   Les ADR historiques ne sont pas réécrits ; préciser lorsqu'une décision ultérieure les remplace.
