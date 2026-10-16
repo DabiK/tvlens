@@ -856,8 +856,11 @@ test('a slow disk holds back neither what a client reads nor the analysis: with 
   await f.block(id, 1, 8000);
   // The description of a passage can be held back, as a slow provider holds it.
   let describing = null;
-  const observe = session.perception.observe.bind(session.perception);
-  session.perception.observe = async input => { await describing?.promise; return observe(input); };
+  const observeVisual = session.perception.observeVisual.bind(session.perception), audioPublished = deferred();
+  session.perception.observeVisual = async input => { await describing?.promise; return observeVisual(input); };
+  f.runtime.listeners.add(state => {
+    if (state.session?.segments[2]?.audioStatus === 'ready') audioPublished.resolve();
+  });
   const segment = (sequence, endMs) => { f.clock += 8000; f.wall += 8000; return f.req('/v1/segments', { sessionId: id, sequence, startMs: endMs - 8000, endMs, frames: [{ atMs: endMs - 8000, data: 'YQ==' }] }); };
   // What a client that polls with the tag it holds ends up reading, once the host has published `expected`.
   const published = async (from, expected) => {
@@ -867,9 +870,14 @@ test('a slow disk holds back neither what a client reads nor the analysis: with 
   // One passage is being described and another waits behind it; nothing else arrives afterwards.
   describing = deferred();
   assert.deepEqual([(await segment(2, 16000)).value.id, (await segment(3, 24000)).value.id], ['moment-2', 'moment-3']);
-  await turns(20); await session.store.serial;
+  await audioPublished.promise;
+  await session.store.serial;
   let polled = await f.polled();
-  assert.deepEqual(polled[panel].value.session.segments.map(s => [s.id, s.status]), [['moment-1', 'ready'], ['moment-2', 'analyzing'], ['moment-3', 'queued']]);
+  assert.deepEqual(polled[panel].value.session.segments.map(s => [s.id, s.status, s.audioStatus, s.visionStatus]), [
+    ['moment-1', 'ready', 'ready', 'ready'],
+    ['moment-2', 'analyzing', 'ready', 'analyzing'],
+    ['moment-3', 'analyzing', 'ready', 'queued'],
+  ]);
   // The disk stops answering, then the description comes back.
   held.hold();
   const from = held.seen.length;

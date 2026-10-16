@@ -39,6 +39,25 @@ function simulatedInspector() {
 
 function simulatedPerception() {
   return {
+    transcribe: async (input) => ({
+      observation: {
+        transcript: input.audio?.byteLength
+          ? "Un cercle se déplace sur un fond bleu."
+          : "",
+        audio: input.audio?.byteLength ? "Audio reçu." : "Pas d’audio.",
+        uncertainty: "",
+      },
+      cost: 0,
+    }),
+    observeVisual: async (input) => ({
+      observation: {
+        summary: "Un cercle se déplace sur un fond bleu.",
+        visual: `${input.frames.length} images reçues.`,
+        transcript: input.observation?.transcript || "",
+        uncertainty: input.observation?.uncertainty || "",
+      },
+      cost: 0,
+    }),
     observe: async (input) => ({
       observation: {
         summary: "Un cercle se déplace sur un fond bleu.",

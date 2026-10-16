@@ -995,7 +995,7 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   const SAVE = 'Impossible de sauvegarder le résumé de session.';
   let time = 0, gate = null, refuse = false, describing = null; const files = new Map(), states = [];
   const hold = () => { gate = deferred(); }, release = () => { const held = gate; gate = null; held?.resolve(); };
-  // One lane, as the simulated hosts and a host without split perception run: the passage is described in one call.
+  // Historical serial lane for a host without split perception; current smoke hosts use the separate audio and vision lanes.
   const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
     perception: { observe: async segment => { await describing?.promise; return { observation: { summary: 'Passage ' + segment.id } }; } },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },

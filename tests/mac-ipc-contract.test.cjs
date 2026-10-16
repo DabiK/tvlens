@@ -232,16 +232,45 @@ async function until(t, check, label, stepMs = 0) {
 let jpeg;
 // One passage of a simulated capture, from the end of the previous one up to the session clock: it lies in
 // the past of any question asked afterwards, as a real capture does (no evidence ever comes from the future).
-async function capture(host, sessionId, { after = 0, frames = 1 } = {}) {
+async function capture(host, sessionId, { after = 0, frames = 1, audio = null } = {}) {
   jpeg ||= 'data:image/jpeg;base64,' + (await sharp({ create: { width: 64, height: 36, channels: 3, background: { r: 23, g: 57, b: 82 } } }).jpeg().toBuffer()).toString('base64');
   await pause(20);
   const state = await host.state(), startMs = Math.max(after, state.segments.at(-1)?.endMs ?? 0), endMs = Math.floor(state.elapsedMs), clip = `clip ${startMs}`;
   assert.ok(endMs > startMs, 'the session clock moved');
-  const id = await host.ingest({ sessionId, startMs, endMs, clip: new Uint8Array(Buffer.from(clip)), audio: null, frames: Array.from({ length: frames }, () => ({ atMs: startMs, dataUrl: jpeg })) });
+  const id = await host.ingest({ sessionId, startMs, endMs, clip: new Uint8Array(Buffer.from(clip)), audio, frames: Array.from({ length: frames }, () => ({ atMs: startMs, dataUrl: jpeg })) });
   return { id, startMs, endMs, clip };
 }
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
+
+test('the Mac IPC host publishes both default smoke lanes with the simulated observations', async t => {
+  const { launch } = await stage(t), host = await launch();
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start(), finished = deferred(), published = [];
+  host.onState(state => {
+    const passage = state?.segments[0];
+    if (!passage) return;
+    published.push(passage);
+    if (['ready', 'error'].includes(passage.visionStatus) || ['ready', 'error'].includes(passage.status)) finished.resolve();
+  });
+  const image = 'data:image/jpeg;base64,' + (await sharp({
+    create: { width: 64, height: 36, channels: 3, background: '#173952' },
+  }).jpeg().toBuffer()).toString('base64');
+  assert.equal(await host.ingest({
+    sessionId: session.id, startMs: 0, endMs: 1, clip: new Uint8Array([1]),
+    audio: new Uint8Array([1]), frames: [{ atMs: 0, dataUrl: image }],
+  }), 'moment-1');
+  await finished.promise;
+  const state = await host.state(), passage = state.segments[0];
+  assert.deepEqual(passage.observation, {
+    transcript: 'Un cercle se déplace sur un fond bleu.', audio: 'Audio reçu.', uncertainty: '',
+    summary: 'Un cercle se déplace sur un fond bleu.', visual: '1 images reçues.',
+  });
+  assert.deepEqual([passage.id, passage.startMs, passage.endMs, passage.status, passage.audioStatus, passage.visionStatus],
+    ['moment-1', 0, 1, 'ready', 'ready', 'ready']);
+  assert.ok(published.some(p => p.audioStatus === 'ready' && p.visionStatus === 'queued' && !p.observation.summary));
+  assert.equal(state.apiCost, 0);
+});
 
 test('the Mac surveillance interval diagnoses a refused runtime tick and calls the next tick even if its journal throws', async t => {
   for (const failingDiagnostic of [false, true]) await t.test(`throwing diagnostic: ${failingDiagnostic}`, async t => {
@@ -1097,7 +1126,7 @@ test('the Mac composition journals failed state deliveries and still saves compl
       return built;
     },
     session: runtime => {
-      runtime.perception.observe = async input => {
+      runtime.perception.observeVisual = async input => {
         input.onProgress('Description…');
         return { observation: { summary: 'Un plateau.', transcript: 'Bonjour.' } };
       };
@@ -1129,33 +1158,56 @@ test('the Mac composition journals failed state deliveries and still saves compl
   unchat();
 });
 
-test('on the Mac host a question raises the asking flag of the session, holds the passages that arrive meanwhile and analyses them after', async t => {
-  const { launch } = await stage(t), turn = {};
-  // A chat agent the test drives: its answer ends when the test says so, or when the question is cancelled.
-  const host = await launch({ wrap: { conversation: built => {
-    built.agent.answer = input => new Promise((resolve, reject) => {
-      turn.finish = resolve;
-      input.signal.addEventListener('abort', () => reject(input.signal.reason), { once: true });
+for (const visionDuringAsk of [false, true]) {
+  test(`a Mac question raises asking while audio continues and vision follows its setting (${visionDuringAsk})`, async t => {
+    const { launch } = await stage(t), turn = {}, entered = deferred();
+    const audioPublished = deferred(), completed = deferred(), released = deferred();
+    const host = await launch({ wrap: {
+      conversation: built => {
+        built.agent.answer = input => new Promise((resolve, reject) => {
+          turn.finish = resolve;
+          input.signal.addEventListener('abort', () => reject(input.signal.reason), { once: true });
+          entered.resolve();
+        });
+        return built;
+      },
+      session: runtime => {
+        if (!visionDuringAsk) runtime.watch.visionDuringAsk = false;
+        return runtime;
+      },
+    } });
+    assert.equal(host.started, true, host.failures.join(' '));
+    const session = await host.start();
+    await capture(host, session.id);
+    await until(t, analysed(host, 1), 'one analysed passage');
+    assert.equal((await host.state()).asking, false, 'no question, no flag');
+    host.onState(state => {
+      const passage = state?.segments[1];
+      if (!passage) return;
+      if (passage.audioStatus === 'ready') audioPublished.resolve();
+      if (['ready', 'error'].includes(passage.status) || passage.visionStatus === 'error') completed.resolve();
+      if (!state.asking) released.resolve();
     });
-    return built;
-  } } });
-  assert.equal(host.started, true, host.failures.join(' '));
-  const a = await host.start();
-  await capture(host, a.id);
-  await until(t, analysed(host, 1), 'one analysed passage');
-  assert.equal((await host.state()).asking, false, 'no question, no flag');
-  await host.ask('Que voit-on maintenant ?');
-  await until(t, async () => (await host.state()).asking === true && Boolean(turn.finish), 'the session says a question is running');
-  // The passage lands while the answer is being written: it is kept and queued, not analysed.
-  await capture(host, a.id);
-  const statuses = async () => (await host.state()).segments.map(s => [s.id, s.status]);
-  assert.deepEqual(await statuses(), [['moment-1', 'ready'], ['moment-2', 'queued']], 'the passage arrived during the question is waiting');
-  await pause(30);
-  assert.deepEqual([await statuses(), (await host.state()).asking], [[['moment-1', 'ready'], ['moment-2', 'queued']], true], 'and still waiting');
-  turn.finish(CHAT_ANSWER);
-  await until(t, async () => (await host.state()).asking === false, 'the flag lowered once the answer is over');
-  await until(t, analysed(host, 2), 'the passage held during the question, analysed with no other gesture');
-});
+    await host.ask('Que voit-on maintenant ?');
+    await entered.promise;
+    assert.equal((await host.state()).asking, true);
+    await capture(host, session.id, { audio: new Uint8Array([1]) });
+    await audioPublished.promise;
+    if (visionDuringAsk) await completed.promise;
+    const during = await host.state(), passage = during.segments[1];
+    assert.equal(during.asking, true, 'perception never finishes the pending question');
+    assert.deepEqual([passage.id, passage.status, passage.audioStatus, passage.visionStatus],
+      ['moment-2', visionDuringAsk ? 'ready' : 'partial', 'ready', visionDuringAsk ? 'ready' : 'queued']);
+    assert.equal(passage.observation.transcript, 'Un cercle se déplace sur un fond bleu.');
+    turn.finish(CHAT_ANSWER);
+    await released.promise;
+    await completed.promise;
+    const after = await host.state();
+    assert.equal(after.asking, false);
+    assert.deepEqual(after.segments.map(s => [s.id, s.status, s.audioStatus, s.visionStatus]),
+      [['moment-1', 'ready', 'ready', 'ready'], ['moment-2', 'ready', 'ready', 'ready']]);
+  });
+}
 
 test('on the Mac host a question reaches the chat agent with the instruction of the surveillance active on the session, and none otherwise', async t => {
   const { launch } = await stage(t), seen = [];

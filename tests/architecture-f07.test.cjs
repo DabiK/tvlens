@@ -334,9 +334,15 @@ onBothHosts('a passage whose storage has begun when its session ends lands first
   const id = await h.start();
   await passage(h, id);
   // The second passage is held in mid-write, as on a slow disk, and whatever is analysed from here on is counted.
-  const live = h.runtime(), put = live.store.put.bind(live.store), observe = live.perception.observe.bind(live.perception), entered = deferred(), onDisk = deferred(), analysed = [];
+  const live = h.runtime(), put = live.store.put.bind(live.store), entered = deferred(), onDisk = deferred(), analysed = [];
   live.store.put = async (stored, input) => { if (stored === 'moment-2') { entered.resolve(); await onDisk.promise; } return put(stored, input); };
-  live.perception.observe = async input => { analysed.push(input.id); return observe(input); };
+  for (const method of ['transcribe', 'observeVisual']) {
+    const original = live.perception[method].bind(live.perception);
+    live.perception[method] = async input => {
+      analysed.push(input.id);
+      return original(input);
+    };
+  }
   try {
     const second = h.send(id);
     await entered.promise;

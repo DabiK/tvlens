@@ -5,6 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
+const { deferred } = require('./helpers/wait.cjs');
 const token = 'b'.repeat(64);
 
 async function fixture(t, { media, runtimeOptions = {} } = {}) {
@@ -43,6 +44,37 @@ test('the time spent preparing a remote block reaches the passage timeline, and 
   assert.deepEqual(passage.ingest, { assembleMs: 37 });
   assert.equal(passage.receivedMs, 9000);
   assert.equal(passage.receivedMs - passage.endMs, 1000, 'close-to-arrival delay is separable from queue wait and compute');
+});
+
+test('the server publishes both default smoke lanes and their observations through HTTP ingestion', async t => {
+  const f = await fixture(t, { media: { assemble: async input => ({
+    ...input, clip: Buffer.from('fixture'), audio: new Uint8Array([1]),
+    frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }],
+  }) } });
+  const finished = deferred(), published = [];
+  f.runtime.listeners.add(state => {
+    const passage = state.session?.segments[0];
+    if (!passage) return;
+    published.push(structuredClone(passage));
+    if (['ready', 'error'].includes(passage.visionStatus) || ['ready', 'error'].includes(passage.status)) finished.resolve();
+  });
+  const session = (await f.req('/v1/session/start', {})).value;
+  f.setClock(8000);
+  const sent = await f.req('/v1/segments', {
+    sessionId: session.id, sequence: 1, startMs: 0, endMs: 8000, frames: [{ atMs: 0, data: 'YQ==' }], audio: 'AQ==',
+  });
+  assert.equal(sent.status, 200);
+  await finished.promise;
+  const state = (await f.req('/v1/state')).value.session;
+  const passage = state.segments[0];
+  assert.deepEqual(passage.observation, {
+    transcript: 'Un cercle se déplace sur un fond bleu.', audio: 'Audio reçu.', uncertainty: '',
+    summary: 'Un cercle se déplace sur un fond bleu.', visual: '1 images reçues.',
+  });
+  assert.deepEqual([passage.id, passage.startMs, passage.endMs, passage.status, passage.audioStatus, passage.visionStatus],
+    ['moment-1', 0, 8000, 'ready', 'ready', 'ready']);
+  assert.ok(published.some(p => p.audioStatus === 'ready' && p.visionStatus === 'queued' && !p.observation.summary));
+  assert.equal(state.apiCost, 0);
 });
 
 test('a media tool killed by its time limit fails the block instead of passing a truncated file', async t => {

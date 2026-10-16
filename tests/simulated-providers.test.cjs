@@ -62,7 +62,7 @@ test("the inspector clips every observation to the requested interval and report
   );
 });
 
-test("perception reports received images and audio and cites the last context passage", async () => {
+test("historical serial perception reports images and audio and cites the last context passage", async () => {
   const perception = providers.simulatedPerception();
   const frames = [{ atMs: 1000 }, { atMs: 2000 }, { atMs: 3000 }];
   for (const [audio, expectedAudio] of [
@@ -90,6 +90,46 @@ test("perception reports received images and audio and cites the last context pa
       cost: 0,
     },
   );
+});
+
+test("simulated transcription publishes an audio patch with deterministic words only for nonempty audio at zero cost", async () => {
+  const perception = providers.simulatedPerception();
+  for (const audio of [null, undefined, new Uint8Array(), new Uint8Array([1])]) {
+    const heard = Boolean(audio?.byteLength);
+    assert.deepEqual(await perception.transcribe?.({ audio }), {
+      observation: {
+        transcript: heard ? "Un cercle se déplace sur un fond bleu." : "",
+        audio: heard ? "Audio reçu." : "Pas d’audio.",
+        uncertainty: "",
+      },
+      cost: 0,
+    });
+  }
+});
+
+test("simulated vision describes the images and preserves supplied speech and uncertainty at zero cost", async () => {
+  const perception = providers.simulatedPerception();
+  const observation = { transcript: "Paroles déjà publiées.", uncertainty: "Son de test." };
+  const input = { frames: [{ atMs: 1000 }, { atMs: 2000 }], observation };
+  assert.deepEqual(await perception.observeVisual?.(input), {
+    observation: {
+      summary: "Un cercle se déplace sur un fond bleu.",
+      visual: "2 images reçues.",
+      transcript: "Paroles déjà publiées.",
+      uncertainty: "Son de test.",
+    },
+    cost: 0,
+  });
+  assert.deepEqual(observation, { transcript: "Paroles déjà publiées.", uncertainty: "Son de test." });
+  assert.deepEqual(await perception.observeVisual?.({ frames: [] }), {
+    observation: {
+      summary: "Un cercle se déplace sur un fond bleu.",
+      visual: "0 images reçues.",
+      transcript: "",
+      uncertainty: "",
+    },
+    cost: 0,
+  });
 });
 
 function videoTools(t) {

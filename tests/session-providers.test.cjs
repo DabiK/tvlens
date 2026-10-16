@@ -2,6 +2,89 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
 const providers = require("../runtime/session-providers.cjs");
+const fs = require("node:fs/promises");
+const os = require("node:os");
+const { createSessionRuntime } = require("../runtime/session-runtime.cjs");
+const { deferred } = require("./helpers/wait.cjs");
+
+test("default smoke ingestion publishes speech before vision and keeps the next audio independent", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-smoke-lanes-"));
+  const published = [];
+  const audioPublished = [deferred(), deferred()];
+  const visionPublished = [deferred(), deferred()];
+  let clock = 0;
+  const runtime = createSessionRuntime({
+    sessionsRoot: path.join(root, "sessions"), userData: root,
+    selectedModels: {}, smoke: true, readClock: () => clock,
+    onChange: (state) => {
+      published.push(structuredClone(state));
+      for (let i = 0; i < 2; i++) {
+        const passage = state.segments[i];
+        if (passage?.audioStatus === "ready" && passage.visionStatus === "queued") audioPublished[i].resolve(passage);
+        if (passage?.visionStatus === "ready") visionPublished[i].resolve(passage);
+      }
+    },
+  });
+  t.after(async () => {
+    await runtime.close();
+    await fs.rm(root, { recursive: true, force: true });
+  });
+  runtime.perception.observe = () => { throw Error("Historical serial perception must not run"); };
+  const audio = [deferred(), deferred()], vision = [deferred(), deferred()];
+  const audioCalls = [], visionCalls = [];
+  const visionEntered = deferred();
+  const retain = (method, gates, calls, entered) => {
+    const original = runtime.perception[method];
+    if (!original) return;
+    runtime.perception[method] = async (input) => {
+      const result = await original(input);
+      const index = calls.push({ input, result }) - 1;
+      entered?.resolve();
+      await gates[index].promise;
+      return result;
+    };
+  };
+  retain("transcribe", audio, audioCalls);
+  retain("observeVisual", vision, visionCalls, visionEntered);
+  const ingest = async (index) => {
+    clock = (index + 1) * 1000;
+    return runtime.watch.ingest({
+      startMs: index * 1000, endMs: clock, clip: new Uint8Array([1]),
+      audio: new Uint8Array([index + 1]), frames: [{ atMs: index * 1000, dataUrl: "data:image/jpeg;base64,YQ==" }],
+    });
+  };
+  assert.equal(await ingest(0), "moment-1");
+  assert.equal(runtime.watch.snapshot().segments[0].audioStatus, "analyzing");
+  audio[0].resolve();
+  const speech = await audioPublished[0].promise;
+  assert.deepEqual([speech.id, speech.startMs, speech.endMs, speech.status, speech.visionStatus],
+    ["moment-1", 0, 1000, "partial", "queued"]);
+  assert.equal(speech.observation.transcript, "Un cercle se déplace sur un fond bleu.");
+  assert.equal(speech.observation.summary, undefined);
+  await visionEntered.promise;
+  assert.equal(await ingest(1), "moment-2");
+  audio[1].resolve();
+  await audioPublished[1].promise;
+  assert.deepEqual(runtime.watch.snapshot().segments.map((s) => [s.id, s.audioStatus, s.visionStatus]),
+    [["moment-1", "ready", "analyzing"], ["moment-2", "ready", "queued"]]);
+  assert.equal(visionCalls.length, 1, "vision serializes while both audio results are published");
+  assert.deepEqual(visionCalls[0].input.observation, audioCalls[0].result.observation);
+  vision[0].resolve();
+  await visionPublished[0].promise;
+  vision[1].resolve();
+  await visionPublished[1].promise;
+  const final = runtime.watch.snapshot();
+  assert.deepEqual(final.segments.map((s) => [s.id, s.startMs, s.endMs, s.status, s.audioStatus, s.visionStatus]),
+    [["moment-1", 0, 1000, "ready", "ready", "ready"], ["moment-2", 1000, 2000, "ready", "ready", "ready"]]);
+  for (let i = 0; i < 2; i++) {
+    assert.equal(final.segments[i].observation.transcript, audioCalls[i].result.observation.transcript);
+    assert.deepEqual(final.segments[i].observation, { ...audioCalls[i].result.observation, ...visionCalls[i].result.observation });
+    const audioIndex = published.findIndex((s) => s.segments[i]?.audioStatus === "ready");
+    const visionIndex = published.findIndex((s) => s.segments[i]?.visionStatus === "ready");
+    assert.ok(audioIndex < visionIndex, "each transcript precedes its visual publication");
+  }
+  assert.deepEqual([final.apiCost, final.coverage.audioError, final.coverage.visionError, final.pending], [0, 0, 0, 0]);
+});
 
 function recordedConstructor() {
   return class {
