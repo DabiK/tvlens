@@ -1,7 +1,7 @@
 ---
 id: T185
 titre: Drive the paired TV page in the test bench
-statut: a-faire
+statut: termine
 bloque_par: T163
 adr: non
 installe: non
@@ -141,3 +141,60 @@ ni état installé d'une TV. Aucune de ces inconnues ne demande une décision av
 
 - Découpage le 15/10 contre `e92c6a6`, par lecture du helper, des scripts et des tests appelants.
   Aucun test ni scénario appairé exécuté ; les limites de preuve sont nommées ci-dessus.
+- Exploration Codex : lecture du helper, des scripts classiques et de leurs appelants ; témoin hooks
+  vérifié. Arbre initial conservé (ticket en cours et deux répertoires non suivis). Exploration et
+  absence d’écart consignées dans `.harness-state/tickets/T185/`. Le DOM commun devra aussi accepter
+  les fragments HTML statiques de la frise et des sessions, les dialogues et la visibilité par ascendants.
+- Premier cycle : `node --test tests/tv-paired-page.test.cjs` rouge sur l’assertion
+  « paired page exposes its polling commands », puis vert (1/1) après extension du banc.
+  Sorties : `paired-start-red.log`, `paired-start-green.log` dans le dossier d’état.
+- Scénarios supplémentaires : formulaire réel avec accusé différé et réutilisation du nœud d’écho,
+  refus avec retrait de l’écho, réglages/surveillance sourcée au tick, stockage isolé, nettoyage et
+  réponses tardives. Première exécution : 5/6 ; le compteur du test de nettoyage incluait déjà
+  l’annulation du délai réseau de `/panel`. Il compare désormais les annulations depuis le début
+  du nettoyage : 6/6 observés (`paired-scenarios-green.log`). Aucun comportement produit modifié.
+- `node --test tests/tv-remote-navigation.test.cjs` : 20/20, assertions existantes inchangées
+  (`navigation.log`). `node scripts/check.mjs --changed` : rouge uniquement pour un import KEYS
+  encore inutilisé ; il sert désormais à conduire la navigation réelle des réglages de surveillance.
+- `node scripts/check.mjs --changed` vert ; cinq suites d’acceptation lancées par
+  `node --test --test-concurrency=1 tests/tv-paired-page.test.cjs tests/tv-remote-navigation.test.cjs tests/tv-panel.test.cjs tests/tv-overlay-queue.test.cjs tests/tv-app-compat.test.cjs` :
+  71/71. Premier `node scripts/check.mjs` complet : vert, 1 458 tests JS et 22 Python.
+- Relecture locale : le déclenchement manuel d’un timeout également confié à un ordonnanceur injecté
+  laissait son inscription externe. `node --test --test-name-pattern='manually driving a poll' tests/tv-paired-page.test.cjs` :
+  rouge observé sur le registre externe non vide (`manual-timeout-red.log`). Annulation de cette
+  inscription avant le callback : `node --test tests/tv-paired-page.test.cjs` vert, 7/7
+  (`manual-timeout-green.log`). Nouveau `node scripts/check.mjs --changed` vert ; les mêmes cinq
+  suites séquentielles passent à 72/72 (`acceptance-suites-final.log`).
+- Deuxième contrôle complet vert : 1 459 tests JS et 22 Python. Ajustement final de la preuve de
+  démarrage : les appels `/ambient…`, toujours enregistrés et simulés, sont exclus du décompte des
+  trois routes exigées pour respecter l’hypothèse de coexistence sans imposer leur absence.
+  `node scripts/check.mjs --changed` reste vert et les cinq suites séquentielles restent à 72/72.
+- Validation de livraison : `node scripts/check.mjs` vert sur le dernier état, 116 fichiers,
+  1 459 tests JavaScript et 22 tests Python (`check-full-delivery.log`).
+- Frontières : `git diff --name-status` ne contient aucune suppression ;
+  `git diff --exit-code -- app core adapters runtime server mcp tv scripts .claude .codex .agents`
+  rend 0 ; le diff des quatre suites existantes demandées rend aussi 0, ainsi que
+  `git diff --check` (`diff-safety.log`). Nouveaux fichiers : `tests/helpers/tv-document.cjs`
+  et `tests/tv-paired-page.test.cjs`. Aucun produit, harnais, plancher ou dépendance modifié.
+  Pas de navigateur, TV, VPS, fournisseur réel, commit ou push. Verdict `TERMINÉ` dans le dossier d’état.
+- Reprise après `relecture-1.md` : rapport, ticket/journal, écarts, `git status` et `git diff` relus ;
+  témoin hooks vérifié. Avant modification, les SHA-256 des trois fichiers correspondent à
+  `reviewed-state.json` (`correction-1-before-hashes.log`).
+  `node --test --test-concurrency=1 tests/tv-paired-page.test.cjs tests/tv-remote-navigation.test.cjs tests/tv-panel.test.cjs tests/tv-overlay-queue.test.cjs tests/tv-app-compat.test.cjs` :
+  72/72 avant correction (`correction-1-before.log`).
+- Constat mineur 1 corrigé : commentaire original rétabli au-dessus de `press`, sans changer la
+  commande ni les assertions. Correction documentaire : aucun test sur le texte du code ajouté,
+  aucun rouge comportemental revendiqué. Aucun écart ni contestation.
+- Validation après correction 1 : `node scripts/check.mjs --changed` vert
+  (`correction-1-check-changed.log`) ; les cinq mêmes suites en séquentiel passent à 72/72
+  (`correction-1-after.log`). `node scripts/check.mjs` complet vert : 1 459 tests JavaScript,
+  22 Python (`correction-1-check-full.log`).
+- `git diff --name-status` : aucune suppression ; `git diff --exit-code -- app core adapters runtime server mcp tv scripts .claude .codex .agents` :
+  0 ; diff des quatre suites existantes : 0 ; `git diff --check` : 0
+  (`correction-1-diff-safety.log`). Le seul changement de code depuis l’état relu est le commentaire
+  restauré ; aucune assertion modifiée. Constat 1 corrigé, aucun constat non corrigé ni contesté.
+  Nouveau verdict `TERMINÉ` ; relecture et intégration laissées à la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T185/relecture-2.md : **Écart accepté, structure du DOM :** `ecarts.md` déclare l'extraction du DOM dans `tests/helpers/tv-document.cjs`. Ce n'est pas un écart à un critère : le critère 3 reste tenu, avec un seul document et un seul chargeur pour les deux modes. Même décision qu'en relecture 1.

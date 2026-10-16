@@ -17,174 +17,108 @@ const KEYS = {
   escape: { keyCode: 27, key: 'Escape' },
 };
 
-const COMMENT = /<!--[\s\S]*?-->/g;
-const OPEN_TAG = /<([a-zA-Z][a-zA-Z0-9-]*)((?:"[^"]*"|'[^']*'|[^>"'])*)>/g;
-const ATTRIBUTE = /([a-zA-Z_:][\w:.-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/g;
+const { readPage, createEvent } = require('./tv-document.cjs');
 
-// Tags and attributes may be spread over several lines: the whole string is scanned, never line by line.
-function parseAttributes(source) {
-  const attributes = {};
-  for (const match of source.matchAll(ATTRIBUTE)) {
-    const value = match[2] ?? match[3] ?? match[4];
-    attributes[match[1].toLowerCase()] = value === undefined ? '' : value;
+// Every scheduled callback belongs to this page, including callbacks queued by a late network answer.
+function pageTimers(calls, injected = {}) {
+  const pending = new Map();
+  let disposed = false;
+  let nextId = 0;
+  function clear(id) {
+    const timer = pending.get(id);
+    if (!timer) return;
+    pending.delete(id);
+    const cancel = timer.repeat ? injected.clearInterval : injected.clearTimeout;
+    if (cancel) cancel(timer.handle);
   }
-  return attributes;
-}
-
-function camelCase(name) {
-  return name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-}
-
-class FakeElement {
-  constructor(document, tagName, attributes, text) {
-    this.document = document;
-    this.tagName = tagName.toUpperCase();
-    this.id = attributes.id || '';
-    this.hidden = 'hidden' in attributes;
-    this.disabled = 'disabled' in attributes;
-    this.open = 'open' in attributes;
-    this.textContent = text;
-    this.scrollTop = 0;
-    this.clicks = 0;
-    this.onclick = null;
-    this.children = [];
-    this.dataset = {};
-    for (const [name, value] of Object.entries(attributes)) {
-      if (name.startsWith('data-')) this.dataset[camelCase(name.slice(5))] = value;
-    }
-    this.listeners = {};
+  function schedule(callback, delay, repeat, args) {
+    if (disposed) return undefined;
+    calls.timers += 1;
+    const id = ++nextId;
+    const timer = { delay, repeat, callback: null, handle: undefined };
+    timer.callback = () => {
+      if (disposed || !pending.has(id)) return;
+      if (!repeat) pending.delete(id);
+      return callback(...args);
+    };
+    pending.set(id, timer);
+    const register = repeat ? injected.setInterval : injected.setTimeout;
+    if (register) timer.handle = register(timer.callback, delay);
+    return id;
   }
-
-  addEventListener(type, listener) {
-    (this.listeners[type] = this.listeners[type] || []).push(listener);
-  }
-
-  emit(type) {
-    for (const listener of this.listeners[type] || []) listener({ type, target: this });
-  }
-
-  // A disabled element still takes the focus here: the guard that keeps the remote off it belongs to the
-  // page and must stay observable.
-  focus() {
-    const previous = this.document.activeElement;
-    if (previous === this) return;
-    this.document.activeElement = this;
-    previous.emit('blur');
-    this.emit('focus');
-  }
-
-  blur() {
-    if (this.document.activeElement !== this) return;
-    this.document.activeElement = this.document.body;
-    this.emit('blur');
-  }
-
-  click() {
-    this.clicks += 1;
-    if (typeof this.onclick === 'function') this.onclick({ type: 'click', target: this });
-  }
-
-  contains(other) {
-    return other === this || this.children.includes(other);
-  }
-
-  querySelector(selector) {
-    if (selector !== '[data-cancel]') throw new Error('Unsupported selector: ' + selector);
-    return this.children.find(child => 'cancel' in child.dataset) || null;
-  }
-
-  querySelectorAll(selector) {
-    if (selector !== 'button') throw new Error('Unsupported selector: ' + selector);
-    return this.children.filter(child => child.tagName === 'BUTTON');
-  }
-}
-
-function parsePage(html) {
-  const source = html.replace(COMMENT, '');
-  const document = { listeners: {}, byId: new Map(), dialogs: [], scripts: [] };
-  document.body = new FakeElement(document, 'body', {}, '');
-  document.documentElement = new FakeElement(document, 'html', {}, '');
-  document.activeElement = document.body;
-  const ranges = [];
-  const elements = [];
-  for (const match of source.matchAll(OPEN_TAG)) {
-    const name = match[1].toLowerCase();
-    const attributes = parseAttributes(match[2]);
-    if (name === 'script' && attributes.src) document.scripts.push(attributes.src);
-    if (!attributes.id) continue;
-    const end = match.index + match[0].length;
-    const next = source.indexOf('<', end);
-    const text = source.slice(end, next < 0 ? source.length : next).replace(/\s+/g, ' ').trim();
-    const element = new FakeElement(document, name, attributes, text);
-    elements.push({ element, index: match.index });
-    document.byId.set(attributes.id, element);
-    if (name === 'dialog') {
-      document.dialogs.push(element);
-      ranges.push({ element, from: match.index, to: source.indexOf('</dialog>', match.index) });
-    }
-  }
-  for (const { element, index } of elements) {
-    const owner = ranges.find(range => index > range.from && index < range.to);
-    if (owner && element.tagName === 'BUTTON') owner.element.children.push(element);
-  }
-  return document;
-}
-
-function readPage() {
-  const html = fs.readFileSync(path.join(APP_DIR, 'index.html'), 'utf8');
-  const document = parsePage(html);
-  const loaded = document.scripts.filter(name => name !== 'connection.js');
-  return { document, loaded };
-}
-
-function createEvent(type, target, fields) {
-  return Object.assign({
-    type,
-    target,
-    defaultPrevented: false,
-    propagationStopped: false,
-    preventDefault() { this.defaultPrevented = true; },
-    stopPropagation() { this.propagationStopped = true; },
-  }, fields);
-}
-
-// Timers and network are spies that count: the panel must start none while it is not paired.
-function loadTvPage() {
-  const { document, loaded } = readPage();
-  const calls = { timers: 0, requests: 0, close: 0 };
-  const count = key => () => { calls[key] += 1; };
-  const context = vm.createContext({});
-  const global = vm.runInContext('globalThis', context);
-  const pageDocument = {
-    body: document.body,
-    documentElement: document.documentElement,
-    getElementById: id => document.byId.get(id) || null,
-    addEventListener: (type, listener) => {
-      (document.listeners[type] = document.listeners[type] || []).push(listener);
+  return {
+    pending,
+    setTimeout: (callback, delay, ...args) => schedule(callback, delay, false, args),
+    setInterval: (callback, delay, ...args) => schedule(callback, delay, true, args),
+    clearTimeout: clear,
+    clearInterval: clear,
+    run(id) {
+      const timer = pending.get(id);
+      if (!timer) throw new Error('No pending timer ' + id);
+      // Explicit driving replaces the scheduler's delivery of a one-shot callback.
+      if (!timer.repeat && injected.clearTimeout) injected.clearTimeout(timer.handle);
+      return timer.callback();
     },
-    querySelector(selector) {
-      if (selector !== 'dialog[open]') throw new Error('Unsupported selector: ' + selector);
-      return document.dialogs.find(dialog => dialog.open) || null;
+    cleanup() {
+      disposed = true;
+      for (const id of pending.keys()) clear(id);
     },
   };
-  Object.defineProperty(pageDocument, 'activeElement', {
-    get: () => document.activeElement,
-  });
+}
+
+// Copy seed values into an independent store, never reuse a previous page's storage object.
+function pageStorage(seed = {}) {
+  const values = new Map(Object.entries(seed).map(([key, value]) => [key, String(value)]));
+  return {
+    get length() { return values.size; },
+    key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(String(key)) ?? null,
+    setItem: (key, value) => { values.set(String(key), String(value)); },
+    removeItem: key => { values.delete(String(key)); },
+    clear: () => values.clear(),
+  };
+}
+
+// Defaults never use process timers or network. Pairing is injected before the classic scripts load.
+// options: { config, fetch, storage (seed entries), now, dateNow, timers (setTimeout/setInterval/clearTimeout/clearInterval) }.
+// The timer registry also permits explicit run(id); numeric element dimensions remain test-controlled.
+function loadTvPage(options = {}) {
+  const { document, loaded } = readPage(APP_DIR);
+  const calls = { timers: 0, requests: 0, close: 0 };
+  const timers = pageTimers(calls, options.timers);
+  const localStorage = pageStorage(options.storage);
+  const wallNow = options.dateNow || (() => 0);
+  class PageDate extends Date {
+    constructor(...args) { super(...(args.length ? args : [wallNow()])); }
+    static now() { return wallNow(); }
+  }
+  const context = vm.createContext({});
+  const global = vm.runInContext('globalThis', context);
   Object.assign(global, {
-    window: global,
-    document: pageDocument,
-    performance: { now: () => 0 },
-    setTimeout: count('timers'),
-    setInterval: count('timers'),
-    clearTimeout() {},
-    clearInterval() {},
-    fetch: () => { calls.requests += 1; return new Promise(() => {}); },
+    window: global, document, localStorage,
+    TVLENS_REMOTE: options.config ? structuredClone(options.config) : undefined,
+    URL, AbortController, structuredClone,
+    Date: PageDate,
+    performance: { now: options.now || (() => 0) },
+    setTimeout: timers.setTimeout,
+    setInterval: timers.setInterval,
+    clearTimeout: timers.clearTimeout,
+    clearInterval: timers.clearInterval,
+    fetch: (...args) => {
+      calls.requests += 1;
+      return options.fetch ? options.fetch(...args) : new Promise(() => {});
+    },
     XMLHttpRequest: function XMLHttpRequest() { calls.requests += 1; },
-    close: count('close'),
+    close: () => { calls.close += 1; },
   });
-  for (const name of loaded) {
-    const file = path.join(APP_DIR, name);
-    vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
+  try {
+    for (const name of loaded) {
+      const file = path.join(APP_DIR, name);
+      vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
+    }
+  } catch (error) {
+    timers.cleanup();
+    throw error;
   }
 
   function dispatch(type, target, fields) {
@@ -193,28 +127,33 @@ function loadTvPage() {
     return event;
   }
   const el = id => {
-    const element = document.byId.get(id);
+    const element = document.getElementById(id);
     if (!element) throw new Error('No element with id ' + id);
     return element;
   };
   return {
-    window: global,
-    scripts: loaded,
-    calls,
-    el,
+    window: global, document, scripts: loaded, calls, el, timers, localStorage,
+    cleanup: timers.cleanup,
     activeId: () => document.activeElement.id,
     // A key goes to the document, as it does on the TV; the event comes back with its recorded effects.
     press: key => dispatch('keydown', document.activeElement, { keyCode: key.keyCode, key: key.key }),
     keyboard: visible => dispatch('keyboardStateChange', document, { detail: { visibility: visible } }),
     mousedown: target => dispatch('mousedown', target, {}),
+    input: (id, value) => {
+      const node = el(id);
+      node.value = value;
+      return node.emit('input');
+    },
+    submit: (id = 'ask') => {
+      const form = el(id);
+      const event = createEvent('submit', form);
+      return { event, done: form.onsubmit(event) };
+    },
     body: document.body,
     documentElement: document.documentElement,
-    // Opens like showModal: the first enabled button takes the focus.
     openDialog: id => {
       const dialog = el(id);
-      dialog.open = true;
-      const first = dialog.children.find(button => !button.disabled);
-      if (first) first.focus();
+      dialog.showModal();
       return dialog;
     },
   };
