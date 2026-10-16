@@ -420,3 +420,100 @@ test('an open overlay reports only its card once per session even after an inter
   assert.equal(page.el('overlay-card').hidden, false);
   assert.deepEqual(shown, [[card], [card]], 'the same sequence in a new session counts again');
 });
+
+test('the paired page loads the polling controller and its public kick and stop drive real reads', async t => {
+  const { manualClock } = require('./helpers/clock.cjs');
+  const clock = manualClock();
+  const net = network();
+  const late = deferred();
+  const reads = [];
+  const page = loadTvPage({
+    config: CONFIG, now: clock.io.now,
+    timers: { setTimeout: clock.io.setTimer, clearTimeout: clock.io.clearTimer },
+    fetch: (url, init) => {
+      if (new URL(url).pathname === '/v1/state') {
+        reads.push(url);
+        if (reads.length === 2) return late.promise;
+      }
+      return net.fetch(url, init);
+    },
+  });
+  t.after(() => page.cleanup());
+  await clock.advance(0);
+  assert.equal(typeof page.window.TVLensPollController, 'object');
+  assert.equal(typeof page.window.TVLensPollController.createPollController, 'function');
+  const at = page.scripts.indexOf('poll-controller.js');
+  assert.ok(page.scripts.indexOf('chat-model.js') < at);
+  assert.ok(at < page.scripts.indexOf('companion.js'));
+  const panel = page.window.tvlensPanel;
+  assert.equal(typeof panel.kick, 'function');
+  assert.equal(typeof panel.state, 'function');
+  assert.equal(typeof panel.stop, 'function');
+  assert.deepEqual({ ...panel.stats }, { polls: 1, notModified: 0, renders: 1, legacy: false, failures: 0 });
+  const held = panel.state();
+  const card = page.el('conversation').firstChild;
+  panel.kick();
+  assert.equal(reads.length, 2, 'the real public kick reads immediately');
+  panel.kick();
+  panel.kick();
+  assert.equal(reads.length, 2);
+  panel.stop();
+  panel.stop();
+  panel.kick();
+  late.resolve(response({ ...net.state, session: null }));
+  await clock.advance(20000);
+  assert.equal(reads.length, 2);
+  assert.equal(panel.state(), held, 'a late response cannot replace page state');
+  assert.equal(page.el('conversation').firstChild, card);
+  assert.deepEqual({ ...panel.stats }, { polls: 1, notModified: 0, renders: 1, legacy: false, failures: 0 });
+  const presentation = [...page.timers.pending.values()].filter(timer => timer.repeat);
+  assert.deepEqual(presentation.map(timer => timer.delay).sort((a, b) => a - b), [250, 1000]);
+});
+
+for (const status of [401, 500, null]) {
+  test('the paired page preserves its offline send state after ' + (status || 'a network failure') + ' until a 304 reconnects', async t => {
+    const net = network();
+    let failure = false;
+    let revalidated = false;
+    const page = loadTvPage({
+      config: CONFIG,
+      fetch: (url, init) => {
+        if (new URL(url).pathname !== '/v1/state') return net.fetch(url, init);
+        if (failure) {
+          if (!status) throw new Error('offline');
+          return { status, ok: false, json: async () => ({ error: 'Refus du serveur.' }) };
+        }
+        if (revalidated) return { status: 304 };
+        return { ...response(net.state), headers: { get: () => '"panel-1"' } };
+      },
+    });
+    t.after(() => page.cleanup());
+    await settle();
+    const panel = page.window.tvlensPanel;
+    const held = panel.state();
+    const card = page.el('conversation').firstChild;
+    assert.equal(page.el('send').disabled, false);
+    failure = true;
+    panel.kick();
+    await settle();
+    const message = status === 401
+      ? 'Appairage refusé par le serveur · vérifie le jeton de cette TV.'
+      : 'Serveur inaccessible · reconnexion…';
+    assert.equal(page.el('connection').textContent, message);
+    assert.equal(page.el('send').disabled, true);
+    const second = [...page.timers.pending].find(([, timer]) => timer.repeat && timer.delay === 1000)[0];
+    page.timers.run(second);
+    assert.equal(page.el('send').disabled, true, 'local presentation cannot enable sending while offline');
+    assert.equal(page.el('connection').textContent, message);
+    assert.deepEqual({ ...panel.stats }, { polls: 1, notModified: 0, renders: 1, legacy: false, failures: 1 });
+    failure = false;
+    revalidated = true;
+    panel.kick();
+    await settle();
+    assert.equal(page.el('connection').textContent, 'Capture reçue');
+    assert.equal(page.el('send').disabled, false);
+    assert.equal(panel.state(), held);
+    assert.equal(page.el('conversation').firstChild, card);
+    assert.deepEqual({ ...panel.stats }, { polls: 2, notModified: 1, renders: 1, legacy: false, failures: 0 });
+  });
+}

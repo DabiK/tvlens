@@ -1,7 +1,7 @@
 ---
 id: T170
 titre: Move TV polling into an injected controller
-statut: a-faire
+statut: termine
 bloque_par: T169, T058, T185
 adr: oui
 installe: non
@@ -105,3 +105,77 @@ signifie ici invalider leur continuation ; il ne suppose pas une capacité d'ann
 client ne publie pas. Aucun résultat de polling sur une TV réelle n'est affirmé.
 
 ## Journal
+
+- Exploration : règles, skills, ticket, boucle, modèle, transport, banc appairé et ADR lus.
+  `git status --short`, `git diff -- docs/travail/tickets/170-move-tv-polling-into-an-injected-controller.md`
+  et `git log -5 --oneline` observés : base `4c1fe2d`, changements préexistants hors périmètre préservés.
+  Exploration et absence d'écart consignées dans `.harness-state/tickets/T170/`.
+
+- Tests d'abord, commandes et sorties conservées dans `.harness-state/tickets/T170/` :
+  - `node --test tests/tv-poll-controller.test.cjs` : rouge sur l'assertion de première lecture
+    (`controller-coalescing-red.log`), puis vert ; rouge sur l'annulation de l'attente
+    (`controller-wait-red.log`), puis vert ; rouge sur le callback de réception
+    (`controller-receive-red.log`), puis vert.
+  - `node --test --test-name-pattern='stop during a deferred body|stop cancels' tests/tv-poll-controller.test.cjs` :
+    deux assertions rouges (effet tardif et redémarrage après arrêt), puis
+    `node --test tests/tv-poll-controller.test.cjs` : 7/7 verts après invalidation définitive.
+  - Ajout des preuves par appels du faux client : replis 404/400 définitifs, repli temporaire de
+    10 s, 401/500 sans repli, backoff actif/repos jusqu'à 8 s, reprise et réglages injectés.
+    `node --test tests/tv-poll-controller.test.cjs` : 16/16 verts (`controller-policy-green.log`).
+- Câblage de page :
+  `node --test --test-name-pattern='paired page loads the polling controller' tests/tv-paired-page.test.cjs`
+  rouge sur l'absence du contrôleur, puis extraction et balise ajoutées.
+  `node --test --test-concurrency=1 tests/tv-poll-controller.test.cjs tests/tv-paired-page.test.cjs` :
+  26/26 verts. Les trois scénarios de refus/reconnexion ajoutés ensuite gardent l'envoi indisponible
+  hors ligne et reconnectent par 304 sans rendu : `node --test tests/tv-paired-page.test.cjs`, 13/13 verts.
+- Mutation demandée : retrait temporaire de la seule garde `if (polling)` dans le contrôleur.
+  `node --test --test-name-pattern='requests during a deferred read' tests/tv-poll-controller.test.cjs` :
+  rouge sur « no concurrent request while the answer is deferred », 11 requêtes au lieu d'une.
+  Sortie : `mutation-in-flight-red.log`. Mutation retirée dans un `finally` ;
+  `node --test tests/tv-poll-controller.test.cjs` : 16/16 verts (`controller-restored-green.log`).
+- ADR 0026 écrit sur le propriétaire de boucle, ses dépendances et son arrêt définitif.
+  `PollPlan`, transport HTTP, banc appairé et intervalles de présentation inchangés.
+- `node scripts/check.mjs --changed` : vert, 29/29 tests, règles, format, lint, gel et cliquet verts
+  (`check-changed.log`). Aucune suppression ESLint devenue inutile ; aucun plancher modifié.
+- Suites demandées en séquentiel :
+  `node --test --test-concurrency=1 tests/tv-poll-controller.test.cjs tests/tv-panel.test.cjs tests/tv-chat-model.test.cjs tests/tv-paired-page.test.cjs tests/tv-remote-navigation.test.cjs tests/tv-app-compat.test.cjs`
+  : 77/77 verts (`tv-suites.log`). Aucun essai sur TV réelle.
+
+- Contrôle final : `node scripts/check.mjs` terminé avec code 0, vert : règles, format, lint,
+  gel du lint et cliquet ; 1487/1487 tests JS dans 118 fichiers, puis 22 tests Python réussis
+  (`check-full.log`). `git diff --check` : code 0, aucune erreur.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T170/verdict.json` ; critères reliés aux
+  preuves dans `couverture.md`. Aucun commit, push, essai TV ou fournisseur réel ; relecture
+  et intégration laissées à la boucle.
+
+- Reprise après `relecture-1.md` : rapport, ticket, journal, écarts, `git status --short` et `git diff`
+  relus. Constat mineur accepté, aucune contestation ni nouvel écart de périmètre.
+  `node --test tests/tv-poll-controller.test.cjs` exécuté avant édition : 16/16 verts
+  (`correction-1-tests-before.log`). Correction rédactionnelle seule : aucun rouge comportemental
+  nouveau revendiqué, ni test du texte source ajouté.
+- Trois lignes de commentaires ajoutées dans `poll-controller.js` : lecture unique en vol,
+  regroupement des accélérations en une lecture immédiate, et gardes ignorant une suite tardive
+  après arrêt parce que le client n'expose pas d'annulation. Le diff de correction est conservé
+  dans `correction-1-commentaires.diff` ; aucune instruction exécutable modifiée.
+- Réserve hors périmètre conservée pour un ticket autorisant `scripts/` : commentaire de
+  `scripts/bench-perceived.cjs:149` renvoyant encore à la boucle de `companion.js` et approximant
+  le modèle effectivement conduit par ce banc. Ce script reste inchangé.
+
+- Après correction : `node scripts/check.mjs --changed` terminé avec code 0, vert : 29/29 tests JS,
+  règles, format, lint, gel et cliquet (`correction-1-check-changed.log`).
+  `git diff --check` : code 0, aucune erreur.
+
+- Contrôle complet de la correction : `node scripts/check.mjs` terminé avec code 0, vert :
+  règles, format, lint, gel, cliquet, 1487/1487 tests JS dans 118 fichiers puis 22 tests Python
+  (`correction-1-check-full.log`). `git diff --check` final : code 0.
+- Nouveau verdict `TERMINÉ` : constat mineur 1 corrigé ; constat hors périmètre 2 conservé dans
+  `reste`. Relecture et intégration laissées à la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- Réserve hors périmètre de la relecture 1, constat 2 : scripts/bench-perceived.cjs:149 renvoie encore à companion.js et décrit approximativement le modèle conduit par le banc ; à corriger dans un ticket autorisant scripts/.
+- .harness-state/tickets/T170/relecture-2.md : `scripts/bench-perceived.cjs:149` (hors périmètre)
+
+  **Problème.** Ce constat vient de la relecture 1 et reste vrai. Le commentaire « Exactly what tv/app/companion.js does at each turn » renvoie toujours à `companion.js`. Or la boucle vit maintenant dans `tv/app/poll-controller.js`. Le commentaire était déjà approximatif avant ce ticket : le banc s'appuie sur `pollPolicy` et non sur `PollPlan`.
+
+  **Attendu.** Corriger la référence dans un ticket qui autorise à modifier `scripts/`. C'est une réserve, et le verdict de l'implémenteur la note déjà dans `reste`.

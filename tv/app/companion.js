@@ -47,6 +47,7 @@ var describeJob = tvlensChatModel.describeJob,
     if (node[name] !== value) node[name] = value;
   }
   var time = tvlensClock,
+    createPollController = window.TVLensPollController.createPollController,
     Surveillance = window.TVLensSurveillance,
     Sessions = window.TVLensSessions;
   var config = window.TVLENS_REMOTE;
@@ -763,42 +764,32 @@ var describeJob = tvlensChatModel.describeJob,
     receivedAt = performance.now();
     render();
   }
-  var stats = { polls: 0, notModified: 0, renders: 0, legacy: false, failures: 0 },
-    pollTimer = null,
-    polling = false,
-    kicked = false,
-    plan = new TvlensPollPlan({
-      activeMs: config.activePollMs,
-      idleMs: config.idlePollMs,
-      viewRetryMs: config.viewRetryMs,
-    });
-  function monotonic() {
-    return performance.now();
-  }
-  // One poll in flight at a time. A kick cancels the wait; during a poll it asks for one more right after.
-  function kickPoll() {
-    if (polling) kicked = true;
-    else {
-      clearTimeout(pollTimer);
-      poll();
-    }
-  }
-  async function poll() {
-    if (polling) return;
-    polling = true;
-    kicked = false;
-    try {
-      // A refused view is replaced by the complete state inside the plan: for good when the server
-      // does not know the views (an older one), for a while after a passing refusal.
-      var read = await plan.read(client, state, monotonic);
-      stats.polls++;
+  var pollController = createPollController({
+    client: client,
+    now: function () {
+      return performance.now();
+    },
+    setTimer: function (callback, delay) {
+      return setTimeout(callback, delay);
+    },
+    clearTimer: function (timer) {
+      clearTimeout(timer);
+    },
+    getState: function () {
+      return state;
+    },
+    activeMs: config.activePollMs,
+    idleMs: config.idlePollMs,
+    viewRetryMs: config.viewRetryMs,
+    onReceive: function (value, viewName) {
       online = true;
-      if (read.answer.notModified) {
-        // Same revision: the held body stays, nothing is redrawn; clocks keep running locally.
-        stats.notModified++;
-        renderStatus();
-      } else receive(read.answer.value, read.view);
-    } catch (error) {
+      receive(value, viewName);
+    },
+    onNotModified: function () {
+      online = true;
+      renderStatus();
+    },
+    onError: function (error) {
       online = false;
       // A refused token is not an outage: retrying will not help until the TV is paired again.
       el("connection").textContent =
@@ -806,13 +797,11 @@ var describeJob = tvlensChatModel.describeJob,
           ? "Appairage refusé par le serveur · vérifie le jeton de cette TV."
           : "Serveur inaccessible · reconnexion…";
       el("send").disabled = true;
-    }
-    stats.legacy = plan.legacy;
-    stats.failures = plan.failures;
-    polling = false;
-    // After a failure the wait grows whatever the held state says: a question shown "in progress"
-    // must not turn an outage into four requests a second.
-    pollTimer = setTimeout(poll, kicked ? 0 : plan.delay(state, monotonic()));
+    },
+  });
+  var stats = pollController.stats;
+  function kickPoll() {
+    pollController.request();
   }
   // Immediate echo: the question is on screen before the network answers. Its node becomes the card
   // of the job once the server names it, so the first poll redraws it in place.
@@ -884,10 +873,11 @@ var describeJob = tvlensChatModel.describeJob,
   window.tvlensPanel = {
     stats: stats,
     kick: kickPoll,
+    stop: pollController.stop,
     state: function () {
       return state;
     },
   };
   el("dictate").focus();
-  poll();
+  pollController.start();
 })();
