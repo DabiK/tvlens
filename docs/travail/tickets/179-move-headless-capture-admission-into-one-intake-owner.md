@@ -1,7 +1,7 @@
 ---
 id: T179
 titre: Move headless capture admission into one intake owner
-statut: a-faire
+statut: termine
 bloque_par: T066, T123, T147
 adr: oui
 installe: non
@@ -102,3 +102,108 @@ des repères de départ à relire après dépendances. Ce ticket conserve la sé
 nettoyage ni libération anticipée du créneau HTTP.
 
 ## Journal
+
+### Exploration — 16 octobre 2026
+
+- Consignes, code, appelants, tests cités et ADR 0002/0003/0006/0007/0015/0020/0021 lus.
+  Détail : `.harness-state/tickets/T179/exploration.md` ; aucun écart de périmètre prévu.
+- `git status --short` et `git diff` : statut du ticket préexistant, deux dossiers non suivis hors
+  périmètre ; aucun code déjà modifié. Témoin de hooks présent.
+- `wc -l runtime/headless-runtime.cjs server/http.cjs` : 864 et 151 lignes avant extraction.
+  HTTP délègue déjà l'ingestion à `server/ingest-routes.cjs` ; déduplication et créneau y restent.
+
+### Module — tests d'abord
+
+- Commande de chaque cycle : `node --test tests/capture-intake.test.cjs` ; pour les rouges ciblés,
+  `node --test --test-name-pattern='deaf preparations' tests/capture-intake.test.cjs`, puis les
+  motifs `storage` et `disk`. Sorties conservées dans le dossier d'état, fichiers `01-*` à `07-*`.
+- Rouges observés sur assertions : refus absent (session obsolète puis lecture seule), fermeture
+  non refusée et opération absente, signaux non levés, anciennes captures acceptées, stockage annulé
+  et non suivi, pause disque non publiée. Verts successifs : 1, 2, 4, 6, 8, 10 puis 13 tests.
+- Les préparations sourdes traversent plusieurs bornes pilotées par `manualClock`, un nouvel objet
+  du même identifiant et l'absence de session ; elles restent possédées et annulées une seule fois.
+  Chaque minuterie est libérée. Stockages média et miniature sont conduits par promesses différées.
+
+### Câblage et acceptation
+
+- Rouge de façade : `node --test --test-name-pattern='headless closing' tests/capture-intake.test.cjs`
+  constate que l'hôte n'arme pas la minuterie injectée (0 au lieu de 1). Après délégation :
+  `node --test tests/capture-intake.test.cjs`, 15/15 verts (`08-wiring-*.log`).
+- Une vérification de compatibilité sur l'option nulle a révélé le repli perdu pendant l'extraction :
+  `node --test --test-name-pattern='default preparation' tests/capture-intake.test.cjs` rouge,
+  puis repli `??` conservé et suite 15/15 verte (`09-default-*.log`).
+- Propriétaire avant : `HeadlessRuntime` pour `admit`, `accept`, `current`, `finish`,
+  `cancelPreparations`, `settleIngestions`, `ingest`, `admitted`, `ingestions` et la borne.
+  Propriétaire après : `createCaptureIntake` dans `runtime/capture-intake.cjs` pour ces éléments.
+  L'hôte garde les sept délégations, les getters des deux mêmes ensembles, les époques et le protocole.
+- `wc -l runtime/headless-runtime.cjs runtime/capture-intake.cjs` : hôte 864 → 774 lignes physiques ;
+  nouveau module 147 lignes. Pas de promesse de seuil global.
+- `node scripts/check.mjs --changed` : premier passage rouge sur le constructeur à 87 lignes utiles ;
+  câblage isolé dans `createHeadlessIntake`, second passage vert, 15/15 tests (`check-changed*.log`).
+  Aucun gel ajouté ou augmenté ; les suppressions existantes restent utiles.
+- `node --test --test-concurrency=1 tests/capture-intake.test.cjs tests/architecture-f06.test.cjs tests/architecture-f07.test.cjs tests/server-ingest-path.test.cjs tests/timeline-server.test.cjs tests/server-sessions.test.cjs`
+  : 80/80 verts, aucun ignoré (`acceptance.log`).
+- `git diff --name-only -- tests` : vide ; `git ls-files --others --exclude-standard tests` :
+  seul `tests/capture-intake.test.cjs`. ADR 0023 ajouté, transport et contrats inchangés.
+
+### Contrôle final et remise à la boucle
+
+- `node scripts/check.mjs` : vert, code de sortie 0. Règles, format, lint, gel et cliquet verts ;
+  113 fichiers JavaScript, 1 415 tests réussis, aucun échec ; Python : 33 tests exécutés,
+  résultat OK avec un test ignoré. Sortie : `.harness-state/tickets/T179/check-full.log`.
+- `git diff --check` : code de sortie 0. Aucun test existant modifié, aucun harnais modifié,
+  aucun commit ni push. Les dossiers non suivis présents au départ restent hors périmètre.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T179/verdict.json` ; relecture et intégration
+  laissées à la boucle. Aucun critère restant ni écart à trancher.
+
+### Reprise après interruption — 16 octobre 2026
+
+- `echec-1.txt` rapporte une interruption du service Codex (503), sans constat de relecture.
+  Le verdict annoncé ci-dessus est absent au démarrage de cette reprise ; code, tests, ADR,
+  traces et journal sont présents. Témoin de hooks présent pour la nouvelle session.
+- Consignes, journal, écarts, diff, propriétaire d'ingestion, façade, fermeture, transport et
+  15 nouveaux tests relus. Aucun correctif supplémentaire identifié ; contrôle final à rejouer
+  avant d'écrire le verdict. Exploration complétée dans le dossier d'état.
+- `node scripts/check.mjs --changed` : vert, code de sortie 0, 15/15 tests ; sortie dans
+  `.harness-state/tickets/T179/reprise-check-changed.log`.
+- `node scripts/check.mjs` : vert, code de sortie 0 ; règles, format, lint, gel et cliquet verts,
+  113 fichiers JavaScript, 1 415 tests réussis, aucun échec ; Python : 33 tests exécutés,
+  résultat OK avec un test ignoré. Sortie : `.harness-state/tickets/T179/reprise-check-full.log`.
+- `git diff --check` : code de sortie 0. `git diff --name-only -- tests` : vide ;
+  `git ls-files --others --exclude-standard tests` : seul `tests/capture-intake.test.cjs`.
+  Aucun code changé pendant cette reprise, aucun harnais modifié, aucun commit ni push.
+- Verdict `TERMINÉ` réécrit dans `.harness-state/tickets/T179/verdict.json` après le contrôle complet.
+  Relecture et intégration laissées à la boucle ; aucune réserve nouvelle.
+
+### Correction de la première relecture — 16 octobre 2026
+
+- Rapport `relecture-1.md`, ticket et journal, écarts, état Git et diff relus. Les deux constats
+  mineurs sont confirmés : commentaires explicatifs manquants et deux instructions sur une ligne
+  dans le nettoyage du stockage différé. Aucun constat contesté ; exploration et écarts complétés.
+- Avant correction : `node --test tests/capture-intake.test.cjs`, code de sortie 0, 15/15 verts
+  (`correction-1-before.log`). Ces corrections de lisibilité ne changent aucun comportement ;
+  aucun rouge comportemental revendiqué, aucun test du texte source ajouté.
+- Constat 1 corrigé : explications locales rétablies sur le refus avant préparation, la possession
+  jusqu'au retour du transport, l'attente des stockages avant la borne, le maintien du créneau,
+  l'opération facultative, la priorité de la vie d'origine et la pause disque de la session courante.
+- Constat 2 corrigé : `media.resolve()` et `thumbnail.resolve()` occupent chacun leur ligne dans
+  le `t.after`. Aucune assertion ni instruction exécutable changée.
+- `node scripts/check.mjs --changed` : vert, code de sortie 0, 15/15 tests après correction
+  (`correction-1-check-changed.log`). `git diff --check` : code de sortie 0.
+- `wc -l runtime/headless-runtime.cjs runtime/capture-intake.cjs` : 774 et 159 lignes physiques ;
+  les douze lignes supplémentaires du module sont les commentaires rétablis.
+- `git diff --name-only -- tests` : vide ; `git ls-files --others --exclude-standard tests` :
+  seul `tests/capture-intake.test.cjs`. Contrôle complet lancé en séquentiel.
+- `node scripts/check.mjs` : vert, code de sortie 0 ; règles, format, lint, gel et cliquet verts,
+  113 fichiers JavaScript, 1 415 tests réussis, aucun échec ; Python : 33 tests exécutés,
+  résultat OK avec un test ignoré (`correction-1-check-full.log`).
+- `git diff --check` après correction : code de sortie 0. Les deux constats sont corrigés,
+  sans réserve ; verdict `TERMINÉ` écrit après le contrôle complet. Aucun commit ni push.
+  La boucle garde la responsabilité de la relecture de correction et de l'intégration.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T179/relecture-2.md : **Écart accepté, repères de lignes historiques** : le transport vit bien dans `server/ingest-routes.cjs` depuis T174. Ce n'est pas un écart à un critère.
+- .harness-state/tickets/T179/relecture-2.md : **Écart accepté, options `setPreparationTimer` / `clearPreparationTimer`** : c'est le câblage des minuteries injectées que demande le périmètre. Il garde le contrat de l'ADR 0015, où `setTimer`/`clearTimer` restent réservés au checkpoint.
+
+  La section « Première relecture » de `ecarts.md` ne conteste rien et ne déclare aucun nouvel écart. Il n'y avait donc aucune contestation à trancher.

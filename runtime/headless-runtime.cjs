@@ -6,7 +6,6 @@ const { randomUUID, randomBytes } = require("node:crypto");
 const {
   createSessionRuntime,
   openArchivedSession,
-  validateSegment,
 } = require("./session-runtime.cjs");
 const { createConversationRuntime } = require("./conversation-runtime.cjs");
 const { createSurveillanceRuntime } = require("./surveillance-runtime.cjs");
@@ -19,7 +18,8 @@ const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
 const { warmUp } = require("./session-warm-up.cjs");
 const { activeInstruction } = require("./active-instruction.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
-const { DiskGuard, STORAGE_FULL } = require("../adapters/disk-guard.cjs");
+const { DiskGuard } = require("../adapters/disk-guard.cjs");
+const { createCaptureIntake, READ_ONLY } = require("./capture-intake.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const {
   SimulatedSurveillanceAgent,
@@ -37,26 +37,25 @@ const {
   overlayView,
 } = require("./state-views.cjs");
 
-const READ_ONLY =
-  "Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.";
 const SESSIONS_LISTED = 50;
-// A block that arrives, or is still being prepared, while its session goes away is not a bad request: its
-// capture is answered 503 and asks the session again, instead of counting a block refused for its content.
-const closing = () =>
-  refusal(503, "Session en cours de fermeture.", "session-closing");
-// How long the end of a session waits for a preparation it cancelled to let go of its media tool and its
-// temporary files. A ceiling on that wait, never a promise about the cleanup itself.
-const PREPARATION_WAIT_MS = 1000;
+
+function createHeadlessIntake(host) {
+  return createCaptureIntake({
+    getSession: () => host.session,
+    getCaptureEpoch: () => host.captureEpoch,
+    isMoving: () => host.moving(),
+    storage: () => host.storage(),
+    publish: () => host.emit(),
+    preparationWaitMs: host.options.preparationWaitMs,
+    setTimer: host.options.setPreparationTimer,
+    clearTimer: host.options.clearPreparationTimer,
+  });
+}
 
 class HeadlessRuntime {
   constructor(options) {
     this.options = options;
     this.listeners = new Set();
-    this.ingestions = new Set();
-    // Blocks the transport has accepted and not handed back yet, from before their media are prepared
-    // (see accept): what the end of their session cancels, or waits for once their storage has begun.
-    this.admitted = new Set();
-    this.preparationWaitMs = options.preparationWaitMs ?? PREPARATION_WAIT_MS;
     this.quota = new CodexQuota();
     // Wall clock of the host. Injected by tests only: question stamps, surveillance and serverNowMs then
     // sit on the same clock, so a client can subtract one from the other.
@@ -80,6 +79,7 @@ class HeadlessRuntime {
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
     const { setTimer, clearTimer } = options;
     this.questionSaves = createQuestionCheckpoint({ setTimer, clearTimer });
+    this.captureIntake = createHeadlessIntake(this);
     // One guard for the host: the sessions it creates and the library that lists and deletes them
     // decide on the same measurement. A simulated run has none unless it is handed one.
     this.guard =
@@ -395,123 +395,33 @@ class HeadlessRuntime {
       this.emit();
     });
   }
-  // Asked by the transport before a block is prepared, so that a refusal costs no media work: an
-  // archive that is only being read never receives capture, and a session stopped for lack of room
-  // keeps saying why instead of looking merely stopped.
+  // Les bancs lisent les ensembles du propriétaire, jamais une copie de l'état d'ingestion.
+  get admitted() {
+    return this.captureIntake.admitted;
+  }
+  get ingestions() {
+    return this.captureIntake.ingestions;
+  }
   admit(sessionId) {
-    const session = this.loaded(sessionId);
-    if (session.readOnly) throw refusal(409, READ_ONLY, "read-only");
-    if (session.watch.accepting) return session;
-    if (this.storage().state === "blocked")
-      throw Object.assign(
-        new Error(
-          session.watch.storageError ||
-            "Espace disque insuffisant : la capture est suspendue pour ne rien supprimer.",
-        ),
-        { code: STORAGE_FULL },
-      );
-    throw Error("La session est arrêtée.");
+    return this.captureIntake.admit(sessionId);
   }
-  // A block the transport has accepted belongs to the host from here, before anything is prepared for
-  // it, until the transport hands it back (finish): the session and the capture it was accepted in, and
-  // the signal that stops its preparation when that session ends, is deleted, or the host stops.
-  // Refused while a session is going away, before any media work.
   accept(sessionId) {
-    const session = this.admit(sessionId);
-    if (this.moving()) throw closing();
-    const operation = {
-      session,
-      epoch: this.captureEpoch,
-      controller: new AbortController(),
-      storing: false,
-    };
-    operation.settled = new Promise((resolve) => {
-      operation.settle = resolve;
-    });
-    this.admitted.add(operation);
-    return operation;
+    return this.captureIntake.accept(sessionId);
   }
-  // Still the life it was accepted in: the session itself, not its identifier, which an archive opened
-  // and resumed shares with its former life; and the capture, which every start and resume renews.
   current(operation) {
-    return (
-      !operation.controller.signal.aborted &&
-      operation.session === this.session &&
-      operation.epoch === this.captureEpoch
-    );
+    return this.captureIntake.current(operation);
   }
-  // Handed back once the block is answered and what prepared it has let go, however late that is.
   finish(operation) {
-    this.admitted.delete(operation);
-    operation.settle();
+    return this.captureIntake.finish(operation);
   }
-  // First thing when the session in memory goes away: a block still being prepared is cancelled, its
-  // media tool stopped and its capture told that the session is closing. One whose storage has begun is
-  // left to land. Hands back what settleIngestions() then waits for: every preparation that has not let
-  // go, one cancelled by an earlier end included. That one is not cancelled twice, and stays owned.
   cancelPreparations() {
-    const cancelled = [];
-    for (const operation of this.admitted)
-      if (!operation.storing) {
-        if (!operation.controller.signal.aborted)
-          operation.controller.abort(closing());
-        cancelled.push(operation.settled);
-      }
-    return cancelled;
+    return this.captureIntake.cancelPreparations();
   }
-  // What is being stored lands whole, as before. What was cancelled is then given preparationWaitMs to
-  // let go. Past that the session goes away all the same and says so, as the failure of this closing step
-  // ("préparation média"): the block stays owned and refused, and the transport prepares no other, until
-  // its preparation has really settled.
-  async settleIngestions(cancelled) {
-    await Promise.allSettled([...this.ingestions]);
-    if (!cancelled.length) return;
-    let timer;
-    const late = await Promise.race([
-      Promise.all(cancelled).then(() => false),
-      new Promise((resolve) => {
-        timer = setTimeout(resolve, this.preparationWaitMs, true);
-      }),
-    ]);
-    clearTimeout(timer);
-    if (late)
-      throw new Error(
-        `arrêt non confirmé après ${this.preparationWaitMs} ms, bloc refusé, préparation suivante en attente`,
-      );
+  settleIngestions(cancelled) {
+    return this.captureIntake.settleIngestions(cancelled);
   }
-  // `operation` is what accept() handed the transport for this block; a host that prepares nothing
-  // (a probe, a test) ingests without one.
-  async ingest(input, operation) {
-    // Stored in the life it was accepted in and no other, whatever happened while it was prepared.
-    if (operation && !this.current(operation))
-      throw operation.controller.signal.aborted
-        ? operation.controller.signal.reason
-        : refusal(
-            409,
-            "La capture a changé pendant la préparation de ce bloc.",
-            "capture-changed",
-          );
-    const session = this.admit(input?.sessionId);
-    validateSegment(input, session.watch.now());
-    if (this.moving()) throw closing();
-    // Its storage starts in this very step: from here an end waits for it to land instead of
-    // cancelling it.
-    if (operation) operation.storing = true;
-    const work = session.watch.ingest(input);
-    this.ingestions.add(work);
-    try {
-      return await work;
-    } catch (error) {
-      // Out of room: the passage was refused before any write. The whole session is paused, clock
-      // included, and says why; nothing is deleted to make space, and it stays open to questions.
-      if (error?.code === STORAGE_FULL && this.session === session) {
-        await session.pause().catch(() => {});
-        this.emit();
-      }
-      throw error;
-    } finally {
-      this.ingestions.delete(work);
-    }
+  ingest(input, operation) {
+    return this.captureIntake.ingest(input, operation);
   }
   ask({ question, sessionId, anchorMs, moment }) {
     if (this.moving()) throw Error("Session en cours de fermeture.");
