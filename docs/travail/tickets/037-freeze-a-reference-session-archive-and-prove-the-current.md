@@ -2,119 +2,108 @@
 id: T037
 titre: Freeze a reference session archive and prove the current code reads it
 statut: a-faire
-bloque_par: T145
+bloque_par: T193
 adr: non
 installe: non
 harnais: non
 supprime_tests: non
+niveau: standard
 ---
 
 ## Ce que le ticket livre
 
-La lecture d'une archive de session n'est prouvée aujourd'hui que par aller-retour : le même code écrit
-puis relit. Après ce ticket, une archive écrite une fois par le code actuel est figée dans
-`tests/fixtures/archives/`, avec ses sommes de contrôle, et un test l'ouvre et la relit par les frontières
-publiques. Tout ticket qui changera un format sur disque aura ainsi un témoin qu'il n'a pas écrit.
+Une archive produite une fois par les vraies frontières de sauvegarde, avec des fournisseurs simulés,
+est figée et relue par le code courant. Les migrations disposeront d'un témoin indépendant de leur
+écrivain, avec des attentes explicites sur les données conservées et les limites de leur lecture.
 
 ## Sources
 
-- Constats : GAP2-01, GAP2-02, GAP2-10, OUBLI-53
-- Livre : jalon:archive-reference
-- Code vérifié à la version `0d5a954` :
-  - `adapters/local-store.cjs` : `FILES` ligne 6 (`session.json`, `deep-answers.json`,
-    `living-recap.json`, `auto.json`, `surveillance.json`, `manifest.json`) ; `MEDIA_DIR`, `THUMBS_DIR`,
-    `LEGACY_THUMBS_DIR` ligne 7 ; `MEDIA_FILE` ligne 8 ; `write(id, input)` lignes 50-73 : le JSON du
-    média est `{frames, audio (base64), startMs, endMs}`, sans version (ligne 55).
-  - `adapters/session-library.cjs` : `MANIFEST_FORMAT`, `MANIFEST_VERSION` ligne 6 ; `SESSION_ID`
-    ligne 8 ; `sessionTitle(at)` lignes 11-15 ; `describe` lignes 34-47 (sans manifeste, titre et dates
-    viennent de `savedAt`, ligne 44) ; `SessionLibrary.state()` lignes 89-114 (`savedAt` est la date de
-    modification du dossier, ligne 95, ou de `session.json`, ligne 98) ; `list()` lignes 117-130 ;
-    `read()` lignes 133-141.
-  - `runtime/headless-runtime.cjs` : `open(id)` lignes 983-1015.
-  - `app/main.cjs` : `store?.saveRecap(state)` ligne 212 — `living-recap.json` n'est écrit que par
-    l'hôte Mac.
-  - `.gitignore` : `*.webm`, `*.bin`, `*.log`, `sessions/`, `saved-moments/` écartent ce qu'une archive
-    contient. `.prettierignore` et `.gitattributes` n'existent pas.
-  - `scripts/check.mjs` : `format` (ligne 88) lancerait Prettier sur `.` s'il était installé.
-  - `tests/server-sessions.test.cjs` : `fixture` ligne 73 — modèle d'un `HeadlessRuntime` hors ligne
-    (faux agent, faux embeddings, faux assembleur, horloges injectées).
-  - Six copies de `tree(dir, base = dir)` dans les tests (`tests/session-durable.test.cjs:24`,
-    `tests/server-sessions.test.cjs:61`, entre autres) : ce ticket ne les fusionne pas.
+- `docs/domaine.md`, section 9 ; ADR 0029 : convertisseurs versionnés, données historiques conservées.
+  Ce filet précède T208 et ne dépend plus du découpage global T145.
+- Code vérifié à `dd5efc9` : `core/session.cjs:489` construit le snapshot non versionné ;
+  `core/session.cjs:513` le remet à l'archive. `adapters/local-store.cjs:5` nomme les documents,
+  `adapters/local-store.cjs:50` écrit les médias avec images, audio et intervalle ;
+  `adapters/local-store.cjs:159` coalesce les états avant temporaire et renommage.
+- `adapters/session-library.cjs:89` lit et complète l'état depuis l'inventaire ;
+  `adapters/session-library.cjs:117` liste, `adapters/session-library.cjs:133` lit l'archive.
+  Avec manifeste, la liste reprend ses totaux sans relire `session.json` ; sans manifeste, elle
+  distingue rétention reconnue et archive historique (`adapters/session-library.cjs:26`, `:34`).
+- `runtime/headless-runtime.cjs:520` délègue l'ouverture à
+  `runtime/headless-session-lifecycle.cjs:207`. Le résumé vivant est sauvegardé côté Mac à
+  `app/main.cjs:207`. Le banc hors ligne existe à `tests/server-sessions.test.cjs:70`.
+- `adapters/local-store.cjs:119` inventorie des paires de fichiers, sans décoder les vidéos.
+  Un clip tronqué avant lecture reste une paire présente : ne pas le déclarer automatiquement manquant.
+  `adapters/embedding-store.cjs:9` lit aussi un journal JSONL, nommé `embeddings.json` par
+  `runtime/session-providers.cjs:187`.
+- `.gitignore` ignore notamment WebM et dossiers `sessions/` ; `.prettierignore` exclut déjà
+  `tests/fixtures/`. Aucune `.gitattributes` n'existe à cette version.
+  Tests à conserver : session-durable, session-lifecycle et server-sessions ; ADR 0002 et 0003.
 
 ## Périmètre
 
-À créer :
-
-- `scripts/fixtures/write-reference-archive.cjs` : pilote un `HeadlessRuntime` hors ligne, sur le modèle
-  de `fixture`, et écrit une génération dans le dossier passé en argument. Il n'est lancé qu'une fois,
-  par cette session ; aucun test ne le lance.
-- `tests/fixtures/archives/durable-v1/` : la génération écrite par le code de la version courante. Elle
-  contient deux sessions, chacune dans un dossier nommé par son identifiant, sous un dossier qui ne
-  s'appelle ni `sessions` ni `saved-moments` :
-  - une session archivée proprement, avec au moins deux passages, leurs médias et vignettes, une
-    conversation et un registre de surveillance ;
-  - une session interrompue : l'hôte n'a pas clos la session ; un clip est tronqué alors que son JSON
-    est complet, et un reste `session.json.tmp` est présent. Ces deux altérations sont faites à la main
-    après l'écriture et le README les nomme, fichier par fichier.
-- `tests/fixtures/archives/durable-v1/expected.json` : ce que la lecture doit rendre (identifiants,
-  états, nombre de passages, médias présents et manquants, intervalle de chaque média, nombre
-  d'affirmations du registre de surveillance), pas une copie des fichiers. Il ne porte ni titre ni date
-  tirés d'une date de fichier : une copie de la génération n'a pas les dates du dépôt.
-- `tests/fixtures/archives/durable-v1/SHA256SUMS` : une somme par fichier de la génération.
-- `tests/fixtures/archives/README.md` : commit d'origine, commande qui a produit la génération, ce qui a
-  été altéré à la main, la règle « une génération figée ne se régénère jamais », qui peut modifier
-  `expected.json` et dans quel cas, et ce que la génération ne contient pas (`living-recap.json`, écrit
-  par le seul hôte Mac ; la disposition antérieure à `manifest.json` ; un média d'une génération
-  ancienne, sans `startMs` ni `endMs`).
-- `tests/archive-compat.test.cjs` et, si besoin, une aide dans `tests/helpers/`.
-- `.prettierignore` (nouveau) : `tests/fixtures/`. `.gitattributes` (nouveau) :
-  `tests/fixtures/archives/** -text`.
-
-À modifier :
-
-- `.gitignore` : une négation ajoutée pour `tests/fixtures/archives/**`.
-
-À ne pas toucher :
-
-- Le code de production : aucun format ne change, aucune version n'est ajoutée à un fichier.
-- Les tests existants et leurs aides locales.
+- Créer `scripts/fixtures/write-reference-archive.cjs`, générateur manuel hors des tests, et
+  `tests/fixtures/archives/durable-v1/`, avec deux dossiers de sessions aux identifiants UUID.
+  Le conteneur parent ne s'appelle ni `sessions` ni `saved-moments`.
+- Le générateur pilote le runtime réel hors ligne, sur horloges maîtrisées : perception simulée,
+  agent de questions simulé, aucun identifiant personnel. Employer les petits médias de fixture
+  disponibles ; aucun outil média réel ni fournisseur n'est requis. Désactiver les embeddings pour
+  ce premier corpus, afin de ne pas confondre JSON et JSONL.
+- La perception simulée par défaut passe par les deux voies livrées par T193 ; chaque passage figé
+  porte `audioStatus` et `visionStatus`, que `expected.json` attend. Au commit vérifié,
+  `adapters/simulated-providers.cjs:40` n'expose encore que `observe` et `ask` ;
+  `core/session.cjs:59` choisit alors la voie série. Le choix du simulé est à
+  `runtime/session-providers.cjs:154` (et non `:65` comme dans la relecture A). Relire la
+  livraison T193 avant génération.
+- Figer une session archivée avec au moins deux passages, médias, miniatures, conversation et registre
+  de surveillance ; puis une session interrompue, avec état sauvegardé et manifeste non final.
+  Après écriture, tronquer un clip de cette seconde session et ajouter un `session.json.tmp` résiduel.
+  Documenter précisément ces deux altérations ; ne pas présenter ce clip comme un média absent.
+- Ajouter `expected.json` (attentes de lecture, pas copie des documents), `SHA256SUMS` et un README
+  donnant commit producteur, commande, altérations et règle de conservation. Le générateur n'est
+  jamais lancé par un test ; une génération figée ne se régénère pas pour accompagner un nouveau format.
+  Un changement d'attente exige un comportement expliqué et relu, sans remplacer le témoin historique.
+- Ajouter `tests/archive-compat.test.cjs`, et une aide de copie si nécessaire. Ajouter une exception
+  ciblée dans `.gitignore` pour ce corpus et `.gitattributes` avec
+  `tests/fixtures/archives/** -text`. Ne pas modifier `.prettierignore`, déjà suffisant.
+- Aucun changement produit, format, autre test ou harnais. Ce socle ne couvre pas `living-recap.json`,
+  les archives antérieures au manifeste, les anciens médias sans intervalle ni la rétention glissante.
+  T222 ajoute ses variantes avant T208 ; T215 ajoute l'archive réellement élaguée avant retrait
+  de cette politique. Toute migration du résumé vivant doit d'abord ajouter son propre témoin.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
-
-1. `node --test tests/archive-compat.test.cjs` passe. Le fichier prouve, sur une copie de la génération
-   dans un dossier temporaire :
-   - chaque fichier listé dans `SHA256SUMS` existe et a la somme écrite, et aucun fichier de la
-     génération n'est absent de la liste ;
-   - chaque fichier de la génération dont le nom finit par `.json` se lit par `JSON.parse` ;
-   - `SessionLibrary.list()` rend les deux sessions avec l'état, le nombre de passages et le décompte de
-     médias de `expected.json` ;
-   - `SessionLibrary.read()` rend pour la session archivée un instantané, une conversation et un registre
-     de surveillance non nuls, et l'inventaire attendu ;
-   - `HeadlessRuntime.open()` ouvre la session archivée ; l'état publié porte les passages attendus, dit
-     le registre de surveillance `ready` et porte le nombre d'affirmations de `expected.json` ;
-   - la session interrompue est listée dans l'état attendu, son clip tronqué est compté comme
-     `expected.json` le dit, et le reste `session.json.tmp` n'empêche ni la liste ni la lecture ;
-   - un titre qui dépend d'une date de fichier est comparé à `sessionTitle` appliqué à une date que le
-     test pose lui-même sur la copie (`fs.utimes`), jamais à une date du dépôt.
-2. Le même fichier prouve qu'aucun chemin de `SHA256SUMS` n'est écarté par `.gitignore`
-   (`git check-ignore --no-index` par chemin) ; ce cas est sauté, et le dit, hors d'un dépôt Git.
-3. Le test ne lance pas le générateur et n'écrit rien sous `tests/fixtures/`.
-4. `node --test tests/session-durable.test.cjs` passe sans qu'une ligne de ce fichier ait changé.
-5. `node scripts/check.mjs` est vert.
+1. Le test vérifie l'ensemble exact des fichiers couverts par `SHA256SUMS`, sans autoréférence du
+   fichier de sommes. Tous les documents JSON du corpus se lisent ; aucun JSONL n'y est inclus.
+   Les sommes et les fichiers restent identiques avant et après chaque scénario.
+2. Sur une copie temporaire, `SessionLibrary.list()` et `read()` restituent identités, états,
+   passages, conversation, surveillance et inventaire définis dans `expected.json`. Les totaux du
+   manifeste et l'inventaire physique sont comparés séparément, sans les assimiler.
+3. `HeadlessRuntime.open()` ouvre l'archive en lecture seule, avec les passages et le registre
+   attendus. Le banc interdit tout fournisseur réel et ne relance aucune analyse à l'ouverture.
+   L'ouverture et la fermeture sans reprise ne modifient pas les octets de la copie.
+4. La session interrompue reste lisible malgré le temporaire résiduel. Son clip tronqué est compté
+   selon la présence de sa paire, sans promesse de décodage ; les autres données restent consultables.
+   Toute attente liée à un mtime est calculée après `utimes` sur la copie, jamais depuis les dates Git.
+5. Aucun fichier nécessaire n'est ignoré par Git : vérifier chaque chemin avec
+   `git check-ignore --no-index`, en interprétant aussi les négations. Hors dépôt Git, ce contrôle
+   est explicitement marqué non lancé. Le test ne touche jamais au corpus original.
+6. À l'implémentation, exécuter en séquentiel archive-compat, session-durable, session-lifecycle et
+   server-sessions, puis `node scripts/check.mjs`. Aucun cas existant ni plancher n'est retiré.
 
 ## Test d'acceptation attendu
 
-`tests/archive-compat.test.cjs`, nouveau. Frontières : `SessionLibrary` (`list`, `read`) et
-`HeadlessRuntime.open`, sur une copie temporaire de `tests/fixtures/archives/durable-v1/`.
+`tests/archive-compat.test.cjs` relit une copie de la génération par `SessionLibrary` puis
+`HeadlessRuntime.open()`. Le test de lecture ne dépend pas du générateur ni d'un aller-retour courant.
+Les écritures sont terminées avant de figer le corpus ; l'interruption simulée n'est pas un crash matériel.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si le code actuel ne peut pas relire, sans modification, la génération
-qu'il vient d'écrire, ou si la négation de `.gitignore` ne suffit pas à faire suivre les médias : verdict
-BLOQUÉ, avec l'écart constaté. La génération n'est pas retouchée pour faire passer le test. Si le runtime
-hors ligne ne produit aucune affirmation de surveillance, le registre est figé tel qu'il est écrit,
-`expected.json` porte zéro et le README le dit : ce n'est pas un blocage.
+Aucune décision n'est attendue.
+
+La capacité du runtime courant à produire puis rouvrir ce corpus reste à prouver à l'implémentation :
+aucune génération ni aucun test n'ont été exécutés au découpage. Si une génération réelle ne se relit
+pas sans correction produit, consigner le défaut et arrêter ce ticket sans retoucher le témoin.
+Si la simulation ne produit aucune affirmation, conserver le registre vide, l'attente zéro et sa limite
+dans le README. Les variantes exclues ci-dessus ne constituent pas une preuve de compatibilité générale.
 
 ## Journal

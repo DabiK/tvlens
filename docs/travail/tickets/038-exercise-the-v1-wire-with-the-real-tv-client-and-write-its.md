@@ -2,120 +2,111 @@
 id: T038
 titre: Exercise the /v1 wire with the real TV client and write its compatibility rule
 statut: a-faire
-bloque_par: T145
+bloque_par: T189
 adr: oui
 installe: non
 harnais: non
 supprime_tests: non
+niveau: sensible
 ---
 
 ## Ce que le ticket livre
 
-Aucun test ne fait parler le client de la TV au vrai serveur : aucun fichier `tests/*.test.cjs` ne cite
-à la fois `RemoteServer` et un chemin de `tv/app`. Et aucune règle écrite ne dit ce qu'un ticket
-a le droit de changer sur `/v1`. Après ce ticket, un test monte le vrai serveur et le fait interroger par
-le vrai client du panneau, et un ADR écrit la règle de compatibilité, les bornes et les délais qui font
-partie du contrat, et l'ordre dans lequel serveur et TV se livrent. Le ticket ne change aucune réponse.
+Le vrai client JavaScript TV parle au vrai serveur HTTP dans un banc hors ligne. Un ADR fixe la
+compatibilité de `/v1` sur les comportements, les refus et les séquences d'appels, avec des preuves
+qui protégeront les projections et le contrôle des sessions pendant la vague structurelle.
 
 ## Sources
 
-- Constats : GAP3-01, GAP3-02, OUBLI-49
-- Livre : jalon:contrat-fil
-- Code vérifié à la version `0d5a954` :
-  - `server/http.cjs`, classe `RemoteServer` : constructeur lignes 6-17 (`requestTimeout = 20000`
-    ligne 15, `headersTimeout = 10000` ligne 16) ; `handle` : 401 lignes 52-58, 405 lignes 60-65,
-    `revalidated` (304) lignes 73-80, `GET /v1/session` lignes 82-95, `/v1/state` lignes 96-99, 404
-    ligne 152, 415 lignes 154-159, limite de corps `route === "/v1/segments" ? 13000000 : 12000`
-    ligne 160, 413 lignes 161-170 (sans code), 400 « JSON invalide. » lignes 179-180.
-  - `runtime/headless-runtime.cjs` : `viewName` lignes 446-450 (400 « Vue d'état inconnue. ») ;
-    `etag(view)` lignes 453-456 ; exports `HeadlessRuntime`, `VIEWS`.
-  - `tv/app/remote-client.js` : `RemoteClient(config, fetcher)` lignes 4-10 ; `refusal(response, value)`
-    lignes 13-18 (garde le statut et le code) ; `send` lignes 19-50 (délai de 8000 ms ligne 23) ;
-    `poll(route)` lignes 68-85 : rend `{ value, notModified }`, et sur un 304 la valeur tenue avec
-    `notModified: true` ; `state(view)` lignes 87-89 ; `module.exports = { RemoteClient }` lignes 170-171.
-  - `tv/app/companion.js` : `tvlensViewRefusal` lignes 240-245 (un 404, ou un 400 dont le message dit
-    « vue d'état inconnue », est classé `unknown`) ; `TvlensPollPlan` ligne 248, dont `refused(error,
-    now)` rend vrai et pose `legacy` à vrai pour un refus `unknown` ; exports `pollPolicy`, `PollPlan`,
-    `mergeState` lignes 363-373.
-  - `tv/transport.py` : `Transport.request(route, data=None, timeout=5)` ligne 43 ;
-    `deliver(item, created, ttl=30)` ligne 50.
-  - `scripts/bench-perceived.cjs` lignes 86-100 : gabarit existant, hors `npm test`, qui monte déjà
-    `RemoteServer` et `HeadlessRuntime` devant le vrai `tv/app/remote-client.js`.
-  - `tests/server-sessions.test.cjs` : `fixture` ligne 73 — modèle d'un hôte hors ligne.
-- Documentation vérifiée : `docs/adr/0006-…md`, décision 12 (ligne 48) et décision 13 (ligne 57), fixe
-  déjà les statuts de `POST /v1/segments` et les délais (5 s côté TV, 15 s par commande, 30 s de vie d'un
-  bloc). `docs/architecture.md:100` : « GET /v1/state reste compatible… ». `docs/architecture.md:104` :
-  des écrans TV écrits dans `tv/app/` ne sont pas encore déployés. `docs/vps-deployment.md:101` : le VPS
-  part de `7015a64` avec des correctifs déployés hors commit. Ce qui est installé n'est donc pas ce que
-  porte le dépôt.
+- `docs/domaine.md`, section 9 ; ADR 0029 et 0030. Le contrat précède les changements du contrôle TV.
+  T145 n'est pas un prérequis. T188 transporte les codes ; T201, transitif par T189, complète leurs
+  émetteurs ; T189 fait lire ces codes à la page TV. Relire leurs livraisons avant de figer le contrat.
+- Code vérifié à `dd5efc9` : `server/http.cjs:6` et `:7` fixent les corps à 12 000/13 000 000 octets,
+  `:8` et `:9` les délais à 20 s/10 s ; `server/http.cjs:44` traite ETag/304 ; `:123` ordonne
+  CORS, authentification, méthode, corps puis routage. Le 413 est encore sans code avant T188.
+- `tv/app/remote-client.js:13` conserve statut et code ; `:19` borne l'envoi à 8 s ; `:70` garde le
+  corps sur 304 ; `:89` expose les vues ; `:159` et `:162` listent et commandent les sessions.
+  Les exports Node conditionnels sont à `tv/app/remote-client.js:171`.
+- `PollPlan` et `mergeState` vivent dans `tv/app/chat-model.js:225` et `:303`, réexportés par
+  `tv/app/companion.js:20`. Le classement courant de vue inconnue lit encore le message à
+  `tv/app/chat-model.js:219` : T189 le remplace par les codes, avec repli 404 historique conservé.
+- `runtime/state-views.cjs:6` définit `VIEWS`. `runtime/headless-runtime.cjs:269` valide la vue,
+  `:280` produit l'état ; ses exports à `:571` n'exportent pas `VIEWS`.
+- `tv/app/sessions-view.js:469` met éventuellement en pause avant une action de bibliothèque ;
+  `tv/app/capture-control.js:52` reprend avant capture locale, `:60` ferme avant nouvelle capture.
+  `tv/app/companion.js:330` arrête la capture locale avant la fin serveur ;
+  `server/session-routes.cjs:54`, `:56`, `:63` et `:64` exposent start/pause/end et l'alias close.
+- Bancs lus : server-sessions, server-state-views, tv-panel et tv-poll-controller sous `tests/` ;
+  `scripts/bench-perceived.cjs:100` et `:126` composent déjà serveur et vrai client, hors suite de tests.
+  ADR 0006, décisions 12/13, et ADR 0021/0026 : statuts, admission, ordre HTTP et polling.
 
 ## Périmètre
 
-À créer :
-
-- `tests/helpers/wire-host.cjs` : monte, hors ligne et sur un dossier temporaire, un `HeadlessRuntime`
-  en mode `smoke` derrière un `RemoteServer` écoutant sur `127.0.0.1`, et rend le vrai `RemoteClient` de
-  `tv/app/remote-client.js` configuré sur lui, avec de quoi l'arrêter. Les tickets suivants du contrat de
-  fil s'en servent.
-- `tests/wire-contract.test.cjs` : les cas ci-dessous.
-- Un ADR dans `docs/adr/`, au premier numéro libre, qui étend l'ADR 0006 sans le redire :
-  1. La règle : sur `/v1`, on ajoute, on ne retire ni ne renomme un chemin, un champ, un code ou un
-     message ; une cause ne change pas de classe de statut. Tant que le plancher n'est pas relevé, tout
-     ce que `/v1` rend aujourd'hui est tenu pour lu par un client installé.
-  2. Qui lit quoi : le panneau (`tv/app/remote-client.js`), la capture (`tv/transport.py`) ; l'app Mac
-     n'appelle pas `/v1`.
-  3. Les bornes et délais du contrat, chacun avec son emplacement des deux côtés : 12 000 et
-     13 000 000 octets de corps, 20 s de requête côté serveur, 8 s côté panneau, 5 s par requête et 30 s
-     de vie d'un bloc côté capture ; un 413 n'a pas de code.
-  4. L'ordre de livraison d'un ajout : les tests du contrat, puis le serveur, puis le client qui lit
-     l'ajout ; un changement de statut ou de champ ne vient qu'ensuite, sous preuve que le client actuel
-     traite encore la réponse.
-  5. Ce que l'ADR ne fixe pas : la révision plancher. Les révisions installées sur la TV et le VPS ne
-     sont lisibles que par le propriétaire ; l'ADR dit où les noter et n'en affirme aucune.
-
-À ne pas toucher :
-
-- Le code de production : `server/`, `runtime/`, `tv/`. Aucune réponse, aucun délai ne change.
-- `scripts/bench-perceived.cjs` et les tests existants.
-- Les aides d'attente et d'horloge de `tests/helpers/` (`wait.cjs`, `clock.cjs`) : elles appartiennent à
-  lot:L05. Ce test attend les promesses des requêtes HTTP et ne crée aucune aide d'attente.
+- Créer ou compléter `tests/helpers/server-host.cjs`, la fabrique partagée prévue par T064 :
+  runtime headless smoke, stockage temporaire, horloges et
+  fournisseurs maîtrisés, assembleur simulé, vrai `RemoteServer` sur `127.0.0.1` et port éphémère,
+  vrai `RemoteClient` auquel on injecte le `fetch` Node. Fermer serveur, runtime et répertoire même
+  après échec. Réutiliser les aides d'horloge et de promesses existantes.
+- Créer `tests/wire-contract.test.cjs`. Les appels passent par le vrai client (`state`, `request`,
+  `sessionAction`, `closeSession`) ; la fusion et le repli passent par le vrai `PollPlan`/`mergeState`.
+  Un fetcher enveloppé peut relever requêtes et réponses sans les remplacer ni changer les globales.
+- Écrire un ADR court au premier numéro libre, prolongeant ADR 0006, 0029 et 0030 : ajouts compatibles
+  sur `/v1`, maintien des routes, champs, codes, statuts et sens des actions déjà lus ; tests puis
+  serveur puis client pour un ajout. Une évolution incompatible exige un autre contrat ou une preuve
+  explicite que les anciens clients ont encore un comportement défini. Aucun changement de produit ici.
+- L'ADR distingue message affichable et identité de refus : statut/code pilotent les décisions après
+  T189. Il ne transforme pas les anciennes regex françaises en contrat immuable de formulation.
+  Il décrit revalidation, refus avant admission, doublons et ordre des commandes, pas seulement JSON.
+- Documenter qui appelle quoi : panneau JavaScript, contrôleur TV local et producteur Python.
+  Le démarrage `/v1/session/start` et `GET /v1/session` de Python ne sont pas attribués au client JS.
+  T204 couvre ce producteur ; ce ticket n'installe ni TV ni VPS. L'annonce de capacités/version
+  de la cible reste à ajouter par un autre ticket ; ne pas inventer qu'elle existe aujourd'hui.
+- Conserver les bornes et délais observés et renvoyer à ADR 0006 pour la préparation et le TTL Python.
+  Ne fixer aucune révision installée ni plancher de déploiement sans preuve du propriétaire.
+  Aucun changement de `server/`, `runtime/`, `tv/`, scripts de mesure, harnais ou tests existants.
 
 ## Critères d'acceptation
 
-Chaque critère se vérifie par un test ou une commande.
-
-1. `node --test tests/wire-contract.test.cjs` passe, hors ligne. Avec le vrai `RemoteClient` devant le
-   vrai serveur, le fichier prouve :
-   - chaque vue de `VIEWS` est rendue par `client.state(view)` (`notModified: false`) et sa valeur est
-     acceptée par `mergeState` ; l'état fusionné porte l'identifiant de la session en cours ;
-   - une vue redemandée sans changement rend `notModified: true` et la valeur déjà tenue ; après un bloc
-     reçu par `POST /v1/segments`, la même demande rend `notModified: false` et un état nouveau ;
-   - une vue inconnue est refusée : `client.state` lève un refus qui porte le statut 400 et le message du
-     serveur ; pour ce refus, `PollPlan.refused` rend vrai et `legacy` passe à vrai ;
-   - un jeton faux donne un refus de statut 401 ; une route inconnue, 404 ;
-   - un corps de plus de 12 000 octets sur une route de commande donne un refus de statut 413, sans code ;
-   - un refus qui porte un code (au moins `read-only` sur `/v1/session/start` d'une archive rouverte)
-     arrive au client avec son statut et son code.
-2. Le test ne remplace ni `fetch` ni une globale : le client reçoit le `fetch` de Node et l'adresse du
-   serveur monté.
-3. `grep -n "0006" docs/adr/<nouvel ADR>` montre que l'ADR renvoie aux décisions 12 et 13 de l'ADR 0006
-   au lieu de recopier leur table de statuts.
-4. `grep -owE "[0-9a-f]{7,40}" docs/adr/<nouvel ADR> | grep "[a-f]"` ne rend rien : l'ADR ne cite aucune
-   révision Git, ni comme installée ni comme plancher.
-5. `node --test tests/server-state-views.test.cjs tests/tv-panel.test.cjs` passe sans qu'une ligne de ces
-   deux fichiers ait changé.
-6. `node scripts/check.mjs` est vert.
+1. Pour l'état complet et chaque vue de `runtime/state-views.cjs`, le client reçoit une valeur
+   fusionnable contenant la bonne session. À état stabilisé, la seconde lecture conserve la valeur
+   avec `notModified:true` ; après ingestion puis publication contrôlée, elle rend un nouvel état.
+   Les tags de deux vues ne sont pas interchangeables ; aucune attente murale n'ordonne l'analyse.
+2. Une vue inconnue donne 400 `unknown-view`, transmis au client puis reconnu par `PollPlan` livré
+   par T189. Authentification fausse, route absente et corps excessif donnent respectivement
+   401 `unauthenticated`, 404 `route-not-found`, 413 `request-too-large`, sans perdre leurs statuts.
+   Le repli d'un ancien serveur 404 sans code reste couvert par les tests de T189.
+3. Une séquence réelle démarre, reçoit un bloc, met en pause, termine, liste puis ouvre l'archive.
+   Le démarrage et les blocs sont émis par le banc comme le producteur Python
+   (`tv/capture.py:59`, `tv/transport.py:55`, `:69`). Pause, fin, liste, ouverture, reprise et
+   fermeture passent par `RemoteClient` (`tv/app/sessions-view.js:473`, `tv/app/companion.js:340`,
+   `tv/app/remote-client.js:159` et `:168`).
+   Ouverte en lecture seule, elle refuse start par 409 `read-only` ; seule une reprise explicite
+   relance l'admission. Les identités, méthodes et ordre des requêtes sont vérifiés via le fetcher.
+   Tester les enveloppes distinctes de `/v1/session/end` et `/v1/sessions/close` sans les fusionner.
+4. Rejouer le même bloc donne le même identifiant et `duplicate:true`, sans nouveau passage ;
+   même séquence avec contenu différent et séquence ancienne gardent leurs refus codés de T188.
+   L'ordre des contrôles n'est pas corrigé par le banc. Les tests d'ingestion existants gardent
+   les preuves d'annulation et de possession des ADR 0006/0023.
+5. Le contrat écrit recense les séquences locales pause/action et arrêt capture/fin serveur à partir
+   des appelants cités. Il distingue ce que prouve ce banc HTTP et ce que prouvent les bancs de page
+   et Python ; aucune orchestration locale n'est prétendue testée par le seul `RemoteClient`.
+6. À l'implémentation, exécuter en séquentiel wire-contract, server-state-views, server-ingest-path,
+   tv-panel et tv-poll-controller, puis `node scripts/check.mjs`. Aucun test ni réponse produit
+   n'est modifié pour satisfaire cette caractérisation.
 
 ## Test d'acceptation attendu
 
-`tests/wire-contract.test.cjs`, nouveau. Frontière : HTTP réel sur `127.0.0.1`, entre le `RemoteClient`
-de `tv/app/remote-client.js` (avec `PollPlan` et `mergeState` de `tv/app/companion.js`) et un
-`RemoteServer` devant un `HeadlessRuntime`.
+`tests/wire-contract.test.cjs` joint le vrai client au vrai serveur local et au runtime smoke.
+Il observe à la fois état, statut/code et séquence de requêtes ; les tests unitaires séparés du
+client et du serveur ne remplacent pas cette preuve. La capture locale reste hors de ce banc.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Si le vrai client ne peut pas être chargé hors navigateur sans modifier
-`tv/app`, ou si un cas révèle une réponse que le client actuel ne sait pas lire : verdict BLOQUÉ, avec
-l'écart constaté ; le test n'est pas plié à la réponse et la réponse n'est pas corrigée dans ce ticket.
+Aucune décision n'est attendue.
+
+Le positionnement après T189 est volontaire : les attentes figent les lecteurs de codes livrés par
+la vague 1, sans réintroduire leurs anciens tests de messages. Une incompatibilité réellement trouvée
+est rapportée avant toute modification produit. Les versions effectivement installées sur la TV et
+le VPS ne sont pas établies ; ce contrat porte sur les sources relues, pas sur un déploiement supposé.
 
 ## Journal
