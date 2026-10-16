@@ -1,7 +1,7 @@
 ---
 id: T037
 titre: Freeze a reference session archive and prove the current code reads it
-statut: a-faire
+statut: termine
 bloque_par: T193
 adr: non
 installe: non
@@ -107,3 +107,71 @@ Si la simulation ne produit aucune affirmation, conserver le registre vide, l'at
 dans le README. Les variantes exclues ci-dessus ne constituent pas une preuve de compatibilité générale.
 
 ## Journal
+
+- Exploration : T193 relu sur `4dfc282`, voies simulées audio/vision confirmées ;
+  protocole de copie après barrières et avant clôture retenu pour l'interruption.
+  Détails et écarts dans `.harness-state/tickets/T037/` ; aucun changement produit prévu.
+
+- Rouge observé : `node --test tests/archive-compat.test.cjs` échoue sur
+  `0 !== 2` (sessions absentes), journal `red-corpus.log`.
+- Génération unique : `node scripts/fixtures/write-reference-archive.cjs tests/fixtures/archives/durable-v1`
+  réussit (code 0). Deux sessions de deux passages sauvegardées par le runtime réel,
+  embeddings désactivés ; troncature et temporaire documentés dans le corpus.
+  Registre sans affirmation : attente zéro conservée avec sa limite explicite.
+- Lecture : `node --test tests/archive-compat.test.cjs` passe les cinq scénarios de
+  données puis échoue sur le WebM ignoré par `*.webm` (`red-git.log`). Après
+  l'exception ciblée et `.gitattributes`, les six cas passent (`green-archive.log`).
+- `node scripts/check.mjs --changed` : premier passage rouge sur `no-regex-spaces` ;
+  regex corrigée sans changer son langage. Aucun test ou plancher assoupli.
+- Contrôles ciblés exécutés dans l'ordre, en séquentiel :
+  `node --test tests/archive-compat.test.cjs` : 6/6 ;
+  `node --test tests/session-durable.test.cjs` : 24/24 ;
+  `node --test tests/session-lifecycle.test.cjs` : 15/15 ;
+  `node --test tests/server-sessions.test.cjs` : 29/29, tous codes 0.
+  Sorties conservées dans le dossier d'état.
+- Protection manuelle : la même commande de génération sur le dossier existant
+  est refusée avec `EEXIST` (code 1, avant toute écriture). `git check-attr text --`
+  sur le clip tronqué retourne `text: unset`. Le test contrôle chaque chemin du
+  corpus avec `git check-ignore --no-index --verbose`, négations comprises.
+
+- Contrôle final complet : `node scripts/check.mjs` : vert, code 0 ; règles,
+  format, lint, gel et cliquet verts, 1936/1936 tests JS (127 fichiers) et 22 tests
+  Python réussis (`check-full.log`).
+- Contrôle final des changements : `node scripts/check.mjs --changed` : vert,
+  code 0, six tests réussis (`check-changed-final.log`). `git diff --check` : code 0.
+  `shasum -a 256 -c SHA256SUMS` dans le corpus : 23 fichiers OK, code 0.
+- Livraison : générateur manuel, deux témoins historiques, attentes explicites,
+  six tests de compatibilité sur copies, exception Git et attribut `-text`.
+  Aucun code produit, autre test ou harnais modifié ; aucun commit ni push.
+  Verdict `TERMINÉ` remis à la boucle pour relecture.
+
+- Reprise après `relecture-1.md` : constat mineur 1 accepté. Option 1 retenue :
+  retrait du remplacement tardif de `child_process` et de la promesse « process ».
+  Fournisseurs injectés et interception de `fetch` conservés ; qualification rouge
+  par préchauffage volontaire à l'ouverture avant correction du banc.
+- Qualification avant correction :
+  `node --require ./.harness-state/tickets/T037/probe-archive-warmup.cjs --test --test-name-pattern='the headless host' tests/archive-compat.test.cjs`
+  échoue sur l'assertion du registre d'appels : deux `chat.prepare` au lieu de zéro,
+  malgré l'absorption volontaire des erreurs (`correction-1-red-warmup.log`).
+  Ce rouge qualifie le garde conservé ; aucune correction produit n'est nécessaire.
+- Correction du constat 1 : interception tardive des processus retirée ; message
+  limité aux fournisseurs injectés, `fetch`, analyse, préchauffage et embeddings.
+  Les six cas et leurs assertions de données restent conservés. Corpus, sommes,
+  attentes et générateur inchangés.
+- Après correction, exécutions séquentielles :
+  `node --test tests/archive-compat.test.cjs` : 6/6 ;
+  `node --test tests/session-durable.test.cjs` : 24/24 ;
+  `node --test tests/session-lifecycle.test.cjs` : 15/15 ;
+  `node --test tests/server-sessions.test.cjs` : 29/29 ;
+  `node scripts/check.mjs --changed` : vert, code 0, six tests réussis.
+  Journaux `correction-1-*.log` dans le dossier d'état.
+- Doute de la relecture expliqué à la lecture :
+  `runtime/session-lifecycle.cjs` appelle `watch.closeIntake()` avant `watch.close()` ;
+  `core/session.cjs` y force `#questionPending = true` pour verrouiller les questions,
+  puis sauvegarde ce drapeau via le getter `asking`. La copie archivée est prise
+  après cette fermeture, la copie interrompue avant ; leur différence est attendue.
+  La restauration recalcule ce drapeau en mémoire. Aucun témoin n'a été retouché.
+- Validation complète de la correction : `node scripts/check.mjs` : vert, code 0 ;
+  1936/1936 tests JS (127 fichiers), 22 tests Python réussis, règles/format/lint/gel/cliquet
+  verts (`correction-1-full.log`). `git diff --check` : code 0.
+  Constat 1 corrigé ; nouveau verdict `TERMINÉ` remis à la boucle, sans commit ni push.

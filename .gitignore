@@ -14,6 +14,7 @@ challenge/
 *.wav
 *.webm
 !tests/fixtures/*.webm
+!/tests/fixtures/archives/durable-v1/**/*.webm
 *.mp4
 *.bin
 *.enc

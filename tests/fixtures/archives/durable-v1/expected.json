@@ -1,0 +1,76 @@
+{
+  "retention": "until-deleted",
+  "elapsedMs": 16000,
+  "passages": [
+    {
+      "id": "moment-1", "startMs": 0, "endMs": 8000,
+      "status": "ready", "audioStatus": "ready", "visionStatus": "ready",
+      "hasAudio": true, "available": true, "thumbnailAvailable": true, "revision": 2,
+      "observation": {
+        "transcript": "Un cercle se déplace sur un fond bleu.", "audio": "Audio reçu.",
+        "summary": "Un cercle se déplace sur un fond bleu.", "visual": "1 images reçues.", "uncertainty": ""
+      }
+    },
+    {
+      "id": "moment-2", "startMs": 8000, "endMs": 16000,
+      "status": "ready", "audioStatus": "ready", "visionStatus": "ready",
+      "hasAudio": true, "available": true, "thumbnailAvailable": true, "revision": 2,
+      "observation": {
+        "transcript": "Un cercle se déplace sur un fond bleu.", "audio": "Audio reçu.",
+        "summary": "Un cercle se déplace sur un fond bleu.", "visual": "1 images reçues.", "uncertainty": ""
+      }
+    }
+  ],
+  "surveillance": {
+    "version": 1, "enabled": false,
+    "activation": {
+      "id": "act-1", "instruction": "Vérifie les affirmations du programme.",
+      "t0Ms": 0, "stopReason": "Surveillance arrêtée."
+    },
+    "totals": { "claims": 0, "lots": 0, "gaps": 0, "rejected": 0 },
+    "claims": [], "lots": [], "gaps": [],
+    "passages": [
+      { "id": "moment-1", "startMs": 0, "endMs": 8000, "bucket": "scanned", "mode": "full" },
+      { "id": "moment-2", "startMs": 8000, "endMs": 16000, "bucket": "scanned", "mode": "full" }
+    ]
+  },
+  "sessions": [
+    {
+      "summary": {
+        "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c", "title": "Session du 21 sept. 2026, 16:13",
+        "firstTopic": null, "host": "server", "createdAt": 1790000000000, "updatedAt": 1790000016000,
+        "closedAt": 1790000016000, "state": "archived", "elapsedMs": 16000, "passages": 2,
+        "media": { "stored": 2, "missing": 0, "bytes": 2953 }, "legacy": false
+      },
+      "manifestState": "archived",
+      "inventory": {
+        "ids": ["moment-1", "moment-2"], "thumbs": ["moment-1", "moment-2"],
+        "legacy": [], "partial": [], "recovered": [], "orphans": [],
+        "mediaBytes": 2381, "thumbBytes": 572, "bytes": 2953
+      },
+      "chat": [{ "id": "deep-1", "question": "Que montre le début ?", "status": "done", "anchorMs": 16000,
+        "result": { "kind": "explanation", "answer": "Un cercle se déplace sur un fond bleu (réponse simulée).", "citations": [], "limits": [] } }]
+    },
+    {
+      "summary": {
+        "id": "22b5e7e6-619e-4fd5-b18a-180d4da2e226", "title": "Session du 21 sept. 2026, 16:14",
+        "firstTopic": null, "host": "server", "createdAt": 1790000076000, "updatedAt": 1790000092000,
+        "closedAt": null, "state": "interrupted", "elapsedMs": 16000, "passages": 2,
+        "media": { "stored": 2, "missing": 0, "bytes": 2953 }, "legacy": false
+      },
+      "manifestState": "live",
+      "inventory": {
+        "ids": ["moment-1", "moment-2"], "thumbs": ["moment-1", "moment-2"],
+        "legacy": [], "partial": [], "recovered": [], "orphans": [],
+        "mediaBytes": 1701, "thumbBytes": 572, "bytes": 2273
+      },
+      "chat": [{ "id": "deep-2", "question": "Que montre le début ?", "status": "done", "anchorMs": 16000,
+        "result": { "kind": "explanation", "answer": "Un cercle se déplace sur un fond bleu (réponse simulée).", "citations": [], "limits": [] } }]
+    }
+  ],
+  "alterations": {
+    "sessionId": "22b5e7e6-619e-4fd5-b18a-180d4da2e226",
+    "clip": "media/moment-2.webm", "originalBytes": 696, "remainingBytes": 16,
+    "temporary": "session.json.tmp", "temporaryText": "{\"id\":\"écriture interrompue\","
+  }
+}
