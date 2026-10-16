@@ -1,7 +1,7 @@
 ---
 id: T030
 titre: Guard the boundaries the layer table leaves open in the architecture test
-statut: a-faire
+statut: termine
 bloque_par: T025, T190
 adr: non
 installe: non
@@ -78,3 +78,57 @@ Les anciennes dépendances T016 à T024 ne sont plus nécessaires. Les exception
 reconduisent les ADR ; elles ne demandent aucune migration du système de modules TV.
 
 ## Journal
+
+### Exploration Codex
+
+Lecture de la garde, de son banc et des ADR ; relevé unique réutilisable. État initial et périmètre consignés dans `.harness-state/tickets/T030/exploration.md` ; aucun écart prévu.
+
+### Gardes et banc — cycles rouge/vert
+
+Les commandes exactes et leurs sorties sont conservées dans `.harness-state/tickets/T030/commandes.md`
+et les logs associés. Les mutations restent dans les arbres temporaires du banc.
+
+- Paquets : `node --test --test-concurrency=1 --test-name-pattern='^external imports' tests/architecture-guard.test.cjs`
+  rouge (42 violations acceptées), puis vert (88/88).
+- UI et `module.require` : `node --test --test-concurrency=1 --test-name-pattern='^Mac UI|module.require' tests/architecture-guard.test.cjs`
+  rouge (17/17), puis vert (17/17).
+- TV : `node --test --test-concurrency=1 --test-name-pattern='^TV scripts' tests/architecture-guard.test.cjs`
+  rouge (35 violations acceptées), puis vert (40/40). Les chargements à cible calculée ont ensuite
+  montré un rouge de 4/4 ; leur refus donne 44/44 verts. Les deux branches sont délimitées aussi
+  avec `?.` et `??` (rouge observé sur deux violations, puis vert).
+- État du domaine : `node --test --test-concurrency=1 --test-name-pattern='^lifecycle guard' tests/architecture-guard.test.cjs`
+  rouge sur les six écritures `asking`, puis vert (26/26). Lectures, comparaisons, commandes et écritures
+  du domaine passent.
+- `node --test tests/architecture.test.cjs` : 8/8 passent sur le dépôt réel, gardes des adaptateurs
+  retirés et assertions positives des rôles Codex incluses.
+- `CONTRIBUTING.md` décrit les frontières vérifiées et les exceptions des ADR 0011 et 0018.
+
+### Vérifications séquentielles
+
+Après la garde réelle (8/8), `node --test --test-concurrency=1 tests/architecture-guard.test.cjs`
+passe : 297/297. Puis `node --test --test-concurrency=1 tests/tv-app-compat.test.cjs
+ tests/tv-remote-navigation.test.cjs tests/tv-text.test.cjs tests/tv-chat-model.test.cjs
+ tests/tv-poll-controller.test.cjs tests/tv-paired-page.test.cjs tests/chat-error-ui.test.cjs`
+passe : 73/73 (chargements classiques sans `module` et CommonJS compris).
+
+`node scripts/check.mjs --changed` : vert ; règles, format, lint, gel du lint, cliquet et 305/305 tests.
+Stock statique de tests : 1426 → 1442, sans modification du plancher.
+`git diff --check` : code 0, aucune erreur.
+
+### Contrôle complet et transmission
+
+`node scripts/check.mjs` : code 0, **vert**. Règles, format, lint, gel du lint et cliquet passent ;
+1902/1902 tests JavaScript sur 124 fichiers et 22 tests Python passent.
+Sortie complète : `.harness-state/tickets/T030/check-full.log`.
+
+Verdict `TERMINÉ` dans `.harness-state/tickets/T030/verdict.json`, sans réserve ni écart.
+Aucun commit ni push. La boucle conserve la responsabilité de la relecture et de l’intégration.
+Les dossiers non suivis présents au départ sont préservés.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T030/relecture-1.md : **`tests/architecture.test.cjs:170`** : `if (specifier === null) continue;` (hors périmètre)
+
+     **Le problème.** Le relevé repère désormais les chargements à cible calculée, comme `require(name)`, `require('es' + 'lint')` ou `` import(`../${x}`) ``. Dans `tv/app/`, la garde les refuse (`:240`). Dans les six couches, `app/ui/` compris, la garde les saute. Un paquet de développement ou un import UI vers un parent, écrit avec une cible calculée, échappe donc aux nouvelles règles. C'est la limite déjà réservée à la clôture de T025, celle des gabarits. Le ticket ne demande pas de la lever. `CONTRIBUTING.md:19` la nomme honnêtement : « imports externes littéraux ». Une recherche ne trouve aujourd'hui aucun `require(` ni `import(` à cible non littérale dans les six couches.
+
+     **Attendu (réserve).** Un ticket ultérieur refuse les chargements calculés dans les couches, comme pour la TV, ou nomme la limite là où la garde est décrite.

@@ -2,6 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { builtinModules } = require('node:module');
+const vm = require('node:vm');
 const REPOSITORY = path.join(__dirname, '..');
 const LAYER_EXTENSIONS = ['.js', '.cjs', '.mjs'];
 const DEPENDENCY_ZONES = [
@@ -85,23 +87,26 @@ function lexSource(source, filename) {
   return { tokens, source: parts.join('') };
 }
 
-function literalImports(tokens) {
+function sourceImports(tokens) {
   const imports = [];
   for (let index = 0; index < tokens.length; index++) {
     const keyword = tokens[index];
-    if (tokens[index - 1] === '.') continue;
+    const moduleRequire = keyword === 'require' && tokens[index - 1] === '.' && tokens[index - 2] === 'module';
+    if (tokens[index - 1] === '.' && !moduleRequire) continue;
+    const call = ['require', 'import'].includes(keyword) && tokens[index + 1] === '(';
     let value;
     if (keyword === 'from' || keyword === 'import') value = tokens[index + 1];
-    if (['require', 'import'].includes(keyword) && tokens[index + 1] === '(' && tokens[index + 3] === ')') {
+    if (call && tokens[index + 3] === ')') {
       value = tokens[index + 2];
     }
-    if (/^['"]/.test(value ?? '')) imports.push(value.slice(1, -1));
+    if (/^['"]/.test(value ?? '')) imports.push({ specifier: value.slice(1, -1), index });
+    else if (call) imports.push({ specifier: null, index });
   }
   return imports;
 }
 
 function resolveImport(filename, specifier) {
-  if (!specifier.startsWith('.')) return null;
+  if (!specifier?.startsWith('.')) return null;
   const target = path.resolve(path.dirname(filename), specifier);
   const candidates = [target, ...LAYER_EXTENSIONS.map(extension => target + extension),
     ...LAYER_EXTENSIONS.map(extension => path.join(target, 'index' + extension))];
@@ -122,6 +127,7 @@ function inventory() {
   if (modules) return modules;
   const collected = [];
   const roots = new Set(DEPENDENCY_ZONES.map(zone => zone.pattern.split('/')[0]));
+  roots.add('tv/app');
   for (const root of roots) {
     const directory = path.join(REPOSITORY, root);
     assert.ok(fs.existsSync(directory), `${root}: missing layer root`);
@@ -129,21 +135,42 @@ function inventory() {
     assert.ok(filenames.length > 0, `${root}: no JavaScript sources`);
     for (const filename of filenames) {
       const { tokens, source } = lexSource(fs.readFileSync(filename, 'utf8'), path.relative(REPOSITORY, filename));
-      collected.push({ relative: path.relative(REPOSITORY, filename).split(path.sep).join('/'), root, source,
-        imports: literalImports(tokens).map(specifier => ({ specifier, target: resolveImport(filename, specifier) })) });
+      collected.push({ relative: path.relative(REPOSITORY, filename).split(path.sep).join('/'), root, source, tokens,
+        imports: sourceImports(tokens).map(imported => ({ ...imported, target: resolveImport(filename, imported.specifier) })) });
     }
   }
   modules = collected;
   return modules;
 }
 
+function externalImportAllowed(relative, specifier, dependencies) {
+  if (relative.startsWith('core/')) return false;
+  const packageName = specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0];
+  if (packageName === 'electron') {
+    return specifier === 'electron' && ['app/main.cjs', 'app/preload.cjs'].includes(relative);
+  }
+  if (specifier.startsWith('node:')) return true;
+  if (builtinModules.includes(specifier)) return false;
+  return Object.hasOwn(dependencies, packageName);
+}
+
+function uiImportAllowed(relative, target) {
+  if (!relative.startsWith('app/ui/')) return true;
+  if (target?.startsWith('app/ui/')) return true;
+  return relative === 'app/ui/browser-capture.mjs' && target === 'app/recording.js';
+}
+
 test('layer dependency table permits only declared zones', t => {
+  const { dependencies = {} } = JSON.parse(fs.readFileSync(path.join(REPOSITORY, 'package.json'), 'utf8'));
   const edges = new Map();
   for (const { relative, imports } of inventory()) {
+    if (relative.startsWith('tv/app/')) continue;
     const origin = zoneFor(relative);
     for (const { specifier, target } of imports) {
+      if (specifier === null) continue;
+      assert.ok(uiImportAllowed(relative, target), `${relative} depends on ${specifier} -> ${target}`);
       if (target === null) {
-        assert.ok(!relative.startsWith('core/'), `${relative} depends on ${specifier}`);
+        assert.ok(externalImportAllowed(relative, specifier, dependencies), `${relative} depends on ${specifier}`);
         continue;
       }
       const destination = zoneFor(target);
@@ -156,6 +183,65 @@ test('layer dependency table permits only declared zones', t => {
     t.diagnostic(`${root}: ${inventory().filter(module => module.root === root).length} fichiers JavaScript`);
   }
   for (const [edge, count] of edges) t.diagnostic(`${edge}: ${count} imports`);
+});
+
+function closingToken(tokens, start) {
+  const closing = { '(': ')', '[': ']', '{': '}' }[tokens[start]];
+  let depth = 1;
+  for (let index = start + 1; index < tokens.length; index++) {
+    if (tokens[index] === tokens[start]) depth++;
+    if (tokens[index] === closing && --depth === 0) return index;
+  }
+  return tokens.length;
+}
+
+function ternaryBranchEnd(tokens, start) {
+  let nested = 0;
+  for (let index = start; index < tokens.length; index++) {
+    if (['(', '[', '{'].includes(tokens[index])) {
+      index = closingToken(tokens, index);
+      continue;
+    }
+    const ternary = tokens[index] === '?' && !['?', '.'].includes(tokens[index + 1]) && tokens[index - 1] !== '?';
+    if (ternary) nested++;
+    if (tokens[index] === ':') {
+      if (nested === 0) return index;
+      nested--;
+    }
+  }
+  return tokens.length;
+}
+
+function nodeGuardRanges(tokens) {
+  const guard = ['typeof', 'module', '=', '=', '=', '"object"', '&', '&', 'module', '&', '&', 'module', '.', 'exports'];
+  const ranges = [];
+  for (let index = 0; index < tokens.length; index++) {
+    const candidate = tokens.slice(index, index + guard.length).map(token => token === "'object'" ? '"object"' : token);
+    if (!guard.every((token, offset) => candidate[offset] === token)) continue;
+    const after = index + guard.length;
+    if (tokens[index - 2] === 'if' && tokens[index - 1] === '(' && tokens[after] === ')' && tokens[after + 1] === '{') {
+      ranges.push([after + 2, closingToken(tokens, after + 1)]);
+    }
+    const expressionStart = ['=', '(', 'return', ',', ':', '?'].includes(tokens[index - 1]) && tokens[index - 2] !== '?';
+    if (expressionStart && tokens[after] === '?') ranges.push([after + 1, ternaryBranchEnd(tokens, after + 1)]);
+  }
+  return ranges;
+}
+
+test('TV presentation uses classic scripts and guarded local CommonJS loads', () => {
+  for (const { relative, source, tokens, imports, root } of inventory()) {
+    if (root !== 'tv/app') continue;
+    const diagnostic = `${relative}: classic script without ES import/export (${imports.map(imported => imported.specifier).join(', ')})`;
+    assert.doesNotThrow(() => new vm.Script(source, { filename: relative }), diagnostic);
+    const dynamicImport = tokens.some((token, index) => token === 'import' && tokens[index - 1] !== '.' && tokens[index + 1] === '(');
+    assert.ok(!dynamicImport, `${relative}: ES import() syntax`);
+    const ranges = nodeGuardRanges(tokens);
+    for (const { specifier, target, index } of imports) {
+      assert.notEqual(specifier, null, `${relative}: require must have a literal relative target`);
+      assert.ok(target?.startsWith('tv/app/'), `${relative} depends on ${specifier} -> ${target}`);
+      assert.ok(ranges.some(([start, end]) => index >= start && index < end), `${relative} depends on ${specifier} without a Node guard`);
+    }
+  }
 });
 
 test('portable core does not access host globals', () => {
@@ -171,7 +257,8 @@ test('shared runtime and headless transport do not import Electron', () => {
   }
 });
 test('compositions leave watch session lifecycle flags to the domain', () => {
-  const member = String.raw`\bwatch\s*(?:\.\s*(?:ending|accepting|readOnly|closed)\b|\[\s*(['"])(?:ending|accepting|readOnly|closed)\1\s*\])`;
+  const flags = 'ending|accepting|readOnly|closed|asking';
+  const member = String.raw`\bwatch\s*(?:\.\s*(?:${flags})\b|\[\s*(['"])(?:${flags})\1\s*\])`;
   const assignment = String.raw`\s*(?:=(?!=|>)|(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])=|\+\+|--)`;
   const write = new RegExp(member + assignment);
   for (const { relative, source, root } of inventory()) {

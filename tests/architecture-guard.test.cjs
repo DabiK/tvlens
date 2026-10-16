@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const vm = require('node:vm');
 
 const EXTENSIONS = ['.js', '.cjs', '.mjs'];
 const LEVELS = ['', 'nested', 'nested/deeper'];
@@ -15,6 +16,7 @@ const GUARD_NAMES = [
   'compositions leave watch session lifecycle flags to the domain',
   'core services do not import the session use case',
   'surveillance does not depend on DeepAsk or chat scheduling flags',
+  'TV presentation uses classic scripts and guarded local CommonJS loads',
 ];
 const LAYER_GUARD_PATTERN = `^(${GUARD_NAMES.join('|')})$`;
 
@@ -32,6 +34,11 @@ function fixture(t) {
     write(root, `${directory}/module.cjs`, 'module.exports = {};');
   }
   write(root, 'core/surveillance.cjs', 'module.exports = {};');
+  write(root, 'tv/app/module.js', 'var value = 1;');
+  write(root, 'package.json', JSON.stringify({
+    dependencies: { sharp: '*', '@modelcontextprotocol/sdk': '*' },
+    devDependencies: { electron: '*', eslint: '*', '@eslint/js': '*' },
+  }));
   return root;
 }
 
@@ -178,8 +185,9 @@ test('lifecycle guard accepts reads and comparisons and only examines CommonJS f
         write(root, `${directory}/${level}/ignored${extension}`, 'session.watch.ending = true;');
       }
       write(root, `${directory}/${level}/reads.cjs`, [
-        'watch.asking = true;',
-        ...['ending', 'accepting', 'readOnly', 'closed'].map(flag =>
+        'watch.setQuestionPending(true); session.watch.setQuestionPending(false);',
+        'state.asking = true; view.asking = false;',
+        ...['ending', 'accepting', 'readOnly', 'closed', 'asking'].map(flag =>
           `void watch.${flag}; void (session.watch.${flag} === true); void (watch.${flag} !== false);`),
       ].join('\n'));
     }
@@ -189,7 +197,7 @@ test('lifecycle guard accepts reads and comparisons and only examines CommonJS f
 });
 
 for (const directory of ['app', 'runtime', 'server', 'mcp']) {
-  for (const flag of ['ending', 'accepting', 'readOnly', 'closed']) {
+  for (const flag of ['ending', 'accepting', 'readOnly', 'closed', 'asking']) {
     const filename = `${directory}/nested/deeper/lifecycle.cjs`;
     test(`lifecycle guard rejects writes to ${flag} in ${filename}`, t => {
       const root = fixture(t);
@@ -199,7 +207,7 @@ for (const directory of ['app', 'runtime', 'server', 'mcp']) {
   }
 }
 
-for (const source of ['session.watch["ending"] = true;', 'watch.closed ||= true;']) {
+for (const source of ['session.watch["ending"] = true;', 'watch.closed ||= true;', "watch['asking'] = true;", 'watch.asking ||= true;']) {
   test(`lifecycle guard rejects ${source} in a nested composition`, t => {
     const root = fixture(t);
     const filename = 'runtime/nested/lifecycle.cjs';
@@ -235,6 +243,7 @@ test('surveillance dependency guard rejects DeepAsk and accepts its removal', t 
 const IMPORT_FORMS = [
   ['single-quoted require', specifier => `require('${specifier}');`],
   ['double-quoted require', specifier => `require("${specifier}");`],
+  ['module.require', specifier => `module.require('${specifier}');`],
   ['multiline from', specifier => `import { value }\n from /* note */\n '${specifier}';`],
   ['multiline re-export', specifier => `export { value }\n from\n "${specifier}";`],
   ['dynamic import', specifier => `import(\n '${specifier}'\n);`],
@@ -458,5 +467,209 @@ for (const numerator of ['count', 'values[0]', 'value()', '({})', '(function () 
     write(root, filename, source('../../core/module.cjs'));
     const result = runGuard(root);
     assert.equal(result.status, 0, result.output);
+  });
+}
+
+
+for (const filename of ['app/main.cjs', 'app/preload.cjs']) {
+  test(`external imports allow Electron at ${filename}`, t => {
+    const root = fixture(t);
+    write(root, filename, "require('electron');");
+    const result = runGuard(root);
+    assert.equal(result.status, 0, result.output);
+  });
+}
+
+for (const directory of LAYERS) {
+  const filename = `${directory}/nested/deeper/packages.mjs`;
+  for (const specifier of ['electron', 'electron/main', 'eslint', '@eslint/js', '@eslint/js/configs', 'fs', 'fs/promises', 'unknown-package']) {
+    test(`external imports reject ${specifier} in ${filename}`, t => {
+      const root = fixture(t);
+      write(root, filename, `import '${specifier}';`);
+      assertRejected(root, filename, new RegExp(`depends on ${specifier}`), GUARD_NAMES[0]);
+    });
+  }
+  for (const specifier of ['node:fs', 'node:fs/promises', 'sharp', 'sharp/lib', '@modelcontextprotocol/sdk', '@modelcontextprotocol/sdk/server/index.js']) {
+    test(`external imports ${directory === 'core' ? 'reject' : 'allow'} ${specifier} in ${filename}`, t => {
+      const root = fixture(t);
+      write(root, filename, `import '${specifier}';`);
+      if (directory === 'core') {
+        assertRejected(root, filename, new RegExp(`depends on ${specifier}`), GUARD_NAMES[0]);
+      } else {
+        const result = runGuard(root);
+        assert.equal(result.status, 0, result.output);
+      }
+    });
+  }
+}
+
+for (const specifier of ['@modelcontextprotocol/sdk-other', '@modelcontextprotocol/other']) {
+  test(`external imports reject package prefix confusion with ${specifier}`, t => {
+    const root = fixture(t);
+    const filename = 'adapters/packages.cjs';
+    write(root, filename, `require('${specifier}');`);
+    assertRejected(root, filename, new RegExp(specifier), GUARD_NAMES[0]);
+  });
+}
+
+
+for (const [form, statement] of IMPORT_FORMS) {
+  test(`Mac UI imports stay inside the presentation folder in ${form}`, t => {
+    const root = fixture(t);
+    const filename = 'app/ui/nested/view.mjs';
+    write(root, filename, statement('../../recording.js'));
+    assertRejected(root, filename, /recording.js/, GUARD_NAMES[0]);
+    write(root, filename, statement('../text.mjs'));
+    const result = runGuard(root);
+    assert.equal(result.status, 0, result.output);
+  });
+}
+
+test('Mac UI permits only the browser capture edge to the recorder', t => {
+  const root = fixture(t);
+  const filename = 'app/ui/browser-capture.mjs';
+  write(root, 'app/recording.js', 'export class RollingRecorder {}');
+  write(root, filename, "import { RollingRecorder } from '../ui/../recording.js';");
+  const result = runGuard(root);
+  assert.equal(result.status, 0, result.output);
+  write(root, filename, "import '../renderer.js';");
+  assertRejected(root, filename, /renderer.js/, GUARD_NAMES[0]);
+});
+
+for (const specifier of ['node:fs', 'sharp', '../../core/module.cjs', '../../adapters/module.cjs', '../main.cjs']) {
+  test(`Mac UI rejects ${specifier} even when allowed by the application layer`, t => {
+    const root = fixture(t);
+    const filename = 'app/ui/view.mjs';
+    write(root, filename, `import '${specifier}';`);
+    assertRejected(root, filename, new RegExp(specifier), GUARD_NAMES[0]);
+  });
+}
+
+
+const NODE_GUARD = 'typeof module === "object" && module && module.exports';
+const TV_FORMS = [
+  ['require', specifier => `require('${specifier}')`],
+  ['module.require', specifier => `module.require('${specifier}')`],
+];
+
+for (const [form, load] of TV_FORMS) {
+  for (const conditional of ['ternary', 'if']) {
+    test(`TV scripts allow local ${form} under a Node ${conditional} guard`, t => {
+      const root = fixture(t);
+      const filename = 'tv/app/nested/view.js';
+      write(root, 'tv/app/text.js', 'var text = {};');
+      const call = load('../text.js');
+      const source = conditional === 'ternary'
+        ? `var shared = ${NODE_GUARD} ? ${call} : root.TVLensText;`
+        : `var shared; if (${NODE_GUARD}) { shared = ${call}; } else { shared = root.TVLensText; }`;
+      const script = source + `\nif (${NODE_GUARD}) module.exports = shared;`;
+      write(root, filename, script);
+      const result = runGuard(root);
+      assert.equal(result.status, 0, result.output);
+      const context = { root: { TVLensText: {} } };
+      assert.doesNotThrow(() => vm.runInNewContext(script, context, { timeout: 1000 }));
+      assert.equal(context.shared, context.root.TVLensText);
+      const shared = {};
+      const resolve = specifier => {
+        assert.equal(specifier, '../text.js');
+        return shared;
+      };
+      const node = { module: { exports: {}, require: resolve }, require: resolve };
+      vm.runInNewContext(script, node, { timeout: 1000 });
+      assert.equal(node.module.exports, shared);
+    });
+  }
+  for (const specifier of ['../../core/module.cjs', '../outside.js', 'node:fs', 'sharp']) {
+    test(`TV scripts reject ${form} of ${specifier} outside their folder`, t => {
+      const root = fixture(t);
+      const filename = 'tv/app/view.js';
+      write(root, filename, `var shared = ${NODE_GUARD} ? ${load(specifier)} : root.Shared;`);
+      assertRejected(root, filename, new RegExp(specifier));
+    });
+  }
+  const call = load('./text.js');
+  for (const source of [
+    `var shared = ${call};`,
+    `var shared = typeof module === "object" ? ${call} : root.Shared;`,
+    `var shared = ${NODE_GUARD} ? root.Shared : ${call};`,
+    `if (${NODE_GUARD}) { module.exports = {}; } var shared = ${call};`,
+    `if (${NODE_GUARD}) { module.exports = {}; } else { var shared = ${call}; }`,
+    `var shared = ready || ${NODE_GUARD} ? ${call} : root.Shared;`,
+  ]) {
+    test(`TV scripts reject ${form} without an enclosing Node guard: ${source}`, t => {
+      const root = fixture(t);
+      const filename = 'tv/app/nested/view.js';
+      write(root, filename, source);
+      assertRejected(root, filename, /text.js/);
+    });
+  }
+}
+
+for (const source of [
+  'import value from "./text.js";',
+  'import * as shared from "./text.js";',
+  'import { value } from "./text.js";',
+  'import "./text.js";',
+  'import("./text.js");',
+  'import(name);',
+  'void import.meta;',
+  'export const value = 1;',
+  'export function value() {}',
+  'export class View {}',
+  'export default function () {}',
+  'var value; export { value };',
+  'export { value } from "./text.js";',
+  'export * from "./text.js";',
+  'export * as shared from "./text.js";',
+]) {
+  test(`TV scripts reject ES module syntax: ${source}`, t => {
+    const root = fixture(t);
+    const filename = 'tv/app/nested/view.js';
+    write(root, filename, source);
+    assertRejected(root, filename, /import|export/);
+  });
+}
+
+test('TV scripts ignore module syntax in comments strings and member names', t => {
+  const root = fixture(t);
+  write(root, 'tv/app/view.js', [
+    '// import "outside"; require("node:fs");',
+    'var documentation = "export default value; require(\'node:fs\');";',
+    'var api = { import: 1, export: 2 }; api.import; api.export;',
+    `if (${NODE_GUARD}) module.exports = api;`,
+  ].join('\n'));
+  const result = runGuard(root);
+  assert.equal(result.status, 0, result.output);
+});
+
+
+test('lifecycle guard leaves question state writes inside the domain', t => {
+  const root = fixture(t);
+  write(root, 'core/nested/question.cjs', 'watch.asking = true; this.asking = false;');
+  const result = runGuard(root);
+  assert.equal(result.status, 0, result.output);
+});
+
+
+for (const call of ["require(name)", "module.require(name)", "require('./' + name)", "module.require(`./${name}`)"]) {
+  test(`TV scripts reject an unverifiable CommonJS load: ${call}`, t => {
+    const root = fixture(t);
+    const filename = 'tv/app/nested/view.js';
+    write(root, filename, `var shared = ${NODE_GUARD} ? ${call} : root.Shared;`);
+    assertRejected(root, filename, /require/);
+  });
+}
+
+
+for (const expression of [
+  `${NODE_GUARD} ? root.Shared?.value : require('./text.js')`,
+  `${NODE_GUARD} ? root.Shared ?? fallback : require('./text.js')`,
+  `ready ?? (${NODE_GUARD}) ? require('./text.js') : root.Shared`,
+]) {
+  test(`TV scripts keep unguarded loads outside a conditional range: ${expression}`, t => {
+    const root = fixture(t);
+    const filename = 'tv/app/view.js';
+    write(root, filename, `var shared = ${expression};`);
+    assertRejected(root, filename, /text.js.*without a Node guard/);
   });
 }
