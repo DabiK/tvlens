@@ -10,13 +10,10 @@ const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
-const { until } = require('./helpers/wait.cjs');
+const { until, tick, deferred, turns } = require('./helpers/wait.cjs');
 
 const token = 's'.repeat(64), GIB = 1024 ** 3;
 const READ_ONLY = 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.';
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const turns = async (count = 20) => { for (let i = 0; i < count; i++) await tick(); };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const exists = target => fs.lstat(target).then(() => true, () => false);
 // The disk refuses the files named, as on EIO or in a directory that is no longer writable: their temporary
 // file is never written, so each keeps what it held. Media, thumbnails and every other file still land.
@@ -169,7 +166,7 @@ test('the start of a film is still served 95 minutes later, after a stop and a r
   assert.deepEqual(await f.req('/v1/session/start', {}), { status: 409, value: { error: READ_ONLY, code: 'read-only' } });
   assert.equal((await f.req('/v1/surveillance/start', { sessionId: A, instruction: 'Vérifie les chiffres.' })).status, 409);
   assert.deepEqual((await f.req(`/v1/sessions/${A}/open`, {})).value.readOnly, true, 'opening it again changes nothing');
-  await turns();
+  await turns(20);
   assert.deepEqual([f.calls.prepare, f.calls.embed], [0, 0], 'no warm-up, no indexing');
   assert.deepEqual(await tree(dirA), before, 'opening, polling and refused requests wrote nothing into the archive');
 
@@ -237,7 +234,7 @@ test('deleting a session over HTTP is refused during capture and for anything bu
   assert.deepEqual([(await f.block(L, 1, 8000)).value.id, (await f.block(L, 2, 16000)).value.id], ['moment-1', 'moment-2']);
   assert.equal((await f.req('/v1/surveillance/start', { sessionId: L, instruction: 'Vérifie les chiffres.' })).value.surveillance.enabled, true);
   const { value: question } = await f.req('/v1/questions', { sessionId: L, question: 'Longue question', anchorMs: 0 });
-  await asked.promise; await turns();
+  await asked.promise; await turns(20);
   const job = f.runtime.deep.jobs.find(item => item.id === question.id), loaded = f.runtime.session;
   assert.equal(job.status, 'running');
   await loaded.search.index.ensure(loaded.watch.segments); await loaded.store.serial;
@@ -270,14 +267,14 @@ test('deleting a session over HTTP is refused during capture and for anything bu
 
   // Everything that could still try to write: the provider answering late, the next ticks, and the
   // objects of the deleted session themselves.
-  late.resolve(); await turns();
+  late.resolve(); await turns(20);
   f.wall += 5000; f.runtime.tick();
   await loaded.store.save(loaded.watch.snapshot());
   await loaded.store.saveResearch({ jobs: [] }); await loaded.store.saveSurveillance({}); await loaded.store.saveManifest({ state: 'live' });
   await assert.rejects(loaded.thumbnails.put('moment-9', 'data:image/jpeg;base64,YQ=='), /terminée/);
   await loaded.search.index.cache.putMany([{ id: 'moment-9', text: 'Vecteur tardif', vector: [0, 1] }]);
   loaded.watch.emit(); await loaded.pause().catch(() => {});
-  await turns();
+  await turns(20);
   assert.equal(await exists(dirL), false, 'the deleted session does not come back');
   assert.deepEqual(await tree(dirN), neighbour, 'the neighbour is untouched: same files, same bytes, same dates');
   assert.deepEqual((await f.req('/v1/sessions')).value.sessions.map(s => s.id), [N]);
@@ -335,16 +332,16 @@ test('below the disk floor a block is answered 507 with nothing written; the ses
 
   // Revalidation while nothing moves but the clock: a second that passes is still answered without a body.
   const blocked = await f.polled();
-  f.clock += 1000; f.wall += 1000; f.runtime.tick(); await turns();
+  f.clock += 1000; f.wall += 1000; f.runtime.tick(); await turns(20);
   assert.deepEqual(Object.values(await f.polled(blocked)).map(reply => [reply.status, reply.bytes]), Array(3).fill([304, 0]));
 
   // Room is back: the state says so within a few seconds, but capture waits for an explicit resume.
-  free = 50 * GIB; f.wall += 6000; f.runtime.tick(); await turns(); f.runtime.tick();
+  free = 50 * GIB; f.wall += 6000; f.runtime.tick(); await turns(20); f.runtime.tick();
   // The disk state changed and nothing else did: every tag held is refused, and the body says why.
   const freed = await f.polled(blocked);
   for (const [route, reply] of Object.entries(freed))
     assert.deepEqual([reply.status, reply.etag !== blocked[route].etag, blocked[route].value.storage.state, reply.value?.storage.state], [200, true, 'blocked', 'ok'], route);
-  f.clock += 1000; f.wall += 1000; f.runtime.tick(); await turns();
+  f.clock += 1000; f.wall += 1000; f.runtime.tick(); await turns(20);
   assert.deepEqual(Object.values(await f.polled(freed)).map(reply => [reply.status, reply.bytes]), Array(3).fill([304, 0]), 'and the new tags hold in turn');
   state = (await f.req('/v1/state')).value;
   assert.deepEqual([state.storage.state, state.session.accepting, state.session.readOnly], ['ok', false, true]);
@@ -656,7 +653,7 @@ test('a slow disk holds back neither what a client reads nor the analysis: with 
   // One passage is being described and another waits behind it; nothing else arrives afterwards.
   describing = deferred();
   assert.deepEqual([(await segment(2, 16000)).value.id, (await segment(3, 24000)).value.id], ['moment-2', 'moment-3']);
-  await turns(); await session.store.serial;
+  await turns(20); await session.store.serial;
   let polled = await f.polled();
   assert.deepEqual(polled[panel].value.session.segments.map(s => [s.id, s.status]), [['moment-1', 'ready'], ['moment-2', 'analyzing'], ['moment-3', 'queued']]);
   // The disk stops answering, then the description comes back.

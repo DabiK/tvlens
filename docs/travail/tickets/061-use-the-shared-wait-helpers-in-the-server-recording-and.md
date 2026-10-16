@@ -1,7 +1,7 @@
 ---
 id: T061
 titre: Use the shared wait helpers in the media, composition and session tests
-statut: a-faire
+statut: termine
 bloque_par: T060
 adr: non
 installe: non
@@ -98,3 +98,27 @@ Au premier échec, conserver la sortie et diagnostiquer ; aucune relance jusqu'a
 sonde slow-fs non livrée n'est nécessaire.
 
 ## Journal
+
+- Exploration : consignes et aides partagées lues ; état initial et inventaire exact conservés dans `.harness-state/tickets/T061/`. Migration sans nouveau comportement : référence verte avant modification, écart de méthode consigné avant implémentation dans `ecarts.md`.
+- Référence avant migration : `node --test tests/<nom>.test.cjs` pour les quinze fichiers, puis `node --test tests/wait-helpers.test.cjs` : seize commandes, toutes avec code de sortie 0. Sorties intégrales dans `before-*.log` ; inventaire dans `inventory-before.log`.
+- Migration : aides partagées dans les quinze fichiers ; huit appels `turns(20)` dans server-sessions et sept dans session-durable explicitent le compte antérieur. `settled()` devient `tick()` ; `until` conserve son prédicat nommé et ses 10 s explicites. Détail des imports/appels dans `migration.md` du dossier d’état.
+- Vérification du lot : les quinze commandes `node --test tests/<nom>.test.cjs`, une par fichier, puis `node --test tests/wait-helpers.test.cjs` passent (162 + 13 cas, zéro échec). Sorties `after-*.log`. Même décompte par fichier avant/après (`case-counts.json`), mêmes titres et 1 420 assertions de scénarios (`assertions-and-titles.json`). L’assertion de dépassement retirée appartient à l’ancienne aide until, remplacée par le contrat partagé déjà testé.
+- Inventaire : commande exacte du critère 1 exécutée avant/après, sorties conservées ; 28 définitions locales deviennent les quatre seuls `settle(watch)` attendus. Aucun appel `turns()` sans argument dans le lot.
+- Contrôle ciblé : `node scripts/check.mjs --changed` : vert (règles, format, lint, gel, cliquet et 162 tests des quinze fichiers). Sortie intégrale dans `check-changed.log`.
+- Contrôle final : `node scripts/check.mjs` : vert, 1 652 tests JS dans 120 fichiers et 22 tests Python réussis. Règles, format, lint, gel et cliquet verts ; sortie intégrale dans `check-full.log`. `git diff --check` passe.
+- Livré pour relecture par la boucle : quinze fichiers migrés, aucun code produit, helper, harnais ou plancher modifié ; verdict `TERMINÉ` dans `.harness-state/tickets/T061/verdict.json`. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T061/relecture-1.md : **1. `tests/server-warm-up.test.cjs:102`** — hors périmètre
+  - **Problème :** il reste une copie locale de `tick` dans le corps d'un test : `await new Promise(resolve => setImmediate(resolve));`. Ce n'est pas une définition, donc l'inventaire du critère 1 ne la voit pas. Le ticket ne cite que la ligne `:9` de ce fichier, et T062 ne la reprend pas non plus.
+  - **Attendu :** `await tick()` partagé, dans un ticket qui couvre les copies écrites directement dans les tests.
+- .harness-state/tickets/T061/relecture-1.md : **2. `tests/session-durable.test.cjs:376`, `:554`, `:557`, `:665`, `:668`, `:858`, `:891`, `:920`, `:931`, `:954`, `:963`, `:980`** — hors périmètre
+  - **Problème :** des boucles `for (let i = 0; i < N; i++) await tick();` avec N = 10 ou 20 restent écrites en clair. Le ticket ne demandait de migrer que la fonction locale de `:1005`. Ces boucles sont donc légitimement intactes, mais ce sont des `turns(N)` qui ne disent pas leur nom.
+  - **Attendu :** `turns(10)` ou `turns(20)`, à décider dans un lot ultérieur.
+- .harness-state/tickets/T061/relecture-1.md : **Écart accepté, méthode (pas de cycle rouge puis vert) :** le ticket est une migration sans nouveau comportement. Il interdit les cas de remplissage et les tests sur le texte source, donc un rouge artificiel n'aurait rien prouvé. La preuve qui le remplace est celle qu'exige le ticket :
+  - les quinze suites et wait-helpers sont vertes avant et après, avec leurs sorties complètes ;
+  - l'inventaire `rg` exact passe de 28 définitions à 4 ;
+  - les comptes par fichier sont les mêmes.
+
+  Aucun constat contesté : c'est la première relecture.

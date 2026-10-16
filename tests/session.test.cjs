@@ -1,8 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession, selectEvidence } = require('../core/session.cjs');
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
+const { tick, deferred } = require('./helpers/wait.cjs');
 function fixture(overrides = {}) {
   let time = 0;
   const files = new Map(), calls = [], snapshots = [];

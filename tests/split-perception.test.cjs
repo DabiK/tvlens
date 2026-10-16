@@ -4,8 +4,7 @@ const { WatchSession } = require('../core/session.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { sessionTimeline } = require('../core/session-timeline.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
+const { tick, deferred } = require('./helpers/wait.cjs');
 function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [];

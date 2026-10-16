@@ -2,8 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession } = require('../core/session.cjs');
 const { passageLatency, latencySummary } = require('../core/latency-trace.cjs');
-const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
+const { tick, deferred } = require('./helpers/wait.cjs');
 // One gate per passage: the test decides when each lane call or media write returns.
 const gates = () => { const map = new Map(); return id => map.get(id) || map.set(id, deferred()).get(id); };
 function fixture(perception, options = {}) {

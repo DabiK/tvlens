@@ -13,7 +13,7 @@ const recordingAgent = (name, calls, prepare = () => Promise.resolve()) => ({
   },
 });
 // Lets the rejections of the promises already handed back surface, as a host that did not wait would see them.
-const settled = () => new Promise((resolve) => setImmediate(resolve));
+const { tick } = require("./helpers/wait.cjs");
 // Collects the rejections nobody handled while `work` runs.
 async function unhandledDuring(work) {
   const seen = [];
@@ -21,8 +21,8 @@ async function unhandledDuring(work) {
   process.on("unhandledRejection", listener);
   try {
     await work();
-    await settled();
-    await settled();
+    await tick();
+    await tick();
   } finally {
     process.off("unhandledRejection", listener);
   }

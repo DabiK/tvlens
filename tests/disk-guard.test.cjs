@@ -11,7 +11,7 @@ const { SessionLibrary } = require('../adapters/session-library.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 
 const GIB = 1024 ** 3, MIB = 1024 ** 2;
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick } = require('./helpers/wait.cjs');
 const settle = async watch => { do { await tick(); } while (watch.running); };
 async function tree(dir, base = dir) {
   const rows = [];

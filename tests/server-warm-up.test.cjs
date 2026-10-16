@@ -6,13 +6,7 @@ const path = require('node:path');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 
-const until = async (check, label) => {
-  for (const deadline = Date.now() + 10000; Date.now() < deadline;) {
-    if (await check()) return;
-    await new Promise(resolve => setTimeout(resolve, 2));
-  }
-  assert.fail('never reached: ' + label);
-};
+const { until } = require('./helpers/wait.cjs');
 
 // A host whose chat agent and observation agent both record the identifier they are asked to prepare.
 async function recordingHost(t, { failing = false } = {}) {
@@ -60,6 +54,7 @@ async function recordingHost(t, { failing = false } = {}) {
     await until(
       () => !runtime.session.watch.running && runtime.session.watch.segments[0].status === 'ready',
       'passage analysed',
+      { timeoutMs: 10000 },
     );
   };
   return { runtime, prepared: state.prepared, keepOnePassage };

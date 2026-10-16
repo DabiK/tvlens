@@ -11,9 +11,8 @@ const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { SavedMoments } = require('../core/saved-moments.cjs');
 const { SavedMomentStore } = require('../adapters/saved-moment-store.cjs');
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick, deferred } = require('./helpers/wait.cjs');
 const settle = async watch => { do { await tick(); } while (watch.running); };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const exists = target => fs.lstat(target).then(() => true, () => false);
 async function tree(dir, base = dir) {
   const rows = [];

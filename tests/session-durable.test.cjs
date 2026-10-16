@@ -15,9 +15,8 @@ const { SessionThumbnails } = require('../adapters/session-thumbnails.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { LocalSessionStore, cleanupRawMedia } = require('../adapters/local-store.cjs');
 
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick, deferred, turns } = require('./helpers/wait.cjs');
 const settle = async watch => { do { await tick(); } while (watch.running); };
-const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const gates = () => { const map = new Map(); return id => map.get(id) || map.set(id, deferred()).get(id); };
 // Every entry under a directory with its content hash and modification time: two listings are equal
 // only when nothing was added, removed or rewritten.
@@ -1002,38 +1001,37 @@ test('a state is published before the disk has taken it: an analysed passage, a 
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
     archive: { save: async () => { await gate?.promise; if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
   const block = index => ({ startMs: index * 1000, endMs: (index + 1) * 1000, clip: new Uint8Array([1]), frames: [], audio: null });
-  const turns = async () => { for (let i = 0; i < 20; i++) await tick(); };
   const shown = () => { const state = states.at(-1); return [state.accepting, state.lastError, state.segments.map(segment => segment.status)]; };
   time = 1000; await watch.ingest(block(0)); await settle(watch);
 
   // Two more passages: one is being described, the other waits behind it, and nothing else arrives afterwards.
   describing = deferred();
   time = 2000; await watch.ingest(block(1)); time = 3000; await watch.ingest(block(2));
-  await turns();
+  await turns(20);
   assert.deepEqual(shown(), [true, null, ['ready', 'analyzing', 'queued']]);
   // The disk stops answering, then the description comes back: the passage is published, and the next one is
   // analysed and published in turn, without waiting for the save of the first.
   hold();
   describing.resolve(); describing = null;
-  await turns();
+  await turns(20);
   assert.deepEqual(shown(), [true, null, ['ready', 'ready', 'ready']], 'published and analysed while the disk holds their save');
   // A pause, then a resume: shown at once, settled only once the disk has answered.
   const settled = [];
   const pausing = watch.stop().then(() => settled.push('pause'));
-  await turns();
+  await turns(20);
   assert.deepEqual([shown()[0], settled], [false, []], 'the pause is shown; whoever awaits it still waits for the disk');
   const resuming = watch.resume().then(() => settled.push('resume'));
-  await turns();
+  await turns(20);
   assert.deepEqual([shown()[0], settled], [true, []], 'the resume is shown; whoever awaits it still waits for the disk');
   const pushed = states.length;
   release();
-  await pausing; await resuming; await turns();
+  await pausing; await resuming; await turns(20);
   assert.deepEqual([settled, states.length], [['pause', 'resume'], pushed], 'saves that land and change nothing of what the state says push nothing more');
 
   // The disk refuses. The pause is shown first, as before; the refusal is published when it is known, once.
   refuse = true; hold();
   const refusedPause = watch.stop();
-  await turns();
+  await turns(20);
   assert.deepEqual([shown().slice(0, 2), states.length], [[false, null], pushed + 1]);
   release(); await refusedPause;
   assert.deepEqual([shown().slice(0, 2), states.length], [[false, SAVE], pushed + 2], 'said as soon as the disk refused, without waiting for another event');
@@ -1047,7 +1045,7 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   // Closing is a barrier: it settles only when its last save has been answered.
   hold();
   const closing = watch.close().then(() => settled.push('close'));
-  await turns();
+  await turns(20);
   assert.deepEqual([watch.closed, settled.includes('close')], [true, false]);
   release(); await closing;
   assert.deepEqual(settled, ['pause', 'resume', 'close']);

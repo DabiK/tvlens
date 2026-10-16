@@ -6,7 +6,7 @@ const { RevocableInspector } = require("../core/revocable-inspector.cjs");
 const { createSessionManifest } = require("../runtime/session-manifest.cjs");
 const { createSessionLifecycle } = require("../runtime/session-lifecycle.cjs");
 
-const deferred = () => Promise.withResolvers();
+const { deferred } = require("./helpers/wait.cjs");
 const ioError = () => Object.assign(new Error("Écriture refusée."), { code: "EIO" });
 
 function fixture({ restore = null } = {}) {

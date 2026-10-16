@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }
+const { deferred, tick } = require('./helpers/wait.cjs');
 async function fixture({ delayedFlush = false, delayedIngest = false } = {}) {
   const { RollingRecorder } = await import('../app/recording.js');
   let now = 0, nextTimer = 0;
@@ -36,7 +36,6 @@ async function fixture({ delayedFlush = false, delayedIngest = false } = {}) {
     session: { id: 'session', elapsedMs: 0, segmentMs: 8000 }, onError: error => errors.push(error), env });
   return { recorder, media, ingested, errors, timers, flush, ingest, advance: ms => { now += ms; } };
 }
-const tick = () => new Promise(resolve => setImmediate(resolve));
 
 test('timer, simultaneous checkpoints and pause flush one passage and never restart after pause', async () => {
   const f = await fixture({ delayedFlush: true });

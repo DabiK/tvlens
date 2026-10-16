@@ -21,7 +21,7 @@ const { createSessionRuntime, openArchivedSession } = require('../runtime/sessio
 // And one clip assembled by ffmpeg 8.1.1 with the command of the server (adapters/remote-media.cjs: concat, fps=2,
 // libvpx, libopus), which is what a passage captured on the TV is stored as: its first 696 bytes, cut inside its first block.
 const fixture = name => fs.readFile(path.join(__dirname, 'fixtures', name));
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick } = require('./helpers/wait.cjs');
 const settle = async watch => { do { await tick(); } while (watch.running); };
 
 // Hand-made Matroska: an element is its identifier, its size and its payload.

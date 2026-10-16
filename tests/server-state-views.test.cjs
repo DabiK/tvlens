@@ -8,7 +8,7 @@ const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 
 const token = 'e'.repeat(64);
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick } = require('./helpers/wait.cjs');
 // Text sizes of an ordinary 8 s spoken passage, as in scripts/bench-backend.cjs.
 const filler = (seed, length) => {
   const words = ['le', 'débat', 'porte', 'sur', 'budget', 'santé', 'réforme', 'ministre', 'affirme', 'opposition', 'conteste', 'chiffres', 'audit', 'vote', 'jeudi', 'plateau', 'invité', 'répond', 'question', 'journaliste'];

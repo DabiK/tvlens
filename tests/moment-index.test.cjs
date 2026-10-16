@@ -13,7 +13,7 @@ const { manualClock } = require('./helpers/clock.cjs');
 const SLOW = 'Recherche sémantique trop lente : classement textuel et temporel uniquement.';
 const UNAVAILABLE = 'Recherche sémantique indisponible : classement textuel et temporel uniquement.';
 // Lets every promise chain settle; nothing in this file waits for real time.
-const tick = () => new Promise(resolve => setImmediate(resolve));
+const { tick } = require('./helpers/wait.cjs');
 const vector = text => (/chien/.test(text) ? [0, 1] : [1, 0]);
 // Records every call with its signal; a manual call stays in flight until resolve()/reject().
 function provider({ manual = false, many = true, fail = false } = {}) {

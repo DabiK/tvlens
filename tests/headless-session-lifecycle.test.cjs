@@ -6,14 +6,7 @@ const {
 const { createCaptureIntake } = require("../runtime/capture-intake.cjs");
 const { warmUp } = require("../runtime/session-warm-up.cjs");
 
-function deferred() {
-  let resolve, reject;
-  const promise = new Promise((yes, no) => {
-    resolve = yes;
-    reject = no;
-  });
-  return { promise, resolve, reject };
-}
+const { deferred } = require("./helpers/wait.cjs");
 
 test("transitions wait for their predecessor and continue after its rejection", async () => {
   assert.equal(typeof createHeadlessSessionLifecycle, "function");
