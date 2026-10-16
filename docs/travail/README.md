@@ -380,6 +380,41 @@ du temps déjà passé sur le ticket en cours ; elle ne tient pas compte d'un ti
 L'outil ne fait que lire : il n'écrit rien dans `.harness-state/` ni dans le dépôt, ne prend pas le verrou et ne modifie aucun
 ticket. Seule commande lancée : `ps -p <pid de la boucle>`, pour lire sa ligne de commande.
 
+### Suivre la boucle dans le navigateur
+
+```sh
+npm run loop:web                               # http://127.0.0.1:4178
+node scripts/loop-web.mjs --port 0             # un port libre
+node scripts/loop-web.mjs --root <dossier>     # la boucle d'un autre dossier de projet
+```
+
+La même vue que le terminal (`buildView`), en scène : un bureau en pixel art où chaque rôle a son poste. L'agent de la
+phase en cours travaille à son bureau, les autres attendent au salon, et le parchemin du ticket passe de poste en poste.
+Le robot est la boucle elle-même : il s'allume pendant le contrôle complet, le verdict et les contrôles de la boucle. Le chef
+montre le nombre de tickets qui attendent une décision du propriétaire. Des bannières marquent un ticket intégré ou
+bloqué, un verdict de relecture, un push refusé et l'arrêt de la boucle.
+
+Un clic ouvre le détail : le titre de la quête ou le parchemin ouvrent la fiche du ticket, la pile « File » la file, le
+coffre ou le score les tickets intégrés, le bouton « Quêtes » ou le tableau de liège le tableau des tickets par colonne
+(décision attendue, à faire, en cours, bloqués, terminés). Le chef ouvre ce tableau filtré sur les décisions.
+
+Le terminal, à droite, montre le fil de l'agent choisi tel qu'il arrive : messages, commandes et leur sortie (cinq
+lignes au plus, puis le nombre de lignes coupées), outils, fichiers écrits, sous-agents lancés. Il suit le bas tant qu'on
+ne remonte pas. Ce qu'il montre dépend du moteur :
+
+| Agent | Session Claude | Session Codex |
+| --- | --- | --- |
+| Explorateur, implémenteur | le fil de leur sous-agent | le fil Codex, un seul pour les deux |
+| Relecteur | le fil du sous-agent `relecteur` | pas de fil en direct : le dernier `relecture-<n>.md` |
+| Rétro | le fil de l'`harmoniseur` pendant une harmonisation | pas de fil en direct |
+| La boucle | le fil de l'orchestrateur | le journal `events.jsonl` |
+
+La relecture Claude du mode Codex et la rétrospective tournent sans flux sur disque : leur sortie n'existe qu'à la fin.
+
+Le serveur n'écoute que sur 127.0.0.1 et refuse une requête adressée sous un autre nom d'hôte. Il ne fait que lire, comme
+le moniteur du terminal, et la page sonde `/api/state` et `/api/feed` chaque seconde, rien quand l'onglet est caché. Les
+polices viennent de Google Fonts ; sans réseau, la page garde des polices du système.
+
 ## Ce que fait la boucle pour un ticket
 
 1. Elle passe le ticket à `en-cours` et lance `claude -p` avec la consigne de suivre la skill `ticket`.

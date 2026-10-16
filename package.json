@@ -26,6 +26,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "loop": "node scripts/loop/run.mjs",
+    "loop:web": "node scripts/loop-web.mjs",
     "lint": "eslint ."
   },
   "devDependencies": {

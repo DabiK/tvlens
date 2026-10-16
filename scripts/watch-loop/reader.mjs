@@ -65,7 +65,7 @@ function maxTicketsOf(command) {
 }
 
 /** Les octets arrivés après `offset`, coupés à la dernière fin de ligne : une ligne ou un caractère à moitié écrit attend la suite. */
-function newLines(file, offset) {
+export function newLines(file, offset) {
   let fd;
   try {
     fd = fs.openSync(file, "r");

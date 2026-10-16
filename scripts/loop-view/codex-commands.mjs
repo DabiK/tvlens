@@ -111,9 +111,14 @@ function pythonPhase(body) {
   return null;
 }
 
-export function codexCommandPhase(command) {
+/** La commande que l'enveloppe `sh/bash/zsh -c` exécute ; la commande telle quelle sans enveloppe lisible. */
+export function shellCommand(command) {
   const wrapper = SHELL.exec(command);
-  const text = wrapper ? shellWord(wrapper[1]) ?? command : command;
+  return wrapper ? shellWord(wrapper[1]) ?? command : command;
+}
+
+export function codexCommandPhase(command) {
+  const text = shellCommand(command);
   for (const heredoc of text.matchAll(PYTHON)) {
     const phase = pythonPhase(heredoc[3]);
     if (phase) return phase;
