@@ -4,6 +4,7 @@ const fs = require("node:fs/promises"),
   path = require("node:path"),
   os = require("node:os");
 const sharp = require("sharp");
+const { deferred } = require("./helpers/wait.cjs");
 const {
   sessionTimeline,
   momentDetail,
@@ -76,13 +77,20 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
     .jpeg()
     .toBuffer();
   let now = 8000;
+  const audio = deferred(), described = deferred();
   const watch = new WatchSession({
     id: "session",
     now: () => now,
     media,
     archive: media,
     thumbnails,
-    perception: {},
+    perception: {
+      transcribe: async () => { await audio.promise; return { observation: {} }; },
+      observeVisual: async () => ({ observation: { summary: "Résumé conservé." } }),
+    },
+    onChange: state => {
+      if (state.segments[0]?.status === "ready") described.resolve();
+    },
     retentionMs: 10000,
   });
   watch.setQuestionPending(true);
@@ -98,12 +106,17 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
         },
       ],
     });
-    assert.equal(watch.segments[0].status, "queued");
+    assert.equal(watch.segments[0].status, "analyzing");
+    assert.equal(watch.segments[0].observation, null);
     assert.equal(watch.segments[0].thumbnailAvailable, true);
     assert.equal(
       (await sharp(await thumbnails.read("moment-1")).metadata()).width,
       320,
     );
+    audio.resolve();
+    watch.setQuestionPending(false);
+    await described.promise;
+    assert.equal(watch.snapshot().segments[0].observation.summary, "Résumé conservé.");
     await watch.stop();
     await watch.resume();
     now = 30000;
@@ -127,6 +140,8 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
       new SessionThumbnails(path.join(dir, "thumbnails")).read("moment-1"),
     );
   } finally {
+    audio.resolve();
+    await watch.close();
     await fs.rm(root, { recursive: true, force: true });
   }
 });

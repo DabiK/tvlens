@@ -175,7 +175,7 @@ function forbidProviders(t) {
   // Les adaptateurs capturent child_process au chargement ; le banc contrôle leurs ports injectés.
   t.mock.method(globalThis, "fetch", forbidden("fetch"));
   const agent = { answer: forbidden("answer"), prepare: forbidden("chat.prepare") };
-  const perception = Object.fromEntries(["transcribe", "observeVisual", "observe", "ask", "prepare"].map(name => [name, forbidden(name)]));
+  const perception = Object.fromEntries(["transcribe", "observeVisual", "prepare"].map(name => [name, forbidden(name)]));
   const surveillanceAgent = {
     detect: forbidden("detect"), verify: forbidden("verify"), prepare: forbidden("surveillance.prepare"),
   };
@@ -258,4 +258,43 @@ test("Git ignore rules retain every required frozen file, including WebM clips",
     const pattern = rule.slice(rule.lastIndexOf(":") + 1);
     assert.ok(result.status === 1 || pattern.startsWith("!"), `${relative} is ignored by ${rule}`);
   }
+});
+
+
+test("historical questions and masking notes survive a real library open and runtime close without providers or rewrites", async t => {
+  const providers = forbidProviders(t);
+  const temp = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-historical-questions-"));
+  t.after(() => fs.rm(temp, { recursive: true, force: true }));
+  const expected = JSON.parse(await fs.readFile(path.join(CORPUS, "expected.json"), "utf8"));
+  const id = expected.sessions[0].summary.id, root = path.join(temp, "sessions"), dir = path.join(root, id);
+  await fs.cp(path.join(CORPUS, id), dir, { recursive: true });
+  const file = path.join(dir, "session.json"), saved = JSON.parse(await fs.readFile(file, "utf8"));
+  const note = "Bas de l’image masqué par un affichage TV Lens sur 1 image(s) sur 4 : la scène n’a pas été vue en entier.";
+  saved.questions = [{ question: "Que voit-on ?", answer: "Un cercle.", kind: "observation", atMs: 8000,
+    citations: [{ id: "moment-1", startMs: 0, endMs: 8000, available: true }], limits: [] }];
+  saved.segments[0].observation.uncertainty = note;
+  saved.segments[0].ingest = { assembleMs: 12, overlay: { cropped: 1, withheld: 0 } };
+  saved.history = [{ id: "moment-0", startMs: 0, endMs: 1, status: "ready",
+    observation: { summary: "Note historique.", uncertainty: note } }];
+  await fs.writeFile(file, JSON.stringify(saved, null, 2));
+  const before = await fingerprint(root), library = new SessionLibrary({ root });
+  const archive = await library.read(id);
+  assert.deepEqual(archive.snapshot.questions, saved.questions);
+  const runtime = new HeadlessRuntime({
+    sessionsRoot: root, userData: temp, config: {}, selectedModels: {}, smoke: true,
+    readClock: () => 0, agent: providers.agent, surveillanceAgent: providers.surveillanceAgent, overrides: providers.overrides,
+  });
+  try {
+    await runtime.open(id);
+    const state = runtime.snapshot().session;
+    assert.deepEqual(state.questions, saved.questions);
+    assert.deepEqual(state.segments[0].observation, saved.segments[0].observation);
+    assert.deepEqual(state.segments[0].ingest, saved.segments[0].ingest);
+    assert.deepEqual(state.history[0].observation, saved.history[0].observation);
+    assert.equal(state.readOnly, true);
+  } finally {
+    await runtime.close();
+  }
+  assert.deepEqual(await fingerprint(root), before);
+  assert.deepEqual(providers.calls, []);
 });

@@ -169,7 +169,6 @@ function createSessionRuntime({
     retentionMs: retentionMs,
     now: () => sessionClock.now(),
     perception,
-    answer: perception,
     media: store,
     archive: store,
     thumbnails,

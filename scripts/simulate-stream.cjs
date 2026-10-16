@@ -217,7 +217,7 @@ async function runScenario(root, name, seed, variant = {}) {
       lag.push(snapshot.analysisLagMs);
     };
     const lag = [];
-    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, answer: perception, media, archive, onChange: observe, retentionMs: scenario.retentionMs, ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
+    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onChange: observe, retentionMs: scenario.retentionMs, ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
 
     const records = [];
     const livePrefix = (anchorMs, startMs, endMs) => [...watch.history, ...watch.segments].filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);

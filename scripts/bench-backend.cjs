@@ -55,7 +55,7 @@ function populatedSession(count) {
   const { WatchSession } = load('core/session.cjs');
   let saved = 0;
   const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000,
-    perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, answer: {},
+    perception: { transcribe: async () => ({}), observeVisual: async () => ({}) },
     media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} },
     archive: { save: async () => { saved++; } } });
   const live = Math.min(count, 37); // five minutes of 8 s passages stay detailed

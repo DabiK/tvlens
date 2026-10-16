@@ -64,8 +64,7 @@ test('revision counts published evidence: transcript, then vision; a failed visi
   assert.equal(second.visionStatus, 'error'); assert.equal(second.revision, 1); assert.equal(second.visionPublishedMs, undefined);
   assert.equal(f.watch.losses.visionError, 1);
   assert.deepEqual(f.snapshots.at(-1).segments.map(s => s.revision), [2, 1]);
-  const legacy = fixture({ observe: async () => ({ observation: { summary: 'Image' } }) });
-  await legacy.add(0); assert.equal(legacy.watch.segments[0].revision, 1);
+
 });
 test('a transcription reporting its own failure is counted and flagged, and a host without Whisper still gets complete visual passages', async () => {
   const gate = deferred();
@@ -234,11 +233,7 @@ test('visionDuringAsk lets vision run during a question, still one call at a tim
   gate.resolve(); await tick();
   assert.equal(max, 1); assert.equal(started, 3); assert.equal(f.watch.asking, true);
   assert.deepEqual(f.watch.segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
-  // The legacy single lane keeps its barrier.
-  let observed = 0;
-  const legacy = fixture({ observe: async () => { observed++; return { observation: { summary: 'Image' } }; } }, { visionDuringAsk: true });
-  legacy.watch.setQuestionPending(true); await legacy.add(0);
-  assert.equal(observed, 0); assert.equal(legacy.watch.segments[0].status, 'queued');
+
 });
 test('a failed media removal or publication never poisons later prunes and ingests', async () => {
   const f = fixture({ transcribe, observeVisual: visual }, { retentionMs: 1000 });

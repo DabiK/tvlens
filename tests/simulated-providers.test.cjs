@@ -62,35 +62,6 @@ test("the inspector clips every observation to the requested interval and report
   );
 });
 
-test("historical serial perception reports images and audio and cites the last context passage", async () => {
-  const perception = providers.simulatedPerception();
-  const frames = [{ atMs: 1000 }, { atMs: 2000 }, { atMs: 3000 }];
-  for (const [audio, expectedAudio] of [
-    [null, "Pas d’audio."],
-    [new Uint8Array([1]), "Audio reçu."],
-  ]) {
-    assert.deepEqual(await perception.observe({ frames, audio }), {
-      observation: {
-        summary: "Un cercle se déplace sur un fond bleu.",
-        visual: "3 images reçues.",
-        audio: expectedAudio,
-        transcript: "",
-        uncertainty: "",
-      },
-      cost: 0,
-    });
-  }
-  assert.deepEqual(
-    await perception.ask({ context: [{ id: "moment-1" }, { id: "moment-2" }] }),
-    {
-      answer: "Un cercle se déplace sur un fond bleu.",
-      kind: "observation",
-      citations: ["moment-2"],
-      limits: [],
-      cost: 0,
-    },
-  );
-});
 
 test("simulated transcription publishes an audio patch with deterministic words only for nonempty audio at zero cost", async () => {
   const perception = providers.simulatedPerception();

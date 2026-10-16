@@ -117,18 +117,7 @@ test('one rejected cumulative output recovers through bounded intact observation
   for(let n=3;n<7;n++) append(snapshot,passage(n),null);
   assert.equal(perceptionContext(snapshot,passage(7)).previousTopicSummary,null);
 });
-test('legacy answer port receives only passage evidence, never aggregate text attached to a chunk', async () => {
-  let received;
-  const watch=new WatchSession({id:'s',now:()=>16000,perception:{},media:{remove:async()=>{},read:async()=>({frames:[]})},archive:{save:async()=>{}},
-    answer:{ask:async input=>{received=input;return {answer:'Pas assez de preuves',kind:'insufficient',citations:[],limits:[]};}}});
-  append(watch,passage(0,'Début'));
-  append(watch,{...passage(1),available:true},'Début et fin');
-  watch.history.push(watch.segments.shift());
-  await watch.ask('De quoi parle-t-on ?');
-  assert.equal(received.context[0].topicSummary,undefined);
-  assert.equal(received.history[0].topicSummary,undefined);
-  assert.equal(watch.segments[0].topicSummary.text,'Début et fin');
-});
+
 test('actual perception input and reused thread cannot carry material from before a capture gap', async () => {
   const snapshot={id:'s',history:[],segments:[]}, prompts=[];
   let closes=0;

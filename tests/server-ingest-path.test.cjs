@@ -99,46 +99,69 @@ test('remote payloads are still refused when malformed or oversized, without bei
   assert.doesNotThrow(() => validateRemote({ ...base, frames: [{ atMs: 0, data: 'QUJD' }], audio: 'QUI=' }));
 });
 
-test('images cropped or withheld under a TV Lens card are bounded at the door, carried to the passage and said in its uncertainty; an ordinary block is unchanged', async t => {
-  const { RemoteMedia, validateRemote } = require('../adapters/remote-media.cjs');
-  const image = (await require('sharp')({ create: { width: 64, height: 36, channels: 3, background: '#336699' } }).jpeg().toBuffer()).toString('base64');
-  const frames = (...flags) => flags.map((overlay, i) => ({ atMs: i * 2000, data: image, ...(overlay === undefined ? {} : { overlay }) }));
-  const body = extra => ({ sessionId: 's', sequence: 1, startMs: 0, endMs: 8000, frames: frames('cropped', undefined, undefined), ...extra });
-  // Out of bounds, mistyped or impossible for the images sent: refused before anything is decoded.
-  for (const [label, refused, message] of [
-    ['six cropped', body({ overlay: { cropped: 6, withheld: 0 } }), /images masquées invalide/], ['six withheld', body({ overlay: { cropped: 1, withheld: 6 } }), /images masquées invalide/],
-    ['negative', body({ overlay: { cropped: -1, withheld: 0 } }), /images masquées invalide/], ['fraction', body({ overlay: { cropped: 1.5, withheld: 0 } }), /images masquées invalide/],
-    ['figure as text', body({ overlay: { cropped: '1', withheld: 0 } }), /images masquées invalide/], ['half a block', body({ overlay: { cropped: 1 } }), /images masquées invalide/],
-    ['not a block', body({ overlay: 'cropped' }), /images masquées invalide/], ['a list', body({ overlay: [1, 0] }), /images masquées invalide/],
-    ['more cropped than sent', body({ overlay: { cropped: 4, withheld: 0 } }), /images masquées incohérente/],
-    // Sent plus withheld cannot exceed the five images one block can hold.
-    ['more withheld than a block holds', body({ overlay: { cropped: 1, withheld: 6 - body().frames.length } }), /images masquées incohérente/],
-    // A withheld image is not sent: one that arrives flagged so could carry the text of a card.
-    ['withheld image sent', body({ frames: frames('withheld', undefined) }), /image masquée invalide/], ['unknown flag', body({ frames: frames(true) }), /image masquée invalide/]])
-    assert.throws(() => validateRemote(refused), message, label);
-  for (const accepted of [body(), body({ overlay: null }), body({ overlay: { cropped: 1, withheld: 5 - body().frames.length } }), body({ overlay: { cropped: 0, withheld: 0 }, frames: frames(undefined) }), body({ frames: frames(null, undefined) })])
-    assert.doesNotThrow(() => validateRemote(accepted));
 
-  // Through the real route and the real assembler, down to the published description.
-  const f = await fixture(t, { media: new RemoteMedia() });
-  const session = (await f.req('/v1/session/start', {})).value, watch = f.runtime.session.watch;
-  const send = async (sequence, endMs, extra) => {
+test('normal and legacy capture blocks retain images, identity, sequence and source without a masking declaration or note', async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  const image = await require('sharp')({ create: { width: 64, height: 36, channels: 3, background: '#336699' } }).jpeg().toBuffer();
+  const assembler = new RemoteMedia(), assembled = [];
+  const f = await fixture(t, { media: { assemble: async (...args) => {
+    const result = await assembler.assemble(...args);
+    assembled.push(result);
+    return result;
+  } } });
+  const session = (await f.req('/v1/session/start', {})).value;
+  const watch = f.runtime.session.watch;
+  for (const sequence of [1, 2, 3]) {
+    const startMs = (sequence - 1) * 1000, endMs = sequence * 1000;
+    const legacy = sequence === 2 ? { overlay: { cropped: 1, withheld: 1 } } : {};
+    if (sequence === 3) legacy.overlay = 'obsolete';
+    const body = { sessionId: session.id, sequence, source: { kind: 'tv', display: 'HDMI 1' }, startMs, endMs,
+      frames: [{ atMs: startMs, data: image.toString('base64'), ...(sequence > 1 ? { overlay: 'cropped' } : {}) }], ...legacy };
     f.setClock(endMs);
-    const sent = await f.req('/v1/segments', { sessionId: session.id, sequence, startMs: endMs - 8000, endMs, frames: extra.frames.map((frame, i) => ({ ...frame, atMs: endMs - 8000 + i * 2000 })), ...(extra.overlay ? { overlay: extra.overlay } : {}) });
+    const sent = await f.req('/v1/segments', body);
+    assert.equal(sent.status, 200);
     do { await new Promise(resolve => setImmediate(resolve)); } while (watch.running);
-    return sent;
-  };
-  const note = (hidden, sampled) => `Bas de l’image masqué par un affichage TV Lens sur ${hidden} image(s) sur ${sampled} : la scène n’a pas été vue en entier.`;
-  assert.equal((await send(1, 8000, { frames: frames('cropped', undefined, undefined), overlay: { cropped: 1, withheld: 1 } })).status, 200);
-  // Flags alone are a declaration too; an ordinary block declares nothing.
-  assert.equal((await send(2, 16000, { frames: frames('cropped', 'cropped') })).status, 200);
-  assert.equal((await send(3, 24000, { frames: frames(undefined, undefined) })).status, 200);
-  const refused = await send(4, 32000, { frames: frames(undefined, undefined), overlay: { cropped: 3, withheld: 0 } });
-  assert.deepEqual([refused.status, refused.value], [400, { error: 'Déclaration d’images masquées incohérente.', code: 'unclassified-error' }]);
-  const passages = (await f.req('/v1/state')).value.session.segments;
-  assert.deepEqual(passages.map(p => [p.id, p.status, p.ingest.overlay, p.observation.uncertainty, p.observation.visual]), [
-    ['moment-1', 'ready', { cropped: 1, withheld: 1 }, note(2, 4), '3 images reçues.'],
-    ['moment-2', 'ready', { cropped: 2, withheld: 0 }, note(2, 2), '2 images reçues.'],
-    ['moment-3', 'ready', undefined, '', '2 images reçues.']]);
-  assert.deepEqual([Object.keys(passages[2].ingest), Object.keys(passages[0].ingest)], [['assembleMs'], ['assembleMs', 'overlay']], 'a passage without declaration keeps the shape it had');
+    const result = assembled.at(-1);
+    assert.deepEqual([result.sessionId, result.sequence, result.source], [body.sessionId, sequence, body.source]);
+    assert.equal(result.overlay, undefined);
+    assert.deepEqual(Object.keys(result.ingest), ['assembleMs']);
+    assert.deepEqual(result.frames.map(frame => frame.atMs), [startMs]);
+    assert.equal(result.frames[0].overlay, undefined);
+    const stored = await f.runtime.session.store.read(sent.value.id);
+    assert.deepEqual(stored.frames, result.frames);
+    assert.equal(result.frames[0].dataUrl, assembled[0].frames[0].dataUrl);
+    const passage = (await f.req('/v1/state')).value.session.segments.at(-1);
+    assert.deepEqual([passage.status, passage.ingest.overlay, passage.observation.uncertainty], ['ready', undefined, '']);
+    assert.equal(passage.observation.visual, '1 images reçues.');
+    assert.equal((await f.req('/v1/segments', body)).value.duplicate, true);
+  }
+});
+
+
+test('the host answers through DeepAsk and refuses questions during and after session teardown without reaching the agent', async t => {
+  let calls = 0;
+  const f = await fixture(t, { runtimeOptions: { agent: { answer: async () => {
+    calls++;
+    return { answer: 'Explication permise.', kind: 'explanation', citations: [], limits: [] };
+  } } } });
+  const session = (await f.req('/v1/session/start', {})).value;
+  const question = { sessionId: session.id, question: 'Pourquoi ?', anchorMs: 0 };
+  const accepted = await f.req('/v1/questions', question);
+  assert.equal(accepted.status, 200);
+  await f.runtime.deep.jobs.find(job => job.id === accepted.value.id).done;
+  assert.equal(f.runtime.deep.snapshot().jobs[0].result.kind, 'explanation');
+  const entered = deferred(), release = deferred(), pause = f.runtime.session.pause;
+  f.runtime.session.pause = async () => { entered.resolve(); await release.promise; return pause(); };
+  const closing = f.runtime.close();
+  try {
+    await entered.promise;
+    assert.equal((await f.req('/v1/questions', question)).status, 400);
+    assert.equal(calls, 1);
+  } finally {
+    release.resolve();
+    await closing;
+  }
+  assert.equal((await f.req('/v1/questions', question)).status, 400);
+  assert.equal(calls, 1);
+  assert.deepEqual(f.runtime.deep.snapshot().jobs, []);
 });

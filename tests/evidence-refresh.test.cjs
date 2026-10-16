@@ -174,3 +174,46 @@ test('conversation runtime binds the live provider to the session of the questio
  assert.deepEqual(contexts[1].passages.map(p=>p.text),['Résumé m1\nParoles m1','Résumé m2\nParoles m2']);assert.equal(second.metrics.evidence.evidenceAsOfMs,7000);
  session=null;assert.equal(created.live(),null);
 });
+
+
+test('chat validates cited observations and rejects missing, unknown or out-of-scope citations while allowing explanations', async () => {
+  const first = ready('moment-1', 0, 15000, { topicSummary: { text: 'CUMUL_HORS_PREUVE' } });
+  const last = ready('moment-2', 15000, 30000);
+  const initial = snap(30000, [last], [first]);
+  const valid = { id: first.id, startMs: first.startMs, endMs: first.endMs };
+  const cases = [
+    ['observation', [], 'insufficient', []],
+    ['observation', [valid], 'observation', [valid]],
+    ['observation', [{ ...valid, id: 'invented' }], 'insufficient', []],
+    ['observation', [{ id: last.id, startMs: last.startMs, endMs: last.endMs }], 'insufficient', []],
+    ['explanation', [], 'explanation', []],
+  ];
+  for (const [kind, citations, expectedKind, accepted] of cases) {
+    const seen = [];
+    const deep = new DeepAsk({
+      makeTools: signal => new VideoTools({ snapshot: initial, signal }),
+      agent: { answer: async ({ context, tools }) => {
+        seen.push(context);
+        const text = await tools.call('get_transcript', { startMs: 0, endMs: 15000 });
+        assert.equal(text.passages[0].available, false, 'expired media leave text consultable');
+        assert.equal(text.passages[0].transcript, 'Paroles moment-1');
+        return { answer: 'Proposition du modèle.', kind, citations, limits: [] };
+      } },
+    });
+    deep.start('Que voyait-on à 00:05 ?', { mode: 'chat', startMs: 0, anchorMs: 15000 });
+    await deep.jobs[0].done;
+    const job = deep.snapshot().jobs[0];
+    assert.equal(job.status, 'done');
+    assert.equal(job.result.kind, expectedKind);
+    assert.deepEqual(job.result.citations, accepted);
+    assert.equal(job.anchorMs, 15000);
+    assert.deepEqual(seen[0].passages.map(p => p.id), ['moment-1']);
+    assert.doesNotMatch(JSON.stringify(seen), /Résumé moment-2|CUMUL_HORS_PREUVE/);
+    if (expectedKind === 'insufficient') {
+      assert.notEqual(job.result.answer, 'Proposition du modèle.');
+      assert.deepEqual(job.result.observations, []);
+      assert.deepEqual(job.result.sources, []);
+      assert.deepEqual(job.result.hypotheses, []);
+    }
+  }
+});

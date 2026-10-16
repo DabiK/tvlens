@@ -98,7 +98,8 @@ function fixture({ restore = null } = {}) {
   };
   const perception = {
     ...resource("perception"),
-    async observe(input) {
+    transcribe: async () => ({ observation: {} }),
+    async observeVisual(input) {
       f.analysed.push(input.id);
       return { observation: { summary: "Résumé conservé" } };
     },

@@ -361,7 +361,7 @@ test('stopping the server host keeps the current session whole, and the next sta
 
 test('ending a session while a passage is still being written waits for it: reopened, the passage is on the timeline and can be re-examined', async t => {
   const f = await fixture(t), analysis = gates();
-  const perception = { observe: async input => { await analysis(input.id).promise; return { observation: { summary: `Résumé ${input.id}` }, cost: 0 }; } };
+  const perception = { transcribe: async () => ({ observation: {} }), observeVisual: async input => { await analysis(input.id).promise; return { observation: { summary: `Résumé ${input.id}` }, cost: 0 }; } };
   const live = f.open({ host: 'server', overrides: { perception } }), id = live.id, dir = path.join(f.sessionsRoot, id);
   analysis('moment-1').resolve();
   f.clock = 8000; await live.watch.ingest(f.block(0, 8000)); await settle(live.watch); await live.store.serial;
@@ -401,7 +401,7 @@ test('a core session closed without waiting still saves a passage that lands aft
   const gate = deferred(), saves = [], files = new Map();
   // Only the second write is slow: the first passage is stored, analysed and saved as usual.
   const media = { put: async (id, input) => { if (id === 'moment-2') await gate.promise; files.set(id, input); }, read: async id => files.get(id), remove: async () => {} };
-  const watch = new WatchSession({ id: 's', now: () => 2000, perception: { observe: async () => ({ observation: { summary: 'Résumé' } }) }, media, archive: { save: async state => { saves.push(state); } } });
+  const watch = new WatchSession({ id: 's', now: () => 2000, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) }, media, archive: { save: async state => { saves.push(state); } } });
   const block = i => ({ startMs: i * 1000, endMs: (i + 1) * 1000, frames: [], audio: null });
   assert.equal(await watch.ingest(block(0)), 'moment-1'); await settle(watch);
   const writing = watch.ingest(block(1)); await tick();
@@ -416,7 +416,8 @@ test('a core session closed without waiting still saves a passage that lands aft
 test('a session cut short reopens read-only with every stored passage: its first one never saved, media newer than its saved state put back in order, media without interval only counted', async t => {
   const f = await fixture(t), analysis = gates(), INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
   // The first analysis never returns: what a power cut leaves on disk is the directory as it is, copied under another root.
-  const perception = { observe: async input => { await analysis(input.id).promise; return { observation: { summary: 'Jamais rendu' }, cost: 0 }; } };
+  const perception = { transcribe: async input => { await analysis(input.id).promise; return { observation: {} }; },
+    observeVisual: async () => ({ observation: { summary: 'Jamais rendu' }, cost: 0 }) };
   const live = f.open({ host: 'server', overrides: { perception } }), id = live.id, dir = path.join(f.sessionsRoot, id);
   const cut = async name => { await live.store.serial; const root = path.join(f.root, name); await fs.cp(dir, path.join(root, id), { recursive: true }); return root; };
   const opened = async root => { const library = new SessionLibrary({ root }), [listed] = await library.list(), { session, archive } = await f.reopen(library, id); return { library, listed, session, archive, state: session.watch.snapshot() }; };
@@ -567,7 +568,7 @@ test('a passage that lands while its session is being ended is kept and saved, b
 
 test('a block already stored is refused on observation order even after a rolling window has emptied the passage list', async () => {
   let time = 0; const stored = [];
-  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 1000, perception: { observe: async () => ({ observation: { summary: 'Résumé' } }) },
+  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 1000, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) },
     media: { put: async id => { stored.push(id); }, read: async () => ({ frames: [] }), remove: async () => {} }, archive: { save: async () => {} } });
   const block = { startMs: 0, endMs: 1000, frames: [], audio: null };
   time = 1000; assert.equal(await watch.ingest(block), 'moment-1'); await settle(watch);
@@ -576,47 +577,6 @@ test('a block already stored is refused on observation order even after a rollin
   await assert.rejects(watch.ingest(block), /ordre d’observation/, 'the same block replayed by its capture');
   assert.deepEqual([stored, watch.snapshot().coverage.passages], [['moment-1'], 1], 'never stored a second time');
   assert.equal(await watch.ingest({ ...block, startMs: 59000, endMs: 60000 }), 'moment-2', 'the capture itself goes on, numbering continued');
-  await watch.close();
-});
-
-test('images hidden by a TV Lens card stay declared on the passage (state, history, archive) and the session itself says so in the uncertainty, once; an ordinary passage is unchanged', async () => {
-  const note = (hidden, sampled) => `Bas de l’image masqué par un affichage TV Lens sur ${hidden} image(s) sur ${sampled} : la scène n’a pas été vue en entier.`;
-  let time = 0; const files = new Map(), saves = [];
-  const media = { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async id => { files.delete(id); } };
-  // What the model says of its own doubts, per passage: nothing, something, or the very sentence it read in a former context.
-  const doubts = { 'moment-2': 'Texte à l’écran peu lisible.', 'moment-5': note(1, 4) };
-  const perception = { transcribe: async s => ({ observation: { transcript: `Paroles ${s.id}` } }),
-    observeVisual: async s => ({ observation: { summary: `Images ${s.id}`, visual: 'Un plateau.', uncertainty: doubts[s.id] || '' } }) };
-  const make = options => new WatchSession({ id: 's', now: () => time, retentionMs: 60000, perception, media, archive: { save: async state => { saves.push(JSON.parse(JSON.stringify(state))); } }, ...options });
-  const watch = make();
-  const block = (i, ingest, images = 4) => ({ startMs: i * 8000, endMs: (i + 1) * 8000, audio: new Uint8Array([1]), frames: Array.from({ length: images }, (_, n) => ({ atMs: i * 8000 + n, dataUrl: 'x' })), ...(ingest ? { ingest } : {}) });
-  const blocks = [block(0, { assembleMs: 12 }), block(1, { assembleMs: 12, overlay: { cropped: 2, withheld: 0 } }), block(2, { assembleMs: 9, overlay: { cropped: 1, withheld: 1 } }, 3),
-    // Not a declaration: out of range, or nothing hidden. The core takes it as an ordinary passage.
-    block(3, { assembleMs: 9, overlay: { cropped: 9, withheld: 0 } }), block(4, { assembleMs: 7, overlay: { cropped: 1, withheld: 0, note: 'ignoré' } }), block(5, { overlay: { cropped: 0, withheld: 0 } }), block(6)];
-  for (const [i, input] of blocks.entries()) { time = (i + 1) * 8000; await watch.ingest(input); await settle(watch); }
-  assert.deepEqual(watch.segments.map(s => [s.id, s.status, s.ingest, s.observation.uncertainty]), [
-    ['moment-1', 'ready', { assembleMs: 12 }, ''],
-    ['moment-2', 'ready', { assembleMs: 12, overlay: { cropped: 2, withheld: 0 } }, note(2, 4) + ' Texte à l’écran peu lisible.'],
-    ['moment-3', 'ready', { assembleMs: 9, overlay: { cropped: 1, withheld: 1 } }, note(2, 4)],
-    ['moment-4', 'ready', { assembleMs: 9 }, ''],
-    ['moment-5', 'ready', { assembleMs: 7, overlay: { cropped: 1, withheld: 0 } }, note(1, 4)],
-    ['moment-6', 'ready', undefined, ''],
-    ['moment-7', 'ready', undefined, '']]);
-  // Strictly what the model returned for a passage without declaration, and no key added to it.
-  assert.deepEqual(watch.segments[0].observation, { transcript: 'Paroles moment-1', summary: 'Images moment-1', visual: 'Un plateau.', uncertainty: '' });
-  assert.equal('ingest' in watch.segments[6], false);
-  // A host without split perception publishes words and description together: same sentence.
-  const single = make({ perception: { observe: async () => ({ observation: { summary: 'Résumé', visual: 'Un plateau.', uncertainty: '' } }) } });
-  await single.ingest(block(0, { overlay: { cropped: 0, withheld: 2 } }, 2)); await settle(single);
-  assert.equal(single.segments[0].observation.uncertainty, note(2, 4), 'the single-lane description says it too');
-  await single.close();
-  // History (the rolling window archives the passages), saved state, and a reopening keep both the declaration and the sentence.
-  time = 400000; await watch.prune(); await watch.stop();
-  const kept = list => list.filter(p => p.ingest?.overlay).map(p => [p.id, p.ingest.overlay, p.observation.uncertainty.startsWith('Bas de l’image masqué par un affichage TV Lens')]);
-  const expected = [['moment-2', { cropped: 2, withheld: 0 }, true], ['moment-3', { cropped: 1, withheld: 1 }, true], ['moment-5', { cropped: 1, withheld: 0 }, true]];
-  assert.deepEqual([watch.segments.length, kept(watch.history), kept(saves.at(-1).history)], [0, expected, expected]);
-  const reopened = make(); reopened.restore(saves.at(-1));
-  assert.deepEqual(kept(reopened.snapshot().history), expected);
   await watch.close();
 });
 
@@ -969,7 +929,7 @@ test('a state that waits for its turn on disk is written as it was asked for: a 
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
   let time = 0;
-  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 5000, media: store, archive: store, perception: { observe: async () => ({ observation: { summary: 'Résumé' } }) } });
+  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 5000, media: store, archive: store, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) } });
   time = 1000; await watch.ingest({ startMs: 0, endMs: 1000, clip: Buffer.from('clip'), frames: [], audio: null }); await settle(watch); await store.serial;
   const held = disk(t, 'session.json');
   held.hold();
@@ -995,9 +955,10 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   const SAVE = 'Impossible de sauvegarder le résumé de session.';
   let time = 0, gate = null, refuse = false, describing = null; const files = new Map(), states = [];
   const hold = () => { gate = deferred(); }, release = () => { const held = gate; gate = null; held?.resolve(); };
-  // Historical serial lane for a host without split perception; current smoke hosts use the separate audio and vision lanes.
+  // La transcription porte la synchronisation : les passages suivants attendent encore leur analyse.
   const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
-    perception: { observe: async segment => { await describing?.promise; return { observation: { summary: 'Passage ' + segment.id } }; } },
+    perception: { transcribe: async segment => { await describing?.promise; return { observation: { transcript: 'Passage ' + segment.id } }; },
+      observeVisual: async segment => ({ observation: { summary: 'Passage ' + segment.id } }) },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
     archive: { save: async () => { await gate?.promise; if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
   const block = index => ({ startMs: index * 1000, endMs: (index + 1) * 1000, clip: new Uint8Array([1]), frames: [], audio: null });

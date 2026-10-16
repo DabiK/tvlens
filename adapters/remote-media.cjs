@@ -8,22 +8,6 @@ function base64(value,max){
   if(typeof value!=='string'||value.length>Math.ceil(max/3)*4||!value.length||!/^[A-Za-z0-9+/]+={0,2}$/.test(value))throw Error('Média encodé invalide.');
   const size=Math.floor((value.length-(value.endsWith('==')?2:value.endsWith('=')?1:0))*3/4);if(!size||size>max)throw Error('Média trop volumineux.');
 }
-// Images the capture cropped or withheld because a TV Lens card was on screen: `overlay:"cropped"` on each cropped image sent,
-// and a block `overlay:{cropped,withheld}` (0 to 5 each; withheld images are not in `frames`). Bounded here; null when nothing is declared.
-function declaredOverlay(input){
-  const flagged=input.frames.filter(f=>f.overlay==='cropped').length,block=input.overlay;
-  // An image flagged otherwise (a withheld one that was sent after all, say) could carry the text of a card: the block is refused.
-  if(input.frames.some(f=>f.overlay!==undefined&&f.overlay!==null&&f.overlay!=='cropped'))throw Error('Déclaration d’image masquée invalide.');
-  if(block===undefined||block===null)return flagged?{cropped:flagged,withheld:0}:null;
-  if(typeof block!=='object'||Array.isArray(block)||![block.cropped,block.withheld].every(v=>Number.isInteger(v)&&v>=0&&v<=5))throw Error('Déclaration d’images masquées invalide.');
-  // A cropped image is one of those sent: their count cannot exceed them. Between the block and the images flagged one by one,
-  // the larger figure is kept rather than losing the block: hidden images are never understated.
-  if(block.cropped>input.frames.length)throw Error('Déclaration d’images masquées incohérente.');
-  // A block carries five images at most: those sent plus those withheld cannot exceed what one block can hold.
-  if(input.frames.length+block.withheld>5)throw Error('Déclaration d’images masquées incohérente.');
-  const cropped=Math.max(block.cropped,flagged);
-  return cropped+block.withheld?{cropped,withheld:block.withheld}:null;
-}
 // Inputs already checked by the HTTP handler are not scanned a second time.
 const validated=new WeakSet();
 function validateRemote(input){
@@ -34,7 +18,6 @@ function validateRemote(input){
   for(const f of input.frames){if(!Number.isFinite(f.atMs)||f.atMs<input.startMs||f.atMs>input.endMs||f.atMs<previous)throw Error('Ordre des images invalide.');previous=f.atMs;base64(f.data,1500000);
     if(f.crop){const c=f.crop;if(!['x','y','width','height'].every(k=>Number.isInteger(c[k]))||c.x<0||c.y<0||c.width<16||c.height<16||c.x+c.width>1280||c.y+c.height>720)throw Error('Cadrage invalide.');}}
   if(input.audio)base64(input.audio,2100000);
-  declaredOverlay(input);
   validated.add(input);
 }
 // Not the block's doing: a media tool that cannot be started or does not end in time, a temporary directory the system
@@ -124,9 +107,9 @@ class RemoteMedia {
       }
     }
     if(failed)throw primary;
-    // Carried to the passage: the session says by itself that such a scene was not seen whole. Absent when nothing was hidden.
-    const overlay=declaredOverlay(input);
-    result.ingest={assembleMs:Math.round(performance.now()-started),...(overlay?{overlay}:{})};return result;
+    delete result.overlay;
+    result.ingest = { assembleMs: Math.round(performance.now() - started) };
+    return result;
   }
 }
 module.exports={RemoteMedia,validateRemote};

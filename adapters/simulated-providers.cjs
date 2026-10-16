@@ -58,23 +58,6 @@ function simulatedPerception() {
       },
       cost: 0,
     }),
-    observe: async (input) => ({
-      observation: {
-        summary: "Un cercle se déplace sur un fond bleu.",
-        visual: `${input.frames.length} images reçues.`,
-        audio: input.audio ? "Audio reçu." : "Pas d’audio.",
-        transcript: "",
-        uncertainty: "",
-      },
-      cost: 0,
-    }),
-    ask: async (input) => ({
-      answer: "Un cercle se déplace sur un fond bleu.",
-      kind: "observation",
-      citations: [input.context.at(-1).id],
-      limits: [],
-      cost: 0,
-    }),
   };
 }
 

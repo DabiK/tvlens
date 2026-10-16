@@ -33,7 +33,7 @@ function stage(clock, config, answers) {
     transcribe: async s => { await sleep(TRANSCRIBE_MS); return { observation: { transcript: `Paroles ${s.id}` }, elapsedMs: TRANSCRIBE_MS }; },
     observeVisual: async s => { await sleep(VISION_MS); return { observation: { summary: `Images ${s.id}`, visual: 'Plan fixe' }, elapsedMs: VISION_MS }; } };
   // One hour of retention keeps expiry out of the picture: only the question may hold anything back here.
-  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, answer: perception, media, archive: { save: async () => {} }, retentionMs: 3600000, visionDuringAsk: config.visionDuringAsk === true });
+  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, retentionMs: 3600000, visionDuringAsk: config.visionDuringAsk === true });
   const agent = scriptedAgent(answers);
   const { deep } = createConversationRuntime({ agent, config, selectedModels: {}, getSession: () => ({ watch, search: {}, inspector: {}, store: media }),
     onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });

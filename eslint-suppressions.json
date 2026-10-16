@@ -238,10 +238,7 @@
   },
   "core/session.cjs": {
     "complexity": {
-      "count": 7
-    },
-    "max-lines": {
-      "count": 1
+      "count": 6
     },
     "no-nested-ternary": {
       "count": 2

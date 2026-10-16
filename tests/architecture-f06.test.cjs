@@ -367,7 +367,6 @@ test('a media tool that does not end in time, cannot be started, or has no tempo
   // The block's own doing: refused as before, in the same words, and not sent again by its capture.
   answers.notWav = await f.send(block({ audio: Buffer.from('not wave').toString('base64') }));
   answers.notAnImage = await f.send(block({ frames: [{ atMs: 0, data: Buffer.from('not an image').toString('base64') }] }));
-  answers.incoherent = await f.send(block({ overlay: { cropped: 3, withheld: 0 } }));
   media.current = new RemoteMedia({ ffmpeg: f.fail });
   answers.toolRefused = await f.send(block());
   answers.notAnImage.value.error = answers.notAnImage.value.error.replace(/^.*(unsupported image format).*$/s, '$1');
@@ -375,7 +374,7 @@ test('a media tool that does not end in time, cannot be started, or has no tempo
   const invalid = error => ({ status: 400, value: { error, code: 'unclassified-error' } });
   assert.deepEqual({ ...answers, paths: JSON.stringify(answers).includes(os.tmpdir()), stored: await f.passages(), left: await dirs.left() }, {
     slow: unavailable('Préparation média trop longue.'), slowAgain: unavailable('Préparation média trop longue.'), absent: unavailable('Outil média indisponible.'), noRoom: unavailable('Espace temporaire média indisponible.'),
-    notWav: invalid('Audio WAV requis.'), notAnImage: invalid('unsupported image format'), incoherent: invalid('Déclaration d’images masquées incohérente.'), toolRefused: invalid('Préparation média échouée : boom'),
+    notWav: invalid('Audio WAV requis.'), notAnImage: invalid('unsupported image format'), toolRefused: invalid('Préparation média échouée : boom'),
     paths: false, stored: [], left: [] });
   // Nothing above cost the session its capture: the next block is prepared and stored.
   media.current = new RemoteMedia({ ffmpeg: f.write });

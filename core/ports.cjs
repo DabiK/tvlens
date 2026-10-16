@@ -6,8 +6,8 @@
  * @typedef {{atMs:number, dataUrl:string}} Frame
  * @typedef {{startMs:number,endMs:number,clip:Uint8Array,frames:Frame[],audio:Uint8Array|null}} CapturedSegment
  * @typedef {{summary:string,visual:string,audio:string,transcript:string,uncertainty?:string}} Observation
- * @typedef {{observe:(segment:object)=>Promise<{observation:Observation,cost?:number}>}} PerceptionPort
- * @typedef {{ask:(context:object)=>Promise<{answer:string,kind:'observation'|'explanation'|'insufficient',citations:string[],limits:string[],cost?:number}>}} AnswerPort
+ * @typedef {{observation:Partial<Observation>,cost?:number,metrics?:object,elapsedMs?:number,failed?:boolean,error?:string}} PerceptionResult
+ * @typedef {{transcribe:(segment:object)=>Promise<PerceptionResult>,observeVisual:(segment:object)=>Promise<PerceptionResult>}} PerceptionPort
  * @typedef {{put:(id:string,input:CapturedSegment)=>Promise<{bytes:number}>,read:(id:string)=>Promise<{frames:Frame[],audio:Uint8Array|null}>,remove:(id:string)=>Promise<void>}} MediaPort
  * put() resolves to the volume it stored; a refusal for lack of room rejects with code 'TVLENS_STORAGE_FULL'
  * before anything is written, and the session stops capture on that code without deleting anything.
@@ -61,12 +61,11 @@ module.exports = {};
  */
 
 /**
- * PerceptionPort optionally exposes transcribe(segment) and observeVisual(segment).
+ * PerceptionPort exposes transcribe(segment) and observeVisual(segment).
  * Both return {observation,cost?,metrics?,elapsedMs?}; visual receives the current
  * observation (including transcript) and returns an observation patch. The core
  * serializes each lane, bounds each backlog, and passes a close cancellation signal.
- * Legacy observe-only adapters keep the serial behavior. Partial observations
- * retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
+ * Partial observations retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
  * A transcribe() result carrying failed:true is counted (coverage.audioError) and flagged on the passage
  * (audioFailed, listed in audioGaps); statuses stay unchanged so that image-only passages still complete.
  * Every published change of an observation increments the passage revision; reception,

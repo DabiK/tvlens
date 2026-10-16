@@ -103,11 +103,7 @@ test('an error its adapter did not mark stays final at the first call, and a ses
     assert.deepEqual(f.watch.snapshot().coverage, { passages: 1, ...BASE, visionError: 1 }, error.message);
     assert.deepEqual([f.watch.segments[0].visionStatus, f.watch.segments[0].visionError, f.reads.length], ['error', error.message, 2]);
   }
-  // The single lane of an adapter that only knows observe() is not part of this: it fails as it did.
-  let observed = 0;
-  const legacy = fixture({ observe: async () => { observed++; throw passing(); } });
-  await legacy.add(0);
-  assert.deepEqual([observed, legacy.watch.segments[0].status, legacy.watch.snapshot().coverage.visionRetried], [1, 'error', undefined]);
+
 });
 
 test('nothing is described again once the session is ending, read-only or closed', async () => {

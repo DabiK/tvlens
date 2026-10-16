@@ -1,4 +1,3 @@
-const { resolveTemporalTarget } = require('./temporal-target.cjs');
 const { completeTopicSummary } = require('./topic-summary.cjs');
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
@@ -23,38 +22,17 @@ const restorable = saved => Boolean(saved) && typeof saved === 'object' && typeo
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
 // place on the session clock, replayable and unanalysed; nothing is analysed again.
 const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
-// Images of a block that the capture cropped or withheld because a TV Lens card was on screen, as it
-// declared them (0 to 5 each). Anything else, or nothing hidden, is no declaration: the passage is then
-// left exactly as it was.
-const hiddenCount = value => Number.isInteger(value) && value >= 0 && value <= 5;
-function declaredOverlay(ingest) {
-  const overlay = ingest && typeof ingest === 'object' && !Array.isArray(ingest) ? ingest.overlay : null;
-  if (!overlay || typeof overlay !== 'object' || !hiddenCount(overlay.cropped) || !hiddenCount(overlay.withheld) || !(overlay.cropped + overlay.withheld)) return null;
-  return { cropped: overlay.cropped, withheld: overlay.withheld };
-}
-// Said by the session itself, never left to the model: a scene whose bottom was hidden is not presented
-// as seen whole. `images` is what reached the passage; the withheld ones were sampled too. Added once,
-// ahead of whatever uncertainty the description already carries: where that text is later cut to a
-// length (context of the next passages, cards), the sentence is what stays.
-function withOverlayNote(observation, segment, images) {
-  const overlay = segment.ingest?.overlay;
-  if (!overlay || !observation) return observation;
-  const hidden = overlay.cropped + overlay.withheld, sampled = Math.max(hidden, (Number.isInteger(images) ? images : 0) + overlay.withheld);
-  const note = `Bas de l’image masqué par un affichage TV Lens sur ${hidden} image(s) sur ${sampled} : la scène n’a pas été vue en entier.`;
-  const said = typeof observation.uncertainty === 'string' ? observation.uncertainty.trim() : '';
-  return said.includes(note) ? observation : { ...observation, uncertainty: said ? `${note} ${said}` : note };
-}
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
   #questionPending = false;
   #questionIntakeClosed = false;
 
-  constructor({ id, now, perception, answer, media, archive, thumbnails, storage,
+  constructor({ id, now, perception, media, archive, thumbnails, storage,
     onChange = () => {}, onPublicationError = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
     // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
     // carries null for "no expiry" (JSON has no Infinity): it is normalised here, never used in arithmetic.
     retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
-    Object.assign(this, { id, now, perception, answer, media, archive, thumbnails, storage,
+    Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
       onChange, onPublicationError, retentionMs, maxPending, visionDuringAsk });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
@@ -62,7 +40,6 @@ class WatchSession {
     // Raised by a host that is ending the session and still waits for a write under way: from then on no
     // analysis is started, since close() would abandon it at once.
     this.ending = false;
-    this.splitPerception = typeof perception.transcribe === 'function' && typeof perception.observeVisual === 'function';
     // Counted where the event happens, never recomputed from the passages. Two more only exist once they
     // happened: visionRetried, the second descriptions started, and visionRecovered, those that succeeded.
     // visionError stays what was lost for good.
@@ -134,8 +111,6 @@ class WatchSession {
       if (empty) { segment.available = false; segment.mediaReason = UNREADABLE; }
       const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
       if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
-      const overlay = declaredOverlay(input.ingest);
-      if (overlay) segment.ingest = { ...segment.ingest, overlay };
       try { await this.media.put(segment.id, input); }
       catch (error) {
         // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
@@ -173,14 +148,16 @@ class WatchSession {
   // Overload sheds the transcription only: the passage keeps its place in the lane, so its images
   // still reach vision in observation order. Past a bounded lane the oldest passage is dropped whole.
   shed() {
-    if (this.splitPerception) {
-      const waiting = this.queue.filter(s => s.audioStatus !== 'skipped');
-      for (const s of waiting.slice(0, Math.max(0, waiting.length - this.maxPending))) { s.audioStatus = 'skipped'; this.losses.audioSkipped++; }
-      while (this.queue.length > this.maxPending * 3) {
-        const dropped = this.queue.shift();
-        Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped', visionSkipReason: 'backlog' }); this.losses.visionSkippedBacklog++;
-      }
-    } else while (this.queue.length > this.maxPending) { this.queue.shift().status = 'skipped'; this.losses.audioSkipped++; }
+    const waiting = this.queue.filter(s => s.audioStatus !== 'skipped');
+    for (const s of waiting.slice(0, Math.max(0, waiting.length - this.maxPending))) {
+      s.audioStatus = 'skipped';
+      this.losses.audioSkipped++;
+    }
+    while (this.queue.length > this.maxPending * 3) {
+      const dropped = this.queue.shift();
+      Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped', visionSkipReason: 'backlog' });
+      this.losses.visionSkippedBacklog++;
+    }
   }
 
   // A question is the cause of a skip only while it alone keeps the lane waiting.
@@ -215,7 +192,7 @@ class WatchSession {
         if (stored(segment) && segment.endMs < cutoff) {
           segment.available = false; segment.mediaReason = 'expired';
           // Still waiting for its transcription: neither lane will ever see it.
-          if (this.splitPerception && this.queue.includes(segment)) {
+          if (this.queue.includes(segment)) {
             if (segment.audioStatus !== 'skipped') this.losses.audioExpired++;
             segment.visionStatus = 'expired'; this.losses.visionExpired++;
           }
@@ -250,37 +227,10 @@ class WatchSession {
     return this.pruneChain;
   }
 
-  async drain() {
+  drain() {
     if (this.closed || this.ending) return;
-    if (this.splitPerception) { this.drainAudio(); this.drainVision(); return; }
-    if (this.running || this.asking || !this.queue.length) return;
-    this.running = true;
-    const segment = this.queue.shift();
-    segment.status = 'analyzing'; this.emit();
-    try {
-      const evidence = await this.media.read(segment.id);
-      if (this.closed) return;
-      this.apiCalls++;
-      const context = perceptionContext(this, segment);
-      const result = await this.perception.observe({ ...segment, ...evidence, context, signal:this.controller.signal, lightweight:this.queue.length>0, onProgress:message=>{segment.stage=message;this.emit();} });
-      if (this.closed) return;
-      segment.analysisMs=result.elapsedMs;segment.metrics=result.metrics;segment.stage=null;
-      segment.observation = withOverlayNote(result.observation, segment, evidence?.frames?.length); segment.revision++;
-      segment.topicSummary = completeTopicSummary(segment, result, context);
-      segment.status = 'ready';
-      this.apiCost += result.cost || 0;
-      this.lastError = null;
-    } catch (error) {
-      if (this.closed) return;
-      segment.status = 'error';
-      segment.error = error.message;
-      this.lastError = error.message;
-    } finally {
-      this.running = false;
-      // Published, and the next passage started, before waiting for persistence: a slow disk holds back
-      // neither what the viewer sees nor the analysis.
-      if (!this.closed) { this.emit(); this.drain(); await this.persist(); }
-    }
+    this.drainAudio();
+    this.drainVision();
   }
 
   // Each lane owns one call and a bounded FIFO of segment references, never raw media.
@@ -364,7 +314,7 @@ class WatchSession {
         result = await describe();
       }
       if (this.closed) return;
-      segment.observation = withOverlayNote({ ...segment.observation, ...result.observation }, segment, evidence?.frames?.length);
+      segment.observation = { ...segment.observation, ...result.observation };
       segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
       segment.visionPublishedMs = this.now(); segment.revision++;
@@ -397,47 +347,6 @@ class WatchSession {
     this.controller.abort(new Error('Session fermée.'));
     this.queue = []; this.visionQueue = [];
     await this.persist();
-  }
-
-  async ask(question) {
-    if (typeof question !== 'string' || !question.trim() || question.length > 2000) throw new Error('Écris une question de 1 à 2 000 caractères.');
-    if (this.asking) throw new Error('Une réponse est déjà en cours.');
-    this.setQuestionPending(true);
-    try {
-      await this.prune();
-      const anchorMs = this.segments.at(-1)?.endMs ?? this.history.at(-1)?.endMs ?? 0;
-      const context = this.segments.map(({ topicSummary, ...s }) => ({ ...s, observation: s.observation ? { ...s.observation } : null }));
-      if (!context.length && !this.history.length) return { answer: 'Je n’ai pas encore de passage enregistré. Laisse la vidéo jouer quelques secondes.', kind: 'insufficient', citations: [], limits: [] };
-      const targetMs = resolveTemporalTarget(question, [...this.history, ...context], anchorMs);
-      const focusIds = targetMs === undefined ? null : [...this.history, ...context].filter(s => targetMs >= s.startMs && targetMs <= s.endMs).map(s => s.id);
-      const chosen = selectEvidence(question, context.filter(stored), anchorMs, targetMs);
-      const evidence = [];
-      for (const segment of chosen) {
-        try { evidence.push({ ...segment, ...await this.media.read(segment.id) }); }
-        catch { /* Retention can expire during a question: text context remains explicit. */ }
-      }
-      this.apiCalls++; this.emit();
-      const result = await this.answer.ask({ question: question.trim(), anchorMs, targetMs, focusIds, context, history: this.history.slice(-120).map(({ topicSummary, ...s }) => s), evidence, conversation: this.questions.slice(-4) });
-      this.apiCost += result.cost || 0;
-      const examined = new Set(evidence.map(s => s.id));
-      const known = new Map([...context.filter(s => hasUsableObservation(s) || examined.has(s.id)), ...this.history.filter(hasUsableObservation)].map(s => [s.id, s]));
-      const citations = [...new Set(result.citations)].filter(id => known.has(id) && (!focusIds || focusIds.includes(id))).map(id => {
-        const segment = known.get(id);
-        return { id, startMs: segment.startMs, endMs: segment.endMs, available: Boolean(segment.available) && this.now() - segment.endMs <= this.retentionMs };
-      });
-      const response = { question: question.trim(), answer: result.answer, kind: result.kind, limits: result.limits, citations, atMs: this.now() };
-      // A confident-looking answer with invented/missing evidence must not be presented as grounded.
-      if (!citations.length && result.kind === 'observation') {
-        response.kind = 'insufficient';
-        response.answer = 'Je ne peux pas relier cette réponse à un passage observé. Reformule la question ou attends que le contexte soit analysé.';
-      }
-      this.questions.push(response);
-      // An explicit question is saved even on a reopened archive.
-      await this.persist(true);
-      return response;
-    } finally {
-      this.setQuestionPending(false);
-    }
   }
 
   async resume() {
@@ -523,9 +432,9 @@ class WatchSession {
     if (this.closed) return;
     publishState(() => this.onChange(this.snapshot()), this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
   }
-  async persist(explicit = false) {
+  async persist() {
     // Opening, pausing or closing a reopened archive leaves its files untouched.
-    if (this.readOnly && !explicit) return;
+    if (this.readOnly) return;
     // Never rejects: an analysis or a pause must not fail for it. A host that needs the state confirmed on
     // disk, as before saying a session archived, asks its archive (see the shared runtime).
     let refused = null;
@@ -540,18 +449,4 @@ class WatchSession {
   }
 }
 
-function selectEvidence(question, segments, anchorMs, targetMs) {
-  const target = targetMs ?? resolveTemporalTarget(question, segments, anchorMs);
-  if (target !== undefined) return segments.filter(s => target >= s.startMs && target <= s.endMs).slice(0, 1);
-  const q = question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (/vient|maintenant|actuellement|dernier|cette scene|ce moment/.test(q)) return segments.slice(-1);
-  const stop = new Set(['quoi', 'quel', 'quelle', 'comment', 'pourquoi', 'dans', 'avec', 'elle', 'cette', 'cest', 'etait', 'avait', 'plus', 'moins', 'estce', 'peux', 'vous', 'nous', 'film']);
-  const terms = q.match(/[a-z]{4,}/g)?.filter(t => !stop.has(t)) || [];
-  const ranked = segments.map(s => {
-    const text = JSON.stringify(s.observation || {}).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    return { segment: s, score: terms.filter(t => text.includes(t)).length };
-  }).sort((a, b) => b.score - a.score || b.segment.endMs - a.segment.endMs);
-  return ranked.slice(0, 2).map(item => item.segment);
-}
-
-module.exports = { WatchSession, selectEvidence, restorable, recoveredPassage };
+module.exports = { WatchSession, restorable, recoveredPassage };

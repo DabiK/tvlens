@@ -279,7 +279,7 @@ function benchAllLive() {
   const time = (fn, repeats = 9) => { const s = []; for (let i = 0; i < repeats; i++) { const t = performance.now(); fn(); s.push(performance.now() - t); } s.sort((a, b) => a - b); return round(s[Math.floor(s.length / 2)]); };
   const rows = [];
   for (const count of [450, 900]) for (const mode of ['archive-apres-5-min', 'tout-en-segments']) {
-    const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, answer: {}, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
+    const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
     const live = mode === 'tout-en-segments' ? count : Math.min(count, 37);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     const snapshot = watch.snapshot();
