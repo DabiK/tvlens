@@ -19,6 +19,7 @@ const {
   subAgentRefusal,
   childEnvironment,
   createContext,
+  diagnoseCleanup,
   inspectThread,
   assertRole,
   itemAllowed,
@@ -88,6 +89,7 @@ class CodexSessionClient {
     // like the product path.
     rpcFactory = spawnRpc,
     features,
+    onCleanupDiagnostic = finding => report(`TVLens : arbre privé Codex conservé : ${JSON.stringify(finding)}`),
     // Reversible settings. environmentAccess restores the default execution environment of a thread.
     // confinementMode comes from the environment only, never from a host:
     //   "enforce" (default): a connection is refused when the App Server contradicts the confinement
@@ -116,6 +118,7 @@ class CodexSessionClient {
       baseInstructions,
       quota,
       maxRotations,
+      onCleanupDiagnostic,
       rpcFactory,
       transportDouble,
       // Asking the binary which flags it knows means running it: a transport double has none to ask.
@@ -616,6 +619,9 @@ class CodexSessionClient {
       }
       try {
         if (left.dir) await fs.rm(left.dir, { recursive: true, force: true });
+      } catch (error) {
+        diagnoseCleanup(this.onCleanupDiagnostic, left.dir, "rm", error);
+        throw error;
       } finally {
         if (this.leaving === left) this.leaving = null;
       }

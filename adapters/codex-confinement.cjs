@@ -7,6 +7,11 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const { execFile } = require("node:child_process");
+const {
+  sweepStaleContexts,
+  diagnoseCleanup,
+  TVLENS_CODEX_CLEANUP_REFUSED,
+} = require("./codex-context-cleanup.cjs");
 const TVLENS_CODEX_ROLE_REFUSED = "TVLENS_CODEX_ROLE_REFUSED";
 
 // One list for the App Server roles and `codex exec`. The model catalog decides most of the tool
@@ -228,11 +233,6 @@ function childEnvironment(parent = process.env, { codexHome, home } = {}) {
   return env;
 }
 
-const CONTEXT_PREFIXES = [
-  "tvlens-codex-session-",
-  "tvlens-verify-",
-  "tvlens-codex-probe-",
-];
 // One private tree per Codex process. The model's working directory (`context`) stays empty and is
 // neither the credential directory (`codexHome`, links to the real auth files) nor HOME (`home`).
 async function createContext(prefix, authHome, root = os.tmpdir()) {
@@ -271,51 +271,6 @@ async function createContext(prefix, authHome, root = os.tmpdir()) {
     await fs.rm(dir, { recursive: true, force: true });
     throw error;
   }
-}
-
-async function ownerAlive(dir) {
-  try {
-    const pid = Number(await fs.readFile(path.join(dir, "owner"), "utf8"));
-    if (!Number.isInteger(pid) || pid <= 0) return false;
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    // EPERM: the process exists but belongs to someone else.
-    return error?.code === "EPERM";
-  }
-}
-// A crash leaves private trees behind, each holding links to the credentials. Hosts call this once
-// at start. A tree whose owner process is alive is never touched, whatever its age. Never throws;
-// resolves to the names removed.
-async function sweepStaleContexts(
-  root = os.tmpdir(),
-  maxAgeMs = 24 * 60 * 60 * 1000,
-  now = Date.now(),
-) {
-  const removed = [];
-  let names = [];
-  try {
-    names = await fs.readdir(root);
-  } catch {
-    return removed;
-  }
-  for (const name of names) {
-    if (!CONTEXT_PREFIXES.some((prefix) => name.startsWith(prefix))) continue;
-    const dir = path.join(root, name);
-    try {
-      const stat = await fs.lstat(dir);
-      if (!stat.isDirectory() || now - stat.mtimeMs < maxAgeMs) continue;
-      if (await ownerAlive(dir)) continue;
-      // Removes the links, never the credential files they point to.
-      await fs.rm(dir, { recursive: true, force: true });
-      removed.push(name);
-    } catch {
-      // Un candidat disparu ou non supprimable ne doit pas empêcher le balayage des suivants.
-      // Seules les suppressions réussies sont rendues dans removed ; un résidu peut rester,
-      // avec ses liens privés, jusqu'à un autre balayage. Le refus n'est pas diagnostiqué ici.
-    }
-  }
-  return removed;
 }
 
 // Reads the App Server's answer to thread/start. `confined` is false when Codex states something
@@ -473,6 +428,8 @@ function openedPages(item) {
 
 module.exports = {
   TVLENS_CODEX_ROLE_REFUSED,
+  TVLENS_CODEX_CLEANUP_REFUSED,
+  diagnoseCleanup,
   DISABLED_FEATURES,
   ENABLED_FEATURES,
   SUB_AGENT_CONTROLS,

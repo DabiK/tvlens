@@ -27,6 +27,7 @@ const { SessionLibrary, sessionTitle } = require('../adapters/session-library.cj
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 const { sweepStaleContexts } = require('../adapters/codex-confinement.cjs');
+const { cleanupCodexContexts } = require('../runtime/codex-cleanup.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { UsageLedger } = require('../adapters/trial-budget.cjs');
@@ -62,7 +63,7 @@ app.whenReady().then(async () => {
   sessionsRoot = path.join(app.getPath('userData'), 'sessions');
   // A crash leaves private Codex trees behind, each holding links to the credentials. Swept once, off the
   // start path: it neither delays nor fails the launch. Saved sessions are never cleaned at start any more.
-  Promise.resolve().then(() => sweepStaleContexts()).catch(() => {});
+  void cleanupCodexContexts({ sweep: sweepStaleContexts, root: os.tmpdir(), log: line => console.error(line) });
   const arg = process.argv.find(x => x.startsWith('--config='))?.slice('--config='.length);
   const configPath = arg || (!app.isPackaged && (!smoke || liveInspection) ? path.join(__dirname, '..', '.env.local') : undefined);
   // The simulated and the fallback configuration keep the production default: a question may run five

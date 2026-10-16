@@ -90,9 +90,20 @@ function bridgeChannels() {
   return { invoked: [...new Set(bridge.invoked.map(call => call.channel))].sort(), listened: [...bridge.listeners.keys()].sort() };
 }
 
+// Le balayeur neutralisé reçoit les dépendances du raccord partagé sans accéder à cette racine.
+function assertStartupSweep(sweeps) {
+  assert.equal(sweeps.length, 1, 'only the injected sweep is called, once');
+  const args = sweeps[0];
+  assert.equal(args.length, 4);
+  assert.deepEqual(args.slice(0, 3), [os.tmpdir(), undefined, undefined]);
+  assert.deepEqual(Object.keys(args[3]), ['onDiagnostic']);
+  assert.equal(typeof args[3].onDiagnostic, 'function');
+  return args;
+}
+
 test('every bridge call has its handler, every event its listener, and the host no longer purges, preempts or knows Auto', async t => {
   const { launch } = await stage(t), sweeping = deferred(), sweepEntered = deferred();
-  t.after(() => sweeping.resolve());
+  t.after(() => sweeping.resolve([]));
   const host = await launch({
     shortcuts: true, sweep: (...args) => { sweepEntered.resolve(args); return sweeping.promise; },
     wrap: { verifier: adapter => ({ ...adapter, verify: async input => {
@@ -102,11 +113,15 @@ test('every bridge call has its handler, every event its listener, and the host 
     } }) },
   });
   assert.equal(host.started, true, host.failures.join(' '));
-  assert.deepEqual(await bounded(sweepEntered.promise), [], 'the controlled Codex sweep receives no real root');
-  assert.deepEqual(host.sweeps, [[]], 'one Codex sweep at start, without delaying the window');
+  const sweepArgs = await bounded(sweepEntered.promise);
+  assert.deepEqual(host.sweeps, [sweepArgs], 'the controlled sweep starts without delaying the window');
+  assertStartupSweep(host.sweeps);
   sweeping.reject(Object.assign(new Error('Balayage refusé.'), { code: 'EACCES' }));
   assert.equal(await host.state(), null, 'a failed Codex sweep does not fail the host');
-  assert.deepEqual(host.failures, []);
+  await waitUntil(() => host.failures.length === 1, 'the refused sweep reaches the host journal');
+  assert.deepEqual(host.failures.map(line => JSON.parse(line)), [{
+    code: 'TVLENS_CODEX_CLEANUP_FAILED', candidate: os.tmpdir(), operation: 'sweep', systemCode: 'EACCES',
+  }]);
   const { invoked, listened } = bridgeChannels(), handled = [...host.handlers.keys()].sort();
   assert.deepEqual(invoked, handled, 'bridge calls and host handlers are the same set: no dead channel on either side');
   // Les deux raccourcis sont les callbacks enregistrés auprès de notre doublure, sans accès au clavier du Mac.
@@ -128,7 +143,7 @@ test('every bridge call has its handler, every event its listener, and the host 
   await host.deleteSession(session.id);
   await waitUntil(() => host.sent.includes('storage:state'), 'storage published after deletion');
   await host.quit();
-  assert.deepEqual(host.sweeps, [[]], 'session commands and quit do not repeat the initial Codex sweep');
+  assert.deepEqual(host.sweeps, [sweepArgs], 'session commands and quit do not repeat the initial Codex sweep');
   const sent = [...new Set(host.sent)].sort();
   assert.deepEqual(sent, listened, 'host events and bridge listeners are the same set');
   for (const channel of [...handled, ...sent]) assert.doesNotMatch(channel, /^auto:/, channel);
@@ -401,7 +416,7 @@ test('a Mac session is archived instead of purged, listed, reopened read-only wi
   assert.deepEqual([config.questionTimeoutMs, config.questionQueueLimit, config.retention, config.retentionMs], [300000, 5, 'until-deleted', null]);
   assert.equal(await host.state(), null);
   assert.deepEqual((await host.sessions()).sessions, [], 'nothing is created, and nothing swept, by starting the app');
-  assert.deepEqual(host.sweeps, [[]], 'stale Codex contexts are swept once at start, in the default temporary directory');
+  assertStartupSweep(host.sweeps);
   // The simulated verifier declares the page it cites as opened, as a real one does: its source survives the
   // strict filter instead of being discarded as a recollection of the model.
   const verifying = host.verify('Apollo 11 a aluni en 1970.');

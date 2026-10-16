@@ -1,7 +1,7 @@
 ---
 id: T198
 titre: Diagnose a private Codex tree left behind after a refused cleanup
-statut: a-faire
+statut: termine
 bloque_par: T199
 adr: non
 installe: non
@@ -116,3 +116,63 @@ Le code actuel confond une lecture de propriétaire refusée avec un propriétai
 prudente du candidat incertain applique ici l'invariant de non-suppression, sans étendre le balayage.
 
 ## Journal
+
+### Exploration Codex
+
+- Lecture des règles, de la skill, des modules, de leurs appelants/tests et des ADR 0005, 0022 et 0032.
+- `git status --short` et `git diff -- docs/travail/tickets/198-diagnose-a-private-codex-tree-left-behind-after-a-refused.md` : statut déjà en-cours ; deux répertoires non suivis hors périmètre.
+- Exploration et absence d'écart prévues consignées dans `.harness-state/tickets/T198/`.
+
+### Diagnostics et conservation prudente
+
+- `node --test --test-name-pattern='a refused stale tree removal' tests/codex-confinement.test.cjs` : rouge observé (diagnostic absent), puis vert, 1/1.
+- `node --test --test-name-pattern='refused candidate metadata|only ESRCH proves|invalid owner|candidate disappearing|failed diagnostic never' tests/codex-confinement.test.cjs` : rouge observé sur les lectures et sondes incertaines, puis commande élargie aux suppressions et exclusions nominales : 15/15 verts.
+- `node --test --test-name-pattern='shared closings keep|refused client cleanup reaches' tests/codex-connect-race.test.cjs` : 2 rouges sur les diagnostics absents, puis 2/2 verts. Confirmation retenue, réponse false, suppression unique partagée et erreur EACCES d'origine conservée malgré un journal qui lève.
+- `node --test tests/codex-cleanup.test.cjs` : 5 rouges sur les assertions avec une façade initialement sans comportement, puis 5/5 verts avec le vrai balayeur injecté, racines isolées et journaux synchrones/asynchrones défaillants.
+- Sorties rouge/vert conservées dans `.harness-state/tickets/T198/*-red.log` et `*-green.log`.
+
+### Contrôles ciblés et lisibilité
+
+- Premier `node scripts/check.mjs --changed` : 45/45 tests verts, contrôle rouge au lint (complexité du balayage et taille du fichier). Traitement d'un candidat séparé du parcours ; listes de constantes regroupées. Aucun gel ni plancher modifié.
+- `node_modules/.bin/eslint adapters/codex-confinement.cjs adapters/codex-session-client.cjs runtime/codex-cleanup.cjs tests/codex-confinement.test.cjs tests/codex-connect-race.test.cjs tests/codex-cleanup.test.cjs` : sortie 0, aucun diagnostic.
+- `node --test --test-concurrency=1 tests/codex-confinement.test.cjs tests/codex-connect-race.test.cjs tests/codex-abandoned-turn.test.cjs tests/codex-thread-rotation.test.cjs tests/codex-cleanup.test.cjs` : 60/60 verts, aucun ignoré.
+
+### Raccord Mac et contrôle complet initial
+
+- `node scripts/check.mjs --changed` après découpage : vert, 45/45 tests ; règles, format, lint, gel et cliquet verts.
+- Premier `node scripts/check.mjs` complet : règles/format/lint/gel/cliquet verts ; 1 977/1 979 tests JS verts, 22/22 Python verts. Deux assertions Mac attendaient les anciens arguments vides du balayeur.
+- `node --test --test-name-pattern='every bridge call has its handler|a Mac session is archived instead' tests/mac-ipc-contract.test.cjs` : 2/2 rouges reproduits sur ce contrat d'arguments, puis 2/2 verts après adaptation explicite au raccord injecté.
+- Le banc vérifie toujours le balayeur neutralisé unique, le démarrage sans attendre sa réponse, l'absence de nouvel appel pendant la session/fermeture, et désormais la racine, le callback de diagnostic et le refus effectivement journalisé. Adaptation consignée dans `ecarts.md` ; aucune preuve retirée.
+
+### Validation finale Codex
+
+- `node scripts/check.mjs --changed` : vert ; règles, format, lint, gel et cliquet verts ; 75/75 tests JS sur les quatre fichiers modifiés.
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 1 979/1 979 tests JS sur 128 fichiers et 22/22 tests Python. Les trois bancs d'hôte cités restent actifs et leurs balayeurs neutralisés restent appelés.
+- Le diagnostic stable indique l'identité locale du candidat, l'opération et le code système ; aucune erreur brute ni contenu d'authentification n'est ajouté au journal ou aux réponses.
+- Les propriétaires incertains restent protégés ; une fermeture partagée conserve son erreur initiale ; les deux hôtes utilisent le raccord partagé avec leur balayeur injecté.
+- Verdict `TERMINÉ` remis dans `.harness-state/tickets/T198/verdict.json`. Aucun commit ni push ; la boucle garde la relecture et l'intégration.
+
+### Reprise après relecture 1
+
+- Rapport, ticket/journal, écarts, `git status --short` et diff relus ; les deux constats mineurs sont retenus.
+- Extraction prévue dans `adapters/codex-context-cleanup.cjs`, déclarée dans `ecarts.md` conformément à la correction demandée ; les exports du confinement et les coutures des hôtes restent conservés.
+- Le banc de refus utilisera une racine contenant `private` pour reproduire le second constat sans dépendre du chemin temporaire de la machine.
+
+### Correction des deux constats mineurs
+
+- Avant correction, les cinq suites ciblées en séquentiel restent vertes : 60/60 (`correction-1-baseline.log`).
+- `node --test --test-name-pattern='a refused stale tree removal' tests/codex-confinement.test.cjs` avec une racine contenant `private` : rouge observé sur l'ancienne assertion, puis 1/1 vert en visant `contains private details`. La comparaison exacte du diagnostic reste active.
+- Restauration des listes : le contrôle rapide du hook puis `node_modules/.bin/eslint adapters/codex-confinement.cjs` signalent 409 lignes utiles, au-delà de 400.
+- Extraction sans changement de comportement vers `adapters/codex-context-cleanup.cjs` : balayage, préfixes et diagnostic. Réexports conservés par le confinement ; `ENVIRONMENT_KEYS` retrouve sa présentation initiale, et les préfixes déplacés gardent une entrée par ligne.
+- `node_modules/.bin/eslint adapters/codex-confinement.cjs adapters/codex-context-cleanup.cjs` : sortie 0, aucun diagnostic. Aucun gel ou plancher modifié.
+
+### Validation après correction de la relecture 1
+
+- `node --test --test-concurrency=1 tests/codex-confinement.test.cjs tests/codex-connect-race.test.cjs tests/codex-abandoned-turn.test.cjs tests/codex-thread-rotation.test.cjs tests/codex-cleanup.test.cjs` : 60/60 verts après extraction, aucun ignoré (`correction-1-targeted-tests.log`).
+- `node scripts/check.mjs --changed` : vert ; règles, format, lint, gel et cliquet verts ; 75/75 tests JS (`correction-1-check-changed.log`).
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 1 979/1 979 tests JS sur 128 fichiers et 22/22 tests Python (`correction-1-check-full.log`). Les trois bancs d'hôte restent actifs.
+- Les deux mineurs sont corrigés sans contestation ni retrait de preuve. Nouveau verdict `TERMINÉ` remis à la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T198/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 2 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

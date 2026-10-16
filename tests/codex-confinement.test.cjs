@@ -1014,3 +1014,135 @@ test('orphan Codex trees are swept by age, never a live owner, a recent tree or 
   assert.equal(await fs.readFile(credential, 'utf8'), 'secret', 'the links are removed, never the credential they point to');
   assert.deepEqual(await sweepStaleContexts(path.join(root, 'missing')), []);
 });
+
+async function staleTrees(t, names) {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-test-private-cleanup-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const now = 1800000000000;
+  const old = new Date(now - 25 * 3600000);
+  const credential = path.join(root, 'auth.json');
+  await fs.writeFile(credential, 'private credential');
+  for (const name of names) {
+    const dir = path.join(root, name);
+    await fs.mkdir(path.join(dir, 'home'), { recursive: true });
+    await fs.symlink(credential, path.join(dir, 'home', 'auth.json'));
+    await fs.writeFile(path.join(dir, 'owner'), '12345');
+    await fs.utimes(dir, old, old);
+  }
+  const dead = () => { throw Object.assign(Error('dead owner'), { code: 'ESRCH' }); };
+  return { root, now, credential, dead };
+}
+
+test('a refused stale tree removal is diagnosed and does not stop the next candidate', async t => {
+  const names = ['tvlens-codex-session-refused', 'tvlens-verify-abandoned'];
+  const { root, now, credential, dead } = await staleTrees(t, names);
+  const diagnostics = [];
+  const refused = path.join(root, names[0]);
+  const fileSystem = {
+    ...fs,
+    readdir: async () => names,
+    rm: async (dir, options) => {
+      if (dir === refused) throw Object.assign(Error('contains private details'), { code: 'EACCES' });
+      return fs.rm(dir, options);
+    },
+  };
+  const removed = await sweepStaleContexts(root, undefined, now, {
+    fileSystem, probe: dead, onDiagnostic: finding => diagnostics.push(finding),
+  });
+  assert.deepEqual(diagnostics, [{
+    code: 'TVLENS_CODEX_CLEANUP_REFUSED', candidate: refused, operation: 'rm', systemCode: 'EACCES',
+  }]);
+  assert.deepEqual(removed, [names[1]]);
+  assert.equal(await fs.readFile(path.join(refused, 'owner'), 'utf8'), '12345');
+  assert.equal(await fs.readlink(path.join(refused, 'home', 'auth.json')), credential);
+  await assert.rejects(fs.access(path.join(root, names[1])), { code: 'ENOENT' });
+  assert.equal(await fs.readFile(credential, 'utf8'), 'private credential');
+  assert.ok(!JSON.stringify(diagnostics).includes('contains private details'));
+});
+
+test('refused candidate metadata and owner reads preserve the tree and name the failed operation', async t => {
+  for (const [method, operation] of [['lstat', 'lstat'], ['readFile', 'read-owner']]) {
+    await t.test(method, async t => {
+      const name = 'tvlens-codex-session-unreadable';
+      const { root, now, dead } = await staleTrees(t, [name]);
+      const diagnostics = [];
+      const fileSystem = { ...fs, [method]: async () => { throw Object.assign(Error('refused'), { code: 'EACCES' }); } };
+      assert.deepEqual(await sweepStaleContexts(root, undefined, now, {
+        fileSystem, probe: dead, onDiagnostic: finding => diagnostics.push(finding),
+      }), []);
+      assert.deepEqual(diagnostics, [{
+        code: 'TVLENS_CODEX_CLEANUP_REFUSED', candidate: path.join(root, name), operation, systemCode: 'EACCES',
+      }]);
+      await fs.access(path.join(root, name, 'home', 'auth.json'));
+    });
+  }
+});
+
+test('only ESRCH proves a probed owner dead while uncertain probes preserve and diagnose the tree', async t => {
+  for (const code of ['EPERM', 'EIO', 'ENOENT', null]) {
+    await t.test(String(code), async t => {
+      const name = 'tvlens-verify-uncertain';
+      const { root, now } = await staleTrees(t, [name]);
+      const diagnostics = [];
+      const probe = pid => {
+        assert.equal(pid, 12345);
+        throw Object.assign(Error('private process information'), { code });
+      };
+      const removed = await sweepStaleContexts(root, undefined, now, { probe, onDiagnostic: finding => diagnostics.push(finding) });
+      assert.deepEqual(removed, []);
+      if (code === 'EPERM') assert.deepEqual(diagnostics, []);
+      else assert.deepEqual(diagnostics, [{
+        code: 'TVLENS_CODEX_CLEANUP_REFUSED', candidate: path.join(root, name), operation: 'probe-owner', systemCode: code || 'UNKNOWN',
+      }]);
+      await fs.access(path.join(root, name));
+    });
+  }
+});
+
+test('an invalid owner cannot prove a tree abandoned', async t => {
+  const name = 'tvlens-verify-invalid-owner';
+  const { root, now } = await staleTrees(t, [name]);
+  await fs.writeFile(path.join(root, name, 'owner'), 'not a pid');
+  const diagnostics = [];
+  assert.deepEqual(await sweepStaleContexts(root, undefined, now, {
+    probe: () => assert.fail('an invalid pid must never be probed'), onDiagnostic: finding => diagnostics.push(finding),
+  }), []);
+  assert.deepEqual(diagnostics, [{
+    code: 'TVLENS_CODEX_CLEANUP_REFUSED', candidate: path.join(root, name), operation: 'read-owner', systemCode: 'INVALID_OWNER',
+  }]);
+  await fs.access(path.join(root, name));
+});
+
+test('a candidate disappearing during inspection or removal is neither a residue nor a successful removal', async t => {
+  for (const operation of ['lstat', 'rm']) {
+    await t.test(operation, async t => {
+      const name = 'tvlens-codex-probe-disappeared';
+      const { root, now, dead } = await staleTrees(t, [name]);
+      const diagnostics = [];
+      const fileSystem = { ...fs, [operation]: async dir => {
+        await fs.rm(dir, { recursive: true });
+        throw Object.assign(Error('already gone'), { code: 'ENOENT' });
+      } };
+      assert.deepEqual(await sweepStaleContexts(root, undefined, now, {
+        fileSystem, probe: dead, onDiagnostic: finding => diagnostics.push(finding),
+      }), []);
+      assert.deepEqual(diagnostics, []);
+      await assert.rejects(fs.access(path.join(root, name)), { code: 'ENOENT' });
+    });
+  }
+});
+
+test('a failed diagnostic never stops the remaining stale tree removals', async t => {
+  const names = ['tvlens-verify-refused', 'tvlens-verify-removable'];
+  const { root, now, dead } = await staleTrees(t, names);
+  let diagnosed = 0;
+  const fileSystem = { ...fs, readdir: async () => names, rm: async (dir, options) => {
+    if (dir === path.join(root, names[0])) throw Object.assign(Error('refused'), { code: 'EPERM' });
+    return fs.rm(dir, options);
+  } };
+  assert.deepEqual(await sweepStaleContexts(root, undefined, now, {
+    fileSystem, probe: dead, onDiagnostic: () => { diagnosed++; throw Error('journal unavailable'); },
+  }), [names[1]]);
+  assert.equal(diagnosed, 1);
+  await fs.access(path.join(root, names[0]));
+});
