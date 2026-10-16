@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { deferred, tick } = require('./helpers/wait.cjs');
 const { loadTvPage, KEYS } = require('./helpers/tv-page.cjs');
 const model = require('../tv/app/chat-model.js');
 const shared = require('../tv/app/text.js');
@@ -105,11 +106,6 @@ test('an older server uses the monotonic time first seen running and queue posit
   assert.equal(list.firstChild.querySelector('.job-progress').textContent, 'En cours · 0:23 / 1:30 max');
 });
 
-function deferred() {
-  let resolve, reject;
-  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
-  return { promise, resolve, reject };
-}
 const target = () => ({ sessionId: 's1', ms: 16000, range: { firstId: 'moment-1', lastId: 'moment-2' } });
 
 test('submission echoes and locks immediately, freezes its target and releases the IME before the response', async t => {
@@ -255,16 +251,16 @@ test('cancellation uses the current running job, otherwise the last queued, and 
   assert.equal(button.hidden, false);
   assert.equal(button.textContent, 'Annuler la question en cours');
   button.click();
-  await new Promise(setImmediate);
+  await tick();
   assert.deepEqual(cancelled, ['deep-2']);
   assert.equal(page.el('error').textContent, 'Cette question était déjà terminée.');
   view.receive(snapshot([jobs[0], jobs[2]]), 0);
   assert.equal(button.textContent, 'Retirer la question en file');
   button.click();
-  await new Promise(setImmediate);
+  await tick();
   assert.deepEqual(cancelled, ['deep-2', 'deep-3']);
   list.firstChild.querySelector('button').click();
-  await new Promise(setImmediate);
+  await tick();
   assert.deepEqual(cancelled, ['deep-2', 'deep-3', 'deep-1']);
   assert.equal(kicks, 3);
   button.focus();
@@ -359,7 +355,6 @@ test('connection changes only availability and never rebuild cards or reset thei
 const CONFIG = { url: 'https://inference.test', controlUrl: 'http://controller.test', token: 'fictitious-pairing-token' };
 const SESSION = '11111111-1111-4111-8111-111111111111';
 const reply = body => ({ status: 200, ok: true, headers: { get: () => '"revision"' }, json: async () => JSON.parse(JSON.stringify(body)) });
-const settle = () => new Promise(setImmediate);
 function paired(t) {
   let now = 0;
   const answer = deferred();
@@ -399,7 +394,7 @@ function paired(t) {
 
 test('the paired form delegates submission and a late old-session response cannot clear its text', async t => {
   const { page, answer, respond, held } = paired(t);
-  await settle();
+  await tick();
   page.el('dictate').click();
   page.keyboard(true);
   page.input('question', 'Ma question');
@@ -409,7 +404,7 @@ test('the paired form delegates submission and a late old-session response canno
   assert.equal(page.el('send').disabled, true);
   respond({ ...held, session: { ...held.session, id: '22222222-2222-4222-8222-222222222222' }, chat: { jobs: [] } });
   page.window.tvlensPanel.kick();
-  await settle();
+  await tick();
   assert.equal(echo.isConnected, false);
   answer.resolve(reply({ id: 'deep-2' }));
   await done;
@@ -420,12 +415,12 @@ test('the paired form delegates submission and a late old-session response canno
 
 test('a real 304 preserves the card children and clock while a chat body keeps the timeline', async t => {
   const { page, held, respond, advance } = paired(t);
-  await settle();
+  await tick();
   const panel = page.window.tvlensPanel;
   // The transport revalidates per URL: prime the chat resource before returning its 304.
   respond({ ...held, view: 'chat', timeline: undefined });
   panel.kick();
-  await settle();
+  await tick();
   const heading = page.el('conversation').firstChild.firstChild;
   const progress = page.el('conversation').querySelector('.job-progress');
   const timeline = panel.state().timeline;
@@ -433,7 +428,7 @@ test('a real 304 preserves the card children and clock while a chat body keeps t
   respond(null);
   advance(4000);
   panel.kick();
-  await settle();
+  await tick();
   assert.equal(panel.stats.renders, 2);
   assert.equal(panel.stats.notModified, 1);
   assert.equal(page.el('conversation').firstChild.firstChild, heading);
@@ -442,7 +437,7 @@ test('a real 304 preserves the card children and clock while a chat body keeps t
   assert.equal(progress.textContent, 'En cours · 1:16 / 1:30 max');
   respond({ ...held, view: 'chat', timeline: undefined, serverNowMs: 104000 });
   panel.kick();
-  await settle();
+  await tick();
   assert.equal(panel.state().timeline, timeline);
   assert.equal(page.el('conversation').firstChild.firstChild, heading);
   assert.equal(panel.stats.renders, 3);
@@ -450,13 +445,13 @@ test('a real 304 preserves the card children and clock while a chat body keeps t
 
 test('the real selected-moment form sends fixed passage bounds and releases the keyboard before acknowledgement', async t => {
   const { page, answer, calls, advance, held } = paired(t);
-  await settle();
+  await tick();
   page.el('show-timeline').click();
-  await settle();
+  await tick();
   page.el('timeline-rail').querySelector('button').click();
-  await settle();
+  await tick();
   page.el('detail-ask').click();
-  await settle();
+  await tick();
   assert.equal(page.activeId(), 'question');
   assert.equal(page.el('moment-context').hidden, false);
   page.keyboard(true);
@@ -481,7 +476,7 @@ test('the real selected-moment form sends fixed passage bounds and releases the 
   held.chat.jobs.push(job({ id: 'deep-2', question: 'Ce moment ?' }));
   answer.resolve(reply({ id: 'deep-2' }));
   await done;
-  await settle();
+  await tick();
   assert.equal(page.el('conversation').lastChild, echo);
   assert.equal(echo.dataset.job, 'deep-2');
   assert.equal(page.el('question').value, 'Autre saisie');

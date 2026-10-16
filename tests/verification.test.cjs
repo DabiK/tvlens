@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { turns } = require('./helpers/wait.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -59,7 +60,6 @@ test('source links must be public HTTPS URLs, never local files or actions', () 
 // execution environment. Offline: this shows what TVLens asks and refuses, not what Codex exposes.
 // Never an existing directory: the client must not link real credentials during tests.
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
-const settle = async (rounds = 10) => { for (let i = 0; i < rounds; i++) await new Promise(resolve => setImmediate(resolve)); };
 // The product deadline is 180 s. Here a turn that a regression leaves unfinished must fail its test
 // within seconds, not hold the suite for three minutes: every verifier below is given this one.
 const DEADLINE = 5000;
@@ -206,7 +206,7 @@ test('cancelling a verification while it is being prepared sends no turn; the de
     verifier.cancel();
     release();
     await assert.rejects(pending, /^Error: Vérification annulée\.$/, step);
-    await settle();
+    await turns(10);
     assert.equal(server.processes.length, step === 'features' ? 0 : 1, step);
     assert.deepEqual(server.processes.flatMap(child => server.sent(child, 'turn/start')), [], `${step}: no turn was sent`);
     if (step !== 'thread/start') assert.deepEqual(server.processes.flatMap(child => server.sent(child, 'thread/start')), [], `${step}: no thread was opened`);

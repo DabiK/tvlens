@@ -1,10 +1,10 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { deferred } = require('./helpers/wait.cjs');
 const { Surveillance, COVERAGE_BUCKETS, CLAIM_STATES, claimKey, sameClaim, applyVerdicts, composeLotText, sentences } = require('../core/surveillance.cjs');
 
 // Everything is promise-driven and the clock is injected: no timer, real or fake, is ever armed here.
 const flush = async (turns = 300) => { for (let i = 0; i < turns; i++) await Promise.resolve(); };
-const deferred = () => { let resolve, reject; const promise = new Promise((a, b) => { resolve = a; reject = b; }); return { promise, resolve, reject }; };
 const passage = (n, transcript, extra = {}) => ({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true,
   // Cumulative and possibly older than the activation: must never reach a model.
   topicSummary: `CUMUL-${n} qui remonte avant l’activation`, ...extra,

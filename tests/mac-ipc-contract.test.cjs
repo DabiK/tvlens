@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { pause } = require('./helpers/wait.cjs');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
@@ -16,8 +17,6 @@ const { shape } = require('./helpers/source-shape.cjs');
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const mainSource = read('app/main.cjs'), preloadSource = read('app/preload.cjs');
-const realTimeout = globalThis.setTimeout;
-const pause = ms => new Promise(resolve => realTimeout(resolve, ms));
 const SESSION = '0f8fad5b-d9cb-469f-a165-70867728950e';
 
 // Section 5.2 of the mission contract: bridge method, sample call, channel and payload sent to the host.

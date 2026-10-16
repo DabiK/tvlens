@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { deferred, tick: waitTick } = require('./helpers/wait.cjs');
 const { loadTvPage, KEYS } = require('./helpers/tv-page.cjs');
 
 const SESSION_ID = '11111111-1111-4111-8111-111111111111';
@@ -33,8 +34,6 @@ function serverState() {
 }
 
 const response = body => ({ status: 200, ok: true, headers: { get: () => null }, json: async () => structuredClone(body) });
-// An event-loop barrier drains promises from already controlled responses; it waits for no duration.
-const settle = () => new Promise(setImmediate);
 function network(state = serverState()) {
   const calls = [];
   const fetch = async (url, init) => {
@@ -53,7 +52,7 @@ test('a paired page reads both hosts and renders a job through its real scripts'
   const net = network();
   const page = loadTvPage({ config: CONFIG, fetch: net.fetch });
   t.after(() => page.cleanup());
-  await settle();
+  await waitTick();
   assert.ok(page.window.tvlensPanel, 'paired page exposes its polling commands');
   const startup = net.calls.filter(call => !new URL(call.url).pathname.startsWith('/ambient'));
   assert.deepEqual(startup.map(call => call.url).sort(), [
@@ -67,12 +66,6 @@ test('a paired page reads both hosts and renders a job through its real scripts'
   assert.equal(card.querySelector('h2').textContent, 'Quel chiffre ?');
   assert.equal(card.querySelector('.chat-answer').textContent, 'Le chiffre est 42.');
 });
-
-function deferred() {
-  let resolve;
-  const promise = new Promise(done => { resolve = done; });
-  return { promise, resolve };
-}
 
 test('the real form echoes immediately, releases focus and turns its echo into the received job', async t => {
   const net = network();
@@ -88,7 +81,7 @@ test('the real form echoes immediately, releases focus and turns its echo into t
     },
   });
   t.after(() => page.cleanup());
-  await settle();
+  await waitTick();
   now = 4000;
   page.el('dictate').click();
   page.keyboard(true);
@@ -110,7 +103,7 @@ test('the real form echoes immediately, releases focus and turns its echo into t
   net.state.chat.jobs.push(job('deep-2', 'Et le suivant ?'));
   answer.resolve(response({ id: 'deep-2' }));
   await done;
-  await settle();
+  await waitTick();
   assert.equal(page.el('conversation').lastChild, echo, 'the real renderer reuses the echo node');
   assert.equal(echo.dataset.job, 'deep-2');
   assert.equal(echo.hasAttribute('data-pending'), false);
@@ -129,7 +122,7 @@ test('a refused submission removes the echo and preserves the composed question'
     fetch: (url, init) => new URL(url).pathname === '/v1/questions' ? answer.promise : net.fetch(url, init),
   });
   t.after(() => page.cleanup());
-  await settle();
+  await waitTick();
   page.input('question', 'Une autre question ?');
   const { done } = page.submit();
   const echo = page.el('conversation').lastChild;
@@ -149,9 +142,9 @@ test('surveillance commands share the page DOM and draw only a new sourced verif
     storage: { 'tvlens.overlay': JSON.stringify({ displayMs: 8000, alerts: true }) },
   });
   t.after(() => page.cleanup());
-  await settle();
+  await waitTick();
   page.el('show-surveillance').click();
-  await settle();
+  await waitTick();
   assert.equal(page.el('surveillance-view').hidden, false);
   assert.equal(page.el('chat-view').hidden, true);
   assert.equal(page.activeId(), 'surv-toggle');
@@ -176,7 +169,7 @@ test('surveillance commands share the page DOM and draw only a new sourced verif
     sources: [{ title: 'Publication', url: 'https://www.insee.fr/statistiques/1' }],
   }] };
   page.window.tvlensPanel.kick();
-  await settle();
+  await waitTick();
   assert.equal(page.el('overlay-card').children.length, 0, 'drawing belongs to the timer callback');
   page.timers.run(tick);
   const card = page.el('overlay-card');
@@ -220,7 +213,7 @@ test('cleanup cancels injected timers and prevents late capture or state respons
       return net.fetch(url, init);
     },
   });
-  await settle();
+  await waitTick();
   assert.ok(timers.pending.size > 0);
   assert.equal(page.timers.pending.size, timers.pending.size);
   const staleCallbacks = [...timers.pending.values()].map(timer => timer.callback);
@@ -234,7 +227,7 @@ test('cleanup cancels injected timers and prevents late capture or state respons
   for (const callback of staleCallbacks) callback();
   capture.resolve(response({ active: false, stopping: false }));
   state.resolve(response(net.state));
-  await settle();
+  await waitTick();
   assert.equal(page.window.tvlensPanel.stats.renders, 1, 'the late response was actually received');
   assert.equal(page.calls.timers, scheduledBefore);
   assert.equal(timers.pending.size, 0);
@@ -260,11 +253,11 @@ test('manually driving a poll consumes its injected timeout registration before 
   const timers = scheduler();
   const page = loadTvPage({ config: CONFIG, fetch: net.fetch, timers });
   t.after(() => page.cleanup());
-  await settle();
+  await waitTick();
   const poll = [...page.timers.pending].find(([, timer]) => !timer.repeat && timer.delay === 1000)[0];
   const before = page.calls.requests;
   page.timers.run(poll);
-  await settle();
+  await waitTick();
   assert.equal(page.calls.requests, before + 1);
   page.cleanup();
   assert.equal(page.timers.pending.size, 0);
@@ -297,16 +290,16 @@ test('the open panel controls server surveillance and local cards without ambien
   });
   t.after(() => page.cleanup());
   const noAmbient = () => assert.deepEqual(net.calls.filter(call => new URL(call.url).pathname.startsWith('/ambient')), []);
-  await settle();
+  await waitTick();
   noAmbient();
   page.el('show-surveillance').click();
-  await settle();
+  await waitTick();
   assert.equal(page.el('surveillance-view').hidden, false);
   assert.equal(page.el('surv-status').textContent, 'Surveillance inactive.');
   noAmbient();
   page.input('surv-instruction', 'Vérifie les chiffres.');
   page.el('surv-toggle').click();
-  await settle();
+  await waitTick();
   assert.equal(page.el('surv-toggle').textContent, 'Arrêter la surveillance');
   assert.match(page.el('surv-status').textContent, /^Vérification en cours/);
   noAmbient();
@@ -328,7 +321,7 @@ test('the open panel controls server surveillance and local cards without ambien
     sources: [{ title: 'Publication', url: 'https://www.insee.fr/statistiques/1' }],
   }] };
   page.window.tvlensPanel.kick();
-  await settle();
+  await waitTick();
   page.timers.run(tick);
   assert.equal(page.el('overlay-card').hidden, true);
   assert.equal(page.el('overlay-activity').hidden, true);
@@ -344,7 +337,7 @@ test('the open panel controls server surveillance and local cards without ambien
   for (let i = 0; i < 5; i++) {
     now += 1000;
     page.timers.run(second);
-    await settle();
+    await waitTick();
   }
   noAmbient();
   now = 7999;
@@ -358,7 +351,7 @@ test('the open panel controls server surveillance and local cards without ambien
   assert.equal(page.el('show-surveillance').textContent, 'Surveillance', 'the shown card updates the local count');
   page.el('show-surveillance').click();
   page.el('surv-toggle').click();
-  await settle();
+  await waitTick();
   page.timers.run(tick);
   assert.equal(page.el('surv-toggle').textContent, 'Activer la surveillance');
   assert.equal(page.el('surv-status').textContent, 'Surveillance arrêtée.');
@@ -488,14 +481,14 @@ for (const status of [401, 500, null]) {
       },
     });
     t.after(() => page.cleanup());
-    await settle();
+    await waitTick();
     const panel = page.window.tvlensPanel;
     const held = panel.state();
     const card = page.el('conversation').firstChild;
     assert.equal(page.el('send').disabled, false);
     failure = true;
     panel.kick();
-    await settle();
+    await waitTick();
     const message = status === 401
       ? 'Appairage refusé par le serveur · vérifie le jeton de cette TV.'
       : 'Serveur inaccessible · reconnexion…';
@@ -509,7 +502,7 @@ for (const status of [401, 500, null]) {
     failure = false;
     revalidated = true;
     panel.kick();
-    await settle();
+    await waitTick();
     assert.equal(page.el('connection').textContent, 'Capture reçue');
     assert.equal(page.el('send').disabled, false);
     assert.equal(panel.state(), held);
