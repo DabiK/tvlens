@@ -1,7 +1,7 @@
 ---
 id: T178
 titre: Report a deterministic capture-to-display latency
-statut: a-faire
+statut: termine
 bloque_par: T058, T066, T168, T171, T183
 adr: oui
 installe: non
@@ -148,3 +148,126 @@ le banc compose seulement les composants nécessaires avec leurs dépendances ma
 Les chiffres réels de capture à affichage restent inconnus ; ce ticket n'en déduit aucune cible métier.
 
 ## Journal
+
+- Exploration : coutures livrées relues, décision ambient ADR 0017 disponible ; scénario composé
+  hors HeadlessRuntime. Horloges DeepAsk maîtrisées dans une VM sans modification du produit.
+  État initial et choix consignés dans `.harness-state/tickets/T178/exploration.md` et `ecarts.md`.
+
+- Contrat rouge observé : `node --test tests/capture-display-latency.test.cjs`, assertion de
+  version (`undefined !== 1`), puis vert après composition réelle capture/cœur/vues.
+  Sorties : `red-contract.log`, `green-contract.log` dans le dossier d'état.
+- Causalité et caractérisations : délais audio, vision, réponse, livraison ; file de deux questions,
+  disponibilité figée, consultations multiples, callbacks vides, cartes réelles, 304, regroupement
+  et secours Mac, horloge murale TV décalée, refus média/réponse et libération.
+  Rouge puis vert observés séparément pour les colonnes du tableau, le texte absent (`null`) et
+  l'observation de l'entrée en file audio : `red-table.log`, `red-missing-text.log`,
+  `red-queue-observation.log` et leurs sorties vertes. Dernière suite ciblée : 12 tests, 12 réussis.
+- `node scripts/check.mjs --changed` : vert (à l'étape des 11 premiers tests).
+  `node --test --test-concurrency=1 tests/capture-display-latency.test.cjs tests/state-delivery.test.cjs tests/session-latency.test.cjs tests/latency.test.cjs tests/capture-controller.test.cjs tests/recording.test.cjs tests/server-ingest-path.test.cjs tests/server-state-views.test.cjs tests/tv-chat-model.test.cjs tests/tv-poll-controller.test.cjs tests/tv-chat-view.test.cjs tests/tv-panel.test.cjs tests/mac-ui.test.cjs` :
+  208 tests réussis, aucun échec ; `related-tests.log`. Suites exécutées en séquentiel.
+- `node scripts/measure-latency.cjs` : tableaux français observés ; deux commandes fraîches
+  `node scripts/measure-latency.cjs --json` puis
+  `cmp .harness-state/tickets/T178/report-one.json .harness-state/tickets/T178/report-two.json` :
+  sortie 0, documents identiques octet pour octet. Aucun débit réel ni pixel mesuré.
+  Node avertit sur stderr du type implicite des modules `.js` Mac existants ; stdout reste un seul JSON.
+- Documentation de commande/lecture et ADR 0028 ajoutés. `node scripts/check.mjs` complet lancé ;
+  son résultat sera consigné après observation.
+- Contrôle final observé : `node scripts/check.mjs` vert ; règles, format, lint, gel et cliquet
+  verts ; 120 fichiers JS en séquentiel, 1 521 tests réussis et aucun échec ; 22 tests Python
+  réussis. Sortie complète : `.harness-state/tickets/T178/check-full.log`.
+- `node scripts/check.mjs --changed` final : vert, 12 nouveaux tests réussis ;
+  `check-changed-final.log`. `git diff --check` et `cmp` des deux JSON : sorties 0.
+  Verdict TERMINÉ écrit pour remise à la boucle ; aucun commit ni push, aucun fichier préexistant
+  de `design/continuous-context/` ou `experiments/` modifié.
+
+### Reprise après relecture 1
+
+- Rapport `relecture-1.md`, ticket/journal, écarts, état/diff et témoin hooks relus.
+  Constats 1 à 8 acceptés ; aucun écart ni contestation. Le constat 9 devient une réserve hors
+  périmètre : extraction future de la porte `asking` dupliquée entre hôtes, dans un ticket dédié.
+- Constat 1 : mutation temporaire retirant `c.poll.stop()` exécutée avant correction :
+  `node --test tests/capture-display-latency.test.cjs`, sortie 0, 12 tests réussis malgré la mutation
+  (`mutation-stop-before.log`). Défaut confirmé. Sonde corrigée : corps publié enregistré et
+  non vide dans le cas nominal, compte des événements tardifs, lecture des timers après la sonde
+  et avant le nettoyage de sécurité. Nouveau test rouge puis vert (`correction-cleanup-*.log`).
+  Même mutation après correction : sortie 1, carte appliquée après libération, 2 événements tardifs
+  et 1 minuterie réarmée (`mutation-stop-after.log`, puis `mutation-stop-final.log`). Mutation retirée.
+- Constat 2 : test renforcé rouge puis vert (`correction-final-cards-*.log`) : chaque question de
+  chaque cas possède sa vraie carte avec « Réponse simulée validée. » sur Mac et TV, et une
+  estampille d'application finie. Textes du DOM conservés par identifiant de question.
+- Constat 3 : nouveau test rouge `80 !== 87`, puis vert (`correction-measured-duration-*.log`) :
+  une attente injectée dépasse le délai déclaré ; audio/vision mesurent l'horloge autour de l'attente.
+- Constat 4 : transitions `asking` publiées avant le deep correspondant, puis reprise de vision en
+  microtâche uniquement à la libération, comme les hôtes. Tests rouge puis vert
+  (`correction-asking-*.log`). Mutation remplaçant la microtâche par une reprise synchrone :
+  `node --test --test-name-pattern='vision held' tests/capture-display-latency.test.cjs`, sortie 1
+  sur l'ordre des publications observées (`mutation-asking-microtask.log`), mutation retirée.
+- Constat 5 : nouvelle découpe à 700/1400 ms, test rouge puis vert
+  (`correction-correlation-*.log`). Rapprochement du transport et de la préparation par la fermeture
+  observée `closedAtMs`/`endMs`, sans deviner l'identifiant attribué par le cœur.
+- Constats 6 et 7 : schéma d'horloge par chemin de champ ; bornes/disponibilité dans le domaine
+  session, traitement de question mural serveur, estampilles client `clientReceivedMs` et
+  `clientAppliedMs`. Tests rouge puis vert (`correction-clock-schema-*.log`,
+  `correction-client-names-*.log`). Documentation et ADR 0028 mis à jour.
+- Constat 8 : délai du premier texte configurable, test rouge `40 !== 70`, puis vert
+  (`correction-constants-*.log`). Délais/bornes/marge et constantes de conduite centralisés dans
+  `scripts/latency-fixture.cjs` ; tests utilisant les paramètres/exportations et les origines de l'environnement.
+- `node scripts/check.mjs --changed` : vert, 20 tests réussis (`correction-check-changed.log`).
+  Deux commandes `node scripts/measure-latency.cjs --json` fraîches puis `cmp` des fichiers
+  `correction-report-one.json` et `correction-report-two.json` : sortie 0, identiques octet pour octet.
+  Suites concernées puis contrôle complet relancés en séquentiel ; résultat à consigner après observation.
+- Validation finale de la correction : suites concernées en séquentiel, 217 tests réussis,
+  aucun échec (`correction-related-tests.log`). `node scripts/check.mjs` : vert ; règles, format,
+  lint, gel et cliquet verts ; 1 529 tests JS sur 120 fichiers et 22 tests Python réussis
+  (`correction-check-full.log`). `git diff --check` : sortie 0.
+- Nouveau verdict TERMINÉ remis à la boucle ; constats 1 à 8 corrigés. Réserve hors périmètre 9
+  conservée dans `reste`, sans modification des hôtes. Aucun commit ni push ; fichiers préexistants
+  étrangers au ticket préservés.
+
+### Reprise après relecture 2
+
+- Rapport `relecture-2.md`, ticket/journal, écarts, arbre et nouveau témoin hooks relus.
+  Constats 1 (bloquant) et 2 (mineur) acceptés sans contestation. Réserves 3 (écart de livraison
+  implicite dans le test) et 4 (porte `asking` dupliquée) conservées hors périmètre.
+- Libération sans `run()` : assertion `doesNotReject` rouge sur la lecture de `c.latest.session`,
+  puis verte avec un bilan nul et libération idempotente (`revision-empty-release-*.log`).
+  La sonde ne retient/résout un corps tardif que si une publication existe.
+- Échec avant ingestion : test rouge sur `armed: 1`, puis vert (`revision-early-failure-*.log`).
+  Les livraisons Mac programmées sont annulées par la vue. L'ajout de l'état initial a révélé une
+  réponse TV encore en vol (`revision-initial-state-progress.log`) ; son attente est désormais
+  annulée par le banc TV. Le cœur ferme avant l'attente du contrôleur de capture, les attentes
+  simulées des fournisseurs/du bridge sont annulées, et le nettoyage de sécurité est en `finally`.
+- Premier polling : nouveau test rouge sur le faux événement `transport.refused`
+  (`revision-initial-state-red.log`), puis vert dans les trois cas nominaux. Le conducteur
+  publie un vrai instantané de session avant de démarrer le polling ; chaque première requête
+  se rattache à cette publication.
+- Erreurs : un refus simulé de transport porte le code stable `SIMULATED_TRANSPORT_REFUSAL`.
+  Toute autre exception du client ou de ses callbacks est conservée puis propagée au conducteur
+  avec sa cause originale, sans faux refus. Test du conducteur rouge sur « Missing expected
+  rejection », puis vert (`revision-conductor-error-*.log`). La fabrique de vues injectée éprouve
+  les exceptions de réception aux premier, deuxième et troisième corps, avec nettoyage nul.
+  Le cas de refus explicitement simulé est aussi couvert.
+- Mutations exécutées puis retirées : masquer les exceptions imprévues en refus de transport
+  fait échouer les assertions (`revision-mutation-misclassified-error.log`, sortie 1) ; omettre
+  `c.poll.stop()` reste détecté (`revision-mutation-stop.log`, sortie 1).
+- `node scripts/check.mjs --changed` : vert, 26 tests réussis (`revision-check-changed.log`).
+  Deux exécutions fraîches `node scripts/measure-latency.cjs --json`, puis `cmp` des fichiers
+  `revision-report-one.json` et `revision-report-two.json` : sortie 0, identiques octet pour octet.
+  Documentation et ADR mis à jour ; suites concernées puis contrôle complet lancés en séquentiel.
+- Validation finale : 223 tests concernés réussis en séquentiel (`revision-related-tests.log`).
+  `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts ; 1 535 tests JS
+  sur 120 fichiers et 22 tests Python réussis (`revision-check-full.log`). `git diff --check` : sortie 0.
+- Nouveau verdict TERMINÉ remis à la boucle. Les deux constats à corriger sont couverts ;
+  réserves 3 et 4 conservées dans `reste`. Aucun commit ni push, aucun fichier produit ou du
+  harnais modifié, fichiers préexistants étrangers au ticket préservés.
+
+### Réserves à la clôture
+
+- Réserve hors périmètre, relecture 2 constat 3 : le test de livraison utilise 65 et un écart 50, dépendant implicitement du défaut 15 ; à exprimer ultérieurement avec DEFAULT_DELAYS.deliveryMs et addedDeliveryMs.
+- Réserve hors périmètre, relecture 2 constat 4 : extraire dans runtime/ la règle asking commune à app/main.cjs et runtime/headless-runtime.cjs, également reproduite par le banc, dans un ticket dédié. Les hôtes restent inchangés.
+- .harness-state/tickets/T178/relecture-3.md : `tests/capture-display-latency.test.cjs:104-122` — hors périmètre (réserve maintenue)
+  - **Problème.** `deliveryMs: 65` et l'écart attendu `50` reposent toujours, sans le dire, sur `DEFAULT_DELAYS.deliveryMs = 15`. La correction n'a pas touché ce code.
+  - **Attendu :** écrire `DEFAULT_DELAYS.deliveryMs + addedDeliveryMs`, comme dans le test de réponse.
+- .harness-state/tickets/T178/relecture-3.md : `app/main.cjs:147-154` et `runtime/headless-runtime.cjs:120-131` — hors périmètre (réserve maintenue)
+  - **Problème.** La règle « question occupée → `asking` » existe en deux exemplaires dans les hôtes, et en troisième dans le banc (`scripts/latency-model.cjs:93-103`).
+  - **Attendu :** l'extraire dans `runtime/` par un ticket dédié.

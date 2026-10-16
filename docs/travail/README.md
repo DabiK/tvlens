@@ -16,6 +16,66 @@ Ce dossier contient :
 
 Les constats qui justifient chaque ticket sont dans `docs/audit-maintenabilite.md`.
 
+## Mesurer la remise d'une capture aux cartes, hors ligne
+
+```sh
+node scripts/measure-latency.cjs          # tableaux français, millisecondes
+node scripts/measure-latency.cjs --json   # un document JSON, schéma version 1
+```
+
+Trois cas reproductibles traversent le vrai contrôleur Mac et son recorder, les deux voies
+`WatchSession`, une ou deux questions `DeepAsk`, puis la livraison Mac et le polling/la vue TV :
+mémoire prête, audio/vision retardés et question en attente derrière une autre. Le premier tableau
+sépare transport simulé, préparation, files audio/vision et traitements ; le second sépare attente
+de question, traitement, premier texte, durée depuis acceptation, publication/réception et retour
+du dessin DOM de chaque client. `—` signifie étape non observée, rendue `null` dans le JSON.
+Le cumul « Capture → » part de la fermeture à 1000 ms visée par la question. Les passages consultés
+restent une liste : une question peut utiliser plusieurs passages, ou seulement une mémoire partielle.
+Le tableau ne présente pas cette liste comme un passage unique.
+
+Le JSON contient `schemaVersion`, `units`, `clocks` et `cases`. Chaque cas conserve ses paramètres,
+passages, questions, événements ordonnés, textes/nombres de cartes (aussi indexés par question), compteurs de polling et bilan
+de libération. Les événements corrèlent scénario, session, révision, question, publication et émission
+locale. Les questions gardent leur disponibilité figée et les liens effectivement consultés.
+Les champs `firstAgentMs`, `firstTextMs`, `firstUsefulMs` et `finishedMs` sont des estampilles ;
+leurs équivalents dans `intervals` sont des durées depuis le démarrage effectif de la question.
+Un callback vide n'est pas du texte utile. La fin est celle publiée après validation des preuves.
+
+Domaines : passage/session depuis zéro ; mural serveur depuis 1800000000000 ; monotone client
+depuis 70000. `clocks.origins` établit leur correspondance pour ce scénario seulement, sans pause
+ni dérive. `clocks.fields` associe les chemins de champs (avec `*` pour les listes et clients)
+à leur domaine : `questions.*.anchorMs` et les bornes de `availability` relèvent de la session,
+`questions.*.startedMs` du mural serveur, les durées de `duration`.
+`coreIngestedMs` reprend `receivedMs` après préparation, jamais la réception HTTP brute.
+Les réceptions et applications client portent les noms distincts `clientReceivedMs` et `clientAppliedMs`.
+La TV extrapole toujours `serverNowMs` par un delta monotone ; sa date murale est indépendante.
+Les événements `client.received` précèdent `view.applied`. Un 304 ne crée aucun corps appliqué.
+Le Mac conserve le regroupement par frame et le secours à 100 ms, sans deuxième dessin.
+Le bilan `cleanup` compte les minuteries et événements après résolution d'un corps publié retenu,
+avant nettoyage de sécurité de l'horloge : `armed`, `frames`, `lateApplications` et `lateEvents` restent nuls.
+
+Ces chiffres synthétiques mesurent l'ordonnancement et la remise aux vues. Ils ne mesurent ni le
+réseau réel, ni Codex/Whisper, ni la dictée LG, ni l'apparition physique des pixels. Aucun fournisseur,
+binaire média, Electron ou TV n'est lancé ; aucun identifiant n'est nécessaire. Le banc réutilise les
+helpers DOM du dépôt et s'importe sans lancer le scénario. `createScenario(options)` construit une
+instance fraîche avec `clock`, `run()` et `release()` ; `release()` est aussi utilisable avant `run()`.
+`measureLatency()` conduit les trois cas. Le premier polling TV lit un instantané initial publié.
+Les cas nominaux ne simulent aucun refus de transport. Le réglage `refuse: "transport"` provoque
+un refus explicite portant le code `SIMULATED_TRANSPORT_REFUSAL` ; toute autre exception du
+polling ou de ses callbacks fait échouer le conducteur avec sa cause d'origine, après libération.
+La seconde entrée optionnelle de `createScenario`, `{ createViews }`, injecte sa fabrique de vues
+pour tester les défauts du banc. Sans publication, la libération ne fabrique aucun corps tardif.
+Les délais audio, vision, premier texte, réponse et livraison se règlent dans ces options pour les tests de causalité.
+Les valeurs par défaut vivent dans `scripts/latency-fixture.cjs`. Les bornes simulées `checkpointMs` et
+`captureCloseMs` peuvent varier sans modifier les durées de capture du produit. La corrélation du
+transport et de la préparation repose sur la fermeture réellement remise, jamais sur un identifiant deviné.
+Les durées des fournisseurs simulés sont lues sur l'horloge avant et après leur attente.
+La porte `asking` reproduit les émissions des hôtes et la reprise de vision en microtâche.
+
+Le scénario ne traverse pas `HeadlessRuntime`. La chaîne T171→T170→T169→T182 attendait la décision
+ambient, désormais livrée par l'ADR 0017. Cette mesure ne sert pas de référence aux déplacements
+T179 et T180. Les domaines et limites sont précisés dans l'[ADR 0028](../adr/0028-une-mesure-synthetique-correle-la-capture-et-la-remise-aux-vues.md).
+
 ## Lire la couverture JavaScript
 
 Depuis la racine du dépôt, avec Node 24 :
