@@ -23,6 +23,7 @@ const {
   createSessionManifest,
   MANIFEST_EVERY_MS,
 } = require("./session-manifest.cjs");
+const { createSessionLifecycle } = require("./session-lifecycle.cjs");
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -47,7 +48,7 @@ function createSessionRuntime({
   restore = null,
   overrides = {},
 }) {
-  let watch;
+  let watch, lifecycle;
   if (restore && (!restore.snapshot || !restore.inventory))
     throw new Error("Archive incomplète : état et inventaire requis.");
   // Checked before anything is built on it: a saved state of another shape is refused in plain words.
@@ -150,12 +151,6 @@ function createSessionRuntime({
           : null,
     };
   };
-  let ending = null,
-    // True once the end of this runtime is on disk, last states and manifest. Its own fact: what an
-    // earlier life of the session left in the manifest says nothing of this one.
-    archived = false,
-    // Why that end is not confirmed, once asked for: the write that was refused.
-    unconfirmed = null;
   const manifest = createSessionManifest({
     id,
     host,
@@ -165,21 +160,8 @@ function createSessionRuntime({
     readClock,
     wallClock,
     readOnly: () => watch.readOnly,
-    hasConfirmedEnd: () => archived,
+    hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
-  // What failed while this runtime was closing, one line per step: kept for the host, never swallowed.
-  const closeErrors = [];
-  // Every closing step is attempted whatever the others did: one adapter that fails to close neither
-  // leaves a provider process running nor keeps the session from being archived.
-  const closing = async (step, work) => {
-    try {
-      await work();
-    } catch (error) {
-      closeErrors.push(
-        `${step} : ${String(error?.message || error).slice(0, 200)}`,
-      );
-    }
-  };
   watch = new WatchSession({
     id,
     retentionMs: retentionMs,
@@ -197,34 +179,22 @@ function createSessionRuntime({
       onChange(state);
     },
   });
-  if (restore) {
-    const { snapshot, inventory } = restore;
-    const known = new Set(
-      [...(snapshot.history || []), ...snapshot.segments].map((p) => p.id),
-    );
-    store.adopt(
-      inventory,
-      snapshot.segments.reduce(
-        (total, p) =>
-          inventory.ids.has(p.id) ? total + (p.endMs - p.startMs) : total,
-        0,
-      ),
-      restore.manifest,
-    );
-    thumbnails.bytes = inventory.thumbBytes || 0;
-    // Stopped and read-only: nothing is indexed, analysed or written until resume().
-    watch.restore(snapshot, {
-      hasMedia: (passage) => inventory.ids.has(passage),
-      hasThumbnail: (passage) => inventory.thumbs.has(passage),
-      orphans:
-        inventory.orphans ||
-        [...inventory.ids, ...(inventory.partial || [])].filter(
-          (passage) => !known.has(passage),
-        ),
-    });
-  }
+  lifecycle = createSessionLifecycle({
+    watch,
+    store,
+    thumbnails,
+    sessionClock,
+    manifest,
+    inspector,
+    index,
+    vectors,
+    perception,
+    inspectorModel,
+    guard: diskGuard,
+    restore,
+  });
 
-  const runtime = {
+  return {
     id,
     watch,
     store,
@@ -247,112 +217,17 @@ function createSessionRuntime({
     // Empty unless an adapter failed to close: that alone keeps no session from being archived, and its
     // host reports these. A write the disk refused is not one of them: archive() is the one to say it.
     get closeErrors() {
-      return [...closeErrors];
+      return lifecycle.closeErrors;
     },
-    async pause() {
-      sessionClock.pause();
-      await watch.stop();
-      await manifest.record(watch.snapshot());
-    },
-    async resume() {
-      // Refused on a fresh measurement before anything changes, with the message of a refused write.
-      await diskGuard?.assertRoom();
-      const fromMs = sessionClock.now();
-      sessionClock.resume();
-      await watch.resume();
-      manifest.captureResumed(fromMs);
-      await manifest.record(watch.snapshot());
-    },
-    // Ends the work of this runtime and keeps the session whole on disk. `purge` is the former
-    // behaviour, on request only: raw media and thumbnails of this session are erased, its text stays.
-    async close({ purge = false } = {}) {
-      // An archive that is only open is never emptied in passing: nothing of this runtime may write into
-      // it, its manifest included. Its media go with the explicit deletion of the whole session.
-      if (purge && watch.readOnly)
-        throw new Error(
-          "Session ouverte en lecture seule : ses médias ne s’effacent qu’avec la suppression de la session.",
-        );
-      // No re-examination from here on, cached results included.
-      inspector.revoke();
-      ending ||= (async () => {
-        // No new passage from here, and one whose write is under way lands first, thumbnail included:
-        // the state saved by close() lists every identifier ingest() has handed or is about to hand back.
-        watch.closeIntake();
-        // A passage that lands during this wait is stored and saved, but its analysis is not started
-        // only to be abandoned by the close that follows.
-        watch.beginEnding();
-        await watch.landed();
-        await closing("session", () => watch.close());
-        await closing("index", () => index?.close?.());
-        await closing("miniatures", () => thumbnails.close());
-        await Promise.all([
-          closing("perception", () => perception.close?.()),
-          closing("modèle d’inspection", () => inspectorModel.close?.()),
-        ]);
-      })();
-      await ending;
-      if (purge) {
-        await thumbnails.clear();
-        await store.clearRaw();
-      }
-      // Asked again after a refusal: the state is saved anew before anything is confirmed.
-      if (unconfirmed) await watch.persist();
-      const state = watch.snapshot();
-      // The last states first, then the manifest that vouches for them: "archived" never sits on disk
-      // beside a state the disk refused. That manifest is written by every life of the session that
-      // captured, a resumed archive included; one that was only read has nothing to write. The refusal
-      // is kept for archive() to say; closing itself never fails for it, so neither a deletion nor a
-      // host that stops is held back.
-      unconfirmed = await store
-        .flush()
-        .then(() => {
-          // Refused before it ever reached the store: the session itself is the one that knows.
-          if (watch.saveError) throw new Error(watch.saveError);
-          return purge || !archived
-            ? manifest.record(
-                state,
-                purge
-                  ? {
-                      media: {
-                        stored: 0,
-                        missing: state.coverage.passages,
-                        bytes: 0,
-                        retention: state.retention,
-                      },
-                    }
-                  : {},
-                true,
-              )
-            : null;
-        })
-        .then(
-          () => {
-            archived = true;
-            return null;
-          },
-          (error) => error,
-        );
-    },
-    // End of a session for its host: closed, kept, and listed as an archive; the manifest handed back is
-    // the one confirmed on disk. Rejects when the disk refused one of the last writes: every resource is
-    // released all the same and the folder keeps what was last confirmed. Asked again, this runtime saves
-    // its state and its manifest anew; a file its host writes (questions, recap, surveillance) stays
-    // refused until that host has written it again.
-    async archive() {
-      await runtime.close();
-      if (unconfirmed) throw unconfirmed;
-      return store.confirmed;
-    },
-    // Before the session is deleted: once this resolves, nothing from this runtime can write into its
-    // directory again, so a late save cannot bring a deleted session back.
-    async seal() {
-      // Sealed first: the last saves of close() are then no-ops instead of final writes.
-      const sealing = [store.seal(), vectors?.seal()];
-      await runtime.close();
-      await Promise.all(sealing);
-    },
+    pause: () => lifecycle.pause(),
+    resume: () => lifecycle.resume(),
+    // Garde la session ; { purge: true } retire ses médias et miniatures en conservant ses textes.
+    close: (options) => lifecycle.close(options),
+    // Confirme l'archive sur disque, ou rejette après libération en gardant le dernier état confirmé.
+    archive: () => lifecycle.archive(),
+    // Attend le scellement avant suppression : aucune écriture tardive ne doit recréer le dossier.
+    seal: () => lifecycle.seal(),
   };
-  return runtime;
 }
 // Reads an archive once and rebuilds its runtime stopped and read-only. `library` is a SessionLibrary on
 // the same root as `sessionsRoot`.
