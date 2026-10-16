@@ -300,7 +300,7 @@ dépendances, puis de leur numéro.
 7. **Latence et serveur** : [T178](178-report-a-deterministic-capture-to-display-latency.md) (mesure déterministe), [T179](179-move-headless-capture-admission-into-one-intake-owner.md), [T180](180-move-headless-session-transitions-into-one-coordinator.md) (réception et cycle de
    vie du serveur).
 
-Un ticket de suppression de tests baisse le plancher `cas_de_test` du nombre exact de cas supprimés, seulement si le
+Un ticket de suppression de tests baisse le plancher `cas_de_test_produit` (ou `cas_de_test_harnais` pour un test du harnais) du nombre exact de cas supprimés, seulement si le
 propriétaire l'a autorisé dans sa décision.
 
 ## Itération 2 — vague 1

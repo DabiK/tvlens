@@ -85,8 +85,8 @@ historiques d'indisponibilité et les baux restent actifs.
   restauration de session-durable, frise et nouvel essai ADR 0008 ; leur inventaire exact est
   établi par recherche `retentionMs`, `prune`, `unremoved` et relu dans chaque fichier. Le cas
   `tests/session.test.cjs:24` appartient à T194 : ne pas le recompter ici.
-- `harnais: oui` n'autorise que la ligne `cas_de_test` de `scripts/quality/baseline.json`, ou le
-  seul plancher produit si T196 l'a séparé. Aucun autre compteur ou fichier protégé ne change.
+- `harnais: oui` n'autorise que la ligne `cas_de_test_produit` de `scripts/quality/baseline.json` : T196 a
+  séparé le cliquet, et seul le plancher des tests du produit baisse. Aucun autre compteur ou fichier protégé ne change.
   Compléter l'ADR de retrait T215, élaguer les suppressions ESLint devenues inutiles.
 
 ## Critères d'acceptation

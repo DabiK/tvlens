@@ -45,7 +45,7 @@ interdictions propres à chacun, à la place des assertions dispersées.
   et `runtime/question-checkpoint.cjs` (aucun import, process ou réseau ; défauts injectables des
   minuteries permis). Le mot « pur » ne prétend pas interdire au checkpoint ses défauts de timer.
 - Déplacer le cas entièrement consacré à la pureté de `tests/question-checkpoint.test.cjs:243`
-  dans la garde : un cas retiré, un cas ajouté, plancher `cas_de_test` constant. Retirer seulement
+  dans la garde : un cas retiré, un cas ajouté, planchers `cas_de_test_produit` et `cas_de_test_harnais` constants (T196 a séparé le cliquet). Retirer seulement
   l'assertion de pureté de `tests/architecture-f07.test.cjs:590` ; son cas de composition et toutes
   ses assertions sur les fermetures restent. Retirer les imports disque devenus inutiles du checkpoint.
 - Conserver les règles de T030 et les preuves comportementales. Aucun code produit, standard,
@@ -67,7 +67,7 @@ interdictions propres à chacun, à la place des assertions dispersées.
    protocole refuse aussi une minuterie ; les défauts injectables du checkpoint restent permis.
    Chaque faute retirée rend le cas vert. Les sorties rouge et verte vont au journal.
 3. Le journal rapproche le cas de pureté déplacé de son nouveau cas : un retrait pour un ajout,
-   sans baisse de cas_de_test et sans modification du plancher. Les autres scénarios du checkpoint
+   sans baisse de `cas_de_test_produit` ni de `cas_de_test_harnais`, et sans modification du plancher. Les autres scénarios du checkpoint
    et de fermeture conservent leurs assertions et valeurs. Aucun cas comportemental n'est supprimé.
 4. À l'implémentation, exécuter en séquentiel architecture, architecture-guard, question-checkpoint
    et architecture-f07, puis `node scripts/check.mjs`. CONTRIBUTING décrit ces règles et renvoie
