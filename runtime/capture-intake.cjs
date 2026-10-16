@@ -1,6 +1,7 @@
 const { STORAGE_FULL } = require("../adapters/disk-guard.cjs");
 const { refusal } = require("./errors.cjs");
 const { validateSegment } = require("./session-runtime.cjs");
+const { shouldPauseForStorageFull } = require("./capture-storage.cjs");
 
 const READ_ONLY =
   "Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.";
@@ -114,7 +115,7 @@ async function ingest(intake, input, operation) {
     // Le manque d'espace refuse le bloc avant toute écriture. Seule la session encore en mémoire
     // se met entièrement en pause, horloge comprise ; rien n'est supprimé pour faire de la place,
     // et elle reste ouverte aux questions.
-    if (error?.code === STORAGE_FULL && intake.getSession() === session) {
+    if (shouldPauseForStorageFull({ code: error?.code, session, currentSession: intake.getSession() })) {
       await session.pause().catch(() => {
         // La session conserve son refus de sauvegarde ; il ne remplace pas le manque d'espace du bloc.
       });

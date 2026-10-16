@@ -11,6 +11,7 @@ const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
 const { until, tick, deferred, turns } = require('./helpers/wait.cjs');
+const { emptyArchive } = require('./helpers/empty-archive.cjs');
 
 const token = 's'.repeat(64), GIB = 1024 ** 3;
 const READ_ONLY = 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.';
@@ -114,6 +115,27 @@ async function fixture(t, { chat, runtimeOptions = () => ({}) } = {}) {
   t.after(async () => { for (const host of f.hosts) await host.stop(); await fs.rm(root, { recursive: true, force: true }); });
   await f.boot();
   return f;
+}
+
+for (const resume of [false, true]) {
+  test(`an empty server archive survives closing ${resume ? 'after explicit resume and pause' : 'without resume or archive writes'}`, async t => {
+    const f = await fixture(t);
+    const archive = await emptyArchive(f.sessionsRoot, 'server');
+    const before = await tree(archive.dir);
+    const opened = await f.req(`/v1/sessions/${archive.id}/open`, {});
+    assert.deepEqual([opened.status, opened.value.readOnly], [200, true]);
+    assert.deepEqual((await f.req('/v1/state')).value.session.questions, []);
+    if (resume) {
+      const resumed = await f.req(`/v1/sessions/${archive.id}/resume`, {});
+      assert.deepEqual([resumed.status, resumed.value.accepting], [200, true]);
+      assert.equal((await f.req('/v1/session/pause', {})).status, 200);
+    }
+    assert.deepEqual((await f.req('/v1/sessions/close', {})).value, { closed: true, id: archive.id, archived: true });
+    assert.equal(await exists(archive.dir), true);
+    for (const name of archive.files) assert.equal(await exists(path.join(archive.dir, name)), true, name);
+    assert.deepEqual((await f.req('/v1/sessions')).value.sessions.map(row => [row.id, row.state, row.passages]), [[archive.id, 'archived', 0]]);
+    if (!resume) assert.deepEqual(await tree(archive.dir), before, 'read-only closing writes nothing');
+  });
 }
 
 test('the start of a film is still served 95 minutes later, after a stop and a restart; an opened archive stays read-only until an explicit resume, and questions never cross sessions', async t => {

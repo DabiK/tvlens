@@ -5,6 +5,7 @@ const {
 } = require("./session-closing.cjs");
 const { refusal } = require("./errors.cjs");
 const { READ_ONLY } = require("./capture-intake.cjs");
+const { isEmptySession } = require("./empty-session.cjs");
 
 class HeadlessSessionLifecycle {
   constructor({
@@ -136,13 +137,12 @@ class HeadlessSessionLifecycle {
         session,
         library: this.library,
         remove,
-        // A session that saw no passage and no question is not an archive worth listing. Only one this
-        // host started itself: an archive that was opened is never discarded for being short.
-        empty: () =>
-          this.fresh &&
-          !this.deep.jobs.length &&
-          !session.watch.questions.length &&
-          !session.watch.snapshot().coverage.passages,
+        empty: () => isEmptySession({
+          fresh: this.fresh,
+          jobs: this.deep.jobs.length,
+          questions: session.watch.questions.length,
+          passages: session.watch.snapshot().coverage.passages,
+        }),
         // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
         begin: [
           "préparation média",

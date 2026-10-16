@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { pause } = require('./helpers/wait.cjs');
+const { pause, deferred } = require('./helpers/wait.cjs');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const os = require('node:os');
@@ -10,6 +10,7 @@ const { EventEmitter } = require('node:events');
 const { createHash, randomUUID } = require('node:crypto');
 const sharp = require('sharp');
 const { shape } = require('./helpers/source-shape.cjs');
+const { emptyArchive } = require('./helpers/empty-archive.cjs');
 
 // The Mac host without Electron. First the contract read statically from the two files; then the real
 // app/main.cjs and app/preload.cjs wired to each other through a stand-in for Electron (simulated agents,
@@ -301,6 +302,29 @@ test('the Mac composition journals a refused surveillance state and delivers its
   assert.equal((await host.surveillanceState()).error, null);
 });
 
+for (const resume of [false, true]) {
+  test(`an empty Mac archive survives closing ${resume ? 'after explicit resume and pause' : 'without resume or archive writes'}`, async t => {
+    const { userData, launch } = await stage(t);
+    const archive = await emptyArchive(path.join(userData, 'sessions'), 'mac');
+    const before = await digest(archive.dir);
+    const host = await launch();
+    assert.equal(host.started, true, host.failures.join(' '));
+    assert.equal((await host.openSession(archive.id)).readOnly, true);
+    assert.deepEqual((await host.state()).questions, []);
+    if (resume) {
+      assert.equal((await host.resumeSession()).id, archive.id);
+      await host.stop();
+      assert.equal((await host.state()).accepting, false);
+    }
+    await host.newSession();
+    assert.equal(fs.existsSync(archive.dir), true, 'the pre-existing archive directory survives');
+    for (const name of archive.files) assert.equal(fs.existsSync(path.join(archive.dir, name)), true, name);
+    assert.deepEqual((await host.sessions()).sessions.map(row => [row.id, row.state, row.passages]), [[archive.id, 'archived', 0]]);
+    if (!resume) assert.deepEqual(await digest(archive.dir), before, 'read-only closing writes nothing');
+    assert.deepEqual(host.failures, []);
+  });
+}
+
 test('a Mac session is archived instead of purged, listed, reopened read-only without a write, resumed only explicitly, and deleted alone', async t => {
   const { folder, launch } = await stage(t), host = await launch();
   assert.equal(host.started, true, host.failures.join(' '));
@@ -526,6 +550,73 @@ test('a question neither suspends nor cancels the surveillance; quitting archive
   assert.deepEqual(await digest(folder), before, 'closing an archive that was only read leaves it untouched');
 });
 
+for (const code of ['EIO', 'TVLENS_STORAGE_FULL']) {
+  test(`Mac ingestion keeps its original ${code} refusal when the full-disk pause cannot save`, async t => {
+    const { launch } = await stage(t);
+    const gate = deferred(), publication = deferred();
+    const refusal = Object.assign(new Error(`Bloc refusé : ${code}.`), { code });
+    let pauses = 0;
+    const host = await launch({ wrap: { session: runtime => {
+      runtime.watch.ingest = () => gate.promise;
+      const pause = runtime.pause;
+      runtime.pause = async () => {
+        pauses++;
+        await pause();
+        throw Object.assign(new Error('Sauvegarde de pause refusée.'), { code: 'EIO' });
+      };
+      return runtime;
+    } } });
+    assert.equal(host.started, true, host.failures.join(' '));
+    const session = await host.start();
+    host.onStorage(state => publication.resolve(state));
+    const rejected = assert.rejects(host.ingest({
+      sessionId: session.id, startMs: 0, endMs: 1, clip: new Uint8Array([1]),
+      frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }],
+    }), error => error.message === refusal.message);
+    gate.reject(refusal);
+    await rejected;
+    assert.equal(pauses, code === 'TVLENS_STORAGE_FULL' ? 1 : 0);
+    assert.equal((await host.state()).accepting, code !== 'TVLENS_STORAGE_FULL');
+    if (code === 'TVLENS_STORAGE_FULL') await publication.promise;
+    assert.equal(host.events.filter(event => event.channel === 'storage:state').length, code === 'TVLENS_STORAGE_FULL' ? 1 : 0);
+  });
+}
+
+test('a Mac disk refusal still pending in the pause of A cannot pause the newly loaded B', async t => {
+  const storage = deferred(), paused = deferred(), pauseSave = deferred();
+  t.after(() => pauseSave.resolve());
+  const { launch } = await stage(t);
+  const refusal = Object.assign(new Error('Bloc de A refusé faute de place.'), { code: 'TVLENS_STORAGE_FULL' });
+  let first = true;
+  const host = await launch({ wrap: { session: runtime => {
+    if (!first) return runtime;
+    first = false;
+    runtime.watch.ingest = () => storage.promise;
+    const pause = runtime.pause;
+    runtime.pause = async () => {
+      await pause();
+      paused.resolve();
+      await pauseSave.promise;
+    };
+    return runtime;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  const failed = assert.rejects(host.ingest({
+    sessionId: a.id, startMs: 0, endMs: 1, clip: new Uint8Array([1]),
+    frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }],
+  }), error => error.message === refusal.message);
+  storage.reject(refusal);
+  await paused.promise;
+  await host.newSession();
+  const b = await host.start();
+  assert.notEqual(b.id, a.id);
+  pauseSave.reject(Object.assign(new Error('Sauvegarde tardive de A refusée.'), { code: 'EIO' }));
+  await failed;
+  const state = await host.state();
+  assert.deepEqual([state.id, state.accepting], [b.id, true]);
+});
+
 test('host settings come from the environment; a full disk stops capture, refuses start and resume and deletes nothing; a mistyped setting refuses the launch', async t => {
   const { folder: sessionFolder, launch } = await stage(t);
   // One archived passage to protect, captured with room to spare.
@@ -575,6 +666,9 @@ test('host settings come from the environment; a full disk stops capture, refuse
   assert.deepEqual(await digest(folder), before);
   // Neither the paused session nor an archive can be captured into while the disk is blocked; reading goes on.
   await assert.rejects(host.start(), refusal);
+  const question = await host.ask('Que sait-on du passage conservé ?');
+  await until(t, async () => (await host.deepState()).jobs.find(job => job.id === question.id)?.status === 'done',
+    'questions remain available while capture is blocked', 500);
   await host.openSession(session.id);
   state = await host.state();
   assert.deepEqual([state.readOnly, state.storage.state], [true, 'blocked'], 'the state of the loaded session carries the disk state');

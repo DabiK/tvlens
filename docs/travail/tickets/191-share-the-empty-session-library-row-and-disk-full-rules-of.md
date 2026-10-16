@@ -1,7 +1,7 @@
 ---
 id: T191
 titre: Share the empty-session, library-row and disk-full rules of both hosts, and spare a resumed archive on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T190
 adr: oui
 installe: non
@@ -104,3 +104,33 @@ n'a été provoqué au découpage. Le ticket corrige cette divergence précise, 
 infirmée sur un déréférencement de `sessionRows`.
 
 ## Journal
+
+- Exploration : règles et appelants relus ; T190 livré, T192 encore à faire. Trois fonctions pures
+  prévues, sans coordinateur commun ni changement des ordres de fermeture. Détails et écarts dans
+  `.harness-state/tickets/T191/` ; aucun écart prévu.
+- Rouge observé : `node --test --test-concurrency=1 --test-name-pattern='an empty Mac archive'
+  tests/mac-ipc-contract.test.cjs` : 1 vert, 1 rouge sur la présence du dossier après reprise.
+  Même parcours serveur : 2/2 verts avant extraction. Sorties `empty-mac-red.log` et `empty-server-before.log`.
+- Correction et règle de vacuité : corpus des 16 combinaisons et quatre parcours IPC/HTTP,
+  commande avec le filtre `an empty (Mac|server) archive|only a fresh session` : 5/5 verts (`empty-green.log`).
+- Projection : corpus commun caractérisé avant extraction, `node --test --test-concurrency=1
+  tests/session-rows.test.cjs` : 5/5 verts (`rows-characterization.log`), puis 5/5 après extraction.
+  Premier essai du corpus refusé pour une fixture incomplète (`watch.readOnly` absent), corrigée sans changer les assertions.
+- Disque plein : caractérisations Mac `--test-name-pattern='Mac ingestion keeps'` : 2/2 verts ;
+  `tests/capture-intake.test.cjs` : 15/15 verts avant extraction. Après extraction, fonctions pures,
+  projection et ingestion : `node --test --test-concurrency=1 tests/empty-session.test.cjs
+  tests/session-rows.test.cjs tests/capture-storage.test.cjs tests/capture-intake.test.cjs` : 22/22 verts.
+  Le contrôle rapide a demandé de découper deux fonctions trop complexes ; corrections sans gel supplémentaire.
+- Bancs ciblés : `node --test --test-concurrency=1 tests/mac-ipc-contract.test.cjs
+  tests/server-sessions.test.cjs tests/headless-session-lifecycle.test.cjs tests/disk-guard.test.cjs` :
+  63/63 verts (`hosts-green.log`). Complément Mac, filtre `a Mac disk refusal|host settings come` :
+  2/2 verts (`disk-mac-replacement.log`), refus de A encore en pause pendant le chargement de B,
+  et question acceptée pendant le blocage disque.
+- Inventaire et relecture des appelants : une définition par règle dans `runtime/`, deux hôtes
+  consommateurs ; façade Mac sans seconde projection. ADR 0036 ajouté ; ordres de fin conservés.
+- `node scripts/check.mjs --changed` : vert, 51/51 tests des fichiers alors modifiés (`check-changed.log`).
+  `node scripts/check.mjs` : vert, 126 fichiers JS, 1912/1912 tests JS et 22 tests Python (`check-full.log`).
+  Aucun test supprimé, aucun changement de harnais, de plancher ou de gel du lint.
+- Contrôle final des fichiers modifiés : `node scripts/check.mjs --changed` : vert, 52/52 tests
+  (`check-changed-final.log`). `git diff --check` : vert. Verdict `TERMINÉ` écrit dans le dossier d'état ;
+  aucun commit ni push, relecture et intégration laissées à la boucle.

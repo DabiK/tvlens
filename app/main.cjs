@@ -7,6 +7,8 @@ const { createConversationRuntime, hasPendingQuestion } = require('../runtime/co
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
+const { isEmptySession } = require('../runtime/empty-session.cjs');
+const { shouldPauseForStorageFull } = require('../runtime/capture-storage.cjs');
 const { createQuestionCheckpoint } = require('../runtime/question-checkpoint.cjs');
 const { createPublicationDiagnostic } = require('../runtime/publication-diagnostic.cjs');
 const { warmUp } = require('../runtime/session-warm-up.cjs');
@@ -22,7 +24,7 @@ const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, s
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { SessionLibrary, sessionTitle } = require('../adapters/session-library.cjs');
-const { DiskGuard, STORAGE_FULL } = require('../adapters/disk-guard.cjs');
+const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 const { sweepStaleContexts } = require('../adapters/codex-confinement.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
@@ -307,8 +309,8 @@ app.whenReady().then(async () => {
       send('watch:state', { ...state, title: loaded?.title ?? null });
     },
   });
-  const adopt = (runtime, name, at) => {
-    loaded = { runtime, title: name, startedAt: at };
+  const adopt = (runtime, name, at, fresh = false) => {
+    loaded = { runtime, title: name, startedAt: at, fresh };
     saved.transcriber = runtime.transcriber;
   };
   // Every five seconds while something of the loaded session moves without an event of its own: its clock while
@@ -355,8 +357,10 @@ app.whenReady().then(async () => {
     try {
       const { freedBytes, refused } = await closeSession({
         session: ended, library, remove,
-        // A session that received neither a passage nor a question is not worth an archive.
-        empty: () => !ended.readOnly && !ended.watch.snapshot().coverage.passages && !deep.jobs.length,
+        empty: () => isEmptySession({
+          fresh: loaded.fresh, jobs: deep.jobs.length, questions: ended.watch.questions.length,
+          passages: ended.watch.snapshot().coverage.passages,
+        }),
         // The external MCP contexts opened on this session end here, before anything is awaited: a call that arrives
         // while the session closes finds none of them, and one still running is refused instead of answered.
         begin: ['contextes MCP', () => ended && bridge?.revoke(ended.id)],
@@ -416,7 +420,7 @@ app.whenReady().then(async () => {
     const name = sourceName ? `${sourceName.slice(0, 80)} · ${sessionTitle(at).replace(/^Session du /, '')}` : sessionTitle(at);
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
-    adopt(runtime, name, at);
+    adopt(runtime, name, at, true);
     pruneTimer = setInterval(sweep, 5000);
     loaded.runtime.watch.emit();
     // Never for an archive that is only being read: opening one warms nothing up.
@@ -433,7 +437,7 @@ app.whenReady().then(async () => {
     try { return await work; }
     catch (error) {
       // Out of room: nothing was stored and nothing is deleted. The session clock stops with the capture.
-      if (error?.code === STORAGE_FULL && session === loaded?.runtime) {
+      if (shouldPauseForStorageFull({ code: error?.code, session, currentSession: loaded?.runtime })) {
         await session.pause().catch(() => {});
         publishStorage();
       }

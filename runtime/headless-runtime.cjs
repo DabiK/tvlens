@@ -15,6 +15,7 @@ const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
 const { warmUp } = require("./session-warm-up.cjs");
 const { activeInstruction } = require("./active-instruction.cjs");
+const { sessionRows } = require("./session-rows.cjs");
 const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard } = require("../adapters/disk-guard.cjs");
 const { createCaptureIntake, READ_ONLY } = require("./capture-intake.cjs");
@@ -469,49 +470,18 @@ class HeadlessRuntime {
     const loaded = this.session,
       current = loaded?.id || null,
       listed = await this.library.list({ current });
-    let sessions = listed.map((summary) => ({
-      ...summary,
-      current: summary.id === current,
-      readOnly: summary.id === current && loaded.readOnly,
-      capturing: summary.id === current && this.capturing(loaded),
-    }));
-    if (loaded && !loaded.readOnly && this.sessionState) {
-      const state = this.sessionState,
-        stored = state.segments.filter((p) => p.available).length,
-        live = {
-          state: "live",
-          elapsedMs: loaded.watch.now(),
-          passages: state.coverage.passages,
-          media: {
-            stored,
-            missing: state.coverage.passages - stored,
-            bytes: loaded.storage().sessionBytes,
-          },
-        };
-      if (sessions.some((summary) => summary.current))
-        sessions = sessions.map((summary) =>
-          summary.current ? { ...summary, ...live } : summary,
-        );
-      else
-        sessions.unshift({
-          id: current,
-          title: loaded.manifest()?.title || "Session en cours",
-          firstTopic: null,
-          host: "server",
-          createdAt: null,
-          updatedAt: null,
-          closedAt: null,
-          legacy: false,
-          current: true,
-          readOnly: false,
-          capturing: this.capturing(loaded),
-          ...live,
-        });
-    }
+    const projected = sessionRows(listed, this.sessionState, {
+      current: loaded ? { ...this.described(loaded), title: loaded.manifest()?.title || null } : null,
+      capturing: this.capturing(loaded),
+      fallback: {
+        title: loaded?.manifest()?.title || "Session en cours",
+        host: "server", createdAt: null, updatedAt: null,
+      },
+      live: loaded ? { elapsedMs: loaded.watch.now(), sessionBytes: loaded.storage().sessionBytes } : {},
+    });
+    const sessions = projected.sessions;
     return {
-      current: loaded
-        ? { ...this.described(loaded), title: loaded.manifest()?.title || null }
-        : null,
+      current: projected.current,
       sessions: sessions.slice(0, SESSIONS_LISTED),
       total: sessions.length,
       storage: await this.library.usage(sessions),

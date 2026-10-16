@@ -1,33 +1,19 @@
+const { sessionRows: projectSessionRows } = require('../runtime/session-rows.cjs');
+
 function sessionRows(listed, loaded, now) {
   const id = loaded?.runtime.watch.id || null;
-  const sessions = [...listed];
-  if (loaded && !loaded.runtime.readOnly) {
-    const state = loaded.runtime.watch.snapshot();
-    const at = sessions.findIndex(s => s.id === id);
-    const stored = state.segments.filter(s => s.available).length;
-    const row = {
-      ...(at < 0 ? {
-        id, firstTopic: null, host: 'mac', createdAt: loaded.startedAt, updatedAt: now, closedAt: null, legacy: false,
-      } : sessions[at]),
-      title: loaded.title, state: 'live', elapsedMs: state.elapsedMs, passages: state.coverage.passages,
-      media: { stored, missing: state.coverage.passages - stored, bytes: state.storage?.sessionBytes ?? 0 },
-    };
-    if (at < 0) sessions.unshift(row);
-    else sessions[at] = row;
-  }
+  const watch = loaded?.runtime.watch;
   // The retention of the loaded session, not the setting of this host: an archive kept until deletion stays so here.
-  return {
+  return projectSessionRows(listed, loaded && !loaded.runtime.readOnly ? watch.snapshot() : null, {
     current: loaded ? {
-      id, title: loaded.title, elapsedMs: loaded.runtime.watch.now(), readOnly: loaded.runtime.readOnly,
-      accepting: loaded.runtime.watch.accepting,
-      retention: Number.isFinite(loaded.runtime.watch.retentionMs) ? 'rolling' : 'until-deleted',
-      retentionMs: Number.isFinite(loaded.runtime.watch.retentionMs) ? loaded.runtime.watch.retentionMs : null,
+      id, title: loaded.title, elapsedMs: watch.now(), readOnly: loaded.runtime.readOnly, accepting: watch.accepting,
+      retention: Number.isFinite(watch.retentionMs) ? 'rolling' : 'until-deleted',
+      retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null,
     } : null,
-    sessions: sessions.map(s => ({
-      ...s, current: s.id === id, readOnly: s.id === id && loaded.runtime.readOnly,
-      capturing: s.id === id && loaded.runtime.watch.accepting,
-    })),
-  };
+    capturing: watch?.accepting ?? false,
+    fallback: loaded ? { host: 'mac', createdAt: loaded.startedAt, updatedAt: now } : {},
+    live: loaded ? { title: loaded.title } : {},
+  });
 }
 
 module.exports = { sessionRows };
