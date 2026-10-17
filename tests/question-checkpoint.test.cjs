@@ -1,7 +1,5 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
 const {
   createQuestionCheckpoint,
 } = require("../runtime/question-checkpoint.cjs");
@@ -238,12 +236,4 @@ test("the delay is a parameter of the module, one second by default", (t) => {
   assert.equal(store.writes.length, 3, "not before a second");
   t.mock.timers.tick(1);
   assert.equal(store.writes.length, 4, "after a second");
-});
-
-test("the module loads nothing and reads neither the process, nor a disk, nor a network", () => {
-  const source = fs
-    .readFileSync(path.join(__dirname, "..", "runtime", "question-checkpoint.cjs"), "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "");
-  assert.doesNotMatch(source, /\brequire\(|\bprocess\b|\bfetch\b|\bimport\b/);
 });

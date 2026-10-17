@@ -32,6 +32,20 @@ table de couches et leur résolution relative :
   des drapeaux `watch.ending`, `watch.accepting`, `watch.readOnly`, `watch.closed` et `watch.asking`
   sont refusées. Les lectures, comparaisons et appels à `watch.setQuestionPending` restent permis ;
   ces transitions appartiennent au domaine.
+- Les accès globaux au temps dans `core/` (`Date.now`, `setTimeout`, `clearTimeout`, `setInterval`,
+  `clearInterval` et `AbortSignal.timeout`) ont un stock exact par fichier et par opération dans
+  `CORE_TIME_STOCK`. La garde compte les appels et références directs, qualifiés par `globalThis`
+  ou `global`, y compris les accès optionnels, les propriétés calculées par chaîne littérale et
+  les expressions `${…}` des gabarits. Elle ignore les commentaires et le texte des littéraux.
+  Tout ajout est refusé, même dans un fichier déjà excepté : la dépendance doit être injectée. Retirer un accès oblige
+  à diminuer ou supprimer son exception ; les effectifs nuls et les entrées vides sont refusés.
+  Ce stock fige la dette existante du cœur.
+- La table `PURE_MODULE_POLICIES` garde `runtime/session-closing.cjs` et
+  `runtime/question-checkpoint.cjs` sans import, accès à `process` ou réseau. Le protocole de fermeture
+  refuse aussi les accès globaux au temps. Le checkpoint conserve ses défauts injectables de
+  `setTimeout` et `clearTimeout`, conformément à l’[ADR 0015](docs/adr/0015-les-minuteries-du-checkpoint-des-questions-sont-injectees.md) :
+  sa pureté porte sur ses dépendances, et permet ces minuteries par défaut. Les interdictions
+  s'appliquent aussi aux expressions des gabarits et aux propriétés calculées par chaîne littérale.
 
 ## Vérifier une modification
 

@@ -18,7 +18,8 @@ const GUARD_NAMES = [
   'surveillance does not depend on DeepAsk or chat scheduling flags',
   'TV presentation uses classic scripts and guarded local CommonJS loads',
 ];
-const LAYER_GUARD_PATTERN = `^(${GUARD_NAMES.join('|')})$`;
+const TIME_GUARD = 'core global time access stock cannot grow or retain unused exceptions';
+const PURE_GUARD = 'pure module table enforces each module dependency and timer policy';
 
 function write(root, filename, source) {
   const target = path.join(root, filename);
@@ -42,10 +43,10 @@ function fixture(t) {
   return root;
 }
 
-function runGuard(root) {
+function runGuard(root, names = GUARD_NAMES) {
   const result = spawnSync(process.execPath, [
     '--test', '--test-concurrency=1', '--test-reporter=tap',
-    `--test-name-pattern=${LAYER_GUARD_PATTERN}`, 'tests/architecture.test.cjs',
+    `--test-name-pattern=^(${names.join('|')})$`, 'tests/architecture.test.cjs',
   ], {
     cwd: root,
     encoding: 'utf8',
@@ -54,14 +55,14 @@ function runGuard(root) {
   assert.ifError(result.error);
   const output = result.stdout + result.stderr;
   // Un filtre périmé ne doit jamais transformer une garde absente en succès.
-  for (const name of GUARD_NAMES) {
+  for (const name of names) {
     assert.ok(output.split('\n').some(line => /^(?:not )?ok \d+ - /.test(line) && line.endsWith(`- ${name}`)), output);
   }
   return { status: result.status, output };
 }
 
-function assertRejected(root, filename, diagnostic, ruleName) {
-  const result = runGuard(root);
+function assertRejected(root, filename, diagnostic, ruleName, names = GUARD_NAMES) {
+  const result = runGuard(root, names);
   assert.equal(result.status, 1, result.output);
   assert.ok(result.output.includes(filename), result.output);
   assert.match(result.output, /ERR_ASSERTION/);
@@ -72,6 +73,204 @@ function assertRejected(root, filename, diagnostic, ruleName) {
   }
   return result;
 }
+
+function timeFixture(t) {
+  const root = fixture(t);
+  fs.cpSync(path.join(__dirname, '..', 'core'), path.join(root, 'core'), { recursive: true });
+  return root;
+}
+
+function assertAccepted(root, names, t) {
+  const result = runGuard(root, names);
+  assert.equal(result.status, 0, result.output);
+  t.diagnostic(result.output);
+}
+
+for (const direction of ['increase', 'decrease']) {
+  test(`core time stock gives an actionable ${direction} diagnostic`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/video-tools.cjs';
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    const changed = direction === 'increase' ? source + '\nDate.now();' : source.replace('Date.now', 'injectedNow');
+    write(root, filename, changed);
+    const code = direction === 'increase' ? /global-time-increase/ : /global-time-unused-exception/;
+    const result = assertRejected(root, filename, code, TIME_GUARD, [TIME_GUARD]);
+    assert.match(result.output, /Date\.now/);
+    t.diagnostic(result.output);
+    write(root, filename, source);
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+for (const count of ['0', '-1', '0.5', 'NaN', 'Infinity', '"1"', 'true']) {
+  test(`core time stock rejects the invalid frozen count ${count}`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/video-tools.cjs';
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    write(root, filename, source.replace('Date.now', 'injectedNow'));
+    const guard = path.join(root, 'tests/architecture.test.cjs');
+    const original = fs.readFileSync(guard, 'utf8');
+    const row = "  'core/video-tools.cjs': { 'Date.now': 1 },\n";
+    fs.writeFileSync(guard, original.replace(row, `  'core/video-tools.cjs': { 'Date.now': ${count} },\n`));
+    t.diagnostic(assertRejected(root, filename, /Date\.now.*global-time-invalid-exception/, TIME_GUARD, [TIME_GUARD]).output);
+    fs.writeFileSync(guard, original.replace(row, ''));
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+for (const presence of ['present', 'absent']) {
+  test(`core time stock rejects an empty exception when its file is ${presence}`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/nested/stale.cjs';
+    if (presence === 'present') write(root, filename, 'module.exports = {};');
+    const guard = path.join(root, 'tests/architecture.test.cjs');
+    const original = fs.readFileSync(guard, 'utf8');
+    const marker = 'const CORE_TIME_STOCK = {';
+    fs.writeFileSync(guard, original.replace(marker, marker + `\n  '${filename}': {},`));
+    t.diagnostic(assertRejected(root, filename, /global-time-invalid-exception/, TIME_GUARD, [TIME_GUARD]).output);
+    fs.writeFileSync(guard, original);
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+const TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
+const COMPUTED_TIME_FORMS = [
+  ['member', operation => {
+    const [base, member] = operation.split('.');
+    return member ? `${base}['${member}']` : `globalThis['${base}']`;
+  }],
+  ['host', operation => {
+    const [base, member] = operation.split('.');
+    return `globalThis['${base}']` + (member ? `.${member}` : '');
+  }],
+  ['chain', operation => 'global' + operation.split('.').map(part => `["${part}"]`).join('')],
+];
+
+for (const [form, access] of COMPUTED_TIME_FORMS) {
+  for (const operation of TIME_OPERATIONS) {
+    test(`core time stock rejects literal computed ${form} ${operation} and accepts its removal`, t => {
+      const root = timeFixture(t);
+      const filename = 'core/nested/time.cjs';
+      write(root, filename, access(operation) + '();');
+      const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+      t.diagnostic(assertRejected(root, filename, diagnostic, TIME_GUARD, [TIME_GUARD]).output);
+      write(root, filename, 'const names = ["Date", "now", "setTimeout"]; clock["setTimeout"]();');
+      assertAccepted(root, [TIME_GUARD], t);
+    });
+  }
+}
+
+for (const operation of TIME_OPERATIONS) {
+  test(`core time stock rejects interpolated ${operation} and accepts its removal`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/nested/time.cjs';
+    write(root, filename, 'module.exports = () => `moment-${' + operation + '()}`;');
+    const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+    t.diagnostic(assertRejected(root, filename, diagnostic, TIME_GUARD, [TIME_GUARD]).output);
+    write(root, filename, 'module.exports = () => `moment-${clock()}`;');
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+for (const expression of [
+  '`nested-${`inner-${Date.now()}`}`',
+  '`object-${({ outer: { time: Date.now() } }).outer.time}`',
+  '`regex-${/[}\\`]/.test(text) ? Date.now() : 0}`',
+  '`comments-${/* } ` */ Date.now() // } `\n}`',
+  '`twice-${Date.now()}-${Date.now()}`',
+]) {
+  test(`core time stock rejects interpolated expressions with nested syntax: ${expression}`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/nested/time.cjs';
+    write(root, filename, 'module.exports = () => ' + expression + ';');
+    const count = expression.startsWith('`twice') ? 2 : 1;
+    t.diagnostic(assertRejected(root, filename, new RegExp(`Date\\.now.*${count}.*0`), TIME_GUARD, [TIME_GUARD]).output);
+    write(root, filename, 'module.exports = () => `literal-\\${Date.now()}`;');
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+for (const [index, operation] of TIME_OPERATIONS.entries()) {
+  test(`core time stock rejects a new ${operation} access and accepts its removal`, t => {
+    const root = timeFixture(t);
+    const filename = `core/nested/deeper/time${EXTENSIONS[index % EXTENSIONS.length]}`;
+    write(root, filename, `${operation};`);
+    const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+    t.diagnostic(assertRejected(root, filename, diagnostic, TIME_GUARD, [TIME_GUARD]).output);
+    write(root, filename, 'module.exports = {};');
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+test('core time stock counts a second identical access on the same line of an excepted file', t => {
+  const root = timeFixture(t);
+  const filename = 'core/moment-index.cjs';
+  const source = fs.readFileSync(path.join(root, filename), 'utf8');
+  write(root, filename, source.replace('setTimeout(fn, ms)', 'setTimeout(fn, ms) || setTimeout(fn, ms)'));
+  t.diagnostic(assertRejected(root, filename, /setTimeout.*2.*1/, TIME_GUARD, [TIME_GUARD]).output);
+  write(root, filename, source);
+  assertAccepted(root, [TIME_GUARD], t);
+});
+
+for (const removal of ['operation', 'file']) {
+  test(`core time stock rejects an unused exception after removing its ${removal}`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/video-tools.cjs';
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    if (removal === 'file') fs.unlinkSync(path.join(root, filename));
+    else write(root, filename, source.replace('Date.now', 'injectedNow'));
+    t.diagnostic(assertRejected(root, filename, /Date\.now.*0.*1/, TIME_GUARD, [TIME_GUARD]).output);
+    const guard = path.join(root, 'tests/architecture.test.cjs');
+    fs.writeFileSync(guard, fs.readFileSync(guard, 'utf8').replace("  'core/video-tools.cjs': { 'Date.now': 1 },\n", ''));
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+test('core time stock cannot compensate an operation or a file with another', t => {
+  const root = timeFixture(t);
+  const filename = 'core/moment-index.cjs';
+  const source = fs.readFileSync(path.join(root, filename), 'utf8');
+  write(root, filename, source.replace('setTimeout(fn, ms)', 'clearTimeout(fn, ms)'));
+  t.diagnostic(assertRejected(root, filename, /setTimeout|clearTimeout/, TIME_GUARD, [TIME_GUARD]).output);
+  write(root, filename, source);
+  const other = 'core/moment-search.cjs';
+  const otherSource = fs.readFileSync(path.join(root, other), 'utf8');
+  write(root, filename, source.replace('setTimeout(fn, ms)', 'injectedTimer(fn, ms)'));
+  write(root, other, otherSource + '\nsetTimeout;');
+  t.diagnostic(assertRejected(root, filename, /setTimeout/, TIME_GUARD, [TIME_GUARD]).output);
+  write(root, filename, source);
+  write(root, other, otherSource);
+  assertAccepted(root, [TIME_GUARD], t);
+});
+
+for (const qualifier of ['globalThis', 'global']) {
+  test(`core time stock counts ${qualifier} references with comments between member tokens`, t => {
+    const root = timeFixture(t);
+    const filename = 'core/nested/time.cjs';
+    for (const operation of TIME_OPERATIONS) {
+      write(root, filename, `${qualifier} /* host */ . ${operation.replace('.', ' /* member */ . ')};`);
+      const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+      t.diagnostic(assertRejected(root, filename, diagnostic, TIME_GUARD, [TIME_GUARD]).output);
+    }
+    write(root, filename, 'module.exports = {};');
+    assertAccepted(root, [TIME_GUARD], t);
+  });
+}
+
+test('core time stock ignores comments literals and injected timer members', t => {
+  const root = timeFixture(t);
+  const examples = TIME_OPERATIONS.join('; ');
+  write(root, 'core/nested/time.cjs', [
+    `// ${examples}`,
+    `/* ${examples} */`,
+    `const documentation = '${examples}';`,
+    `const template = \`${examples}\`;`,
+    'const pattern = /Date.now|setTimeout|clearTimeout|setInterval|clearInterval|AbortSignal.timeout/;',
+    'clock.setTimeout(); clock.clearTimeout(); clock.setInterval(); clock.clearInterval();',
+    'clock?.setTimeout(); clock?.["clearTimeout"]();',
+  ].join('\n'));
+  assertAccepted(root, [TIME_GUARD], t);
+});
 
 test('layer table rejects an adapter importing the runtime and accepts its removal', t => {
   const root = fixture(t);
@@ -249,6 +448,167 @@ const IMPORT_FORMS = [
   ['dynamic import', specifier => `import(\n '${specifier}'\n);`],
   ['side-effect import', specifier => `import "${specifier}";`],
 ];
+
+const PURE_MODULES = ['runtime/session-closing.cjs', 'runtime/question-checkpoint.cjs'];
+function pureFixture(t) {
+  const root = fixture(t);
+  for (const filename of PURE_MODULES) write(root, filename, fs.readFileSync(path.join(__dirname, '..', filename), 'utf8'));
+  return root;
+}
+
+for (const operation of TIME_OPERATIONS) {
+  for (const filename of ['core/nested/time.cjs', 'runtime/session-closing.cjs']) {
+    const inCore = filename.startsWith('core/');
+    const rule = inCore ? TIME_GUARD : PURE_GUARD;
+    const description = inCore ? 'core time stock' : 'pure module table';
+    test(`${description} rejects optional ${operation} accesses in ${filename}`, t => {
+      const root = inCore ? timeFixture(t) : pureFixture(t);
+      const source = inCore ? 'module.exports = {};' : fs.readFileSync(path.join(root, filename), 'utf8');
+      const expressions = [
+        `globalThis?.${operation}`,
+        'global?.' + operation.split('.').map(part => `['${part}']`).join('?.'),
+      ];
+      if (operation.includes('.')) expressions.push(operation.replace('.', '?.'));
+      for (const expression of expressions) {
+        write(root, filename, source + '\n' + expression + ';');
+        const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+        t.diagnostic(assertRejected(root, filename, diagnostic, rule, [rule]).output);
+        write(root, filename, source);
+        assertAccepted(root, [rule], t);
+      }
+    });
+  }
+}
+
+for (const filename of PURE_MODULES) {
+  test(`pure module table rejects optional dependency and host accesses in ${filename}`, t => {
+    const root = pureFixture(t);
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    for (const expression of ['module?.["require"]("node:fs")', 'globalThis?.["process"].cwd()', 'global?.["fetch"](url)']) {
+      write(root, filename, source + '\n' + expression + ';');
+      t.diagnostic(assertRejected(root, filename, /forbidden (import|process|fetch)/, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, source);
+      assertAccepted(root, [PURE_GUARD], t);
+    }
+  });
+}
+
+for (const filename of PURE_MODULES) {
+  for (const expression of [
+    'globalThis["require"]("node:fs")',
+    'module["require"]("node:fs")',
+    'globalThis["import"]("node:fs")',
+    'globalThis["process"].cwd()',
+    'globalThis["fetch"](url)',
+    'global["process"].cwd()',
+    'global["fetch"](url)',
+  ]) {
+    test(`pure module table rejects literal computed ${expression} in ${filename}`, t => {
+      const root = pureFixture(t);
+      const source = fs.readFileSync(path.join(root, filename), 'utf8');
+      write(root, filename, source + '\n' + expression + ';');
+      const diagnostic = /require|import/.test(expression) ? /forbidden import/ : /forbidden (process|fetch)/;
+      t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, source + '\nconst names = ["require", "import", "process", "fetch"];');
+      assertAccepted(root, [PURE_GUARD], t);
+    });
+  }
+}
+
+for (const [form, access] of COMPUTED_TIME_FORMS) {
+  for (const operation of TIME_OPERATIONS) {
+    test(`pure module table rejects literal computed ${form} ${operation} in the closing protocol`, t => {
+      const root = pureFixture(t);
+      const filename = 'runtime/session-closing.cjs';
+      const source = fs.readFileSync(path.join(root, filename), 'utf8');
+      write(root, filename, source + '\n' + access(operation) + '();');
+      const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+      t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, source);
+      assertAccepted(root, [PURE_GUARD], t);
+    });
+  }
+}
+
+for (const filename of PURE_MODULES) {
+  for (const expression of ['require("node:fs")', 'import("node:fs")', 'process.pid', 'fetch(url)']) {
+    test(`pure module table rejects interpolated ${expression} in ${filename} and accepts its removal`, t => {
+      const root = pureFixture(t);
+      const source = fs.readFileSync(path.join(root, filename), 'utf8');
+      write(root, filename, source + '\nconst value = `result-${' + expression + '}`;');
+      const diagnostic = /require|import/.test(expression) ? /forbidden import/ : /forbidden (process|fetch)/;
+      t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, source);
+      assertAccepted(root, [PURE_GUARD], t);
+    });
+  }
+}
+
+for (const operation of TIME_OPERATIONS) {
+  test(`pure module table rejects interpolated ${operation} in the closing protocol`, t => {
+    const root = pureFixture(t);
+    const filename = 'runtime/session-closing.cjs';
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    write(root, filename, source + '\nconst value = `result-${' + operation + '()}`;');
+    const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+    t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+    write(root, filename, source);
+    assertAccepted(root, [PURE_GUARD], t);
+  });
+}
+
+for (const filename of PURE_MODULES) {
+  for (const [form, statement] of IMPORT_FORMS) {
+    test(`pure module table rejects ${form} in ${filename} and accepts its removal`, t => {
+      const root = pureFixture(t);
+      const source = fs.readFileSync(path.join(root, filename), 'utf8');
+      write(root, filename, source + '\n' + statement('./module.cjs'));
+      t.diagnostic(assertRejected(root, filename, /import/, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, source);
+      assertAccepted(root, [PURE_GUARD], t);
+    });
+  }
+  for (const source of ['process.cwd();', 'fetch("https://example.test");', 'require(name);']) {
+    test(`pure module table rejects ${source} in ${filename} and accepts its removal`, t => {
+      const root = pureFixture(t);
+      const original = fs.readFileSync(path.join(root, filename), 'utf8');
+      write(root, filename, original + '\n' + source);
+      const diagnostic = source.startsWith('require') ? /import/ : /process|fetch/;
+      t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+      write(root, filename, original);
+      assertAccepted(root, [PURE_GUARD], t);
+    });
+  }
+}
+
+for (const operation of TIME_OPERATIONS) {
+  test(`pure module table rejects ${operation} in the closing protocol and permits checkpoint timer defaults`, t => {
+    const root = pureFixture(t);
+    const filename = 'runtime/session-closing.cjs';
+    const source = fs.readFileSync(path.join(root, filename), 'utf8');
+    write(root, filename, source + `\n${operation};`);
+    const diagnostic = new RegExp(operation.replaceAll('.', '\\.'));
+    t.diagnostic(assertRejected(root, filename, diagnostic, PURE_GUARD, [PURE_GUARD]).output);
+    write(root, filename, source);
+    assertAccepted(root, [PURE_GUARD], t);
+  });
+}
+
+test('pure module table ignores policy words in comments and literals and requires its modules to exist', t => {
+  const root = pureFixture(t);
+  const filename = 'runtime/session-closing.cjs';
+  write(root, filename, [
+    '// require("node:fs"); process.cwd(); fetch(); setTimeout();',
+    '/* import "node:fs"; clearTimeout(); */',
+    'const documentation = "process fetch require setTimeout";',
+    'module.exports = {};',
+  ].join('\n'));
+  assertAccepted(root, [PURE_GUARD], t);
+  fs.unlinkSync(path.join(root, filename));
+  t.diagnostic(assertRejected(root, filename, /must exist/, PURE_GUARD, [PURE_GUARD]).output);
+  write(root, filename, 'module.exports = {};');
+  assertAccepted(root, [PURE_GUARD], t);
+});
 
 for (const [form, statement] of IMPORT_FORMS) {
   test(`layer table checks ${form} and resolves parent imports across layers`, t => {

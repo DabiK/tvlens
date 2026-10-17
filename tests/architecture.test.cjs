@@ -14,6 +14,58 @@ const DEPENDENCY_ZONES = [
   { pattern: 'mcp/**', imports: ['mcp/**', 'core/**'] },
   { pattern: 'app/**', imports: ['app/**', 'core/**', 'adapters/**', 'runtime/**'] },
 ];
+const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
+// Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
+const CORE_TIME_STOCK = {
+  'core/deep-ask.cjs': { 'Date.now': 1, setTimeout: 2, clearTimeout: 2 },
+  'core/living-recap.cjs': { 'Date.now': 1, setTimeout: 1, clearTimeout: 1 },
+  'core/moment-index.cjs': { 'Date.now': 1, setTimeout: 1, clearTimeout: 1 },
+  'core/moment-search.cjs': { setTimeout: 1, clearTimeout: 1 },
+  'core/saved-moments.cjs': { 'Date.now': 1, 'AbortSignal.timeout': 1 },
+  'core/surveillance.cjs': { 'Date.now': 1 },
+  'core/video-tools.cjs': { 'Date.now': 1 },
+  'core/verification.cjs': { 'Date.now': 1 },
+};
+const PURE_MODULE_POLICIES = [
+  { filename: 'runtime/session-closing.cjs', allowTimers: false },
+  { filename: 'runtime/question-checkpoint.cjs', allowTimers: true },
+];
+const NETWORK_GLOBALS = ['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource'];
+
+function literalMemberTokens(tokens) {
+  const normalized = [];
+  const beforeExpression = /^(?:return|throw|case|yield|await|void|typeof|delete|new|in|of|instanceof|else|do)$/;
+  for (let index = 0; index < tokens.length; index++) {
+    if (tokens[index] === '?' && tokens[index + 1] === '.') {
+      if (tokens[index + 2] !== '[') normalized.push('.');
+      index++;
+      continue;
+    }
+    const previous = normalized.at(-1) ?? '';
+    const afterObject = /^[\w$]+$/.test(previous) && !beforeExpression.test(previous) || [')', ']', '}'].includes(previous);
+    const name = /^(['"])([\w$]+)\1$/.exec(tokens[index + 1] ?? '')?.[2];
+    if (afterObject && tokens[index] === '[' && name && tokens[index + 2] === ']') {
+      normalized.push('.', name);
+      index += 2;
+    } else normalized.push(tokens[index]);
+  }
+  return normalized;
+}
+
+function globalTimeAccesses(sourceTokens) {
+  const tokens = literalMemberTokens(sourceTokens);
+  const counts = {};
+  for (let index = 0; index < tokens.length; index++) {
+    const member = tokens[index - 1] === '.';
+    const globalMember = ['globalThis', 'global'].includes(tokens[index - 2]) && tokens[index - 3] !== '.';
+    if (member && !globalMember) continue;
+    for (const operation of GLOBAL_TIME_OPERATIONS) {
+      const parts = operation.split('.').flatMap((part, offset) => offset === 0 ? [part] : ['.', part]);
+      if (parts.every((part, offset) => tokens[index + offset] === part)) counts[operation] = (counts[operation] ?? 0) + 1;
+    }
+  }
+  return counts;
+}
 
 function zoneFor(filename) {
   return DEPENDENCY_ZONES.filter(zone => filename.startsWith(zone.pattern.slice(0, -2)))
@@ -55,25 +107,66 @@ function advanceRegexContext(value, tokens, state) {
   return closing ? context?.endsStatement === true : regexCanStartAfter(value);
 }
 
-function lexSource(source, filename) {
-  const token = /\s+|"(?:\\[\s\S]|[^"\\\r\n])*"|'(?:\\[\s\S]|[^'\\\r\n])*'|`(?:\\[\s\S]|[^`\\])*`|\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|[\w$]+|\+\+|--|=>|[^\s]/gy;
+function lexTemplate(source, filename, start) {
+  const tokens = ['(', '""'];
+  const parts = ['`'];
+  let segmentStart = start + 1;
+  let index = segmentStart;
+  while (index < source.length) {
+    if (source[index] === '\\') {
+      index += 2;
+      continue;
+    }
+    if (source[index] === '`') {
+      parts.push(source.slice(segmentStart, index + 1));
+      return { tokens: [...tokens, ')'], source: parts.join(''), end: index + 1 };
+    }
+    if (source.startsWith('${', index)) {
+      parts.push(source.slice(segmentStart, index + 2));
+      const expression = lexSource(source, filename, index + 2, true);
+      parts.push(expression.source, '}');
+      // Les bornes évitent de joindre des membres ou des conditions de deux interpolations.
+      tokens.push(',', '(', ...expression.tokens, ')');
+      index = expression.end + 1;
+      segmentStart = index;
+    } else index++;
+  }
+  assert.fail(`${filename}: unterminated template literal`);
+}
+
+function nextLexeme(source, token, regexp, regexAllowed) {
+  const index = token.lastIndex;
+  regexp.lastIndex = index;
+  // Le contexte distingue une regex d'une division, sans ouvrir de chaîne dans son corps.
+  const startsComment = source.startsWith('//', index) || source.startsWith('/*', index);
+  const literal = !startsComment && regexAllowed ? regexp.exec(source) : null;
+  if (!literal) return token.exec(source)[0];
+  token.lastIndex = regexp.lastIndex;
+  return literal[0];
+}
+
+function lexSource(source, filename, start = 0, interpolation = false) {
+  const token = /\s+|"(?:\\[\s\S]|[^"\\\r\n])*"|'(?:\\[\s\S]|[^'\\\r\n])*'|\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|[\w$]+|\+\+|--|=>|[^\s]/gy;
   const regexp = /\/(?:\\[^\r\n]|\[(?:\\[^\r\n]|[^\]\\\r\n])*\]|[^/\\[\r\n])+\/[a-z]*/y;
   const tokens = [];
   const parts = [];
   const context = { stack: [], closed: null };
   let regexAllowed = true;
+  token.lastIndex = start;
   while (token.lastIndex < source.length) {
     const index = token.lastIndex;
-    regexp.lastIndex = index;
-    // Le contexte distingue une regex d'une division, sans ouvrir de chaîne dans son corps.
-    const startsComment = source.startsWith('//', index) || source.startsWith('/*', index);
-    const literal = !startsComment && regexAllowed ? regexp.exec(source) : null;
-    let value;
-    if (literal) {
-      value = literal[0];
-      token.lastIndex = regexp.lastIndex;
-    } else value = token.exec(source)[0];
+    if (interpolation && source[index] === '}' && context.stack.length === 0) return { tokens, source: parts.join(''), end: index };
+    const value = nextLexeme(source, token, regexp, regexAllowed);
     assert.ok(value !== "'" && value !== '"', `${filename}: unterminated string literal`);
+    if (value === '`') {
+      const template = lexTemplate(source, filename, index);
+      parts.push(template.source);
+      tokens.push(...template.tokens);
+      token.lastIndex = template.end;
+      regexAllowed = false;
+      context.closed = null;
+      continue;
+    }
     if (value.startsWith('//') || value.startsWith('/*')) {
       parts.push(' ');
       continue;
@@ -84,6 +177,7 @@ function lexSource(source, filename) {
       tokens.push(value);
     }
   }
+  assert.ok(!interpolation, `${filename}: unterminated template interpolation`);
   return { tokens, source: parts.join('') };
 }
 
@@ -248,6 +342,46 @@ test('portable core does not access host globals', () => {
   for (const { relative, source, root } of inventory()) {
     if (root !== 'core') continue;
     assert.doesNotMatch(source, /\b(?:fetch|ipcRenderer|ipcMain|localStorage|document|window|process|Buffer)\s*[.(]/, relative);
+  }
+});
+test('core global time access stock cannot grow or retain unused exceptions', () => {
+  for (const [filename, operations] of Object.entries(CORE_TIME_STOCK)) {
+    assert.ok(Object.keys(operations).length > 0, `${filename}: global-time-invalid-exception: remove the empty file exception`);
+    for (const [operation, count] of Object.entries(operations)) {
+      assert.ok(Number.isInteger(count) && count > 0,
+        `${filename}: ${operation}: global-time-invalid-exception: frozen counts must be positive integers; remove unused exceptions`);
+    }
+  }
+  const actual = new Map(inventory().filter(module => module.root === 'core')
+    .map(({ relative, tokens }) => [relative, globalTimeAccesses(tokens)]));
+  const filenames = new Set([...actual.keys(), ...Object.keys(CORE_TIME_STOCK)]);
+  for (const filename of filenames) {
+    const observed = actual.get(filename) ?? {};
+    const expected = CORE_TIME_STOCK[filename] ?? {};
+    for (const operation of new Set([...Object.keys(observed), ...Object.keys(expected)])) {
+      const count = observed[operation] ?? 0;
+      const allowed = expected[operation] ?? 0;
+      const reason = count > allowed
+        ? 'global-time-increase: inject the time dependency; no new global access is allowed'
+        : 'global-time-unused-exception: lower or remove the frozen exception';
+      assert.equal(count, allowed, `${filename}: ${operation}: ${count} observed, ${allowed} frozen; ${reason}`);
+    }
+  }
+});
+test('pure module table enforces each module dependency and timer policy', () => {
+  for (const { filename, allowTimers } of PURE_MODULE_POLICIES) {
+    const module = inventory().find(module => module.relative === filename);
+    assert.ok(module, `${filename} must exist`);
+    const { imports, tokens } = module;
+    const members = literalMemberTokens(tokens);
+    const importAccess = members.find(token => token === 'require' || token === 'import');
+    assert.ok(imports.length === 0 && importAccess === undefined, `${filename}: forbidden import ${imports[0]?.specifier ?? importAccess}`);
+    const forbidden = members.find(token => token === 'process' || NETWORK_GLOBALS.includes(token));
+    assert.equal(forbidden, undefined, `${filename}: forbidden ${forbidden}`);
+    if (!allowTimers) {
+      const operations = Object.keys(globalTimeAccesses(tokens));
+      assert.equal(operations.length, 0, `${filename}: forbidden global time ${operations.join(', ')}`);
+    }
   }
 });
 test('shared runtime and headless transport do not import Electron', () => {
