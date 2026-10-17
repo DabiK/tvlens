@@ -5,7 +5,7 @@ const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
-const { CODEX_SESSION } = require("./helpers/codex-session.cjs");
+const { CODEX_SESSION, CAPACITY_EVENTS, STARTUP_WARNING_EVENTS } = require("./helpers/codex-session.cjs");
 
 const tickets = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tickets.mjs")).href);
 const tuning = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tune.mjs")).href);
@@ -1881,6 +1881,549 @@ const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 
 const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
 const correctedReview = (report) => report.replace(/^(CONSTATS[^\n]*)/m, "$1\nNON CORRIGÉS : 0");
 
+test("Codex retries a capacity failure in the same guarded thread before its only review and attempt", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["capacity-after-usage", ""]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  assert.deepEqual(calls[1].args.slice(0, 3), ["exec", "resume", calls[0].session]);
+  assert.deepEqual(calls.map(call => call.reviewCount), [0, 0]);
+  assert.deepEqual(calls.map(call => call.previousAlive), [false, false]);
+  for (const call of calls) {
+    assert.equal(call.args[call.args.indexOf("-m") + 1], "gpt-6.1-sol");
+    assert.ok(call.args.includes('model_reasoning_effort="high"'));
+    assert.ok(call.args.includes('approval_policy="never"'));
+    assert.ok(call.args.includes("--dangerously-bypass-hook-trust"));
+    noProcess(call.pid);
+  }
+  assert.notEqual(calls[0].run, calls[1].run);
+  assert.deepEqual(jsonLines(repo, "fake-hook-witnesses"), calls.map(call => ({ session: call.session, run: call.run })));
+  const retries = repo.events().filter(e => e.phase === "capacite-reprise");
+  assert.deepEqual(retries.map(e => [e.ticket, e.attempt, e.invocation, e.reprise, e.attente_ms]),
+    [["T001", 1, calls[0].run, 1, 15000]]);
+  const ended = repo.events().find(e => e.phase === "session-terminee");
+  assert.equal(ended.invocations.length, 2);
+  assert.equal(ended.relectures, 1);
+  assert.equal(ended.tours, 2);
+  assert.equal(ended.jetons.input_tokens, 20);
+  for (const [i, invocation] of ended.invocations.entries()) {
+    assert.equal(invocation.invocation, calls[i].run);
+    assert.equal(invocation.jetons.input_tokens, 10);
+    assert.equal(invocation.code, i === 0 ? 1 : 0);
+    assert.equal(jsonLines(repo, path.basename(invocation.trace)).filter(e => e.type === "turn.completed").length, 1);
+  }
+  assert.equal(jsonLines(repo, "codex-1.jsonl").filter(e => e.type === "thread.started").length, 2);
+  assert.equal(jsonLines(repo, "fake-review-calls")[0].model, "opus");
+  assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 1);
+  assert.equal(repo.events().some(e => e.phase === "tentative-refusee"), false);
+  assert.equal(repo.commits()[0], "T001: Add the greeting");
+});
+
+const capacityModule = () => import(pathToFileURL(path.join(__dirname, "../scripts/loop/codex-capacity.mjs")).href);
+
+test("a capacity stream stays pending until the child closes after its final output", async (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const { sessionState, streamSession } = await import(pathToFileURL(path.join(repo.root, "scripts/loop/codex-stream.mjs")).href);
+  const trace = path.join(repo.root, ".harness-state/held-stream.jsonl");
+  const pidFile = ".harness-state/held-child.pid";
+  fs.writeFileSync(trace, "");
+  let observed;
+  const output = new Promise(resolve => { observed = resolve; });
+  const watcher = fs.watch(trace, () => {
+    if (fs.readFileSync(trace, "utf8").includes('"turn.failed"')) observed();
+  });
+  const script = `
+const fs = require("node:fs");
+const hold = fs.watch(".harness-state", () => {});
+process.on("SIGTERM", () => { hold.close(); process.exitCode = 1; });
+fs.writeFileSync(${JSON.stringify(pidFile)}, String(process.pid));
+for (const event of ${JSON.stringify(CAPACITY_EVENTS)}) console.log(JSON.stringify(event));
+process.stdout.end();
+`;
+  const state = sessionState();
+  let finished = false;
+  const running = streamSession(repo.root, ["-e", script], repo.env({ TVLENS_CODEX_BIN: process.execPath }),
+    [trace], state, 5000, Date.now(), () => {}).then(code => {
+    finished = true;
+    observed();
+    return code;
+  });
+  let pid;
+  let code;
+  const release = () => {
+    if (!fs.existsSync(path.join(repo.root, pidFile))) return;
+    try {
+      process.kill(Number(repo.read(pidFile)), "SIGTERM");
+    } catch (error) {
+      if (error.code !== "ESRCH") throw error;
+    }
+  };
+  try {
+    await output;
+    assert.equal(state.capacity?.code, "CODEX_CAPACITY");
+    pid = Number(repo.read(pidFile));
+    assert.doesNotThrow(() => process.kill(pid, 0));
+    assert.equal(finished, false, "capacity output must not finish a live invocation");
+  } finally {
+    watcher.close();
+    release();
+    code = await running;
+  }
+  assert.equal(code, 1);
+  noProcess(pid);
+});
+
+for (const skip of [false, true]) {
+  test(`Codex passes each capacity delay to its timer unless explicitly skipped: ${skip}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    repo.write(codexDir + "fake-waits", "");
+    repo.write(".harness-state/fake-timer.cjs", `
+const fs = require("node:fs");
+const timers = require("node:timers/promises");
+timers.setTimeout = async (delay) => {
+  const dir = ".harness-state/tickets/T001/";
+  const invocations = fs.readFileSync(dir + "fake-codex-calls", "utf8").trim().split("\\n").length;
+  fs.appendFileSync(dir + "fake-waits", JSON.stringify({ delay, invocations }) + "\\n");
+};
+require("node:module").syncBuiltinESMExports();
+`);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_FAILURES: JSON.stringify(["capacity", "capacity", "capacity", ""]),
+      NODE_OPTIONS: `--require=${path.join(repo.root, ".harness-state/fake-timer.cjs")}`,
+      ...(skip ? { TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1" } : {}),
+    });
+    assert.equal(result.code, 0, result.out);
+    const waits = repo.read(codexDir + "fake-waits").trim().split("\n").filter(Boolean).map(JSON.parse);
+    assert.deepEqual(waits, skip ? [] : [
+      { delay: 15000, invocations: 1 }, { delay: 30000, invocations: 2 }, { delay: 60000, invocations: 3 },
+    ]);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 4);
+    assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+  });
+}
+
+test("capacity classification only accepts the characterized messages at the provider event boundary", async () => {
+  const { capacityFailure } = await capacityModule();
+  for (const event of CAPACITY_EVENTS) assert.equal(capacityFailure(event)?.code, "CODEX_CAPACITY");
+  for (const event of [
+    { type: "error", message: "rate_limit exceeded" },
+    { type: "turn.failed", error: { message: "HTTP 429" } },
+    { type: "error", message: "Authentication failed" },
+    { type: "error", message: "Quota exceeded" },
+    { type: "item.completed", item: { type: "agent_message", text: CAPACITY_EVENTS[0].message } },
+    { type: "item.completed", item: { type: "command_execution", aggregated_output: CAPACITY_EVENTS[0].message } },
+  ]) assert.equal(capacityFailure(event), null);
+});
+
+test("capacity retries cannot accept an invocation that has consumed the remaining deadline", async () => {
+  const { retryCapacity } = await capacityModule();
+  let time = 0;
+  const result = await retryCapacity(async () => {
+    time = 3000;
+    return { code: 0, session: "validated-thread" };
+  }, { timeoutMs: 2000, now: () => time });
+  assert.equal(result.code, 1);
+  assert.match(result.problem, /délai maximal/);
+});
+
+test("capacity retries share a deadline and stop after the three documented waits", async () => {
+  const { retryCapacity } = await capacityModule();
+  let time = 0;
+  const calls = [];
+  const waits = [];
+  const result = await retryCapacity(async request => {
+    calls.push(request);
+    time += 1000;
+    return { code: 1, capacity: { code: "CODEX_CAPACITY" }, session: "validated-thread", problem: "capacity" };
+  }, {
+    timeoutMs: 200000, now: () => time, wait: async delay => { waits.push(delay); time += delay; },
+  });
+  assert.deepEqual(waits, [15000, 30000, 60000]);
+  assert.deepEqual(calls.map(call => call.timeoutMs), [200000, 184000, 153000, 92000]);
+  assert.deepEqual(calls.map(call => call.session), [null, "validated-thread", "validated-thread", "validated-thread"]);
+  assert.deepEqual(calls.map(call => call.retry), [0, 1, 2, 3]);
+  assert.equal(result.code, 1);
+  assert.equal(result.exhausted, "limit");
+});
+
+for (const stage of ["invocation", "wait"]) {
+  test(`capacity retries stop at the shared deadline consumed by the ${stage}`, async () => {
+    const { retryCapacity } = await capacityModule();
+    let time = 0;
+    let calls = 0;
+    const waits = [];
+    const result = await retryCapacity(async () => {
+      calls++;
+      time += stage === "invocation" ? 6000 : 1000;
+      return { code: 1, capacity: { code: "CODEX_CAPACITY" }, session: "validated-thread" };
+    }, { timeoutMs: 20000, now: () => time, wait: async delay => { waits.push(delay); time += 20000; } });
+    assert.equal(calls, 1);
+    assert.deepEqual(waits, stage === "wait" ? [15000] : []);
+    assert.equal(result.code, 1);
+    assert.match(result.problem, /délai maximal/);
+    assert.equal(result.resumeImpossible, false);
+  });
+}
+
+test("Codex capacity exhaustion counts one refusal before a fresh attempt escalates normally", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "2"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["capacity", "capacity", "capacity", "capacity", ""]),
+    TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 5);
+  for (const call of calls.slice(1, 4)) {
+    assert.deepEqual(call.args.slice(0, 3), ["exec", "resume", calls[0].session]);
+    assert.ok(call.args.includes('model_reasoning_effort="high"'));
+  }
+  assert.deepEqual(calls[4].args.slice(0, 2), ["exec", "--json"]);
+  assert.notEqual(calls[4].session, calls[0].session);
+  assert.ok(calls[4].args.includes('model_reasoning_effort="xhigh"'));
+  assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+  assert.deepEqual(repo.events().filter(e => e.phase === "capacite-reprise").map(e => e.attente_ms), [15000, 30000, 60000]);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session-terminee").map(e => e.invocations.length), [4, 1]);
+  assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+  assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 2);
+});
+
+test("capacity during both useful corrections preserves their reports and budget until a new state is accepted", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["", "capacity", "", "capacity", ""]),
+    FAKE_REVIEWS: JSON.stringify([rejectedReview, correctedReview(rejectedReview), acceptedReview]),
+    FAKE_CODEX_GREETINGS: JSON.stringify(["hello", "pending first", "first corrected", "pending second", "second corrected"]),
+    TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 5);
+  assert.deepEqual(calls.map(call => call.reviewCount), [0, 1, 1, 2, 2]);
+  for (const i of [1, 3]) {
+    assert.equal(calls[i].args.at(-1), calls[i + 1].args.at(-1));
+    assert.ok(calls[i].args.at(-1).includes(codexDir + `relecture-${(i + 1) / 2}.md`));
+    assert.ok(calls[i + 1].greetingPresent);
+    assert.ok(calls[i + 1].greeting.includes(i === 1 ? "pending first" : "pending second"));
+  }
+  for (const call of calls.slice(1)) assert.equal(call.session, calls[0].session);
+  assert.equal(new Set(calls.map(call => call.run)).size, 5);
+  const reviews = jsonLines(repo, "fake-review-calls");
+  assert.equal(reviews.length, 3);
+  assert.ok(reviews[1].prompt.includes("revue-2.interdiff"));
+  assert.ok(reviews[2].prompt.includes("revue-3.interdiff"));
+  assert.ok(repo.read(codexDir + "revue-2.interdiff").includes("first corrected"));
+  assert.ok(repo.read(codexDir + "revue-3.interdiff").includes("second corrected"));
+  assert.ok(repo.read("core/greeting.cjs").includes("second corrected"));
+  assert.equal(repo.read(codexDir + "relecture-1.md"), rejectedReview);
+  assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(review => review.verdict), ["à corriger", "à corriger", "accepté"]);
+  assert.equal(repo.events().find(e => e.phase === "session-terminee").invocations.length, 5);
+  assert.equal(repo.commits()[0], "T001: Add the greeting");
+});
+
+for (const [source, type, diagnostic] of [
+  ["command_execution", "turn.failed", "Authentication failed"],
+  ["agent_message", "turn.failed", "Unknown provider failure"],
+  ["command_execution", "error", "Unknown provider failure"],
+  ["agent_message", "error", "Authentication failed"],
+]) {
+  test(`Codex refuses a non-capacity ${type} despite capacity text in ${source}: ${diagnostic}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const item = source === "command_execution"
+      ? { type: source, command: "cat fixture", aggregated_output: CAPACITY_EVENTS[0].message }
+      : { type: source, text: CAPACITY_EVENTS[0].message };
+    const events = [
+      { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+      { type: "item.completed", item }, { type, error: { message: diagnostic } },
+    ];
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_EVENTS: JSON.stringify([events]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    assert.equal(repo.events().some(e => e.phase === "capacite-reprise"), false);
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 0);
+    assert.ok(repo.failure().includes(diagnostic), repo.failure());
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+for (const failure of ["capacity-recovered", "capacity-tool", "capacity-stderr", "capacity-signal"]) {
+  test(`Codex only retries unrecovered provider capacity events: ${failure}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const terminal = ["capacity-stderr", "capacity-signal"].includes(failure);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_FAILURE: failure, TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, terminal ? 2 : 0, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    assert.equal(repo.events().some(e => e.phase === "capacite-reprise"), false);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, terminal ? 0 : 1);
+  });
+}
+
+test("Codex can start fresh after capacity only when no thread or work could have started", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["capacity-before-thread", ""]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 0, result.out);
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 2);
+  assert.deepEqual(calls.map(call => call.args.slice(0, 2)), [["exec", "--json"], ["exec", "--json"]]);
+  assert.equal(calls[1].greetingPresent, false);
+  assert.deepEqual(jsonLines(repo, "fake-hook-witnesses"), [{ session: calls[1].session, run: calls[1].run }]);
+});
+
+for (const work of [
+  { type: "turn.started" },
+  { type: "item.started", item: { type: "command_execution", command: "node --test" } },
+  { type: "item.completed", item: { type: "file_change", changes: [{ path: "core/greeting.cjs", kind: "add" }] } },
+]) {
+  test(`Codex refuses a missing identity after work instead of replacing the session on capacity: ${work.type}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_EVENTS: JSON.stringify([[work, ...CAPACITY_EVENTS]]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    assert.match(repo.failure(), /identité.*absente.*travail/);
+    assert.equal(repo.events().some(e => e.phase === "capacite-reprise"), false);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  });
+}
+
+for (const stage of ["before-turn-warnings", "before-thread-warnings"]) {
+  test(`startup warnings preserve a fresh guarded correction after a resume failure: ${stage}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_RESUME_FAILURE: stage, FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+    });
+    assert.equal(result.code, 0, result.out);
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, 3);
+    assert.deepEqual(calls.map(call => call.reviewCount), [0, 1, 1]);
+    assert.deepEqual(calls[1].args.slice(0, 3), ["exec", "resume", calls[0].session]);
+    assert.deepEqual(calls[2].args.slice(0, 2), ["exec", "--json"]);
+    assert.notEqual(calls[2].session, calls[0].session);
+    assert.equal(calls[2].args.at(-1), calls[1].args.at(-1));
+    assert.ok(calls[2].greetingPresent);
+    const fallback = repo.events().filter(e => e.phase === "reprise-impossible");
+    assert.equal(fallback.length, 1);
+    assert.match(fallback[0].raison, /resume unavailable before turn/);
+    assert.doesNotMatch(fallback[0].raison, /identité.*absente.*travail/);
+    if (stage === "before-thread-warnings") assert.match(fallback[0].raison, /hooks Codex non chargés/);
+    const invocations = repo.events().find(e => e.phase === "session-terminee").invocations;
+    const stream = jsonLines(repo, path.basename(invocations[1].trace));
+    const identity = stage === "before-turn-warnings" ? [{ type: "thread.started", thread_id: calls[0].session }] : [];
+    assert.deepEqual(stream, [...identity, ...STARTUP_WARNING_EVENTS, { type: "error", message: "resume unavailable before turn" }]);
+    assert.deepEqual(JSON.parse(repo.read(codexDir + "hooks-started.json")), { session: calls[2].session, run: calls[2].run });
+    assert.equal(new Set(calls.map(call => call.run)).size, 3);
+    assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(review => review.verdict), ["à corriger", "accepté"]);
+    assert.equal(repo.commits()[0], "T001: Add the greeting");
+  });
+}
+
+for (const hooks of ["missing", "missing-on-resume", "stale-on-resume", "foreign"]) {
+  test(`capacity during the initial invocation never bypasses hook or identity confinement: ${hooks}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const resumed = hooks !== "missing";
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_FAILURES: JSON.stringify(resumed ? ["capacity", "capacity", ""] : ["capacity", ""]),
+      FAKE_CODEX_HOOKS: hooks === "foreign" ? "valid" : hooks,
+      ...(hooks === "foreign" ? { FAKE_CODEX_RESUME_SESSION: "foreign-thread" } : {}),
+      TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, resumed ? 2 : 1);
+    assert.equal(repo.events().some(e => e.phase === "reprise-impossible"), false);
+    assert.equal(repo.events().filter(e => e.phase === "capacite-reprise").length, resumed ? 1 : 0);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+test("capacity resume option failure refuses the initial invocation before any review", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["capacity", ""]), FAKE_CODEX_UNSUPPORTED_RESUME: "--disable",
+    TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+  assert.equal(jsonLines(repo, "fake-help-calls").length, 1);
+  assert.equal(repo.events().some(e => e.phase === "reprise-impossible"), false);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+});
+
+for (const failure of ["options", "hooks", "identity"]) {
+  test(`a capacity retry during correction refuses ${failure} failure without a fresh fallback or another review`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const foreign = [{ type: "thread.started", thread_id: "foreign-thread" }, { type: "turn.started" }, { type: "turn.completed" }];
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+      FAKE_CODEX_FAILURES: JSON.stringify(["", "capacity", ""]),
+      FAKE_CODEX_UNSUPPORTED_RESUMES: JSON.stringify(failure === "options" ? [null, "", "--disable"] : []),
+      FAKE_CODEX_HOOKS_BY_INVOCATION: JSON.stringify(failure === "hooks" ? ["valid", "valid", "missing"] : []),
+      FAKE_CODEX_EVENTS: JSON.stringify(failure === "identity" ? [null, null, foreign] : []),
+      TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(repo.events().some(e => e.phase === "reprise-impossible"), false, "a capacity retry cannot restart a correction");
+    assert.equal(result.code, 2, result.out);
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, failure === "options" ? 2 : 3);
+    assert.deepEqual(calls.map(call => call.reviewCount), failure === "options" ? [0, 1] : [0, 1, 1]);
+    for (const call of calls.slice(1)) {
+      assert.deepEqual(call.args.slice(0, 3), ["exec", "resume", calls[0].session]);
+      assert.ok(call.args.at(-1).includes(rejectedReview));
+      assert.ok(call.args.at(-1).includes(codexDir + "relecture-1.md"));
+    }
+    assert.equal(jsonLines(repo, "fake-help-calls").length, 2);
+    assert.equal(jsonLines(repo, "fake-review-calls").length, 1);
+    assert.deepEqual(jsonLines(repo, "relectures.jsonl").map(review => review.verdict), ["à corriger"]);
+    assert.equal(repo.events().filter(e => e.phase === "capacite-reprise").length, 1);
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    const invocations = repo.events().find(e => e.phase === "session-terminee").invocations;
+    assert.deepEqual(invocations.map(invocation => [invocation.reprise, invocation.code]), [[0, 0], [0, 1], [1, 1]]);
+    const diagnostics = { options: /options requises de reprise/, hooks: /hooks Codex non chargés/, identity: /session changée/ };
+    assert.match(repo.failure(), diagnostics[failure]);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+for (const source of ["discovery", "stream"]) {
+  test(`invocation diagnostics remain bounded in events and session reports after ${source} failure`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const diagnostic = "provider detail ".repeat(800);
+    const events = [
+      { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" }, { type: "error", message: diagnostic },
+    ];
+    const scenario = source === "discovery" ? {
+      FAKE_CODEX_FAILURES: JSON.stringify(["capacity", ""]), FAKE_CODEX_UNSUPPORTED_RESUME: "--disable",
+      FAKE_CODEX_HELP_DIAGNOSTIC: diagnostic,
+    } : { FAKE_CODEX_EVENTS: JSON.stringify([events]), FAKE_CODEX_HOOKS: "missing" };
+    const result = repo.codex(["--attempts", "1"], { ...scenario, TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1" });
+    assert.equal(result.code, 2, result.out);
+    const invocations = repo.events().filter(e => e.phase === "invocation-terminee");
+    assert.equal(invocations.length, source === "discovery" ? 2 : 1);
+    const reports = repo.events().find(e => e.phase === "session-terminee").invocations;
+    assert.equal(reports.length, invocations.length);
+    for (const entry of [...invocations, ...reports]) {
+      assert.ok(entry.problem.length <= 2000, `The invocation diagnostic contains ${entry.problem.length} characters`);
+    }
+    const problem = invocations.at(-1).problem;
+    assert.match(problem, /provider detail/);
+    if (source === "discovery") assert.match(problem, /options requises de reprise/);
+    if (source === "stream") assert.match(problem, /hooks Codex non chargés.*non approuvés.*propriétaire.*codex.*\/hooks/);
+    assert.equal(reports.at(-1).problem, problem);
+    assert.equal(repo.failure().trim(), problem);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+for (const refusal of ["hooks", "changed identity", "missing identity"]) {
+  test(`a bounded correction diagnostic retains its confinement reason after a long stream failure: ${refusal}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const missingIdentity = refusal === "missing identity";
+    const session = refusal === "changed identity" ? "foreign-thread" : "codex-thread-1";
+    const events = [
+      ...(missingIdentity ? [] : [{ type: "thread.started", thread_id: session }]),
+      { type: "turn.started" }, { type: "error", message: "provider detail ".repeat(800) },
+    ];
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_REVIEWS: JSON.stringify([rejectedReview, acceptedReview]),
+      FAKE_CODEX_EVENTS: JSON.stringify([null, events]),
+      FAKE_CODEX_HOOKS_BY_INVOCATION: JSON.stringify(["valid", refusal === "hooks" ? "missing" : "valid"]),
+    });
+    assert.equal(result.code, missingIdentity ? 2 : 0, result.out);
+    const invocations = repo.events().filter(e => e.phase === "invocation-terminee");
+    assert.equal(invocations.length, missingIdentity ? 2 : 3);
+    const problem = invocations[1].problem;
+    assert.ok(problem.length <= 2000, `The correction diagnostic contains ${problem.length} characters`);
+    assert.match(problem, /provider detail/);
+    const reasons = {
+      hooks: /hooks Codex non chargés.*non approuvés.*hors du dépôt approuvé.*propriétaire.*codex.*\/hooks/,
+      "changed identity": /session changée.*codex-thread-1 attendue, foreign-thread reçue/,
+      "missing identity": /identité de session absente.*début du travail.*reprise refusée/,
+    };
+    assert.match(problem, reasons[refusal]);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").invocations[1].problem, problem);
+    const fallback = repo.events().filter(e => e.phase === "reprise-impossible");
+    assert.equal(fallback.length, missingIdentity ? 0 : 1);
+    if (missingIdentity) {
+      assert.equal(repo.failure().trim(), problem);
+      assert.deepEqual(repo.commits(), ["init"]);
+    } else {
+      assert.equal(fallback[0].raison, problem);
+      assert.equal(repo.commits()[0], "T001: Add the greeting");
+    }
+    assert.equal(jsonLines(repo, "fake-review-calls").length, missingIdentity ? 1 : 2);
+  });
+}
+
+test("an oversized capacity resume identity keeps the refusal diagnostic bounded without another invocation", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURE: "capacity", FAKE_CODEX_RESUME_SESSION: "x".repeat(4000), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.ok(repo.failure().length <= 2000, `The refusal contains ${repo.failure().length} characters`);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+});
+
+for (const failure of ["capacity-error-only", "capacity-failed-only"]) {
+  test(`Codex resumes each characterized standalone capacity event: ${failure}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--attempts", "1"], {
+      FAKE_CODEX_FAILURES: JSON.stringify([failure, ""]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, 0, result.out);
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].session, calls[0].session);
+    assert.equal(calls[1].previousAlive, false);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").invocations[0].capacity.code, "CODEX_CAPACITY");
+  });
+}
+
+test("a capacity retry without a completed turn cannot trigger review despite a finished verdict", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const unfinished = [{ type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" }];
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_FAILURES: JSON.stringify(["capacity", ""]), FAKE_CODEX_EVENTS: JSON.stringify([null, unfinished]),
+    TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
 for (const engine of ["claude", "codex"]) {
   for (const change of ["add", "remove", "delete"]) {
     test(`the gates refuse ${engine} when its session makes an untracked list change: ${change}`, (t) => {
@@ -2125,6 +2668,31 @@ test("a failed Codex process without its hook witness retains the failure and ex
   assert.equal(result.code, 2, result.out);
   assert.match(repo.failure(), /processus en échec/);
   assert.match(repo.failure(), /hooks Codex non chargés.*non approuvés.*hors du dépôt approuvé.*propriétaire.*codex.*\/hooks/);
+  assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a failed Codex process with long stderr preserves its hook refusal and approval remedy within the diagnostic bound", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const stderr = "process detail ".repeat(800);
+  const result = repo.codex(["--attempts", "1"], {
+    FAKE_CODEX_HOOKS: "missing", FAKE_CODEX_FAILURE: "exit", FAKE_CODEX_STDERR: stderr,
+  });
+  assert.equal(result.code, 2, result.out);
+  const invocations = repo.events().filter(e => e.phase === "invocation-terminee");
+  assert.equal(invocations.length, 1);
+  const problem = invocations[0].problem;
+  assert.ok(problem.length <= 2000, `The process diagnostic contains ${problem.length} characters`);
+  assert.match(problem, /processus en échec \(code 1\)/);
+  assert.match(problem, /process detail/);
+  assert.match(problem, /hooks Codex non chargés.*non approuvés.*hors du dépôt approuvé.*propriétaire.*codex.*\/hooks/);
+  const ended = repo.events().find(e => e.phase === "session-terminee");
+  assert.equal(ended.invocations[0].problem, problem);
+  assert.equal(ended.relectures, 0);
+  assert.equal(repo.events().find(e => e.phase === "tentative-refusee").raison, problem);
+  assert.equal(repo.failure().trim(), problem);
+  assert.equal(repo.read(invocations[0].trace + ".stderr"), stderr);
   assert.equal(fs.existsSync(path.join(repo.root, codexDir, "fake-review-calls")), false);
   assert.deepEqual(repo.commits(), ["init"]);
 });
