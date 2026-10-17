@@ -254,6 +254,9 @@ ni le débit soutenu, ni l’état installé. Les mesures datées et leurs limit
 [validation](validation.md). Le backend local optionnel est raccordé par `LocalVlmAgent` ; une validation
 matérielle GX10 reste distincte des preuves contre un faux serveur.
 
+La boucle de tickets confie ses processus successifs à `scripts/loop/restart.mjs` : après intégration
+de ses modules, elle conserve verrou, lancement et compteurs en rechargeant le code (ADR 0056).
+
 ## Décisions
 
 Chaque entrée renvoie au texte daté de la décision. Les statuts et preuves historiques de ces ADR
@@ -428,3 +431,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0055](adr/0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md) :
   La Mémoire conserve les passages sans balayage temporel ; les archives historiques restent lisibles
   et les simulations utilisent la conservation durable.
+
+- [ADR 0056](adr/0056-la-boucle-releve-son-processus-apres-integration-de-ses-modules.md) :
+  La boucle relève son processus après intégration de ses modules, sans perdre le lancement ni les compteurs.

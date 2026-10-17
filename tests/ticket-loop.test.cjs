@@ -2,6 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { spawn } = require("node:child_process");
 const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
 const { CODEX_SESSION } = require("./helpers/codex-session.cjs");
@@ -185,6 +186,36 @@ const scenario = process.env.FAKE_SCENARIO;
 if (scenario === "silent") process.exit(0);
 fs.appendFileSync(process.env.TVLENS_TICKET_FILE, "- jalon : attempt " + attempt + "\\n");
 const scenarios = {
+  "stop-worker"() {
+    process.kill(process.ppid, process.env.FAKE_WORKER_SIGNAL);
+    process.exit(0);
+  },
+  "reload-module"() {
+    write(path.join(dir, "loop-observed.json"), JSON.stringify({
+      pid: process.ppid, lock: fs.readFileSync(".harness-state/loop/lock", "utf8"), plan,
+      args: process.argv.slice(2), cwd: process.cwd(), marker: process.env.FAKE_MARKER,
+      window: process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW,
+    }));
+    if (id === "T001") {
+      const file = process.env.FAKE_RELOAD_MODULE;
+      if (file === "scripts/loop/models.mjs") {
+        write(file, fs.readFileSync(file, "utf8").replaceAll("claude-sonnet-5-5", "fresh model with spaces"));
+        if (process.env.FAKE_RELOAD_APPEND) fs.appendFileSync(file, process.env.FAKE_RELOAD_APPEND);
+      } else {
+        fs.appendFileSync(file, process.env.FAKE_RELOAD_APPEND || "\\n// Une documentation sans effet.\\n");
+      }
+    }
+    if (id === "T002" && process.env.FAKE_HOLD_SECOND === "1") {
+      process.kill(process.ppid, "SIGSTOP");
+      write(".harness-state/second-ready", String(process.ppid));
+      process.kill(Number(process.env.FAKE_OBSERVER_PID), "SIGWINCH");
+    }
+    if (process.env.FAKE_OBSERVER_PID) process.stderr.write(id + " agent stderr\\n");
+    greeting();
+    review();
+    if (["1", id].includes(process.env.FAKE_RELOAD_AFTER_REVIEW)) write("core/greeting.cjs", "module.exports = 'changed';\\n");
+    verdict("TERMINÉ");
+  },
   done() {
     greeting();
     review();
@@ -2779,3 +2810,407 @@ for (const section of ["### Synthèse", "#### Critères d'acceptation", "### Sui
       [`${codexDir}relecture-2.md : ${finding}`]);
   });
 }
+
+const reloadRepo = () => loopRepo({
+  "docs/travail/tickets/001-add-greeting.md": ticketText({ harnais: "oui", niveau: "simple" }),
+  "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+  "docs/travail/tickets/003-add-welcome.md": ticketText({ id: "T003", titre: "Add the welcome" }),
+});
+const observedLoop = (repo, id) => JSON.parse(repo.read(`.harness-state/tickets/${id}/loop-observed.json`));
+
+for (const module of ["scripts/loop/models.mjs", "scripts/quality/ratchet.mjs"]) {
+  test(`an integrated module is loaded by a fresh instance before the next ticket: ${module}`, (t) => {
+    const repo = reloadRepo();
+    t.after(repo.cleanup);
+    const append = '\nif (process.argv[1]?.endsWith("loop/run.mjs")) {\n' +
+      '  fs.appendFileSync(".harness-state/quality-loaded", String(process.pid) + "\\n");\n}\n';
+    const result = repo.loop("reload-module", ["--max", "2", "--ticket", "T001", "--no-retro"], {
+      FAKE_RELOAD_MODULE: module, FAKE_RELOAD_APPEND: module.includes("quality") ? append : "",
+      FAKE_MARKER: "inherited value with spaces",
+    });
+    assert.equal(result.code, 0, result.out);
+    const first = observedLoop(repo, "T001");
+    const second = observedLoop(repo, "T002");
+    assert.notEqual(second.pid, first.pid, "the next ticket must run in a new loop process");
+    assert.equal(first.lock, String(first.pid));
+    assert.equal(second.lock, String(second.pid));
+    assert.equal(second.cwd, repo.root);
+    assert.equal(second.marker, "inherited value with spaces");
+    if (module.includes("models")) assert.equal(second.plan.model, "fresh model with spaces");
+    else assert.equal(repo.read(".harness-state/quality-loaded"), `${second.pid}\n`);
+    assert.deepEqual(repo.commits(), ["T002: Add the farewell", "T001: Add the greeting", "init"]);
+    assert.equal(repo.read(".harness-state/tickets/T002/fake-attempts"), "1");
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T003")), false);
+    assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.ticket), ["T001", "T002"]);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+    assert.equal(repo.git("status", "--porcelain").stdout, "");
+  });
+}
+
+function startObservedLoop(t, repo, args, env = {}) {
+  const output = path.join(repo.root, ".harness-state/output.log");
+  fs.writeFileSync(output, "existing output\n");
+  const fd = fs.openSync(output, "a");
+  const child = spawn(process.execPath, ["scripts/loop/run.mjs", "--no-push", ...args], {
+    cwd: repo.root, detached: true, stdio: ["ignore", fd, fd],
+    env: repo.env({ TVLENS_CLAUDE_BIN: path.join(repo.root, ".harness-state/fake-claude.cjs"),
+      FAKE_SCENARIO: "reload-module", FAKE_OBSERVER_PID: String(process.pid), ...env }),
+  });
+  fs.closeSync(fd);
+  const ended = new Promise((resolve, reject) => {
+    child.once("error", reject);
+    child.once("close", (code, signal) => resolve({ code, signal }));
+  });
+  const signal = (name) => {
+    try {
+      process.kill(-child.pid, name);
+    } catch (error) {
+      if (error.code !== "ESRCH") throw error;
+    }
+  };
+  t.after(async () => {
+    signal("SIGCONT");
+    signal("SIGTERM");
+    await ended;
+  });
+  const waitFor = (name) => new Promise((resolve, reject) => {
+    const file = path.join(repo.root, ".harness-state", name);
+    const check = () => {
+      if (!fs.existsSync(file)) return;
+      const value = fs.readFileSync(file, "utf8");
+      if (!value) return;
+      process.off("SIGWINCH", check);
+      resolve(value);
+    };
+    ended.then(() => {
+      if (!fs.existsSync(file)) {
+        process.off("SIGWINCH", check);
+        reject(new Error(`The loop exited before ${name}: ${repo.read(".harness-state/output.log")}`));
+      }
+    }, reject);
+    process.on("SIGWINCH", check);
+    t.after(() => process.off("SIGWINCH", check));
+    check();
+  });
+  return { child, ended, waitFor, output, signal };
+}
+
+const holdSuccessor = [
+  'import { spawnSync as notifyLoop } from "node:child_process";',
+  'if (process.send && process.argv[1]?.endsWith("loop/run.mjs")) {',
+  '  const notify = \'process.kill(Number(process.argv[1]), "SIGSTOP");\' +',
+  '    \'require("node:fs").writeFileSync(".harness-state/successor-ready", process.argv[1]);\' +',
+  '    \'process.kill(Number(process.env.FAKE_OBSERVER_PID), "SIGWINCH");\';',
+  '  notifyLoop(process.execPath, ["-e", notify, String(process.pid)]);',
+  '  process.stderr.write("successor stderr\\n");',
+  '}',
+  '',
+].join("\n");
+
+const noProcess = (pid) => assert.throws(() => process.kill(pid, 0), { code: "ESRCH" });
+
+for (const failure of ["SIGINT", "SIGTERM", "exception", "exit-code"]) {
+  test(`a stopped first instance preserves its exit without a handover failure: ${failure}`, { timeout: 20000 }, async (t) => {
+    const repo = reloadRepo();
+    const crash = [
+      'if (process.send) process.on("SIGUSR2", () => {',
+      '  if (process.env.FAKE_WORKER_STOP === "exception") throw new TypeError("simulated worker failure");',
+      '  process.exit(7);',
+      '});',
+      '',
+    ].join("\n");
+    repo.write("scripts/loop/models.mjs", repo.read("scripts/loop/models.mjs") + "\n" + crash);
+    assert.equal(repo.git("add", "scripts/loop/models.mjs").code, 0);
+    assert.equal(repo.git("commit", "-q", "-m", "worker failure fixture").code, 0);
+    const signal = failure.startsWith("SIG") ? failure : null;
+    const run = startObservedLoop(t, repo, ["--max", "2", "--no-retro"], {
+      FAKE_SCENARIO: "stop-worker", FAKE_WORKER_SIGNAL: signal ?? "SIGUSR2", FAKE_WORKER_STOP: failure,
+    });
+    t.after(repo.cleanup);
+    const ended = await run.ended;
+    const code = failure === "exception" ? 1 : 7;
+    assert.equal(repo.events().some(e => e.phase === "relance-echouee"), false);
+    assert.deepEqual(ended, { code: signal ? null : code, signal });
+    assert.doesNotMatch(repo.read(".harness-state/output.log"), /La relève de la boucle a échoué/);
+    if (failure === "exception") assert.match(repo.read(".harness-state/output.log"), /TypeError: simulated worker failure/);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+    noProcess(Number(repo.read(".harness-state/loop/lock")));
+    noProcess(run.child.pid);
+    noProcess(-run.child.pid);
+  });
+}
+
+test("a held handover keeps one owner, the launch history and redirected output", { timeout: 20000 }, async (t) => {
+  const repo = reloadRepo();
+  const run = startObservedLoop(t, repo, ["--max", "2", "--no-retro"], {
+    FAKE_RELOAD_MODULE: "scripts/loop/models.mjs", FAKE_RELOAD_APPEND: "\n" + holdSuccessor, FAKE_HOLD_SECOND: "1",
+  });
+  t.after(repo.cleanup);
+  const successor = Number(await run.waitFor("successor-ready"));
+  const first = observedLoop(repo, "T001");
+  noProcess(first.pid);
+  assert.equal(repo.read(".harness-state/loop/lock"), String(run.child.pid));
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+  const before = fs.statSync(path.join(repo.root, ".harness-state/loop/lock")).mtimeMs;
+  const ordinary = repo.loop("done", ["--no-retro"]);
+  assert.equal(ordinary.code, 1, ordinary.out);
+  assert.match(ordinary.out, /Une boucle tourne déjà/);
+  process.kill(successor, "SIGCONT");
+  assert.equal(Number(await run.waitFor("second-ready")), successor);
+  assert.equal(repo.read(".harness-state/loop/lock"), String(successor));
+  noProcess(first.pid);
+  const { createReader } = await import(pathToFileURL(path.join(__dirname, "../scripts/watch-loop/reader.mjs")).href);
+  const { analyzeEvents, launchEvents } = await import(pathToFileURL(path.join(__dirname, "../scripts/loop-view/events.mjs")).href);
+  const state = createReader(repo.root, { commandOf: () => "node scripts/loop/run.mjs --max 2 --no-retro" }).read(Date.now());
+  assert.equal(state.loop.pid, successor);
+  assert.ok(Math.abs(state.loop.launchedAt - before) < 0.01);
+  assert.equal(state.loop.maxTickets, 2);
+  assert.equal(state.loop.retrospective, false);
+  const visible = analyzeEvents(launchEvents(state.events, state.loop), { since: state.loop.launchedAt });
+  assert.deepEqual(visible.finished.map(e => e.id), ["T001"]);
+  assert.equal(visible.current.id, "T002");
+  process.kill(successor, "SIGCONT");
+  assert.deepEqual(await run.ended, { code: 0, signal: null });
+  noProcess(successor);
+  noProcess(run.child.pid);
+  noProcess(-run.child.pid);
+  const output = repo.read(".harness-state/output.log");
+  assert.ok(output.startsWith("existing output\n"));
+  for (const id of ["T001", "T002"]) assert.match(output, new RegExp(`${id} intégré`));
+  assert.match(output, /successor stderr/);
+  assert.equal(repo.events().filter(e => e.phase === "integre").length, 2);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+});
+
+test("fixed options, initial exclusions and tuning counters survive a module reload", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  repo.write("notes/café personnel.md", "mine\n");
+  seedJournal(repo, [observation({ id: "R-T008-1", impact: "fort" })]);
+  repo.write(".claude/skills/ticket/SKILL.md", "# Ticket\n");
+  repo.git("add", ".claude/skills/ticket/SKILL.md");
+  repo.git("commit", "-q", "-m", "instructions");
+  const args = ["--max", "2", "--ticket", "T001", "--no-retro", "--tune-every", "2", "--model", "custom model with spaces",
+    "--effort", "max", "--permission-mode", "mode with spaces", "--budget-usd", "3", "--timeout-min", "7", "--compact-window", "12345"];
+  const result = repo.loop("reload-module", args, { FAKE_RELOAD_MODULE: "scripts/loop/models.mjs", FAKE_TUNE: "edits-skill" });
+  assert.equal(result.code, 0, result.out);
+  for (const id of ["T001", "T002"]) {
+    const call = observedLoop(repo, id);
+    assert.deepEqual(call.plan, { model: "custom model with spaces", effort: "max", review: null });
+    assert.equal(call.window, "12345");
+    for (const [key, value] of [["--permission-mode", "mode with spaces"], ["--max-budget-usd", "3"]]) {
+      assert.equal(call.args[call.args.indexOf(key) + 1], value);
+    }
+    assert.equal(fs.existsSync(path.join(repo.root, `.harness-state/tickets/${id}/fake-retro-call`)), false);
+    assert.deepEqual(JSON.parse(repo.read(`.harness-state/tickets/${id}/untracked-before.json`)), ["notes/café personnel.md"]);
+  }
+  const phases = repo.events().map(e => e.phase);
+  assert.ok(phases.indexOf("relance") < phases.indexOf("harmonisation"), phases.join(","));
+  assert.equal(phases.filter(p => p === "harmonisation").length, 1);
+  assert.equal(phases.filter(p => p === "harmonisation-integree").length, 1);
+  assert.equal(repo.read("notes/café personnel.md"), "mine\n");
+  assert.doesNotMatch(repo.git("log", "--name-only", "--format=", "-3").stdout, /notes/);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T003")), false);
+});
+
+test("the due retrospective and tuning finish once in the retiring instance before the successor starts", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  seedJournal(repo, [observation({ id: "R-T008-1", impact: "fort" })]);
+  repo.write(".claude/skills/ticket/SKILL.md", "# Ticket\n");
+  repo.git("add", ".claude/skills/ticket/SKILL.md");
+  repo.git("commit", "-q", "-m", "instructions");
+  const result = repo.loop("reload-module", ["--max", "2", "--tune-every", "1"], {
+    FAKE_RELOAD_MODULE: "scripts/loop/models.mjs", FAKE_TUNE: "edits-skill",
+  });
+  assert.equal(result.code, 0, result.out);
+  const events = repo.events();
+  const rank = (phase) => events.findIndex(e => e.phase === phase);
+  assert.ok(rank("retro") < rank("harmonisation-integree"));
+  assert.ok(rank("harmonisation-integree") < rank("relance"));
+  assert.ok(rank("relance") < events.findIndex(e => e.phase === "session" && e.ticket === "T002"));
+  assert.deepEqual(events.filter(e => e.phase === "retro").map(e => e.ticket), ["T001", "T002"]);
+  assert.equal(events.filter(e => e.phase === "harmonisation-integree").length, 1);
+});
+
+test("Codex remains the engine with its fixed model and effort after reload", (t) => {
+  const repo = loopRepo({
+    "docs/travail/tickets/001-add-greeting.md": ticketText({ harnais: "oui" }),
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", harnais: "oui" }),
+  });
+  t.after(repo.cleanup);
+  repo.write(".harness-state/fake-codex.cjs", CODEX_SESSION);
+  const bin = path.join(repo.root, ".harness-state/fake-codex.cjs");
+  fs.chmodSync(bin, 0o755);
+  const args = ["--engine", "codex", "--max", "2", "--no-retro", "--model", "custom codex model", "--effort", "xhigh"];
+  const result = repo.loop("done", args, { TVLENS_CODEX_BIN: bin, FAKE_CODEX_EDIT: "scripts/loop/models.mjs" });
+  assert.equal(result.code, 0, result.out);
+  const calls = ["T001", "T002"].map(id => {
+    const entries = repo.read(`.harness-state/tickets/${id}/fake-codex-calls`).trim().split("\n").map(JSON.parse);
+    assert.equal(entries.length, 1);
+    return entries[0];
+  });
+  assert.notEqual(calls[0].loopPid, calls[1].loopPid);
+  for (const call of calls) {
+    assert.equal(call.loopLock, String(call.loopPid));
+    assert.equal(call.args[call.args.indexOf("-m") + 1], "custom codex model");
+    assert.ok(call.args.includes('model_reasoning_effort="xhigh"'));
+  }
+  assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.moteur), ["codex", "codex"]);
+});
+
+for (const file of ["docs/notes.md", "scripts/loop/README.md", "scripts/quality/settings.json", "core/other.cjs"]) {
+  test(`an integrated non-module path keeps the current instance: ${file}`, (t) => {
+    const repo = reloadRepo();
+    t.after(repo.cleanup);
+    repo.write(file, file.endsWith(".json") ? "{}\n" : "// initial\n");
+    repo.git("add", file);
+    repo.git("commit", "-q", "-m", "fixture");
+    const append = file.endsWith(".json") ? "\n" : "\n// documentation\n";
+    const result = repo.loop("reload-module", ["--max", "2", "--no-retro"], { FAKE_RELOAD_MODULE: file, FAKE_RELOAD_APPEND: append });
+    assert.equal(result.code, 0, result.out);
+    assert.equal(observedLoop(repo, "T001").pid, observedLoop(repo, "T002").pid);
+    assert.equal(repo.events().some(e => e.phase.startsWith("relance")), false);
+  });
+}
+
+test("tightening only the baseline does not reload the loop", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  assert.equal(repo.node("scripts/quality/ratchet.mjs", ["--init"]).code, 0);
+  repo.git("add", "scripts/quality/baseline.json");
+  repo.git("commit", "-q", "-m", "baseline");
+  const result = repo.loop("adds-test-case", ["--max", "2", "--no-retro"], { FAKE_TEST_FILE: "tests/sample.test.cjs" });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.events().filter(e => e.phase === "integre").length, 2);
+  assert.equal(repo.events().some(e => e.phase.startsWith("relance")), false);
+});
+
+test("a module integration at max one starts no successor ticket or reload", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("reload-module", ["--max", "1", "--no-retro"], { FAKE_RELOAD_MODULE: "scripts/loop/models.mjs" });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.events().some(e => e.phase.startsWith("relance")), false);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+});
+
+for (const failure of ["quality", "review", "commit", "push"]) {
+  test(`a refused module integration never starts a successor: ${failure}`, (t) => {
+    const repo = reloadRepo();
+    t.after(repo.cleanup);
+    if (failure === "commit") {
+      repo.write(".git/hooks/pre-commit", "#!/bin/sh\nexit 1\n");
+      fs.chmodSync(path.join(repo.root, ".git/hooks/pre-commit"), 0o755);
+    }
+    const env = { FAKE_SCENARIO: "reload-module", FAKE_RELOAD_MODULE: "scripts/loop/models.mjs" };
+    if (failure === "quality") {
+      env.FAKE_RELOAD_MODULE = "scripts/quality/ratchet.mjs";
+      env.FAKE_RELOAD_APPEND = "\n// " + "x".repeat(200) + "\n";
+    }
+    if (failure === "review") env.FAKE_RELOAD_AFTER_REVIEW = "1";
+    const args = ["--max", "2", "--no-retro", "--attempts", "1"];
+    let result;
+    if (failure === "push") {
+      addRemote(repo, '#!/bin/sh\necho push >> ../push-calls\nexit 1\n');
+      result = loopWithPush(repo, args, env);
+      assert.equal(repo.read(".harness-state/push-calls"), "push\n");
+    } else result = repo.loop("reload-module", args, env);
+    assert.equal(result.code, failure === "push" ? 3 : 2, result.out);
+    assert.equal(repo.events().some(e => e.phase.startsWith("relance")), false);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+    assert.equal(repo.commits().length, failure === "push" ? 2 : 1);
+  });
+}
+
+test("renamed and deleted integrated module paths trigger reload without consulting ticket permissions", async (t) => {
+  const repo = harnessRepo({
+    "scripts/loop/old module.cjs": "module.exports = 1;\n",
+    "scripts/quality/deleted.mjs": "export const value = 1;\n",
+    "docs/other.mjs": "export const value = 1;\n",
+  });
+  t.after(repo.cleanup);
+  const before = repo.git("rev-parse", "HEAD").stdout.trim();
+  assert.equal(repo.git("mv", "scripts/loop/old module.cjs", "docs/moved.cjs").code, 0);
+  assert.equal(repo.git("rm", "scripts/quality/deleted.mjs").code, 0);
+  repo.write("docs/other.mjs", "export const value = 2;\n");
+  repo.git("add", "-A");
+  repo.git("commit", "-q", "-m", "move and delete");
+  const { integratedModules } = await import(pathToFileURL(path.join(__dirname, "../scripts/loop/restart.mjs")).href);
+  assert.deepEqual(integratedModules(repo.git, before), ["scripts/loop/old module.cjs", "scripts/quality/deleted.mjs"]);
+});
+
+test("a reload starts the next ticket after a successful local push with no duplicate push", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  const remote = addRemote(repo, '#!/bin/sh\necho push >> ../push-calls\nexit 0\n');
+  const result = loopWithPush(repo, ["--max", "2", "--no-retro"], {
+    FAKE_SCENARIO: "reload-module", FAKE_RELOAD_MODULE: "scripts/loop/models.mjs",
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.notEqual(observedLoop(repo, "T001").pid, observedLoop(repo, "T002").pid);
+  assert.equal(repo.read(".harness-state/push-calls"), "push\npush\n");
+  const local = repo.git("rev-parse", "HEAD").stdout;
+  assert.equal(repo.git("--git-dir", remote, "rev-parse", "work").stdout, local);
+});
+
+for (const failure of ["dirty-tree", "module-load"]) {
+  test(`a failed successor stops the launch, records its cause and leaves no process: ${failure}`, { timeout: 20000 }, async (t) => {
+    const repo = reloadRepo();
+    const failImport = '\nif (process.send && process.argv[1]?.endsWith("loop/run.mjs")) throw new Error("simulated loader failure");\n';
+    const run = startObservedLoop(t, repo, ["--max", "2", "--no-retro"], {
+      FAKE_RELOAD_MODULE: "scripts/loop/models.mjs",
+      FAKE_RELOAD_APPEND: "\n" + holdSuccessor + (failure === "module-load" ? failImport : ""),
+    });
+    t.after(repo.cleanup);
+    const successor = Number(await run.waitFor("successor-ready"));
+    const first = observedLoop(repo, "T001");
+    noProcess(first.pid);
+    if (failure === "dirty-tree") {
+      repo.write("package.json", '{ "name": "changed" }\n');
+      const ordinary = repo.loop("done", ["--no-retro"]);
+      assert.equal(ordinary.code, 1, ordinary.out);
+      assert.match(ordinary.out, /fichiers suivis sont modifiés/);
+      process.kill(successor, "SIGCONT");
+    } else process.kill(successor, "SIGCONT");
+    assert.deepEqual(await run.ended, { code: 1, signal: null });
+    noProcess(first.pid);
+    noProcess(successor);
+    noProcess(run.child.pid);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+    const failed = repo.events().find(e => e.phase === "relance-echouee");
+    assert.equal(failed.cause, failure === "module-load" ? "LOOP_MODULE_FAILED" : "LOOP_WORKER_FAILED");
+    assert.match(failed.raison, failure === "module-load" ? /simulated loader failure/ : /code 1/);
+    assert.match(repo.read(".harness-state/output.log"), /La relève de la boucle a échoué/);
+    if (failure === "module-load") assert.match(repo.read(".harness-state/output.log"), /simulated loader failure/);
+  });
+}
+
+test("the supervisor reloads its own owner before launching a fresh worker", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  const append = '\nif (!process.send && process.argv[1]?.endsWith("loop/run.mjs")) {\n' +
+    '  fs.writeFileSync(".harness-state/supervisor-reloaded", String(process.pid));\n}\n';
+  const result = repo.loop("reload-module", ["--max", "2", "--no-retro"], {
+    FAKE_RELOAD_MODULE: "scripts/loop/restart.mjs", FAKE_RELOAD_APPEND: append,
+  });
+  assert.equal(result.code, 0, result.out);
+  const supervisor = Number(repo.read(".harness-state/supervisor-reloaded"));
+  assert.ok(supervisor > 0);
+  noProcess(supervisor);
+  assert.notEqual(observedLoop(repo, "T001").pid, observedLoop(repo, "T002").pid);
+});
+
+test("the successor still refuses a change made after review and preserves the blocked exit code", (t) => {
+  const repo = reloadRepo();
+  t.after(repo.cleanup);
+  const result = repo.loop("reload-module", ["--max", "3", "--no-retro", "--attempts", "1"], {
+    FAKE_RELOAD_MODULE: "scripts/loop/models.mjs", FAKE_RELOAD_AFTER_REVIEW: "T002",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(repo.events().filter(e => e.phase === "relance").length, 1);
+  assert.match(repo.read(".harness-state/tickets/T002/echec-1.txt"), /modifié depuis la dernière relecture/);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T003")), false);
+  assert.deepEqual(repo.commits(), ["T001: Add the greeting", "init"]);
+});
