@@ -55,6 +55,12 @@ inchangés et sans snapshot dans les événements.
 - Adapter uniquement les attentes de révision de session-latency et architecture-f08 qui
   conduisent le vrai cœur ; les lister chacune dans `ecarts.md`. Le cas review-regressions
   de même révision reste intact, ainsi que les compteurs, ordres de voies et barrières disque.
+- Décision de l'orchestrateur, le 17/10, par délégation du propriétaire (absent), après le blocage de la première
+  tentative : trois attentes de plus changent, et seulement elles, parce qu'elles suivent le contrat de ce ticket
+  (la révision monte quand la disponibilité change ou que la miniature arrive) et ont été écrites après lui :
+  `tests/memory-view.test.cjs:461`, révision du passage rendu illisible `0` → `1` ; `tests/archive-compat.test.cjs:599`
+  et `:618`, révision du passage neuf `moment-5` `2` → `3` pour sa miniature. Les révisions des passages historiques et
+  les témoins du corpus restent identiques ; aucune autre assertion ne change.
 - Compléter l'ADR de publication, sans migrer index, manifeste ou autres lecteurs. Garder
   `onChange`, formats persistés et fil ; aucun déplacement, harnais ou retrait de test.
 
@@ -92,3 +98,8 @@ Les formes historiques à révisions égales restent consultables. Si T223 a dé
 ses témoins d'archives remplacent les scénarios d'expiration active, sans réintroduire la politique.
 
 ## Journal
+
+- 17/10, orchestrateur : la première tentative s'est bloquée sur ces trois attentes (contrôle complet 2487/2489).
+  Son travail est archivé dans `.harness-state/archives/T221-bloque-1/` : `code.patch`, `fichiers/docs/adr/` (ADR 0050),
+  `ticket-journal.patch` et `etat/` (preuves, `revision-expectations-proposed.patch`). Le réappliquer, le vérifier
+  contre le code du moment, appliquer les trois adaptations autorisées ci-dessus, puis passer la relecture.
