@@ -23,6 +23,7 @@ const token = '6'.repeat(64), JPEG = 'data:image/jpeg;base64,YQ==';
 const CLOSING = { error: 'Session en cours de fermeture.', code: 'session-closing' };
 const CHANGED = { error: 'La capture a changé pendant la préparation de ce bloc.', code: 'capture-changed' };
 const UNAVAILABLE = 'media-unavailable';
+const TOOL_DETAIL = 'boom: /private/tvlens-refused/source.wav';
 const LATE = ms => `préparation média : arrêt non confirmé après ${ms} ms, bloc refusé, préparation suivante en attente`;
 // Whether it came true within the bound: for a fact a test reports with the others instead of stopping on it.
 const eventually = async (check, rounds = 300) => { for (let i = 0; i < rounds; i++) { if (await check()) return true; await pause(5); } return false; };
@@ -71,7 +72,8 @@ function scratch(t) {
 
 // A private directory and the Node programs that stand for FFmpeg behind the real assembler, each under the name it is
 // run by. `hang` writes its pid and never ends by itself; `write` writes the file it was asked for, its last
-// argument, and leaves; `fail` says "boom" and leaves with 1. Whatever a test proved, what it started is killed when
+// argument, and leaves; `fail` emits a diagnostic containing a fictitious host path and leaves with 1.
+// Whatever a test proved, what it started is killed when
 // it ends, before anything else is closed or removed.
 async function bench(t) {
   const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-f06-')), pids = path.join(root, 'tool-pids'), b = { root, closing: [] };
@@ -84,7 +86,7 @@ async function bench(t) {
   const script = async (name, body) => { const file = path.join(root, name); await fsp.writeFile(file, `#!${process.execPath}\n${body}`, { mode: 0o700 }); return file; };
   b.hang = await script('ffmpeg-hang', `require('node:fs').appendFileSync(${JSON.stringify(pids)},process.pid+'\\n');setInterval(()=>{},1000);`);
   b.write = await script('ffmpeg-write', `require('node:fs').copyFileSync(${JSON.stringify(path.join(__dirname, 'fixtures', 'ffmpeg-webm-head.webm'))},process.argv.at(-1));`);
-  b.fail = await script('ffmpeg-fail', `process.stderr.write('boom');process.exit(1);`);
+  b.fail = await script('ffmpeg-fail', `process.stderr.write(${JSON.stringify(TOOL_DETAIL)});process.exit(1);`);
   return b;
 }
 
@@ -364,24 +366,36 @@ test('a media tool that does not end in time, cannot be started, or has no tempo
   dirs.refuse = Object.assign(new Error(`ENOSPC: no space left on device, mkdtemp '${path.join(os.tmpdir(), 'tvlens-ingest-XXXXXX')}'`), { code: 'ENOSPC' });
   answers.noRoom = await f.send(block());
   dirs.refuse = null;
-  // The block's own doing: refused as before, in the same words, and not sent again by its capture.
+  // Le refus de contenu reste définitif ; les détails techniques restent côté serveur.
   answers.notWav = await f.send(block({ audio: Buffer.from('not wave').toString('base64') }));
   answers.notAnImage = await f.send(block({ frames: [{ atMs: 0, data: Buffer.from('not an image').toString('base64') }] }));
   media.current = new RemoteMedia({ ffmpeg: f.fail });
   answers.toolRefused = await f.send(block());
-  answers.notAnImage.value.error = answers.notAnImage.value.error.replace(/^.*(unsupported image format).*$/s, '$1');
   const unavailable = error => ({ status: 503, value: { error, code: UNAVAILABLE } });
   const invalid = (error, code) => ({ status: 400, value: { error, code } });
   assert.deepEqual({ ...answers, paths: JSON.stringify(answers).includes(os.tmpdir()), stored: await f.passages(), left: await dirs.left() }, {
     slow: unavailable('Préparation média trop longue.'), slowAgain: unavailable('Préparation média trop longue.'), absent: unavailable('Outil média indisponible.'), noRoom: unavailable('Espace temporaire média indisponible.'),
     notWav: invalid('Audio WAV requis.', 'invalid-media-block'),
-    notAnImage: invalid('unsupported image format', 'image-unreadable'),
-    toolRefused: invalid('Préparation média échouée : boom', 'media-tool-refused'),
+    notAnImage: invalid('Image illisible.', 'image-unreadable'),
+    toolRefused: invalid('Préparation média échouée.', 'media-tool-refused'),
     paths: false, stored: [], left: [] });
   // Nothing above cost the session its capture: the next block is prepared and stored.
   media.current = new RemoteMedia({ ffmpeg: f.write });
   assert.deepEqual(await f.send(block()), { status: 200, value: { id: 'moment-1', duplicate: false } });
 });
+
+for (const frame of [null, 42, true, 'frame']) {
+  test(`HTTP ingestion explicitly refuses a non-object frame (${JSON.stringify(frame)}) before preparing media`, async t => {
+    const dirs = scratch(t), f = await host(t, { media: new RemoteMedia() });
+    const session = await f.start();
+    const response = await f.send(f.body(session, 1, 8000, { frames: [frame] }));
+    assert.deepEqual(response, {
+      status: 400, value: { error: 'Ordre des images invalide.', code: 'invalid-media-block' },
+    });
+    assert.deepEqual(dirs.made, []);
+    assert.deepEqual(await f.passages(), []);
+  });
+}
 
 test('the assembler given a signal makes nothing once it has fired, starts no tool when it fires between two steps, kills its own tool when it fires meanwhile, and settles only once that tool has left and its directory is removed', async t => {
   const dirs = scratch(t), b = await bench(t), jpeg = await image();
@@ -502,6 +516,37 @@ test('a temporary directory the system refuses to remove does not change why a b
     given: { same: true, status: 503, code: 'test', message: 'given up by its owner', removal: true },
     alone: { status: 503, code: UNAVAILABLE, message: 'Espace temporaire média indisponible.', removal: true }, attempts: 4, stayed: 4, left: [] });
 });
+
+for (const kind of ['image', 'tool']) {
+  test(`a ${kind} content refusal keeps its public response and cause when cleanup also fails`, async t => {
+    const dirs = scratch(t), media = { assemble: (...args) => media.current.assemble(...args) };
+    const f = await host(t, { media }), jpeg = await image(), session = await f.start();
+    media.current = new RemoteMedia({ ffmpeg: f.fail });
+    const input = f.body(session, 1, 8000, {
+      frames: [{ atMs: 0, data: kind === 'image' ? Buffer.from('not an image').toString('base64') : jpeg }],
+    });
+    const message = kind === 'image' ? 'Image illisible.' : 'Préparation média échouée.';
+    const code = kind === 'image' ? 'TVLENS_MEDIA_IMAGE_UNREADABLE' : 'TVLENS_MEDIA_TOOL_REFUSED';
+    const publicCode = kind === 'image' ? 'image-unreadable' : 'media-tool-refused';
+    const cleanup = Object.assign(Error('cleanup: /private/tvlens-refused/scratch'), { code: 'EBUSY' });
+    try {
+      dirs.stuck = cleanup;
+      assert.deepEqual(await f.send(input), { status: 400, value: { error: message, code: publicCode } });
+      const error = await failure(media.current.assemble(input));
+      assert.equal(error.message, message);
+      assert.equal(error.code, code);
+      assert.ok(error.cause instanceof Error);
+      if (kind === 'image') assert.match(error.cause.message, /unsupported image format/);
+      else assert.equal(error.cause.message, TOOL_DETAIL);
+      assert.strictEqual(error.cleanup, cleanup);
+      assert.equal(dirs.removals.length, 2);
+      assert.equal((await dirs.left()).length, 2);
+    } finally {
+      await dirs.sweep();
+    }
+    assert.deepEqual(await dirs.left(), []);
+  });
+}
 
 // ---- What was already guaranteed --------------------------------------------------------------------------------------
 

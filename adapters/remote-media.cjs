@@ -27,7 +27,8 @@ function validateRemote(input) {
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Nombre d’images invalide.');
   let previous = -Infinity;
   for (const f of input.frames) {
-    if (!Number.isFinite(f.atMs) || f.atMs < input.startMs || f.atMs > input.endMs || f.atMs < previous)
+    if (!f || typeof f !== 'object'
+      || !Number.isFinite(f.atMs) || f.atMs < input.startMs || f.atMs > input.endMs || f.atMs < previous)
       throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Ordre des images invalide.');
     previous = f.atMs;
     base64(f.data, 1500000);
@@ -48,7 +49,7 @@ async function encodeImage(frame) {
     if (frame.crop) image = image.extract({ left: frame.crop.x, top: frame.crop.y, width: frame.crop.width, height: frame.crop.height });
     return await image.resize({ width: 1280, height: 720, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 75 }).toBuffer();
   } catch (cause) {
-    throw domainError(TVLENS_MEDIA_IMAGE_UNREADABLE, cause.message, cause);
+    throw domainError(TVLENS_MEDIA_IMAGE_UNREADABLE, 'Image illisible.', cause);
   }
 }
 // Not the block's doing: a media tool that cannot be started or does not end in time, a temporary directory the system
@@ -79,7 +80,7 @@ async function command(binary,args,timeoutMs,signal){
       else if (expired) reject(unavailable('Préparation média trop longue.'));
       // Un signal système ne prouve aucun refus du contenu par l’outil.
       else if (killed) reject(Error('Préparation média échouée : ' + err));
-      else if (code) reject(domainError(TVLENS_MEDIA_TOOL_REFUSED, 'Préparation média échouée : ' + err));
+      else if (code) reject(domainError(TVLENS_MEDIA_TOOL_REFUSED, 'Préparation média échouée.', Error(err)));
       else resolve();
     });
     child.stderr?.on('data',v=>{err=(err+v).slice(-2000);});

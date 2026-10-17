@@ -241,4 +241,13 @@ class DeliveryTests(unittest.TestCase):
   self.refuse=(409,{'error':'Séquence ancienne.'})
   self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':2},time.monotonic(),ttl=5))
   self.assertEqual((self.report['dropReasons'],self.report['errors']),({'readOnly':1,'deliveryRejected':1},['HTTP 409']))
+ def test_unreadable_image_is_dropped_after_one_http_400_without_retry(self):
+  self.failures=0
+  self.refuse=(400,{'error':'Image illisible.','code':'image-unreadable'})
+  with patch.object(self.stop,'wait',side_effect=AssertionError('a content refusal must not wait for a retry')):
+   self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic(),ttl=5))
+  self.assertEqual(self.attempts,1)
+  self.assertEqual(self.accepted,set())
+  self.assertEqual(self.report,{'sent':0,'dropped':1,'retries':0,'errors':['HTTP 400'],
+   'dropReasons':{'deliveryRejected':1}})
 if __name__=='__main__':unittest.main()

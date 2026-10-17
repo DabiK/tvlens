@@ -176,10 +176,10 @@ for (const kind of ['image', 'wav', 'tool', 'validation']) {
     const { id } = (await f.req('/v1/session/start', {})).value;
     const input = { sessionId: id, sequence: 1, startMs: 0, endMs: 100, frames: [{ atMs: 0, data }] };
     const expected = {
-      image: ['image-unreadable', /unsupported image format/],
-      wav: ['invalid-media-block', /^Audio WAV requis\.$/],
-      tool: ['media-tool-refused', /^Préparation média échouée : /],
-      validation: ['invalid-media-block', /^Nombre d’images invalide\.$/],
+      image: ['image-unreadable', 'Image illisible.'],
+      wav: ['invalid-media-block', 'Audio WAV requis.'],
+      tool: ['media-tool-refused', 'Préparation média échouée.'],
+      validation: ['invalid-media-block', 'Nombre d’images invalide.'],
     }[kind];
     if (kind === 'image') input.frames[0].data = Buffer.from('not an image').toString('base64');
     if (kind === 'wav') input.audio = 'YQ==';
@@ -187,7 +187,7 @@ for (const kind of ['image', 'wav', 'tool', 'validation']) {
     const response = await f.req('/v1/segments', input);
     assert.equal(response.status, 400);
     assert.equal(response.value.code, expected[0]);
-    assert.match(response.value.error, expected[1]);
+    assert.equal(response.value.error, expected[1]);
     assert.deepEqual(f.runtime.session.watch.snapshot().segments, []);
     assert.equal(f.runtime.admitted.size, 0);
     assert.equal(f.server.ingesting, false);

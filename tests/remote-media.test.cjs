@@ -61,6 +61,11 @@ for (const [condition, change, message] of [
  ['invalid sequence', { sequence: -1 }, 'Séquence invalide.'],
  ['long interval', { endMs: 20000 }, 'Intervalle invalide.'],
  ['empty frames', { frames: [] }, 'Nombre d’images invalide.'],
+ ['null frame', { frames: [null] }, 'Ordre des images invalide.'],
+ ['missing frame', { frames: [undefined] }, 'Ordre des images invalide.'],
+ ['numeric frame', { frames: [42] }, 'Ordre des images invalide.'],
+ ['boolean frame', { frames: [true] }, 'Ordre des images invalide.'],
+ ['string frame', { frames: ['frame'] }, 'Ordre des images invalide.'],
  ['frame order', { frames: [{ atMs: -1, data: 'YQ==' }] }, 'Ordre des images invalide.'],
  ['base64 encoding', { frames: [{ atMs: 0, data: 'invalid!' }] }, 'Média encodé invalide.'],
  ['empty decoded media', { frames: [{ atMs: 0, data: 'A' }] }, 'Média trop volumineux.'],
@@ -78,7 +83,7 @@ for (const [condition, change, message] of [
 }
 
 for (const transform of [false, true]) {
- test(`image refusal preserves the sharp cause and message (transformation: ${transform})`, async () => {
+ test(`image refusal publishes a fixed message and preserves the sharp cause (transformation: ${transform})`, async () => {
   const input = validBlock();
   if (transform) input.frames[0] = {
    atMs: 0,
@@ -89,8 +94,8 @@ for (const transform of [false, true]) {
    assert.equal(error.code, 'TVLENS_MEDIA_IMAGE_UNREADABLE');
    assert.equal(require('../adapters/remote-media.cjs').TVLENS_MEDIA_IMAGE_UNREADABLE, error.code);
    assert.ok(error.cause instanceof Error);
-   assert.equal(error.message, error.cause.message);
-   assert.match(error.message, transform ? /extract_area/ : /unsupported image format/);
+   assert.equal(error.message, 'Image illisible.');
+   assert.match(error.cause.message, transform ? /extract_area/ : /unsupported image format/);
    assert.equal(error.status, undefined);
    return true;
   });
@@ -104,12 +109,18 @@ test('a non-WAV block retains its validation identity after frame work settles',
  });
 });
 
-test('an executed media tool that refuses content has a distinct exported identity', async () => {
+test('an executed media tool refusal has a fixed message and keeps stderr in its cause', async t => {
+ const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-media-refused-'));
+ t.after(() => fs.rm(root, { recursive: true, force: true }));
+ const binary = path.join(root, 'refusing-tool'), detail = 'boom: /private/tvlens-refused/source.wav';
+ await fs.writeFile(binary, `#!${process.execPath}\nprocess.stderr.write(${JSON.stringify(detail)});process.exit(1);\n`, { mode: 0o700 });
  const data = (await sharp({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer()).toString('base64');
- await assert.rejects(new RemoteMedia({ ffmpeg: process.execPath }).assemble({ ...validBlock(), frames: [{ atMs: 0, data }] }), error => {
+ await assert.rejects(new RemoteMedia({ ffmpeg: binary }).assemble({ ...validBlock(), frames: [{ atMs: 0, data }] }), error => {
   assert.equal(error.code, 'TVLENS_MEDIA_TOOL_REFUSED');
   assert.equal(require('../adapters/remote-media.cjs').TVLENS_MEDIA_TOOL_REFUSED, error.code);
-  assert.match(error.message, /^Préparation média échouée : /);
+  assert.equal(error.message, 'Préparation média échouée.');
+  assert.ok(error.cause instanceof Error);
+  assert.equal(error.cause.message, detail);
   assert.equal(error.status, undefined);
   return true;
  });

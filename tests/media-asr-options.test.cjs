@@ -67,15 +67,30 @@ test('a non-WAV sound keeps its message and leaves no temporary directory', asyn
 });
 test('a failed frame waits for the running audio child before cleanup and stays the reported error', async t => {
  const leftovers = await privateTmp(t), log = path.join(os.tmpdir(), 'ffmpeg.log');
- const ffmpeg = await script(os.tmpdir(), 'ffmpeg', `const fs=require('node:fs');setTimeout(()=>{fs.appendFileSync(${JSON.stringify(log)},'settled\\n');process.stderr.write('boom');process.exit(1);},150);`);
+ const detail = 'boom: /private/tvlens-refused/source.wav';
+ const ffmpeg = await script(os.tmpdir(), 'ffmpeg', `const fs=require('node:fs');setTimeout(()=>{
+fs.appendFileSync(${JSON.stringify(log)},'settled\\n');process.stderr.write(${JSON.stringify(detail)});process.exit(1);},150);`);
  const good = (await solid('#808080')).toString('base64'), bad = Buffer.from('not an image').toString('base64');
  const input = { sessionId: 'test', sequence: 1, startMs: 0, endMs: 1000, frames: [{ atMs: 0, data: good }, { atMs: 500, data: bad }], audio: wav(1).toString('base64') };
  const media = new RemoteMedia({ ffmpeg });
- await assert.rejects(media.assemble(input), /unsupported image format/);
+ const imageRefusal = error => {
+  assert.equal(error.message, 'Image illisible.');
+  assert.equal(error.code, 'TVLENS_MEDIA_IMAGE_UNREADABLE');
+  assert.ok(error.cause instanceof Error);
+  assert.match(error.cause.message, /unsupported image format/);
+  return true;
+ };
+ await assert.rejects(media.assemble(input), imageRefusal);
  assert.equal(await fs.readFile(log, 'utf8'), 'settled\n');
  assert.deepEqual(await leftovers(), []);
- await assert.rejects(media.assemble({ ...input, audio: Buffer.from('not wave').toString('base64') }), /unsupported image format/);
- await assert.rejects(media.assemble({ ...input, frames: [input.frames[0]] }), /Préparation média échouée : /);
+ await assert.rejects(media.assemble({ ...input, audio: Buffer.from('not wave').toString('base64') }), imageRefusal);
+ await assert.rejects(media.assemble({ ...input, frames: [input.frames[0]] }), error => {
+  assert.equal(error.message, 'Préparation média échouée.');
+  assert.equal(error.code, 'TVLENS_MEDIA_TOOL_REFUSED');
+  assert.ok(error.cause instanceof Error);
+  assert.equal(error.cause.message, detail);
+  return true;
+ });
  assert.deepEqual(await leftovers(), []);
 });
 
