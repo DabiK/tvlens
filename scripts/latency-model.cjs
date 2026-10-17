@@ -1,5 +1,5 @@
 const { WatchSession } = require("../core/session.cjs");
-const { VideoTools } = require("../core/video-tools.cjs");
+const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
 const { hasPendingQuestion } = require("../runtime/conversation-runtime.cjs");
 const {
   createQuestionCheckpoint,
@@ -84,10 +84,10 @@ function createModel({ env, delays, views, record }) {
     now: env.serverNow,
     makeTools: (signal, onProgress) =>
       new VideoTools({
-        snapshot: session.snapshot(),
+        consultation: consultationOf(session.memoryView()),
         signal,
         onProgress,
-        live: () => session.snapshot(),
+        reread: (ids) => session.memoryPassages(ids),
         now: env.serverNow,
       }),
     agent: createAgent(env, delays, tools),

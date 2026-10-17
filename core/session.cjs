@@ -448,6 +448,10 @@ class WatchSession {
     return memory.readMemoryPassage(this, id, this.#modalities);
   }
 
+  memoryPassages(ids) {
+    return memory.readMemoryPassages(this, ids, this.#modalities);
+  }
+
   recentMemoryPassages(limit) {
     return memory.recentMemoryPassages(this, limit, this.#modalities);
   }

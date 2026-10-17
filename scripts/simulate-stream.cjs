@@ -93,6 +93,8 @@ async function runScenario(root, name, seed, variant = {}) {
   const { MomentIndex } = load('core/moment-index.cjs');
   const { MomentSearch } = load('core/moment-search.cjs');
   const { createConversationRuntime, hasPendingQuestion } = load('runtime/conversation-runtime.cjs');
+  const { createMemoryMedia } = load('runtime/memory-media.cjs');
+  const { consultationOf } = load('core/video-tools.cjs');
   const { hasUsableObservation } = load('core/passage-text.cjs');
   const started = performance.now();
   const clock = new VirtualClock().install();
@@ -261,7 +263,7 @@ async function runScenario(root, name, seed, variant = {}) {
           return { answer: 'Le passage retrouvé.', kind: 'observation', citations: cite([best]), limits: [] };
         }
         // inspect: the newest passage inside the prefix, or an explicit older target.
-        const pool = [...tools.segments].sort((a, b) => a.endMs - b.endMs);
+        const pool = tools.consultationScope().passages.sort((a, b) => a.endMs - b.endMs);
         const target = record.targetMs === undefined ? pool.at(-1) : pool.find(s => s.startMs <= record.targetMs && s.endMs >= record.targetMs);
         if (!target) return { answer: 'Aucun passage à réexaminer.', kind: 'insufficient', citations: [], limits: [] };
         try {
@@ -275,7 +277,8 @@ async function runScenario(root, name, seed, variant = {}) {
           return { answer: 'Le média de ce passage n’est plus disponible.', kind: 'insufficient', citations: [], limits: [error.message] };
         }
       } };
-    conversation = createConversationRuntime({ getSession: () => ({ watch, search, inspector, store: media }), agent: chatAgent,
+    const memory = { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) }, memoryMedia = createMemoryMedia(media);
+    conversation = createConversationRuntime({ getSession: () => ({ id: watch.id, memory, memoryMedia, search, inspector }), agent: chatAgent,
       onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });
     const deep = conversation.deep;
 
@@ -303,7 +306,7 @@ async function runScenario(root, name, seed, variant = {}) {
         const record = { ...q, question: `${QUESTIONS[q.kind]} (${Math.round(q.atMs / 1000)} s)` };
         records.push(record);
         try {
-          const options = lg ? { mode: 'chat', anchorMs: clock.t, snapshot: watch.snapshot() } : { mode: 'chat' };
+          const options = lg ? { mode: 'chat', anchorMs: clock.t, consultation: consultationOf(watch.memoryView()) } : { mode: 'chat' };
           record.jobId = deep.start(record.question, options).id;
           if (q.cancelAfterMs) setTimeout(() => deep.cancel('Question annulée.', record.jobId), q.cancelAfterMs);
         } catch (error) { record.rejected = error.message; }

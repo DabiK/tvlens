@@ -223,6 +223,7 @@ function createSessionRuntime({
     memory: {
       view: () => watch.memoryView(),
       passage: id => watch.memoryPassage(id),
+      passages: ids => watch.memoryPassages(ids),
       recentPassages: limit => watch.recentMemoryPassages(limit),
     },
     memoryMedia: createMemoryMedia(store),

@@ -7,7 +7,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const sharp = require('sharp');
 const { WatchSession } = require('../core/session.cjs');
 const { SessionClock } = require('../core/session-clock.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { createSessionRuntime, openArchivedSession, INDEX_OBSERVE_TAIL, MANIFEST_EVERY_MS } = require('../runtime/session-runtime.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
@@ -29,7 +29,7 @@ async function tree(dir, base = dir) {
   }
   return rows;
 }
-const inspect = (session, startMs, endMs) => new VideoTools({ snapshot: session.watch.snapshot(), search: session.search, inspector: session.inspector, media: session.store })
+const inspect = (session, startMs, endMs) => new VideoTools({ consultation: consultationOf(session.memory.view()), search: session.search, inspector: session.inspector, media: session.memoryMedia })
   .call('inspect_clip', { startMs, endMs, question: 'Que voit-on ?' });
 // The disk refuses the files named, as on EIO or in a directory that is no longer writable: their temporary
 // file is never written, so each keeps what it held. Media, thumbnails and every other file still land.
@@ -170,7 +170,8 @@ test('an archive written before manifests is listed and opened as text only, wit
   assert.deepEqual([...state.history, ...state.segments].map(p => [p.id, Boolean(p.available), p.mediaReason, p.thumbnailAvailable, p.status]),
     [['moment-1', false, 'not-kept', false, 'ready'], ['moment-2', false, 'not-kept', false, 'ready'], ['moment-3', false, 'not-kept', false, 'partial']]);
   assert.deepEqual([state.segments[1].visionStatus, state.segments[1].visionError], ['error', 'Analyse interrompue à la fermeture de la session.']);
-  const tools = new VideoTools({ snapshot: state, search: session.search, inspector: session.inspector, media: session.store });
+  const tools = new VideoTools({ consultation: consultationOf(session.memory.view()),
+    search: session.search, inspector: session.inspector, media: session.memoryMedia });
   await assert.rejects(tools.call('inspect_clip', { startMs: 8000, endMs: 16000, question: 'Que voit-on ?' }), /Média non conservé/);
   await assert.rejects(session.store.lease(['moment-2']), /indisponible/);
   assert.equal((await tools.call('get_transcript', { startMs: 0, endMs: 24000 })).passages.map(p => p.transcript).join(' '), 'Paroles 1 Paroles 2 Paroles 3', 'the text stays consultable');
@@ -225,7 +226,7 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
   // Adapted on purpose (it used to read [1000, 'rolling']): the archive keeps the contract it was saved
   // under, and says so; the window of the host that reopens it is not its own.
   assert.deepEqual([state.retentionMs, state.retention], [null, 'until-deleted']);
-  assert.equal(new VideoTools({ snapshot: state }).context().pendingCount, 0);
+  assert.equal(new VideoTools({ consultation: consultationOf(reopened.memoryView()) }).context().pendingCount, 0);
   await reopened.prune(); await reopened.stop(); await tick();
   assert.deepEqual([saves.length, removed.length, reopened.segments.length], [0, 0, 4], 'no save and no sweep while the archive is only open');
   await assert.rejects(reopened.ingest(block(9000)), /arrêtée/);

@@ -72,9 +72,10 @@ module.exports = {};
  * lane starts and publications are stamped on the session clock (core/latency-trace.cjs).
  * The visionDuringAsk option lets a new visual call start while a question is pending.
  *
- * VideoTools keeps session, scope start, anchor and passage ids fixed for one question.
- * With a live snapshot provider it re-reads those passages at consultation boundaries
- * (answer start, search, transcript, inspection); the journal records each revision read.
+ * VideoTools keeps session, scope start, anchor and passage ids fixed for one question, from the consultation
+ * frozen out of a memory view. With a bounded reread port it re-reads those passages at consultation boundaries
+ * (answer start, search, transcript, inspection); the journal records each revision read. Media are leased
+ * through the memory media port, for the passages an inspection admits only.
  */
 
 /**

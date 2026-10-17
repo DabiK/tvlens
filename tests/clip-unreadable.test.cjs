@@ -6,7 +6,7 @@ const path = require('node:path');
 const sharp = require('sharp');
 const { holdsMedia } = require('../core/clip-container.cjs');
 const { WatchSession } = require('../core/session.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
 const { spawnSync } = require('node:child_process');
@@ -110,7 +110,7 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   // Re-examination is not refused: it goes through the real inspector, on the files really stored.
   const dir = await fs.mkdtemp(path.join(f.root, 'decoders-')), tools = await decoders(dir), seen = [];
   const inspector = new ClipInspector({ media: live.store, ffmpeg: tools.works, ...looking(seen) });
-  const video = new VideoTools({ snapshot: live.watch.snapshot(), search: live.search, inspector, media: live.store });
+  const video = new VideoTools({ consultation: consultationOf(live.memory.view()), search: live.search, inspector, media: live.memoryMedia });
   const result = await video.call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' });
   assert.deepEqual(await tools.calls(), [], 'the container known to be empty is not handed to the decoder');
   assert.deepEqual(seen[0].frames, [{ atMs: 0, dataUrl: f.jpeg }, { atMs: 1200, dataUrl: f.jpeg }]);
@@ -149,7 +149,8 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   await fs.rm(path.join(media, 'moment-1.webm'));
   const emptied = await f.reopen(id);
   assert.deepEqual(emptied.watch.segments.map(s => [s.id, s.available, s.mediaReason]), [['moment-1', false, 'missing'], ['moment-2', true, undefined]]);
-  await assert.rejects(new VideoTools({ snapshot: emptied.watch.snapshot(), search: emptied.search, inspector, media: emptied.store }).call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' }), /Média introuvable/);
+  const consulted = new VideoTools({ consultation: consultationOf(emptied.memory.view()), search: emptied.search, inspector, media: emptied.memoryMedia });
+  await assert.rejects(consulted.call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' }), /Média introuvable/);
 });
 
 test('with speech and images analysed apart, the unreadable passage still gets its images described', async () => {

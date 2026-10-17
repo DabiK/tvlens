@@ -10,6 +10,7 @@ const {
 const { createConversationRuntime, hasPendingQuestion } = require("./conversation-runtime.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { publishState } = require("../core/state-publication.cjs");
+const { consultationOf } = require("../core/video-tools.cjs");
 const { createSurveillanceRuntime, tickSurveillance } = require("./surveillance-runtime.cjs");
 const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
@@ -428,15 +429,15 @@ class HeadlessRuntime {
       anchorMs > session.watch.now() + 3000
     )
       throw refusal(400, "Ancrage invalide.", "invalid-anchor");
-    const snapshot = session.watch.snapshot();
-    const selected = moment ? momentDetail(snapshot, moment.segmentIds || moment) : null;
+    // The detail of a selected moment still reads the session state; the question itself consults the memory view.
+    const selected = moment ? momentDetail(session.watch.snapshot(), moment.segmentIds || moment) : null;
     return this.deep.start(question, {
       mode: "chat",
       anchorMs: selected ? selected.endMs : anchorMs,
       ...(selected
         ? { startMs: selected.startMs, intent: "explain-moment" }
         : {}),
-      snapshot,
+      consultation: consultationOf(session.memory.view()),
     });
   }
   detail({ sessionId, segmentIds, firstId, lastId }) {

@@ -14,7 +14,7 @@ const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 const { CodexSurveillanceAgent } = require('../adapters/codex-surveillance-agent.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { createSessionRuntime, openArchivedSession } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 
@@ -589,7 +589,7 @@ test('a closed session runtime re-examines nothing more: a late call is refused 
     seen.model++;
     return simulated(input);
   };
-  const ask = (session, question) => new VideoTools({ snapshot: session.watch.snapshot(), search: session.search, inspector: session.inspector, media: session.store })
+  const ask = (session, question) => new VideoTools({ consultation: consultationOf(session.memory.view()), search: session.search, inspector: session.inspector, media: session.memoryMedia })
     .call('inspect_clip', { startMs: 0, endMs: 8000, question });
   // While the runtime lives: served, then served from its cache.
   assert.equal((await ask(live, 'Que voit-on ?')).observations.length, 1);

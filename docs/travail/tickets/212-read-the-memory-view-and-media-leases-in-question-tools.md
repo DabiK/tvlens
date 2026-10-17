@@ -1,7 +1,7 @@
 ---
 id: T212
 titre: Read the memory consultation view and leased media in question tools
-statut: a-faire
+statut: termine
 bloque_par: T207
 adr: non
 installe: non
@@ -102,3 +102,52 @@ information établie ci-dessus manque au contrat, nommer le manque et étendre e
 test de contrat ; ne pas importer la racine ou les structures privées pour contourner ce manque.
 
 ## Journal
+
+- 2026-10-17 — Cadrage : ticket et `docs/standards.md` lus ; aucun jalon ni rapport d'échec antérieur,
+  ce n'est pas une reprise. Base `ff788e5` (T207 et T208 intégrés).
+- 2026-10-17 — Exploration (`explorateur`, rapport dans `.harness-state/tickets/T212/exploration.md`) :
+  contrat T207 dans `core/memory/ports.cjs` et `memory-view.cjs`, ports `runtime.memory` et
+  `runtime.memoryMedia` ; `makeTools` lit encore `watch.snapshot()` et `session.store`, `VideoTools`
+  fige un snapshot JSON et `reexamination` lit ses internes. Manque au contrat : la relecture bornée ne
+  rend ni session ni horloge (`evidenceAsOfMs`). Une vingtaine de suites construisent `VideoTools`
+  directement. `momentDetail` du serveur reste à T213. Lignes du ticket décalées depuis `dd5efc9`.
+- 2026-10-17 — Décisions (écrites dans `.harness-state/tickets/T212/ecarts.md`) : étendre le port de
+  lecture d'une lecture bornée `passages(ids)` avec session et horloge, et son test de contrat ; refuser
+  une portée figée d'une autre session ; `ask` serveur garde le snapshot pour le seul `momentDetail` (T213).
+- 2026-10-17 — Implémentation (`implementeur`) : lecture bornée `memory.passages(ids)` (session, horloge,
+  passages) ajoutée au contrat et à son test ; `VideoTools` prend `consultation {sessionId, anchorMs,
+  startMs, passages}`, `reread` et le port `memoryMedia`, traduit `MemoryPassage` en un seul endroit et
+  expose `consultationScope()` ; `makeTools` refuse une portée d'une autre session ; `DeepAsk`, actions
+  de moment, raccourci Mac et `ask` serveur passent par `memory.view()`. Rapporté : `node scripts/check.mjs
+  --changed` vert (221 tests), 53 suites concernées vertes en séquentiel, 14 mutations détectées ;
+  `--prune-suppressions` sans effet. Correspondance des champs lus avec le contrat T207 :
+  identité `view.session.id` puis `passages(ids).session.id` à chaque relecture ; ancrage
+  `view.clock.elapsedMs` ; `evidenceAsOfMs` `passages(ids).clock.elapsedMs` ; début de portée option de
+  la question ou portée conservée, marqueur `view.clock.capturedThroughMs` ; identifiants et bornes figés
+  `MemoryPassage.id/startMs/endMs` filtrés et copiés, relus seulement à l'identique ; révisions
+  `revision` ; disponibilité et raisons `availability.replayable/reason/images`, bail `memoryMedia.lease`
+  refusé par code ; trous recalculés sur le préfixe (pas `view.coverage`) ; texte `observation`, `summary` ;
+  statuts `status`, `audioStatus`, `visionStatus`, `audioError`, `visionError`, `visionSkipReason`,
+  `stage`, `error`, `audioFailed`. Les `null` du contrat redeviennent absents. Aucun repli sur un champ interne.
+- 2026-10-17 — Relecture 1 (`node scripts/loop/reviewed-state.mjs record --ticket T212`, relecteur neuf) :
+  « à corriger », 2 bloquants — `scripts/latency-model.cjs` (et donc `tests/capture-display-latency.test.cjs`)
+  et six scripts de banc et de sonde construisent encore `VideoTools` avec `snapshot`. Écarts déclarés acceptés.
+- 2026-10-17 — Correction 1 (`implementeur`) : `scripts/latency-model.cjs`, `simulate-stream.cjs` (qui
+  cassait aussi `tests/stream-simulation.test.cjs`), `bench-backend.cjs`, `bench-perceived.cjs` et les quatre
+  sondes construisent les outils par `consultation` ; fixture commune `scripts/memory-fixture.cjs`. Rapporté :
+  `capture-display-latency` 26/26, `stream-simulation` 8/8, `node scripts/check.mjs` complet vert
+  (2438 tests JS, 47 Python). Sondes réelles non lancées (fournisseurs), vérifiées en syntaxe.
+- 2026-10-17 — Relecture 2 (`node scripts/loop/reviewed-state.mjs record --ticket T212`, relecteur neuf,
+  relecture de correction) : « accepté », 0 bloquant, 0 mineur, 0 hors périmètre, NON CORRIGÉS : 0.
+- 2026-10-17 — Contrôle final : `node scripts/check.mjs` vert — 2438 tests JS sur 137 fichiers, 0 échec ;
+  47 tests Python OK ; cliquet amélioré (`lignes_longues_prod` 420 → 414, `lignes_longues_tests`
+  1603 → 1598, `cas_de_test_produit` 1269 → 1275).
+
+### Réserves à la clôture
+
+- Écart accepté, extension du contrat T207 : lecture bornée memory.passages(ids) rendant { session: { id }, clock, passages }, couverte par tests/memory-view.test.cjs
+- Écart accepté, critère 6 : runtime/headless-runtime.cjs ask lit encore watch.snapshot() pour le seul momentDetail, que T213 migre
+- Écart accepté : suites hors de la liste du ticket adaptées dans leur seule construction
+- Changements de comportement acceptés : aucune preuve enregistrée par un appel encore en vol après libération ; scope() ne recule plus le début de portée ; un passage d'historique unreadable est refusé à l'inspection (images: false)
+- Non vérifié : les sondes probe-chat-* et probe-codex-speed (fournisseurs réels) n'ont été vérifiées qu'en syntaxe ; ClipInspector lit toujours les médias par le store (runtime/session-providers.cjs), hors périmètre
+- Réserve de relecture non comptée : espace finale à scripts/bench-perceived.cjs:288

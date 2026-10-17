@@ -66,12 +66,12 @@ function populatedSession(count) {
 
 async function benchState() {
   const { sessionTimeline } = load('core/session-timeline.cjs');
-  const { VideoTools } = load('core/video-tools.cjs');
+  const { VideoTools, consultationOf } = load('core/video-tools.cjs');
   const { perceptionContext } = load('core/perception-context.cjs');
   const rows = [];
   for (const count of [75, 450, 900, 1800]) {
     const watch = populatedSession(count);
-    const snapshot = watch.snapshot();
+    const snapshot = watch.snapshot(), view = watch.memoryView();
     const state = () => { const session = watch.snapshot(); return { session, timeline: sessionTimeline(session), chat: { jobs: [] }, captureGaps: [] }; };
     const payload = JSON.stringify(state());
     rows.push({ passages: count, observedMinutes: round((2000 + count * 8000) / 60000),
@@ -81,7 +81,7 @@ async function benchState() {
       timelineMs: timeSync(() => sessionTimeline(snapshot)),
       statePollMs: timeSync(() => JSON.stringify(state())),
       statePollBytes: Buffer.byteLength(payload),
-      questionToolsMs: timeSync(() => new VideoTools({ snapshot, search: {}, inspector: {}, media: {} })),
+      questionToolsMs: timeSync(() => new VideoTools({ consultation: consultationOf(view), search: {}, inspector: {}, media: {} })),
       perceptionContextMs: timeSync(() => perceptionContext(watch, watch.segments.at(-1))) });
   }
   return rows;

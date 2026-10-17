@@ -525,7 +525,7 @@ app.whenReady().then(async () => {
   if (!smoke || process.argv.includes('--live-shortcut')) {
     explainShortcutRegistered = globalShortcut.register(explainShortcut, () => {
       try {
-        const frozen = viewingActions.freeze(loaded?.runtime.watch.snapshot());
+        const frozen = viewingActions.freeze(loaded?.runtime.memory.view());
         window.show();
         window.webContents.send('moments:explain-requested', frozen);
       } catch (error) { window.webContents.send('saved:error', error.message); }

@@ -1,8 +1,10 @@
 const { DeepAsk, QUESTION_TIMEOUT_MS } = require("../core/deep-ask.cjs");
-const { VideoTools } = require("../core/video-tools.cjs");
+const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
+const { domainError } = require("../core/shared/domain-error.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
+const TVLENS_QUESTION_SCOPE_FOREIGN = "TVLENS_QUESTION_SCOPE_FOREIGN";
 
 function hasPendingQuestion(jobs, sessionId) {
   return Boolean(sessionId) && jobs.some(job => job.sessionId === sessionId
@@ -18,7 +20,7 @@ function questionTimeout(value) {
   return value;
 }
 
-// Both hosts supply the current session; frozen question snapshots take precedence.
+// Both hosts supply the current session; a consultation kept by the question takes precedence over its view.
 function createConversationRuntime({
   getSession,
   agent,
@@ -43,20 +45,25 @@ function createConversationRuntime({
     });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
-    if (!session?.watch || !session.search || !session.inspector)
+    if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)
       throw Error("Démarre une session.");
-    const snapshot = scope.snapshot || session.watch.snapshot();
+    const consultation = scope.consultation || consultationOf(session.memory.view());
+    // A kept scope names its session: a moment of another session is never consulted under the current one.
+    if (consultation.sessionId !== session.id)
+      throw domainError(TVLENS_QUESTION_SCOPE_FOREIGN, "Ce moment n’appartient pas à la session en cours.");
+    const { sessionId } = consultation;
     return new VideoTools({
-      snapshot,
+      consultation,
       search: session.search,
       inspector: session.inspector,
-      media: session.store,
+      media: session.memoryMedia,
       signal,
       onProgress,
-      // Evidence refresh stays bound to the question's session: nothing to read once the host moved on.
-      live: () => {
-        const watch = getSession()?.watch;
-        return watch?.id === snapshot.id ? watch.snapshot() : null;
+      // Rereads stay bound to the question's session: nothing is read once the host moved on. Only the identifier
+      // is kept here, never the view or the session the question started from.
+      reread: (ids) => {
+        const current = getSession();
+        return current?.id === sessionId && current.memory ? current.memory.passages(ids) : null;
       },
     });
   };
@@ -75,4 +82,4 @@ function createConversationRuntime({
     }),
   };
 }
-module.exports = { createConversationRuntime, hasPendingQuestion };
+module.exports = { createConversationRuntime, hasPendingQuestion, TVLENS_QUESTION_SCOPE_FOREIGN };

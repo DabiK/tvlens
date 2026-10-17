@@ -8,6 +8,7 @@ const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { LocalTranscriber } = require('../adapters/local-transcriber.cjs');
 const { CachedInspector } = require('../core/cached-inspector.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
+const { consultationFrom } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { mcpToolDefinitions } = require('../mcp/tool-definitions.cjs');
 
@@ -54,7 +55,8 @@ setTimeout(() => fs.writeFileSync(arg('-of') + '.json', JSON.stringify({ transcr
     media: { file: id => path.join(dir, id + '.webm'), read: async () => ({ frames: [], audio: stored }) },
     strategy: { name: 'test', diverse: false, prepare: async ({ segments }) => ({ segments, metadata: { warnings: [] }, cost: 0 }) } }));
   const tools = new VideoTools({ inspector, media: { lease: async () => async () => {} },
-    snapshot: { id: 'session', elapsedMs: 20000, history: [], segments: [{ id: 'moment-1', startMs: 8000, endMs: 16000, status: 'ready', available: true, ...passage }] } });
+    consultation: consultationFrom({ id: 'session', elapsedMs: 20000, history: [],
+      segments: [{ id: 'moment-1', startMs: 8000, endMs: 16000, status: 'ready', available: true, ...passage }] }) });
   return { tools, transcriber, prompts, inspector, setMode: value => fs.writeFile(mode, String(value)),
     // Seconds of sound given to each Whisper process started so far.
     launches: async () => (await fs.readFile(log, 'utf8').catch(() => '')).split('\n').filter(Boolean).map(Number),
@@ -117,7 +119,9 @@ test('an observation resting on speech carries the whole speech interval, never 
 test('speech is bounded by its own passage and by the anchor, and never narrowed by an observation', async () => {
   const ready = { status: 'ready', audioStatus: 'ready', available: true };
   const tools = answer => { const handed = []; return { handed, tools: new VideoTools({ media: { lease: async () => async () => {} },
-    snapshot: { id: 's', elapsedMs: 2500, history: [], segments: [{ id: 'm2', startMs: 1000, endMs: 2000, ...ready, observation: { summary: 'B', transcript: 'b' } }, { id: 'm3', startMs: 2000, endMs: 3000, ...ready, observation: { summary: 'C', transcript: 'c' } }] },
+    consultation: consultationFrom({ id: 's', elapsedMs: 2500, history: [], segments: [
+      { id: 'm2', startMs: 1000, endMs: 2000, ...ready, observation: { summary: 'B', transcript: 'b' } },
+      { id: 'm3', startMs: 2000, endMs: 3000, ...ready, observation: { summary: 'C', transcript: 'c' } }] }),
     inspector: { inspect: async ({ segments }) => { handed.push(...segments.map(s => [s.id, s.observation.transcript])); return answer; } } }) }; };
   // The request reaches into m3, which ends after the anchor: m3 is never handed over, and speech claimed past m2 is dropped.
   const beyond = tools({ speech: [{ id: 'm2', startMs: 1000, endMs: 3000 }, { id: 'm3', startMs: 2000, endMs: 3000 }],

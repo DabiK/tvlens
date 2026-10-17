@@ -96,9 +96,16 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * clock.elapsedMs et les identifiants/intervalles ; ses relectures portent seulement sur cet ensemble.
  * Une révision ne représente pas encore tous les changements de disponibilité.
  *
+ * @typedef {object} MemoryPassageRead
+ * @property {{id:string}} session Identité de la session lue, pour qu'une question ne relise que la sienne.
+ * @property {MemoryClock} clock Même horloge que MemoryView.clock au moment de la lecture.
+ * @property {MemoryPassage[]} passages Ordre demandé ; un identifiant inconnu est omis.
+ *
  * @typedef {object} MemoryReadPort
  * @property {()=>MemoryView} view
  * @property {(id:string)=>MemoryPassage|null} passage Lecture bornée, sans construire MemoryView.
+ * @property {(ids:string[])=>MemoryPassageRead} passages Relecture bornée d'un ensemble figé, sans construire
+ * MemoryView ni projeter un passage non demandé. Refus TVLENS_MEMORY_IDS_INVALID si ids n'est pas une liste de textes.
  * @property {(limit:number)=>MemoryPassage[]} recentPassages Queue conservée, sans history ni filtre ready.
  *
  * @typedef {{atMs:number,dataUrl:string}} MemoryFrame

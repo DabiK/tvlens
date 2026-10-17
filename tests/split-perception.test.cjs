@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession } = require('../core/session.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { sessionTimeline } = require('../core/session-timeline.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { tick, deferred, until } = require('./helpers/wait.cjs');
@@ -187,7 +187,7 @@ test('speech is published and next audio processed during blocked vision; contex
   await f.add(0); await f.add(1);
   assert.deepEqual(seen, ['moment-1']);
   assert.deepEqual(f.watch.segments.map(s => s.audioStatus), ['ready', 'ready']);
-  const tools = new VideoTools({ snapshot: f.watch.snapshot() });
+  const tools = new VideoTools({ consultation: consultationOf(f.watch.memoryView()) });
   assert.equal(tools.context().passages.length, 2);
   assert.equal(tools.context().passages[0].precision, 'partial-observation');
   assert.equal(tools.context().analyzedThroughMs, 0);
@@ -286,7 +286,7 @@ test('empty successful audio and expired queued vision never turn the archived p
   f.setTime(5000); await f.watch.prune();
   assert.equal(f.watch.history[0].summary, 'Passage non analysé.');
   assert.equal(f.watch.history[0].status, 'expired');
-  const tools = new VideoTools({ snapshot: f.watch.snapshot() });
+  const tools = new VideoTools({ consultation: consultationOf(f.watch.memoryView()) });
   assert.deepEqual(tools.context().passages, []);
   assert.equal(tools.context().contextThroughMs, 0);
   assert.equal(f.watch.snapshot().contextThroughMs, 0);

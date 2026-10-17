@@ -8,7 +8,7 @@ const sharp = require('sharp');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
 const { until, tick, deferred, turns } = require('./helpers/wait.cjs');
 const { emptyArchive } = require('./helpers/empty-archive.cjs');
@@ -596,7 +596,7 @@ test('an archive kept until deletion keeps that contract on a host set to a roll
   const replay = await f.raw(`/v1/media/${A}/moment-1`, { headers: { Range: 'bytes=0-6' } });
   assert.equal(replay.status, 206); assert.equal(await replay.text(), 'fixture');
   const loaded = f.runtime.session;
-  const inspected = await new VideoTools({ snapshot: loaded.watch.snapshot(), search: loaded.search, inspector: loaded.inspector, media: loaded.store }).call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que voit-on au début ?' });
+  const inspected = await new VideoTools({ consultation: consultationOf(loaded.memory.view()), search: loaded.search, inspector: loaded.inspector, media: loaded.memoryMedia }).call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que voit-on au début ?' });
   assert.equal(inspected.observations[0].id, 'moment-1', 'the lease found the real files of the first passage');
   assert.equal((await f.req('/v1/session/end', {})).value.archived, true);
 

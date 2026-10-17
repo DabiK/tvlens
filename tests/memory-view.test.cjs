@@ -264,6 +264,58 @@ test('bounded reads project only one passage or the requested retained tail with
   snapshot.mock.restore();
 });
 
+test('a bounded read by identifiers publishes the identity, the clock and the requested passages without the complete view', t => {
+  const f = fixture(t);
+  assert.equal(typeof f.watch.memoryPassages, 'function');
+  f.watch.restore({
+    id: 'session', retention: 'until-deleted', history: [savedPassage(1)],
+    segments: [
+      savedPassage(2), savedPassage(3, { mediaReason: 'unreadable', available: false }),
+      savedPassage(4, { revision: undefined, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing' }),
+      savedPassage(5, { status: 'error', observation: null, summary: null }),
+    ],
+  }, { hasMedia: () => true });
+  f.time = 7000;
+  const expected = f.watch.memoryView();
+  let unrequestedReads = 0;
+  Object.defineProperty(f.watch.segments[0].observation, 'visual', {
+    enumerable: true,
+    get() {
+      unrequestedReads++;
+      return 'Image hors demande';
+    },
+  });
+  const memory = require('../core/memory/index.cjs');
+  const complete = t.mock.method(memory, 'createMemoryView', () => assert.fail('full view is forbidden'));
+  const snapshot = t.mock.method(f.watch, 'snapshot', () => assert.fail('snapshot is forbidden'));
+  f.effects.length = 0;
+  const read = f.watch.memoryPassages(['moment-4', 'absent', 'moment-1', 'moment-3']);
+  keys(read, 'session clock passages');
+  keys(read.session, 'id');
+  assert.deepEqual(read.session, { id: 'session' });
+  assert.deepEqual(read.clock, expected.clock, 'the clock is the one the complete view publishes');
+  const byId = new Map(expected.passages.map(p => [p.id, p]));
+  assert.deepEqual(read.passages, ['moment-4', 'moment-1', 'moment-3'].map(id => byId.get(id)),
+    'requested order, unknown identifiers omitted, same passage projection');
+  assert.deepEqual(read.passages.map(p => [p.origin, p.revision, p.availability.reason]),
+    [['retained', null, null], ['history', 7, 'missing'], ['retained', 7, 'unreadable']]);
+  assert.equal(unrequestedReads, 0, 'a passage that is neither requested nor needed by the clock is never projected');
+  assert.deepEqual(f.watch.memoryPassages([]), { session: { id: 'session' }, clock: expected.clock, passages: [] });
+  for (const invalid of [undefined, 'moment-1', [1], new Set(['moment-1'])]) {
+    assert.throws(() => f.watch.memoryPassages(invalid), { code: 'TVLENS_MEMORY_IDS_INVALID' });
+  }
+  read.passages[0].observation.summary = 'Modifié';
+  read.clock.elapsedMs = 0;
+  read.session.id = 'foreign';
+  const again = f.watch.memoryPassages(['moment-4']);
+  assert.deepEqual([again.session.id, again.clock.elapsedMs, again.passages[0].observation.summary], ['session', 7000, 'Résumé 4']);
+  assert.deepEqual(f.effects, []);
+  assert.equal(complete.mock.callCount(), 0);
+  assert.equal(snapshot.mock.callCount(), 0);
+  complete.mock.restore();
+  snapshot.mock.restore();
+});
+
 test('full views own their lists, observations, summaries and coverage and perform no reads or publications', t => {
   const f = fixture(t);
   f.watch.restore({
@@ -399,7 +451,7 @@ test('composition binds read capabilities to its session and defers explicit del
   assert.equal(typeof runtime.memory?.view, 'function');
   assert.equal(typeof runtime.memoryMedia?.read, 'function');
   assert.equal(typeof runtime.memoryMedia?.lease, 'function');
-  keys(runtime.memory, 'view passage recentPassages');
+  keys(runtime.memory, 'view passage passages recentPassages');
   keys(runtime.memoryMedia, 'read lease');
   runtime.watch.beginEnding();
   await runtime.watch.ingest(block(0, { clip: new Uint8Array() }));
@@ -407,6 +459,7 @@ test('composition binds read capabilities to its session and defers explicit del
   contract(view);
   assert.equal(view.session.id, runtime.id);
   assert.equal(runtime.memory.passage('moment-1').revision, 0);
+  assert.deepEqual(runtime.memory.passages(['moment-1', 'absent']), { session: { id: runtime.id }, clock: view.clock, passages: view.passages });
   assert.deepEqual(runtime.memory.passage('moment-1').availability,
     { replayable: false, reason: 'unreadable', images: true, audio: true });
   assert.equal(runtime.memory.recentPassages(1)[0].id, 'moment-1');

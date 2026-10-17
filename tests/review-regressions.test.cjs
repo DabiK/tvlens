@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { consultationFrom, rereadOf } = require('./helpers/memory-consultation.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -233,7 +234,7 @@ test('an older read returned late never replaces the newer consulted version, ev
   let live, releaseSearch;
   const snapshot = { id: 's', elapsedMs: 9000, history: [], segments: [{ id: 'moment-1', startMs: 0, endMs: 8000, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing', available: true, revision: 1, observation: { transcript: 'Paroles' } }] };
   live = snapshot;
-  const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), reread:rereadOf(() => live), media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
   await turns(6);
@@ -375,7 +376,7 @@ test('a passage whose transcription failed says so wherever its empty transcript
   const failed = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', audioFailed: true, available: true, revision: 2, observation: { summary: 'Un plateau.', visual: 'Deux personnes.', transcript: '' } };
   const heard = { ...failed, id: 'moment-2', startMs: 8000, endMs: 16000, audioFailed: undefined, observation: { ...failed.observation, transcript: 'Bonsoir.' } };
   const snapshot = { id: 's', elapsedMs: 17000, history: [], segments: [failed, heard] };
-  const tools = new VideoTools({ snapshot, search: {}, inspector: {}, media: {} });
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), search: {}, inspector: {}, media: {} });
   const read = await tools.call('get_transcript', { startMs: 0, endMs: 16000 });
   assert.deepEqual(read.passages.map(p => [p.id, p.audioStatus, p.audioFailed]), [['moment-1', 'ready', true], ['moment-2', 'ready', undefined]]);
   assert.equal('audioFailed' in read.passages[1], false, 'a passage that was heard carries no flag');
@@ -389,7 +390,7 @@ test('with the session clock stopped by a pause, an older read returned late sti
   const passage = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing', available: true, revision: 1, observation: { transcript: 'Paroles' } };
   const snapshot = { id: 's', elapsedMs: 9000, history: [], segments: [passage] };
   live = snapshot;
-  const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), reread:rereadOf(() => live), media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
   await turns(6);

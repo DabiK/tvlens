@@ -1,6 +1,7 @@
 const { hasUsableObservation } = require('../passage-text.cjs');
 const { domainError } = require('../shared/domain-error.cjs');
 const TVLENS_MEMORY_LIMIT_INVALID = 'TVLENS_MEMORY_LIMIT_INVALID';
+const TVLENS_MEMORY_IDS_INVALID = 'TVLENS_MEMORY_IDS_INVALID';
 const NULLABLE_FIELDS = [
   'revision', 'status', 'audioStatus', 'visionStatus', 'error', 'audioError', 'visionError',
   'visionSkipReason', 'stage', 'summary',
@@ -110,6 +111,46 @@ function readMemoryPassage(memory, id, modalities = new Map()) {
   return historical ? passageView(historical, 'history', modalities.get(id)) : null;
 }
 
+function* newestFirst(memory) {
+  for (let index = memory.segments.length - 1; index >= 0; index--) yield [memory.segments[index], 'retained'];
+  for (let index = memory.history.length - 1; index >= 0; index--) yield [memory.history[index], 'history'];
+}
+
+// Each bound is set by the newest passage that meets it, as the complete view takes the last one in observation order.
+function settleClock(bounds, passage) {
+  bounds.capturedThroughMs ??= passage.endMs || 0;
+  if (bounds.analyzedThroughMs === null && passage.status === 'ready') bounds.analyzedThroughMs = passage.endMs || 0;
+  if (bounds.contextThroughMs === null && hasUsableObservation(passage)) bounds.contextThroughMs = passage.endMs || 0;
+}
+
+// A question rereads its own passages at every consultation boundary: it needs the session identity and the
+// clock of the complete view, never the projection of every passage. One backward pass from the newest passage:
+// the clock is settled by the latest analysed and usable passages, the others are only compared by identifier.
+/** @returns {import('./ports.cjs').MemoryPassageRead} */
+function readMemoryPassages(memory, ids, modalities = new Map()) {
+  if (!Array.isArray(ids) || ids.some(id => typeof id !== 'string')) {
+    throw domainError(TVLENS_MEMORY_IDS_INVALID, 'Identifiants de passages invalides.');
+  }
+  const wanted = new Set(ids), found = new Map();
+  const bounds = { capturedThroughMs: null, analyzedThroughMs: null, contextThroughMs: null };
+  for (const [passage, origin] of newestFirst(memory)) {
+    settleClock(bounds, passage);
+    // A retained passage wins over a history entry of the same identifier, as for a single passage read.
+    if (wanted.has(passage.id) && !found.has(passage.id)) found.set(passage.id, [passage, origin]);
+  }
+  const clock = { elapsedMs: memory.now(), capturedThroughMs: bounds.capturedThroughMs ?? 0,
+    analyzedThroughMs: bounds.analyzedThroughMs ?? 0, contextThroughMs: bounds.contextThroughMs ?? 0 };
+  clock.analysisLagMs = Math.max(0, clock.capturedThroughMs - clock.analyzedThroughMs);
+  return {
+    session: { id: memory.id },
+    clock,
+    passages: ids.filter(id => found.has(id)).map(id => {
+      const [passage, origin] = found.get(id);
+      return passageView(passage, origin, modalities.get(id));
+    }),
+  };
+}
+
 /** @returns {import('./ports.cjs').MemoryPassage[]} */
 function recentMemoryPassages(memory, limit, modalities = new Map()) {
   if (!Number.isSafeInteger(limit) || limit < 0) {
@@ -119,4 +160,7 @@ function recentMemoryPassages(memory, limit, modalities = new Map()) {
   return memory.segments.slice(-limit).map(p => passageView(p, 'retained', modalities.get(p.id)));
 }
 
-module.exports = { createMemoryView, readMemoryPassage, recentMemoryPassages, TVLENS_MEMORY_LIMIT_INVALID };
+module.exports = {
+  createMemoryView, readMemoryPassage, readMemoryPassages, recentMemoryPassages,
+  TVLENS_MEMORY_LIMIT_INVALID, TVLENS_MEMORY_IDS_INVALID,
+};

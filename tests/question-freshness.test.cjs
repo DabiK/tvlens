@@ -2,15 +2,16 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { VideoTools } = require('../core/video-tools.cjs');
 const { DeepAsk } = require('../core/deep-ask.cjs');
+const { consultationFrom, rereadOf } = require('./helpers/memory-consultation.cjs');
 
 const passage = (n, startMs, endMs, extra = {}) => ({ id: `moment-${n}`, startMs, endMs, status: 'ready', available: true, observation: { summary: `Résumé ${n}`, transcript: `Paroles ${n}` }, ...extra });
 // The question froze at 26 s. The passage covering 24–32 s arrived afterwards: it is not part of the prefix.
 const snapshot = () => ({ id: 's1', elapsedMs: 26000, history: [], segments: [passage(1, 0, 8000), passage(2, 8000, 16000), passage(3, 16000, 24000)] });
-const tools = (inspected = []) => new VideoTools({ snapshot: snapshot(), search: { search: async () => ({ moments: [] }) },
+const tools = (inspected = []) => new VideoTools({ consultation: consultationFrom(snapshot()), search: { search: async () => ({ moments: [] }) },
   inspector: { inspect: async input => { inspected.push(input); return { observations: [], hypotheses: [], limits: [] }; } },
   media: { lease: async () => async () => {} },
   // A later state knows a newer passage: refreshing must never add it.
-  live: () => ({ ...snapshot(), elapsedMs: 40000, segments: [...snapshot().segments, passage(4, 24000, 32000)] }) });
+  reread: rereadOf(() => ({ ...snapshot(), elapsedMs: 40000, segments: [...snapshot().segments, passage(4, 24000, 32000)] })) });
 
 test('a request beyond what the question froze is refused with the interval that can be asked instead', async () => {
   const inspected = [], t = tools(inspected);
@@ -24,7 +25,7 @@ test('a request beyond what the question froze is refused with the interval that
   assert.equal(inspected.length, 0, 'nothing was re-examined');
   // Neither refusal widened the prefix, and the newer passage stays out after a refresh.
   assert.equal(t.refresh(), true);
-  assert.deepEqual(t.segments.map(s => s.id), ['moment-1', 'moment-2', 'moment-3']);
+  assert.deepEqual(t.consultationScope().passages.map(s => s.id), ['moment-1', 'moment-2', 'moment-3']);
   assert.equal(t.availability().throughMs, 24000);
   // The viewer reads the limit once, however many requests were refused.
   assert.deepEqual(t.limits, ['Une demande visait un intervalle hors de la mémoire disponible au moment de la question (0:00–0:24).']);
@@ -34,7 +35,7 @@ test('a request beyond what the question froze is refused with the interval that
 });
 
 test('a question asked before any passage says so instead of an opaque refusal', async () => {
-  const t = new VideoTools({ snapshot: { id: 's1', elapsedMs: 3000, history: [], segments: [] }, search: {}, inspector: {}, media: {} });
+  const t = new VideoTools({ consultation: consultationFrom({ id: 's1', elapsedMs: 3000, history: [], segments: [] }), search: {}, inspector: {}, media: {} });
   assert.deepEqual(t.availability(), { startMs: 0, throughMs: 0, anchorMs: 3000, passages: 0, lastPassage: null });
   await assert.rejects(t.call('get_transcript', { startMs: 0, endMs: 3000 }), /Aucun passage n’était encore reçu au moment de la question\./);
   assert.deepEqual(t.limits, ['Aucun passage n’était encore reçu au moment de la question.']);
