@@ -37,7 +37,7 @@ test('removing references reports queued audio and ends a generic vision hold at
   lanes.enqueue(first);
   lanes.drain();
   lanes.enqueue(second);
-  assert.equal(lanes.remove(second), true, 'the root can count the unprocessed audio as expired');
+  assert.equal(lanes.remove(second), true, 'the caller can distinguish audio that has not been processed');
   assert.equal(lanes.state().audioPending, 0);
   audio.resolve();
   await handedOver.promise;
@@ -53,9 +53,9 @@ test('removing references reports queued audio and ends a generic vision hold at
   assert.deepEqual(descriptions, [], 'releasing cannot resurrect removed references');
 });
 
-test('read-only memory refuses a visual retry before and after the second media read', async t => {
-  for (const stage of ['failure', 'reread']) {
-    let lifecycle = new MemoryLifecycleState(), calls = 0, reads = 0;
+test('read-only memory and unavailable media refuse a visual retry before and after the second media read', async t => {
+  for (const condition of ['read-only', 'unavailable']) for (const stage of ['failure', 'reread']) {
+    let lifecycle = new MemoryLifecycleState(), calls = 0, reads = 0, available = true;
     const entered = deferred(), release = deferred(), finished = deferred();
     const retried = [], losses = [];
     const refusal = Object.assign(Error('Connexion coupée'), { code: 'TVLENS_VISION_TRANSIENT' });
@@ -79,7 +79,7 @@ test('read-only memory refuses a visual retry before and after the second media 
         }
         throw refusal;
       },
-      hasMedia: () => true,
+      hasMedia: () => available,
       isEnding: () => lifecycle.ending,
       isReadOnly: () => lifecycle.readOnly,
       contextFor: () => ({}),
@@ -95,7 +95,8 @@ test('read-only memory refuses a visual retry before and after the second media 
     lanes.enqueue(passage);
     lanes.drain();
     await entered.promise;
-    lifecycle = lifecycle.restore();
+    if (condition === 'read-only') lifecycle = lifecycle.restore();
+    else available = false;
     release.resolve();
     await finished.promise;
     assert.deepEqual([calls, reads, retried, losses], [1, stage === 'failure' ? 2 : 3, [], [['vision', 'error']]], stage);

@@ -68,7 +68,7 @@ test("selected moments resolve from archived observations without pretending raw
   );
   assert.throws(() => momentDetail(viewOf(snapshot), ["moment-99"]), /absent/);
 });
-test("thumbnail exists before analysis, survives raw expiry, pause and the end of the session; only an explicit purge removes it", async () => {
+test("thumbnail exists before analysis, survives explicit media removal, pause and the end of the session; only an explicit purge removes it", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-thumbnails-"));
   const dir = path.join(root, "session");
   const thumbnails = new SessionThumbnails(path.join(dir, "thumbnails"));
@@ -93,7 +93,6 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
     onChange: state => {
       if (state.segments[0]?.status === "ready") described.resolve();
     },
-    retentionMs: 10000,
   });
   watch.setQuestionPending(true);
   try {
@@ -122,8 +121,8 @@ test("thumbnail exists before analysis, survives raw expiry, pause and the end o
     await watch.stop();
     await watch.resume();
     now = 30000;
-    await watch.prune();
-    assert.equal(watch.history[0].thumbnailAvailable, true);
+    await media.remove("moment-1");
+    assert.equal(watch.snapshot().segments[0].thumbnailAvailable, true);
     await assert.rejects(media.read("moment-1"));
     assert.ok((await thumbnails.read("moment-1")).length);
     // End of the session: no later write, and the image stays on disk for the archive.

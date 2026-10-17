@@ -79,8 +79,8 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {string} id
  * @property {boolean} accepting
  * @property {boolean} readOnly
- * @property {'rolling'|'until-deleted'} retention
- * @property {number|null} retentionMs
+ * @property {'until-deleted'} retention
+ * @property {null} retentionMs
  * @property {number} unplacedMedia
  * @property {string|null} lastError
  *
@@ -137,8 +137,8 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {boolean} accepting
  * @property {boolean} readOnly
  * @property {number} unplacedMedia
- * @property {'rolling'|'until-deleted'} retention
- * @property {number|null} retentionMs
+ * @property {'until-deleted'} retention
+ * @property {null} retentionMs
  * @property {boolean} asking Compatibilité de la façade ; ne fait pas partie de MemoryView.
  * @property {boolean} analyzing
  * @property {number} pending

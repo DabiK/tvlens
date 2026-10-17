@@ -570,7 +570,7 @@ test('below the disk floor a block is answered 507 with nothing written; the ses
   assert.deepEqual([state.storage.state, state.session.accepting, state.session.lastError, state.session.segments.length], ['ok', true, null, 2]);
 });
 
-test('an archive kept until deletion keeps that contract on a host set to a rolling window: reopened, resumed and swept an hour later, its start is still there and can be re-examined', async t => {
+test('an archive keeps its media with a legacy retention option after reopening, resuming and advancing an hour', async t => {
   const f = await fixture(t, { runtimeOptions: f => (f.window ? { retentionMs: f.window } : {}) });
   const A = (await f.req('/v1/session/start', {})).value.id, mediaA = path.join(f.sessionsRoot, A, 'media');
   assert.deepEqual([(await f.block(A, 1, 8000)).value.id, (await f.block(A, 2, 16000)).value.id], ['moment-1', 'moment-2']);
@@ -585,9 +585,9 @@ test('an archive kept until deletion keeps that contract on a host set to a roll
   const resumed = (await f.req(`/v1/sessions/${A}/resume`, {})).value;
   assert.deepEqual([resumed.accepting, resumed.retention, resumed.retentionMs], [true, 'until-deleted', null]);
   assert.equal((await f.block(A, 1, 24000)).value.id, 'moment-3');
-  // An hour later on the session clock, far past the window: the periodic sweep, then the one of a new block.
+  // Une heure plus tard : rafraîchissement publié puis nouveau bloc, sans suppression des anciens médias.
   f.clock += 3600000;
-  await f.runtime.session.watch.prune();
+  f.runtime.session.watch.emit();
   assert.equal((await f.block(A, 2, 3632000)).value.id, 'moment-4');
   const state = (await f.req('/v1/state')).value.session;
   assert.deepEqual([state.retention, state.retentionMs, state.history.length, state.segments.map(s => [s.id, s.available])],
@@ -605,11 +605,11 @@ test('an archive kept until deletion keeps that contract on a host set to a roll
   assert.deepEqual([B.retention, B.retentionMs], ['until-deleted', null]);
   assert.equal((await f.block(B.id, 1, 8000)).value.id, 'moment-1');
   f.clock += 600000;
-  await f.runtime.session.watch.prune();
+  f.runtime.session.watch.emit();
   assert.equal((await f.raw(`/v1/media/${B.id}/moment-1`)).status, 200);
   await f.runtime.pause();
   f.clock += 3600000;
-  await f.runtime.session.watch.prune();
+  f.runtime.session.watch.emit();
   assert.equal((await f.raw(`/v1/media/${B.id}/moment-1`)).status, 200);
   assert.deepEqual((await tree(mediaA)).filter(row => /moment-[12]\./.test(row[0])), start);
 });

@@ -33,8 +33,8 @@ function stage(clock, config, answers) {
   const perception = {
     transcribe: async s => { await sleep(TRANSCRIBE_MS); return { observation: { transcript: `Paroles ${s.id}` }, elapsedMs: TRANSCRIBE_MS }; },
     observeVisual: async s => { await sleep(VISION_MS); return { observation: { summary: `Images ${s.id}`, visual: 'Plan fixe' }, elapsedMs: VISION_MS }; } };
-  // One hour of retention keeps expiry out of the picture: only the question may hold anything back here.
-  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, retentionMs: 3600000, visionDuringAsk: config.visionDuringAsk === true });
+  // Seule la politique des questions peut retenir la vision dans ce scénario.
+  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, visionDuringAsk: config.visionDuringAsk === true });
   const agent = scriptedAgent(answers);
   const memory = { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) };
   const { deep } = createConversationRuntime({ agent, config, selectedModels: {},

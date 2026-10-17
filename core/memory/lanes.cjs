@@ -76,7 +76,7 @@ class PerceptionLanes {
     this.#shed();
   }
 
-  // L'expiration reste décidée par la racine ; le retrait ne touche pas aux appels en vol.
+  // Le retrait explicite des références ne touche pas aux appels en vol.
   remove(segment) {
     const awaitingAudio = this.#audioQueue.includes(segment);
     this.#audioQueue = this.#audioQueue.filter(item => item !== segment);

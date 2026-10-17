@@ -60,12 +60,8 @@ class HeadlessSessionLifecycle {
     return {
       id: session.id,
       elapsedMs: watch.now(),
-      retentionMs: Number.isFinite(watch.retentionMs)
-        ? watch.retentionMs
-        : null,
-      retention: Number.isFinite(watch.retentionMs)
-        ? "rolling"
-        : "until-deleted",
+      retentionMs: null,
+      retention: "until-deleted",
       readOnly: watch.readOnly,
       accepting: watch.accepting,
     };

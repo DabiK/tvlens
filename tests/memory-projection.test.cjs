@@ -85,31 +85,23 @@ test('the shared projection preserves every published field and optional passage
   snapshot.mock.restore();
 });
 
-test('a complete read stays fresh while a changed availability waits for media removal before publication', async t => {
-  const { deferred } = require('./helpers/wait.cjs');
+test('a complete read observes unreadable media from its fact before the host publishes the passage', async t => {
   const { runtime } = await fixture(t);
   const { watch, memoryProjection } = runtime;
-  const entered = deferred(), removal = deferred();
-  t.after(() => removal.resolve());
   watch.beginEnding();
-  watch.retentionMs = 1000;
-  await watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array([1]), frames: [], audio: null });
-  memoryProjection.read();
-  const remove = runtime.store.remove.bind(runtime.store);
-  t.mock.method(runtime.store, 'remove', async id => {
-    entered.resolve();
-    await removal.promise;
-    return remove(id);
+  const before = memoryProjection.read().session;
+  const onChange = t.mock.method(watch, 'onChange');
+  const observed = [];
+  runtime.events.subscribe(event => {
+    if (event.type !== 'PassageUpdated') return;
+    observed.push({ current: memoryProjection.read().session, expected: watch.snapshot(), publications: onChange.mock.callCount() });
   });
-  t.mock.method(watch, 'now', () => 5000);
-  const pruning = watch.prune();
-  await entered.promise;
-  try {
-    assert.deepStrictEqual(memoryProjection.read().session, watch.snapshot(), 'the full body observes the current consultation before the next publication');
-  } finally {
-    removal.resolve();
-    await pruning;
-  }
+  await watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array(), frames: [], audio: null });
+  assert.equal(before.segments.length, 0);
+  assert.equal(observed.length, 1);
+  assert.equal(observed[0].publications, 0);
+  assert.equal(observed[0].current.segments[0].mediaReason, 'unreadable');
+  assert.deepStrictEqual(observed[0].current, observed[0].expected);
 });
 
 test('historical null flags, empty optional codes and extension names survive consultation normalization', async t => {

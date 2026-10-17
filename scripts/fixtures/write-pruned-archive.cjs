@@ -12,6 +12,11 @@ const EPOCH_MS = 1792195200000;
 
 async function main(destination) {
   if (!destination) throw new Error("Indique un nouveau dossier de sortie.");
+  if (typeof WatchSession.prototype.prune !== "function") {
+    throw Object.assign(new Error("Ce générateur exige l’élagage historique. Utilise le code du commit producteur 5e3f479."), {
+      code: "TVLENS_HISTORICAL_PRUNING_REQUIRED",
+    });
+  }
   // Aucun témoin existant ne peut être remplacé, même si sa racine est vide.
   await fs.mkdir(destination);
   const root = path.join(destination, ID);
@@ -25,7 +30,7 @@ async function main(destination) {
     accepting: () => watch.accepting,
     memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
   });
-  // Composition historique explicite : aucune option d'hôte ni variable d'environnement.
+  // Le témoin figé provient du commit 5e3f479 : sa fenêtre exige le cœur historique.
   const watch = new WatchSession({
     id: ID, now: () => clock, retentionMs: WINDOW_MS, media: store, archive: store, thumbnails,
     onEvents: pending => pending.forEach(event => events.publish(event)),

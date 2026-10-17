@@ -241,15 +241,32 @@ test('manual question blocks new vision but lets audio progress; close prevents 
   gate.resolve(); await tick(); assert.equal(signal.aborted, true);
   assert.equal(f.snapshots.length, count); assert.equal(f.watch.segments[0].observation.summary, undefined);
 });
-test('retention preserves completed speech while expiring queued vision and does not lose active enrichment', async () => {
-  const gate = deferred(); const f = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } }, { retentionMs: 1000 });
-  await f.add(0); await f.add(1); f.setTime(5000); await f.watch.prune();
-  assert.equal(f.watch.snapshot().visionPending, 0); assert.equal(f.watch.segments[1].visionStatus, 'expired');
-  gate.resolve(); await tick(); await f.watch.prune();
-  assert.equal(f.watch.history.length, 2);
-  assert.equal(f.watch.history[0].observation.summary, 'Images moment-1');
-  assert.equal(f.watch.history[1].observation.transcript, 'Paroles moment-2');
+test('completed speech and active enrichment survive a long pause and later ingestion with queued vision', async t => {
+  const gate = deferred();
+  const f = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } }, { retentionMs: 1000 });
+  t.after(() => f.watch.close());
+  await f.add(0);
+  await f.add(1);
+  await f.watch.stop();
+  f.setTime(7200000);
+  await f.watch.resume();
+  await f.add(7200);
+  const before = f.watch.memoryView();
+  assert.deepEqual(before.passages.map(p => [p.id, p.observation.transcript, p.availability.replayable]), [
+    ['moment-1', 'Paroles moment-1', true], ['moment-2', 'Paroles moment-2', true], ['moment-3', 'Paroles moment-3', true],
+  ]);
+  assert.deepEqual(before.passages.map(p => p.visionStatus), ['analyzing', 'queued', 'queued']);
+  gate.resolve();
+  await tick();
+  const after = f.watch.memoryView();
+  assert.deepEqual(after.passages.map(p => [p.id, p.origin, p.status, p.observation.summary]), [
+    ['moment-1', 'retained', 'ready', 'Images moment-1'],
+    ['moment-2', 'retained', 'ready', 'Images moment-2'],
+    ['moment-3', 'retained', 'ready', 'Images moment-3'],
+  ]);
+  assert.deepEqual([after.losses.audioExpired, after.losses.visionExpired], [0, 0]);
 });
+
 test('Codex split port sends existing transcript to vision without retranscription and observe remains compatible', async () => {
   let calls = 0, instructions;
   const perception = new CodexPerception({ transcriber: { transcribe: async () => { calls++; return { text: 'Bonjour', limits: [], cacheHit: true }; } },
@@ -279,19 +296,22 @@ test('vision success cannot clear concurrent newer audio failure or its own part
   await f.add(2); assert.equal(f.watch.lastError, null);
   assert.equal(f.watch.segments[1].audioError, 'new audio failure');
 });
-test('empty successful audio and expired queued vision never turn the archived placeholder into evidence', async () => {
-  const f = fixture({ transcribe: async () => ({ observation: { transcript: '' } }), observeVisual: visual }, { retentionMs: 1000 });
-  f.watch.setQuestionPending(true); await f.add(0);
-  assert.equal(f.watch.segments[0].audioStatus, 'ready');
-  f.setTime(5000); await f.watch.prune();
-  assert.equal(f.watch.history[0].summary, 'Passage non analysé.');
-  assert.equal(f.watch.history[0].status, 'expired');
+test('a historical expired placeholder never becomes evidence or a citation', async () => {
+  const f = fixture({ transcribe, observeVisual: visual });
+  // Archive synthétique de l’ancien cas : audio vide réussi, vision expirée avant son départ.
+  f.watch.restore({ id: 's', retention: 'rolling', retentionMs: 1000, segments: [], history: [{
+    id: 'moment-1', startMs: 0, endMs: 1000, status: 'expired', audioStatus: 'ready', visionStatus: 'expired',
+    summary: 'Passage non analysé.', observation: { transcript: '' }, mediaReason: 'expired',
+  }] });
+  f.setTime(5000);
   const tools = new VideoTools({ consultation: consultationOf(f.watch.memoryView()) });
   assert.deepEqual(tools.context().passages, []);
   assert.equal(tools.context().contextThroughMs, 0);
   assert.equal(f.watch.snapshot().contextThroughMs, 0);
   await tools.call('get_transcript', { startMs: 0, endMs: 1000 });
-  assert.deepEqual(tools.memoryEvidence, []); assert.deepEqual(tools.transcriptEvidence, []);
+  assert.deepEqual(tools.memoryEvidence, []);
+  assert.deepEqual(tools.transcriptEvidence, []);
+  await f.watch.close();
 });
 
 test('shared session supplies historical context at vision dispatch, after pause and without future audio leakage', async () => {

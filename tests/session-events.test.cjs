@@ -77,7 +77,7 @@ test('memory records reception only after a complete admission and drains its fa
   assert.deepEqual(states[0].segments.map(p => [p.id, p.revision, p.status]), [['moment-1', 0, 'queued']]);
   await watch.ingest(block(1));
   watch.emit();
-  await watch.prune();
+  watch.emit();
   assert.deepEqual(batches, [[received(0)], [received(1)]], 'later emissions do not replay drained facts');
 });
 
@@ -375,7 +375,7 @@ for (const failure of ['reported audio', 'thrown audio', 'thrown vision']) {
     assert.equal(seen.passage.status, failure === 'thrown audio' ? 'analyzing' : 'partial');
     const events = structuredClone(f.events), losses = f.watch.memoryView().losses;
     f.watch.emit();
-    await f.watch.prune();
+    f.watch.emit();
     assert.deepEqual(f.events, events);
     assert.deepEqual(f.watch.memoryView().losses, losses);
     assert.equal(f.watch.memoryPassage('moment-1').revision, revision);
@@ -454,7 +454,7 @@ test('bounded audio overload announces every shed lane and whole passage drop ex
   assert.deepEqual([seen.passage.status, seen.passage.audioStatus, seen.passage.visionStatus], ['skipped', 'skipped', 'skipped']);
   const before = structuredClone(f.events);
   f.watch.emit();
-  await f.watch.prune();
+  f.watch.emit();
   assert.deepEqual(f.events, before);
   audio.resolve();
   await tick();
@@ -506,118 +506,10 @@ test('a shed audio passage reaching a full vision queue announces its own loss w
   await tick();
 });
 
-test('expiry announces only the queued lane losses and the later handoff loss of the active transcription', async t => {
-  const audio = deferred();
-  const f = coreFixture(t, { retentionMs: 2500, perception: {
-    transcribe: async () => { await audio.promise; return audioResult; }, observeVisual: async () => visionResult,
-  } });
-  for (let index = 0; index < 4; index++) await f.add(index);
-  assert.deepEqual(f.events.filter(event => event.passageId === 'moment-1'), [received(0), updated(0, 1)]);
-  const prior = f.events.length;
-  f.time = 6000;
-  await f.watch.prune();
-  assert.deepEqual(f.events.slice(prior), [
-    updated(1, 2), lost(1, 2, 'vision', 'expired'),
-    updated(2, 1), lost(2, 1, 'audio', 'expired'), lost(2, 1, 'vision', 'expired'),
-  ]);
-  assert.deepEqual(f.watch.memoryView().passages.slice(0, 3).map(p => [p.revision, p.availability.reason]), [
-    [1, 'expired'], [2, 'expired'], [1, 'expired'],
-  ]);
-  assertCountedLosses(f);
-  const before = structuredClone(f.events);
-  await f.watch.prune();
-  f.watch.emit();
-  assert.deepEqual(f.events, before);
-  audio.resolve();
-  await tick();
-  assert.deepEqual(f.events.filter(event => event.passageId === 'moment-1'), [
-    received(0), updated(0, 1), updated(0, 2), lost(0, 2, 'vision', 'expired'),
-  ]);
-  assertCountedLosses(f);
-  await f.watch.prune();
-  const first = f.watch.memoryPassage('moment-1');
-  assert.deepEqual([first.origin, first.revision, first.observation.transcript], ['history', 2, audioResult.observation.transcript]);
-  await f.watch.stop();
-  assert.equal(f.saves.at(-1).history[0].revision, 2);
-});
-
-test('a transcription finishing during media removal gets its own revision after the consultable expiry', async t => {
-  const audio = deferred(), removal = deferred(), removing = deferred();
-  t.after(() => removal.resolve());
-  const f = coreFixture(t, { retentionMs: 1000, perception: {
-    transcribe: async () => { await audio.promise; return audioResult; },
-    observeVisual: async () => visionResult,
-  } });
-  const remove = f.watch.media.remove;
-  t.mock.method(f.watch.media, 'remove', async id => {
-    removing.resolve();
-    await removal.promise;
-    return remove(id);
-  });
-  await f.add(0);
-  f.time = 5000;
-  const published = f.states.length;
-  const pruning = f.watch.prune();
-  await removing.promise;
-  const expired = f.watch.memoryPassage('moment-1');
-  assert.deepEqual([expired.revision, expired.availability.reason, expired.observation], [1, 'expired', null]);
-  assert.equal(f.states.length, published, 'closing the fact batch does not add an onChange publication');
-  audio.resolve();
-  await tick();
-  const transcribed = f.watch.memoryPassages(['moment-1']).passages[0];
-  assert.equal(transcribed.revision, 2, 'the already consultable expiry and the transcript are distinct versions');
-  assert.equal(transcribed.observation.transcript, audioResult.observation.transcript);
-  assert.deepEqual(f.events, [received(0), updated(0, 1), updated(0, 2), lost(0, 2, 'vision', 'expired')]);
-  assert.deepEqual([f.seen[1].passage.revision, f.seen[1].passage.observation], [1, null]);
-  assert.equal(f.seen[2].passage.observation.transcript, audioResult.observation.transcript);
-  assertCountedLosses(f);
-  removal.resolve();
-  await pruning;
-  assert.deepEqual([f.watch.memoryPassage('moment-1').origin, f.watch.memoryPassage('moment-1').revision], ['history', 2]);
-  await f.watch.stop();
-  assert.equal(f.saves.at(-1).history[0].revision, 2);
-});
-
-test('expired queued vision and active enrichment keep their final versions in history without repeating removal losses', async t => {
-  const vision = deferred();
-  const f = coreFixture(t, { retentionMs: 1000, perception: {
-    transcribe: async () => audioResult, observeVisual: async () => { await vision.promise; return visionResult; },
-  } });
-  const remove = f.watch.media.remove;
-  let refused = true;
-  t.mock.method(f.watch.media, 'remove', async id => {
-    if (refused) throw Error('EPERM /private/media');
-    return remove(id);
-  });
-  await f.add(0);
-  await f.add(1);
-  const prior = f.events.length;
-  f.time = 5000;
-  await f.watch.prune();
-  assert.deepEqual(f.events.slice(prior), [updated(0, 2), updated(1, 2), lost(1, 2, 'vision', 'expired')]);
-  assertCountedLosses(f);
-  assert.deepEqual(f.seen.at(-1).passage.availability, { replayable: false, reason: 'expired', images: false, audio: false });
-  assert.equal(f.seen.at(-1).passage.visionStatus, 'expired');
-  const before = structuredClone(f.events);
-  refused = false;
-  await f.watch.prune();
-  assert.deepEqual(f.events, before);
-  vision.resolve();
-  await tick();
-  await f.watch.prune();
-  assert.deepEqual(f.events.slice(prior), [updated(0, 2), updated(1, 2), lost(1, 2, 'vision', 'expired'), updated(0, 3)]);
-  assert.deepEqual(f.watch.memoryView().passages.map(p => [p.origin, p.revision, p.visionStatus]), [
-    ['history', 3, 'ready'], ['history', 2, 'expired'],
-  ]);
-  assertCountedLosses(f);
-  await f.watch.stop();
-  assert.deepEqual(f.saves.at(-1).history.map(p => p.revision), [3, 2]);
-});
-
 for (const available of [true, false]) {
-  test(`a late ${available ? 'available' : 'failed'} thumbnail keeps the same passage version in history and storage`, async t => {
+  test(`a late ${available ? 'available' : 'failed'} thumbnail keeps the same passage version in memory and storage`, async t => {
     const thumbnail = deferred(), entered = deferred();
-    const f = coreFixture(t, { retentionMs: 500, thumbnails: { put: async () => {
+    const f = coreFixture(t, { thumbnails: { put: async () => {
       entered.resolve();
       await thumbnail.promise;
       if (!available) throw Error('missing thumbnail');
@@ -628,21 +520,21 @@ for (const available of [true, false]) {
     await tick();
     assert.deepEqual(f.events, [received(0), updated(0, 1), updated(0, 2)]);
     f.time = 5000;
-    await f.watch.prune();
-    assert.equal(f.watch.memoryPassage('moment-1').origin, 'history');
-    assert.equal(f.watch.memoryPassage('moment-1').revision, 3);
+    f.watch.emit();
+    assert.equal(f.watch.memoryPassage('moment-1').origin, 'retained');
+    assert.equal(f.watch.memoryPassage('moment-1').revision, 2);
     thumbnail.resolve();
     assert.equal(await ingesting, 'moment-1');
-    const revision = available ? 4 : 3;
-    assert.deepEqual(f.events, [received(0), updated(0, 1), updated(0, 2), updated(0, 3), ...(available ? [updated(0, 4)] : [])]);
+    const revision = available ? 3 : 2;
+    assert.deepEqual(f.events, [received(0), updated(0, 1), updated(0, 2), ...(available ? [updated(0, 3)] : [])]);
     const passage = f.watch.memoryPassage('moment-1');
-    assert.deepEqual([passage.revision, passage.thumbnailAvailable, passage.availability.reason], [revision, available, 'expired']);
+    assert.deepEqual([passage.revision, passage.thumbnailAvailable, passage.availability.reason], [revision, available, null]);
     assertCountedLosses(f);
     f.watch.emit();
-    await f.watch.prune();
-    assert.equal(f.events.length, available ? 5 : 4);
+    f.watch.emit();
+    assert.equal(f.events.length, available ? 4 : 3);
     await f.watch.stop();
-    assert.deepEqual([f.saves.at(-1).history[0].revision, f.saves.at(-1).history[0].thumbnailAvailable], [revision, available]);
+    assert.deepEqual([f.saves.at(-1).segments[0].revision, f.saves.at(-1).segments[0].thumbnailAvailable], [revision, available]);
   });
 }
 

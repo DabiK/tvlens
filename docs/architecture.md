@@ -179,7 +179,9 @@ révision ; le refus sans passage porte deux identités nulles. Aucun lecteur ac
 L’horloge suit l’ordre d’observation, même si le lecteur revient en arrière. Les médias et miniatures
 restent jusqu’à suppression explicite. Les anciens réglages de rétention ne sont plus lus par les hôtes.
 Une archive rouverte devient durable après décodage de ses motifs historiques, sans réécriture à l’ouverture.
-Le retrait en deux lots est décrit dans l’[ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md).
+L’[ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) décrit
+la conservation des hôtes ; l’[ADR 0055](adr/0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md)
+achève le retrait du balayage temporel dans la Mémoire et les simulations.
 `session.json`, `manifest.json`, `media/` et `thumbs/` portent état, liste et médias ; les usages ajoutent
 questions, résumé vivant, surveillance et embeddings. `SessionLibrary` liste par manifeste et supprime
 une session ciblée. Les archives anciennes sans manifeste restent lisibles comme texte seul.
@@ -402,7 +404,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) :
   Les hôtes conservent les médias jusqu'à suppression ; la reprise garde les motifs historiques,
-  sans réactiver de fenêtre. Le retrait de l'élagage interne suit dans un second lot.
+  sans réactiver de fenêtre. L’ADR 0055 achève le retrait de l’élagage interne.
 
 - [ADR 0049](adr/0049-la-capture-mac-utilise-le-repli-screen-capture-kit-et-signale-le-silence.md) :
   La capture Mac utilise le repli ScreenCaptureKit d'Electron 39–44 et avertit durablement quand le son manque.
@@ -422,3 +424,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0054](adr/0054-le-serveur-publie-une-projection-applicative-de-la-memoire.md) :
   Le serveur publie une projection de la consultation et de ports publics distincts ; les lectures
   complètes restent fraîches et les vues légères gardent leur cache et leurs ETags.
+
+- [ADR 0055](adr/0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md) :
+  La Mémoire conserve les passages sans balayage temporel ; les archives historiques restent lisibles
+  et les simulations utilisent la conservation durable.

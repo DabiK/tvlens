@@ -93,11 +93,11 @@ test('one passage with held analyses keeps cadence opportunities and reports con
   assert.deepEqual([f.writes[0].passages, f.writes[0].firstTopic], [1, null]);
   clock.t = 29999;
   f.wall = 900000;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   assert.equal(f.writes.length, 1);
   clock.t = 30000;
   f.wall = 500;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   assert.equal(f.writes.length, 2);
   f.audio.resolve();
   await f.visualEntered.promise;
@@ -105,13 +105,13 @@ test('one passage with held analyses keeps cadence opportunities and reports con
   await f.ready.promise;
   await runtime.watch.persist();
   clock.t = 60000;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   assert.deepEqual(f.writes.map(value => [value.elapsedMs, value.firstTopic]), [[0, null], [30000, null], [60000, 'Énergie']]);
   const measured = { ...counts(), hosts: f.hosts,
     updates: f.events.filter(e => e.type === 'PassageUpdated').length, manifestRequests: f.writes.length };
   t.diagnostic(JSON.stringify(measured));
-  assert.equal(measured.snapshot, 14);
-  assert.equal(measured.hosts, 10);
+  assert.equal(measured.snapshot, 13);
+  assert.equal(measured.hosts, 9);
   assert.equal(measured.createMemoryView, measured.manifestRequests, 'complete views are constructed only for manifest writes');
   assert.equal(measured.readMemoryPassage, measured.updates, 'at most the named passage is projected for each update');
   assert.equal(measured.readMemoryPassages, 1, 'manifest initialization projects no passage');
@@ -200,7 +200,7 @@ test('restoration is silent and resume initializes only the eligible retained ta
   const observe = t.mock.method(MomentIndex.prototype, 'observe');
   const f = await fixture(t, { restore });
   const { runtime, clock } = f;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   runtime.watch.emit();
   await runtime.pause();
   await clock.runUntil(60000);
@@ -235,7 +235,7 @@ test('a resumed archive with history only keeps later cadence opportunities with
   await f.runtime.resume();
   const before = f.writes.length;
   f.clock.t = 30000;
-  await f.runtime.watch.prune();
+  f.runtime.watch.emit();
   assert.equal(f.writes.length, before + 1, 'history still counts for periodic manifests after explicit resume');
   assert.equal(f.writes.at(-1).passages, 62);
   assert.equal(f.writes.at(-1).media.stored, 0);
@@ -320,19 +320,20 @@ test('a final manifest remains mandatory after every optional consumer subscribe
   assert.deepEqual(f.embedded, []);
 });
 
-test('manifest totals follow expired passages moved into history, enriched topics and a late thumbnail', async t => {
+test('manifest totals follow historical expired passages, enriched topics and a late thumbnail', async t => {
   const restore = restoredSession();
   restore.snapshot.history = restore.snapshot.history.slice(0, 1);
-  restore.snapshot.segments = [{
+  restore.snapshot.segments = [];
+  restore.snapshot.history.push({
     id: 'moment-2', startMs: 1000, endMs: 2000, revision: 2, status: 'partial', available: false,
     mediaReason: 'expired', observation: { transcript: 'Anciennes paroles' },
-  }];
+  });
   restore.snapshot.elapsedMs = 2000;
   restore.inventory.ids.clear();
   const f = await fixture(t, { restore });
   const { runtime, clock } = f;
   await runtime.resume();
-  await runtime.watch.prune();
+  runtime.watch.emit();
   assert.equal(runtime.memory.passage('moment-2').origin, 'history');
   const thumbnail = deferred(), thumbnailEntered = deferred();
   f.cleanup.push(() => thumbnail.resolve());
@@ -354,14 +355,14 @@ test('manifest totals follow expired passages moved into history, enriched topic
   await partial.promise;
   removeObserver();
   clock.t = 30000;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   const beforeThumbnail = f.writes.at(-1);
   assert.deepEqual([beforeThumbnail.passages, beforeThumbnail.media.stored, beforeThumbnail.media.missing,
     beforeThumbnail.firstTopic, beforeThumbnail.media.retention], [3, 1, 2, 'Énergie', 'until-deleted']);
   thumbnail.resolve();
   await capturing;
   clock.t = 60000;
-  await runtime.watch.prune();
+  runtime.watch.emit();
   assert.equal(f.writes.at(-1).media.bytes, beforeThumbnail.media.bytes + 17);
   const facts = f.writes.map(value => ({ elapsedMs: value.elapsedMs, passages: value.passages, firstTopic: value.firstTopic,
     media: value.media }));
@@ -410,14 +411,14 @@ test('a late thumbnail update outside the retained tail never feeds the backgrou
   assert.deepEqual(observe.mock.calls.slice(observed).flatMap(call => call.arguments[0]).filter(p => p.id === before.id), []);
 });
 
-test('late passage facts cannot reintroduce a passage moved into history into the background index', async t => {
+test('late passage facts cannot reintroduce historical passages into the background index', async t => {
   const restore = restoredSession();
   restore.inventory.ids.delete('moment-3');
+  restore.snapshot.history.push({ ...restore.snapshot.segments.shift(), available: false, mediaReason: 'expired' });
   const f = await fixture(t, { restore });
   const { runtime } = f;
   await runtime.resume();
-  assert.equal(runtime.memory.passage('moment-3').origin, 'retained');
-  await runtime.watch.prune();
+  runtime.watch.emit();
   const passage = runtime.memory.passage('moment-3');
   assert.equal(passage.origin, 'history');
   assert.equal(passage.usableObservation, true);

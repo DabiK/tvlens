@@ -78,10 +78,65 @@ async function fixture(t) {
   return f;
 }
 
+test('a legacy retention option cannot remove captured bytes across long advances, pause, resume and reopening', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-conservation-'));
+  const store = LocalSessionStore.forSession(root);
+  let time = 1000;
+  const opened = [];
+  const make = () => {
+    const watch = new WatchSession({
+      id: 'durable', now: () => time, retentionMs: 1000, media: store, archive: store,
+      perception: {
+        transcribe: async () => ({ observation: { transcript: 'Paroles conservées' } }),
+        observeVisual: async () => ({ observation: { summary: 'Images conservées' } }),
+      },
+    });
+    opened.push(watch);
+    return watch;
+  };
+  t.after(async () => {
+    for (const watch of opened) await watch.close();
+    await fs.rm(root, { recursive: true, force: true });
+  });
+  const removal = t.mock.method(store, 'remove');
+  const block = startMs => ({ startMs, endMs: startMs + 1000, clip: Buffer.from(`clip ${startMs}`), frames: [], audio: null });
+  const watch = make();
+  await watch.ingest(block(0));
+  await settle(watch);
+  const firstBytes = await tree(store.mediaRoot);
+  time = 86400000;
+  await watch.ingest(block(time - 1000));
+  await settle(watch);
+  assert.deepEqual(watch.snapshot().segments.map(p => [p.id, p.available]), [['moment-1', true], ['moment-2', true]]);
+  assert.deepEqual(watch.snapshot().history, []);
+  assert.deepEqual((await tree(store.mediaRoot)).filter(([name]) => name.startsWith('moment-1.')), firstBytes);
+  const beforePause = await tree(store.mediaRoot);
+  await watch.stop();
+  time *= 2;
+  watch.emit();
+  assert.deepEqual(await tree(store.mediaRoot), beforePause);
+  await watch.resume();
+  await watch.close();
+  const saved = await store.load();
+  const inventory = await store.inventory();
+  const reopened = make();
+  reopened.restore(saved, { hasMedia: id => inventory.ids.has(id) });
+  assert.deepEqual(reopened.snapshot().segments.map(p => [p.id, p.available]), [['moment-1', true], ['moment-2', true]]);
+  for (const state of [saved, reopened.snapshot(), reopened.memoryView().session, reopened.readPublicationStatus()]) {
+    assert.deepEqual([state.retention, state.retentionMs], ['until-deleted', null]);
+  }
+  await reopened.resume();
+  assert.equal(await reopened.ingest(block(time)), 'moment-3');
+  await settle(reopened);
+  assert.deepEqual((await tree(store.mediaRoot)).filter(([name]) => !name.startsWith('moment-3.')), beforePause);
+  assert.equal(removal.mock.callCount(), 0);
+  assert.deepEqual(reopened.snapshot().history, []);
+});
+
 test('the start of a film is still replayable and inspectable after 95 minutes, a stop and a reopening; capture only comes back on an explicit resume', async t => {
   const f = await fixture(t), live = f.open({ host: 'server' }), id = live.id, dir = path.join(f.sessionsRoot, id);
   f.clock = 8000; assert.equal(await live.watch.ingest(f.block(0, 8000)), 'moment-1'); await settle(live.watch);
-  f.clock = 5700000; await live.watch.prune();
+  f.clock = 5700000; live.watch.emit();
   await live.watch.ingest(f.block(5692000, 5700000)); await settle(live.watch);
   // Nothing expired, nothing was compacted away: both passages keep their media 95 minutes in.
   assert.deepEqual(live.watch.segments.map(s => [s.id, s.status, s.available, s.thumbnailAvailable]), [['moment-1', 'ready', true, true], ['moment-2', 'ready', true, true]]);
@@ -113,7 +168,7 @@ test('the start of a film is still replayable and inspectable after 95 minutes, 
   f.clock = 20000000; f.embedded.length = 0;
   const { session, archive } = await f.reopen(library, id);
   const fed = []; session.search.index.observe = passages => fed.push(passages.length);
-  session.watch.emit(); await session.watch.prune(); await tick();
+  session.watch.emit(); await tick();
   const reopened = session.watch.snapshot();
   assert.deepEqual([session.readOnly, reopened.readOnly, reopened.accepting, reopened.elapsedMs], [true, true, false, 5700000], 'stopped, at its archived instant');
   assert.deepEqual(reopened.segments.map(s => [s.id, s.status, s.available, s.thumbnailAvailable, s.mediaReason]), [['moment-1', 'ready', true, true, undefined], ['moment-2', 'ready', true, true, undefined]]);
@@ -176,7 +231,7 @@ test('an archive written before manifests is listed and opened as text only, wit
   await assert.rejects(session.store.lease(['moment-2']), /indisponible/);
   assert.equal((await tools.call('get_transcript', { startMs: 0, endMs: 24000 })).passages.map(p => p.transcript).join(' '), 'Paroles 1 Paroles 2 Paroles 3', 'the text stays consultable');
   assert.equal(tools.context().pendingCount, 0, 'nothing is shown as still in analysis');
-  session.watch.emit(); await session.watch.prune(); await session.pause(); await session.close(); await tick();
+  session.watch.emit(); await session.pause(); await session.close(); await tick();
   assert.deepEqual(await tree(f.sessionsRoot), before, 'listing, opening and closing changed no byte and added no file');
   assert.deepEqual(f.embedded, []);
 
@@ -205,12 +260,11 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
   vision('moment-1').resolve();
   for (let i = 0; i < 4; i++) { time = (i + 1) * 1000; await live.ingest(block(i)); await tick(); }
   assert.deepEqual(live.segments.map(s => [s.status, s.audioStatus, s.visionStatus]), [['ready', 'ready', 'ready'], ['partial', 'ready', 'analyzing'], ['analyzing', 'analyzing', undefined], ['queued', undefined, undefined]]);
-  // What the store wrote: JSON has no Infinity, so "no expiry" is saved as null.
   const saved = JSON.parse(JSON.stringify(live.snapshot()));
   assert.deepEqual([saved.retentionMs, saved.retention], [null, 'until-deleted']);
   await live.close(); saves.length = 0;
 
-  // A host set to a rolling window reopens it much later: the archive must not be swept by being opened.
+  // Une ancienne option finie est ignorée : rouvrir une archive ne supprime aucun média.
   time = 9000000;
   const reopened = make({ retentionMs: 1000 });
   reopened.restore(saved, { hasMedia: id => id !== 'moment-2', hasThumbnail: id => id === 'moment-1', orphans: ['moment-9', 'moment-6'] });
@@ -223,12 +277,11 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
   const state = reopened.snapshot();
   assert.deepEqual([state.accepting, state.readOnly, state.pending, state.analyzing, state.coverage.audioError, state.coverage.visionError], [false, true, 0, false, 1, 1]);
   assert.equal(state.unplacedMedia, 2, 'media no passage could be made of are counted in the state');
-  // Adapted on purpose (it used to read [1000, 'rolling']): the archive keeps the contract it was saved
-  // under, and says so; the window of the host that reopens it is not its own.
+  // La politique publiée est durable, même quand le constructeur reçoit une ancienne option.
   assert.deepEqual([state.retentionMs, state.retention], [null, 'until-deleted']);
   assert.equal(new VideoTools({ consultation: consultationOf(reopened.memoryView()) }).context().pendingCount, 0);
-  await reopened.prune(); await reopened.stop(); await tick();
-  assert.deepEqual([saves.length, removed.length, reopened.segments.length], [0, 0, 4], 'no save and no sweep while the archive is only open');
+  reopened.emit(); await reopened.stop(); await tick();
+  assert.deepEqual([saves.length, removed.length, reopened.segments.length], [0, 0, 4], 'opening alone neither saves nor removes media');
   await assert.rejects(reopened.ingest(block(9000)), /arrêtée/);
   assert.throws(() => reopened.restore(saved), /déjà commencée/);
   assert.throws(() => make().restore({ ...saved, id: 'other' }), /incompatible/);
@@ -244,25 +297,25 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
 
   // Explicit resume: numbering continues past the highest orphan, and saving starts again.
   const untilDeleted = make({ retentionMs: saved.retentionMs });
-  assert.equal(untilDeleted.retentionMs, Infinity, 'a saved null is never fed back into arithmetic');
+  assert.deepEqual([untilDeleted.snapshot().retention, untilDeleted.snapshot().retentionMs], ['until-deleted', null]);
   untilDeleted.restore(saved, { hasMedia: () => true, orphans: ['moment-9'] });
   await untilDeleted.resume();
   assert.deepEqual([untilDeleted.accepting, untilDeleted.readOnly, saves.length], [true, false, 1]);
   time = 9001000; audio('moment-10').resolve(); vision('moment-10').resolve();
   assert.equal(await untilDeleted.ingest(block(9000)), 'moment-10'); await tick();
-  await untilDeleted.prune();
-  assert.deepEqual([untilDeleted.segments.length, untilDeleted.history.length, removed.length], [5, 0, 0], 'nothing expires without a rolling window');
+  untilDeleted.emit();
+  assert.deepEqual([untilDeleted.segments.length, untilDeleted.history.length, removed.length], [5, 0, 0], 'all captured media remain until explicit deletion');
   await untilDeleted.close();
-  // Resumed by a host set to a rolling window, then swept long after: nothing promised until deletion goes.
+  // Après reprise et rafraîchissement tardif, l’ancienne option ne retire aucun passage.
   const promised = make({ retentionMs: 1000 });
   promised.restore(saved, { hasMedia: () => true });
-  await promised.resume(); time += 600000; await promised.prune();
+  await promised.resume(); time += 600000; promised.emit();
   assert.deepEqual([promised.snapshot().retention, promised.segments.map(s => s.available), promised.history.length, removed.length], ['until-deleted', [true, true, true, true], 0, 0]);
   await promised.close();
   // Les anciennes archives deviennent durables après décodage de leurs motifs historiques.
   const windowed = make({ retentionMs: 1000 });
   windowed.restore({ ...saved, retention: 'rolling', retentionMs: 300000 }, { hasMedia: () => true });
-  await windowed.resume(); await windowed.prune();
+  await windowed.resume(); windowed.emit();
   assert.deepEqual([windowed.snapshot().retention, windowed.segments.length, removed], ['until-deleted', 4, []]);
   await windowed.close();
   const clock = new SessionClock(() => time, { elapsedMs: 5000, paused: true });
@@ -333,8 +386,8 @@ test('a long capture costs no directory listing, media read or disk measurement 
   assert.equal(manifests, Math.ceil(60000 / MANIFEST_EVERY_MS), 'first passage, then every 30 s of capture');
   assert.equal(measures, 1, 'sixty writes inside one cache period measure the disk once');
   const reads = readFile.mock.callCount(), states = [];
-  for (let i = 0; i < 200; i++) { await live.watch.prune(); live.watch.emit(); states.push(live.watch.snapshot().storage); }
-  assert.equal(fed.length, observed, 'unchanged sweeps do not feed the index');
+  for (let i = 0; i < 200; i++) { live.watch.emit(); states.push(live.watch.snapshot().storage); }
+  assert.equal(fed.length, observed, 'unchanged publications do not feed the index');
   assert.deepEqual([readdir.mock.callCount(), readFile.mock.callCount() - reads, measures, manifests], [0, 0, 1, 2], 'two hundred ticks touch neither the directory, the media nor the disk');
   wall += 6000; f.clock = 61000; await live.watch.ingest(f.block(60000, 61000, 'data:image/jpeg;base64,YQ=='));
   assert.equal(measures, 2, 'a write after the cache period measures again');
@@ -482,7 +535,7 @@ test('a session cut short reopens read-only with every stored passage: its first
   assert.deepEqual((await inspect(d.session, 8000, 20000)).observations.map(o => o.id), ['moment-2', 'moment-3'], 'media the saved state never knew are leased and re-examined');
   assert.equal(JSON.stringify(d.state).includes('moment-7') || JSON.stringify(d.state).includes('moment-8'), false, 'media without a known interval are never shown as a passage');
   await assert.rejects(d.session.store.lease(['moment-8']), /indisponible/);
-  d.session.watch.emit(); await d.session.watch.prune(); await d.session.pause(); await d.session.close(); await tick();
+  d.session.watch.emit(); await d.session.pause(); await d.session.close(); await tick();
   assert.deepEqual(await tree(image), kept, 'listing, opening, pausing and closing changed no byte: nothing erased, moved or rewritten');
   // A saved state that knows the passages around it: the one put back takes its place by its interval.
   const gap = path.join(f.root, 'cut-gap', id); await fs.cp(image, gap, { recursive: true });
@@ -605,16 +658,19 @@ test('a passage that lands while its session is being ended is kept and saved, b
   assert.equal(await (await session.store.response('moment-2')).text(), 'clip 8000');
 });
 
-test('a block already stored is refused on observation order even after a rolling window has emptied the passage list', async () => {
+test('a resumed historical archive refuses replayed blocks and continues numbering after its last passage', async () => {
   let time = 0; const stored = [];
-  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 1000, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) },
+  const watch = new WatchSession({ id: 's', now: () => time, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) },
     media: { put: async id => { stored.push(id); }, read: async () => ({ frames: [] }), remove: async () => {} }, archive: { save: async () => {} } });
   const block = { startMs: 0, endMs: 1000, frames: [], audio: null };
-  time = 1000; assert.equal(await watch.ingest(block), 'moment-1'); await settle(watch);
-  time = 60000; await watch.prune();
-  assert.deepEqual([watch.segments.length, watch.history.map(p => p.id)], [0, ['moment-1']], 'the only passage left the list with its expired media');
+  watch.restore({ id: 's', retention: 'rolling', retentionMs: 1000, segments: [], history: [{
+    id: 'moment-1', startMs: 0, endMs: 1000, status: 'ready', summary: 'Résumé', mediaReason: 'expired',
+  }] });
+  await watch.resume();
+  time = 60000;
+  assert.deepEqual([watch.snapshot().segments.length, watch.snapshot().history.map(p => p.id)], [0, ['moment-1']]);
   await assert.rejects(watch.ingest(block), /ordre d’observation/, 'the same block replayed by its capture');
-  assert.deepEqual([stored, watch.snapshot().coverage.passages], [['moment-1'], 1], 'never stored a second time');
+  assert.deepEqual([stored, watch.snapshot().coverage.passages], [[], 1], 'never stored a second time');
   assert.equal(await watch.ingest({ ...block, startMs: 59000, endMs: 60000 }), 'moment-2', 'the capture itself goes on, numbering continued');
   await watch.close();
 });
@@ -963,12 +1019,12 @@ test('sealing drops the states that waited for their turn: the write in flight i
   assert.deepEqual([await exists(dir), held.seen.length], [false, started], 'the deleted session does not come back');
 });
 
-test('a state that waits for its turn on disk is written as it was asked for: a rolling window that moves a passage into the history meanwhile does not show it twice', async t => {
+test('a state waiting for its turn on disk keeps its captured passages while a later ingestion adds another', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-coalesce-')), dir = path.join(root, randomUUID());
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
   let time = 0;
-  const watch = new WatchSession({ id: 's', now: () => time, retentionMs: 5000, media: store, archive: store, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) } });
+  const watch = new WatchSession({ id: 's', now: () => time, media: store, archive: store, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) } });
   time = 1000; await watch.ingest({ startMs: 0, endMs: 1000, clip: Buffer.from('clip'), frames: [], audio: null }); await settle(watch); await store.serial;
   const held = disk(t, 'session.json');
   held.hold();
@@ -977,17 +1033,19 @@ test('a state that waits for its turn on disk is written as it was asked for: a 
   await held.reached(1);
   const resuming = watch.resume();
   for (let i = 0; i < 20; i++) await tick();
-  // The window closes on the passage meanwhile: its media go, its summary moves into the history.
-  time = 400000; await watch.prune();
-  assert.deepEqual([watch.segments.length, watch.history.map(passage => passage.id), held.count('session.json')], [0, ['moment-1'], 1]);
+  // Un stockage admis en fin de session atterrit sans lancer d’analyse ni remplacer l’état en attente.
+  watch.beginEnding();
+  time = 400000;
+  await watch.ingest({ startMs: 399000, endMs: time, clip: Buffer.from('second clip'), frames: [], audio: null });
+  assert.deepEqual([watch.snapshot().segments.map(p => p.id), held.count('session.json')], [['moment-1', 'moment-2'], 1]);
   held.release();
   await pausing; await resuming; await store.serial;
   const written = await saved('session.json');
   assert.deepEqual([written.accepting, written.segments.map(passage => passage.id), written.history.map(passage => passage.id), held.count('session.json')], [true, ['moment-1'], [], 2],
-    'the state asked for before the sweep, whole: the passage is listed once');
+    'the requested state stays whole and contains no later passage');
   await watch.close();
   const closed = await saved('session.json');
-  assert.deepEqual([closed.segments.length, closed.history.map(passage => passage.id)], [0, ['moment-1']], 'and the next save says where the passage is now');
+  assert.deepEqual([closed.segments.map(p => p.id), closed.history], [['moment-1', 'moment-2'], []], 'the next save includes the later passage');
 });
 
 test('a state is published before the disk has taken it: an analysed passage, a pause and a resume are shown while their save is held, whoever awaits a pause, a resume or a close still waits for the disk, and what the disk answered is published when it changes what the state says, never otherwise', async () => {

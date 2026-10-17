@@ -77,7 +77,7 @@ test('authenticated remote session: ingest dedupe, anchored FIFO, targeted cance
  assert.equal((await req('/v1/segments',{...segment,sequence:1,endMs:9000})).status,400);
  const expiredBefore=await fetch(server.url+'/v1/media/moment-1',{headers:{Authorization:'Bearer '+token,Range:'bytes=0-2'}});
  assert.equal(expiredBefore.status,206);assert.equal(await expiredBefore.text(),'fix');
- clock=301000;await runtime.session.watch.prune();
+ clock=301000;runtime.session.watch.emit();
  assert.equal((await fetch(server.url+'/v1/media/moment-1',{headers:{Authorization:'Bearer '+token}})).status,200);
  assert.equal((await req('/v1/state')).value.chat.jobs[0].result.answer,'first','durable media preserves conversation');
  await req('/v1/session/end',{});

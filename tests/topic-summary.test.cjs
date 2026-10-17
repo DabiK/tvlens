@@ -90,11 +90,12 @@ test('legacy observations remain honestly bounded and cannot seed a false full-t
 });
 test('aggregate survives archival and pause/resume while original transcript and timestamps remain unchanged', async () => {
   let now=8000;
-  const watch=new WatchSession({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}},retentionMs:10000});
-  const p={...passage(0,'Argument initial'),available:true};
-  append(watch,p);
+  const watch=new WatchSession({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}}});
+  const historical={id:'s',history:[],segments:[]};
+  append(historical,passage(0,'Argument initial'));
+  watch.restore({...historical,history:historical.segments,segments:[],retention:'rolling',retentionMs:10000});
   await watch.stop(); await watch.resume();
-  now=30000; await watch.prune();
+  now=30000; watch.emit();
   assert.equal(watch.history[0].topicSummary.text,'Argument initial');
   assert.equal(watch.history[0].observation.transcript,'Paroles 0');
   const next=passage(1); const context=perceptionContext(watch,next);

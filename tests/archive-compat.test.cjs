@@ -8,6 +8,8 @@ const childProcess = require("node:child_process");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const { LocalSessionStore } = require("../adapters/local-store.cjs");
 const { HeadlessRuntime } = require("../runtime/headless-runtime.cjs");
+const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
+const { DeepAsk } = require("../core/deep-ask.cjs");
 const { until } = require("./helpers/wait.cjs");
 
 const CORPUS = path.join(__dirname, "fixtures", "archives", "durable-v1");
@@ -543,6 +545,44 @@ function mediaFacts(state) {
   ]);
 }
 
+async function assertHistoricalQuestionTools(runtime) {
+  const makeTools = signal => new VideoTools({
+    consultation: consultationOf(runtime.session.memory.view()), signal,
+    search: runtime.session.search, media: runtime.session.memoryMedia,
+    inspector: { inspect: async () => assert.fail("unavailable media must never reach an inspector") },
+  });
+  const tools = makeTools();
+  const found = await tools.call("search_moments", { query: "cercle bleu" });
+  assert.ok(found.moments.some(passage => passage.id === "moment-1" && passage.text.includes("cercle bleu")));
+  const text = await tools.call("get_transcript", { startMs: 0, endMs: 1000 });
+  assert.equal(text.passages[0].transcript, "Un cercle bleu traverse l’écran.");
+  assert.equal(text.passages[0].available, false);
+  await assert.rejects(tools.call("inspect_clip", { startMs: 0, endMs: 1000, question: "Quelle forme ?" }), /Média expiré/);
+  await assert.rejects(tools.call("inspect_clip", { startMs: 8000, endMs: 9000, question: "Quelle forme ?" }), /Média introuvable/);
+  assert.deepEqual(tools.observations, []);
+  assert.equal(tools.inspections, 0);
+  tools.release();
+
+  // Le second passage du corpus n'a jamais été analysé : son placeholder ne justifie aucune citation.
+  const deep = new DeepAsk({ makeTools, agent: { answer: async ({ context, tools }) => {
+    assert.deepEqual(context.passages, []);
+    await tools.call("get_transcript", { startMs: 1000, endMs: 2000 });
+    assert.deepEqual(tools.memoryEvidence, []);
+    assert.deepEqual(tools.transcriptEvidence, []);
+    return { answer: "Une image inventée.", kind: "observation",
+      citations: [{ id: "moment-2", startMs: 1000, endMs: 2000 }], limits: [] };
+  } } });
+  deep.start("Que voyait-on ?", { mode: "chat", startMs: 1000, anchorMs: 2000 });
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.status, "done");
+  assert.equal(job.result.kind, "insufficient");
+  assert.deepEqual(job.result.citations, []);
+  assert.deepEqual(job.result.observations, []);
+  assert.notEqual(job.result.answer, "Une image inventée.");
+  assert.equal(job.validation.acceptedCitations, 0);
+}
+
 test("the pruned archive opens without writes or providers and resumes durably without recovering missing media", async t => {
   const providers = forbidProviders(t);
   await withCopy(async (root, expected) => {
@@ -555,10 +595,7 @@ test("the pruned archive opens without writes or providers and resumes durably w
       assert.deepEqual(mediaFacts(state), expected.restored);
       assert.deepEqual(runtime.snapshot().captureGaps, expected.captureGaps);
       assertSelected(state, { questions: expected.saved.questions, coverage: expected.saved.coverage });
-      const found = await runtime.session.search.search({
-        query: "cercle bleu", segments: [...state.history, ...state.segments], anchorMs: state.elapsedMs,
-      });
-      assert.ok(found.moments.some(passage => passage.id === "moment-1" && passage.text.includes("cercle bleu")));
+      await assertHistoricalQuestionTools(runtime);
     } finally {
       await runtime.close();
     }
@@ -591,10 +628,10 @@ test("the pruned archive opens without writes or providers and resumes durably w
         assert.equal(id, expected.resume.nextId);
         await until(() => !resumed.session.watch.running, "new analysis finishes");
         clock += 3600000;
-        await resumed.session.watch.prune();
+        resumed.session.watch.emit();
         await resumed.pause();
         clock += 3600000;
-        await resumed.session.watch.prune();
+        resumed.session.watch.emit();
         const state = resumed.snapshot().session;
         assert.deepEqual(mediaFacts(state), [...expected.restored, ["moment-5", true, null, 3]]);
         assert.deepEqual(state.questions, oldState.questions);

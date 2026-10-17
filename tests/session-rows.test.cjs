@@ -52,7 +52,7 @@ test('an existing session keeps its metadata and position while its figures are 
       media: { stored: 1, missing: 2, bytes: 1200 }, current: true, readOnly: false, capturing: false },
   ]);
   assert.deepEqual(result.current, {
-    id: 'session-a', title: 'Vidéo', elapsedMs: 32000, readOnly: false, accepting: false, retention: 'rolling', retentionMs: 60000,
+    id: 'session-a', title: 'Vidéo', elapsedMs: 32000, readOnly: false, accepting: false, retention: 'until-deleted', retentionMs: null,
   });
   assert.equal(listed[1], stored);
 });
@@ -76,12 +76,12 @@ test('without a loaded session current is null and all library rows are inactive
   assert.deepEqual(sessionRows([], null, 500), { current: null, sessions: [] });
 });
 
-function projectionMetadata(loaded, item) {
+function projectionMetadata(loaded) {
   return Object.freeze({
     current: loaded ? Object.freeze({
       id: 'session-a', title: loaded.title, elapsedMs: 32000, readOnly: loaded.runtime.readOnly,
       accepting: loaded.runtime.watch.accepting,
-      retention: item.retentionMs ? 'rolling' : 'until-deleted', retentionMs: item.retentionMs ?? null,
+      retention: 'until-deleted', retentionMs: null,
     }) : null,
     capturing: loaded?.runtime.watch.accepting ?? false,
     fallback: Object.freeze({ host: 'mac', createdAt: 100, updatedAt: 500 }),
@@ -148,8 +148,7 @@ test('both host facades project the same library facts while preserving their ti
       Object.assign(memory, {
         readPublicationStatus: () => ({
           accepting: watch.accepting, readOnly: watch.readOnly, asking: false, unplacedMedia: 0,
-          retention: Number.isFinite(watch.retentionMs) ? 'rolling' : 'until-deleted',
-          retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null,
+          retention: 'until-deleted', retentionMs: null,
           pending: 0, audioPending: 0, visionPending: 0, analyzing: false, lastError: null, visionBlockedMs: 0,
         }),
         readHistoricalQuestions: () => [],
@@ -162,7 +161,7 @@ test('both host facades project the same library facts while preserving their ti
     server.library.usage = async rows => ({ sessions: rows.length, bytes: rows.reduce((sum, row) => sum + row.media.bytes, 0) });
     const mac = sessionRows(listed, loaded, 500);
     const headless = await server.sessions();
-    const metadata = projectionMetadata(loaded, item);
+    const metadata = projectionMetadata(loaded);
     const metadataBefore = structuredClone(metadata);
     assert.deepEqual(projectSessionRows(listed, snapshot, metadata), mac, item.name + ' pure projection');
     assert.deepEqual(metadata, metadataBefore);

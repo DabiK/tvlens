@@ -64,7 +64,6 @@ function passageView(passage, origin, known) {
 function createMemoryView(memory, modalities = new Map()) {
   const elapsedMs = memory.now();
   const lanes = memory.perceptionState(elapsedMs);
-  const rolling = Number.isFinite(memory.retentionMs);
   const passages = [
     ...memory.history.map(p => passageView(p, 'history', modalities.get(p.id))),
     ...memory.segments.map(p => passageView(p, 'retained', modalities.get(p.id))),
@@ -79,8 +78,8 @@ function createMemoryView(memory, modalities = new Map()) {
       id: memory.id,
       accepting: memory.accepting,
       readOnly: memory.readOnly,
-      retention: rolling ? 'rolling' : 'until-deleted',
-      retentionMs: rolling ? memory.retentionMs : null,
+      retention: 'until-deleted',
+      retentionMs: null,
       unplacedMedia: memory.unplacedMedia,
       lastError: memory.storageError || memory.saveError || memory.lastError,
     },

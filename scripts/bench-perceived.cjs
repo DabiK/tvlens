@@ -7,7 +7,7 @@
 // The chat agent is a FAKE with fixed delays: this measures the client overhead (poll cadence, payload),
 // never a provider, a network or the TV's processor. No provider is called, no fixed port is opened.
 //   node scripts/bench-perceived.cjs [--root <tree>] [--tmp <dir>] [--questions 6] [--sizes 75,900]
-//                                    [--only bytes,perceived,ledger,allLive] [--layout auto|rolling|durable] [--out file.json]
+//                                    [--only bytes,perceived,ledger,allLive] [--layout durable|historical-pruned] [--out file.json]
 // --root points at a source tree (default: this checkout), e.g. the extracted baseline, to measure "before"
 // with the same script. A tree without node_modules needs NODE_PATH=<worktree>/../node_modules.
 const path = require('node:path');
@@ -21,7 +21,9 @@ const tmp = path.resolve(option('--tmp', os.tmpdir()));
 const questionsPerRun = Number(option('--questions', 6));
 const sizes = String(option('--sizes', '75,900')).split(',').map(Number);
 const only = new Set(String(option('--only', 'bytes,perceived,ledger,allLive')).split(','));
-const layout = option('--layout', 'auto');
+const layout = option('--layout', 'durable');
+if (!['durable', 'historical-pruned'].includes(layout)) throw Error('Disposition inconnue : durable ou historical-pruned attendu.');
+const HISTORICAL_RETAINED_PASSAGES = 37;
 const load = file => require(path.join(root, file));
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const round = value => (value === null || value === undefined ? null : Math.round(value * 10) / 10);
@@ -127,10 +129,9 @@ async function run(count, policyName, seed) {
   try {
     const session = await client.request('/v1/session/start', {});
     const watch = runtime.session.watch;
-    // A tree with durable retention keeps every passage with its media; the former one archived all but
-    // the last five minutes. Each tree is weighed in the shape it really produces.
-    const durable = layout === 'durable' || (layout === 'auto' && !Number.isFinite(watch.retentionMs));
-    const live = durable ? count : Math.min(count, 37);
+    // Disposition synthétique historique sur demande ; la conservation courante reste durable.
+    const durable = layout === 'durable';
+    const live = durable ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     watch.sequence = count; base = 2000 + count * 8000;
     // Published like any change: the light views are built from the last published state.
@@ -208,7 +209,7 @@ async function run(count, policyName, seed) {
       notModified: unchanged?.status === 304 ? unchanged.bytes : null, revalidation: unchanged?.status === 304, views };
     const chatOnlyBytes = Buffer.byteLength(JSON.stringify({ chat: runtime.deep.snapshot() }));
     const pick = (group, key) => rows.map(r => r[group][key]);
-    return { passages: count, layout: durable ? 'durable' : 'rolling', policy: policyName, questions: rows.length, allDone: rows.every(r => r.status === 'done'),
+    return { passages: count, layout: durable ? 'durable' : 'historical-pruned', policy: policyName, questions: rows.length, allDone: rows.every(r => r.status === 'done'),
       server: { firstProgressMs: stats(pick('server', 'firstProgressMs')), firstUsefulMsDirect: stats(rows.filter(r => r.kind === 'direct').map(r => r.server.firstUsefulMs)), firstUsefulMsRecent: stats(rows.filter(r => r.kind === 'recent').map(r => r.server.firstUsefulMs)), totalMs: stats(pick('server', 'totalMs')) },
       perceived: { ackMs: stats(pick('perceived', 'ackMs')), cardMs: stats(pick('perceived', 'cardMs')), textMsDirect: stats(rows.filter(r => r.kind === 'direct').map(r => r.perceived.textMs)), textMsRecent: stats(rows.filter(r => r.kind === 'recent').map(r => r.perceived.textMs)), doneMs: stats(pick('perceived', 'doneMs')) },
       clientOverhead: { cardMs: stats(pick('overhead', 'cardMs')), textMs: stats(pick('overhead', 'textMs')), doneMs: stats(pick('overhead', 'doneMs')) },
@@ -233,8 +234,8 @@ async function pollBytes(count) {
   const server = await new RemoteServer({ runtime, media: { assemble: async x => x }, token }).listen(0, '127.0.0.1');
   try {
     const { id } = await runtime.start(), watch = runtime.session.watch;
-    const durable = layout === 'durable' || (layout === 'auto' && !Number.isFinite(watch.retentionMs));
-    const live = durable ? count : Math.min(count, 37);
+    const durable = layout === 'durable';
+    const live = durable ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     watch.sequence = count; base = 2000 + count * 8000; watch.emit();
     // Six answered questions, as after the perceived-delay loop.
@@ -251,7 +252,7 @@ async function pollBytes(count) {
     const unchanged = tagged[1].etag ? await raw(tagged[0], { 'If-None-Match': tagged[1].etag }) : null;
     const overlay = await raw('/v1/surveillance/overlay');
     const cell = reply => (reply?.status === 200 ? { bytes: reply.bytes, ms: reply.ms } : null);
-    return { passages: count, minutes: Math.round(count * 8 / 60), layout: durable ? 'durable' : 'rolling', questions: 6, full: cell(full), panel: cell(panel), chat: cell(chat),
+    return { passages: count, minutes: Math.round(count * 8 / 60), layout: durable ? 'durable' : 'historical-pruned', questions: 6, full: cell(full), panel: cell(panel), chat: cell(chat),
       notModified: unchanged?.status === 304 ? { bytes: unchanged.bytes, ms: unchanged.ms } : null, overlay: cell(overlay) };
   } finally {
     await server.close().catch(() => {}); await runtime.close().catch(() => {});
@@ -278,9 +279,9 @@ function benchAllLive() {
   const { VideoTools, consultationOf } = load('core/video-tools.cjs');
   const time = (fn, repeats = 9) => { const s = []; for (let i = 0; i < repeats; i++) { const t = performance.now(); fn(); s.push(performance.now() - t); } s.sort((a, b) => a - b); return round(s[Math.floor(s.length / 2)]); };
   const rows = [];
-  for (const count of [450, 900]) for (const mode of ['archive-apres-5-min', 'tout-en-segments']) {
+  for (const count of [450, 900]) for (const mode of ['historical-pruned', 'tout-en-segments']) {
     const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
-    const live = mode === 'tout-en-segments' ? count : Math.min(count, 37);
+    const live = mode === 'tout-en-segments' ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     const snapshot = watch.snapshot(), view = watch.memoryView();
     const state = () => {

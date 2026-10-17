@@ -41,12 +41,9 @@ class WatchSession {
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
     onChange = () => {}, onEvents = () => {}, onPublicationError = () => {},
-    retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
-    // La durée reste une API historique du cœur ; les hôtes utilisent la conservation sans expiration.
-    // Un état sauvegardé porte null (JSON ne connaît pas Infinity), normalisé avant tout calcul.
-    retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
+    maxPending = 2, visionDuringAsk = false }) {
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
-      onChange, onEvents, onPublicationError, retentionMs, maxPending, visionDuringAsk });
+      onChange, onEvents, onPublicationError, maxPending, visionDuringAsk });
     this.#events = new PassageEvents(id);
     this.segments = [];
     this.history = [];
@@ -55,7 +52,6 @@ class WatchSession {
     // happened: visionRetried, the second descriptions started, and visionRecovered, those that succeeded.
     // visionError stays what was lost for good.
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
-    this.unremoved = new Set();
     this.sequence = 0;
     this.storageError = null;
     // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
@@ -63,7 +59,7 @@ class WatchSession {
     this.saveError = null;
     // Ingests under way, and media found on disk at reopening that no passage could be made of.
     this.landing = new Set(); this.unplacedMedia = 0;
-    this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve(); this.ingestChain = Promise.resolve();
+    this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.ingestChain = Promise.resolve();
     this.#lanes = new memory.PerceptionLanes({
       maxPending,
       now: () => this.now(),
@@ -154,8 +150,7 @@ class WatchSession {
     // Overlapping calls are admitted in call order; a rejected one must not block the next.
     const admitted = this.ingestChain = this.ingestChain.catch(() => {}).then(async () => {
       if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
-      // Against the last passage known, archived ones included: once a rolling window has emptied the list,
-      // a block replayed by its capture must still be refused, never stored a second time.
+      // Les passages historiques comptent aussi : reprendre une archive ne permet pas de rejouer son dernier bloc.
       const previous = this.segments.at(-1) ?? this.history.at(-1);
       if (previous && input.startMs < previous.endMs - 100)
         throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
@@ -200,7 +195,7 @@ class WatchSession {
       return segment;
     });
     const segment = await admitted;
-    // Analysis is already running: the thumbnail and the retention sweep no longer delay it.
+    // La miniature ne retarde pas le départ des analyses ; son écriture reste attendue par l’ingestion.
     if (this.thumbnails) {
       let available;
       try {
@@ -210,63 +205,9 @@ class WatchSession {
       catch { available = false; }
       if (Boolean(segment.thumbnailAvailable) !== available) this.#events.update(segment);
       segment.thumbnailAvailable = available;
-      // The passage may already have been archived: its card must still find the thumbnail.
-      const archived = this.history.find(item => item.id === segment.id);
-      if (archived) Object.assign(archived, { thumbnailAvailable: available, revision: segment.revision });
       this.emit();
     }
-    await this.prune();
     return segment.id;
-  }
-
-  prune() {
-    // A rejected step must not poison later sweeps or ingests.
-    this.pruneChain = this.pruneChain.catch(() => {}).then(async () => {
-      // A reopened archive is never swept: a host set to a rolling window must not erase it by opening it.
-      if (this.readOnly) return;
-      const cutoff = this.now() - this.retentionMs;
-      for (const segment of this.segments) {
-        if (stored(segment) && segment.endMs < cutoff) {
-          segment.available = false; segment.mediaReason = 'expired';
-          this.#events.update(segment);
-          // Still waiting for its transcription: neither lane will ever see it.
-          if (this.#lanes.remove(segment)) {
-            if (segment.audioStatus !== 'skipped') {
-              this.losses.audioExpired++;
-              this.#events.update(segment, 'audio', 'expired');
-            }
-            segment.visionStatus = 'expired'; this.losses.visionExpired++;
-            this.#events.update(segment, 'vision', 'expired');
-          }
-          if (segment.visionStatus === 'queued') {
-            segment.visionStatus = 'expired'; this.losses.visionExpired++;
-            segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
-            this.#events.update(segment, 'vision', 'expired');
-          }
-          if (segment.status === 'queued') segment.status = 'expired';
-          // The passage stays unavailable: a failed removal must not stop the sweep or the archival.
-          this.unremoved.add(segment.id);
-        }
-      }
-      // La version expirée est déjà consultable : une analyse terminant pendant le retrait doit avoir la sienne.
-      this.#events.publish(events => this.onEvents(events), this.onPublicationError);
-      // A removal that failed is tried again at every sweep: no raw media beyond the rolling window.
-      for (const id of [...this.unremoved]) {
-        try { await this.media.remove(id); this.unremoved.delete(id); }
-        catch { this.lastError = 'Impossible de supprimer un média expiré.'; }
-      }
-      // Keep summaries for the session, but no raw media beyond the rolling window.
-      while (this.segments.length && !stored(this.segments[0]) && this.segments[0].status !== 'analyzing' && this.segments[0].audioStatus !== 'analyzing' && this.segments[0].visionStatus !== 'analyzing') {
-        const item = this.segments.shift();
-        this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, topicSummary: item.topicSummary, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs,
-          // Stamps stay with the archived passage; bulky per-call metrics do not: the whole history is sent at every state poll.
-          receivedMs: item.receivedMs, audioStartedMs: item.audioStartedMs, visionQueuedMs: item.visionQueuedMs, visionStartedMs: item.visionStartedMs, visionPublishedMs: item.visionPublishedMs, revision: item.revision, ingest: item.ingest, visionSkipReason: item.visionSkipReason, audioFailed: item.audioFailed, audioFailureCode: item.audioFailureCode,
-          // Why the media cannot be replayed stays with the summary: expired, missing or never kept.
-          mediaReason: item.mediaReason });
-      }
-      this.emit();
-    });
-    return this.pruneChain;
   }
 
   #syncVisionPolicy() {
@@ -351,9 +292,6 @@ class WatchSession {
     this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id).concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
     // Counted and reported, never shown as a passage: nothing says where they belong on the session clock.
     this.unplacedMedia = orphans.length || 0;
-    // Les motifs historiques sont décodés avant ce changement : l'absence de retention signifie
-    // encore « non conservé ». Aucune archive rouverte ne réactive ensuite une fenêtre d'élagage.
-    this.retentionMs = Infinity;
     this.#lifecycle = restoredLifecycle;
     this.lastError = null;
   }
@@ -363,10 +301,9 @@ class WatchSession {
 
   readPublicationStatus() {
     const lanes = this.perceptionState();
-    const rolling = Number.isFinite(this.retentionMs);
     return {
       accepting: this.accepting, readOnly: this.readOnly, unplacedMedia: this.unplacedMedia,
-      retention: rolling ? 'rolling' : 'until-deleted', retentionMs: rolling ? this.retentionMs : null,
+      retention: 'until-deleted', retentionMs: null,
       asking: this.asking, analyzing: lanes.analyzing,
       pending: lanes.pending, audioPending: lanes.audioPending, visionPending: lanes.visionPending,
       lastError: this.storageError || this.saveError || this.lastError,
@@ -408,14 +345,14 @@ class WatchSession {
       analysisLagMs: Math.max(0, capturedThroughMs - analyzedThroughMs),
       contextThroughMs: all.filter(hasUsableObservation).at(-1)?.endMs || 0,
       gaps,
-      retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null,
-      retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted',
+      retentionMs: null,
+      retention: 'until-deleted',
       readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
       pending: lanes.pending, audioPending: lanes.audioPending, visionPending: lanes.visionPending,
       // A capture stopped for lack of room keeps saying so, and so does a state that was not saved: a late
       // analysis must not clear the reason.
       lastError: this.storageError || this.saveError || this.lastError,
-      // Listes détachées : un élagage ultérieur ne doit pas ajouter leurs passages à l'historique sauvegardé.
+      // Les ajouts ultérieurs ne doivent pas modifier les listes d'un état en attente d'écriture.
       history: [...this.history], questions: [...this.questions],
       latency: latencySummary(all), coverage, audioGaps,
       // Le snapshot historique omet une cause vide ; la consultation conserve ses causes nulles explicites.

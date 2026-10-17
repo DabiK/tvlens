@@ -12,7 +12,6 @@ const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
 const { spawnSync } = require('node:child_process');
 const { ClipInspector } = require('../adapters/clip-inspector.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
-const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { createSessionRuntime, openArchivedSession } = require('../runtime/session-runtime.cjs');
 
 // Two recordings made by Chromium's MediaRecorder (Electron 44) on 13 October 2026, kept as they came out:
@@ -97,7 +96,7 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   const empty = await fixture('chromium-webm-no-frame.webm'), head = await fixture('chromium-webm-head.webm');
   f.clock = 2000; await live.watch.ingest({ startMs: 0, endMs: 2000, clip: empty, frames: [{ atMs: 0, dataUrl: f.jpeg }, { atMs: 1200, dataUrl: f.jpeg }], audio: null });
   f.clock = 10000; await live.watch.ingest({ startMs: 2000, endMs: 10000, clip: head, frames: [{ atMs: 2000, dataUrl: f.jpeg }], audio: null });
-  await settle(live.watch); await live.watch.prune();
+  await settle(live.watch);
   // Analysed like any passage, from its images; its video alone is said unreadable. The next one is untouched.
   assert.deepEqual(live.watch.segments.map(s => [s.id, s.status, s.available, s.mediaReason, s.thumbnailAvailable]), [['moment-1', 'ready', false, 'unreadable', true], ['moment-2', 'ready', true, undefined, true]]);
   assert.equal(live.watch.history.length, 0, 'the passage is not archived as if its media had expired');
@@ -169,27 +168,6 @@ test('with speech and images analysed apart, the unreadable passage still gets i
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles.' }, elapsedMs: 1 }), observeVisual: async () => ({ observation: { summary: 'Images.' }, elapsedMs: 1 }) } });
   await assert.rejects(strict.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [] }), /disque plein/);
   assert.deepEqual([strict.segments.length, strict.snapshot().coverage.videoUnreadable], [0, undefined]);
-});
-
-test('a rolling window still expires an unreadable passage, and removes its files then', async t => {
-  const f = await runtime(t);
-  const store = LocalSessionStore.forSession(path.join(f.sessionsRoot, 'historical'));
-  // The historical core API remains covered directly; hosts no longer compose a rolling window.
-  const watch = new WatchSession({
-    id: 'historical', now: () => f.clock, media: store, archive: store, retentionMs: 60000,
-    perception: { observeVisual: async () => ({ observation: { summary: 'Un cercle.' }, elapsedMs: 1 }) },
-  });
-  f.opened.push(watch);
-  const media = path.join(store.root, 'media');
-  f.clock = 2000;
-  await watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'),
-    frames: [{ atMs: 0, dataUrl: f.jpeg }], audio: null });
-  await settle(watch);
-  await watch.prune();
-  assert.deepEqual([watch.segments[0].mediaReason, (await fs.readdir(media)).sort()], ['unreadable', ['moment-1.json', 'moment-1.webm']]);
-  f.clock = 120000;
-  await watch.prune();
-  assert.deepEqual([watch.segments.length, watch.history.map(s => [s.id, s.mediaReason]), await fs.readdir(media)], [0, [['moment-1', 'expired']], []]);
 });
 
 test('re-examination falls back on the images kept at capture only when the video itself cannot be decoded', async t => {

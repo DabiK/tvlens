@@ -58,3 +58,10 @@ les réglages retirés, les questions et le disque. Le banc Mac vérifie le mani
 analyse bloquée et le silence en pause. `remote-server` et `architecture-f10` lisent le 410 et les
 plages historiques ; `architecture-f05`, `architecture-f07`, `session-lifecycle` et
 `session-manifest` gardent baux, admission, confirmation et scellement.
+
+## Complément — retrait du balayage interne
+
+L’[ADR 0055](0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md) complète ce premier lot :
+la durée interne, le balayage et ses suppressions à retenter disparaissent. Les preuves mixtes
+restent actives et les refus historiques passent par restauration. Les corpus et le convertisseur
+ne changent pas.
