@@ -260,9 +260,6 @@
     }
   },
   "runtime/headless-runtime.cjs": {
-    "complexity": {
-      "count": 1
-    },
     "max-lines": {
       "count": 1
     },

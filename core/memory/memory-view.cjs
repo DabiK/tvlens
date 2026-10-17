@@ -8,6 +8,10 @@ const NULLABLE_FIELDS = [
   'visionSkipReason', 'stage', 'summary',
 ];
 const CAPTURE_JITTER_MS = 250;
+const CONSULTED_FIELDS = new Set([
+  'id', 'startMs', 'endMs', ...NULLABLE_FIELDS, 'audioFailed',
+  'observation', 'topicSummary', 'thumbnailAvailable', 'available',
+]);
 
 function captureGapsOf(passages) {
   const captureGaps = [];
@@ -39,7 +43,7 @@ function passageView(passage, origin, known) {
     startMs: passage.startMs,
     endMs: passage.endMs,
     ...Object.fromEntries(NULLABLE_FIELDS.map(key => [key, passage[key] ?? null])),
-    explicitNulls: NULLABLE_FIELDS.filter(key => passage[key] === null),
+    explicitNulls: Object.keys(passage).filter(key => passage[key] === null),
     audioFailed: Boolean(passage.audioFailed),
     ...(passage.audioFailureCode ? { audioFailureCode: passage.audioFailureCode } : {}),
     observation: passage.observation ? structuredClone(passage.observation) : null,
@@ -49,6 +53,9 @@ function passageView(passage, origin, known) {
     modalities: { ...modalities },
     availability: { replayable, reason, images: available(modalities.images), audio: available(modalities.audio) },
     usableObservation: hasUsableObservation(passage),
+    fieldOrder: Object.keys(passage),
+    undefinedFields: Object.keys(passage).filter(key => passage[key] === undefined),
+    metadata: structuredClone(Object.fromEntries(Object.entries(passage).filter(([key]) => !CONSULTED_FIELDS.has(key)))),
   };
 }
 
@@ -71,7 +78,6 @@ function createMemoryView(memory, modalities = new Map()) {
     session: {
       id: memory.id,
       accepting: memory.accepting,
-      asking: memory.asking,
       readOnly: memory.readOnly,
       retention: rolling ? 'rolling' : 'until-deleted',
       retentionMs: rolling ? memory.retentionMs : null,

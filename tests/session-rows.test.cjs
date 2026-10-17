@@ -7,6 +7,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const { createMemoryProjection } = require('../runtime/memory/memory-projection.cjs');
 
 function loadedSession({ readOnly = false, accepting = true, retentionMs = Infinity } = {}) {
   return {
@@ -143,6 +144,18 @@ test('both host facades project the same library facts while preserving their ti
       });
       loaded.runtime.watch.snapshot = () => snapshot;
       loaded.runtime.watch.readOnly = loaded.runtime.readOnly;
+      const { memory, watch, storage } = loaded.runtime;
+      Object.assign(memory, {
+        readPublicationStatus: () => ({
+          accepting: watch.accepting, readOnly: watch.readOnly, asking: false, unplacedMedia: 0,
+          retention: Number.isFinite(watch.retentionMs) ? 'rolling' : 'until-deleted',
+          retentionMs: Number.isFinite(watch.retentionMs) ? watch.retentionMs : null,
+          pending: 0, audioPending: 0, visionPending: 0, analyzing: false, lastError: null, visionBlockedMs: 0,
+        }),
+        readHistoricalQuestions: () => [],
+        readUsage: () => ({ apiCalls: 0, apiCost: 0 }),
+      });
+      loaded.runtime.memoryProjection = createMemoryProjection({ memory, now: watch.now, storage });
     }
     server.adopt(loaded?.runtime ?? null);
     server.library.list = async () => listed;

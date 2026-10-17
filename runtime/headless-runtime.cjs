@@ -74,11 +74,7 @@ function createHeadlessLifecycle(host, conversation) {
     },
     warmUp,
     guard: host.guard,
-    onAdopt: (session, state) => {
-      host.sessionState = state;
-      host.sessionMemory = session?.memory.view() || null;
-      host.emit();
-    },
+    onAdopt: () => host.emit(),
     publish: () => host.emit(),
     log: (line) => host.log(line),
   });
@@ -242,9 +238,13 @@ class HeadlessRuntime {
     // One revision per published change, never one per second: a poll that already holds it is
     // answered without a body.
     this.revision++;
+    const projection = this.session?.memoryProjection.read();
+    this.sessionState = projection?.session || null;
+    this.sessionMemory = projection?.memory || null;
     this.storageKey = JSON.stringify(this.storage());
+    let delivered;
     for (const listener of this.listeners) {
-      publishState(() => listener(this.snapshot()), this.onPublicationError, {
+      publishState(() => listener(delivered ||= this.fullState(projection)), this.onPublicationError, {
         origin: "headless-runtime", sessionId: this.session?.id, revision: this.revision,
       });
     }
@@ -252,8 +252,6 @@ class HeadlessRuntime {
   // Session onChange. A session that is no longer the one in memory publishes nothing.
   published(state) {
     if (this.session?.id !== state.id) return;
-    this.sessionState = state;
-    this.sessionMemory = this.session.memory.view();
     this.emit();
   }
   // Figures already in memory (last measurement of the guard, volume written by this session): a
@@ -283,9 +281,11 @@ class HeadlessRuntime {
   }
   snapshot(view) {
     if (this.viewName(view) !== "full") return this.view(view);
-    const session = this.session?.watch.snapshot() || null;
-    const memory = this.session?.memory.view() || null;
-    if (session) session.title = this.session.manifest()?.title || null;
+    return this.fullState(this.session?.memoryProjection.read());
+  }
+  fullState(projection) {
+    const session = projection ? { ...projection.session, title: this.session.manifest()?.title || null } : null;
+    const memory = projection?.memory || null;
     return {
       session,
       transcription: { language: this.options.config?.transcriptionLanguage || "fr", ...this.transcriber.availability() },
@@ -324,17 +324,10 @@ class HeadlessRuntime {
     });
   }
   view(name) {
-    const derived = this.derive(),
-      watch = this.session?.watch;
+    const derived = this.derive();
     // What moves without a publication is read live: the clock, and the flags a closing does not announce.
     return stateView(name, derived, {
-      liveSession: derived.header && {
-        accepting: watch.accepting,
-        asking: watch.asking,
-        readOnly: watch.readOnly,
-        elapsedMs: watch.now(),
-        storage: this.session.storage(),
-      },
+      liveSession: derived.header && this.session.memoryProjection.live(),
       timeoutMs: this.deep.timeoutMs,
       revision: this.revision,
       serverNowMs: this.wallClock(),
@@ -469,7 +462,7 @@ class HeadlessRuntime {
     const loaded = this.session;
     if (!loaded) return { current: null, snapshot: null, capturing: false, storage: null };
     // L'état publié et la référence sont transférés ensemble ; aucun objet mutable ne traverse l'attente.
-    const state = this.sessionState?.id === loaded.id ? this.sessionState : loaded.watch.snapshot();
+    const state = this.sessionState;
     return {
       current: { ...this.described(loaded), title: loaded.manifest()?.title || null },
       snapshot: {

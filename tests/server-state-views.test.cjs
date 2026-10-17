@@ -223,19 +223,21 @@ test('state and moment HTTP bodies preserve the frozen memory scenario and JSON 
   }
 });
 
-test('timeline views and moment selection consult memory while the complete session keeps its snapshot source', async t => {
+test('server state, views, moments and listing consult the public projection without a domain snapshot', async t => {
   const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
   const expected = require('./fixtures/state-view-responses.json');
   const { runtime, session } = await stateViewScenario(t);
   const legacy = session.watch.snapshot();
-  const snapshot = t.mock.method(session.watch, 'snapshot', () => ({ ...legacy, history: [], segments: [] }));
+  const snapshot = t.mock.method(session.watch, 'snapshot', () => assert.fail('snapshot is unavailable to server readers'));
   let full;
   assert.doesNotThrow(() => { full = runtime.snapshot(); });
-  assert.deepEqual(full.session.segments, [], 'the complete session still comes from snapshot');
+  assert.deepStrictEqual(full.session, { ...legacy, title: 'Session du 21 sept. 2026, 16:13' });
   assert.deepStrictEqual(full.timeline, expected['/v1/state'].timeline);
   assert.deepStrictEqual(full.captureGaps, expected['/v1/state'].captureGaps);
-  assert.equal(snapshot.mock.callCount(), 1, 'only the complete session reads snapshot');
-  snapshot.mock.mockImplementation(() => assert.fail('snapshot is unavailable to consultation readers'));
+  assert.equal(snapshot.mock.callCount(), 0, 'the complete session uses the public projection too');
+  const listing = runtime.sessionListingRead();
+  assert.equal(listing.snapshot.coverage.passages, 56);
+  assert.equal(listing.snapshot.segments.length, legacy.segments.length);
   for (const view of ['chat', 'panel']) {
     assert.equal(runtime.snapshot(view).session.passages, 56);
   }
@@ -248,7 +250,127 @@ test('timeline views and moment selection consult memory while the complete sess
   });
   assert.deepEqual([asked.startMs, asked.anchorMs, asked.intent], [1000, 25500, 'explain-moment']);
   assert.equal(asked.consultation.sessionId, session.id);
-  assert.equal(snapshot.mock.callCount(), 1);
+  assert.equal(snapshot.mock.callCount(), 0);
   start.mock.restore();
   snapshot.mock.restore();
+});
+
+test('one server delivery shares its projection and keeps legacy snapshot work distinct from replay readers', async t => {
+  const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
+  const { runtime, session } = await stateViewScenario(t);
+  const snapshot = t.mock.method(session.watch, 'snapshot');
+  const projected = t.mock.method(session.memoryProjection, 'read');
+  const seen = [];
+  const first = state => seen.push(state), second = state => seen.push(state);
+  runtime.listeners.add(first);
+  runtime.listeners.add(second);
+  try {
+    session.watch.emit();
+    assert.equal(snapshot.mock.callCount(), 1, 'the retained domain callback builds its legacy snapshot once');
+    assert.equal(projected.mock.callCount(), 1, 'the application builds once for this delivery');
+    assert.equal(seen.length, 2);
+    assert.equal(seen[0], seen[1], 'listeners share the delivered state');
+    assert.equal(seen[0].session.segments.length, 54);
+    runtime.snapshot();
+    runtime.snapshot('panel');
+    runtime.snapshot('chat');
+    runtime.sessionListingRead();
+    assert.equal(snapshot.mock.callCount(), 1, 'server reads add no legacy snapshots');
+    assert.equal(projected.mock.callCount(), 2, 'the explicit complete read consults fresh memory');
+  } finally {
+    runtime.listeners.delete(first);
+    runtime.listeners.delete(second);
+    snapshot.mock.restore();
+    projected.mock.restore();
+  }
+});
+
+test('server projection follows textless queues, acquired usage and save failures, then detaches late publications', async t => {
+  const { createServerHost } = require('./helpers/server-host.cjs');
+  const host = await createServerHost(t);
+  await host.producer('/v1/session/start', {});
+  const session = host.runtime.session, watch = session.watch;
+  const visual = host.analysis.hold();
+  const queued = host.published(state => state.session?.visionPending === 1 && !state.session.analyzing);
+  watch.setQuestionPending(true);
+  await host.clock.advance(1000);
+  await host.producer('/v1/segments', {
+    sessionId: session.id, sequence: 1, startMs: 0, endMs: 1000,
+    frames: [{ atMs: 0, data: 'YQ==' }],
+  });
+  await queued;
+  await session.store.serial;
+  async function latest() {
+    const expected = watch.snapshot();
+    const snapshot = t.mock.method(watch, 'snapshot', () => assert.fail('HTTP readers must use public ports'));
+    try {
+      const response = await host.producer('/v1/state');
+      assert.equal(response.status, 200);
+      assert.deepStrictEqual(response.value.session, JSON.parse(JSON.stringify({ ...expected, title: session.manifest()?.title || null })));
+      for (const view of ['chat', 'panel']) {
+        const { value } = await host.producer('/v1/state?view=' + view);
+        for (const field of ['asking', 'analyzing', 'pending', 'audioPending', 'visionPending', 'lastError']) {
+          assert.equal(value.session[field], expected[field], view + ':' + field);
+        }
+        assert.equal(value.session.passages, expected.coverage.passages);
+      }
+      const rows = await host.client.sessions();
+      assert.equal(rows.sessions.find(row => row.id === session.id).passages, expected.coverage.passages);
+      assert.equal(snapshot.mock.callCount(), 0);
+      return response.value;
+    } finally {
+      snapshot.mock.restore();
+    }
+  }
+  const waiting = await latest();
+  assert.deepEqual([waiting.session.asking, waiting.session.visionPending], [true, 1]);
+  const tag = host.runtime.etag('panel');
+  watch.setQuestionPending(false);
+  await visual.started;
+  assert.notEqual(host.runtime.etag('panel'), tag, 'a queue transition invalidates views without new passage text');
+  assert.equal((await latest()).session.apiCalls, 1, 'a started provider call is acquired before its result publishes');
+  const completed = host.published(state => state.session?.segments[0]?.status === 'ready');
+  visual.release();
+  await completed;
+  await session.store.serial;
+  const save = t.mock.method(session.store, 'save', async () => { throw Object.assign(Error('refused'), { code: 'EIO' }); });
+  await watch.persist();
+  assert.ok((await latest()).session.lastError);
+  save.mock.restore();
+  await watch.persist();
+  assert.equal((await latest()).session.lastError, null);
+  const old = watch.snapshot();
+  await host.runtime.end();
+  await host.runtime.start();
+  const current = host.runtime.snapshot(), revision = host.runtime.revision;
+  host.runtime.published(old);
+  assert.equal(host.runtime.revision, revision);
+  assert.equal(host.runtime.snapshot().session.id, current.session.id);
+  assert.equal(host.runtime.snapshot().session.coverage.passages, 0, 'A cannot append its passages to B');
+});
+
+test('archive loading publishes historical questions separately from current chat jobs through public ports', async t => {
+  const { createServerHost } = require('./helpers/server-host.cjs');
+  const host = await createServerHost(t);
+  await host.runtime.start();
+  const id = host.runtime.session.id;
+  host.runtime.session.watch.questions.push({ question: 'Question conservée', answer: { text: 'Réponse historique' } });
+  await host.runtime.end();
+  await host.runtime.open(id);
+  const { watch, memory } = host.runtime.session;
+  const expected = watch.snapshot();
+  const snapshot = t.mock.method(watch, 'snapshot', () => assert.fail('archive reads cannot fall back to snapshot'));
+  try {
+    const { status, value } = await host.producer('/v1/state');
+    assert.equal(status, 200);
+    assert.deepStrictEqual(value.session, { ...expected, title: host.runtime.session.manifest()?.title || null });
+    assert.deepStrictEqual(value.session.questions, [{ question: 'Question conservée', answer: { text: 'Réponse historique' } }]);
+    assert.deepStrictEqual(value.chat.jobs, []);
+    assert.equal(value.session.readOnly, true);
+    assert.equal('asking' in memory.view().session, false);
+    assert.equal((await host.client.sessions()).current.id, id);
+    assert.equal(snapshot.mock.callCount(), 0);
+  } finally {
+    snapshot.mock.restore();
+  }
 });

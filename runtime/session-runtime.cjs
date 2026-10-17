@@ -29,6 +29,7 @@ const {
 const { createSessionLifecycle } = require("./session-lifecycle.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { createMemoryMedia } = require("./memory-media.cjs");
+const { createMemoryProjection } = require("./memory/memory-projection.cjs");
 // Decoded before anything is built on it: a saved state of another shape, format or version, or a manifest
 // of another shape, is refused in plain words. Hands back the archive with the model to restore.
 function readableRestore(restore) {
@@ -166,6 +167,9 @@ function createSessionRuntime({
     passage: id => watch.memoryPassage(id),
     passages: ids => watch.memoryPassages(ids),
     recentPassages: limit => watch.recentMemoryPassages(limit),
+    readPublicationStatus: () => watch.readPublicationStatus(),
+    readHistoricalQuestions: () => watch.readHistoricalQuestions(),
+    readUsage: () => watch.readUsage(),
   };
   const manifest = createSessionManifest({
     id,
@@ -226,6 +230,7 @@ function createSessionRuntime({
     events,
     memory,
     memoryMedia: createMemoryMedia(store),
+    memoryProjection: createMemoryProjection({ memory, now: () => sessionClock.now(), storage }),
     store,
     search,
     inspector,

@@ -46,12 +46,12 @@ function keys(value, expected) {
 
 function contract(view) {
   keys(view, 'session clock passages coverage losses');
-  keys(view.session, 'id accepting asking readOnly retention retentionMs unplacedMedia lastError');
+  keys(view.session, 'id accepting readOnly retention retentionMs unplacedMedia lastError');
   keys(view.clock, 'elapsedMs capturedThroughMs analyzedThroughMs contextThroughMs analysisLagMs');
   keys(view.coverage, 'passages retainedPassages historyPassages replayablePassages startMs throughMs pending ' +
     'audioPending visionPending analyzing gaps audioGaps visionGaps captureGaps visionBlockedMs');
   assert.equal(typeof view.session.id, 'string');
-  for (const key of ['accepting', 'asking', 'readOnly']) assert.equal(typeof view.session[key], 'boolean');
+  for (const key of ['accepting', 'readOnly']) assert.equal(typeof view.session[key], 'boolean');
   for (const value of Object.values(view.clock)) assert.equal(typeof value, 'number');
   for (const value of Object.values(view.losses)) assert.equal(typeof value, 'number');
   assert.ok(['rolling', 'until-deleted'].includes(view.session.retention));
@@ -61,7 +61,8 @@ function contract(view) {
   coverageContract(view.coverage);
   for (const p of view.passages) {
     keys(p, 'id startMs endMs revision status audioStatus visionStatus error audioError visionError audioFailed ' +
-      'visionSkipReason stage observation topicSummary summary explicitNulls thumbnailAvailable origin modalities availability usableObservation');
+      'visionSkipReason stage observation topicSummary summary explicitNulls thumbnailAvailable origin modalities availability ' +
+      'usableObservation fieldOrder undefinedFields metadata');
     assert.equal(typeof p.id, 'string');
     for (const key of ['startMs', 'endMs']) assert.equal(typeof p[key], 'number');
     assert.ok(p.revision === null || Number.isInteger(p.revision));
@@ -96,7 +97,7 @@ test('empty memory publishes a detached consultation contract without snapshot o
   const view = f.watch.memoryView();
   contract(view);
   assert.deepEqual(view.session, {
-    id: 'session', accepting: true, asking: false, readOnly: false, retention: 'until-deleted', retentionMs: null,
+    id: 'session', accepting: true, readOnly: false, retention: 'until-deleted', retentionMs: null,
     unplacedMedia: 0, lastError: null,
   });
   assert.deepEqual(view.clock, {
@@ -451,7 +452,7 @@ test('composition binds read capabilities to its session and defers explicit del
   assert.equal(typeof runtime.memory?.view, 'function');
   assert.equal(typeof runtime.memoryMedia?.read, 'function');
   assert.equal(typeof runtime.memoryMedia?.lease, 'function');
-  keys(runtime.memory, 'view passage passages recentPassages');
+  keys(runtime.memory, 'view passage passages recentPassages readPublicationStatus readHistoricalQuestions readUsage');
   keys(runtime.memoryMedia, 'read lease');
   runtime.watch.beginEnding();
   await runtime.watch.ingest(block(0, { clip: new Uint8Array() }));
@@ -528,7 +529,8 @@ test('processing header exposes held vision, pending counts and blocked duration
   await audioPublished.promise;
   f.time = 4000;
   const view = f.watch.memoryView();
-  assert.equal(view.session.asking, true);
+  assert.equal('asking' in view.session, false);
+  assert.equal(f.watch.readPublicationStatus().asking, true);
   assert.deepEqual([view.coverage.pending, view.coverage.audioPending, view.coverage.visionPending,
     view.coverage.analyzing, view.coverage.visionBlockedMs], [1, 0, 1, false, 3000]);
   assert.deepEqual([view.clock.elapsedMs, view.clock.contextThroughMs], [4000, 1000]);

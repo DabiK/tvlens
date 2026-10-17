@@ -361,6 +361,27 @@ class WatchSession {
     return memory.createMemoryView(this, this.#modalities);
   }
 
+  readPublicationStatus() {
+    const lanes = this.perceptionState();
+    const rolling = Number.isFinite(this.retentionMs);
+    return {
+      accepting: this.accepting, readOnly: this.readOnly, unplacedMedia: this.unplacedMedia,
+      retention: rolling ? 'rolling' : 'until-deleted', retentionMs: rolling ? this.retentionMs : null,
+      asking: this.asking, analyzing: lanes.analyzing,
+      pending: lanes.pending, audioPending: lanes.audioPending, visionPending: lanes.visionPending,
+      lastError: this.storageError || this.saveError || this.lastError,
+      visionBlockedMs: lanes.visionBlockedMs,
+    };
+  }
+
+  readHistoricalQuestions() {
+    return structuredClone(this.questions);
+  }
+
+  readUsage() {
+    return { apiCalls: this.apiCalls, apiCost: this.apiCost };
+  }
+
   memoryPassage(id) {
     return memory.readMemoryPassage(this, id, this.#modalities);
   }

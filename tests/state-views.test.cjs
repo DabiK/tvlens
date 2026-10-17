@@ -237,3 +237,19 @@ test('panel projects frozen cards, retained passages, availability and gaps from
   assert.equal(derived.header.audioGapCount, expected.session.audioGapCount);
   assert.equal(derived.header.visionGapCount, expected.session.visionGapCount);
 });
+
+test('polled views take the published identity from consultation and the question flag from live values', () => {
+  const memory = viewOf(publishedState(2));
+  const derived = deriveStateViews({
+    memory, jobs: [], title: 'Débat',
+    publicationStatus: { id: 'another-session', asking: false, lastError: 'Erreur étrangère' },
+  });
+  assert.equal(derived.header.id, memory.session.id);
+  assert.equal(derived.header.lastError, memory.session.lastError);
+  for (const name of ['chat', 'panel']) {
+    const live = liveValues();
+    assert.equal(stateView(name, derived, live).session.asking, true);
+    live.liveSession.asking = false;
+    assert.equal(stateView(name, derived, live).session.asking, false);
+  }
+});

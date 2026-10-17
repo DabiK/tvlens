@@ -13,4 +13,5 @@ module.exports = {
   ...require('./lanes.cjs'),
   ...require('./memory-view.cjs'),
   ...require('./ports.cjs'),
+  latencySummary: require('../latency-trace.cjs').latencySummary,
 };

@@ -418,3 +418,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0053](adr/0053-le-texte-de-passage-est-partage-et-les-identites-de-sujet-restent-propres-aux-projections.md) :
   Le texte de passage rejoint le noyau partagé ; les projections partagent la continuité en gardant leurs identités de sujet.
+
+- [ADR 0054](adr/0054-le-serveur-publie-une-projection-applicative-de-la-memoire.md) :
+  Le serveur publie une projection de la consultation et de ports publics distincts ; les lectures
+  complètes restent fraîches et les vues légères gardent leur cache et leurs ETags.

@@ -1,7 +1,7 @@
 ---
 id: T219
 titre: Serve the server state and views from the application memory projection
-statut: a-faire
+statut: termine
 bloque_par: T209, T211, T212, T213
 adr: oui
 installe: non
@@ -107,3 +107,76 @@ sans enrichir MemoryView avec les données de Questions. La durabilité reste ap
 propriétaires actuels ; une projection réussie ne confirme aucun état disque.
 
 ## Journal
+
+- Exploration : règles, skill, domaine et contrats consultés ; correspondance des champs et invalidations
+  consignée dans `.harness-state/tickets/T219/exploration.md`, écarts prévus dans `ecarts.md`.
+  Arbre initial : ticket en cours et deux dossiers non suivis préexistants conservés.
+
+- Ports et projection : `node --test tests/memory-projection.test.cjs` rouge observé sur les
+  accès absents, puis vert ; rouge/vert supplémentaires sur la fraîcheur pendant retrait média
+  et les valeurs facultatives nulles. Sorties conservées dans le dossier d'état.
+- Migration serveur : `node --test tests/server-state-views.test.cjs` vert (8 cas à cette étape),
+  corps figés et ordre JSON inchangés, lecteurs sans snapshot, files sans texte et erreurs de
+  sauvegarde couverts. Le callback hérité reste compté séparément de la projection partagée.
+- Garde : rouge observé sur l'export public de latence ; déclaration de la composition et exception
+  exacte ajoutées. `node --test --test-concurrency=1 tests/architecture.test.cjs tests/memory-view.test.cjs`
+  vert (26 cas). Suppression de complexité devenue inutile élaguée par
+  `node_modules/.bin/eslint --prune-suppressions runtime/headless-runtime.cjs`.
+- Premier `node scripts/check.mjs --changed` rouge : une ligne de test dépassait 160 caractères ;
+  ligne découpée. ADR 0054 écrit ; suites d'acceptation et contrôle final à suivre.
+
+- Acceptation en séquentiel : commande ci-dessous, 609 tests réussis, aucun échec ; sortie dans
+  `.harness-state/tickets/T219/acceptance.log`. Le contrat Mac est passé sans modifier ses motifs.
+
+  ```sh
+  node --test --test-concurrency=1 tests/memory-projection.test.cjs tests/server-state-views.test.cjs \
+    tests/server-sessions.test.cjs tests/timeline-server.test.cjs tests/state-views.test.cjs \
+    tests/wire-contract.test.cjs tests/mac-ipc-contract.test.cjs tests/architecture.test.cjs \
+    tests/architecture-guard.test.cjs
+  ```
+
+- `node scripts/check.mjs --changed` vert : règles, format, lint, gel, cliquet et 39 tests réussis.
+  Le compteur produit passe de 1370 à 1377 ; aucun plancher modifié. Sortie : `check-changed-final.log`.
+
+- Premier `node scripts/check.mjs` rouge : 2564/2565 tests JS réussis, 47 tests Python réussis.
+  L'échec de `session-rows` vient de sa doublure serveur sans le nouveau port public de projection.
+  `node --test tests/session-rows.test.cjs` reproduit cet échec ; raccord à la vraie projection avec
+  les ports du scénario, puis vert (5 tests). Toutes les assertions et valeurs attendues restent intactes.
+  Diagnostic et justification consignés dans `ecarts.md`, sorties rouge/vert conservées.
+- Après correction, `node scripts/check.mjs --changed` vert : 44 tests sur 5 fichiers, règles,
+  format, lint, gel et cliquet verts. Sortie : `check-changed-correction.log`.
+
+- Contrôle final : `node scripts/check.mjs` vert, 2565/2565 tests JavaScript sur 144 fichiers et
+  47 tests Python réussis ; règles, format, lint, gel et cliquet verts. Sortie conservée dans
+  `.harness-state/tickets/T219/check-full-final.log`. `git diff --check` vert.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T219/verdict.json` ; aucune réserve propre,
+  aucun commit ni push. La boucle possède la relecture et l'intégration.
+
+- Reprise après `relecture-1.md` : rapport, journal, écarts et diff relus. Constat mineur 1 accepté :
+  retrait prévu du paramètre redondant des vues ; exploration et justification consignées dans le
+  dossier d'état. Aucun autre changement de périmètre prévu.
+
+- Correction du constat mineur 1 : `node --test tests/state-views.test.cjs` rouge observé sur
+  l'identité de l'en-tête issue d'une publication étrangère. Après retrait du paramètre et de son
+  étalement, `node --test --test-concurrency=1 tests/state-views.test.cjs tests/server-state-views.test.cjs`
+  vert : 16 tests réussis, corps figés et ordre JSON conservés. Sorties :
+  `correction-1-state-views-red.log` et `correction-1-state-views-green.log` dans le dossier d'état.
+- `node scripts/check.mjs --changed` vert après correction : 51 tests réussis sur 6 fichiers ;
+  règles, format, lint, gel et cliquet verts. Sortie : `correction-1-check-changed.log`.
+
+- Après correction de relecture, `node scripts/check.mjs` vert : 2566/2566 tests JavaScript
+  sur 144 fichiers et 47 tests Python réussis ; règles, format, lint, gel et cliquet verts.
+  Sortie : `.harness-state/tickets/T219/correction-1-check-full.log`. `git diff --check` vert.
+- Nouveau verdict `TERMINÉ` enregistré : constat mineur 1 corrigé, aucune réserve propre et
+  aucune contestation. La boucle conserve la relecture et l'intégration ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T219/relecture-2.md : 1. `runtime/headless-session-lifecycle.cjs:83` — hors périmètre
+  - **Problème.** `adopt()` construit encore `session.watch.snapshot()` pour le passer à `onAdopt`. Or `onAdopt` vaut `() => host.emit()` (`runtime/headless-runtime.cjs:77`) et ignore cet argument.
+  - **Attendu.** Dans T224 ou T225 : `this.onAdopt(session)`, sans snapshot.
+  - **Pourquoi hors périmètre.** Le ticket interdit tout changement du cycle de vie.
+- .harness-state/tickets/T219/relecture-2.md : 2. `docs/domaine.md:303` — hors périmètre
+  - **Problème.** La phrase « l'hôte headless en construit un par auditeur » est fausse depuis ce lot : `emit()` partage une seule livraison entre ses auditeurs.
+  - **Attendu.** La corriger dans le lot qui révise ce document cible figé.
+- .harness-state/tickets/T219/relecture-2.md : **Écart accepté, section « Correction après relecture 1 » de `ecarts.md`.** Ce n'est pas un écart à un critère : c'est l'application de l'attendu du constat 1. Aucune assertion ni aucun témoin existant n'est retiré, et l'interdiff ne touche à aucun test existant.

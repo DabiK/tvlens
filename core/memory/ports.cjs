@@ -54,11 +54,30 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {MemoryModalities} modalities
  * @property {MemoryAvailability} availability
  * @property {boolean} usableObservation Même critère que les lecteurs de preuves actuels.
+ * @property {string[]} fieldOrder Présence et ordre des champs acquis du passage, avant normalisation.
+ * @property {string[]} undefinedFields Champs présents dont la valeur est undefined, distincts de null.
+ * @property {MemoryPassageMetadata} metadata Métadonnées facultatives détachées ; aucune capacité ni chemin ajouté.
+ *
+ * @typedef {object} MemoryPassageMetadata
+ * @property {boolean} [hasAudio]
+ * @property {MediaReason|null} [mediaReason]
+ * @property {number} [receivedMs]
+ * @property {number} [audioStartedMs]
+ * @property {number} [transcriptPublishedMs]
+ * @property {number} [visionQueuedMs]
+ * @property {number} [visionStartedMs]
+ * @property {number} [visionPublishedMs]
+ * @property {number} [audioMs]
+ * @property {number} [visionMs]
+ * @property {number} [analysisMs]
+ * @property {{assembleMs:number}} [ingest]
+ * @property {object} [metrics]
+ * Les extensions historiques non normalisées restent dans metadata avec leur présence d'origine.
+ * latencySummary, exporté par l'entrée publique, calcule les latences depuis ces horodatages et l'intervalle.
  *
  * @typedef {object} MemorySession
  * @property {string} id
  * @property {boolean} accepting
- * @property {boolean} asking État de traitement actuellement porté par la façade de session.
  * @property {boolean} readOnly
  * @property {'rolling'|'until-deleted'} retention
  * @property {number|null} retentionMs
@@ -110,6 +129,23 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {(ids:string[])=>MemoryPassageRead} passages Relecture bornée d'un ensemble figé, sans construire
  * MemoryView ni projeter un passage non demandé. Refus TVLENS_MEMORY_IDS_INVALID si ids n'est pas une liste de textes.
  * @property {(limit:number)=>MemoryPassage[]} recentPassages Queue conservée, sans history ni filtre ready.
+ * @property {()=>MemoryPublicationStatus} readPublicationStatus Activité et compatibilité, séparées de la consultation métier.
+ * @property {()=>object[]} readHistoricalQuestions Copie profonde des questions conservées, sans les jobs de DeepAsk.
+ * @property {()=>{apiCalls:number,apiCost:number}} readUsage Compteurs acquis de perception.
+ *
+ * @typedef {object} MemoryPublicationStatus
+ * @property {boolean} accepting
+ * @property {boolean} readOnly
+ * @property {number} unplacedMedia
+ * @property {'rolling'|'until-deleted'} retention
+ * @property {number|null} retentionMs
+ * @property {boolean} asking Compatibilité de la façade ; ne fait pas partie de MemoryView.
+ * @property {boolean} analyzing
+ * @property {number} pending
+ * @property {number} audioPending
+ * @property {number} visionPending
+ * @property {string|null} lastError Priorité stockage, sauvegarde puis traitement.
+ * @property {number} visionBlockedMs Durée lue à l'instant courant, sans consolider une retenue.
  *
  * @typedef {{atMs:number,dataUrl:string}} MemoryFrame
  * @typedef {{frames:MemoryFrame[],audio:Uint8Array|null}} MemoryMedia

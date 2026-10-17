@@ -20,14 +20,17 @@ const DEPENDENCY_ZONES = [
     imports: ['core/memory/**', 'core/shared/**'] },
   { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
   { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**', 'core/memory/**'] },
-  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
+  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'runtime/memory/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
   { pattern: 'runtime/memory/**', layer: 'application', context: 'memory',
     imports: ['runtime/memory/**', 'core/memory/**', 'core/shared/**'] },
   { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
   { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**', 'runtime/memory/**'] },
 ];
-const TEMPORARY_IMPORT_EXCEPTIONS = [];
+const TEMPORARY_IMPORT_EXCEPTIONS = [
+  { name: 'memory-public-latency-summary', source: 'core/memory/index.cjs', target: 'core/latency-trace.cjs',
+    reason: 'Le calcul public de latence reste dans son module plat jusqu’à la contraction de la façade de mémoire.' },
+];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
 const CORE_TIME_STOCK = {
