@@ -355,3 +355,41 @@ test('an unreadable instruction is absent at the agent and published questions s
   assert.ok(inputs.every(input => !Object.hasOwn(input, 'instruction')));
   assert.ok(states.every(state => state.jobs.every(job => !Object.hasOwn(job, 'instruction'))));
 });
+
+for (const [code, message, question, options] of [
+  ['TVLENS_QUESTION_INVALID', 'Question invalide.', ' ', {}],
+  ['TVLENS_QUESTION_ACTION_INVALID', 'Action inconnue.', 'Pourquoi ?', { intent: 'other' }],
+  ['TVLENS_QUESTION_INTERVAL_INVALID', 'Intervalle de question invalide.', 'Pourquoi ?', { startMs: 2, anchorMs: 1 }],
+]) {
+  test(`question refusals expose ${code} without transport metadata`, () => {
+    const emitter = require('../core/deep-ask.cjs');
+    const deep = new DeepAsk({});
+    assert.throws(() => deep.start(question, options), error => {
+      assert.equal(error.code, code);
+      assert.equal(emitter[code], code);
+      assert.equal(error.message, message);
+      assert.equal(error.status, undefined);
+      return true;
+    });
+  });
+}
+
+test('a full question queue refuses with its own exported identity and keeps every admitted question', async t => {
+  const clock = new VirtualClock().install();
+  t.after(() => clock.uninstall());
+  const gate = deferred();
+  const deep = new DeepAsk({ makeTools: tools, agent: { answer: async () => {
+    await gate.promise;
+    return { answer: 'Réponse.', kind: 'explanation', citations: [], limits: [] };
+  } } });
+  t.after(async () => { deep.cancelAll(); gate.resolve(); await clock.runUntil(0); });
+  for (let i = 0; i < 6; i++) deep.start('Pourquoi ?');
+  assert.throws(() => deep.start('Pourquoi encore ?'), error => {
+    assert.equal(error.code, 'TVLENS_QUESTION_QUEUE_FULL');
+    assert.equal(require('../core/deep-ask.cjs').TVLENS_QUESTION_QUEUE_FULL, error.code);
+    assert.equal(error.message, 'Cinq questions sont déjà en attente. Attends une réponse ou annule une question.');
+    assert.equal(error.status, undefined);
+    return true;
+  });
+  assert.equal(deep.snapshot().jobs.length, 6);
+});

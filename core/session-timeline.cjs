@@ -1,3 +1,7 @@
+const { domainError } = require('./shared/domain-error.cjs');
+const TVLENS_MOMENT_SELECTION_INVALID = 'TVLENS_MOMENT_SELECTION_INVALID';
+const TVLENS_MOMENT_MISSING = 'TVLENS_MOMENT_MISSING';
+const TVLENS_MOMENT_INTERVAL_DISCONTINUOUS = 'TVLENS_MOMENT_INTERVAL_DISCONTINUOUS';
 const { summaryForPassages } = require('./topic-summary.cjs');
 // Projection of observed passages, never an inference or provider call.
 const topicKey = (value) =>
@@ -76,7 +80,7 @@ function momentDetail(snapshot, selection) {
   if (selection && !Array.isArray(selection)) {
     const first = all.findIndex(p => p.id === selection.firstId);
     const last = all.findIndex(p => p.id === selection.lastId);
-    if (first < 0 || last < first) throw Error("Bornes de moment invalides.");
+    if (first < 0 || last < first) throw domainError(TVLENS_MOMENT_SELECTION_INVALID, "Bornes de moment invalides.");
     ids = all.slice(first, last + 1).map(p => p.id);
   }
   if (
@@ -84,11 +88,11 @@ function momentDetail(snapshot, selection) {
     !ids.length ||
     new Set(ids).size !== ids.length
   )
-    throw Error("Sélection de moments invalide.");
+    throw domainError(TVLENS_MOMENT_SELECTION_INVALID, "Sélection de moments invalide.");
   const wanted = new Set(ids);
   const selected = all.filter((p) => wanted.has(p.id));
   if (selected.length !== ids.length)
-    throw Error("Moment absent de cette session.");
+    throw domainError(TVLENS_MOMENT_MISSING, "Moment absent de cette session.");
   // The selection must form a contiguous observed interval, not arbitrary omitted evidence.
   const first = all.indexOf(selected[0]);
   if (
@@ -96,7 +100,7 @@ function momentDetail(snapshot, selection) {
       .slice(first, first + selected.length)
       .some((p, i) => p.id !== selected[i].id)
   )
-    throw Error("Intervalle discontinu.");
+    throw domainError(TVLENS_MOMENT_INTERVAL_DISCONTINUOUS, "Intervalle discontinu.");
   return {
     sessionId: snapshot.id,
     ...summaryForPassages(selected),
@@ -120,4 +124,4 @@ function momentDetail(snapshot, selection) {
     })),
   };
 }
-module.exports = { sessionTimeline, momentDetail };
+module.exports = { sessionTimeline, momentDetail, TVLENS_MOMENT_SELECTION_INVALID, TVLENS_MOMENT_MISSING, TVLENS_MOMENT_INTERVAL_DISCONTINUOUS };

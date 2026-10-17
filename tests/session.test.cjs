@@ -31,3 +31,30 @@ test('upstream failure leaves media available and is visible', async () => {
   assert.equal(f.watch.lastError, 'Quota atteint');
   assert.equal(f.files.has('moment-1'), true);
 });
+
+for (const [condition, code, message, run] of [
+  ['invalid timestamp', 'TVLENS_CAPTURE_TIME_INVALID', 'Horodatage invalide.', f => f.watch.ingest({ startMs: -1, endMs: 1 })],
+  ['overlapping interval', 'TVLENS_CAPTURE_ORDER_INVALID', 'Les segments doivent suivre l’ordre d’observation.', async f => {
+    await f.add(0);
+    return f.add(0);
+  }],
+  ['stopped intake', 'TVLENS_SESSION_STOPPED', 'La session est arrêtée.', async f => { await f.watch.stop(); return f.add(0); }],
+  ['closed resume', 'TVLENS_SESSION_STOPPED', 'Session fermée.', async f => { await f.watch.close(); return f.watch.resume(); }],
+  ['closed landing', 'TVLENS_SESSION_STOPPED', 'La session est arrêtée.', async f => {
+    const pending = f.add(0);
+    await f.watch.close();
+    return pending;
+  }],
+]) {
+  test(`capture refusals expose ${code} for ${condition}`, async t => {
+    const f = fixture();
+    t.after(() => f.watch.close());
+    await assert.rejects(run(f), error => {
+      assert.equal(error.code, code);
+      assert.equal(require('../core/session.cjs')[code], code);
+      assert.equal(error.message, message);
+      assert.equal(error.status, undefined);
+      return true;
+    });
+  });
+}

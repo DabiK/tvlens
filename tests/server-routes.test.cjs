@@ -644,6 +644,33 @@ test("HTTP carries recognized application codes at every error status independen
     [404, "not-found"],
     [507, STORAGE_FULL, "storage-full"],
     ...[
+      ["TVLENS_QUESTION_INVALID", "invalid-question"],
+      ["TVLENS_QUESTION_QUEUE_FULL", "question-queue-full"],
+      ["TVLENS_QUESTION_ACTION_INVALID", "invalid-question-action"],
+      ["TVLENS_QUESTION_INTERVAL_INVALID", "invalid-question-interval"],
+      ["TVLENS_CAPTURE_TIME_INVALID", "invalid-capture-time"],
+      ["TVLENS_CAPTURE_ORDER_INVALID", "invalid-capture-order"],
+      ["TVLENS_SESSION_STOPPED", "session-stopped"],
+      ["TVLENS_MOMENT_SELECTION_INVALID", "invalid-moment-selection"],
+      ["TVLENS_MOMENT_MISSING", "moment-missing"],
+      ["TVLENS_MOMENT_INTERVAL_DISCONTINUOUS", "discontinuous-moment-interval"],
+      ["TVLENS_TRANSCRIPTION_LANGUAGE_INVALID", "invalid-transcription-language"],
+      ["TVLENS_SURVEILLANCE_SESSION_REQUIRED", "surveillance-session-required"],
+      ["TVLENS_SURVEILLANCE_INSTRUCTION_INVALID", "invalid-surveillance-instruction"],
+      ["TVLENS_SURVEILLANCE_RETRY_INVALID", "invalid-surveillance-retry"],
+      ["TVLENS_SESSION_ID_INVALID", "invalid-session-id"],
+      ["TVLENS_SESSION_NOT_FOUND", "not-found"],
+      ["TVLENS_ARCHIVE_INVALID", "invalid-archive"],
+      ["TVLENS_MEDIA_BLOCK_INVALID", "invalid-media-block"],
+      ["TVLENS_MEDIA_IMAGE_UNREADABLE", "image-unreadable"],
+      ["TVLENS_MEDIA_TOOL_REFUSED", "media-tool-refused"],
+    ].map(([code, publicCode]) => [undefined, code, publicCode]),
+    ...[
+      "unknown-view", "stale-session", "invalid-anchor", "invalid-captured-segment", "invalid-archive",
+      "invalid-history-cursor", "invalid-history-limit", "invalid-surveillance-id",
+      "language-setting-busy", "surveillance-session-required",
+    ].map(code => [undefined, code]),
+    ...[
       "TVLENS_CODEX_DISCONNECTED",
       "TVLENS_CODEX_REQUEST_TIMEOUT",
       "TVLENS_CODEX_REQUEST_CUT",
@@ -1051,3 +1078,218 @@ test("the composed table gives each of the 26 method and path pairs exactly one 
     }
   }
 });
+
+async function applicationFixture(t, options = {}) {
+  const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
+  const { TranscriptionSettings } = require('../adapters/transcription-settings.cjs');
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-application-refusals-'));
+  const runtime = new HeadlessRuntime({
+    userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true,
+    transcriptionSettings: new TranscriptionSettings(path.join(root, 'transcription.json')),
+    readClock: () => 0, log: () => {},
+    agent: { answer: async () => ({ answer: 'Réponse.', kind: 'explanation', citations: [], limits: [] }) },
+    ...options,
+  });
+  t.after(async () => { await runtime.close(); await fs.rm(root, { recursive: true, force: true }); });
+  const media = { assemble: async input => ({
+    ...input, clip: Buffer.from('clip'), frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }],
+  }) };
+  return { ...await httpFixture(t, { runtime, media }), root };
+}
+
+function expectRefusal(actual, code, error, status = 400) {
+  assert.deepEqual(actual, { status, value: { code, error } });
+}
+
+test('HTTP state requests classify the real view, language validator and concurrent language setting', async t => {
+  const { deferred } = require('./helpers/wait.cjs');
+  const f = await applicationFixture(t);
+  expectRefusal(await f.request('/v1/state?view=other'), 'unknown-view', 'Vue d’état inconnue.');
+  expectRefusal(await f.request('/v1/settings/transcription', { language: 'es' }),
+    'invalid-transcription-language', 'Langue de transcription invalide.');
+  const entered = deferred(), release = deferred(), settings = f.runtime.options.transcriptionSettings;
+  const save = settings.save.bind(settings);
+  t.mock.method(settings, 'save', async language => { entered.resolve(); await release.promise; return save(language); });
+  const pending = f.request('/v1/settings/transcription', { language: 'en' });
+  try {
+    await entered.promise;
+    expectRefusal(await f.request('/v1/settings/transcription', { language: 'fr' }), 'language-setting-busy', 'Réglage en cours, réessaie.');
+  } finally { release.resolve(); await pending; }
+});
+
+test('HTTP question requests classify real session, anchor, question and moment refusals', async t => {
+  const f = await applicationFixture(t);
+  expectRefusal(await f.request('/v1/questions', { sessionId: 'absent' }), 'stale-session', 'Session obsolète.');
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  for (const anchorMs of [-1, 3001]) {
+    expectRefusal(await f.request('/v1/questions', { sessionId: id, anchorMs, question: 'Pourquoi ?' }), 'invalid-anchor', 'Ancrage invalide.');
+  }
+  expectRefusal(await f.request('/v1/questions', { sessionId: id, anchorMs: 0, question: '' }), 'invalid-question', 'Question invalide.');
+  for (let i = 0; i < 3; i++) await f.runtime.ingest({
+    sessionId: id, startMs: i * 100, endMs: (i + 1) * 100,
+    clip: Buffer.from('clip'), frames: [{ atMs: i * 100, dataUrl: 'data:image/jpeg;base64,YQ==' }],
+  });
+  for (const [selection, code, message] of [
+    [{ segmentIds: [] }, 'invalid-moment-selection', 'Sélection de moments invalide.'],
+    [{ firstId: 'moment-2', lastId: 'moment-1' }, 'invalid-moment-selection', 'Bornes de moment invalides.'],
+    [{ segmentIds: ['moment-99'] }, 'moment-missing', 'Moment absent de cette session.'],
+    [{ segmentIds: ['moment-1', 'moment-3'] }, 'discontinuous-moment-interval', 'Intervalle discontinu.'],
+  ]) {
+    expectRefusal(await f.request('/v1/moments/detail', { sessionId: id, ...selection }), code, message);
+    expectRefusal(await f.request('/v1/questions', { sessionId: id, anchorMs: 0, question: 'Pourquoi ?', moment: selection }), code, message);
+  }
+});
+
+test('HTTP question queue fullness comes from the real queue without starting a refused question', async t => {
+  const { deferred } = require('./helpers/wait.cjs');
+  const release = deferred();
+  let calls = 0;
+  const f = await applicationFixture(t, { agent: { answer: async () => {
+    calls++;
+    await release.promise;
+    return { answer: 'Réponse.', kind: 'explanation', citations: [], limits: [] };
+  } } });
+  t.after(() => release.resolve());
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  const question = { sessionId: id, anchorMs: 0, question: 'Pourquoi ?' };
+  for (let i = 0; i < 6; i++) assert.equal((await f.request('/v1/questions', question)).status, 200);
+  expectRefusal(await f.request('/v1/questions', question), 'question-queue-full',
+    'Cinq questions sont déjà en attente. Attends une réponse ou annule une question.');
+  assert.equal(calls, 1);
+});
+
+test('HTTP surveillance requests classify real instruction, retry and history refusals', async t => {
+  const f = await applicationFixture(t);
+  expectRefusal(await f.request('/v1/surveillance/start', { sessionId: 'absent' }), 'stale-session', 'Session obsolète.');
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  const request = (path, fields = {}) => f.request('/v1/surveillance/' + path, { sessionId: id, ...fields });
+  expectRefusal(await request('start', { instruction: '' }), 'invalid-surveillance-instruction',
+    'Écris une consigne de surveillance de 1 à 1 500 caractères.');
+  expectRefusal(await request('retry', { id: 'claim-99' }), 'invalid-surveillance-retry', 'Active la surveillance avant de relancer.');
+  assert.equal((await request('start', { instruction: 'Vérifie.' })).status, 200);
+  await f.runtime.surveillance.ready();
+  expectRefusal(await request('retry', { id: 'claim-99' }), 'invalid-surveillance-retry', 'Cet élément ne peut pas être relancé.');
+  expectRefusal(await request('history', { beforeSeq: 0 }), 'invalid-history-cursor', 'Curseur d’historique invalide.');
+  expectRefusal(await request('history', { limit: 0 }), 'invalid-history-limit', 'Limite d’historique invalide.');
+  expectRefusal(await request('detail', { id: '../claim-1' }), 'invalid-surveillance-id', 'Identifiant de surveillance invalide.');
+  expectRefusal(await request('detail', { id: 'claim-99' }), 'not-found', 'Élément de surveillance introuvable.', 404);
+});
+
+test('HTTP surveillance without a session identifies the shared composition refusal', async t => {
+  const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
+  const surveillance = createSurveillanceRuntime({ getSession: () => null, agent: {} });
+  t.after(() => surveillance.close());
+  const f = await httpFixture(t, { runtime: { startSurveillance: input => surveillance.start(input) } });
+  expectRefusal(await f.request('/v1/surveillance/start', { instruction: 'Vérifie.' }),
+    'surveillance-session-required', 'Démarre une session avant d’activer la surveillance.');
+});
+
+test('HTTP ingestion distinguishes real admission, captured segment and observation order refusals', async t => {
+  const f = await applicationFixture(t);
+  expectRefusal(await f.request('/v1/segments', block()), 'stale-session', 'Session obsolète.');
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  const input = block({ sessionId: id, endMs: 200 });
+  await f.runtime.pause();
+  expectRefusal(await f.request('/v1/segments', input), 'session-stopped', 'La session est arrêtée.');
+  await f.runtime.start();
+  const assemble = f.media.assemble;
+  for (const [change, code, message] of [
+    [{ clip: Buffer.alloc(0) }, 'invalid-captured-segment', 'Segment vidéo trop volumineux ou vide.'],
+    [{ startMs: -1 }, 'invalid-capture-time', 'Horodatage invalide.'],
+  ]) {
+    const mock = t.mock.method(f.media, 'assemble', async body => ({ ...await assemble(body), ...change }));
+    expectRefusal(await f.request('/v1/segments', input), code, message);
+    mock.mock.restore();
+  }
+  assert.equal((await f.request('/v1/segments', input)).status, 200);
+  expectRefusal(await f.request('/v1/segments', { ...input, sequence: 2 }), 'invalid-capture-order',
+    'Les segments doivent suivre l’ordre d’observation.');
+});
+
+test('HTTP library requests retain real invalid identifier, missing archive and unreadable archive classifications', async t => {
+  const { randomUUID } = require('node:crypto');
+  const f = await applicationFixture(t);
+  for (const action of ['open', 'resume', 'delete']) {
+    expectRefusal(await f.request('/v1/sessions/invalid/' + action, {}), 'invalid-session-id', 'Identifiant de session invalide.');
+    expectRefusal(await f.request('/v1/sessions/' + randomUUID() + '/' + action, {}), 'not-found', 'Session introuvable.', 404);
+  }
+  for (const content of [null, '{', JSON.stringify({ id: 'other', segments: [] })]) {
+    const id = randomUUID(), dir = f.runtime.library.dir(id);
+    await fs.mkdir(dir, { recursive: true });
+    if (content !== null) await fs.writeFile(path.join(dir, 'session.json'), content);
+    expectRefusal(await f.request('/v1/sessions/' + id + '/open', {}), 'invalid-archive', 'Archive illisible.');
+  }
+});
+
+test('HTTP closing refusals retain their historical 400 while admitted capture closing stays 503', async t => {
+  const { deferred } = require('./helpers/wait.cjs');
+  const f = await applicationFixture(t);
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  const entered = deferred(), release = deferred();
+  const transition = f.runtime.exclusive(async () => { entered.resolve(); await release.promise; });
+  await entered.promise;
+  const closed = f.runtime.close();
+  try {
+    for (const [route, body] of [
+      ['/v1/questions', { sessionId: id }], ['/v1/surveillance/start', { sessionId: id }],
+    ]) {
+      expectRefusal(await f.request(route, body), 'session-closing', 'Session en cours de fermeture.');
+    }
+    expectRefusal(await f.request('/v1/segments', block({ sessionId: id })), 'session-closing', 'Session en cours de fermeture.', 503);
+    const requests = ['start', 'open', 'resume'].map(action => {
+      const route = action === 'start' ? '/v1/session/start' : '/v1/sessions/' + id + '/' + action;
+      return f.request(route, {});
+    });
+    release.resolve();
+    await transition;
+    for (const response of await Promise.all(requests)) expectRefusal(response, 'session-closing', 'Session en cours de fermeture.');
+  } finally { release.resolve(); await closed; }
+});
+
+for (const [options, code, message] of [
+  [{ intent: 'other' }, 'invalid-question-action', 'Action inconnue.'],
+  [{ startMs: 2, anchorMs: 1 }, 'invalid-question-interval', 'Intervalle de question invalide.'],
+]) {
+  test(`HTTP translates the real question emitter refusal ${code}`, async t => {
+    const { DeepAsk } = require('../core/deep-ask.cjs');
+    const deep = new DeepAsk({});
+    const f = await httpFixture(t, { runtime: { ask: input => deep.start(input.question, input) } });
+    expectRefusal(await f.request('/v1/questions', { question: 'Pourquoi ?', ...options }), code, message);
+  });
+}
+
+test('HTTP library transitions preserve exact capturing, not-open and read-only refusals', async t => {
+  const { emptyArchive } = require('./helpers/empty-archive.cjs');
+  const f = await applicationFixture(t);
+  const archive = await emptyArchive(f.runtime.options.sessionsRoot, 'server');
+  const { id } = (await f.request('/v1/session/start', {})).value;
+  expectRefusal(await f.request('/v1/sessions/' + archive.id + '/open', {}), 'capturing',
+    'Arrête la capture avant d’ouvrir une autre session.', 409);
+  expectRefusal(await f.request('/v1/sessions/' + archive.id + '/resume', {}), 'not-open',
+    'Ouvre cette session avant de reprendre la capture.', 409);
+  expectRefusal(await f.request('/v1/sessions/' + id + '/delete', {}), 'capturing',
+    'Arrête la capture avant de supprimer cette session.', 409);
+  await f.runtime.pause();
+  assert.equal((await f.request('/v1/sessions/' + archive.id + '/open', {})).status, 200);
+  const { READ_ONLY } = require('../runtime/headless-runtime.cjs');
+  expectRefusal(await f.request('/v1/session/start', {}), 'read-only', READ_ONLY, 409);
+  expectRefusal(await f.request('/v1/segments', block({ sessionId: archive.id })), 'read-only', READ_ONLY, 409);
+  expectRefusal(await f.request('/v1/surveillance/start', { sessionId: archive.id }), 'read-only',
+    'Session ouverte en lecture seule : reprends la capture avant d’activer la surveillance.', 409);
+});
+
+
+for (const code of ['EIO', 'EACCES', 'EMFILE']) {
+  test(`HTTP archive opening keeps a real ${code} read failure unclassified`, async t => {
+    const { emptyArchive } = require('./helpers/empty-archive.cjs');
+    const f = await applicationFixture(t);
+    const archive = await emptyArchive(f.runtime.options.sessionsRoot, 'server');
+    const file = path.join(archive.dir, 'session.json'), readFile = fs.readFile;
+    const cause = Object.assign(Error('Fichier de session illisible.'), { code });
+    t.mock.method(fs, 'readFile', async (target, ...args) => {
+      if (target === file) throw cause;
+      return readFile(target, ...args);
+    });
+    expectRefusal(await f.request('/v1/sessions/' + archive.id + '/open', {}), 'unclassified-error', 'Archive illisible.');
+  });
+}

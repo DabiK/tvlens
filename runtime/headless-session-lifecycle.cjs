@@ -87,7 +87,7 @@ class HeadlessSessionLifecycle {
   }
   start() {
     return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
+      if (this.closing) throw refusal(400, "Session en cours de fermeture.", "session-closing");
       let session = this.session;
       // Looking at an archive never adds capture to it: it is resumed explicitly, or left for a new one.
       if (session?.readOnly) throw refusal(409, READ_ONLY, "read-only");
@@ -206,7 +206,7 @@ class HeadlessSessionLifecycle {
   // La capture ne peut revenir que par une reprise explicite avec resume().
   open(id) {
     return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
+      if (this.closing) throw refusal(400, "Session en cours de fermeture.", "session-closing");
       this.library.dir(id);
       const loaded = this.session;
       if (loaded?.id === id && loaded.readOnly) return this.described(loaded);
@@ -237,7 +237,7 @@ class HeadlessSessionLifecycle {
   // on its own clock and numbering.
   resume(id) {
     return this.exclusive(async () => {
-      if (this.closing) throw Error("Session en cours de fermeture.");
+      if (this.closing) throw refusal(400, "Session en cours de fermeture.", "session-closing");
       this.library.dir(id);
       const session = this.session;
       if (session?.id !== id) {

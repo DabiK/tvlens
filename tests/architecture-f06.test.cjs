@@ -371,10 +371,12 @@ test('a media tool that does not end in time, cannot be started, or has no tempo
   answers.toolRefused = await f.send(block());
   answers.notAnImage.value.error = answers.notAnImage.value.error.replace(/^.*(unsupported image format).*$/s, '$1');
   const unavailable = error => ({ status: 503, value: { error, code: UNAVAILABLE } });
-  const invalid = error => ({ status: 400, value: { error, code: 'unclassified-error' } });
+  const invalid = (error, code) => ({ status: 400, value: { error, code } });
   assert.deepEqual({ ...answers, paths: JSON.stringify(answers).includes(os.tmpdir()), stored: await f.passages(), left: await dirs.left() }, {
     slow: unavailable('Préparation média trop longue.'), slowAgain: unavailable('Préparation média trop longue.'), absent: unavailable('Outil média indisponible.'), noRoom: unavailable('Espace temporaire média indisponible.'),
-    notWav: invalid('Audio WAV requis.'), notAnImage: invalid('unsupported image format'), toolRefused: invalid('Préparation média échouée : boom'),
+    notWav: invalid('Audio WAV requis.', 'invalid-media-block'),
+    notAnImage: invalid('unsupported image format', 'image-unreadable'),
+    toolRefused: invalid('Préparation média échouée : boom', 'media-tool-refused'),
     paths: false, stored: [], left: [] });
   // Nothing above cost the session its capture: the next block is prepared and stored.
   media.current = new RemoteMedia({ ffmpeg: f.write });
@@ -495,8 +497,8 @@ test('a temporary directory the system refuses to remove does not change why a b
     await dirs.sweep();
   }
   assert.deepEqual({ ...facts, left: await dirs.left() }, {
-    http: { status: 400, value: { error: 'Audio WAV requis.', code: 'unclassified-error' } },
-    invalid: { status: undefined, code: undefined, message: 'Audio WAV requis.', removal: true },
+    http: { status: 400, value: { error: 'Audio WAV requis.', code: 'invalid-media-block' } },
+    invalid: { status: undefined, code: 'TVLENS_MEDIA_BLOCK_INVALID', message: 'Audio WAV requis.', removal: true },
     given: { same: true, status: 503, code: 'test', message: 'given up by its owner', removal: true },
     alone: { status: 503, code: UNAVAILABLE, message: 'Espace temporaire média indisponible.', removal: true }, attempts: 4, stayed: 4, left: [] });
 });
@@ -570,6 +572,6 @@ test('what the transport already guaranteed stays: one preparation at a time, du
     busy: { status: 429, value: { error: 'Préparation du passage précédent.', code: 'preparation-busy' } },
     second: { status: 200, value: { id: 'moment-2', duplicate: false } },
     tooLarge: { status: 413, value: { error: 'Requête trop volumineuse.', code: 'request-too-large' } }, pauseCancels: false,
-    paused: { status: 400, value: { error: 'La session est arrêtée.', code: 'unclassified-error' } },
+    paused: { status: 400, value: { error: 'La session est arrêtée.', code: 'session-stopped' } },
     archive: { status: 409, value: { error: READ_ONLY, code: 'read-only' } }, archivePrepared: 0 });
 });

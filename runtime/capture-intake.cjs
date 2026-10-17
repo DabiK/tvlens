@@ -14,7 +14,7 @@ const PREPARATION_WAIT_MS = 1000;
 // et une capture suspendue faute de place continue d'en donner la raison.
 function admit({ getSession, storage }, sessionId) {
   const session = getSession();
-  if (!session || sessionId !== session.id) throw Error("Session obsolète.");
+  if (!session || sessionId !== session.id) throw refusal(400, "Session obsolète.", "stale-session");
   if (session.readOnly) throw refusal(409, READ_ONLY, "read-only");
   if (session.watch.accepting) return session;
   if (storage().state === "blocked")
@@ -25,7 +25,7 @@ function admit({ getSession, storage }, sessionId) {
       ),
       { code: STORAGE_FULL },
     );
-  throw Error("La session est arrêtée.");
+  throw refusal(400, "La session est arrêtée.", "session-stopped");
 }
 
 // L'hôte possède le bloc avant sa préparation pour pouvoir l'annuler quand sa session part.

@@ -96,7 +96,7 @@ test('chat and surveillance overlap on the server host: neither holds the other 
 
   // Routes: nothing to watch without a session, with a stale session or without an instruction.
   const stale = await req('/v1/surveillance/start', { sessionId: 'x', instruction: 'Vérifie les chiffres.' });
-  assert.deepEqual([stale.status, stale.value], [400, { error: 'Session obsolète.', code: 'unclassified-error' }]);
+  assert.deepEqual([stale.status, stale.value], [400, { error: 'Session obsolète.', code: 'stale-session' }]);
   const id = (await req('/v1/session/start', {})).value.id, dir = path.join(sessionsRoot, id);
   assert.equal((await req('/v1/surveillance/start', { sessionId: id, instruction: '' })).status, 400);
   assert.deepEqual([(await state()).surveillance.enabled, (await state()).surveillance.activity.state], [false, 'idle']);

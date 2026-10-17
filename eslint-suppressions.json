@@ -81,9 +81,6 @@
   "adapters/remote-media.cjs": {
     "complexity": {
       "count": 1
-    },
-    "no-nested-ternary": {
-      "count": 1
     }
   },
   "adapters/session-library.cjs": {

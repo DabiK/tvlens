@@ -1,3 +1,7 @@
+const { domainError } = require('./shared/domain-error.cjs');
+const TVLENS_CAPTURE_TIME_INVALID = 'TVLENS_CAPTURE_TIME_INVALID';
+const TVLENS_CAPTURE_ORDER_INVALID = 'TVLENS_CAPTURE_ORDER_INVALID';
+const TVLENS_SESSION_STOPPED = 'TVLENS_SESSION_STOPPED';
 const { completeTopicSummary } = require('./topic-summary.cjs');
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
@@ -86,8 +90,10 @@ class WatchSession {
   }
 
   async ingest(input) {
-    if (!this.accepting) throw new Error('La session est arrêtée.');
-    if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 60000) throw new Error('Horodatage invalide.');
+    if (!this.accepting) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
+    if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.startMs < 0
+      || input.endMs <= input.startMs || input.endMs - input.startMs > 60000)
+      throw domainError(TVLENS_CAPTURE_TIME_INVALID, 'Horodatage invalide.');
     // Tracked until it has landed whole (media, passage, thumbnail): a host ending the session waits on landed().
     const landing = this.land(input, this.now());
     this.landing.add(landing);
@@ -98,11 +104,12 @@ class WatchSession {
   async land(input, receivedMs) {
     // Overlapping calls are admitted in call order; a rejected one must not block the next.
     const admitted = this.ingestChain = this.ingestChain.catch(() => {}).then(async () => {
-      if (this.closed) throw new Error('La session est arrêtée.');
+      if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
       // Against the last passage known, archived ones included: once a rolling window has emptied the list,
       // a block replayed by its capture must still be refused, never stored a second time.
       const previous = this.segments.at(-1) ?? this.history.at(-1);
-      if (previous && input.startMs < previous.endMs - 100) throw new Error('Les segments doivent suivre l’ordre d’observation.');
+      if (previous && input.startMs < previous.endMs - 100)
+        throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
       const segment = { id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs, status: 'queued', hasAudio: Boolean(input.audio?.byteLength), available: true, observation: null, receivedMs, revision: 0 };
       // A container without a media block is kept as it came, analysed from its images and its sound, and never
       // announced as a video that can be replayed. Reading the container must never cost the passage.
@@ -350,7 +357,7 @@ class WatchSession {
   }
 
   async resume() {
-    if (this.closed) throw new Error('Session fermée.');
+    if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'Session fermée.');
     // The only way out of a reopened archive, and of a capture stopped for lack of room.
     this.readOnly = false; this.storageError = null;
     // Published at once, like the pause below, and settled only once the state has been saved or refused:
@@ -449,4 +456,4 @@ class WatchSession {
   }
 }
 
-module.exports = { WatchSession, restorable, recoveredPassage };
+module.exports = { WatchSession, restorable, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_SESSION_STOPPED };

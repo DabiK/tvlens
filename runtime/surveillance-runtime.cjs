@@ -1,3 +1,4 @@
+const { refusal } = require("./errors.cjs");
 const { Surveillance } = require("../core/surveillance.cjs");
 const { publishState } = require("../core/state-publication.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
@@ -447,7 +448,7 @@ function createSurveillanceRuntime({
     start({ instruction } = {}) {
       const session = getSession?.();
       if (!session?.watch)
-        throw new Error("Démarre une session avant d’activer la surveillance.");
+        throw refusal(400, "Démarre une session avant d’activer la surveillance.", "surveillance-session-required");
       const snapshot = session.watch.snapshot();
       // The registry of a former session is closed in its own folder before this one is bound.
       if (surveillance.sessionId && surveillance.sessionId !== snapshot.id) {

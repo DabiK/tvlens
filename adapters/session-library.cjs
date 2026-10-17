@@ -1,3 +1,7 @@
+const { domainError } = require('../core/shared/domain-error.cjs');
+const TVLENS_SESSION_ID_INVALID = 'TVLENS_SESSION_ID_INVALID';
+const TVLENS_SESSION_NOT_FOUND = 'TVLENS_SESSION_NOT_FOUND';
+const TVLENS_ARCHIVE_INVALID = 'TVLENS_ARCHIVE_INVALID';
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { LocalSessionStore } = require('./local-store.cjs');
@@ -65,20 +69,26 @@ class SessionLibrary {
 
   // The only way to a session directory: an identifier supplied by a client can never name another path.
   dir(id) {
-    if (typeof id !== 'string' || !SESSION_ID.test(id)) throw new Error('Identifiant de session invalide.');
+    if (typeof id !== 'string' || !SESSION_ID.test(id))
+      throw domainError(TVLENS_SESSION_ID_INVALID, 'Identifiant de session invalide.');
     return path.join(this.root, id);
   }
   // A real directory, direct child of the root: never a link that would lead a read or a deletion elsewhere.
   async folder(id) {
-    const dir = this.dir(id), stats = await fs.lstat(dir).catch(() => null);
-    if (!stats?.isDirectory() || path.dirname(dir) !== this.root) throw new Error('Session introuvable.');
+    const dir = this.dir(id);
+    const stats = await fs.lstat(dir).catch(cause => {
+      if (cause?.code === 'ENOENT') throw domainError(TVLENS_SESSION_NOT_FOUND, 'Session introuvable.', cause);
+      throw new Error('Session introuvable.', { cause });
+    });
+    if (!stats.isDirectory() || path.dirname(dir) !== this.root)
+      throw domainError(TVLENS_SESSION_NOT_FOUND, 'Session introuvable.');
     return dir;
   }
   async manifest(store, id) {
     const manifest = await store.load('manifest').catch(() => null);
     if (manifest?.format !== MANIFEST_FORMAT || manifest.id !== id) return null;
     // The manifest of this very session, but of another shape: listed as unreadable, refused at opening.
-    if (!readableManifest(manifest)) throw new Error('Archive illisible.');
+    if (!readableManifest(manifest)) throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.');
     return manifest;
   }
 
@@ -87,14 +97,18 @@ class SessionLibrary {
   // very first passage): none of it may become unreachable. Each such passage whose media carries its
   // interval is put back in observation order, unanalysed and replayable; the others are only reported.
   async state(store, id, manifest, inventory) {
-    let snapshot = await store.load('session').catch(() => undefined), savedAt;
+    let snapshot = await store.load('session').catch(cause => {
+      // Le store distingue pour l’instant l’analyse JSON des fautes système par l’absence de code.
+      if (typeof cause?.code === 'string') throw new Error('Archive illisible.', { cause });
+      throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.', cause);
+    }), savedAt;
     if (snapshot === null) {
       // Never saved. Rebuilt empty only when the directory proves it is a session: a manifest or stored media.
-      if (!manifest && !inventory.ids.size) throw new Error('Archive illisible.');
+      if (!manifest && !inventory.ids.size) throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.');
       snapshot = { id, accepting: false, elapsedMs: manifest?.elapsedMs || 0, retentionMs: null, retention: manifest?.media?.retention || 'until-deleted', history: [], segments: [], questions: [] };
       savedAt = manifest?.updatedAt ?? Math.round((await fs.stat(store.root)).mtimeMs);
     } else {
-      if (!restorable(snapshot) || snapshot.id !== id) throw new Error('Archive illisible.');
+      if (!restorable(snapshot) || snapshot.id !== id) throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.');
       savedAt = Math.round((await fs.stat(path.join(store.root, 'session.json'))).mtimeMs);
     }
     const known = new Set(passagesOf(snapshot).map(passage => passage.id)), recovered = [];
@@ -157,4 +171,7 @@ class SessionLibrary {
   }
 }
 
-module.exports = { SessionLibrary, sessionTitle, readableManifest, MANIFEST_FORMAT, MANIFEST_VERSION, SESSION_ID };
+module.exports = {
+  SessionLibrary, sessionTitle, readableManifest, MANIFEST_FORMAT, MANIFEST_VERSION, SESSION_ID,
+  TVLENS_SESSION_ID_INVALID, TVLENS_SESSION_NOT_FOUND, TVLENS_ARCHIVE_INVALID,
+};

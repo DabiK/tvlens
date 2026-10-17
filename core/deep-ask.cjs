@@ -1,3 +1,8 @@
+const { domainError } = require('./shared/domain-error.cjs');
+const TVLENS_QUESTION_INVALID = 'TVLENS_QUESTION_INVALID';
+const TVLENS_QUESTION_QUEUE_FULL = 'TVLENS_QUESTION_QUEUE_FULL';
+const TVLENS_QUESTION_ACTION_INVALID = 'TVLENS_QUESTION_ACTION_INVALID';
+const TVLENS_QUESTION_INTERVAL_INVALID = 'TVLENS_QUESTION_INTERVAL_INVALID';
 const { publishState } = require('./state-publication.cjs');
 // Core must not import adapters: tracing and error serialization are injected by the runtime.
 // An answer is plain text: its pages travel in `sources`, shown apart by every client. A model that still writes a
@@ -72,10 +77,15 @@ class DeepAsk {
     return this.snapshot();
   }
   start(question, {mode='inspect',intent,snapshot,anchorMs,startMs} = {}) {
-    if(typeof question!=='string'||!question.trim()||question.length>2000) throw new Error('Question invalide.');
-    if(this.jobs.filter(j=>j.status==='queued').length>=5)throw new Error('Cinq questions sont déjà en attente. Attends une réponse ou annule une question.');
-    if(intent!==undefined&&!['recap','explain-moment'].includes(intent))throw new Error('Action inconnue.');
-    if(anchorMs!==undefined&&(!Number.isFinite(anchorMs)||anchorMs<0)||startMs!==undefined&&(!Number.isFinite(startMs)||startMs<0||anchorMs!==undefined&&startMs>anchorMs))throw new Error('Intervalle de question invalide.');
+    if (typeof question !== 'string' || !question.trim() || question.length > 2000)
+      throw domainError(TVLENS_QUESTION_INVALID, 'Question invalide.');
+    if (this.jobs.filter(j => j.status === 'queued').length >= 5)
+      throw domainError(TVLENS_QUESTION_QUEUE_FULL, 'Cinq questions sont déjà en attente. Attends une réponse ou annule une question.');
+    if (intent !== undefined && !['recap', 'explain-moment'].includes(intent))
+      throw domainError(TVLENS_QUESTION_ACTION_INVALID, 'Action inconnue.');
+    if (anchorMs !== undefined && (!Number.isFinite(anchorMs) || anchorMs < 0)
+      || startMs !== undefined && (!Number.isFinite(startMs) || startMs < 0 || anchorMs !== undefined && startMs > anchorMs))
+      throw domainError(TVLENS_QUESTION_INTERVAL_INVALID, 'Intervalle de question invalide.');
     const controller=new AbortController();
     // The ceiling travels with the job: clients show elapsed / ceiling from the published state, without a literal of their own.
     const job={id:`deep-${++this.sequence}`,question,mode,intent,createdAt:this.now(),timeoutMs:this.timeoutMs,status:'queued',message:'En attente de la réponse précédente…',activity:[],preview:'',controller,result:null};
@@ -223,4 +233,7 @@ function isRecentSummary(question){
   const q=question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return /(?:ca parle de quoi|qu.est.ce qui vient de se passer|j.ai decroche|^(?:resume|recapitule)(?:[.!? ]*$| (?:ce moment|cette scene|ce qui vient)))/.test(q)&&!/(?:vrai|verifi|source|exact|combien|pourquoi|il y a|premier|debut|[0-9])/.test(q);
 }
-module.exports={DeepAsk,isRecentSummary,QUESTION_TIMEOUT_MS,QUESTION_PROGRESS_MS,limitLabel};
+module.exports = {
+  DeepAsk, isRecentSummary, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel,
+  TVLENS_QUESTION_INVALID, TVLENS_QUESTION_QUEUE_FULL, TVLENS_QUESTION_ACTION_INVALID, TVLENS_QUESTION_INTERVAL_INVALID,
+};

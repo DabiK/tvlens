@@ -118,9 +118,9 @@ function surveillanceHistory(
     beforeSeq !== null &&
     !(Number.isInteger(beforeSeq) && beforeSeq > 0)
   )
-    throw refusal(400, "Curseur d’historique invalide.");
+    throw refusal(400, "Curseur d’historique invalide.", "invalid-history-cursor");
   if (!Number.isInteger(limit) || limit < 1)
-    throw refusal(400, "Limite d’historique invalide.");
+    throw refusal(400, "Limite d’historique invalide.", "invalid-history-limit");
   const items = [],
     grouped = new Set();
   for (const lot of registry.lots || []) {
@@ -181,7 +181,7 @@ function surveillanceHistory(
 // One result or one claim in full: text, claims, video origins, sources, uncertainties, delays.
 function surveillanceDetail(registry, id) {
   if (typeof id !== "string" || !/^(?:lot|claim)-\d+$/.test(id))
-    throw refusal(400, "Identifiant de surveillance invalide.");
+    throw refusal(400, "Identifiant de surveillance invalide.", "invalid-surveillance-id");
   const lot = registry.lots.find((item) => item.id === id),
     claim = registry.claims.find((item) => item.id === id);
   if (!lot && !claim)

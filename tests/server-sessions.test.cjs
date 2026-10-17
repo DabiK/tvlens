@@ -462,7 +462,7 @@ test('deleting a session over HTTP is refused during capture and for anything bu
   for (const bad of ['..%2F' + N, 'sessions', N.toUpperCase(), N + '%00', '%20' + N, 'moment-1'])
     for (const action of ['delete', 'open', 'resume'])
       assert.deepEqual(await f.req(`/v1/sessions/${bad}/${action}`, {}),
-        { status: 400, value: { error: 'Identifiant de session invalide.', code: 'unclassified-error' } }, bad + ' ' + action);
+        { status: 400, value: { error: 'Identifiant de session invalide.', code: 'invalid-session-id' } }, bad + ' ' + action);
   // Dot segments are resolved before routing: they never reach a session route at all.
   for (const dots of ['..', '%2E%2E', `${N}/..`])
     assert.equal((await f.req(`/v1/sessions/${dots}/delete`, {})).status, 404, dots);
@@ -831,7 +831,7 @@ test('a start renews the block numbering even when the session was still capturi
   // but the session refuses it on observation order.
   const replayed = await f.block(id, 9000002, 16000);
   assert.deepEqual(replayed,
-    { status: 400, value: { error: 'Les segments doivent suivre l’ordre d’observation.', code: 'unclassified-error' } });
+    { status: 400, value: { error: 'Les segments doivent suivre l’ordre d’observation.', code: 'invalid-capture-order' } });
   // Even after one more start has made the transport forget the block it has just accepted.
   await f.req('/v1/session/start', {});
   assert.equal((await f.block(id, 5, 24000)).status, 400);

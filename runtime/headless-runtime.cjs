@@ -174,7 +174,7 @@ class HeadlessRuntime {
     this.auxKey = this.auxiliary();
   }
   async setTranscriptionLanguage(language) {
-    if (this.savingLanguage) throw Error("Réglage en cours, réessaie.");
+    if (this.savingLanguage) throw refusal(400, "Réglage en cours, réessaie.", "language-setting-busy");
     this.savingLanguage = true;
     try {
       await this.options.transcriptionSettings.save(language);
@@ -272,7 +272,7 @@ class HeadlessRuntime {
   }
   viewName(view) {
     if (view === undefined) return "full";
-    if (!VIEWS.includes(view)) throw refusal(400, "Vue d’état inconnue.");
+    if (!VIEWS.includes(view)) throw refusal(400, "Vue d’état inconnue.", "unknown-view");
     return view;
   }
   // Entity tag of a state resource, from counters only: answering 304 builds no snapshot. The complete
@@ -382,7 +382,7 @@ class HeadlessRuntime {
   }
   loaded(sessionId) {
     if (!this.session || sessionId !== this.session.id)
-      throw Error("Session obsolète.");
+      throw refusal(400, "Session obsolète.", "stale-session");
     return this.session;
   }
   start() {
@@ -420,14 +420,14 @@ class HeadlessRuntime {
     return this.captureIntake.ingest(input, operation);
   }
   ask({ question, sessionId, anchorMs, moment }) {
-    if (this.moving()) throw Error("Session en cours de fermeture.");
+    if (this.moving()) throw refusal(400, "Session en cours de fermeture.", "session-closing");
     const session = this.loaded(sessionId);
     if (
       !Number.isFinite(anchorMs) ||
       anchorMs < 0 ||
       anchorMs > session.watch.now() + 3000
     )
-      throw Error("Ancrage invalide.");
+      throw refusal(400, "Ancrage invalide.", "invalid-anchor");
     const snapshot = session.watch.snapshot();
     const selected = moment ? momentDetail(snapshot, moment.segmentIds || moment) : null;
     return this.deep.start(question, {
@@ -520,7 +520,7 @@ class HeadlessRuntime {
     return this.lifecycle.remove(id);
   }
   startSurveillance({ sessionId, instruction } = {}) {
-    if (this.moving()) throw Error("Session en cours de fermeture.");
+    if (this.moving()) throw refusal(400, "Session en cours de fermeture.", "session-closing");
     const session = this.loaded(sessionId);
     // An archive that is only being read receives no new passage: there is nothing to watch.
     if (session.readOnly)

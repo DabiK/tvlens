@@ -1,3 +1,4 @@
+const { refusal } = require("./errors.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
@@ -53,15 +54,15 @@ function createSessionRuntime({
 }) {
   let watch, lifecycle;
   if (restore && (!restore.snapshot || !restore.inventory))
-    throw new Error("Archive incomplète : état et inventaire requis.");
+    throw refusal(400, "Archive incomplète : état et inventaire requis.", "invalid-archive");
   // Checked before anything is built on it: a saved state of another shape is refused in plain words.
   if (
     restore &&
     (!restorable(restore.snapshot) || !readableManifest(restore.manifest))
   )
-    throw new Error("Archive illisible.");
+    throw refusal(400, "Archive illisible.", "invalid-archive");
   if (restore && id !== undefined && id !== restore.snapshot.id)
-    throw new Error("Archive d’une autre session.");
+    throw refusal(400, "Archive d’une autre session.", "invalid-archive");
   id ??= restore ? restore.snapshot.id : randomUUID();
   // null is how a saved state spells "no expiry"; anything else must be a real duration.
   if (
@@ -257,18 +258,18 @@ function validateSegment(input, now) {
     !Number.isFinite(input.endMs) ||
     input.endMs > now + 3000
   )
-    throw new Error("Horodatage de capture invalide.");
+    throw refusal(400, "Horodatage de capture invalide.", "invalid-captured-segment");
   if (
     !(input.clip instanceof Uint8Array) ||
     input.clip.byteLength < 1 ||
     input.clip.byteLength > 20000000
   )
-    throw new Error("Segment vidéo trop volumineux ou vide.");
+    throw refusal(400, "Segment vidéo trop volumineux ou vide.", "invalid-captured-segment");
   if (
     input.audio &&
     (!(input.audio instanceof Uint8Array) || input.audio.byteLength > 2100000)
   )
-    throw new Error("Audio invalide.");
+    throw refusal(400, "Audio invalide.", "invalid-captured-segment");
   if (
     !Array.isArray(input.frames) ||
     input.frames.length < 1 ||
@@ -283,7 +284,7 @@ function validateSegment(input, now) {
         f.atMs > input.endMs + 100,
     )
   )
-    throw new Error("Images de capture invalides.");
+    throw refusal(400, "Images de capture invalides.", "invalid-captured-segment");
 }
 module.exports = {
   createSessionRuntime,

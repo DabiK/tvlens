@@ -1,3 +1,37 @@
+const {
+  TVLENS_QUESTION_INVALID,
+  TVLENS_QUESTION_QUEUE_FULL,
+  TVLENS_QUESTION_ACTION_INVALID,
+  TVLENS_QUESTION_INTERVAL_INVALID,
+} = require("../core/deep-ask.cjs");
+const {
+  TVLENS_CAPTURE_TIME_INVALID,
+  TVLENS_CAPTURE_ORDER_INVALID,
+  TVLENS_SESSION_STOPPED,
+} = require("../core/session.cjs");
+const {
+  TVLENS_MOMENT_SELECTION_INVALID,
+  TVLENS_MOMENT_MISSING,
+  TVLENS_MOMENT_INTERVAL_DISCONTINUOUS,
+} = require("../core/session-timeline.cjs");
+const {
+  TVLENS_TRANSCRIPTION_LANGUAGE_INVALID,
+} = require("../core/transcription-language.cjs");
+const {
+  TVLENS_SURVEILLANCE_SESSION_REQUIRED,
+  TVLENS_SURVEILLANCE_INSTRUCTION_INVALID,
+  TVLENS_SURVEILLANCE_RETRY_INVALID,
+} = require("../core/surveillance.cjs");
+const {
+  TVLENS_SESSION_ID_INVALID,
+  TVLENS_SESSION_NOT_FOUND,
+  TVLENS_ARCHIVE_INVALID,
+} = require("../adapters/session-library.cjs");
+const {
+  TVLENS_MEDIA_BLOCK_INVALID,
+  TVLENS_MEDIA_IMAGE_UNREADABLE,
+  TVLENS_MEDIA_TOOL_REFUSED,
+} = require("../adapters/remote-media.cjs");
 const http = require("node:http");
 const { timingSafeEqual } = require("node:crypto");
 const { STORAGE_FULL } = require("../adapters/disk-guard.cjs");
@@ -20,9 +54,34 @@ const SEGMENT_BODY_LIMIT = 13000000;
 const REQUEST_TIMEOUT_MS = 20000;
 const HEADERS_TIMEOUT_MS = 10000;
 // Seules les identités des émetteurs connus traversent le transport ; un errno garde le repli historique.
+const PUBLIC_CODES = new Map([
+  [TVLENS_QUESTION_INVALID, "invalid-question"],
+  [TVLENS_QUESTION_QUEUE_FULL, "question-queue-full"],
+  [TVLENS_QUESTION_ACTION_INVALID, "invalid-question-action"],
+  [TVLENS_QUESTION_INTERVAL_INVALID, "invalid-question-interval"],
+  [TVLENS_CAPTURE_TIME_INVALID, "invalid-capture-time"],
+  [TVLENS_CAPTURE_ORDER_INVALID, "invalid-capture-order"],
+  [TVLENS_SESSION_STOPPED, "session-stopped"],
+  [TVLENS_MOMENT_SELECTION_INVALID, "invalid-moment-selection"],
+  [TVLENS_MOMENT_MISSING, "moment-missing"],
+  [TVLENS_MOMENT_INTERVAL_DISCONTINUOUS, "discontinuous-moment-interval"],
+  [TVLENS_TRANSCRIPTION_LANGUAGE_INVALID, "invalid-transcription-language"],
+  [TVLENS_SURVEILLANCE_SESSION_REQUIRED, "surveillance-session-required"],
+  [TVLENS_SURVEILLANCE_INSTRUCTION_INVALID, "invalid-surveillance-instruction"],
+  [TVLENS_SURVEILLANCE_RETRY_INVALID, "invalid-surveillance-retry"],
+  [TVLENS_SESSION_ID_INVALID, "invalid-session-id"],
+  [TVLENS_SESSION_NOT_FOUND, "not-found"],
+  [TVLENS_ARCHIVE_INVALID, "invalid-archive"],
+  [TVLENS_MEDIA_BLOCK_INVALID, "invalid-media-block"],
+  [TVLENS_MEDIA_IMAGE_UNREADABLE, "image-unreadable"],
+  [TVLENS_MEDIA_TOOL_REFUSED, "media-tool-refused"],
+]);
 const APPLICATION_CODES = new Set([
   "invalid-capture-time", "media-unavailable", "read-only", "session-closing",
-  "capture-changed", "capturing", "not-open", "not-found",
+  "capture-changed", "capturing", "not-open", "not-found", "session-stopped",
+  "unknown-view", "stale-session", "invalid-anchor", "invalid-captured-segment", "invalid-archive",
+  "invalid-history-cursor", "invalid-history-limit", "invalid-surveillance-id",
+  "language-setting-busy", "surveillance-session-required",
   TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT, TVLENS_CODEX_REQUEST_CUT,
   TVLENS_CODEX_CONNECTION_LOST, TVLENS_CODEX_INPUT_REFUSED, TVLENS_CODEX_SESSION_CLOSED,
   TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_ROLE_REFUSED,
@@ -115,7 +174,7 @@ function sendError(error, res, send) {
   const status = Number.isInteger(error?.status) && error.status >= 400 && error.status < 600 ? error.status : 400;
   return send(status, {
     error: error.message,
-    code: APPLICATION_CODES.has(error?.code) ? error.code : "unclassified-error",
+    code: PUBLIC_CODES.get(error?.code) ?? (APPLICATION_CODES.has(error?.code) ? error.code : "unclassified-error"),
   });
 }
 

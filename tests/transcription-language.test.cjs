@@ -35,3 +35,14 @@ test('Whisper receives selected language; cache is language-specific and in-flig
   assert.equal(transcriber.misses,3);
  } finally { await fs.rm(dir,{recursive:true,force:true}); }
 });
+
+test('an invalid transcription language carries the exported domain identity and original message', () => {
+ const emitter = require('../core/transcription-language.cjs');
+ assert.throws(() => emitter.validateTranscriptionLanguage('es'), error => {
+  assert.equal(error.code, 'TVLENS_TRANSCRIPTION_LANGUAGE_INVALID');
+  assert.equal(emitter.TVLENS_TRANSCRIPTION_LANGUAGE_INVALID, error.code);
+  assert.equal(error.message, 'Langue de transcription invalide.');
+  assert.equal(error.status, undefined);
+  return true;
+ });
+});

@@ -869,3 +869,33 @@ test('a single verification running late, with nothing queued behind it, is neve
   assert.deepEqual([state.activity.state, state.backlog.reason, state.backlog.claimsWaiting, state.counts.running, state.activity.label], ['late', 'verification', 0, 1, 'Vérification en cours : elle a pris du retard.']);
   for (const label of labels) assert.doesNotMatch(label, /\b0 (affirmation|passage)/, label);
 });
+
+for (const [condition, code, message, run] of [
+  ['missing session', 'TVLENS_SURVEILLANCE_SESSION_REQUIRED', 'Démarre une session avant d’activer la surveillance.', h => {
+    h.surveillance.start({ instruction: 'Vérifie.' }, null);
+  }],
+  ['empty instruction', 'TVLENS_SURVEILLANCE_INSTRUCTION_INVALID', 'Écris une consigne de surveillance de 1 à 1 500 caractères.', h => {
+    h.surveillance.start({ instruction: ' ' }, h.snapshot());
+  }],
+  ['disabled retry', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Active la surveillance avant de relancer.', h => h.surveillance.retry('claim-1')],
+  ['nonfailed passage', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Ce passage n’est pas en échec.', h => {
+    h.surveillance.start({ instruction: 'Vérifie.' }, h.snapshot());
+    h.add(passage(1, ''));
+    h.surveillance.retry('moment-1');
+  }],
+  ['unknown retry', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Cet élément ne peut pas être relancé.', h => {
+    h.surveillance.start({ instruction: 'Vérifie.' }, h.snapshot());
+    h.surveillance.retry('claim-99');
+  }],
+]) {
+  test(`surveillance request refusals expose ${code} for ${condition}`, () => {
+    const h = harness();
+    assert.throws(() => run(h), error => {
+      assert.equal(error.code, code);
+      assert.equal(require('../core/surveillance.cjs')[code], code);
+      assert.equal(error.message, message);
+      assert.equal(error.status, undefined);
+      return true;
+    });
+  });
+}

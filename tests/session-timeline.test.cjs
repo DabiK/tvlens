@@ -156,3 +156,22 @@ test('long topics use compact immutable boundaries without including newly appen
   assert.equal(detail.passages.at(-1).id,'moment-1200');
   assert.throws(()=>momentDetail({id:'long',history:[],segments},{firstId:'moment-3',lastId:'moment-1'}),/invalides/);
 });
+
+for (const [condition, selection, code, message] of [
+  ['empty selection', [], 'TVLENS_MOMENT_SELECTION_INVALID', 'Sélection de moments invalide.'],
+  ['duplicate selection', ['moment-1', 'moment-1'], 'TVLENS_MOMENT_SELECTION_INVALID', 'Sélection de moments invalide.'],
+  ['reversed boundaries', { firstId: 'moment-2', lastId: 'moment-1' }, 'TVLENS_MOMENT_SELECTION_INVALID', 'Bornes de moment invalides.'],
+  ['missing moment', ['moment-99'], 'TVLENS_MOMENT_MISSING', 'Moment absent de cette session.'],
+  ['noncontiguous interval', ['moment-1', 'moment-3'], 'TVLENS_MOMENT_INTERVAL_DISCONTINUOUS', 'Intervalle discontinu.'],
+]) {
+  test(`moment refusals expose ${code} for ${condition}`, () => {
+    const snapshot = { id: 's', history: [], segments: [1, 2, 3].map(n => passage(n, (n - 1) * 8000, 'Sujet')) };
+    assert.throws(() => momentDetail(snapshot, selection), error => {
+      assert.equal(error.code, code);
+      assert.equal(require('../core/session-timeline.cjs')[code], code);
+      assert.equal(error.message, message);
+      assert.equal(error.status, undefined);
+      return true;
+    });
+  });
+}

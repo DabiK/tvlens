@@ -165,3 +165,53 @@ test('the host answers through DeepAsk and refuses questions during and after se
   assert.equal(calls, 1);
   assert.deepEqual(f.runtime.deep.snapshot().jobs, []);
 });
+
+for (const kind of ['image', 'wav', 'tool', 'validation']) {
+  test(`HTTP ingestion classifies real ${kind} content refusal and releases its admission`, async t => {
+    const { RemoteMedia } = require('../adapters/remote-media.cjs');
+    const data = (await require('sharp')({ create: {
+      width: 32, height: 32, channels: 3, background: '#fff',
+    } }).jpeg().toBuffer()).toString('base64');
+    const f = await fixture(t, { media: new RemoteMedia({ ffmpeg: process.execPath }) });
+    const { id } = (await f.req('/v1/session/start', {})).value;
+    const input = { sessionId: id, sequence: 1, startMs: 0, endMs: 100, frames: [{ atMs: 0, data }] };
+    const expected = {
+      image: ['image-unreadable', /unsupported image format/],
+      wav: ['invalid-media-block', /^Audio WAV requis\.$/],
+      tool: ['media-tool-refused', /^Préparation média échouée : /],
+      validation: ['invalid-media-block', /^Nombre d’images invalide\.$/],
+    }[kind];
+    if (kind === 'image') input.frames[0].data = Buffer.from('not an image').toString('base64');
+    if (kind === 'wav') input.audio = 'YQ==';
+    if (kind === 'validation') input.frames = [];
+    const response = await f.req('/v1/segments', input);
+    assert.equal(response.status, 400);
+    assert.equal(response.value.code, expected[0]);
+    assert.match(response.value.error, expected[1]);
+    assert.deepEqual(f.runtime.session.watch.snapshot().segments, []);
+    assert.equal(f.runtime.admitted.size, 0);
+    assert.equal(f.server.ingesting, false);
+    assert.equal(f.server.accepted.size, 0);
+  });
+}
+
+for (const [errno, status, code] of [['EIO', 400, 'unclassified-error'], ['ENOSPC', 507, 'storage-full']]) {
+  test(`HTTP ingestion preserves a real store write failure as ${status} ${code}`, async t => {
+    const f = await fixture(t);
+    const { id } = (await f.req('/v1/session/start', {})).value;
+    const write = fs.writeFile;
+    const cause = Object.assign(Error('Horodatage invalide.'), { code: errno });
+    t.mock.method(fs, 'writeFile', async (target, ...args) => {
+      if (String(target).endsWith('moment-1.webm')) throw cause;
+      return write(target, ...args);
+    });
+    const response = await f.req('/v1/segments', {
+      sessionId: id, sequence: 1, startMs: 0, endMs: 100, frames: [{ atMs: 0, data: 'YQ==' }],
+    });
+    assert.equal(response.status, status);
+    assert.equal(response.value.code, code);
+    if (errno === 'EIO') assert.equal(response.value.error, cause.message);
+    assert.deepEqual(f.runtime.session.watch.snapshot().segments, []);
+    assert.deepEqual(await fs.readdir(f.runtime.session.store.mediaRoot), []);
+  });
+}

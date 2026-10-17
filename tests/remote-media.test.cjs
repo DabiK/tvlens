@@ -52,3 +52,79 @@ test('cleanup failure preserves an abort reason that cannot carry the cleanup di
   assert.deepEqual(removal.mock.calls.map(call => call.arguments[0]), [dir]);
  });
 });
+
+const validBlock = () => ({
+ sessionId: 's', sequence: 1, startMs: 0, endMs: 100,
+ frames: [{ atMs: 0, data: Buffer.from('not an image').toString('base64') }],
+});
+for (const [condition, change, message] of [
+ ['invalid sequence', { sequence: -1 }, 'Séquence invalide.'],
+ ['long interval', { endMs: 20000 }, 'Intervalle invalide.'],
+ ['empty frames', { frames: [] }, 'Nombre d’images invalide.'],
+ ['frame order', { frames: [{ atMs: -1, data: 'YQ==' }] }, 'Ordre des images invalide.'],
+ ['base64 encoding', { frames: [{ atMs: 0, data: 'invalid!' }] }, 'Média encodé invalide.'],
+ ['empty decoded media', { frames: [{ atMs: 0, data: 'A' }] }, 'Média trop volumineux.'],
+ ['invalid crop', { frames: [{ atMs: 0, data: 'YQ==', crop: { x: -1 } }] }, 'Cadrage invalide.'],
+]) {
+ test(`remote block validation identifies ${condition}`, () => {
+  assert.throws(() => validateRemote({ ...validBlock(), ...change }), error => {
+   assert.equal(error.code, 'TVLENS_MEDIA_BLOCK_INVALID');
+   assert.equal(require('../adapters/remote-media.cjs').TVLENS_MEDIA_BLOCK_INVALID, error.code);
+   assert.equal(error.message, message);
+   assert.equal(error.status, undefined);
+   return true;
+  });
+ });
+}
+
+for (const transform of [false, true]) {
+ test(`image refusal preserves the sharp cause and message (transformation: ${transform})`, async () => {
+  const input = validBlock();
+  if (transform) input.frames[0] = {
+   atMs: 0,
+   data: (await sharp({ create: { width: 1, height: 1, channels: 3, background: '#fff' } }).png().toBuffer()).toString('base64'),
+   crop: { x: 0, y: 0, width: 16, height: 16 },
+  };
+  await assert.rejects(new RemoteMedia().assemble(input), error => {
+   assert.equal(error.code, 'TVLENS_MEDIA_IMAGE_UNREADABLE');
+   assert.equal(require('../adapters/remote-media.cjs').TVLENS_MEDIA_IMAGE_UNREADABLE, error.code);
+   assert.ok(error.cause instanceof Error);
+   assert.equal(error.message, error.cause.message);
+   assert.match(error.message, transform ? /extract_area/ : /unsupported image format/);
+   assert.equal(error.status, undefined);
+   return true;
+  });
+ });
+}
+
+test('a non-WAV block retains its validation identity after frame work settles', async () => {
+ const data = (await sharp({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer()).toString('base64');
+ await assert.rejects(new RemoteMedia().assemble({ ...validBlock(), frames: [{ atMs: 0, data }], audio: 'YQ==' }), {
+  code: 'TVLENS_MEDIA_BLOCK_INVALID', message: 'Audio WAV requis.',
+ });
+});
+
+test('an executed media tool that refuses content has a distinct exported identity', async () => {
+ const data = (await sharp({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer()).toString('base64');
+ await assert.rejects(new RemoteMedia({ ffmpeg: process.execPath }).assemble({ ...validBlock(), frames: [{ atMs: 0, data }] }), error => {
+  assert.equal(error.code, 'TVLENS_MEDIA_TOOL_REFUSED');
+  assert.equal(require('../adapters/remote-media.cjs').TVLENS_MEDIA_TOOL_REFUSED, error.code);
+  assert.match(error.message, /^Préparation média échouée : /);
+  assert.equal(error.status, undefined);
+  return true;
+ });
+});
+
+test('a tool terminated by the system keeps its unclassified failure instead of blaming content', async t => {
+ const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-media-signal-'));
+ t.after(() => fs.rm(root, { recursive: true, force: true }));
+ const binary = path.join(root, 'interrupted-tool');
+ await fs.writeFile(binary, `#!${process.execPath}\nprocess.kill(process.pid, 'SIGTERM');\n`, { mode: 0o700 });
+ const data = (await sharp({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer()).toString('base64');
+ await assert.rejects(new RemoteMedia({ ffmpeg: binary }).assemble({ ...validBlock(), frames: [{ atMs: 0, data }] }), error => {
+  assert.equal(error.code, undefined);
+  assert.equal(error.status, undefined);
+  assert.equal(error.message, 'Préparation média échouée : ');
+  return true;
+ });
+});

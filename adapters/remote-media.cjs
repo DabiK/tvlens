@@ -1,24 +1,55 @@
+const { domainError } = require('../core/shared/domain-error.cjs');
+const TVLENS_MEDIA_BLOCK_INVALID = 'TVLENS_MEDIA_BLOCK_INVALID';
+const TVLENS_MEDIA_IMAGE_UNREADABLE = 'TVLENS_MEDIA_IMAGE_UNREADABLE';
+const TVLENS_MEDIA_TOOL_REFUSED = 'TVLENS_MEDIA_TOOL_REFUSED';
 const fs=require('node:fs/promises');
 const os=require('node:os');
 const path=require('node:path');
 const {spawn}=require('node:child_process');
 const sharp=require('sharp');
 // Checks a base64 payload without decoding it: a block carries several megabytes, decoded once in assemble().
-function base64(value,max){
-  if(typeof value!=='string'||value.length>Math.ceil(max/3)*4||!value.length||!/^[A-Za-z0-9+/]+={0,2}$/.test(value))throw Error('Média encodé invalide.');
-  const size=Math.floor((value.length-(value.endsWith('==')?2:value.endsWith('=')?1:0))*3/4);if(!size||size>max)throw Error('Média trop volumineux.');
+function base64(value, max) {
+  if (typeof value !== 'string' || value.length > Math.ceil(max / 3) * 4 || !value.length || !/^[A-Za-z0-9+/]+={0,2}$/.test(value))
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Média encodé invalide.');
+  const padding = value.endsWith('==') ? 2 : Number(value.endsWith('='));
+  const size = Math.floor((value.length - padding) * 3 / 4);
+  if (!size || size > max) throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Média trop volumineux.');
 }
 // Inputs already checked by the HTTP handler are not scanned a second time.
-const validated=new WeakSet();
-function validateRemote(input){
-  if(!input||typeof input.sessionId!=='string'||!Number.isSafeInteger(input.sequence)||input.sequence<0)throw Error('Séquence invalide.');
-  if(!Number.isFinite(input.startMs)||!Number.isFinite(input.endMs)||input.startMs<0||input.endMs<=input.startMs||input.endMs-input.startMs>10000)throw Error('Intervalle invalide.');
-  if(!Array.isArray(input.frames)||input.frames.length<1||input.frames.length>5)throw Error('Nombre d’images invalide.');
-  let previous=-Infinity;
-  for(const f of input.frames){if(!Number.isFinite(f.atMs)||f.atMs<input.startMs||f.atMs>input.endMs||f.atMs<previous)throw Error('Ordre des images invalide.');previous=f.atMs;base64(f.data,1500000);
-    if(f.crop){const c=f.crop;if(!['x','y','width','height'].every(k=>Number.isInteger(c[k]))||c.x<0||c.y<0||c.width<16||c.height<16||c.x+c.width>1280||c.y+c.height>720)throw Error('Cadrage invalide.');}}
-  if(input.audio)base64(input.audio,2100000);
+const validated = new WeakSet();
+function validateRemote(input) {
+  if (!input || typeof input.sessionId !== 'string' || !Number.isSafeInteger(input.sequence) || input.sequence < 0)
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Séquence invalide.');
+  if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs)
+    || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 10000)
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Intervalle invalide.');
+  if (!Array.isArray(input.frames) || input.frames.length < 1 || input.frames.length > 5)
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Nombre d’images invalide.');
+  let previous = -Infinity;
+  for (const f of input.frames) {
+    if (!Number.isFinite(f.atMs) || f.atMs < input.startMs || f.atMs > input.endMs || f.atMs < previous)
+      throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Ordre des images invalide.');
+    previous = f.atMs;
+    base64(f.data, 1500000);
+    if (f.crop) {
+      const c = f.crop;
+      if (!['x', 'y', 'width', 'height'].every(k => Number.isInteger(c[k]))
+        || c.x < 0 || c.y < 0 || c.width < 16 || c.height < 16 || c.x + c.width > 1280 || c.y + c.height > 720)
+        throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Cadrage invalide.');
+    }
+  }
+  if (input.audio) base64(input.audio, 2100000);
   validated.add(input);
+}
+// Seule la chaîne sharp identifie un contenu image illisible ; le disque et l’annulation gardent leur refus.
+async function encodeImage(frame) {
+  try {
+    let image = sharp(Buffer.from(frame.data, 'base64'), { limitInputPixels: 1920 * 1080 });
+    if (frame.crop) image = image.extract({ left: frame.crop.x, top: frame.crop.y, width: frame.crop.width, height: frame.crop.height });
+    return await image.resize({ width: 1280, height: 720, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 75 }).toBuffer();
+  } catch (cause) {
+    throw domainError(TVLENS_MEDIA_IMAGE_UNREADABLE, cause.message, cause);
+  }
 }
 // Not the block's doing: a media tool that cannot be started or does not end in time, a temporary directory the system
 // refuses. The transport answers 503 with this code, so that the capture sends the same block again instead of counting
@@ -42,7 +73,15 @@ async function command(binary,args,timeoutMs,signal){
     // nothing was started: that error is the end of the command, and no other is.
     child.on('error',cause=>{if(child.pid)return;settle();reject(signal?.aborted?signal.reason:unavailable('Outil média indisponible.',cause));});
     // A child killed by the timer exits with a signal and no code: a truncated file must never pass for a result.
-    child.on('exit',(code,killed)=>{settle();if(signal?.aborted)reject(signal.reason);else if(expired)reject(unavailable('Préparation média trop longue.'));else if(code||killed)reject(Error('Préparation média échouée : '+err));else resolve();});
+    child.on('exit', (code, killed) => {
+      settle();
+      if (signal?.aborted) reject(signal.reason);
+      else if (expired) reject(unavailable('Préparation média trop longue.'));
+      // Un signal système ne prouve aucun refus du contenu par l’outil.
+      else if (killed) reject(Error('Préparation média échouée : ' + err));
+      else if (code) reject(domainError(TVLENS_MEDIA_TOOL_REFUSED, 'Préparation média échouée : ' + err));
+      else resolve();
+    });
     child.stderr?.on('data',v=>{err=(err+v).slice(-2000);});
   });
 }
@@ -57,10 +96,8 @@ class RemoteMedia {
       signal?.throwIfAborted();
       const seconds=String((input.endMs-input.startMs)/1000);
       const encode=async(frame,i)=>{
-        let image=sharp(Buffer.from(frame.data,'base64'),{limitInputPixels:1920*1080});
-        if(frame.crop)image=image.extract({left:frame.crop.x,top:frame.crop.y,width:frame.crop.width,height:frame.crop.height});
-        // An encoding under way cannot be stopped: it is left to finish, and nothing is written for it afterwards.
-        const jpeg=await image.resize({width:1280,height:720,fit:'inside',withoutEnlargement:true}).jpeg({quality:75}).toBuffer();
+        // Un encodage commencé se règle avant l’annulation et avant tout nettoyage.
+        const jpeg = await encodeImage(frame);
         signal?.throwIfAborted();
         await scratch(fs.writeFile(path.join(dir,`${i}.jpg`),jpeg,{mode:0o600}));
         return {atMs:frame.atMs,dataUrl:'data:image/jpeg;base64,'+jpeg.toString('base64')};
@@ -68,7 +105,8 @@ class RemoteMedia {
       const resample=async()=>{
         if(!input.audio)return null;
         const raw=Buffer.from(input.audio,'base64');
-        if(raw.toString('ascii',0,4)!=='RIFF'||raw.toString('ascii',8,12)!=='WAVE')throw Error('Audio WAV requis.');
+        if (raw.toString('ascii', 0, 4) !== 'RIFF' || raw.toString('ascii', 8, 12) !== 'WAVE')
+          throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Audio WAV requis.');
         await scratch(fs.writeFile(path.join(dir,'source.wav'),raw,{mode:0o600}));
         await command(this.ffmpeg,['-nostdin','-v','error','-i',path.join(dir,'source.wav'),'-t',seconds,'-ar','16000','-ac','1',path.join(dir,'audio.wav')],this.timeoutMs,signal);
         return scratch(fs.readFile(path.join(dir,'audio.wav')));
@@ -112,4 +150,7 @@ class RemoteMedia {
     return result;
   }
 }
-module.exports={RemoteMedia,validateRemote};
+module.exports = {
+  RemoteMedia, validateRemote,
+  TVLENS_MEDIA_BLOCK_INVALID, TVLENS_MEDIA_IMAGE_UNREADABLE, TVLENS_MEDIA_TOOL_REFUSED,
+};

@@ -1,3 +1,7 @@
+const { domainError } = require('./shared/domain-error.cjs');
+const TVLENS_SURVEILLANCE_SESSION_REQUIRED = 'TVLENS_SURVEILLANCE_SESSION_REQUIRED';
+const TVLENS_SURVEILLANCE_INSTRUCTION_INVALID = 'TVLENS_SURVEILLANCE_INSTRUCTION_INVALID';
+const TVLENS_SURVEILLANCE_RETRY_INVALID = 'TVLENS_SURVEILLANCE_RETRY_INVALID';
 /**
  * Free-instruction surveillance (tickets 05 and 06). Portable core: no provider, no host, no chat.
  *
@@ -395,8 +399,10 @@ class Surveillance {
 
   /** Activation: t0 is the session position of the snapshot. Nothing that started before it is ever read. */
   start({ instruction } = {}, snapshot) {
-    if (!snapshot || typeof snapshot.id !== 'string' || !snapshot.id || !Number.isFinite(snapshot.elapsedMs) || snapshot.elapsedMs < 0) throw new Error('Démarre une session avant d’activer la surveillance.');
-    if (typeof instruction !== 'string' || !instruction.trim() || instruction.trim().length > 1500) throw new Error('Écris une consigne de surveillance de 1 à 1 500 caractères.');
+    if (!snapshot || typeof snapshot.id !== 'string' || !snapshot.id || !Number.isFinite(snapshot.elapsedMs) || snapshot.elapsedMs < 0)
+      throw domainError(TVLENS_SURVEILLANCE_SESSION_REQUIRED, 'Démarre une session avant d’activer la surveillance.');
+    if (typeof instruction !== 'string' || !instruction.trim() || instruction.trim().length > 1500)
+      throw domainError(TVLENS_SURVEILLANCE_INSTRUCTION_INVALID, 'Écris une consigne de surveillance de 1 à 1 500 caractères.');
     if (this.enabled) this.stop('Consigne remplacée.');
     // The registry belongs to one session: it is kept across activations, never across sessions.
     if (this.sessionId !== snapshot.id) { this.clear(); this.sessionId = snapshot.id; }
@@ -498,15 +504,15 @@ class Surveillance {
 
   /** A claim in error or cancelled goes back to the queue; a passage whose detection failed is read again. */
   retry(id) {
-    if (!this.enabled) throw new Error('Active la surveillance avant de relancer.');
+    if (!this.enabled) throw domainError(TVLENS_SURVEILLANCE_RETRY_INVALID, 'Active la surveillance avant de relancer.');
     const entry = this.passages.get(id), claim = this.index.get(id), now = this.now();
     if (entry) {
-      if (entry.bucket !== 'failed') throw new Error('Ce passage n’est pas en échec.');
+      if (entry.bucket !== 'failed') throw domainError(TVLENS_SURVEILLANCE_RETRY_INVALID, 'Ce passage n’est pas en échec.');
       Object.assign(entry, { bucket: 'pending', attempts: 0, error: null, failedAt: null, readableAt: now });
       this.holdDetectionUntil = 0;
     } else if (claim && claim.action === 'verify' && ['error', 'cancelled'].includes(claim.status)) {
       Object.assign(claim, { status: 'detected', reason: null, error: null, since: now, queuedAt: null, startedAt: null, finishedAt: null, lotId: null });
-    } else throw new Error('Cet élément ne peut pas être relancé.');
+    } else throw domainError(TVLENS_SURVEILLANCE_RETRY_INVALID, 'Cet élément ne peut pas être relancé.');
     this.pump(); this.emit();
     return this.snapshot();
   }
@@ -918,4 +924,5 @@ class Surveillance {
 }
 
 module.exports = { Surveillance, COVERAGE_BUCKETS, CLAIM_STATES, ASSESSMENT_LABELS, CARD_LABELS,
+  TVLENS_SURVEILLANCE_SESSION_REQUIRED, TVLENS_SURVEILLANCE_INSTRUCTION_INVALID, TVLENS_SURVEILLANCE_RETRY_INVALID,
   claimKey, sameClaim, validateDetection, applyVerdicts, composeLotText, composeSignalText, acceptableText, sentences, sourceKey };
