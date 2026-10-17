@@ -52,9 +52,7 @@ Les états de capture, d’analyse, d’attente et d’erreur sont distincts. La
   <img src="screenshots/current/floating-chat.png" width="420" alt="Chat TVLens déplié au-dessus du lecteur">
 </p>
 
-Les actions Mac permettent aussi de **garder un moment**, **rattraper ce que tu as manqué**, relire une citation disponible ou confier une **Surveillance** au compagnon, avec une consigne libre : « Vérifie les chiffres sur l’économie ». Elle commence à son activation et continue pendant tes questions. Ses résultats sourcés arrivent en cartes courtes, en bas à gauche ; ce qui n’a pas pu être vérifié reste dans l’historique.
-
-Les sessions sont conservées : **Mémoire → Sessions** liste les sessions passées, les ouvre en lecture seule, reprend la capture sur demande, ou les supprime.
+Les actions Mac permettent aussi de **garder un moment**, **rattraper ce que tu as manqué**, relire une citation disponible ou activer **Auto** avec une consigne ciblée : « Surveille les chiffres sur l’économie ». Auto commence à son activation ; tes questions restent prioritaires.
 
 <details>
 <summary>Voir la mémoire de session sur Mac</summary>
@@ -82,19 +80,9 @@ Sur la **LG 75QNED87T rootée de test**, YouTube continue pendant que TVLens pro
 
 *Captures réelles du compagnon LG prises le 2 octobre 2026 pendant un débat sur YouTube. Les descriptions visibles sont des observations automatiques, pas des faits vérifiés. [À propos des visuels](screenshots/lg/README.md).*
 
-Les miniatures apparaissent dès réception ; titres et résumés arrivent avec l’analyse. Tu peux remonter le passé sans perdre ta position, ouvrir le détail, afficher les paroles ou **questionner ce moment** avec son intervalle attaché au chat. Les miniatures et les médias restent avec la session jusqu’à sa suppression.
+Les miniatures apparaissent dès réception ; titres et résumés arrivent avec l’analyse. Tu peux remonter le passé sans perdre ta position, ouvrir le détail, afficher les paroles ou **questionner ce moment** avec son intervalle attaché au chat. Les miniatures restent pendant la session, même après expiration du média détaillé.
 
 Le companion s’ouvre avec **Rakuten** sur la télécommande configurée. La capture démarre manuellement ; **Arrêter / Reprendre** conserve le contexte. Retour ferme le panneau. Le bouton micro physique direct reste une fonction LG : la dictée TVLens passe par le clavier.
-
-> **Version installée sur la TV de test.** Les changements du 13 octobre 2026 (questions de cinq minutes, sessions conservées, surveillance, alertes en bas à gauche) ont été installés sur la TV de test et sur le VPS le 13 octobre 2026 au matin, par la supervision et avec l’autorisation de Dabi, puis essayés par quelques parcours réels courts : cela ne vaut pas validation. À cette date, l’affichage d’alertes panneau fermé était désactivé par défaut, sans validation native.
-> Voir [le livrable de la nuit](docs/night-features-delivery.md) et [l’historique des alertes panneau fermé](docs/lg-ambient.md).
-
-**État du dépôt au 16 octobre 2026.** L’affichage ambient panneau fermé est retiré selon
-l’[ADR 0017](docs/adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md) : page et outils, superviseur
-et relais, gate de capture, puis intégrations de page et documents. Le panneau ouvert conserve
-surveillance, activité et cartes sourcées ; alertes et durée (8, 14 ou 20 secondes) restent des choix
-locaux. L’API overlay serveur et ses ETags sont conservés, avec retrait différé. Ce travail ne décrit
-aucun déploiement ni désinstallation sur la TV ou le VPS.
 
 → [Navigation et frise](docs/lg-timeline.md) · [Capture et reprise](docs/lg-capture-control.md)
 
@@ -108,7 +96,7 @@ aucun déploiement ni désinstallation sur la TV ou le VPS.
 
 Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentification par jeton. TVLens et Tailscale sont configurés pour démarrer automatiquement. La coexistence avec le LAN et CyberGhost Japon a été testée ; le VPN Internet reste indépendant du companion.
 
-**Les interfaces n’ont pas encore toutes les mêmes commandes.** Le marque-page durable, la recherche dédiée, le résumé progressif et la relecture sont disponibles sur Mac. La TV dispose du chat et de la frise avec détail/paroles/question contextualisée ; sa frise n’ajoute pas de lecteur vidéo. La surveillance et les sessions archivées reposent sur le même cœur des deux côtés ; leurs écrans TV sont écrits, pas encore déployés ni validés sur l’appareil.
+**Les interfaces n’ont pas encore toutes les mêmes commandes.** Le marque-page durable, l’interface Auto, la recherche dédiée et la relecture sont disponibles sur Mac. La TV dispose du chat et de la frise avec détail/paroles/question contextualisée ; sa frise n’ajoute pas de lecteur vidéo.
 
 → [Installer sur son serveur Linux](docs/server-installation.md) · [Mesures du VPS et retour au Mac](docs/vps-deployment.md) · [Tailscale sur la LG](docs/lg-tailscale.md)
 
@@ -162,8 +150,7 @@ Les sources produisent des segments horodatés. Le domaine gère mémoire, réte
 | Perception et réexamen | Codex, Luna par défaut ; planches de six images horodatées, sélection adaptative |
 | Transcription | Whisper multilingue sur l’hôte Mac ou Linux |
 | Chat et preuves | Codex App Server, fil par session, outils de contexte et recherche web |
-| Mémoire | Médias, miniatures et textes de chaque session, conservés jusqu’à sa suppression ; sessions archivées consultables ; résumé progressif sur Mac |
-| Surveillance | Consigne libre lue en continu, en parallèle du chat ; affirmations suivies jusqu’à un état explicite ; cartes regroupées et sourcées |
+| Mémoire | Médias récents, archives textuelles, miniatures de session ; résumé progressif sur Mac |
 | Recherche sémantique | Embeddings texte OpenRouter à la demande, index JSON local et repli lexical |
 | Interfaces | Electron complet/flottant ; companion webOS chat/frise |
 | Hébergement distant | Service systemd sous utilisateur dédié, accès privé Tailscale |
@@ -174,8 +161,7 @@ Le chat reçoit ses outils directement via l’App Server. Un adaptateur **MCP**
 
 ## Ce qui est prouvé, ce qui reste à mesurer
 
-- **Suite hors ligne** : 287 tests Node et 6 tests Python (`tests/test_tv_control.py`) passaient sur la base de la mission du 13 octobre 2026, avant ses changements. Le résultat de la suite après la mission, et ce qu’elle ne prouve pas, sont dans [le livrable de la nuit](docs/night-features-delivery.md).
-- **Changements du 13 octobre 2026** (cinq minutes, sessions conservées, surveillance, cloisonnement) : prouvés par tests hors ligne, par un parcours Electron à fournisseurs simulés et, pour le cloisonnement, par des tours de modèle réels sur Mac. **Installés sur la TV de test et le VPS le 13 octobre au matin par la supervision ; essais réels courts seulement, sans valeur de validation (livrable, section 13).**
+- **114 tests Node** passent sur Mac et Linux ; **12 tests Python** et tests d’interface LG pour les contrôles, le réseau, la géométrie et la frise.
 - Essais réels avec Whisper, Luna et Codex : description, transcription, questions successives, outils temporels, pause/reprise et réexamen.
 - **TV → VPS : 24 secondes, 12 images et 3 segments reçus sans perte**, puis analyse et réponse. L’utilisateur a confirmé le panneau et la frise sur la TV.
 - Lors du premier essai, avant séparation audio/vision, les trois blocs de 8 secondes ont pris **15 à 22 secondes chacun à analyser** : le réseau fonctionne, mais l’analyse peut prendre du retard. Ce court essai ne valide pas un visionnage continu prolongé.
@@ -192,9 +178,8 @@ node scripts/smoke-tv-timeline.mjs
 ## Confidentialité et limites du POC
 
 - **Le POC n’est pas entièrement local** : Codex reçoit images et transcriptions. Avec le VPS, images et audio quittent aussi la TV vers cet hôte privé. Whisper y transcrit l’audio ; OpenRouter reçoit uniquement le texte à vectoriser.
-- **Les médias d’une session restent sur le disque de l’hôte jusqu’à sa suppression explicite** : images, son, miniatures, paroles, réponses. Rien n’est purgé au bout de cinq minutes ni au redémarrage. Compter de l’ordre d’un gigaoctet par film, d’après une estimation hors ligne. Sous un plancher d’espace libre (1 Gio par défaut), la capture est refusée et rien n’est supprimé. `TVLENS_MEDIA_RETENTION_MS` rétablit une fenêtre glissante.
-- **Cinq minutes de traitement par question au plus**, hors attente dans la file (cinq questions en attente au maximum) ; `TVLENS_QUESTION_TIMEOUT_MS` abaisse ce plafond. Pause/reprise garde le contexte. Après un redémarrage du moteur, la session est retrouvée dans la liste, archivée ou « interrompue » après un arrêt brutal : elle s’ouvre en lecture seule et la capture ne reprend que sur demande.
-- **Les agents sont cloisonnés, pas isolés de façon absolue.** Ils n’ont ni shell ni lecteur de fichiers : c’est mesuré avec un vrai modèle pour le chat et le vérificateur seulement, sur Mac et pour une version de Codex, et établi sans modèle seulement pour la surveillance et l’analyse ; rien n’est mesuré sous Linux. Détail et limites : [SECURITY.md](SECURITY.md).
+- **Cinq minutes de médias détaillés** par défaut, dans l’ordre observé. Les textes de session restent consultables après expiration. Sur Mac, garder un moment conserve explicitement son média jusqu’à suppression.
+- **60 secondes de traitement par question**, hors attente dans la file. Pause/reprise garde le contexte ; un redémarrage du moteur ne restaure pas la session en mémoire.
 - Une observation, un OCR ou une accusation rapportée **n’est pas une preuve indépendante**. Les erreurs des modèles, de transcription et d’identification restent possibles.
 - La source LG échantillonne des images : elle ne fournit pas une vidéo native continue. Un réexamen ne peut retrouver une action jamais capturée.
 - La validation TV porte sur **YouTube et une LG rootée précise**. Compatibilité universelle, capture DRM, Netflix et Prime ne sont pas promises.
@@ -204,7 +189,7 @@ node scripts/smoke-tv-timeline.mjs
 
 L’usage et les interfaces existent. L’objectif du challenge **ASUS Ascent GX10** est de remplacer les adaptateurs cloud par des modèles locaux, puis de mesurer une hypothèse précise : **peut-on suivre un visionnage continu tout en répondant aux questions, sans envoyer les images et les paroles à un fournisseur d’inférence ?**
 
-À explorer ensuite : caméra + micro pour une TV non modifiée, analyse des actions rapides, embeddings multimodaux, validation sur la TV de la surveillance et des cartes du panneau ouvert, et expérimentation d’un moteur embarqué webOS. Ces pistes restent des travaux futurs.
+À explorer ensuite : caméra + micro pour une TV non modifiée, analyse des actions rapides, embeddings multimodaux, fonctions mémoire/Auto supplémentaires sur TV et expérimentation d’un moteur embarqué webOS. Ces pistes restent des travaux futurs.
 
 ---
 
