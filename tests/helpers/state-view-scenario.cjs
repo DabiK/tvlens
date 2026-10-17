@@ -33,11 +33,16 @@ async function stateViewScenario(t) {
     history: state.history, segments: state.segments, losses: state.losses,
     sequence: state.history.length + state.segments.length,
     lastError: 'Dernière analyse indisponible.', saveError: 'Sauvegarde indisponible.',
-    storageError: 'Stockage indisponible.', running: true, visionBlockedMs: 1500, visionHeldSince: 500000,
+    storageError: 'Stockage indisponible.',
   });
   session.watch.setQuestionPending(true);
-  session.watch.queue = state.segments.filter(p => p.status === 'queued');
-  session.watch.visionQueue = state.segments.filter(p => p.visionStatus === 'queued');
+  // Ce scénario de projection fournit des comptes publiés, sans construire des appels de perception en vol.
+  t.mock.method(session.watch, 'perceptionState', (now = clock) => {
+    const audioPending = state.segments.filter(p => p.status === 'queued').length;
+    const visionPending = state.segments.filter(p => p.visionStatus === 'queued').length;
+    return { pending: audioPending + visionPending, audioPending, visionPending, analyzing: true,
+      visionBlockedMs: 1500 + Math.max(0, now - 500000) };
+  });
   clock = input.elapsedMs;
   runtime.adopt(session, Array.from({ length: 35 }, (_, i) => ({
     id: `deep-${i + 1}`, question: `Question ${i + 1} ?`, status: 'done', createdAt: 1000 + i,

@@ -6,6 +6,7 @@
  */
 module.exports = {
   ...require('./archive.cjs'),
+  ...require('./lanes.cjs'),
   ...require('./memory-view.cjs'),
   ...require('./ports.cjs'),
 };

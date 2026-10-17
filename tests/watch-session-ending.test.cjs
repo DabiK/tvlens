@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession } = require('../core/session.cjs');
-const { tick } = require('./helpers/wait.cjs');
+const { tick, deferred } = require('./helpers/wait.cjs');
 
 function fixture() {
   const publications = [];
@@ -149,3 +149,29 @@ test('a question completion cannot reopen the intake closed silently during sess
   assert.deepEqual([publications.length, calls, saves.length], [published, [], 0]);
   await watch.close();
 });
+
+for (const [lane, heldRead, expected] of [['audio', 1, []], ['vision', 2, ['transcribe']]]) {
+  test(`ending during the ${lane} media read starts no new provider call`, async t => {
+    const { watch, calls, files } = fixture();
+    const entered = deferred(), release = deferred();
+    const read = watch.media.read;
+    let reads = 0;
+    watch.media.read = async id => {
+      if (++reads === heldRead) {
+        entered.resolve();
+        await release.promise;
+      }
+      return read(id);
+    };
+    t.after(() => watch.close());
+    const landing = watch.ingest(block());
+    await entered.promise;
+    watch.beginEnding();
+    release.resolve();
+    await landing;
+    await tick();
+    assert.deepEqual(calls, expected, 'media returning during teardown cannot start an analysis');
+    assert.equal(files.size, 1, 'the admitted media stay stored');
+    assert.equal(watch.snapshot().apiCalls, 0);
+  });
+}

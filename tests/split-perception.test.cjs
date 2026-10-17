@@ -216,12 +216,12 @@ test('both lane backlogs are bounded and skipped vision keeps speech', async () 
     observeVisual: async s => { maxVision = Math.max(maxVision, ++activeVision); await visionGate.promise; activeVision--; return visual(s); } });
   for (let i = 0; i < 5; i++) await f.add(i);
   // Overload sheds transcriptions only: two wait for Whisper, the two older ones wait to hand their images over.
-  assert.equal(f.watch.queue.filter(s => s.audioStatus !== 'skipped').length, 2);
+  assert.equal(f.watch.snapshot().segments.filter(s => s.status === 'queued' && s.audioStatus !== 'skipped').length, 2);
   assert.deepEqual(f.watch.segments.filter(s => s.audioStatus === 'skipped').map(s => s.id), ['moment-2', 'moment-3']);
   assert.equal(f.watch.losses.audioSkipped, 2);
   audioGate.resolve(); await tick();
   for (let i = 5; i < 9; i++) await f.add(i);
-  assert.equal(f.watch.visionQueue.length, 2);
+  assert.equal(f.watch.snapshot().visionPending, 2);
   const skipped = f.watch.segments.filter(s => s.visionStatus === 'skipped');
   assert.ok(skipped.length > 0);
   assert.ok(skipped.filter(s => s.audioStatus === 'ready').every(s => s.status === 'partial' && s.observation.transcript));
@@ -244,7 +244,7 @@ test('manual question blocks new vision but lets audio progress; close prevents 
 test('retention preserves completed speech while expiring queued vision and does not lose active enrichment', async () => {
   const gate = deferred(); const f = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } }, { retentionMs: 1000 });
   await f.add(0); await f.add(1); f.setTime(5000); await f.watch.prune();
-  assert.equal(f.watch.visionQueue.length, 0); assert.equal(f.watch.segments[1].visionStatus, 'expired');
+  assert.equal(f.watch.snapshot().visionPending, 0); assert.equal(f.watch.segments[1].visionStatus, 'expired');
   gate.resolve(); await tick(); await f.watch.prune();
   assert.equal(f.watch.history.length, 2);
   assert.equal(f.watch.history[0].observation.summary, 'Images moment-1');

@@ -232,7 +232,7 @@
   },
   "core/session.cjs": {
     "complexity": {
-      "count": 6
+      "count": 4
     },
     "no-nested-ternary": {
       "count": 2

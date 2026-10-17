@@ -150,6 +150,7 @@ test('a session closed during the second call publishes nothing more and reopens
 
 test('what allows the second call is checked again once the media have been read again', async () => {
   const changes = { ending: f => { f.watch.ending = true; }, question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
+    intake: f => { f.watch.closeIntake(); f.watch.setQuestionPending(false); },
     expiry: async f => { f.setTime(5000); await f.watch.prune(); }, closed: f => f.watch.close() };
   for (const [name, change] of Object.entries(changes)) {
     const reread = deferred(), calls = []; let reads = 0;
@@ -193,7 +194,7 @@ test('the second call only takes a free lane: not while a passage waits behind i
   const gate = deferred(), calls = [];
   const f = fixture({ transcribe, observeVisual: async s => { calls.push(s.id); if (s.id === 'moment-1') { await gate.promise; throw passing(); } return visual(s); } });
   await f.add(0); await f.add(1);
-  assert.deepEqual(f.watch.visionQueue.map(s => s.id), ['moment-2']);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').map(s => s.id), ['moment-2']);
   gate.resolve();
   await turns(8);
   assert.deepEqual(calls, ['moment-1', 'moment-2'], 'the passage that waited is described next, in observation order');

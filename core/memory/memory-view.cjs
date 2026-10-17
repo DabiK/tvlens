@@ -64,6 +64,7 @@ function passageView(passage, origin, known) {
 /** @returns {import('./ports.cjs').MemoryView} */
 function createMemoryView(memory, modalities = new Map()) {
   const elapsedMs = memory.now();
+  const lanes = memory.perceptionState(elapsedMs);
   const rolling = Number.isFinite(memory.retentionMs);
   const passages = [
     ...memory.history.map(p => passageView(p, 'history', modalities.get(p.id))),
@@ -93,13 +94,12 @@ function createMemoryView(memory, modalities = new Map()) {
       replayablePassages: passages.filter(p => p.availability.replayable).length,
       startMs: passages[0]?.startMs ?? null,
       throughMs: capturedThroughMs,
-      pending: memory.queue.length + memory.visionQueue.length,
-      audioPending: memory.queue.length,
-      visionPending: memory.visionQueue.length,
-      analyzing: memory.running,
+      pending: lanes.pending,
+      audioPending: lanes.audioPending,
+      visionPending: lanes.visionPending,
+      analyzing: lanes.analyzing,
       ...passageGaps(passages),
-      visionBlockedMs: memory.visionBlockedMs +
-        (memory.visionHeldSince === null ? 0 : Math.max(0, elapsedMs - memory.visionHeldSince)),
+      visionBlockedMs: lanes.visionBlockedMs,
     },
     losses: { ...memory.losses },
   };

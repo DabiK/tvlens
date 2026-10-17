@@ -2,7 +2,6 @@ const { domainError } = require('./shared/domain-error.cjs');
 const TVLENS_CAPTURE_TIME_INVALID = 'TVLENS_CAPTURE_TIME_INVALID';
 const TVLENS_CAPTURE_ORDER_INVALID = 'TVLENS_CAPTURE_ORDER_INVALID';
 const TVLENS_SESSION_STOPPED = 'TVLENS_SESSION_STOPPED';
-const { completeTopicSummary } = require('./topic-summary.cjs');
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
@@ -11,9 +10,10 @@ const { publishState } = require('./state-publication.cjs');
 const { PassageEvents } = require('./passage-events.cjs');
 const memory = require('./memory/index.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
-// Set as `code` by a perception adapter on a failed description it knows to be passing (a connection that gave
-// way, its own deadline): the only failure a passage may be described a second time for.
-const VISION_TRANSIENT = 'TVLENS_VISION_TRANSIENT';
+const LANE_LOSSES = {
+  audio: { backlog: 'audioSkipped', expired: 'audioExpired', error: 'audioError' },
+  vision: { backlog: 'visionSkippedBacklog', held: 'visionSkippedAsking', expired: 'visionExpired', error: 'visionError' },
+};
 const unfinished = status => status === 'queued' || status === 'analyzing';
 // The files of a passage are there, whether or not its video plays: a recorder that received no frame leaves a
 // container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
@@ -35,6 +35,7 @@ class WatchSession {
   #questionPending = false;
   #questionIntakeClosed = false;
   #events;
+  #lanes;
   #modalities = new Map();
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
@@ -46,9 +47,10 @@ class WatchSession {
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
       onChange, onEvents, onPublicationError, retentionMs, maxPending, visionDuringAsk });
     this.#events = new PassageEvents(id);
-    this.segments = []; this.history = []; this.questions = []; this.queue = [];
-    this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
-    this.closed = false; this.controller = new AbortController();
+    this.segments = [];
+    this.history = [];
+    this.questions = [];
+    this.closed = false;
     // Raised by a host that is ending the session and still waits for a write under way: from then on no
     // analysis is started, since close() would abandon it at once.
     this.ending = false;
@@ -57,8 +59,8 @@ class WatchSession {
     // visionError stays what was lost for good.
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
     this.unremoved = new Set();
-    this.visionBlockedMs = 0; this.visionHeldSince = null;
-    this.sequence = 0; this.accepting = true; this.running = false;
+    this.sequence = 0;
+    this.accepting = true;
     this.readOnly = false; this.storageError = null;
     // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
     // successful, says that the state is on disk.
@@ -66,22 +68,60 @@ class WatchSession {
     // Ingests under way, and media found on disk at reopening that no passage could be made of.
     this.landing = new Set(); this.unplacedMedia = 0;
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.pruneChain = Promise.resolve(); this.ingestChain = Promise.resolve();
+    this.#lanes = new memory.PerceptionLanes({
+      maxPending,
+      now: () => this.now(),
+      readMedia: passageId => this.media.read(passageId),
+      transcribe: input => this.perception.transcribe(input),
+      observeVisual: input => this.perception.observeVisual(input),
+      hasMedia: stored,
+      isEnding: () => this.ending,
+      isReadOnly: () => this.readOnly,
+      contextFor: segment => perceptionContext(this, segment),
+      update: (segment, lane, cause) => this.#updateLane(segment, lane, cause),
+      addUsage: ({ calls = 0, cost = 0 }) => {
+        this.apiCalls += calls;
+        this.apiCost += cost;
+      },
+      count: name => { this.losses[name] = (this.losses[name] || 0) + 1; },
+      setError: message => { this.lastError = message; },
+      clearErrorThrough: segment => this.#clearErrorThrough(segment),
+      publish: () => this.emit(),
+      persist: () => this.persist(),
+    });
   }
 
   get asking() { return this.#questionPending; }
+  get running() { return this.perceptionState().analyzing; }
+
+  perceptionState(now = this.now()) {
+    const { heldMs, ...state } = this.#lanes.state(now);
+    return { ...state, visionBlockedMs: heldMs };
+  }
+
+  #updateLane(segment, lane, cause) {
+    const code = cause === 'held' ? 'asking' : cause;
+    if (cause) {
+      this.losses[LANE_LOSSES[lane][cause]]++;
+      if (lane === 'vision' && ['held', 'backlog'].includes(cause)) segment.visionSkipReason = code;
+    }
+    this.#events.update(segment, lane, code);
+  }
+
+  #clearErrorThrough(segment) {
+    // Un succès ancien ne masque pas l'échec audio d'un passage arrivé pendant son appel vision.
+    const outstanding = this.segments.slice().reverse().find(s =>
+      s.endMs >= segment.endMs && (s.audioError || s.visionError));
+    this.lastError = outstanding?.visionError || outstanding?.audioError || null;
+  }
 
   setQuestionPending(busy) {
     if (this.#questionIntakeClosed || this.#questionPending === busy) return;
     this.#questionPending = busy;
-    if (!busy) this.endVisionHold();
+    this.#syncVisionPolicy();
     if (this.closed || this.ending) return;
     this.emit();
     if (!busy) queueMicrotask(() => this.drain());
-  }
-
-  endVisionHold() {
-    if (this.visionHeldSince === null) return;
-    this.visionBlockedMs += Math.max(0, this.now() - this.visionHeldSince); this.visionHeldSince = null;
   }
 
   // Empêche de lancer une analyse qui serait abandonnée à la fermeture, sans fermer l'admission des passages.
@@ -94,6 +134,7 @@ class WatchSession {
     // Le refus des questions survit à une notification de fin arrivée pendant la fermeture.
     this.#questionIntakeClosed = true;
     this.#questionPending = true;
+    this.#syncVisionPolicy();
     this.accepting = false;
   }
 
@@ -149,7 +190,7 @@ class WatchSession {
       }
       // A write that was under way when the session closed still lands, but nothing is queued for analysis.
       // Nor while its host is ending it: the passage is kept, replayable, and reopens as unanalysed.
-      if (!this.closed && !this.ending) { this.queue.push(segment); this.shed(); }
+      this.#lanes.enqueue(segment);
       // The very first passage, and one landing after close(), are saved before their identifier is handed
       // back: a session cut during its first analysis reopens, and closing never leaves media the saved
       // state does not know. Queued ahead of the publication, without delaying the analysis.
@@ -178,47 +219,6 @@ class WatchSession {
     return segment.id;
   }
 
-  // Overload sheds the transcription only: the passage keeps its place in the lane, so its images
-  // still reach vision in observation order. Past a bounded lane the oldest passage is dropped whole.
-  shed() {
-    const waiting = this.queue.filter(s => s.audioStatus !== 'skipped');
-    for (const s of waiting.slice(0, Math.max(0, waiting.length - this.maxPending))) {
-      s.audioStatus = 'skipped';
-      this.losses.audioSkipped++;
-      this.#events.update(s, 'audio', 'backlog');
-    }
-    while (this.queue.length > this.maxPending * 3) {
-      const dropped = this.queue.shift();
-      Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped', visionSkipReason: 'backlog' });
-      this.losses.visionSkippedBacklog++;
-      this.#events.update(dropped, 'vision', 'backlog');
-    }
-  }
-
-  // A question is the cause of a skip only while it alone keeps the lane waiting.
-  skipVision(segment) {
-    const reason = this.asking && !this.visionDuringAsk && !this.visionRunning ? 'asking' : 'backlog';
-    segment.visionStatus = 'skipped'; segment.visionSkipReason = reason;
-    segment.status = hasUsableObservation(segment) ? 'partial' : 'skipped';
-    this.losses[reason === 'asking' ? 'visionSkippedAsking' : 'visionSkippedBacklog']++;
-    this.#events.update(segment, 'vision', reason);
-  }
-
-  // Hands a passage over to the vision lane, or records why it will not be described.
-  toVision(segment) {
-    segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
-    if (stored(segment)) {
-      // A passage without speech only takes a free place: it never evicts a spoken one waiting for its images.
-      if (segment.audioStatus === 'skipped' && this.visionQueue.length >= this.maxPending) return this.skipVision(segment);
-      segment.visionStatus = 'queued'; segment.visionQueuedMs = this.now(); this.visionQueue.push(segment);
-      while (this.visionQueue.length > this.maxPending) this.skipVision(this.visionQueue.shift());
-    } else {
-      segment.visionStatus = 'expired'; this.losses.visionExpired++;
-      segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
-      this.#events.update(segment, 'vision', 'expired');
-    }
-  }
-
   prune() {
     // A rejected step must not poison later sweeps or ingests.
     this.pruneChain = this.pruneChain.catch(() => {}).then(async () => {
@@ -230,7 +230,7 @@ class WatchSession {
           segment.available = false; segment.mediaReason = 'expired';
           this.#events.update(segment);
           // Still waiting for its transcription: neither lane will ever see it.
-          if (this.queue.includes(segment)) {
+          if (this.#lanes.remove(segment)) {
             if (segment.audioStatus !== 'skipped') {
               this.losses.audioExpired++;
               this.#events.update(segment, 'audio', 'expired');
@@ -238,9 +238,6 @@ class WatchSession {
             segment.visionStatus = 'expired'; this.losses.visionExpired++;
             this.#events.update(segment, 'vision', 'expired');
           }
-          this.queue = this.queue.filter(item => item !== segment);
-          this.visionQueue = this.visionQueue.filter(item => item !== segment);
-          if (!this.visionQueue.length) this.endVisionHold();
           if (segment.visionStatus === 'queued') {
             segment.visionStatus = 'expired'; this.losses.visionExpired++;
             segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
@@ -272,134 +269,21 @@ class WatchSession {
     return this.pruneChain;
   }
 
+  #syncVisionPolicy() {
+    this.#lanes.setVisionHeld(this.asking && !this.visionDuringAsk);
+  }
+
   drain() {
-    if (this.closed || this.ending) return;
-    this.drainAudio();
-    this.drainVision();
-  }
-
-  // Each lane owns one call and a bounded FIFO of segment references, never raw media.
-  async drainAudio() {
-    if (this.closed || this.ending || this.audioRunning) return;
-    // A passage whose transcription was shed moves on as soon as the passages before it have.
-    if (this.queue[0]?.audioStatus === 'skipped') {
-      // One at a time, letting an idle vision lane take each before the next arrives.
-      while (this.queue[0]?.audioStatus === 'skipped') { this.toVision(this.queue.shift()); this.drainVision(); }
-      this.emit();
-    }
-    if (!this.queue.length) return;
-    this.audioRunning = true; this.running = true;
-    const segment = this.queue.shift();
-    segment.status = 'analyzing'; segment.audioStatus = 'analyzing'; segment.audioStartedMs = this.now(); this.emit();
-    try {
-      const evidence = await this.media.read(segment.id);
-      if (this.closed) return;
-      const result = await this.perception.transcribe({ ...segment, ...evidence, signal: this.controller.signal });
-      if (this.closed) return;
-      segment.analysisMs = result.elapsedMs; segment.audioMs = result.elapsedMs;
-      segment.metrics = result.metrics; this.apiCost += result.cost || 0;
-      // A transcriber that reports its own failure is counted and flagged, never hidden as plain silence.
-      // The passage keeps its statuses: a host without Whisper still gets complete visual passages.
-      if (result.failed === true) {
-        segment.audioFailed = true;
-        segment.audioFailureCode = result.code;
-        this.losses.audioError++;
-        this.#events.update(segment, 'audio', 'error');
-      }
-      segment.observation = result.observation;
-      this.#events.update(segment);
-      segment.audioStatus = 'ready'; segment.transcriptPublishedMs = this.now();
-    } catch (error) {
-      if (this.closed) return;
-      segment.audioStatus = 'error'; segment.audioError = error.message;
-      this.lastError = error.message; this.losses.audioError++;
-      this.#events.update(segment, 'audio', 'error');
-    } finally {
-      this.audioRunning = false; this.running = this.visionRunning;
-      if (!this.closed) {
-        this.toVision(segment);
-        // Publish speech before waiting for persistence or vision. An idle vision lane takes this
-        // passage before the passages shed behind it are handed over.
-        this.emit(); this.drainVision(); this.drain(); await this.persist();
-      }
-    }
-  }
-
-  // A second description needs a failure marked as passing, a session that is neither ending, closed nor read-only,
-  // media still kept, and a lane nobody waits for: no passage queued behind, no question holding vision back.
-  retriesVision(segment, error) {
-    return error?.code === VISION_TRANSIENT && !this.closed && !this.ending && !this.readOnly && stored(segment)
-      && !this.visionQueue.length && !(this.asking && !this.visionDuringAsk);
-  }
-
-  async drainVision() {
-    if (this.closed || this.ending || this.visionRunning || !this.visionQueue.length) return;
-    // Only the time during which a question alone keeps queued vision waiting is charged to the gate.
-    if (this.asking && !this.visionDuringAsk) { this.visionHeldSince ??= this.now(); return; }
-    this.endVisionHold();
-    this.visionRunning = true; this.running = true;
-    const segment = this.visionQueue.shift();
-    segment.visionStatus = 'analyzing'; segment.visionStartedMs = this.now(); this.emit();
-    try {
-      let evidence = await this.media.read(segment.id);
-      if (this.closed) return;
-      let context, result, retried = false;
-      // Every call made is counted, the second one of a passage included.
-      const describe = () => {
-        this.apiCalls++;
-        context = perceptionContext(this, segment);
-        return this.perception.observeVisual({ ...segment, ...evidence,
-          context, signal: this.controller.signal, lightweight: this.visionQueue.length > 0,
-          onProgress: message => { if (!this.closed) { segment.stage = message; this.emit(); } } });
-      };
-      try { result = await describe(); }
-      catch (error) {
-        // A failure its adapter marked as passing is tried once more, here and now: the passage stays in analysis,
-        // nothing is published as lost meanwhile, and nothing is queued or delayed for it. Its media are read again,
-        // and what allows the second call is checked again once they are. A description that ran into its deadline
-        // during a continuous capture will seldom find the lane free, and is then lost as before.
-        if (!this.retriesVision(segment, error)) throw error;
-        // Media that cannot be read any more leave the first failure as the reason, in its own words.
-        try { evidence = await this.media.read(segment.id); } catch { throw error; }
-        if (!this.retriesVision(segment, error)) throw error;
-        this.losses.visionRetried = (this.losses.visionRetried || 0) + 1; retried = true;
-        result = await describe();
-      }
-      if (this.closed) return;
-      segment.observation = { ...segment.observation, ...result.observation };
-      segment.topicSummary = completeTopicSummary(segment, result, context);
-      segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
-      segment.visionPublishedMs = this.now();
-      this.#events.update(segment);
-      segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
-      segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
-      segment.metrics = { ...segment.metrics, ...result.metrics };
-      this.apiCost += result.cost || 0;
-      if (retried) this.losses.visionRecovered = (this.losses.visionRecovered || 0) + 1;
-      // A completed passage recovers older failures, but cannot clear a newer
-      // audio failure that arrived while this vision call was in flight.
-      const outstanding = this.segments.slice().reverse().find(s =>
-        s.endMs >= segment.endMs && (s.audioError || s.visionError));
-      this.lastError = outstanding?.visionError || outstanding?.audioError || null;
-    } catch (error) {
-      if (this.closed) return;
-      segment.visionStatus = 'error'; segment.visionError = error.message;
-      segment.status = hasUsableObservation(segment) ? 'partial' : 'error';
-      this.lastError = error.message; this.losses.visionError++;
-      this.#events.update(segment, 'vision', 'error');
-    } finally {
-      this.visionRunning = false; this.running = this.audioRunning;
-      segment.stage = null;
-      if (!this.closed) { this.emit(); this.drain(); await this.persist(); }
-    }
+    this.#syncVisionPolicy();
+    this.#lanes.drain();
   }
 
   // Does not wait for a write still under way, which may never return: that passage is saved when it
   // lands (see land). A host that wants one final saved state waits on landed() first, as the shared runtime does.
   async close() {
-    this.closed = true; this.accepting = false; this.endVisionHold();
-    this.controller.abort(new Error('Session fermée.'));
-    this.queue = []; this.visionQueue = [];
+    this.closed = true;
+    this.accepting = false;
+    this.#lanes.close();
     await this.persist();
   }
 
@@ -451,7 +335,7 @@ class WatchSession {
     const retried = counted(saved.coverage?.visionRetried, saved.segments.length + (saved.history?.length || 0)), recovered = counted(saved.coverage?.visionRecovered, retried);
     if (retried) this.losses.visionRetried = retried;
     if (recovered) this.losses.visionRecovered = recovered;
-    if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.visionBlockedMs = saved.coverage.visionBlockedMs;
+    if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.#lanes.restoreHeldMs(saved.coverage.visionBlockedMs);
     // A summary whose media is gone stays a summary: only passages still listed with their media can be replayed.
     this.history = (saved.history || []).map(passage => { const { available, ...summary } = reopen(passage, false); return summary; });
     this.segments = saved.segments.map(passage => reopen(passage, true));
@@ -484,15 +368,16 @@ class WatchSession {
 
   snapshot() {
     const all=[...this.history,...this.segments],now=this.now(),capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
-    return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: this.running,
+    const lanes = this.perceptionState(now);
+    return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: lanes.analyzing,
       elapsedMs: now, capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null, retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted', readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
-      pending: this.queue.length + this.visionQueue.length, audioPending: this.queue.length, visionPending: this.visionQueue.length,
+      pending: lanes.pending, audioPending: lanes.audioPending, visionPending: lanes.visionPending,
       // A capture stopped for lack of room keeps saying so, and so does a state that was not saved: a late
       // analysis must not clear the reason.
       // Lists of their own, like the passages below: an archive may hold a state for a while before writing
       // it, and a sweep that moves a passage into the history meanwhile must not show it there too.
       lastError: this.storageError || this.saveError || this.lastError, history: [...this.history], questions: [...this.questions],
-      latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: this.visionBlockedMs + (this.visionHeldSince === null ? 0 : Math.max(0, now - this.visionHeldSince)) },
+      latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: lanes.visionBlockedMs },
       audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus, ...(s.audioFailureCode ? { code: s.audioFailureCode } : {}) })),
       visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
       // Cached figures supplied by the host (free space, volume of this session): never measured here.

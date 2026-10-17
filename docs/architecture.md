@@ -113,7 +113,10 @@ ciblée. Sur LG, `tv/capture.py` envoie images et audio au serveur ; `RemoteMedi
 Le WebM reconstruit à partir d’images fixes n’est pas une vidéo native. Les deux captures rejoignent
 `WatchSession` après validation par leur hôte et stockage par `LocalSessionStore`.
 
-**Deux voies.** Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
+**Deux voies.** `core/memory/lanes.cjs` possède les deux FIFO privées, leurs appels et une retenue
+vision générique. `WatchSession` traduit encore l'activité des questions et les noms historiques,
+puis publie les versions et sauvegarde. Snapshot et consultation lisent les mêmes comptes détachés.
+Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
 
 - L’audio appelle `transcribe`, puis publie immédiatement les paroles. Par défaut `maxPending = 2` :
   seuls les deux derniers passages en attente gardent leur transcription ; les plus anciens sont
@@ -397,3 +400,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0050](adr/0050-les-versions-consultables-et-les-pertes-de-voie-publient-leur-revision.md) :
   Les versions consultables et les pertes de voie publient leur révision, après transition et sans snapshot.
+
+- [ADR 0051](adr/0051-les-voies-de-perception-possedent-leurs-files-et-une-retenue-generique.md) :
+  Les voies possèdent files, appels et retenue générique ; la session traduit la politique et publie les versions.

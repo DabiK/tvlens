@@ -20,6 +20,7 @@ const GUARD_NAMES = [
 ];
 const TIME_GUARD = 'core global time access stock cannot grow or retain unused exceptions';
 const PURE_GUARD = 'pure module table enforces each module dependency and timer policy';
+const LANES_GUARD = 'memory perception lanes own their queues and use a generic hold policy';
 
 function write(root, filename, source) {
   const target = path.join(root, filename);
@@ -718,6 +719,21 @@ function contextFixture(t) {
   write(root, 'core/shared/value.cjs', 'module.exports = {};');
   declareZone(root, { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] });
   return root;
+}
+
+for (const identifier of [
+  'questionPending', 'isAsking', 'deepAskPending', 'surveillanceActive', 'holdForQuestion',
+  'deep-ask-pending', 'canRunDuringAsk', 'visionDuringAsk', 'visionSkippedAsking',
+]) {
+  test(`memory lane vocabulary guard rejects the compound name ${identifier} and accepts generic policy`, t => {
+    const root = contextFixture(t);
+    const filename = 'core/memory/lanes.cjs';
+    write(root, 'core/session.cjs', 'module.exports = {};');
+    write(root, filename, `module.exports = { ${JSON.stringify(identifier)}: false };`);
+    assertRejected(root, filename, new RegExp(identifier), LANES_GUARD, [LANES_GUARD]);
+    write(root, filename, 'module.exports = { visionHeld: false, audioPending: 0 };');
+    assertAccepted(root, [LANES_GUARD], t);
+  });
 }
 
 for (const [description, patch] of [

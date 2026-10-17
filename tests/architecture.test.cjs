@@ -30,6 +30,10 @@ const DEPENDENCY_ZONES = [
 const TEMPORARY_IMPORT_EXCEPTIONS = [
   { name: 'memory-passage-text', source: 'core/memory/memory-view.cjs', target: 'core/passage-text.cjs',
     reason: 'La vue reprend le critère de preuve du helper encore plat, destiné au noyau partagé core/shared/, en attendant son déplacement.' },
+  { name: 'memory-lanes-passage-text', source: 'core/memory/lanes.cjs', target: 'core/passage-text.cjs',
+    reason: 'Les voies lisent le critère de preuve encore plat ; cette arête disparaîtra à son déplacement dans core/shared/.' },
+  { name: 'memory-lanes-topic-summary', source: 'core/memory/lanes.cjs', target: 'core/topic-summary.cjs',
+    reason: 'Le résultat vision complète le sujet avec ce helper encore plat ; cette arête disparaîtra à son rangement dans core/memory/.' },
 ];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
@@ -504,7 +508,7 @@ test('shared runtime and headless transport do not import Electron', () => {
   }
 });
 test('compositions leave watch session lifecycle flags to the domain', () => {
-  const flags = 'ending|accepting|readOnly|closed|asking';
+  const flags = 'ending|accepting|readOnly|closed|asking|queue|visionQueue|audioRunning|visionRunning|visionHeldSince|visionBlockedMs';
   const member = String.raw`\bwatch\s*(?:\.\s*(?:${flags})\b|\[\s*(['"])(?:${flags})\1\s*\])`;
   const assignment = String.raw`\s*(?:=(?!=|>)|(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])=|\+\+|--)`;
   const write = new RegExp(member + assignment);
@@ -513,6 +517,13 @@ test('compositions leave watch session lifecycle flags to the domain', () => {
     const match = write.exec(source);
     assert.equal(match?.[0] ?? null, null, `${relative} writes ${match?.[0]}`);
   }
+});
+test('memory perception lanes own their queues and use a generic hold policy', () => {
+  const lanes = inventory().find(module => module.relative === 'core/memory/lanes.cjs');
+  assert.ok(lanes, 'the memory context must own perception lanes');
+  assert.doesNotMatch(lanes.source, /asking|question|deep-?ask|surveillance|duringask/i, lanes.relative);
+  const session = inventory().find(module => module.relative === 'core/session.cjs');
+  assert.doesNotMatch(session.source, /this\.(?:queue|visionQueue|audioRunning|visionRunning|visionHeldSince|controller)\b/);
 });
 test('core services do not import the session use case', () => {
   for (const { relative, root, imports } of inventory()) {

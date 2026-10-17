@@ -145,7 +145,7 @@ test('the audio lane stays bounded when Whisper stalls: beyond it the oldest pas
   const gate = deferred();
   const f = fixture({ transcribe: async s => { await gate.promise; return transcribe(s); }, observeVisual: visual });
   for (let i = 0; i < 9; i++) await f.add(i);
-  assert.equal(f.watch.queue.length, 6);
+  assert.equal(f.watch.snapshot().audioPending, 6);
   assert.deepEqual(f.watch.segments.filter(s => s.status === 'skipped').map(s => [s.id, s.visionStatus, s.visionSkipReason]), [['moment-2', 'skipped', 'backlog'], ['moment-3', 'skipped', 'backlog']]);
   assert.deepEqual([f.watch.losses.audioSkipped, f.watch.losses.visionSkippedBacklog], [6, 2]);
   gate.resolve(); await tick();
@@ -158,12 +158,12 @@ test('visionBlockedMs only accumulates while a question alone holds queued visio
   assert.equal(blocked(), 0); f.setTime(3000); assert.equal(blocked(), 2000);
   // The question ends at 3000: nothing is charged afterwards, even before the next drain.
   f.watch.setQuestionPending(false); f.setTime(5000);
-  assert.equal(blocked(), 2000); assert.equal(f.watch.visionBlockedMs, 2000);
+  assert.equal(blocked(), 2000); assert.equal(f.snapshots.at(-1).coverage.visionBlockedMs, 2000);
   await tick();
   assert.equal(f.watch.segments[0].visionStartedMs, 5000);
   // Queued behind the call in flight, not behind the question.
   f.watch.setQuestionPending(true); await f.add(5); f.setTime(7000);
-  assert.equal(f.watch.visionQueue.length, 1); assert.equal(blocked(), 2000);
+  assert.equal(f.watch.snapshot().visionPending, 1); assert.equal(blocked(), 2000);
   vision('moment-1').resolve(); await tick();
   f.setTime(7500); assert.equal(blocked(), 2500);
   f.watch.setQuestionPending(false); await tick();
@@ -226,7 +226,7 @@ test('visionDuringAsk lets vision run during a question, still one call at a tim
   f.watch.setQuestionPending(true);
   for (let i = 0; i < 5; i++) await f.add(i);
   assert.equal(started, 1); assert.equal(f.watch.segments[0].visionStatus, 'analyzing');
-  assert.equal(f.watch.visionQueue.length, 2);
+  assert.equal(f.watch.snapshot().visionPending, 2);
   assert.deepEqual(f.watch.segments.filter(s => s.visionStatus === 'skipped').map(s => [s.id, s.visionSkipReason]), [['moment-2', 'backlog'], ['moment-3', 'backlog']]);
   const { coverage } = f.watch.snapshot();
   assert.equal(coverage.visionSkippedBacklog, 2); assert.equal(coverage.visionSkippedAsking, 0); assert.equal(coverage.visionBlockedMs, 0);
@@ -352,7 +352,7 @@ test('a passage without speech only takes a free place in the vision lane and ne
   const f = fixture({ transcribe: async s => { if (s.id === 'moment-4') await audio.promise; return transcribe(s); }, observeVisual: async s => { await vision.promise; return visual(s); } });
   // moment-1 is being described; moment-2 and moment-3 hold both waiting places with their speech.
   for (let i = 0; i < 3; i++) await f.add(i);
-  assert.deepEqual(f.watch.visionQueue.map(s => s.id), ['moment-2', 'moment-3']);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').map(s => s.id), ['moment-2', 'moment-3']);
   // moment-4 stalls in Whisper; three more arrive, so moment-5 is shed behind it.
   for (let i = 3; i < 7; i++) await f.add(i);
   assert.equal(f.watch.segments[4].audioStatus, 'skipped');
@@ -360,7 +360,7 @@ test('a passage without speech only takes a free place in the vision lane and ne
   const shed = f.watch.segments[4];
   assert.deepEqual([shed.status, shed.visionStatus, shed.visionSkipReason], ['skipped', 'skipped', 'backlog'], 'no free place: it is dropped whole and counted');
   assert.ok(f.watch.segments.slice(1, 4).filter(s => s.visionStatus === 'skipped').every(s => s.observation.transcript), 'spoken passages are only evicted by spoken ones');
-  assert.equal(f.watch.visionQueue.every(s => s.observation?.transcript), true);
+  assert.equal(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').every(s => s.observation?.transcript), true);
   vision.resolve(); await tick();
 });
 

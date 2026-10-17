@@ -1,7 +1,7 @@
 ---
 id: T214
 titre: Extract the memory perception lanes and their generic vision hold policy
-statut: a-faire
+statut: termine
 bloque_par: T221, T207
 adr: oui
 installe: non
@@ -110,3 +110,75 @@ relevés au démarrage. Si un helper encore plat doit être lu temporairement, l
 doit nommer cette arête et sa fin ; elle ne justifie aucun import de Questions dans la Mémoire.
 
 ## Journal
+
+- Exploration : skill ticket-codex, standards, contrat de test et code des deux voies relus ;
+  état initial et plan consignés dans `.harness-state/tickets/T214/exploration.md` et `ecarts.md`.
+  Les fichiers non suivis préexistants restent intacts. Aucun écart aux critères prévu.
+
+- Extraction, rouge puis vert :
+  `node --test --test-name-pattern='memory perception lanes' tests/architecture.test.cjs` :
+  1/1 rouge sur l'absence de propriétaire Mémoire, puis 1/1 vert (`lanes-red.log`, `lanes-green.log`).
+  `PerceptionLanes` possède les références, appels, annulation, transfert, retenue et nouvel essai.
+  La façade traduit la politique à un seul endroit, et `held` aux frontières historiques.
+  Élagage, fermeture, snapshot et consultation délèguent aux comptes/retraits du propriétaire.
+- `node --test --test-concurrency=1 tests/split-perception.test.cjs tests/session-latency.test.cjs tests/architecture-f08.test.cjs tests/watch-session-ending.test.cjs tests/session.test.cjs` :
+  première extraction à 77/78 (`ingestion-green.log`) : une attente asynchrone supplémentaire
+  retardait la libération vision et faisait perdre une référence sans paroles. Attente retirée ;
+  78/78 verts (`ingestion-corrected-green.log`), sans changer l'assertion d'ordre.
+- Critère de fin :
+  `node --test --test-name-pattern='ending during the .* media read' tests/watch-session-ending.test.cjs` :
+  2/2 rouges sur un départ fournisseur après début de fin, puis 2/2 verts après revérification
+  au retour de lecture (`ending-read-red.log`, `ending-read-green.log`).
+  La matrice de relecture avant nouvel essai couvre aussi `closeIntake` suivi d'une fin de question tardive.
+- Contrats, en séquentiel :
+  `node --test --test-concurrency=1 tests/session-events.test.cjs tests/events.test.cjs tests/memory-view.test.cjs tests/capture-intake.test.cjs tests/session-lifecycle.test.cjs tests/architecture.test.cjs tests/architecture-guard.test.cjs tests/server-state-views.test.cjs tests/state-view-contract.test.cjs` :
+  593/593 verts (`contracts-green.log`). Le dernier chemin était absent et ignoré par Node ;
+  les preuves de vues sont `server-state-views` et la suite `state-views` ci-dessous.
+- `node --test --test-concurrency=1 tests/memory-lanes.test.cjs tests/split-perception.test.cjs tests/session-latency.test.cjs tests/architecture-f08.test.cjs tests/watch-session-ending.test.cjs tests/session.test.cjs tests/state-views.test.cjs` :
+  87/87 verts (`perception-final-green.log`). Le test direct caractérise uniquement le retrait
+  explicite des références et la fin exacte de sa mesure, sans accès aux files.
+- `node_modules/.bin/eslint --prune-suppressions core/session.cjs` : code 0 ;
+  complexités gelées de 6 à 4, aucune suppression ajoutée. Le contrôle ciblé ESLint est vert
+  (`lint-green.log`) après découpage synchrone de l'éligibilité au drainage vision.
+- `node scripts/check.mjs --changed` : vert, 92/92 tests sur 7 fichiers ; règles, format, lint,
+  gel et cliquet verts (`check-changed.log`). ADR 0051 et présentation d'architecture ajoutés.
+
+- Contrôle complet final : `node scripts/check.mjs` : **vert**, 2 532/2 532 tests JS
+  sur 141 fichiers et 47/47 tests Python ; règles, format, lint, gel et cliquet verts
+  (`.harness-state/tickets/T214/check-full.log`). Aucun cas ni assertion métier retiré,
+  aucun accès global au temps ajouté ; stock de complexités de la session diminué de deux.
+  Le protocole de relecture et l'intégration restent à la boucle ; aucun commit ni push effectué.
+- Après la dernière mise en forme : `node scripts/check.mjs --changed` : **vert**, 92/92 tests ;
+  `git diff --check` : code 0. Verdict `TERMINÉ` enregistré dans
+  `.harness-state/tickets/T214/verdict.json`, sans réserve propre à l'implémentation.
+
+- Reprise après `relecture-1.md` : rapport, journal, écarts, `git status` et `git diff` relus.
+  Les deux constats mineurs sont acceptés : protéger les noms composés dans la garde,
+  puis déplier les deux `try/catch` sans modifier le flot de nouvel essai.
+  Plan consigné dans `.harness-state/tickets/T214/correction-1-exploration.md` ; aucun nouvel écart.
+- Constat 1 corrigé, tests d'abord :
+  `node --test --test-name-pattern='memory lane vocabulary guard' tests/architecture-guard.test.cjs` :
+  9/9 rouges, dont sept acceptations erronées de noms composés et deux diagnostics sans chemin ;
+  puis 9/9 verts après recherche par sous-chaîne et ajout du chemin au diagnostic
+  (`correction-1-vocabulary-red.log`, `correction-1-vocabulary-green.log`).
+  Chaque fixture refuse le nom composé et accepte ensuite une politique générique.
+- Constat 2 corrigé : les deux `try/catch` sont répartis sur plusieurs lignes, sans ajout d'attente.
+  Avant modification, `node --test --test-name-pattern='media that cannot be read again|what allows the second call' tests/architecture-f08.test.cjs` :
+  2/2 verts (`correction-1-reread-before.log`). Après mise en forme,
+  `node --test --test-concurrency=1 tests/architecture-f08.test.cjs tests/memory-lanes.test.cjs tests/architecture.test.cjs` :
+  35/35 verts (`correction-1-lanes-green.log`) ; cause initiale et conditions de relecture conservées.
+- `node scripts/check.mjs --changed` après correction : **vert**, 596/596 tests JS sur
+  8 fichiers ; règles, format, lint, gel et cliquet verts (`correction-1-check-changed.log`).
+  `git diff --check` : code 0. Aucun test ni assertion retiré ; aucune contestation de relecture.
+- Contrôle complet après correction : `node scripts/check.mjs` : **vert**, 2 541/2 541 tests JS
+  sur 141 fichiers, 47/47 tests Python ; règles, format, lint, gel et cliquet verts
+  (`correction-1-check-full.log`). Les deux constats mineurs sont corrigés, sans changement
+  de comportement des voies. Verdict `TERMINÉ` renouvelé ; relecture et intégration à la boucle.
+  Aucun commit ni push effectué.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T214/relecture-2.md : `adapters/codex-perception.cjs:25` et `core/memory/lanes.cjs:5` (hors périmètre)
+
+  Le code `'TVLENS_VISION_TRANSIENT'` est toujours défini à deux endroits. Ce doublon existait déjà avant ce ticket, et le retirer demande de modifier l'adaptateur. Je le garde comme réserve, inchangée par rapport à la relecture 1.
+- .harness-state/tickets/T214/relecture-2.md : **Écart accepté, critère 5.** Je maintiens la décision de la relecture 1. Le propriétaire vérifie à nouveau le début de fin au retour de la lecture média, avant le premier appel fournisseur. Cela réalise la garantie « aucune nouvelle analyse ne part ». La preuve est rouge puis verte (`ending-read-red.log`, `ending-read-green.log`), et l'ADR 0051 le documente. La correction ne touche pas ce chemin.
