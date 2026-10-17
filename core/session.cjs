@@ -1,7 +1,6 @@
 const { domainError } = require('./shared/domain-error.cjs');
 const TVLENS_CAPTURE_TIME_INVALID = 'TVLENS_CAPTURE_TIME_INVALID';
 const TVLENS_CAPTURE_ORDER_INVALID = 'TVLENS_CAPTURE_ORDER_INVALID';
-const TVLENS_SESSION_STOPPED = 'TVLENS_SESSION_STOPPED';
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
@@ -9,6 +8,7 @@ const { holdsMedia } = require('./clip-container.cjs');
 const { publishState } = require('./state-publication.cjs');
 const { PassageEvents } = require('./passage-events.cjs');
 const memory = require('./memory/index.cjs');
+const { TVLENS_SESSION_STOPPED } = memory;
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
 const LANE_LOSSES = {
   audio: { backlog: 'audioSkipped', expired: 'audioExpired', error: 'audioError' },
@@ -32,6 +32,7 @@ function capturedModalities(input, hasAudio) {
 
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
+  #lifecycle = new memory.MemoryLifecycleState();
   #questionPending = false;
   #questionIntakeClosed = false;
   #events;
@@ -50,18 +51,13 @@ class WatchSession {
     this.segments = [];
     this.history = [];
     this.questions = [];
-    this.closed = false;
-    // Raised by a host that is ending the session and still waits for a write under way: from then on no
-    // analysis is started, since close() would abandon it at once.
-    this.ending = false;
     // Counted where the event happens, never recomputed from the passages. Two more only exist once they
     // happened: visionRetried, the second descriptions started, and visionRecovered, those that succeeded.
     // visionError stays what was lost for good.
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
     this.unremoved = new Set();
     this.sequence = 0;
-    this.accepting = true;
-    this.readOnly = false; this.storageError = null;
+    this.storageError = null;
     // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
     // successful, says that the state is on disk.
     this.saveError = null;
@@ -93,6 +89,10 @@ class WatchSession {
 
   get asking() { return this.#questionPending; }
   get running() { return this.perceptionState().analyzing; }
+  get closed() { return this.#lifecycle.closed; }
+  get ending() { return this.#lifecycle.ending; }
+  get accepting() { return this.#lifecycle.accepting; }
+  get readOnly() { return this.#lifecycle.readOnly; }
 
   perceptionState(now = this.now()) {
     const { heldMs, ...state } = this.#lanes.state(now);
@@ -126,7 +126,7 @@ class WatchSession {
 
   // Empêche de lancer une analyse qui serait abandonnée à la fermeture, sans fermer l'admission des passages.
   beginEnding() {
-    this.ending = true;
+    this.#lifecycle = this.#lifecycle.beginEnding();
   }
 
   // Empêche une nouvelle question ou un nouveau passage pendant l'attente des écritures déjà admises.
@@ -135,7 +135,7 @@ class WatchSession {
     this.#questionIntakeClosed = true;
     this.#questionPending = true;
     this.#syncVisionPolicy();
-    this.accepting = false;
+    this.#lifecycle = this.#lifecycle.closeIntake();
   }
 
   async ingest(input) {
@@ -172,7 +172,7 @@ class WatchSession {
         // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
         if (error?.code === STORAGE_FULL) {
           const admissionWasOpen = this.accepting;
-          this.accepting = false;
+          this.#lifecycle = this.#lifecycle.suspendAdmission();
           this.storageError = error.message;
           if (admissionWasOpen) this.#events.suspended(input, STORAGE_FULL);
           this.emit();
@@ -281,25 +281,31 @@ class WatchSession {
   // Does not wait for a write still under way, which may never return: that passage is saved when it
   // lands (see land). A host that wants one final saved state waits on landed() first, as the shared runtime does.
   async close() {
-    this.closed = true;
-    this.accepting = false;
+    this.#lifecycle = this.#lifecycle.close();
     this.#lanes.close();
     await this.persist();
   }
 
   async resume() {
-    if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'Session fermée.');
     // The only way out of a reopened archive, and of a capture stopped for lack of room.
-    this.readOnly = false; this.storageError = null;
+    this.#lifecycle = this.#lifecycle.resume();
+    this.storageError = null;
     // Published at once, like the pause below, and settled only once the state has been saved or refused:
     // whoever awaits a resume or a pause waits for the disk, whoever watches the state does not.
-    this.accepting = true; this.emit(); this.drain(); await this.persist();
+    this.emit();
+    this.drain();
+    await this.persist();
   }
-  async stop() { this.accepting = false; this.emit(); await this.persist(); }
+  async stop() {
+    this.#lifecycle = this.#lifecycle.pause();
+    this.emit();
+    await this.persist();
+  }
   // Reopens a saved session stopped, at its archived instant. Synchronous and silent: nothing is written,
   // analysed or sent anywhere, and capture only comes back through an explicit resume().
   restore(archived, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
-    if (this.closed || this.sequence || this.segments.length || this.history.length || this.questions.length) throw new Error('Session déjà commencée : restauration impossible.');
+    const restoredLifecycle = this.#lifecycle.restore();
+    if (this.sequence || this.segments.length || this.history.length || this.questions.length) throw memory.restorationRefusal();
     if (!archived || archived.id !== this.id) throw new Error('Archive incompatible avec cette session.');
     // Decoded before anything is restored: a historical document comes back as saved, a versioned one without its markers.
     const saved = memory.fromArchive(archived);
@@ -348,7 +354,8 @@ class WatchSession {
     // Les motifs historiques sont décodés avant ce changement : l'absence de retention signifie
     // encore « non conservé ». Aucune archive rouverte ne réactive ensuite une fenêtre d'élagage.
     this.retentionMs = Infinity;
-    this.accepting = false; this.readOnly = true; this.lastError = null;
+    this.#lifecycle = restoredLifecycle;
+    this.lastError = null;
   }
   memoryView() {
     return memory.createMemoryView(this, this.#modalities);

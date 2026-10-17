@@ -1,3 +1,4 @@
+'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { tick, turns, deferred, until, failure } = require('./helpers/wait.cjs');
@@ -107,16 +108,30 @@ test('an error its adapter did not mark stays final at the first call, and a ses
 });
 
 test('nothing is described again once the session is ending, read-only or closed', async () => {
-  for (const [name, end] of [['ending', w => { w.ending = true; }], ['readOnly', w => { w.readOnly = true; }]]) {
+  {
     const gate = deferred(); let calls = 0;
     const f = fixture({ transcribe, observeVisual: async () => { calls++; await gate.promise; throw passing(); } });
     await f.add(0);
-    end(f.watch);
+    f.watch.beginEnding();
     gate.resolve();
     await turns(8);
     const [p] = f.watch.segments;
-    assert.deepEqual([calls, f.reads.length, p.visionStatus, p.visionError, f.watch.losses.visionRetried, f.watch.losses.visionError], [1, 2, 'error', 'Connexion coupée', undefined, 1], name);
+    assert.deepEqual(
+      [calls, f.reads.length, p.visionStatus, p.visionError, f.watch.losses.visionRetried, f.watch.losses.visionError],
+      [1, 2, 'error', 'Connexion coupée', undefined, 1], 'ending');
   }
+  const archive = fixture({ transcribe, observeVisual: async () => { throw passing(); } });
+  archive.watch.restore({ id: 's', retention: 'until-deleted', segments: [{
+    id: 'moment-1', startMs: 0, endMs: 1000, available: true, status: 'partial', audioStatus: 'ready',
+    visionStatus: 'error', visionError: 'Connexion coupée', observation: { transcript: 'Paroles conservées.' },
+  }], coverage: { visionError: 1 } }, { hasMedia: () => true });
+  archive.watch.drain();
+  await turns(8);
+  const restored = archive.watch.snapshot();
+  assert.equal(restored.readOnly, true);
+  assert.deepEqual([archive.reads, archive.snapshots, archive.saves], [[], [], []]);
+  assert.deepEqual([restored.segments[0].visionError, restored.coverage.visionRetried, restored.coverage.visionError],
+    ['Connexion coupée', undefined, 1], 'the restored loss is neither retried nor published');
   const gate = deferred(); let calls = 0, signal;
   const f = fixture({ transcribe, observeVisual: async s => { calls++; signal = s.signal; await gate.promise; throw passing(); } });
   await f.add(0); await f.watch.close();
@@ -149,7 +164,7 @@ test('a session closed during the second call publishes nothing more and reopens
 });
 
 test('what allows the second call is checked again once the media have been read again', async () => {
-  const changes = { ending: f => { f.watch.ending = true; }, question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
+  const changes = { ending: f => f.watch.beginEnding(), question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
     intake: f => { f.watch.closeIntake(); f.watch.setQuestionPending(false); },
     expiry: async f => { f.setTime(5000); await f.watch.prune(); }, closed: f => f.watch.close() };
   for (const [name, change] of Object.entries(changes)) {

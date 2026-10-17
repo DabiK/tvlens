@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { PerceptionLanes } = require('../core/memory/index.cjs');
+const { PerceptionLanes, MemoryLifecycleState } = require('../core/memory/index.cjs');
 const { deferred, tick } = require('./helpers/wait.cjs');
 
 test('removing references reports queued audio and ends a generic vision hold at the last removal', async t => {
@@ -51,4 +51,54 @@ test('removing references reports queued audio and ends a generic vision hold at
   lanes.drain();
   await tick();
   assert.deepEqual(descriptions, [], 'releasing cannot resurrect removed references');
+});
+
+test('read-only memory refuses a visual retry before and after the second media read', async t => {
+  for (const stage of ['failure', 'reread']) {
+    let lifecycle = new MemoryLifecycleState(), calls = 0, reads = 0;
+    const entered = deferred(), release = deferred(), finished = deferred();
+    const retried = [], losses = [];
+    const refusal = Object.assign(Error('Connexion coupée'), { code: 'TVLENS_VISION_TRANSIENT' });
+    const passage = { id: 'moment-1', status: 'queued', available: true };
+    const lanes = new PerceptionLanes({
+      maxPending: 2,
+      now: () => 0,
+      readMedia: async () => {
+        if (++reads === 3 && stage === 'reread') {
+          entered.resolve();
+          await release.promise;
+        }
+        return {};
+      },
+      transcribe: async () => ({ observation: { transcript: 'Paroles conservées.' } }),
+      observeVisual: async () => {
+        calls++;
+        if (stage === 'failure') {
+          entered.resolve();
+          await release.promise;
+        }
+        throw refusal;
+      },
+      hasMedia: () => true,
+      isEnding: () => lifecycle.ending,
+      isReadOnly: () => lifecycle.readOnly,
+      contextFor: () => ({}),
+      update: (segment, lane, cause) => { if (cause) losses.push([lane, cause]); },
+      addUsage: () => {},
+      count: name => retried.push(name),
+      setError: () => {},
+      clearErrorThrough: () => {},
+      publish: () => {},
+      persist: async () => { if (passage.visionStatus === 'error') finished.resolve(); },
+    });
+    t.after(() => lanes.close());
+    lanes.enqueue(passage);
+    lanes.drain();
+    await entered.promise;
+    lifecycle = lifecycle.restore();
+    release.resolve();
+    await finished.promise;
+    assert.deepEqual([calls, reads, retried, losses], [1, stage === 'failure' ? 2 : 3, [], [['vision', 'error']]], stage);
+    assert.deepEqual([passage.status, passage.visionStatus, passage.visionError], ['partial', 'error', refusal.message], stage);
+  }
 });

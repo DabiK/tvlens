@@ -257,6 +257,27 @@ test("a refused resume keeps the archive stopped, its clock and its capture list
   assert.deepEqual([f.events, f.saves, f.writes], [["guard requested"], [], []]);
 });
 
+test('pause and resume publish immediately and settle only after the memory state is saved', async () => {
+  for (const command of ['pause', 'resume']) {
+    const f = fixture(command === 'resume' ? { restore: archiveFacts() } : {});
+    f.time = 1000;
+    f.saveGate = deferred();
+    f.saveEntered = deferred();
+    let settled = false;
+    const pending = f.lifecycle[command]().then(() => { settled = true; });
+    await f.saveEntered.promise;
+    const accepting = command === 'resume';
+    assert.equal(f.watch.snapshot().accepting, accepting, command);
+    assert.equal(f.indexed.at(-1)?.accepting, accepting, 'the published state precedes the disk');
+    assert.equal(f.watch.snapshot().readOnly, false);
+    assert.deepEqual([settled, f.saves], [false, []], command);
+    f.saveGate.resolve();
+    await pending;
+    assert.equal(settled, true);
+    assert.equal(f.saves.at(-1).accepting, accepting, command);
+  }
+});
+
 test("overlapping closes revoke inspection before waiting and release resources once after the admitted passage lands without analysis", async () => {
   const f = fixture();
   assert.equal(typeof f.lifecycle.close, "function");

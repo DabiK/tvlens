@@ -62,6 +62,10 @@ accès aux images et au son conservés, avec baux, sans chemin local ni mutateur
 Les lecteurs actuels conservent leur snapshot pendant leur migration progressive. Le même index publie
 `toArchive` et `fromArchive`, seuls à écrire et à décoder le format versionné de `session.json`.
 
+`core/memory/lifecycle-state.cjs` porte les transitions pures d'une valeur immuable à quatre axes.
+`WatchSession` en possède la référence privée et garde les commandes, leurs effets et leurs attentes ;
+les compositions lisent toujours `closed`, `ending`, `accepting` et `readOnly` par des getters.
+
 | Module | Responsabilité et frontière |
 | --- | --- |
 | `runtime/session-providers.cjs` | Construit transcription, perception, inspection révocable et index ; reçoit options et substitutions de fournisseurs. |
@@ -403,3 +407,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0051](adr/0051-les-voies-de-perception-possedent-leurs-files-et-une-retenue-generique.md) :
   Les voies possèdent files, appels et retenue générique ; la session traduit la politique et publie les versions.
+
+- [ADR 0052](adr/0052-les-transitions-de-memoire-remplacent-une-valeur-immuable.md) :
+  Les transitions remplacent une valeur immuable à quatre axes ; la racine conserve les effets et les lectures publiques.
