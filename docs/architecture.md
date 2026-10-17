@@ -147,6 +147,13 @@ Ouvrir puis refermer une archive ne réanalyse ni ne réécrit son contenu.
 
 ## Mémoire, recherche et surveillance
 
+`WatchSession` enregistre `PassageReceived` après ajout du passage et `AdmissionSuspended` après
+fermeture de l'admission pour disque plein. La composition partagée livre ces messages bornés par
+`core/shared/events.cjs`, via son diffuseur injectable `events` : abonnements synchrones, publications
+imbriquées en FIFO, données immuables et échecs isolés. Les messages nomment session, passage et
+révision ; le refus sans passage porte deux identités nulles. Aucun lecteur actuel ne migre et
+`onChange` garde son contrat. Les faits ne sont ni rejoués à la restauration ni chargés de sauvegarder.
+
 L’horloge suit l’ordre d’observation, même si le lecteur revient en arrière. Les médias et miniatures
 restent jusqu’à suppression explicite par défaut ; `TVLENS_MEDIA_RETENTION_MS` peut rétablir une
 fenêtre glissante. Une archive durable conserve son contrat quand elle est reprise sur un autre réglage.
@@ -357,3 +364,9 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0043](adr/0043-les-raccords-du-renderer-mac-passent-par-une-composition-importable.md) :
   Les raccords du renderer Mac passent par une composition importable, vérifiée par ses comportements publics.
+
+- [ADR 0044](adr/0044-la-garde-declare-les-contextes-et-les-exceptions-de-migration.md) :
+  La garde déclare les contextes, le noyau partagé, les entrées publiques et les exceptions exactes de migration.
+
+- ADR 0045 (`docs/adr/0045-les-faits-de-memoire-sont-livres-par-un-diffuseur-isole.md`) :
+  Les faits de réception et de suspension sont livrés après transition, par un diffuseur isolé sans rejeu.

@@ -30,14 +30,16 @@ const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, st
 class WatchSession {
   #questionPending = false;
   #questionIntakeClosed = false;
+  #events = [];
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
-    onChange = () => {}, onPublicationError = () => {}, retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
+    onChange = () => {}, onEvents = () => {}, onPublicationError = () => {},
+    retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
     // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
     // carries null for "no expiry" (JSON has no Infinity): it is normalised here, never used in arithmetic.
     retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
-      onChange, onPublicationError, retentionMs, maxPending, visionDuringAsk });
+      onChange, onEvents, onPublicationError, retentionMs, maxPending, visionDuringAsk });
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
     this.closed = false; this.controller = new AbortController();
@@ -121,10 +123,24 @@ class WatchSession {
       try { await this.media.put(segment.id, input); }
       catch (error) {
         // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
-        if (error?.code === STORAGE_FULL) { this.accepting = false; this.storageError = error.message; this.emit(); await this.persist(); }
+        if (error?.code === STORAGE_FULL) {
+          const admissionWasOpen = this.accepting;
+          this.accepting = false;
+          this.storageError = error.message;
+          if (admissionWasOpen) this.#events.push({
+            type: 'AdmissionSuspended', sessionId: this.id, passageId: null, revision: null,
+            cause: { code: STORAGE_FULL }, interval: { startMs: input.startMs, endMs: input.endMs },
+          });
+          this.emit();
+          await this.persist();
+        }
         throw error;
       }
       this.segments.push(segment);
+      this.#events.push({
+        type: 'PassageReceived', sessionId: this.id, passageId: segment.id, revision: segment.revision,
+        interval: { startMs: segment.startMs, endMs: segment.endMs },
+      });
       // Counted once the passage exists: a refused write leaves no passage and no count.
       if (empty) this.losses.videoUnreadable = (this.losses.videoUnreadable || 0) + 1;
       // A write that was under way when the session closed still lands, but nothing is queued for analysis.
@@ -436,6 +452,11 @@ class WatchSession {
       segments: this.segments.map(s => ({ ...s })) };
   }
   emit() {
+    if (this.#events.length) {
+      const events = this.#events;
+      this.#events = [];
+      publishState(() => this.onEvents(events), this.onPublicationError, { origin: 'watch-session-events', sessionId: this.id });
+    }
     if (this.closed) return;
     publishState(() => this.onChange(this.snapshot()), this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
   }

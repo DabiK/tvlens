@@ -3,6 +3,7 @@ const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
 const { WatchSession, restorable } = require("../core/session.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const {
   LocalSessionStore,
@@ -45,6 +46,7 @@ function createSessionRuntime({
   onChange = () => {},
   log = () => {},
   onPublicationError = createPublicationDiagnostic(),
+  events = createEventPublisher({ onError: onPublicationError }),
   readClock = () => performance.now(),
   wallClock = Date.now,
   host = null,
@@ -178,6 +180,9 @@ function createSessionRuntime({
     storage,
     visionDuringAsk: config.visionDuringAsk === true,
     onPublicationError,
+    onEvents: (pending) => {
+      for (const event of pending) events.publish(event);
+    },
     onChange: (state) => {
       if (!state.readOnly) feedIndex?.(state);
       manifest.publish(state);
@@ -202,6 +207,7 @@ function createSessionRuntime({
   return {
     id,
     watch,
+    events,
     store,
     search,
     inspector,
