@@ -21,7 +21,7 @@ function passageGaps(passages) {
     gaps: passages.filter(p => ['error', 'skipped', 'expired'].includes(p.status))
       .map(p => ({ ...interval(p), status: p.status })),
     audioGaps: passages.filter(p => p.audioFailed || (p.status === 'partial' && ['skipped', 'error'].includes(p.audioStatus)))
-      .map(p => ({ ...interval(p), audioStatus: p.audioFailed ? 'failed' : p.audioStatus })),
+      .map(p => ({ ...interval(p), audioStatus: p.audioFailed ? 'failed' : p.audioStatus, ...(p.audioFailureCode ? { code: p.audioFailureCode } : {}) })),
     visionGaps: passages.filter(p => p.status === 'partial' && ['skipped', 'expired', 'error'].includes(p.visionStatus))
       .map(p => ({ ...interval(p), visionStatus: p.visionStatus, reason: p.visionSkipReason })),
   };
@@ -49,6 +49,7 @@ function passageView(passage, origin, known) {
     ...Object.fromEntries(NULLABLE_FIELDS.map(key => [key, passage[key] ?? null])),
     explicitNulls: NULLABLE_FIELDS.filter(key => passage[key] === null),
     audioFailed: Boolean(passage.audioFailed),
+    ...(passage.audioFailureCode ? { audioFailureCode: passage.audioFailureCode } : {}),
     observation: passage.observation ? structuredClone(passage.observation) : null,
     topicSummary: passage.topicSummary ? structuredClone(passage.topicSummary) : null,
     thumbnailAvailable: Boolean(passage.thumbnailAvailable),

@@ -1,7 +1,8 @@
 import systemPaths from '../adapters/system-paths.cjs';
 import fs from 'node:fs/promises';import path from 'node:path';import {createReadStream,createWriteStream} from 'node:fs';import {Readable} from 'node:stream';import {pipeline} from 'node:stream/promises';import {createHash} from 'node:crypto';import {spawnSync} from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 const expected='60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe';
-const model=path.resolve(process.env.TVLENS_WHISPER_MODEL || '.local/models/ggml-base.bin');
+const model=path.resolve(process.env.TVLENS_WHISPER_MODEL || fileURLToPath(new URL('../.local/models/ggml-base.bin', import.meta.url)));
 const binary=systemPaths.executable('whisper-cli',{override:process.env.TVLENS_WHISPER_BINARY});
 if(spawnSync(binary,['--help'],{stdio:'ignore'}).error){
  if(process.platform!=='darwin')throw Error('Installe whisper.cpp et ajoute whisper-cli au PATH, ou définis TVLENS_WHISPER_BINARY. Voir docs/server-installation.md.');

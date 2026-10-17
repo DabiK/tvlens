@@ -279,6 +279,7 @@ function stateView(
     revision,
     serverNowMs,
     transcriptionLanguage,
+    transcriptionAvailability,
     surveillance,
     storage,
   },
@@ -297,7 +298,7 @@ function stateView(
     view: name,
     revision,
     serverNowMs,
-    transcription: { language: transcriptionLanguage || "fr" },
+    transcription: { language: transcriptionLanguage || "fr", ...transcriptionAvailability },
     surveillance,
     storage,
   };

@@ -4,6 +4,7 @@ const {
   simulatedRecap,
 } = require("../adapters/simulated-providers.cjs");
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
+const { createSessionTranscriber } = require('../runtime/session-providers.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
@@ -104,6 +105,12 @@ app.whenReady().then(async () => {
     return fn(...args);
   });
   const send = (channel, value) => { if (!window.isDestroyed()) window.webContents.send(channel, value); };
+  const onPublicationError = createPublicationDiagnostic(line => console.error(line));
+  const makeTranscriber = () => createSessionTranscriber({
+    config, packaged: app.isPackaged, onPublicationError,
+    onAvailability: () => { if (loaded) send('watch:state', sessionState()); },
+  });
+  let transcriber = makeTranscriber();
   // Session transitions (start, pause, new, open, resume, delete, quit) never interleave: each one sees
   // the state the previous one left.
   let transition = Promise.resolve();
@@ -132,7 +139,6 @@ app.whenReady().then(async () => {
   handle('window:mode', value => windowMode(value));
   const codexBinary = await findCodex();
   const quota=new CodexQuota();
-  const onPublicationError = createPublicationDiagnostic(line => console.error(line));
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
@@ -264,6 +270,7 @@ app.whenReady().then(async () => {
   const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
   // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
   const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
+    transcription: (loaded?.runtime.transcriber || transcriber).availability(),
     questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: 'until-deleted', retentionMs: null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);
@@ -279,6 +286,7 @@ app.whenReady().then(async () => {
   handle('app:import-config', async () => {
     const result = await dialog.showOpenDialog(window, { title: 'Sélectionner .env.local', properties: ['openFile', 'showHiddenFiles'] });
     if (!result.canceled) { const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance }; config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); Object.assign(config, host); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome;for(const client of surveillanceClients())client.authHome=config.codexAuthHome; }
+    if (!result.canceled) transcriber = makeTranscriber();
     return configuration();
   });
   const captureSources = await createCaptureSources({
@@ -292,7 +300,9 @@ app.whenReady().then(async () => {
   let storageShown = null;
   const ingestions = new Set();
   // The core state plus its additive title: what the renderer receives for the loaded session.
-  const sessionState = () => (loaded ? { ...loaded.runtime.watch.snapshot(), title: loaded.title } : null);
+  const sessionState = () => (loaded ? {
+    ...loaded.runtime.watch.snapshot(), title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
+  } : null);
   const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
     ? simulatedRecap()
     : new CodexRecap({
@@ -303,14 +313,14 @@ app.whenReady().then(async () => {
       });
   // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
   const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,restore,
-    smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
+    transcriber, smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
     log: line => console.error(line),
     onPublicationError,
     onChange: state => {
       if (!closing && !switching) recap.observe(state);
       surveillance.observe(state);
-      send('watch:state', { ...state, title: loaded?.title ?? null });
+      send('watch:state', { ...state, title: loaded?.title ?? null, transcription: (loaded?.runtime.transcriber || transcriber).availability() });
     },
   });
   const adopt = (runtime, name, at, fresh = false) => {

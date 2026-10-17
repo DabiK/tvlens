@@ -47,10 +47,12 @@ const inspectionProviders = {
 };
 
 function createSessionTranscriber(
-  { config },
+  { config, packaged = false, onAvailability, onPublicationError },
   { LocalTranscriber: Transcriber = LocalTranscriber } = {},
 ) {
   return new Transcriber({
+    ...(onAvailability ? { onAvailability } : {}),
+    onPublicationError,
     binary: config.whisperBinary,
     threads: config.whisperThreads,
     getLanguage: () => config.transcriptionLanguage || "auto",
@@ -58,16 +60,9 @@ function createSessionTranscriber(
     ...(config.whisperAudioCtx === undefined
       ? {}
       : { audioCtx: config.whisperAudioCtx }),
-    model:
-      config.whisperModel ||
-      path.join(
-        path.dirname(
-          config.researchBudgetFile ||
-            path.join(process.cwd(), ".local", "research-budget.json"),
-        ),
-        "models",
-        "ggml-base.bin",
-      ),
+    model: config.whisperModel || (packaged
+      ? path.join(path.dirname(config.researchBudgetFile || path.join(process.cwd(), ".local", "research-budget.json")), "models", "ggml-base.bin")
+      : path.resolve(__dirname, "../.local/models/ggml-base.bin")),
   });
 }
 

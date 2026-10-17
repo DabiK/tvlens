@@ -1122,7 +1122,9 @@
       "title": "Session du 21 sept. 2026, 16:13"
     },
     "transcription": {
-      "language": "fr"
+      "language": "fr",
+      "available": true,
+      "code": null
     },
     "timeline": {
       "sessionId": "state-view-memory",
@@ -2911,7 +2913,9 @@
     "revision": 1,
     "serverNowMs": 1790000000000,
     "transcription": {
-      "language": "fr"
+      "language": "fr",
+      "available": true,
+      "code": null
     },
     "surveillance": {
       "version": 1,
@@ -3263,7 +3267,9 @@
     "revision": 1,
     "serverNowMs": 1790000000000,
     "transcription": {
-      "language": "fr"
+      "language": "fr",
+      "available": true,
+      "code": null
     },
     "surveillance": {
       "version": 1,

@@ -246,7 +246,7 @@ class WatchSession {
         const item = this.segments.shift();
         this.history.push({ id: item.id, startMs: item.startMs, endMs: item.endMs, topicSummary: item.topicSummary, summary: item.observation?.summary || item.observation?.transcript || 'Passage non analysé.', observation: item.observation, status: item.status, thumbnailAvailable: item.thumbnailAvailable, audioStatus: item.audioStatus, visionStatus: item.visionStatus, audioError: item.audioError, visionError: item.visionError, audioMs: item.audioMs, visionMs: item.visionMs, transcriptPublishedMs: item.transcriptPublishedMs,
           // Stamps stay with the archived passage; bulky per-call metrics do not: the whole history is sent at every state poll.
-          receivedMs: item.receivedMs, audioStartedMs: item.audioStartedMs, visionQueuedMs: item.visionQueuedMs, visionStartedMs: item.visionStartedMs, visionPublishedMs: item.visionPublishedMs, revision: item.revision, ingest: item.ingest, visionSkipReason: item.visionSkipReason, audioFailed: item.audioFailed,
+          receivedMs: item.receivedMs, audioStartedMs: item.audioStartedMs, visionQueuedMs: item.visionQueuedMs, visionStartedMs: item.visionStartedMs, visionPublishedMs: item.visionPublishedMs, revision: item.revision, ingest: item.ingest, visionSkipReason: item.visionSkipReason, audioFailed: item.audioFailed, audioFailureCode: item.audioFailureCode,
           // Why the media cannot be replayed stays with the summary: expired, missing or never kept.
           mediaReason: item.mediaReason });
       }
@@ -283,7 +283,11 @@ class WatchSession {
       segment.metrics = result.metrics; this.apiCost += result.cost || 0;
       // A transcriber that reports its own failure is counted and flagged, never hidden as plain silence.
       // The passage keeps its statuses: a host without Whisper still gets complete visual passages.
-      if (result.failed === true) { segment.audioFailed = true; this.losses.audioError++; }
+      if (result.failed === true) {
+        segment.audioFailed = true;
+        segment.audioFailureCode = result.code;
+        this.losses.audioError++;
+      }
       segment.observation = result.observation; segment.revision++;
       segment.audioStatus = 'ready'; segment.transcriptPublishedMs = this.now();
     } catch (error) {
@@ -467,7 +471,7 @@ class WatchSession {
       // it, and a sweep that moves a passage into the history meanwhile must not show it there too.
       lastError: this.storageError || this.saveError || this.lastError, history: [...this.history], questions: [...this.questions],
       latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: this.visionBlockedMs + (this.visionHeldSince === null ? 0 : Math.max(0, now - this.visionHeldSince)) },
-      audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus })),
+      audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus, ...(s.audioFailureCode ? { code: s.audioFailureCode } : {}) })),
       visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
       // Cached figures supplied by the host (free space, volume of this session): never measured here.
       storage: this.storage ? this.storage() : null,

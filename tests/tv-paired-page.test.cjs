@@ -554,3 +554,29 @@ for (const status of [401, 500, null]) {
     assert.deepEqual({ ...panel.stats }, { polls: 2, notModified: 1, renders: 1, legacy: false, failures: 0 });
   });
 }
+
+test('transcription availability renders one durable coded warning and clears on recovery without exposing private diagnostics', async t => {
+  const net = network();
+  net.state.transcription = { language: 'fr', available: false, code: 'TVLENS_WHISPER_MODEL_MISSING', error: '/private/model.bin' };
+  const page = loadTvPage({ config: CONFIG, fetch: net.fetch });
+  t.after(() => page.cleanup());
+  await waitTick();
+  const warning = page.document.getElementById('transcription-warning');
+  assert.ok(warning, 'the real page contains the persistent warning');
+  assert.equal(warning.hidden, false);
+  assert.equal(warning.dataset.code, 'TVLENS_WHISPER_MODEL_MISSING');
+  assert.match(warning.textContent, /modèle introuvable/);
+  assert.doesNotMatch(warning.textContent, /private|model.bin/);
+  page.window.tvlensPanel.kick();
+  await waitTick();
+  assert.equal(warning.hidden, false);
+  net.state.transcription.code = 'TVLENS_WHISPER_BINARY_MISSING';
+  page.window.tvlensPanel.kick();
+  await waitTick();
+  assert.match(warning.textContent, /binaire introuvable/);
+  net.state.transcription = { language: 'fr', available: true, code: null };
+  page.window.tvlensPanel.kick();
+  await waitTick();
+  assert.equal(warning.hidden, true);
+  assert.equal(warning.textContent, '');
+});

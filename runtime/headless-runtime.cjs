@@ -37,6 +37,8 @@ const {
   overlayView,
 } = require("./state-views.cjs");
 
+const { createSessionTranscriber } = require("./session-providers.cjs");
+
 const SESSIONS_LISTED = 50;
 
 function createHeadlessIntake(host) {
@@ -97,6 +99,9 @@ class HeadlessRuntime {
     // Journal of the host; a test hands its own.
     this.log = options.log || ((line) => console.error(line));
     this.onPublicationError = options.onPublicationError || createPublicationDiagnostic(line => this.log(line));
+    this.transcriber = options.transcriber || createSessionTranscriber({
+      ...options, config: options.config || {}, onAvailability: () => this.emit(), onPublicationError: this.onPublicationError,
+    });
     this.sessionState = null;
     this.sessionMemory = null;
     this.derived = null;
@@ -284,7 +289,7 @@ class HeadlessRuntime {
     if (session) session.title = this.session.manifest()?.title || null;
     return {
       session,
-      transcription: { language: this.options.config?.transcriptionLanguage || "fr" },
+      transcription: { language: this.options.config?.transcriptionLanguage || "fr", ...this.transcriber.availability() },
       timeline: sessionTimeline(memory),
       chat: { ...this.deep.snapshot(), timeoutMs: this.deep.timeoutMs },
       captureGaps: captureGapsOf(memory?.passages || []),
@@ -335,6 +340,7 @@ class HeadlessRuntime {
       revision: this.revision,
       serverNowMs: this.wallClock(),
       transcriptionLanguage: this.options.config?.transcriptionLanguage,
+      transcriptionAvailability: this.transcriber.availability(),
       surveillance: this.surveillance.snapshot({ brief: true }),
       storage: this.storage(),
     });
@@ -361,6 +367,7 @@ class HeadlessRuntime {
     return {
       host: "server",
       ...this.options,
+      transcriber: this.transcriber,
       guard: this.guard,
       quota: this.quota,
       onChange: (state) => this.published(state),

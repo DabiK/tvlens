@@ -70,6 +70,7 @@ function createSessionRuntime({
   guard,
   restore = null,
   overrides = {},
+  transcriber = null,
 }) {
   let watch, lifecycle;
   if (restore) restore = readableRestore(restore);
@@ -114,10 +115,11 @@ function createSessionRuntime({
     store,
     userData,
     log,
+    onPublicationError,
   };
   const { vectors, index, search, feedIndex } =
     createSessionIndex(providerOptions);
-  const transcriber = createSessionTranscriber(providerOptions);
+  transcriber ||= createSessionTranscriber(providerOptions);
   const { inspector, inspectorModel } = createSessionInspection({
     ...providerOptions,
     transcriber,

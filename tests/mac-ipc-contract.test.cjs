@@ -1443,3 +1443,17 @@ test('on the Mac host both agents are warmed up with the id of the session when 
   const b = await host.start();
   assert.deepEqual([took(), host.failures], [[`chat:${b.id}`, `observe:${b.id}-observe`], []], 'a rejecting warm-up fails neither start nor the host');
 });
+
+test('Mac startup exposes transcription availability before capture and publishes its coded cause with session states', async t => {
+  const { launch, userData } = await stage(t);
+  const configFile = path.join(userData, 'speech.env');
+  await fsp.writeFile(configFile, 'TVLENS_WHISPER_MODEL=/missing/private-model.bin\nTVLENS_WHISPER_BINARY=/missing/whisper\n');
+  const host = await launch({ flags: ['--live-inspection', '--config=' + configFile] });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const availability = (await host.config()).transcription;
+  assert.deepEqual(availability, { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' });
+  const session = await host.start();
+  assert.equal((await host.state()).id, session.id);
+  assert.deepEqual((await host.state()).transcription, availability);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state').at(-1).value.transcription, availability);
+});

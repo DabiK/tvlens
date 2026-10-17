@@ -120,7 +120,10 @@ class CodexPerception {
       metrics: { audioCacheHit: Boolean(audio.cacheHit), whisper: audio.metrics || {} },
       elapsedMs: Date.now() - started,
       // A failed transcription is not silence: the caller must be able to tell them apart.
-      ...(audio.metrics?.failed === true ? { failed: true, error: "Transcription locale indisponible : vérifie Whisper et son modèle." } : {}),
+      ...(audio.metrics?.failed === true ? {
+        failed: true, code: audio.code,
+        error: "Transcription locale indisponible : vérifie Whisper et son modèle.",
+      } : {}),
     };
   }
   async observe(segment) {

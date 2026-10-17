@@ -59,6 +59,7 @@ function setSources(result) {
 }
 function setConfig(value) {
   configuration = value;
+  wiring.receiveTranscription(value.transcription);
   $('provider').textContent = `Codex ${value.canObserve ? 'prêt' : 'indisponible'} · ${value.model.split('/').at(-1)}`;
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';
   scheduleState(); updateButtons();
@@ -290,6 +291,7 @@ async function changeWindowMode(floating,expanded=false,{focus=true}={}){
   catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(reason(e));}
 }
 $('float-mode').onclick=()=>changeWindowMode(true);
+$('float-transcription-warning').onclick = () => changeWindowMode(true, true, { focus: false });
 $('float-audio-warning').onclick = () => changeWindowMode(true, true, { focus: false });
 $('float-full').onclick=()=>{shell.show('direct');return changeWindowMode(false);};
 $('close-chat').onclick=()=>changeWindowMode(true,false);

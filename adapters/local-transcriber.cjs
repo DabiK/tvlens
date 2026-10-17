@@ -2,10 +2,32 @@ const { validateTranscriptionLanguage } = require('../core/transcription-languag
 const { executable } = require('./system-paths.cjs');
 const { whisperDiagnostics } = require('./whisper-diagnostics.cjs');
 const fs = require('node:fs/promises');
+const disk = require('node:fs');
+const { publishState } = require('../core/state-publication.cjs');
 const path = require('node:path');
 const os = require('node:os');
 const { spawn } = require('node:child_process');
 const { createHash } = require('node:crypto');
+
+const TVLENS_WHISPER_MODEL_MISSING = 'TVLENS_WHISPER_MODEL_MISSING';
+const TVLENS_WHISPER_BINARY_MISSING = 'TVLENS_WHISPER_BINARY_MISSING';
+const TVLENS_WHISPER_FAILED = 'TVLENS_WHISPER_FAILED';
+
+function resolveBinary(binary) {
+  return binary === path.basename(binary) ? executable(binary) : binary;
+}
+
+function startupFailure(model, binary) {
+  try {
+    if (!disk.statSync(model).isFile()) return TVLENS_WHISPER_MODEL_MISSING;
+    disk.accessSync(model, disk.constants.R_OK);
+  } catch { return TVLENS_WHISPER_MODEL_MISSING; }
+  try {
+    if (!disk.statSync(binary).isFile()) return TVLENS_WHISPER_BINARY_MISSING;
+    disk.accessSync(binary, disk.constants.X_OK);
+  } catch { return TVLENS_WHISPER_BINARY_MISSING; }
+  return null;
+}
 
 // Whisper encodes 1500 positions of 20 ms (30 s) whatever the clip length. 'auto' keeps the clip plus a margin;
 // 0 (full context) whenever the RIFF header does not describe the bytes held, since a short context truncates speech.
@@ -24,14 +46,31 @@ function autoAudioCtx(wav) {
 
 class LocalTranscriber {
   constructor({ binary = executable('whisper-cli'), model, getLanguage = () => 'auto',
-    threads = Math.min(4, os.availableParallelism()), audioCtx = 0 } = {}) {
+    threads = Math.min(4, os.availableParallelism()), audioCtx = 0, onAvailability = () => {}, onPublicationError } = {}) {
     if (!Number.isInteger(threads) || threads < 1 || threads > 16) throw Error('Whisper : nombre de threads invalide (1–16).');
     if (audioCtx !== 0 && audioCtx !== 'auto' && !(Number.isInteger(audioCtx) && audioCtx >= 64 && audioCtx <= 1500)) throw Error('Whisper : contexte audio invalide (0, auto ou 64–1500).');
+    binary = resolveBinary(binary);
     Object.assign(this, { binary, model, getLanguage, threads, audioCtx });
+    this.onAvailability = onAvailability;
+    this.onPublicationError = onPublicationError;
+    this.failureCode = startupFailure(model, binary);
     this.cache = new Map();
     this.running = new Map();
     this.hits = 0;
     this.misses = 0;
+  }
+
+  availability() {
+    return { available: this.failureCode === null, code: this.failureCode };
+  }
+
+  reportAvailability(code) {
+    if (this.failureCode === code) return;
+    this.failureCode = code;
+    publishState(() => this.onAvailability(this.availability()), this.onPublicationError || (() => {
+      // Un usage isolé peut omettre le journal : l'état acquis reste consultable sans interrompre la transcription.
+      // Les compositions des hôtes fournissent leur diagnostic de publication.
+    }), { origin: 'local-transcriber' });
   }
 
   async transcribe(audio, signal) {
@@ -73,8 +112,10 @@ class LocalTranscriber {
   async run({ bytes, language, audioCtx, key, started }, signal) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-speech-'));
     let diagnostic = '';
+    let failureCode = TVLENS_WHISPER_MODEL_MISSING;
     try {
       await fs.access(this.model);
+      failureCode = TVLENS_WHISPER_FAILED;
       const input = path.join(dir, 'audio.wav'), output = path.join(dir, 'speech');
       await fs.writeFile(input, bytes, { mode: 0o600 });
       signal?.throwIfAborted();
@@ -86,7 +127,8 @@ class LocalTranscriber {
         const abort = () => child.kill('SIGKILL');
         signal?.addEventListener('abort', abort, { once: true });
         if (signal?.aborted) abort();
-        child.once('error', () => {
+        child.once('error', error => {
+          failureCode = ['ENOENT', 'EACCES'].includes(error.code) ? TVLENS_WHISPER_BINARY_MISSING : TVLENS_WHISPER_FAILED;
           signal?.removeEventListener('abort', abort);
           reject(Error('Whisper local indisponible.'));
         });
@@ -100,16 +142,20 @@ class LocalTranscriber {
       const data = JSON.parse(await fs.readFile(output + '.json', 'utf8'));
       const text = (data.transcription || []).map(s => s.text.trim()).filter(Boolean).join(' ');
       const value = { text, language, limits: ['Transcription automatique locale ; elle peut contenir des erreurs.'] };
+      this.reportAvailability(null);
       this.cache.set(key, value);
       if (this.cache.size > 64) this.cache.delete(this.cache.keys().next().value);
       return { ...value, cacheHit: false, metrics: { ...whisperDiagnostics(diagnostic), threads: this.threads, audioCtx, elapsedMs: performance.now() - started } };
     } catch (error) {
       if (signal?.aborted) throw error;
-      return { text: '', limits: ['Transcription locale indisponible : vérifie Whisper et son modèle.'],
+      this.reportAvailability(failureCode);
+      return { code: failureCode, text: '', limits: ['Transcription locale indisponible : vérifie Whisper et son modèle.'],
         metrics: { ...whisperDiagnostics(diagnostic), threads: this.threads, audioCtx, elapsedMs: performance.now() - started, failed: true } };
     } finally {
       await fs.rm(dir, { recursive: true, force: true });
     }
   }
 }
-module.exports = { LocalTranscriber, autoAudioCtx };
+module.exports = {
+  LocalTranscriber, autoAudioCtx, TVLENS_WHISPER_MODEL_MISSING, TVLENS_WHISPER_BINARY_MISSING, TVLENS_WHISPER_FAILED,
+};

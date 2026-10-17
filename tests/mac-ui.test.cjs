@@ -1891,3 +1891,40 @@ test("browser composition uses every injected factory and the real rolling recor
   );
   assert.deepEqual(errors, []);
 });
+
+test('transcription failures keep one coded banner through redraws and reset, and a successful silence clears it', async t => {
+  const f = await rendererHarness(t, { configuration: { transcription: { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' } } });
+  f.wiring.drawState();
+  assert.equal(f.get('transcription-warning').hidden, false);
+  assert.match(f.get('transcription-warning').textContent, /modèle introuvable/);
+  assert.equal(f.get('transcription-warning').dataset.code, 'TVLENS_WHISPER_MODEL_MISSING');
+  assert.equal(f.get('float-transcription-warning').hidden, false);
+  assert.equal(f.get('float-bar').classList.contains('transcription-missing'), true);
+  const banner = f.get('transcription-warning');
+  for (let i = 0; i < 3; i++) f.wiring.drawState();
+  assert.equal(f.get('transcription-warning'), banner, 'redraws keep the same banner');
+  f.publish('onState', { id: 'session', segments: [], transcription: { available: false, code: 'TVLENS_WHISPER_BINARY_MISSING' } });
+  f.frame();
+  assert.match(f.get('transcription-warning').textContent, /binaire introuvable/);
+  f.publish('onReset');
+  assert.equal(f.get('transcription-warning').hidden, false);
+  f.publish('onState', { id: 'new-session', segments: [], transcription: { available: true, code: null } });
+  f.frame();
+  assert.equal(f.get('transcription-warning').hidden, true);
+  assert.equal(f.get('transcription-warning').textContent, '');
+  assert.equal(f.get('float-transcription-warning').hidden, true);
+  assert.equal(f.get('float-bar').classList.contains('transcription-missing'), false);
+});
+
+test('a configuration refresh clears the retained transcription warning after leaving a session', async t => {
+  const failed = { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' };
+  const f = await rendererHarness(t, { configuration: { transcription: failed } });
+  f.publish('onState', { id: 'session', segments: [], transcription: failed });
+  f.frame();
+  f.publish('onReset');
+  assert.equal(f.get('transcription-warning').hidden, false);
+  assert.equal(typeof f.wiring.receiveTranscription, 'function');
+  f.wiring.receiveTranscription({ available: true, code: null });
+  f.frame();
+  assert.equal(f.get('transcription-warning').hidden, true);
+});

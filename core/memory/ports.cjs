@@ -41,6 +41,7 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {string|null} audioError
  * @property {string|null} visionError
  * @property {boolean} audioFailed Une transcription en échec peut avoir audioStatus ready.
+ * @property {string} [audioFailureCode] Cause stable fournie par la transcription en échec.
  * @property {string|null} visionSkipReason
  * @property {string|null} stage
  * @property {MemoryObservation|null} observation
@@ -83,7 +84,7 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {number} visionPending
  * @property {boolean} analyzing
  * @property {Array<MemoryInterval & {status:string}>} gaps
- * @property {Array<MemoryInterval & {audioStatus:string}>} audioGaps
+ * @property {Array<MemoryInterval & {audioStatus:string,code?:string}>} audioGaps
  * @property {Array<MemoryInterval & {visionStatus:string,reason:string|null}>} visionGaps
  * @property {Array<{startMs:number,endMs:number}>} captureGaps Trous avant ou entre passages, hors gigue de 250 ms.
  * @property {number} visionBlockedMs Temps de rétention de la voie vision, distinct des pertes.

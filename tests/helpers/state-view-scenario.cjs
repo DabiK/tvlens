@@ -16,6 +16,7 @@ async function stateViewScenario(t) {
   const runtime = new HeadlessRuntime({
     userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true,
     readClock: () => clock, wallClock: () => 1790000000000,
+    transcriber: { availability: () => ({ available: true, code: null }) },
     agent: { answer: async () => ({ answer: 'Réponse simulée.', citations: [], limits: [] }) },
   });
   let server;
