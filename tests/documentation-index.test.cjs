@@ -12,9 +12,12 @@ const OWNERS = [
 ];
 const REFERENCES = ['docs/architecture.md', 'docs/README.md', 'CONTRIBUTING.md'];
 
-function trackedFiles(root) {
-  return execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' })
+// Published: what Git tracks, plus the new files under docs/ that the loop will commit with its ticket.
+// Ignored files (a private draft) and untracked folders outside docs/ (local research) are never published.
+function publishedFiles(root) {
+  const list = (...args) => execFileSync('git', ['ls-files', '-z', ...args], { cwd: root, encoding: 'utf8' })
     .split('\0').filter(Boolean);
+  return [...new Set([...list(), ...list('--others', '--exclude-standard', '--', 'docs')])];
 }
 
 function expectedIndexTargets(documents) {
@@ -34,7 +37,7 @@ function linksOf(source) {
 
 function documentProblems(root) {
   const problems = [];
-  const documents = trackedFiles(root);
+  const documents = publishedFiles(root);
   const read = filename => fs.readFileSync(path.join(root, filename), 'utf8');
   const index = read('docs/README.md');
   const architecture = read('docs/architecture.md');
@@ -130,12 +133,21 @@ test('documentation inventory diagnoses a newly added top-level document', t => 
   assert.ok(documentProblems(root).some(problem => problem.includes('ajouter un lien vers new-reference.md')));
 });
 
-test('documentation inventory excludes untracked and ignored documents from every category', t => {
+test('documentation inventory excludes ignored documents from every category', t => {
   const { root, write } = fixture(t);
-  write('.gitignore', 'docs/private-draft.md\n');
-  for (const filename of ['docs/private-draft.md', 'docs/local-notes.md', 'docs/adr/0002-draft.md', 'docs/archive/private/README.md']) {
+  write('.gitignore', 'docs/private-draft.md\ndocs/local/\n');
+  for (const filename of ['docs/private-draft.md', 'docs/local/notes.md', 'docs/local/adr/0002-draft.md']) {
     write(filename, '# Brouillon local', { tracked: false });
   }
+  assert.deepEqual(documentProblems(root), []);
+});
+
+test('documentation inventory counts a new document under docs before its commit', t => {
+  const { root, write, read } = fixture(t);
+  write('docs/adr/0002-new.md', '# Nouvelle décision', { tracked: false });
+  const expected = 'ajouter une phrase et un lien vers adr/0002-new.md dans la section Décisions';
+  assert.ok(documentProblems(root).some(problem => problem.includes(expected)));
+  write('docs/architecture.md', read('docs/architecture.md') + '- [ADR](adr/0002-new.md) : Expliquer la nouvelle règle.\n');
   assert.deepEqual(documentProblems(root), []);
 });
 
