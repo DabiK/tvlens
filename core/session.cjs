@@ -39,8 +39,8 @@ class WatchSession {
   constructor({ id, now, perception, media, archive, thumbnails, storage,
     onChange = () => {}, onEvents = () => {}, onPublicationError = () => {},
     retentionMs = Infinity, maxPending = 2, visionDuringAsk = false }) {
-    // Media are kept until the session is deleted unless a host asks for a rolling window. A saved state
-    // carries null for "no expiry" (JSON has no Infinity): it is normalised here, never used in arithmetic.
+    // La durée reste une API historique du cœur ; les hôtes utilisent la conservation sans expiration.
+    // Un état sauvegardé porte null (JSON ne connaît pas Infinity), normalisé avant tout calcul.
     retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
       onChange, onEvents, onPublicationError, retentionMs, maxPending, visionDuringAsk });
@@ -435,9 +435,9 @@ class WatchSession {
     this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id).concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
     // Counted and reported, never shown as a passage: nothing says where they belong on the session clock.
     this.unplacedMedia = orphans.length || 0;
-    // The retention contract belongs to the session, not to the host that reopens it: media promised
-    // until deletion stay so on a host set to a rolling window, after an explicit resume as well.
-    if (saved.retention === 'until-deleted') this.retentionMs = Infinity;
+    // Les motifs historiques sont décodés avant ce changement : l'absence de retention signifie
+    // encore « non conservé ». Aucune archive rouverte ne réactive ensuite une fenêtre d'élagage.
+    this.retentionMs = Infinity;
     this.accepting = false; this.readOnly = true; this.lastError = null;
   }
   memoryView() {

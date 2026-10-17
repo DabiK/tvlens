@@ -16,6 +16,7 @@ challenge/
 !tests/fixtures/*.webm
 !/tests/fixtures/archives/durable-v1/**/*.webm
 !/tests/fixtures/archives/historical-v1/**/*.webm
+!/tests/fixtures/archives/pruned-v1/**/*.webm
 *.mp4
 *.bin
 *.enc

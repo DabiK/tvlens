@@ -539,13 +539,13 @@ test('sessions: a session being captured cannot be deleted, an old archive is te
     ['vidéo indisponible', 'vidéo expirée', 'vidéo indisponible', true]);
   assert.ok(!/\bmediaNote\b/.test(fs.readFileSync(app('ui', 'recap-view.js'), 'utf8')));
   assert.deepEqual([retentionNote({ retention: 'until-deleted', retentionMs: null }), retentionNote({ retention: 'rolling', retentionMs: 1800000 }), retentionNote(null)],
-    ['Vidéo conservée jusqu’à la suppression de la session', 'Vidéo conservée 30 min, résumés gardés ensuite', '']);
+    ['Vidéo conservée jusqu’à la suppression de la session', 'Vidéo conservée jusqu’à la suppression de la session', '']);
   // The retention shown is the loaded session's own. A durable archive opened on a host set to a rolling window
   // says "until deleted": the setting of the host is not even an input of what the Mémoire view writes.
   const durable = { id: 'kept', readOnly: true, retention: 'until-deleted', retentionMs: null, history: [], segments: [{ available: true, status: 'ready' }, { available: false, status: 'ready' }] };
   assert.equal(sessionRetention(durable), 'Vidéo conservée jusqu’à la suppression de la session');
   assert.equal(describeMemory(durable), '2 passages · 1 à revoir · 2 analysés · Vidéo conservée jusqu’à la suppression de la session');
-  assert.equal(sessionRetention({ id: 'live', retention: 'rolling', retentionMs: 1800000 }), 'Vidéo conservée 30 min, résumés gardés ensuite');
+  assert.equal(sessionRetention({ id: 'live', retention: 'rolling', retentionMs: 1800000 }), 'Vidéo conservée jusqu’à la suppression de la session');
   // A state that does not say it: the entry of that same session in the library (sessions().current), never the
   // entry of another session, and otherwise nothing rather than a guess.
   const silent = { id: 'kept', history: [], segments: [] }, entry = id => ({ current: { id, retention: 'until-deleted', retentionMs: null } });

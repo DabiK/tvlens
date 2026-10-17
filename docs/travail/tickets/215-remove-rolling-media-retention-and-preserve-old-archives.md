@@ -1,7 +1,7 @@
 ---
 id: T215
 titre: Stop reading the rolling retention setting on both hosts and keep old archives readable
-statut: a-faire
+statut: termine
 bloque_par: T208
 adr: oui
 installe: non
@@ -102,3 +102,103 @@ portée uniquement par T223, qui retire l'élagage ; ce premier lot ne consomme 
 Les témoins historiques servent à la compatibilité et ne réintroduisent aucun réglage actif d'hôte.
 
 ## Journal
+
+- Exploration sur `5e3f479` : lectures des compositions, restauration, persistance et corpus existants.
+  Le rafraîchissement Mac alimente aussi le manifeste ; il sera conservé pendant la capture.
+  État et écarts prévus dans `.harness-state/tickets/T215/`. Témoin hooks présent ; aucun rapport à reprendre.
+  Le nouveau corpus sera indépendant ; les corpus T037/T222 restent figés.
+
+- Corpus : `node --test --test-name-pattern='the pruned archive is a frozen witness' tests/archive-compat.test.cjs`
+  rouge sur `0 !== 1` (`red-corpus.log`), puis vert après la génération unique
+  `node scripts/fixtures/write-pruned-archive.cjs tests/fixtures/archives/pruned-v1` (code 0).
+  Producteur : cœur de `5e3f479`, fenêtre injectée directement, avant modification produit.
+  Deux passages réellement élagués, un trou d'analyse, une paire retirée après confirmation et une
+  paire conservée ; provenance, attentes et sommes figées. Aucun générateur appelé par un test.
+- Restauration : `node --test --test-name-pattern='reopening settles' tests/session-durable.test.cjs`
+  rouge sur rolling/1000 au lieu de until-deleted/null, puis vert (`red-restore.log`, `green-restore.log`).
+  Le décodage de not-kept précède toujours la normalisation. L'API directe de prune reste intacte.
+- Réglages serveur : rouge de `server host reads its reversible` sur retentionMs encore publié ;
+  rouge du cas `an archive kept until deletion keeps that contract on a host` sur une session neuve rolling.
+  Après retrait des lectures, validation, transmission et timer d'élagage, les trois cas ciblés passent
+  (`red-server-settings.log`, `red-runtime-settings.log`, `green-server-runtime.log`).
+- Mac : rouges des cas de configuration sur rolling et du banc `retired Mac retention` ; puis six cas
+  ciblés verts (`red-mac-settings.log`, `red-mac-clock.log`, `green-mac.log`). Une horloge injectée avance
+  d'une heure en capture, puis d'une heure en pause : médias conservés, manifeste rafraîchi sans analyse
+  prête, pause sans publication ni écriture. Les valeurs invalides de l'ancienne option sont ignorées.
+  Le cas des canaux IPC passe ; aucun motif source Mac n'a été modifié.
+- Affichage : `node --test --test-concurrency=1 tests/mac-ui.test.cjs tests/tv-chat-view.test.cjs`
+  rouge sur l'ancien libellé de durée et l'expiration déduite de rolling, puis vert (`red-ui.log`, `green-ui.log`).
+  Les motifs explicites expired, missing et not-kept restent distincts.
+
+### Correspondance des attentes modifiées avec Q18
+
+| Cas conservés | Changement de rétention | Preuve conservée ou ajoutée |
+| --- | --- | --- |
+| mac-ipc-contract : réglages, reprise, cadence et pause | Ancienne variable/option sans effet, sessions neuves durables | Délais de questions, seuils disque, inspection et fichiers initiaux conservés ; nouveau banc d'horloge et manifeste |
+| server-sessions : réglages et reprise sur ancien réglage | Plus de durée validée, sessions neuves durables | Relecture, inspection et lecture HTTP après une heure ; pause et refus disque conservés |
+| session-durable : restauration mixte et coût d'une capture longue | Archives rolling ou sans retention durables ; ancien paramètre invalide ignoré | Motifs, révisions, interruptions et numérotation conservés ; tests directs d'élagage inchangés |
+| remote-server et architecture-f10 | Le 410 ne provient plus de l'expiration d'une capture neuve | Copie de pruned-v1 via le vrai runtime ; 410 avant lecture de plage, octets exacts, abandon et fermeture du descripteur |
+| mac-ui et tv-chat-view | Aucune promesse d'expiration active, aucune déduction depuis rolling | Motifs historiques explicitement affichés ; conservation durable annoncée |
+| architecture-f05, architecture-f07, session-manifest | Aucune attente à changer dans le code livré courant | Cas inchangés : baux jusqu'au retour réel, admission, suppression, scellement et priorité des patches historiques |
+
+- `archive-compat` : 27/27 (`archive-refusal.log`). Lecture seule sans fournisseur ni réécriture,
+  textes cherchables, reprise ajoutant moment-5, anciennes paires intactes, compteurs et questions
+  préservés, puis fermeture/réouverture. Refus de session.json ou manifest.json : `archived: false`.
+- Documents actifs et deux scripts adaptés ; scripts Electron et live non lancés conformément au périmètre.
+  ADR 0048 écrit ; le second lot T223 conserve la responsabilité de retirer l'élagage interne.
+- `node scripts/check.mjs --changed` : vert, 197/197 tests lors du premier passage
+  (`check-changed-first.log`). Règles, format, lint, gel et cliquet verts ; aucune suppression ESLint à élaguer.
+- Suites imposées exécutées séparément et en séquentiel, commande `node --test tests/<nom>.test.cjs` :
+  mac-ipc-contract 32/32, server-sessions 29/29, remote-server 3/3, architecture-f10 10/10,
+  architecture-f05 15/15, architecture-f07 26/26, session-manifest 7/7, mac-ui 52/52,
+  archive-compat 27/27, session-durable 24/24, session-lifecycle 15/15, tv-chat-view 23/23.
+  Tous codes 0 ; commandes et résumés dans `suites.json`, sorties dans `suite-*.log` du dossier d'état.
+
+- Premier contrôle complet `node scripts/check.mjs` : rouge, 2449/2452 tests JS verts et
+  47/47 Python verts (`check-full.log`). Trois échecs reproduits avec
+  `node --test --test-concurrency=1 --test-name-pattern='a rolling window still expires|published documentation indexes|every saved state' tests/clip-unreadable.test.cjs tests/documentation-index.test.cjs tests/session-archive.test.cjs`
+  (`red-full-regressions.log`) : test de purge encore composé par le runtime, ADR absent de la
+  section Décisions, corpus supposé entièrement non versionné.
+- Corrections : le cas illisible compose directement le cœur et le stockage réel avec fenêtre,
+  conserve ses deux assertions de purge ; l'index explique l'ADR ; le round-trip couvre aussi
+  l'enveloppe versionnée, sans changer les octets figés ni les comparaisons de toutes les clés du modèle.
+  `node --test --test-concurrency=1 tests/clip-unreadable.test.cjs tests/documentation-index.test.cjs tests/session-archive.test.cjs`
+  : 34/34, code 0 (`green-full-regressions.log`). Aucun cas retiré, aucun motif source Mac changé.
+- `node scripts/check.mjs --changed` après corrections : vert, 222/222 tests JS, code 0
+  (`check-changed-final.log`). Les dix fichiers de tests modifiés gardent chacun au moins leur
+  nombre de cas initial (`test-counts.json`). Harnais et gel ESLint inchangés.
+- Intégrité revérifiée : 148 fichiers des anciens corpus identiques à HEAD ; toutes les sommes
+  de durable-v1 (23), historical-v1 (123) et pruned-v1 (11) valides (`integrity.json`).
+  `git diff --check` : code 0. Les trois scripts adaptés/ajoutés passent `node --check`.
+  Le générateur a servi une seule fois à figer le témoin ; les scripts Electron et live ont
+  seulement été contrôlés en syntaxe, sans lancer Electron ni les fournisseurs réels.
+- Contrôle final `node scripts/check.mjs` : vert, code 0 (`check-full-final.log`) :
+  règles, format, lint, gel et cliquet verts ; 2452/2452 tests JS dans 137 fichiers et 47/47 Python.
+  Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T215/verdict.json` ; aucune réserve restante.
+  Aucun commit ni push ; relecture et intégration laissées à la boucle.
+
+### Reprise après relecture 1
+
+- Rapport, ticket/journal, écarts, statut et diff relus sur `d246657` ; nouveau témoin hooks présent.
+  Constat mineur 1 accepté : retirer les trois options mortes des fixtures de listage HTTP,
+  sans toucher aux scénarios ni à leurs assertions. Aucun changement produit requis.
+- Avant correction :
+  `node --test --test-name-pattern='HTTP session listing keeps the entry session facts|HTTP .* keeps A while the library waits|HTTP .* freezes flags and figures' tests/server-sessions.test.cjs`
+  : 7/7, code 0 (`reprise-1-before.log`). Ce nettoyage de montage ne révèle pas de défaut
+  comportemental : aucun nouveau rouge revendiqué, aucune comparaison de source ajoutée.
+- Constat 1 corrigé : les trois montages utilisent `fixture(t)` ; les sept variantes de listage
+  gardent toutes leurs assertions, dont la politique durable de l'archive ouverte. Les cas dédiés
+  à l'ancienne option ignorée restent en place. `node --test tests/server-sessions.test.cjs` :
+  29/29, code 0 (`reprise-1-server-sessions.log`).
+- `node scripts/check.mjs --changed` : vert, 222/222 tests JS, règles, format, lint, gel et cliquet
+  verts, code 0 (`reprise-1-check-changed.log`). `git diff --check` : code 0.
+- `node scripts/check.mjs` après correction : vert, code 0 (`reprise-1-check-full.log`) :
+  2452/2452 tests JS dans 137 fichiers, 47/47 Python ; règles, format, lint, gel et cliquet verts.
+  Nouveau verdict `TERMINÉ`, constat mineur 1 corrigé sans réserve propre. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T215/relecture-2.md : 1. `docs/night-features-delivery.md:237`, `:842` (hors périmètre, réserve)
+
+  - **Ce qui ne va pas :** ce constat vient de la relecture 1 et il est toujours vrai. Ce livrable du 13/10 présente encore `TVLENS_MEDIA_RETENTION_MS` comme un réglage réversible, dans le texte et dans le tableau « environnement du processus ». Il ne fait pas partie des six documents actifs nommés par le ticket.
+  - **Ce qui est attendu :** le reporter en réserve. Deux suites possibles : une note « réglage retiré depuis ADR 0048 », ou rien si ce livrable est considéré comme figé.

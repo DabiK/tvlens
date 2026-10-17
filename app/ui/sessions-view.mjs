@@ -1,4 +1,4 @@
-import { formatBytes, formatClock, formatDay, formatDuration, formatLimit, formatMinutes, plural } from './text.mjs';
+import { formatBytes, formatClock, formatDay, formatDuration, formatMinutes, plural } from './text.mjs';
 
 /**
  * Pure view model of saved sessions, storage and media availability (tickets 02 and 03) for the Mac window,
@@ -30,15 +30,16 @@ export function unavailableNote(passage) {
 
 /** How long the video is kept, in words, from whatever carries {retention, retentionMs}. */
 export function retentionNote(source) {
-  if (source?.retention === 'rolling' && finite(source.retentionMs) > 0) return `Vidéo conservée ${formatLimit(source.retentionMs)}, résumés gardés ensuite`;
-  if (source?.retention === 'until-deleted' || (source && source.retention === undefined && source.retentionMs === null)) return 'Vidéo conservée jusqu’à la suppression de la session';
+  const known = ['until-deleted', 'rolling'].includes(source?.retention);
+  if (known || (source && source.retention === undefined && source.retentionMs === null))
+    return 'Vidéo conservée jusqu’à la suppression de la session';
   return '';
 }
 
 /**
- * Retention of the loaded session, read from the session itself: its state, else the `current` entry of the
- * library when it is the same session. Never the setting of the host: an archive kept until deletion stays so
- * when it is opened on a host set to a rolling window. Empty when the session does not say.
+ * Conservation de la session chargée : son état, sinon l'entrée current de cette même session.
+ * Les valeurs historiques restent lisibles mais ne promettent plus une expiration.
+ * Sans information de la session, aucun libellé n'est inventé.
  */
 export function sessionRetention(state, library = null) {
   if (!state?.id) return '';

@@ -12,6 +12,7 @@ const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
 const { spawnSync } = require('node:child_process');
 const { ClipInspector } = require('../adapters/clip-inspector.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
+const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { createSessionRuntime, openArchivedSession } = require('../runtime/session-runtime.cjs');
 
 // Two recordings made by Chromium's MediaRecorder (Electron 44) on 13 October 2026, kept as they came out:
@@ -171,12 +172,24 @@ test('with speech and images analysed apart, the unreadable passage still gets i
 });
 
 test('a rolling window still expires an unreadable passage, and removes its files then', async t => {
-  const f = await runtime(t), live = f.open({ retentionMs: 60000 }), media = path.join(f.sessionsRoot, live.id, 'media');
-  f.clock = 2000; await live.watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), frames: [{ atMs: 0, dataUrl: f.jpeg }], audio: null });
-  await settle(live.watch); await live.watch.prune();
-  assert.deepEqual([live.watch.segments[0].mediaReason, (await fs.readdir(media)).sort()], ['unreadable', ['moment-1.json', 'moment-1.webm']]);
-  f.clock = 120000; await live.watch.prune();
-  assert.deepEqual([live.watch.segments.length, live.watch.history.map(s => [s.id, s.mediaReason]), await fs.readdir(media)], [0, [['moment-1', 'expired']], []]);
+  const f = await runtime(t);
+  const store = LocalSessionStore.forSession(path.join(f.sessionsRoot, 'historical'));
+  // The historical core API remains covered directly; hosts no longer compose a rolling window.
+  const watch = new WatchSession({
+    id: 'historical', now: () => f.clock, media: store, archive: store, retentionMs: 60000,
+    perception: { observeVisual: async () => ({ observation: { summary: 'Un cercle.' }, elapsedMs: 1 }) },
+  });
+  f.opened.push(watch);
+  const media = path.join(store.root, 'media');
+  f.clock = 2000;
+  await watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'),
+    frames: [{ atMs: 0, dataUrl: f.jpeg }], audio: null });
+  await settle(watch);
+  await watch.prune();
+  assert.deepEqual([watch.segments[0].mediaReason, (await fs.readdir(media)).sort()], ['unreadable', ['moment-1.json', 'moment-1.webm']]);
+  f.clock = 120000;
+  await watch.prune();
+  assert.deepEqual([watch.segments.length, watch.history.map(s => [s.id, s.mediaReason]), await fs.readdir(media)], [0, [['moment-1', 'expired']], []]);
 });
 
 test('re-examination falls back on the images kept at capture only when the video itself cannot be decoded', async t => {

@@ -36,7 +36,7 @@ try {
   // The ceiling of a question and the retention are read from the host: nothing on screen states them by itself.
   const configuration = await page.evaluate(() => window.tvlens.config());
   assert.ok(configuration.questionTimeoutMs > 0, 'The host publishes the question ceiling');
-  assert.ok(['until-deleted', 'rolling'].includes(configuration.retention), 'The host publishes the retention');
+  assert.deepEqual([configuration.retention, configuration.retentionMs], ['until-deleted', null]);
   if (liveVideoAgent) stateTimeoutMs = configuration.questionTimeoutMs + 5000;
   assert.doesNotMatch(await page.locator('body').innerText(), /60 secondes|Mémoire vidéo de 5 min|Surveillance auto/);
   await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1000,720));
@@ -174,7 +174,7 @@ try {
   assert.ok(archive.sourcePassages.length>0);
   await page.waitForFunction(()=>[...document.querySelectorAll('.moment-image')].filter(img=>img.complete&&img.naturalWidth>0).length>=2);
   // The retention shown is the loaded session's own (its state), not the setting of the host.
-  assert.match(await page.locator('#memory-status').textContent(), state.retention === 'until-deleted' ? /jusqu’à la suppression de la session$/ : /Vidéo conservée [^·]+, résumés gardés ensuite$/, 'Retention text comes from the session state');
+  assert.match(await page.locator('#memory-status').textContent(), /jusqu’à la suppression de la session$/, 'Retention text comes from the session state');
   await page.screenshot({path:'/tmp/tvlens-recap.png',fullPage:true});
   await page.locator('#nav-live').click();
   // Media of a session live in its media/ folder, kept until the session is deleted.
@@ -503,7 +503,7 @@ try {
   await page.waitForFunction(()=>[...document.querySelectorAll('#timeline img.moment-image')].some(img=>img.getAttribute('src').startsWith('tvlens-media://')&&img.complete&&img.naturalWidth>0));
   if (archivedState.segments.length > 40) assert.match(await page.locator('#timeline-older').textContent(), /passages? plus anciens?/, 'A long session draws its recent passages and names the rest');
   // An archive states its own retention, read from its state: a durable one says "until deleted" wherever it is opened.
-  assert.match(await page.locator('#memory-status').textContent(), opened.retention === 'until-deleted' ? /jusqu’à la suppression de la session$/ : /Vidéo conservée [^·]+, résumés gardés ensuite$/, 'An opened archive shows the retention of the session');
+  assert.match(await page.locator('#memory-status').textContent(), /jusqu’à la suppression de la session$/, 'An opened archive shows the retention of the session');
   await page.locator('#nav-live').click();
   await page.locator('#message-list .deep-message').first().locator('.reference:not([disabled])').first().click();
   await page.waitForFunction(() => document.querySelector('#replay').readyState >= 2);

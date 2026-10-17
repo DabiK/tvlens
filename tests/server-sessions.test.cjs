@@ -149,7 +149,7 @@ function currentFacts(list) {
 }
 
 test('HTTP session listing keeps the entry session facts while the library waits across a replacement', async t => {
-  const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+  const f = await fixture(t);
   const A = (await f.req('/v1/session/start', {})).value.id;
   await f.block(A, 1, 8000);
   const before = currentFacts((await f.req('/v1/sessions')).value);
@@ -200,7 +200,7 @@ test('HTTP storage keeps the entry session volume while library usage waits acro
 for (const route of ['/v1/sessions', '/v1/storage']) {
   for (const transition of ['close', 'open archive']) {
     test(`HTTP ${route} keeps A while the library waits across ${transition}`, async t => {
-      const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+      const f = await fixture(t);
       const archive = await emptyArchive(f.sessionsRoot, 'server');
       const A = (await f.req('/v1/session/start', {})).value.id;
       await f.block(A, 1, 8000);
@@ -252,7 +252,7 @@ for (const route of ['/v1/sessions', '/v1/storage']) {
   });
 
   test(`HTTP ${route} freezes flags and figures while the same session captures more and pauses`, async t => {
-    const f = await fixture(t, { runtimeOptions: () => ({ retentionMs: 60000 }) });
+    const f = await fixture(t);
     const A = (await f.req('/v1/session/start', {})).value.id;
     await f.block(A, 1, 8000);
     const before = (await f.req(route)).value;
@@ -600,13 +600,17 @@ test('an archive kept until deletion keeps that contract on a host set to a roll
   assert.equal(inspected.observations[0].id, 'moment-1', 'the lease found the real files of the first passage');
   assert.equal((await f.req('/v1/session/end', {})).value.archived, true);
 
-  // The window of this host is real: a session born under it promised nothing and does expire.
+  // Le paramètre retiré ne change pas non plus la politique des nouvelles sessions.
   const B = (await f.req('/v1/session/start', {})).value;
-  assert.deepEqual([B.retention, B.retentionMs], ['rolling', 300000]);
+  assert.deepEqual([B.retention, B.retentionMs], ['until-deleted', null]);
   assert.equal((await f.block(B.id, 1, 8000)).value.id, 'moment-1');
   f.clock += 600000;
   await f.runtime.session.watch.prune();
-  assert.deepEqual(await f.req(`/v1/media/${B.id}/moment-1`), { status: 410, value: { error: 'Média expiré.', code: 'media-expired' } });
+  assert.equal((await f.raw(`/v1/media/${B.id}/moment-1`)).status, 200);
+  await f.runtime.pause();
+  f.clock += 3600000;
+  await f.runtime.session.watch.prune();
+  assert.equal((await f.raw(`/v1/media/${B.id}/moment-1`)).status, 200);
   assert.deepEqual((await tree(mediaA)).filter(row => /moment-[12]\./.test(row[0])), start);
 });
 
@@ -842,11 +846,14 @@ test('a start renews the block numbering even when the session was still capturi
 
 test('the server host reads its reversible settings strictly, and no longer sweeps media at start', async () => {
   const { settings } = require('../server/main.cjs');
-  assert.deepEqual(settings({}), { questionTimeoutMs: undefined, surveillance: undefined, retentionMs: Infinity, disk: { minFreeBytes: GIB, warnFreeBytes: 2 * GIB } });
+  assert.deepEqual(settings({}), { questionTimeoutMs: undefined, surveillance: undefined, disk: { minFreeBytes: GIB, warnFreeBytes: 2 * GIB } });
   assert.deepEqual(settings({ TVLENS_QUESTION_TIMEOUT_MS: '60000', TVLENS_SURVEILLANCE_WORKERS: '2', TVLENS_MEDIA_RETENTION_MS: '300000', TVLENS_DISK_MIN_FREE_MB: '512', TVLENS_DISK_WARN_FREE_MB: '', TVLENS_PORT: '1' }),
-    { questionTimeoutMs: 60000, surveillance: { workers: 2 }, retentionMs: 300000, disk: { minFreeBytes: 512 * 1024 ** 2, warnFreeBytes: 2 * GIB } });
-  for (const [name, value] of [['TVLENS_MEDIA_RETENTION_MS', 'abc'], ['TVLENS_MEDIA_RETENTION_MS', '0'], ['TVLENS_DISK_MIN_FREE_MB', '-1'], ['TVLENS_DISK_WARN_FREE_MB', '2 Go']])
+    { questionTimeoutMs: 60000, surveillance: { workers: 2 }, disk: { minFreeBytes: 512 * 1024 ** 2, warnFreeBytes: 2 * GIB } });
+  for (const [name, value] of [['TVLENS_DISK_MIN_FREE_MB', '-1'], ['TVLENS_DISK_WARN_FREE_MB', '2 Go']])
     assert.throws(() => settings({ [name]: value }), new RegExp('Réglage ' + name + ' invalide'));
+  for (const value of ['abc', '0', '-1', '300000']) {
+    assert.deepEqual(settings({ TVLENS_MEDIA_RETENTION_MS: value }), settings({}), 'retired setting is ignored');
+  }
   // The two values handed over as converted are refused by the runtimes that own their bounds, at start.
   const host = env => { const s = settings(env); return new HeadlessRuntime({ userData: os.tmpdir(), sessionsRoot: path.join(os.tmpdir(), 'tvlens-absent-sessions'), smoke: true, selectedModels: {}, agent: { answer: async () => ({}) },
     config: { questionTimeoutMs: s.questionTimeoutMs, ...(s.surveillance ? { surveillance: s.surveillance } : {}) } }); };

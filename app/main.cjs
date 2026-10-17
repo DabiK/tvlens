@@ -48,7 +48,7 @@ let verifierAdapter, verification;
 let surveillance, surveillanceTimer, storageTimer;
 let recap, recapAdapter, recapTimer, switching = false;
 let deep, bridge, videoAgent;
-let window, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
+let window, captureRefreshTimer, config, sessionsRoot, archiveOnQuit, closing = false;
 let loaded = null;
 const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
@@ -76,11 +76,6 @@ app.whenReady().then(async () => {
   config.questionTimeoutMs = setting('TVLENS_QUESTION_TIMEOUT_MS');
   const workers = setting('TVLENS_SURVEILLANCE_WORKERS');
   config.surveillance = { ...config.surveillance, ...(workers === undefined ? {} : { workers }) };
-  // Media are kept until their session is deleted. TVLENS_MEDIA_RETENTION_MS (or --retention-ms= in a
-  // test run) brings the rolling window back.
-  const retentionFlag = smoke ? process.argv.find(x => x.startsWith('--retention-ms='))?.split('=')[1] : undefined;
-  const retentionMs = retentionFlag ? Number(retentionFlag) : setting('TVLENS_MEDIA_RETENTION_MS') ?? Infinity;
-  if (!(retentionMs > 0)) throw new Error('Réglage TVLENS_MEDIA_RETENTION_MS invalide : durée positive en millisecondes attendue.');
   // Durable retention never deletes to make room: below the floor, capture is refused and says why.
   // A simulated run only depends on the free space of its machine when a threshold is set for it.
   const guard = smoke && !process.env.TVLENS_DISK_MIN_FREE_MB && !process.env.TVLENS_DISK_WARN_FREE_MB ? null
@@ -262,7 +257,7 @@ app.whenReady().then(async () => {
   const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
   // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
   const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
-    questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: Number.isFinite(retentionMs) ? 'rolling' : 'until-deleted', retentionMs: Number.isFinite(retentionMs) ? retentionMs : null });
+    questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: 'until-deleted', retentionMs: null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);
   handle('models:choices',()=>modelChoices(config.codexAuthHome));
@@ -300,7 +295,7 @@ app.whenReady().then(async () => {
         quota,
       });
   // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
-  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
+  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,restore,
     smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
     log: line => console.error(line),
@@ -315,12 +310,10 @@ app.whenReady().then(async () => {
     loaded = { runtime, title: name, startedAt: at, fresh };
     saved.transcriber = runtime.transcriber;
   };
-  // Every five seconds while something of the loaded session moves without an event of its own: its clock while
-  // it captures, a rolling window to sweep, a removal to try again. A durable session that is paused pushes
-  // nothing: its state is the one already shown.
-  const sweep = () => {
-    if (loaded && (loaded.runtime.watch.accepting || Number.isFinite(loaded.runtime.watch.retentionMs) || loaded.runtime.watch.unremoved?.size))
-      loaded.runtime.watch.prune().catch(() => {});
+  // L'horloge et la cadence du manifeste avancent même sans analyse prête.
+  // En pause, aucun de ces faits ne change : la fenêtre garde le dernier état publié.
+  const refreshCapture = () => {
+    if (loaded?.runtime.watch.accepting) loaded.runtime.watch.emit();
   };
   // Same shape as the server host. The manifest of the session in memory is up to thirty seconds old, or
   // not written yet: its row carries the figures in memory instead.
@@ -367,7 +360,7 @@ app.whenReady().then(async () => {
         // while the session closes finds none of them, and one still running is refused instead of answered.
         begin: ['contextes MCP', () => ended && bridge?.revoke(ended.id)],
         steps: [
-          ['résumé vivant', async () => { clearInterval(pruneTimer); try { recap.reset(); await recapAdapter?.close?.(); } finally { recapAdapter = null; } }],
+          ['résumé vivant', async () => { clearInterval(captureRefreshTimer); try { recap.reset(); await recapAdapter?.close?.(); } finally { recapAdapter = null; } }],
           // The last surveillance states reach the session folder before the session closes.
           ['surveillance', () => surveillance.reset(reason)],
           // Final states are saved as they are published; whatever still waited for its second is handed over too,
@@ -423,7 +416,7 @@ app.whenReady().then(async () => {
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at, true);
-    pruneTimer = setInterval(sweep, 5000);
+    captureRefreshTimer = setInterval(refreshCapture, 5000);
     loaded.runtime.watch.emit();
     // Never for an archive that is only being read: opening one warms nothing up.
     warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: id });
@@ -494,7 +487,7 @@ app.whenReady().then(async () => {
       publishStorage();
       throw error;
     });
-    clearInterval(pruneTimer); pruneTimer = setInterval(sweep, 5000);
+    clearInterval(captureRefreshTimer); captureRefreshTimer = setInterval(refreshCapture, 5000);
     // Same as at the start: never for an archive that is only being read.
     warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: loaded.runtime.watch.id });
     send('sessions:changed');
@@ -580,7 +573,7 @@ app.on('window-all-closed', () => app.quit());
 app.on('before-quit', event => {
   if (closing) return;
   event.preventDefault(); closing = true;
-  for (const timer of [pruneTimer, recapTimer, surveillanceTimer, storageTimer]) clearInterval(timer);
+  for (const timer of [captureRefreshTimer, recapTimer, surveillanceTimer, storageTimer]) clearInterval(timer);
   globalShortcut.unregisterAll();
   verifierAdapter?.cancel?.();
   // Quitting archives the loaded session like "Nouvelle session" does: nothing is purged, now or at the next start.

@@ -104,13 +104,18 @@ for (const [condition, document] of [
 
 test('every saved state of the frozen corpus is read as it is and survives a version 1 round trip key for key', async () => {
   const files = await sessionFiles(ARCHIVES);
-  assert.ok(files.length >= 12, 'the durable and historical corpora are both present');
+  assert.ok(files.length >= 13, 'the durable, historical and pruned corpora are present');
   for (const file of files) {
     const label = path.relative(ARCHIVES, file);
-    const saved = JSON.parse(await fs.readFile(file, 'utf8'));
-    assert.deepEqual(fromArchive(reread(saved)), saved, label);
+    const document = JSON.parse(await fs.readFile(file, 'utf8'));
+    const { format, version, ...model } = document;
+    const versioned = Object.hasOwn(document, 'format');
+    const saved = versioned ? model : document;
+    if (versioned) assert.deepEqual([format, version], [ARCHIVE_FORMAT, ARCHIVE_VERSION], label);
+    assert.deepEqual(fromArchive(reread(document)), saved, label);
     const written = reread(toArchive(saved));
     assert.deepEqual([written.format, written.version], [ARCHIVE_FORMAT, ARCHIVE_VERSION], label);
+    if (versioned) assert.deepEqual(written, document, label);
     const decoded = reread(fromArchive(written));
     assert.deepEqual(Object.keys(decoded), Object.keys(saved), label);
     for (const key of ['segments', 'history']) {

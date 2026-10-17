@@ -1,0 +1,17 @@
+{
+  "jobs": [
+    {
+      "id": "deep-1",
+      "sessionId": "4473f9a2-3179-4ba8-b5f5-e5462d11fb52",
+      "question": "Quelle forme ?",
+      "anchorMs": 1000,
+      "status": "done",
+      "result": {
+        "answer": "Un cercle bleu.",
+        "kind": "explanation",
+        "citations": [],
+        "limits": []
+      }
+    }
+  ]
+}

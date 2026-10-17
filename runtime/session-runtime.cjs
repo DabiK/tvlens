@@ -60,8 +60,6 @@ function createSessionRuntime({
   localInspection = false,
   liveObservation = false,
   strategy = "sheets-diverse",
-  // Media are kept until the session is deleted; a finite value brings the rolling window back.
-  retentionMs = Infinity,
   onChange = () => {},
   log = () => {},
   onPublicationError = createPublicationDiagnostic(),
@@ -78,15 +76,6 @@ function createSessionRuntime({
   if (restore && id !== undefined && id !== restore.snapshot.id)
     throw refusal(400, "Archive d’une autre session.", "invalid-archive");
   id ??= restore ? restore.snapshot.id : randomUUID();
-  // null is how a saved state spells "no expiry"; anything else must be a real duration.
-  if (
-    retentionMs !== null &&
-    retentionMs !== Infinity &&
-    !(Number.isFinite(retentionMs) && retentionMs > 0)
-  )
-    throw new Error(
-      "Réglage retentionMs invalide : durée positive en millisecondes attendue.",
-    );
   // An unknown value must not silently fall back to Codex and be read as a local measurement.
   if (!["codex", "local", undefined].includes(config.perceptionBackend))
     throw new Error("Backend de perception inconnu (codex ou local).");
@@ -183,7 +172,6 @@ function createSessionRuntime({
   });
   watch = new WatchSession({
     id,
-    retentionMs: retentionMs,
     now: () => sessionClock.now(),
     perception,
     media: store,

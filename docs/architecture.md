@@ -162,8 +162,9 @@ révision ; le refus sans passage porte deux identités nulles. Aucun lecteur ac
 `onChange` garde son contrat. Les faits ne sont ni rejoués à la restauration ni chargés de sauvegarder.
 
 L’horloge suit l’ordre d’observation, même si le lecteur revient en arrière. Les médias et miniatures
-restent jusqu’à suppression explicite par défaut ; `TVLENS_MEDIA_RETENTION_MS` peut rétablir une
-fenêtre glissante. Une archive durable conserve son contrat quand elle est reprise sur un autre réglage.
+restent jusqu’à suppression explicite. Les anciens réglages de rétention ne sont plus lus par les hôtes.
+Une archive rouverte devient durable après décodage de ses motifs historiques, sans réécriture à l’ouverture.
+Le retrait en deux lots est décrit dans l’[ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md).
 `session.json`, `manifest.json`, `media/` et `thumbs/` portent état, liste et médias ; les usages ajoutent
 questions, résumé vivant, surveillance et embeddings. `SessionLibrary` liste par manifeste et supprime
 une session ciblée. Les archives anciennes sans manifeste restent lisibles comme texte seul.
@@ -383,3 +384,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0047](adr/0047-session-json-porte-un-format-et-une-version-lus-par-un-convertisseur.md) :
   session.json porte un format et une version, écrits et lus par le seul convertisseur de la Mémoire.
+
+- [ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) :
+  Les hôtes conservent les médias jusqu'à suppression ; la reprise garde les motifs historiques,
+  sans réactiver de fenêtre. Le retrait de l'élagage interne suit dans un second lot.

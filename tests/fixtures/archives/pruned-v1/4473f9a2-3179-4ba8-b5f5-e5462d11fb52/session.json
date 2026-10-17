@@ -1,0 +1,199 @@
+{
+  "format": "tvlens-viewing-memory",
+  "version": 1,
+  "id": "4473f9a2-3179-4ba8-b5f5-e5462d11fb52",
+  "accepting": false,
+  "asking": true,
+  "analyzing": false,
+  "elapsedMs": 16000,
+  "capturedThroughMs": 16000,
+  "analyzedThroughMs": 16000,
+  "analysisLagMs": 0,
+  "contextThroughMs": 16000,
+  "gaps": [
+    {
+      "id": "moment-2",
+      "startMs": 1000,
+      "endMs": 2000,
+      "status": "error"
+    }
+  ],
+  "retentionMs": 12000,
+  "retention": "rolling",
+  "readOnly": false,
+  "unplacedMedia": 0,
+  "apiCalls": 4,
+  "apiCost": 0,
+  "pending": 0,
+  "audioPending": 0,
+  "visionPending": 0,
+  "lastError": null,
+  "history": [
+    {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 1000,
+      "topicSummary": null,
+      "summary": "Le cercle bleu continue son trajet.",
+      "observation": {
+        "transcript": "Un cercle bleu traverse l’écran.",
+        "summary": "Le cercle bleu continue son trajet."
+      },
+      "status": "ready",
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "audioMs": 0,
+      "visionMs": 0,
+      "transcriptPublishedMs": 1000,
+      "receivedMs": 1000,
+      "audioStartedMs": 1000,
+      "visionQueuedMs": 1000,
+      "visionStartedMs": 1000,
+      "visionPublishedMs": 1000,
+      "revision": 2,
+      "mediaReason": "expired"
+    },
+    {
+      "id": "moment-2",
+      "startMs": 1000,
+      "endMs": 2000,
+      "summary": "Passage non analysé.",
+      "observation": null,
+      "status": "error",
+      "thumbnailAvailable": true,
+      "audioStatus": "error",
+      "visionStatus": "error",
+      "audioError": "Transcription indisponible dans le témoin.",
+      "visionError": "Image indisponible dans le témoin.",
+      "receivedMs": 2000,
+      "audioStartedMs": 2000,
+      "visionQueuedMs": 2000,
+      "visionStartedMs": 2000,
+      "revision": 0,
+      "mediaReason": "expired"
+    }
+  ],
+  "questions": [
+    {
+      "question": "Quelle forme ?",
+      "answer": "Un cercle bleu.",
+      "atMs": 1000
+    }
+  ],
+  "latency": {
+    "passages": 4,
+    "blockMs": {
+      "n": 4,
+      "mean": 1000,
+      "max": 1000
+    },
+    "arrivalMs": {
+      "n": 4,
+      "mean": 0,
+      "max": 0
+    },
+    "audioWaitMs": {
+      "n": 4,
+      "mean": 0,
+      "max": 0
+    },
+    "audioMs": {
+      "n": 3,
+      "mean": 0,
+      "max": 0
+    },
+    "visionWaitMs": {
+      "n": 4,
+      "mean": 0,
+      "max": 0
+    },
+    "visionMs": {
+      "n": 3,
+      "mean": 0,
+      "max": 0
+    },
+    "transcriptAfterCloseMs": {
+      "n": 3,
+      "mean": 0,
+      "max": 0
+    },
+    "readyAfterCloseMs": {
+      "n": 3,
+      "mean": 0,
+      "max": 0
+    }
+  },
+  "coverage": {
+    "passages": 4,
+    "audioSkipped": 0,
+    "audioExpired": 0,
+    "visionSkippedBacklog": 0,
+    "visionSkippedAsking": 0,
+    "visionExpired": 0,
+    "audioError": 1,
+    "visionError": 1,
+    "visionBlockedMs": 0
+  },
+  "audioGaps": [],
+  "visionGaps": [],
+  "storage": null,
+  "segments": [
+    {
+      "id": "moment-3",
+      "startMs": 8000,
+      "endMs": 9000,
+      "status": "ready",
+      "hasAudio": true,
+      "available": true,
+      "observation": {
+        "transcript": "Un cercle bleu traverse l’écran.",
+        "summary": "Le cercle bleu continue son trajet."
+      },
+      "receivedMs": 9000,
+      "revision": 2,
+      "audioStatus": "ready",
+      "audioStartedMs": 9000,
+      "analysisMs": 0,
+      "audioMs": 0,
+      "metrics": {},
+      "transcriptPublishedMs": 9000,
+      "visionStatus": "ready",
+      "visionQueuedMs": 9000,
+      "visionStartedMs": 9000,
+      "topicSummary": null,
+      "visionMs": 0,
+      "visionPublishedMs": 9000,
+      "stage": null,
+      "thumbnailAvailable": true
+    },
+    {
+      "id": "moment-4",
+      "startMs": 15000,
+      "endMs": 16000,
+      "status": "ready",
+      "hasAudio": true,
+      "available": true,
+      "observation": {
+        "transcript": "Un cercle bleu traverse l’écran.",
+        "summary": "Le cercle bleu continue son trajet."
+      },
+      "receivedMs": 16000,
+      "revision": 2,
+      "audioStatus": "ready",
+      "audioStartedMs": 16000,
+      "analysisMs": 0,
+      "audioMs": 0,
+      "metrics": {},
+      "transcriptPublishedMs": 16000,
+      "visionStatus": "ready",
+      "visionQueuedMs": 16000,
+      "visionStartedMs": 16000,
+      "topicSummary": null,
+      "visionMs": 0,
+      "visionPublishedMs": 16000,
+      "stage": null,
+      "thumbnailAvailable": true
+    }
+  ]
+}

@@ -6,7 +6,7 @@ const require=createRequire(import.meta.url);
 // Real media decoded by Chromium; only the OS picker is substituted. No expected answer is sent to any model.
 // Real providers throughout (chat, perception, inspection and the surveillance role): run on purpose only.
 const bytes=await fs.readFile(process.argv[2]||'/tmp/tvlens-source-live.mp4');
-const app=await electron.launch({args:['.','--smoke-test','--live-video-agent','--live-inspection','--live-observation','--live-surveillance','--retention-ms=45000'],executablePath:require('electron')});
+const app=await electron.launch({args:['.','--smoke-test','--live-video-agent','--live-inspection','--live-observation','--live-surveillance'],executablePath:require('electron')});
 let page;const report={date:new Date().toISOString(),fixture:'45 seconds of local Kennedy Rice video; Chromium playback stream, real recorder, local Whisper, Luna perception, persistent Codex chat and web, Codex surveillance role. OS source picker substituted. No fixture descriptions or expected answers injected.',checks:{}};
 async function waitFor(fn,timeout=90000){const start=Date.now();while(Date.now()-start<timeout){const value=await fn();if(value)return value;await new Promise(r=>setTimeout(r,200));}throw Error('Timed out waiting for live test state');}
 try{
@@ -55,7 +55,10 @@ try{
  const beforePause=await page.evaluate(()=>window.tvlens.state());await page.locator('#stop').click();await waitFor(async()=>!(await page.evaluate(()=>window.tvlens.state())).analyzing);
  await page.locator('#observe').click();await page.waitForFunction(()=>document.querySelector('#preview').videoWidth>0);const resumed=await page.evaluate(()=>window.tvlens.state());report.checks.pauseResume=resumed.id===beforePause.id;
  await send('Redonne-moi le lien de la source du discours');await waitFor(async()=>(await page.evaluate(()=>window.tvlens.deepState())).jobs.at(-1).status==='done');const resumedJob=(await page.evaluate(()=>window.tvlens.deepState())).jobs.at(-1);report.resumedJob=resumedJob;report.checks.threadAfterResume=resumedJob.result?.threadId===jobs[0].result?.threadId&&resumedJob.result?.sources?.length>0;
- const finalState=await page.evaluate(()=>window.tvlens.state());report.checks.expiredMedia=finalState.history.length>0;report.checks.bookmarkSurvivesExpiration=(await page.evaluate(()=>window.tvlens.savedMoments())).some(x=>x.id===saved.id);
+ const finalState=await page.evaluate(()=>window.tvlens.state());
+ report.checks.durableMedia=finalState.retention==='until-deleted'&&finalState.retentionMs===null
+  &&initial.segments.every(old=>finalState.segments.some(current=>current.id===old.id&&current.available===old.available));
+ report.checks.bookmarkSurvivesResume=(await page.evaluate(()=>window.tvlens.savedMoments())).some(x=>x.id===saved.id);
  await page.evaluate(id=>window.tvlens.removeSaved(id),saved.id);report.checks.bookmarkDeleted=!(await page.evaluate(()=>window.tvlens.savedMoments())).some(x=>x.id===saved.id);
  report.quota=await page.evaluate(()=>window.tvlens.quota());report.budget=await page.evaluate(()=>window.tvlens.researchBudget());report.finalCapture={capturedThroughMs:finalState.capturedThroughMs,analyzedThroughMs:finalState.analyzedThroughMs,analysisLagMs:finalState.analysisLagMs,gaps:finalState.gaps};
  for(const [name,value]of Object.entries(report.checks))assert.ok(value,name);

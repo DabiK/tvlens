@@ -1,0 +1,27 @@
+{
+  "format": "tvlens-session",
+  "version": 1,
+  "id": "4473f9a2-3179-4ba8-b5f5-e5462d11fb52",
+  "host": "server",
+  "createdAt": 1792195200000,
+  "updatedAt": 1792195216000,
+  "closedAt": 1792195216000,
+  "state": "archived",
+  "title": "Session du 17 oct. 2026, 02:00",
+  "firstTopic": null,
+  "elapsedMs": 16000,
+  "capturedThroughMs": 16000,
+  "passages": 4,
+  "media": {
+    "stored": 2,
+    "missing": 2,
+    "bytes": 3549,
+    "retention": "rolling"
+  },
+  "captures": [
+    {
+      "startedAt": 1792195200000,
+      "fromMs": 0
+    }
+  ]
+}

@@ -160,14 +160,6 @@ class HeadlessRuntime {
       probe: () => ({ chatBusy: this.deep.jobs.some(active) }),
     });
     this.lifecycle = createHeadlessLifecycle(this, conversation);
-    this.timer = setInterval(() => {
-      const watch = this.session?.watch;
-      // Durable retention has nothing to sweep between two passages (each ingest sweeps): an idle
-      // session publishes nothing, so its polls are answered 304.
-      if (watch && (Number.isFinite(watch.retentionMs) || watch.unremoved?.size))
-        watch.prune().catch(() => {});
-    }, 5000);
-    this.timer.unref();
     this.ticker = setInterval(() => this.tick(), 1000);
     this.ticker.unref();
     // One measurement at start, off the critical path: the state says more than "unknown" before the
@@ -558,7 +550,6 @@ class HeadlessRuntime {
     return surveillanceDetail(this.surveillanceRegistry(), id);
   }
   close() {
-    clearInterval(this.timer);
     clearInterval(this.ticker);
     return this.lifecycle.close();
   }

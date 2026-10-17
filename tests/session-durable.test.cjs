@@ -235,7 +235,8 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
 
   // Saved by a version that did not keep media: the reason says so, whatever the old flags claimed.
   const { retention, ...former } = saved;
-  const old = make(); old.restore({ ...former, history: [{ id: 'moment-0', startMs: 0, endMs: 1, status: 'ready', summary: 'Ancien' }] });
+  const old = make({ retentionMs: 1000 }); old.restore({ ...former, history: [{ id: 'moment-0', startMs: 0, endMs: 1, status: 'ready', summary: 'Ancien' }] });
+  assert.deepEqual([old.snapshot().retention, old.snapshot().retentionMs], ['until-deleted', null]);
   assert.deepEqual([...old.history, ...old.segments].map(p => [Boolean(p.available), p.mediaReason]), Array(5).fill([false, 'not-kept']));
   // A rolling session reopened later: what had expired stays "expired".
   const rolling = make(); rolling.restore({ ...saved, retention: 'rolling', history: [{ id: 'moment-0', startMs: 0, endMs: 1, status: 'ready', summary: 'Ancien' }] }, { hasMedia: () => true });
@@ -258,11 +259,11 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
   await promised.resume(); time += 600000; await promised.prune();
   assert.deepEqual([promised.snapshot().retention, promised.segments.map(s => s.available), promised.history.length, removed.length], ['until-deleted', [true, true, true, true], 0, 0]);
   await promised.close();
-  // A session saved under a rolling window promised nothing: the window of the host applies to it.
+  // Les anciennes archives deviennent durables après décodage de leurs motifs historiques.
   const windowed = make({ retentionMs: 1000 });
   windowed.restore({ ...saved, retention: 'rolling', retentionMs: 300000 }, { hasMedia: () => true });
   await windowed.resume(); await windowed.prune();
-  assert.deepEqual([windowed.snapshot().retention, windowed.segments.length, removed], ['rolling', 0, ['moment-1', 'moment-2', 'moment-3', 'moment-4']]);
+  assert.deepEqual([windowed.snapshot().retention, windowed.segments.length, removed], ['until-deleted', 4, []]);
   await windowed.close();
   const clock = new SessionClock(() => time, { elapsedMs: 5000, paused: true });
   time += 60000; assert.equal(clock.now(), 5000); clock.resume(); time += 250; assert.equal(clock.now(), 5250);
@@ -334,7 +335,8 @@ test('a long capture costs no directory listing, media read or disk measurement 
   assert.deepEqual(Object.keys(storage), ['state', 'freeBytes', 'minFreeBytes', 'sessionBytes', 'bytesPerMinute', 'remainingMinutes']);
   assert.deepEqual([storage.state, storage.sessionBytes, storage.bytesPerMinute], ['ok', onDisk, Math.round(onDisk * 60000 / 61000)]);
   assert.equal(storage.remainingMinutes, Math.floor((storage.freeBytes - storage.minFreeBytes) / storage.bytesPerMinute));
-  assert.throws(() => f.open({ retentionMs: -5 }), /retentionMs invalide/);
+  const ignored = f.open({ retentionMs: -5 }).watch.snapshot();
+  assert.deepEqual([ignored.retention, ignored.retentionMs], ['until-deleted', null]);
 });
 
 test('stopping the server host keeps the current session whole, and the next start finds it archived', async t => {

@@ -177,7 +177,7 @@ const HOST_SETTINGS = ['TVLENS_QUESTION_TIMEOUT_MS', 'TVLENS_SURVEILLANCE_WORKER
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
 // and, when `disk` is given, the free space measured by the real DiskGuard (its documented `freeBytes` option).
 // `wrap` expose les compositions et leur diagnostic pour injecter une panne aux frontières du vrai hôte.
-async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false } = {}) {
+async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock } = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
   const registeredShortcuts = new Map();
   let bridge, finished, loaded;
@@ -211,7 +211,7 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
   const argv = [...process.argv], saved = Object.fromEntries(HOST_SETTINGS.map(name => [name, process.env[name]])), consoleError = console.error, load = Module._load;
   const restore = () => { process.argv.splice(0, process.argv.length, ...argv); for (const name of HOST_SETTINGS) if (saved[name] === undefined) delete process.env[name]; else process.env[name] = saved[name]; console.error = consoleError; };
   for (const name of HOST_SETTINGS) delete process.env[name];
-  Object.assign(process.env, env); process.argv.push('--smoke-test');
+  Object.assign(process.env, env); process.argv.push('--smoke-test', ...flags);
   if (shortcuts) process.argv.push('--live-shortcut');
   console.error = error => failures.push(String(error?.message || error));
   Module._load = function (request, parent, ...rest) {
@@ -223,6 +223,10 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
       return { ...loaded, simulatedVerifier: (...args) => wrap.verifier(loaded.simulatedVerifier(...args)) };
     // Measured afresh at every check, so that a change of free space is seen at once instead of five seconds later.
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
+    if (request === '../runtime/session-runtime.cjs' && readClock) return { ...loaded, createSessionRuntime: options => {
+      const runtime = loaded.createSessionRuntime({ ...options, readClock });
+      return wrap.session ? wrap.session(runtime) : runtime;
+    } };
     const factories = {
       '../runtime/conversation-runtime.cjs': ['createConversationRuntime', wrap.conversation],
       '../runtime/session-runtime.cjs': ['createSessionRuntime', wrap.session],
@@ -295,6 +299,57 @@ async function capture(host, sessionId, { after = 0, frames = 1, audio = null } 
 }
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
+
+test('retired Mac retention options cannot expire media and capture refreshes the manifest before analysis finishes', async t => {
+  const { launch, folder } = await stage(t), gate = deferred();
+  let clock = 0, runtime;
+  t.after(() => gate.resolve({ observation: { transcript: 'Paroles conservées.' } }));
+  const host = await launch({
+    env: { TVLENS_MEDIA_RETENTION_MS: '1' }, flags: ['--retention-ms=1'], readClock: () => clock,
+    wrap: { session: built => {
+      runtime = built;
+      built.perception.transcribe = () => gate.promise;
+      return built;
+    } },
+  });
+  assert.equal(host.started, true);
+  const config = await host.config();
+  assert.deepEqual([config.retention, config.retentionMs], ['until-deleted', null]);
+  const { id } = await host.start();
+  clock = 1000;
+  await host.ingest({ sessionId: id, startMs: 0, endMs: 1000, clip: new Uint8Array([1]),
+    frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }] });
+  await runtime.store.flush();
+  const manifest = () => JSON.parse(fs.readFileSync(path.join(folder(id), 'manifest.json'), 'utf8'));
+  const initial = manifest().elapsedMs;
+  host.events.length = 0;
+  clock = 3600000;
+  t.mock.timers.tick(5000);
+  await runtime.store.flush();
+  const state = await host.state();
+  assert.deepEqual([state.elapsedMs, state.segments[0].available, state.segments[0].audioStatus], [clock, true, 'analyzing']);
+  assert.ok(host.events.some(event => event.channel === 'watch:state' && event.value.elapsedMs === clock));
+  assert.ok(manifest().elapsedMs > initial, 'manifest cadence does not wait for a ready passage');
+  await host.stop();
+  host.events.length = 0;
+  const before = await digest(folder(id));
+  clock += 3600000;
+  t.mock.timers.tick(3600000);
+  await runtime.store.flush();
+  assert.equal(host.events.filter(event => event.channel === 'watch:state').length, 0);
+  assert.deepEqual(await digest(folder(id)), before);
+  assert.deepEqual([(await host.state()).elapsedMs, (await host.state()).segments[0].available], [3600000, true]);
+});
+
+test('invalid retired Mac retention values are ignored at startup', async t => {
+  const { launch } = await stage(t);
+  for (const value of ['abc', '-1', '0']) {
+    const host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: value }, flags: ['--retention-ms=' + value] });
+    assert.equal(host.started, true, value);
+    assert.deepEqual([(await host.config()).retention, (await host.config()).retentionMs], ['until-deleted', null]);
+    await host.quit();
+  }
+});
 
 test('the Mac IPC host publishes both default smoke lanes with the simulated observations', async t => {
   const { launch } = await stage(t), host = await launch();
@@ -737,11 +792,11 @@ test('host settings come from the environment; a full disk stops capture, refuse
   // One archived passage to protect, captured with room to spare.
   let host = await launch({ env: { TVLENS_QUESTION_TIMEOUT_MS: '60000', TVLENS_MEDIA_RETENTION_MS: '300000' } });
   let config = await host.config();
-  assert.deepEqual([config.questionTimeoutMs, config.retention, config.retentionMs], [60000, 'rolling', 300000], 'both rollbacks are read and published');
+  assert.deepEqual([config.questionTimeoutMs, config.retention, config.retentionMs], [60000, 'until-deleted', null], 'the question ceiling changes, the retired retention does not');
   const session = await host.start();
   await capture(host, session.id);
   const live = await until(t, analysed(host, 1), 'the passage');
-  assert.deepEqual([live.retention, live.retentionMs], ['rolling', 300000]);
+  assert.deepEqual([live.retention, live.retentionMs], ['until-deleted', null]);
   await host.ask('Que voit-on maintenant ?');
   assert.equal((await host.deepState()).jobs[0].timeoutMs, 60000, 'the lowered ceiling is the one enforced');
   await host.cancelDeep((await host.deepState()).jobs[0].id);
@@ -808,7 +863,7 @@ test('host settings come from the environment; a full disk stops capture, refuse
 
   // Mistyped settings: the app says so and quits instead of running under another value.
   for (const [name, value, message] of [['TVLENS_QUESTION_TIMEOUT_MS', 'abc', /questionTimeoutMs invalide/], ['TVLENS_QUESTION_TIMEOUT_MS', '300001', /questionTimeoutMs invalide/],
-    ['TVLENS_SURVEILLANCE_WORKERS', '4', /surveillance\.workers invalide/], ['TVLENS_MEDIA_RETENTION_MS', '-1', /TVLENS_MEDIA_RETENTION_MS invalide/], ['TVLENS_DISK_MIN_FREE_MB', 'beaucoup', /TVLENS_DISK_MIN_FREE_MB invalide/],
+    ['TVLENS_SURVEILLANCE_WORKERS', '4', /surveillance\.workers invalide/], ['TVLENS_DISK_MIN_FREE_MB', 'beaucoup', /TVLENS_DISK_MIN_FREE_MB invalide/],
     ['TVLENS_DISK_WARN_FREE_MB', '-5', /TVLENS_DISK_WARN_FREE_MB invalide/]]) {
     const refused = await launch({ env: { [name]: value } });
     assert.equal(refused.started, false, `${name}=${value}`);
@@ -831,7 +886,7 @@ test('an archive kept until deletion keeps that contract on a Mac host set to a 
   // The same data under a host set back to a rolling window, far shorter than the real time that follows.
   host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: '50' } });
   const config = await host.config();
-  assert.deepEqual([config.retention, config.retentionMs], ['rolling', 50]);
+  assert.deepEqual([config.retention, config.retentionMs], ['until-deleted', null]);
   await host.openSession(a.id);
   let state = await host.state();
   assert.deepEqual([state.readOnly, state.retention, state.retentionMs, (await host.sessions()).current.retention], [true, 'until-deleted', null, 'until-deleted'], 'the archive states its own contract, not the setting of the host');
@@ -855,12 +910,15 @@ test('an archive kept until deletion keeps that contract on a Mac host set to a 
   assert.deepEqual([state.history.length, state.segments.map(s => [s.id, s.available])], [0, [['moment-1', true], ['moment-2', true], ['moment-3', true]]]);
   await host.stop(); await host.newSession();
 
-  // The window of this host is real: a session born under it promised nothing and does expire.
+  // Le paramètre retiré reste sans effet sur les nouvelles captures.
   const b = await host.start();
   await capture(host, b.id);
-  const rolling = await until(t, async () => { await pause(60); const s = await host.state(); return [...s.history, ...s.segments].some(p => p.id === 'moment-1' && !p.available) && s; }, 'the passage of a rolling session expires', 5000);
-  assert.deepEqual([rolling.retention, rolling.retentionMs, (await host.sessions()).current.retention], ['rolling', 50, 'rolling']);
-  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), false);
+  await until(t, analysed(host, 1), 'the new passage finishes');
+  await sweep();
+  const durable = await host.state();
+  assert.deepEqual([durable.retention, durable.retentionMs, (await host.sessions()).current.retention],
+    ['until-deleted', null, 'until-deleted']);
+  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true);
   assert.deepEqual([await fsp.readFile(media('moment-1.webm'), 'utf8'), await fsp.readFile(media('moment-3.webm'), 'utf8')], [a1.clip, a3.clip], 'while the archive is still whole');
 });
 
@@ -1003,7 +1061,7 @@ test('a passage search belongs to the session that asked: its thumbnails are tha
   assert.deepEqual({ otherSessionLoaded: refused, noSessionLoaded: await orphan }, { otherSessionLoaded: 'Session obsolète.', noSessionLoaded: 'Session obsolète.' });
 });
 
-test('the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; a rolling window is still swept while its session is paused', async t => {
+test('the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; the retired setting cannot expire paused media', async t => {
   const { folder, launch } = await stage(t);
   let host = await launch();
   assert.equal(host.started, true, host.failures.join(' '));
@@ -1030,16 +1088,18 @@ test('the loaded Mac session is pushed every five seconds while it captures, and
   assert.equal(pushed().length, 1);
   await host.stop(); await host.newSession(); await host.quit();
 
-  // A session promised a rolling window is swept on that same timer whether it captures or not: a passage
-  // that left the window just before the pause (the session clock stops with it) is still erased.
+  // Même avec l'ancien réglage, la pause reste silencieuse et les médias restent présents.
   host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: '50' } });
   const b = await host.start();
   await capture(host, b.id);
-  await pause(150);
-  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true, 'out of the window, and not swept yet');
+  await until(t, analysed(host, 1), 'the passage finishes before pause');
   await host.stop();
-  const expired = await until(t, async () => { await pause(60); const s = await host.state(); return [...s.history, ...s.segments].some(p => p.id === 'moment-1' && !p.available) && s; }, 'the passage of a paused rolling session expires', 5000);
-  assert.deepEqual([expired.accepting, expired.retention, fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm'))], [false, 'rolling', false]);
+  await quiet();
+  for (let i = 0; i < 5; i++) await sweep();
+  const paused = await host.state();
+  assert.deepEqual([paused.accepting, paused.retention, pushed().length], [false, 'until-deleted', 0]);
+  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true);
+
 });
 
 test('on the Mac host the draft of an answer reaches the window each time it moves and the disk at most once a second, its last state included when the answer stalls; ending the session saves the final state at once and leaves nothing to write later', async t => {

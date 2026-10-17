@@ -3,6 +3,7 @@ const fs=require('node:fs/promises');const os=require('node:os');const path=requ
 const {HeadlessRuntime}=require('../runtime/headless-runtime.cjs');
 const {RemoteServer}=require('../server/http.cjs');
 const { deferred } = require('./helpers/wait.cjs');
+const { copyPrunedArchive } = require('./helpers/pruned-archive.cjs');
 const token='a'.repeat(64);
 
 test('the server ignores foreign question publications and keeps its closing lock without active jobs', async t => {
@@ -44,7 +45,7 @@ test('authenticated remote session: ingest dedupe, anchored FIFO, targeted cance
  const first=new Promise(resolve=>finishFirst=resolve);let started;
  const invoked=new Promise(resolve=>started=resolve);
  const agent={answer:async({question,signal})=>{started();if(question==='first')await Promise.race([first,new Promise(r=>signal.addEventListener('abort',r,{once:true}))]);return {answer:question,kind:'explanation',citations:[],limits:[]};}};
- // Media are kept until deletion by default: the rolling window is asked for explicitly, so that its expiry path stays covered.
+ // L’ancienne option ne change plus la conservation des nouvelles captures.
  const runtime=new HeadlessRuntime({userData:dir,sessionsRoot:path.join(dir,'sessions'),config:{},selectedModels:{observationModel:'test',inspectionModel:'test',codexModel:'test'},smoke:true,agent,readClock:()=>clock,retentionMs:300000});
  let assemblies=0;const media={assemble:async x=>{assemblies++;return {...x,clip:Buffer.from('fixture'),frames:[{atMs:x.startMs,dataUrl:'data:image/jpeg;base64,YQ=='}],audio:null};}};
  const server=await new RemoteServer({runtime,media,token}).listen(0,'127.0.0.1');
@@ -77,8 +78,13 @@ test('authenticated remote session: ingest dedupe, anchored FIFO, targeted cance
  const expiredBefore=await fetch(server.url+'/v1/media/moment-1',{headers:{Authorization:'Bearer '+token,Range:'bytes=0-2'}});
  assert.equal(expiredBefore.status,206);assert.equal(await expiredBefore.text(),'fix');
  clock=301000;await runtime.session.watch.prune();
+ assert.equal((await fetch(server.url+'/v1/media/moment-1',{headers:{Authorization:'Bearer '+token}})).status,200);
+ assert.equal((await req('/v1/state')).value.chat.jobs[0].result.answer,'first','durable media preserves conversation');
+ await req('/v1/session/end',{});
+ const historical=await copyPrunedArchive(runtime.library.root);
+ await req('/v1/sessions/'+historical.id+'/open',{});
  assert.equal((await req('/v1/media/moment-1')).status,410);
- assert.equal((await req('/v1/state')).value.chat.jobs[0].result.answer,'first','media expiry preserves conversation');
+ assert.equal((await req('/v1/state')).value.chat.jobs[0].result.answer,'Un cercle bleu.');
 });
 test('a running question exposes its ceiling and the server clock, lets capture continue, and its HTTP cancellation tells what really happened',async t=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-remote-question-'));let clock=0,wall=1790000000000,started;
