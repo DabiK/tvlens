@@ -1,9 +1,11 @@
 # Choix du réexamen vidéo — 28 septembre 2026
 
-**Choix retenu : Gemini 3.8 Flash + vidéo native ralentie ×4.** La sélection
-adaptative améliore les planches sur ce corpus, mais la vidéo obtient la même
-justesse avec moins de coût et de délai. Les variantes restent interchangeables
-derrière `ClipInspectionPort`, sans changement du domaine ou des outils MCP.
+**Rapport historique du 28 septembre 2026.** Le choix de cette campagne était Gemini 3.8 Flash
+avec vidéo native ralentie ×4. Les adaptateurs d’évaluation et les scripts de comparaison ont
+ensuite été retirés sans remplacement ([ADR 0016](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md)).
+Les préparateurs encore présents ne permettent pas de rejouer ce banc. Le chemin actif utilise
+Codex et les planches adaptatives ; voir l’[architecture](architecture.md).
+Les résultats ci-dessous restent ceux du corpus et du modèle de cette campagne.
 
 ## Comparaison finale contrôlée
 

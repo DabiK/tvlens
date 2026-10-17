@@ -1,7 +1,7 @@
 ---
 id: T108
 titre: Make the architecture page and the docs index describe the current code
-statut: a-faire
+statut: termine
 bloque_par: T030, T202, T194
 adr: non
 installe: non
@@ -129,3 +129,86 @@ pas des valeurs à figer dans le test.
   (architecture, index, guide, comparaison des stratégies), `fichiers/tests/documentation-index.test.cjs`,
   `ticket-journal.patch` et `etat/`. Le réappliquer, le vérifier contre le code du moment et restreindre
   l'inventaire aux documents suivis par Git, selon l'arbitrage ci-dessus.
+
+### Reprise, inventaire Git et rouge — 17 octobre 2026
+
+- Skill `ticket-codex`, méthode de tests, standards, journal et tentative archivée relus ; témoin de
+  hooks présent. Exploration et absence d’écart consignées dans `.harness-state/tickets/T108/`.
+- `git ls-files -z -- docs` : 50 Markdown de premier niveau hors index, 42 ADR numérotés hors gabarit,
+  aucun index `archive/*/README.md`. Détail : `inventaire-initial.json` du dossier d’état.
+  Absents de l’index : `active-goal.md`, `audit-architecture.md`, `audit-maintenabilite.md`,
+  `audit-points-chauds.md`, `chat-overlay-validation.md`, `domaine.md`, `lg-companion-design.md`,
+  `lg-pre-root-safety.md`, `reexamen-contract-original.md`, `research-dgx-spark-qwen38-2026-10-12.md`,
+  `standards.md`, ainsi que les entrées `adr/`, `diagrams/README.md` et `architecture-improvements/index.md`.
+  L’architecture ne liait que l’ADR 0017, sans section Décisions.
+- Test archivé repris avant correction des documents ; inventaire fondé sur Git, fixtures dans des
+  dépôts temporaires. Une fixture prouve l’exclusion des documents non suivis et ignorés dans les trois catégories.
+- `node --test tests/documentation-index.test.cjs` : rouge observé, 8 réussites et 1 échec sur
+  l’assertion des documents initiaux (chemins, décisions, propriétaires et affirmations périmées).
+  Sortie complète : `.harness-state/tickets/T108/documentation-red.log`.
+
+### Carte, index et vert documentaire
+
+- Patch `code.patch` de la tentative bloquée réappliqué après vérification d’application ; aucune reprise
+  de son ancien verdict. Carte et index revérifiés contre le code présent, les ADR et l’inventaire Git.
+- Correspondance paragraphes/code : couches → `tests/architecture.test.cjs` (table de couches et exceptions) ;
+  propriétaires → `runtime/session-runtime.cjs`, `session-providers.cjs`, `session-manifest.cjs`,
+  `session-lifecycle.cjs`, `session-closing.cjs`, `capture-intake.cjs`, `headless-session-lifecycle.cjs`,
+  `state-views.cjs`, `headless-runtime.cjs` ; perception/archives → `core/session.cjs` relu en entier
+  et ADR 0035/0038 ; questions → `runtime/conversation-runtime.cjs`.
+- Fin des hôtes → protocole commun, cycle de ressources, coordinateur headless et `endSession` Mac ;
+  ordres de l’ADR 0007 conservés, règle vide de 0036 explicitée. Coutures Mac/Codex/TV → compositions
+  renderer/client/companion, livraison Mac et polling TV, ADR 0018/0022/0025/0026/0027.
+  Détail des lectures et correspondances dans `exploration.md` du dossier d’état.
+- Les 42 ADR ont un lien et une phrase ; cible 0029/0030, retraits et décisions amendées sont distingués.
+  Files : six références audio au plus en attente par défaut, dont deux transcriptions conservées,
+  et deux places vision hors appel actif ; les passages à transcription sautée n’évincent pas la vision pleine.
+- Index : documents suivis indexés, rapports classés et datés ; lien vers `experiments/README.md` non suivi
+  retiré, dossier local préservé. Aucune cible locale des trois références n’est hors de Git.
+- Guide : appel `startSurveillance` vérifié par lecture de la sonde ; aucun rejeu. Comparaison historique
+  et guide distinguent les bancs d’évaluation retirés des préparateurs encore présents.
+- `node --test tests/documentation-index.test.cjs` : 9/9 réussites, sortie `documentation-green.log`.
+- `node scripts/check.mjs --changed` : règles, format, lint, gel, cliquet et test documentaire verts,
+  9 réussites, 0 échec ; sortie `check-changed.log`. Aucun outil annoncé non lancé.
+- `git diff --check` et `git diff --exit-code -- README.md` : code 0, sorties vides.
+
+### Contrôle complet et remise à la boucle
+
+- `node scripts/check.mjs` : code 0, contrôle vert. Règles, format, lint, gel et cliquet exécutés
+  avec succès ; 133 fichiers JavaScript, 2 290 tests réussis, 0 échec ; 30 tests Python réussis.
+  Sortie : `.harness-state/tickets/T108/check-full.log`. Aucune étape qualité non lancée.
+- Recherche ciblée dans architecture/index/installation/comparaison : aucune ancienne mention de branche,
+  du pont Auto ou des bancs retirés encore disponibles. Audits, tickets et ADR historiques exclus.
+- Verdict `TERMINÉ` dans `.harness-state/tickets/T108/verdict.json` ; aucune réserve propre restante.
+  Aucun essai matériel, live ou déploiement exécuté. Aucun commit ni push ; README de présentation inchangé.
+
+### Reprise après relecture 1 — 17 octobre 2026
+
+- Rapport `relecture-1.md`, ticket et journal, écarts, état Git et diff relus ; nouveau témoin de hooks présent.
+  Les trois constats mineurs sont acceptés, sans écart ni contestation. Les travaux présents sont conservés.
+- Correction prévue : cibles de liens validées dans l’inventaire Git du dépôt entier, y compris les dossiers
+  contenant un fichier suivi ; fixtures contre les cibles présentes mais non suivies avant le correctif.
+  Limite de preuve de la sonde datée d’après le livrable du 13 octobre 2026 ; consignes de travail classées en référence.
+
+- `node --test tests/documentation-index.test.cjs` avant correction : 10 réussites, 1 échec sur la
+  fixture des cibles présentes non publiées. Les neuf diagnostics attendus manquaient ; sortie
+  `.harness-state/tickets/T108/correction-1-red.log`.
+- Constat 1 corrigé : `git ls-files -z` couvre désormais le dépôt entier ; les liens locaux exigent
+  une présence sur disque et un fichier suivi ou un préfixe de dossier publié. Les deux nouvelles fixtures
+  prouvent le refus de fichiers non suivis/ignorés et de dossiers non publiés sur les trois références,
+  ainsi que l’acceptation des fichiers suivis hors `docs/` et de leurs dossiers.
+- Constat 2 corrigé : la limite de preuve de la sonde renvoie au livrable du 13 octobre 2026, qui signale
+  son réalignement et son absence de lancement ; aucun rejeu ni essai live exécuté ou revendiqué.
+- Constat 3 corrigé : « Travail et tickets » figure dans la table de référence pour développer ;
+  le titre et les consignes actuelles de `docs/travail/README.md` ont été relus.
+- `node --test tests/documentation-index.test.cjs` après correction : 11/11 réussites ; sortie
+  `correction-1-green.log`. `node scripts/check.mjs --changed` : code 0, règles, format, lint, gel,
+  cliquet et tests verts, 11/11 ; sortie `correction-1-check-changed.log`. Aucune étape non lancée.
+
+- `node scripts/check.mjs` après les trois corrections : code 0, règles, format, lint, gel et cliquet verts ;
+  133 fichiers JavaScript, 2 292 tests réussis, 0 échec ; 30 tests Python réussis. Aucune étape qualité
+  non lancée. Sortie `.harness-state/tickets/T108/correction-1-check-full.log`.
+- `git diff --check` et `git diff --exit-code -- README.md` : codes 0, sorties vides ;
+  `correction-1-diff.log`. Aucun changement produit, ADR, harnais ou README de présentation.
+- Nouveau verdict `TERMINÉ`, trois constats corrigés, aucune contestation ni réserve propre restante.
+  Aucun sous-agent, relecteur, essai matériel, live, déploiement, commit ou push lancé.

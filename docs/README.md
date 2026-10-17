@@ -1,60 +1,87 @@
 # Documentation TVLens
 
-## Découvrir et utiliser
+L’[architecture](architecture.md) décrit le code présent. Les rapports ci-dessous gardent leurs
+dates, leurs conditions d’essai et leurs limites ; ils n’établissent pas l’état d’une installation.
+L’inventaire porte sur les documents suivis par Git ; les brouillons locaux n’y figurent pas.
+
+## Référence : utiliser et développer
 
 | Document | Contenu |
 | --- | --- |
-| [Présentation du projet](../README.md) | Expérience, fonctionnalités Mac/TV, état livré et objectif GX10 |
-| [Installation Mac](installation.md) | Prérequis, configuration, autorisations, modèles et dépannage |
-| [Interface](interface.md) | Direct, Mémoire, mode flottant et companion LG |
-| [Installation LG](lg-installation.md) | Parcours complet TV → Mac/VPS, composants, appairage et limites |
-| [Frise LG](lg-timeline.md) | Navigation télécommande, sujets, miniatures, détail et questions attachées |
-| [Capture LG](lg-capture-control.md) | Démarrage manuel, pause/reprise, tampon et incidents réseau |
-| [Alertes LG panneau fermé](lg-ambient.md) | Mode ambiant : profils, sûreté des touches, protection de la capture, protocole de validation native. Code livré, affichage désactivé par défaut, **non validé sur la TV** |
-| [Installer son serveur](server-installation.md) | Configuration portable Linux, outils, systemd et appairage |
-| [VPS privé](vps-deployment.md) | Runtime Linux, systemd, appairage, mesures et retour au Mac |
-| [Tailscale sur LG](lg-tailscale.md) | Installation, coexistence LAN/VPN, persistance et retrait |
+| [Présentation](../README.md) | Expérience Mac/TV et présentation du projet |
+| [Installation Mac](installation.md) | Prérequis, configuration, autorisations et dépannage |
+| [Interface](interface.md) | Direct, Mémoire, mode flottant et interactions |
+| [Installation LG](lg-installation.md) | Composants, appairage et parcours TV vers hôte |
+| [Installation serveur](server-installation.md) | Configuration Linux et service ; relevés historiques identifiés dans le guide |
+| [Frise LG](lg-timeline.md) | Navigation, sujets, miniatures et questions attachées ; essais datés dans le document |
+| [Capture LG](lg-capture-control.md) | Commandes et incidents réseau ; conserve le bilan de livraison du 30 septembre 2026 |
+| [Identité du companion](lg-companion-design.md) | Présentation et navigation du panneau LG |
+| [Retrait des alertes panneau fermé](lg-ambient.md) | Retrait achevé dans le dépôt selon l’ADR 0017 ; cartes du panneau ouvert conservées |
+| [Tailscale sur LG](lg-tailscale.md) | Installation, coexistence réseau et retrait |
+| [VPN Internet sur LG](lg-openvpn.md) | Composant indépendant du transport TVLens |
+| [Résumé progressif](living-recap.md) | Chapitres, provenance, réouverture et limites |
+| [Vérification externe](verification.md) | Port de vérification manuelle et rôle actif App Server |
+| [Architecture](architecture.md) | Couches, propriétaires, chemins de perception et de question, cycle des hôtes |
+| [Standards](standards.md) | Règles de code et contrôles associés |
+| [Contribuer](../CONTRIBUTING.md) | Frontières et vérifications de développement |
+| [Travail et tickets](travail/README.md) | Consignes de boucle et file de remédiation |
+| [Confidentialité](../SECURITY.md) | Cloisonnement des agents, limites et preuves datées |
+| [Décisions d’architecture](adr/) | ADR datés ; chaque décision est expliquée dans la carte d’architecture |
+| [Diagrammes](diagrams/README.md) | Schémas et statut de leurs représentations |
+| [Captures de présentation](../screenshots/current/README.md) | Protocole, médias et crédits |
 
-## Comprendre, développer, vérifier
+## Cibles, contrats et explorations
 
-| Document | Contenu |
-| --- | --- |
-| [Architecture](architecture.md) | Domaine, ports, adaptateurs et hôtes Mac/Linux |
-| [Rôles des agents](refactor-runtime.md) | Codex chat/perception, outils directs, MCP et indexation |
-| [Latence du backend](backend-latency-optimization.md) | Chemin d’un bloc, changements de la branche de latence, mesures Mac/VPS, simulation et limites |
-| [Livrable de la nuit du 13 octobre 2026](night-features-delivery.md) | Questions de cinq minutes, sessions conservées, suppression et disque, cloisonnement, surveillance, cartes regroupées, overlay TV : ce qui est livré, prouvé, et ce qui ne l’est pas. Rien n’est déployé |
-| [Réexamen : réutiliser la transcription](reinspection-transcript-reuse.md) | Cause, correction, contrat d’`inspect_clip` (`exactSpeech`, intervalles images et paroles), mesures et réserves d’une autre session, intégrées par fusion |
-| [Confidentialité et cloisonnement](../SECURITY.md) | Ce qui est empêché, détecté après coup ou inconnu pour les agents Codex ; à faire avant tout déploiement |
-| [Audit avant publication](publication-audit.md) | Périmètre, anonymisation de l’historique et contrôles |
-| [Validation](validation.md) | Résultats actuels, essais réels, échecs et limites |
-| [Contribuer](../CONTRIBUTING.md) | Organisation et vérifications à lancer |
-| [Résumé progressif](living-recap.md) | Chapitres, provenance et conservation |
-| [Vérification externe](verification.md) | Port de vérification manuelle, rôle du vérificateur, isolation |
-| [Captures du README](../screenshots/current/README.md) | Protocole, médias et crédits |
+Ces documents cadrent des intentions ou une cible. Leur présence dans l’index ne les déclare pas réalisés.
 
-## Mission du 13 octobre 2026
+- [Domaine et cible d’architecture](domaine.md) : cible figée le 16 octobre 2026, ADR 0029 et 0030.
+- [PRD V2](PRD-V2.md) : cadrage du 12 octobre 2026, backend et essai local GX10 à réaliser.
+- [Roadmap companion LG](lg-companion-roadmap.md) : proposition du 30 septembre 2026, puis bilan et critères ouverts.
+- [Exploration d’un moteur dans la TV](lg-on-device-exploration.md) : demande du 30 septembre 2026, distincte du runtime distant.
+- [Analyse dgx-spark-qwen38](research-dgx-spark-qwen38-2026-10-12.md) : recherche du 12 octobre 2026, limites et pistes locales.
 
-- [Demandes produit et neuf décisions](features-proactives-et-retention-2026-10-13.md) : le contrat de la mission.
-- [Objectif de la nuit](night-hackathon-objective.md) et [index des tickets](tvlens-night-tickets.md), avec l’état de chacun.
-- [Livrable](night-features-delivery.md) : à lire avant tout déploiement.
+## Rapports datés et historique
 
-## Candidature et prochaines expériences
+Les affirmations de branche, de déploiement et les mesures de ces documents valent pour leurs relevés.
+Un résultat ancien avec Gemini ne valide pas automatiquement Codex ou un modèle local.
+Les anciens bancs d’évaluation ont été retirés selon l’ADR 0016 ; leurs rapports restent consultables.
 
-- [PRD / roadmap V2 — trois jours](PRD-V2.md) : référence de livraison backend, tranche locale GX10, décisions et replis.
-- [Expérimentations perception et contexte](../experiments/README.md) : intentions, hypothèses et protocoles non exécutés sur mouvement, traitements asynchrones et navigation agentique.
-- [Roadmap companion LG](lg-companion-roadmap.md) : état livré, différences avec le contrat initial et critères restant ouverts.
-- [Exploration d’un moteur dans la TV](lg-on-device-exploration.md) : expérience future distincte du runtime Mac/VPS.
-- Inférence locale GX10, capture caméra/micro et embeddings multimodaux : pistes à valider, pas des fonctionnalités livrées.
+### Relevés et audits d’octobre 2026
 
-## Recherche et historique
+- [Validation](validation.md) : relevé du 4 octobre 2026 et compléments datés, essais réels et échecs conservés.
+- [Latence du backend](backend-latency-optimization.md) : rapport des 12 et 13 octobre 2026, mesures et simulation.
+- [Réutilisation de transcription au réexamen](reinspection-transcript-reuse.md) : rapport du 13 octobre 2026.
+- [Demandes produit et rétention](features-proactives-et-retention-2026-10-13.md) : contrat confirmé le 13 octobre 2026.
+- [Objectif de la nuit](night-hackathon-objective.md) : mission du 13 octobre 2026.
+- [Tickets de la nuit](tvlens-night-tickets.md) : état relevé le 13 octobre 2026.
+- [Livrable de la nuit](night-features-delivery.md) : preuves, limites et faits de mise en service du 13 octobre 2026.
+- [Audit de maintenabilité](audit-maintenabilite.md) : nuit du 13 au 14 octobre 2026.
+- [Audit des points chauds](audit-points-chauds.md) : lecture du 15 octobre 2026.
+- [Audit d’architecture](audit-architecture.md) : lectures du 16 octobre 2026 ; constats à confronter au code du moment.
+- [Première boucle d’architecture](architecture-improvements/index.md) : fiches et historiques des 13 et 14 octobre 2026.
 
-Ces documents décrivent des étapes antérieures. Leurs modèles, budgets et hypothèses peuvent différer de l’état actuel présenté ci-dessus.
+### Relevés et cadrages de septembre 2026
 
-- [Premier runtime TV → Mac](lg-remote-runtime.md), [premiers essais de sidebar](lg-sidebar-validation.md).
-- [Optimisation de session](session-optimization.md), [actions et latence](friction-latency.md), [fonctions de visionnage](viewing-upgrade.md).
-- [Réexamen](reexamen-validation.md), [comparaison des stratégies](strategy-comparison.md), [grille d’évaluation](action-evaluation-rubric.md).
-- [Recherche temporelle](temporal-research.md), [recherche vidéo](video-temporal-research.md).
-- [Décisions initiales](product-decisions-original.md), [roadmap initiale](roadmap-original.md), [tickets initiaux](ticket-drafts-original.json).
-- [Exploration PicCap](lg-piccap-exploration.md), [ancien plan TV non rootée](lg-piccap-test-plan.md) et [VPN LG, composant indépendant](lg-openvpn.md).
+- [Réexamen vidéo](reexamen-validation.md) : validation du 28 septembre 2026.
+- [Comparaison des stratégies](strategy-comparison.md) : résultats du 28 septembre 2026, banc retiré.
+- [Grille du corpus temporel](action-evaluation-rubric.md) : critères de lecture de ces évaluations historiques.
+- [Recherche temporelle](temporal-research.md) et [recherche vidéo](video-temporal-research.md) : recherches du 28 septembre 2026.
+- [Contrat original du réexamen](reexamen-contract-original.md) : cadrage de la campagne de septembre 2026.
+- [Optimisation de session](session-optimization.md) : rapport du 29 septembre 2026.
+- [Chat et outils de visionnage](viewing-upgrade.md) : rapport du 29 septembre 2026.
+- [Goal fiabilité et outils](active-goal.md) : bilan historique du 29 septembre 2026.
+- [Chat et interface flottante](chat-overlay-validation.md) : validations de septembre 2026, dont correction du 29 septembre.
+- [Visionnage sans interruption](friction-latency.md) : parcours et mesures de l’étape de septembre 2026.
+- [Refactor des runtimes](refactor-runtime.md) : responsabilités et validation du 30 septembre 2026.
+- [Premier runtime LG vers Mac](lg-remote-runtime.md) : premier branchement du 30 septembre 2026.
+- [Essais de sidebar](lg-sidebar-validation.md) : faisabilité du 30 septembre 2026.
+- [Préparation avant root](lg-pre-root-safety.md) : relevé du 30 septembre 2026, échecs et limites de sauvegarde.
+- [Exploration PicCap](lg-piccap-exploration.md) : recherche du 29 septembre 2026.
+- [Plan TV sans modification système](lg-piccap-test-plan.md) : plan initial de septembre 2026, antérieur au companion rooté.
+- [Relevé VPS](vps-deployment.md) : installation initiale de septembre 2026 et compléments datés d’octobre.
+- [Préparation du dépôt public](publication-audit.md) : audit du 30 septembre 2026.
+- [Décisions produit initiales](product-decisions-original.md), [roadmap initiale](roadmap-original.md)
+  et [tickets initiaux](ticket-drafts-original.json) : cadrage de septembre 2026, antérieur aux évolutions suivantes.
 
-Les rapports JSON sont des relevés d’essais, pas des garanties générales de performance. Les échecs restent conservés ; un score historique Gemini n’est pas une validation automatique de Luna ou d’un futur modèle local.
+Les rapports JSON liés depuis ces pages sont des traces d’essais ; leurs échecs et limites font partie
+des résultats. Les archives documentaires, lorsqu’elles auront un index, seront ajoutées ici.

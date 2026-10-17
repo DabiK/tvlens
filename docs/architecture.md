@@ -1,145 +1,356 @@
 # Architecture actuelle
 
-TVLens suit une architecture hexagonale : les règles applicatives dépendent de contrats injectés ; les choix de plateforme, de modèle et de stockage appartiennent aux adaptateurs. Les hôtes `app/main.cjs` (Electron) et `runtime/headless-runtime.cjs` (serveur TV) utilisent les compositions partagées `runtime/session-runtime.cjs`, `runtime/conversation-runtime.cjs` et `runtime/surveillance-runtime.cjs`.
+Cette page décrit les propriétaires et les chemins présents dans le dépôt. Elle ne déduit pas
+l’état d’une installation TV ou VPS de l’état des sources. Les relevés d’essais sont classés par
+époque dans l’[index documentaire](README.md).
 
-> **État du 13 octobre 2026.** Cette page décrit le code de la branche `codex/tvlens-night-features`, qui n’est ni commitée ni déployée : la TV et le VPS tournent encore sur la version précédente. Ce qui est prouvé, et à quel niveau, est dans [le livrable de la nuit](night-features-delivery.md).
+La [cible du domaine](domaine.md), figée le 16 octobre 2026, et les ADR 0029 et 0030 décrivent
+l’évolution prévue. Le rangement par contextes et le coordinateur unique des deux hôtes ne sont
+pas encore réalisés dans cette carte.
 
-## Organisation
+## Couches et frontières
 
-| Couche | Responsabilité | Principaux fichiers |
+Les règles applicatives reçoivent leurs dépendances par injection. La table `DEPENDENCY_ZONES`
+de [la garde d’architecture](../tests/architecture.test.cjs) autorise les imports relatifs suivants,
+en parcourant récursivement les sources JavaScript :
+
+| Couche | Responsabilité | Cibles internes autorisées |
 | --- | --- | --- |
-| Domaine applicatif | Session, temps observé, conservation, file de questions, preuves et priorité | `core/session.cjs`, `session-clock.cjs`, `deep-ask.cjs`, `video-tools.cjs` |
-| Cas d’usage | Recherche, moments gardés, surveillance, rattrapage et résumé progressif | `core/moment-search.cjs`, `saved-moments.cjs`, `surveillance.cjs`, `viewing-actions.cjs`, `living-recap.cjs` |
-| Contrats | Perception, agent, transcription, média, archivage, embeddings, inspection, détection et vérification d’affirmations, bibliothèque de sessions, espace disque | `core/ports.cjs` |
-| Adaptateurs sortants | Codex, Whisper, OpenRouter embeddings, fichiers locaux, bibliothèque de sessions, garde disque | `adapters/` |
-| Adaptateurs entrants | Capture navigateur/TV, IPC Electron, HTTP et serveur MCP | `app/recording.js`, `app/preload.cjs`, `tv/capture.py`, `server/http.cjs`, `mcp/server.cjs` |
-| Présentation | Commandes utilisateur, Direct/Mémoire/Surveillance, cartes en bas à gauche, companion LG chat/frise/surveillance/sessions | `app/renderer.js`, `app/ui/`, `tv/app/` |
+| `core/` | Session, perception, preuves, questions, recherche, surveillance et contrats des ports | `core/` |
+| `adapters/` | Modèles, transcription, médias, stockage et transports sortants | `adapters/`, `core/` |
+| `runtime/` | Assemblage partagé, politiques de session et projections | `runtime/`, `core/`, `adapters/` |
+| `server/` | HTTP authentifié, validation, traduction des erreurs et routes TV | `server/`, `core/`, `adapters/`, `runtime/` |
+| `mcp/` | Pont et outils pour clients externes | `mcp/`, `core/` |
+| `app/` | Hôte Electron, IPC, capture Mac et présentation | `app/`, `core/`, `adapters/`, `runtime/` |
 
-`tests/architecture.test.cjs` interdit les dépendances externes dans le cœur. Les vues reçoivent des données et des callbacks ; elles n'appellent pas directement un fournisseur ou le disque.
+Le cœur refuse tout import externe et les accès hôte contrôlés par la garde (`process`, réseau,
+DOM, IPC, stockage navigateur, `Buffer`). Les autres couches acceptent les imports littéraux
+`node:` et les paquets de `dependencies`, sous-chemins compris. Les builtins sans préfixe et les
+paquets de développement sont refusés ; `electron` n’est permis que dans `app/main.cjs` et
+`app/preload.cjs`. `runtime/` et `server/` restent indépendants d’Electron.
 
-## De la capture à la réponse
+`app/ui/` importe uniquement dans son dossier, sauf `browser-capture.mjs` vers `app/recording.js`.
+`tv/app/` utilise des scripts classiques : aucune syntaxe ES import/export, même dynamique.
+Ses chargements CommonJS sont relatifs, internes au dossier et sous garde Node explicite
+`typeof module === "object" && module && module.exports`.
 
-Deux adaptateurs alimentent le même domaine. Sur LG, `tv/capture.py` envoie quatre images espacées d’environ deux secondes et huit secondes d’audio par tranche. `server/http.cjs` authentifie et valide les requêtes ; `RemoteMedia` normalise les fichiers. Le WebM reconstruit avec les images fixes n’est pas une vidéo native. Sur Mac, le chemin Electron suit les étapes ci-dessous.
+La garde interdit aussi aux compositions `.cjs` des hôtes et du runtime d’écrire directement
+`watch.ending`, `accepting`, `readOnly`, `closed` ou `asking`. Le domaine porte ces transitions.
+Les services du cœur n’importent pas `core/session.cjs` ; `Surveillance` ne dépend ni de `DeepAsk`
+ni des indicateurs de planification du chat.
 
-1. `RollingRecorder` produit un premier segment de 2 secondes, puis des segments de 8 secondes : clip WebM, frames JPEG horodatées et audio WAV. `checkpoint` permet de terminer le segment à l'instant d'une action ciblée.
-2. Le processus principal valide les entrées IPC et les transmet à `WatchSession`. `LocalSessionStore` conserve les médias et sérialise les archives.
-3. `WatchSession` orchestre deux files FIFO bornées (un travail actif et deux en attente chacune). `LocalTranscriber` transcrit d’abord l’audio du passage sur l’hôte Mac ou VPS et publie le texte immédiatement. `CodexPerception.observeVisual` reçoit ensuite les images et ce texte pour le même intervalle. L’audio du passage suivant peut avancer pendant cette vision. Codex reçoit images et transcription, pas le WAV brut. Les adaptateurs historiques `observe` restent compatibles.
-4. `DeepAsk` ancre chaque question à l'envoi, gère la file FIFO (cinq en attente au plus), la progression réelle, l'annulation ciblée et un plafond de traitement de cinq minutes, hors attente. Le plafond appliqué est publié avec chaque question (`job.timeoutMs`) : les clients en dérivent leurs textes et l’écoulé. `TVLENS_QUESTION_TIMEOUT_MS` peut seulement l’abaisser. Chaque question publie aussi ce qu’elle pouvait consulter au moment de son gel (`job.availability`).
-5. `CodexSessionAgent` gère la conversation et les preuves externes ; `CodexSessionClient` garde le transport App Server et le fil par session. La perception change de fil à chaque sujet sans relancer le processus. Les outils dynamiques consultent `VideoTools`. L’adaptateur MCP expose les mêmes contrats à des clients externes ; son pont est lancé par Electron, pas par le serveur TV.
-6. Les résultats comprennent des citations validées. La relecture utilise les fichiers locaux avec prise en charge des plages d'octets ; les sources externes passent par les contrôles de liens.
+**Temps et modules purs.** `CORE_TIME_STOCK` fige par fichier et opération les accès globaux au
+temps encore présents dans le cœur : `Date.now`, les quatre fonctions de minuterie et
+`AbortSignal.timeout`. Ce stock est une dette exacte, pas une autorisation d’ajout : toute nouvelle
+référence doit être injectée, toute suppression doit réduire l’exception correspondante.
+`PURE_MODULE_POLICIES` interdit imports, `process` et réseau à `runtime/session-closing.cjs` et
+`runtime/question-checkpoint.cjs`. Le premier refuse aussi le temps global ; le second conserve
+ses défauts injectables `setTimeout` et `clearTimeout` (ADR 0015). Les gardes reconnaissent aussi
+les accès qualifiés, optionnels, calculés par chaîne littérale et les expressions des gabarits.
+[Le banc des gardes](../tests/architecture-guard.test.cjs) éprouve ces interdictions par violations locales.
 
-La capture reste indépendante des recherches. La file de perception est bornée ; en surcharge, certains passages sont marqués comme non analysés plutôt que de prétendre à une couverture complète. Leur média reste disponible avec la session.
+## Propriétaires et compositions
 
-## Mémoire et cycle de vie
+Les deux hôtes composent `runtime/session-runtime.cjs`, `conversation-runtime.cjs` et
+`surveillance-runtime.cjs`. Le premier construit les objets de session et expose leur façade ;
+les choix de fournisseur et les transitions ont leurs propriétaires propres.
 
-Le temps est monotone dans l'ordre d'observation : un retour arrière dans le lecteur ne remonte pas l'horloge TVLens.
+| Module | Responsabilité et frontière |
+| --- | --- |
+| `runtime/session-providers.cjs` | Construit transcription, perception, inspection révocable et index ; reçoit options et substitutions de fournisseurs. |
+| `runtime/session-manifest.cjs` | Construit et écrit le manifeste ; cadence monotone de 30 secondes et historique des 100 dernières captures. |
+| `runtime/session-lifecycle.cjs` | Restaure, met en pause/reprend, révoque l’inspecteur, libère les ressources et confirme l’archive de cette vie. |
+| `runtime/session-closing.cjs` | Protocole de fin commun : étapes tentées, erreurs nommées, archivage ou scellement/effacement, libération de l’hôte. |
+| `runtime/capture-intake.cjs` | Possède les opérations headless dès l’admission, leur validité, leur annulation et l’attente des stockages admis. |
+| `runtime/headless-session-lifecycle.cjs` | Sérialise les transitions serveur, possède la session chargée, l’époque de capture et le résultat de fin. |
+| `runtime/state-views.cjs` | Projette en mémoire les vues chat/panel, l’overlay serveur et l’historique de surveillance ; aucun transport ni disque. |
 
-**Conservation.** Les médias d’une session sont gardés jusqu’à sa suppression explicite : rien n’expire à cinq minutes, rien n’est nettoyé au démarrage ni à la fermeture. Une durée dans `TVLENS_MEDIA_RETENTION_MS` rétablit une fenêtre glissante ; un segment qui chevauche la borne expire alors lorsqu'il en sort entièrement. Une archive enregistrée « jusqu’à suppression » garde ce contrat même reprise sur un hôte réglé en fenêtre glissante.
+`session-manifest` lit la confirmation finale détenue par `session-lifecycle` ; il ne la déduit
+pas du manifeste d’une ancienne vie. `HeadlessRuntime` compose les propriétaires et délègue sans
+recopier leur état. `empty-session`, `session-rows` et `capture-storage` portent les règles pures
+communes de session vide, de liste et de pause disque. Les lectures de bibliothèque capturent les
+faits de la session avant leur première attente (ADR 0036 et 0037).
 
-**Dossier de session.** `session.json`, `manifest.json`, les médias dans `media/`, les miniatures dans `thumbs/`, et selon l’usage `deep-answers.json`, `living-recap.json`, `surveillance.json`, `embeddings.json`. `SessionLibrary` (`adapters/session-library.cjs`) liste par manifeste, lit, et supprime une session et elle seule. Le format est additif : une archive antérieure, sans manifeste, est listée « texte seul » et n’est ni migrée ni effacée. Un passage indisponible porte son motif (`mediaReason` : `expired`, `missing`, `not-kept`, `unreadable`).
+**Mac.** `app/main.cjs` compose Electron et garde la table IPC ; `preload.cjs` expose un bridge limité.
+Les fabriques de fenêtre, sources et actions reçoivent leurs dépendances et gardent leur état dans
+leur instance. Le renderer compose `app/ui/capture-controller.mjs` via `browser-capture.mjs` :
+ce contrôleur possède flux, audio, recorder et flushes. Les actions et contrôles lui délèguent ;
+l’arrêt attend le recorder et ses ingestions, puis l’hôte, avant de libérer pistes et audio.
+`app/ui/state-delivery.mjs` adopte immédiatement les états poussés et regroupe leurs dessins par
+frame, avec secours à 100 ms. `bindPushedStates` garde la fraîcheur des lectures initiales et des
+archives face aux poussées ; la libération retire abonnements, lectures, frames et minuteries.
+Le chat conserve un seul arbre DOM entre fenêtre complète et mode flottant.
 
-**Vidéo illisible.** Un enregistreur qui reçoit le son mais aucune image écrit un conteneur WebM valide et vide (un en-tête, aucun bloc média). À la réception, `core/clip-container.cjs` lit la structure du conteneur — pas sa taille — et un conteneur vide rend le passage `available: false`, `mediaReason: 'unreadable'`. `available` ne dit que « la vidéo peut être relue » : les fichiers du passage restent sur le disque tels qu’ils sont arrivés, le passage est analysé comme les autres à partir de ses images et de son son, et son réexamen se fait sur les images conservées à la capture, avec une limite dite en premier. Le même repli sert quand `ffmpeg` refuse un clip ou n’en tire aucune image ; la limite dit alors seulement que le réexamen repose sur les images conservées, sans qualifier la vidéo d’illisible. Un `ffmpeg` absent ou tué reste une erreur du décodeur. L’agent voit `mediaReason: "unreadable"` dans ses outils et sait que ce passage reste réexaminable. Ce contrôle ne garantit pas qu’un clip non vide se décode : un fichier abîmé n’est découvert qu’à la relecture ou au réexamen. Il n’est fait qu’à la réception : une archive enregistrée avant lui, ou un passage retrouvé sur le disque après une coupure, n’est pas rejugé.
+**Codex.** `adapters/codex-session-client.cjs` possède transport App Server, fils, activité et drain.
+`codex-session-events.cjs` distribue les notifications avec les gardes de fil/tour et les effets
+reçus ; `codex-session-run.cjs` conduit préparation, accusé de démarrage, interruption, watchdog et
+nettoyage sur ce même état. Ces modules ne créent pas un second client. Le remplacement d’un groupe
+de processus attend son arrêt ; les accès ouverts sur une session sont révoqués à sa fin.
+Les rôles sont cloisonnés selon [SECURITY.md](../SECURITY.md), avec les limites qui y sont documentées.
 
-**Cycle de vie.** Pause/reprise conserve la session, ses résumés et la discussion ; la pause n'ajoute pas de temps observé. « Nouvelle session » et la fermeture de l’application sur Mac, « Terminer la session » et l’arrêt du service sur le serveur, **archivent**. Une archive s’ouvre en lecture seule, horloge figée : questions, frise et relecture restent possibles, la capture ne reprend que sur une reprise explicite. Les questions d’une archive sont rouvertes avec elle ; le fil Codex, éphémère, ne l’est pas : une nouvelle question ouvre un fil neuf. Une session terminée sans passage ni question n’est pas conservée.
+**HTTP et TV.** `server/http.cjs` garde authentification, limites, réponses et traduction des erreurs ;
+`server/routes.cjs` répartit les groupes sessions, ingestion, questions, surveillance et état.
+Le transport possède séquences, doublons et créneau de préparation ; l’ingestion métier reste dans
+`capture-intake`. `tv/app/index.html` charge modèles, contrôleur de polling et vue avant le companion.
+`chat-model.js` porte fusion d’état, progression et plan de polling ; `poll-controller.js` possède
+une seule lecture en vol, accélérations regroupées, timer et invalidation des retours après arrêt.
+`chat-view.js` possède cartes, écho, verrou d’envoi et progression ; un changement de session invalide
+un envoi tardif. `companion.js` compose ces objets, conserve sélection/ancrage et navigation.
+Le contenu des modèles et du réseau s’affiche comme texte.
 
-**Disque.** `DiskGuard` (`adapters/disk-guard.cjs`) mesure l’espace libre du volume des sessions : sous le plancher (1 Gio par défaut), le passage est refusé avant toute écriture, la capture s’arrête et rien n’est supprimé ; sous l’alerte (2 Gio), l’état dit « espace faible ». Il n’y a aucune éviction automatique.
+## De la capture à la question
 
-`SavedMoments` copie explicitement le média dans la bibliothèque des moments gardés, qui ne part pas avec la session. La suppression est une action utilisateur. `LivingRecap` conserve la provenance des chapitres et les textes ; si un média devient indisponible, l'interface désactive la relecture.
+Sur Mac, `RollingRecorder` produit un premier segment de 2 secondes puis des segments de 8 secondes,
+avec clip WebM, images JPEG horodatées et audio WAV. Un checkpoint ferme le segment pour une action
+ciblée. Sur LG, `tv/capture.py` envoie images et audio au serveur ; `RemoteMedia` prépare les fichiers.
+Le WebM reconstruit à partir d’images fixes n’est pas une vidéo native. Les deux captures rejoignent
+`WatchSession` après validation par leur hôte et stockage par `LocalSessionStore`.
 
-## Recherche et réexamen
+**Deux voies.** Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
 
-`MomentSearch` sélectionne l’intervalle et classe les passages (55 % lexical, 45 % similarité). `MomentIndex` crée et réutilise les vecteurs via les ports embeddings/cache. `OpenRouterEmbeddings` appelle `text-embedding-3-small` ; `EmbeddingStore` persiste un index JSON local, pas une base vectorielle serveur.
+- L’audio appelle `transcribe`, puis publie immédiatement les paroles. Par défaut `maxPending = 2` :
+  seuls les deux derniers passages en attente gardent leur transcription ; les plus anciens sont
+  marqués `audioStatus: skipped`. La file conserve jusqu’à `maxPending × 3` références (six par défaut),
+  hors appel actif, pour transmettre encore les images dans l’ordre. Au-delà, les plus anciens
+  sont abandonnés entièrement, avec perte vision `backlog` comptée.
+- La vision appelle `observeVisual` sur images et transcription disponible du même passage.
+  Sa file attend au plus `maxPending` passages (deux par défaut), hors appel actif. Un passage dont
+  la transcription a été sautée en surcharge saute aussi la vision si la file est pleine ; il
+  n’évince pas les passages déjà en attente. Sinon, un débordement évince le plus ancien.
+  Le statut conserve les preuves partielles.
 
-Quand une clé d’embeddings est configurée, les passages publiés alimentent l’index **en arrière-plan** : un lot à la fois, file bornée, une entrée par passage, envois groupés toutes les trente secondes. Leur texte part donc vers OpenRouter au fil de la session ; `TVLENS_BACKGROUND_INDEX=0` revient à un index alimenté par les seules recherches. Une recherche demande les passages de son préfixe, attend au plus 1,5 s, puis classe lexicalement ce qui manque et l’annonce (`semantic`, avertissement). Une référence temporelle reconnue contourne les embeddings. Sans clé, recherche lexicale ; en cas d’échec du fournisseur, repli lexical avec avertissement. `EmbeddingStore` écrit un journal en ajout seul.
+L’audio du passage suivant peut avancer pendant la vision du précédent. Les fournisseurs simulés
+suivent le même contrat à deux voies. La session ne sélectionne plus de voie série ; la méthode
+combinée `CodexPerception.observe` subsiste seulement pour une sonde explicite (ADR 0038).
+Codex reçoit images et texte ; le WAV est transcrit par `LocalTranscriber` sur l’hôte.
+Une description échouant sur une erreur transitoire identifiée peut être redemandée une seule fois,
+uniquement si la voie est libre et la session encore utilisable (ADR 0008 et 0031).
 
-La perception et le résumé vivant passent par `CodexAnalysisAgent` : aucun outil déclaré et web désactivé. Ils ne choisissent pas eux-mêmes de parcourir la mémoire. Voir [les responsabilités et la validation du refactor](refactor-runtime.md).
+**Questions.** `conversation-runtime` compose `DeepAsk`, `CodexSessionAgent` et `VideoTools`.
+`DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
+publie progression et annulation ciblée, et applique au traitement un plafond de cinq minutes,
+abaissable par `TVLENS_QUESTION_TIMEOUT_MS`. `job.timeoutMs` et `job.availability` décrivent le
+plafond et la disponibilité figée. `WatchSession.setQuestionPending` possède le fait `asking`.
+La transcription continue ; la vision continue avec le réglage hôte par défaut
+`TVLENS_VISION_DURING_ASK=1`. Avec `0`, les questions retiennent la vision en attente et les pertes
+sont classées `asking` ou `backlog` selon la cause. La surveillance n’utilise pas cette file.
 
-`VideoTools` fige session, ancrage, liste des passages et bornes, limite le nombre d'appels/inspections, puis valide les citations. Au démarrage de la réponse et avant chaque outil, il relit la version courante de ces mêmes passages ; un journal garde chaque révision remise à l'agent. Aucun passage n'est ajouté après l'envoi de la question. Les baux média empêchent l'effacement d'un passage utilisé par un réexamen en cours.
+`VideoTools` conserve session, bornes et identifiants des passages autorisés. Au démarrage de la
+réponse et avant chaque outil, il relit leurs versions disponibles ; aucun passage ultérieur ne
+rejoint la question. Les citations sont validées et les consultations journalisées. Une annulation
+ne rend les outils qu’au retour effectif de l’agent. Les baux protègent les médias d’un réexamen.
 
-`ClipInspector` prépare les preuves derrière `ClipInspectionPort`. Dans l'app actuelle, Codex utilise **les planches adaptatives `sheets-diverse`**, avec six frames numérotées et horodatées par planche. Le choix de préparation, FFmpeg et les appels modèle restent hors du domaine. `CachedInspector` réutilise un résultat uniquement quand la question, l'intervalle et l'identité des médias correspondent.
+Les anciennes archives peuvent contenir `questions` dans `session.json` : validation, restauration
+et snapshot conservent ces données. Elles ne rétablissent ni `WatchSession.ask`, ni `selectEvidence`,
+ni un port de réponse historique. Les travaux du chat actif sont conservés dans `deep-answers.json`.
+Ouvrir puis refermer une archive ne réanalyse ni ne réécrit son contenu.
 
-Les stratégies vidéo native ralentie et autres variantes OpenRouter sont conservées pour les expériences historiques. Elles ne sont pas le chemin actif du chat ou de la vision. Les résultats Gemini anciens ne valident pas automatiquement Luna : voir [les comparaisons](strategy-comparison.md).
+## Mémoire, recherche et surveillance
 
-## Surveillance et résumé progressif
+L’horloge suit l’ordre d’observation, même si le lecteur revient en arrière. Les médias et miniatures
+restent jusqu’à suppression explicite par défaut ; `TVLENS_MEDIA_RETENTION_MS` peut rétablir une
+fenêtre glissante. Une archive durable conserve son contrat quand elle est reprise sur un autre réglage.
+`session.json`, `manifest.json`, `media/` et `thumbs/` portent état, liste et médias ; les usages ajoutent
+questions, résumé vivant, surveillance et embeddings. `SessionLibrary` liste par manifeste et supprime
+une session ciblée. Les archives anciennes sans manifeste restent lisibles comme texte seul.
 
-`Surveillance` (`core/surveillance.cjs`) remplace l’ancien mode Auto, retiré. Une consigne libre du spectateur est lue à partir de son activation, passage par passage, du plus ancien au plus récent. Chaque affirmation détectée reçoit un identifiant et finit dans un état explicite : sourcée, indéterminée, relevée (signalement), en erreur, annulée, ou encore en attente. La file est bornée et ne perd rien en silence : un retard ou une panne de lecture sont dits dans l’état.
+`available` indique la relecture vidéo. Un conteneur sans bloc média est conservé avec
+`mediaReason: unreadable` ; ses images et paroles restent analysables. Le réexamen peut se rabattre
+sur les images conservées, en annonçant sa limite. Les autres indisponibilités sont `missing`,
+`expired` et `not-kept`. `DiskGuard` refuse une écriture sous le plancher d’espace libre sans rien
+supprimer ; l’hôte met la capture et son horloge en pause. `SavedMoments` copie les médias gardés
+hors de la session, jusqu’à suppression propre de ces moments.
 
-- **En parallèle du chat.** Le module ne lit aucun indicateur de question. Une question ne suspend ni n’annule la surveillance, et inversement.
-- **Deux rôles Codex.** Lecture : ni web ni outil. Vérification : web seul, aucun outil, un poste par défaut (`TVLENS_SURVEILLANCE_WORKERS`, 1 à 3). Un fil neuf par tour.
-- **Résultats regroupés.** Un lot de vérification donne au plus une carte, limitée aux affirmations dont la page citée a été ouverte. Un signalement (« Repéré dans la vidéo ») est une observation de la vidéo, sans source web : il ne va jamais dans l’affichage en bas à gauche.
-- **Composition commune.** `runtime/surveillance-runtime.cjs` sert les deux hôtes et écrit le registre dans `surveillance.json`. Un agent simulé (`adapters/simulated-surveillance-agent.cjs`) sert les tests et le mode de démonstration.
-- **Consigne et chat.** Tant que la surveillance est active, sa consigne est transmise au tour de chat comme un champ à part, jamais dans les données.
+`MomentSearch` combine classement lexical et embeddings optionnels ; une référence temporelle
+reconnue contourne l’index. `session-providers` compose `MomentIndex`, `EmbeddingStore` et
+`OpenRouterEmbeddings`. L’indexation de fond est bornée et groupée ; sans clé ou en échec, la recherche
+reste lexicale avec ses limites signalées. Le texte vectorisé part vers OpenRouter.
+`ClipInspector` prépare les preuves derrière le port d’inspection ; le runtime actif utilise les
+planches adaptatives `sheets-diverse`. Cache et révocation enveloppent l’inspection.
+Les adaptateurs OpenRouter d’évaluation et leurs scripts ont été retirés (ADR 0016) ; les préparateurs
+de stratégies encore présents ne constituent pas un banc d’évaluation disponible.
+Les [comparaisons du 28 septembre 2026](strategy-comparison.md) restent des résultats historiques.
 
-Tout cela est prouvé par simulation ; la qualité de la détection avec un vrai modèle n’est pas mesurée. Voir [le livrable](night-features-delivery.md).
+`Surveillance` lit la consigne à partir de son activation, passage par passage : d’abord les paroles,
+puis la description si elle arrive. Lecture sans web ni outil, vérification avec web seul : les rôles
+Codex sont distincts du chat. La composition partagée persiste `surveillance.json` et confirme les
+publications réellement remises ; un tick peut retenter uniquement l’état courant refusé.
+Les cartes sourcées sont regroupées ; les signalements sans source restent dans l’historique.
+`LivingRecap` conserve chapitres et provenance et attend les observations complètes ; les passages
+partiels exclus sont signalés. Perception et résumé utilisent `CodexAnalysisAgent`, sans outil ni web.
 
-`ViewingActions` conserve l'ancrage des actions ciblées et le repère de rattrapage. `LivingRecap` possède une synthèse injectée ; `CodexRecap` reçoit les passages et chapitres sans outils web. Les synthèses de fond peuvent être annulées au profit des questions. Une génération protège contre les résultats tardifs.
+L’affichage ambient panneau fermé est retiré selon l’ADR 0017. Les cartes, files, compteurs,
+activité et réglages du panneau ouvert restent. La route serveur `/v1/surveillance/overlay` et son
+contrat d’ETags sont conservés ; leur retrait est différé. Voir [retrait et historique LG](lg-ambient.md).
 
-## Interface et dépendances
+## Fin de session et hôtes
 
-Les logiques propres à l’hôte Mac suivent la forme de `app/window-mode.cjs` et
-`app/capture-sources.cjs` : une fabrique reçoit les objets Electron en paramètres et garde tout
-l’état mutable dans son instance. Elle ne charge ni Electron, ni les compositions `runtime/`, ni
-les adaptateurs substitués par les bancs Mac ; les choix d’environnement lui sont transmis par
-`app/main.cjs`. Les bancs remplacent Electron à chaque lancement mais gardent les nouveaux modules
-en cache : aucune dépendance Electron ni aucun état d’un lancement ne doit donc vivre au niveau
-du module. `main.cjs` conserve la table des canaux et événements (`handle` et `send`), avec une
-ligne par canal qui appelle le module ; les gardes du contrat IPC continuent ainsi de lire cette
-table dans un seul fichier. Les fabriques se testent sans Electron, avec des objets injectés.
+Pause et reprise gardent la session et la discussion ; la pause fige l’horloge sans ajouter de temps
+observé. L’ouverture d’une archive est silencieuse, en lecture seule et sans préchauffage ; seule une
+reprise explicite rétablit la capture. Le fil Codex éphémère n’est pas restauré avec les questions.
 
-- `ViewingShell` gère la navigation, les états de couverture et le chrome visuel.
-- Les modèles de vue purs (`app/ui/job-view.mjs`, `surveillance-view.mjs`, `sessions-view.mjs`, `card-queue.mjs`) sont testés sans DOM ; le chat et la frise sont redessinés par entrée, sans défilement forcé.
-- `renderRecapView` rend les snapshots dans le panneau Mémoire et le dialogue compact ; `replay` et `notice` sont injectés.
-- `format.js` contient les helpers de présentation ; les textes des modèles sont insérés avec `textContent`.
-- Le chat garde un seul arbre DOM entre mode complet et flottant : historique, brouillon et file ne sont pas dupliqués.
-- `preload.cjs` expose une API limitée ; les renderers n'ont pas accès directement à Node.
+Le protocole partagé de l’ADR 0007 lève la fin avant toute attente, tente chaque étape et garde les
+échecs nommés. Chaque hôte lui remet encore son propre ordre :
 
-## Données et consommation
+| Moment | Mac (`app/main.cjs`) | Serveur (`headless-session-lifecycle.cjs`) |
+| --- | --- | --- |
+| Début synchrone | Révocation des contextes MCP | Annulation des préparations média |
+| Étapes propres | Résumé vivant, surveillance, questions/checkpoint, chat, stockages puis pause si capture active | Pause sauf suppression, stockages/préparations, questions/checkpoint, surveillance, chat |
+| Sort commun | Archive confirmée, ou scellement puis effacement si vide/supprimée | Même protocole ; résultat de fin conservé par le coordinateur |
 
-En mode Mac, l’audio brut et les médias sont stockés sur le Mac. En mode TV → VPS, la TV envoie images et audio au VPS via Tailscale, et Whisper y transcrit les paroles. Dans les deux modes, images et transcriptions vont à Codex. Les embeddings optionnels envoient du texte à OpenRouter. Les sources web sortent du périmètre local.
+Le cycle des ressources révoque l’inspecteur avant attente, ferme l’admission, attend les ingestions
+admises, ferme les ressources puis attend états et manifeste final. L’archivage n’est confirmé qu’après
+réussite du disque. Un refus d’adaptateur n’empêche pas les autres fermetures ; un refus disque laisse
+le dernier état confirmé. Rien n’est effacé sans scellement ni si l’hôte ne peut lâcher la session.
+La règle commune de session vide exige une création de cette vie sans passage ni question historique
+ou active. L’ADR 0036 précise ainsi le critère des hôtes de l’ADR 0007 ; l’ADR 0030 prévoit leur futur
+coordinateur commun, encore distinct des propriétaires présents.
 
-`CodexQuota` est informatif. `UsageLedger` conserve les dépenses OpenRouter connues et les montants encore inconnus, sans plafond local. Aucune réserve locale n'interdit les appels ; les limites des fournisseurs restent applicables.
+L’ingestion serveur possède un bloc avant sa préparation : signal, objet session et époque doivent
+encore correspondre avant stockage. Un stockage commencé atterrit en entier ; une préparation annulée
+est attendue dans une borne de 1000 ms par défaut, sans libérer l’opération ni le créneau HTTP si elle
+continue. Le transport ne les rend qu’à son `finish`.
 
-## Sources et hôtes portables
+Les vues légères `GET /v1/state?view=chat` et `?view=panel` sont calculées depuis l’état publié et les
+faits en mémoire ; le polling ne lit pas le disque. Les ETags distinguent ressource et processus ;
+un état inchangé rend 304 sans corps. La TV fusionne les corps, conserve les questions par identifiant
+et extrapole le temps entre deux réceptions. Le contrat `/v1` porte aussi sur les refus et séquences
+(ADR 0042). Sur TV, arrêt de capture locale et fin distante sont deux confirmations distinctes.
 
-Un agent pour modèle local (`adapters/local-vlm-agent.cjs`, API Ollama) peut remplacer Codex pour la description des passages via `TVLENS_PERCEPTION_BACKEND=local` ; il n'a été testé que contre un faux serveur. Le GX10 reste à valider, débit continu compris. Une caméra + microphone doit produire le contrat `CapturedSegment` existant, avec un média rejouable et des horodatages cohérents.
+Les tests locaux et les bancs simulés protègent ces contrats ; ils ne prouvent ni la qualité des modèles,
+ni le débit soutenu, ni l’état installé. Les mesures datées et leurs limites sont dans
+[validation](validation.md). Le backend local optionnel est raccordé par `LocalVlmAgent` ; une validation
+matérielle GX10 reste distincte des preuves contre un faux serveur.
 
-Les chemins LG → Mac et LG → VPS utilisent la même ingestion HTTP authentifiée. Le lecteur reste dans l’application YouTube native ; le companion webOS alterne chat droit et frise basse. Dictée via le clavier LG, pause/reprise, frise et réponses sur VPS ont été confirmées par l’utilisateur. Le bouton micro physique direct n’est pas détourné.
+## Décisions
 
-`core/session-timeline.cjs` projette les passages en cartes contiguës par sujet. `SessionThumbnails` conserve des JPEG réduits dans le dossier `thumbs/` de la session ; ils restent jusqu’à sa suppression. Les questions attachées à une carte gardent leurs bornes malgré de nouvelles captures.
+Chaque entrée renvoie au texte daté de la décision. Les statuts et preuves historiques de ces ADR
+restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cible de l’état livré.
 
-**État interrogé par la TV.** Avec la conservation durable, l’état complet grossit avec la session. `GET /v1/state` reste compatible ; `GET /v1/state?view=chat` et `?view=panel` rendent des vues légères, et `GET /v1/surveillance/overlay` conserve sa projection compacte, ses champs et son contrat
-d’ETags ; son retrait est différé selon l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md). Chaque réponse porte un `ETag` qui ne change qu’avec un changement publié : une requête avec `If-None-Match` égal reçoit un `304` sans corps. Aucune de ces interrogations ne lit le disque. Le gain mesuré est un gain de transport, sur banc synthétique ; un client TV non mis à jour continue de télécharger l’état complet.
+- [ADR 0001](adr/0001-resultats-de-recherche-lies-a-leur-session.md) :
+  Un résultat de recherche reste attaché à la session qui l’a demandé.
 
-Le serveur Linux exécute `server/main.cjs` sans Electron, sous utilisateur dédié et systemd. Il écoute exclusivement sur l’adresse Tailscale du VPS. Les fournisseurs IA restent distants ; Tailscale protège le transport TV/hôte, pas une promesse d’inférence locale. Les premiers essais séquentiels prenaient 15–22 s par tranche de 8 s. Après séparation et langue française, un essai court de neuf passages mesure 5,18 s de transcription moyenne pour environ 8 s de son, hors vision et attente. Cela ne valide pas un débit soutenu sur une longue session ; voir [validation](validation.md).
+- [ADR 0002](adr/0002-archive-confirmee-avant-d-etre-annoncee.md) :
+  Une archive n’est annoncée qu’après confirmation de ses états finaux sur disque.
 
-La parité d’interface n’est pas complète : marque-pages durables, recherche dédiée, résumé progressif et relecture restent côté Mac. La surveillance et les sessions archivées partagent le même cœur et les mêmes routes ; leurs écrans TV sont écrits dans `tv/app/`, pas encore déployés ni validés sur l’appareil. Les outils de recherche du chat TV utilisent le runtime commun. Une session n’est pas migrée entre les hôtes. Après un redémarrage, l’hôte retrouve ses sessions sur disque, archivées, ou marquées interrompues après un arrêt brutal.
+- [ADR 0003](adr/0003-dernier-etat-par-fichier-et-publication-avant-sauvegarde.md) :
+  Le dernier état de chaque fichier est sérialisé ; la publication précède la sauvegarde.
 
-**Affichage TV.** L’affichage ambient panneau fermé est retiré du dépôt conformément à l’[ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md).
-Les quatre étapes ont retiré page et outils, superviseur et relais, gate de capture, puis intégrations
-de page et documents. Le panneau ouvert conserve les cartes sourcées, la file, l’activité, les compteurs
-locaux et les réglages `alerts`/`displayMs`, sans appel local `/ambient`. La surveillance démarre et
-s’arrête sur le serveur. Ce retrait n’annonce aucun déploiement ; les faits datés restent dans
-[LG : retrait et historique](lg-ambient.md).
+- [ADR 0004](adr/0004-contexte-de-question-rendu-quand-l-agent-a-fini.md) :
+  Le contexte d’une question est rendu quand son agent a effectivement fini.
 
-**Cloisonnement des agents.** Les fils Codex sont ouverts sans environnement d’exécution, dans des dossiers séparés des identifiants, avec une liste blanche d’éléments par rôle ; le vérificateur manuel suit la même voie. Ce cloisonnement n’est pas absolu et n’est mesuré que sur Mac : voir [SECURITY.md](../SECURITY.md).
+- [ADR 0005](adr/0005-groupe-codex-attendu-avant-d-etre-remplace-et-contextes-revoques-en-fin-de-session.md) :
+  Le remplacement Codex attend le groupe précédent ; la fin révoque les accès à la session.
 
-Voir [runtime LG](lg-remote-runtime.md), [frise](lg-timeline.md), [déploiement VPS](vps-deployment.md) et [Tailscale](lg-tailscale.md). L’inférence GX10, le moteur embarqué TV et les embeddings multimodaux restent à explorer.
+- [ADR 0006](adr/0006-bloc-possede-des-son-admission-et-preparation-annulee-quand-sa-session-part.md) :
+  Un bloc est possédé dès admission ; sa préparation est annulée quand sa session part.
 
+- [ADR 0007](adr/0007-fin-de-session-par-un-meme-protocole-sur-les-deux-hotes.md) :
+  Les hôtes partagent le protocole de fin et gardent leurs ordres ; 0030 prévoit sa future unification.
 
-## État partiel et configuration audio
+- [ADR 0008](adr/0008-description-redemandee-une-fois-apres-un-echec-passager.md) :
+  Une description transitoirement échouée est retentée une fois si la voie est libre ;
+  0031 remplace sa classification textuelle par des champs stables.
 
-`audioStatus` et `visionStatus` distinguent les étapes ; `partial` expose une preuve réellement disponible sans inventer les éléments manquants. Les outils de contexte et la frise acceptent ces preuves partielles. `LivingRecap` attend encore les observations complètes ; le récapitulatif signale les passages partiels exclus. La surveillance, elle, lit un passage dès que ses paroles sont publiées, puis une seule fois de plus quand la description arrive. Une question conserve son ancrage et sa liste de passages. Un résultat tardif portant sur l’un de ces passages est lu à la consultation suivante (démarrage de la réponse, puis chaque outil) ; un passage absent de l’instantané initial n’est jamais ajouté, et rien n’est relu après la fin ou l’annulation de la question.
+- [ADR 0009](adr/0009-synthese-refusee-pour-sa-taille-retentee-seulement-si-son-entree-change.md) :
+  Une synthèse refusée pour sa taille attend une modification de son entrée avant nouvelle tentative.
 
-La transcription continue pendant les questions manuelles. Depuis le 13 octobre 2026, la description visuelle continue elle aussi, un appel à la fois : une question peut durer cinq minutes et ne doit pas priver de description ce qui est capturé entre-temps. `TVLENS_VISION_DURING_ASK=0` rétablit l’ancienne retenue. Chaque passage porte ses horodatages de réception, de début de voie et de publication, ainsi qu'une révision ; l'état expose `latency`, `coverage` (pertes par cause, temps de vision retenu par les questions), `visionGaps` et `audioGaps`. En surcharge audio, la transcription d'un passage saute mais ses images restent décrites tant qu'une place est libre dans la file vision ; au-delà de deux passages sans paroles par rafale, les suivants sont perdus en entier et comptés. Voir [latence et architecture du backend](backend-latency-optimization.md). L’interface affiche capture et analyse, sans prétendre que tous les indicateurs internes sont exposés séparément. La fermeture annule les travaux ; les appels interactifs de réexamen peuvent encore partager le transcripteur avec le fond.
+- [ADR 0010](adr/0010-une-plage-de-clip-ne-lit-que-les-octets-qu-elle-renvoie.md) :
+  Une lecture Range de clip ne lit que les octets qu’elle renvoie.
 
-`TranscriptionSettings` persiste la langue du serveur (français par défaut). Le port de transcription reçoit son choix via la composition ; les appels en cours gardent leur langue, et le cache distingue langue + audio. Les observations et réexamens déjà mis en cache ne sont pas recalculés au changement. Le streaming audio n’est pas activé : [essai isolé et limites](audio-stream-probe-20261004.json).
+- [ADR 0011](adr/0011-un-script-partage-du-panneau-tv-est-une-iife-exposee-sur-la-page-et-par-commonjs.md) :
+  Les scripts TV partagés sont des IIFE page/CommonJS ; le consommateur ambient a été retiré par 0017.
 
-Le résumé cumulatif de sujet vit dans `segment.topicSummary`, hors de
-`segment.observation` : il ne constitue pas une preuve du bloc courant.
-`core/topic-summary.cjs` possède les bornes du résumé et le choix d’une restitution
-compatible avec la sélection. `perceptionContext` fournit le résumé précédent au
-port de perception ; l’adaptateur Codex retourne le texte agrégé dans le même
-appel que la description actuelle. Le cœur vérifie les limites et assigne les
-IDs, conserve l’agrégat lors de l’archivage, et repart du passage actuel à chaque
-frontière. La frise et son détail utilisent la même projection, avec un repli
-explicitement limité aux extraits quand aucun agrégat ne couvre l’intervalle.
+- [ADR 0012](adr/0012-la-boucle-separe-codex-et-son-relecteur-claude.md) :
+  La boucle sépare implémentation Codex et relecture Claude.
+
+- [ADR 0013](adr/0013-formatage-prettier-reglages-par-defaut.md) :
+  Le formatage suit les réglages par défaut de Prettier.
+
+- [ADR 0014](adr/0014-eslint-gel-des-infractions.md) :
+  Les infractions ESLint existantes sont gelées par fichier et règle.
+
+- [ADR 0015](adr/0015-les-minuteries-du-checkpoint-des-questions-sont-injectees.md) :
+  Les deux hôtes injectent les minuteries du checkpoint des questions.
+
+- [ADR 0016](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md) :
+  Les adaptateurs d’évaluation hérités et leurs scripts sont retirés sans remplacement du banc.
+
+- [ADR 0017](adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md) :
+  L’affichage ambient panneau fermé est retiré ; les cartes du panneau ouvert et la route overlay restent.
+
+- [ADR 0018](adr/0018-un-controleur-injecte-possede-la-capture-du-mac.md) :
+  Un contrôleur injecté possède les ressources de capture Mac et leur libération.
+
+- [ADR 0019](adr/0019-fournisseurs-et-manifeste-separes-de-l-assemblage-de-session.md) :
+  Les fabriques de fournisseurs et de manifeste sont séparées de l’assemblage de session ;
+  0020 confie ensuite la confirmation finale au cycle de vie.
+
+- [ADR 0020](adr/0020-le-cycle-de-vie-possede-la-restauration-et-la-fin-du-runtime-de-session.md) :
+  Le cycle des ressources possède restauration et fin confirmée du runtime de session.
+
+- [ADR 0021](adr/0021-le-transport-http-distribue-les-routes-par-groupe.md) :
+  Le transport HTTP distribue les routes par groupes et conserve ses validations communes.
+
+- [ADR 0022](adr/0022-le-client-codex-delegue-les-notifications-et-l-execution-des-tours.md) :
+  Le client Codex délègue notifications et tours en gardant un seul état de connexion.
+
+- [ADR 0023](adr/0023-un-proprietaire-possede-l-ingestion-headless.md) :
+  Un propriétaire possède l’ingestion headless dès son admission, jusqu’au finish du transport.
+
+- [ADR 0024](adr/0024-un-coordinateur-possede-les-transitions-headless.md) :
+  Un coordinateur possède les transitions headless et le transfert synchrone de session et questions.
+
+- [ADR 0025](adr/0025-la-livraison-des-etats-mac-possede-ses-dessins-et-ses-attentes.md) :
+  La livraison Mac possède adoption des états, dessins regroupés et attentes annulables.
+
+- [ADR 0026](adr/0026-un-controleur-injecte-possede-la-boucle-de-polling-tv.md) :
+  Un contrôleur injecté possède la boucle de polling TV et ignore les retours après arrêt.
+
+- [ADR 0027](adr/0027-une-vue-possede-les-cartes-et-les-envois-du-chat-tv.md) :
+  Une vue possède les cartes et les envois du chat TV, invalidés au changement de session.
+
+- [ADR 0028](adr/0028-une-mesure-synthetique-correle-la-capture-et-la-remise-aux-vues.md) :
+  Le banc synthétique corrèle capture et remise aux vues, sans mesurer le matériel ou les modèles réels.
+
+- [ADR 0029](adr/0029-le-code-se-range-par-contextes-du-domaine-en-hexagone.md) :
+  La cible range le code par contextes en hexagone ; ce rangement reste à réaliser.
+
+- [ADR 0030](adr/0030-un-seul-coordinateur-de-sessions-pour-les-deux-hotes.md) :
+  La cible prévoit un coordinateur unique des deux hôtes et amende 0007 ; la migration reste à réaliser.
+
+- [ADR 0031](adr/0031-les-erreurs-de-perception-et-de-verification-se-classent-par-champs-stables.md) :
+  Les échecs de perception et vérification se classent par champs stables, jamais par message.
+
+- [ADR 0032](adr/0032-les-notifications-d-etat-ne-peuvent-pas-interrompre-les-transitions.md) :
+  Les refus de notification d’état ne peuvent interrompre les transitions applicatives.
+
+- [ADR 0033](adr/0033-la-surveillance-confirme-la-livraison-et-retente-seulement-l-etat-courant.md) :
+  La surveillance confirme la livraison et retente seulement l’état courant refusé.
+
+- [ADR 0034](adr/0034-les-refus-http-portent-un-code-dans-le-json-ou-un-en-tete-media.md) :
+  Les refus HTTP portent un code JSON ou média ; 0040 remplace son repli historique des erreurs inattendues.
+
+- [ADR 0035](adr/0035-la-session-possede-la-transition-de-question-en-cours.md) :
+  La session possède la transition de question en cours ; 0038 retire ensuite son ancienne API ask.
+
+- [ADR 0036](adr/0036-les-hotes-partagent-trois-regles-pures-de-session.md) :
+  Les hôtes partagent les règles pures de session vide, de liste et de pause disque.
+
+- [ADR 0037](adr/0037-les-lectures-de-bibliotheque-capturent-la-session-a-l-entree.md) :
+  Les lectures de bibliothèque capturent les faits de la session à leur entrée.
+
+- [ADR 0038](adr/0038-la-session-utilise-deux-voies-et-conserve-les-questions-historiques.md) :
+  La session utilise seulement les deux voies et conserve les questions historiques dans les archives.
+
+- [ADR 0039](adr/0039-les-codes-de-refus-suivent-leur-module-emetteur.md) :
+  Les codes de refus sont déclarés par leur module émetteur ; la traduction HTTP reste dans l’hôte.
+
+- [ADR 0040](adr/0040-les-erreurs-http-inattendues-repondent-500-et-restent-au-journal.md) :
+  Les erreurs HTTP inattendues répondent 500 avec texte générique et sont journalisées ; le repli de 0034 est remplacé.
+
+- [ADR 0041](adr/0041-les-refus-http-restent-structures-jusqu-au-rapport-de-capture-tv.md) :
+  Les refus structurés par statut et code parviennent jusqu’au rapport de capture TV.
+
+- [ADR 0042](adr/0042-le-fil-v1-conserve-les-comportements-lus-par-les-clients-tv.md) :
+  Le contrat v1 conserve les comportements, refus et séquences lus par les clients TV, au-delà de la forme JSON.

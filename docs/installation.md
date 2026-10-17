@@ -158,7 +158,8 @@ npm run test:codex-speed:live       # mesures sur un petit scénario contrôlé
 
 Les tests live nécessitent le compte Codex et, pour les embeddings, une clé créditée.
 [Résultats et limites](session-optimization.md). Les scripts de comparaison des
-anciens modèles restent disponibles mais ne décrivent plus la configuration actuelle.
+anciens modèles ont été retirés sans remplacement ; leurs rapports restent historiques
+([ADR 0016](adr/0016-retrait-des-adaptateurs-d-evaluation-herites.md)).
 
 ## Dépannage
 
@@ -207,9 +208,9 @@ node scripts/check-codex-quota.cjs
 Le test réel substitue seulement le sélecteur de capture macOS par le flux décodé
 par Chromium : vidéo, son, transcription locale, perception et chat/web sont réels.
 La rétention est accélérée à 45 secondes dans ce test ; en production, les médias
-sont gardés jusqu'à la suppression de la session. Ce script date d'avant le
-13 octobre 2026 : il appelle encore l'ancien pont Auto, retiré depuis, et n'a pas
-été rejoué.
+sont gardés jusqu'à la suppression de la session. Le script appelle `startSurveillance` avec une consigne libre.
+Aucun rejeu n’est consigné depuis ce réalignement, signalé dans le
+[livrable du 13 octobre 2026](night-features-delivery.md).
 
 Référence du raccourci global : [API Electron globalShortcut](https://www.electronjs.org/docs/latest/api/global-shortcut).
 
