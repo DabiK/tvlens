@@ -1,6 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { deferred } = require("./helpers/wait.cjs");
+const { manualClock } = require("./helpers/clock.cjs");
 
 test("the controller imports without window, document or navigator", async () => {
   const names = ["window", "document", "navigator"];
@@ -99,6 +100,7 @@ async function fixture({
   let nextTimer = 0,
     nextId = 0;
   const timers = new Map();
+  const audioClock = manualClock();
   const clock = {
     setTimeout: (fn, ms) => {
       const id = ++nextTimer;
@@ -192,6 +194,7 @@ async function fixture({
       return recorder;
     },
     timers: clock,
+    time: audioClock.io,
     uuid: () => `flush-${++nextId}`,
     video,
     session: () => currentState,
@@ -229,6 +232,7 @@ async function fixture({
     messages,
     timers,
     clock,
+    audioClock,
     bridge,
     session,
     recorders,
@@ -331,6 +335,131 @@ test("video capture without live audio creates no audio context and still record
     f.events.some((event) => event[0] === "audio.context"),
     false,
   );
+});
+
+async function audioWarningFixture(options = {}) {
+  const { renderCaptureControls } = await import("../app/ui/capture-controls.mjs");
+  const nodes = new Map();
+  const get = (id) => {
+    if (!nodes.has(id)) nodes.set(id, { classList: { toggle() {} } });
+    return nodes.get(id);
+  };
+  let f;
+  const draw = () => renderCaptureControls({
+    get, capture: f.controller, session: null, shell: { observation() {} },
+  });
+  f = await fixture({ ...options, view: { changed: draw } });
+  return { ...f, get, draw };
+}
+
+const AUDIO_WARNING = "Le son n'est pas capté : vérifie la permission d'enregistrement de l'écran et de l'audio du système, puis relance l'app";
+
+test("missing live audio keeps a visible warning through recording and repeated control draws until capture stops", async () => {
+  const f = await audioWarningFixture({ audio: false });
+  await f.controller.startPreview();
+  assert.equal(f.get("audio-warning").hidden, false);
+  assert.equal(f.get("audio-warning").textContent, AUDIO_WARNING);
+  await f.controller.observe();
+  assert.equal(f.statuses.at(-1), "Capture + mémoire actives");
+  await f.audioClock.advance(30_000);
+  f.draw();
+  assert.equal(f.get("audio-warning").hidden, false);
+  assert.equal(f.get("float-audio-warning").hidden, false);
+  assert.equal(f.get("float-audio-warning").title, AUDIO_WARNING);
+  await f.controller.stop();
+  assert.equal(f.get("audio-warning").hidden, true);
+  assert.equal(f.get("float-audio-warning").hidden, true);
+  assert.equal(f.audioClock.armed, 0);
+});
+
+test("ten seconds of digital silence during recording warns durably and receiving sound clears and restarts the deadline", async () => {
+  const f = await audioWarningFixture();
+  const samples = (rms) => f.worklet.port.onmessage({
+    data: { type: "samples", samples: new Float32Array([rms, -rms]), rms },
+  });
+  await f.controller.startPreview();
+  await f.audioClock.advance(30_000);
+  assert.equal(f.get("audio-warning").hidden, true, "preview time is not recording time");
+  await f.controller.observe();
+  samples(0);
+  await f.audioClock.advance(9_999);
+  samples(1e-9);
+  assert.equal(f.get("audio-warning").hidden, true);
+  await f.audioClock.advance(1);
+  assert.equal(f.get("audio-warning").hidden, false);
+  assert.equal(f.get("audio-warning").textContent, AUDIO_WARNING);
+  await f.audioClock.advance(20_000);
+  samples(0);
+  f.draw();
+  assert.equal(f.get("audio-warning").hidden, false);
+  samples(1e-5);
+  assert.equal(f.get("audio-warning").hidden, true, "quiet sound is still sound");
+  assert.equal(f.get("float-audio-warning").hidden, true);
+  for (let i = 0; i < 3; i++) {
+    await f.audioClock.advance(9_999);
+    samples(0.25);
+    assert.equal(f.get("audio-warning").hidden, true);
+  }
+  await f.audioClock.advance(9_999);
+  assert.equal(f.get("audio-warning").hidden, true);
+  await f.audioClock.advance(1);
+  assert.equal(f.get("audio-warning").hidden, false, "a later silence has its own deadline");
+  await f.controller.stop();
+  assert.equal(f.get("audio-warning").hidden, true);
+  assert.equal(f.audioClock.armed, 0);
+});
+
+test("ending the live audio track warns immediately while video continues and buffered sound cannot clear it", async () => {
+  const f = await audioWarningFixture();
+  await f.controller.startPreview();
+  await f.controller.observe();
+  f.audioTrack.readyState = "ended";
+  f.audioTrack.onended?.();
+  assert.equal(f.get("audio-warning").hidden, false);
+  assert.equal(f.controller.recording, true);
+  f.worklet.port.onmessage({ data: { type: "samples", samples: new Float32Array([0.5]), rms: 0.5 } });
+  assert.equal(f.get("audio-warning").hidden, false);
+  await f.controller.stop();
+  assert.equal(f.audioTrack.onended, null);
+  assert.equal(f.audioClock.armed, 0);
+});
+
+test("a retained capture still warns without worklet packets after a refused stop and keeps watching track loss", async () => {
+  const f = await audioWarningFixture();
+  await f.controller.startPreview();
+  await f.controller.observe();
+  await f.audioClock.advance(9_999);
+  const recorder = f.recorders[0], stop = recorder.stop;
+  const refusal = Object.assign(new Error("stop refused"), { code: "STOP_REFUSED" });
+  recorder.stop = async () => { throw refusal; };
+  await assert.rejects(f.controller.stop(), (error) => error === refusal);
+  await f.audioClock.advance(1);
+  assert.equal(f.get("audio-warning").hidden, false, "no samples cannot conceal a silent live track");
+  f.worklet.port.onmessage({ data: { type: "samples", samples: new Float32Array([0.5]), rms: 0.5 } });
+  assert.equal(f.get("audio-warning").hidden, true);
+  f.audioTrack.readyState = "ended";
+  f.audioTrack.onended();
+  assert.equal(f.get("audio-warning").hidden, false);
+  recorder.stop = stop;
+  await f.controller.stop();
+  assert.equal(f.audioClock.armed, 0);
+});
+
+test("sound received while a stop is pending leaves a silence deadline if that stop is refused", async () => {
+  const held = deferred();
+  const f = await audioWarningFixture({ recorderStop: held.promise });
+  await f.controller.startPreview();
+  await f.controller.observe();
+  const refusal = Object.assign(new Error("stop refused"), { code: "STOP_REFUSED" });
+  const rejected = assert.rejects(f.controller.stop(), (error) => error === refusal);
+  await f.recorderStopping.promise;
+  f.worklet.port.onmessage({ data: { type: "samples", samples: new Float32Array([0.5]), rms: 0.5 } });
+  held.reject(refusal);
+  await rejected;
+  await f.audioClock.advance(10_000);
+  assert.equal(f.get("audio-warning").hidden, false);
+  await f.controller.release().catch((error) => assert.equal(error, refusal));
+  assert.equal(f.audioClock.armed, 0);
 });
 
 test("simultaneous stops wait for the recorder before stopping the host and releasing tracks and audio", async () => {

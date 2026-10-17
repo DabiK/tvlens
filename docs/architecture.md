@@ -388,3 +388,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) :
   Les hôtes conservent les médias jusqu'à suppression ; la reprise garde les motifs historiques,
   sans réactiver de fenêtre. Le retrait de l'élagage interne suit dans un second lot.
+
+- [ADR 0049](adr/0049-la-capture-mac-utilise-le-repli-screen-capture-kit-et-signale-le-silence.md) :
+  La capture Mac utilise le repli ScreenCaptureKit d'Electron 39–44 et avertit durablement quand le son manque.

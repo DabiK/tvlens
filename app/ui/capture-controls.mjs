@@ -24,6 +24,8 @@ const ASK_STATUS = {
   waiting: "Les premiers passages arrivent bientôt.",
   idle: "Choisis une source et lance TVLens.",
 };
+const AUDIO_WARNING =
+  "Le son n'est pas capté : vérifie la permission d'enregistrement de l'écran et de l'audio du système, puis relance l'app";
 export function renderCaptureControls({
   get,
   shell,
@@ -51,4 +53,9 @@ export function renderCaptureControls({
   get("float-record").title = RECORD_TITLE[controls.recordTitle];
   get("observe").textContent = OBSERVE_LABEL[controls.observeLabel];
   get("ask-status").textContent = ASK_STATUS[controls.askStatus];
+  get("audio-warning").hidden = !capture.audioWarning;
+  get("audio-warning").textContent = capture.audioWarning ? AUDIO_WARNING : "";
+  get("float-audio-warning").hidden = !capture.audioWarning;
+  get("float-audio-warning").title = AUDIO_WARNING;
+  get("float-bar").classList.toggle("audio-missing", Boolean(capture.audioWarning));
 }

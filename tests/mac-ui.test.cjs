@@ -1851,6 +1851,7 @@ test("browser composition uses every injected factory and the real rolling recor
     [
       ["interval", 400],
       ["timeout", 2000],
+      ["timeout", 10_000],
     ],
   );
   now = 1000;

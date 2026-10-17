@@ -290,6 +290,7 @@ async function changeWindowMode(floating,expanded=false,{focus=true}={}){
   catch(e){floatingMode=priorFloating;floatingExpanded=priorExpanded;paint();notice(reason(e));}
 }
 $('float-mode').onclick=()=>changeWindowMode(true);
+$('float-audio-warning').onclick = () => changeWindowMode(true, true, { focus: false });
 $('float-full').onclick=()=>{shell.show('direct');return changeWindowMode(false);};
 $('close-chat').onclick=()=>changeWindowMode(true,false);
 $('float-menu-toggle').onclick=async()=>{

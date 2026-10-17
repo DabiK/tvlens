@@ -1,7 +1,7 @@
 ---
 id: T246
 titre: Capture the Mac system audio on recent macOS and warn when no sound is captured
-statut: a-faire
+statut: termine
 bloque_par:
 adr: oui
 installe: non
@@ -75,3 +75,52 @@ capture contient une piste audio non muette et que les passages sont transcrits,
 L'app empaquetée n'a pas été essayée : si elle se comporte autrement, ce ticket le dit et ne la modifie pas.
 
 ## Journal
+
+- Exploration : règles, skill et ADR 0018/0043 lus ; couture du vrai hôte et contrôleur injecté retenus.
+  Documentation Electron confirmée via Context7. Plan et ajustements consignés dans
+  `.harness-state/tickets/T246/exploration.md` et `ecarts.md`. Les trois changements initiaux sont préservés.
+- Option de démarrage :
+  `node --test --test-name-pattern='Mac system audio fallback' tests/mac-ipc-contract.test.cjs` :
+  rouge observé sur l'option absente, puis vert (macOS, fusion, absence de doublon, Linux et Windows).
+  Sorties : `startup-red.log`, `startup-green.log` dans le dossier d'état.
+- Avertissement sans piste :
+  `node --test --test-name-pattern='missing live audio keeps' tests/capture-controller.test.cjs` :
+  rouge sur l'absence de bannière, puis vert avec contrôleur et vue des commandes réels.
+  Sorties : `missing-audio-red.log`, `missing-audio-green.log`.
+- Silence numérique et retour du son :
+  `node --test --test-name-pattern='ten seconds of digital silence' tests/capture-controller.test.cjs` :
+  rouge à dix secondes, puis vert avec horloge injectée, persistance, son faible et réarmement.
+  Sorties : `silence-red.log`, `silence-green.log`.
+- Fin de piste :
+  `node --test --test-name-pattern='ending the live audio track warns' tests/capture-controller.test.cjs` :
+  rouge sur l'avertissement absent, puis vert ; des échantillons restants ne masquent pas la perte de piste.
+  Sorties : `ended-audio-red.log`, `ended-audio-green.log`.
+- Capture conservée après refus d'arrêt :
+  `node --test --test-name-pattern='a retained capture still warns' tests/capture-controller.test.cjs` :
+  rouge sur le délai perdu, puis vert sans échantillon du worklet et avec fin de piste ultérieure.
+  Sorties : `retained-capture-red.log`, `retained-capture-green.log`.
+- `node scripts/check.mjs --changed` : vert, 75 tests réussis (`check-changed-1.log`).
+  ADR 0049 rédigé. Essais matériels Mac et paquet non lancés ; vérification réelle réservée à l'orchestrateur
+  après intégration, comme prévu dans le ticket.
+- Premier contrôle complet : `node scripts/check.mjs` rouge (`check-full-1.log`) : 2440/2457 tests JS réussis,
+  47 tests Python réussis. Diagnostic ciblé dans `integration-red.log` : deux doublures Electron sans
+  `commandLine`, contrat de minuteries du banc de latence à conserver, attente du timer audio à ajouter dans
+  la composition navigateur, et lien de l'ADR manquant dans l'index des décisions. Aucun échec écarté.
+- Corrections de raccordement : doublures Electron complétées sans changer leurs assertions ; le suivi audio
+  dérive par défaut des minuteries déjà injectées, sans modifier le banc de latence ; le test navigateur attend
+  aussi la minuterie audio et conserve ses preuves de libération. ADR 0049 indexé dans `docs/architecture.md`.
+  `node --test --test-concurrency=1 --test-name-pattern='Mac host revokes the external|Mac host .IPC.|fresh offline|published documentation indexes|browser composition uses every' tests/architecture-f05.test.cjs tests/architecture-f07.test.cjs tests/capture-display-latency.test.cjs tests/documentation-index.test.cjs tests/mac-ui.test.cjs`
+  passe : 13/13, sortie `integration-green.log`.
+- Son pendant un arrêt ensuite refusé :
+  `node --test --test-name-pattern='sound received while a stop is pending' tests/capture-controller.test.cjs` :
+  rouge sur le délai perdu, puis vert ; la libération forcée supprime aussi cette attente.
+  Sorties : `pending-stop-red.log`, `pending-stop-green.log`.
+- Validation finale : `node scripts/check.mjs --changed` vert, 170/170 tests JS (`check-changed-2.log`),
+  puis `node scripts/check.mjs` vert, 2458/2458 tests JS sur 137 fichiers et 47 tests Python
+  (`check-full-2.log`). Règles, format, lint, gel du lint et cliquet verts ; `git diff --check` sans erreur.
+  Aucun changement du harnais ni du plancher, aucun commit ni push. Verdict `TERMINÉ` dans le dossier d'état,
+  prêt pour la relecture de la boucle. La preuve matérielle Mac attend l'intégration ; l'app empaquetée n'a pas été essayée.
+
+### Réserves à la clôture
+
+- Comme prévu au ticket, l'orchestrateur doit vérifier après intégration une piste audio non muette et les transcriptions sur le Mac réel, sans option en ligne de commande. L'app empaquetée n'a pas été essayée.

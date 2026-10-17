@@ -172,14 +172,27 @@ const digest = async dir => {
 };
 const HOST_SETTINGS = ['TVLENS_QUESTION_TIMEOUT_MS', 'TVLENS_SURVEILLANCE_WORKERS', 'TVLENS_MEDIA_RETENTION_MS', 'TVLENS_DISK_MIN_FREE_MB', 'TVLENS_DISK_WARN_FREE_MB', 'TVLENS_VISION_DURING_ASK'];
 
+function commandLineStub(disabledFeatures) {
+  const switches = new Map(disabledFeatures ? [['disable-features', disabledFeatures]] : []);
+  return {
+    switches,
+    commandLine: { getSwitchValue: name => switches.get(name) || '', appendSwitch: (name, value) => switches.set(name, value) },
+  };
+}
+
 // Loads app/main.cjs in its own simulated mode with `electron` replaced. IPC goes through the real preload,
 // structured-cloned both ways and with Electron's error prefix, as between two processes. Two things of the
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
 // and, when `disk` is given, the free space measured by the real DiskGuard (its documented `freeBytes` option).
 // `wrap` expose les compositions et leur diagnostic pour injecter une panne aux frontières du vrai hôte.
-async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock } = {}) {
+async function launch(userData, {
+  env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock,
+  platform = process.platform, disabledFeatures = '',
+} = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
   const registeredShortcuts = new Map();
+  const { switches, commandLine } = commandLineStub(disabledFeatures);
+  let startupSwitches;
   let bridge, finished, loaded;
   const quitting = new Promise(resolve => { finished = resolve; }), ready = new Promise(resolve => { loaded = resolve; });
   const webContents = { mainFrame: {}, setWindowOpenHandler() {}, on() {}, send: (channel, value) => {
@@ -191,7 +204,10 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     isDestroyed() { return false; } getBounds() { return { x: 0, y: 0, width: 1340, height: 920 }; } getContentBounds() { return { x: 0, y: 0, width: 1340, height: 892 }; }
     loadFile() { loaded(true); return Promise.resolve(); } show() {} focus() {} setMinimumSize() {} setAlwaysOnTop() {} setBounds() {}
   }
-  const app = Object.assign(new EventEmitter(), { isPackaged: false, setName() {}, setPath() {}, getPath: () => userData, requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(),
+  const app = Object.assign(new EventEmitter(), { isPackaged: false, setName() {}, setPath() {}, getPath: () => userData,
+    requestSingleInstanceLock: () => true,
+    commandLine,
+    whenReady: () => { startupSwitches = Object.fromEntries(switches); return Promise.resolve(); },
     // As Electron does: quitting asks first, and a handler may hold it back until its own work is done.
     quit() { const event = { prevented: false, preventDefault() { this.prevented = true; } }; app.emit('before-quit', event); if (!event.prevented) { finished(); loaded(false); } } });
   const electron = { app, BrowserWindow, ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
@@ -240,12 +256,14 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     }
     return loaded;
   };
+  const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform');
+  Object.defineProperty(process, 'platform', { value: platform });
   try { delete require.cache[require.resolve('../app/main.cjs')]; require('../app/main.cjs'); }
   catch (error) { restore(); throw error; }
-  finally { Module._load = load; }
+  finally { Module._load = load; Object.defineProperty(process, 'platform', platformDescriptor); }
   const started = await ready;
   let stopped;
-  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, events: [],
+  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, startupSwitches, events: [],
     pressShortcut: key => registeredShortcuts.get(key)(),
     fetch: (url, headers = {}) => schemes.get('tvlens-media')(new Request(url, { headers })),
     quit: () => (stopped ||= (async () => { app.quit(); await quitting; restore(); })()) };
@@ -299,6 +317,23 @@ async function capture(host, sessionId, { after = 0, frames = 1, audio = null } 
 }
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
+
+test('Mac system audio fallback is set before readiness and preserves existing disabled features on each platform', async t => {
+  const { launch } = await stage(t);
+  const feature = 'MacCatapLoopbackAudioForScreenShare';
+  for (const [platform, disabledFeatures, expected] of [
+    ['darwin', '', feature],
+    ['darwin', 'OtherFeature,AnotherFeature', `OtherFeature,AnotherFeature,${feature}`],
+    ['darwin', `OtherFeature,${feature}`, `OtherFeature,${feature}`],
+    ['linux', '', undefined],
+    ['win32', 'OtherFeature', 'OtherFeature'],
+  ]) {
+    const host = await launch({ platform, disabledFeatures });
+    assert.equal(host.started, true, host.failures.join(' '));
+    assert.deepEqual(host.startupSwitches, expected ? { 'disable-features': expected } : {}, platform);
+    await host.quit();
+  }
+});
 
 test('retired Mac retention options cannot expire media and capture refreshes the manifest before analysis finishes', async t => {
   const { launch, folder } = await stage(t), gate = deferred();

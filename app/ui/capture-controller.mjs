@@ -1,5 +1,7 @@
 const AUDIO_SAMPLE_RATE = 16000;
 const AUDIO_FLUSH_TIMEOUT_MS = 500;
+const AUDIO_SILENCE_TIMEOUT_MS = 10_000;
+const DIGITAL_SILENCE_RMS = 1e-7;
 const METER_GAIN = 4;
 const SNAPSHOT_WIDTH = 320;
 const SNAPSHOT_HEIGHT = 180;
@@ -20,6 +22,8 @@ class CaptureController {
   #generation = 0;
   #pending = new Set();
   #audioSource;
+  #audioWarning = false;
+  #silenceTimer;
   #released = false;
   #releaseTask;
   #stopTask;
@@ -33,6 +37,7 @@ class CaptureController {
     browser,
     createRecorder,
     timers,
+    time = { setTimer: timers.setTimeout, clearTimer: timers.clearTimeout },
     uuid,
     video,
     session,
@@ -45,6 +50,7 @@ class CaptureController {
       browser,
       createRecorder,
       timers,
+      time,
       uuid,
       video,
       session,
@@ -58,6 +64,10 @@ class CaptureController {
 
   get recording() {
     return Boolean(this.#recorder);
+  }
+
+  get audioWarning() {
+    return this.#audioWarning;
   }
 
   get stopping() {
@@ -160,6 +170,8 @@ class CaptureController {
   }
 
   #detachAudio() {
+    if (this.#silenceTimer !== undefined) this.time.clearTimer(this.#silenceTimer);
+    this.#silenceTimer = undefined;
     if (this.#worklet) this.#worklet.port.onmessage = null;
     for (const complete of this.#flushes.values()) complete();
   }
@@ -184,6 +196,7 @@ class CaptureController {
       this.#worklet = undefined;
       for (const complete of this.#flushes.values()) complete();
       this.video.srcObject = null;
+      this.#audioWarning = false;
       this.#notify("meter", 0);
       this.#notify("preview", false);
     }
@@ -255,9 +268,29 @@ class CaptureController {
       onSegment: (id, preview) => this.#notify("segment", id, preview, session),
     });
     this.#recorder.start();
+    this.#armSilenceWarning();
     this.#notify("recording");
     this.#notify("status", "Capture + mémoire actives");
     this.#notify("settled");
+  }
+
+  #setAudioWarning(warning) {
+    if (warning === this.#audioWarning) return;
+    this.#audioWarning = warning;
+    this.#notify("changed");
+  }
+
+  #armSilenceWarning() {
+    if (this.#silenceTimer !== undefined) this.time.clearTimer(this.#silenceTimer);
+    this.#silenceTimer = undefined;
+    if (!this.#recorder || !this.#worklet || this.#released) return;
+    // Une piste vivante sans échantillon n'est pas une preuve de son : le flux Tap peut être mort.
+    const timer = this.time.setTimer(() => {
+      if (this.#silenceTimer !== timer || this.#released || !this.#recorder) return;
+      this.#silenceTimer = undefined;
+      this.#setAudioWarning(true);
+    }, AUDIO_SILENCE_TIMEOUT_MS);
+    this.#silenceTimer = timer;
   }
 
   flushAudio() {
@@ -307,6 +340,13 @@ class CaptureController {
     const tracks = this.#stream
       .getAudioTracks()
       .filter((track) => track.readyState === "live");
+    this.#audioWarning = !tracks.length;
+    const stream = this.#stream;
+    for (const track of tracks) {
+      track.onended = () => {
+        if (!this.#released && this.#stream === stream && !this.#hasLiveAudio()) this.#setAudioWarning(true);
+      };
+    }
     this.#notify(
       "status",
       tracks.length
@@ -340,8 +380,16 @@ class CaptureController {
       if (data.type === "samples") {
         this.#notify("meter", Math.min(1, data.rms * METER_GAIN));
         this.#recorder?.samples(data.samples);
+        if (data.rms > DIGITAL_SILENCE_RMS && this.#hasLiveAudio()) {
+          this.#setAudioWarning(false);
+          this.#armSilenceWarning();
+        }
       }
       if (data.type === "flushed") this.#flushes.get(data.id)?.();
     };
+  }
+
+  #hasLiveAudio() {
+    return this.#stream?.getAudioTracks().some((track) => track.readyState === "live");
   }
 }
