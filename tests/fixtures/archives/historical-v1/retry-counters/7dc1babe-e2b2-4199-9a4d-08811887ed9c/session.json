@@ -1,0 +1,147 @@
+{
+  "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+  "accepting": false,
+  "asking": true,
+  "analyzing": false,
+  "elapsedMs": 16000,
+  "capturedThroughMs": 16000,
+  "analyzedThroughMs": 16000,
+  "analysisLagMs": 0,
+  "contextThroughMs": 16000,
+  "gaps": [],
+  "retentionMs": null,
+  "retention": "until-deleted",
+  "readOnly": false,
+  "unplacedMedia": 0,
+  "apiCalls": 9,
+  "apiCost": 0.125,
+  "pending": 0,
+  "audioPending": 0,
+  "visionPending": 0,
+  "lastError": null,
+  "history": [],
+  "questions": [],
+  "latency": {
+    "passages": 2,
+    "blockMs": {
+      "n": 2,
+      "mean": 8000,
+      "max": 8000
+    },
+    "arrivalMs": {
+      "n": 2,
+      "mean": 0,
+      "max": 0
+    },
+    "audioWaitMs": {
+      "n": 2,
+      "mean": 0,
+      "max": 0
+    },
+    "audioMs": {
+      "n": 0
+    },
+    "visionWaitMs": {
+      "n": 2,
+      "mean": 0,
+      "max": 0
+    },
+    "visionMs": {
+      "n": 0
+    },
+    "transcriptAfterCloseMs": {
+      "n": 2,
+      "mean": 0,
+      "max": 0
+    },
+    "readyAfterCloseMs": {
+      "n": 2,
+      "mean": 0,
+      "max": 0
+    }
+  },
+  "coverage": {
+    "passages": 2,
+    "audioSkipped": 1,
+    "audioExpired": 2,
+    "visionSkippedBacklog": 3,
+    "visionSkippedAsking": 4,
+    "visionExpired": 5,
+    "audioError": 6,
+    "visionError": 7,
+    "visionBlockedMs": 123,
+    "visionRetried": 2,
+    "visionRecovered": 1
+  },
+  "audioGaps": [],
+  "visionGaps": [],
+  "storage": {
+    "state": "unknown",
+    "freeBytes": null,
+    "minFreeBytes": null,
+    "sessionBytes": 2953,
+    "bytesPerMinute": 11074,
+    "remainingMinutes": null
+  },
+  "segments": [
+    {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000,
+      "status": "ready",
+      "hasAudio": true,
+      "available": true,
+      "observation": {
+        "transcript": "Un cercle se déplace sur un fond bleu.",
+        "audio": "Audio reçu.",
+        "uncertainty": "",
+        "summary": "Un cercle se déplace sur un fond bleu.",
+        "visual": "1 images reçues."
+      },
+      "receivedMs": 8000,
+      "revision": 2,
+      "audioStatus": "ready",
+      "audioStartedMs": 8000,
+      "analysisMs": 0,
+      "metrics": {},
+      "transcriptPublishedMs": 8000,
+      "visionStatus": "ready",
+      "visionQueuedMs": 8000,
+      "visionStartedMs": 8000,
+      "topicSummary": null,
+      "visionPublishedMs": 8000,
+      "stage": null,
+      "thumbnailAvailable": true
+    },
+    {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000,
+      "status": "partial",
+      "hasAudio": true,
+      "available": true,
+      "observation": {
+        "transcript": "Un cercle se déplace sur un fond bleu.",
+        "audio": "Audio reçu.",
+        "uncertainty": "",
+        "summary": "Un cercle se déplace sur un fond bleu.",
+        "visual": "1 images reçues."
+      },
+      "receivedMs": 16000,
+      "revision": 2,
+      "audioStatus": "ready",
+      "audioStartedMs": 16000,
+      "analysisMs": 0,
+      "metrics": {},
+      "transcriptPublishedMs": 16000,
+      "visionStatus": "error",
+      "visionQueuedMs": 16000,
+      "visionStartedMs": 16000,
+      "topicSummary": null,
+      "visionPublishedMs": 16000,
+      "stage": null,
+      "thumbnailAvailable": true,
+      "visionError": "Description indisponible."
+    }
+  ]
+}

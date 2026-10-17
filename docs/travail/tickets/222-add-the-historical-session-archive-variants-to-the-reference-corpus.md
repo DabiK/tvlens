@@ -1,7 +1,7 @@
 ---
 id: T222
 titre: Add the historical session archive variants to the reference corpus
-statut: a-faire
+statut: termine
 bloque_par: T037, T194
 adr: non
 installe: non
@@ -79,3 +79,123 @@ historique nouvelle doit fournir son témoin avant d'étendre le lecteur. Le ré
 propre format ; il reste hors de ce corpus de variantes de `session.json`.
 
 ## Journal
+
+- Exploration : lecteurs publics, corpus T037 et cas historique T194 relus ; transformations
+  figées dans un corpus séparé, sans changement produit. Plan et écarts consignés dans
+  `.harness-state/tickets/T222/`. Témoin de hooks présent ; aucun sous-agent lancé.
+
+- Rouge puis vert du corpus :
+  `node --test --test-name-pattern='the historical corpus freezes' tests/archive-compat.test.cjs`
+  échoue sur la liste vide, puis passe après ajout de dix témoins (les huit variantes demandées,
+  rétention inconnue et compteurs invalides). Logs `red-corpus.log`, `green-corpus.log`.
+- Rouge Git : `node --test --test-name-pattern='Git ignore rules' tests/archive-compat.test.cjs`
+  refuse le WebM ignoré ; exception limitée au nouveau corpus ajoutée, contrôle ensuite vert
+  dans `characterization.log`. Génération originale et ses sommes inchangées.
+- Première caractérisation : 19 cas réussis, reprise refusée car le banc omettait sessionId
+  (`stale-session`). Correction du banc et horloge de capture explicite ; aucun lecteur modifié.
+  Les README locaux décrivent les différences actuelles entre classement et rétention restaurée.
+
+- Contrôles ciblés exécutés une suite à la fois, tous codes 0 :
+  `node --test tests/archive-compat.test.cjs` : 20/20 ;
+  `node --test tests/session-durable.test.cjs` : 23/23 ;
+  `node --test tests/session-lifecycle.test.cjs` : 15/15 ;
+  `node --test tests/server-sessions.test.cjs` : 29/29 ;
+  `node --test tests/clip-unreadable.test.cjs` : 5/5.
+  Sorties conservées dans `.harness-state/tickets/T222/<suite>.log`.
+  La reprise crée moment-71 sans écraser les paires, demi-paires ni miniatures existantes.
+- `node scripts/check.mjs --changed --no-tests` puis `node scripts/check.mjs --changed` :
+  verts, code 0 ; le second exécute 20 tests réussis. `git diff --check` : code 0.
+  `git diff --exit-code -- tests/fixtures/archives/durable-v1 scripts/fixtures/write-reference-archive.cjs`
+  confirme l'absence de modification de la génération originale et de son générateur.
+
+- Contrôle complet final : `node scripts/check.mjs` : vert, code 0 ; règles, format,
+  lint, gel et cliquet verts ; 2313/2313 tests JavaScript (133 fichiers), 47 tests Python
+  réussis (`check-full.log`). Aucun contrôle déclaré réussi sans résultat observé.
+- Livraison : dix variantes figées, attentes bibliothèque/runtime distinctes, provenance et
+  sommes locales et globales vérifiées ; ouverture, pause et fermeture sans réécriture,
+  index désactivé et fournisseurs interdits. Les comportements existants de rolling ouvert
+  avec configuration par défaut et de retention inconnue sont documentés sans correction.
+  Aucun code produit ni harnais modifié, aucun test supprimé, aucun commit ni push.
+  Verdict `TERMINÉ` remis à la boucle pour relecture.
+
+- Reprise après `relecture-1.md` : les trois constats mineurs sont acceptés. Préparation
+  des rouges sur l'énumération inversée, l'ordre temporel et le history textuel sans observation.
+  Écarts et exploration complétés ; sauvegarde des octets additionnels avant correction dans
+  `.harness-state/tickets/T222/corpus-before-correction/`. durable-v1 reste intact.
+
+- Constat 1 : `node --test --test-name-pattern='the frozen modern-without-manifest|an explicit resume' tests/archive-compat.test.cjs`
+  échoue sur les deux assertions avec l'énumération média inversée par fs.readdir
+  (`correction-1-red-enumeration.log`). Après tri non mutant de partial et orphans,
+  la même commande passe 2/2 (`correction-1-green-enumeration.log`). L'inversion est
+  conservée dans le banc ; aucun ordre de système de fichiers n'est présumé.
+- Constat 2 : `node --test --test-name-pattern='recovered passages in the frozen archive' tests/archive-compat.test.cjs`
+  échoue sur l'ancien ordre (3,4,9), puis passe après correction des intervalles du témoin :
+  9 = 16000–24000, 3 et 4 = 24000–32000. Attentes, provenance et sommes mises à jour ;
+  la variante, le cas d'ordre et la reprise passent 3/3 (`correction-1-green-order.log`).
+  Qualification supplémentaire : la même commande, préchargée avec
+  `--require ./.harness-state/tickets/T222/probe-without-temporal-sort.cjs`, échoue
+  sur l'assertion d'ordre (`correction-1-red-without-sort.log`). Aucun produit modifié.
+- Constat 3 : `node --test --test-name-pattern='the frozen text history restores' tests/archive-compat.test.cjs`
+  échoue sur les clés surnuméraires de l'ancien history, puis passe avec la forme historique
+  id/startMs/endMs/status/summary, sans observation ni available. Le runtime garde ce texte
+  avec expired ; topicSummary non nul reste vérifié sur le second passage. Le cas dédié
+  et le cas de variante passent 2/2 (`correction-1-green-text-history.log`). README,
+  provenance, attentes et sommes révisés pour la couverture, sans correction de lecteur.
+- Après correction, suites jouées en séquentiel, tous codes 0 : archive-compat 22/22,
+  session-durable 23/23, session-lifecycle 15/15, server-sessions 29/29 et clip-unreadable 5/5
+  par `node --test tests/<suite>.test.cjs` (`correction-1-<suite>.log`).
+  `node scripts/check.mjs --changed` : vert, code 0, 22 tests réussis
+  (`correction-1-check-changed.log`).
+- Contrôle complet de la correction : `node scripts/check.mjs` : vert, code 0 ;
+  règles, format, lint, gel et cliquet verts ; 2315/2315 tests JavaScript dans 133 fichiers,
+  47 tests Python réussis (`correction-1-check-full.log`).
+- Les trois mineurs sont corrigés. L'interdiff des témoins est conservé dans
+  `correction-1-corpus-interdiff.txt` : seuls les deux dossiers concernés et les README/sommes
+  parent ont changé depuis la relecture. Aucun fichier de témoin ajouté ou supprimé.
+  Le constat hors périmètre reste transmis par la boucle depuis son rapport de relecture.
+  Nouveau verdict `TERMINÉ`, sans commit ni push ; aucun produit, harnais ou témoin durable-v1 modifié.
+- Vérification finale : `git diff --check` et `git diff --exit-code` ciblé sur durable-v1,
+  son générateur, core/adapters/runtime et le harnais : codes 0. Nouveau verdict.json
+  relu comme JSON valide, statut `TERMINÉ`.
+
+- Reprise après `relecture-2.md` : nouveau mineur documentaire accepté. Les faits des deux
+  témoins sont conservés ; le récit de relecture et les renvois au dossier local sont retirés
+  des README versionnés. Écarts et exploration complétés, aucun nouveau périmètre.
+- Contrôle éditorial temporaire, sans ajout de test permanent pour ce texte :
+  `python3 .harness-state/tickets/T222/check-corpus-readmes.py` échoue sur les passages
+  de récit dans chacun des deux README (`correction-2-red-readmes.log`), puis passe après
+  nettoyage en vérifiant aussi les faits conservés (`correction-2-green-readmes.log`).
+- Les deux SHA256SUMS locaux ont chacun leur ligne README actualisée ; le SHA256SUMS
+  parent reprend les sommes des deux README et des deux SHA256SUMS locaux. Les données
+  JSON, les médias et les attentes restent identiques à l'état relu.
+- `node --test tests/archive-compat.test.cjs` : 22/22, code 0 ;
+  `node scripts/check.mjs --changed` : vert, code 0, 22 tests réussis
+  (`correction-2-archive-compat.log`, `correction-2-check-changed.log`).
+  L'interdiff par empreintes confirme cinq fichiers modifiés dans le corpus, sans ajout
+  ni suppression, et aucune modification du fichier de test (`correction-2-corpus-interdiff.txt`).
+- Contrôle complet de cette correction : `node scripts/check.mjs` : vert, code 0 ;
+  règles, format, lint, gel et cliquet verts ; 2315/2315 tests JavaScript dans 133 fichiers
+  et 47 tests Python réussis (`correction-2-check-full.log`).
+- Le nouveau mineur documentaire est corrigé. Les trois corrections précédentes restent
+  couvertes par les mêmes tests et les mêmes données. L'historique demeure dans ce journal ;
+  les README ne décrivent que les témoins. Le constat hors périmètre reste transmis par la boucle.
+  Nouveau verdict `TERMINÉ`, sans commit ni push. durable-v1, son générateur, le produit,
+  les tests et le harnais n'ont pas été modifiés par cette correction documentaire.
+
+### Réserves à la clôture
+
+- Comportement existant caractérisé sans correction, hors changement produit autorisé : une archive rolling ouverte avec la configuration par défaut expose until-deleted et retentionMs null dans le runtime.
+- .harness-state/tickets/T222/relecture-3.md : 1. `adapters/session-library.cjs:47` face à `core/session.cjs:375` et `:385` — hors périmètre (réserve reprise)
+
+  Ce constat reprend le constat 4 de `relecture-1.md`, déjà reporté en relecture 2. Il reste vrai : le diff ne touche aucun code produit.
+
+  **Problème.** Une `retention` inconnue est classée différemment selon le lecteur :
+  - la bibliothèque la classe comme ancienne : `former = !RETENTIONS.includes(...)`, donc `legacy` et `archived` ;
+  - le cœur ne réserve `not-kept` qu'au cas `retention === undefined` (`:375`). Il expose donc `missing` ou `expired` (`:385`).
+
+  **Ce que fait le ticket.** Il caractérise ce comportement sans le corriger, comme demandé. Le README `unknown-retention` le décrit.
+
+  **Attendu.** Une correction dans un ticket produit. À reporter en réserve.
+- .harness-state/tickets/T222/relecture-3.md : **Écarts acceptés en relecture 1**, qui restent acceptés :
+    - l'exception `.gitignore` limitée aux WebM de `historical-v1` ;
+    - les variantes supplémentaires `unknown-retention` et `invalid-retry-counters`.

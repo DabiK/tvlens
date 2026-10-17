@@ -1,0 +1,393 @@
+{
+  "provenance": {
+    "kind": "documented-transformation",
+    "sourceCorpus": "durable-v1",
+    "sourceSession": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+    "sourceCommit": "4dfc282",
+    "sourceSumsSha256": "a9f53883d29245e4c22405c148370f50c1cbc1ff6d323b007fb0982198babe7e",
+    "readerCommit": "728d501",
+    "transformation": "Remplacement du premier passage par un history textuel à cinq clés (id, startMs, endMs, status, summary), sans observation ni available ; retrait de sa paire et de sa miniature ; topicSummary explicite sur le second passage.",
+    "changes": {
+      "added": [],
+      "removed": [
+        "media/moment-1.json",
+        "media/moment-1.webm",
+        "thumbs/moment-1.jpg"
+      ],
+      "modified": [
+        "session.json"
+      ]
+    }
+  },
+  "summary": {
+    "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+    "firstTopic": null,
+    "host": "server",
+    "createdAt": 1790000000000,
+    "updatedAt": 1790000016000,
+    "closedAt": 1790000016000,
+    "state": "archived",
+    "elapsedMs": 16000,
+    "passages": 2,
+    "legacy": false,
+    "media": {
+      "stored": 2,
+      "missing": 0,
+      "bytes": 2953
+    }
+  },
+  "manifestTitle": "Session du 21 sept. 2026, 16:13",
+  "manifest": {
+    "format": "tvlens-session",
+    "version": 1,
+    "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+    "host": "server",
+    "createdAt": 1790000000000,
+    "updatedAt": 1790000016000,
+    "closedAt": 1790000016000,
+    "state": "archived",
+    "title": "Session du 21 sept. 2026, 16:13",
+    "firstTopic": null,
+    "elapsedMs": 16000,
+    "capturedThroughMs": 16000,
+    "passages": 2,
+    "media": {
+      "stored": 2,
+      "missing": 0,
+      "bytes": 2953,
+      "retention": "until-deleted"
+    },
+    "captures": [
+      {
+        "startedAt": 1790000000000,
+        "fromMs": 0
+      }
+    ]
+  },
+  "inventory": {
+    "ids": [
+      "moment-2"
+    ],
+    "legacy": [],
+    "thumbs": [
+      "moment-2"
+    ],
+    "partial": [],
+    "recovered": [],
+    "orphans": [],
+    "mediaBytes": 1194,
+    "thumbBytes": 286,
+    "bytes": 1480
+  },
+  "librarySnapshot": {
+    "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+    "accepting": false,
+    "asking": true,
+    "analyzing": false,
+    "elapsedMs": 16000,
+    "capturedThroughMs": 16000,
+    "analyzedThroughMs": 16000,
+    "analysisLagMs": 0,
+    "contextThroughMs": 16000,
+    "gaps": [],
+    "retentionMs": null,
+    "retention": "until-deleted",
+    "readOnly": false,
+    "unplacedMedia": 0,
+    "apiCalls": 2,
+    "apiCost": 0,
+    "pending": 0,
+    "audioPending": 0,
+    "visionPending": 0,
+    "lastError": null,
+    "history": [
+      {
+        "id": "moment-1",
+        "startMs": 0,
+        "endMs": 8000,
+        "status": "ready",
+        "summary": "Un cercle se déplace sur un fond bleu."
+      }
+    ],
+    "questions": [],
+    "latency": {
+      "passages": 2,
+      "blockMs": {
+        "n": 2,
+        "mean": 8000,
+        "max": 8000
+      },
+      "arrivalMs": {
+        "n": 2,
+        "mean": 0,
+        "max": 0
+      },
+      "audioWaitMs": {
+        "n": 2,
+        "mean": 0,
+        "max": 0
+      },
+      "audioMs": {
+        "n": 0
+      },
+      "visionWaitMs": {
+        "n": 2,
+        "mean": 0,
+        "max": 0
+      },
+      "visionMs": {
+        "n": 0
+      },
+      "transcriptAfterCloseMs": {
+        "n": 2,
+        "mean": 0,
+        "max": 0
+      },
+      "readyAfterCloseMs": {
+        "n": 2,
+        "mean": 0,
+        "max": 0
+      }
+    },
+    "coverage": {
+      "passages": 2,
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0,
+      "visionBlockedMs": 0
+    },
+    "audioGaps": [],
+    "visionGaps": [],
+    "storage": {
+      "state": "unknown",
+      "freeBytes": null,
+      "minFreeBytes": null,
+      "sessionBytes": 2953,
+      "bytesPerMinute": 11074,
+      "remainingMinutes": null
+    },
+    "segments": [
+      {
+        "id": "moment-2",
+        "startMs": 8000,
+        "endMs": 16000,
+        "status": "ready",
+        "hasAudio": true,
+        "available": true,
+        "observation": {
+          "transcript": "Un cercle se déplace sur un fond bleu.",
+          "audio": "Audio reçu.",
+          "uncertainty": "",
+          "summary": "Un cercle se déplace sur un fond bleu.",
+          "visual": "1 images reçues."
+        },
+        "receivedMs": 16000,
+        "revision": 2,
+        "audioStatus": "ready",
+        "audioStartedMs": 16000,
+        "analysisMs": 0,
+        "metrics": {},
+        "transcriptPublishedMs": 16000,
+        "visionStatus": "ready",
+        "visionQueuedMs": 16000,
+        "visionStartedMs": 16000,
+        "topicSummary": {
+          "text": "Le cercle se déplace.",
+          "firstId": "moment-2",
+          "lastId": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000
+        },
+        "visionPublishedMs": 16000,
+        "stage": null,
+        "thumbnailAvailable": true
+      }
+    ]
+  },
+  "runtime": {
+    "id": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+    "elapsedMs": 16000,
+    "history": [
+      {
+        "id": "moment-1",
+        "startMs": 0,
+        "endMs": 8000,
+        "status": "ready",
+        "summary": "Un cercle se déplace sur un fond bleu.",
+        "mediaReason": "expired",
+        "thumbnailAvailable": false
+      }
+    ],
+    "segments": [
+      {
+        "id": "moment-2",
+        "startMs": 8000,
+        "endMs": 16000,
+        "status": "ready",
+        "hasAudio": true,
+        "available": true,
+        "observation": {
+          "transcript": "Un cercle se déplace sur un fond bleu.",
+          "audio": "Audio reçu.",
+          "uncertainty": "",
+          "summary": "Un cercle se déplace sur un fond bleu.",
+          "visual": "1 images reçues."
+        },
+        "receivedMs": 16000,
+        "revision": 2,
+        "audioStatus": "ready",
+        "audioStartedMs": 16000,
+        "analysisMs": 0,
+        "metrics": {},
+        "transcriptPublishedMs": 16000,
+        "visionStatus": "ready",
+        "visionQueuedMs": 16000,
+        "visionStartedMs": 16000,
+        "topicSummary": {
+          "text": "Le cercle se déplace.",
+          "firstId": "moment-2",
+          "lastId": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000
+        },
+        "visionPublishedMs": 16000,
+        "stage": null,
+        "thumbnailAvailable": true
+      }
+    ],
+    "questions": [],
+    "apiCalls": 2,
+    "apiCost": 0,
+    "coverage": {
+      "passages": 2,
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0,
+      "visionBlockedMs": 0
+    },
+    "accepting": false,
+    "asking": false,
+    "analyzing": false,
+    "readOnly": true,
+    "retention": "until-deleted",
+    "retentionMs": null,
+    "pending": 0,
+    "audioPending": 0,
+    "visionPending": 0,
+    "unplacedMedia": 0,
+    "lastError": null
+  },
+  "media": [
+    {
+      "id": "moment-2",
+      "frameTimes": [
+        8000
+      ],
+      "audioBase64": "UklGRgAAAAA=",
+      "interval": {
+        "startMs": 8000,
+        "endMs": 16000,
+        "hasAudio": true
+      }
+    }
+  ],
+  "chat": {
+    "jobs": [
+      {
+        "id": "deep-1",
+        "question": "Que montre le début ?",
+        "mode": "chat",
+        "createdAt": 1790000016000,
+        "timeoutMs": 300000,
+        "status": "done",
+        "message": "Lecture de la mémoire disponible…",
+        "activity": [
+          {
+            "message": "Question reçue…",
+            "at": 1790000016000
+          },
+          {
+            "message": "Lecture de la mémoire disponible…",
+            "at": 1790000016000
+          }
+        ],
+        "preview": "",
+        "result": {
+          "answer": "Un cercle se déplace sur un fond bleu (réponse simulée).",
+          "kind": "explanation",
+          "citations": [],
+          "limits": [],
+          "observations": [],
+          "hypotheses": []
+        },
+        "sessionId": "7dc1babe-e2b2-4199-9a4d-08811887ed9c",
+        "anchorMs": 16000,
+        "availability": {
+          "startMs": 0,
+          "throughMs": 16000,
+          "anchorMs": 16000,
+          "passages": 2,
+          "lastPassage": {
+            "id": "moment-2",
+            "startMs": 8000,
+            "endMs": 16000
+          }
+        },
+        "startedAt": 1790000016000,
+        "contextReadyAt": 1790000016000,
+        "evidenceAtStart": {
+          "contextThroughMs": 16000,
+          "analyzedThroughMs": 16000,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0
+        },
+        "firstProgressAt": 1790000016000,
+        "validation": {
+          "evidenceCount": 2,
+          "proposedCitations": 0,
+          "acceptedCitations": 0
+        },
+        "audit": [],
+        "sourcesReused": 0,
+        "firstUsefulAt": 1790000016000,
+        "finishedAt": 1790000016000,
+        "metrics": {
+          "waitMs": 0,
+          "contextMs": 0,
+          "firstProgressMs": 0,
+          "firstUsefulMs": 0,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 0,
+          "endToEndMs": 0,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "evidence": {
+            "anchorMs": 16000,
+            "frozenAtMs": 16000,
+            "evidenceAsOfMs": 16000,
+            "refreshes": 1,
+            "journalEntries": 2,
+            "journalDropped": 0,
+            "contextThroughMs": 16000,
+            "analyzedThroughMs": 16000,
+            "pendingCount": 0,
+            "partialCount": 0,
+            "unanalyzedTailMs": 0,
+            "lagAtStartMs": 0
+          }
+        }
+      }
+    ]
+  }
+}
