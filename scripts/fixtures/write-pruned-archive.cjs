@@ -1,6 +1,7 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { WatchSession } = require("../../core/session.cjs");
+const { createEventPublisher } = require("../../core/shared/events.cjs");
 const { LocalSessionStore } = require("../../adapters/local-store.cjs");
 const { SessionThumbnails } = require("../../adapters/session-thumbnails.cjs");
 const { createSessionManifest } = require("../../runtime/session-manifest.cjs");
@@ -16,14 +17,18 @@ async function main(destination) {
   const root = path.join(destination, ID);
   const store = LocalSessionStore.forSession(root);
   const thumbnails = new SessionThumbnails(path.join(root, "thumbs"));
+  const events = createEventPublisher();
   let clock = 0, settled;
   const manifest = createSessionManifest({
     id: ID, host: "server", store, thumbnails, readClock: () => clock,
     wallClock: () => EPOCH_MS + clock, readOnly: () => false, hasConfirmedEnd: () => false,
+    accepting: () => watch.accepting,
+    memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
   });
   // Composition historique explicite : aucune option d'hôte ni variable d'environnement.
   const watch = new WatchSession({
     id: ID, now: () => clock, retentionMs: WINDOW_MS, media: store, archive: store, thumbnails,
+    onEvents: pending => pending.forEach(event => events.publish(event)),
     perception: {
       transcribe: async ({ id }) => {
         if (id === "moment-2") throw new Error("Transcription indisponible dans le témoin.");
@@ -35,11 +40,12 @@ async function main(destination) {
       },
     },
     onChange: state => {
-      manifest.publish(state);
+      manifest.publish();
       const last = state.segments.at(-1);
       if (last && ["ready", "error"].includes(last.status) && !state.analyzing) settled?.();
     },
   });
+  manifest.connect(events);
   const fixtures = path.join(__dirname, "../../tests/fixtures");
   const clip = await fs.readFile(path.join(fixtures, "ffmpeg-webm-head.webm"));
   const jpeg = await fs.readFile(path.join(fixtures,
@@ -63,10 +69,11 @@ async function main(destination) {
     result: { answer: "Un cercle bleu.", kind: "explanation", citations: [], limits: [] },
   }] });
   watch.closeIntake();
+  manifest.disconnect();
   await watch.close();
   await thumbnails.close();
   await store.flush();
-  await manifest.record(watch.snapshot(), {}, true);
+  await manifest.record({}, true);
   // Altération documentée après la confirmation : le passage reste disponible dans l'état sauvegardé.
   await fs.rm(path.join(root, "media", "moment-3.webm"));
   await fs.rm(path.join(root, "media", "moment-3.json"));

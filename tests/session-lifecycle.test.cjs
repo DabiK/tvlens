@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const { WatchSession } = require("../core/session.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const { RevocableInspector } = require("../core/revocable-inspector.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { createSessionManifest } = require("../runtime/session-manifest.cjs");
 const { createSessionLifecycle } = require("../runtime/session-lifecycle.cjs");
 
@@ -109,6 +110,7 @@ function fixture({ restore = null } = {}) {
     restore ? { elapsedMs: restore.snapshot.elapsedMs, paused: true } : {},
   );
   let watch, lifecycle;
+  const events = createEventPublisher();
   const manifest = createSessionManifest({
     id: "session",
     host: "server",
@@ -118,6 +120,8 @@ function fixture({ restore = null } = {}) {
     readClock: () => f.time,
     wallClock: () => f.wall,
     readOnly: () => watch.readOnly,
+    accepting: () => watch.accepting,
+    memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
   watch = new WatchSession({
@@ -126,9 +130,10 @@ function fixture({ restore = null } = {}) {
     perception,
     media: store,
     archive: store,
+    onEvents: pending => pending.forEach(event => events.publish(event)),
     onChange(state) {
       if (!state.readOnly) f.indexed.push(state);
-      manifest.publish(state);
+      manifest.publish();
     },
   });
   const guard = {
@@ -154,6 +159,7 @@ function fixture({ restore = null } = {}) {
     index: resource("index"),
     restore,
   });
+  manifest.connect(events);
   return Object.assign(f, { lifecycle, watch, sessionClock, store, thumbnails, inspector });
 }
 

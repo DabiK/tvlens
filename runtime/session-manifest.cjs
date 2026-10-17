@@ -24,10 +24,10 @@ function firstTopicOf(passages) {
   );
 }
 
-function buildManifest(facts, state, closed) {
+function buildManifest(facts, view, closed) {
   const { id, host, store, thumbnails, captures, wallClock } = facts;
-  const passages = [...state.history, ...state.segments];
-  const stored = state.segments.filter((segment) => segment.available).length;
+  const passages = view.passages;
+  const stored = view.coverage.replayablePassages;
   const createdAt = sessionCreatedAt(facts);
   return {
     format: MANIFEST_FORMAT,
@@ -40,14 +40,14 @@ function buildManifest(facts, state, closed) {
     state: closed ? "archived" : "live",
     title: store.manifest?.title || sessionTitle(createdAt),
     firstTopic: store.manifest?.firstTopic || firstTopicOf(passages),
-    elapsedMs: state.elapsedMs,
-    capturedThroughMs: state.capturedThroughMs,
+    elapsedMs: view.clock.elapsedMs,
+    capturedThroughMs: view.clock.capturedThroughMs,
     passages: passages.length,
     media: {
       stored,
       missing: passages.length - stored,
       bytes: store.bytes + thumbnails.bytes,
-      retention: state.retention,
+      retention: view.session.retention,
     },
     captures,
   };
@@ -63,29 +63,44 @@ function createSessionManifest({
   restore = null,
   hasConfirmedEnd,
   readOnly,
+  accepting,
+  memory,
 }) {
   const captures = restore
     ? [...(restore.manifest?.captures || [])]
     : [{ startedAt: wallClock(), fromMs: 0 }];
   const facts = { id, host, store, thumbnails, wallClock, restore, captures };
   let manifestAt = -Infinity;
+  let hasPassages = false;
+  let unsubscribe;
   return {
+    connect(events) {
+      unsubscribe?.();
+      // L'horloge bornée reconnaît aussi une archive dont tous les passages sont en history.
+      hasPassages = memory.passages([]).clock.capturedThroughMs > 0;
+      unsubscribe = events.subscribe(event => {
+        if (event.sessionId === id && ['PassageReceived', 'PassageUpdated'].includes(event.type)) hasPassages = true;
+      });
+    },
+    disconnect() {
+      unsubscribe?.();
+    },
     captureResumed(fromMs) {
       captures.push({ startedAt: wallClock(), fromMs });
       captures.splice(0, captures.length - MANIFEST_MAX_CAPTURES);
     },
-    publish(state) {
+    publish() {
       // First stored passage, then a bounded cadence: the manifest of a session cut short is at most this old.
       if (
-        !state.readOnly &&
-        state.accepting &&
-        state.coverage.passages &&
+        !readOnly() &&
+        accepting() &&
+        hasPassages &&
         readClock() - manifestAt >= MANIFEST_EVERY_MS
       )
-        return this.record(state);
+        return this.record();
     },
     // `final` vouches for the last states already on disk: it is the write that first says "archived".
-    record(state, patch = {}, final = false) {
+    record(patch = {}, final = false) {
       // Opening and closing a reopened archive without resuming must leave its directory intact.
       if (readOnly()) return Promise.resolve();
       manifestAt = readClock();
@@ -94,7 +109,7 @@ function createSessionManifest({
       // must not look archived, nor inherit confirmation from the manifest of an earlier life.
       return store
         .saveManifest({
-          ...buildManifest(facts, state, final || hasConfirmedEnd()),
+          ...buildManifest(facts, memory.view(), final || hasConfirmedEnd()),
           ...patch,
         })
         .catch((error) => {

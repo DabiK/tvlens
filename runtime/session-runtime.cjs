@@ -72,7 +72,7 @@ function createSessionRuntime({
   overrides = {},
   transcriber = null,
 }) {
-  let watch, lifecycle;
+  let watch, lifecycle, indexConsumer;
   if (restore) restore = readableRestore(restore);
   if (restore && id !== undefined && id !== restore.snapshot.id)
     throw refusal(400, "Archive d’une autre session.", "invalid-archive");
@@ -117,7 +117,7 @@ function createSessionRuntime({
     log,
     onPublicationError,
   };
-  const { vectors, index, search, feedIndex } =
+  const { vectors, index, search, connectIndex } =
     createSessionIndex(providerOptions);
   transcriber ||= createSessionTranscriber(providerOptions);
   const { inspector, inspectorModel } = createSessionInspection({
@@ -161,6 +161,12 @@ function createSessionRuntime({
           : null,
     };
   };
+  const memory = {
+    view: () => watch.memoryView(),
+    passage: id => watch.memoryPassage(id),
+    passages: ids => watch.memoryPassages(ids),
+    recentPassages: limit => watch.recentMemoryPassages(limit),
+  };
   const manifest = createSessionManifest({
     id,
     host,
@@ -170,6 +176,8 @@ function createSessionRuntime({
     readClock,
     wallClock,
     readOnly: () => watch.readOnly,
+    accepting: () => watch.accepting,
+    memory,
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
   watch = new WatchSession({
@@ -186,8 +194,7 @@ function createSessionRuntime({
       for (const event of pending) events.publish(event);
     },
     onChange: (state) => {
-      if (!state.readOnly) feedIndex?.(state);
-      manifest.publish(state);
+      manifest.publish();
       onChange(state);
     },
   });
@@ -204,18 +211,20 @@ function createSessionRuntime({
     inspectorModel,
     guard: diskGuard,
     restore,
+    disconnectConsumers: () => {
+      indexConsumer?.close();
+      manifest.disconnect();
+    },
+    resumeConsumers: () => indexConsumer?.resume(),
   });
+  manifest.connect(events);
+  indexConsumer = connectIndex?.({ id, events, memory, readOnly: () => watch.readOnly });
 
   return {
     id,
     watch,
     events,
-    memory: {
-      view: () => watch.memoryView(),
-      passage: id => watch.memoryPassage(id),
-      passages: ids => watch.memoryPassages(ids),
-      recentPassages: limit => watch.recentMemoryPassages(limit),
-    },
+    memory,
     memoryMedia: createMemoryMedia(store),
     store,
     search,

@@ -14,7 +14,7 @@ const {
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
 const { MomentSearch } = require("../core/moment-search.cjs");
-const { hasUsableObservation } = require("../core/passage-text.cjs");
+const { publishState } = require("../core/state-publication.cjs");
 const {
   simulatedInspectionModel,
   simulatedInspector,
@@ -162,7 +162,7 @@ function createSessionPerception(
 }
 
 function createSessionIndex(
-  { config, userData, store, smoke, liveInspection, overrides, log = () => {} },
+  { config, userData, store, smoke, liveInspection, overrides, log = () => {}, onPublicationError = () => {} },
   dependencies = {},
 ) {
   const make = { ...indexProviders, ...dependencies };
@@ -196,14 +196,40 @@ function createSessionIndex(
   // Published passages feed the bounded background index; a search never waits for a full catch-up.
   const feedIndex =
     index?.observe && config.backgroundIndex !== false
-      ? (state) =>
-          index.observe(
-            state.segments
-              .slice(-INDEX_OBSERVE_TAIL)
-              .filter(hasUsableObservation),
-          )
+      ? (passages) => index.observe(passages.filter(passage => passage.usableObservation))
       : null;
-  return { vectors, index, search, feedIndex };
+  const connectIndex = feedIndex ? options => subscribeSessionIndex({ ...options, feedIndex, onPublicationError }) : null;
+  return { vectors, index, search, feedIndex, connectIndex };
+}
+
+function subscribeSessionIndex({ id, events, memory, readOnly, feedIndex, onPublicationError }) {
+  // La queue précède le filtre d'éligibilité, comme dans l'alimentation historique.
+  const revisions = new Map();
+  function initialize() {
+    const passages = memory.recentPassages(INDEX_OBSERVE_TAIL);
+    revisions.clear();
+    for (const passage of passages) revisions.set(passage.id, passage.revision);
+    if (!readOnly()) feedIndex(passages);
+  }
+  function resume() {
+    // Cette réaction facultative n'empêche jamais l'enregistrement explicite de la reprise.
+    publishState(initialize, onPublicationError, { origin: 'session-index-initialization', sessionId: id });
+  }
+  resume();
+  const unsubscribe = events.subscribe(event => {
+    if (event.sessionId !== id || readOnly()) return;
+    if (event.type === 'PassageReceived') {
+      if (!revisions.has(event.passageId)) revisions.set(event.passageId, -1);
+      if (revisions.size > INDEX_OBSERVE_TAIL) revisions.delete(revisions.keys().next().value);
+    }
+    if (event.type !== 'PassageUpdated' || !revisions.has(event.passageId)) return;
+    if (event.revision <= revisions.get(event.passageId)) return;
+    const passage = memory.passage(event.passageId);
+    if (!passage || passage.revision !== event.revision || passage.origin !== 'retained') return;
+    revisions.set(passage.id, passage.revision);
+    feedIndex([passage]);
+  });
+  return { resume, close: unsubscribe };
 }
 
 module.exports = {

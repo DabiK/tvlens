@@ -1,7 +1,7 @@
 ---
 id: T209
 titre: Feed the index and session manifest from passage events
-statut: a-faire
+statut: termine
 bloque_par: T221, T207
 adr: non
 installe: non
@@ -122,3 +122,86 @@ déduits des seuls événements reçus, qui ne forment pas un historique. Le co�
 mesuré à l'implémentation ; aucun chiffre de performance n'est établi lors de ce découpage.
 
 ## Journal
+
+- Exploration : API des événements et de MemoryView vérifiées ; initialisation après restauration,
+  queue de 48 avant filtrage, cadence sur balayage et manifeste final explicite conservés.
+  État initial et choix consignés dans `.harness-state/tickets/T209/exploration.md` ; aucun écart prévu.
+
+- Tests d'abord : `node --test tests/session-event-consumers.test.cjs` a reproduit le couplage
+  au snapshot (premier manifeste absent : 0 au lieu de 1), puis est passé après migration.
+  Le cas d'archive uniquement en history a ensuite échoué sur la cadence (1 au lieu de 2),
+  puis est passé après initialisation par l'horloge de la lecture bornée vide.
+- Migration : index abonné aux versions de passage, curseurs bornés et reprise explicite sur la
+  queue courante ; manifeste abonné à réception/mise à jour, lecture complète seulement pour écrire,
+  occasion de cadence sans contenu de snapshot, désabonnements à la fermeture et fin explicite conservée.
+- Sonde déterministe, un auditeur d'hôte : premier passage, audio/vision retenus, balayages à
+  29 999, 30 000 et 60 000 ms. Avant : 14 snapshots, 0 vue complète, 0 lecture bornée ; après :
+  14 snapshots, 3 vues complètes pour 3 demandes de manifeste, 2 lectures du seul passage pour
+  2 PassageUpdated, 2 lectures d'initialisation bornées (queue de 48 et horloge sans passage).
+  Dans les deux cas : 10 notifications d'hôte et 3 demandes de manifeste. Ce sont des comptes
+  de constructions, pas une mesure de latence ; la notification complète héritée reste présente.
+- Comparaison des manifestes : le scénario « manifest totals » exécuté aussi sur les quatre modules
+  de HEAD copiés dans un répertoire temporaire produit les mêmes quatre demandes et faits : reprise,
+  passage expiré déplacé en history, sujet enrichi et miniature tardive (+17 octets).
+  Journaux `manifest-facts-before.log` et `manifest-facts.log` dans le dossier d'état.
+- Adaptation de session-durable : l'ancienne assertion attendant le renvoi de 48 passages a échoué
+  (1 observé). Elle vérifie désormais le seul passage nommé, son appartenance à la queue de 48 et
+  l'absence de renvoi lors des émissions répétées ; toutes les assertions de durabilité sont conservées.
+
+- Vérifications intermédiaires : `node scripts/check.mjs --changed` vert (74 tests), puis les
+  sept commandes `node --test tests/<suite>.test.cjs` exécutées séparément et en séquentiel :
+  session-event-consumers 10/10, session-providers 18/18, moment-index 41/41,
+  session-manifest 7/7, session-lifecycle 15/15, session-durable 24/24,
+  server-state-views 6/6. Sorties conservées dans `suite-*.log`.
+- Protection supplémentaire de la reprise : nouveau rouge observé sur `assert.doesNotReject`
+  lorsqu'`observe` refuse l'initialisation ; réaction isolée et diagnostiquée avant l'enregistrement
+  explicite. `node --test tests/session-event-consumers.test.cjs` : 11/11 verts ensuite.
+
+- Contrôle complet : `node scripts/check.mjs` vert, règles/format/lint/gel/cliquet verts,
+  2 504 tests JavaScript dans 139 fichiers et 47 tests Python réussis (`check-full.log`).
+- Nettoyage du banc après ce contrôle : libération des miniatures retenues avant fermeture même
+  en cas d'assertion en échec, et attente du signal d'entrée visuelle après reprise, sans nombre
+  de tours implicite. `node scripts/check.mjs --changed` vert : 75/75 tests (`check-changed-final.log`).
+  Aucun changement de production après le contrôle complet. `git diff --check` vert.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T209/verdict.json` ; relecture et intégration
+  laissées à la boucle. Aucun commit ni push.
+
+- Reprise après relecture 1 : trois constats acceptés. Vérification du générateur manuel dans
+  un dossier temporaire neuf, puis preuves discriminantes des gardes de lecture seule, de queue
+  et d'origine historique. Aucune contestation ni modification des corpus figés.
+
+- Constat bloquant corrigé, tests d'abord :
+  `python3 .harness-state/tickets/T209/probe-pruned-generator.py` exécute
+  `node scripts/fixtures/write-pruned-archive.cjs <dossier-temporaire-neuf>` et vérifie la sortie.
+  Rouge avant adaptation : code 0 mais un seul passage et aucun manifeste ; vert après branchement
+  des événements, des lectures et de la nouvelle signature : code 0, moment-1 à moment-4,
+  manifeste final `archived` et 4 passages (`correction-generator-{red,green}.log`).
+- Première preuve mineure renforcée : espion sur `MomentIndex.prototype.observe` installé avant
+  la composition ; 60 s d'horloge virtuelle en lecture seule, aucun appel, embedding ou travail
+  en attente ; reprise explicite ensuite éligible.
+- Seconde preuve mineure ajoutée : miniature du premier passage retenue jusqu'à l'admission de
+  48 passages plus récents, puis mise à jour réellement publiée sans renvoi à observe. Autre cas :
+  passage conservé devenu historique par prune(), puis faits de réception/mise à jour retardés
+  refusés selon l'origine consultée, malgré leur texte utilisable.
+- Preuves de discrimination : `python3 .harness-state/tickets/T209/probe-index-guards.py` retire
+  chacune des trois gardes, indépendamment et uniquement dans une copie temporaire. Chacun des
+  trois tests sélectionnés échoue sur son assertion (codes 1, `ERR_ASSERTION`), sans changer le
+  code de production de l'arbre. Sorties `correction-guard-{read-only,tail,history}-red.log`.
+  Avec les gardes intactes, `node --test tests/session-event-consumers.test.cjs` : 13/13 verts.
+- `node scripts/check.mjs --changed` : vert, 77/77 tests ; règles, format, lint, gel et cliquet verts
+  (`correction-check-changed.log`). Aucun compteur ni test supprimé, corpus figés conservés.
+
+- Vérification de correction en séquentiel : `node --test tests/<suite>.test.cjs` pour
+  session-event-consumers 13/13, session-providers 18/18, moment-index 41/41,
+  session-manifest 7/7, session-lifecycle 15/15, session-durable 24/24,
+  server-state-views 6/6, puis archive-compat 27/27. Total : 151 tests ciblés verts,
+  sorties `correction-suite-*.log` ; compatibilité et intégrité des corpus conservées.
+- Contrôle complet après toutes les corrections : `node scripts/check.mjs`, code 0 et vert :
+  2 506 tests JavaScript dans 139 fichiers, 47 tests Python, règles/format/lint/gel/cliquet verts
+  (`correction-check-full.log`). `git diff --check` réussi.
+- Nouveau verdict `TERMINÉ` : les trois constats de relecture sont corrigés, aucune réserve propre.
+  Relecture de correction et intégration laissées à la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T209/relecture-2.md : **Écart accepté, adaptation de `scripts/fixtures/write-pruned-archive.cjs`.** Ce n'est pas un élargissement de périmètre : c'est l'appelant que le changement d'API casserait, et la relecture 1 en demandait la correction. Ce script n'appartient pas au harnais protégé (`scripts/quality/`, `scripts/loop/`, `scripts/check.mjs`), et les corpus figés restent intacts.

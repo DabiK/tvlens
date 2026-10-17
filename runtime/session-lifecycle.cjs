@@ -88,6 +88,7 @@ class SessionLifecycle {
         "Session ouverte en lecture seule : ses médias ne s’effacent qu’avec la suppression de la session.",
       );
     inspector.revoke();
+    this.#objects.disconnectConsumers?.();
     this.#ending ||= this.#releaseResources();
     await this.#ending;
     if (purge) await this.#purgeMedia();
@@ -100,19 +101,20 @@ class SessionLifecycle {
     await store.clearRaw();
   }
 
-  #recordFinalManifest(state, purge) {
+  #recordFinalManifest(purge) {
     if (!purge && this.#archived) return null;
+    const view = purge ? this.#objects.watch.memoryView() : null;
     const patch = purge
       ? {
           media: {
             stored: 0,
-            missing: state.coverage.passages,
+            missing: view.coverage.passages,
             bytes: 0,
-            retention: state.retention,
+            retention: view.session.retention,
           },
         }
       : {};
-    return this.#objects.manifest.record(state, patch, true);
+    return this.#objects.manifest.record(patch, true);
   }
 
   async #confirmFinalState(purge) {
@@ -120,7 +122,6 @@ class SessionLifecycle {
     // Après un refus, un nouvel essai doit sauvegarder l'état à nouveau, même si les ressources
     // sont déjà fermées : le retour du disque ne prouve pas que l'état refusé y a atterri.
     if (this.#unconfirmed) await watch.persist();
-    const state = watch.snapshot();
     // Les états précèdent leur manifeste final. Un refus ne retient ni close ni une suppression ;
     // archive le transmet, et un nouvel essai peut confirmer sans refermer les fournisseurs.
     this.#unconfirmed = await store
@@ -128,7 +129,7 @@ class SessionLifecycle {
       .then(() => {
         // Le port d'archive peut refuser avant d'atteindre le store ; seul le cœur connaît alors ce refus.
         if (watch.saveError) throw new Error(watch.saveError);
-        return this.#recordFinalManifest(state, purge);
+        return this.#recordFinalManifest(purge);
       })
       .then(
         () => {
@@ -163,7 +164,7 @@ class SessionLifecycle {
     const { sessionClock, watch, manifest } = this.#objects;
     sessionClock.pause();
     await watch.stop();
-    await manifest.record(watch.snapshot());
+    await manifest.record();
   }
 
   async resume() {
@@ -173,8 +174,9 @@ class SessionLifecycle {
     const fromMs = sessionClock.now();
     sessionClock.resume();
     await watch.resume();
+    this.#objects.resumeConsumers?.();
     manifest.captureResumed(fromMs);
-    await manifest.record(watch.snapshot());
+    await manifest.record();
   }
 }
 

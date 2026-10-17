@@ -313,19 +313,28 @@ test('a long capture costs no directory listing, media read or disk measurement 
   const guard = new DiskGuard({ path: f.sessionsRoot, freeBytes: async () => { measures++; return 50 * 1024 ** 3; }, now: () => wall });
   const live = f.open({ guard }), dir = path.join(f.sessionsRoot, live.id);
   const fed = [], observe = live.search.index.observe.bind(live.search.index);
-  live.search.index.observe = passages => { fed.push(passages.length); observe(passages); };
+  live.search.index.observe = passages => {
+    const tail = new Set(live.memory.recentPassages(INDEX_OBSERVE_TAIL).map(passage => passage.id));
+    fed.push({ count: passages.length, insideTail: passages.every(passage => tail.has(passage.id)) });
+    observe(passages);
+  };
   let manifests = 0; const saveManifest = live.store.saveManifest.bind(live.store);
   live.store.saveManifest = patch => { manifests++; return saveManifest(patch); };
   const readdir = t.mock.method(fsp, 'readdir'), readFile = t.mock.method(fsp, 'readFile');
   for (let i = 0; i < 60; i++) { f.clock = (i + 1) * 1000; await live.watch.ingest(f.block(i * 1000, (i + 1) * 1000, 'data:image/jpeg;base64,YQ==')); await settle(live.watch); }
   assert.deepEqual([live.watch.segments.length, live.watch.history.length, live.watch.segments.every(s => s.available && s.status === 'ready')], [60, 0, true]);
   // Saves in flight publish late: wait for them, then look at one emission of the whole, analysed session.
-  await live.store.serial; await tick(); live.watch.emit();
-  assert.deepEqual([Math.max(...fed), fed.at(-1)], [INDEX_OBSERVE_TAIL, INDEX_OBSERVE_TAIL], 'the index is only shown the tail of the session');
+  await live.store.serial; await tick();
+  const observed = fed.length;
+  live.watch.emit();
+  assert.equal(fed.length, observed, 'a repeated host publication does not feed the index');
+  assert.deepEqual([Math.max(...fed.map(feed => feed.count)), fed.at(-1).count], [1, 1], 'each update feeds only its named passage');
+  assert.ok(fed.every(feed => feed.insideTail), 'no observation comes from outside the retained tail');
   assert.equal(manifests, Math.ceil(60000 / MANIFEST_EVERY_MS), 'first passage, then every 30 s of capture');
   assert.equal(measures, 1, 'sixty writes inside one cache period measure the disk once');
   const reads = readFile.mock.callCount(), states = [];
   for (let i = 0; i < 200; i++) { await live.watch.prune(); live.watch.emit(); states.push(live.watch.snapshot().storage); }
+  assert.equal(fed.length, observed, 'unchanged sweeps do not feed the index');
   assert.deepEqual([readdir.mock.callCount(), readFile.mock.callCount() - reads, measures, manifests], [0, 0, 1, 2], 'two hundred ticks touch neither the directory, the media nor the disk');
   wall += 6000; f.clock = 61000; await live.watch.ingest(f.block(60000, 61000, 'data:image/jpeg;base64,YQ=='));
   assert.equal(measures, 2, 'a write after the cache period measures again');

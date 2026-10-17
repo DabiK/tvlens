@@ -6,6 +6,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const { createSessionRuntime } = require("../runtime/session-runtime.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { deferred } = require("./helpers/wait.cjs");
 
 test("default smoke ingestion publishes speech before vision and keeps the next audio independent", async (t) => {
@@ -376,9 +377,15 @@ test("embeddings overrides bypass smoke and key selection and background indexin
     id: `moment-${i + 1}`,
     status: "ready",
     observation: { summary: `Passage ${i + 1}` },
+    usableObservation: true,
+    revision: 2,
   }));
   segments[20].observation = {};
-  built.feedIndex({ segments });
+  segments[20].usableObservation = false;
+  built.connectIndex({
+    id: "session", events: createEventPublisher(), readOnly: () => false,
+    memory: { recentPassages: limit => segments.slice(-limit) },
+  });
   assert.deepEqual(
     built.index.observed,
     segments.slice(12).filter((segment) => segment.id !== "moment-21"),
