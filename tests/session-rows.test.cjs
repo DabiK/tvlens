@@ -6,6 +6,7 @@ const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 
 function loadedSession({ readOnly = false, accepting = true, retentionMs = Infinity } = {}) {
   return {
@@ -132,6 +133,13 @@ test('both host facades project the same library facts while preserving their ti
       Object.assign(loaded.runtime, {
         id: 'session-a', manifest: () => ({ title: 'Titre du runtime' }),
         storage: () => ({ sessionBytes: snapshot.storage?.sessionBytes ?? 0 }),
+        memory: memoryOf({
+          id: 'session-a', elapsedMs: snapshot.elapsedMs,
+          history: [{ id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready' }],
+          segments: snapshot.segments.map((p, i) => ({
+            ...p, id: `moment-${i + 2}`, startMs: (i + 1) * 8000, endMs: (i + 2) * 8000, status: 'ready',
+          })),
+        }),
       });
       loaded.runtime.watch.snapshot = () => snapshot;
       loaded.runtime.watch.readOnly = loaded.runtime.readOnly;

@@ -46,6 +46,8 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * @property {MemoryObservation|null} observation
  * @property {MemoryTopicSummary|null} topicSummary
  * @property {string|null} summary Résumé historique de repli.
+ * @property {string[]} explicitNulls Champs de métadonnées explicitement nuls, distingués des champs absents
+ * normalisés à null. Les projections historiques peuvent ainsi conserver leurs omissions sans lire l'archive.
  * @property {boolean} thumbnailAvailable
  * @property {'history'|'retained'} origin history ne retrouve jamais de média par cette vue.
  * @property {MemoryModalities} modalities

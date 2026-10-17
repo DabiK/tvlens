@@ -207,3 +207,48 @@ test('polled views of a two-hour session stay small whatever its length, are ans
   other.revision = runtime.revision;
   assert.notEqual(other.etag('chat'), runtime.etag('chat'));
 });
+
+test('state and moment HTTP bodies preserve the frozen memory scenario and JSON field order', async t => {
+  const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
+  const expected = require('./fixtures/state-view-responses.json');
+  const { request } = await stateViewScenario(t);
+  for (const [route, body] of Object.entries(expected)) {
+    const selection = route === '/v1/moments/detail'
+      ? { sessionId: 'state-view-memory', firstId: 'moment-1', lastId: 'moment-56' }
+      : undefined;
+    const response = await request(route, selection);
+    assert.equal(response.status, 200, route);
+    assert.deepStrictEqual(response.value, body, route);
+    assert.equal(JSON.stringify(response.value), JSON.stringify(body), route + ' field order');
+  }
+});
+
+test('timeline views and moment selection consult memory while the complete session keeps its snapshot source', async t => {
+  const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
+  const expected = require('./fixtures/state-view-responses.json');
+  const { runtime, session } = await stateViewScenario(t);
+  const legacy = session.watch.snapshot();
+  const snapshot = t.mock.method(session.watch, 'snapshot', () => ({ ...legacy, history: [], segments: [] }));
+  let full;
+  assert.doesNotThrow(() => { full = runtime.snapshot(); });
+  assert.deepEqual(full.session.segments, [], 'the complete session still comes from snapshot');
+  assert.deepStrictEqual(full.timeline, expected['/v1/state'].timeline);
+  assert.deepStrictEqual(full.captureGaps, expected['/v1/state'].captureGaps);
+  assert.equal(snapshot.mock.callCount(), 1, 'only the complete session reads snapshot');
+  snapshot.mock.mockImplementation(() => assert.fail('snapshot is unavailable to consultation readers'));
+  for (const view of ['chat', 'panel']) {
+    assert.equal(runtime.snapshot(view).session.passages, 56);
+  }
+  const selected = runtime.detail({ sessionId: session.id, segmentIds: ['moment-1', 'moment-2'] });
+  assert.deepEqual(selected.passages.map(p => p.id), ['moment-1', 'moment-2']);
+  const start = t.mock.method(runtime.deep, 'start', (_question, options) => options);
+  const asked = runtime.ask({
+    sessionId: session.id, anchorMs: 600000, question: 'Explique ce moment.',
+    moment: { firstId: 'moment-1', lastId: 'moment-3' },
+  });
+  assert.deepEqual([asked.startMs, asked.anchorMs, asked.intent], [1000, 25500, 'explain-moment']);
+  assert.equal(asked.consultation.sessionId, session.id);
+  assert.equal(snapshot.mock.callCount(), 1);
+  start.mock.restore();
+  snapshot.mock.restore();
+});

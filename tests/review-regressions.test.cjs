@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { consultationFrom, rereadOf } = require('./helpers/memory-consultation.cjs');
+const { memoryOf, consultationFrom, rereadOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -381,7 +382,7 @@ test('a passage whose transcription failed says so wherever its empty transcript
   assert.deepEqual(read.passages.map(p => [p.id, p.audioStatus, p.audioFailed]), [['moment-1', 'ready', true], ['moment-2', 'ready', undefined]]);
   assert.equal('audioFailed' in read.passages[1], false, 'a passage that was heard carries no flag');
   assert.equal(tools.memoryEvidence.find(e => e.id === 'moment-1').audioFailed, true);
-  const detail = momentDetail(snapshot, ['moment-1', 'moment-2']);
+  const detail = momentDetail(viewOf(snapshot), ['moment-1', 'moment-2']);
   assert.deepEqual(detail.passages.map(p => p.audioFailed), [true, undefined]);
 });
 

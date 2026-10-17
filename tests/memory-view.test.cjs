@@ -61,7 +61,7 @@ function contract(view) {
   coverageContract(view.coverage);
   for (const p of view.passages) {
     keys(p, 'id startMs endMs revision status audioStatus visionStatus error audioError visionError audioFailed ' +
-      'visionSkipReason stage observation topicSummary summary thumbnailAvailable origin modalities availability usableObservation');
+      'visionSkipReason stage observation topicSummary summary explicitNulls thumbnailAvailable origin modalities availability usableObservation');
     assert.equal(typeof p.id, 'string');
     for (const key of ['startMs', 'endMs']) assert.equal(typeof p[key], 'number');
     assert.ok(p.revision === null || Number.isInteger(p.revision));
@@ -532,4 +532,17 @@ test('processing header exposes held vision, pending counts and blocked duration
   assert.deepEqual([view.coverage.pending, view.coverage.audioPending, view.coverage.visionPending,
     view.coverage.analyzing, view.coverage.visionBlockedMs], [1, 0, 1, false, 3000]);
   assert.deepEqual([view.clock.elapsedMs, view.clock.contextThroughMs], [4000, 1000]);
+});
+
+test('consultation distinguishes explicit null metadata from absent metadata for historical projections', t => {
+  const f = fixture(t);
+  f.watch.segments.push(
+    savedPassage(1),
+    savedPassage(2, { audioStatus: null, visionStatus: null, audioError: null, visionError: null }),
+  );
+  const view = f.watch.memoryView();
+  assert.deepEqual(view.passages.map(p => p.explicitNulls), [[], ['audioStatus', 'visionStatus', 'audioError', 'visionError']]);
+  view.passages[1].explicitNulls.push('summary');
+  assert.deepEqual(f.watch.memoryPassage('moment-2').explicitNulls, ['audioStatus', 'visionStatus', 'audioError', 'visionError']);
+  assert.deepEqual(f.watch.recentMemoryPassages(1)[0], f.watch.memoryPassage('moment-2'));
 });

@@ -1,3 +1,5 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises"),
@@ -37,14 +39,14 @@ test("timeline groups only contiguous known subjects and retains unanalysed/fail
       passage(6, 48000, "", "error"),
     ],
   };
-  const result = sessionTimeline(snapshot);
+  const result = sessionTimeline(viewOf(snapshot));
   assert.equal(result.cards.length, 5);
   assert.deepEqual(result.cards[0].segmentIds, ["moment-1", "moment-2"]);
   assert.equal(result.cards[0].endMs, 16000);
   assert.equal(result.cards[1].status, "pending");
   assert.equal(result.cards[4].status, "error");
   snapshot.segments[2] = passage(3, 16000, "Énergie");
-  const updated = sessionTimeline(snapshot);
+  const updated = sessionTimeline(viewOf(snapshot));
   assert.equal(updated.cards[0].id, "moment-1");
   assert.equal(updated.cards[0].endMs, 32000);
   assert.equal(updated.cards[1].startMs, 40000);
@@ -55,16 +57,16 @@ test("selected moments resolve from archived observations without pretending raw
     c = passage(3, 16000, "Autre");
   delete a.available;
   const snapshot = { id: "session", history: [a], segments: [b, c] };
-  const result = momentDetail(snapshot, ["moment-1", "moment-2"]);
+  const result = momentDetail(viewOf(snapshot), ["moment-1", "moment-2"]);
   assert.equal(result.startMs, 0);
   assert.equal(result.endMs, 16000);
   assert.equal(result.passages[0].available, false);
   assert.equal(result.passages[0].transcript, "Paroles 1");
   assert.throws(
-    () => momentDetail(snapshot, ["moment-1", "moment-3"]),
+    () => momentDetail(viewOf(snapshot), ["moment-1", "moment-3"]),
     /discontinu/,
   );
-  assert.throws(() => momentDetail(snapshot, ["moment-99"]), /absent/);
+  assert.throws(() => momentDetail(viewOf(snapshot), ["moment-99"]), /absent/);
 });
 test("thumbnail exists before analysis, survives raw expiry, pause and the end of the session; only an explicit purge removes it", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-thumbnails-"));
@@ -150,11 +152,11 @@ test('long topics use compact immutable boundaries without including newly appen
   const segments = Array.from({length:1201}, (_, i) => passage(i+1,i*8000,'Conférence'));
   const selection = {firstId:'moment-1',lastId:'moment-1200'};
   assert.ok(JSON.stringify(selection).length < 100);
-  const detail = momentDetail({id:'long',history:[],segments},selection);
+  const detail = momentDetail(viewOf({id:'long',history:[],segments}),selection);
   assert.equal(detail.passages.length,1200);
   assert.equal(detail.endMs,9600000);
   assert.equal(detail.passages.at(-1).id,'moment-1200');
-  assert.throws(()=>momentDetail({id:'long',history:[],segments},{firstId:'moment-3',lastId:'moment-1'}),/invalides/);
+  assert.throws(()=>momentDetail(viewOf({id:'long',history:[],segments}),{firstId:'moment-3',lastId:'moment-1'}),/invalides/);
 });
 
 for (const [condition, selection, code, message] of [
@@ -166,7 +168,7 @@ for (const [condition, selection, code, message] of [
 ]) {
   test(`moment refusals expose ${code} for ${condition}`, () => {
     const snapshot = { id: 's', history: [], segments: [1, 2, 3].map(n => passage(n, (n - 1) * 8000, 'Sujet')) };
-    assert.throws(() => momentDetail(snapshot, selection), error => {
+    assert.throws(() => momentDetail(viewOf(snapshot), selection), error => {
       assert.equal(error.code, code);
       assert.equal(require('../core/session-timeline.cjs')[code], code);
       assert.equal(error.message, message);
@@ -175,3 +177,29 @@ for (const [condition, selection, code, message] of [
     });
   });
 }
+
+test('timeline and selected details project the consultation contract with the frozen historical behavior', () => {
+  const source = require('./fixtures/state-view-memory.json');
+  const expected = require('./fixtures/state-view-responses.json');
+  const view = memoryOf(source).view();
+  let timeline;
+  assert.doesNotThrow(() => { timeline = sessionTimeline(view); });
+  assert.deepStrictEqual(timeline, expected['/v1/state'].timeline);
+  const detail = momentDetail(view, { firstId: 'moment-1', lastId: 'moment-56' });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(detail)), expected['/v1/moments/detail']);
+  assert.deepStrictEqual(momentDetail(view, view.passages.map(p => p.id)), detail);
+  const first = momentDetail(view, { firstId: 'moment-1', lastId: 'moment-3' });
+  assert.equal(first.summaryKind, 'cumulative');
+  assert.equal(first.summary, timeline.cards[0].summary);
+  assert.equal(momentDetail(view, ['moment-2', 'moment-3']).summaryKind, 'bounded-excerpts');
+});
+
+test('a late thumbnail enriches a pending consultation card without changing its identity or media availability', () => {
+  const source = { id: 's', history: [], segments: [{ ...passage(1, 0, '', 'queued'), thumbnailAvailable: false }] };
+  let before;
+  assert.doesNotThrow(() => { before = sessionTimeline(memoryOf(source).view()).cards[0]; });
+  assert.deepEqual([before.id, before.status, before.thumbnailId, before.mediaAvailable], ['moment-1', 'pending', null, true]);
+  source.segments[0].thumbnailAvailable = true;
+  const after = sessionTimeline(memoryOf(source).view()).cards[0];
+  assert.deepEqual(after, { ...before, thumbnailId: 'moment-1' });
+});

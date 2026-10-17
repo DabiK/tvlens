@@ -72,8 +72,9 @@ function createHeadlessLifecycle(host, conversation) {
     },
     warmUp,
     guard: host.guard,
-    onAdopt: (_session, state) => {
+    onAdopt: (session, state) => {
       host.sessionState = state;
+      host.sessionMemory = session?.memory.view() || null;
       host.emit();
     },
     publish: () => host.emit(),
@@ -97,6 +98,7 @@ class HeadlessRuntime {
     this.log = options.log || ((line) => console.error(line));
     this.onPublicationError = options.onPublicationError || createPublicationDiagnostic(line => this.log(line));
     this.sessionState = null;
+    this.sessionMemory = null;
     this.derived = null;
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
     const { setTimer, clearTimer } = options;
@@ -254,6 +256,7 @@ class HeadlessRuntime {
   published(state) {
     if (this.session?.id !== state.id) return;
     this.sessionState = state;
+    this.sessionMemory = this.session.memory.view();
     this.surveillance.observe(state);
     this.emit();
   }
@@ -285,16 +288,14 @@ class HeadlessRuntime {
   snapshot(view) {
     if (this.viewName(view) !== "full") return this.view(view);
     const session = this.session?.watch.snapshot() || null;
+    const memory = this.session?.memory.view() || null;
     if (session) session.title = this.session.manifest()?.title || null;
     return {
       session,
       transcription: { language: this.options.config?.transcriptionLanguage || "fr" },
-      timeline: sessionTimeline(session),
+      timeline: sessionTimeline(memory),
       chat: { ...this.deep.snapshot(), timeoutMs: this.deep.timeoutMs },
-      captureGaps: captureGapsOf([
-        ...(session?.history || []),
-        ...(session?.segments || []),
-      ]),
+      captureGaps: captureGapsOf(memory?.passages || []),
       // Counters only: background indexing that fails or falls behind must be visible somewhere.
       index: this.session?.search.index?.status?.() || null,
       quota: this.quota.snapshot(),
@@ -307,7 +308,7 @@ class HeadlessRuntime {
     };
   }
   // Everything of a view that only moves with a published change, computed once per revision from
-  // the last state the session published: a poll never copies or walks the passages again.
+  // the consultation at the last session publication: a poll never copies or walks the passages again.
   derive() {
     const sessionId = this.session?.id || null;
     if (
@@ -315,14 +316,14 @@ class HeadlessRuntime {
       this.derived.sessionId === sessionId
     )
       return this.derived;
-    const state = sessionId ? this.sessionState : null;
+    const memory = sessionId ? this.sessionMemory : null;
     return (this.derived = {
       revision: this.revision,
       sessionId,
       ...deriveStateViews({
-        state,
+        memory,
         jobs: this.deep.snapshot().jobs,
-        title: state ? this.session.manifest()?.title || null : null,
+        title: memory ? this.session.manifest()?.title || null : null,
       }),
     });
   }
@@ -429,20 +430,20 @@ class HeadlessRuntime {
       anchorMs > session.watch.now() + 3000
     )
       throw refusal(400, "Ancrage invalide.", "invalid-anchor");
-    // The detail of a selected moment still reads the session state; the question itself consults the memory view.
-    const selected = moment ? momentDetail(session.watch.snapshot(), moment.segmentIds || moment) : null;
+    const memory = session.memory.view();
+    const selected = moment ? momentDetail(memory, moment.segmentIds || moment) : null;
     return this.deep.start(question, {
       mode: "chat",
       anchorMs: selected ? selected.endMs : anchorMs,
       ...(selected
         ? { startMs: selected.startMs, intent: "explain-moment" }
         : {}),
-      consultation: consultationOf(session.memory.view()),
+      consultation: consultationOf(memory),
     });
   }
   detail({ sessionId, segmentIds, firstId, lastId }) {
     const session = this.loaded(sessionId);
-    return momentDetail(session.watch.snapshot(), segmentIds || { firstId, lastId });
+    return momentDetail(session.memory.view(), segmentIds || { firstId, lastId });
   }
   // The real outcome: a question already finished, or unknown, was not cancelled.
   cancel(id) {

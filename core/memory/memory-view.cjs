@@ -47,6 +47,7 @@ function passageView(passage, origin, known) {
     startMs: passage.startMs,
     endMs: passage.endMs,
     ...Object.fromEntries(NULLABLE_FIELDS.map(key => [key, passage[key] ?? null])),
+    explicitNulls: NULLABLE_FIELDS.filter(key => passage[key] === null),
     audioFailed: Boolean(passage.audioFailed),
     observation: passage.observation ? structuredClone(passage.observation) : null,
     topicSummary: passage.topicSummary ? structuredClone(passage.topicSummary) : null,

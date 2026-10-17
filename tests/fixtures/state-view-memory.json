@@ -1,0 +1,882 @@
+{
+  "id": "state-view-memory",
+  "elapsedMs": 600000,
+  "history": [
+    {
+      "id": "moment-1",
+      "startMs": 1000,
+      "endMs": 9000,
+      "status": "ready",
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "continue",
+        "summary": "Résumé 1. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 1.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "mediaReason": "expired"
+    },
+    {
+      "id": "moment-2",
+      "startMs": 9000,
+      "endMs": 17000,
+      "status": "ready",
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "continue",
+        "summary": "Résumé 2. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 2.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "mediaReason": "expired"
+    }
+  ],
+  "segments": [
+    {
+      "id": "moment-3",
+      "startMs": 17500,
+      "endMs": 25500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "continue",
+        "summary": "Résumé 3. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 3.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "topicSummary": {
+        "text": "Argument initial conservé puis deux réponses contradictoires. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. Cumul non vérifié. ",
+        "firstId": "moment-1",
+        "lastId": "moment-3",
+        "startMs": 1000,
+        "endMs": 25500
+      }
+    },
+    {
+      "id": "moment-4",
+      "startMs": 26500,
+      "endMs": 34500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "change",
+        "summary": "Résumé 4. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 4.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-5",
+      "startMs": 34500,
+      "endMs": 42500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "uncertain",
+        "summary": "Résumé 5. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 5.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-6",
+      "startMs": 44000,
+      "endMs": 52000,
+      "status": "partial",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "error",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Énergie",
+        "topicContinuity": "continue",
+        "summary": "Résumé 6. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 6.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "audioError": "Audio indisponible."
+    },
+    {
+      "id": "moment-7",
+      "startMs": 53500,
+      "endMs": 61500,
+      "status": "partial",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "skipped",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 7",
+        "topicContinuity": "continue",
+        "summary": "Résumé 7. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 7.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "visionSkipReason": "asking"
+    },
+    {
+      "id": "moment-8",
+      "startMs": 63000,
+      "endMs": 71000,
+      "status": "partial",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "error",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 8",
+        "topicContinuity": "continue",
+        "summary": "Résumé 8. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 8.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "visionError": "Vision indisponible.",
+      "audioFailed": true
+    },
+    {
+      "id": "moment-9",
+      "startMs": 72500,
+      "endMs": 80500,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-10",
+      "startMs": 82000,
+      "endMs": 90000,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-11",
+      "startMs": 91500,
+      "endMs": 99500,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-12",
+      "startMs": 101000,
+      "endMs": 109000,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-13",
+      "startMs": 110500,
+      "endMs": 118500,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-14",
+      "startMs": 120000,
+      "endMs": 128000,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-15",
+      "startMs": 129500,
+      "endMs": 137500,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-16",
+      "startMs": 139000,
+      "endMs": 147000,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-17",
+      "startMs": 148500,
+      "endMs": 156500,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-18",
+      "startMs": 158000,
+      "endMs": 166000,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-19",
+      "startMs": 167500,
+      "endMs": 175500,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-20",
+      "startMs": 177000,
+      "endMs": 185000,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-21",
+      "startMs": 186500,
+      "endMs": 194500,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-22",
+      "startMs": 196000,
+      "endMs": 204000,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-23",
+      "startMs": 205500,
+      "endMs": 213500,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-24",
+      "startMs": 215000,
+      "endMs": 223000,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-25",
+      "startMs": 224500,
+      "endMs": 232500,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-26",
+      "startMs": 234000,
+      "endMs": 242000,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-27",
+      "startMs": 243500,
+      "endMs": 251500,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-28",
+      "startMs": 253000,
+      "endMs": 261000,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-29",
+      "startMs": 262500,
+      "endMs": 270500,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-30",
+      "startMs": 272000,
+      "endMs": 280000,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-31",
+      "startMs": 281500,
+      "endMs": 289500,
+      "status": "error",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-32",
+      "startMs": 291000,
+      "endMs": 299000,
+      "status": "skipped",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-33",
+      "startMs": 300500,
+      "endMs": 308500,
+      "status": "expired",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-34",
+      "startMs": 310000,
+      "endMs": 318000,
+      "status": "ready",
+      "available": false,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 34",
+        "topicContinuity": "continue",
+        "summary": "Résumé 34. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 34.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "mediaReason": "missing"
+    },
+    {
+      "id": "moment-35",
+      "startMs": 319500,
+      "endMs": 327500,
+      "status": "ready",
+      "available": false,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 35",
+        "topicContinuity": "continue",
+        "summary": "Résumé 35. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 35.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "mediaReason": "unreadable"
+    },
+    {
+      "id": "moment-36",
+      "startMs": 329000,
+      "endMs": 337000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 36",
+        "topicContinuity": "continue",
+        "summary": "Résumé 36. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 36.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-37",
+      "startMs": 338500,
+      "endMs": 346500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": null,
+      "visionStatus": null,
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 37",
+        "topicContinuity": "continue",
+        "summary": "Résumé 37. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 37.",
+        "uncertainty": "Propos non vérifiés."
+      },
+      "audioError": null,
+      "visionError": null
+    },
+    {
+      "id": "moment-38",
+      "startMs": 348000,
+      "endMs": 356000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 38",
+        "topicContinuity": "continue",
+        "summary": "Résumé 38. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 38.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-39",
+      "startMs": 357500,
+      "endMs": 365500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 39",
+        "topicContinuity": "continue",
+        "summary": "Résumé 39. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 39.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-40",
+      "startMs": 367000,
+      "endMs": 375000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 40",
+        "topicContinuity": "continue",
+        "summary": "Résumé 40. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 40.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-41",
+      "startMs": 376500,
+      "endMs": 384500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 41",
+        "topicContinuity": "continue",
+        "summary": "Résumé 41. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 41.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-42",
+      "startMs": 386000,
+      "endMs": 394000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 42",
+        "topicContinuity": "continue",
+        "summary": "Résumé 42. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 42.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-43",
+      "startMs": 395500,
+      "endMs": 403500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 43",
+        "topicContinuity": "continue",
+        "summary": "Résumé 43. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 43.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-44",
+      "startMs": 405000,
+      "endMs": 413000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 44",
+        "topicContinuity": "continue",
+        "summary": "Résumé 44. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 44.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-45",
+      "startMs": 414500,
+      "endMs": 422500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 45",
+        "topicContinuity": "continue",
+        "summary": "Résumé 45. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 45.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-46",
+      "startMs": 424000,
+      "endMs": 432000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 46",
+        "topicContinuity": "continue",
+        "summary": "Résumé 46. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 46.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-47",
+      "startMs": 433500,
+      "endMs": 441500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 47",
+        "topicContinuity": "continue",
+        "summary": "Résumé 47. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 47.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-48",
+      "startMs": 443000,
+      "endMs": 451000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 48",
+        "topicContinuity": "continue",
+        "summary": "Résumé 48. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 48.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-49",
+      "startMs": 452500,
+      "endMs": 460500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 49",
+        "topicContinuity": "continue",
+        "summary": "Résumé 49. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 49.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-50",
+      "startMs": 462000,
+      "endMs": 470000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 50",
+        "topicContinuity": "continue",
+        "summary": "Résumé 50. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 50.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-51",
+      "startMs": 471500,
+      "endMs": 479500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 51",
+        "topicContinuity": "continue",
+        "summary": "Résumé 51. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 51.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-52",
+      "startMs": 481000,
+      "endMs": 489000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 52",
+        "topicContinuity": "continue",
+        "summary": "Résumé 52. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 52.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-53",
+      "startMs": 490500,
+      "endMs": 498500,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 53",
+        "topicContinuity": "continue",
+        "summary": "Résumé 53. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 53.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-54",
+      "startMs": 500000,
+      "endMs": 508000,
+      "status": "ready",
+      "available": true,
+      "thumbnailAvailable": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 54",
+        "topicContinuity": "continue",
+        "summary": "Résumé 54. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 54.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    },
+    {
+      "id": "moment-55",
+      "startMs": 509500,
+      "endMs": 517500,
+      "status": "queued",
+      "available": true,
+      "thumbnailAvailable": false,
+      "audioStatus": "queued",
+      "visionStatus": "queued",
+      "revision": 2,
+      "observation": null
+    },
+    {
+      "id": "moment-56",
+      "startMs": 519000,
+      "endMs": 527000,
+      "status": "partial",
+      "available": true,
+      "thumbnailAvailable": false,
+      "audioStatus": "ready",
+      "visionStatus": "analyzing",
+      "revision": 2,
+      "observation": {
+        "topic": "Sujet 56",
+        "topicContinuity": "continue",
+        "summary": "Résumé 56. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. Contexte historique. ",
+        "transcript": "Paroles 56.",
+        "uncertainty": "Propos non vérifiés."
+      }
+    }
+  ],
+  "losses": {
+    "audioSkipped": 3,
+    "audioExpired": 2,
+    "visionSkippedBacklog": 4,
+    "visionSkippedAsking": 1,
+    "visionExpired": 8,
+    "audioError": 2,
+    "visionError": 9
+  }
+}

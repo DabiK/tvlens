@@ -72,13 +72,16 @@ async function benchState() {
   for (const count of [75, 450, 900, 1800]) {
     const watch = populatedSession(count);
     const snapshot = watch.snapshot(), view = watch.memoryView();
-    const state = () => { const session = watch.snapshot(); return { session, timeline: sessionTimeline(session), chat: { jobs: [] }, captureGaps: [] }; };
+    const state = () => {
+      const session = watch.snapshot();
+      return { session, timeline: sessionTimeline(watch.memoryView()), chat: { jobs: [] }, captureGaps: [] };
+    };
     const payload = JSON.stringify(state());
     rows.push({ passages: count, observedMinutes: round((2000 + count * 8000) / 60000),
       snapshotMs: timeSync(() => watch.snapshot()),
       archiveStringifyMs: timeSync(() => JSON.stringify(snapshot, null, 2)),
       archiveBytes: Buffer.byteLength(JSON.stringify(snapshot, null, 2)),
-      timelineMs: timeSync(() => sessionTimeline(snapshot)),
+      timelineMs: timeSync(() => sessionTimeline(view)),
       statePollMs: timeSync(() => JSON.stringify(state())),
       statePollBytes: Buffer.byteLength(payload),
       questionToolsMs: timeSync(() => new VideoTools({ consultation: consultationOf(view), search: {}, inspector: {}, media: {} })),

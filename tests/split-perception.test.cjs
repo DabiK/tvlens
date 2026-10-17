@@ -208,7 +208,7 @@ test('audio and vision fail independently, keeping usable evidence and terminal 
   assert.equal(f.watch.segments[0].audioError, 'speech failed');
   assert.equal(f.watch.segments[1].observation.transcript, 'Paroles moment-2');
   assert.equal(f.watch.segments[1].visionError, 'vision failed');
-  assert.deepEqual(sessionTimeline(f.watch.snapshot()).cards.map(c => [c.status,c.pending]), [['partial',0],['partial',0]]);
+  assert.deepEqual(sessionTimeline(f.watch.memoryView()).cards.map(c => [c.status,c.pending]), [['partial',0],['partial',0]]);
 });
 test('both lane backlogs are bounded and skipped vision keeps speech', async () => {
   const audioGate = deferred(), visionGate = deferred(); let activeAudio = 0, activeVision = 0, maxAudio = 0, maxVision = 0;

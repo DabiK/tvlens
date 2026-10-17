@@ -283,7 +283,10 @@ function benchAllLive() {
     const live = mode === 'tout-en-segments' ? count : Math.min(count, 37);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     const snapshot = watch.snapshot(), view = watch.memoryView();
-    const state = () => { const session = watch.snapshot(); return { session, timeline: sessionTimeline(session), chat: { jobs: [] }, captureGaps: [] }; };
+    const state = () => {
+      const session = watch.snapshot();
+      return { session, timeline: sessionTimeline(watch.memoryView()), chat: { jobs: [] }, captureGaps: [] };
+    };
     rows.push({ passages: count, mode, statePollBytes: Buffer.byteLength(JSON.stringify(state())), statePollMs: time(() => JSON.stringify(state())), snapshotMs: time(() => watch.snapshot()),
       archiveBytes: Buffer.byteLength(JSON.stringify(snapshot, null, 2)), archiveStringifyMs: time(() => JSON.stringify(snapshot, null, 2)), 
       questionToolsMs: time(() => new VideoTools({ consultation: consultationOf(view), search: {}, inspector: {}, media: {} })) });

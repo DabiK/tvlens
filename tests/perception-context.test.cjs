@@ -1,3 +1,5 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { perceptionContext } = require('../core/perception-context.cjs');
@@ -48,26 +50,26 @@ test('provider uses explicit bounded historical context, keeps current evidence 
 test('one subject stays one progressively enriched card across hours and archived chunks; real transition splits', () => {
   const passages=Array.from({length:1200},(_,i)=>passage(i));
   const snapshot={id:'long',history:passages.slice(0,1100),segments:passages.slice(1100)};
-  const cards=sessionTimeline(snapshot).cards;
+  const cards=sessionTimeline(viewOf(snapshot)).cards;
   assert.equal(cards.length,1);
   assert.equal(cards[0].segmentIds.length,1200);
   assert.equal(cards[0].summary,'Résumé 1198 Résumé 1199');
   assert.ok(cards[0].summary.length <= 900);
-  const detail=momentDetail(snapshot,{firstId:'moment-0',lastId:'moment-1199'});
+  const detail=momentDetail(viewOf(snapshot),{firstId:'moment-0',lastId:'moment-1199'});
   assert.equal(detail.passages[700].transcript,'Paroles 700');
   assert.equal(detail.passages[700].startMs,5600000);
   snapshot.segments.push(passage(1200,'Sport'));
-  assert.equal(sessionTimeline(snapshot).cards.length,2);
+  assert.equal(sessionTimeline(viewOf(snapshot)).cards.length,2);
 });
 test('successful vision can group a known topic despite audio failure, with partial status retained', () => {
   const a=passage(0),b={...passage(1),status:'partial',visionStatus:'ready',audioStatus:'error',audioError:'Audio indisponible'};
-  const cards=sessionTimeline({id:'s',history:[],segments:[a,b]}).cards;
+  const cards=sessionTimeline(viewOf({id:'s',history:[],segments:[a,b]})).cards;
   assert.equal(cards.length,1); assert.equal(cards[0].status,'partial');
 });
 test('explicit transition or uncertain continuity never merges merely because the generated title matches', () => {
   for (const topicContinuity of ['change','uncertain']) {
     const a=passage(0), b=passage(1); b.observation.topicContinuity=topicContinuity;
-    assert.equal(sessionTimeline({id:'s',history:[],segments:[a,b]}).cards.length,2);
+    assert.equal(sessionTimeline(viewOf({id:'s',history:[],segments:[a,b]})).cards.length,2);
   }
 });
 test('session outline preserves explicit same-title transitions and uncertainty as separate historical runs', () => {

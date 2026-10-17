@@ -3,6 +3,10 @@ const TVLENS_MOMENT_SELECTION_INVALID = 'TVLENS_MOMENT_SELECTION_INVALID';
 const TVLENS_MOMENT_MISSING = 'TVLENS_MOMENT_MISSING';
 const TVLENS_MOMENT_INTERVAL_DISCONTINUOUS = 'TVLENS_MOMENT_INTERVAL_DISCONTINUOUS';
 const { summaryForPassages } = require('./topic-summary.cjs');
+const CAPTURE_GAP_MS = 1000;
+// La consultation normalise l'absence à null ; le fil historique garde ses champs omis.
+const optionalPassageField = (passage, key) =>
+  passage[key] ?? (passage.explicitNulls.includes(key) ? null : undefined);
 // Projection of observed passages, never an inference or provider call.
 const topicKey = (value) =>
   String(value || "")
@@ -11,10 +15,11 @@ const topicKey = (value) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
-function sessionTimeline(snapshot) {
-  if (!snapshot) return { sessionId: null, cards: [] };
+/** @param {import('./memory/ports.cjs').MemoryView|null} memory */
+function sessionTimeline(memory) {
+  if (!memory) return { sessionId: null, cards: [] };
   const cards = [];
-  for (const passage of [...snapshot.history, ...snapshot.segments]) {
+  for (const passage of memory.passages) {
     const observation = passage.observation || {};
     const ready = passage.status === "ready";
     const topic = ready || passage.visionStatus === "ready" ? topicKey(observation.topic) : "";
@@ -25,7 +30,7 @@ function sessionTimeline(snapshot) {
       !card ||
       card.topicKey !== topic ||
       ["change", "uncertain"].includes(observation.topicContinuity) ||
-      passage.startMs - card.endMs > 1000
+      passage.startMs - card.endMs > CAPTURE_GAP_MS
     ) {
       card = {
         id: passage.id,
@@ -60,10 +65,10 @@ function sessionTimeline(snapshot) {
       card.summaries.push(observation.summary || observation.transcript);
     if (["queued", "analyzing"].includes(passage.status) || ["queued", "analyzing"].includes(passage.visionStatus)) card.pending++;
     if (["error", "skipped", "expired"].includes(passage.status)) card.failed++;
-    card.mediaAvailable ||= Boolean(passage.available);
+    card.mediaAvailable ||= passage.availability.replayable;
   }
   return {
-    sessionId: snapshot.id,
+    sessionId: memory.session.id,
     cards: cards.map(({ topicKey, summaries, statuses, passages, ...card }) => ({
       ...card,
       ...summaryForPassages(passages),
@@ -73,8 +78,9 @@ function sessionTimeline(snapshot) {
     })),
   };
 }
-function momentDetail(snapshot, selection) {
-  const all = [...snapshot.history, ...snapshot.segments];
+/** @param {import('./memory/ports.cjs').MemoryView} memory */
+function momentDetail(memory, selection) {
+  const all = memory.passages;
   let ids = selection;
   // Boundary IDs keep long-topic requests small and frozen as new passages arrive.
   if (selection && !Array.isArray(selection)) {
@@ -102,7 +108,7 @@ function momentDetail(snapshot, selection) {
   )
     throw domainError(TVLENS_MOMENT_INTERVAL_DISCONTINUOUS, "Intervalle discontinu.");
   return {
-    sessionId: snapshot.id,
+    sessionId: memory.session.id,
     ...summaryForPassages(selected),
     startMs: selected[0].startMs,
     endMs: selected.at(-1).endMs,
@@ -111,17 +117,20 @@ function momentDetail(snapshot, selection) {
       startMs: p.startMs,
       endMs: p.endMs,
       status: p.status,
-      audioStatus: p.audioStatus,
-      visionStatus: p.visionStatus,
-      audioError: p.audioError,
-      visionError: p.visionError,
+      audioStatus: optionalPassageField(p, 'audioStatus'),
+      visionStatus: optionalPassageField(p, 'visionStatus'),
+      audioError: optionalPassageField(p, 'audioError'),
+      visionError: optionalPassageField(p, 'visionError'),
       // The transcriber failed: an empty transcript is not silence.
       ...(p.audioFailed ? { audioFailed: true } : {}),
       transcript: p.observation?.transcript || "",
       summary: p.observation?.summary || "",
       uncertainty: p.observation?.uncertainty || "",
-      available: Boolean(p.available),
+      available: p.availability.replayable,
     })),
   };
 }
-module.exports = { sessionTimeline, momentDetail, TVLENS_MOMENT_SELECTION_INVALID, TVLENS_MOMENT_MISSING, TVLENS_MOMENT_INTERVAL_DISCONTINUOUS };
+module.exports = {
+  sessionTimeline, momentDetail, optionalPassageField, CAPTURE_GAP_MS,
+  TVLENS_MOMENT_SELECTION_INVALID, TVLENS_MOMENT_MISSING, TVLENS_MOMENT_INTERVAL_DISCONTINUOUS,
+};
