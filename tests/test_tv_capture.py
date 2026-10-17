@@ -1,5 +1,9 @@
 """Capture TV simulée : vrai programme, faux Luna/arecord et récepteur local."""
 import base64
+from contextlib import ExitStack, redirect_stdout
+import io
+from types import SimpleNamespace
+from unittest.mock import patch
 import json
 import os
 from pathlib import Path
@@ -46,6 +50,8 @@ class Server:
         self.state = state or {'id': 's1', 'accepting': True, 'readOnly': False, 'storage': {'state': 'ok'}}
         self.segments = []
         self.starts = 0
+        self.on_segment = None
+        self.requests = []
         owner = self
         # Un test peut suspendre la réponse de démarrage, comme le ferait un serveur lent ou distant.
         self.hold = None
@@ -64,10 +70,12 @@ class Server:
                 self.wfile.write(body)
 
             def do_GET(self):
+                owner.requests.append(('GET', self.path))
                 self.reply(200, owner.state)
 
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                owner.requests.append(('POST', self.path))
                 if self.path == '/v1/session/start':
                     owner.starts += 1
                     owner.started.set()
@@ -80,7 +88,8 @@ class Server:
                             return
                     return self.reply(*owner.start)
                 owner.segments.append(body)
-                self.reply(*owner.segment)
+                response = owner.on_segment(body) if owner.on_segment else owner.segment
+                self.reply(*response)
         self.http = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         self.thread = threading.Thread(target=self.http.serve_forever)
         self.thread.start()
@@ -346,6 +355,165 @@ class CaptureRun(unittest.TestCase):
             report, segments = run(readings)
             self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['framesMoved'], segments),
                              (0, 1, {'geometryChanged': 1}, 0, []))
+
+    def controlled_capture(self, server, blocks=1, before_audio=lambda *_: None, video=None):
+        """Horloge pilotée et médias locaux ; capture.run, thread d'envoi et HTTP réels."""
+        clock = [100.0]
+        stop = threading.Event()
+        threads = []
+        recordings = []
+        events = iter((stop, threading.Event()))
+        full = {
+            'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'c',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+
+        def wait(delay):
+            clock[0] += delay
+            return stop.is_set()
+
+        def launch_thread(*args, **kwargs):
+            thread = threading.Thread(*args, **kwargs)
+            threads.append(thread)
+            return thread
+
+        class Audio:
+            def __init__(self, command, **_):
+                self.returncode = None
+                self.started = clock[0]
+                self.path = Path(command[-1])
+                recordings.append(self)
+                before_audio(len(recordings), stop)
+
+            def poll(self):
+                return self.returncode
+
+            def kill(self):
+                self.returncode = -9
+
+            def wait(self, **_):
+                if self.returncode is None:
+                    clock[0] = self.started + 8
+                    self.path.write_bytes(b'RIFF' + b'\0' * 4 + b'WAVE' + b'\0' * 40)
+                    self.returncode = 0
+                return self.returncode
+
+        def luna(endpoint, payload):
+            if endpoint.endswith('/getStatus'):
+                current = dict(full)
+                if video:
+                    current.update(video(len(recordings)))
+                return {'video': [current]}
+            Path(payload['path']).write_bytes(PNG)
+            return {'returnValue': True}
+
+        (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64}))
+        args = [
+            '--config', str(self.root / 'connection.json'), '--seconds', str(blocks * 8),
+            '--idle-seconds', '0', '--lock', str(self.root / 'capture.lock'),
+            '--report', str(self.root / 'report.json'),
+        ]
+        output = io.StringIO()
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(stop, 'wait', side_effect=wait))
+            clock_source = SimpleNamespace(monotonic=lambda: clock[0])
+            stack.enter_context(patch.object(capture, 'time', clock_source))
+            stack.enter_context(patch('transport.time', clock_source))
+            stack.enter_context(patch.object(capture, 'open',
+                                            side_effect=lambda *args: stack.enter_context(open(*args)), create=True))
+            stack.enter_context(patch.object(capture, 'threading', SimpleNamespace(
+                Event=lambda: next(events), Lock=threading.Lock, Thread=launch_thread)))
+            stack.enter_context(patch.object(capture.signal, 'signal'))
+            stack.enter_context(patch.object(capture.os, 'umask'))
+            stack.enter_context(patch.object(capture.subprocess, 'Popen', Audio))
+            stack.enter_context(patch.object(capture, 'luna', side_effect=luna))
+            stack.enter_context(redirect_stdout(output))
+            capture.run(args)
+        alive_threads = [thread.name for thread in threads if thread.is_alive()]
+        self.assertEqual(alive_threads, [], 'le thread doit être terminé avant le rapport final')
+        self.assertTrue(all(audio.poll() is not None for audio in recordings))
+        report = json.loads((self.root / 'report.json').read_text())
+        self.assertEqual(json.loads(output.getvalue()), report)
+        self.assertTrue(report['stopped'])
+        self.assertEqual(report['queued'], 0)
+        self.assertEqual(report['dropped'], sum(report['dropReasons'].values()))
+        return report
+
+    def test_incomplete_block_is_counted_before_queueing_and_the_next_block_delivers(self):
+        server = Server()
+        try:
+            report = self.controlled_capture(server, blocks=2,
+                                            video=lambda block: {'connected': block != 1})
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['retries']),
+                         (1, 1, {'foreignApp': 1}, 0))
+        self.assertEqual((report['connection'], report['stopReason'], report['lastRefusal']), ('connected', 'duration', None))
+        block, = server.segments
+        self.assertEqual((block['sequence'], block['startMs'], block['endMs']), (100001, 8000, 16000))
+        self.assertEqual(server.requests, [('POST', '/v1/session/start'), ('GET', '/v1/session'), ('POST', '/v1/segments')])
+
+    def test_initial_elapsed_offset_and_monotone_deltas_define_all_block_and_frame_intervals(self):
+        server = Server(start=(200, {'id': 's1', 'elapsedMs': 45000}))
+        try:
+            # La source de temps du banc expose seulement monotonic, aucune heure civile.
+            report = self.controlled_capture(server, blocks=2)
+        finally:
+            server.close()
+        self.assertEqual([(block['sequence'], block['startMs'], block['endMs']) for block in server.segments],
+                         [(100000, 45000, 53000), (100001, 53000, 61000)])
+        self.assertEqual([[frame['atMs'] for frame in block['frames']] for block in server.segments],
+                         [[45000, 47000, 49000, 51000], [53000, 55000, 57000, 59000]])
+        self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['retries']), (2, 0, {}, 0))
+        self.assertEqual((report['connection'], report['stopReason'], report['lastRefusal']), ('connected', 'duration', None))
+
+    def test_blocked_post_makes_overflow_and_left_at_stop_exact_without_cancelling_the_inflight_post(self):
+        server = Server()
+        posted = threading.Event()
+        release = threading.Event()
+        barrier_failures = []
+
+        def held_post(_):
+            posted.set()
+            if not release.wait(10):
+                barrier_failures.append('POST non libéré')
+            return 200, {'duplicate': False}
+
+        # capture.run absorberait une exception du faux Popen : la barrière est donc vérifiée après son retour.
+        def before_audio(number, stop):
+            if number == 2 and not posted.wait(10):
+                barrier_failures.append('premier POST absent')
+            if number == 6:
+                stop.set()
+                release.set()
+
+        server.on_segment = held_post
+        try:
+            report = self.controlled_capture(server, blocks=7, before_audio=before_audio)
+        finally:
+            release.set()
+            server.close()
+        self.assertEqual(barrier_failures, [])
+        # Six blocs commencés : un POST en vol réussit, un déborde, un reste incomplet, trois restent en file.
+        self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['retries']),
+                         (1, 5, {'queueOverflow': 1, 'stopped': 1, 'leftAtStop': 3}, 0))
+        self.assertEqual((report['connection'], report['stopReason'], report['lastRefusal']), ('connected', 'stopped', None))
+        self.assertEqual([block['sequence'] for block in server.segments], [100000])
+        self.assertEqual(server.requests, [('POST', '/v1/session/start'), ('GET', '/v1/session'), ('POST', '/v1/segments')])
+
+    def test_simulated_session_ended_rejects_one_block_without_a_specific_capture_stop(self):
+        server = Server()
+        server.on_segment = lambda _: (410, {'code': 'session-ended'}) if len(server.segments) == 1 else (200, {})
+        try:
+            report = self.controlled_capture(server, blocks=2)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['retries']),
+                         (1, 1, {'deliveryRejected': 1}, 0))
+        self.assertEqual((report['connection'], report['stopReason'], report['lastRefusal']),
+                         ('connected', 'duration', {'status': 410, 'code': 'session-ended'}))
+        self.assertEqual([block['sequence'] for block in server.segments], [100000, 100001])
+        self.assertIn('HTTP 410', report['errors'])
 
     def test_duration_bounds(self):
         for seconds in ('7', '21601'):

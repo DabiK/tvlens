@@ -354,3 +354,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0042](adr/0042-le-fil-v1-conserve-les-comportements-lus-par-les-clients-tv.md) :
   Le contrat v1 conserve les comportements, refus et séquences lus par les clients TV, au-delà de la forme JSON.
+
+- [ADR 0043](adr/0043-les-raccords-du-renderer-mac-passent-par-une-composition-importable.md) :
+  Les raccords du renderer Mac passent par une composition importable, vérifiée par ses comportements publics.

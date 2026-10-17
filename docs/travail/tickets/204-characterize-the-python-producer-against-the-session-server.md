@@ -1,7 +1,7 @@
 ---
 id: T204
 titre: Characterize the Python producer against the session server
-statut: a-faire
+statut: termine
 bloque_par: T189
 adr: non
 installe: non
@@ -102,3 +102,54 @@ ne justifient aucune suppression des garanties précédentes. La cible d'arrêt 
 changera volontairement la caractérisation du critère 4 dans un ticket ultérieur.
 
 ## Journal
+
+- Exploration : règles, code Python, suites, doubles et ADR concernés lus. T189 conserve déjà
+  `lastRefusal`. Plan et adaptation du rouge/vert à la caractérisation sans changement produit
+  consignés dans `.harness-state/tickets/T204/` ; état initial hors ticket préservé.
+- Transport : 13 cas ajoutés sur HTTP local (ordre GET/POST, bloc complet après accusé ambigu,
+  cinq refus avant livraison, deux 507, 410 simulé, panne continue, arrêt et expiration après GET).
+  `python3 -B -m unittest discover -s tests -p 'test_tv_control.py'` : 32 tests verts
+  (`control-first.log`), scénario de reprise existant conservé.
+- Capture : quatre cas ajoutés avec horloge commune capture/transport, thread et HTTP réels.
+  Première exécution ciblée : trois assertions rouges et une erreur du banc ; correction du banc
+  (horloges désalignées et remplacement global de l'heure civile), assertions conservées.
+  `PYTHONPATH=tests python3 -B -m unittest` suivi des quatre noms détaillés dans
+  `capture-bench-fixed.log` : 4 tests verts. Saturation par POST suspendu, sans sommeil de remplissage.
+- Sensibilité : `python3 -B .harness-state/tickets/T204/sensitivity.py` : 17 mutations en mémoire,
+  chacune refusée par une assertion (compteurs, bloc HTTP, décalage initial), sans erreur du banc ;
+  traces dans `sensitivity.log`. Le produit est inchangé.
+- Validation séquentielle : `python3 -B -m unittest discover -s tests -p 'test_tv_control.py'`
+  puis `python3 -B -m unittest discover -s tests -p 'test_tv_capture.py'` : 32 puis 15 tests verts.
+  `node scripts/check.mjs --changed` : vert. Premier `node scripts/check.mjs` : 47 tests Python
+  verts, 2 299/2 300 tests JS verts ; seul l’index documentaire manque le lien vers l’ADR 0043
+  déjà présent dans HEAD. `node --test tests/documentation-index.test.cjs` reproduit le diagnostic.
+  Ajout du lien et de sa phrase dans `docs/architecture.md`, sans changer le test ; raison consignée
+  avant correction dans `ecarts.md`. Même commande : 11 tests verts.
+- Contrôle final : `node scripts/check.mjs` : vert, 2 300/2 300 tests JS et 47 tests Python verts
+  (`check-full-final.log`). Les comparaisons HTTP prennent une copie du bloc avant livraison pour
+  détecter aussi une mutation de l'entrée. Aucun code produit ni test existant modifié ou supprimé.
+  Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T204/verdict.json` ; relecture et intégration
+  laissées à la boucle, sans commit ni push.
+- Reprise après relecture 1 : rapport, journal, écarts, état Git et diff relus ; constat mineur
+  confirmé. Nettoyage prévu dans le banc de capture : relevé des threads après `run`, nom explicite
+  et commentaire des barrières placé auprès de leur vrai traitement. Aucun nouvel écart.
+- Correction du constat 1 : `python3 -B .harness-state/tickets/T204/thread-sensitivity.py` :
+  un rouge observé sur l’assertion de fin du thread, sans erreur du banc, par mutation en mémoire.
+  Retrait du `try/finally` sans effet et du commentaire trompeur ; relevé `alive_threads` explicite,
+  assertion conservée. Explication des barrières déplacée près de `before_audio` et de son vrai motif.
+  Les deux cas ciblés (horodatage et saturation), commande complète dans `correction-1.md`, passent
+  sans mutation : 2 tests verts (`correction-targeted-green.log`).
+- Vérification après correction, en séquentiel :
+  `python3 -B -m unittest discover -s tests -p 'test_tv_control.py'` : 32 tests verts ;
+  `python3 -B -m unittest discover -s tests -p 'test_tv_capture.py'` : 15 tests verts ;
+  `node scripts/check.mjs --changed` : vert. Sorties `correction-control.log`,
+  `correction-capture.log` et `correction-check-changed.log` dans le dossier d’état.
+- Contrôle complet après correction : `node scripts/check.mjs` : vert, 2 300/2 300 tests JS
+  et 47 tests Python verts (`correction-check-full.log`). Constat 1 corrigé, aucune réserve propre
+  restante. Nouveau verdict `TERMINÉ` écrit ; relecture et intégration laissées à la boucle,
+  sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T204/relecture-2.md : **Écart accepté, méthode (aucun critère) : rouge/vert remplacé par des mutations en mémoire.** La décision de la relecture 1 tient. La correction applique la même méthode à l'assertion de fin du thread, et n'ajoute aucun test sur le texte du code.
+- .harness-state/tickets/T204/relecture-2.md : **Écart accepté, critère 8 : lien vers l'ADR 0043 ajouté dans `docs/architecture.md`.** La décision de la relecture 1 tient. Ces lignes n'ont pas changé dans l'interdiff.

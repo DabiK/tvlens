@@ -2,6 +2,8 @@ from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import MagicMock, patch
 import fcntl
 import json
+import socket
+from types import SimpleNamespace
 from pathlib import Path
 import sys
 import tempfile
@@ -198,16 +200,31 @@ class DeliveryTests(unittest.TestCase):
  def setUp(self):
   self.session='one';self.failures=1;self.accepted=set();self.attempts=0;self.ambiguous=True;self.state={};self.refuse=None
   self.sequences=[];self.refusals=[]
+  self.requests=[]
+  self.blocks=[]
+  self.disconnect=False
+  self.after_get=lambda:None
+  self.omit_id=False
   owner=self
   class Handler(BaseHTTPRequestHandler):
    def log_message(self,*_):pass
    def reply(self,code,value):
     self.send_response(code);self.end_headers();self.wfile.write(json.dumps(value).encode())
    def do_GET(self):
+    owner.requests.append(('GET',self.path,self.headers.get('Authorization')))
+    if owner.disconnect:
+     self.connection.shutdown(socket.SHUT_RDWR)
+     self.connection.close()
+     return
+    owner.after_get()
     if owner.failures:owner.failures-=1;return self.reply(503,{})
-    self.reply(200,dict({'id':owner.session,'accepting':True},**owner.state))
+    state=dict({'id':owner.session,'accepting':True},**owner.state)
+    if owner.omit_id:state.pop('id',None)
+    self.reply(200,state)
    def do_POST(self):
     item=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+    owner.requests.append(('POST',self.path,self.headers.get('Authorization')))
+    owner.blocks.append(item)
     owner.attempts+=1
     owner.sequences.append(item['sequence'])
     if owner.refusals:return self.reply(*owner.refusals.pop(0))
@@ -220,6 +237,147 @@ class DeliveryTests(unittest.TestCase):
   self.stop=threading.Event();self.report={'sent':0,'dropped':0,'retries':0,'errors':[],'lastRefusal':None}
   self.transport=Transport({'url':'http://127.0.0.1:'+str(self.server.server_port),'token':'x'*64},self.stop,self.report)
  def tearDown(self):self.server.shutdown();self.server.server_close();self.thread.join()
+ def prepare_delivery(self):
+  self.failures=0
+  self.ambiguous=False
+  self.report.update(connection='capturing',stopReason=None)
+  return {'sessionId':'one','sequence':23,'startMs':12000,'endMs':20000,
+   'frames':[{'atMs':12000,'data':'image'}],'audio':'sound'}
+
+ def test_accepted_block_reads_session_then_posts_unchanged_and_counts_once(self):
+  item=self.prepare_delivery()
+  expected=json.loads(json.dumps(item))
+  with patch.object(self.stop,'wait',side_effect=AssertionError('accepted block must not retry')):
+   self.assertTrue(self.transport.deliver(item,time.monotonic()))
+  self.assertEqual(self.requests,[('GET','/v1/session','Bearer '+'x'*64),('POST','/v1/segments','Bearer '+'x'*64)])
+  self.assertEqual(self.blocks,[expected])
+  self.assertEqual(item,expected)
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['retries']),(1,0,0))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['lastRefusal']),('connected',None,None))
+
+ def test_ambiguous_ack_repeats_the_entire_block_without_counting_a_second_delivery(self):
+  item=self.prepare_delivery()
+  expected=json.loads(json.dumps(item))
+  self.ambiguous=True
+  clock=[100.0]
+  with patch('transport.time',SimpleNamespace(monotonic=lambda:clock[0])),\
+    patch.object(self.stop,'wait',side_effect=lambda delay:clock.__setitem__(0,clock[0]+delay)):
+   self.assertTrue(self.transport.deliver(item,100.0))
+  self.assertEqual([(method,path) for method,path,_ in self.requests],
+   [('GET','/v1/session'),('POST','/v1/segments')]*2)
+  self.assertEqual(self.blocks,[expected,expected])
+  self.assertEqual(item,expected)
+  self.assertEqual(self.accepted,{23})
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['retries']),(1,0,1))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['lastRefusal']),
+   ('connected',None,{'status':503,'code':None}))
+
+ def assert_preflight_stop(self,state,error,reason,loss):
+  item=self.prepare_delivery()
+  self.state=state
+  with patch.object(self.stop,'wait',side_effect=AssertionError('preflight refusal must not retry')):
+   with self.assertRaises(error) as stopped:self.transport.deliver(item,time.monotonic())
+  self.assertEqual(stopped.exception.reason,reason)
+  self.assertEqual([(method,path) for method,path,_ in self.requests],[('GET','/v1/session')])
+  self.assertEqual(self.blocks,[])
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (0,1,{loss:1},0))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['lastRefusal']),('capturing',None,None))
+  self.assertFalse(self.stop.is_set())
+
+ def test_changed_identity_stops_before_delivery_with_session_changed_loss(self):
+  self.assert_preflight_stop({'id':'two'},SessionChanged,'session-changed','sessionChanged')
+
+ def test_absent_identity_stops_before_delivery_with_the_same_session_changed_loss(self):
+  self.omit_id=True
+  self.assert_preflight_stop({},SessionChanged,'session-changed','sessionChanged')
+
+ def test_same_identity_not_accepting_still_means_session_changed_today(self):
+  self.assert_preflight_stop({'accepting':False},SessionChanged,'session-changed','sessionChanged')
+
+ def test_same_identity_read_only_stops_before_delivery_with_its_own_loss(self):
+  self.assert_preflight_stop({'readOnly':True,'accepting':False},ReadOnly,'read-only','readOnly')
+
+ def test_same_identity_blocked_storage_stops_before_delivery_with_its_own_loss(self):
+  self.assert_preflight_stop({'storage':{'state':'blocked'},'accepting':False},StorageFull,'storage-full','storageFull')
+
+ def test_post_storage_full_with_code_is_final_and_keeps_the_refusal(self):
+  self.assert_final_storage_refusal({'code':'storage-full'})
+
+ def test_post_legacy_storage_full_without_code_is_final_and_keeps_the_status(self):
+  self.assert_final_storage_refusal({})
+
+ def assert_final_storage_refusal(self,body):
+  item=self.prepare_delivery()
+  self.refuse=(507,body)
+  with patch.object(self.stop,'wait',side_effect=AssertionError('storage refusal must not reconnect')):
+   with self.assertRaises(StorageFull) as stopped:self.transport.deliver(item,time.monotonic())
+  self.assertEqual(stopped.exception.reason,'storage-full')
+  self.assertEqual(self.blocks,[item])
+  self.assertEqual(self.report['lastRefusal'],{'status':507,'code':body.get('code')})
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (0,1,{'storageFull':1},0))
+  self.assertEqual((self.report['connection'],self.report['stopReason']),('capturing',None))
+
+ def test_simulated_session_ended_rejects_only_its_block_and_the_next_block_can_deliver(self):
+  item=self.prepare_delivery()
+  # Réponse de compatibilité simulée ; la route segments actuelle ne produit pas ce 410.
+  self.refusals=[(410,{'code':'session-ended','error':'Session terminée.'})]
+  with patch.object(self.stop,'wait',side_effect=AssertionError('rejected block must not retry')):
+   self.assertFalse(self.transport.deliver(item,time.monotonic()))
+   self.assertEqual((self.report['connection'],self.report['stopReason']),('capturing',None))
+   self.assertFalse(self.stop.is_set())
+   self.assertTrue(self.transport.deliver(dict(item,sequence=24),time.monotonic()))
+  self.assertEqual(self.blocks,[item,dict(item,sequence=24)])
+  self.assertEqual(self.report['lastRefusal'],{'status':410,'code':'session-ended'})
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (1,1,{'deliveryRejected':1},0))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['errors']),('connected',None,['HTTP 410']))
+
+ def test_continuous_network_loss_retries_until_monotone_expiration_without_a_post(self):
+  item=self.prepare_delivery()
+  self.disconnect=True
+  clock=[100.0]
+  waits=[]
+  def wait(delay):
+   waits.append(delay)
+   clock[0]+=delay
+  with patch('transport.time',SimpleNamespace(monotonic=lambda:clock[0])),patch.object(self.stop,'wait',side_effect=wait):
+   self.assertFalse(self.transport.deliver(item,100.0))
+  self.assertEqual(clock[0],130.0)
+  self.assertEqual(waits,[1]*30)
+  self.assertEqual([(method,path) for method,path,_ in self.requests],[('GET','/v1/session')]*30)
+  self.assertEqual(self.blocks,[])
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (0,1,{'deliveryExpired':1},30))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['lastRefusal']),('reconnecting',None,None))
+
+ def test_stop_during_network_recovery_prevents_new_attempts_before_the_deadline(self):
+  item=self.prepare_delivery()
+  self.disconnect=True
+  clock=[100.0]
+  def wait(delay):
+   clock[0]+=delay
+   self.stop.set()
+  with patch('transport.time',SimpleNamespace(monotonic=lambda:clock[0])),patch.object(self.stop,'wait',side_effect=wait):
+   self.assertFalse(self.transport.deliver(item,100.0))
+  self.assertEqual(clock[0],101.0)
+  self.assertEqual(len(self.requests),1)
+  self.assertEqual(self.blocks,[])
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (0,1,{'stopped':1},1))
+  self.assertEqual((self.report['connection'],self.report['stopReason'],self.report['lastRefusal']),('reconnecting',None,None))
+
+ def test_expiration_while_reading_session_prevents_the_following_post(self):
+  item=self.prepare_delivery()
+  clock=[100.0]
+  self.after_get=lambda:clock.__setitem__(0,130.0)
+  with patch('transport.time',SimpleNamespace(monotonic=lambda:clock[0])):
+   self.assertFalse(self.transport.deliver(item,100.0))
+  self.assertEqual([(method,path) for method,path,_ in self.requests],[('GET','/v1/session')])
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (0,1,{'deliveryExpired':1},0))
+
  def test_recovery_and_ambiguous_ack_retry_same_sequence(self):
   self.assertTrue(self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic(),ttl=5))
   self.assertEqual(self.report['retries'],2);self.assertEqual(self.accepted,{1});self.assertEqual(self.report['sent'],1)
