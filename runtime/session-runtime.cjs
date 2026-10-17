@@ -2,7 +2,8 @@ const { refusal } = require("./errors.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
-const { WatchSession, restorable } = require("../core/session.cjs");
+const { WatchSession } = require("../core/session.cjs");
+const { fromArchive, TVLENS_ARCHIVE_INVALID } = require("../core/memory/index.cjs");
 const { createEventPublisher } = require("../core/shared/events.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const {
@@ -28,6 +29,23 @@ const {
 const { createSessionLifecycle } = require("./session-lifecycle.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { createMemoryMedia } = require("./memory-media.cjs");
+// Decoded before anything is built on it: a saved state of another shape, format or version, or a manifest
+// of another shape, is refused in plain words. Hands back the archive with the model to restore.
+function readableRestore(restore) {
+  if (!restore.snapshot || !restore.inventory)
+    throw refusal(400, "Archive incomplète : état et inventaire requis.", "invalid-archive");
+  let snapshot;
+  try {
+    snapshot = fromArchive(restore.snapshot);
+  } catch (error) {
+    if (error?.code === TVLENS_ARCHIVE_INVALID)
+      throw refusal(400, error.message, "invalid-archive");
+    throw error;
+  }
+  if (!readableManifest(restore.manifest))
+    throw refusal(400, "Archive illisible.", "invalid-archive");
+  return { ...restore, snapshot };
+}
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -56,14 +74,7 @@ function createSessionRuntime({
   overrides = {},
 }) {
   let watch, lifecycle;
-  if (restore && (!restore.snapshot || !restore.inventory))
-    throw refusal(400, "Archive incomplète : état et inventaire requis.", "invalid-archive");
-  // Checked before anything is built on it: a saved state of another shape is refused in plain words.
-  if (
-    restore &&
-    (!restorable(restore.snapshot) || !readableManifest(restore.manifest))
-  )
-    throw refusal(400, "Archive illisible.", "invalid-archive");
+  if (restore) restore = readableRestore(restore);
   if (restore && id !== undefined && id !== restore.snapshot.id)
     throw refusal(400, "Archive d’une autre session.", "invalid-archive");
   id ??= restore ? restore.snapshot.id : randomUUID();

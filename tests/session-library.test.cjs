@@ -98,3 +98,36 @@ for (const code of ['EIO', 'EACCES', 'EMFILE']) {
     });
   });
 }
+
+// Every file under a directory with its bytes: two listings are equal only when nothing was added, removed or rewritten.
+async function files(dir, base = dir) {
+  const rows = [];
+  for (const entry of (await fs.readdir(dir, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
+    const target = path.join(dir, entry.name), name = path.relative(base, target);
+    if (entry.isDirectory()) rows.push([name, 'dir'], ...await files(target, base));
+    else rows.push([name, (await fs.readFile(target)).toString('base64')]);
+  }
+  return rows;
+}
+
+for (const [condition, envelope] of [
+  ['a future version', { format: 'tvlens-viewing-memory', version: 2 }],
+  ['a format without a version', { format: 'tvlens-viewing-memory' }],
+  ['a version without a format', { version: 1 }],
+  ['the manifest format', { format: 'tvlens-session', version: 1 }],
+]) {
+  test(`a saved state with ${condition} is refused before its media are recovered and listed as unreadable, without a write`, async t => {
+    const lib = await library(t), id = randomUUID(), dir = lib.dir(id);
+    await fs.mkdir(path.join(dir, 'media'), { recursive: true });
+    await fs.writeFile(path.join(dir, 'session.json'), JSON.stringify({
+      ...envelope, id, elapsedMs: 0, retentionMs: null, retention: 'until-deleted', history: [], questions: [], segments: [],
+    }));
+    // A whole pair with its interval: a historical reading would put it back as a passage.
+    await fs.writeFile(path.join(dir, 'media', 'moment-1.json'), JSON.stringify({ startMs: 0, endMs: 8000, frames: [], audio: null }));
+    await fs.writeFile(path.join(dir, 'media', 'moment-1.webm'), 'clip');
+    const before = await files(lib.root);
+    await assert.rejects(lib.read(id), refused('TVLENS_ARCHIVE_INVALID', 'Archive illisible.'));
+    assert.deepEqual((await lib.list()).map(session => [session.id, session.state]), [[id, 'unreadable']]);
+    assert.deepEqual(await files(lib.root), before);
+  });
+}

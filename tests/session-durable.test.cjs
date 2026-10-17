@@ -537,6 +537,33 @@ test('a saved state that parses but has another shape is an unreadable archive, 
   assert.deepEqual(await tree(dir), before);
 });
 
+test('a saved state of another format or version is refused by its code wherever it is handed over, and its folder stays as it was', async t => {
+  const f = await fixture(t), library = new SessionLibrary({ root: f.sessionsRoot });
+  const passage = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready', available: true, observation: { summary: 'Résumé' } };
+  const model = id => ({ id, elapsedMs: 8000, retention: 'until-deleted', history: [], questions: [], segments: [{ ...passage }] });
+  const core = () => new WatchSession({ id: 's', now: () => 0, perception: {}, media: {}, archive: { save: async () => {} } });
+  const inventory = { ids: new Set(), legacy: new Set(), partial: [], thumbs: new Set(), mediaBytes: 0, thumbBytes: 0, bytes: 0 };
+  const code = { code: 'TVLENS_ARCHIVE_INVALID' }, refusal = { code: 'invalid-archive', status: 400 };
+  const envelopes = [
+    { format: 'tvlens-viewing-memory', version: 2 }, { format: 'tvlens-viewing-memory' }, { version: 1 }, { format: 'tvlens-session', version: 1 },
+  ];
+  for (const envelope of envelopes) {
+    const id = randomUUID(), dir = path.join(f.sessionsRoot, id), label = JSON.stringify(envelope);
+    await fs.mkdir(dir, { recursive: true }); await fs.writeFile(path.join(dir, 'session.json'), JSON.stringify({ ...envelope, ...model(id) }));
+    const before = await tree(dir);
+    await assert.rejects(library.read(id), code, label);
+    await assert.rejects(f.reopen(library, id), code, label);
+    assert.equal((await library.list()).find(s => s.id === id).state, 'unreadable', label);
+    assert.throws(() => core().restore({ ...envelope, ...model('s') }), code, label);
+    assert.throws(() => f.open({ restore: { snapshot: { ...envelope, ...model(id) }, inventory } }), refusal, label);
+    assert.deepEqual(await tree(dir), before, label);
+  }
+  // The version this host writes is restored by the core as well, without its markers.
+  const watch = core();
+  watch.restore({ format: 'tvlens-viewing-memory', version: 1, ...model('s') });
+  assert.deepEqual(watch.snapshot().segments.map(s => [s.id, s.status, s.available, s.mediaReason]), [['moment-1', 'ready', false, 'missing']]);
+});
+
 test('a passage that lands while its session is being ended is kept and saved, but starts no analysis only to have it abandoned', async t => {
   const f = await fixture(t), calls = { transcribe: 0, visual: 0 };
   // Split perception with vision free during questions, as in production: nothing else would hold a new analysis back.

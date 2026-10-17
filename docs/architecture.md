@@ -59,7 +59,8 @@ les choix de fournisseur et les transitions ont leurs propriétaires propres.
 `memory.view()`, `memory.passage(id)` et `memory.recentPassages(limit)` ; ces lectures détachées
 ne rappellent pas le snapshot. `memoryMedia.read(id)` et `memoryMedia.lease(ids)` donnent séparément
 accès aux images et au son conservés, avec baux, sans chemin local ni mutateur de stockage.
-Les lecteurs actuels conservent leur snapshot pendant leur migration progressive.
+Les lecteurs actuels conservent leur snapshot pendant leur migration progressive. Le même index publie
+`toArchive` et `fromArchive`, seuls à écrire et à décoder le format versionné de `session.json`.
 
 | Module | Responsabilité et frontière |
 | --- | --- |
@@ -379,3 +380,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0046](adr/0046-la-memoire-publie-une-vue-detachee-et-des-capacites-media-separees.md) :
   La Mémoire publie une vue détachée, des lectures bornées et des capacités média séparées avec baux.
+
+- [ADR 0047](adr/0047-session-json-porte-un-format-et-une-version-lus-par-un-convertisseur.md) :
+  session.json porte un format et une version, écrits et lus par le seul convertisseur de la Mémoire.

@@ -504,6 +504,10 @@ test("an explicit resume numbers a new passage past recovered media and both kin
       }
       const archive = await new SessionLibrary({ root: resumedRoot }).read(id);
       assert.equal(archive.snapshot.segments.at(-1).id, expected.resume.nextId);
+      // The resumed life saves in the current version; the copy it started from is the historical witness.
+      const { format, version, ...saved } = JSON.parse(await fs.readFile(path.join(resumedRoot, id, "session.json"), "utf8"));
+      assert.deepEqual([format, version], ["tvlens-viewing-memory", 1]);
+      assert.deepEqual(archive.snapshot, saved, "the library reads the version it wrote back to the saved model");
       assert.deepEqual(inventoryFacts(archive.inventory).orphans, [...expected.inventory.orphans].sort());
       assert.deepEqual(providers.calls, []);
     } finally {

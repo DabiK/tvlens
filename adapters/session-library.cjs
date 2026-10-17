@@ -1,11 +1,11 @@
 const { domainError } = require('../core/shared/domain-error.cjs');
 const TVLENS_SESSION_ID_INVALID = 'TVLENS_SESSION_ID_INVALID';
 const TVLENS_SESSION_NOT_FOUND = 'TVLENS_SESSION_NOT_FOUND';
-const TVLENS_ARCHIVE_INVALID = 'TVLENS_ARCHIVE_INVALID';
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { LocalSessionStore } = require('./local-store.cjs');
-const { restorable, recoveredPassage } = require('../core/session.cjs');
+const { recoveredPassage } = require('../core/session.cjs');
+const { fromArchive, TVLENS_ARCHIVE_INVALID } = require('../core/memory/index.cjs');
 
 const MANIFEST_FORMAT = 'tvlens-session', MANIFEST_VERSION = 1;
 // Session directories are named by randomUUID(): anything else is neither listed, opened nor deleted.
@@ -108,7 +108,9 @@ class SessionLibrary {
       snapshot = { id, accepting: false, elapsedMs: manifest?.elapsedMs || 0, retentionMs: null, retention: manifest?.media?.retention || 'until-deleted', history: [], segments: [], questions: [] };
       savedAt = manifest?.updatedAt ?? Math.round((await fs.stat(store.root)).mtimeMs);
     } else {
-      if (!restorable(snapshot) || snapshot.id !== id) throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.');
+      // Decoded before anything is recovered around it: another format or version is refused here, never read as historical.
+      snapshot = fromArchive(snapshot);
+      if (snapshot.id !== id) throw domainError(TVLENS_ARCHIVE_INVALID, 'Archive illisible.');
       savedAt = Math.round((await fs.stat(path.join(store.root, 'session.json'))).mtimeMs);
     }
     const known = new Set(passagesOf(snapshot).map(passage => passage.id)), recovered = [];

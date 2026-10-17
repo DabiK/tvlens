@@ -18,12 +18,6 @@ const unfinished = status => status === 'queued' || status === 'analyzing';
 // container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
 // `available` only says that the video can be replayed.
 const UNREADABLE = 'unreadable', stored = segment => Boolean(segment.available) || segment.mediaReason === UNREADABLE;
-// A saved state restore() can read without guessing: a file that parses but has another shape is refused
-// in plain words instead of failing half-way on a TypeError.
-const passageLike = passage => Boolean(passage) && typeof passage === 'object' && typeof passage.id === 'string' && /^moment-\d+$/.test(passage.id) && Number.isFinite(passage.startMs) && Number.isFinite(passage.endMs);
-const listOf = (value, valid) => value == null || (Array.isArray(value) && value.every(valid));
-const restorable = saved => Boolean(saved) && typeof saved === 'object' && typeof saved.id === 'string' && Array.isArray(saved.segments) && saved.segments.every(passageLike)
-  && listOf(saved.history, passageLike) && listOf(saved.questions, question => Boolean(question) && typeof question === 'object');
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
 // place on the session clock, replayable and unanalysed; nothing is analysed again.
 const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
@@ -394,10 +388,11 @@ class WatchSession {
   async stop() { this.accepting = false; this.emit(); await this.persist(); }
   // Reopens a saved session stopped, at its archived instant. Synchronous and silent: nothing is written,
   // analysed or sent anywhere, and capture only comes back through an explicit resume().
-  restore(saved, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
+  restore(archived, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
     if (this.closed || this.sequence || this.segments.length || this.history.length || this.questions.length) throw new Error('Session déjà commencée : restauration impossible.');
-    if (!saved || saved.id !== this.id) throw new Error('Archive incompatible avec cette session.');
-    if (!restorable(saved)) throw new Error('Archive illisible.');
+    if (!archived || archived.id !== this.id) throw new Error('Archive incompatible avec cette session.');
+    // Decoded before anything is restored: a historical document comes back as saved, a versioned one without its markers.
+    const saved = memory.fromArchive(archived);
     // Saved before durable retention existed: its raw media were never meant to be kept.
     const formerFormat = saved.retention === undefined;
     const reopen = (source, kept) => {
@@ -489,7 +484,7 @@ class WatchSession {
     // Never rejects: an analysis or a pause must not fail for it. A host that needs the state confirmed on
     // disk, as before saying a session archived, asks its archive (see the shared runtime).
     let refused = null;
-    try { await this.archive.save(this.snapshot()); }
+    try { await this.archive.save(memory.toArchive(this.snapshot())); }
     catch { refused = 'Impossible de sauvegarder le résumé de session.'; }
     // States are published before they are saved: what the save answered is said when it changes what the
     // state says, a refusal or its end, and only then. Compared when the answer comes, not when it was asked
@@ -500,4 +495,4 @@ class WatchSession {
   }
 }
 
-module.exports = { WatchSession, restorable, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_SESSION_STOPPED };
+module.exports = { WatchSession, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_SESSION_STOPPED };

@@ -19,7 +19,7 @@ const DEPENDENCY_ZONES = [
   { pattern: 'core/memory/**', layer: 'domain', context: 'memory', entryPoint: 'core/memory/index.cjs',
     imports: ['core/memory/**', 'core/shared/**'] },
   { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
-  { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**'] },
+  { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**', 'core/memory/**'] },
   { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
   { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },

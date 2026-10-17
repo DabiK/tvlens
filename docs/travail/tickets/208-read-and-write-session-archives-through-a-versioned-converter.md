@@ -1,7 +1,7 @@
 ---
 id: T208
 titre: Read and write session archives through a versioned converter
-statut: a-faire
+statut: termine
 bloque_par: T222, T205
 adr: oui
 installe: non
@@ -114,3 +114,46 @@ format. La sous-zone peut être créée ici si T207 n'est pas encore livré ; T2
 Le changement de rétention relève de T215 (hôtes/archives), puis T223 (élagage et tests dédiés).
 
 ## Journal
+
+- Cadrage : ticket et `docs/standards.md` lus ; aucun jalon ni rapport d'échec, ce n'est pas une reprise.
+- Exploration (`.harness-state/tickets/T208/exploration.md`) : seul écrivain `WatchSession.persist()`
+  (`core/session.cjs:492`) vers `LocalSessionStore.save` ; la forme est validée à cinq endroits
+  (`restorable` du cœur, `restore()`, bibliothèque `:111`, runtime `:59-68`, syntaxe JSON du store).
+  Code livré réutilisable : `TVLENS_ARCHIVE_INVALID` (traduit en 400 `invalid-archive` par le serveur).
+  Deux contraintes hors ticket, dans le périmètre : `adapters/**` doit gagner `core/memory/**` dans la
+  garde ; `tests/architecture-f08.test.cjs:142` restaure ce que le port a reçu, donc une enveloppe v1.
+  Références `chemin:ligne` du ticket décalées depuis `dd5efc9`, contenu inchangé ; aucun écart de périmètre.
+- Base avant changement, en séquentiel (`node --test tests/<nom>.test.cjs`, journaux `base-*.log`) :
+  archive-compat 22/22, session-durable 23/23, session-lifecycle 15/15, server-sessions 29/29,
+  clip-unreadable 5/5, architecture-f08 23/23, architecture 10/10, architecture-guard 495/495,
+  session-library 12/12, session-runtime 7/7, server-routes 47/47. Empreintes des 148 fichiers de
+  `tests/fixtures/archives` notées dans `corpus-avant.sha256`.
+- Implémentation (agent `implementeur`, journaux `impl-*.log`) : `core/memory/archive.cjs` (`toArchive`,
+  `fromArchive`, validation déplacée, code `TVLENS_ARCHIVE_INVALID`) publié par l'index ; `persist()`,
+  `restore()`, la bibliothèque et `createSessionRuntime` passent par lui ; garde : `adapters/**` reçoit
+  `core/memory/**`. Nouveau `tests/session-archive.test.cjs` (17), cas ajoutés à session-library (+4),
+  session-runtime (+5), session-durable (+1), server-routes (+1), archive-compat prolongé. Rouge vu pour
+  chaque ajout selon le compte rendu ; suites ciblées vertes, `check --changed` et `check` complet verts
+  (2432/2432 JS, 47 Python) d'après `impl-check-full.log` ; empreintes du corpus identiques.
+- ADR `docs/adr/0047-session-json-porte-un-format-et-une-version-lus-par-un-convertisseur.md` écrit et
+  indexé dans `docs/architecture.md` (avec une phrase sur `toArchive`/`fromArchive` dans la section Mémoire).
+- Relecture 1 (`node scripts/loop/reviewed-state.mjs record --ticket T208`, `revue-1.diff`) : relecteur neuf,
+  `VERDICT : accepté`, `CONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre` (`relecture-1.md`, enregistrée
+  dans `relectures.jsonl`). Aucune correction.
+- `node scripts/check.mjs` sur l'état de la relecture 1 : vert, 2432/2432 JS, 47 Python (`check-full-final.log`).
+- Correction de l'ADR par l'orchestrateur : la phrase « une archive v1 ne s'ouvre plus avec une version
+  antérieure » était fausse (l'ancien `restorable` ignore les clés en plus). Relecture de correction 1
+  (`revue-2`) : `à corriger`, 1 mineur, `NON CORRIGÉS : 0` — la nouvelle phrase affirmait à tort qu'une
+  v2 serait toujours ouverte. Reformulée au conditionnel (refus par la forme seulement). Relecture de
+  correction 2 (`revue-3`) : `accepté`, 0 constat, `NON CORRIGÉS : 0` (`relecture-3.md`). Code et tests
+  inchangés depuis la relecture 1.
+- `node scripts/check.mjs` sur l'état final relu : **vert**, règles, format, lint, gel et cliquet verts
+  (lignes_longues_prod 422 → 420, cas_de_test_produit 1258 → 1269), **2432/2432 tests JS** sur 137
+  fichiers, 47 tests Python OK (`check-full-revue-3.log`). Empreintes des 148 fichiers du corpus
+  identiques à `corpus-avant.sha256`. Aucun test supprimé ou assoupli, aucun plancher ni harnais
+  protégé modifié. Verdict `TERMINÉ`, intégration laissée à la boucle.
+
+### Réserves à la clôture
+
+- Non vérifié : ouverture dans l'Electron réel et depuis la TV ; seuls la bibliothèque, le runtime headless et les routes HTTP ont été exercés en test.
+- Question pour le propriétaire : avec un manifeste, list() ne lit pas session.json ; une session dont session.json porte une version future y apparaît selon son manifeste, puis est refusée à l'ouverture (contrat de liste inchangé, refus avant restauration tenu).
