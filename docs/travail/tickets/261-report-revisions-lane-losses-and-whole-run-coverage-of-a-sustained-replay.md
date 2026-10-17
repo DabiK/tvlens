@@ -13,15 +13,18 @@ niveau: sensible
 ## Ce que le ticket livre
 
 Le rejeu soutenu produit un bilan de toute la campagne : révisions observées, publications audio
-et vision, pertes par voie, couverture et retard. Un dernier passage prêt ne masque jamais
-une lacune antérieure. Cette seconde part de la tranche E d'Astra tient dans une session et un commit.
+et vision, pertes par voie, couverture, retard et backend effectif de chaque rôle.
+Un dernier passage prêt ne masque jamais une lacune antérieure. Cette seconde part de la tranche E
+d'Astra tient dans une session et un commit.
 
 ## Sources
 
 - Rapport Astra du 17/10, non versionné ; le ticket en reprend tout ce qui sert.
   Section 3, E, à `beb9589`, puis coupe de la relecture du 17/10 : le calendrier d'envoi et les
   issues appartiennent à T259 ; ce ticket ajoute les mesures de G3 sur toute l'exécution.
-- Code relu à `16be86b` : `core/memory/memory-view.cjs:58` expose des métadonnées détachées,
+- Décisions du propriétaire du 17/10 au soir : source vidéo T262 et rôles locaux T263–T265
+  avant le GX10 ; détection locale de surveillance après l'expérience (T266).
+- Code relu à `4599eea` : `core/memory/memory-view.cjs:58` expose des métadonnées détachées,
   dont horodatages et métriques ; `:74` calcule la couverture et `:101` expose les trous.
   `:10` fixe le seuil de trou de capture à 250 ms. T219 est terminé et fournit les données
   temporelles qui manquaient au rapport Astra.
@@ -47,12 +50,27 @@ une lacune antérieure. Cette seconde part de la tranche E d'Astra tient dans un
 - T259 livre `scripts/replay-local-stream.cjs` et `tests/local-stream-replay.test.cjs` : scénario,
   validation sans agent, calendrier à origine fixe, réessais TV, questions et fin bornée.
   Les noms et interfaces définitifs de Mémoire sont ceux livrés après T227, prérequis transitif.
+- `runtime/conversation-runtime.cjs:37-45`, `runtime/session-providers.cjs:86-95` et
+  `:172-184` composent aujourd'hui les rôles questions, inspection et embeddings ;
+  `runtime/surveillance-runtime.cjs:251-254` donne le même agent aux deux rôles de surveillance.
+  T263–T265 et T267 rendent les identités locales observables ; T267 les transmet dans les
+  métriques et traces des questions. Le bilan doit lire ces identités effectives.
 
 ## Périmètre
 
 - À modifier : `scripts/replay-local-stream.cjs`, ses aides de rapport sous `scripts/` si besoin,
   et `tests/local-stream-replay.test.cjs`. Réutiliser SHA, empreintes, paramètres, rôles/backends
   et issues d'envoi/question déjà acquis par T259 ; ne pas créer un second calendrier.
+- Produire une table par rôle : perception, questions, embeddings de recherche, inspection,
+  transcription et, si composée, surveillance avec détection et recherche web séparées.
+  Pour chacun, conserver backend choisi, backend/modèle réellement composé, paramètres connus
+  et preuve des appels effectués, ou état désactivé/simulé/non exercé/inconnu. Une inspection
+  issue du cache garde son identité d'origine ; un repli lexical reste une recherche lexicale.
+  La configuration seule ne prouve aucun appel. Inclure toute autre inférence effectivement utilisée.
+- La provenance des trente minutes garde ses empreintes : capture, vidéo convertie T262 ou
+  corpus bouclé déclaré. Le bilan ne présente pas une vidéo convertie comme une capture LG.
+  Aucun repli Codex/OpenRouter ne compte comme traitement local ; la détection locale T266
+  n'est pas requise avant GX10 et le web de la surveillance reste distant.
 - Tenir un journal progressif par session/passage/révision, avec publications audio et vision,
   pertes par voie, issues de questions et échantillons de retard sur toute l'exécution.
   Conserver les versions observées au lieu d'écraser un passage par sa dernière valeur.
@@ -111,7 +129,13 @@ une lacune antérieure. Cette seconde part de la tranche E d'Astra tient dans un
    Pendant un fournisseur retenu sans publication, le calendrier produit encore des échantillons
    et l'âge de la dernière preuve disponible augmente ; une preuve absente ne prend pas l'âge zéro.
    La référence Codex reste identifiée et aucun fallback ne devient une mesure locale.
-6. À l'implémentation future, jouer en séquentiel `local-stream-replay`, `memory-view`,
+6. Un scénario contrôlé combine questions locales, embeddings locaux et inspection locale ;
+   le rapport conserve l'identité de chacun indépendamment de la perception. Un second laisse
+   l'inspection non exercée et provoque un classement lexical après panne d'embeddings :
+   ni l'une ni l'autre ne devient une mesure locale réussie. La recherche web de surveillance
+   demeure distante ou non exercée. Une sortie modèle ne peut usurper ces identités.
+   Source vidéo, empreinte et paramètres de conversion restent visibles après une fin incomplète.
+7. À l'implémentation future, jouer en séquentiel `local-stream-replay`, `memory-view`,
    `session-events`, `memory-projection` et `server-state-views` sous `tests/` (`.test.cjs`),
    les contrats de projection/coordination affectés, puis `node scripts/check.mjs`.
 
@@ -129,7 +153,8 @@ jamais la qualité, le GPU ou le débit matériel G3.
 
 Aucune décision n'est attendue.
 
-T259 est le seul prérequis direct ; il apporte T257/T255 et la contraction Mémoire T227.
+T259 est le seul prérequis direct ; il apporte T262/T257/T255, les rôles locaux T263–T265, T267
+et la contraction Mémoire T227. T266 attend la fin de l'expérience et ne bloque pas ce bilan.
 L'implémentation relit les interfaces livrées après T225/T227 sans utiliser les collections privées.
 T232/T252 aident à identifier et afficher les quotas sans bloquer ce bilan ; un refus inconnu
 ne devient pas un quota. T240 n'est pas requis : avant lui, l'attente réelle de l'agent peut rester
@@ -138,7 +163,7 @@ incluse dans le traitement annoncé. Cette limite doit figurer dans le rapport.
 Décision du 17/10 : copie après T227 et intégration des préparatifs, répétition Mac avant accès,
 `hackathon-rc` en repli, phase 2 retenue par T254. Le propriétaire fournit les extraits français ;
 l'orchestrateur prépare manifeste et grille. La source des trente minutes est consignée par T259 :
-enregistrement fourni ou corpus bouclé déclaré. Un test accéléré ne constitue pas G3 ; une campagne
+enregistrement fourni, vidéo convertie ou corpus bouclé déclaré. Un test accéléré ne constitue pas G3 ; une campagne
 réelle complète n'établit la stabilité que pour son SHA, ses entrées et ses paramètres.
 
 ## Journal

@@ -442,9 +442,13 @@ La décision de T250 (« Surveillance oui, fournisseurs non ») figure dans ses 
 
 Découpage du 17/10 à `b22753c`, d'après les tickets A à F de la section 3 du rapport Astra
 (base `beb9589`), corrigé après la relecture Opus puis vérifié à `16be86b`, après T219 et T223.
+Complété le 17/10 au soir à `4599eea` par les décisions du propriétaire : source vidéo,
+questions, embeddings et inspection locaux avant l'accès, détection locale de surveillance après.
 La Mémoire expose les horodatages utiles ; elle ne fait plus de balayage temporel.
 Une tranche par session Codex et par commit ; aucune exécution réelle dans ces sessions,
-modèles locaux compris. Les sept tickets sont sans ADR nouveau, installation ou modification du harnais.
+modèles locaux compris. Les douze premiers tickets ci-dessous préparent l'accès ; le treizième,
+T266, attend la fin de l'expérience.
+T263 et T264 demandent un ADR court ; aucun ticket de ce lot n'autorise installation ou modification du harnais.
 
 [T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) retient la phase 2 pendant
 cette préparation. La copie sera prise après T227 et intégration des préparatifs, répétée sur
@@ -452,15 +456,26 @@ le Mac avant l'accès puis figée par l'orchestrateur ; `hackathon-rc` reste le 
 Le propriétaire constitue une dizaine d'extraits français réels pour G2 ; l'orchestrateur prépare
 le format et la grille d'annotation livrés par T257/T258. La répétition et G1–G3 réels restent hors boucle.
 Les annotations sont figées avant l'inférence ; si leur empreinte manque ou diffère, la notation G2 est refusée.
-La source des trente minutes de G3 est déclarée : enregistrement continu ou corpus bouclé avec
-nouveaux temps et séquences. T261 garde aussi les envois manquants dans le dénominateur de couverture.
+La source des trente minutes de G3 est déclarée : enregistrement continu, vidéo convertie T262
+ou corpus bouclé avec nouveaux temps et séquences. Une vraie session TV reste le témoin de fidélité
+à la capture LG ; la conversion ne la remplace pas. T261 garde les envois manquants dans le
+dénominateur de couverture et identifie séparément le backend de chaque rôle effectivement exercé.
+Questions, embeddings et inspection choisissent chacun leur backend, sans repli implicite Codex/OpenRouter.
+Le web des questions locales n'est pas porté dans T263 ; le web de la surveillance reste distant.
 
-Ordre d'exécution recommandé ci-dessous. T255/T256 peuvent avancer pendant une attente de recette
-Mémoire sur sélection explicite de l'orchestrateur ; T259 attend ses contrats finaux, puis T261
-ajoute le bilan de campagne avant le guide T260. T256 corrige l'app empaquetée ; il n'est pas sur
-le chemin de la copie. T232/T252 aident à lire les pertes de quota sans bloquer ces préparatifs ;
-T240 n'est pas un prérequis GX10. T254 ne bloque aucun des sept tickets : sa clôture opérateur
-attend la copie figée.
+Ordre d'exécution recommandé ci-dessous ; la boucle, qui prend le plus petit numéro prêt,
+suit un ordre compatible. T255/T256, T263/T264, puis T265 après T255, peuvent avancer
+pendant une attente de recette Mémoire. T257 définit d'abord le format ; T262 le produit depuis
+une vidéo, sans dépendance inverse. T264 réutilise le transport de T263 ; T267 transmet l'identité
+des questions dans leurs métriques et traces après T263. T259 attend T227, T262, T264, T265 et T267 ;
+T261 ajoute le bilan avant T260.
+Le guide reçoit ainsi source et rôles locaux transitivement, sans dépendances redondantes.
+T256 corrige l'app empaquetée ; il n'est pas sur le chemin de la copie.
+T232/T252 aident à lire les pertes de quota sans bloquer ces préparatifs ; T240 garde l'accès
+exclusif à l'agent et n'est pas un prérequis GX10. T235 et la phase 2 T234–T245/T250/T253 gardent
+fiche de source durable, cycle de vie et contrôle TV. Ces responsabilités ne sont pas recréées.
+T254 ne bloque aucun préparatif : sa clôture opérateur attend la copie figée. **T266 attend une
+décision attestant la fin de l'expérience, pas seulement ce gel** ; la boucle doit le laisser en attente.
 
 - [T255](255-separate-model-loading-from-session-cold-starts.md)
   — Separate model loading from session cold starts (standard ; aucune dépendance).
@@ -470,12 +485,26 @@ attend la copie figée.
   — Replay captured TVLens inputs through the production perception (standard ; dépend de T255).
 - [T258](258-score-replay-results-against-frozen-human-annotations.md)
   — Score replay results against frozen human annotations (standard ; dépend de T257).
+- [T262](262-convert-a-video-file-into-tv-blocks-and-a-perception-replay-manifest.md)
+  — Convert a video file into TV blocks and a perception replay manifest (standard ; dépend de T257).
+- [T263](263-answer-session-questions-with-ollama-and-the-existing-video-tools.md)
+  — Answer session questions with Ollama and the existing video tools (sensible ; aucune dépendance ; ADR).
+- [T264](264-index-and-search-a-session-with-model-bound-ollama-embeddings.md)
+  — Index and search a session with model-bound Ollama embeddings (sensible ; dépend de T263 ; ADR).
+- [T265](265-reexamine-clips-with-an-explicit-ollama-inspection-backend.md)
+  — Reexamine clips with an explicit Ollama inspection backend (standard ; dépend de T255).
+- [T267](267-report-the-effective-question-backend-in-question-metrics-and-traces.md)
+  — Report the effective question backend in question metrics and traces (sensible ; dépend de T263).
 - [T259](259-replay-a-sustained-session-at-a-fixed-capture-cadence.md)
-  — Drive a fixed-cadence capture and question schedule through the headless server (sensible ; dépend de T257, T227).
+  — Drive a fixed-cadence capture and question schedule through the headless server
+  (sensible ; dépend de T227, T262, T264, T265, T267).
 - [T261](261-report-revisions-lane-losses-and-whole-run-coverage-of-a-sustained-replay.md)
   — Report revisions, lane losses and whole-run coverage of a sustained replay (sensible ; dépend de T259).
 - [T260](260-document-and-rehearse-the-frozen-gx10-experiment.md)
   — Document the frozen GX10 experiment and check its offline commands (simple ; dépend de T258, T261).
+- [T266](266-detect-surveillance-claims-locally-after-the-gx10-experiment.md)
+  — Detect surveillance claims locally after the GX10 experiment
+  (sensible ; dépend de T261 ; décision du propriétaire attendue après l'expérience).
 
 ## Jalons
 
@@ -496,13 +525,18 @@ section « Hypothèses bloquantes » du ticket.
 - [T233](233-check-the-memory-projection-live-on-the-tv-before-the-contraction.md) — Check the memory projection live on the TV before the contraction. Décision attendue du propriétaire : la projection livrée par T219 est-elle vérifiée en réel sur la TV et le VPS ? L’orchestrateur réalise et clôt ce contrôle après T219 ; T224 attend.
 - [T228](228-hold-the-structural-wave-until-the-hackathon-release-is-on-main.md) — Hold the structural wave until the hackathon release is on main. Décision attendue du propriétaire : le tag `hackathon-rc` est-il posé sur la fin de la vague 1 ?
 - [T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) — Hold phase 2 until the GX10 experiment copy is frozen. Décision attendue du propriétaire : la copie de l'expérience GX10 est-elle figée ?
+- [T266](266-detect-surveillance-claims-locally-after-the-gx10-experiment.md)
+  — Detect surveillance claims locally after the GX10 experiment. Décision attendue du propriétaire :
+  l'expérience GX10 est-elle terminée ? La détection locale passe après l'expérience ; le web reste distant.
 - [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md) — Hold the full remediation queue until the owner reopens it. Décision attendue du propriétaire : rouvrir la file complète des tickets de dette, après le plan court, en relisant d'abord les tickets retenus contre le code du moment.
 - [T138](138-run-the-quality-check-on-github-actions-in-informative-mode.md) — Run the quality check on GitHub Actions in informative mode. Décision attendue du propriétaire : sous quelles conditions la CI tourne sur GitHub. Elle porte sur
 - [T140](140-state-what-runs-on-the-test-tv-and-the-server-in-one-place.md) — State what runs on the test TV and the server in one place. Décision attendue du propriétaire : la version de la nuit tourne-t-elle encore sur la TV de test et sur le
 
 ## Tickets à relire avant de lancer
 
-- **Demande un ADR** (`adr: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T036](036-add-a-journal-port-with-a-stderr-sink-and-a-contract-test.md), [T038](038-exercise-the-v1-wire-with-the-real-tv-client-and-write-its.md), [T052](052-answer-an-unexpected-server-error-with-a-generic-500-and.md), [T066](066-drive-the-question-checkpoint-of-the-server-host-with-an.md), [T071](071-inject-the-disk-into-the-session-store-and-library-with-a.md), [T072](072-let-a-session-say-what-it-still-has-in-flight-and-when-it-is.md), [T125](125-decide-description-retries-and-verifier-failures-on-error.md), [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md), [T135](135-record-the-build-identity-in-a-generated-file-and-read-it.md), [T137](137-describe-every-file-installed-on-the-tv-in-one-manifest.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T167](167-move-mac-preview-and-recording-into-an-injected-capture-controller.md), [T170](170-move-tv-polling-into-an-injected-controller.md), [T171](171-keep-tv-chat-cards-and-submission-state-inside-one-view.md), [T172](172-build-the-session-providers-of-createsessionruntime-outside-it.md), [T173](173-move-the-restore-and-close-of-a-session-runtime-into-their-own-module.md), [T174](174-route-the-server-http-handler-through-one-module-per-route-group.md), [T175](175-split-the-event-and-run-handling-of-the-codex-session-client.md), [T178](178-report-a-deterministic-capture-to-display-latency.md), [T179](179-move-headless-capture-admission-into-one-intake-owner.md), [T180](180-move-headless-session-transitions-into-one-coordinator.md), [T183](183-deliver-the-pushed-state-of-the-mac-window-through-one-tested-seam.md), [T186](186-keep-a-failed-state-publication-from-stalling-the-perception.md), [T187](187-guard-the-surveillance-tick-on-both-hosts-and-never-mark-a.md), [T188](188-answer-every-refusal-of-the-server-with-its-stable-code-from.md), [T189](189-read-the-server-s-error-codes-in-the-tv-page-instead-of.md), [T190](190-let-the-watch-session-own-its-question-pending-state.md), [T191](191-share-the-empty-session-library-row-and-disk-full-rules-of.md), [T192](192-read-one-consistent-session-when-the-server-lists-sessions.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T201](201-give-the-domain-and-adapter-refusals-their-stable-codes.md), [T203](203-deliver-the-renderer-s-wiring-through-one-tested-seam.md), [T205](205-guard-context-subzones-public-entry-points-and-temporary-exceptions.md), [T206](206-publish-bounded-passage-events-after-memory-transitions.md), [T207](207-publish-a-memory-consultation-view-beside-the-session-snapshot.md), [T208](208-read-and-write-session-archives-through-a-versioned-converter.md), [T214](214-extract-the-memory-perception-lanes.md), [T215](215-remove-rolling-media-retention-and-preserve-old-archives.md), [T217](217-name-the-memory-lifecycle-state-transitions.md), [T218](218-place-clean-memory-modules-behind-the-public-entry.md), [T219](219-build-published-memory-projections-in-the-application.md), [T220](220-rename-the-memory-root-to-viewing-memory.md), [T221](221-publish-passage-updates-and-lane-losses-with-their-revision.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md), [T224](224-deliver-the-mac-window-state-from-the-same-projection.md), [T225](225-stop-building-the-full-snapshot-to-notify.md), [T226](226-speak-of-passages-inside-the-viewing-memory.md), [T227](227-translate-question-activity-into-the-vision-hold-outside-the-viewing-memory.md), [T229](229-restart-the-loop-after-integrating-its-own-code.md), [T232](232-show-the-codex-quota-exhaustion-on-lost-descriptions.md), [T235](235-model-the-session-record-behind-the-library-entry-point.md), [T236](236-share-the-session-coordinator-from-the-headless-lifecycle.md), [T240](240-cancel-and-save-questions-when-their-session-is-unloaded.md), [T244](244-place-independent-saved-moments-in-the-library-context.md), [T251](251-resume-a-quota-stopped-ticket-with-claude-when-asked.md).
+- **Demande un ADR** (`adr: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T036](036-add-a-journal-port-with-a-stderr-sink-and-a-contract-test.md), [T038](038-exercise-the-v1-wire-with-the-real-tv-client-and-write-its.md), [T052](052-answer-an-unexpected-server-error-with-a-generic-500-and.md), [T066](066-drive-the-question-checkpoint-of-the-server-host-with-an.md), [T071](071-inject-the-disk-into-the-session-store-and-library-with-a.md), [T072](072-let-a-session-say-what-it-still-has-in-flight-and-when-it-is.md), [T125](125-decide-description-retries-and-verifier-failures-on-error.md), [T132](132-share-the-clock-and-plural-helpers-of-the-tv-panel-views-in.md), [T135](135-record-the-build-identity-in-a-generated-file-and-read-it.md), [T137](137-describe-every-file-installed-on-the-tv-in-one-manifest.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T167](167-move-mac-preview-and-recording-into-an-injected-capture-controller.md), [T170](170-move-tv-polling-into-an-injected-controller.md), [T171](171-keep-tv-chat-cards-and-submission-state-inside-one-view.md), [T172](172-build-the-session-providers-of-createsessionruntime-outside-it.md), [T173](173-move-the-restore-and-close-of-a-session-runtime-into-their-own-module.md), [T174](174-route-the-server-http-handler-through-one-module-per-route-group.md), [T175](175-split-the-event-and-run-handling-of-the-codex-session-client.md), [T178](178-report-a-deterministic-capture-to-display-latency.md), [T179](179-move-headless-capture-admission-into-one-intake-owner.md), [T180](180-move-headless-session-transitions-into-one-coordinator.md), [T183](183-deliver-the-pushed-state-of-the-mac-window-through-one-tested-seam.md), [T186](186-keep-a-failed-state-publication-from-stalling-the-perception.md), [T187](187-guard-the-surveillance-tick-on-both-hosts-and-never-mark-a.md), [T188](188-answer-every-refusal-of-the-server-with-its-stable-code-from.md), [T189](189-read-the-server-s-error-codes-in-the-tv-page-instead-of.md), [T190](190-let-the-watch-session-own-its-question-pending-state.md), [T191](191-share-the-empty-session-library-row-and-disk-full-rules-of.md), [T192](192-read-one-consistent-session-when-the-server-lists-sessions.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T201](201-give-the-domain-and-adapter-refusals-their-stable-codes.md), [T203](203-deliver-the-renderer-s-wiring-through-one-tested-seam.md), [T205](205-guard-context-subzones-public-entry-points-and-temporary-exceptions.md), [T206](206-publish-bounded-passage-events-after-memory-transitions.md), [T207](207-publish-a-memory-consultation-view-beside-the-session-snapshot.md), [T208](208-read-and-write-session-archives-through-a-versioned-converter.md), [T214](214-extract-the-memory-perception-lanes.md), [T215](215-remove-rolling-media-retention-and-preserve-old-archives.md), [T217](217-name-the-memory-lifecycle-state-transitions.md), [T218](218-place-clean-memory-modules-behind-the-public-entry.md), [T219](219-build-published-memory-projections-in-the-application.md), [T220](220-rename-the-memory-root-to-viewing-memory.md), [T221](221-publish-passage-updates-and-lane-losses-with-their-revision.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md), [T224](224-deliver-the-mac-window-state-from-the-same-projection.md), [T225](225-stop-building-the-full-snapshot-to-notify.md), [T226](226-speak-of-passages-inside-the-viewing-memory.md), [T227](227-translate-question-activity-into-the-vision-hold-outside-the-viewing-memory.md), [T229](229-restart-the-loop-after-integrating-its-own-code.md), [T232](232-show-the-codex-quota-exhaustion-on-lost-descriptions.md), [T235](235-model-the-session-record-behind-the-library-entry-point.md), [T236](236-share-the-session-coordinator-from-the-headless-lifecycle.md), [T240](240-cancel-and-save-questions-when-their-session-is-unloaded.md), [T244](244-place-independent-saved-moments-in-the-library-context.md), [T251](251-resume-a-quota-stopped-ticket-with-claude-when-asked.md),
+  [T263](263-answer-session-questions-with-ollama-and-the-existing-video-tools.md),
+  [T264](264-index-and-search-a-session-with-model-bound-ollama-embeddings.md).
 - **Installe une dépendance** (`installe: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md).
 - **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md), [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md), [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md), [T156](156-set-aside-what-a-refused-tuning-leaves-and-keep-its-reviewer-out.md), [T158](158-run-a-ticket-with-codex-reviewed-by-claude-through-the-loop.md), [T159](159-give-a-codex-session-the-same-hooks-as-a-claude-session-and.md), [T160](160-keep-the-last-review-reserves-of-a-codex-ticket-and-start-its.md), [T161](161-review-a-correction-against-the-previous-review-and-escalate.md), [T162](162-resume-the-codex-session-for-a-correction-and-prove-its-hooks.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T196](196-count-the-harness-test-cases-apart-from-the-product-s-in-the.md), [T199](199-ignore-a-codex-reconnection-its-turn-recovered-from-and-keep.md), [T200](200-name-the-skill-of-each-engine-in-one-hook-helper-and-enforce.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md), [T229](229-restart-the-loop-after-integrating-its-own-code.md), [T230](230-retry-capacity-failures-in-the-same-codex-session.md), [T231](231-stop-the-loop-clearly-when-the-codex-quota-is-exhausted.md), [T251](251-resume-a-quota-stopped-ticket-with-claude-when-asked.md).
 - **Supprime des tests** (`supprime_tests: oui`) : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md), [T181](181-remove-the-ambient-capture-gate.md), [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md).
@@ -553,12 +587,24 @@ Aucun des tickets T229 à T232 et T234 à T253 n’autorise la suppression de fi
   — Replay captured TVLens inputs through the production perception
 - [T258](258-score-replay-results-against-frozen-human-annotations.md)
   — Score replay results against frozen human annotations
+- [T262](262-convert-a-video-file-into-tv-blocks-and-a-perception-replay-manifest.md)
+  — Convert a video file into TV blocks and a perception replay manifest
+- [T263](263-answer-session-questions-with-ollama-and-the-existing-video-tools.md)
+  — Answer session questions with Ollama and the existing video tools _(demande un ADR)_
+- [T264](264-index-and-search-a-session-with-model-bound-ollama-embeddings.md)
+  — Index and search a session with model-bound Ollama embeddings _(demande un ADR)_
+- [T265](265-reexamine-clips-with-an-explicit-ollama-inspection-backend.md)
+  — Reexamine clips with an explicit Ollama inspection backend
+- [T267](267-report-the-effective-question-backend-in-question-metrics-and-traces.md)
+  — Report the effective question backend in question metrics and traces (sensible ; dépend de T263)
 - [T259](259-replay-a-sustained-session-at-a-fixed-capture-cadence.md)
   — Drive a fixed-cadence capture and question schedule through the headless server
 - [T261](261-report-revisions-lane-losses-and-whole-run-coverage-of-a-sustained-replay.md)
   — Report revisions, lane losses and whole-run coverage of a sustained replay
 - [T260](260-document-and-rehearse-the-frozen-gx10-experiment.md)
   — Document the frozen GX10 experiment and check its offline commands
+- [T266](266-detect-surveillance-claims-locally-after-the-gx10-experiment.md)
+  — Detect surveillance claims locally after the GX10 experiment _(décision attendue : fin de l'expérience)_
 
 ### structure — Filets, contrats et Mémoire
 

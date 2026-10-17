@@ -12,8 +12,9 @@ niveau: standard
 
 ## Ce que le ticket livre
 
-Une commande valide puis rejoue des entrées capturées par TVLens dans sa perception de production,
-avec backend explicite `local` ou `codex`. Chaque cas laisse un résultat ou un refus identifié et
+Une commande valide puis rejoue des entrées capturées par TVLens ou issues d'une vidéo convertie
+dans sa perception de production, avec backend explicite `local` ou `codex`.
+Chaque cas laisse un résultat ou un refus identifié et
 des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra : une session, un commit.
 
 ## Sources
@@ -21,7 +22,9 @@ des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra 
 - Rapport Astra du 17/10, non versionné ; le ticket en reprend tout ce qui sert.
   Section 3, C, « Replay captured TVLens inputs through the production
   perception », base `beb9589` ; synthèse croisée GX10 et analyse `astra-gx10.md`, préparation du corpus.
-- Code relu à `16be86b` : `runtime/session-providers.cjs:130` fournit la fabrique de perception ;
+- Décision du propriétaire du 17/10 au soir : T262 fournira aussi des entrées depuis une vidéo,
+  convertie en blocs TV avec ffmpeg. Leur provenance reste distincte d'une capture réelle LG.
+- Code relu à `4599eea` : `runtime/session-providers.cjs:130` fournit la fabrique de perception ;
   `:148` donne priorité à une perception injectée, `:149` sélectionne le simulé en smoke et
   `:150` compose le rôle réel avec l'agent local selon la configuration. Ne pas mesurer un simulé.
 - `adapters/codex-perception.cjs:134` reçoit le transcript déjà disponible ; `:140` borne à six
@@ -44,9 +47,14 @@ des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra 
   Documenter le format près du runner ; T260 réunira les commandes d'exploitation.
 - Définir un manifeste transportable minimal : identifiant du cas, intervalle, images ordonnées
   avec leurs temps, transcript effectivement disponible et ses limites, contexte antérieur
-  admissible, drapeau `lightweight`, provenance de capture et empreintes des entrées. Les médias existants sont lus
+  admissible, drapeau `lightweight`, provenance (capture TVLens ou vidéo convertie) et empreintes des entrées.
+  Les médias existants sont lus
   sans modification ; aucune lecture des collections privées de Mémoire ni exporteur général.
-- Le manifeste est écrit par l'orchestrateur. Images, audio et intervalle viennent du JSON média.
+- Le manifeste peut être préparé par l'orchestrateur depuis une capture, ou produit par la source
+  vidéo T262 au même format. La provenance vidéo conserve empreinte du fichier, intervalle source
+  et paramètres de conversion ; elle ne vaut pas capture LG. Le lecteur valide les deux provenances
+  sur fixtures sans attendre l'existence du convertisseur.
+- Pour une capture conservée, images, audio et intervalle viennent du JSON média.
   Le transcript vient de `observation.transcript` de l'archive ; sa disponibilité au départ de
   la vision doit être justifiée ou marquée inconnue. L'incertitude finale peut mêler audio et vision :
   ne pas la présenter comme la limite audio d'origine. Sans trace d'entrée conservée, le contexte
@@ -56,6 +64,9 @@ des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra 
   Sans transcript disponible, laisser le champ vide avec sa limite. Les exemples montrent une entrée
   documentée et une entrée aux champs absents ou inconnus ; ils ne promettent pas le rejeu exact
   d'un état d'entrée que l'archive n'a pas conservé.
+- Pour une vidéo convertie, transcript et contexte restent vides avec leur limite explicite,
+  sauf apport documenté par l'opérateur selon les mêmes règles. Le convertisseur n'infère rien.
+  Un corpus généré ne démontre pas la fidélité à la capture LG ; une vraie session TV reste son témoin.
 - Appeler la fabrique partagée et `observeVisual()` réels. Le transcript figé ne déclenche pas
   Whisper dans ce rejeu de composant. Conserver prompt, sélection effective et validation du produit ;
   enregistrer les images effectivement envoyées après ses bornes, sans inventer d'observation dense LG.
@@ -68,7 +79,7 @@ des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra 
   avec aide CLI sans effet. Identifier les campagnes et conserver progressivement résultats,
   erreurs et mesures déjà acquises en cas de refus intermédiaire ou d'interruption.
 - À ne pas toucher : perception produit, capture TV/Mac, formats d'archive, rétention, files,
-  politiques de reprise, nouveau générateur vidéo, juge automatique ou fournisseur de repli implicite.
+  politiques de reprise, convertisseur vidéo (T262), juge automatique ou fournisseur de repli implicite.
 - Aucun essai réel dans la session Codex : modèle local, TV, VPS et fournisseurs restent des
   opérations de l'orchestrateur ou du propriétaire. Tests avec faux Ollama, agent Codex doublé
   et fichiers temporaires.
@@ -84,6 +95,8 @@ des mesures brutes exploitables pour G1 et la référence G2. Tranche C d'Astra 
    Les champs non récupérables restent absents ou inconnus dans le rapport ; ils ne sont pas reconstitués.
    Une entrée valide en mode validation et l'aide CLI ne construisent ni n'appellent de fournisseur ;
    l'option d'exécution est obligatoire pour inférer.
+   Une fixture de capture et une fixture « vidéo convertie » conservent chacune leur provenance ;
+   les limites des champs absents et les empreintes de conversion restent dans le résultat.
 3. Chaque cas tenté garde son identifiant et une issue explicite, y compris JSON modèle invalide,
    refus, erreur et annulation. Un échec intermédiaire conserve les sorties précédentes ; une
    réponse tardive ne devient pas une réussite. Une campagne interrompue est marquée incomplète.
@@ -115,7 +128,9 @@ l'orchestrateur prépare le format et la grille d'annotation à partir des outil
 T258. Le corpus réel n'est pas un prérequis à l'implémentation sur fixtures maîtrisées. Les formats
 et exemples livrés doivent permettre cette préparation sans nouveau développement.
 
-T255 est le seul prérequis fonctionnel. T220/T226 ne bloquent pas le rejeu de composant, qui ne lit
+T255 est le seul prérequis fonctionnel. T262 dépend de ce format et ajoutera la conversion, pas
+l'inverse : le lecteur et sa fixture vidéo sont vérifiables avant le convertisseur. T220/T226 ne
+bloquent pas le rejeu de composant, qui ne lit
 pas les internes de Mémoire. La copie finale reste postérieure à T227, répétée sur Mac avant accès,
 avec `hackathon-rc` en repli ; T254 retient la phase 2. Ce runner ne prouve pas une tenue de trente minutes.
 
