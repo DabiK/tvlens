@@ -438,6 +438,45 @@ La décision de T250 (« Surveillance oui, fournisseurs non ») figure dans ses 
 - [T244](244-place-independent-saved-moments-in-the-library-context.md) — Place independent saved moments in the library context (standard ; dépend de T240).
 - [T245](245-remove-obsolete-session-transition-state-from-the-hosts.md) — Remove obsolete session transition state from the hosts (standard ; dépend de T243, T244).
 
+## Itération 2 — préparation du GX10
+
+Découpage du 17/10 à `b22753c`, d'après les tickets A à F de la section 3 du rapport Astra
+(base `beb9589`), corrigé après la relecture Opus puis vérifié à `16be86b`, après T219 et T223.
+La Mémoire expose les horodatages utiles ; elle ne fait plus de balayage temporel.
+Une tranche par session Codex et par commit ; aucune exécution réelle dans ces sessions,
+modèles locaux compris. Les sept tickets sont sans ADR nouveau, installation ou modification du harnais.
+
+[T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) retient la phase 2 pendant
+cette préparation. La copie sera prise après T227 et intégration des préparatifs, répétée sur
+le Mac avant l'accès puis figée par l'orchestrateur ; `hackathon-rc` reste le repli de démonstration.
+Le propriétaire constitue une dizaine d'extraits français réels pour G2 ; l'orchestrateur prépare
+le format et la grille d'annotation livrés par T257/T258. La répétition et G1–G3 réels restent hors boucle.
+Les annotations sont figées avant l'inférence ; si leur empreinte manque ou diffère, la notation G2 est refusée.
+La source des trente minutes de G3 est déclarée : enregistrement continu ou corpus bouclé avec
+nouveaux temps et séquences. T261 garde aussi les envois manquants dans le dénominateur de couverture.
+
+Ordre d'exécution recommandé ci-dessous. T255/T256 peuvent avancer pendant une attente de recette
+Mémoire sur sélection explicite de l'orchestrateur ; T259 attend ses contrats finaux, puis T261
+ajoute le bilan de campagne avant le guide T260. T256 corrige l'app empaquetée ; il n'est pas sur
+le chemin de la copie. T232/T252 aident à lire les pertes de quota sans bloquer ces préparatifs ;
+T240 n'est pas un prérequis GX10. T254 ne bloque aucun des sept tickets : sa clôture opérateur
+attend la copie figée.
+
+- [T255](255-separate-model-loading-from-session-cold-starts.md)
+  — Separate model loading from session cold starts (standard ; aucune dépendance).
+- [T256](256-honor-explicit-whisper-paths-when-loading-cached-settings.md)
+  — Honor explicit Whisper paths when loading cached settings (standard ; dépend de T247).
+- [T257](257-replay-captured-tvlens-inputs-through-the-production-perception.md)
+  — Replay captured TVLens inputs through the production perception (standard ; dépend de T255).
+- [T258](258-score-replay-results-against-frozen-human-annotations.md)
+  — Score replay results against frozen human annotations (standard ; dépend de T257).
+- [T259](259-replay-a-sustained-session-at-a-fixed-capture-cadence.md)
+  — Drive a fixed-cadence capture and question schedule through the headless server (sensible ; dépend de T257, T227).
+- [T261](261-report-revisions-lane-losses-and-whole-run-coverage-of-a-sustained-replay.md)
+  — Report revisions, lane losses and whole-run coverage of a sustained replay (sensible ; dépend de T259).
+- [T260](260-document-and-rehearse-the-frozen-gx10-experiment.md)
+  — Document the frozen GX10 experiment and check its offline commands (simple ; dépend de T258, T261).
+
 ## Jalons
 
 Un jalon est un livrable dont d'autres lots dépendent.
@@ -503,6 +542,23 @@ Aucun des tickets T229 à T232 et T234 à T253 n’autorise la suppression de fi
 - [T243](243-confirm-tv-capture-stop-and-server-session-end-separately.md) — Confirm TV capture stop and server session end separately
 - [T244](244-place-independent-saved-moments-in-the-library-context.md) — Place independent saved moments in the library context _(demande un ADR)_
 - [T245](245-remove-obsolete-session-transition-state-from-the-hosts.md) — Remove obsolete session transition state from the hosts
+
+### GX10 — Préparation de l'expérience
+
+- [T255](255-separate-model-loading-from-session-cold-starts.md)
+  — Separate model loading from session cold starts
+- [T256](256-honor-explicit-whisper-paths-when-loading-cached-settings.md)
+  — Honor explicit Whisper paths when loading cached settings
+- [T257](257-replay-captured-tvlens-inputs-through-the-production-perception.md)
+  — Replay captured TVLens inputs through the production perception
+- [T258](258-score-replay-results-against-frozen-human-annotations.md)
+  — Score replay results against frozen human annotations
+- [T259](259-replay-a-sustained-session-at-a-fixed-capture-cadence.md)
+  — Drive a fixed-cadence capture and question schedule through the headless server
+- [T261](261-report-revisions-lane-losses-and-whole-run-coverage-of-a-sustained-replay.md)
+  — Report revisions, lane losses and whole-run coverage of a sustained replay
+- [T260](260-document-and-rehearse-the-frozen-gx10-experiment.md)
+  — Document the frozen GX10 experiment and check its offline commands
 
 ### structure — Filets, contrats et Mémoire
 
