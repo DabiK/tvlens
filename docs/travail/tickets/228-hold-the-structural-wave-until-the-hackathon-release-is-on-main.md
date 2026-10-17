@@ -1,7 +1,7 @@
 ---
 id: T228
 titre: Hold the structural wave until the hackathon release is on main
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -55,3 +55,8 @@ Décision attendue du propriétaire : le tag `hackathon-rc` est-il posé sur la 
 propriétaire a décidé le 16/10 que l'orchestrateur ferme ce ticket dès que le tag est posé.
 
 ## Journal
+
+- 17/10, 07 h 47, orchestrateur : la boucle s’est arrêtée seule, aucun ticket prêt. Vague 1 et tests seuls (T037,
+  T038, T204, T222) terminés, aucun ticket structurel lancé, arbre propre. Tag annoté `hackathon-rc` posé sur
+  `633e6d8` et poussé. Ticket fermé selon la décision du 16/10 ; la boucle repart sur T205. La recette TV et Mac
+  se fait à partir du tag, sans retenir la boucle.
