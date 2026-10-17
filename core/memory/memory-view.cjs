@@ -1,5 +1,6 @@
 const { hasUsableObservation } = require('../passage-text.cjs');
 const { domainError } = require('../shared/domain-error.cjs');
+const { calculateCoverage } = require('./coverage.cjs');
 const TVLENS_MEMORY_LIMIT_INVALID = 'TVLENS_MEMORY_LIMIT_INVALID';
 const TVLENS_MEMORY_IDS_INVALID = 'TVLENS_MEMORY_IDS_INVALID';
 const NULLABLE_FIELDS = [
@@ -7,24 +8,15 @@ const NULLABLE_FIELDS = [
   'visionSkipReason', 'stage', 'summary',
 ];
 const CAPTURE_JITTER_MS = 250;
-const interval = ({ id, startMs, endMs }) => ({ id, startMs, endMs });
 
-function passageGaps(passages) {
+function captureGapsOf(passages) {
   const captureGaps = [];
   let through = 0;
   for (const passage of passages) {
     if (passage.startMs - through > CAPTURE_JITTER_MS) captureGaps.push({ startMs: through, endMs: passage.startMs });
     through = Math.max(through, passage.endMs);
   }
-  return {
-    captureGaps,
-    gaps: passages.filter(p => ['error', 'skipped', 'expired'].includes(p.status))
-      .map(p => ({ ...interval(p), status: p.status })),
-    audioGaps: passages.filter(p => p.audioFailed || (p.status === 'partial' && ['skipped', 'error'].includes(p.audioStatus)))
-      .map(p => ({ ...interval(p), audioStatus: p.audioFailed ? 'failed' : p.audioStatus, ...(p.audioFailureCode ? { code: p.audioFailureCode } : {}) })),
-    visionGaps: passages.filter(p => p.status === 'partial' && ['skipped', 'expired', 'error'].includes(p.visionStatus))
-      .map(p => ({ ...interval(p), visionStatus: p.visionStatus, reason: p.visionSkipReason })),
-  };
+  return captureGaps;
 }
 
 function historicalModalities(passage) {
@@ -73,6 +65,8 @@ function createMemoryView(memory, modalities = new Map()) {
   const capturedThroughMs = passages.at(-1)?.endMs || 0;
   const analyzedThroughMs = passages.filter(p => p.status === 'ready').at(-1)?.endMs || 0;
   const contextThroughMs = passages.filter(p => p.usableObservation).at(-1)?.endMs || 0;
+  const { coverage, ...gaps } = calculateCoverage({ passages, losses: memory.losses, visionBlockedMs: lanes.visionBlockedMs });
+  const { passages: passageCount, visionBlockedMs, ...losses } = coverage;
   return {
     session: {
       id: memory.id,
@@ -88,7 +82,7 @@ function createMemoryView(memory, modalities = new Map()) {
       analysisLagMs: Math.max(0, capturedThroughMs - analyzedThroughMs) },
     passages,
     coverage: {
-      passages: passages.length,
+      passages: passageCount,
       retainedPassages: memory.segments.length,
       historyPassages: memory.history.length,
       replayablePassages: passages.filter(p => p.availability.replayable).length,
@@ -98,10 +92,11 @@ function createMemoryView(memory, modalities = new Map()) {
       audioPending: lanes.audioPending,
       visionPending: lanes.visionPending,
       analyzing: lanes.analyzing,
-      ...passageGaps(passages),
-      visionBlockedMs: lanes.visionBlockedMs,
+      ...gaps,
+      captureGaps: captureGapsOf(passages),
+      visionBlockedMs,
     },
-    losses: { ...memory.losses },
+    losses,
   };
 }
 

@@ -1,7 +1,7 @@
 ---
 id: T216
 titre: Extract memory loss and coverage calculations into a pure module
-statut: a-faire
+statut: termine
 bloque_par: T214
 adr: non
 installe: non
@@ -98,3 +98,37 @@ retenue, sans nouvelle formule de pourcentage. Un besoin de taux temporel serait
 à faire décider séparément. Aucun résultat de test n'a été exécuté pendant le découpage.
 
 ## Journal
+
+### Exploration
+
+- Lecture des règles, de la skill et des contrats session, consultation, archive et voies ; exploration et écarts dans `.harness-state/tickets/T216/`.
+- `git status --short` et `git diff` : seul le statut du ticket était modifié ; deux dossiers non suivis préexistants, conservés.
+- Deux sélections de pertes à unifier ; compteurs et politique de retenue gardent leurs propriétaires. Aucun écart prévu.
+
+### Extraction et tests directs
+
+- `node --test tests/memory-coverage.test.cjs` : cinq cycles avec rouge sur assertion puis vert observé (trous totaux, audio, vision, compteurs, retenue), 5/5 au dernier passage. Sorties `red-*.log` et `green-*.log` dans le dossier d'état.
+- `node --test tests/memory-view.test.cjs` : 14/14 après branchement du calcul partagé ; mémoire mixte et aller-retour versionné couverts. Une erreur d'attendu du nouveau test sur les lectures du stockage par le snapshot a été corrigée et consignée dans `cycles.md`.
+- `node_modules/.bin/eslint --prune-suppressions core/session.cjs core/memory/coverage.cjs core/memory/lanes.cjs core/memory/memory-view.cjs core/memory/index.cjs tests/memory-coverage.test.cjs tests/memory-view.test.cjs` : code 0 ; aucune suppression à élaguer.
+
+### Vérifications et remise à la boucle
+
+- Suites ciblées lancées une par une avec `node --test tests/<suite>.test.cjs` : `memory-coverage`, `memory-view`, `memory-lanes`, `session-latency`, `split-perception`, `architecture-f08`, `watch-session-ending`, `session-archive`, `archive-compat`, `session-durable`, `state-views`, `server-state-views`, `session-manifest`, `architecture`, `architecture-guard`. Résultat : 15 suites, 695 tests passés, aucun échec ; commandes et sorties dans `targeted-results.json` et les logs associés.
+- `node scripts/check.mjs --changed` : vert ; 19 tests JavaScript passés, règles, format, lint, gel et cliquet verts.
+- `node scripts/check.mjs` : vert ; 142 fichiers de tests JavaScript, 2 547 tests passés, 47 tests Python passés ; règles, format, lint, gel et cliquet verts. Sortie dans `.harness-state/tickets/T216/check-full.log`.
+- `git diff --check` : code 0. Aucun harnais, permission d'import, plancher ou test existant retiré ou affaibli. Aucun écart ; aucun commit ni push. Verdict `TERMINÉ`, relecture et intégration rendues à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T216/relecture-1.md : **1. `runtime/state-views.cjs:209`** (hors périmètre)
+  - **Problème.** `sessionHeader` reconstruit `{ passages: coverage.passages, ...losses, visionBlockedMs: coverage.visionBlockedMs }`. C'est exactement la projection des compteurs que produit `core/memory/coverage.cjs:16`. La vue la défait (`memory-view.cjs:69`), puis l'en-tête serveur la refait. Les chiffres sont identiques aujourd'hui, mais si `calculateCoverage` change de forme, l'en-tête de la TV divergera du snapshot Electron.
+  - **Pourquoi hors périmètre.** Ce n'est ni un filtre ni de l'arithmétique, donc le critère 5 tient au sens strict. Corriger demanderait de changer le contrat `MemoryView` (`ports.cjs` et la garde de clés `contract()` des tests) ou d'ajouter un export public, ce que le ticket restreint.
+  - **Attendu.** Le reporter en réserve : une seule projection des compteurs, servie aux deux hôtes.
+- .harness-state/tickets/T216/relecture-1.md : **2. `app/ui/sessions-view.mjs:73`** (hors périmètre)
+  - **Problème.** `describeMemory` refait le filtre de trou total `['error', 'skipped', 'expired']` sur `state.segments`, au lieu de lire `state.gaps`. Le même ensemble de statuts est aussi redéclaré dans `core/living-recap.cjs:62`, `core/video-tools.cjs:165` et `core/surveillance.cjs:476`.
+  - **Pourquoi hors périmètre.** Le renderer ne peut pas importer `core/`. Son décompte ne porte que sur les passages retenus : passer à `state.gaps` changerait le chiffre affiché. Le ticket et le critère 5 sortent explicitement ces outils de son périmètre.
+  - **Attendu.** Une réserve sur l'unicité de `TOTAL_GAP_STATUSES` (règle « constantes à un seul endroit »).
+- .harness-state/tickets/T216/relecture-1.md : **3. `core/memory/memory-view.cjs:10-20` et `runtime/state-views.cjs:97-106`** (hors périmètre)
+  - **Problème.** Le renommage de `passageGaps` en `captureGapsOf` est nécessaire et le nom est exact. Mais deux fonctions privées portent maintenant le même nom avec des seuils différents : 250 ms (`CAPTURE_JITTER_MS`) d'un côté, 1000 ms (`CAPTURE_GAP_MS`) de l'autre. `coverage.captureGaps` de la vue et `captureGaps` du panneau ne décrivent donc pas les mêmes trous.
+  - **Pourquoi hors périmètre.** Cette divergence existait avant le diff, et le ticket interdit de déplacer ces seuils.
+  - **Attendu.** Une réserve : décider s'il existe une seule définition du trou de capture.

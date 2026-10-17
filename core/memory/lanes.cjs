@@ -1,5 +1,6 @@
 const { hasUsableObservation } = require('../passage-text.cjs');
 const { completeTopicSummary } = require('../topic-summary.cjs');
+const { heldDuration } = require('./coverage.cjs');
 
 // Seul le port de perception peut déclarer cet échec passager.
 const VISION_TRANSIENT = 'TVLENS_VISION_TRANSIENT';
@@ -50,7 +51,7 @@ class PerceptionLanes {
       audioPending: this.#audioQueue.length,
       visionPending: this.#visionQueue.length,
       analyzing: this.#audioRunning || this.#visionRunning,
-      heldMs: this.#heldMs + (this.#heldSince === null ? 0 : Math.max(0, now - this.#heldSince)),
+      heldMs: heldDuration({ acquiredMs: this.#heldMs, heldSince: this.#heldSince, now }),
     };
   }
 
@@ -65,7 +66,7 @@ class PerceptionLanes {
 
   #endHold() {
     if (this.#heldSince === null) return;
-    this.#heldMs += Math.max(0, this.#ports.now() - this.#heldSince);
+    this.#heldMs = heldDuration({ acquiredMs: this.#heldMs, heldSince: this.#heldSince, now: this.#ports.now() });
     this.#heldSince = null;
   }
 

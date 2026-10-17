@@ -367,22 +367,35 @@ class WatchSession {
   }
 
   snapshot() {
-    const all=[...this.history,...this.segments],now=this.now(),capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
+    const all = [...this.history, ...this.segments], now = this.now();
+    const capturedThroughMs = all.at(-1)?.endMs || 0;
+    const analyzedThroughMs = all.filter(s => s.status === 'ready').at(-1)?.endMs || 0;
     const lanes = this.perceptionState(now);
-    return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: lanes.analyzing,
-      elapsedMs: now, capturedThroughMs, analyzedThroughMs, analysisLagMs:Math.max(0,capturedThroughMs-analyzedThroughMs), contextThroughMs:all.filter(hasUsableObservation).at(-1)?.endMs||0, gaps:all.filter(s=>['error','skipped','expired'].includes(s.status)).map(({id,startMs,endMs,status})=>({id,startMs,endMs,status})), retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null, retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted', readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
+    const { gaps, audioGaps, visionGaps, coverage } = memory.calculateCoverage({
+      passages: all, losses: this.losses, visionBlockedMs: lanes.visionBlockedMs,
+    });
+    return {
+      id: this.id, accepting: this.accepting, asking: this.asking, analyzing: lanes.analyzing,
+      elapsedMs: now, capturedThroughMs, analyzedThroughMs,
+      analysisLagMs: Math.max(0, capturedThroughMs - analyzedThroughMs),
+      contextThroughMs: all.filter(hasUsableObservation).at(-1)?.endMs || 0,
+      gaps,
+      retentionMs: Number.isFinite(this.retentionMs) ? this.retentionMs : null,
+      retention: Number.isFinite(this.retentionMs) ? 'rolling' : 'until-deleted',
+      readOnly: this.readOnly, unplacedMedia: this.unplacedMedia, apiCalls: this.apiCalls, apiCost: this.apiCost,
       pending: lanes.pending, audioPending: lanes.audioPending, visionPending: lanes.visionPending,
       // A capture stopped for lack of room keeps saying so, and so does a state that was not saved: a late
       // analysis must not clear the reason.
-      // Lists of their own, like the passages below: an archive may hold a state for a while before writing
-      // it, and a sweep that moves a passage into the history meanwhile must not show it there too.
-      lastError: this.storageError || this.saveError || this.lastError, history: [...this.history], questions: [...this.questions],
-      latency: latencySummary(all), coverage: { passages: all.length, ...this.losses, visionBlockedMs: lanes.visionBlockedMs },
-      audioGaps: all.filter(s => s.audioFailed || (s.status === 'partial' && ['skipped', 'error'].includes(s.audioStatus))).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, audioStatus: s.audioFailed ? 'failed' : s.audioStatus, ...(s.audioFailureCode ? { code: s.audioFailureCode } : {}) })),
-      visionGaps: all.filter(s => s.status === 'partial' && ['skipped', 'expired', 'error'].includes(s.visionStatus)).map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, visionStatus: s.visionStatus, ...(s.visionSkipReason && { reason: s.visionSkipReason }) })),
+      lastError: this.storageError || this.saveError || this.lastError,
+      // Listes détachées : un élagage ultérieur ne doit pas ajouter leurs passages à l'historique sauvegardé.
+      history: [...this.history], questions: [...this.questions],
+      latency: latencySummary(all), coverage, audioGaps,
+      // Le snapshot historique omet une cause vide ; la consultation conserve ses causes nulles explicites.
+      visionGaps: visionGaps.map(({ reason, ...gap }) => ({ ...gap, ...(reason ? { reason } : {}) })),
       // Cached figures supplied by the host (free space, volume of this session): never measured here.
       storage: this.storage ? this.storage() : null,
-      segments: this.segments.map(s => ({ ...s })) };
+      segments: this.segments.map(s => ({ ...s })),
+    };
   }
   emit() {
     this.#events.publish(events => this.onEvents(events), this.onPublicationError);

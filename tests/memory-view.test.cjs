@@ -546,3 +546,60 @@ test('consultation distinguishes explicit null metadata from absent metadata for
   assert.deepEqual(f.watch.memoryPassage('moment-2').explicitNulls, ['audioStatus', 'visionStatus', 'audioError', 'visionError']);
   assert.deepEqual(f.watch.recentMemoryPassages(1)[0], f.watch.memoryPassage('moment-2'));
 });
+
+test('mixed historical and retained losses keep intervals, causes and acquired counters across archive round trips', t => {
+  const f = fixture(t);
+  const coverage = { audioSkipped: 8, audioExpired: 2, audioError: 3, visionSkippedBacklog: 4, visionSkippedAsking: 1,
+    visionExpired: 2, visionError: 3, visionBlockedMs: 700, visionRetried: 2, visionRecovered: 1, videoUnreadable: 1 };
+  f.watch.restore({
+    id: 'session', retention: 'rolling', retentionMs: 1000, coverage,
+    history: [
+      savedPassage(1, { status: 'expired' }),
+      savedPassage(2, { status: 'partial', audioStatus: 'error', visionStatus: 'ready' }),
+      savedPassage(3, { status: 'partial', audioStatus: 'ready', visionStatus: 'expired' }),
+    ],
+    segments: [
+      savedPassage(4, { audioStatus: 'ready', audioFailed: true, audioFailureCode: 'NO_TRANSCRIPT' }),
+      savedPassage(5, { status: 'partial', visionStatus: 'skipped', visionSkipReason: 'asking' }),
+      savedPassage(6, { status: 'partial', visionStatus: 'error', visionSkipReason: null }),
+      savedPassage(7, { status: 'partial', visionStatus: 'skipped', visionSkipReason: '' }),
+    ],
+  }, { hasMedia: () => true });
+  const snapshot = f.watch.snapshot();
+  const view = f.watch.memoryView();
+  assert.deepEqual(snapshot.coverage, { passages: 7, ...coverage });
+  const { visionBlockedMs, ...losses } = coverage;
+  assert.deepEqual(view.losses, losses);
+  assert.equal(view.coverage.visionBlockedMs, visionBlockedMs);
+  assert.deepEqual(view.coverage.gaps, [{ id: 'moment-1', startMs: 0, endMs: 1000, status: 'expired' }]);
+  assert.deepEqual(view.coverage.audioGaps, [
+    { id: 'moment-2', startMs: 1000, endMs: 2000, audioStatus: 'error' },
+    { id: 'moment-4', startMs: 3000, endMs: 4000, audioStatus: 'failed', code: 'NO_TRANSCRIPT' },
+  ]);
+  assert.deepEqual(view.coverage.visionGaps, [
+    { id: 'moment-3', startMs: 2000, endMs: 3000, visionStatus: 'expired', reason: null },
+    { id: 'moment-5', startMs: 4000, endMs: 5000, visionStatus: 'skipped', reason: 'asking' },
+    { id: 'moment-6', startMs: 5000, endMs: 6000, visionStatus: 'error', reason: null },
+    { id: 'moment-7', startMs: 6000, endMs: 7000, visionStatus: 'skipped', reason: '' },
+  ]);
+  assert.deepEqual(snapshot.gaps, view.coverage.gaps);
+  assert.deepEqual(snapshot.audioGaps, view.coverage.audioGaps);
+  assert.deepEqual(snapshot.visionGaps, [
+    { id: 'moment-3', startMs: 2000, endMs: 3000, visionStatus: 'expired' },
+    { id: 'moment-5', startMs: 4000, endMs: 5000, visionStatus: 'skipped', reason: 'asking' },
+    { id: 'moment-6', startMs: 5000, endMs: 6000, visionStatus: 'error' },
+    { id: 'moment-7', startMs: 6000, endMs: 7000, visionStatus: 'skipped' },
+  ]);
+  const { toArchive } = require('../core/memory/index.cjs');
+  const reopened = fixture(t);
+  reopened.watch.restore(JSON.parse(JSON.stringify(toArchive(snapshot))), { hasMedia: () => true });
+  for (const watch of [f.watch, reopened.watch]) {
+    for (let read = 0; read < 3; read++) {
+      assert.deepEqual(watch.snapshot().coverage, snapshot.coverage);
+      assert.deepEqual(watch.memoryView().coverage, view.coverage);
+      assert.deepEqual(watch.memoryView().losses, view.losses);
+    }
+  }
+  assert.deepEqual(f.effects, Array(4).fill('storage'), 'only explicit snapshots consult host storage');
+  assert.deepEqual(reopened.effects, Array(3).fill('storage'));
+});

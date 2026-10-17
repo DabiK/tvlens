@@ -1,10 +1,10 @@
 {
-  "lignes_longues_prod": 410,
+  "lignes_longues_prod": 406,
   "lignes_longues_tests": 1590,
   "catch_vides_prod": 0,
   "tests_nommes_par_chantier": 9,
   "process_env_hors_config": 6,
   "inner_html": 2,
-  "cas_de_test_produit": 1353,
+  "cas_de_test_produit": 1359,
   "cas_de_test_harnais": 381
 }
