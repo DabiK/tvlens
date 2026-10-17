@@ -1,3 +1,5 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -183,11 +185,12 @@ async function watchedSession(limits = {}) {
   h.surveillance = new Surveillance({ detector: { detect: async request => ({ claims: request.passages.flatMap(p => script[p.id] || []) }) }, researcher, now: () => h.clock,
     limits: { visionGraceMs: 0, detectBatchPassages: 1, verifyRetries: 0, ...limits } });
   h.snapshot = () => ({ id: 'session-mac', elapsedMs: h.elapsedMs, history: [], segments: h.segments });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, h.snapshot());
+  h.view = () => memoryOf(h.snapshot()).view();
+  h.surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, h.view());
   for (let n = 1; n <= 5; n++) {
     h.segments.push({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true, observation: { transcript: text[`moment-${n}`], summary: '', visual: '', uncertainty: '' } });
     h.elapsedMs = n * 8000; h.clock += 8000;
-    h.surveillance.observe(h.snapshot());
+    h.surveillance.observe(h.view());
     await flush();
   }
   return h;
@@ -297,8 +300,8 @@ test('a saved history still being read is told as a restoration, and a history k
   const session = { id: 'session-mac', readOnly: false };
   let answer;
   const store = { saveSurveillance: async () => {}, loadSurveillance: () => new Promise(resolve => { answer = resolve; }) };
-  const watch = { snapshot: () => ({ id: 'session-mac', elapsedMs: 12000, history: [], segments: [] }) };
-  const runtime = createSurveillanceRuntime({ getSession: () => ({ watch, store }), agent: new SimulatedSurveillanceAgent(), now: () => T0 });
+  const current = { memory: memoryOf({ id: 'session-mac', elapsedMs: 12000 }), events: createEventPublisher(), store };
+  const runtime = createSurveillanceRuntime({ getSession: () => current, agent: new SimulatedSurveillanceAgent(), now: () => T0 });
   const reading = runtime.start({ instruction: 'Vérifie les chiffres annoncés.' }), restoring = describeSurveillance(reading, { session });
   assert.deepEqual([reading.activity.state, reading.registry.status], ['restoring', 'restoring']);
   // Its own state, worded by the core: neither late, nor a check in progress, nor a surveillance already listening.
@@ -434,12 +437,12 @@ test('a reading that fails is told as a failed reading, with the passages left u
     const h = { clock: T0, elapsedMs: 0, segments: [] };
     const surveillance = new Surveillance({ now: () => h.clock, limits: { visionGraceMs: 0, detectBatchPassages: 1, detectRetries: 0 }, researcher: { verify: () => new Promise(() => {}) },
       detector: { detect: async request => { if (request.passages.some(p => down.includes(p.id))) throw new Error('Codex indisponible (401).'); return { claims: [] }; } } });
-    const snapshot = () => ({ id: 'session-mac', elapsedMs: h.elapsedMs, history: [], segments: h.segments });
-    surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, snapshot());
+    const view = () => memoryOf({ id: 'session-mac', elapsedMs: h.elapsedMs, segments: h.segments }).view();
+    surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, view());
     for (let n = 1; n <= passages; n++) {
       h.segments.push({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true, observation: { transcript: 'Il affirme que le chômage est à 7 % cette année.', summary: '', visual: '', uncertainty: '' } });
       h.elapsedMs = n * 8000; h.clock += 8000;
-      surveillance.observe(snapshot()); await flush(); surveillance.tick(); await flush();
+      surveillance.observe(view()); await flush(); surveillance.tick(); await flush();
     }
     if (later) { h.clock += later; surveillance.tick(); await flush(); }
     return surveillance.snapshot();

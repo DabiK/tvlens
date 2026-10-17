@@ -319,7 +319,6 @@ app.whenReady().then(async () => {
     log: line => console.error(line),
     onPublicationError,
     onChange: state => {
-      surveillance.observe(state);
       send('watch:state', { ...state, title: loaded?.title ?? null, transcription: (loaded?.runtime.transcriber || transcriber).availability() });
     },
   });

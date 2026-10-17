@@ -254,7 +254,6 @@ class HeadlessRuntime {
     if (this.session?.id !== state.id) return;
     this.sessionState = state;
     this.sessionMemory = this.session.memory.view();
-    this.surveillance.observe(state);
     this.emit();
   }
   // Figures already in memory (last measurement of the guard, volume written by this session): a

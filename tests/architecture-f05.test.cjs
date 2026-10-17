@@ -17,6 +17,8 @@ const { SessionLibrary } = require('../adapters/session-library.cjs');
 const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { createSessionRuntime, openArchivedSession } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 
 // F05: a Codex process group has one owner until it is gone, a reconnection waits for the group it replaces, and the
 // end of a session revokes what was opened on it. Offline: Node children stand for Codex behind the real transport, a
@@ -499,7 +501,7 @@ test('a host with nothing else to do is still there once the group it waits for 
 });
 
 test('a surveillance stopped and started again starts no Codex process while the ones it stopped are not seen gone', async t => {
-  const server = appServer(), session = { watch: { snapshot: () => ({ id: 'session-f05', elapsedMs: 0, history: [], segments: [] }) }, store: {} };
+  const server = appServer(), session = { memory: memoryOf({ id: 'session-f05', elapsedMs: 0 }), events: createEventPublisher(), store: {} };
   const runtime = createSurveillanceRuntime({ getSession: () => session, config: { surveillance: { workers: 2 } },
     agent: new CodexSurveillanceAgent({ authHome, workers: 2, rpcFactory: server.rpcFactory }) });
   t.after(async () => { server.release(); await runtime.close(); });

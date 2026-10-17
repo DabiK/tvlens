@@ -397,21 +397,21 @@ class Surveillance {
   chatBusy() { try { return Boolean(this.probe?.()?.chatBusy); } catch { return false; } }
   fail(error) { this.error = clip(error?.message, 200) || 'Erreur interne de surveillance.'; }
 
-  /** Activation: t0 is the session position of the snapshot. Nothing that started before it is ever read. */
-  start({ instruction } = {}, snapshot) {
-    if (!snapshot || typeof snapshot.id !== 'string' || !snapshot.id || !Number.isFinite(snapshot.elapsedMs) || snapshot.elapsedMs < 0)
+  /** Activation: t0 is the session position of the consultation view. Nothing that started before it is ever read. */
+  start({ instruction } = {}, view) {
+    if (!view || typeof view.session?.id !== 'string' || !view.session.id || !Number.isFinite(view.clock?.elapsedMs) || view.clock.elapsedMs < 0)
       throw domainError(TVLENS_SURVEILLANCE_SESSION_REQUIRED, 'Démarre une session avant d’activer la surveillance.');
     if (typeof instruction !== 'string' || !instruction.trim() || instruction.trim().length > 1500)
       throw domainError(TVLENS_SURVEILLANCE_INSTRUCTION_INVALID, 'Écris une consigne de surveillance de 1 à 1 500 caractères.');
     if (this.enabled) this.stop('Consigne remplacée.');
     // The registry belongs to one session: it is kept across activations, never across sessions.
-    if (this.sessionId !== snapshot.id) { this.clear(); this.sessionId = snapshot.id; }
+    if (this.sessionId !== view.session.id) { this.clear(); this.sessionId = view.session.id; }
     this.generation++;
-    this.activation = { id: `act-${++this.activationSeq}`, instruction: instruction.trim(), t0Ms: snapshot.elapsedMs, startedAt: this.now(), stoppedAt: null, stopReason: null };
-    Object.assign(this, { enabled: true, restored: false, stoppedWithPending: 0, holdDetectionUntil: 0, detectStreak: 0, detectFailure: null, error: null, elapsedMs: snapshot.elapsedMs });
+    this.activation = { id: `act-${++this.activationSeq}`, instruction: instruction.trim(), t0Ms: view.clock.elapsedMs, startedAt: this.now(), stoppedAt: null, stopReason: null };
+    Object.assign(this, { enabled: true, restored: false, stoppedWithPending: 0, holdDetectionUntil: 0, detectStreak: 0, detectFailure: null, error: null, elapsedMs: view.clock.elapsedMs });
     // The cursor follows the activation: a new instruction reads from its own t0.
     this.passages = new Map();
-    this.observe(snapshot);
+    this.observe(view);
     this.emit();
     return this.snapshot();
   }
@@ -431,13 +431,13 @@ class Surveillance {
     return this.snapshot();
   }
 
-  /** Called on every session change. Registers and re-reads the passages that start after t0. Never throws. */
-  observe(snapshot) {
+  /** Called with current consultation data on passage events and ticks. Registers and re-reads the passages that start after t0. Never throws. */
+  observe(view) {
     try {
-      if (!this.enabled || !snapshot || snapshot.id !== this.sessionId) return;
-      if (Number.isFinite(snapshot.elapsedMs)) this.elapsedMs = snapshot.elapsedMs;
+      if (!this.enabled || !view || view.session?.id !== this.sessionId) return;
+      if (Number.isFinite(view.clock?.elapsedMs)) this.elapsedMs = view.clock.elapsedMs;
       const t0 = this.activation.t0Ms, now = this.now(), busy = value => value === 'queued' || value === 'analyzing';
-      for (const list of [snapshot.history, snapshot.segments]) for (const passage of Array.isArray(list) ? list : []) {
+      for (const passage of view.passages || []) {
         // A passage straddling t0 is excluded: at most one segment of blind zone after the activation.
         if (!passage || typeof passage.id !== 'string' || !(passage.startMs >= t0) || !(passage.endMs > passage.startMs)) continue;
         let entry = this.passages.get(passage.id);

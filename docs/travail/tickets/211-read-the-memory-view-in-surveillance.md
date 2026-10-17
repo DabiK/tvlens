@@ -1,7 +1,7 @@
 ---
 id: T211
 titre: Read the memory consultation view and passage updates in surveillance
-statut: a-faire
+statut: termine
 bloque_par: T221, T207, T187
 adr: non
 installe: non
@@ -100,3 +100,71 @@ Les repères du plan sur la seconde lecture étaient approximatifs : la règle e
 un autre nom, suivre le contrat T207. La migration ne décide aucune nouvelle règle de surveillance.
 
 ## Journal
+
+- Exploration : contrats `memory.view()` et `events.subscribe()` présents ; règles de `classify` conservées.
+  Lecture de `git status --short` et `git diff` : seul le statut du ticket est modifié avant ce travail,
+  avec `design/continuous-context/` et `experiments/` non suivis laissés en place. Détails et écarts dans
+  `.harness-state/tickets/T211/`.
+
+- Domaine : `node --test --test-name-pattern='activation reads the consultation clock'
+  tests/surveillance.test.cjs` rouge observé sur l'assertion d'acceptation de la vue ; après migration,
+  `node --test tests/surveillance.test.cjs` : 23 tests réussis.
+- Abonnement : `node --test --test-name-pattern='passage events coalesce'
+  tests/surveillance-runtime.test.cjs` rouge observé ; après branchement, la suite entière
+  `node --test tests/surveillance-runtime.test.cjs` réussit (26 tests). Événements coalescés, lecture
+  hors livraison synchrone et passage reçu encore en attente compté à l'arrêt.
+
+- Horloge : `node --test --test-name-pattern='a tick without a passage event'
+  tests/surveillance-runtime.test.cjs` rouge observé (`8000 !== 41000`), puis vert après relecture de
+  la vue au tick ; `publishedAtMs` et `videoLagMs` vérifiés sans nouvel événement de passage.
+- Couverture complémentaire : vrais événements de `createSessionRuntime`, grâce audio et seconde
+  lecture visuelle unique, changement de disponibilité seul, stabilité après perte vision,
+  rattrapage avec le dernier `t0`, détachement sur reset/restauration/remplacement/fermeture et
+  neutralisation d'un événement ou registre tardif de l'ancienne session.
+- Libération : `node --test --test-name-pattern='refused consultation'
+  tests/surveillance-runtime.test.cjs` rouge observé sur la fermeture refusée ; diagnostic isolé,
+  puis suite complète verte (`node --test tests/surveillance-runtime.test.cjs` : 35 tests).
+- `node scripts/check.mjs --changed` : vert, 113 tests. Le premier passage a signalé deux fixtures
+  Mac utilisant encore l'ancienne entrée ; elles ont été adaptées sans changer leurs assertions.
+- `node --test --test-concurrency=1 tests/surveillance.test.cjs tests/surveillance-runtime.test.cjs
+  tests/server-surveillance.test.cjs tests/mac-ipc-contract.test.cjs` : vert, 101 tests, aucun échec.
+  Aucun motif de câblage Mac modifié. Sorties conservées dans `.harness-state/tickets/T211/`.
+
+- Inventaire des appelants : `scripts/probe-surveillance.cjs` fournit désormais une vue Mémoire.
+  `node --check scripts/probe-surveillance.cjs` : réussi. Sonde fournisseur réel non exécutée.
+- Premier `node scripts/check.mjs` : 2 526/2 527 tests JS réussis, 47 tests Python réussis ; seule
+  la fixture du scénario arrêt/redémarrage de `tests/architecture-f05.test.cjs` restait sur l'ancien
+  contrat. Échec reproduit avec `node --test --test-name-pattern='a surveillance stopped and started'
+  tests/architecture-f05.test.cjs`, fixture migrée sans modifier les assertions, puis scénario vert.
+- Nouveau `node scripts/check.mjs --changed` : vert, 128 tests réussis ; contrôle complet relancé.
+- Contrôle final `node scripts/check.mjs` : **vert** — règles, format, lint, gel et cliquet réussis ;
+  2 527 tests JavaScript réussis (140 fichiers, en séquentiel), 47 tests Python réussis.
+  `git diff --check` : réussi. Verdict `TERMINÉ` enregistré pour la relecture par la boucle.
+  Aucun commit ni push ; aucun fournisseur réel, TV, VPS ou identifiant utilisé.
+
+- Reprise après `relecture-1.md` : deux constats mineurs acceptés. Lecture du rapport, des consignes,
+  du journal, des écarts, de `git status --short` et de `git diff`. Corrections prévues : isoler le
+  refus de consultation dans le tick et vérifier le détachement avant toute reconnexion.
+- Constat 1 : `node --test --test-name-pattern='refused consultation at tick'
+  tests/surveillance-runtime.test.cjs` rouge observé sur le refus remontant du tick, puis vert après
+  remplacement de `catchUp()` par `observeCurrent()`. Le test vérifie l'annulation d'une
+  vérification hors délai, le diagnostic refusé isolé et l'écriture due maintenue.
+- Constat 2 : assertions de détachement ajoutées avant la réactivation pour reset/restauration/
+  fermeture ; abonnés comptés à la fermeture même si la vue refuse. Vérification par mutation :
+  `node --test --test-name-pattern='detach memory subscriptions|cannot prevent subscription or
+  provider release at close' tests/surveillance-runtime.test.cjs` échoue sur les quatre assertions
+  attendues quand le détachement de `stop()` est temporairement retiré. Code restauré dans un
+  `finally`, puis `node --test tests/surveillance-runtime.test.cjs` vert : 36 tests réussis.
+- Vérifications de correction : `node scripts/check.mjs --changed` vert (129 tests), puis
+  `node --test --test-concurrency=1 tests/surveillance.test.cjs tests/surveillance-runtime.test.cjs
+  tests/server-surveillance.test.cjs tests/mac-ipc-contract.test.cjs` vert (102 tests).
+- Clôture de la correction : `node scripts/check.mjs` **vert** — règles, format, lint, gel et
+  cliquet réussis ; 2 528 tests JavaScript réussis (140 fichiers, séquentiels), 47 tests Python
+  réussis. `git diff --check` réussi. Les deux constats sont corrigés ; nouveau verdict `TERMINÉ`
+  écrit dans le dossier d'état pour la relecture de la boucle. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T211/relecture-2.md : **Écart accepté, fixtures de `tests/mac-ui.test.cjs`.** Il est inchangé depuis la relecture 1 : seule la construction de la session est adaptée, avec des assertions identiques.
+- .harness-state/tickets/T211/relecture-2.md : **Écart accepté, `scripts/probe-surveillance.cjs`.** Il est inchangé : c'est une adaptation mécanique d'un appelant du runtime partagé. La sonde réelle n'est pas lancée.
+- .harness-state/tickets/T211/relecture-2.md : **Écart accepté, fixture de `tests/architecture-f05.test.cjs`.** Il est inchangé : seule la session est remplacée, et le scénario comme ses attentes restent les mêmes.
