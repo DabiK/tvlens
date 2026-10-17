@@ -155,7 +155,10 @@ Ouvrir puis refermer une archive ne réanalyse ni ne réécrit son contenu.
 ## Mémoire, recherche et surveillance
 
 `WatchSession` enregistre `PassageReceived` après ajout du passage et `AdmissionSuspended` après
-fermeture de l'admission pour disque plein. La composition partagée livre ces messages bornés par
+fermeture de l'admission pour disque plein. `PassageUpdated` annonce les enrichissements, disponibilités
+et miniatures ; `PassageLost` nomme la voie et la cause de chaque perte comptée. Ces changements font
+avancer la révision du passage ; les faits acquis dans une même transition partagent cette version.
+La composition partagée livre ces messages bornés par
 `core/shared/events.cjs`, via son diffuseur injectable `events` : abonnements synchrones, publications
 imbriquées en FIFO, données immuables et échecs isolés. Les messages nomment session, passage et
 révision ; le refus sans passage porte deux identités nulles. Aucun lecteur actuel ne migre et
@@ -391,3 +394,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0049](adr/0049-la-capture-mac-utilise-le-repli-screen-capture-kit-et-signale-le-silence.md) :
   La capture Mac utilise le repli ScreenCaptureKit d'Electron 39–44 et avertit durablement quand le son manque.
+
+- [ADR 0050](adr/0050-les-versions-consultables-et-les-pertes-de-voie-publient-leur-revision.md) :
+  Les versions consultables et les pertes de voie publient leur révision, après transition et sans snapshot.

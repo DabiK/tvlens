@@ -458,7 +458,7 @@ test('composition binds read capabilities to its session and defers explicit del
   const view = runtime.memory.view();
   contract(view);
   assert.equal(view.session.id, runtime.id);
-  assert.equal(runtime.memory.passage('moment-1').revision, 0);
+  assert.equal(runtime.memory.passage('moment-1').revision, 1);
   assert.deepEqual(runtime.memory.passages(['moment-1', 'absent']), { session: { id: runtime.id }, clock: view.clock, passages: view.passages });
   assert.deepEqual(runtime.memory.passage('moment-1').availability,
     { replayable: false, reason: 'unreadable', images: true, audio: true });

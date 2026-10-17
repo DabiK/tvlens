@@ -81,7 +81,7 @@ test('a description that fails twice is lost after exactly two calls, counted as
   await f.add(0);
   const [p] = f.watch.segments, state = f.watch.snapshot();
   assert.deepEqual(calls, ['moment-1', 'moment-1']);
-  assert.deepEqual([p.status, p.visionStatus, p.visionError, p.revision, p.observation.transcript, p.visionPublishedMs], ['partial', 'error', 'Coupure 2', 1, 'Paroles moment-1', undefined]);
+  assert.deepEqual([p.status, p.visionStatus, p.visionError, p.revision, p.observation.transcript, p.visionPublishedMs], ['partial', 'error', 'Coupure 2', 2, 'Paroles moment-1', undefined]);
   assert.deepEqual(state.coverage, { passages: 1, ...BASE, visionRetried: 1, visionError: 1 }, 'tried again, never recovered, lost once');
   assert.deepEqual([state.lastError, state.apiCalls, state.visionGaps], ['Coupure 2', 2, [{ id: 'moment-1', startMs: 0, endMs: 1000, visionStatus: 'error' }]]);
   await f.add(1);

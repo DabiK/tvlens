@@ -8,6 +8,7 @@ const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
 const { holdsMedia } = require('./clip-container.cjs');
 const { publishState } = require('./state-publication.cjs');
+const { PassageEvents } = require('./passage-events.cjs');
 const memory = require('./memory/index.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
 // Set as `code` by a perception adapter on a failed description it knows to be passing (a connection that gave
@@ -33,7 +34,7 @@ function capturedModalities(input, hasAudio) {
 class WatchSession {
   #questionPending = false;
   #questionIntakeClosed = false;
-  #events = [];
+  #events;
   #modalities = new Map();
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
@@ -44,6 +45,7 @@ class WatchSession {
     retentionMs = Number.isFinite(retentionMs) && retentionMs > 0 ? retentionMs : Infinity;
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
       onChange, onEvents, onPublicationError, retentionMs, maxPending, visionDuringAsk });
+    this.#events = new PassageEvents(id);
     this.segments = []; this.history = []; this.questions = []; this.queue = [];
     this.visionQueue = []; this.audioRunning = false; this.visionRunning = false;
     this.closed = false; this.controller = new AbortController();
@@ -131,10 +133,7 @@ class WatchSession {
           const admissionWasOpen = this.accepting;
           this.accepting = false;
           this.storageError = error.message;
-          if (admissionWasOpen) this.#events.push({
-            type: 'AdmissionSuspended', sessionId: this.id, passageId: null, revision: null,
-            cause: { code: STORAGE_FULL }, interval: { startMs: input.startMs, endMs: input.endMs },
-          });
+          if (admissionWasOpen) this.#events.suspended(input, STORAGE_FULL);
           this.emit();
           await this.persist();
         }
@@ -142,12 +141,12 @@ class WatchSession {
       }
       this.#modalities.set(segment.id, capturedModalities(input, segment.hasAudio));
       this.segments.push(segment);
-      this.#events.push({
-        type: 'PassageReceived', sessionId: this.id, passageId: segment.id, revision: segment.revision,
-        interval: { startMs: segment.startMs, endMs: segment.endMs },
-      });
+      this.#events.received(segment);
       // Counted once the passage exists: a refused write leaves no passage and no count.
-      if (empty) this.losses.videoUnreadable = (this.losses.videoUnreadable || 0) + 1;
+      if (empty) {
+        this.losses.videoUnreadable = (this.losses.videoUnreadable || 0) + 1;
+        this.#events.update(segment);
+      }
       // A write that was under way when the session closed still lands, but nothing is queued for analysis.
       // Nor while its host is ending it: the passage is kept, replayable, and reopens as unanalysed.
       if (!this.closed && !this.ending) { this.queue.push(segment); this.shed(); }
@@ -162,11 +161,17 @@ class WatchSession {
     const segment = await admitted;
     // Analysis is already running: the thumbnail and the retention sweep no longer delay it.
     if (this.thumbnails) {
-      try { await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl); segment.thumbnailAvailable = true; }
-      catch { segment.thumbnailAvailable = false; }
+      let available;
+      try {
+        await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl);
+        available = true;
+      }
+      catch { available = false; }
+      if (Boolean(segment.thumbnailAvailable) !== available) this.#events.update(segment);
+      segment.thumbnailAvailable = available;
       // The passage may already have been archived: its card must still find the thumbnail.
       const archived = this.history.find(item => item.id === segment.id);
-      if (archived) archived.thumbnailAvailable = segment.thumbnailAvailable;
+      if (archived) Object.assign(archived, { thumbnailAvailable: available, revision: segment.revision });
       this.emit();
     }
     await this.prune();
@@ -180,11 +185,13 @@ class WatchSession {
     for (const s of waiting.slice(0, Math.max(0, waiting.length - this.maxPending))) {
       s.audioStatus = 'skipped';
       this.losses.audioSkipped++;
+      this.#events.update(s, 'audio', 'backlog');
     }
     while (this.queue.length > this.maxPending * 3) {
       const dropped = this.queue.shift();
       Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped', visionSkipReason: 'backlog' });
       this.losses.visionSkippedBacklog++;
+      this.#events.update(dropped, 'vision', 'backlog');
     }
   }
 
@@ -194,6 +201,7 @@ class WatchSession {
     segment.visionStatus = 'skipped'; segment.visionSkipReason = reason;
     segment.status = hasUsableObservation(segment) ? 'partial' : 'skipped';
     this.losses[reason === 'asking' ? 'visionSkippedAsking' : 'visionSkippedBacklog']++;
+    this.#events.update(segment, 'vision', reason);
   }
 
   // Hands a passage over to the vision lane, or records why it will not be described.
@@ -207,6 +215,7 @@ class WatchSession {
     } else {
       segment.visionStatus = 'expired'; this.losses.visionExpired++;
       segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
+      this.#events.update(segment, 'vision', 'expired');
     }
   }
 
@@ -219,10 +228,15 @@ class WatchSession {
       for (const segment of this.segments) {
         if (stored(segment) && segment.endMs < cutoff) {
           segment.available = false; segment.mediaReason = 'expired';
+          this.#events.update(segment);
           // Still waiting for its transcription: neither lane will ever see it.
           if (this.queue.includes(segment)) {
-            if (segment.audioStatus !== 'skipped') this.losses.audioExpired++;
+            if (segment.audioStatus !== 'skipped') {
+              this.losses.audioExpired++;
+              this.#events.update(segment, 'audio', 'expired');
+            }
             segment.visionStatus = 'expired'; this.losses.visionExpired++;
+            this.#events.update(segment, 'vision', 'expired');
           }
           this.queue = this.queue.filter(item => item !== segment);
           this.visionQueue = this.visionQueue.filter(item => item !== segment);
@@ -230,12 +244,15 @@ class WatchSession {
           if (segment.visionStatus === 'queued') {
             segment.visionStatus = 'expired'; this.losses.visionExpired++;
             segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
+            this.#events.update(segment, 'vision', 'expired');
           }
           if (segment.status === 'queued') segment.status = 'expired';
           // The passage stays unavailable: a failed removal must not stop the sweep or the archival.
           this.unremoved.add(segment.id);
         }
       }
+      // La version expirée est déjà consultable : une analyse terminant pendant le retrait doit avoir la sienne.
+      this.#events.publish(events => this.onEvents(events), this.onPublicationError);
       // A removal that failed is tried again at every sweep: no raw media beyond the rolling window.
       for (const id of [...this.unremoved]) {
         try { await this.media.remove(id); this.unremoved.delete(id); }
@@ -287,13 +304,16 @@ class WatchSession {
         segment.audioFailed = true;
         segment.audioFailureCode = result.code;
         this.losses.audioError++;
+        this.#events.update(segment, 'audio', 'error');
       }
-      segment.observation = result.observation; segment.revision++;
+      segment.observation = result.observation;
+      this.#events.update(segment);
       segment.audioStatus = 'ready'; segment.transcriptPublishedMs = this.now();
     } catch (error) {
       if (this.closed) return;
       segment.audioStatus = 'error'; segment.audioError = error.message;
       this.lastError = error.message; this.losses.audioError++;
+      this.#events.update(segment, 'audio', 'error');
     } finally {
       this.audioRunning = false; this.running = this.visionRunning;
       if (!this.closed) {
@@ -349,7 +369,8 @@ class WatchSession {
       segment.observation = { ...segment.observation, ...result.observation };
       segment.topicSummary = completeTopicSummary(segment, result, context);
       segment.visionStatus = 'ready'; segment.visionMs = result.elapsedMs;
-      segment.visionPublishedMs = this.now(); segment.revision++;
+      segment.visionPublishedMs = this.now();
+      this.#events.update(segment);
       segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
       segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
       segment.metrics = { ...segment.metrics, ...result.metrics };
@@ -365,6 +386,7 @@ class WatchSession {
       segment.visionStatus = 'error'; segment.visionError = error.message;
       segment.status = hasUsableObservation(segment) ? 'partial' : 'error';
       this.lastError = error.message; this.losses.visionError++;
+      this.#events.update(segment, 'vision', 'error');
     } finally {
       this.visionRunning = false; this.running = this.audioRunning;
       segment.stage = null;
@@ -478,11 +500,7 @@ class WatchSession {
       segments: this.segments.map(s => ({ ...s })) };
   }
   emit() {
-    if (this.#events.length) {
-      const events = this.#events;
-      this.#events = [];
-      publishState(() => this.onEvents(events), this.onPublicationError, { origin: 'watch-session-events', sessionId: this.id });
-    }
+    this.#events.publish(events => this.onEvents(events), this.onPublicationError);
     if (this.closed) return;
     publishState(() => this.onChange(this.snapshot()), this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
   }

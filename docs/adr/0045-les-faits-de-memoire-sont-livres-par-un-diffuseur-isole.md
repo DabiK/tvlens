@@ -28,7 +28,7 @@ l'erreur réservée au diagnostic. Le diagnostic injecté est lui-même protég�
 rejet, sans nouvelle publication ni diagnostic récursif. Aucune promesse d'abonné ou de diagnostic
 n'est attendue ; aucun accès au temps ni aucune dépendance externe n'est nécessaire.
 
-`WatchSession` enregistre deux faits dans une file privée puis la vide avant tout callback, lors
+`WatchSession` enregistre ses faits dans une file privée puis la vide avant tout callback, lors
 de la publication de la transition. Son port synchrone `onEvents` remet le lot à la composition
 partagée, qui appelle le diffuseur injecté par l'option `events`, construit par défaut avec
 `onPublicationError`. La façade expose ce même `events` pour abonnement. Le port est protégé
@@ -39,18 +39,22 @@ même quand la publication d'état est déjà silencieuse.
 | Type | Moment | Identités et données |
 | --- | --- | --- |
 | `PassageReceived` | Après stockage accepté et ajout effectif à la mémoire | `sessionId`, `passageId`, `revision` courante et `interval: { startMs, endMs }` |
+| `PassageUpdated` | Après acquisition d’une nouvelle version consultable (ADR 0050) | Identités, nouvelle `revision` et intervalle |
+| `PassageLost` | Après une perte effectivement comptée (ADR 0050) | Identités, `revision`, intervalle, `lane` et `cause: { code }` bornées |
 | `AdmissionSuspended` | Après fermeture de l'admission pour disque plein | `sessionId`, `passageId: null`, `revision: null`, `cause: { code: 'TVLENS_STORAGE_FULL' }` et intervalle refusé |
 
 La réception copie la révision initiale existante, sans la faire avancer. Les enrichissements
-audio et vision conservent leurs incréments actuels. Le refus disque conserve son erreur d'origine,
+audio et vision conservent leurs incréments ; l’ADR 0050 étend la révision aux autres versions
+consultables. Le refus disque conserve son erreur d'origine,
 n'ajoute aucun passage et transmet uniquement son code structuré dans le fait. La suspension est
 enregistrée seulement si ce refus ferme une admission encore ouverte. Les autres écritures déjà
 admises conservent leur refus et leur sauvegarde, sans nouveau fait après une première suspension
 ou une fermeture par `stop()`, `closeIntake()` ou `close()`. Aucun texte de
 perception, média, objet `Error`, snapshot ou liste de passages n'entre dans ces messages.
 
-Les files se vident après livraison ; aucun historique ni rejeu n'est conservé. Restaurer reste
-silencieux, sans `MemoryReopened`. Les enrichissements et pertes n'ajoutent aucun événement ici.
+Les files sont vidées avant les callbacks ; aucun historique ni rejeu n'est conservé. Restaurer reste
+silencieux, sans `MemoryReopened`. Les enrichissements et pertes suivent désormais le complément
+[ADR 0050](0050-les-versions-consultables-et-les-pertes-de-voie-publient-leur-revision.md).
 `onChange` conserve ses points d'émission, sa signature et ses lecteurs. Sauvegarde, révocation
 et fermeture restent des appels explicites, indépendants des notifications.
 

@@ -596,7 +596,7 @@ test("the pruned archive opens without writes or providers and resumes durably w
         clock += 3600000;
         await resumed.session.watch.prune();
         const state = resumed.snapshot().session;
-        assert.deepEqual(mediaFacts(state), [...expected.restored, ["moment-5", true, null, 2]]);
+        assert.deepEqual(mediaFacts(state), [...expected.restored, ["moment-5", true, null, 3]]);
         assert.deepEqual(state.questions, oldState.questions);
         assert.deepEqual(state.gaps, oldState.gaps);
         assert.deepEqual(state.history.slice(0, 2), oldState.history);
@@ -616,7 +616,7 @@ test("the pruned archive opens without writes or providers and resumes durably w
       const reopened = historicalRuntime(resumedRoot, providers);
       try {
         await reopened.open(expected.id);
-        assert.deepEqual(mediaFacts(reopened.snapshot().session), [...expected.restored, ["moment-5", true, null, 2]]);
+        assert.deepEqual(mediaFacts(reopened.snapshot().session), [...expected.restored, ["moment-5", true, null, 3]]);
         assert.deepEqual(reopened.snapshot().session.questions, oldState.questions);
       } finally {
         await reopened.close();

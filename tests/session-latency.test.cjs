@@ -39,7 +39,7 @@ test('timeline stamps are ordered on the session clock and survive archival with
   assert.equal(f.watch.segments.length, 0);
   const archived = f.watch.history[1];
   assert.deepEqual(stamps.map(k => archived[k]), [2000, 2400, 2600, 2600, 3100, 3500]);
-  assert.equal(archived.revision, 2); assert.deepEqual(archived.ingest, { assembleMs: 150 });
+  assert.equal(archived.revision, 3); assert.deepEqual(archived.ingest, { assembleMs: 150 });
   assert.equal(second.analysisMs, 1000); assert.deepEqual(second.metrics, { whisper: { threads: 4 }, frames: 3 });
   assert.equal(archived.metrics, undefined, 'the archive is sent at every state poll: it keeps numbers, not diagnostics');
   assert.equal(archived.audioMs, 300); assert.equal(archived.visionMs, 700); assert.equal(archived.status, 'ready');
@@ -51,7 +51,7 @@ test('ingest metadata keeps only a finite, non-negative assembleMs from a plain 
   for (const [i, [ingest]] of cases.entries()) await f.add(i, { ingest });
   assert.deepEqual(f.watch.segments.map(s => s.ingest), cases.map(([, kept]) => kept));
 });
-test('revision counts published evidence: transcript, then vision; a failed vision adds nothing', async () => {
+test('revision counts consultable versions: transcript, then visual evidence or terminal loss', async () => {
   const audio = gates(), vision = gates();
   const f = fixture({ transcribe: async s => { await audio(s.id).promise; return transcribe(s); },
     observeVisual: async s => { await vision(s.id).promise; if (s.id === 'moment-2') throw Error('vision failed'); return visual(s); } });
@@ -61,9 +61,9 @@ test('revision counts published evidence: transcript, then vision; a failed visi
   vision('moment-1').resolve(); await tick(); assert.equal(first.revision, 2); assert.equal(first.status, 'ready');
   audio('moment-2').resolve(); vision('moment-2').resolve(); await f.add(1);
   const second = f.watch.segments[1];
-  assert.equal(second.visionStatus, 'error'); assert.equal(second.revision, 1); assert.equal(second.visionPublishedMs, undefined);
+  assert.equal(second.visionStatus, 'error'); assert.equal(second.revision, 2); assert.equal(second.visionPublishedMs, undefined);
   assert.equal(f.watch.losses.visionError, 1);
-  assert.deepEqual(f.snapshots.at(-1).segments.map(s => s.revision), [2, 1]);
+  assert.deepEqual(f.snapshots.at(-1).segments.map(s => s.revision), [2, 2]);
 
 });
 test('a transcription reporting its own failure is counted and flagged, and a host without Whisper still gets complete visual passages', async () => {
