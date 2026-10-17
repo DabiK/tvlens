@@ -75,7 +75,16 @@ par les commandes des critères 1 à 3.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : la version de la nuit tourne-t-elle encore sur la TV de test et sur le
+Décision prise par l'orchestrateur le 17/10, par délégation du propriétaire (décider en son absence) : les faits
+sont établis. Depuis le 17/10, la TV de test et le VPS font tourner le tag `hackathon-rc` (`633e6d8`), recetté ce
+jour-là. Sur le VPS, c'est la release figée `/opt/tvlens/releases/hackathon-rc-20261017-633e6d8`, choisie par le
+drop-in `/etc/systemd/system/tvlens.service.d/night-release.conf` ; `/opt/tvlens/app` n'est pas ce qui tourne. Sur
+la TV, la page `org.tvlens.sidebarprobe` et le compagnon (`controller.py`, `capture.py`, `transport.py`) sont ceux du
+tag, écrans de surveillance et de sessions compris ; les anciens fichiers ambient restent présents sans être
+chargés. Le `README.md` ne change pas (décision du propriétaire du 16/10) : l'endroit unique est un document de
+`docs/`, auquel le reste renvoie, et il décrit aussi la méthode des releases figées.
+
+Question posée : la version de la nuit tourne-t-elle encore sur la TV de test et sur le
 VPS, et depuis quelle révision ? D'après `docs/night-features-delivery.md` (ligne 79), elle a été installée
 depuis l'arbre de travail. Les écrans de surveillance et de sessions de la TV sont-ils déployés ? Sans cette
 réponse, le ticket ne peut rien affirmer. Aucune vérification n'est faite sur la TV ou le VPS par la session.
