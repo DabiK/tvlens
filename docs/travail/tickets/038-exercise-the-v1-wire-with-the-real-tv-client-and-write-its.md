@@ -1,7 +1,7 @@
 ---
 id: T038
 titre: Exercise the /v1 wire with the real TV client and write its compatibility rule
-statut: a-faire
+statut: termine
 bloque_par: T189
 adr: oui
 installe: non
@@ -110,3 +110,57 @@ est rapportée avant toute modification produit. Les versions effectivement inst
 le VPS ne sont pas établies ; ce contrat porte sur les sources relues, pas sur un déploiement supposé.
 
 ## Journal
+
+- Exploration : consignes, transport, runtime, clients JS/Python, aides et ADR relus ; notes et
+  écarts prévus dans `.harness-state/tickets/T038/`. Le témoin de hooks est présent. Le diff
+  préexistant et les deux répertoires non suivis sont conservés. Aucun changement produit prévu.
+- Banc, rouge puis vert : `node --test tests/wire-contract.test.cjs` échoue d'abord sur
+  l'assertion d'observation HTTP (`undefined !== 200`, `wire-red.log`), puis passe 1/1 après
+  ajout du fetcher qui observe une copie de la réponse (`wire-revalidation-green.log`).
+- Caractérisations ajoutées sans changement produit : la même commande passe 4/4 pour les vues,
+  publication pilotée et refus (`wire-views-refusals.log`), puis 6/6 avec cycle d'archive et
+  déduplication (`wire-lifecycle-dedup.log`). Ces comportements existants étaient déjà verts.
+- Contrat écrit : ADR 0042, premier numéro libre, distingue producteurs, séquences locales lues,
+  preuves HTTP, refus codés et politique d'évolution. Aucun déploiement ni capacité négociée supposé.
+- `node scripts/check.mjs --changed` : vert, 6/6 tests, règles/format/lint/gel/cliquet verts
+  (`check-changed.log`). Aucun test ni réponse produit existant n'est modifié.
+- Acceptation exécutée dans l'ordre, sans concurrence :
+  `node --test tests/wire-contract.test.cjs` (6/6),
+  `node --test tests/server-state-views.test.cjs` (4/4),
+  `node --test tests/server-ingest-path.test.cjs` (13/13),
+  `node --test tests/tv-panel.test.cjs` (19/19),
+  `node --test tests/tv-poll-controller.test.cjs` (25/25), tous verts.
+  Sorties conservées dans `.harness-state/tickets/T038/*-acceptance.log`.
+- `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet verts,
+  2 140/2 140 tests JS (132 fichiers) et 30/30 tests Python (`check-full.log`).
+  `git diff --check` : aucune erreur. Verdict `TERMINÉ` écrit dans le dossier d'état ;
+  relecture et intégration laissées à la boucle, sans commit ni push.
+- Reprise après `relecture-1.md` : rapport, consignes, ticket/journal, écarts, fichiers concernés,
+  appelants, `git status --short` et `git diff` relus. Nouveau témoin de hooks présent. Les deux
+  mineurs sont acceptés ; preuve de délai prévue avant correction dans le dossier d'état.
+- Délai, rouge puis vert :
+  `node .harness-state/tickets/T038/probe-publication-timeout.cjs` échoue d'abord sur son assertion
+  (`0 !== 1`) : le test de rejeu attend la garde de libération à 11 s, sans délai propre
+  (`publication-timeout-red.log`). Après ajout de `{ timeout: 10000 }` à ce test, la même sonde
+  passe : annulation nommée `testTimeoutFailure`, `test timed out after 10000ms`, à 10,013 s
+  (`publication-timeout-green.log`). La perception est retenue par l'aide existante dans un processus
+  isolé ; la garde garantit le nettoyage du cas rouge. Aucun attendu du banc n'est assoupli.
+- ADR 0042 corrigé : les appels questions/annulation, détail de moment, miniature, surveillance
+  et réglage de transcription sont recensés avec leurs méthodes, après relecture de RemoteClient
+  et companion.js. La portée de la ligne état/sessions et celle du banc sont explicites.
+- Vérifications de correction exécutées en séquentiel, dans l'ordre :
+  `node --test tests/wire-contract.test.cjs` (6/6),
+  `node --test tests/server-state-views.test.cjs` (4/4),
+  `node --test tests/server-ingest-path.test.cjs` (13/13),
+  `node --test tests/tv-panel.test.cjs` (19/19),
+  `node --test tests/tv-poll-controller.test.cjs` (25/25), tous verts
+  (`*-correction-1.log`). `node scripts/check.mjs --changed` : vert, 6/6 tests et contrôles qualité
+  verts (`check-changed-correction-1.log`).
+- `node scripts/check.mjs` après correction : vert ; règles, format, lint, gel et cliquet verts,
+  2 140/2 140 tests JS (132 fichiers), 30/30 tests Python (`check-full-correction-1.log`).
+  `git diff --check` : aucune erreur. Les deux mineurs sont corrigés ; nouveau verdict `TERMINÉ`
+  écrit. Relecture et intégration rendues à la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T038/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 2 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
