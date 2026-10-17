@@ -121,9 +121,6 @@
     }
   },
   "app/renderer.js": {
-    "complexity": {
-      "count": 1
-    },
     "max-lines": {
       "count": 1
     }

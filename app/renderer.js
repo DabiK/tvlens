@@ -1,36 +1,27 @@
-import { renderRecapView } from './ui/recap-view.js';
-import { reduceRecap } from './ui/recap-state.mjs';
+import { createRendererWiring } from './ui/renderer-wiring.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { createBrowserCaptureController } from './ui/browser-capture.mjs';
 import { bindCaptureActions } from './ui/capture-actions.mjs';
 import { bindMomentActions } from './ui/moment-actions.mjs';
 import { renderCaptureControls } from './ui/capture-controls.mjs';
-import { agreeText, cleanError, formatBytes, plural } from './ui/text.mjs';
+import { cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
-import { describeSurveillance, isRestoring, nextSeen, sequences, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
-import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, describeMemory, mediaNote } from './ui/sessions-view.mjs';
-import { replayTarget } from './ui/search-view.mjs';
-import { createSearchController } from './ui/search-controller.mjs';
-import { CardQueue, CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
+import { isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
+import { describeSessions, describeStorage, describeArchive, describeDeletion, describeCoverage, mediaNote } from './ui/sessions-view.mjs';
+import { CARD_DURATIONS_MS, DEFAULT_CARD_DURATION_MS } from './ui/card-queue.mjs';
 import { KeyedList, tail, olderPassagesLabel, trimMap, settledCount } from './ui/list-view.mjs';
-import { createChatView } from './ui/chat-view.mjs';
 import { cardEntry, historyEntry, filterEntry, gapEntry } from './ui/surveillance-dom.js';
 import { sessionEntry } from './ui/sessions-dom.js';
-import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';
-import { createStateDelivery, bindPushedStates, FALLBACK_MS } from './ui/state-delivery.mjs';
+import { FALLBACK_MS } from './ui/state-delivery.mjs';
 const $ = id => document.getElementById(id);
 const shell = new ViewingShell();
 const bridge = window.tvlens;
 // Reversible display bounds: a film is hundreds of passages, the window draws the recent ones.
 const RAIL_LIMIT = 40, PREVIEW_LIMIT = 60, HISTORY_STEP = 200, REGISTRY_EVERY_MS = 2000;
-let configuration, currentState = null, pendingQuestion = '';
-let verificationState = { busy: false, jobs: [] }, pendingQuestionAt = 0;
-let deepState = { jobs: [] };
-let recapState = null, recapRevision = 0, recapKey = '';
+let configuration, pendingQuestion = '', pendingQuestionAt = 0;
 const momentPreviews = new Map();
-// Passages of the loaded session by id, rebuilt once per state: cards and citations look them up, never scan.
-let passages = new Map(), shownError = '', forceBottom = false, settled = -1;
+let shownError = '', forceBottom = false, settled = -1;
 const cancelling = new Set();
 const reason = error => cleanError(error);
 const status = text => { $('state').textContent = text; $('live-state').textContent = text; };
@@ -74,16 +65,16 @@ function setConfig(value) {
 }
 function updateButtons() {
   renderCaptureControls({
-    get: $, shell, capture, session: currentState,
+    get: $, shell, capture, session: wiring.session,
     captureBusy: captureActions.busy, quickBusy: momentActions.busy,
-    configuration, verificationBusy: verificationState.busy, pendingQuestion,
+    configuration, verificationBusy: wiring.verificationState.busy, pendingQuestion,
   });
 }
 const capture = createBrowserCaptureController({
   bridge,
   source: () => $('source').value,
   video: $('preview'),
-  session: () => currentState,
+  session: () => wiring.session,
   view: {
     previewStarting: () => { $('start').disabled = true; },
     observing: () => {
@@ -104,7 +95,7 @@ const capture = createBrowserCaptureController({
       $('source').disabled = true;
     },
     stopped: () => {
-      $('mode').textContent = currentState?.id ? 'EN PAUSE' : 'PRÊT À REGARDER';
+      $('mode').textContent = wiring.session?.id ? 'EN PAUSE' : 'PRÊT À REGARDER';
       $('mode').classList.remove('cloud');
     },
     changed: updateButtons,
@@ -120,7 +111,7 @@ const capture = createBrowserCaptureController({
     meter: value => { $('meter').value = value; },
     state: receiveState,
     segment: (id, preview, session) => {
-      if (preview && currentState?.id === session.id) momentPreviews.set(id, preview);
+      if (preview && wiring.session?.id === session.id) momentPreviews.set(id, preview);
       scheduleState();
     },
   },
@@ -128,7 +119,7 @@ const capture = createBrowserCaptureController({
 const captureActions = bindCaptureActions({
   get: $, capture, bridge, window,
   sources: () => window.capture.sources(),
-  session: () => currentState,
+  session: () => wiring.session,
   configuration: () => configuration,
   mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
   changeWindowMode,
@@ -137,82 +128,58 @@ const captureActions = bindCaptureActions({
 });
 const momentActions = bindMomentActions({
   get: $, capture, bridge,
-  session: () => currentState,
+  session: () => wiring.session,
   mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
   changeWindowMode, changed: updateButtons, notice,
   forceBottom: () => { forceBottom = true; },
 });
-// `card` is a search result, which names the session it was searched in; a citation is only drawn for the loaded one.
-function replay(id, offset = 0, card) {
-  // Session and passage are both checked before any address is built; the refusal says why (another session,
-  // video not kept, missing, expired).
-  const { segment, url, refusal } = replayTarget({ id, sessionId: card ? card.sessionId : currentState?.id }, currentState);
-  if (refusal) return notice(refusal);
-  $('replay-title').textContent = `Passage ${formatTime(segment.startMs)} — ${formatTime(segment.endMs)}`;
-  $('replay').muted = true;
-  $('replay').src = url;
-  $('replay').onloadedmetadata = () => { $('replay').currentTime = Math.min(offset, Math.max(0, $('replay').duration - 0.1)); };
-  $('replay-note').textContent = currentState.accepting ? 'Relecture muette pendant l’observation pour ne pas recapturer son audio.' : 'Tu peux activer le son : l’observation est arrêtée.';
-  $('replay-dialog').showModal();
-  $('replay').play().catch(() => {});
-}
-// A citation or a surveillance origin starts inside its passage, at its own time code.
-function replayAt(id, startMs) {
-  const segment = passages.get(id);
-  replay(id, segment && Number.isFinite(startMs) ? Math.max(0, (startMs - segment.startMs) / 1000) : 0);
-}
-const thumbnail = id => `tvlens-media://${currentState.id}/thumb/${id}`;
-const previewOf = id => momentPreviews.get(id) || (passages.get(id)?.thumbnailAvailable ? thumbnail(id) : undefined);
+const thumbnail = id => `tvlens-media://${wiring.session.id}/thumb/${id}`;
+const previewOf = id => momentPreviews.get(id) || (wiring.passages.get(id)?.thumbnailAvailable ? thumbnail(id) : undefined);
 
 // ---- Loaded session --------------------------------------------------------------------------
-function receiveState(state) {
-  if (state) stateDelivery.receive('session', state);
-}
-function adoptState(state) {
-  if (currentState?.id !== state.id) { momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; recapKey = ''; shownError = ''; search.clear(); }
-  currentState = state;
-  passages = new Map();
-  for (const list of [state.history || [], state.segments]) for (const passage of list) passages.set(passage.id, passage);
+function receiveState(state) { wiring.receiveState(state); }
+function adoptedState(state) {
+  if (loadedSessionId !== state.id) {
+    momentPreviews.clear(); cancelling.clear(); surveillanceRegistry = null; registryKey = ''; shownError = '';
+  }
+  loadedSessionId = state.id;
   if (state.storage) storageState = { ...storageState, ...state.storage };
-  // The session no longer accepts passages (disk full, pause decided by the host): the recorder stops with it.
+  // Une pause imposée par l’hôte ou un disque plein arrête aussi le recorder qui ne peut plus livrer de passages.
   captureActions.pauseIfUnavailable({ accepting: state.accepting });
 }
+let loadedSessionId = null;
 const PASSAGE_LABELS = { queued: 'En attente d’analyse', analyzing: 'Analyse en cours…', ready: 'Analysé', partial: 'Analyse partielle', skipped: 'Analyse sautée : file pleine', error: 'Analyse indisponible', expired: 'Vidéo expirée avant l’analyse' };
 const timelineList = new KeyedList($('timeline'));
-function drawState() {
-  const state = currentState;
+function drawSessionChrome() {
+  const state = wiring.session;
   drawBanners();
-  if (!state) { drawTimeline(); drawChat(); drawSurveillance(); updateButtons(); return; }
-  if (recapState?.sessionId && recapState.sessionId !== state.id) recapState = null;
-  renderRecap();
+  if (!state) { drawTimeline(); drawSurveillance(); updateButtons(); return; }
   $('elapsed').textContent = formatTime(state.elapsedMs);
   $('chat-coverage').textContent = describeCoverage(state);
   $('usage').textContent = `Perception Codex : ${plural(state.apiCalls, 'passage')}`;
-  // The retention shown is the loaded session's own (its state, else its entry in the library), never the setting
-  // of this host: an archive kept until deletion says so wherever it is opened. No duration is written here.
-  $('memory-status').textContent = describeMemory(state, { library });
-  $('memory-status').title = $('memory-status').textContent;
   // Said once per message: a state arrives several times a second and must not overwrite a newer notice.
   if (state.lastError && state.lastError !== shownError && !diskFull()) notice(state.lastError);
   shownError = state.lastError || '';
-  drawTimeline(); drawChat(); drawSurveillance(); updateButtons();
+  drawTimeline(); drawSurveillance(); updateButtons();
 }
-const stateDelivery = createStateDelivery({
-  sources: {
-    session: { group: 'session', adopt: adoptState },
-    deep: { group: 'chat', adopt: state => { deepState = state; } },
-    verification: { group: 'chat', adopt: state => { verificationState = state; } },
+const wiring = createRendererWiring({
+  bridge, window, document, get: $, shell,
+  configuration: () => configuration, library: () => library, preview: previewOf,
+  chatOptions: () => ({ cancelling, pendingQuestion, pendingQuestionAt, forceBottom }),
+  mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
+  watchOptions: () => ({ registry: surveillanceRegistry, filter: watchFilter, historyLimit }),
+  views: { adopted: adoptedState, session: drawSessionChrome, chat: chatDrawn, reset: resetSessionChrome,
+    changed: updateButtons, surveillance: drawSurveillanceChrome },
+  notice,
+  time: {
+    now: () => Date.now(), requestFrame: callback => requestAnimationFrame(callback), cancelFrame: id => cancelAnimationFrame(id),
+    setTimer: (callback, delay) => setTimeout(callback, delay), clearTimer: id => clearTimeout(id),
   },
-  draws: { session: drawState, chat: drawChat },
-  now: () => performance.now(),
-  requestFrame: callback => requestAnimationFrame(callback),
-  cancelFrame: id => cancelAnimationFrame(id),
-  setTimer: (callback, delay) => setTimeout(callback, delay),
-  clearTimer: id => clearTimeout(id),
 });
-const scheduleState = () => stateDelivery.schedule('session');
+const scheduleState = () => wiring.scheduleState();
+const drawState = () => wiring.drawState();
 function drawTimeline() {
-  const state = currentState, { items, olderCount } = tail(state?.segments, RAIL_LIMIT);
+  const state = wiring.session, { items, olderCount } = tail(state?.segments, RAIL_LIMIT);
   const entries = items.slice().reverse().map(segment => {
     const memory = momentPreviews.get(segment.id), image = memory || (segment.thumbnailAvailable ? thumbnail(segment.id) : '');
     const text = segment.observation?.summary || segment.observation?.transcript || PASSAGE_LABELS[segment.status];
@@ -235,9 +202,9 @@ function drawTimeline() {
 }
 let storageState = null, storageView = describeStorage(null);
 // Out of room, the persistent banner says it all: the same reason is not repeated as a notice at every refused passage.
-const diskFull = () => storageView.blocked || currentState?.storage?.state === 'blocked';
+const diskFull = () => storageView.blocked || wiring.session?.storage?.state === 'blocked';
 function drawBanners() {
-  const archive = describeArchive(currentState);
+  const archive = describeArchive(wiring.session);
   $('archive-banner').hidden = !archive;
   if (archive) { $('archive-label').textContent = archive.label.toUpperCase(); $('archive-text').textContent = `${archive.text}.`; $('archive-hint').textContent = archive.hint; }
   storageView = describeStorage(storageState, { capturing: capture.recording });
@@ -250,42 +217,15 @@ function drawBanners() {
 function receiveStorage(storage) { if (!storage) return; storageState = { ...storage }; drawBanners(); }
 
 // ---- Conversation: one card per question, only what changed is redrawn -----------------------
-const drawChatCards = createChatView({ list: $('message-list'), box: $('messages'), intro: $('chat-intro'), queueStatus: $('queue-status') });
-function chatContext() {
-  return { now: Date.now(), timeoutMs: configuration?.questionTimeoutMs ?? null, queuedIds: deepState.jobs.filter(job => job.status === 'queued').map(job => job.id),
-    capturing: Boolean(currentState?.accepting), session: currentState, passage: id => passages.get(id), preview: previewOf, cancelling,
-    verifyAvailable: Boolean(configuration?.verificationAvailable), verifyBusy: verificationState.busy };
-}
-function drawChat() {
-  drawChatCards({ context: chatContext(), deepState, verificationState, pendingQuestion, pendingQuestionAt,
-    forceBottom, limit: configuration?.questionQueueLimit });
+const drawChat = () => wiring.drawChat();
+function chatDrawn() {
   forceBottom = false;
   // The budget file is read again when a question finishes, not at each fragment of an answer.
-  const finished = settledCount(deepState.jobs);
+  const finished = settledCount(wiring.deepState.jobs);
   if (finished !== settled) { settled = finished; refreshResearchBudget(); }
 }
-const scheduleChat = () => stateDelivery.schedule('chat');
-function openVerification(text = '') {
-  if (verificationState.busy) return notice('Une vérification est déjà en cours. Tu peux toujours poser une question sur la vidéo.');
-  if (!configuration?.verificationAvailable) return notice('Codex CLI est introuvable sur ce Mac.');
-  $('claim').value = claimFrom(text); $('verify-error').textContent = '';
-  $('verify-dialog').showModal(); $('claim').focus();
-}
-$('verify').onclick = () => openVerification($('question').value);
-$('close-verify').onclick = () => $('verify-dialog').close();
-$('verify-form').onsubmit = async event => {
-  event.preventDefault(); const claim = $('claim').value.trim();
-  if (!claim || verificationState.busy) return;
-  $('verify-dialog').close(); notice('');
-  if (withoutVerifyPrefix($('question').value) === claim) $('question').value = '';
-  try { await bridge.verify(claim); }
-  catch (error) { notice(reason(error)); }
-};
+const scheduleChat = () => wiring.scheduleChat();
 function refreshResearchBudget() { bridge.researchBudget().then(b => { $('research-usage').textContent = `OpenRouter (historique + embeddings) : ${b.spentUsd.toFixed(4)} $ comptabilisés${b.limitUsd==null?' · sans plafond local':` sur ${b.limitUsd} $`}${b.heldUsd ? ' · appels réservés en cours ou coût inconnu' : ''}`; }).catch(() => {}); }
-const pushedStates = bindPushedStates({
-  bridge, delivery: stateDelivery, changed: updateButtons, onError: error => notice(reason(error)),
-});
-window.addEventListener('beforeunload', () => pushedStates.release());
 $('ask-form').onsubmit = async event => {
   event.preventDefault(); const question = $('question').value.trim();
   // Enter goes through the same gate as the button: no request the host can only refuse.
@@ -309,19 +249,14 @@ setInterval(() => {
 }, 1000);
 
 // ---- One click handler for every card: a button keeps working when its card is redrawn -------
-const jobOf = id => deepState.jobs.find(job => job.id === id);
+const jobOf = id => wiring.deepState.jobs.find(job => job.id === id);
 const actions = {
-  replay: data => replayAt(data.id, data.start === undefined ? NaN : Number(data.start)),
   'job-cancel': async data => { cancelling.add(data.id); drawChat(); try { await bridge.cancelDeep(data.id); } finally { cancelling.delete(data.id); scheduleChat(); } },
   'job-reask': data => { const job = jobOf(data.id); if (job) { $('question').value = job.question; $('question').focus(); updateButtons(); } },
-  'job-more': data => { const job = jobOf(data.id); return job?.result && bridge.ask(deepenRequest(job.result.answer)); },
-  'job-verify': data => { const job = jobOf(data.id); if (job?.result) openVerification(job.result.answer); },
   'job-reexamine': data => { const job = jobOf(data.id); return job && (job.intent ? bridge.reexamineMoment(job.id) : bridge.deepen(job.question)); },
   'chat-source': data => bridge.openChatSource(data.job, Number(data.index)),
   'verify-cancel': (data, target) => { target.disabled = true; return bridge.cancelVerification(); },
-  'verify-retry': data => { const job = verificationState.jobs.find(item => item.id === data.id); if (job) openVerification(job.claim); },
   'verify-source': data => bridge.openSource(data.job, Number(data.index)),
-  'watch-source': data => bridge.openSurveillanceSource(data.lot, Number(data.index)),
   'watch-dismiss': data => { cardQueue.dismiss(data.key); drawStack(); },
   'watch-show-lot': data => showLot(data.lot),
   'watch-retry': async data => receiveSurveillance(await bridge.retrySurveillanceClaim(data.id)),
@@ -331,23 +266,15 @@ const actions = {
   'session-delete': data => askDeleteSession(data.id),
   'session-resume': () => captureActions.requestCapture(() => captureActions.captureFromArchive()),
 };
-document.addEventListener('click', event => {
-  const target = event.target.closest?.('[data-action]');
-  const run = target && !target.disabled && actions[target.dataset.action];
-  if (run) Promise.resolve().then(() => run(target.dataset, target)).catch(error => notice(reason(error)));
-});
-
 $('source').onchange = updateButtons;
 $('refresh').onclick = refresh;
 $('settings').onclick = () => window.capture.settings().catch(error => notice(reason(error)));
 $('import').onclick = () => bridge.importConfig().then(setConfig).catch(error => notice(reason(error)));
 $('close-replay').onclick = () => $('replay-dialog').close();
 $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttribute('src'); $('replay').load(); };
-$('replay').onvolumechange = () => { if (currentState?.accepting) $('replay').muted = true; };
+$('replay').onvolumechange = () => { if (wiring.session?.accepting) $('replay').muted = true; };
 $('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
 bridge.config().then(setConfig).catch(error => notice(reason(error)));
-// A reloaded window finds the session the host still holds.
-bridge.state().then(receiveState).catch(() => {});
 refresh();
 
 $('models').onclick=async()=>{try{const value=await bridge.models();const choices=await bridge.modelChoices();$('codex-models').replaceChildren(...choices.map(m=>new Option(m.name,m.id)));$('codex-model').value=value.codexModel;$('observation-model').value=value.observationModel;$('inspection-model').value=value.inspectionModel;$('models-status').textContent='';$('models-dialog').showModal();}catch(e){notice(reason(e));}};
@@ -378,7 +305,7 @@ $('float-chat').onclick=()=>{if(floatingExpanded&&shell.view==='watch'){shell.sh
 let library = null, sessionsView = describeSessions(null), sessionsStale = true, deleteSessionId = null;
 const sessionsList = new KeyedList($('sessions-list'));
 function drawSessions() {
-  sessionsView = describeSessions(library, { capturing: capture.recording, readOnly: Boolean(currentState?.readOnly) });
+  sessionsView = describeSessions(library, { capturing: capture.recording, readOnly: Boolean(wiring.session?.readOnly) });
   sessionsList.sync(sessionsView.rows.map(sessionEntry));
   $('sessions-empty').hidden = !sessionsView.empty; $('sessions-empty').textContent = sessionsView.empty || '';
 }
@@ -391,22 +318,11 @@ async function refreshSessions() {
 }
 // Listing reads the disk: it is done when the panel is on screen, and otherwise remembered as due.
 const sessionsChanged = () => { if (shell.view === 'memory' && !document.body.classList.contains('floating')) refreshSessions(); else sessionsStale = true; };
-async function pullSession() {
-  const state = await bridge.state();
-  if (!state) return clearSession();
-  receiveState(state);
-  const deepIsFresh = pushedStates.beginDeepRead();
-  const [deep, recap, surveillance] = await Promise.all([bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)]);
-  if (deepIsFresh()) deepState = deep;
-  if (recap) receiveRecap(recap);
-  if (surveillance) receiveSurveillance(surveillance);
-  forceBottom = true; scheduleState();
-}
 async function openArchive(id) {
   return captureActions.openArchive(async () => {
     notice('');
     await bridge.openSession(id);
-    await pullSession();
+    await wiring.pullSession();
     shell.show('direct');
   });
 }
@@ -437,16 +353,14 @@ $('refresh-sessions').onclick = () => refreshSessions();
 $('storage-banner-open').onclick = async () => { if (floatingMode) await changeWindowMode(false); shell.show('memory'); $('sessions-panel').scrollIntoView({ block: 'start' }); };
 const startNewSession = async () => { try { await bridge.newSession(); } catch (e) { notice(reason(e)); } };
 $('new-session').onclick = $('archive-new').onclick = startNewSession;
-function clearSession() {
-  recapRevision++; recapState = null; currentState = null; passages = new Map(); deepState = { jobs: [] }; momentActions.reset(); cancelling.clear();
+function resetSessionChrome() {
+  momentActions.reset(); cancelling.clear(); loadedSessionId = null;
   surveillanceRegistry = null; registryKey = ''; shownError = '';
-  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear(); search.clear();
-  renderRecap();
+  $('recap-dialog').close(); $('moment-dialog').close(); $('attention-status').textContent = ''; notice(''); momentPreviews.clear();
   $('elapsed').textContent = '00:00'; $('mode').textContent = 'PRÊT À REGARDER'; $('mode').classList.remove('cloud');
   $('memory-status').textContent = 'Les passages apparaîtront après quelques secondes de capture.'; $('chat-coverage').textContent = '';
-  drawState();
 }
-bridge.onReset(clearSession);
+
 bridge.onSessionsChanged?.(sessionsChanged);
 bridge.onStorage?.(receiveStorage);
 bridge.storage?.().then(receiveStorage).catch(() => {});
@@ -454,11 +368,22 @@ bridge.storage?.().then(receiveStorage).catch(() => {});
 async function keepRecent(){try{const saved=await bridge.keepMoment();notice(`Moment ${formatTime(saved.startMs)}–${formatTime(saved.endMs)} conservé jusqu’à suppression.`);shell.bookmarkFeedback(true);setTimeout(()=>shell.bookmarkFeedback(false),2000);await renderSavedRail();}catch(e){notice(reason(e));}}
 $('keep-moment').onclick=keepRecent;$('float-keep').onclick=keepRecent;
 let deleteSavedId;
-function momentCard(moment,{savedId}={}){
- const card=el('article','moment-card');if(moment.preview){const image=el('img');image.src=moment.preview;image.alt='Aperçu du passage';card.append(image);}
- const content=el('div');content.append(el('strong','',`${formatTime(moment.startMs)}–${formatTime(moment.endMs)}`));content.append(el('p','',moment.text||moment.observation?.transcript||moment.observation?.summary||'Transcription indisponible.'));
- const available=savedId||moment.available;const play=el('button','secondary',available?'Revoir ↗':`Texte conservé · ${mediaNote(moment).short}`);play.disabled=!available;
- play.onclick=()=>{if(!savedId)return replay(moment.id,0,moment);$('replay-title').textContent='Moment conservé';$('replay').src=`tvlens-saved://${savedId}/${moment.id}`;$('replay').onloadedmetadata=null;$('replay').muted=true;$('replay-note').textContent='Copie conservée sur ce Mac ; supprimer le moment efface aussi cette vidéo.';$('replay-dialog').showModal();$('replay').play().catch(()=>{});};content.append(play);card.append(content);return card;
+function momentCard(moment, { savedId } = {}) {
+  if (!savedId) return wiring.momentCard(moment);
+  return wiring.momentCard(moment, {
+    available: true,
+    replay: () => {
+      $('replay-title').textContent = 'Moment conservé';
+      $('replay').src = `tvlens-saved://${savedId}/${moment.id}`;
+      $('replay').onloadedmetadata = null;
+      $('replay').muted = true;
+      $('replay-note').textContent = 'Copie conservée sur ce Mac ; supprimer le moment efface aussi cette vidéo.';
+      $('replay-dialog').showModal();
+      $('replay').play().catch(() => {
+        // Les contrôles du lecteur permettent une relance manuelle ; onerror présente une vidéo illisible.
+      });
+    },
+  });
 }
 async function renderSaved(){const values=await bridge.savedMoments();$('saved-results').replaceChildren(...values.map(value=>{const group=el('section','saved-group');group.append(el('small','hint',new Date(value.createdAt).toLocaleString()+' · Conservé'));for(const m of value.moments)group.append(momentCard(m,{savedId:value.id}));const remove=el('button','link','Supprimer ce moment');remove.onclick=()=>{deleteSavedId=value.id;$('delete-saved-dialog').showModal();};group.append(remove);return group;}));if(!values.length)$('saved-results').append(el('p','hint','Aucun moment gardé.'));renderSavedRail(values);}
 async function renderSavedRail(values){values ||= await bridge.savedMoments();const tiles=values.slice(0,5).map(value=>{const moment=value.moments[0],tile=el('button','saved-tile'),preview=el('img');preview.alt='Aperçu du moment gardé';if(moment?.preview)preview.src=moment.preview;const copy=el('span');copy.append(el('strong','',formatTime(value.startMs)),document.createTextNode(moment?.observation?.summary||'Moment gardé'));tile.append(preview,copy);tile.onclick=()=>openLibrary().catch(e=>notice(reason(e)));return tile;});$('saved-rail').replaceChildren(...(tiles.length?tiles:[el('p','placeholder','Garde un moment pour le retrouver ici.')]));}
@@ -467,21 +392,6 @@ $('open-library').onclick=()=>openLibrary().catch(e=>notice(reason(e)));$('close
 $('saved-all').onclick=$('open-library').onclick;
 $('nav-saved').onclick=$('open-library').onclick;
 $('nav-search').onclick=async()=>{await openLibrary();$('moment-query').focus();};
-// Search results belong to the session they were searched in and to the latest request: a reset or another session
-// empties them, and an answer or a refusal still on its way is dropped instead of being drawn in the new session.
-const searchIntro = $('search-status').textContent;
-const search = createSearchController({
-  search: query => bridge.searchMoments(query),
-  session: () => currentState,
-  onStart: () => { $('search-status').textContent = 'Recherche dans la session…'; },
-  onResult: (cards, found) => {
-    $('search-results').replaceChildren(...cards.map(m => momentCard(m)));
-    $('search-status').textContent = `${plural(found.moments.length, 'passage')} · ${found.mode}. ${agreeText(found.warnings.join(' '))}`;
-  },
-  onClear: () => { $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; },
-  onFailure: e => { $('search-status').textContent = reason(e); },
-});
-$('moment-search-form').onsubmit = e => { e.preventDefault(); search.submit($('moment-query').value); };
 $('shortcut-form').onsubmit=async e=>{e.preventDefault();try{await bridge.saveViewingSettings({bookmarkShortcut:$('bookmark-shortcut').value.trim()});$('shortcut-status').textContent='Raccourci enregistré.';}catch(e){$('shortcut-status').textContent=reason(e);}};
 $('cancel-delete-saved').onclick=()=>$('delete-saved-dialog').close();$('confirm-delete-saved').onclick=async()=>{try{await bridge.removeSaved(deleteSavedId);$('delete-saved-dialog').close();await renderSaved();}catch(e){notice(reason(e));}};
 bridge.onSaved(()=>{notice('Moment conservé sur ce Mac jusqu’à suppression.');renderSavedRail().catch(()=>{});if($('library-dialog').open)renderSaved().catch(()=>{});});bridge.onSaveError(message=>notice(reason(message)));
@@ -508,45 +418,20 @@ const savePreferences = () => {
     // La durée choisie est déjà appliquée à cardQueue et conservée en mémoire ; seule sa reprise après rechargement est perdue.
   }
 };
-let surveillanceState = null, surveillanceRegistry = null, registryKey = '', registryAt = 0, registryBusy = false, registryTimer;
-let watchFilter = 'all', historyLimit = HISTORY_STEP, seen = { overlay: 0, signal: 0 }, seenFor, syncedInstruction = '', watchBusy = false, stackTimer, watchPushes = 0;
-const cardQueue = new CardQueue({ durationMs: preferences.cardDurationMs });
-const stackList = new KeyedList($('watch-stack')), resultsList = new KeyedList($('watch-results')), historyList = new KeyedList($('watch-history')), filtersList = new KeyedList($('watch-filters')), gapsList = new KeyedList($('watch-gaps-list'));
-// banner: the notice "history not saved" has its own place above every view (#watch-notice), written once.
-const surveillanceView = () => describeSurveillance(surveillanceState, { registry: surveillanceRegistry, session: currentState ? { id: currentState.id, readOnly: currentState.readOnly } : null,
-  seen, filter: watchFilter, historyLimit, banner: true });
-function receiveSurveillance(state) {
-  if (!state || typeof state !== 'object' || !state.activity) return;
-  surveillanceState = state;
-  // First state of a session: what it already holds is history, not news for the tab badge. A state still
-  // restoring holds nothing final (sequences at zero): the reference is taken once the saved history is read.
-  ({ seen, seenFor } = nextSeen({ seen, seenFor }, state));
-  // A restored registry (reopened archive) never pops up; otherwise freshness decides what is still news.
-  // view.cards holds sourced verifications only: a signal is counted on the tab and read in the panel.
-  cardQueue.offer(surveillanceView().cards, { sessionId: state.sessionId, now: Date.now(), prime: Boolean(state.restored) });
-  scheduleSurveillance();
-}
-function drawSurveillance() {
-  const open = shell.view === 'watch' && !(floatingMode && !floatingExpanded) && document.visibilityState === 'visible';
-  if (open) seen = sequences(surveillanceState);
-  const view = surveillanceView();
-  shell.watchBadge(view.badge);
-  const chip = $('watch-chip');
-  chip.hidden = !view.chip.visible; chip.textContent = view.chip.text; chip.dataset.state = view.chip.state;
-  $('watch-activity').textContent = [view.activity.text, view.activity.detail && `${view.activity.detail}.`, view.activity.error && `Incident : ${view.activity.error}`].filter(Boolean).join(' ');
-  $('watch-activity').dataset.state = view.status;
-  // History kept in memory only: said above every view for as long as the state says it, in its own words.
-  // The banner carries no action: nothing here ever offers to remove the registry on disk.
-  const unsaved = view.notice?.text || '';
-  $('watch-notice').hidden = !unsaved; $('watch-notice').dataset.tone = view.notice?.tone || '';
-  if ($('watch-notice-text').textContent !== unsaved) $('watch-notice-text').textContent = unsaved;
+let surveillanceRegistry = null, registryKey = '', registryAt = 0, registryBusy = false, registryTimer;
+let watchFilter = 'all', historyLimit = HISTORY_STEP, syncedInstruction = '', watchBusy = false;
+const cardQueue = wiring.cardQueue;
+cardQueue.setDuration(preferences.cardDurationMs);
+const resultsList = new KeyedList($('watch-results')), historyList = new KeyedList($('watch-history')), filtersList = new KeyedList($('watch-filters')), gapsList = new KeyedList($('watch-gaps-list'));
+const receiveSurveillance = state => wiring.receiveSurveillance(state);
+const drawSurveillance = () => wiring.drawSurveillance();
+function drawSurveillanceChrome(view) {
   $('watch-start').textContent = view.form.startLabel; $('watch-start').disabled = !view.form.canStart || watchBusy;
   $('watch-stop').disabled = !view.form.canStop || watchBusy; $('watch-hint').textContent = view.form.hint;
   // The field shows the running instruction unless the viewer is writing another one.
   const field = $('watch-instruction');
   if (document.activeElement !== field && view.instruction && (!field.value || field.value === syncedInstruction)) field.value = view.instruction;
   syncedInstruction = view.instruction || syncedInstruction;
-  drawStack();
   if (shell.view !== 'watch') return;
   resultsList.sync(view.results.map(card => cardEntry(card)));
   $('watch-results-empty').hidden = view.results.length > 0;
@@ -561,36 +446,21 @@ function drawSurveillance() {
   gapsList.sync(view.gaps.rows.map(gapEntry));
   refreshRegistry();
 }
-const scheduleSurveillance = batched(drawSurveillance);
+const scheduleSurveillance = () => wiring.scheduleSurveillance();
 // The pushed state holds the most recent claims only: the whole registry is read when the panel is open and
 // something changed, never more than once every two seconds.
 function refreshRegistry() {
-  if (shell.view !== 'watch' || !surveillanceState?.sessionId || registryBusy || !bridge.surveillanceHistory) return;
-  const key = JSON.stringify([surveillanceState.sessionId, surveillanceState.totals, surveillanceState.counts]);
+  if (shell.view !== 'watch' || !wiring.surveillanceState?.sessionId || registryBusy || !bridge.surveillanceHistory) return;
+  const key = JSON.stringify([wiring.surveillanceState.sessionId, wiring.surveillanceState.totals, wiring.surveillanceState.counts]);
   if (key === registryKey) return;
   const wait = REGISTRY_EVERY_MS - (Date.now() - registryAt);
   clearTimeout(registryTimer);
   if (wait > 0) { registryTimer = setTimeout(refreshRegistry, wait); return; }
   registryBusy = true; registryAt = Date.now();
-  bridge.surveillanceHistory().then(registry => { if (registry?.sessionId === surveillanceState?.sessionId) surveillanceRegistry = registry; }).catch(() => {})
+  bridge.surveillanceHistory().then(registry => { if (registry?.sessionId === wiring.surveillanceState?.sessionId) surveillanceRegistry = registry; }).catch(() => {})
     .finally(() => { registryBusy = false; registryKey = key; scheduleSurveillance(); });
 }
-// Bottom-left stack, for sourced verifications only (the queue refuses any other kind). Nothing here focuses
-// anything: a card appears, stays its time and leaves.
-function drawStack() {
-  const now = Date.now(), collapsed = floatingMode && !floatingExpanded, shown = document.visibilityState === 'visible';
-  // With the surveillance panel open the results are already listed under the viewer's eyes: no card on top of them.
-  if (shown && !collapsed && shell.view === 'watch') cardQueue.clear();
-  const visible = cardQueue.visible(now, { displayable: shown });
-  stackList.sync(collapsed ? [] : visible.map(card => cardEntry(card, { compact: true })));
-  // The collapsed floating window is one bar high: the card is condensed to a line that opens the window.
-  const first = collapsed ? visible[0] : null, toast = $('float-toast');
-  toast.hidden = !first; document.body.classList.toggle('has-float-toast', Boolean(first));
-  if (first) { toast.textContent = `${first.label} · ${first.intervalLabel} — ${first.text}`; toast.title = 'Ouvrir pour lire le résultat et ses sources'; }
-  clearTimeout(stackTimer);
-  const next = cardQueue.nextChangeAt();
-  if (next !== null) stackTimer = setTimeout(drawStack, Math.max(50, next - Date.now() + 20));
-}
+const drawStack = () => wiring.drawStack();
 const scheduleStack = batched(drawStack);
 function showLot(lotId) {
   return showWatch().then(() => {
@@ -611,10 +481,10 @@ $('watch-duration').onchange = () => { preferences.cardDurationMs = Number($('wa
 async function commandSurveillance(run) {
   watchBusy = true; $('watch-error').textContent = ''; drawSurveillance();
   try {
-    const pushed = watchPushes, state = await run();
+    const pushed = wiring.watchPushes, state = await run();
     // An activation is answered at once, while the saved history is still being read ("restoring"); the state
     // that follows is pushed. Such an answer never replaces a state pushed since the command left.
-    if (!(isRestoring(state) && watchPushes !== pushed)) receiveSurveillance(state?.activity ? state : await bridge.surveillanceState());
+    if (!(isRestoring(state) && wiring.watchPushes !== pushed)) receiveSurveillance(state?.activity ? state : await bridge.surveillanceState());
   }
   catch (error) { $('watch-error').textContent = reason(error); }
   finally { watchBusy = false; drawSurveillance(); }
@@ -640,28 +510,7 @@ $('watch-stack').addEventListener('focusin', event => { const key = event.target
 $('watch-stack').addEventListener('focusout', event => { const key = event.target.closest('.watch-card')?.dataset.key; if (key) { cardQueue.release(key, Date.now()); scheduleStack(); } });
 document.addEventListener('visibilitychange', () => { drawStack(); scheduleSurveillance(); });
 shell.onShow = view => { if (view === 'memory' && sessionsStale) refreshSessions(); if (view === 'watch') registryKey = ''; drawSurveillance(); };
-bridge.onSurveillance?.(state => { watchPushes++; receiveSurveillance(state); });
-bridge.surveillanceState?.().then(receiveSurveillance).catch(() => {});
-
-function receiveRecap(state) {
-  const next = reduceRecap(recapState, state, currentState?.id);
-  if (next === undefined) return;
-  recapRevision++;
-  recapState = next;
-  renderRecap();
-}
-// Redrawn when the recap or the availability of a cited passage changes, not at every session state.
-function renderRecap() {
-  const cited = (recapState?.chapters || []).flatMap(chapter => chapter.sources || []);
-  const key = [recapRevision, currentState?.id, recapState?.sessionId, cited.map(source => (passages.get(source.id)?.available ? 1 : 0)).join('')].join('|');
-  if (key === recapKey) return;
-  recapKey = key;
-  renderRecapView({
-    state: recapState, session: currentState,
-    targets: [[$('recap-content'), false], [$('recap-dialog-content'), true]],
-    replay, notice
-  });
-}
+const renderRecap = () => wiring.renderRecap();
 async function openRecap() {
   if (floatingMode) await changeWindowMode(true, true);
   renderRecap();
@@ -669,9 +518,5 @@ async function openRecap() {
 }
 $('open-recap').onclick = $('open-recap-all').onclick = () => openRecap().catch(error => notice(reason(error)));
 $('close-recap').onclick = () => $('recap-dialog').close();
-bridge.onRecap(receiveRecap);
-const initialRecapRevision = recapRevision;
-bridge.recapState().then(state => { if (recapRevision === initialRecapRevision) receiveRecap(state); }).catch(() => {
-  if (recapRevision === initialRecapRevision) receiveRecap({ sessionId: currentState?.id, status: 'error', chapters: [], overview: '' });
-});
+wiring.bind(actions);
 drawState();

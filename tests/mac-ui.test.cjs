@@ -6,12 +6,13 @@ const vm = require('node:vm');
 const { pathToFileURL } = require('node:url');
 const { describeJob: describeTvJob } = require('../tv/app/companion.js');
 const { Surveillance } = require('../core/surveillance.cjs');
-const { deferred } = require('./helpers/wait.cjs');
+const { deferred, turns } = require('./helpers/wait.cjs');
+const { rendererHarness } = require('./helpers/mac-renderer.cjs');
 
-// The Mac view models are pure ES modules: imported as they are, without Electron and without a DOM.
+// Les modules Mac et leur composition sont importés directement, sans Electron.
 const ui = name => import(`../app/ui/${name}.mjs`);
 const app = (...parts) => path.join(__dirname, '..', 'app', ...parts);
-// Files of app/ are compared through their shape: the layout of their code (quotes, spaces, line breaks) is not what is checked.
+// Les dernières gardes de contenu ignorent la mise en forme ; les raccords sont exercés par le banc.
 const { shape } = require('./helpers/source-shape.cjs');
 const shaped = (...parts) => shape(fs.readFileSync(app(...parts), 'utf8'));
 const holds = (shapedSource, fragment) => shapedSource.includes(shape(fragment));
@@ -108,7 +109,7 @@ test('the Mac and TV view models agree on the meaning of every question state', 
   }
 });
 
-test('freshness of a question is shown from what the core measured, and nothing is invented without it', async () => {
+test('freshness of a question is shown from what the core measured, and nothing is invented without it', async (t) => {
   const { describeFreshness, describeJob } = await ui('job-view');
   assert.equal(describeFreshness({ id: 'deep-1', status: 'queued', anchorMs: 724000 }), null);
   assert.equal(describeJob({ status: 'done', anchorMs: 724000, result: observed }, { now: T0 }).freshness, null);
@@ -139,13 +140,20 @@ test('freshness of a question is shown from what the core measured, and nothing 
   assert.deepEqual([saved.short, saved.detail], ['Mémoire analysée jusqu’à 11:58', 'Mémoire analysée jusqu’à 11:58 pour cette question.']);
   assert.equal(describeFreshness({ anchorMs: 3000, evidenceAtStart: { contextThroughMs: 0, pendingCount: 1 } }).short, 'Aucun passage analysé');
   assert.deepEqual([describeJob({ status: 'done', anchorMs: 724000, result: observed }, { now: T0 }).freshnessLabel, describeJob({ status: 'running', anchorMs: 724000 }, { now: T0 }).freshnessLabel], [null, null]);
-  // The card writes the label chosen by the view model above the answer, and the detail inside the folded block.
-  const card = shaped('ui', 'job-card.js');
-  assert.ok(holds(card, "el('p', 'hint job-fresh', view.freshnessLabel)"), 'the label is written above the answer');
-  assert.ok(holds(card, 'line.title = view.freshness.label'), 'the whole sentence stays on hover');
-  // A comment above names the block too: the line of code is the last mention of it.
-  const folded = card.lastIndexOf(shape("'Détails du traitement'"));
-  assert.ok(folded > 0 && card.indexOf(shape("'hint job-fresh-detail', view.freshness.detail")) > folded, 'the detail is inside the folded block');
+  const f = await rendererHarness(t);
+  f.publish('onState', { id: 'session', segments: [], history: [] });
+  f.publish('onDeepState', { jobs: [{ ...frozen, id: 'deep-9', sessionId: 'session', status: 'done', createdAt: T0, result: observed }] });
+  f.frame();
+  const card = f.get('message-list').children[0];
+  const fresh = card.querySelectorAll('.job-fresh')[0];
+  const answer = card.querySelectorAll('.job-result')[0];
+  const details = card.querySelectorAll('.response-details')[0];
+  assert.equal(fresh.textContent, asked.short);
+  assert.equal(fresh.title, asked.label);
+  assert.ok(card.children.indexOf(fresh) < card.children.indexOf(answer), 'freshness before answer');
+  assert.equal(details.open || false, false);
+  assert.equal(details.querySelectorAll('.job-fresh-detail')[0].textContent, asked.detail);
+  assert.equal(details.children[0].textContent, 'Détails du traitement');
 });
 
 // A real registry, produced by the surveillance core with scripted ports: the view model is checked against
@@ -280,7 +288,8 @@ test('lateness shows on the tab with the number waiting, and counts and bounds c
   assert.deepEqual([brief.history.rows.length, brief.history.bound.total, brief.history.bound.label, brief.results.length, brief.history.empty], [0, 7, 'Chargement de l’historique (7 éléments)…', 2, null]);
 });
 
-test('a saved history still being read is told as a restoration, and a history kept in memory only gets a discreet notice: both in the words of the state', async () => {
+test('a saved history still being read is told as a restoration, and a history kept in memory only gets a discreet notice: both in the words of the state',
+  async (t) => {
   const { describeSurveillance, isRestoring } = await ui('surveillance-view');
   const { createSurveillanceRuntime, REGISTRY_MESSAGES } = require('../runtime/surveillance-runtime.cjs');
   const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
@@ -336,7 +345,7 @@ test('a saved history still being read is told as a restoration, and a history k
   // The banner itself: a plain banner among the others, hidden without a notice, its text set from the view model,
   // and nothing to click in it.
   // The page is read tag by tag and attribute by attribute: neither their order nor their line breaks are checked.
-  const page = fs.readFileSync(app('index.html'), 'utf8'), renderer = shaped('renderer.js');
+  const page = fs.readFileSync(app('index.html'), 'utf8');
   const attributesOf = tag => Object.fromEntries([...tag.replace(/^<\w+|\/?>$/g, '').matchAll(/([^\s=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'))?/g)]
     .map(match => [match[1], match[2] ?? match[3] ?? '']));
   const tags = [...page.matchAll(/<div\b[^>]*>/g)].map(match => ({ at: match.index, attributes: attributesOf(match[0]) }));
@@ -350,13 +359,30 @@ test('a saved history still being read is told as a restoration, and a history k
   assert.ok(!/<button|<a\b|supprim|effac/i.test(banner), 'nothing to click in the notice');
   const main = page.search(/<main[\s>]/);
   assert.ok(main >= 0 && notice.at < main, 'above every view');
-  assert.ok(holds(renderer, 'historyLimit, banner: true })'), 'the view model is asked for the banner');
-  assert.ok(holds(renderer, "const unsaved = view.notice?.text || '';\n$('watch-notice').hidden = !unsaved;"), 'the banner is hidden without a notice');
-  assert.ok(holds(renderer, "$('watch-notice-text').textContent = unsaved"), 'its text is set from the view model');
-  // The tab badge takes its reference from nextSeen on every state received (its rule is proved below, without a DOM).
-  const from = renderer.indexOf(shape('function receiveSurveillance(')), to = renderer.indexOf(shape('function drawSurveillance('));
-  assert.ok(from >= 0 && to > from, 'the renderer no longer declares receiveSurveillance before drawSurveillance');
-  assert.ok(renderer.slice(from, to).includes(shape('nextSeen(')), 'the reference of the tab badge comes from nextSeen');
+  const f = await rendererHarness(t);
+  f.publish('onState', { ...session, segments: [], history: [] });
+  assert.equal(typeof f.listeners.get('onSurveillance'), 'function', 'surveillance subscribed');
+  for (const registryStatus of ['memory-only', 'unreadable', 'write-failed', 'ready', 'restoring']) {
+    const text = REGISTRY_MESSAGES[registryStatus] || null;
+    f.publish('onSurveillance', { ...state, registry: { status: registryStatus,
+      ready: registryStatus !== 'restoring', persisted: registryStatus === 'ready', message: text } });
+    f.frame();
+    const visible = !['ready', 'restoring'].includes(registryStatus);
+    assert.equal(f.get('watch-notice').hidden, !visible);
+    if (visible) {
+      assert.equal(f.get('watch-notice-text').textContent, text);
+      assert.equal(f.get('watch-activity').textContent.includes(text), false, 'notice is not repeated in activity');
+    }
+  }
+  f.publish('onState', { id: 'badge-session', history: [], segments: [] });
+  f.publish('onSurveillance', { ...state, sessionId: 'badge-session', overlay: { seq: 0 }, signals: { seq: 0 }, registry: { ready: false } });
+  f.frame();
+  f.publish('onSurveillance', { ...state, sessionId: 'badge-session', overlay: { seq: 7 }, signals: { seq: 2 }, registry: { ready: true } });
+  f.frame();
+  assert.equal(f.badges.at(-1).count, 0, 'first ready history is the badge reference');
+  f.publish('onSurveillance', { ...state, sessionId: 'badge-session', overlay: { seq: 8 }, signals: { seq: 3 }, registry: { ready: true } });
+  f.frame();
+  assert.equal(f.badges.at(-1).count, 2);
   await runtime.close();
 });
 
@@ -672,7 +698,7 @@ test('wording helpers: durations, sizes and errors read as a viewer would write 
   assert.deepEqual([cleanError('Session obsolète.'), cleanError(undefined)], ['Session obsolète.', 'Erreur inattendue.']);
 });
 
-test('search cards name the session they were searched in: a late answer is not drawn in another session, and an old card replays nothing there', async () => {
+test('search cards name the session they were searched in: a late answer is not drawn in another session, and an old card replays nothing there', async (t) => {
   const { searchCards, replayTarget } = await ui('search-view');
   const { mediaNote } = await ui('sessions-view');
   const passage = (id, extra = {}) => ({ id, startMs: 0, endMs: 8000, available: true, ...extra });
@@ -699,21 +725,80 @@ test('search cards name the session they were searched in: a late answer is not 
   assert.deepEqual([own('moment-3'), own('moment-2'), own('moment-9'), replayTarget({ id: 'moment-1' }, null)],
     [{ refusal: mediaNote(b.segments[1]).long }, { refusal: mediaNote(b.history[0]).long }, { refusal: mediaNote(undefined).long }, { refusal: mediaNote(undefined).long }]);
 
-  // The window itself cannot be loaded here: its wiring is read through its shape, like the fragments below: a pattern
-  // writes no space around punctuation and no semicolon. The order of a search is proven by the controller tests below.
-  const renderer = shaped('renderer.js');
-  const between = (from, to) => {
-    const start = renderer.indexOf(shape(from)), end = renderer.indexOf(shape(to));
-    assert.ok(start >= 0 && end >= 0, `the renderer no longer contains ${from} and ${to}`);
-    return renderer.slice(start, end);
-  };
-  assert.match(renderer, /if\(currentState\?\.id!==state\.id\)\{[^}]*search\.clear\(\)[^}]*\}/, 'another session empties the results');
-  assert.ok(between('function clearSession()', 'bridge.onReset(clearSession)').includes(shape('search.clear();')), 'a reset empties the results');
-  assert.ok(holds(renderer, "onClear: () => { $('search-results').replaceChildren(); $('search-status').textContent = searchIntro; }"),
-    'clearing the search empties the results and puts the introduction back');
-  assert.ok(holds(renderer, 'if(!savedId)return replay(moment.id,0,moment);'), 'a search card hands itself, session included, to replay()');
-  assert.ok(holds(renderer, 'replayTarget({ id, sessionId: card ? card.sessionId : currentState?.id }, currentState)'), 'replay() asks replayTarget');
-  assert.ok(!/tvlens-media:\/\/\$\{currentState\.id\}\/\$\{/.test(renderer), 'the address of a passage is built by replayTarget alone');
+  const f = await rendererHarness(t);
+  f.publish('onState', a);
+  f.get('moment-query').value = 'un cercle';
+  const submit = () => f.submit(f.get('moment-search-form'));
+  assert.equal(typeof f.get('moment-search-form').onsubmit, 'function', 'search form bound');
+  const first = submit();
+  assert.equal(f.reads.at(-1).args[0], 'un cercle');
+  f.reads.at(-1).resolve(found);
+  await first;
+  assert.match(f.get('search-status').textContent, /1 passage · lexical/);
+  const play = f.get('search-results').children[0].children.at(-1).children.at(-1);
+  await f.click(play);
+  assert.equal(f.get('replay').src, 'tvlens-media://session-a/moment-1');
+  assert.equal(f.get('replay-dialog').open, true);
+  f.get('replay-dialog').close();
+  const plays = f.get('replay').plays;
+  for (const change of ['session', 'reset']) {
+    f.publish('onState', a);
+    const done = submit();
+    const read = f.reads.at(-1);
+    read.resolve(found);
+    await done;
+    assert.equal(f.get('search-results').children.length, 1);
+    const late = submit();
+    const held = f.reads.at(-1);
+    if (change === 'session') f.publish('onState', b);
+    else f.publish('onReset');
+    assert.equal(f.get('search-results').children.length, 0);
+    assert.equal(f.get('search-status').textContent, 'Cherche un passage.');
+    held.resolve(found);
+    await late;
+    assert.equal(f.get('search-results').children.length, 0, change);
+    const refusal = submit();
+    const refused = f.reads.at(-1);
+    f.publish('onReset');
+    refused.reject(new Error('late search refusal'));
+    await refusal;
+    assert.equal(f.get('search-status').textContent, 'Cherche un passage.');
+  }
+  f.publish('onState', b);
+  await f.click(play);
+  assert.equal(f.get('replay').plays, plays, 'retained A card cannot play B passage');
+  assert.equal(f.get('replay-dialog').open, false);
+  assert.match(f.get('notice').textContent, /autre session/);
+});
+
+test('a retained moment shares the passage card presentation and delegates playback while the open session offers the same passage', async (t) => {
+  const f = await rendererHarness(t);
+  let played = 0;
+  const moment = { id: 'moment-1', sessionId: 'session', startMs: 8000, endMs: 16000, available: false,
+    mediaReason: 'expired', preview: 'data:image/jpeg;saved', text: 'Un moment conservé.' };
+  f.publish('onState', { id: 'session', history: [], segments: [{ ...moment, available: true }] });
+  f.frame();
+  const original = f.wiring.momentCard(moment);
+  const retained = f.wiring.momentCard(moment, { available: true, replay: () => { played++; } });
+  const button = card => card.querySelectorAll('.secondary')[0];
+  assert.equal(button(original).disabled, true);
+  assert.match(button(original).textContent, /vidéo expirée/);
+  assert.equal(button(retained).disabled, false, 'the retained copy is playable even after session media expiry');
+  assert.equal(button(retained).textContent, 'Revoir ↗');
+  assert.equal(retained.children[0].src, moment.preview);
+  assert.equal(retained.children[0].alt, 'Aperçu du passage');
+  assert.equal(retained.children[1].children[0].textContent, '00:08–00:16');
+  assert.equal(retained.children[1].children[1].textContent, moment.text);
+  await f.click(button(retained));
+  assert.equal(played, 1);
+  assert.equal(Boolean(f.get('replay-dialog').open), false, 'playback remains owned by the supplied callback');
+  assert.equal(f.get('replay').src || '', '', 'the retained click must not select session media');
+  assert.equal(f.get('notice').textContent, '');
+  const current = f.wiring.momentCard({ ...moment, available: true });
+  await f.click(button(current));
+  assert.equal(f.get('replay-dialog').open, true, 'default playback can open the same passage in this session');
+  assert.equal(f.get('replay').src, 'tvlens-media://session/moment-1');
+  assert.equal(played, 1);
 });
 
 test('a state read overtaken by a push is stale, right after departure or just before its answer', async () => {
@@ -794,31 +879,119 @@ test('a rejected state read propagates its failure and leaves the next read fres
   assert.equal(await answer, true);
 });
 
-test('the window tracks pushes and guards all three deep and verification reads with their own freshness source', () => {
-  // Garde de composition ; les lectures et cartes réelles sont exercées dans state-delivery.test.cjs.
-  const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, "import { createStateDelivery, bindPushedStates, FALLBACK_MS } from './ui/state-delivery.mjs';"));
-  assert.ok(holds(renderer, "session: { group: 'session', adopt: adoptState }"));
-  assert.ok(holds(renderer, "deep: { group: 'chat', adopt: state => { deepState = state; } }"));
-  assert.ok(holds(renderer, "verification: { group: 'chat', adopt: state => { verificationState = state; } }"));
-  assert.ok(holds(renderer, 'draws: { session: drawState, chat: drawChat }'));
-  assert.ok(holds(renderer, `const pushedStates = bindPushedStates({
-    bridge, delivery: stateDelivery, changed: updateButtons, onError: error => notice(reason(error)),
-  });`));
-  assert.ok(holds(renderer, "window.addEventListener('beforeunload', () => pushedStates.release());"));
-  const start = renderer.indexOf(shape('async function pullSession()'));
-  const end = renderer.indexOf(shape('async function openArchive('));
-  assert.ok(start >= 0 && end > start, 'pullSession is declared before openArchive');
-  const pull = renderer.slice(start, end);
-  assert.ok(holds(pull, `const deepIsFresh = pushedStates.beginDeepRead();
-    const [deep, recap, surveillance] = await Promise.all([
-      bridge.deepState(), bridge.recapState().catch(() => null), bridge.surveillanceState?.().catch(() => null)
-    ]);
-    if (deepIsFresh()) deepState = deep;`), 'the archive guard is checked after all reads');
-  assert.ok(holds(pull, `if (recap) receiveRecap(recap);
-    if (surveillance) receiveSurveillance(surveillance);
-    forceBottom = true; scheduleState();`), 'the other archive states and their drawing remain unconditional');
-  assert.equal([...pull.matchAll(/catch\(/g)].length, 2, 'a rejected deep read still propagates');
+test('the window tracks pushes and guards all three deep and verification reads with their own freshness source', async (t) => {
+  const f = await rendererHarness(t);
+  f.publish('onState', { id: 'session', history: [], segments: [] });
+  f.publish('onDeepState', { jobs: [{ id: 'new', status: 'running', question: 'Dernière question', createdAt: T0 }] });
+  f.publish('onDeepState', { jobs: [{ id: 'new', status: 'running', question: 'Question retenue', createdAt: T0 }] });
+  f.publish('onVerificationState', { busy: true, jobs: [{ id: 'check', status: 'running', claim: 'Chiffre poussé', createdAt: T0 + 1 }] });
+  assert.deepEqual(f.draws.filter(item => typeof item === 'string'), ['buttons', 'buttons', 'buttons']);
+  assert.equal(f.frames.size, 2, 'session and chat have separate batches');
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Question retenue/);
+  assert.doesNotMatch(f.get('message-list').textContent, /Dernière question/);
+  assert.match(f.get('message-list').textContent, /Chiffre poussé/);
+  assert.deepEqual(f.draws.filter(item => item === 'session' || item === 'chat'), ['session', 'chat', 'chat']);
+  f.reads.find(read => read.name === 'deepState').resolve({ jobs: [] });
+  f.reads.find(read => read.name === 'verificationState').resolve({ busy: false, jobs: [] });
+  await turns(1);
+  assert.equal(f.frames.size, 0, 'overtaken initial reads schedule nothing');
+  const text = f.get('message-list').textContent;
+  const retained = [...f.listeners.values()].slice(0, 3);
+  f.publish('onDeepState', { jobs: [] });
+  f.window.dispatchEvent({ type: 'beforeunload' });
+  assert.equal(f.listeners.size, 0, 'window unload releases its subscriptions');
+  f.wiring.release();
+  assert.equal(f.frames.size, 0);
+  assert.equal(f.clock.armed, 0);
+  assert.equal(f.listeners.size, 0);
+  assert.equal(f.removed.length, new Set(f.removed).size, 'each subscription removed once');
+  for (const callback of retained) callback(null);
+  await f.clock.advance(100);
+  assert.equal(f.get('message-list').textContent, text);
+});
+
+test('published questions reach the document through the shared renderer binding', async (t) => {
+  const f = await rendererHarness(t);
+  f.publish('onDeepState', { jobs: [{ id: 'live', status: 'running', createdAt: T0, preview: 'Brouillon publié' }] });
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Brouillon publié/);
+});
+
+test('fresh initial reads draw real cards and all retained reads become inert when the window unloads', async (t) => {
+  const f = await rendererHarness(t);
+  f.reads.find(read => read.name === 'deepState').resolve({ jobs: [{ id: 'initial', status: 'running', createdAt: T0, preview: 'Lecture initiale' }] });
+  f.reads.find(read => read.name === 'verificationState').resolve({ busy: true,
+    jobs: [{ id: 'check', status: 'running', createdAt: T0 + 1, claim: 'Vérification initiale' }] });
+  await turns(1);
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Lecture initiale/);
+  assert.match(f.get('message-list').textContent, /Vérification initiale/);
+  assert.equal(f.draws.filter(value => value === 'buttons').length, 1);
+  const text = f.get('message-list').textContent;
+  f.window.dispatchEvent({ type: 'beforeunload' });
+  for (const read of f.reads) {
+    if (read.name === 'state') read.resolve({ id: 'late', history: [], segments: [] });
+    if (read.name === 'recapState') read.resolve({ sessionId: 'late', status: 'ready', overview: 'Résumé tardif', chapters: [] });
+    if (read.name === 'surveillanceState') read.resolve({ sessionId: 'late', activity: { state: 'listening' } });
+  }
+  await f.clock.advance(100);
+  assert.equal(f.get('message-list').textContent, text);
+  assert.doesNotMatch(f.get('recap-content').textContent, /Résumé tardif/);
+  assert.equal(f.listeners.size, 0);
+});
+
+test('an archive question read checks freshness after another member of Promise.all answers', async (t) => {
+  const f = await rendererHarness(t);
+  f.get('messages').scrollHeight = 2000;
+  f.get('messages').scrollTop = 0;
+  const reading = f.wiring.pullSession();
+  await turns(1);
+  const state = f.reads.filter(read => read.name === 'state').at(-1);
+  assert.ok(state, 'archive reads the session');
+  state.resolve({ id: 'archive', readOnly: true, history: [], segments: [] });
+  await turns(1);
+  const deep = f.reads.filter(read => read.name === 'deepState').at(-1);
+  const recap = f.reads.filter(read => read.name === 'recapState').at(-1);
+  const watch = f.reads.filter(read => read.name === 'surveillanceState').at(-1);
+  deep.resolve({ jobs: [{ id: 'old', status: 'running', question: 'Question archivée', createdAt: T0 }] });
+  await turns(1);
+  f.publish('onDeepState', { jobs: [{ id: 'pushed', status: 'running', question: 'Question plus récente', createdAt: T0 }] });
+  f.publish('onVerificationState', { busy: false, jobs: [] });
+  recap.resolve({ sessionId: 'archive', status: 'ready', overview: 'Résumé de l’archive', chapters: [] });
+  watch.resolve({ sessionId: 'archive', activity: { state: 'listening' },
+    registry: { ready: true, persisted: false, message: 'Archive en mémoire seulement.' } });
+  await reading;
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Question plus récente/);
+  assert.doesNotMatch(f.get('message-list').textContent, /Question archivée/);
+  assert.match(f.get('recap-content').textContent, /Résumé de l’archive/);
+  assert.equal(f.get('watch-notice-text').textContent, 'Archive en mémoire seulement.');
+  assert.equal(f.get('messages').scrollTop, 2000, 'archive loading follows the latest answer');
+});
+
+test('archive question read failures propagate while optional recap and surveillance failures leave a fresh question usable', async (t) => {
+  const f = await rendererHarness(t);
+  const reading = f.wiring.pullSession();
+  f.reads.filter(read => read.name === 'state').at(-1).resolve({ id: 'archive', history: [], segments: [] });
+  await turns(1);
+  f.publish('onVerificationState', { busy: false, jobs: [] });
+  f.reads.filter(read => read.name === 'deepState').at(-1).resolve({
+    jobs: [{ id: 'archive', status: 'running', createdAt: T0, preview: 'Question archivée' }] });
+  f.reads.filter(read => read.name === 'recapState').at(-1).reject(new Error('optional recap'));
+  f.reads.filter(read => read.name === 'surveillanceState').at(-1).reject(new Error('optional watch'));
+  await reading;
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Question archivée/);
+  const failed = f.wiring.pullSession();
+  const error = Object.assign(new Error('deep read refused'), { code: 'DEEP_READ_REFUSED' });
+  const rejection = assert.rejects(failed, cause => cause === error);
+  f.reads.filter(read => read.name === 'state').at(-1).resolve({ id: 'archive', history: [], segments: [] });
+  await turns(1);
+  f.reads.filter(read => read.name === 'deepState').at(-1).reject(error);
+  f.reads.filter(read => read.name === 'recapState').at(-1).resolve(null);
+  f.reads.filter(read => read.name === 'surveillanceState').at(-1).resolve(null);
+  await rejection;
 });
 
 // A controller whose searches are the held requests, in the order they are asked, and whose observers write a log.
@@ -927,6 +1100,72 @@ test('an observer that fails while drawing an answer has that failure told as th
   assert.deepEqual(log, [['start'], ['failure', drawing]]);
 });
 
+test('surveillance publications feed the real sourced stack and keep a signal outside it', async (t) => {
+  const f = await rendererHarness(t);
+  const h = await watchedSession();
+  t.after(() => h.surveillance.stop());
+  f.publish('onState', h.snapshot());
+  f.publish('onSurveillance', h.surveillance.snapshot());
+  f.frame();
+  const stack = f.get('watch-stack');
+  assert.equal(stack.children.length, 1);
+  assert.equal(stack.children[0].dataset.kind, 'verification');
+  assert.match(stack.textContent, /Publication claim-1/);
+  const source = stack.querySelectorAll('.source-link')[0];
+  await f.click(source);
+  assert.deepEqual(f.calls.at(-1), ['openSurveillanceSource', 'lot-1', 0]);
+  const signal = h.surveillance.snapshot().signals.cards[0];
+  f.publish('onState', { id: 'signal-session', history: [], segments: [] });
+  f.publish('onSurveillance', { ...h.surveillance.snapshot(), sessionId: 'signal-session', overlay: { seq: 1, cards: [signal] } });
+  f.frame();
+  assert.equal(stack.children.length, 0, 'even a misfiled signal never enters the stack');
+});
+
+test('recap publications keep the earlier content through the reducer and redraw citations with the session', async (t) => {
+  const f = await rendererHarness(t);
+  const passage = { id: 'moment-1', startMs: 0, endMs: 8000, available: true, status: 'ready' };
+  const session = { id: 'session', history: [], segments: [passage] };
+  f.publish('onState', session);
+  f.publish('onRecap', { sessionId: 'session', status: 'ready', overview: 'Résumé conservé',
+    chapters: [{ id: 'chapter', title: 'Un débat', startMs: 0, endMs: 8000, sources: [passage] }] });
+  for (const status of ['updating', 'error']) {
+    f.publish('onRecap', { sessionId: 'session', status, overview: '', chapters: [] });
+    assert.match(f.get('recap-content').textContent, /Résumé conservé/);
+  }
+  f.publish('onRecap', { sessionId: 'other', status: 'ready', overview: 'Résumé étranger', chapters: [] });
+  assert.doesNotMatch(f.get('recap-content').textContent, /Résumé étranger/);
+  f.frame();
+  assert.equal(f.get('recap-content').querySelectorAll('.recap-source')[0].disabled, false);
+  f.publish('onDeepState', { jobs: [{ id: 'answer', sessionId: 'session', status: 'done', createdAt: T0,
+    result: { ...observed, citations: [passage] } }] });
+  f.frame();
+  const card = f.get('message-list').children[0];
+  assert.equal(card.querySelectorAll('.reference')[0].disabled, false);
+  f.publish('onState', { ...session, segments: [{ ...passage, available: false, mediaReason: 'expired' }] });
+  f.frame();
+  for (const id of ['recap-content', 'recap-dialog-content']) {
+    assert.equal(f.get(id).querySelectorAll('.recap-source')[0].disabled, true);
+    assert.match(f.get(id).querySelectorAll('.recap-source')[0].title, /expirée/);
+  }
+  assert.equal(f.get('message-list').children[0], card);
+  assert.equal(card.querySelectorAll('.reference')[0].disabled, true);
+});
+
+test('memory presents the open session retention and falls back only to that session in the library', async (t) => {
+  const f = await rendererHarness(t, { configuration: { retention: 'rolling', retentionMs: 1800000 },
+    library: { current: { id: 'archive', retention: 'until-deleted' } } });
+  f.publish('onState', { id: 'archive', retention: 'until-deleted', history: [], segments: [] });
+  f.frame();
+  assert.match(f.get('memory-status').textContent, /Vidéo conservée jusqu’à la suppression de la session/);
+  f.publish('onState', { id: 'archive', history: [], segments: [] });
+  f.frame();
+  assert.match(f.get('memory-status').textContent, /jusqu’à la suppression/);
+  assert.equal(f.get('memory-status').title, f.get('memory-status').textContent);
+  f.publish('onState', { id: 'another', history: [], segments: [] });
+  f.frame();
+  assert.equal(f.get('memory-status').textContent, '0 passage · 0 à revoir · 0 analysé');
+});
+
 // ---- Requests of the chat: what the window sends to the models --------------------------------------
 
 test('the claim of a verification loses every recognised prefix, in any case, and keeps what is not one', async () => {
@@ -988,14 +1227,25 @@ test('asking to go deeper repeats the first 1200 characters of the answer after 
   assert.equal(deepenRequest('f'.repeat(1500)), `Approfondis cette réponse : ${'f'.repeat(1200)}`);
 });
 
-test('the window takes its claim, its question and its deepening request from the chat rules', () => {
-  // The window cannot be loaded without Electron, so its wiring is read through its shape (layout aside): the rules
-  // above are only worth something if the window calls them instead of a chain of its own.
-  const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, "import { claimFrom, withoutVerifyPrefix, deepenRequest } from './ui/chat-requests.mjs';"), 'the window imports the chat rules');
-  assert.ok(holds(renderer, "$('claim').value = claimFrom(text);"), 'the claim offered comes from claimFrom');
-  assert.ok(holds(renderer, "if (withoutVerifyPrefix($('question').value) === claim)"), 'the question cleared comes from withoutVerifyPrefix');
-  assert.ok(holds(renderer, 'bridge.ask(deepenRequest(job.result.answer))'), 'the deepening request comes from deepenRequest');
+test('the window takes its claim, its question and its deepening request from the chat rules', async (t) => {
+  const f = await rendererHarness(t);
+  assert.equal(typeof f.get('verify').onclick, 'function', 'verification button bound');
+  f.get('question').value = 'vérifie que le chiffre est exact';
+  await f.click(f.get('verify'));
+  assert.equal(f.get('claim').value, 'le chiffre est exact');
+  assert.equal(f.get('verify-dialog').open, true);
+  await f.submit(f.get('verify-form'));
+  assert.equal(f.get('question').value, '');
+  assert.deepEqual(f.calls, [['verify', 'le chiffre est exact']]);
+  f.publish('onState', { id: 'session', history: [], segments: [] });
+  f.publish('onDeepState', { jobs: [{ id: 'answer', sessionId: 'session', status: 'done', createdAt: T0,
+    result: { ...observed, answer: 'Le chiffre est 7 %. ' + 'a'.repeat(1500) } }] });
+  f.frame();
+  const buttons = f.get('message-list').querySelectorAll('.secondary');
+  await f.click(buttons.find(node => node.dataset.action === 'job-more'));
+  assert.deepEqual(f.calls.at(-1), ['ask', 'Approfondis cette réponse : ' + ('Le chiffre est 7 %. ' + 'a'.repeat(1500)).slice(0, 1200)]);
+  await f.click(buttons.find(node => node.dataset.action === 'job-verify'));
+  assert.equal(f.get('claim').value, 'Le chiffre est 7 %. ' + 'a'.repeat(1500));
 });
 
 // ---- Controls of the window: which command is off, and which wording it takes ------------------------
@@ -1178,12 +1428,14 @@ test('browser composition selects the source and shares its preview with one inj
   assert.equal(video.srcObject, null);
 });
 
-// ---- Static guards on the renderer itself (it cannot be loaded without Electron) -------------------
+// ---- Gardes des frontières du renderer : imports, DOM, bridge et contenu ---------------------------
 const rendererFiles = ['renderer.js', 'recording.js', ...fs.readdirSync(app('ui')).filter(name => /\.m?js$/.test(name)).map(name => `ui/${name}`)];
 const read = file => fs.readFileSync(app(file), 'utf8');
 
 const elementPatterns = new Map([
   ['renderer.js', /\$\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/renderer-commands.mjs', /(?:this\.)?get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/renderer-wiring.mjs', /(?:this\.)?get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/capture-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/moment-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/capture-controls.mjs', /\bget\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
@@ -1203,7 +1455,7 @@ const namedImports = (source, file) => scanned(source, namedImportPattern, file)
 const bridgeMethods = (source, group, pattern = /\b(?:bridge|window\.tvlens)\??\.([A-Za-z]+)/g) =>
   new Set(scanned(source, pattern, group).map(match => match[1]));
 
-// Le renderer initialise le DOM au chargement ; seuls ses modules peuvent être exécutés ici.
+// Le point d’entrée initialise la page ; sa composition importable est exercée par le banc ci-dessus.
 const importRendererModule = file => import(pathToFileURL(app(file)).href);
 
 test('static scans survive quote and line changes and reject empty input with its file or group', async () => {
@@ -1291,26 +1543,14 @@ test('the renderer talks to the bridge of the contract only, and writes no ceili
   const everything = [...rendererFiles.map(read), read('index.html')].join('\n');
   // The former Auto mode is gone, bridge and wording.
   assert.ok(!/autoState|startAuto|stopAuto|openAutoSource|onAuto\b|auto-frequency|Surveillance auto|questions manuelles sont prioritaires/.test(everything));
-  // Contract 5.3: no setting, stored preference or control puts a signal on screen, and the stack is fed by the
-  // view model alone (its `cards`), never from the signal cards of the state.
+  // Frontière produit : aucune API ou préférence ne réintroduit les signaux dans la pile.
   assert.ok(!/showSignals|watch-signals|float-toast\[data-kind/.test(everything + read('style.css')), 'no "signals on screen" setting');
-  const renderer = shaped('renderer.js');
-  assert.ok(holds(renderer, 'cardQueue.offer(surveillanceView().cards,'), 'the stack is fed by the view model');
-  assert.equal([...renderer.matchAll(/cardQueue\.offer\(/g)].length, 1, 'one way into the stack');
-  assert.ok(!/signals\??\.cards/.test(renderer + shaped('ui', 'surveillance-dom.js')), 'the renderer never reads the signal cards itself');
-  // A recap state is received through reduceRecap (its rule is proved without a DOM): the window keeps no copy of it.
-  const recapFrom = renderer.indexOf(shape('function receiveRecap(')), recapTo = renderer.indexOf(shape('function renderRecap('));
-  assert.ok(recapFrom >= 0 && recapTo > recapFrom, 'the renderer no longer declares receiveRecap before renderRecap');
-  assert.ok(renderer.slice(recapFrom, recapTo).includes(shape('reduceRecap(')), 'the recap received goes through reduceRecap');
-  // The retention shown is the loaded session's: the renderer no longer reads the setting of the host for it.
-  assert.ok(!/retentionNote\(configuration\)|configuration\??\.retention/.test(renderer), 'the host retention is not what the loaded session shows');
-  assert.ok(holds(renderer, "$('memory-status').textContent = describeMemory(state, { library });"), 'the memory status is written from the session');
   // No count written "N mot(s)": every count is agreed by ui/text.mjs, in the page and in the texts the modules build
   // (comments aside); sentences that come from the core go through agreeText where they are drawn.
   const code = file => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   for (const file of rendererFiles) assert.ok(!/\}\s[\p{L}’ ]*\p{L}\((?:s|es)\)/u.test(code(file)), `${file} writes a count with a parenthesised plural`);
   assert.ok(!/\p{L}\((?:s|es|e|x)\)/u.test(read('index.html')), 'index.html writes a parenthesised plural');
-  const agreed = [['ui/job-card.js', 'view.limits'], ['ui/recap-view.js', 'state.limits'], ['renderer.js', 'found.warnings']];
+  const agreed = [['ui/job-card.js', 'view.limits'], ['ui/recap-view.js', 'state.limits'], ['ui/renderer-commands.mjs', 'found.warnings']];
   for (const [file, sentences] of agreed) assert.ok(holds(shaped(file), `agreeText(${sentences}.join(' '))`), `${file} agrees the sentences of the core`);
   // Ceilings and retention come from job.timeoutMs, the configuration and the session state.
   for (const file of [...rendererFiles, 'index.html']) {
