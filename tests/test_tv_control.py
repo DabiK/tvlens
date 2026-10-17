@@ -188,6 +188,7 @@ class DeviceLifecycle(unittest.TestCase):
 class DeliveryTests(unittest.TestCase):
  def setUp(self):
   self.session='one';self.failures=1;self.accepted=set();self.attempts=0;self.ambiguous=True;self.state={};self.refuse=None
+  self.sequences=[];self.refusals=[]
   owner=self
   class Handler(BaseHTTPRequestHandler):
    def log_message(self,*_):pass
@@ -199,6 +200,8 @@ class DeliveryTests(unittest.TestCase):
    def do_POST(self):
     item=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
     owner.attempts+=1
+    owner.sequences.append(item['sequence'])
+    if owner.refusals:return self.reply(*owner.refusals.pop(0))
     if owner.refuse:return self.reply(*owner.refuse)
     owner.accepted.add(item['sequence'])
     if owner.ambiguous:owner.ambiguous=False;return self.reply(503,{})
@@ -217,6 +220,17 @@ class DeliveryTests(unittest.TestCase):
   self.assertEqual(self.attempts,0)
   # Every lost block names its cause; the total shown by the panel is unchanged.
   self.assertEqual(self.report['dropReasons'],{'deliveryExpired':1,'stopped':1});self.assertEqual(self.report['dropped'],2)
+ def test_internal_server_error_retries_the_same_sequence_then_counts_the_accepted_block(self):
+  self.failures=0;self.ambiguous=False
+  self.refusals=[(500,{'error':'Erreur interne du serveur.','code':'internal-error'})]
+  clock=[0.0]
+  def wait(delay):clock[0]+=delay
+  with patch('transport.time.monotonic',side_effect=lambda:clock[0]),patch.object(self.stop,'wait',side_effect=wait) as pause:
+   self.assertTrue(self.transport.deliver({'sessionId':'one','sequence':7},0.0,ttl=5))
+  pause.assert_called_once_with(1)
+  self.assertEqual(self.sequences,[7,7])
+  self.assertEqual(self.accepted,{7})
+  self.assertEqual(self.report,{'sent':1,'dropped':0,'retries':1,'errors':[],'connection':'connected'})
  def test_restart_does_not_move_buffer_into_new_session(self):
   self.failures=0;self.session='two'
   with self.assertRaises(SessionChanged):self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic())

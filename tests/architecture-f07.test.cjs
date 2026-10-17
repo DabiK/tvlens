@@ -383,7 +383,8 @@ onBothHosts('a session whose final state the disk refuses is never said archived
   assert.deepEqual([next !== id, await passage(h, next), h.journal.length], [true, 'moment-1', 1]);
 });
 
-onBothHosts('deleting the loaded session is refused while it captures; a deletion whose seal is refused erases nothing, says why to whoever asked and in the journal, and leaves the host without a session: the folder is what it was, listed as cut short and reopenable, and a new session starts; deleted for good with a question running, the question is given up and nothing brings the folder back', async (t, h) => {
+onBothHosts('deletion while capturing is refused; a failed seal reports failure to the caller and its reason in the journal, '
+  + 'preserves files for reopening, and allows later deletion without restoring the folder', async (t, h) => {
   const id = await h.start();
   await passage(h, id);
   const capturing = await h.remove(id);
@@ -393,8 +394,10 @@ onBothHosts('deleting the loaded session is refused while it captures; a deletio
   const live = h.runtime(), seal = live.seal.bind(live), before = await tree(h.folder(id));
   live.seal = async () => { await seal(); throw new Error('scellement refusé (simulé)'); };
   const refused = await h.remove(id), said = 'scellement : scellement refusé (simulé)';
+  const refusalMessage = h.name === 'server' ? 'Erreur interne du serveur.' : 'scellement refusé (simulé)';
   assert.deepEqual({ capturing, refused, intact: await tree(h.folder(id)), closed: live.watch.closed, state: await h.state(), jobs: await h.jobs(), rows: await h.rows(), journal: h.journal, lastEnd: h.lastEnd?.() }, {
-    capturing: 'Arrête la capture avant de supprimer cette session.', refused: 'scellement refusé (simulé)', intact: before, closed: true, state: null, jobs: [], rows: [[id, 'interrupted', 1, 1]],
+    capturing: 'Arrête la capture avant de supprimer cette session.', refused: refusalMessage,
+    intact: before, closed: true, state: null, jobs: [], rows: [[id, 'interrupted', 1, 1]],
     journal: [`TVLens — fermeture incomplète de la session ${id} : ${said}`], lastEnd: h.lastEnd && { id, archived: false, errors: [said] } });
   // The host is free: another session starts, captures and is archived.
   const other = await h.start();
@@ -496,7 +499,8 @@ async function withRunningQuestion(h) {
 }
 const UNCANCELLED = ['questions : annulation impossible (simulé)', 'hôte : Une question est en cours.'];
 
-test('server host (HTTP) — a session its host could not let go of is not said deleted, and nothing of it is erased: whoever asked is told why, the journal says it, the question is still running and the host still shows the session it holds; once its questions can be cancelled the same deletion goes through, and a new session starts', async t => {
+test('server host (HTTP) — a failed session release refuses deletion with an internal error while the journal says why; '
+  + 'files and the running question remain until cancellation succeeds, then deletion and a new session work', async t => {
   const h = await serverHost(t), id = await withRunningQuestion(h);
   // The latest state of the running question has reached the disk: nothing of this session is left to write.
   await h.settled();
@@ -505,7 +509,8 @@ test('server host (HTTP) — a session its host could not let go of is not said 
   const refused = await h.remove(id);
   h.deep.cancelAll = cancelAll;
   assert.deepEqual({ refused, folder: await kept(h.folder(id)), erased: [...erased], held: (await h.state())?.id, questions: (await h.jobs()).map(job => job.status), journal: h.journal, lastEnd: h.lastEnd() }, {
-    refused: 'Une question est en cours.', folder: before, erased: [], held: id, questions: ['running'], journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: false, errors: UNCANCELLED } });
+    refused: 'Erreur interne du serveur.', folder: before, erased: [], held: id, questions: ['running'],
+    journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: false, errors: UNCANCELLED } });
   // The questions can be cancelled again: the same deletion goes through, and the agent answering late changes nothing.
   const removed = await h.remove(id);
   h.chat.turn.finish(); await pause(60);
@@ -514,13 +519,14 @@ test('server host (HTTP) — a session its host could not let go of is not said 
     removed: 'deleted', erased: ['rm'], folder: false, next: [true, 'moment-1', 0], journal: 1 });
 });
 
-test('server host (HTTP) — a session its host could not let go of is not said ended: its archive is on disk, whoever asked is told why, the journal says it, and the host still shows the session it holds; once its questions can be cancelled the same end goes through with the question given up and saved, and a new session starts', async t => {
+test('server host (HTTP) — a failed session release refuses the end with an internal error while the journal says why; '
+  + 'the archive and running question remain, then successful cancellation allows the end and a new session', async t => {
   const h = await serverHost(t), id = await withRunningQuestion(h), cancelAll = h.deep.cancelAll;
   h.deep.cancelAll = () => { throw new Error('annulation impossible (simulé)'); };
   const refused = await h.end();
   h.deep.cancelAll = cancelAll;
   assert.deepEqual({ refused, held: (await h.state())?.id, questions: (await h.jobs()).map(job => job.status), manifest: (await saved(h, id, 'manifest.json')).state, journal: h.journal, lastEnd: h.lastEnd() }, {
-    refused: { status: 400, value: { error: 'Une question est en cours.', code: 'unclassified-error' } },
+    refused: { status: 500, value: { error: 'Erreur interne du serveur.', code: 'internal-error' } },
     held: id, questions: ['running'], manifest: 'archived', journal: [LINE(UNCANCELLED, id)], lastEnd: { id, archived: true, errors: UNCANCELLED } });
   const ended = await h.end();
   h.chat.turn.finish(); await pause(60);

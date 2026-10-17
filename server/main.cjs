@@ -38,7 +38,10 @@ async function main(){
  // Sessions are durable: nothing is swept at start, and a session cut short by the last stop is found listed, whole.
  const sessionsRoot=path.join(root,'sessions');
  const runtime=new HeadlessRuntime({userData:root,sessionsRoot,host:'server',guard:new DiskGuard({path:sessionsRoot,...host.disk}),retentionMs:host.retentionMs,config,transcriptionSettings,selectedModels,codexBinary:executable('codex', {override:process.env.TVLENS_CODEX_BINARY})});
- const server=await new RemoteServer({runtime,media:new RemoteMedia({ffmpeg:config.ffmpeg}),token:token.trim()}).listen(Number(process.env.TVLENS_PORT||8787),process.env.TVLENS_BIND||'127.0.0.1');
+ const server=await new RemoteServer({
+  runtime,media:new RemoteMedia({ffmpeg:config.ffmpeg}),token:token.trim(),
+  logError:entry=>console.error('Erreur HTTP inattendue.',entry),
+ }).listen(Number(process.env.TVLENS_PORT||8787),process.env.TVLENS_BIND||'127.0.0.1');
  console.log('TVLens server '+server.url+' — device token stored in '+tokenFile);
  // Stopping archives the session in memory: its media, questions and surveillance registry stay on disk.
  let closing=false;const close=async()=>{if(closing)return;closing=true;await server.close();await runtime.close();process.exit(0);};

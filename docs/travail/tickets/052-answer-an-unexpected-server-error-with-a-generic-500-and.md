@@ -1,7 +1,7 @@
 ---
 id: T052
 titre: Answer an unexpected server error with a generic 500 and journal it
-statut: a-faire
+statut: termine
 bloque_par: T051
 adr: oui
 installe: non
@@ -102,3 +102,76 @@ est inclus ici. Si un parcours normal reste sans statut après ces dépendances,
 doit être établie avant de le convertir ; aucune règle métier ne se déduit de son message.
 
 ## Journal
+
+- Exploration : lecture des consignes, de la skill tests, du transport et de ses cinq groupes,
+  des tests et clients concernés, des ADR 0021/0026/0034/0039. Décision « oui, 500 » présente.
+  Exploration et migrations prévues consignées dans `.harness-state/tickets/T052/`.
+  Cette évolution du contrat remplace le repli 400 inattendu ; les refus explicites restent publics.
+  Aucun test lancé à ce stade, aucun essai TV réel.
+- Réponse générique, tests d'abord :
+  `node --test --test-name-pattern='HTTP answers an ordinary unexpected Error' tests/server-routes.test.cjs`
+  échoue sur l'assertion (400/message interne au lieu de 500/internal-error/texte fixe), puis passe
+  après le changement minimal. Sorties `ordinary-error-red.log` et `ordinary-error-green.log`.
+  Le contrôle rapide a signalé une complexité de 16 dans `sendError` ; extraction de la traduction
+  `publicCode`, sans modification du gel ni des règles, puis contrôle rapide vert.
+- Journal injecté :
+  `node --test --test-name-pattern='HTTP journals|journal sink throws' tests/server-routes.test.cjs`
+  rouge sur l'absence d'appel du puits (11 échecs), puis vert (11 tests). Le point d'entrée câble
+  stderr ; les refus reconnus et la terminaison `headersSent` restent hors de ce journal.
+  Sorties `journal-red.log` et `journal-green.log` dans le dossier d'état.
+- Migrations déclarées appliquées : ancien repli inattendu, lecture d'archives EIO/EACCES/EMFILE
+  et écriture EIO passent à 500 générique ; ENOSPC reste 507. Aucun cas retiré.
+  `node --test --test-concurrency=1 tests/server-routes.test.cjs tests/server-ingest-path.test.cjs` :
+  un nouveau cas 429 avait d'abord utilisé un code public au lieu de l'identité émettrice ; correction
+  du double vers `TVLENS_QUESTION_QUEUE_FULL`, puis 59 tests réussis. Sortie `server-contract-green.log`.
+- Preuves clients sans changement du produit Python/TV :
+  `node --test --test-name-pattern='internal server errors through the remote client' tests/tv-poll-controller.test.cjs`
+  et `python3 tests/test_tv_control.py DeliveryTests.test_internal_server_error_retries_the_same_sequence_then_counts_the_accepted_block`
+  passent chacun (1 test). Vrais transports, réponses contrôlées et horloges maîtrisées ; aucun
+  essai TV réel. ADR 0040 ajouté pour documenter cette évolution du contrat et ses conséquences.
+- Contrôles intermédiaires : `node scripts/check.mjs --changed` vert (76 tests JS).
+  Les sept suites serveur/panneau jouées ensemble avec `--test-concurrency=1` passent (130 tests),
+  puis `python3 -m unittest discover -s tests -p test_tv_control.py` passe (15 tests).
+- Premier `node scripts/check.mjs` : règles/format/lint/gel/cliquet verts, Python vert (24 tests),
+  JS rouge (2111/2114). Trois anciennes attentes HTTP de `tests/architecture-f07.test.cjs` exposent
+  encore les erreurs internes de scellement/libération. Lecture du test complet, du protocole, du
+  cycle de vie et de l'ADR 0007 : ces erreurs sans statut viennent d'une panne simulée de fermeture,
+  dont une annulation de questions rendue défaillante, pas d'un refus métier normal.
+  Migration déclarée dans les écarts avant modification ; état, fichiers, journal et branche Mac
+  restent vérifiés à l'identique.
+  `node --test --test-name-pattern='server host.*deleting the loaded session|server host.*could not let go' tests/architecture-f07.test.cjs`
+  reproduit les trois échecs sur les seules réponses publiques (`session-fallback-red.log`).
+- Migration des trois réponses de fermeture effectuée sans toucher au protocole ni à l'hôte Mac.
+  `node --test tests/architecture-f07.test.cjs` : 26/26 ; `node scripts/check.mjs --changed` : vert,
+  102/102 tests JS. Sorties `session-fallback-green.log` et `check-changed-final.log`.
+- Contrôle final `node scripts/check.mjs` : vert, règles/format/lint/gel/cliquet verts,
+  2114/2114 tests JS sur 131 fichiers et 24 tests Python réussis, en séquentiel.
+  Sortie `check-full.log` ; premier passage rouge conservé dans `check-full-initial.log`.
+  `git diff --check` ne signale aucune erreur. Verdict `TERMINÉ` écrit dans le dossier d'état ;
+  la relecture et l'intégration restent à la boucle. Aucun essai TV réel, commit ou push.
+- Reprise après `relecture-1.md` : les deux constats sont acceptés. L'exclusion du journal après
+  `headersSent`, affirmée plus haut, était erronée et contraire au critère 2 ; sa suppression
+  est consignée dans les écarts avant correction. Le test HTTP sera renforcé avant le code,
+  l'ADR précisé, et les trois titres de fermeture alignés sur le résultat public et le journal.
+- Constat bloquant, tests d'abord :
+  `node --test --test-name-pattern='HTTP ends an already started response' tests/server-routes.test.cjs`
+  échoue sur l'absence d'entrée au journal (1 test, `headers-journal-red.log`), puis sur les deux
+  cas après ajout du puits défaillant (`headers-journal-sink-red.log`). Après correction : 2/2
+  réussis (`headers-journal-green.log`). La réponse reste 200 au corps vide ; le journal reçoit
+  l'erreur de sérialisation, sa cause par identité, la méthode et le pathname, même si le puits lève.
+  La classification précède désormais la garde `headersSent`, sans journaliser les refus explicites
+  ni reconnus ; un seul bloc protégé appelle le puits. L'ADR 0040 précise cette garantie.
+- Constat mineur : les trois titres de fermeture sont reformulés. Les deux titres serveur nomment
+  l'erreur interne reçue et la raison au journal ; le titre commun nomme l'échec signalé au demandeur
+  et la raison au journal, ce qui couvre les deux hôtes. Aucune assertion ni aucun cas retiré.
+- Vérification des corrections : `node scripts/check.mjs --changed` vert (103 tests JS).
+  `node --test --test-concurrency=1 tests/remote-server.test.cjs tests/server-routes.test.cjs tests/server-ingest-path.test.cjs tests/server-sessions.test.cjs tests/server-state-views.test.cjs tests/architecture-f07.test.cjs tests/tv-panel.test.cjs tests/tv-poll-controller.test.cjs` :
+  157/157 tests réussis en séquentiel. Puis
+  `python3 -m unittest discover -s tests -p test_tv_control.py` : 15/15.
+  Sorties `correction-1-check-changed.log`, `correction-1-server-panel-suites.log`,
+  `correction-1-python-control-suite.log` ; détails dans `correction-1.md` du dossier d'état.
+- Contrôle complet après correction : `node scripts/check.mjs` vert, règles/format/lint/gel/cliquet
+  verts, 2115/2115 tests JS sur 131 fichiers et 24 tests Python réussis en séquentiel.
+  Sortie `correction-1-check-full.log`. `git diff --check` : aucune erreur.
+  Nouveau verdict `TERMINÉ` écrit ; les deux constats sont corrigés et la relecture reste à la boucle.
+  Aucun essai TV réel, commit ou push.

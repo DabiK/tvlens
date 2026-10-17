@@ -631,10 +631,62 @@ test("HTTP reaches all five groups with the recorded runtime and assembler", asy
   );
 });
 
+test("HTTP answers an ordinary unexpected Error with a generic internal error", async (t) => {
+  const f = await httpFixture(t, { runtime: { ask: () => { throw Error("secret-key /private/server/file"); } } });
+  assert.deepEqual(await f.request("/v1/questions", {}), {
+    status: 500, value: { error: "Erreur interne du serveur.", code: "internal-error" },
+  });
+});
+
+for (const [name, error] of [
+  ["TypeError", new TypeError("secret-key /private/type")],
+  ["RangeError", new RangeError("secret-key /private/range")],
+  ["ReferenceError", new ReferenceError("secret-key /private/reference")],
+  ["SyntaxError", new SyntaxError("secret-key /private/syntax")],
+  ["ordinary Error with cause", new Error("secret-key /private/outer", { cause: Error("secret-key /private/cause") })],
+  ["string", "secret-key /private/string"],
+  ["null", null],
+  ["undefined", undefined],
+  ["system error", Object.assign(Error("EIO secret-key /private/media"), {
+    code: "EIO", path: "/private/media", syscall: "write", cause: Error("secret-key disk cause"),
+  })],
+  ["invalid status", Object.assign(Error("secret-key /private/status"), { status: 600 })],
+]) {
+  test(`HTTP journals an unexpected ${name} with its origin while keeping the response generic`, async (t) => {
+    const entries = [];
+    const runtime = { ask: () => { throw error; }, etag: () => { throw error; } };
+    const f = await httpFixture(t, { runtime, logError: entry => entries.push(entry) });
+    for (const [pathname, body, method] of [["/v1/questions", {}, "POST"], ["/v1/state", undefined, "GET"]]) {
+      assert.deepEqual(await f.request(pathname + "?view=secret-query", body), {
+        status: 500, value: { error: "Erreur interne du serveur.", code: "internal-error" },
+      });
+      assert.equal(entries.length, method === "POST" ? 1 : 2);
+      assert.deepEqual(entries.at(-1), { method, pathname, error, cause: error?.cause });
+      assert.equal(entries.at(-1).error, error);
+      assert.equal(entries.at(-1).cause, error?.cause);
+    }
+  });
+}
+
+test("HTTP still answers with the generic internal error when the journal sink throws", async (t) => {
+  let calls = 0;
+  const error = Error("secret-key /private/origin");
+  const f = await httpFixture(t, {
+    runtime: { ask: () => { throw error; } },
+    logError: () => { calls++; throw Error("secret-key /private/journal"); },
+  });
+  assert.deepEqual(await f.request("/v1/questions", {}), {
+    status: 500, value: { error: "Erreur interne du serveur.", code: "internal-error" },
+  });
+  assert.equal(calls, 1);
+});
+
 test("HTTP carries recognized application codes at every error status independently of their message", async (t) => {
-  const f = await httpFixture(t);
+  const entries = [];
+  const f = await httpFixture(t, { ...ingestionFixture(), logError: entry => entries.push(entry) });
   const cases = [
     [400, "invalid-capture-time"],
+    [429, "TVLENS_QUESTION_QUEUE_FULL", "question-queue-full"],
     [503, "media-unavailable"],
     [409, "read-only"],
     [503, "session-closing"],
@@ -705,9 +757,10 @@ test("HTTP carries recognized application codes at every error status independen
     });
   }
   assert.deepEqual(f.events, []);
+  assert.deepEqual(entries, [], "explicit and recognized refusals are not unexpected errors");
 });
 
-test("HTTP leaves errno, unknown identities and familiar wording unclassified with the historical fallback", async (t) => {
+test("HTTP keeps an explicit status but hides errno, unknown identities and familiar wording without one", async (t) => {
   const f = await httpFixture(t);
   for (const fields of [
     {}, { code: "ENOENT" }, { code: "EIO" }, { code: "ENOSPC" },
@@ -717,13 +770,44 @@ test("HTTP leaves errno, unknown identities and familiar wording unclassified wi
   ]) {
     for (const message of ["Session obsolète.", "Espace disque insuffisant."]) {
       f.runtime.ask = () => { throw Object.assign(Error(message), fields); };
-      assert.deepEqual(await f.request("/v1/questions", {}), {
-        status: fields.status === 503 ? 503 : 400,
-        value: { error: message, code: "unclassified-error" },
-      });
+      const expected = fields.status === 503
+        ? { status: 503, value: { error: message, code: "unclassified-error" } }
+        : { status: 500, value: { error: "Erreur interne du serveur.", code: "internal-error" } };
+      assert.deepEqual(await f.request("/v1/questions", {}), expected);
     }
   }
   assert.deepEqual(f.events, []);
+});
+
+test("HTTP ends an already started response without sending another set of headers", async (t) => {
+  const entries = [];
+  const cause = Error("secret-key /private/serialization-cause");
+  const error = new Error("secret-key /private/serialization", { cause });
+  const f = await httpFixture(t, {
+    runtime: { ask: () => ({ toJSON: () => { throw error; } }) },
+    logError: entry => entries.push(entry),
+  });
+  const response = await wireRequest(f.server, "/v1/questions", { body: "{}" });
+  assert.equal(response.status, 200);
+  assert.equal(response.text, "");
+  assert.deepEqual(entries, [{ method: "POST", pathname: "/v1/questions", error, cause }]);
+  assert.equal(entries[0].error, error);
+  assert.equal(entries[0].cause, cause);
+});
+
+test("HTTP ends an already started response even when its error journal throws", async (t) => {
+  const entries = [];
+  const error = new Error("secret-key /private/serialization", { cause: Error("secret-key serialization cause") });
+  const f = await httpFixture(t, {
+    runtime: { ask: () => ({ toJSON: () => { throw error; } }) },
+    logError: entry => { entries.push(entry); throw Error("secret-key /private/journal"); },
+  });
+  const response = await wireRequest(f.server, "/v1/questions", { body: "{}" });
+  assert.equal(response.status, 200);
+  assert.equal(response.text, "");
+  assert.deepEqual(entries, [{ method: "POST", pathname: "/v1/questions", error, cause: error.cause }]);
+  assert.equal(entries[0].error, error);
+  assert.equal(entries[0].cause, error.cause);
 });
 
 test("HTTP preserves JPEG and both media routes including Range headers and statuses", async (t) => {
@@ -1079,7 +1163,7 @@ test("the composed table gives each of the 26 method and path pairs exactly one 
   }
 });
 
-async function applicationFixture(t, options = {}) {
+async function applicationFixture(t, options = {}, serverOptions = {}) {
   const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
   const { TranscriptionSettings } = require('../adapters/transcription-settings.cjs');
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-application-refusals-'));
@@ -1094,7 +1178,7 @@ async function applicationFixture(t, options = {}) {
   const media = { assemble: async input => ({
     ...input, clip: Buffer.from('clip'), frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }],
   }) };
-  return { ...await httpFixture(t, { runtime, media }), root };
+  return { ...await httpFixture(t, { runtime, media, ...serverOptions }), root };
 }
 
 function expectRefusal(actual, code, error, status = 400) {
@@ -1280,9 +1364,10 @@ test('HTTP library transitions preserve exact capturing, not-open and read-only 
 
 
 for (const code of ['EIO', 'EACCES', 'EMFILE']) {
-  test(`HTTP archive opening keeps a real ${code} read failure unclassified`, async t => {
+  test(`HTTP archive opening answers a real ${code} read failure generically and journals its cause`, async t => {
     const { emptyArchive } = require('./helpers/empty-archive.cjs');
-    const f = await applicationFixture(t);
+    const entries = [];
+    const f = await applicationFixture(t, {}, { logError: entry => entries.push(entry) });
     const archive = await emptyArchive(f.runtime.options.sessionsRoot, 'server');
     const file = path.join(archive.dir, 'session.json'), readFile = fs.readFile;
     const cause = Object.assign(Error('Fichier de session illisible.'), { code });
@@ -1290,6 +1375,13 @@ for (const code of ['EIO', 'EACCES', 'EMFILE']) {
       if (target === file) throw cause;
       return readFile(target, ...args);
     });
-    expectRefusal(await f.request('/v1/sessions/' + archive.id + '/open', {}), 'unclassified-error', 'Archive illisible.');
+    const pathname = '/v1/sessions/' + archive.id + '/open';
+    expectRefusal(await f.request(pathname, {}), 'internal-error', 'Erreur interne du serveur.', 500);
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].method, 'POST');
+    assert.equal(entries[0].pathname, pathname);
+    assert.equal(entries[0].error.message, 'Archive illisible.');
+    assert.equal(entries[0].error.cause, cause);
+    assert.equal(entries[0].cause, cause);
   });
 }

@@ -8,13 +8,13 @@ const { RemoteServer } = require('../server/http.cjs');
 const { deferred } = require('./helpers/wait.cjs');
 const token = 'b'.repeat(64);
 
-async function fixture(t, { media, runtimeOptions = {} } = {}) {
+async function fixture(t, { media, runtimeOptions = {}, logError } = {}) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-ingest-path-'));
   let clock = 0;
   const runtime = new HeadlessRuntime({ userData: dir, sessionsRoot: path.join(dir, 'sessions'), config: {}, selectedModels: { observationModel: 'test', inspectionModel: 'test', codexModel: 'test' },
     smoke: true, agent: { answer: async () => ({ answer: 'ok', kind: 'explanation', citations: [], limits: [] }) }, readClock: () => clock, ...runtimeOptions });
   const assembled = media || { assemble: async x => ({ ...x, clip: Buffer.from('fixture'), frames: [{ atMs: x.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null, ingest: { assembleMs: 37 } }) };
-  const server = await new RemoteServer({ runtime, media: assembled, token }).listen(0, '127.0.0.1');
+  const server = await new RemoteServer({ runtime, media: assembled, token, logError }).listen(0, '127.0.0.1');
   t.after(async () => { await server.close(); await runtime.close(); await fs.rm(dir, { recursive: true, force: true }); });
   const req = async (route, body, method) => {
     const res = await fetch(server.url + route, { method: method || (body ? 'POST' : 'GET'), headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
@@ -195,9 +195,10 @@ for (const kind of ['image', 'wav', 'tool', 'validation']) {
   });
 }
 
-for (const [errno, status, code] of [['EIO', 400, 'unclassified-error'], ['ENOSPC', 507, 'storage-full']]) {
+for (const [errno, status, code] of [['EIO', 500, 'internal-error'], ['ENOSPC', 507, 'storage-full']]) {
   test(`HTTP ingestion preserves a real store write failure as ${status} ${code}`, async t => {
-    const f = await fixture(t);
+    const entries = [];
+    const f = await fixture(t, { logError: entry => entries.push(entry) });
     const { id } = (await f.req('/v1/session/start', {})).value;
     const write = fs.writeFile;
     const cause = Object.assign(Error('Horodatage invalide.'), { code: errno });
@@ -210,7 +211,13 @@ for (const [errno, status, code] of [['EIO', 400, 'unclassified-error'], ['ENOSP
     });
     assert.equal(response.status, status);
     assert.equal(response.value.code, code);
-    if (errno === 'EIO') assert.equal(response.value.error, cause.message);
+    if (errno === 'EIO') {
+      assert.equal(response.value.error, 'Erreur interne du serveur.');
+      assert.equal(entries.length, 1);
+      assert.equal(entries[0].method, 'POST');
+      assert.equal(entries[0].pathname, '/v1/segments');
+      assert.equal(entries[0].error, cause);
+    } else assert.deepEqual(entries, []);
     assert.deepEqual(f.runtime.session.watch.snapshot().segments, []);
     assert.deepEqual(await fs.readdir(f.runtime.session.store.mediaRoot), []);
   });

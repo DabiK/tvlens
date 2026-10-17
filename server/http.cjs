@@ -53,7 +53,7 @@ const JSON_BODY_LIMIT = 12000;
 const SEGMENT_BODY_LIMIT = 13000000;
 const REQUEST_TIMEOUT_MS = 20000;
 const HEADERS_TIMEOUT_MS = 10000;
-// Seules les identités des émetteurs connus traversent le transport ; un errno garde le repli historique.
+// Seules les identités des émetteurs connus désignent un refus métier ; un errno ne le prouve pas.
 const PUBLIC_CODES = new Map([
   [TVLENS_QUESTION_INVALID, "invalid-question"],
   [TVLENS_QUESTION_QUEUE_FULL, "question-queue-full"],
@@ -166,23 +166,43 @@ async function readJSON(req, path, send) {
   return { raw, body };
 }
 
-function sendError(error, res, send) {
+function publicCode(code) {
+  return PUBLIC_CODES.get(code) ?? (APPLICATION_CODES.has(code) ? code : undefined);
+}
+
+function validErrorStatus(status) {
+  return Number.isInteger(status) && status >= 400 && status < 600 ? status : undefined;
+}
+
+function sendError(error, res, send, reportError) {
+  const storageFull = error?.code === STORAGE_FULL;
+  const code = publicCode(error?.code);
+  const status = validErrorStatus(error?.status);
+  const unexpected = !storageFull && !status && !code;
+  if (unexpected) {
+    try {
+      reportError();
+    } catch {
+      // Un journal indisponible ne doit pas empêcher la réponse publique.
+    }
+  }
   if (res.headersSent) return res.end();
   // Rien n'a été stocké ni supprimé : la capture apprend pourquoi son bloc est refusé.
-  if (error?.code === STORAGE_FULL)
+  if (storageFull)
     return send(507, { error: error.message, code: "storage-full" });
-  const status = Number.isInteger(error?.status) && error.status >= 400 && error.status < 600 ? error.status : 400;
-  return send(status, {
+  if (unexpected)
+    return send(500, { error: "Erreur interne du serveur.", code: "internal-error" });
+  return send(status ?? 400, {
     error: error.message,
-    code: PUBLIC_CODES.get(error?.code) ?? (APPLICATION_CODES.has(error?.code) ? error.code : "unclassified-error"),
+    code: code ?? "unclassified-error",
   });
 }
 
 class RemoteServer {
-  constructor({ runtime, media, token }) {
+  constructor({ runtime, media, token, logError = () => {} }) {
     if (typeof token !== "string" || token.length < 32)
       throw Error("Device token required");
-    Object.assign(this, { runtime, media, token });
+    Object.assign(this, { runtime, media, token, logError });
     this.accepted = new Map();
     this.lastSequence = -1;
     this.epoch = runtime.captureEpoch;
@@ -209,9 +229,11 @@ class RemoteServer {
     // Les lectures sont des GET sans corps ; le reste est un POST JSON : le panneau ne connaît aucun autre verbe.
     if (req.method !== "GET" && req.method !== "POST")
       return send(405, { error: "Méthode non autorisée.", code: "method-not-allowed" }, { Allow: "GET, POST, OPTIONS" });
+    let pathname;
     try {
       // La query sélectionne une vue, jamais une autre route. Même une route inconnue valide son corps avant le 404.
       const url = new URL(req.url, "http://tvlens.local");
+      pathname = url.pathname;
       const payload = req.method === "POST" ? await readJSON(req, url.pathname, send) : {};
       if (!payload) return;
       const handled = await dispatchRoute(this.routes, {
@@ -220,7 +242,7 @@ class RemoteServer {
       });
       if (!handled) send(404, { error: "Route inconnue.", code: "route-not-found" });
     } catch (error) {
-      sendError(error, res, send);
+      sendError(error, res, send, () => this.logError({ method: req.method, pathname, error, cause: error?.cause }));
     }
   }
   async close() {
