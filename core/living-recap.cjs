@@ -1,4 +1,4 @@
-const {passageText}=require('./passage-text.cjs');
+const {passageText}=require('./shared/passage-text.cjs');
 
 // Set as `code` by a synthesis adapter on an input it refuses for its size, before any provider call: the one
 // failure that waiting does not cure.

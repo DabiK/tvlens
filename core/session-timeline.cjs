@@ -2,8 +2,7 @@ const { domainError } = require('./shared/domain-error.cjs');
 const TVLENS_MOMENT_SELECTION_INVALID = 'TVLENS_MOMENT_SELECTION_INVALID';
 const TVLENS_MOMENT_MISSING = 'TVLENS_MOMENT_MISSING';
 const TVLENS_MOMENT_INTERVAL_DISCONTINUOUS = 'TVLENS_MOMENT_INTERVAL_DISCONTINUOUS';
-const { summaryForPassages } = require('./topic-summary.cjs');
-const CAPTURE_GAP_MS = 1000;
+const { summaryForPassages, continuesTopic, CAPTURE_GAP_MS } = require('./memory/index.cjs');
 // La consultation normalise l'absence à null ; le fil historique garde ses champs omis.
 const optionalPassageField = (passage, key) =>
   passage[key] ?? (passage.explicitNulls.includes(key) ? null : undefined);
@@ -25,13 +24,8 @@ function sessionTimeline(memory) {
     const topic = ready || passage.visionStatus === "ready" ? topicKey(observation.topic) : "";
     let card = cards.at(-1);
     // Never group across an unanalysed passage or a capture gap. No guessed topics.
-    if (
-      !topic ||
-      !card ||
-      card.topicKey !== topic ||
-      ["change", "uncertain"].includes(observation.topicContinuity) ||
-      passage.startMs - card.endMs > CAPTURE_GAP_MS
-    ) {
+    if (!continuesTopic({ previousTopic: card?.topicKey, topic,
+      continuity: observation.topicContinuity, gapMs: passage.startMs - card?.endMs })) {
       card = {
         id: passage.id,
         startMs: passage.startMs,

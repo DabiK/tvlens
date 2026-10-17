@@ -1,4 +1,4 @@
-const { validSummary, MAX_TOPIC_SUMMARY } = require('../core/topic-summary.cjs');
+const { validSummary, MAX_TOPIC_SUMMARY } = require('../core/memory/index.cjs');
 const { CodexAnalysisAgent } = require("./codex-analysis-agent.cjs");
 const { TVLENS_CODEX_CONNECTION_LOST } = require("./codex-session-events.cjs");
 const { TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT } = require("./codex-rpc.cjs");

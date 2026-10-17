@@ -1,4 +1,4 @@
-const { passageText } = require("./passage-text.cjs");
+const { passageText } = require("./shared/passage-text.cjs");
 
 const RETRY_BASE_MS = 2000,
   RETRY_MAX_MS = 60000;

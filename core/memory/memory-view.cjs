@@ -1,4 +1,4 @@
-const { hasUsableObservation } = require('../passage-text.cjs');
+const { hasUsableObservation } = require('../shared/passage-text.cjs');
 const { domainError } = require('../shared/domain-error.cjs');
 const { calculateCoverage } = require('./coverage.cjs');
 const TVLENS_MEMORY_LIMIT_INVALID = 'TVLENS_MEMORY_LIMIT_INVALID';

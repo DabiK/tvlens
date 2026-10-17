@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Deterministic replay of a capture stream through the real orchestration (WatchSession,
-// CodexPerception, DeepAsk, VideoTools, MomentSearch) with controlled providers and a
+// CodexPerception, DeepAsk, VideoTools, MemorySearch) with controlled providers and a
 // virtual clock. It checks ordering, bounded budgets, losses and evidence freshness.
 // Provider latencies are MODELS taken from the historical measurements quoted in
 // docs/backend-latency-optimization.md: results validate orchestration, never the real
@@ -91,11 +91,11 @@ async function runScenario(root, name, seed, variant = {}) {
   const { CodexPerception } = load('adapters/codex-perception.cjs');
   const { CachedInspector } = load('core/cached-inspector.cjs');
   const { MomentIndex } = load('core/moment-index.cjs');
-  const { MomentSearch } = load('core/moment-search.cjs');
+  const { MemorySearch } = load('core/moment-search.cjs');
   const { createConversationRuntime, hasPendingQuestion } = load('runtime/conversation-runtime.cjs');
   const { createMemoryMedia } = load('runtime/memory-media.cjs');
   const { consultationOf } = load('core/video-tools.cjs');
-  const { hasUsableObservation } = load('core/passage-text.cjs');
+  const { hasUsableObservation } = load('core/shared/passage-text.cjs');
   const started = performance.now();
   const clock = new VirtualClock().install();
   const rng = { asr: mulberry32(seed), vision: mulberry32(seed + 1), chat: mulberry32(seed + 2), feed: mulberry32(seed + 3) };
@@ -200,7 +200,7 @@ async function runScenario(root, name, seed, variant = {}) {
       async put(id, text, value) { counters.embeddingWrites++; this.entries.set(id, { text, vector: value }); this.byText.set(text, value); },
       async putMany(items) { counters.embeddingWrites++; for (const item of items) { this.entries.set(item.id, { text: item.text, vector: item.vector }); this.byText.set(item.text, item.vector); } } };
     const momentIndex = new MomentIndex({ embeddings, cache, flushMs: 30000, maxPending: 2048 }); // INDEX_FLUSH_MS and INDEX_MAX_PENDING of runtime/session-runtime.cjs
-    const search = new MomentSearch({ index: momentIndex });
+    const search = new MemorySearch({ index: momentIndex });
     // Same feed as runtime/session-runtime.cjs: published passages go to the bounded background index.
     const feedIndex = variant.backgroundIndex !== false && typeof momentIndex.observe === 'function';
 

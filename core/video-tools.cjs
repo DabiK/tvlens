@@ -1,4 +1,4 @@
-const { passageText, hasUsableObservation } = require('./passage-text.cjs');
+const { passageText, hasUsableObservation } = require('./shared/passage-text.cjs');
 const { domainError } = require('./shared/domain-error.cjs');
 // Why a passage cannot be re-examined, in the viewer's words. Without a reason the media went through the
 // rolling window: that wording is the historical one and stays as it is.

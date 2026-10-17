@@ -13,9 +13,9 @@ const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { heldWhisper } = require('./helpers/held-whisper.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
 const { MomentIndex } = require('../core/moment-index.cjs');
-const { MomentSearch } = require('../core/moment-search.cjs');
+const { MemorySearch } = require('../core/moment-search.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
-const { passageText } = require('../core/passage-text.cjs');
+const { passageText } = require('../core/shared/passage-text.cjs');
 const { momentDetail } = require('../core/session-timeline.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
@@ -169,7 +169,7 @@ test('during an embeddings outage searches do not multiply failing requests: one
   const clock = manualClock({ turns: 6 });
   let requests = 0;
   const index = new MomentIndex({ embeddings: { embedMany: async () => { requests++; throw Error('HTTP 503'); } }, cache: memoryCache(), ...clock.io });
-  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
+  const search = new MemorySearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = async () => {
     const found = search.search({ query: 'il est question du budget', segments, anchorMs: 800000, budgetMs: 1500, queryBudgetMs: 100 });
@@ -332,7 +332,7 @@ test('a search during the pause that follows a provider failure answers at once 
       return reply(texts.map(() => [1, 0]));
     },
   }, cache, ...clock.io });
-  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
+  const search = new MemorySearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = () => { const found = {}; search.search({ query: 'il est question du budget', segments, anchorMs: 800000 }).then(value => { found.value = value; }); return found; };
   // No timer fires below unless the clock is advanced: an answer means the search did not wait.

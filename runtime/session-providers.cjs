@@ -13,7 +13,7 @@ const {
 } = require("../adapters/openrouter-embeddings.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
-const { MomentSearch } = require("../core/moment-search.cjs");
+const { MemorySearch } = require("../core/moment-search.cjs");
 const { publishState } = require("../core/state-publication.cjs");
 const {
   simulatedInspectionModel,
@@ -34,7 +34,7 @@ const indexProviders = {
   OpenRouterEmbeddings,
   EmbeddingStore,
   MomentIndex,
-  MomentSearch,
+  MemorySearch,
 };
 const inspectionProviders = {
   CodexPerception,
@@ -192,7 +192,7 @@ function createSessionIndex(
         maxPending: INDEX_MAX_PENDING,
       })
     : null;
-  const search = new make.MomentSearch({ index });
+  const search = new make.MemorySearch({ index });
   // Published passages feed the bounded background index; a search never waits for a full catch-up.
   const feedIndex =
     index?.observe && config.backgroundIndex !== false

@@ -29,7 +29,7 @@ module.exports = {};
 /**
  * @typedef {{embed:(text:string,signal?:AbortSignal)=>Promise<number[]>,embedMany?:(texts:string[],signal?:AbortSignal)=>Promise<number[][]>}} EmbeddingPort
  * embedMany is optional: one bounded request for several texts, vectors in input order.
- * @typedef {{search:(request:{query:string,segments:object[],anchorMs:number,signal?:AbortSignal})=>Promise<object>}} MomentSearchPort
+ * @typedef {{search:(request:{query:string,segments:object[],anchorMs:number,signal?:AbortSignal})=>Promise<object>}} MemorySearchPort
  * @typedef {{inspect:(request:{question:string,startMs:number,endMs:number,segments:object[],signal?:AbortSignal})=>Promise<{observations:object[],hypotheses:string[],limits:string[]}>}} ClipInspectionPort
  * @typedef {{answer:(request:{question:string,tools:object,signal:AbortSignal})=>Promise<object>}} VideoAgentPort
  * @typedef {{lease:(ids:string[])=>Promise<()=>Promise<void>>}} MediaLeasePort

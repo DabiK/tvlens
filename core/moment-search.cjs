@@ -1,4 +1,4 @@
-const { passageText } = require("./passage-text.cjs");
+const { passageText } = require("./shared/passage-text.cjs");
 const { MomentIndex } = require("./moment-index.cjs");
 const { resolveTemporalTarget } = require("./temporal-target.cjs");
 const normalize = (text) =>
@@ -18,7 +18,7 @@ function cosine(a, b) {
   }
   return aa && bb ? dot / Math.sqrt(aa * bb) : 0;
 }
-class MomentSearch {
+class MemorySearch {
   constructor({
     index,
     embeddings,
@@ -163,4 +163,4 @@ function result(s, score) {
     score,
   };
 }
-module.exports = { MomentSearch };
+module.exports = { MemorySearch };

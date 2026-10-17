@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { WatchSession } = require('../core/session.cjs');
 const { perceptionContext } = require('../core/perception-context.cjs');
-const { completeTopicSummary } = require('../core/topic-summary.cjs');
+const { completeTopicSummary } = require('../core/memory/index.cjs');
 const { sessionTimeline, momentDetail } = require('../core/session-timeline.cjs');
 const passage = (n, summary = `Réponse ${n}`) => ({ id:`moment-${n}`, startMs:n*8000,
   endMs:(n+1)*8000, status:'ready', observation:{topic:'Économie', summary, transcript:`Paroles ${n}`, topicContinuity:'continue'} });

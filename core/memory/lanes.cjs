@@ -1,5 +1,5 @@
-const { hasUsableObservation } = require('../passage-text.cjs');
-const { completeTopicSummary } = require('../topic-summary.cjs');
+const { hasUsableObservation } = require('../shared/passage-text.cjs');
+const { completeTopicSummary } = require('./topic-summary.cjs');
 const { heldDuration } = require('./coverage.cjs');
 
 // Seul le port de perception peut déclarer cet échec passager.

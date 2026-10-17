@@ -82,3 +82,68 @@ test('session outline preserves explicit same-title transitions and uncertainty 
     ['moment-0','moment-0'],['moment-1','moment-1'],['moment-2','moment-3'],
   ]);
 });
+
+test('topic runs and cumulative recovery accept a 1000 ms gap and stop at 1001 ms', () => {
+  for (const gap of [1000, 1001]) {
+    const first = passage(0), next = passage(1);
+    first.topicSummary = { text: 'Argument initial', firstId: first.id, lastId: first.id, startMs: 0, endMs: 8000 };
+    next.startMs += gap;
+    next.endMs += gap;
+    const snapshot = { id: 's', history: [first], segments: [next] };
+    const context = perceptionContext(snapshot, { ...passage(2), startMs: next.endMs });
+    assert.equal(context.sessionOutline.length, gap === 1000 ? 1 : 2);
+    assert.equal(context.activeTopic.firstId, gap === 1000 ? first.id : next.id);
+    assert.equal(context.previousTopicSummary?.text ?? null, gap === 1000 ? 'Argument initial' : null);
+    assert.equal(sessionTimeline(viewOf(snapshot)).cards.length, gap === 1000 ? 1 : 2);
+    const atCaptureBoundary = perceptionContext({ history: [first], segments: [] }, { ...next });
+    assert.equal(atCaptureBoundary.previousTopic, gap === 1000 ? first.observation.topic : '');
+    assert.equal(atCaptureBoundary.activeTopic?.firstId ?? null, gap === 1000 ? first.id : null);
+    assert.equal(atCaptureBoundary.previousTopicSummary?.text ?? null, gap === 1000 ? 'Argument initial' : null);
+  }
+});
+
+test('perception preserves exact topic identity while the timeline normalizes case and accents', () => {
+  for (const title of ['DÉBAT ÉCONOMIQUE', 'Debat economique']) {
+    const first = passage(0), next = passage(1, title);
+    first.topicSummary = { text: 'Ancien sujet', firstId: first.id, lastId: first.id, startMs: 0, endMs: 8000 };
+    const snapshot = { id: 's', history: [first], segments: [next] };
+    const context = perceptionContext(snapshot, passage(2));
+    assert.equal(context.sessionOutline.length, 2, title);
+    assert.equal(context.previousTopic, title);
+    assert.equal(context.activeTopic.firstId, next.id);
+    assert.equal(context.previousTopicSummary, null);
+    assert.equal(sessionTimeline(viewOf(snapshot)).cards.length, 1, title);
+  }
+});
+
+test('a short passage without a topic is skipped only by the outline, using the last known topic time', () => {
+  const first = passage(0), unknown = { ...passage(1), endMs: 8500, status: 'skipped', observation: null };
+  first.topicSummary = { text: 'Argument initial', firstId: first.id, lastId: first.id, startMs: 0, endMs: 8000 };
+  for (const startMs of [8500, 9001]) {
+    const next = { ...passage(2), startMs, endMs: startMs + 8000 };
+    const snapshot = { id: 's', history: [first], segments: [unknown, next] };
+    const context = perceptionContext(snapshot, { ...passage(3), startMs: next.endMs });
+    assert.equal(context.sessionOutline.length, startMs === 8500 ? 1 : 2);
+    assert.equal(context.activeTopic.firstId, next.id);
+    assert.equal(context.previousTopicSummary, null);
+    assert.deepEqual(sessionTimeline(viewOf(snapshot)).cards.map(card => card.segmentIds), [[first.id], [unknown.id], [next.id]]);
+    const beforeReturn = perceptionContext({ history: [first], segments: [unknown] }, next);
+    assert.equal(beforeReturn.previousTopic, '');
+    assert.equal(beforeReturn.activeTopic, null);
+    assert.equal(beforeReturn.previousTopicSummary, null);
+  }
+});
+
+test('a returning topic never bridges an explicit break even when its title matches again', () => {
+  for (const topicContinuity of ['change', 'uncertain']) {
+    const first = passage(0), boundary = passage(1), next = passage(2);
+    boundary.observation.topicContinuity = topicContinuity;
+    first.topicSummary = { text: 'Argument initial', firstId: first.id, lastId: first.id, startMs: 0, endMs: 8000 };
+    const snapshot = { id: 's', history: [first], segments: [boundary, next] };
+    const context = perceptionContext(snapshot, passage(3));
+    assert.deepEqual(context.sessionOutline.map(run => [run.firstId, run.lastId]), [[first.id, first.id], [boundary.id, next.id]]);
+    assert.equal(context.activeTopic.firstId, boundary.id);
+    assert.equal(context.previousTopicSummary, null);
+    assert.deepEqual(sessionTimeline(viewOf(snapshot)).cards.map(card => card.segmentIds), [[first.id], [boundary.id, next.id]]);
+  }
+});

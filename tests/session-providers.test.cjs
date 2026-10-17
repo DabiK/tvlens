@@ -275,7 +275,7 @@ test("indexing selects embeddings by smoke mode and key and shares its vector ca
       OpenRouterEmbeddings: recordedConstructor(),
       EmbeddingStore: recordedConstructor(),
       MomentIndex: recordedConstructor(),
-      MomentSearch: recordedConstructor(),
+      MemorySearch: recordedConstructor(),
     });
     assert.ok(built.search, "search is available with or without embeddings");
     assert.deepEqual(built.search.args, [{ index: built.index }]);
@@ -359,7 +359,7 @@ function indexDependencies(extra = {}) {
         this.observed = passages;
       }
     },
-    MomentSearch: recordedConstructor(),
+    MemorySearch: recordedConstructor(),
     ...extra,
   };
 }

@@ -27,14 +27,7 @@ const DEPENDENCY_ZONES = [
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
   { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**', 'runtime/memory/**'] },
 ];
-const TEMPORARY_IMPORT_EXCEPTIONS = [
-  { name: 'memory-passage-text', source: 'core/memory/memory-view.cjs', target: 'core/passage-text.cjs',
-    reason: 'La vue reprend le critère de preuve du helper encore plat, destiné au noyau partagé core/shared/, en attendant son déplacement.' },
-  { name: 'memory-lanes-passage-text', source: 'core/memory/lanes.cjs', target: 'core/passage-text.cjs',
-    reason: 'Les voies lisent le critère de preuve encore plat ; cette arête disparaîtra à son déplacement dans core/shared/.' },
-  { name: 'memory-lanes-topic-summary', source: 'core/memory/lanes.cjs', target: 'core/topic-summary.cjs',
-    reason: 'Le résultat vision complète le sujet avec ce helper encore plat ; cette arête disparaîtra à son rangement dans core/memory/.' },
-];
+const TEMPORARY_IMPORT_EXCEPTIONS = [];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
 const CORE_TIME_STOCK = {
@@ -52,6 +45,16 @@ const PURE_MODULE_POLICIES = [
   { filename: 'runtime/question-checkpoint.cjs', allowTimers: true },
 ];
 const NETWORK_GLOBALS = ['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource'];
+
+test('topic summaries belong to memory and passage text belongs to the shared kernel without legacy modules', () => {
+  const filenames = inventory().map(module => module.relative);
+  for (const filename of ['core/topic-summary.cjs', 'core/passage-text.cjs']) {
+    assert.equal(filenames.includes(filename), false, `${filename}: remove the legacy module`);
+  }
+  for (const filename of ['core/memory/topic-summary.cjs', 'core/shared/passage-text.cjs']) {
+    assert.ok(filenames.includes(filename), `${filename}: missing module`);
+  }
+});
 
 function literalMemberTokens(tokens) {
   const normalized = [];

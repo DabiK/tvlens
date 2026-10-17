@@ -66,6 +66,11 @@ Les lecteurs actuels conservent leur snapshot pendant leur migration progressive
 `WatchSession` en possède la référence privée et garde les commandes, leurs effets et leurs attentes ;
 les compositions lisent toujours `closed`, `ending`, `accepting` et `readOnly` par des getters.
 
+`core/memory/topic-summary.cjs` porte les résumés cumulatifs, accessibles par l'index public.
+`topic-continuity.cjs` partage la décision de continuité : la perception prépare une identité exacte,
+la frise une identité normalisée. `core/shared/passage-text.cjs` fournit le texte propre à un passage
+aux contextes qui en ont besoin, sans y inclure de synthèse cumulative.
+
 | Module | Responsabilité et frontière |
 | --- | --- |
 | `runtime/session-providers.cjs` | Construit transcription, perception, inspection révocable et index ; reçoit options et substitutions de fournisseurs. |
@@ -186,7 +191,7 @@ sur les images conservées, en annonçant sa limite. Les autres indisponibilité
 supprimer ; l’hôte met la capture et son horloge en pause. `SavedMoments` copie les médias gardés
 hors de la session, jusqu’à suppression propre de ces moments.
 
-`MomentSearch` combine classement lexical et embeddings optionnels ; une référence temporelle
+`MemorySearch`, encore dans `core/moment-search.cjs`, combine classement lexical et embeddings optionnels ; une référence temporelle
 reconnue contourne l’index. `session-providers` compose `MomentIndex`, `EmbeddingStore` et
 `OpenRouterEmbeddings`. L’indexation de fond est bornée et groupée ; sans clé ou en échec, la recherche
 reste lexicale avec ses limites signalées. Le texte vectorisé part vers OpenRouter.
@@ -410,3 +415,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0052](adr/0052-les-transitions-de-memoire-remplacent-une-valeur-immuable.md) :
   Les transitions remplacent une valeur immuable à quatre axes ; la racine conserve les effets et les lectures publiques.
+
+- [ADR 0053](adr/0053-le-texte-de-passage-est-partage-et-les-identites-de-sujet-restent-propres-aux-projections.md) :
+  Le texte de passage rejoint le noyau partagé ; les projections partagent la continuité en gardant leurs identités de sujet.

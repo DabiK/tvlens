@@ -1,17 +1,17 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs/promises');const os=require('node:os');const path=require('node:path');
-const {MomentSearch}=require('../core/moment-search.cjs');const {VideoTools}=require('../core/video-tools.cjs');const {DeepAsk}=require('../core/deep-ask.cjs');const {LocalSessionStore}=require('../adapters/local-store.cjs');
+const {MemorySearch}=require('../core/moment-search.cjs');const {VideoTools}=require('../core/video-tools.cjs');const {DeepAsk}=require('../core/deep-ask.cjs');const {LocalSessionStore}=require('../adapters/local-store.cjs');
 const {consultationFrom,rereadOf}=require('./helpers/memory-consultation.cjs');
 const {deferred,turns}=require('./helpers/wait.cjs');const {VirtualClock}=require('./helpers/clock.cjs');
 const segments=[{id:'moment-1',startMs:0,endMs:15000,available:true,observation:{summary:'Une automobile s’immobilise.'}},{id:'moment-2',startMs:15000,endMs:30000,available:true,observation:{summary:'Un chien court.'}}];
 const cache=()=>{const m=new Map();return {get:async(id,t)=>m.get(id+t),put:async(id,t,v)=>m.set(id+t,v)}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 test('hybrid retrieval finds semantic paraphrases and excludes future evidence; temporal references bypass embeddings',async()=>{
- let calls=0;const search=new MomentSearch({embeddings:{embed:async text=>{calls++;return /chien/.test(text)?[0,1]:[1,0]}},cache:cache()});
+ let calls=0;const search=new MemorySearch({embeddings:{embed:async text=>{calls++;return /chien/.test(text)?[0,1]:[1,0]}},cache:cache()});
  let r=await search.search({query:'voiture arrêtée',segments,anchorMs:30000});assert.equal(r.moments[0].id,'moment-1');assert.equal(r.mode,'hybrid');
  const count=calls;r=await search.search({query:'il y a deux secondes',segments,anchorMs:15000});assert.equal(calls,count);assert.equal(r.moments[0].id,'moment-1');assert.equal(r.moments.length,1);
 });
 test('embedding failure degrades to explicitly labelled lexical search',async()=>{
- const search=new MomentSearch({embeddings:{embed:async()=>{throw Error('offline')}},cache:cache()});const r=await search.search({query:'chien',segments,anchorMs:30000});assert.equal(r.moments[0].id,'moment-2');assert.equal(r.mode,'lexical');assert.equal(r.warnings.length,1);
+ const search=new MemorySearch({embeddings:{embed:async()=>{throw Error('offline')}},cache:cache()});const r=await search.search({query:'chien',segments,anchorMs:30000});assert.equal(r.moments[0].id,'moment-2');assert.equal(r.mode,'lexical');assert.equal(r.warnings.length,1);
 });
 test('video tools freeze prefix, reject expired/future media and filter fabricated evidence',async()=>{
  const snap={id:'s',history:[],segments:structuredClone(segments)};let leases=0,current=snap;
