@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { deferred, tick: waitTick } = require('./helpers/wait.cjs');
 const { loadTvPage, KEYS } = require('./helpers/tv-page.cjs');
+const refusedReports = require('./fixtures/tv-capture-refusals.json');
 
 const SESSION_ID = '11111111-1111-4111-8111-111111111111';
 const SERVER_NOW = Date.UTC(2031, 0, 1);
@@ -65,6 +66,49 @@ test('a paired page reads both hosts and renders a job through its real scripts'
   assert.equal(card.tagName, 'ARTICLE');
   assert.equal(card.querySelector('h2').textContent, 'Quel chiffre ?');
   assert.equal(card.querySelector('.chat-answer').textContent, 'Le chiffre est 42.');
+});
+
+for (const [name, report] of Object.entries(refusedReports)) {
+  test('the paired capture control renders the Python refusal report ' + name + ' as text', async t => {
+    const net = network();
+    const value = { active: false, stopping: false, exitCode: 0, report };
+    const page = loadTvPage({
+      config: CONFIG,
+      fetch: (url, init) => new URL(url).pathname === '/capture' ? response(value) : net.fetch(url, init),
+    });
+    t.after(() => page.cleanup());
+    await waitTick();
+    const expected = page.window.TVLensSessions.describeCapture(value, { storage: net.state.storage });
+    assert.equal(page.el('capture-state').textContent, expected.label);
+    assert.equal(page.el('capture-state').getAttribute('data-ended'), expected.ended);
+    assert.equal(page.el('capture').textContent, expected.button);
+    assert.equal(page.el('archive-capture-dialog').open, false);
+    assert.deepEqual(net.calls.filter(call => call.method === 'POST'), [], 'no automatic capture or resume');
+    if (report.lastRefusal.code === 'read-only') {
+      assert.match(page.el('capture-state').textContent, /lecture seule.*Reprendre ou Nouvelle session/);
+    } else if (report.lastRefusal.status === 409) {
+      assert.equal(expected.action, 'start');
+      assert.doesNotMatch(page.el('capture-state').textContent, /lecture seule|Reprendre|archive/i);
+    }
+  });
+}
+
+test('historical capture diagnostics containing markup and status numbers stay generic text in the paired page', async t => {
+  const net = network();
+  const diagnostic = '<img src=x onerror=alert(1)> 409 images / 507 octets';
+  const page = loadTvPage({
+    config: CONFIG,
+    fetch: (url, init) => new URL(url).pathname === '/capture'
+      ? response({ active: false, report: { errors: [diagnostic], dropped: 1, dropReasons: { deliveryRejected: 1 } } })
+      : net.fetch(url, init),
+  });
+  t.after(() => page.cleanup());
+  await waitTick();
+  assert.equal(page.el('capture-state').getAttribute('data-ended'), 'error');
+  assert.equal(page.el('capture-state').textContent,
+    'Capture arrêtée · ' + diagnostic + ' · 1 passage non envoyé (envoi refusé 1)');
+  assert.equal(page.el('capture-state').querySelector('img'), null);
+  assert.equal(page.el('capture').textContent, 'Démarrer l’analyse');
 });
 
 test('the real form echoes immediately, releases focus and turns its echo into the received job', async t => {

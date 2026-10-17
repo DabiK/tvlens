@@ -121,10 +121,10 @@ test('stop cancels a wait and remains terminal after repeated stops, requests an
   assert.equal(h.requests.length, 1);
 });
 
-const refusal = (status, message) => Object.assign(new Error(message), { status });
+const refusal = (status, message, code) => Object.assign(new Error(message), { status, code });
 const busy = () => ({ timeline: { cards: [] }, chat: { jobs: [{ id: 'deep-1', status: 'running' }] } });
 
-for (const error of [refusal(404, 'Route inconnue.'), refusal(400, 'Vue d’état inconnue.')]) {
+for (const error of [refusal(404, 'Route inconnue.'), refusal(400, 'Vue indisponible sous cette forme.', 'unknown-view')]) {
   test('a view refusal with status ' + error.status + ' permanently reads the complete state', async t => {
     const h = setup(t, view => {
       if (view) throw error;
@@ -244,6 +244,40 @@ test('configured cadences and retry duration reach the existing plan', async t =
     { at: 4000, view: 'chat' }, { at: 4500, view: 'chat' },
   ]);
 });
+
+for (const [status, code, message, permanent, fallback] of [
+  [400, 'unknown-view', 'Resource unavailable!', true, true],
+  [400, 'unknown-view', 'Vue d’état inconnue.', true, true],
+  [400, undefined, 'Vue d’état inconnue.', false, true],
+  [400, 'invalid-anchor', 'Vue d’état inconnue.', false, true],
+  [404, 'route-not-found', 'Route reformulée.', true, true],
+  [404, 'media-missing', 'Vue d’état inconnue.', false, false],
+  [401, 'unauthorized', 'Vue d’état inconnue.', false, false],
+  [503, 'internal-error', 'Vue d’état inconnue.', false, false],
+]) {
+  test(`real polling classifies ${status} ${code} with message ${message}`, async t => {
+    let reads = 0;
+    const client = new RemoteClient({ url: 'http://controlled-server', token: 'fixture' }, async () => {
+      const failing = ++reads === 1;
+      return new Response(JSON.stringify(failing ? { code, error: message } : busy()), { status: failing ? status : 200 });
+    });
+    const h = setup(t, view => client.state(view), busy());
+    h.controller.start();
+    await h.clock.advance(0);
+    assert.deepEqual(h.requests.map(call => call.view), fallback ? ['panel', 'full'] : ['panel']);
+    assert.equal(h.controller.stats.legacy, permanent);
+    assert.equal(h.received.length, fallback ? 1 : 0);
+    assert.deepEqual(h.errors.map(error => [error.status, error.code, error.message]), fallback ? [] : [[status, code, message]]);
+    await h.clock.advance(999);
+    assert.equal(h.requests.length, fallback ? 2 : 1);
+    await h.clock.advance(1);
+    assert.deepEqual(h.requests.at(-1), { at: 1000, view: fallback ? 'full' : 'chat' });
+    await h.clock.advance(9000);
+    assert.equal(h.controller.stats.legacy, permanent);
+    assert.equal(h.requests.at(-1).view === 'full', permanent);
+    assert.equal(h.controller.stats.failures, 0);
+  });
+}
 
 test('requests before start do nothing and stopping an unused controller prevents startup', async t => {
   const h = setup(t, () => body(idle()));

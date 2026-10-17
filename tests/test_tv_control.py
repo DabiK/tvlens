@@ -16,6 +16,8 @@ import controller as device
 from controller import CaptureController, DeviceServer
 from transport import Transport, SessionChanged, StorageFull, ReadOnly
 
+REFUSED_REPORTS=json.loads((Path(__file__).parent/'fixtures'/'tv-capture-refusals.json').read_text())
+
 class ControlTests(unittest.TestCase):
  def test_boot_without_python_executable_uses_absolute_interpreter(self):
   with tempfile.TemporaryDirectory() as temp:
@@ -158,6 +160,13 @@ class DeviceRoutes(unittest.TestCase):
    self.assertFalse(self.request('/capture/stop','POST')[1]['active'])
    child.terminate.assert_called_once_with()
 
+ def test_capture_route_transmits_the_shared_refusal_reports_unchanged(self):
+  for report in REFUSED_REPORTS.values():
+   self.capture.report.write_text(json.dumps(report))
+   status,body,_=self.request('/capture')
+   self.assertEqual(status,200)
+   self.assertEqual(body,{'active':False,'stopping':False,'exitCode':None,'report':report})
+
 class DeviceLifecycle(unittest.TestCase):
  def test_startup_and_shutdown_launch_no_background_work(self):
   with tempfile.TemporaryDirectory() as temp:
@@ -208,7 +217,7 @@ class DeliveryTests(unittest.TestCase):
     self.reply(200,{'duplicate':True})
   self.server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
   self.thread=threading.Thread(target=self.server.serve_forever);self.thread.start()
-  self.stop=threading.Event();self.report={'sent':0,'dropped':0,'retries':0,'errors':[]}
+  self.stop=threading.Event();self.report={'sent':0,'dropped':0,'retries':0,'errors':[],'lastRefusal':None}
   self.transport=Transport({'url':'http://127.0.0.1:'+str(self.server.server_port),'token':'x'*64},self.stop,self.report)
  def tearDown(self):self.server.shutdown();self.server.server_close();self.thread.join()
  def test_recovery_and_ambiguous_ack_retry_same_sequence(self):
@@ -220,6 +229,54 @@ class DeliveryTests(unittest.TestCase):
   self.assertEqual(self.attempts,0)
   # Every lost block names its cause; the total shown by the panel is unchanged.
   self.assertEqual(self.report['dropReasons'],{'deliveryExpired':1,'stopped':1});self.assertEqual(self.report['dropped'],2)
+ def test_delivery_keeps_each_http_refusal_and_rejects_sequence_conflicts_without_retry(self):
+  self.failures=0
+  self.ambiguous=False
+  for sequence,code in enumerate(('read-only','storage-full','stale-sequence','sequence-conflict','capture-changed'),1):
+   expected=REFUSED_REPORTS[code]['lastRefusal']
+   self.refuse=(expected['status'],{'code':expected['code'],'error':'Reformulé : 409 / 507, même refus.'})
+   with self.subTest(code=code),patch.object(self.stop,'wait',side_effect=AssertionError('no retry for this refusal')):
+    if code in ('read-only','storage-full'):
+     with self.assertRaises(ReadOnly if code=='read-only' else StorageFull):
+      self.transport.deliver({'sessionId':'one','sequence':sequence},time.monotonic())
+    else:self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':sequence},time.monotonic()))
+    self.assertEqual(self.report.get('lastRefusal'),expected)
+    self.assertEqual((self.attempts,self.report['dropped'],self.report['sent'],self.report['retries']),(sequence,sequence,0,0))
+  self.assertEqual(self.report['dropReasons'],{'readOnly':1,'storageFull':1,'deliveryRejected':3})
+  self.assertEqual(self.report['errors'],['HTTP 409']*3)
+  self.refuse=None
+  self.assertTrue(self.transport.deliver({'sessionId':'one','sequence':6},time.monotonic()))
+  self.assertEqual((self.report.get('lastRefusal'),self.report['sent']),(REFUSED_REPORTS['capture-changed']['lastRefusal'],1))
+ def test_storage_status_without_code_stops_but_a_foreign_code_keeps_the_retry_policy(self):
+  self.failures=0
+  self.ambiguous=False
+  self.refusals=[(507,{'error':'Reformulé sans numéro.'})]
+  with self.assertRaises(StorageFull):
+   self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic())
+  self.assertEqual(self.report.get('lastRefusal'),{'status':507,'code':None})
+  self.refusals=[(507,{'error':'Stockage plein 507 / lecture seule 409.','code':'other-refusal'})]
+  clock=[0.0]
+  with patch('transport.time.monotonic',side_effect=lambda:clock[0]),\
+    patch.object(self.stop,'wait',side_effect=lambda delay:clock.__setitem__(0,clock[0]+delay)) as pause:
+   try:delivered=self.transport.deliver({'sessionId':'one','sequence':2},0.0,ttl=5)
+   except SessionChanged as error:delivered=error.reason
+  self.assertIs(delivered,True)
+  pause.assert_called_once_with(1)
+  self.assertEqual(self.sequences,[1,2,2])
+  self.assertEqual(self.report['lastRefusal'],{'status':507,'code':'other-refusal'})
+  self.assertEqual((self.report['sent'],self.report['dropped'],self.report['dropReasons'],self.report['retries']),
+   (1,1,{'storageFull':1},1))
+ def test_network_failure_keeps_the_last_http_refusal_even_when_its_text_contains_status_numbers(self):
+  previous=REFUSED_REPORTS['stale-sequence']['lastRefusal']
+  self.report['lastRefusal']=previous
+  with patch('transport.urllib.request.urlopen',side_effect=urllib.error.URLError('409 images / 507 octets')),\
+    patch.object(self.stop,'wait',side_effect=lambda _:self.stop.set()):
+   self.assertFalse(self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic()))
+  self.assertEqual(self.report['lastRefusal'],previous)
+  self.assertEqual(self.report['connection'],'reconnecting')
+  self.assertEqual((self.report['retries'],self.report['sent'],self.report['dropped'],self.report['dropReasons']),
+   (1,0,1,{'stopped':1}))
+  self.assertEqual(self.report['errors'],[])
  def test_internal_server_error_retries_the_same_sequence_then_counts_the_accepted_block(self):
   self.failures=0;self.ambiguous=False
   self.refusals=[(500,{'error':'Erreur interne du serveur.','code':'internal-error'})]
@@ -230,7 +287,8 @@ class DeliveryTests(unittest.TestCase):
   pause.assert_called_once_with(1)
   self.assertEqual(self.sequences,[7,7])
   self.assertEqual(self.accepted,{7})
-  self.assertEqual(self.report,{'sent':1,'dropped':0,'retries':1,'errors':[],'connection':'connected'})
+  self.assertEqual(self.report,{'sent':1,'dropped':0,'retries':1,'errors':[],'connection':'connected',
+   'lastRefusal':{'status':500,'code':'internal-error'}})
  def test_restart_does_not_move_buffer_into_new_session(self):
   self.failures=0;self.session='two'
   with self.assertRaises(SessionChanged):self.transport.deliver({'sessionId':'one','sequence':1},time.monotonic())
@@ -263,5 +321,5 @@ class DeliveryTests(unittest.TestCase):
   self.assertEqual(self.attempts,1)
   self.assertEqual(self.accepted,set())
   self.assertEqual(self.report,{'sent':0,'dropped':1,'retries':0,'errors':['HTTP 400'],
-   'dropReasons':{'deliveryRejected':1}})
+   'dropReasons':{'deliveryRejected':1},'lastRefusal':{'status':400,'code':'image-unreadable'}})
 if __name__=='__main__':unittest.main()

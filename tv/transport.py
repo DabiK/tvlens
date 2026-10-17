@@ -75,8 +75,11 @@ class Transport:
                 raise
             except (OSError, ValueError) as error:
                 status, code, _ = refusal(error)
-                # 507 is an answer, not an outage: retrying it for 30 s would only show "network cut" for a full disk.
-                if status == 507 or code == 'storage-full':
+                if status is not None:
+                    self.report['lastRefusal'] = {'status': status, 'code': code}
+                # Un refus storage-full, ou un 507 ancien sans code, exige de libérer de l'espace :
+                # le retenter afficherait une coupure réseau. Un autre code sur 507 garde la reprise des 5xx.
+                if code == 'storage-full' or (status == 507 and not code):
                     drop(self.report, 'storageFull')
                     raise StorageFull(STORAGE_FULL) from None
                 if status == 409 and code == 'read-only':

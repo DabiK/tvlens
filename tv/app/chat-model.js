@@ -210,13 +210,14 @@
       delayMs: backoff || (moving ? activeMs : idleMs),
     };
   }
-  // What the refusal of a light view means. "unknown": the server has no views (an older one routes on
-  // the exact URL, 404) or says it does not know this one; the complete state from now on. "passing":
-  // any other 400, which this server answers to every exception without a status; the complete state
-  // for a while, then the views again. null: not about the view at all (outage, token, server error).
+  // Un ancien serveur répond 404 sans code ; les versions récentes identifient la vue ou la route
+  // absente. Les autres 400 gardent le repli temporaire, sans déduire une identité de leur message.
   function tvlensViewRefusal(error) {
     if (!error || !error.status) return null;
-    if (error.status === 404 || (error.status === 400 && /vue d.état inconnue/i.test(error.message || "")))
+    if (
+      (error.status === 404 && (!error.code || error.code === "route-not-found")) ||
+      (error.status === 400 && error.code === "unknown-view")
+    )
       return "unknown";
     return error.status === 400 ? "passing" : null;
   }

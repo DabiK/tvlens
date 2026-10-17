@@ -1,0 +1,202 @@
+{
+  "read-only": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session."
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "read-only",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "read-only",
+    "stopMessage": "Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 409,
+      "code": "read-only"
+    }
+  },
+  "storage-full": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "Stockage plein sur le serveur : libère de la place, puis relance la capture."
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "storage-full",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "storage-full",
+    "stopMessage": "Stockage plein sur le serveur : libère de la place, puis relance la capture.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 507,
+      "code": "storage-full"
+    }
+  },
+  "stale-sequence": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "HTTP Error 409: Conflict"
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "error",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "error",
+    "stopMessage": "Capture arrêtée sur une erreur.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 409,
+      "code": "stale-sequence"
+    }
+  },
+  "sequence-conflict": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "HTTP Error 409: Conflict"
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "error",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "error",
+    "stopMessage": "Capture arrêtée sur une erreur.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 409,
+      "code": "sequence-conflict"
+    }
+  },
+  "capture-changed": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "HTTP Error 409: Conflict"
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "error",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "error",
+    "stopMessage": "Capture arrêtée sur une erreur.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 409,
+      "code": "capture-changed"
+    }
+  },
+  "legacy-conflict": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "HTTP Error 409: Conflict"
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "error",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "error",
+    "stopMessage": "Capture arrêtée sur une erreur.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 409,
+      "code": null
+    }
+  },
+  "legacy-storage-full": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "Stockage plein sur le serveur : libère de la place, puis relance la capture."
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "storage-full",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "storage-full",
+    "stopMessage": "Stockage plein sur le serveur : libère de la place, puis relance la capture.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 507,
+      "code": null
+    }
+  },
+  "foreign-storage-status": {
+    "sessionId": null,
+    "sent": 0,
+    "dropped": 0,
+    "dropReasons": {},
+    "errors": [
+      "HTTP Error 507: Insufficient Storage"
+    ],
+    "frames": 0,
+    "retries": 0,
+    "connection": "error",
+    "stopped": true,
+    "queued": 0,
+    "framesMoved": 0,
+    "stopReason": "error",
+    "stopMessage": "Capture arrêtée sur une erreur.",
+    "limits": {
+      "seconds": 8,
+      "idleSeconds": 600
+    },
+    "lastRefusal": {
+      "status": 507,
+      "code": "other-refusal"
+    }
+  }
+}

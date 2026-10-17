@@ -79,3 +79,25 @@ test('the companion facade uses the shared functions and constants by identity',
   assert.deepEqual(Object.keys(facade).sort(), facadeNames);
   for (const name of facadeNames) assert.equal(facade[name], model[name], name);
 });
+
+test('view fallback uses status and code independently of the server wording', () => {
+  for (const model of [loadNode(), loadClassic().TVLensChatModel]) {
+    for (const [status, code, message, permanent, fallback] of [
+      [400, 'unknown-view', 'Autre formulation / unknown resource!', true, true],
+      [400, undefined, 'Vue d’état inconnue.', false, true],
+      [400, 'invalid-anchor', 'Vue d’état inconnue.', false, true],
+      [404, undefined, 'Old route', true, true],
+      [404, 'route-not-found', 'Autre route', true, true],
+      [404, 'media-missing', 'Vue d’état inconnue.', false, false],
+      [401, 'unknown-view', 'Vue d’état inconnue.', false, false],
+      [500, 'unknown-view', 'Vue d’état inconnue.', false, false],
+      [409, 'read-only', 'Vue d’état inconnue.', false, false],
+    ]) {
+      const plan = new model.PollPlan();
+      const error = Object.assign(new Error(message), { status, code });
+      assert.equal(plan.refused(error, 100), fallback, `${status} ${code}: fallback`);
+      assert.equal(plan.legacy, permanent, `${status} ${code}: permanent`);
+      assert.equal(plan.viewsAfter, fallback && !permanent ? 10100 : 0);
+    }
+  }
+});

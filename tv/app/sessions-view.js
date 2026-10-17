@@ -246,13 +246,15 @@
       errors = report.errors || [],
       last = errors.length ? String(errors[errors.length - 1]) : "",
       reason = report.stopReason || null,
+      refusal = report.lastRefusal || {},
       full =
         storage.blocked ||
         reason === "storage-full" ||
         report.connection === "storage-full" ||
-        /\b507\b/.test(last),
+        refusal.code === "storage-full" ||
+        (refusal.status === 507 && !refusal.code),
       refused =
-        reason === "read-only" || report.connection === "read-only" || /\b409\b/.test(last),
+        reason === "read-only" || report.connection === "read-only" || refusal.code === "read-only",
       view = { button: "Démarrer l’analyse", label: "", action: "start", ended: null };
     if (value && value.stopping) {
       view.button = "Arrêt en cours…";

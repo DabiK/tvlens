@@ -12,6 +12,7 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
+REFUSED_REPORTS = json.loads((ROOT / 'tests' / 'fixtures' / 'tv-capture-refusals.json').read_text())
 sys.path.insert(0, str(ROOT / 'tv'))
 import capture
 
@@ -180,8 +181,9 @@ class CaptureRun(unittest.TestCase):
         self.assertIn('32 s', report['stopMessage'])
         self.assertEqual(set(report), {
             'sessionId', 'sent', 'dropped', 'dropReasons', 'errors', 'frames', 'retries', 'connection',
-            'stopped', 'queued', 'pid', 'framesMoved', 'stopReason', 'stopMessage', 'limits',
+            'stopped', 'queued', 'pid', 'framesMoved', 'stopReason', 'stopMessage', 'limits', 'lastRefusal',
         })
+        self.assertIsNone(report['lastRefusal'])
         self.assertEqual(json.loads((self.root / 'gate-reads.json').read_text()), [])
         self.assertEqual(self.gate.read_bytes(), original)
 
@@ -208,6 +210,7 @@ class CaptureRun(unittest.TestCase):
         self.assertIn('Stockage plein', report['errors'][-1])
         self.assertEqual(report['dropReasons'].get('storageFull'), 1)
         self.assertEqual(report['dropped'], sum(report['dropReasons'].values()))
+        self.assertEqual(report['lastRefusal'], REFUSED_REPORTS['storage-full']['lastRefusal'])
 
     def test_archive_open_read_only_refuses_the_start_in_plain_words(self):
         server = Server(start=(409, {'error': 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.', 'code': 'read-only'}))
@@ -218,6 +221,38 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual((report['stopReason'], report['connection'], report['stopped'], report['sent']), ('read-only', 'read-only', True, 0))
         self.assertEqual(report['errors'], ['Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.'])
         self.assertEqual((server.starts, server.segments), (1, []))
+
+    def test_start_refusals_produce_the_shared_reports_without_classifying_their_words(self):
+        for name, expected in REFUSED_REPORTS.items():
+            refusal = expected['lastRefusal']
+            body = {'error': 'Vue d’état inconnue, lecture seule, 409 et 507 : texte arbitraire.'}
+            if refusal['code'] is not None:
+                body['code'] = refusal['code']
+            with self.subTest(refusal=name):
+                server = Server(start=(refusal['status'], body))
+                try:
+                    report = self.run_capture(server)
+                finally:
+                    server.close()
+                self.assertEqual({key: value for key, value in report.items() if key != 'pid'}, expected)
+                self.assertIsInstance(report['pid'], int)
+                self.assertEqual((server.starts, server.segments), (1, []))
+
+    def test_sequence_refusals_reject_blocks_without_stopping_for_read_only_or_retrying(self):
+        for code in ('stale-sequence', 'sequence-conflict', 'capture-changed'):
+            with self.subTest(code=code):
+                server = Server(segment=(409, {'code': code, 'error': 'Lecture seule ? 507 / 409 : texte arbitraire.'}))
+                try:
+                    report = self.run_capture(server, seconds=16)
+                finally:
+                    server.close()
+                self.assertEqual(report['lastRefusal'], REFUSED_REPORTS[code]['lastRefusal'])
+                self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['retries']),
+                                 (0, 2, {'deliveryRejected': 2}, 0))
+                self.assertEqual((report['stopReason'], report['connection'], report['stopped']), ('duration', 'capturing', True))
+                self.assertEqual(report['errors'].count('HTTP 409'), 2)
+                self.assertEqual((server.starts, len(server.segments)), (1, 2))
+                self.assertEqual(len({segment['sequence'] for segment in server.segments}), 2)
 
     def test_stop_asked_while_the_session_start_is_still_pending_ends_with_its_cause_like_any_other(self):
         server = Server()
@@ -230,6 +265,7 @@ class CaptureRun(unittest.TestCase):
         try:
             self.assertTrue(server.started.wait(15))
             self.assertEqual((server.starts, json.loads((self.root / 'report.json').read_text())['connection']), (1, 'starting'))
+            self.assertIsNone(json.loads((self.root / 'report.json').read_text())['lastRefusal'])
             # Le contrôleur arrête la capture alors que le serveur n’a pas encore répondu au démarrage.
             child.send_signal(signal.SIGTERM)
             _, stderr = child.communicate(timeout=15)

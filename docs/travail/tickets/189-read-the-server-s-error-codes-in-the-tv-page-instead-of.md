@@ -1,7 +1,7 @@
 ---
 id: T189
 titre: Read the server's error codes in the TV page instead of matching its texts
-statut: a-faire
+statut: termine
 bloque_par: T201
 adr: oui
 installe: non
@@ -107,3 +107,46 @@ sens de transport explicite, un 409 sans identité reste générique. Ce ticket 
 le contrat serveur–TV versionné prévu pour la vague 2, ni valider le moteur d'une TV réelle.
 
 ## Journal
+
+### Exploration
+
+- Consignes, modules, appelants, tests et ADR de la zone lus ; catalogue T201 présent.
+- `git status --short` et `git diff` : ticket déjà en-cours, deux dossiers non suivis hors périmètre, aucun changement de code initial.
+- Exploration et changements de caractérisation consignés dans `.harness-state/tickets/T189/exploration.md` et `ecarts.md` avant implémentation.
+
+### Implémentation et cycles rouge / vert
+
+- `node --test --test-name-pattern='view fallback uses' tests/tv-chat-model.test.cjs` : rouge observé sur `400 unknown-view: permanent` (false au lieu de true). Après classification par codes, `node --test tests/tv-chat-model.test.cjs` : 7/7 verts.
+- `node --test --test-concurrency=1 tests/tv-chat-model.test.cjs tests/tv-poll-controller.test.cjs` : 32/32 verts, dont lectures via RemoteClient avec texte constant/code variable et code constant/texte variable.
+- `python3 -B -m unittest discover -s tests -p test_tv_control.py -k test_delivery_keeps` : rouge sur lastRefusal manquant, puis vert ; read-only, storage-full et les trois conflits sont conservés, sans reprise des refus définitifs, compteurs vérifiés et dernier refus conservé après succès.
+- `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_start_refusals` : 8 sous-cas rouges sur le rapport attendu, puis verts. La fixture commune compare tous les champs sauf le PID dynamique, avec phrases arbitraires.
+- `python3 -B -m unittest discover -s tests -p test_tv_control.py -k test_storage_status` : rouge sur storage-full au lieu d’une livraison réussie après reprise, puis vert ; le 507 sans code reste stockage plein, le code étranger conserve la politique de reprise.
+- `node --test --test-name-pattern='capture refusal codes|capture button:' tests/tv-panel.test.cjs` : rouge sur le diagnostic 507 historique et stale-sequence devenu read-only ; après suppression des regex, `node --test tests/tv-panel.test.cjs` : 19/19 verts.
+- Caractérisations remplacées : phrase française sans code → repli temporaire ; regex 409/507 seules → diagnostic générique ; 409 de démarrage étranger/sans code → erreur générique. Les anciennes attentes exactes des rapports Python ajoutent lastRefusal (500 internal-error, 400 image-unreadable et liste des champs).
+- `node --test --test-concurrency=1 tests/tv-chat-model.test.cjs tests/tv-poll-controller.test.cjs tests/tv-panel.test.cjs tests/tv-paired-page.test.cjs tests/tv-chat-view.test.cjs` : 95/95 verts, fixture rendue jusque dans le contrôle de capture de la page réelle, texte réseau brut et absence d’action automatique vérifiés.
+- `python3 -B -m unittest discover -s tests -p test_tv_control.py` : 18 tests verts, dont relais inchangé des fixtures sur `/capture`.
+- `node scripts/check.mjs --changed --no-tests` : règles, format, lint, gel et cliquet verts ; aucun test lancé par cette commande. Sorties des cycles conservées sous `.harness-state/tickets/T189/`.
+- ADR 0041 ajouté pour le champ additif et la compatibilité des versions antérieures.
+
+### Vérifications finales ciblées
+
+- `python3 -B -m unittest discover -s tests -p test_tv_capture.py` : 11 tests verts ; démarrage réel refusé, capture simulée et pertes de séquence vérifiés.
+- `node scripts/check.mjs --changed` : vert, dont 73 tests JS sur les quatre fichiers modifiés ; règles, format, lint, gel et cliquet verts.
+- `git diff --check` : vert. Aucun fichier du harnais modifié.
+- `node scripts/check.mjs` : contrôle complet vert ; 2 134/2 134 tests JS dans 131 fichiers, 30 tests Python verts (27,751 s), règles, format, lint, gel et cliquet verts. Sortie conservée dans `.harness-state/tickets/T189/check-full.log`.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T189/verdict.json` ; aucune réserve propre. Aucun commit ni push ; la boucle assure la relecture et l’intégration.
+
+### Reprise après relecture 1
+
+- Rapport, ticket/journal, écarts, `git status --short` et `git diff` relus ; les deux constats mineurs sont acceptés. Témoin de hooks de reprise vérifié.
+- Corrections prévues : une instruction par ligne dans les deux nouveaux tests visés ; commentaire cohérent avec l'arrêt sur storage-full ou 507 sans code et la reprise des autres 507. Aucun comportement ni assertion à changer.
+- Les tests existants sont exécutés avant correction. Ces modifications de forme et de commentaire ne justifient ni nouveau test du texte source ni échec fonctionnel artificiel.
+- Avant correction : `python3 -B -m unittest discover -s tests -p test_tv_control.py -k test_delivery_keeps -k test_storage_status` : 2 tests verts (1,041 s), sortie `correction-1-before.log`.
+- Constat 1 corrigé : les deux affectations sont séparées dans chacun des deux nouveaux tests visés ; aucune assertion modifiée. Constat 2 corrigé : le commentaire distingue storage-full/507 sans code des autres 507 soumis aux reprises 5xx.
+- `node scripts/check.mjs --changed` : vert ; 73/73 tests JS, règles, format, lint, gel et cliquet verts (`correction-1-check-changed.log`). `git diff --check` : vert.
+- Après correction : `node scripts/check.mjs` : contrôle complet vert ; 2 134/2 134 tests JS dans 131 fichiers, 30 tests Python verts (28,216 s), règles, format, lint, gel et cliquet verts. Sortie conservée dans `.harness-state/tickets/T189/correction-1-check-full.log`.
+- Nouveau verdict `TERMINÉ` écrit dans `.harness-state/tickets/T189/verdict.json`. Les deux constats mineurs sont corrigés ; aucune réserve propre ajoutée. Aucun commit ni push ; relecture et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T189/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

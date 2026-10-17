@@ -40,7 +40,7 @@ def run(argv=None):
  stop_event=threading.Event();done=threading.Event();save_lock=threading.Lock()
  limits={'seconds':args.seconds,'idleSeconds':args.idle_seconds}
  report={'sessionId':None,'sent':0,'dropped':0,'dropReasons':{},'errors':[],'frames':0,'retries':0,'connection':'starting','stopped':False,'queued':0,
-  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits}
+  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits,'lastRefusal':None}
  def save():
   with save_lock:
    target=Path(args.report);tmp_report=target.with_suffix('.tmp')
@@ -61,9 +61,13 @@ def run(argv=None):
   # Stopped while the server was still being asked (up to five seconds): an end like any other, with its cause.
   stop_event.set();report['connection']='stopped';end('stopped',False);report['stopped']=True;save();return
  except Exception as error:
-  # 409: the server holds an archive open for reading. 507: its disk is full. Both are answers, said as such.
-  status,code,message=refusal(error)
-  reason='read-only' if code=='read-only' or status==409 else 'storage-full' if code=='storage-full' or status==507 else 'error'
+  # Un 409 sans identité ne prouve pas une archive ; le 507 ancien reste non ambigu sans code.
+  status,code,_=refusal(error)
+  if status is not None:
+   report['lastRefusal']={'status':status,'code':code}
+  if code=='read-only':reason='read-only'
+  elif code=='storage-full' or (status==507 and not code):reason='storage-full'
+  else:reason='error'
   report['connection']=reason;report['errors']=[str(error)] if reason=='error' else [];end(reason,reason!='error');report['stopped']=True;save();return
  anchor=time.monotonic();offset=session['elapsedMs'];report['sessionId']=session['id'];report['connection']='capturing';save()
  pending=queue.Queue(maxsize=3)

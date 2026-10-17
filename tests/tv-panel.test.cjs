@@ -7,6 +7,7 @@ const surveillance = require('../tv/app/surveillance-view.js');
 const sessions = require('../tv/app/sessions-view.js');
 const { RemoteClient } = require('../tv/app/remote-client.js');
 const overlay = require('../tv/app/surveillance-overlay.js');
+const refusedReports = require('./fixtures/tv-capture-refusals.json');
 
 // Pure view models of the TV panel: no DOM, no network, every clock injected.
 const SERVER_NOW = Date.UTC(2031, 0, 1);
@@ -117,7 +118,7 @@ async function drivePolls(plan, state, respond, untilMs) {
   }
   return { requests, reads };
 }
-const refusal = (status, message) => Object.assign(new Error(message), { status });
+const refusal = (status, message, code) => Object.assign(new Error(message), { status, code });
 const outage = () => Object.assign(new Error('Connexion impossible.'), { network: true });
 
 test('a passing 400 on a view is not a server without views: the complete state stands in, then the views come back', async () => {
@@ -133,7 +134,7 @@ test('a passing 400 on a view is not a server without views: the complete state 
   assert.deepEqual([passing.requests[back].at, passing.requests.slice(3, back).every(r => r.resource === 'full'), passing.reads.at(-1)], [12000, true, 'panel'], 'views again ten seconds later, and they stay');
   assert.equal(passing.requests.filter(r => r.resource === 'full').length, 10, 'the megabyte state is read for ten seconds, not until the panel is reloaded');
   // The server says it does not know the view, or routes on the exact URL (an older one): the complete state for good.
-  for (const error of [refusal(400, 'Vue d’état inconnue.'), refusal(404, 'Route inconnue.')]) {
+  for (const error of [refusal(400, 'Vue indisponible sous cette forme.', 'unknown-view'), refusal(404, 'Route inconnue.')]) {
     plan = new panel.PollPlan();
     const older = await drivePolls(plan, idle, view => { if (view !== 'full') throw error; return {}; }, 30000);
     assert.equal(plan.legacy, true, error.message);
@@ -495,15 +496,18 @@ test('capture button: every end of capture comes with its cause, and an open arc
   assert.deepEqual([stopped({ stopReason: 'nouvelle-cause', stopMessage: 'Phrase de la capture.' }).label, stopped({ stopReason: 'nouvelle-cause', stopMessage: 'Phrase de la capture.' }).ended], ['Capture arrêtée : Phrase de la capture.', 'nouvelle-cause'], 'an unknown cause is still told, in the words of the capture');
   assert.deepEqual([stopped({ stopReason: 'session-changed' }).ended, stopped({ connection: 'session-changed' }).label], ['session-changed', 'Serveur redémarré ou session changée · redémarre l’analyse.']);
   assert.equal(stopped({ stopReason: 'parent' }).label, 'Capture arrêtée : contrôleur TV redémarré. Elle ne reprend pas seule.');
-  // Storage: the server state, the reason of the capture or a bare 507 all say the same thing in plain words.
+  // Les raisons structurées restent lisibles dans les rapports historiques ; le texte seul reste un diagnostic.
   const full = 'Capture arrêtée : espace disque insuffisant sur le serveur. Rien n’a été supprimé, rien ne reprend seul.';
   assert.deepEqual([stopped({}, { storage: { state: 'blocked' } }).label, stopped({}, { storage: { state: 'blocked' } }).ended], [full, 'storage']);
   assert.equal(stopped({ stopReason: 'storage-full' }).label, full);
-  assert.equal(stopped({ connection: 'error', errors: ['HTTP Error 507: Insufficient Storage'] }).label, full);
+  assert.equal(stopped({ connection: 'error', errors: ['HTTP Error 507: Insufficient Storage'] }).label,
+    'Capture arrêtée · HTTP Error 507: Insufficient Storage');
   assert.equal(sessions.describeCapture({ active: true, report: { connection: 'connected', sent: 3 } }, { storage: { state: 'blocked' } }).label, 'Espace disque insuffisant sur le serveur : les passages sont refusés, rien n’a été supprimé.');
   // An archive open read-only: the button offers the choice instead of starting anything.
   assert.deepEqual(stopped({ stopReason: 'idle' }, { readOnly: true }), { button: 'Reprendre ou nouvelle session…', label: 'Archive ouverte en lecture seule · rien n’est capturé.', action: 'choose', ended: null });
-  assert.deepEqual([stopped({ connection: 'error', errors: ['HTTP Error 409: Conflict'] }).ended, stopped({ stopReason: 'read-only' }).label], ['read-only', 'Capture refusée : session ouverte en lecture seule. Choisis Reprendre ou Nouvelle session.']);
+  assert.equal(stopped({ connection: 'error', errors: ['HTTP Error 409: Conflict'] }).ended, 'error');
+  assert.equal(stopped({ stopReason: 'read-only' }).label,
+    'Capture refusée : session ouverte en lecture seule. Choisis Reprendre ou Nouvelle session.');
   assert.equal(stopped({ errors: ['Contrôleur arrêté.'] }).label, 'Capture arrêtée · Contrôleur arrêté.');
   assert.equal(sessions.describeCapture({ active: false, exitCode: 1, report: {} }, {}).label, 'Capture interrompue · tu peux réessayer.');
   assert.equal(sessions.describeCapture({ active: false, exitCode: null, report: {} }, {}).label, 'Capture arrêtée · contexte conservé');
@@ -520,4 +524,36 @@ test('capture button: every end of capture comes with its cause, and an open arc
   assert.ok(counted.size >= 6 && ['deliveryError', 'storageFull', 'readOnly'].every(cause => counted.has(cause)), [...counted].join(','));
   for (const cause of counted) assert.doesNotMatch(stopped({ stopReason: 'stopped', dropped: 1, dropReasons: { [cause]: 1 } }).label, new RegExp('\\(' + cause + ' 1\\)'), cause);
   assert.equal(sessions.describeCapture(undefined, undefined).label, 'Capture arrêtée · contexte conservé');
+});
+
+test('capture refusal codes survive the Python report and diagnostic numbers never classify it', () => {
+  const stopped = report => sessions.describeCapture({ active: false, exitCode: 0, report });
+  for (const [name, report] of Object.entries(refusedReports)) {
+    const view = stopped(report);
+    const expected = { 'read-only': 'read-only', 'storage-full': 'storage', 'legacy-storage-full': 'storage' }[name] || 'error';
+    assert.equal(view.ended, expected, name);
+    assert.equal(view.action, 'start', name);
+    if (expected === 'error') {
+      assert.equal(view.label, 'Capture arrêtée · ' + report.errors[0], name);
+      assert.doesNotMatch(view.label, /lecture seule|Reprendre|espace disque insuffisant/);
+    }
+  }
+  for (const [lastRefusal, expected] of [
+    [{ status: 409, code: 'read-only' }, 'read-only'],
+    [{ status: 507, code: 'storage-full' }, 'storage'],
+    [{ status: 507, code: null }, 'storage'],
+    [{ status: 507, code: 'other-refusal' }, 'error'],
+    [{ status: 409, code: 'sequence-conflict' }, 'error'],
+    [null, 'error'],
+    [undefined, 'error'],
+  ]) {
+    for (const text of ['Refus reformulé sans numéro.', 'Un outil compte 409 images et 507 octets.']) {
+      const view = stopped({ lastRefusal, errors: [text], dropped: 1, dropReasons: { deliveryRejected: 1 } });
+      assert.equal(view.ended, expected, `${JSON.stringify(lastRefusal)} ${text}`);
+      assert.match(view.label, /1 passage non envoyé \(envoi refusé 1\)$/);
+    }
+  }
+  for (const reason of ['storage-full', 'read-only']) {
+    assert.equal(stopped({ connection: reason }).ended, reason === 'storage-full' ? 'storage' : 'read-only');
+  }
 });
