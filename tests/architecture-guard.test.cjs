@@ -27,10 +27,27 @@ function write(root, filename, source) {
   fs.writeFileSync(target, source);
 }
 
+function guardPolicy() {
+  const source = fs.readFileSync(path.join(__dirname, 'architecture.test.cjs'), 'utf8');
+  const table = /const DEPENDENCY_ZONES = (\[[\s\S]*?\n\]);/.exec(source);
+  assert.ok(table, 'fixture-policy-table-missing');
+  return { source, table: table[0], zones: vm.runInNewContext(table[1]) };
+}
+
+function isolatedPolicy() {
+  const { source, table, zones } = guardPolicy();
+  // Les cas fabriquent leurs contextes : la politique produit ne doit pas pré-déclarer ces mêmes noms.
+  const flat = zones.filter(zone => !zone.context);
+  const patterns = new Set(flat.map(zone => zone.pattern));
+  const isolated = flat.map(zone => ({ ...zone, imports: zone.imports.filter(pattern => patterns.has(pattern)) }));
+  return source.replace(table, `const DEPENDENCY_ZONES = ${JSON.stringify(isolated, null, 2)};`)
+    .replace(/const TEMPORARY_IMPORT_EXCEPTIONS = \[[\s\S]*?\];/, 'const TEMPORARY_IMPORT_EXCEPTIONS = [];');
+}
+
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'architecture-guard-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  write(root, 'tests/architecture.test.cjs', fs.readFileSync(path.join(__dirname, 'architecture.test.cjs')));
+  write(root, 'tests/architecture.test.cjs', isolatedPolicy());
   for (const directory of LAYERS) {
     write(root, `${directory}/module.cjs`, 'module.exports = {};');
   }
@@ -77,7 +94,13 @@ function assertRejected(root, filename, diagnostic, ruleName, names = GUARD_NAME
 
 function timeFixture(t) {
   const root = fixture(t);
-  fs.cpSync(path.join(__dirname, '..', 'core'), path.join(root, 'core'), { recursive: true });
+  const { source } = guardPolicy();
+  const stock = /const CORE_TIME_STOCK = (\{[\s\S]*?\n\});/.exec(source);
+  assert.ok(stock, 'fixture-time-stock-missing');
+  // Tout le stock réel reste contrôlé ; les autres modules ne font pas partie de ce dépôt artificiel.
+  for (const filename of Object.keys(vm.runInNewContext(`(${stock[1]})`))) {
+    write(root, filename, fs.readFileSync(path.join(__dirname, '..', filename)));
+  }
   return root;
 }
 
@@ -1035,10 +1058,9 @@ test('layer table selects the most specific source and destination zones from an
   const filename = 'core/memory/service.cjs';
   write(root, filename, "require('../module.cjs');");
   assert.equal(runGuard(root).status, 0);
-  const guard = path.join(root, 'tests/architecture.test.cjs');
   // Seule la donnée de politique change dans la copie de la garde réelle.
   const row = { ...MEMORY_ZONE, imports: ['core/memory/**'] };
-  fs.writeFileSync(guard, fs.readFileSync(guard, 'utf8').replace('\n];', `\n  ${JSON.stringify(row)},\n];`));
+  declareZone(root, row);
   t.diagnostic(assertRejected(root, filename, /core\/module\.cjs/, GUARD_NAMES[0]).output);
   write(root, filename, "require('./local.cjs');");
   const accepted = runGuard(root);

@@ -15,15 +15,20 @@ const ROOT_LAYERS = {
   app: 'host',
 };
 const DEPENDENCY_ZONES = [
-  { pattern: 'core/**', layer: 'domain', imports: ['core/**', 'core/shared/**'] },
+  { pattern: 'core/**', layer: 'domain', imports: ['core/**', 'core/shared/**', 'core/memory/**'] },
+  { pattern: 'core/memory/**', layer: 'domain', context: 'memory', entryPoint: 'core/memory/index.cjs',
+    imports: ['core/memory/**', 'core/shared/**'] },
   { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
   { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**'] },
-  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'adapters/**'] },
+  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
   { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
   { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
 ];
-const TEMPORARY_IMPORT_EXCEPTIONS = [];
+const TEMPORARY_IMPORT_EXCEPTIONS = [
+  { name: 'memory-passage-text', source: 'core/memory/memory-view.cjs', target: 'core/passage-text.cjs',
+    reason: 'La vue reprend le critère de preuve du helper encore plat, destiné au noyau partagé core/shared/, en attendant son déplacement.' },
+];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
 const CORE_TIME_STOCK = {

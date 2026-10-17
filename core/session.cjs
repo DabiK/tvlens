@@ -8,6 +8,7 @@ const { hasUsableObservation } = require('./passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
 const { holdsMedia } = require('./clip-container.cjs');
 const { publishState } = require('./state-publication.cjs');
+const memory = require('./memory/index.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
 // Set as `code` by a perception adapter on a failed description it knows to be passing (a connection that gave
 // way, its own deadline): the only failure a passage may be described a second time for.
@@ -26,11 +27,20 @@ const restorable = saved => Boolean(saved) && typeof saved === 'object' && typeo
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
 // place on the session clock, replayable and unanalysed; nothing is analysed again.
 const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
+function capturedModalities(input, hasAudio) {
+  return {
+    audio: hasAudio ? 'present' : 'absent',
+    images: input.frames?.length ? 'present' : 'absent',
+    video: input.clip?.byteLength ? 'present' : 'absent',
+  };
+}
+
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
   #questionPending = false;
   #questionIntakeClosed = false;
   #events = [];
+  #modalities = new Map();
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
     onChange = () => {}, onEvents = () => {}, onPublicationError = () => {},
@@ -136,6 +146,7 @@ class WatchSession {
         }
         throw error;
       }
+      this.#modalities.set(segment.id, capturedModalities(input, segment.hasAudio));
       this.segments.push(segment);
       this.#events.push({
         type: 'PassageReceived', sessionId: this.id, passageId: segment.id, revision: segment.revision,
@@ -434,6 +445,18 @@ class WatchSession {
     if (saved.retention === 'until-deleted') this.retentionMs = Infinity;
     this.accepting = false; this.readOnly = true; this.lastError = null;
   }
+  memoryView() {
+    return memory.createMemoryView(this, this.#modalities);
+  }
+
+  memoryPassage(id) {
+    return memory.readMemoryPassage(this, id, this.#modalities);
+  }
+
+  recentMemoryPassages(limit) {
+    return memory.recentMemoryPassages(this, limit, this.#modalities);
+  }
+
   snapshot() {
     const all=[...this.history,...this.segments],now=this.now(),capturedThroughMs=all.at(-1)?.endMs||0,analyzedThroughMs=all.filter(s=>s.status==='ready').at(-1)?.endMs||0;
     return { id: this.id, accepting: this.accepting, asking: this.asking, analyzing: this.running,

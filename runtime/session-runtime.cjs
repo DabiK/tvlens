@@ -27,6 +27,7 @@ const {
 } = require("./session-manifest.cjs");
 const { createSessionLifecycle } = require("./session-lifecycle.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
+const { createMemoryMedia } = require("./memory-media.cjs");
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -208,6 +209,12 @@ function createSessionRuntime({
     id,
     watch,
     events,
+    memory: {
+      view: () => watch.memoryView(),
+      passage: id => watch.memoryPassage(id),
+      recentPassages: limit => watch.recentMemoryPassages(limit),
+    },
+    memoryMedia: createMemoryMedia(store),
     store,
     search,
     inspector,

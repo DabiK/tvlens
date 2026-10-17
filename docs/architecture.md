@@ -5,8 +5,8 @@ l’état d’une installation TV ou VPS de l’état des sources. Les relevés 
 époque dans l’[index documentaire](README.md).
 
 La [cible du domaine](domaine.md), figée le 16 octobre 2026, et les ADR 0029 et 0030 décrivent
-l’évolution prévue. Le rangement par contextes et le coordinateur unique des deux hôtes ne sont
-pas encore réalisés dans cette carte.
+l’évolution prévue. Le rangement par contextes commence avec l’entrée publique de Mémoire ;
+le coordinateur unique des deux hôtes reste à réaliser.
 
 ## Couches et frontières
 
@@ -54,6 +54,12 @@ les accès qualifiés, optionnels, calculés par chaîne littérale et les expre
 Les deux hôtes composent `runtime/session-runtime.cjs`, `conversation-runtime.cjs` et
 `surveillance-runtime.cjs`. Le premier construit les objets de session et expose leur façade ;
 les choix de fournisseur et les transitions ont leurs propriétaires propres.
+
+`core/memory/index.cjs` publie le contrat de consultation de Mémoire. La façade de session expose
+`memory.view()`, `memory.passage(id)` et `memory.recentPassages(limit)` ; ces lectures détachées
+ne rappellent pas le snapshot. `memoryMedia.read(id)` et `memoryMedia.lease(ids)` donnent séparément
+accès aux images et au son conservés, avec baux, sans chemin local ni mutateur de stockage.
+Les lecteurs actuels conservent leur snapshot pendant leur migration progressive.
 
 | Module | Responsabilité et frontière |
 | --- | --- |
@@ -368,5 +374,8 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0044](adr/0044-la-garde-declare-les-contextes-et-les-exceptions-de-migration.md) :
   La garde déclare les contextes, le noyau partagé, les entrées publiques et les exceptions exactes de migration.
 
-- ADR 0045 (`docs/adr/0045-les-faits-de-memoire-sont-livres-par-un-diffuseur-isole.md`) :
+- [ADR 0045](adr/0045-les-faits-de-memoire-sont-livres-par-un-diffuseur-isole.md) :
   Les faits de réception et de suspension sont livrés après transition, par un diffuseur isolé sans rejeu.
+
+- [ADR 0046](adr/0046-la-memoire-publie-une-vue-detachee-et-des-capacites-media-separees.md) :
+  La Mémoire publie une vue détachée, des lectures bornées et des capacités média séparées avec baux.
