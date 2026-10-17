@@ -56,7 +56,8 @@ function runGuard(root, names = GUARD_NAMES) {
   const output = result.stdout + result.stderr;
   // Un filtre périmé ne doit jamais transformer une garde absente en succès.
   for (const name of names) {
-    assert.ok(output.split('\n').some(line => /^(?:not )?ok \d+ - /.test(line) && line.endsWith(`- ${name}`)), output);
+    const executed = output.split('\n').some(line => /^(?:not )?ok \d+ - /.test(line) && line.endsWith(`- ${name}`));
+    assert.ok(executed, `fixture-guard-not-executed: ${name}\n${output}`);
   }
   return { status: result.status, output };
 }
@@ -282,6 +283,19 @@ test('layer table rejects an adapter importing the runtime and accepts its remov
   assert.equal(result.status, 0, result.output);
   t.diagnostic(result.output);
 });
+
+for (const [origin, destination] of [['core', 'adapters'], ['adapters', 'runtime']]) {
+  test(`layer diagnostics describe ${origin} to ${destination} without advising a policy change`, t => {
+    const root = fixture(t);
+    const filename = `${origin}/reader.cjs`;
+    write(root, filename, `require('../${destination}/module.cjs');`);
+    const result = assertRejected(root, filename, /zone-permission-missing/, GUARD_NAMES[0]);
+    assert.ok(result.output.includes(`zone-permission-missing: ${origin}/** does not list ${destination}/**`), result.output);
+    assert.doesNotMatch(result.output, /\b(?:declare|add|allow|authorize)\b/);
+    write(root, filename, 'module.exports = {};');
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
 
 test('layer table accepts parent imports within the core', t => {
   const root = fixture(t);
@@ -657,6 +671,365 @@ test('portable core rejects an adapter imported by DeepAsk and accepts its remov
   t.diagnostic(result.output);
 });
 
+function declareZone(root, zone) {
+  const guard = path.join(root, 'tests/architecture.test.cjs');
+  const source = fs.readFileSync(guard, 'utf8');
+  const table = /const DEPENDENCY_ZONES = (\[[\s\S]*?\n\]);/.exec(source);
+  assert.ok(table, 'fixture-policy-table-missing');
+  const zones = vm.runInNewContext(table[1]);
+  const existing = zones.find(row => row.pattern === zone.pattern);
+  if (existing) Object.assign(existing, zone);
+  else zones.push(zone);
+  fs.writeFileSync(guard, source.replace(table[0], `const DEPENDENCY_ZONES = ${JSON.stringify(zones, null, 2)};`));
+}
+
+const MEMORY_ZONE = {
+  pattern: 'core/memory/**', layer: 'domain', context: 'memory', entryPoint: 'core/memory/index.cjs',
+  imports: ['core/memory/**', 'core/shared/**'],
+};
+
+function contextFixture(t) {
+  const root = fixture(t);
+  write(root, 'core/memory/index.cjs', "module.exports = require('./lanes');");
+  write(root, 'core/memory/lanes.cjs', 'module.exports = {};');
+  write(root, 'core/shared/value.cjs', 'module.exports = {};');
+  declareZone(root, { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] });
+  return root;
+}
+
+for (const [description, patch] of [
+  ['a missing context', { context: undefined }],
+  ['an empty context', { context: '' }],
+  ['a foreign context in the pattern', { context: 'inquiry' }],
+  ['a private module as public entry', { entryPoint: 'core/memory/lanes.cjs' }],
+  ['a missing public entry', { entryPoint: undefined }],
+  ['a foreign public entry', { entryPoint: 'core/inquiry/index.cjs' }],
+  ['a missing layer', { layer: undefined }],
+  ['an application layer in the domain', { layer: 'application', context: undefined, entryPoint: undefined }],
+  ['an adapter layer in the domain', { layer: 'adapter', context: undefined, entryPoint: undefined }],
+  ['a host layer in the domain', { layer: 'host', context: undefined, entryPoint: undefined }],
+]) {
+  test(`zone metadata rejects ${description} and accepts the corrected domain declaration`, t => {
+    const root = contextFixture(t);
+    declareZone(root, { ...MEMORY_ZONE, ...patch });
+    assertRejected(root, MEMORY_ZONE.pattern, /zone-metadata-invalid/, GUARD_NAMES[0]);
+    declareZone(root, MEMORY_ZONE);
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const [description, patch] of [
+  ['a context on the kernel', { context: 'memory' }],
+  ['a public entry on the kernel', { entryPoint: 'core/shared/index.cjs' }],
+  ['a missing kernel marker', { shared: undefined }],
+  ['a context replacing the kernel marker', { shared: undefined, context: 'shared', entryPoint: 'core/shared/index.cjs' }],
+  ['a false kernel marker', { shared: false }],
+]) {
+  test(`zone metadata rejects ${description} and accepts the corrected shared declaration`, t => {
+    const root = contextFixture(t);
+    const kernel = { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] };
+    declareZone(root, { ...kernel, ...patch });
+    assertRejected(root, kernel.pattern, /zone-metadata-invalid/, GUARD_NAMES[0]);
+    declareZone(root, { ...kernel, context: undefined, entryPoint: undefined });
+    declareZone(root, MEMORY_ZONE);
+    write(root, 'core/memory/lanes.cjs', "require('../shared/value.cjs');");
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const [directory, layer, incorrect] of [
+  ['runtime', 'application', 'host'],
+  ['adapters', 'adapter', 'host'],
+  ['server', 'host', 'application'],
+  ['mcp', 'host', 'adapter'],
+  ['app', 'host', 'application'],
+]) {
+  test(`zone metadata rejects a wrong ${incorrect} layer under ${directory} and accepts its actual layer without a context`, t => {
+    const root = fixture(t);
+    const subdirectory = directory === 'runtime' ? 'compose' : 'nested';
+    const pattern = `${directory}/${subdirectory}/**`;
+    write(root, `${directory}/${subdirectory}/module.cjs`, 'module.exports = {};');
+    declareZone(root, { pattern, layer: incorrect, imports: [pattern] });
+    assertRejected(root, pattern, /zone-metadata-invalid/, GUARD_NAMES[0]);
+    declareZone(root, { pattern, layer, imports: [pattern] });
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+test('zone metadata rejects a runtime context inconsistent with its pattern', t => {
+  const root = contextFixture(t);
+  const zone = { pattern: 'runtime/inquiry/**', layer: 'application', context: 'inquiry', imports: ['runtime/inquiry/**'] };
+  write(root, 'runtime/inquiry/ask.cjs', 'module.exports = {};');
+  declareZone(root, { ...zone, context: 'memory' });
+  assertRejected(root, zone.pattern, /zone-metadata-invalid/, GUARD_NAMES[0]);
+  declareZone(root, zone);
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+test('context declaration requires the precise permission before exposing only its public entry', t => {
+  const root = contextFixture(t);
+  const filename = 'app/reader.cjs';
+  write(root, filename, "require('../core/memory/index.cjs');");
+  assertAccepted(root, GUARD_NAMES, t);
+  declareZone(root, MEMORY_ZONE);
+  const result = assertRejected(root, filename, /zone-permission-missing/, GUARD_NAMES[0]);
+  assert.ok(result.output.includes(filename), result.output);
+  assert.ok(result.output.includes('core/memory/index.cjs'), result.output);
+  assert.match(result.output, /zones app\/\*\* -> core\/memory\/\*\*/);
+  assert.match(result.output, /zone-permission-missing: app\/\*\* does not list core\/memory\/\*\*/);
+  declareZone(root, { pattern: 'app/**', imports: ['app/**', 'core/**', 'core/memory/**'] });
+  assertAccepted(root, GUARD_NAMES, t);
+  write(root, filename, "require('../core/memory/lanes.cjs');");
+  assertRejected(root, filename, /context-private-import/, GUARD_NAMES[0]);
+  write(root, filename, "require('../core/memory');");
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+for (const target of ['index.cjs', 'lanes.cjs']) {
+  test(`context domains reject foreign ${target} despite an explicit permission`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    declareZone(root, { pattern: 'core/inquiry/**', layer: 'domain', context: 'inquiry',
+      entryPoint: 'core/inquiry/index.cjs', imports: ['core/inquiry/**', 'core/memory/**', 'core/shared/**'] });
+    const filename = 'core/inquiry/question.cjs';
+    write(root, filename, `require('../memory/${target}');`);
+    const result = assertRejected(root, filename, /context-domain-import-forbidden/, GUARD_NAMES[0]);
+    assert.ok(result.output.includes('core/memory/**'), result.output);
+    assert.ok(result.output.includes('core/inquiry/**'), result.output);
+    assert.doesNotMatch(result.output, /zone-permission-missing|declare core\/memory/);
+    write(root, filename, "require('../shared/value.cjs');");
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+test('context runtime reads a foreign public entry and refuses its private modules', t => {
+  const root = contextFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  declareZone(root, { pattern: 'runtime/inquiry/**', layer: 'application', context: 'inquiry',
+    imports: ['runtime/inquiry/**', 'core/memory/**', 'core/shared/**'] });
+  const filename = 'runtime/inquiry/ask.cjs';
+  write(root, filename, "require('../../core/memory'); require('../../core/shared/value');");
+  assertAccepted(root, GUARD_NAMES, t);
+  write(root, filename, "require('../../core/memory/lanes');");
+  assertRejected(root, filename, /context-private-import/, GUARD_NAMES[0]);
+  write(root, filename, "require('../../core/memory/index.cjs');");
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+test('context members access their own internals and shared kernel while flat modules use the public entry', t => {
+  const root = contextFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  write(root, 'core/memory/lanes.cjs', "require('../shared/value.cjs');");
+  declareZone(root, { pattern: 'core/**', imports: ['core/**', 'core/shared/**', 'core/memory/**'] });
+  write(root, 'core/session.cjs', "require('./memory');");
+  assertAccepted(root, GUARD_NAMES, t);
+  write(root, 'core/session.cjs', "require('./memory/lanes.cjs');");
+  assertRejected(root, 'core/session.cjs', /context-private-import/, GUARD_NAMES[0]);
+  write(root, 'core/session.cjs', "require('./memory/index.cjs');");
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+for (const [form, statement] of IMPORT_FORMS) {
+  test(`context public entries use existing resolution for ${form} and ignore comments`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    declareZone(root, { pattern: 'app/**', imports: ['app/**', 'core/**', 'core/memory/**', 'core/shared/**'] });
+    const filename = 'app/reader.mjs';
+    write(root, filename, [statement('../core/memory/../memory/lanes'), '// require("../core/memory/lanes");'].join('\n'));
+    assertRejected(root, filename, /context-private-import/, GUARD_NAMES[0]);
+    write(root, filename, [statement('../core/memory/../memory'), '// require("../core/memory/lanes");',
+      '/* require("../core/memory/lanes"); */'].join('\n'));
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+test('context modules require a migration exception to reach flat modules despite a broad permission', t => {
+  const root = contextFixture(t);
+  declareZone(root, { ...MEMORY_ZONE, imports: [...MEMORY_ZONE.imports, 'core/**'] });
+  write(root, 'core/passage-text.cjs', 'module.exports = {};');
+  const filename = 'core/memory/lanes.cjs';
+  write(root, filename, "require('../passage-text.cjs');");
+  assertRejected(root, filename, /context-flat-import-requires-exception/, GUARD_NAMES[0]);
+  write(root, filename, "require('../shared/value.cjs');");
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+function declareExceptions(root, exceptions) {
+  const guard = path.join(root, 'tests/architecture.test.cjs');
+  const source = fs.readFileSync(guard, 'utf8');
+  const table = /const TEMPORARY_IMPORT_EXCEPTIONS = \[[\s\S]*?\];/;
+  assert.ok(table.test(source), 'fixture-exception-table-missing');
+  fs.writeFileSync(guard, source.replace(table, `const TEMPORARY_IMPORT_EXCEPTIONS = ${JSON.stringify(exceptions, null, 2)};`));
+}
+
+function migrationException(source, target) {
+  return { name: 'legacy-passage-bridge', source, target, reason: 'Façade conservée jusqu’au rangement du texte de passage.' };
+}
+
+test('migration exceptions permit an exact context to flat edge without a broad permission', t => {
+  const root = contextFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  const filename = 'core/memory/lanes.cjs';
+  write(root, 'core/passage-text.cjs', 'module.exports = {};');
+  write(root, filename, "require('../memory/../passage-text');");
+  assertRejected(root, filename, /context-flat-import-requires-exception/, GUARD_NAMES[0]);
+  declareExceptions(root, [migrationException(filename, 'core/passage-text.cjs')]);
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+test('migration exceptions permit only the declared facade source and resolved target', t => {
+  const root = contextFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  const filename = 'core/passage-text.cjs';
+  const original = "module.exports = require('./memory/lanes');";
+  write(root, filename, original);
+  declareExceptions(root, [migrationException(filename, 'core/memory/lanes.cjs')]);
+  assertAccepted(root, GUARD_NAMES, t);
+  write(root, 'core/other.cjs', original);
+  assertRejected(root, 'core/other.cjs', /zone-permission-missing/, GUARD_NAMES[0]);
+  fs.unlinkSync(path.join(root, 'core/other.cjs'));
+  assertAccepted(root, GUARD_NAMES, t);
+  write(root, filename, "module.exports = require('./memory/index.cjs');");
+  assertRejected(root, filename, /zone-permission-missing/, GUARD_NAMES[0]);
+  write(root, filename, original);
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
+for (const change of ['import', 'file', 'permission', 'target-file']) {
+  test(`migration exceptions expire after changing the ${change}`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    const filename = 'core/passage-text.cjs';
+    write(root, filename, "module.exports = require('./memory');");
+    declareExceptions(root, [migrationException(filename, 'core/memory/index.cjs')]);
+    assertAccepted(root, GUARD_NAMES, t);
+    if (change === 'import') write(root, filename, '// require("./memory");\nmodule.exports = {};');
+    if (change === 'file') fs.unlinkSync(path.join(root, filename));
+    if (change === 'permission') declareZone(root, { pattern: 'core/**', imports: ['core/**', 'core/shared/**', 'core/memory/**'] });
+    if (change === 'target-file') fs.unlinkSync(path.join(root, 'core/memory/index.cjs'));
+    assertRejected(root, filename, /migration-exception-unused/, GUARD_NAMES[0]);
+    declareExceptions(root, []);
+    if (change === 'target-file') write(root, filename, 'module.exports = {};');
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const [field, value] of [
+  ['source', 'core/**'], ['target', 'core/memory/**'], ['source', '../outside.cjs'],
+  ['target', 'core/memory/../memory/index.cjs'], ['reason', ''], ['name', ''],
+]) {
+  test(`migration exceptions require an exact documented ${field}: ${JSON.stringify(value)}`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    const filename = 'core/passage-text.cjs';
+    write(root, filename, "module.exports = require('./memory');");
+    declareExceptions(root, [{ ...migrationException(filename, 'core/memory/index.cjs'), [field]: value }]);
+    assertRejected(root, 'tests/architecture.test.cjs', /migration-exception-invalid/, GUARD_NAMES[0]);
+    declareExceptions(root, [migrationException(filename, 'core/memory/index.cjs')]);
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const duplicate of ['name', 'edge']) {
+  test(`migration exceptions reject a duplicate ${duplicate}`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    const filename = 'core/passage-text.cjs';
+    write(root, filename, "require('./memory');");
+    write(root, 'core/other.cjs', "require('./memory');");
+    const first = migrationException(filename, 'core/memory/index.cjs');
+    const second = duplicate === 'name' ? { ...first, source: 'core/other.cjs' } : { ...first, name: 'second-bridge' };
+    declareExceptions(root, [first, second]);
+    assertRejected(root, 'tests/architecture.test.cjs', /migration-exception-invalid/, GUARD_NAMES[0]);
+    declareExceptions(root, [first, { ...second, source: 'core/other.cjs', name: 'second-bridge' }]);
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const target of ['index.cjs', 'lanes.cjs']) {
+  test(`migration exceptions cannot authorize a foreign domain ${target}`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    declareZone(root, { pattern: 'core/inquiry/**', layer: 'domain', context: 'inquiry',
+      entryPoint: 'core/inquiry/index.cjs', imports: ['core/inquiry/**', 'core/memory/**', 'core/shared/**'] });
+    const filename = 'core/inquiry/question.cjs';
+    write(root, filename, `require('../memory/${target}');`);
+    declareExceptions(root, [migrationException(filename, `core/memory/${target}`)]);
+    const result = assertRejected(root, filename, /context-domain-import-forbidden/, GUARD_NAMES[0]);
+    assert.doesNotMatch(result.output, /zone-permission-missing|declare core\/memory/);
+    write(root, filename, "require('../shared/value.cjs');");
+    declareExceptions(root, []);
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+for (const [source, rule, diagnostic] of [
+  ['process.cwd();', GUARD_NAMES[1], /host globals/],
+  ["require('node:fs');", GUARD_NAMES[0], /depends on node:fs/],
+]) {
+  test(`migration exceptions preserve the independent prohibition of ${source}`, t => {
+    const root = contextFixture(t);
+    declareZone(root, MEMORY_ZONE);
+    const filename = 'core/passage-text.cjs';
+    const facade = "module.exports = require('./memory');";
+    declareExceptions(root, [migrationException(filename, 'core/memory/index.cjs')]);
+    write(root, filename, facade + '\n' + source);
+    assertRejected(root, filename, diagnostic, rule);
+    write(root, filename, facade);
+    assertAccepted(root, GUARD_NAMES, t);
+  });
+}
+
+test('migration exceptions preserve core global time stock and its actual guard execution', t => {
+  const root = timeFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  write(root, 'core/memory/index.cjs', 'module.exports = {};');
+  const filename = 'core/passage-text.cjs';
+  const facade = "module.exports = require('./memory');";
+  declareExceptions(root, [migrationException(filename, 'core/memory/index.cjs')]);
+  write(root, filename, facade + '\nDate.now();');
+  const names = [...GUARD_NAMES, TIME_GUARD];
+  assertRejected(root, filename, /global-time-increase/, TIME_GUARD, names);
+  write(root, filename, facade);
+  assertAccepted(root, names, t);
+});
+
+test('migration exceptions preserve Electron and package restrictions in context runtime modules', t => {
+  const root = contextFixture(t);
+  declareZone(root, { pattern: 'runtime/inquiry/**', layer: 'application', context: 'inquiry', imports: ['runtime/inquiry/**'] });
+  const filename = 'runtime/inquiry/ask.cjs';
+  const bridge = "require('../module.cjs');";
+  declareExceptions(root, [migrationException(filename, 'runtime/module.cjs')]);
+  for (const specifier of ['electron', 'eslint']) {
+    write(root, filename, bridge + `\nrequire('${specifier}');`);
+    assertRejected(root, filename, new RegExp(`depends on ${specifier}`), GUARD_NAMES[0]);
+    if (specifier === 'electron') assertRejected(root, filename, /depends on electron/, GUARD_NAMES[2], [GUARD_NAMES[2]]);
+    write(root, filename, bridge);
+    assertAccepted(root, GUARD_NAMES, t);
+  }
+});
+
+test('migration exceptions preserve the independent pure module policy and its actual guard execution', t => {
+  const root = pureFixture(t);
+  declareZone(root, MEMORY_ZONE);
+  write(root, 'core/memory/index.cjs', 'module.exports = {};');
+  const filename = 'runtime/session-closing.cjs';
+  const source = fs.readFileSync(path.join(root, filename), 'utf8');
+  write(root, filename, source + "\nrequire('../core/memory');");
+  declareExceptions(root, [migrationException(filename, 'core/memory/index.cjs')]);
+  const names = [...GUARD_NAMES, PURE_GUARD];
+  assertRejected(root, filename, /forbidden import/, PURE_GUARD, names);
+  write(root, filename, source);
+  declareExceptions(root, []);
+  assertAccepted(root, names, t);
+});
+
+test('guard fixture reports a missing selected guard as a bench defect', t => {
+  const root = fixture(t);
+  assert.throws(() => runGuard(root, ['missing guard']), /fixture-guard-not-executed: missing guard/);
+  assertAccepted(root, GUARD_NAMES, t);
+});
+
 test('layer table selects the most specific source and destination zones from an added row', t => {
   const root = fixture(t);
   const filename = 'core/memory/service.cjs';
@@ -664,7 +1037,7 @@ test('layer table selects the most specific source and destination zones from an
   assert.equal(runGuard(root).status, 0);
   const guard = path.join(root, 'tests/architecture.test.cjs');
   // Seule la donnée de politique change dans la copie de la garde réelle.
-  const row = { pattern: 'core/memory/**', imports: ['core/memory/**'] };
+  const row = { ...MEMORY_ZONE, imports: ['core/memory/**'] };
   fs.writeFileSync(guard, fs.readFileSync(guard, 'utf8').replace('\n];', `\n  ${JSON.stringify(row)},\n];`));
   t.diagnostic(assertRejected(root, filename, /core\/module\.cjs/, GUARD_NAMES[0]).output);
   write(root, filename, "require('./local.cjs');");

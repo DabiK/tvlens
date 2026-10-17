@@ -6,14 +6,24 @@ const { builtinModules } = require('node:module');
 const vm = require('node:vm');
 const REPOSITORY = path.join(__dirname, '..');
 const LAYER_EXTENSIONS = ['.js', '.cjs', '.mjs'];
+const ROOT_LAYERS = {
+  core: 'domain',
+  runtime: 'application',
+  adapters: 'adapter',
+  server: 'host',
+  mcp: 'host',
+  app: 'host',
+};
 const DEPENDENCY_ZONES = [
-  { pattern: 'core/**', imports: ['core/**'] },
-  { pattern: 'adapters/**', imports: ['adapters/**', 'core/**'] },
-  { pattern: 'runtime/**', imports: ['runtime/**', 'core/**', 'adapters/**'] },
-  { pattern: 'server/**', imports: ['server/**', 'core/**', 'adapters/**', 'runtime/**'] },
-  { pattern: 'mcp/**', imports: ['mcp/**', 'core/**'] },
-  { pattern: 'app/**', imports: ['app/**', 'core/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'core/**', layer: 'domain', imports: ['core/**', 'core/shared/**'] },
+  { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
+  { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**'] },
+  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'adapters/**'] },
+  { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
+  { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
 ];
+const TEMPORARY_IMPORT_EXCEPTIONS = [];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
 const CORE_TIME_STOCK = {
@@ -254,9 +264,104 @@ function uiImportAllowed(relative, target) {
   return relative === 'app/ui/browser-capture.mjs' && target === 'app/recording.js';
 }
 
+function validateContextZone(zone, root, diagnostic) {
+  assert.ok(typeof zone.context === 'string' && /^[a-z][a-z0-9-]*$/.test(zone.context), diagnostic);
+  assert.equal(zone.pattern, `${root}/${zone.context}/**`, diagnostic);
+}
+
+function validateDomainZone(zone, diagnostic) {
+  if (zone.pattern === 'core/**') {
+    assert.ok(!Object.hasOwn(zone, 'context') && !Object.hasOwn(zone, 'entryPoint'), diagnostic);
+    return;
+  }
+  validateContextZone(zone, 'core', diagnostic);
+  assert.equal(zone.entryPoint, `core/${zone.context}/index.cjs`, diagnostic);
+}
+
+function validateDependencyZones() {
+  for (const zone of DEPENDENCY_ZONES) {
+    const diagnostic = `zone-metadata-invalid: ${zone.pattern}`;
+    const root = zone.pattern.split('/')[0];
+    assert.ok(Object.hasOwn(ROOT_LAYERS, root), diagnostic);
+    assert.equal(zone.layer, ROOT_LAYERS[root], diagnostic);
+    assert.ok(zone.shared === undefined || zone.shared === true, diagnostic);
+    if (zone.pattern === 'core/shared/**') assert.equal(zone.shared, true, diagnostic);
+    if (zone.shared) {
+      assert.equal(zone.pattern, 'core/shared/**', diagnostic);
+      assert.equal(zone.layer, 'domain', diagnostic);
+      assert.ok(!Object.hasOwn(zone, 'context') && !Object.hasOwn(zone, 'entryPoint'), diagnostic);
+    } else if (zone.layer === 'domain') validateDomainZone(zone, diagnostic);
+    else {
+      assert.ok(!Object.hasOwn(zone, 'entryPoint'), diagnostic);
+      if (Object.hasOwn(zone, 'context')) {
+        assert.equal(zone.layer, 'application', diagnostic);
+        validateContextZone(zone, 'runtime', diagnostic);
+      }
+    }
+  }
+}
+
+function foreignDomainImport(origin, destination) {
+  return origin.layer === 'domain' && origin.context && destination?.layer === 'domain' &&
+    destination.context && origin.context !== destination.context;
+}
+
+function importPolicyViolation(origin, destination, target) {
+  if (foreignDomainImport(origin, destination)) return 'context-domain-import-forbidden: domains cannot import another context';
+  if (origin.context && /^(?:core|runtime)\/[^/]+$/.test(target)) {
+    return 'context-flat-import-requires-exception: declare the exact migration edge';
+  }
+  if (!destination || !origin.imports.includes(destination.pattern)) {
+    return `zone-permission-missing: ${origin.pattern} does not list ${destination?.pattern ?? target}`;
+  }
+  if (destination.shared) return null;
+  if (destination.layer === 'domain' && destination.context && origin.context !== destination.context && target !== destination.entryPoint) {
+    return `context-private-import: use ${destination.entryPoint}`;
+  }
+  return null;
+}
+
+function exactModulePath(filename) {
+  return typeof filename === 'string' && !/[?*[\]{}\\]/.test(filename) &&
+    !path.posix.isAbsolute(filename) && !filename.startsWith('../') &&
+    path.posix.normalize(filename) === filename && LAYER_EXTENSIONS.includes(path.posix.extname(filename));
+}
+
+function validateMigrationExceptions() {
+  const names = new Set();
+  const edges = new Set();
+  const filenames = new Set(inventory().map(module => module.relative));
+  for (const exception of TEMPORARY_IMPORT_EXCEPTIONS) {
+    const { name, source, target, reason } = exception;
+    const diagnostic = `migration-exception-invalid: ${JSON.stringify(exception)}`;
+    assert.ok(typeof name === 'string' && /^[a-z][a-z0-9-]*$/.test(name), diagnostic);
+    assert.ok(typeof reason === 'string' && reason.trim().length > 0, diagnostic);
+    assert.ok(exactModulePath(source) && exactModulePath(target), diagnostic);
+    const edge = `${source} -> ${target}`;
+    assert.ok(!names.has(name) && !edges.has(edge), diagnostic);
+    names.add(name);
+    edges.add(edge);
+    assert.ok(filenames.has(source) && filenames.has(target), `${name}: ${edge}: migration-exception-unused: a module disappeared`);
+  }
+}
+
+function assertRelativeImport(relative, specifier, target, origin, usedExceptions) {
+  const destination = zoneFor(target);
+  const violation = importPolicyViolation(origin, destination, target);
+  const zones = `zones ${origin.pattern} -> ${destination?.pattern ?? 'undeclared'}`;
+  const exception = TEMPORARY_IMPORT_EXCEPTIONS.find(item => item.source === relative && item.target === target);
+  const migrationAllowed = violation && exception && !foreignDomainImport(origin, destination);
+  if (migrationAllowed) usedExceptions.add(exception.name);
+  assert.ok(violation === null || migrationAllowed, `${relative} depends on ${specifier} -> ${target}; ${zones}; ${violation}`);
+  return `${origin.pattern} -> ${destination?.pattern ?? 'undeclared'}`;
+}
+
 test('layer dependency table permits only declared zones', t => {
+  validateDependencyZones();
   const { dependencies = {} } = JSON.parse(fs.readFileSync(path.join(REPOSITORY, 'package.json'), 'utf8'));
   const edges = new Map();
+  validateMigrationExceptions();
+  const usedExceptions = new Set();
   for (const { relative, imports } of inventory()) {
     if (relative.startsWith('tv/app/')) continue;
     const origin = zoneFor(relative);
@@ -267,11 +372,12 @@ test('layer dependency table permits only declared zones', t => {
         assert.ok(externalImportAllowed(relative, specifier, dependencies), `${relative} depends on ${specifier}`);
         continue;
       }
-      const destination = zoneFor(target);
-      assert.ok(destination && origin.imports.includes(destination.pattern), `${relative} depends on ${specifier} -> ${target}`);
-      const edge = `${origin.pattern} -> ${destination.pattern}`;
+      const edge = assertRelativeImport(relative, specifier, target, origin, usedExceptions);
       edges.set(edge, (edges.get(edge) ?? 0) + 1);
     }
+  }
+  for (const { name, source, target } of TEMPORARY_IMPORT_EXCEPTIONS) {
+    assert.ok(usedExceptions.has(name), `${name}: ${source} -> ${target}: migration-exception-unused: remove the obsolete declaration`);
   }
   for (const root of new Set(inventory().map(module => module.root))) {
     t.diagnostic(`${root}: ${inventory().filter(module => module.root === root).length} fichiers JavaScript`);
