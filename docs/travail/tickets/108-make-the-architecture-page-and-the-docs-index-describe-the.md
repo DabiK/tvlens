@@ -74,6 +74,10 @@ déploiement ou de branche quittent ces pages de référence ; les faits histori
   stratégies d'évaluation encore annoncées disponibles. Ne pas prétendre que la sonde live a été
   rejouée. **Ne pas modifier `README.md`** : décision du propriétaire, le 16/10, le README de
   présentation reste celui de `main` pour le hackathon. Son décompte daté reste tel quel.
+- Arbitrage de l'orchestrateur, le 17/10, après le blocage de la première tentative : l'inventaire porte
+  sur les documents **suivis par Git** (`git ls-files`). Un fichier ignoré n'est pas publié et n'entre ni
+  dans l'index ni dans le test : c'est le cas du brouillon privé `docs/candidature-draft.md`
+  (`.gitignore:33`), qui reste hors du dépôt. Le test donne le même résultat sur ce poste et sur un clone propre.
 - Créer `tests/documentation-index.test.cjs`, autonome, sans dépendre du futur T107 : énumération
   locale des documents et ADR, vérification des liens attendus et de leurs cibles. Les diagnostics
   disent quel lien ou quelle phrase ajouter. Il refuse dans architecture/index/CONTRIBUTING les
@@ -119,3 +123,9 @@ Les décomptes de documents sont des repères d'exploration à recalculer après
 pas des valeurs à figer dans le test.
 
 ## Journal
+
+- 17/10, orchestrateur : la première tentative s'est bloquée sur ce seul point (test documentaire 7/8, contrôle
+  complet 2288/2289). Son travail est archivé dans `.harness-state/archives/T108-bloque-1/` : `code.patch`
+  (architecture, index, guide, comparaison des stratégies), `fichiers/tests/documentation-index.test.cjs`,
+  `ticket-journal.patch` et `etat/`. Le réappliquer, le vérifier contre le code du moment et restreindre
+  l'inventaire aux documents suivis par Git, selon l'arbitrage ci-dessus.
