@@ -15,6 +15,7 @@ const { createPublicationDiagnostic } = require('../runtime/publication-diagnost
 const { warmUp } = require('../runtime/session-warm-up.cjs');
 const { activeInstruction } = require('../runtime/active-instruction.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
+const { createLivingRecapRuntime } = require('../runtime/memory/living-recap-runtime.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
 const {SavedMoments}=require('../core/saved-moments.cjs');
@@ -54,7 +55,7 @@ if (process.platform === 'darwin') {
 const QUESTION_QUEUE_LIMIT = 5;
 let verifierAdapter, verification;
 let surveillance, surveillanceTimer, storageTimer;
-let recap, recapAdapter, recapTimer, switching = false;
+let recap, recapAdapter, recapTimer, recapConsumer, switching = false;
 let deep, bridge, videoAgent;
 let window, captureRefreshTimer, config, sessionsRoot, archiveOnQuit, closing = false;
 let loaded = null;
@@ -318,7 +319,6 @@ app.whenReady().then(async () => {
     log: line => console.error(line),
     onPublicationError,
     onChange: state => {
-      if (!closing && !switching) recap.observe(state);
       surveillance.observe(state);
       send('watch:state', { ...state, title: loaded?.title ?? null, transcription: (loaded?.runtime.transcriber || transcriber).availability() });
     },
@@ -326,6 +326,16 @@ app.whenReady().then(async () => {
   const adopt = (runtime, name, at, fresh = false) => {
     loaded = { runtime, title: name, startedAt: at, fresh };
     saved.transcriber = runtime.transcriber;
+    recapConsumer?.close();
+    recapConsumer = createLivingRecapRuntime({
+      id: runtime.id, recap,
+      readView: runtime.memory.view,
+      subscribe: runtime.events.subscribe,
+      schedule: queueMicrotask,
+      isBlocked: () => closing || switching || loaded?.runtime !== runtime,
+      onError: onPublicationError,
+      silent: runtime.readOnly,
+    });
   };
   // L'horloge et la cadence du manifeste avancent même sans analyse prête.
   // En pause, aucun de ces faits ne change : la fenêtre garde le dernier état publié.
@@ -377,7 +387,17 @@ app.whenReady().then(async () => {
         // while the session closes finds none of them, and one still running is refused instead of answered.
         begin: ['contextes MCP', () => ended && bridge?.revoke(ended.id)],
         steps: [
-          ['résumé vivant', async () => { clearInterval(captureRefreshTimer); try { recap.reset(); await recapAdapter?.close?.(); } finally { recapAdapter = null; } }],
+          ['résumé vivant', async () => {
+            clearInterval(captureRefreshTimer);
+            recapConsumer?.close();
+            recapConsumer = null;
+            try {
+              recap.reset();
+              await recapAdapter?.close?.();
+            } finally {
+              recapAdapter = null;
+            }
+          }],
           // The last surveillance states reach the session folder before the session closes.
           ['surveillance', () => surveillance.reset(reason)],
           // Final states are saved as they are published; whatever still waited for its second is handed over too,

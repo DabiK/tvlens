@@ -1,3 +1,4 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { LivingRecap } = require('../core/living-recap.cjs');
@@ -10,7 +11,7 @@ const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const CAPACITY = 'TVLENS_RECAP_CAPACITY', LIMIT = 240000, WINDOW = 25000;
 const REFUSED = 'La session dépasse la capacité de cette synthèse automatique. Le dernier résumé reste disponible ; tous les passages originaux sont conservés.';
 const source = (id, startMs, endMs, text = 'Une scène', status = 'ready') => ({ id, startMs, endMs, status, available: true, observation: status === 'ready' ? { summary: text } : null });
-const snapshot = (segments, history = [], id = 's') => ({ id, segments, history });
+const snapshot = (segments, history = [], id = 's') => memoryOf({ id, segments, history }).view();
 // What the adapter really handed to its agent, read back from the prompt.
 const data = request => request.instructions.slice(request.instructions.indexOf('DONNÉES : ') + 'DONNÉES : '.length);
 // A valid synthesis of that: earlier chapters kept, every source they do not cite gathered in one more.

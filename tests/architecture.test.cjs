@@ -21,9 +21,11 @@ const DEPENDENCY_ZONES = [
   { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
   { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**', 'core/memory/**'] },
   { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
+  { pattern: 'runtime/memory/**', layer: 'application', context: 'memory',
+    imports: ['runtime/memory/**', 'core/memory/**', 'core/shared/**'] },
   { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
-  { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**', 'runtime/memory/**'] },
 ];
 const TEMPORARY_IMPORT_EXCEPTIONS = [
   { name: 'memory-passage-text', source: 'core/memory/memory-view.cjs', target: 'core/passage-text.cjs',

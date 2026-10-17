@@ -1,7 +1,7 @@
 ---
 id: T210
 titre: Feed the living recap from memory events and its consultation view
-statut: a-faire
+statut: termine
 bloque_par: T221, T207
 adr: non
 installe: non
@@ -100,3 +100,16 @@ limites. Si l'une manque, documenter la transition et compléter son événement
 au snapshot ni synthèse sur une seule transcription. Aucun gain de coût n'est annoncé au découpage.
 
 ## Journal
+
+- Exploration : contrats T206/T221/T207 et ADR relus ; les événements existants couvrent les limites. Coordination prévue dans `runtime/memory/`, initialisation silencieuse et débranchement avant reset. État initial et choix consignés dans `.harness-state/tickets/T210/exploration.md` ; aucun écart prévu.
+- Cœur, rouge puis vert : `node --test --test-name-pattern='memory consultation supplies' tests/living-recap.test.cjs` échoue sur `sourceCount` (0 au lieu de 1), puis `node --test tests/living-recap.test.cjs` passe (18/18) après migration de `observe` et des seules fixtures existantes vers `MemoryView`.
+- Raccord Mac, rouge puis vert : `node --test --test-name-pattern='Mac recap follows' tests/mac-ipc-contract.test.cjs` échoue sur la limite d'analyse partielle, puis passe (1/1) avec publications de session neutralisées, vraie composition à deux voies et vision retenue.
+- Coordination : `node --test tests/living-recap-runtime.test.cjs` passe (5/5) : regroupement différé, révisions répétées, attentes/pertes/trous sans source prête, session étrangère, blocage et débranchement, abonné défaillant et sauvegardes, restauration silencieuse sans snapshot. `node --test --test-name-pattern='Mac closing detaches' tests/mac-ipc-contract.test.cjs` passe (1/1), avec analyse libérée dans l'étape capture et chapitres vérifiés sur disque.
+- Non-régression : `node --test tests/architecture-f09.test.cjs` passe (10/10) ; `node --test tests/mac-ipc-contract.test.cjs` passe (36/36). Aucun motif du câblage Mac modifié.
+- Premier `node scripts/check.mjs --changed` : ROUGE, uniquement complexité 16 du chargeur de test après ajout d'une injection de fermeture ; tests 79/79. Extraction du petit raccord de test, sans modification de règle ni de plancher. Sorties conservées dans `.harness-state/tickets/T210/`.
+- Contrôles finaux : `node_modules/.bin/eslint --prune-suppressions core/living-recap.cjs app/main.cjs runtime/memory/living-recap-runtime.cjs tests/living-recap-runtime.test.cjs tests/living-recap.test.cjs tests/architecture-f09.test.cjs tests/architecture.test.cjs tests/mac-ipc-contract.test.cjs` réussi, aucune suppression devenue inutile. `node scripts/check.mjs --changed` vert (79/79 tests). `node scripts/check.mjs` vert : 2 514 tests JavaScript dans 140 fichiers et 47 tests Python ; règles, format, lint, gel et cliquet verts. `git diff --check` réussi.
+- Livraison : entrée `MemoryView`, coordination différée et dédupliquée dans `runtime/memory/`, branchement Mac initialisé après restauration silencieuse et détaché avant reset. Cadence, priorité aux questions, originaux, provenance, limites, capacité et formats conservés. Aucun commit ni push ; verdict `TERMINÉ` transmis à la boucle, relecture à sa charge. Fournisseurs réels, Electron natif, TV et VPS non exercés.
+- Reprise après `.harness-state/tickets/T210/relecture-1.md` : rapport, journal, écarts et diff relus. Les deux constats mineurs sont acceptés : retrait de la garde de sauvegarde, test de synthèse finie pendant une transition de fermeture retenue, assertion de non-réassociation dans capture et une instruction par ligne sur les ajouts. Aucun écart prévu.
+- Correction du constat 1, tests d'abord : `node --test --test-name-pattern='Mac quitting saves a completed synthesis' tests/mac-ipc-contract.test.cjs` ROUGE sur `saved.pendingCount` (1 au lieu de 0). Après retrait de `!closing && !switching` de la condition de sauvegarde, `node --test --test-name-pattern='Mac quitting saves a completed synthesis|Mac closing detaches' tests/mac-ipc-contract.test.cjs` passe (2/2). Le premier test retient la pause, termine la synthèse après before-quit et vérifie sa sauvegarde puis ses chapitres archivés ; le second vérifie désormais `sessionId === null` après la livraison tardive dans l'étape capture. Journaux `correction-save-red.log` et `correction-save-green.log`.
+- Correction du constat 2 : instructions scindées dans l'étape résumé et tous les callbacks ajoutés concernés des deux bancs ; indentation du raccord de fermeture corrigée. `node scripts/check.mjs --changed` vert : 80/80 tests et règles/format/lint/gel/cliquet validés (`correction-check-changed.log`). Aucun motif existant du câblage Mac modifié.
+- Contrôle complet après correction : `node scripts/check.mjs`, code 0 et vert, 2 515/2 515 tests JavaScript dans 140 fichiers et 47 tests Python ; règles, format, lint, gel et cliquet verts (`correction-check-full.log`). `git diff --check` réussi. Les deux constats de la relecture 1 sont corrigés, sans contestation ni réserve ; nouveau verdict `TERMINÉ` pour la boucle. Aucun commit ni push ; Electron natif et fournisseurs réels non exercés.

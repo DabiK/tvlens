@@ -180,6 +180,24 @@ function commandLineStub(disabledFeatures) {
   };
 }
 
+function wrapClosingModule(loaded, wrapClosing) {
+  if (!wrapClosing) return loaded;
+  return { ...loaded, closeSession: options => wrapClosing(loaded.closeSession, options) };
+}
+
+function wrapProvider(factory, wrap) {
+  if (!wrap) return factory;
+  return (...args) => wrap(factory(...args));
+}
+
+function wrapSimulatedProviders(loaded, wrap) {
+  return {
+    ...loaded,
+    simulatedVerifier: wrapProvider(loaded.simulatedVerifier, wrap.verifier),
+    simulatedRecap: wrapProvider(loaded.simulatedRecap, wrap.recap),
+  };
+}
+
 // Loads app/main.cjs in its own simulated mode with `electron` replaced. IPC goes through the real preload,
 // structured-cloned both ways and with Electron's error prefix, as between two processes. Two things of the
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
@@ -235,8 +253,8 @@ async function launch(userData, {
     const loaded = load.call(this, request, parent, ...rest);
     if (!parent?.filename?.endsWith(path.join('app', 'main.cjs'))) return loaded;
     if (request === '../adapters/codex-confinement.cjs') return { ...loaded, sweepStaleContexts: (...args) => { sweeps.push(args); return sweep(...args); } };
-    if (request === '../adapters/simulated-providers.cjs' && wrap.verifier)
-      return { ...loaded, simulatedVerifier: (...args) => wrap.verifier(loaded.simulatedVerifier(...args)) };
+    if (request === '../runtime/session-closing.cjs') return wrapClosingModule(loaded, wrap.closing);
+    if (request === '../adapters/simulated-providers.cjs') return wrapSimulatedProviders(loaded, wrap);
     // Measured afresh at every check, so that a change of free space is seen at once instead of five seconds later.
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
     if (request === '../runtime/session-runtime.cjs' && readClock) return { ...loaded, createSessionRuntime: options => {
@@ -1456,4 +1474,178 @@ test('Mac startup exposes transcription availability before capture and publishe
   assert.equal((await host.state()).id, session.id);
   assert.deepEqual((await host.state()).transcription, availability);
   assert.deepEqual(host.events.filter(event => event.channel === 'watch:state').at(-1).value.transcription, availability);
+});
+
+test('Mac recap follows passage events without session state publications and waits for both lanes', async t => {
+  const visual = deferred(), visionEntered = deferred(), complete = deferred();
+  let runtime;
+  const { launch } = await stage(t);
+  const host = await launch({ wrap: { session: built => {
+    runtime = built;
+    built.watch.onChange = () => {};
+    built.perception.transcribe = async () => ({ observation: { transcript: 'Paroles seules' } });
+    built.perception.observeVisual = async () => {
+      visionEntered.resolve();
+      await visual.promise;
+      return { observation: { summary: 'Images et paroles' } };
+    };
+    built.events.subscribe(event => {
+      if (event.type === 'PassageUpdated' && built.memory.passage(event.passageId)?.status === 'ready') complete.resolve(event);
+    });
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  await capture(host, session.id, { audio: new Uint8Array([1]) });
+  await visionEntered.promise;
+  t.mock.timers.tick(1000);
+  const partial = await host.recapState();
+  assert.equal(partial.sourceCount, 0);
+  assert.ok(partial.limits.includes('1 passage(s) avec une analyse partielle, non inclus dans le résumé.'));
+  visual.resolve();
+  const event = await complete.promise;
+  await tick();
+  assert.equal((await host.recapState()).sourceCount, 1);
+  t.mock.timers.tick(1000);
+  await until(t, async () => (await host.recapState()).status === 'ready', 'recap synthesized from the passage event');
+  const ready = await host.recapState();
+  assert.deepEqual(ready.overviewSourceIds, ['moment-1']);
+  assert.match(ready.sourcePassages[0].text, /Images et paroles/);
+  runtime.events.publish(event);
+  await tick();
+  assert.deepEqual(await host.recapState(), ready);
+});
+
+test('Mac closing detaches recap before capture drains and preserves the archived chapters through a late analysis', async t => {
+  const visual = deferred(), visionEntered = deferred(), thumbnail = deferred(), thumbnailEntered = deferred();
+  const captureEntered = deferred();
+  let runtime, saves = 0;
+  const { launch, folder } = await stage(t);
+  t.after(() => {
+    visual.resolve();
+    thumbnail.resolve();
+  });
+  const host = await launch({ wrap: {
+    closing: (close, options) => close({ ...options, steps: options.steps.map(([name, work]) => [name, () => {
+      if (name === 'capture') captureEntered.resolve();
+      return work();
+    }]) }),
+    session: built => {
+      runtime = built;
+      built.perception.transcribe = async () => ({ observation: { transcript: 'Paroles' } });
+      built.perception.observeVisual = async input => {
+        if (input.id === 'moment-2') {
+          visionEntered.resolve();
+          await visual.promise;
+        }
+        return { observation: { summary: 'Sujet ' + input.id } };
+      };
+      const save = built.store.saveRecap.bind(built.store);
+      built.store.saveRecap = state => {
+        saves++;
+        return save(state);
+      };
+      const put = built.thumbnails.put.bind(built.thumbnails);
+      built.thumbnails.put = async (id, ...args) => {
+        if (id === 'moment-2') {
+          thumbnailEntered.resolve();
+          await thumbnail.promise;
+        }
+        return put(id, ...args);
+      };
+      return built;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, async () => (await host.state()).segments[0]?.status === 'ready', 'first complete passage');
+  t.mock.timers.tick(1000);
+  await until(t, async () => (await host.recapState()).status === 'ready', 'first chapter');
+  const ready = await host.recapState();
+  const ingesting = capture(host, session.id);
+  await thumbnailEntered.promise;
+  await visionEntered.promise;
+  const delivered = deferred();
+  runtime.events.subscribe(event => {
+    if (event.type === 'PassageUpdated' && runtime.memory.passage(event.passageId)?.status === 'ready') delivered.resolve(event);
+  });
+  const beforeClosing = saves;
+  const ending = host.quit();
+  await captureEntered.promise;
+  assert.equal((await host.recapState()).sessionId, null, 'recap reset precedes the capture step');
+  visual.resolve();
+  const event = await delivered.promise;
+  await tick();
+  assert.equal((await host.recapState()).sessionId, null, 'late passage events cannot rebind the recap during capture');
+  assert.equal(saves, beforeClosing, 'late analysis requests no recap save while capture is draining');
+  thumbnail.resolve();
+  await ingesting;
+  await ending;
+  const archived = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+  assert.deepEqual(archived.chapters, ready.chapters);
+  const empty = await host.recapState();
+  runtime.events.publish({ ...event, revision: event.revision + 1 });
+  await tick();
+  assert.equal(saves, beforeClosing);
+  assert.deepEqual(await host.recapState(), empty);
+});
+
+test('Mac quitting saves a completed synthesis while session closing waits for the current transition', async t => {
+  const synthesis = deferred();
+  const synthesisEntered = deferred();
+  const pauseEntered = deferred();
+  const pauseReleased = deferred();
+  const recapReady = deferred();
+  let runtime;
+  const { launch, folder } = await stage(t);
+  const host = await launch({ wrap: {
+    recap: adapter => ({ ...adapter, summarize: input => {
+      synthesisEntered.resolve(input);
+      return synthesis.promise;
+    } }),
+    session: built => {
+      runtime = built;
+      const pause = built.pause;
+      built.pause = async () => {
+        pauseEntered.resolve();
+        await pauseReleased.promise;
+        return pause();
+      };
+      return built;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  host.onRecap(state => {
+    if (state.status === 'ready') recapReady.resolve(state);
+  });
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, analysed(host, 1), 'complete passage before synthesis');
+  t.mock.timers.tick(1000);
+  const input = await synthesisEntered.promise;
+  const stopping = host.stop();
+  let quitting;
+  let ready;
+  try {
+    await pauseEntered.promise;
+    quitting = host.quit();
+    synthesis.resolve({
+      overview: 'Synthèse achevée pendant la fermeture.',
+      chapters: [{ title: 'Sujet observé', summary: 'Chapitre conservé.', sourceIds: input.sourcePassages.map(p => p.id) }],
+    });
+    ready = await recapReady.promise;
+    assert.equal(ready.sessionId, session.id, 'the queued closing has not reset the recap');
+    await runtime.store.flush();
+    const saved = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+    assert.equal(saved.pendingCount, 0, 'a completed synthesis is saved even after before-quit');
+    assert.deepEqual(saved.chapters, ready.chapters);
+  } finally {
+    pauseReleased.resolve();
+    await stopping;
+    await quitting;
+  }
+  const archived = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+  assert.deepEqual(archived.chapters, ready.chapters);
+  assert.equal(archived.pendingCount, 0);
 });
