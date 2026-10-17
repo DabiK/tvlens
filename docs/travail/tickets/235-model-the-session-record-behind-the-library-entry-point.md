@@ -2,7 +2,7 @@
 id: T235
 titre: Model the session record behind the library entry point
 statut: a-faire
-bloque_par: T227
+bloque_par: T227, T254
 adr: oui
 installe: non
 harnais: non

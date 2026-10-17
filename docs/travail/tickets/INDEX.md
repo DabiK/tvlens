@@ -394,6 +394,8 @@ La [cible du domaine](../../domaine.md) et l'[ADR 0030](../../adr/0030-un-seul-c
 fixent le coordinateur unique et les garanties de fin. Les groupes ci-dessous suivent les dépendances ;
 la boucle choisit le plus petit numéro prêt. L'arrêt pour quota protège la file avant le secours Claude.
 
+**Préparation du GX10 d'abord.** [T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) retient T250 et T235, donc toute la phase 2, jusqu'au gel de la copie de l'expérience GX10 (décision du 17/10). Le harnais, le message de quota et les tickets de préparation du GX10 passent pendant ce temps.
+
 T233 est écrit par l'orchestrateur dans le dépôt principal ; il n'est pas recréé dans ce worktree.
 T224 y dépend de T233, en plus de T219, T210 et T195 ; T219 est déjà transitif par T233.
 L'INDEX reprend les dépendances de ces deux tickets dans le dépôt principal ; leurs fichiers de phase 1 restent hors périmètre.
@@ -454,6 +456,7 @@ section « Hypothèses bloquantes » du ticket.
 
 - [T233](233-check-the-memory-projection-live-on-the-tv-before-the-contraction.md) — Check the memory projection live on the TV before the contraction. Décision attendue du propriétaire : la projection livrée par T219 est-elle vérifiée en réel sur la TV et le VPS ? L’orchestrateur réalise et clôt ce contrôle après T219 ; T224 attend.
 - [T228](228-hold-the-structural-wave-until-the-hackathon-release-is-on-main.md) — Hold the structural wave until the hackathon release is on main. Décision attendue du propriétaire : le tag `hackathon-rc` est-il posé sur la fin de la vague 1 ?
+- [T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) — Hold phase 2 until the GX10 experiment copy is frozen. Décision attendue du propriétaire : la copie de l'expérience GX10 est-elle figée ?
 - [T145](145-hold-the-full-remediation-queue-until-the-owner-reopens-it.md) — Hold the full remediation queue until the owner reopens it. Décision attendue du propriétaire : rouvrir la file complète des tickets de dette, après le plan court, en relisant d'abord les tickets retenus contre le code du moment.
 - [T138](138-run-the-quality-check-on-github-actions-in-informative-mode.md) — Run the quality check on GitHub Actions in informative mode. Décision attendue du propriétaire : sous quelles conditions la CI tourne sur GitHub. Elle porte sur
 - [T140](140-state-what-runs-on-the-test-tv-and-the-server-in-one-place.md) — State what runs on the test TV and the server in one place. Décision attendue du propriétaire : la version de la nuit tourne-t-elle encore sur la TV de test et sur le

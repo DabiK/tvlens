@@ -2,7 +2,7 @@
 id: T250
 titre: Report the confirmed archive the seal and the release apart when a session ends
 statut: a-faire
-bloque_par: T227
+bloque_par: T227, T254
 adr: non
 installe: non
 harnais: non

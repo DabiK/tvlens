@@ -1,0 +1,51 @@
+---
+id: T254
+titre: Hold phase 2 until the GX10 experiment copy is frozen
+statut: a-faire
+bloque_par:
+adr: non
+installe: non
+harnais: non
+supprime_tests: non
+niveau:
+---
+
+## Ce que le ticket livre
+
+Ce ticket ne se traite pas en session : il retient la phase 2 (Bibliothèque). Le 17/10, le propriétaire a choisi de
+préparer d'abord l'expérience sur l'ASUS GX10 (accès la semaine du 19/10), à partir d'un commit pris après la fin de la
+phase Mémoire. Tant que ce ticket n'est pas terminé, T250 et T235, les deux portes d'entrée de la phase 2, attendent :
+la copie de l'expérience n'embarque aucune migration de la Bibliothèque en cours. Les tickets de préparation du GX10,
+le harnais et le message de quota passent pendant ce temps.
+
+## Sources
+
+- Décision du propriétaire, le 17/10 : préparer le GX10 avant la phase 2 ; copie de l'expérience prise après T227,
+  répétée sur le Mac avant l'accès, `hackathon-rc` gardé en repli pour la démonstration.
+- Analyse d'Astra du 17/10 (commit `beb9589`) : la file prend le plus petit numéro prêt, donc la phase 2 démarrerait
+  avant les tickets du GX10 sans retenue.
+- Les tickets de la phase 2 dépendent tous de T250 ou de T235, directement ou non.
+
+## Périmètre
+
+- À modifier : rien. Ce ticket n'est pas lancé par la boucle, puisqu'il attend une décision.
+- Hors boucle, par l'orchestrateur, quand la phase Mémoire est terminée et que les tickets de préparation du GX10 sont
+  intégrés : poser un tag sur le commit retenu pour l'expérience, le consigner dans le journal de ce ticket, passer le
+  statut à `termine` et committer ce seul fichier. La phase 2 reprend alors.
+
+## Critères d'acceptation
+
+1. Tant que ce ticket est à faire, `node scripts/loop/run.mjs --dry-run` ne propose ni T250, ni T235, ni aucun ticket
+   qui en dépend.
+2. `node scripts/loop/tickets.mjs validate` ne signale aucun problème.
+
+## Test d'acceptation attendu
+
+Aucun test : ce ticket ne change ni le code ni le harnais. Le critère 1 se vérifie par la commande.
+
+## Hypothèses bloquantes
+
+Décision attendue du propriétaire : la copie de l'expérience GX10 est-elle figée ? Le propriétaire a décidé le 17/10
+que l'orchestrateur ferme ce ticket quand le tag de la copie est posé.
+
+## Journal
