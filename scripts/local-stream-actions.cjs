@@ -38,12 +38,12 @@ async function question(entry, context) {
   entry.acknowledgedAtMs = clock.now();
   if (response.status === 200) {
     entry.jobId = response.value.id;
-    observer.refresh();
   } else {
     entry.status = response.status === null ? 'unfinished' : 'refused';
     entry.acknowledgementUnknown = response.status === null;
     entry.code = response.value?.code || 'HTTP_' + response.status;
   }
+  observer.refresh();
 }
 async function cancel(entry, context, submission) {
   const cancellation = entry.cancellation;

@@ -1,7 +1,7 @@
 ---
 id: T261
 titre: Report revisions, lane losses and whole-run coverage of a sustained replay
-statut: a-faire
+statut: termine
 bloque_par: T259
 adr: non
 installe: non
@@ -167,5 +167,54 @@ enregistrement fourni, vidéo convertie ou corpus bouclé déclaré. Un test acc
 réelle complète n'établit la stabilité que pour son SHA, ses entrées et ses paramètres.
 
 ## Journal
+- 18/10, Codex, validation des corrections de relecture 1 : dix suites exigées et de coordination
+  exécutées en séquentiel par `node --test` : 156 tests verts (`correction-required-suites.log`).
+  `node scripts/check.mjs --changed` : vert, 43 tests JS ; `node scripts/check.mjs` : vert,
+  152 fichiers JS / 2 883 tests et 47 tests Python, règles/format/lint/gel/cliquet verts.
+  `git diff --check` vert. Nouveau verdict `TERMINÉ`, constats 1 à 6 corrigés, sans contestation.
+  Aucun essai réel, commit ou push ; rapport de relecture conservé intact.
+- 18/10, Codex, corrections de relecture 1 :
+  `node --test --test-name-pattern='a question completed during session closure' tests/local-stream-replay.test.cjs`
+  rouge sur l'acquisition tardive, puis filtre étendu fermeture/question/perception/HTTP : 4 tests verts.
+  Le statut produit est conservé ; le journal marque `afterClose` et les réussites exigent `acquired`.
+- 18/10, Codex : assertions exactes des révisions/canaux et du sondage HTTP (2 000 ms, délai 500 ms,
+  accusé fini et décomposition égale aux métriques). Six mutations temporaires vérifiées par
+  `node .harness-state/tickets/T261/verify-observation-assertions.cjs` : six rouges sur assertion,
+  sources restaurées après chaque cas. Filtre `'passage journals|whole campaign coverage'` vert.
+- 18/10, Codex : filtre `'surveillance role tables'` rouge sur paramètres absents, puis filtre
+  `'surveillance role tables|exercised surveillance retains'` : 2 tests verts. Paramètres configurés
+  `reasoningEffort`/`workers`, ou null sans copie du défaut. Seuil HTTP importé de l'export public.
+  Aides renommées `local-stream-summary.cjs` et `local-stream-provider-observation.cjs` ; filtre
+  `'passage journals|whole campaign coverage|question completed during session closure|surveillance role tables'` : 4 verts.
+- 18/10, Codex, reprise après relecture 1 : rapport, journal, écarts et arbre relus. Traitement
+  des six constats numérotés 1 à 6, tests d'abord, sans écart prévu ni modification du produit.
+- 18/10, Codex : contrôles finaux observés verts. En séquentiel, `node --test` sur
+  `local-stream-replay`, `memory-view`, `session-events`, `memory-projection`, `server-state-views`,
+  `session-runtime`, `session-lifecycle`, `evidence-refresh`, `headless-session-lifecycle` et
+  `conversation-runtime` : 154 tests verts. `node scripts/check.mjs --changed` : 41 tests verts,
+  règles/format/lint/gel/cliquet verts. `node scripts/check.mjs` : 152 fichiers JS, 2 881 tests verts,
+  puis 47 tests Python verts. `git diff --check` vert. Aucun essai réel, commit ou push.
+  Verdict `TERMINÉ` déposé dans le dossier d'état pour la relecture de la boucle.
+- 18/10, Codex : cycles rouge → vert observés par `node --test --test-name-pattern='passage journals'
+  tests/local-stream-replay.test.cjs`, puis filtre `'whole campaign coverage|passage journals'` :
+  versions audio/vision, métriques brutes, échantillons et couverture de 45 passages reçus sur 46
+  envois planifiés ; doublon, audio failed, trous de début, de 400 ms et de fin conservés.
+- 18/10, Codex : cycles rouge → vert observés avec les filtres
+  `'local questions retain independent|failed embeddings keep lexical'`,
+  `'a perception answer delivered during'`, `'a separate overload|production perception and questions'`
+  et `'local questions retain independent|exercised surveillance retains'` : identités séparées,
+  inspection en cache, classement lexical après panne, refus de question et acquisition révoquée
+  dès la fermeture. Sorties exactes dans `.harness-state/tickets/T261/`.
+- 18/10, Codex : filtre `'a perception answer delivered during|cancellation while upload|video preparation bodies'` :
+  3 tests verts ; réponse tardive annulée sans réussite, perte vision, provenance vidéo et bilan
+  incomplet conservés. Le premier contrôle `--changed` a révélé une ancienne doublure HTTP de
+  question sans enveloppe Ollama valide ; enveloppe corrigée et réussite désormais explicitement vérifiée.
+- 18/10, Codex : exploration du runner, de ses aides et des contrats publics ; conservation prévue
+  des versions via événements de passage et lecture bornée, sondage HTTP distinct pour les révisions
+  d'hôte, consultation en processus pour la couverture. Aucun écart prévu ; aucun essai réel.
 - 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
   frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T261/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

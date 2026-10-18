@@ -5,6 +5,7 @@ const { observeHost } = require('./local-stream-observe.cjs');
 const { createTransport, bounded } = require('./local-stream-transport.cjs');
 const { setLanguage, upload, question, cancel } = require('./local-stream-actions.cjs');
 const { finalizeRoles } = require('./local-stream-report.cjs');
+const { summarize } = require('./local-stream-summary.cjs');
 
 function schedule(context, initialLanguage) {
   const { clock, loaded, report, transport, signal, writer } = context;
@@ -140,6 +141,7 @@ async function execute(options, dependencies, loaded, report, writer) {
   } catch (error) {
     recordFailure(error, report, observer);
   } finally {
+    observer?.beforeClose();
     if (host) await shutdown(host, report, loaded);
     observer?.detach();
     host?.sealDiagnostics();
@@ -148,5 +150,6 @@ async function execute(options, dependencies, loaded, report, writer) {
   report.complete = completed(report, reason);
   report.status = report.complete ? 'complete' : 'incomplete';
   finalizeRoles(report);
+  if (report.journal) report.summary = summarize(report);
 }
 module.exports = { execute };

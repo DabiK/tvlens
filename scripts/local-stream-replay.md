@@ -164,7 +164,7 @@ ou une identité de questions locales inconnue refuse la qualification de la cam
 conserve sélection, identité effective, origine et invocation. Un rôle injecté, simulé, désactivé
 ou non exercé garde `localMeasurement: false`. Les questions locales ne disposent pas du web et
 une panne locale ne déclenche aucun repli Codex/OpenRouter. Embeddings et inspection restent
-identifiés pour leur examen ultérieur par le bilan de campagne.
+identifiés indépendamment dans le bilan de campagne.
 La garde sur le résultat visuel consigne son diagnostic sans modifier le résultat livré à la session.
 
 ## Transport, sorties et limites
@@ -190,6 +190,55 @@ tardive après annulation n'est pas une réussite. `shutdown.archiveConfirmed` e
 `shutdown.releaseConfirmed` restent séparés : une archive confirmée ne prouve pas la fermeture
 d'un fournisseur ; une fermeture hors délai reste non confirmée avec son diagnostic.
 
-Ce runner livre calendrier et issues. Le journal des révisions, publications audio/vision, pertes,
-retards, couverture et le bilan G3 relèvent du prolongement de campagne. Les tests accélérés avec
-faux serveurs ne prouvent ni débit GPU ni stabilité de trente minutes réelles.
+## Journal et bilan de campagne
+
+`journal.revisions` conserve une copie de chaque version de passage observée, avec son identité de
+session, son canal et les métadonnées de perception, dont les métriques fournisseur et leurs durées
+brutes. L'abonné public `session.events` relit seulement `session.memory.passage(id)` à la version
+annoncée. Ce canal observe les publications de passage pendant son abonnement. La révision d'hôte
+reste différente : `journal.httpStates` sonde réellement `/v1/state` chaque seconde et se déclare
+échantillonné. Une réponse retenue ou absente ne crée aucune publication intermédiaire supposée.
+
+Le même pas de 1 000 ms produit `journal.samples`, même quand aucun fournisseur ne publie : horloge
+de session, bornes de capture et d'analyse, retard publié, dernières preuves audio et vision.
+`ageMs` mesure le temps depuis leur publication ; `contentAgeMs` mesure le temps depuis la fin du
+passage. Sans preuve disponible, l'âge vaut `null`. Ces calculs restent dans le domaine session ;
+`clocks.fields` distingue estampilles de session, mural serveur, durées produit et nanosecondes
+fournisseur. Un dernier passage prêt peut ramener le retard publié à zéro sans combler un trou.
+
+`consultation` est la dernière vue `session.memory.view()` lue en processus avant fermeture.
+Elle conserve les trous produit à 250 ms, les intervalles et les compteurs acquis. Les trous vus
+au fil de la campagne restent dans `journal.productGaps`. Les `captureGaps` HTTP à 1 000 ms restent
+séparés dans `journal.httpStates` : cette consultation en processus n'est pas une capacité HTTP.
+
+`summary.coverage` calcule séparément l'union des intervalles reçus, des publications audio réussies
+et des publications vision réussies, rapportée à toute la fenêtre planifiée. Ses intervalles
+manquants incluent le début et la fin. Ni réessai reconnu comme doublon, ni compteur cumulatif relu
+n'ajoute de couverture. Un audio `failed` ne couvre rien ; un refus HTTP ne crée pas de perte de
+voie pour un passage absent. `journal.losses` déduplique les faits par passage, voie et révision ;
+`summary.losses` garde leurs causes et durées, et `summary.lossCounters` garde à part les compteurs
+produit sans les sommer entre échantillons. Aucun bilan ne se limite aux quarante derniers passages.
+
+`summary.roles` fournit la table des rôles avec sélection, identité composée, paramètres connus,
+preuves d'invocation et qualification. Les diagnostics d'inspection gardent l'identité d'origine
+sur un résultat du cache. Les recherches lexicales restent indiquées même après une tentative
+d'embeddings en échec. Détection de surveillance et recherche web ont des lignes distinctes ;
+le web demeure distant. Les nombres de requêtes fournisseur inconnus restent `null`.
+La configuration seule, une injection ou une sortie JSON de modèle ne qualifie pas une mesure locale.
+
+Les issues successives des questions figurent dans `journal.questions`, refus et annulations
+compris. `questions[].acquired` distingue une réponse acquise avant la fermeture du statut final
+publié par le produit : une réponse terminée pendant la fermeture peut garder `status: "done"`,
+avec `acquired: false`. Le journal marque ces observations `afterClose: true` et les bilans de
+réussite ainsi que la qualification des rôles les excluent. Les réponses déjà acquises restent comptées.
+Les paramètres configurés `reasoningEffort` et `workers` des rôles de surveillance sont conservés ;
+`null` signifie que le défaut du produit s'applique, sans en recopier la valeur.
+
+`questions[].latency` sépare accusé HTTP, délai soumission → résultat reçu par sondage HTTP
+et métriques internes disponibles. Ce délai inclut le pas de sondage. Attente effective de l'agent,
+premier token et réseau pur restent inconnus (`null`) ; les métriques brutes ne sont pas remplacées
+par zéro. Une réponse après annulation ou début de fermeture ne devient pas une preuve acquise.
+
+En fin incomplète, journaux, bilan partiel, attentes restantes, empreintes et provenance restent
+dans `campaign.json`. Une vidéo convertie y reste une vidéo convertie avec ses paramètres.
+Les tests accélérés avec faux serveurs ne prouvent ni débit GPU ni stabilité de trente minutes réelles.

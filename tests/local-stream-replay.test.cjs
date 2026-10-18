@@ -37,7 +37,7 @@ async function fixture(t) {
     index.blocks[0].body.sha256 = sha256(raw);
     const indexRaw = JSON.stringify(index);
     await fs.writeFile(path.join(root, 'blocks.json'), indexRaw);
-    scenario.index.sha256 = sha256(indexRaw);
+    if (scenario.index.path === 'blocks.json') scenario.index.sha256 = sha256(indexRaw);
     await fs.writeFile(scenarioPath, JSON.stringify(scenario));
   };
   await save();
@@ -159,7 +159,9 @@ async function accelerated(t, f, extra = {}) {
   const cleanup = new AbortController();
   const { CodexPerception } = require('../adapters/codex-perception.cjs');
   const analysis = extra.analysis || { answer: async () => visual, close() {} };
-  const transcriber = { availability: () => ({ available: true }), transcribe: async () => ({ text: 'Paroles françaises.', limits: [] }) };
+  const transcriber = extra.transcriber || {
+    availability: () => ({ available: true }), transcribe: async () => ({ text: 'Paroles françaises.', limits: [] }),
+  };
   const perception = new CodexPerception({ agent: analysis, transcriber });
   const runtimeOptions = { guard: null, transcriber,
     agent: { identity: { kind: 'codex', model: 'fake-chat', transport: 'injected' }, answer: async () => answer, close() {} },
@@ -206,6 +208,7 @@ test('the real headless HTTP composition accepts distinct occurrences on a fixed
   assert.deepEqual(report.uploads.map(x => x.status), ['accepted', 'accepted', 'accepted']);
   assert.deepEqual(report.uploads.map(x => [x.sequence, x.submittedAtMs]), [[0, 1000], [1, 2000], [2, 3000]]);
   assert.equal(report.questions[0].status, 'done');
+  assert.equal(report.questions[0].acquired, true);
   assert.equal(report.questions[0].anchorMs, 1500);
   assert.equal(typeof report.clocks.relation, 'string');
   for (const field of ['plannedAtMs', 'submittedAtMs', 'finishedAtMs', 'anchorMs'])
@@ -215,6 +218,120 @@ test('the real headless HTTP composition accepts distinct occurrences on a fixed
   assert.equal(report.shutdown.archiveConfirmed, true);
   assert.equal(report.shutdown.releaseConfirmed, true);
   assert.equal(report.complete, true);
+});
+
+test('passage journals retain separate audio and vision revisions and sample ageing evidence without publications', async t => {
+  const f = await fixture(t), held = deferred(), entered = deferred();
+  const providerTimings = { totalMs: 12, rawNs: { total_duration: 12000000 } };
+  const stage = await accelerated(t, f, { analysis: { answer: async () => {
+    entered.resolve();
+    await held.promise;
+    return { ...visual, backend: { kind: 'codex', model: 'doubled' }, providerTimings,
+      clientTimings: { requestMs: 17 }, modelState: 'unknown' };
+  }, close() {} } });
+  await until(() => stage.host.report.journal.httpStates.some(row => row.atMs === 0), 'initial HTTP sample completes on its clock');
+  await stage.clock.advance(1000);
+  await entered.promise;
+  await until(() => stage.host.report.uploads[0].status === 'accepted', 'first capture acknowledged before next deadline');
+  await until(() => stage.host.report.journal.httpStates.some(row => row.atMs === 1000), 'earlier HTTP sample completes before question submission');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.questions[0].status === 'done', 'question finishes before the next HTTP poll');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.uploads[1].status === 'accepted', 'second audio while vision is held');
+  await until(() => stage.host.report.journal.httpStates.some(row => row.atMs === 2000), 'HTTP sample received before clock advances');
+  await stage.clock.advance(500);
+  held.resolve();
+  await until(() => stage.host.runtime.session.memory.passage('moment-1').visionStatus === 'ready', 'vision published separately');
+  await stage.clock.advance(500);
+  const report = await stage.pending;
+  assert.ok(report.journal?.revisions?.length > 0, 'the exported report retains passage versions');
+  const versions = report.journal.revisions.filter(row => row.passage.id === 'moment-1');
+  assert.deepEqual(versions.map(row => [row.passage.revision, row.channel]),
+    [[0, 'session.events'], [1, 'session.events'], [2, 'session.events']]);
+  const audio = versions.find(row => row.passage.audioStatus === 'ready' && row.passage.visionStatus !== 'ready');
+  const vision = versions.find(row => row.passage.visionStatus === 'ready');
+  assert.ok(audio.passage.revision < vision.passage.revision);
+  assert.equal(audio.passage.metadata.transcriptPublishedMs, 1000);
+  assert.deepEqual(vision.passage.metadata.metrics.providerTimings, providerTimings);
+  assert.equal(vision.passage.metadata.metrics.clientTimings.requestMs, 17);
+  assert.deepEqual(report.observation.passages, { channel: 'session.events + session.memory.passage(id)', exhaustive: true });
+  assert.equal(report.observation.hostRevisions.channel, '/v1/state');
+  assert.equal(report.observation.hostRevisions.exhaustive, false);
+  assert.equal(report.observation.sampleStepMs, 1000);
+  const samples = report.journal.samples;
+  assert.ok(samples.some(row => row.atMs === 0 && row.evidence.audio.ageMs === null));
+  assert.ok(samples.some(row => row.atMs === 2000 && row.evidence.audio.ageMs === 1000));
+  assert.ok(samples.some(row => row.atMs === 2000 && row.evidence.vision.ageMs === null));
+  assert.equal(report.summary.coverage.capture.coveredMs, 3000);
+  assert.equal(report.summary.coverage.audio.coveredMs, 3000);
+  assert.equal(report.summary.coverage.vision.coveredMs, 3000);
+  assert.equal(report.questions[0].latency.agentWaitMs, null);
+  assert.equal(report.questions[0].latency.firstTokenMs, null);
+  assert.equal(report.questions[0].latency.httpObservedAtMs, 2000);
+  assert.equal(report.questions[0].latency.submissionToHttpResponseMs, 500);
+  assert.ok(Number.isFinite(report.questions[0].latency.acknowledgementMs));
+  assert.deepEqual(report.questions[0].latency.internal, report.questions[0].metrics);
+  assert.ok(report.journal.httpStates.length > 0);
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(f.options.outputDir, 'campaign.json'))), report);
+});
+
+test('whole campaign coverage retains early gaps and failed audio beyond forty passages without counting retries or refusals as evidence', async t => {
+  const f = await fixture(t);
+  f.scenario.clips = Array.from({ length: 46 }, (_, i) => ({ id: 'clip-' + i, block: 0, occurrence: i,
+    atMs: 500 + i * 1000 + (i > 0 ? 400 : 0), language: 'fr' }));
+  f.scenario.plannedDurationMs = 46900;
+  f.scenario.questions = [];
+  let transcriptions = 0, firstAcknowledgement = true;
+  const stage = await accelerated(t, f, { transcriber: {
+    availability: () => ({ available: true }), transcribe: async () => {
+      const failed = transcriptions++ === 0;
+      return { text: failed ? '' : 'Paroles françaises.', limits: [], metrics: { failed }, code: failed ? 'NO_AUDIO' : undefined };
+    },
+  }, dependencies: { exchange: async (route, input, forward) => {
+    const sequence = route === '/v1/segments' ? JSON.parse(input.raw).sequence : null;
+    if (sequence === 45) return { status: 400, value: { code: 'invalid-captured-segment' } };
+    const response = await forward(route, input);
+    if (sequence === 0 && firstAcknowledgement) { firstAcknowledgement = false; throw Error('Accusé perdu.'); }
+    return response;
+  } } });
+  await stage.clock.advance(1500);
+  await until(() => stage.host.runtime.session.memory.passage('moment-1')?.audioFailed, 'first failed audio published');
+  await until(() => stage.host.report.uploads[0].attempts.at(-1)?.code === 'network-cut', 'lost acknowledgement starts retry wait');
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[0].status === 'accepted', 'first occurrence acknowledged as duplicate');
+  for (let i = 1; i < 46; i++) {
+    const due = f.scenario.clips[i].atMs + 1000;
+    await stage.clock.advance(Math.max(0, due - stage.clock.io.now()));
+    await until(() => ['accepted', 'refused'].includes(stage.host.report.uploads[i].status), 'scheduled occurrence outcome');
+    if (i < 45) await until(() => stage.host.runtime.session.memory.passage('moment-' + (i + 1))?.visionStatus === 'ready',
+      'each visual publication precedes the next capture');
+  }
+  const report = await stage.pending;
+  assert.ok(report.summary?.losses?.audio, 'the report aggregates lane losses across the campaign');
+  assert.equal(report.summary.passages, 45);
+  assert.equal(report.summary.losses.audio.byCause.error, 1);
+  assert.equal(report.summary.losses.audio.lostMs, 1000);
+  assert.equal(report.summary.losses.vision.count, 0);
+  assert.equal(report.summary.lossCounters.audioError, 1);
+  assert.equal(report.uploads[0].duplicate, true);
+  assert.equal(report.summary.coverage.capture.coveredMs, 45000);
+  assert.equal(report.summary.coverage.audio.coveredMs, 44000);
+  assert.equal(report.summary.coverage.vision.coveredMs, 45000);
+  assert.equal(report.summary.coverage.capture.plannedMs, 46900);
+  assert.equal(report.summary.coverage.capture.percent, 45000 / 46900 * 100);
+  assert.deepEqual(report.summary.coverage.capture.missing,
+    [{ startMs: 0, endMs: 500 }, { startMs: 1500, endMs: 1900 }, { startMs: 45900, endMs: 46900 }]);
+  assert.equal(report.consultation.beforeClose, true);
+  assert.equal(report.consultation.channel, 'session.memory.view()');
+  assert.deepEqual(report.observation.consultation, { channel: 'session.memory.view()', captureGapThresholdMs: 250 });
+  assert.deepEqual(report.observation.httpCaptureGaps, { channel: '/v1/state', captureGapThresholdMs: 1000, exhaustive: false });
+  assert.equal(report.consultation.coverage.audioGaps[0].audioStatus, 'failed');
+  assert.ok(report.consultation.coverage.captureGaps.some(gap => gap.startMs === 1500 && gap.endMs === 1900));
+  assert.ok(report.journal.httpStates.some(row => row.captureGaps?.length === 0));
+  assert.ok(report.journal.httpStates.every(row => !row.captureGaps?.some(gap => gap.startMs === 1500 && gap.endMs === 1900)));
+  assert.equal(report.journal.losses.length, 1);
+  assert.equal(report.journal.losses[0].passageId, 'moment-1');
+  assert.ok(report.journal.revisions.some(row => row.passage.id === 'moment-45' && row.passage.status === 'ready'));
 });
 
 test('all HTTP media bounds and source fingerprints are checked before constructing any provider', async t => {
@@ -464,6 +581,7 @@ test('a separate overload schedule retains one active and five waiting questions
   assert.equal(report.remaining.filter(item => item.kind === 'question').length, 6);
   assert.equal(report.questions.filter(item => item.status === 'cancelled').length, 6);
   assert.equal(report.questions.filter(item => item.called.exercised).length, 1);
+  assert.equal(report.journal.questions.filter(row => row.status === 'refused').length, 2);
   assert.ok(report.questions.every(item => item.effectiveBackend.configured === 'codex'));
   held.resolve(answer);
   await turns(3);
@@ -474,7 +592,9 @@ test('cancellation while upload transport is held cannot turn a late question an
   const f = await fixture(t), heldUpload = deferred(), heldAnswer = deferred(), entered = deferred(), delivered = deferred();
   f.scenario.questions[0].cancelAtMs = 1800;
   let held = false;
-  const stage = await accelerated(t, f, { runtimeOptions: { agent: {
+  const stage = await accelerated(t, f, { analysis: { answer: async () => {
+    throw Object.assign(Error('Perception refusée.'), { code: 'TVLENS_PROVIDER_REFUSED' });
+  }, close() {} }, runtimeOptions: { agent: {
     identity: { kind: 'codex' }, answer: async input => {
       entered.resolve(input);
       const result = await heldAnswer.promise;
@@ -506,6 +626,11 @@ test('cancellation while upload transport is held cannot turn a late question an
   assert.equal(report.questions[0].status, 'cancelled');
   assert.equal(report.questions[0].result, null);
   assert.equal(report.uploads[0].status, 'unfinished');
+  assert.equal(report.summary.status, 'incomplete');
+  assert.equal(report.summary.questions.successful, 0);
+  assert.equal(report.journal.questions.some(row => row.acquired), false);
+  assert.ok(report.journal.losses.some(row => row.lane === 'vision' && row.passageId === 'moment-1'));
+  assert.ok(report.summary.losses.vision.count > 0);
   assert.ok(report.remaining.some(item => item.kind === 'upload'));
   const before = await fs.readFile(path.join(f.options.outputDir, 'campaign.json'), 'utf8');
   heldAnswer.resolve(answer);
@@ -586,7 +711,8 @@ async function fakeOllama(t, handler) {
       const body = JSON.parse(Buffer.concat(chunks));
       calls.push({ route: req.url, body, authorization: req.headers.authorization });
       if (handler?.(body, res, req.url)) return;
-      res.end(JSON.stringify({ model: body.model, message: { content: JSON.stringify(body.model === 'vision-fixture' ? visual : answer) } }));
+      res.end(JSON.stringify({ model: body.model, done: true, message: { role: 'assistant',
+        content: JSON.stringify(body.model === 'vision-fixture' ? visual : answer) } }));
     });
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -609,6 +735,7 @@ test('production perception and questions use only the explicitly selected fake 
   assert.equal(report.reference, null);
   assert.equal(report.roles.perception.localMeasurement, true);
   assert.equal(report.roles.questions.localMeasurement, true);
+  assert.equal(report.questions[0].status, 'done');
   assert.equal(report.roles.inspection.exercised, false);
   assert.equal(report.roles.inspection.localMeasurement, false);
   assert.equal(report.roles.embeddings.exercised, false);
@@ -795,6 +922,102 @@ else fs.copyFileSync(path.join(__dirname, 'frame.jpg'), args.at(-1));
   assert.equal(report.provenance.preparation.parameters.durationMs, 1800000);
   assert.equal(report.uploads.length, 2);
   assert.deepEqual(await fs.readFile(path.join(prepared, 'blocks/000000/body.json')), before);
+  f.options.outputDir = path.join(f.root, 'out-incomplete');
+  const held = deferred(), entered = deferred();
+  let transcriptions = 0;
+  const stage = await accelerated(t, f, { analysis: { close() {}, answer: () => { entered.resolve(); return held.promise; } },
+    transcriber: { availability: () => ({ available: true }), transcribe: async () => ({ text: 'Paroles françaises.', limits: [],
+      metrics: { failed: transcriptions++ > 0 } }) } });
+  await stage.clock.advance(1000);
+  await entered.promise;
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[1].status === 'accepted', 'second video block accepted with held vision');
+  await stage.clock.advance(1000);
+  const partial = await stage.pending;
+  assert.equal(partial.status, 'incomplete');
+  assert.deepEqual(partial.provenance, report.provenance);
+  assert.equal(partial.inputs.indexSha256, report.inputs.indexSha256);
+  assert.equal(partial.inputs.scenarioSha256, sha256(await fs.readFile(f.options.scenarioPath)));
+  assert.equal(partial.provenance.kind, 'converted-video');
+  assert.equal(partial.summary.coverage.capture.coveredMs, 2000);
+  assert.equal(partial.summary.coverage.audio.coveredMs, 1000);
+  assert.equal(partial.summary.coverage.vision.coveredMs, 0);
+  assert.equal(partial.summary.losses.audio.count, 1);
+  assert.ok(partial.summary.remaining.some(row => row.kind === 'analysis'));
+  assert.ok(partial.journal.samples.some(row => row.atMs === 2000 && row.evidence.audio.ageMs === 1000));
+  assert.equal(partial.journal.samples.at(-1).evidence.audio.ageMs, 2000);
+  assert.equal(partial.journal.samples.at(-1).evidence.vision.ageMs, null);
+  const saved = await fs.readFile(path.join(f.options.outputDir, 'campaign.json'), 'utf8');
+  held.resolve(visual);
+  await turns(5);
+  assert.equal(JSON.stringify(partial), JSON.stringify(JSON.parse(saved)));
+});
+
+test('a perception answer delivered during provider closure cannot become acquired role evidence', async t => {
+  const f = await fixture(t), held = deferred(), returned = deferred(), closing = deferred(), released = deferred();
+  const stage = await accelerated(t, f, { analysis: { answer: async () => {
+    await held.promise;
+    returned.resolve();
+    return visual;
+  }, close: async () => { closing.resolve(); await released.promise; } } });
+  f.cleanups.unshift(async () => { held.resolve(); released.resolve(); });
+  for (let i = 0; i < 3; i++) {
+    await stage.clock.advance(1000);
+    await until(() => stage.host.report.uploads[i].status === 'accepted', 'accepted before held provider closure');
+  }
+  await stage.clock.advance(1000);
+  await closing.promise;
+  held.resolve();
+  await returned.promise;
+  await turns(5);
+  assert.equal(stage.host.report.roles.perception.successful, false, 'closure revokes acquisition before awaiting provider release');
+  released.resolve();
+  const report = await stage.pending;
+  assert.equal(report.summary.publications.vision, 0);
+  assert.equal(report.uploads[0].roles.perception.status, 'running');
+  assert.equal(report.summary.status, 'incomplete');
+});
+
+test('a question completed during session closure preserves its product status without acquiring a successful answer', async t => {
+  const f = await fixture(t), held = deferred(), entered = deferred(), closing = deferred(), released = deferred();
+  const stage = await accelerated(t, f, { runtimeOptions: { agent: {
+    identity: { kind: 'codex', model: 'doubled', transport: 'injected' }, close() {}, answer: async () => {
+      entered.resolve();
+      await held.promise;
+      return answer;
+    },
+  } } });
+  f.cleanups.unshift(async () => { held.resolve(); released.resolve(); });
+  const session = stage.host.runtime.session, pause = session.pause;
+  t.mock.method(session, 'pause', async () => {
+    closing.resolve();
+    await released.promise;
+    return pause();
+  });
+  for (let i = 0; i < 3; i++) {
+    await stage.clock.advance(1000);
+    await until(() => stage.host.report.uploads[i].status === 'accepted', 'capture accepted while question waits');
+  }
+  await entered.promise;
+  await stage.clock.advance(1000);
+  await closing.promise;
+  held.resolve();
+  await until(() => stage.host.report.questions[0].status === 'done', 'product publishes its question result during closing pause');
+  const late = stage.host.report.journal.questions.at(-1);
+  assert.equal(late.acquired, false, 'closure revokes question acquisition before awaiting session pause');
+  assert.equal(late.afterClose, true);
+  released.resolve();
+  const report = await stage.pending;
+  assert.equal(report.questions[0].status, 'done');
+  assert.equal(report.questions[0].acquired, false);
+  assert.deepEqual(report.questions[0].result.answer, answer.answer);
+  assert.equal(report.roles.questions.successful, false);
+  assert.equal(report.roles.questions.localMeasurement, false);
+  assert.equal(report.summary.questions.successful, 0);
+  assert.equal(report.summary.questions.outcomes[0].acquired, false);
+  assert.ok(report.remaining.some(row => row.kind === 'question'));
+  assert.equal(report.summary.status, 'incomplete');
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(f.options.outputDir, 'campaign.json'))), report);
 });
 
 test('interruption preserves completed outputs and explicitly retains all future scheduled items', async t => {
@@ -856,6 +1079,91 @@ test('a question retains the actual local embedding and inspection roles indepen
   assert.equal(report.questions[0].roles?.embeddings?.identity?.backend, 'ollama');
   assert.equal(report.questions[0].roles.embeddings.mode, 'hybrid');
   assert.ok(ollama.calls.some(call => call.route === '/api/embed'));
+});
+
+test('local questions retain independent embedding and cached inspection identities despite forged model fields', async t => {
+  const f = await fixture(t);
+  const inspection = { observations: [{ id: 'moment-1', startMs: 0, endMs: 1000, text: 'Un plan bleu.', basis: 'images' }],
+    hypotheses: [], limits: [], inspection: { backend: 'forged', model: 'forged' } };
+  const inspect = { function: { name: 'inspect_clip', arguments: { startMs: 0, endMs: 1000, question: 'Quel plan ?' } } };
+  let questionTurns = 0;
+  const ollama = await fakeOllama(t, (body, res, route) => {
+    if (route === '/api/embed') res.end(JSON.stringify({ model: body.model, embeddings: body.input.map(() => [1, 0, 0]) }));
+    else if (body.model === 'questions-fixture' && questionTurns++ < 2) {
+      const tools = questionTurns === 1 ? [{ function: { name: 'search_moments', arguments: { query: 'Paroles françaises' } } }, inspect] : [inspect];
+      res.end(JSON.stringify({ done: true, message: { role: 'assistant', content: '', tool_calls: tools } }));
+    } else res.end(JSON.stringify({ done: true, message: { role: 'assistant', content: JSON.stringify(body.model === 'questions-fixture'
+      ? { ...answer, kind: 'observation', citations: [{ id: 'moment-1', startMs: 0, endMs: 1000 }], backend: { kind: 'forged' } } : inspection) } }));
+    return true;
+  });
+  const jpeg = await require('sharp')({ create: { width: 32, height: 32, channels: 3, background: 'blue' } }).jpeg().toBuffer();
+  f.body.frames[0].data = jpeg.toString('base64');
+  Object.assign(f.scenario.config, { embeddingsBackend: 'local', backgroundIndex: false,
+    localEmbeddings: { url: ollama.url, model: 'vectors-fixture', numCtx: 2048 } });
+  f.scenario.config.localQuestions.url = ollama.url;
+  f.scenario.config.localVlm.url = ollama.url;
+  const decoder = path.join(f.root, 'decoder-double');
+  await fs.writeFile(decoder, `#!${process.execPath}\nprocess.exit(1);\n`, { mode: 0o700 });
+  const stage = await accelerated(t, f, { questionsBackend: 'local', runtimeOptions: { agent: undefined },
+    dependencies: { config: { ffmpeg: decoder } } });
+  await stage.clock.advance(1000);
+  await until(() => stage.host.runtime.session.memory.passage('moment-1')?.visionStatus === 'ready', 'initial evidence before local tools');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.questions[0].status === 'done', 'local question and both cached inspections complete');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.uploads[1].status === 'accepted', 'second capture before its next deadline');
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[2].status === 'accepted', 'last capture after local tools');
+  const report = await stage.pending;
+  assert.ok(report.roles.inspection.evidence?.length > 0, 'the role retains diagnostic evidence for each inspection');
+  assert.deepEqual(report.roles.inspection.evidence.map(row => [row.identity.backend, row.identity.model, row.cacheHit, row.modelCalled]),
+    [['ollama', 'vision-fixture', false, true], ['ollama', 'vision-fixture', true, false]]);
+  assert.equal(report.roles.questions.identity.model, 'questions-fixture');
+  assert.equal(report.roles.embeddings.identity.model, 'vectors-fixture');
+  assert.equal(report.roles.inspection.identity.model, 'vision-fixture');
+  assert.ok(['questions', 'embeddings', 'inspection'].every(name => report.roles[name].localMeasurement));
+  assert.equal(report.roles.perception.localMeasurement, false);
+  assert.equal(report.roles.surveillanceWeb.localMeasurement, false);
+  assert.equal(report.roles.surveillanceWeb.status, 'not-exercised');
+  assert.equal(report.roles.embeddings.parameters.model, 'vectors-fixture');
+  assert.equal(report.roles.perception.parameters.model, report.roles.perception.identity.model);
+  assert.equal(report.roles.questions.evidence[0]?.providerRequests, 3);
+  assert.equal(report.summary.roles.find(row => row.role === 'questions').status, 'observed');
+  assert.doesNotMatch(JSON.stringify(report.summary.roles), /forged/);
+});
+
+test('failed embeddings keep lexical search separate from successful local measurements and unexercised inspection', async t => {
+  const f = await fixture(t);
+  let questionTurns = 0;
+  const ollama = await fakeOllama(t, (body, res, route) => {
+    if (route === '/api/embed') { res.writeHead(503); res.end('{}'); }
+    else if (questionTurns++ === 0) res.end(JSON.stringify({ done: true, message: { role: 'assistant', content: '', tool_calls: [
+      { function: { name: 'search_moments', arguments: { query: 'Paroles françaises' } } },
+    ] } }));
+    else res.end(JSON.stringify({ done: true, message: { role: 'assistant', content: JSON.stringify(answer) } }));
+    return true;
+  });
+  Object.assign(f.scenario.config, { embeddingsBackend: 'local', backgroundIndex: false,
+    localEmbeddings: { url: ollama.url, model: 'vectors-fixture' } });
+  f.scenario.config.localQuestions.url = ollama.url;
+  const stage = await accelerated(t, f, { questionsBackend: 'local', runtimeOptions: { agent: undefined } });
+  await stage.clock.advance(1000);
+  await until(() => stage.host.runtime.session.memory.passage('moment-1')?.audioStatus === 'ready', 'searchable evidence');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.questions[0].status === 'done', 'lexical fallback still answers');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.uploads[1].status === 'accepted', 'second capture after lexical fallback');
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[2].status === 'accepted', 'last capture after lexical fallback');
+  const report = await stage.pending;
+  assert.equal(report.questions[0].roles.embeddings.mode, 'lexical');
+  assert.equal(report.roles.embeddings.localMeasurement, false, 'a failed vector provider is not a successful local measurement');
+  assert.equal(report.roles.embeddings.status, 'failed');
+  assert.equal(report.roles.inspection.status, 'not-exercised');
+  assert.equal(report.roles.inspection.localMeasurement, false);
+  assert.equal(report.roles.surveillanceWeb.status, 'not-exercised');
+  assert.ok(ollama.calls.some(call => call.route === '/api/embed'));
+  assert.equal(report.roles.embeddings.evidence.at(-1).mode, 'lexical');
 });
 
 test('an unacknowledged question remains unfinished when the campaign ends and its late transport reply is ignored', async t => {
@@ -967,4 +1275,27 @@ test('exercised surveillance retains its provider origin and call count after se
   assert.ok(report.roles.surveillance.calls > 0);
   assert.equal(report.roles.surveillance.origin, 'injected');
   assert.equal(report.roles.surveillance.localMeasurement, false);
+  assert.equal(report.roles.surveillanceDetection.calls, report.roles.surveillance.calls);
+  assert.equal(report.roles.surveillanceWeb.calls, 0);
+  assert.equal(report.roles.surveillanceWeb.identity.web, 'distant');
+});
+
+test('surveillance role tables retain configured reasoning effort and workers without inventing product defaults', async t => {
+  for (const surveillance of [undefined, { model: 'surveillance-fixture', reasoningEffort: 'medium', workers: 2 }]) {
+    const f = await fixture(t);
+    const stage = await accelerated(t, f, { dependencies: { config: { surveillance } } });
+    for (let i = 0; i < 3; i++) {
+      await stage.clock.advance(1000);
+      await until(() => stage.host.report.uploads[i].status === 'accepted', 'capture accepted with surveillance settings');
+    }
+    const report = await stage.pending;
+    for (const name of ['surveillance', 'surveillanceDetection', 'surveillanceWeb']) {
+      const role = report.roles[name], row = report.summary.roles.find(item => item.role === name);
+      assert.equal(role.parameters.reasoningEffort, surveillance?.reasoningEffort ?? null);
+      assert.equal(role.parameters.workers, surveillance?.workers ?? null);
+      assert.equal(role.parameters.model, surveillance?.model ?? 'chat-fixture');
+      assert.deepEqual(row.parameters, role.parameters);
+      assert.equal(role.exercised, false);
+    }
+  }
 });

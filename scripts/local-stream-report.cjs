@@ -31,18 +31,40 @@ async function identity(dependencies) {
 }
 function rolesOf(config) {
   const roles = {};
-  for (const role of ['perception', 'questions', 'embeddings', 'inspection'])
-    roles[role] = { configured: config[role + 'Backend'], identity: null, origin: null, exercised: false, calls: 0, localMeasurement: false };
-  roles.transcription = { configured: 'whisper', identity: null, origin: null, exercised: false, calls: 0, localMeasurement: false };
-  roles.surveillance = { configured: 'codex', identity: null, origin: null, exercised: false, calls: 0, localMeasurement: false };
+  for (const role of ['perception', 'questions', 'embeddings', 'inspection', 'transcription', 'surveillance',
+    'surveillanceDetection', 'surveillanceWeb']) {
+    const configured = config[role + 'Backend'] ?? (role === 'transcription' ? 'whisper' : 'codex');
+    const settings = { perception: 'localVlm', questions: 'localQuestions', embeddings: 'localEmbeddings', inspection: 'localVlm' };
+    const parameters = configured === 'local' ? config[settings[role]] || {} : {};
+    roles[role] = { configured, identity: null, origin: null, exercised: false, successful: false, calls: 0,
+      localMeasurement: false, evidence: [], parameters: Object.fromEntries(['model', 'numCtx', 'keepAlive', 'timeoutMs']
+        .filter(key => parameters[key] !== undefined).map(key => [key, parameters[key]])) };
+  }
   return roles;
 }
+function roleStatus(role) {
+  if (role.configured === 'disabled') return 'disabled';
+  if (!role.exercised) return 'not-exercised';
+  if (role.origin === 'simulated' || role.origin === 'injected' || role.origin === 'substituted') return 'simulated';
+  if (role.failures && !role.successful) return 'failed';
+  if (!role.identity || role.identity.kind === 'unknown') return 'unknown';
+  return 'observed';
+}
 function finalizeRoles(report) {
-  for (const name of ['perception', 'questions', 'inspection', 'embeddings']) {
+  report.roles.questions.successful = report.questions.some(entry => entry.acquired && entry.status === 'done');
+  report.roles.questions.failures = report.questions.filter(entry => entry.status === 'error').length;
+  report.roles.questions.evidence = report.questions.filter(entry => entry.called?.exercised).map(entry => ({
+    id: entry.id, jobId: entry.jobId, status: entry.status, acquired: Boolean(entry.acquired), identity: entry.called.identity,
+    providerRequests: entry.metrics?.calls?.providerRequests ?? null, metrics: structuredClone(entry.metrics ?? null),
+  }));
+  for (const name of Object.keys(report.roles)) {
     const role = report.roles[name];
+    for (const key of ['model', 'numCtx', 'keepAlive', 'temperature', 'reasoningEffort', 'threads', 'audioCtx'])
+      if (role.identity?.[key] !== undefined) role.parameters[key] = role.identity[key];
     const effective = role.observedIdentity;
     const ollama = effective?.kind === 'ollama' || effective?.backend === 'ollama';
-    role.localMeasurement = Boolean(role.configured === 'local' && role.origin === 'composed' && role.exercised && ollama);
+    role.localMeasurement = Boolean(role.configured === 'local' && role.origin === 'composed' && role.exercised && role.successful && ollama);
+    role.status = roleStatus(role);
   }
 }
 module.exports = { reportWriter, identity, rolesOf, finalizeRoles };
