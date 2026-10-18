@@ -4,6 +4,14 @@ const CAPACITY_EVENTS = [
   { type: "turn.failed", error: { message: "Selected model is at capacity. Please try a different model." } },
 ];
 
+// Refus réel du fournisseur, conservé avec sa ponctuation et sa date sans fuseau.
+const QUOTA_MESSAGE = "You’ve hit your usage limit. Visit https://chatgpt.com/settings/usage to purchase more credits " +
+  "or try again at Oct 22nd, 2026 8:41 AM.";
+const QUOTA_EVENTS = [
+  { type: "error", message: QUOTA_MESSAGE },
+  { type: "turn.failed", error: { message: QUOTA_MESSAGE } },
+];
+
 // Avertissements de démarrage de .harness-state/tickets/T202/codex-1.jsonl:101-104, le 17 octobre 2026.
 const STARTUP_WARNING_MESSAGES = [
   "Codex is ignoring 1 unrecognized configuration setting. Check for typos or deprecated settings.\n" +
@@ -71,6 +79,11 @@ const call = {
     fs.readFileSync(path.join(dir, "fake-review-calls"), "utf8").trim().split("\\n").length : 0,
 };
 fs.appendFileSync(calls, JSON.stringify(call) + "\\n");
+const beforeWork = JSON.parse(process.env.FAKE_CODEX_BEFORE_WORK_EVENTS || "null")?.[rank];
+if (beforeWork) {
+  for (const event of beforeWork) console.log(JSON.stringify(event));
+  process.exit(1);
+}
 const capacity = ${JSON.stringify(CAPACITY_EVENTS)};
 if (failure === "capacity-before-thread") {
   for (const event of capacity) console.log(JSON.stringify(event));
@@ -99,6 +112,7 @@ if (["before-turn", "before-turn-warnings", "before-thread-warnings"].includes(r
 }
 fs.mkdirSync("core", { recursive: true });
 if (!blocked) fs.writeFileSync("core/greeting.cjs", "module.exports = () => 'hello';\\n");
+if (process.env.FAKE_CODEX_JOURNAL) fs.appendFileSync(process.env.TVLENS_TICKET_FILE, process.env.FAKE_CODEX_JOURNAL);
 const greeting = JSON.parse(process.env.FAKE_CODEX_GREETINGS || "null")?.[rank];
 if (greeting) fs.writeFileSync("core/greeting.cjs", "module.exports = () => " + JSON.stringify(greeting) + ";\\n");
 if (process.env.FAKE_UNTRACKED_CHANGE) {
@@ -181,4 +195,4 @@ for (const event of events) console.log(JSON.stringify(event));
 if (failure === "exit") process.exitCode = 1;
 `;
 
-module.exports = { CODEX_SESSION, CAPACITY_EVENTS, STARTUP_WARNING_EVENTS };
+module.exports = { CODEX_SESSION, CAPACITY_EVENTS, QUOTA_EVENTS, STARTUP_WARNING_EVENTS };

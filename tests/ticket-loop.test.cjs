@@ -1,11 +1,12 @@
-const { test } = require("node:test");
+const { test, after } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { pathToFileURL } = require("node:url");
 const { harnessRepo } = require("./helpers/harness-repo.cjs");
-const { CODEX_SESSION, CAPACITY_EVENTS, STARTUP_WARNING_EVENTS } = require("./helpers/codex-session.cjs");
+const { CODEX_SESSION, CAPACITY_EVENTS, QUOTA_EVENTS, STARTUP_WARNING_EVENTS } = require("./helpers/codex-session.cjs");
 
 const tickets = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tickets.mjs")).href);
 const tuning = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop/tune.mjs")).href);
@@ -391,11 +392,24 @@ const scenarios = {
 scenarios[scenario]();
 `;
 
+// Réutiliser les scripts immuables évite le coût du premier lancement de chaque copie sur macOS.
+// Chaque appel garde un processus neuf et écrit seulement dans le dépôt propre à son scénario.
+const fakeAgentDir = fs.mkdtempSync(path.join(os.tmpdir(), "tvlens-fake-agents-"));
+after(() => fs.rmSync(fakeAgentDir, { recursive: true, force: true }));
+for (const [name, source] of [["claude", FAKE_SESSION], ["codex", CODEX_SESSION]]) {
+  fs.writeFileSync(path.join(fakeAgentDir, `${name}.cjs`), source, { mode: 0o555 });
+}
+
+function linkFakeAgent(repo, name) {
+  const bin = path.join(repo.root, ".harness-state", `fake-${name}.cjs`);
+  fs.mkdirSync(path.dirname(bin), { recursive: true });
+  fs.symlinkSync(path.join(fakeAgentDir, `${name}.cjs`), bin);
+  return bin;
+}
+
 function loopRepo(scenarioFiles = {}) {
   const repo = harnessRepo({ "docs/travail/tickets/001-add-greeting.md": ticketText(), ...scenarioFiles });
-  const bin = path.join(repo.root, ".harness-state", "fake-claude.cjs");
-  repo.write(".harness-state/fake-claude.cjs", FAKE_SESSION);
-  fs.chmodSync(bin, 0o755);
+  const bin = linkFakeAgent(repo, "claude");
   const loop = (scenario, args = [], env = {}) =>
     repo.node("scripts/loop/run.mjs", ["--no-push", ...args], { env: { TVLENS_CLAUDE_BIN: bin, FAKE_SCENARIO: scenario, ...env } });
   const status = () => /^statut: (.*)$/m.exec(repo.read("docs/travail/tickets/001-add-greeting.md"))[1];
@@ -1788,9 +1802,7 @@ const codexDir = ".harness-state/tickets/T001/";
 const jsonLines = (repo, file) => repo.read(codexDir + file).trim().split("\n").map(JSON.parse);
 function codexRepo(fields = {}) {
   const repo = loopRepo({ "docs/travail/tickets/001-add-greeting.md": ticketText(fields) });
-  repo.write(".harness-state/fake-codex.cjs", CODEX_SESSION);
-  const bin = path.join(repo.root, ".harness-state/fake-codex.cjs");
-  fs.chmodSync(bin, 0o755);
+  const bin = linkFakeAgent(repo, "codex");
   const codex = (args = [], env = {}) => repo.loop("done", ["--engine", "codex", "--no-retro", ...args], { TVLENS_CODEX_BIN: bin, ...env });
   return { ...repo, codex };
 }
@@ -1880,6 +1892,210 @@ test("a Codex ticket accepted on its first review is integrated with safe option
 const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 0 hors périmètre\n- core/greeting.cjs:1 : preuve manquante.\n- nom à préciser.";
 const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
 const correctedReview = (report) => report.replace(/^(CONSTATS[^\n]*)/m, "$1\nNON CORRIGÉS : 0");
+
+for (const stage of ["before", "after"]) {
+  for (const [form, quota] of [["error", QUOTA_EVENTS.slice(0, 1)], ["turn.failed", QUOTA_EVENTS.slice(1)], ["both", QUOTA_EVENTS]]) {
+    test(`Codex stops on quota ${stage} work: ${form}`, (t) => {
+      const repo = codexRepo();
+      t.after(repo.cleanup);
+      repo.write("scripts/check.mjs", 'import fs from "node:fs";\nfs.writeFileSync(".harness-state/check-ran", "");\n');
+      repo.write("docs/travail/tickets/002-add-farewell.md", ticketText({ id: "T002" }));
+      assert.equal(repo.git("add", "-A").code, 0);
+      assert.equal(repo.git("commit", "-q", "-m", "observe quota interruption").code, 0);
+      const commits = repo.commits();
+      const afterWork = stage === "after";
+      if (!afterWork) repo.write("notes/personal.md", "mine\n");
+      const usage = { input_tokens: 13, output_tokens: 7 };
+      const events = afterWork ? [
+        { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+        { type: "turn.completed", usage }, { type: "turn.started" }, ...quota,
+      ] : quota;
+      const result = repo.loop("done", ["--engine", "codex", "--max", "2", "--tune-every", "1"], {
+        TVLENS_CODEX_BIN: path.join(repo.root, ".harness-state/fake-codex.cjs"), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+        [afterWork ? "FAKE_CODEX_EVENTS" : "FAKE_CODEX_BEFORE_WORK_EVENTS"]: JSON.stringify([events]),
+        FAKE_CODEX_JOURNAL: "- jalon : travail conservé\n",
+      });
+      assert.equal(result.code, 5, result.out);
+      assert.equal(repo.status(), "a-faire");
+      assert.deepEqual(repo.commits(), commits);
+      const calls = jsonLines(repo, "fake-codex-calls");
+      assert.equal(calls.length, 1);
+      noProcess(calls[0].pid);
+      noProcess(calls[0].loopPid);
+      assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+      const stopped = repo.events().filter(e => e.phase === "quota-epuise");
+      assert.equal(stopped.length, 1);
+      assert.equal(stopped[0].ticket, "T001");
+      assert.equal(stopped[0].reprise, "Oct 22nd, 2026 8:41 AM");
+      assert.match(result.out, /quota Codex épuisé/i);
+      assert.ok(result.out.includes(stopped[0].reprise), result.out);
+      assert.doesNotMatch(result.out + JSON.stringify(repo.events()), /https?:|chatgpt\.com|You[’']ve|purchase more credits/);
+      const ended = repo.events().find(e => e.phase === "session-terminee");
+      assert.equal(ended.invocations.length, 1);
+      assert.equal(ended.relectures, 0);
+      assert.equal(ended.tours, afterWork ? 1 : 0);
+      assert.equal(ended.jetons.input_tokens, afterWork ? 13 : 0);
+      assert.equal(ended.invocations[0].quota.code, "CODEX_QUOTA_EXHAUSTED");
+      assert.deepEqual(jsonLines(repo, "codex-1.jsonl"), events);
+      assert.equal(repo.events().some(e => ["tentative-refusee", "bloque", "integre", "capacite-reprise", "reprise-impossible",
+        "retro", "retro-echouee", "harmonisation", "relance"].includes(e.phase)), false);
+      for (const file of ["fake-review-calls", "fake-retro-call", "echec-1.txt", "reviewed-state.json"]) {
+        assert.equal(fs.existsSync(path.join(repo.root, codexDir, file)), false, file);
+      }
+      assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/check-ran")), false);
+      assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+      const diff = repo.git("diff").stdout;
+      if (afterWork) {
+        assert.equal(repo.read("core/greeting.cjs"), "module.exports = () => 'hello';\n");
+        assert.match(diff, /\+.*travail conservé/);
+        assert.match(result.out, /arbre contient du travail modifié/i);
+      } else {
+        assert.equal(diff, "");
+        assert.equal(repo.read("notes/personal.md"), "mine\n");
+        assert.equal(fs.existsSync(path.join(repo.root, "core/greeting.cjs")), false);
+        assert.match(result.out, /arbre ne contient pas de travail modifié/i);
+      }
+    });
+  }
+}
+
+for (const [label, diagnostic, reprise] of [
+  ["ASCII apostrophe", QUOTA_EVENTS[0].message.replace("’", "'"), "Oct 22nd, 2026 8:41 AM"],
+  ["no announcement", "You've hit your usage limit.", null],
+  ["unsafe announcement", "You've hit your usage limit. or try again at https://private.invalid/token=secret.", null],
+  ["uncharacterized date", "You've hit your usage limit. or try again at tomorrow morning.", null],
+  ["oversized announcement", `You've hit your usage limit. or try again at ${"x".repeat(3000)}.`, null],
+]) {
+  test(`Codex quota diagnostics preserve only a bounded characterized retry announcement: ${label}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex([], { FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([[{ type: "error", message: diagnostic }]]) });
+    assert.equal(result.code, 5, result.out);
+    const stopped = repo.events().filter(e => e.phase === "quota-epuise");
+    assert.equal(stopped.length, 1);
+    assert.equal(stopped[0].reprise, reprise);
+    if (reprise === null) assert.match(result.out, /Reprise non fournie/);
+    else assert.ok(result.out.includes(reprise));
+    assert.doesNotMatch(result.out + JSON.stringify(repo.events()), /https?:|token=|secret|tomorrow|x{80}|You[’']ve/);
+  });
+}
+
+test("a terminal quota event keeps the retry announcement supplied by its paired error", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const events = [QUOTA_EVENTS[0], { type: "turn.failed", error: { message: "You've hit your usage limit." } }];
+  const result = repo.codex([], { FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([events]) });
+  assert.equal(result.code, 5, result.out);
+  assert.equal(repo.events().find(e => e.phase === "quota-epuise").reprise, "Oct 22nd, 2026 8:41 AM");
+});
+
+test("a terminal quota keeps its announcement when a later completion recovers the paired error", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const events = [QUOTA_EVENTS[0], { type: "turn.failed", error: { message: "You've hit your usage limit." } }, { type: "turn.completed" }];
+  const result = repo.codex([], { FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([events]) });
+  assert.equal(result.code, 5, result.out);
+  assert.equal(repo.events().find(e => e.phase === "quota-epuise").reprise, "Oct 22nd, 2026 8:41 AM");
+});
+
+for (const terminal of [false, true]) {
+  test(`Codex quota recovery preserves the terminal turn distinction: ${terminal}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const events = [
+      { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+      ...(terminal ? QUOTA_EVENTS : QUOTA_EVENTS.slice(0, 1)), { type: "turn.completed", usage: { input_tokens: 17 } },
+    ];
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_EVENTS: JSON.stringify([events]) });
+    assert.equal(result.code, terminal ? 5 : 0, result.out);
+    assert.equal(repo.status(), terminal ? "a-faire" : "termine");
+    assert.equal(repo.events().filter(e => e.phase === "quota-epuise").length, terminal ? 1 : 0);
+    assert.equal(repo.events().filter(e => e.phase === "reconnexion").length, 1);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, terminal ? 0 : 1);
+    assert.doesNotMatch(result.out + JSON.stringify(repo.events()), /https?:|chatgpt\.com|You’ve/);
+  });
+}
+
+for (const quotaFirst of [false, true]) {
+  test(`terminal quota wins over capacity in either event order: ${quotaFirst}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const failures = quotaFirst ? [QUOTA_EVENTS[1], ...CAPACITY_EVENTS] : [...CAPACITY_EVENTS, QUOTA_EVENTS[1]];
+    const result = repo.codex([], { FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([failures]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1" });
+    assert.equal(result.code, 5, result.out);
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    assert.equal(repo.events().some(e => e.phase === "capacite-reprise"), false);
+    assert.equal(repo.events().filter(e => e.phase === "quota-epuise").length, 1);
+  });
+}
+
+for (const source of ["tool", "file", "agent"]) {
+  test(`quota phrases in ${source} content do not interrupt a normal Codex session`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const text = QUOTA_EVENTS[0].message;
+    const items = {
+      tool: { type: "command_execution", command: "cat fixture", aggregated_output: text },
+      file: { type: "file_change", changes: [{ path: "fixture.txt", kind: "add" }], content: text },
+      agent: { type: "agent_message", text },
+    };
+    if (source === "file") repo.write("fixture.txt", text);
+    const events = [
+      { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+      { type: "item.completed", item: items[source] }, { type: "turn.completed" },
+    ];
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_EVENTS: JSON.stringify([events]) });
+    assert.equal(result.code, 0, result.out);
+    assert.equal(repo.events().some(e => e.phase === "quota-epuise"), false);
+    assert.equal(repo.events().find(e => e.phase === "session-terminee").relectures, 1);
+    assert.equal(repo.status(), "termine");
+  });
+}
+
+for (const diagnostic of ["HTTP 429", "Rate limit reached, try again shortly", "HTTP 401 Authentication failed", "Unknown provider failure"]) {
+  test(`Codex retains ordinary failure handling for non-quota provider errors: ${diagnostic}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const events = [
+      { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+      { type: "error", message: diagnostic }, { type: "turn.failed", error: { message: diagnostic } },
+    ];
+    const result = repo.codex(["--attempts", "1"], { FAKE_CODEX_EVENTS: JSON.stringify([events]) });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(repo.events().some(e => e.phase === "quota-epuise"), false);
+    assert.equal(repo.events().find(e => e.phase === "invocation-terminee").quota, null);
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    assert.ok(repo.failure().includes(diagnostic));
+  });
+}
+
+for (const stage of ["capacity", "correction"]) {
+  test(`quota during a ${stage} resume stops without a fresh fallback and keeps prior usage`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const quota = [{ type: "turn.failed", error: QUOTA_EVENTS[1].error, usage: { input_tokens: 3 } }];
+    const result = repo.codex([], {
+      FAKE_CODEX_FAILURES: JSON.stringify(stage === "capacity" ? ["capacity-after-usage", ""] : ["", ""]),
+      FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([null, quota]), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+      FAKE_REVIEWS: JSON.stringify(stage === "correction" ? [rejectedReview] : []),
+    });
+    assert.equal(result.code, 5, result.out);
+    assert.equal(repo.events().some(e => ["reprise-impossible", "tentative-refusee", "bloque", "integre"].includes(e.phase)), false);
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, 2);
+    assert.deepEqual(calls[1].args.slice(0, 3), ["exec", "resume", calls[0].session]);
+    assert.equal(calls[1].previousAlive, false);
+    const ended = repo.events().find(e => e.phase === "session-terminee");
+    assert.equal(ended.jetons.input_tokens, 13);
+    assert.equal(ended.tours, 1);
+    assert.equal(ended.invocations.length, 2);
+    assert.equal(ended.relectures, stage === "correction" ? 1 : 0);
+    if (stage === "correction") assert.equal(repo.read(codexDir + "relecture-1.md"), rejectedReview);
+    assert.equal(repo.status(), "a-faire");
+    assert.deepEqual(repo.commits(), ["init"]);
+    noProcess(calls[1].pid);
+  });
+}
 
 test("Codex retries a capacity failure in the same guarded thread before its only review and attempt", (t) => {
   const repo = codexRepo();
@@ -3607,9 +3823,7 @@ test("Codex remains the engine with its fixed model and effort after reload", (t
     "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", harnais: "oui" }),
   });
   t.after(repo.cleanup);
-  repo.write(".harness-state/fake-codex.cjs", CODEX_SESSION);
-  const bin = path.join(repo.root, ".harness-state/fake-codex.cjs");
-  fs.chmodSync(bin, 0o755);
+  const bin = linkFakeAgent(repo, "codex");
   const args = ["--engine", "codex", "--max", "2", "--no-retro", "--model", "custom codex model", "--effort", "xhigh"];
   const result = repo.loop("done", args, { TVLENS_CODEX_BIN: bin, FAKE_CODEX_EDIT: "scripts/loop/models.mjs" });
   assert.equal(result.code, 0, result.out);

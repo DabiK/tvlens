@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { capacityFailure } from "./codex-capacity.mjs";
+import { quotaDiagnostic, quotaFailure } from "./codex-quota.mjs";
 
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -15,7 +16,7 @@ const TOKEN_FIELDS = ["input_tokens", "cached_input_tokens", "output_tokens", "r
 export function sessionState() {
   return {
     session: null, turnStarted: false, tours: 0, jetons: Object.fromEntries(TOKEN_FIELDS.map(field => [field, 0])),
-    problem: null, capacity: null, terminal: false,
+    problem: null, capacity: null, quota: null, terminal: false,
   };
 }
 
@@ -43,12 +44,18 @@ function readIdentity(message, state) {
   state.session = session;
 }
 
+function retainQuota(state, errors) {
+  const pending = errors.find(error => error.quota?.reprise)?.quota || errors.find(error => error.quota)?.quota || null;
+  if (!state.quota || state.quota.reprise === null) state.quota = pending || state.quota;
+}
+
 function consumeTurn(message, state, stream) {
   if (message.type === "turn.started") stream.openTurn = true;
   const workItem = ["item.started", "item.completed"].includes(message.type) && message.item?.type !== "error";
   if (["turn.started", "turn.completed"].includes(message.type) || workItem) state.turnStarted = true;
   if (message.type === "turn.completed") {
     stream.openTurn = false;
+    if (state.quota) retainQuota(state, stream.errors);
     for (const error of stream.errors) stream.reportRecovery(error.reason);
     stream.errors = [];
     state.tours++;
@@ -60,11 +67,14 @@ function consumeTurn(message, state, stream) {
 
 function consumeFailure(message, state, stream) {
   if (["error", "turn.failed"].includes(message.type)) {
-    const reason = `Codex : ${message.error?.message || message.message || "erreur du flux"}`.slice(0, MAX_DIAGNOSTIC_LENGTH);
+    const quota = quotaFailure(message);
+    const reason = quota ? quotaDiagnostic(quota.reprise) :
+      `Codex : ${message.error?.message || message.message || "erreur du flux"}`.slice(0, MAX_DIAGNOSTIC_LENGTH);
     const capacity = capacityFailure(message);
-    if (message.type === "error") stream.errors.push({ reason, capacity });
+    if (message.type === "error") stream.errors.push({ reason, capacity, quota });
     else {
       state.problem ||= reason;
+      state.quota ||= quota;
       state.capacity = capacity;
       stream.nonCapacityFailure ||= !capacity;
     }
@@ -118,6 +128,7 @@ export function streamSession(root, args, env, files, state, timeoutMs, started,
       clearTimeout(killTimer);
       state.problem ||= stream.errors.at(-1)?.reason;
       if (stream.errors.length) {
+        retainQuota(state, stream.errors);
         state.capacity ||= stream.errors.at(-1).capacity;
         stream.nonCapacityFailure ||= stream.errors.some(error => !error.capacity);
       }
@@ -127,7 +138,8 @@ export function streamSession(root, args, env, files, state, timeoutMs, started,
         state.problem = "Codex : tour inachevé, aucune fin de tour valide.";
         state.terminal = true;
       }
-      if (state.terminal || stream.nonCapacityFailure) state.capacity = null;
+      if (state.terminal || stream.nonCapacityFailure || state.quota) state.capacity = null;
+      if (state.quota) state.problem = quotaDiagnostic(state.quota.reprise);
       resolve(state.problem ? 1 : 0);
     });
   });

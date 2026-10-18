@@ -136,6 +136,7 @@ async function hookedSession(root, request, env, file, state, timeoutMs, started
 }
 
 function sessionOutcome(request, state, marker, run, code) {
+  if (state.quota) return { code: 1, resumeImpossible: false };
   // Sans fil ni début de travail, le fournisseur a refusé avant qu'une session puisse être reprise.
   const beforeSession = !request.session && !state.session && !state.turnStarted && state.capacity && !state.terminal;
   if (beforeSession) return { code, resumeImpossible: false };
@@ -166,14 +167,14 @@ async function capacitySession(root, request, env, file, state, timeoutMs, start
     const report = {
       invocation, session: current.session, reprise: retry, code: outcome.code, trace: path.relative(root, trace),
       tours: current.tours, jetons: current.jetons, duree_ms: Date.now() - launched, delai_ms: remaining,
-      capacity: current.capacity, problem: current.problem,
+      capacity: current.capacity, quota: current.quota, problem: current.problem,
     };
     state.invocations.push(report);
     state.session = current.session;
     state.tours += current.tours;
     for (const field of Object.keys(state.jetons)) state.jetons[field] += current.jetons[field];
     event("invocation-terminee", { ticket: env.TVLENS_TICKET, ...report });
-    return { ...outcome, session: current.session, capacity: current.capacity, problem: current.problem,
+    return { ...outcome, session: current.session, capacity: current.capacity, quota: current.quota, problem: current.problem,
       resumeImpossible: retry === 0 && outcome.resumeImpossible };
   }, {
     timeoutMs, session: request.session, wait: delay => skipWait ? Promise.resolve() : sleep(delay),
@@ -188,6 +189,7 @@ async function capacitySession(root, request, env, file, state, timeoutMs, start
   });
   state.problem = result.problem;
   state.capacity = result.capacity || null;
+  state.quota = result.quota || null;
   if (result.exhausted) {
     event("capacite-epuisee", { ticket: env.TVLENS_TICKET, invocation: state.invocations.at(-1)?.invocation, cause: result.exhausted });
   }
@@ -392,5 +394,5 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
   const { problem, turnStarted, terminal, ...usage } = state;
   const report = { ...usage, moteur: "codex", duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };
   event("session-terminee", { ticket: ticket.id, attempt, code, ...report });
-  return { code, report, problem, reserves };
+  return { code, report, problem, reserves, quota: state.quota };
 }

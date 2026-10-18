@@ -21,6 +21,7 @@ export async function retryCapacity(invoke, {
     const remaining = deadline - now();
     if (remaining <= 0) return deadlineFailure();
     const result = await invoke({ session, timeoutMs: remaining, retry });
+    if (result.quota) return result;
     if (now() >= deadline) return deadlineFailure();
     if (!result.capacity || result.code === 0) return result;
     const delay = CAPACITY_RETRY_DELAYS_MS[retry];

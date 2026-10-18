@@ -16,6 +16,7 @@ const STAGE_PHASES = {
   integrated: BETWEEN,
   retro: PHASES.retro,
   blocked: { key: "blocked", label: "Bloqué" },
+  quota: { key: "quota", label: "Quota Codex épuisé" },
   between: BETWEEN,
 };
 const STARTING = { key: "start", label: "Démarrage" };

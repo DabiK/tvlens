@@ -1,5 +1,6 @@
 // Décodeur pur de codex exec --json : Codex travaille sans sous-agent.
 import { PHASES } from "./phases.mjs";
+import { quotaDiagnostic, quotaFailure } from "../loop/codex-quota.mjs";
 import { codexCommandPhase } from "./codex-commands.mjs";
 import { enterPhase, LAST_ACTIONS, relativePath, formatTarget, isVerdictPath } from "./session-state.mjs";
 
@@ -71,7 +72,8 @@ export function foldCodexSession(previous, lines, { root }) {
     }
     if (message.type === "turn.completed") completeTurn(state, message);
     if (message.type === "turn.failed" || message.type === "error") {
-      state.problem = message.error?.message || message.message || "Échec Codex";
+      const quota = quotaFailure(message);
+      state.problem = quota ? quotaDiagnostic(quota.reprise) : message.error?.message || message.message || "Échec Codex";
       enterPhase(state, { key: "failed", label: "Échec du tour" }, at);
       addAction(state, {}, "Erreur", state.problem, at);
     }

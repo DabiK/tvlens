@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 const stream = require("./helpers/loop-stream.cjs");
+const { QUOTA_EVENTS } = require("./helpers/codex-session.cjs");
 
 const feedModule = () => import(pathToFileURL(path.join(__dirname, "..", "scripts/loop-view/feed.mjs")).href);
 const kinds = (entries) => entries.map((entry) => (entry.k === "phase" ? `phase:${entry.label}` : entry.k));
@@ -10,6 +11,18 @@ const { codexEvent, codexItem } = stream;
 const command = (type, id, text, extra = {}) => codexItem(type, { id, type: "command_execution", command: text, ...extra });
 const toolResult = (id, content, isError = false) =>
   JSON.stringify({ type: "user", parent_tool_use_id: null, message: { content: [{ type: "tool_result", tool_use_id: id, content, is_error: isError }] } });
+
+test("the Codex feed shows the quota retry announcement without copying provider URLs", async () => {
+  const { emptyFeed, foldFeed, feedSince } = await feedModule();
+  const feed = foldFeed(emptyFeed(), QUOTA_EVENTS.map(event => JSON.stringify(event)), { engine: "codex" });
+  const shown = feedSince(feed, "codex", 0).entries;
+  assert.deepEqual(shown.map(entry => entry.k), ["warn", "warn"]);
+  for (const entry of shown) {
+    assert.match(entry.text, /Quota Codex épuisé/);
+    assert.ok(entry.text.includes("Oct 22nd, 2026 8:41 AM"));
+  }
+  assert.doesNotMatch(JSON.stringify(shown), /https?:|chatgpt\.com|You’ve/);
+});
 
 test("a Codex stream reads like a terminal: phases, messages, commands with their output, written files", async () => {
   const { emptyFeed, foldFeed, feedSince, feedAgents } = await feedModule();
