@@ -158,6 +158,7 @@ test('configuration exposes the latency switches with safe defaults and leaves e
  // Vision during a question is on by default since questions may run five minutes (rollback: TVLENS_VISION_DURING_ASK=0).
  assert.deepEqual(added(bare), { whisperAudioCtx: undefined, visionDuringAsk: true, backgroundIndex: true, perceptionBackend: 'codex', localVlm: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null } });
  assert.deepEqual(existing(bare), { apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true,
+  embeddingsBackend: undefined, localEmbeddings: { url: null, model: null, token: null },
   questionsBackend: 'codex', localQuestions: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null },
   codexAuthHome: null, whisperModel: null, whisperThreads: undefined, whisperBinary: '/usr/bin/whisper-cli', ffmpeg: '/usr/bin/ffmpeg',
   inspectionModel: 'google/gemini-3.8-flash', inspectionStrategy: 'native-slow', researchBudgetFile: path.join(root, 'config', '.local', 'research-budget.json'), budgetFile: path.join(root, 'config', '.local', 'trial-budget.json') });

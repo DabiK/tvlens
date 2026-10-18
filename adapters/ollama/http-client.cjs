@@ -31,7 +31,7 @@ class OllamaHttpClient {
   constructor({ url, model, numCtx, keepAlive = '10m', token, fetchImpl = fetch } = {}) {
     validateOllamaConfig({ url, model, numCtx, token });
     const endpoint = new URL(url);
-    endpoint.pathname = endpoint.pathname.replace(/\/+$/, '') + '/api/chat';
+    endpoint.pathname = endpoint.pathname.replace(/\/+$/, '') + '/api/';
     this.#endpoint = endpoint.href;
     this.#headers = new Headers({ 'Content-Type': 'application/json' });
     try { if (token) this.#headers.set('Authorization', `Bearer ${token}`); } catch { throw invalidConfig(); }
@@ -41,11 +41,21 @@ class OllamaHttpClient {
   }
 
   async chat({ messages, tools, format, signal }) {
+    return this.request('chat', { ...this.#parameters, stream: false, messages, tools, format }, signal);
+  }
+
+  async embed({ input, signal }) {
+    return this.request('embed', { model: this.#parameters.model, input, truncate: false }, signal);
+  }
+
+  async request(route, payload, signal) {
     signal.throwIfAborted();
+    const endpoint = new URL(this.#endpoint);
+    endpoint.pathname += route;
     let response, body;
     try {
-      response = await this.#fetch(this.#endpoint, { method: 'POST', headers: this.#headers, signal,
-        body: JSON.stringify({ ...this.#parameters, stream: false, messages, tools, format }) });
+      response = await this.#fetch(endpoint.href, { method: 'POST', headers: this.#headers, signal,
+        body: JSON.stringify(payload) });
       body = await response.text();
     } catch {
       // L'erreur réseau peut contenir une URL ou un jeton ; seul le refus expurgé sort du transport.

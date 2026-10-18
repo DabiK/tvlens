@@ -1,7 +1,7 @@
 ---
 id: T264
 titre: Index and search a session with model-bound Ollama embeddings
-statut: a-faire
+statut: termine
 bloque_par: T263
 adr: oui
 installe: non
@@ -148,3 +148,49 @@ existent déjà ; la sélection du rôle questions ne choisit pas celle des embe
 Relire les interfaces après T220/T224–T227 si ces tickets sont intégrés entre-temps.
 
 ## Journal
+
+- Exploration : règles, skill tests, composition, index/recherche, store, configuration et ADR lus.
+  `git status --short` / `git diff` : statut du ticket et deux dossiers de recherche préexistants ; aucun code modifié initialement.
+  Choix : cache par identité effective ; tags locaux sans identité de poids isolés par instance ; aucun appel à l’ouverture.
+- Configuration : `node --test tests/portable-config.test.cjs` rouge observé (`embeddingsBackend` absent), puis vert (5 cas).
+  Sorties : `.harness-state/tickets/T264/config-{red,green}.log`.
+- Index local : `node --test tests/ollama-embeddings.test.cjs` rouge sur l’absence d’index sans clé, puis vert avec faux HTTP et vrais index/cache/recherche.
+- Identités : `node --test tests/moment-index.test.cjs` rouge sur mélange/cache réutilisé et identité modifiée, puis vert (46 cas).
+  Réouverture A/B/A, mêmes dimensions, backends distincts, ancien en-tête et changement en vol couverts.
+- Lots : `node --test tests/ollama-embeddings.test.cjs` rouge sur éviction de cache et modèle annoncé différent, puis vert.
+  La suite complète couvre aussi annulation, échéance injectée, scellement, panne et ouverture d’archive sans inférence (15 cas).
+- Sélection : `node --test --test-name-pattern='embedding selection rejects' tests/session-providers.test.cjs` rouge sur construction anticipée du budget, puis vert.
+  `node --test tests/session-providers.test.cjs` : vert (19 cas).
+- `node scripts/check.mjs --changed` : vert (113 cas observés dans les fichiers retenus par ce mode).
+- Premier contrôle complet : rouge sur les doubles anonymes d’autres suites et sur les traces envoyées au journal d’erreurs Mac ; règles/lint/Python verts.
+  Reproductions : `node --test tests/server-sessions.test.cjs` et
+  `node --test --test-name-pattern='the Mac host revokes' tests/architecture-f05.test.cjs`.
+  Les six autres fabriques de doubles reçoivent une identité sans changement d’assertions.
+  La trace devient consultable sur `search.lastEmbeddingTrace`, sans publication au journal d’erreurs.
+- `node --test --test-concurrency=1 tests/ollama-embeddings.test.cjs tests/session-providers.test.cjs tests/archive-compat.test.cjs tests/clip-unreadable.test.cjs tests/server-sessions.test.cjs tests/session-delete.test.cjs tests/session-durable.test.cjs tests/session-event-consumers.test.cjs tests/architecture-f05.test.cjs` : vert, 151 cas.
+  La sélection OpenRouter explicite valide et la désactivation prioritaire sur l’injection sont également vérifiées.
+- `node scripts/check.mjs --changed` : vert final, 223 cas dans 13 fichiers ; sortie dans `check-changed-final.log`.
+- `node scripts/check.mjs` : vert final, sortie 0 ; 2 701 tests JavaScript sur 147 fichiers et 47 tests Python réussis.
+  Règles, format, lint, gel et cliquet verts ; rapport `.harness-state/tickets/T264/check-full-final.log`.
+  `git diff --check` : sortie 0. Verdict `TERMINÉ` déposé ; aucun essai réel, commit ni push.
+- Reprise après `relecture-1.md` : rapport, journal, écarts, `git status --short` et `git diff` relus.
+  Correction du constat mineur : ajouter la réouverture de deux compositions locales réelles sur un même dossier temporaire ; aucun changement de politique d’identité prévu.
+- Correction de la relecture : nouveau test par deux `createSessionIndex` locaux, même tag et même dossier,
+  avec indexation/recherche, fermeture/scellement puis reconstruction depuis un faux Ollama aux vecteurs différents.
+  Cache initial vide à la réouverture, nouveaux appels `/api/embed`, fichiers distincts et cache historique intact vérifiés.
+- `node --test --test-name-pattern='reopening the same local configuration' tests/ollama-embeddings.test.cjs` :
+  rouge observé sur `passageVector` avec la mutation temporaire « révision stable = tag » ; source restituée à l’identique (SHA-256 consigné).
+  `node --test tests/ollama-embeddings.test.cjs` : vert, 16 cas. Preuves : `local-reopen-mutation-red.log`,
+  `local-reopen-mutation-proof.txt` et `local-reopen-green.log` dans le dossier d’état.
+- `node scripts/check.mjs --changed` après correction : vert, 224 tests sur 13 fichiers ; règles, format, lint, gel et cliquet verts.
+  `git diff --check` : sortie 0. Contrôle complet relancé avant le nouveau verdict.
+- `node scripts/check.mjs` après correction de la relecture : vert, sortie 0 ; 2 702 tests JavaScript sur 147 fichiers et 47 tests Python réussis.
+  Règles, format, lint, gel et cliquet verts ; rapport `.harness-state/tickets/T264/correction-check-full.log`.
+  Source de l’adaptateur vérifiée identique à celle avant mutation ; nouveau verdict `TERMINÉ`, aucun essai réel, commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T264/relecture-2.md : `adapters/embeddings/ollama-embeddings.cjs:38` et `provider-identity.cjs:18-19` : accumulation des fichiers `embeddings-<hash>.json` (hors périmètre, réserve reprise de la relecture 1)
+
+  - **Le problème.** Avec les embeddings locaux, chaque réouverture suivie d'une recherche écrit un nouveau fichier par identité d'instance et reconstruit tout à la demande. Le nouveau test le montre lui-même : deux fichiers pour deux instances.
+  - **Pourquoi ce n'est pas à corriger ici.** C'est voulu (« un espace de cache neuf ») et c'est documenté dans l'ADR 0058. Le nettoyage revient au cycle des archives (T235, phase 2).

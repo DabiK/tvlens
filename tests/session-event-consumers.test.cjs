@@ -1,3 +1,4 @@
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -16,7 +17,7 @@ async function fixture(t, { testClock, ...extra } = {}) {
   const clock = testClock || new VirtualClock().install();
   const f = { root, clock, wall: 1000, hosts: 0, events: [], writes: [], embedded: [], diagnostics: [], cleanup: [] };
   const audio = deferred(), visual = deferred(), audioEntered = deferred(), visualEntered = deferred(), ready = deferred();
-  const embeddings = {
+  const embeddings = { identity: HISTORICAL_IDENTITY,
     embedMany(texts, signal) {
       const result = deferred();
       const call = { texts, signal, ...result };

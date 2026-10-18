@@ -9,8 +9,10 @@ const { inspectionStrategy } = require("../adapters/inspection-strategies.cjs");
 const { UsageLedger } = require("../adapters/trial-budget.cjs");
 const {
   OpenRouterEmbeddings,
-  EMBEDDING_MODEL,
 } = require("../adapters/openrouter-embeddings.cjs");
+const { OllamaEmbeddings } = require("../adapters/embeddings/ollama-embeddings.cjs");
+const { providerIdentity } = require("../adapters/embeddings/provider-identity.cjs");
+const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
 const { MemorySearch } = require("../core/moment-search.cjs");
@@ -32,6 +34,7 @@ const INDEX_OBSERVE_TAIL = 48;
 const indexProviders = {
   UsageLedger,
   OpenRouterEmbeddings,
+  OllamaEmbeddings,
   EmbeddingStore,
   MomentIndex,
   MemorySearch,
@@ -166,40 +169,71 @@ function createSessionIndex(
   dependencies = {},
 ) {
   const make = { ...indexProviders, ...dependencies };
-  const researchBudget = new make.UsageLedger(
-    config.researchBudgetFile || path.join(userData, "research-budget.json"),
-  );
-  const embeddings =
-    overrides.embeddings ||
-    ((smoke && !liveInspection) || !config.apiKey
-      ? null
-      : new make.OpenRouterEmbeddings({
-          apiKey: config.apiKey,
-          budget: researchBudget,
-        }));
-  const vectors = embeddings
+  const selectedEmbeddings = selectEmbeddings(config, smoke && !liveInspection, make, userData, overrides.embeddings);
+  const identity = selectedEmbeddings ? providerIdentity(selectedEmbeddings, store.root) : null;
+  const embeddingDiagnostics = indexDiagnostic(identity, config);
+  const vectors = identity
     ? new make.EmbeddingStore(
-        path.join(store.root, "embeddings.json"),
-        EMBEDDING_MODEL,
-        { onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)) },
+        identity.file,
+        identity.model,
+        { onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)),
+          assertIdentity: identity.assertIdentity, identityScoped: identity.identityScoped },
       )
     : null;
-  const index = embeddings
+  const index = identity
     ? new make.MomentIndex({
-        embeddings,
+        embeddings: identity.provider,
         cache: vectors,
         flushMs: INDEX_FLUSH_MS,
         maxPending: INDEX_MAX_PENDING,
       })
     : null;
   const search = new make.MemorySearch({ index });
+  diagnoseSearch(search, embeddingDiagnostics);
   // Published passages feed the bounded background index; a search never waits for a full catch-up.
   const feedIndex =
     index?.observe && config.backgroundIndex !== false
       ? (passages) => index.observe(passages.filter(passage => passage.usableObservation))
       : null;
   const connectIndex = feedIndex ? options => subscribeSessionIndex({ ...options, feedIndex, onPublicationError }) : null;
-  return { vectors, index, search, feedIndex, connectIndex };
+  return { vectors, index, search, feedIndex, connectIndex, embeddingDiagnostics };
+}
+
+function selectEmbeddings(config, simulated, make, userData, override) {
+  validateEmbeddingSelection(config);
+  const backend = config.embeddingsBackend ?? (config.apiKey ? 'openrouter' : 'disabled');
+  if (config.embeddingsBackend === 'disabled') return null;
+  if (override) return override;
+  if (backend === 'disabled') return null;
+  if (backend === 'local') return new make.OllamaEmbeddings(config.localEmbeddings || {});
+  if (simulated) return null;
+  const budget = new make.UsageLedger(config.researchBudgetFile || path.join(userData, 'research-budget.json'));
+  return new make.OpenRouterEmbeddings({ apiKey: config.apiKey, budget });
+}
+
+function validateEmbeddingSelection(config) {
+  if (![undefined, 'local', 'openrouter', 'disabled'].includes(config.embeddingsBackend)
+    || (config.embeddingsBackend === 'openrouter' && !config.apiKey)) {
+    throw Object.assign(Error('Configuration des embeddings invalide : backend ou clé manquant.'), { code: 'TVLENS_EMBEDDINGS_CONFIG_INVALID' });
+  }
+  if (config.embeddingsBackend === 'local') validateOllamaConfig(config.localEmbeddings);
+}
+
+function indexDiagnostic(identity, config) {
+  const diagnostic = identity?.diagnostic || { enabled: false, backend: 'disabled', model: null, identity: null };
+  return Object.freeze({ ...diagnostic, selection: config.embeddingsBackend === undefined ? 'legacy' : 'explicit' });
+}
+
+function diagnoseSearch(search, diagnostic) {
+  search.embeddingDiagnostics = diagnostic;
+  if (typeof search.search !== 'function') return;
+  const run = search.search.bind(search);
+  search.search = async input => {
+    const result = await run(input);
+    // Le journal des hôtes signale des erreurs ; une recherche réussie y ferait annoncer une panne.
+    search.lastEmbeddingTrace = Object.freeze({ code: 'TVLENS_EMBEDDINGS_SEARCH', ...diagnostic, mode: result.mode });
+    return { ...result, embeddings: diagnostic };
+  };
 }
 
 function subscribeSessionIndex({ id, events, memory, readOnly, feedIndex, onPublicationError }) {

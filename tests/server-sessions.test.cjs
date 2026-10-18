@@ -1,3 +1,4 @@
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -80,7 +81,7 @@ async function fixture(t, { chat, runtimeOptions = () => ({}) } = {}) {
   const f = { root, sessionsRoot, clock: 0, wall: 1790000000000, calls: { prepare: 0, embed: 0, assemble: 0 }, hosts: [] };
   const agent = { prepare: async () => { f.calls.prepare++; }, close: async () => {},
     answer: chat || (async ({ question }) => ({ answer: 'Réponse à : ' + question, kind: 'explanation', citations: [], limits: [] })) };
-  const embeddings = { embed: async () => { f.calls.embed++; return [1, 0]; }, embedMany: async texts => { f.calls.embed += texts.length; return texts.map(() => [1, 0]); } };
+  const embeddings = { identity: HISTORICAL_IDENTITY, embed: async () => { f.calls.embed++; return [1, 0]; }, embedMany: async texts => { f.calls.embed += texts.length; return texts.map(() => [1, 0]); } };
   const media = { assemble: async input => { f.calls.assemble++; return { ...input, clip: Buffer.from('fixture ' + input.startMs), frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,' + jpeg }], audio: null }; } };
   f.boot = async () => {
     const runtime = new HeadlessRuntime({ userData: root, sessionsRoot, config: {}, selectedModels: {}, smoke: true, agent, readClock: () => f.clock, wallClock: () => f.wall,

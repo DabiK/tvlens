@@ -12,6 +12,7 @@ const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { heldWhisper } = require('./helpers/held-whisper.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 const { MomentIndex } = require('../core/moment-index.cjs');
 const { MemorySearch } = require('../core/moment-search.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
@@ -285,7 +286,7 @@ test('the session runtime feeds published passages to the index, honours the opt
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-runtime-wiring-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const calls = [];
-  const embeddings = { embedMany: async texts => { calls.push(texts); return texts.map(() => [1, 0]); } };
+  const embeddings = { identity: HISTORICAL_IDENTITY, embedMany: async texts => { calls.push(texts); return texts.map(() => [1, 0]); } };
   const perception = { transcribe: async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 1 }), observeVisual: async s => ({ observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 1 }) };
   const build = config => createSessionRuntime({ sessionsRoot: path.join(root, 'sessions'), userData: root, config, selectedModels: {}, smoke: true, overrides: { perception, embeddings }, readClock: () => 9000 });
   const block = { startMs: 0, endMs: 8000, clip: Buffer.from('clip'), audio: new Uint8Array([1]), frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }] };
@@ -313,7 +314,7 @@ test('the session runtime feeds published passages to the index, honours the opt
 
 test('the headless state exposes index counters only when an index exists', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-index-state-'));
-  const runtime = new HeadlessRuntime({ userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true, agent: { answer: async () => ({}) }, overrides: { embeddings: { embedMany: async texts => texts.map(() => [1, 0]) } } });
+  const runtime = new HeadlessRuntime({ userData: root, sessionsRoot: path.join(root, 'sessions'), config: {}, selectedModels: {}, smoke: true, agent: { answer: async () => ({}) }, overrides: { embeddings: { identity: HISTORICAL_IDENTITY, embedMany: async texts => texts.map(() => [1, 0]) } } });
   t.after(async () => { await runtime.close(); await fs.rm(root, { recursive: true, force: true }); });
   assert.equal(runtime.snapshot().index, null);
   await runtime.start();

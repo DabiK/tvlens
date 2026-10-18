@@ -7,6 +7,7 @@ const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
 const { emptyArchive } = require('./helpers/empty-archive.cjs');
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 
 const token = 'e'.repeat(64);
 const { tick } = require('./helpers/wait.cjs');
@@ -31,7 +32,7 @@ test('server session options deliver embedding load diagnostics even before a se
       const runtime = new HeadlessRuntime({
         userData: root, sessionsRoot, config: { apiKey: 'secret-key' }, selectedModels: {}, smoke: true,
         agent: { answer: async () => ({}) },
-        overrides: { embeddings: { embed: async () => {
+        overrides: { embeddings: { identity: HISTORICAL_IDENTITY, embed: async () => {
           calls++;
           return [1, 0];
         } } },

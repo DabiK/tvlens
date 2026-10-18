@@ -1,3 +1,4 @@
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -70,7 +71,7 @@ async function runtime(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-unreadable-')), sessionsRoot = path.join(root, 'sessions');
   const jpeg = 'data:image/jpeg;base64,' + (await sharp({ create: { width: 64, height: 36, channels: 3, background: '#264136' } }).jpeg().toBuffer()).toString('base64');
   const f = { root, sessionsRoot, clock: 0, jpeg, opened: [] };
-  const embeddings = { embed: async () => [1, 0], embedMany: async texts => texts.map(() => [1, 0]) };
+  const embeddings = { identity: HISTORICAL_IDENTITY, embed: async () => [1, 0], embedMany: async texts => texts.map(() => [1, 0]) };
   f.options = extra => ({ userData: root, config: {}, selectedModels: {}, smoke: true, readClock: () => f.clock, overrides: { embeddings }, ...extra });
   f.open = extra => { const session = createSessionRuntime({ sessionsRoot, ...f.options(extra) }); f.opened.push(session); return session; };
   f.reopen = async id => { const opened = await openArchivedSession({ library: new SessionLibrary({ root: sessionsRoot }), id, ...f.options() }); f.opened.push(opened.session); return opened.session; };

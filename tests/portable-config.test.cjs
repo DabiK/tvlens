@@ -78,3 +78,32 @@ test('question backend imports persist while startup overrides and tokens stay o
   assert.equal(bare.questionsBackend, 'codex');
   assert.deepEqual(bare.localQuestions, { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null });
 });
+
+test('embedding backend imports persist independently and never persist local tokens or startup overrides', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-embedding-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'embeddings.env');
+  await fs.writeFile(configPath, [
+    'TVLENS_EMBEDDINGS_BACKEND=local', 'TVLENS_LOCAL_EMBEDDINGS_URL=http://127.0.0.1:11434/private',
+    'TVLENS_LOCAL_EMBEDDINGS_MODEL=file-model', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN=FILE_SECRET',
+  ].join('\n'));
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  const imported = await load({ configPath, environment: {
+    TVLENS_LOCAL_EMBEDDINGS_MODEL: 'env-model', TVLENS_LOCAL_EMBEDDINGS_TOKEN: 'ENV_SECRET',
+  } });
+  assert.equal(imported.embeddingsBackend, 'local');
+  assert.deepEqual(imported.localEmbeddings, { url: 'http://127.0.0.1:11434/private', model: 'env-model', token: 'ENV_SECRET' });
+  assert.deepEqual([imported.questionsBackend, imported.perceptionBackend], ['codex', 'codex']);
+  assert.doesNotMatch(await fs.readFile(path.join(root, 'provider.enc'), 'utf8'), /FILE_SECRET|ENV_SECRET|env-model/);
+  const restored = await load();
+  assert.equal(restored.embeddingsBackend, 'local');
+  assert.deepEqual(restored.localEmbeddings, { ...imported.localEmbeddings, model: 'file-model', token: null });
+  for (const backend of ['disabled', 'openrouter', 'invalid']) {
+    assert.equal((await load({ environment: { TVLENS_EMBEDDINGS_BACKEND: backend } })).embeddingsBackend, backend);
+  }
+  assert.equal((await load({ configPath, environment: { TVLENS_LOCAL_EMBEDDINGS_MODEL: '' } })).localEmbeddings.model, 'file-model');
+  const bare = await loadConfig({ userData: root, safeStorage: { isEncryptionAvailable: () => false }, environment: {} });
+  assert.equal(bare.embeddingsBackend, undefined);
+  assert.deepEqual(bare.localEmbeddings, { url: null, model: null, token: null });
+});

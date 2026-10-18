@@ -727,3 +727,103 @@ test('a steady stream is sent as a few passages per request once a flush interva
   assert.deepEqual(batches[2], ['Passage 5']);
   index.close();
 });
+
+const { createSessionIndex } = require('../runtime/session-providers.cjs');
+async function composedIndex(t, root, identity, calls = [], extra = {}) {
+  const embeddings = { identity, embed: async text => { calls.push(text); return identity.model === 'B' ? [0, 1] : [1, 0]; }, ...extra };
+  const diagnostics = [];
+  const built = createSessionIndex({ config: {}, userData: root, store: { root }, overrides: { embeddings },
+    log: line => diagnostics.push(JSON.parse(line)) });
+  t.after(async () => { built.index.close(); await built.vectors.seal(); });
+  await built.vectors.loaded;
+  return { ...built, embeddings, diagnostics };
+}
+
+test('composition partitions equal-dimension models and backends and reopening preserves all earlier vectors', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-model-spaces-'));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  const query = { query: 'chien', segments: scene, anchorMs: 16000 };
+  const a = await composedIndex(t, root, { backend: 'first', model: 'A', parameters: { dimensions: 2 } });
+  await a.index.ensure(scene);
+  assert.equal((await a.search.search(query)).mode, 'hybrid');
+  a.index.close(); await a.vectors.seal();
+  const original = await fsp.readFile(a.vectors.file, 'utf8');
+  const bCalls = [];
+  const b = await composedIndex(t, root, { backend: 'first', model: 'B', parameters: { dimensions: 2 } }, bCalls);
+  assert.equal(await b.index.passageVector(scene[0]), null);
+  assert.equal(bCalls.length, 0, 'opening a different identity does not rebuild');
+  assert.equal(b.diagnostics[0]?.code, 'TVLENS_EMBEDDING_CACHE_LOAD');
+  assert.equal(b.diagnostics[0].cause, 'model-mismatch');
+  assert.equal(b.diagnostics[0].rebuild, 'total');
+  assert.equal((await b.search.search(query)).mode, 'hybrid');
+  assert.deepEqual(bCalls, [passageText(scene[0]), passageText(scene[1]), 'chien']);
+  assert.deepEqual(await b.index.passageVector(scene[0]), [0, 1]);
+  b.index.close(); await b.vectors.seal();
+  assert.equal(await fsp.readFile(a.vectors.file, 'utf8'), original);
+  const other = await composedIndex(t, root, { backend: 'second', model: 'A', parameters: { dimensions: 2 } });
+  assert.equal(await other.index.passageVector(scene[0]), null);
+  assert.notEqual(other.vectors.file, a.vectors.file);
+  const changed = await composedIndex(t, root, { backend: 'first', model: 'A', parameters: { dimensions: 3 } });
+  assert.equal(await changed.index.passageVector(scene[0]), null);
+  const aCalls = [];
+  const reopened = await composedIndex(t, root, { parameters: { dimensions: 2 }, model: 'A', backend: 'first' }, aCalls);
+  assert.equal((await reopened.search.search(query)).mode, 'hybrid');
+  assert.deepEqual(aCalls, [], 'both passages and the query survive other model searches');
+  assert.deepEqual(await reopened.index.passageVector(scene[0]), [1, 0]);
+});
+
+test('composition refuses identity-free providers and rejects a changed identity even on cached queries', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-model-change-'));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  assert.throws(() => createSessionIndex({ config: {}, userData: root, store: { root }, overrides: { embeddings: { embed() {} } } }),
+    { code: 'TVLENS_EMBEDDINGS_IDENTITY_REQUIRED' });
+  const calls = [];
+  const built = await composedIndex(t, root, { backend: 'first', model: 'A' }, calls);
+  await built.index.ensure(scene);
+  await built.index.queryVector('chien');
+  built.embeddings.identity.model = 'B';
+  await assert.rejects(built.index.queryVector('chien'), { code: 'TVLENS_EMBEDDINGS_IDENTITY_CHANGED' });
+  const result = await built.search.search({ query: 'chien', segments: scene, anchorMs: 16000 });
+  assert.equal(result.mode, 'lexical');
+  assert.deepEqual(result.warnings, [UNAVAILABLE]);
+  assert.deepEqual(calls, [passageText(scene[0]), passageText(scene[1]), 'chien']);
+});
+
+test('an identity change during inference cannot write its late vectors and requires a new index', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-model-flight-'));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  const identity = { backend: 'first', model: 'A' };
+  const built = await composedIndex(t, root, identity, [], { embed: async () => { identity.model = 'B'; return [0, 1]; } });
+  await assert.rejects(built.index.ensure(scene), { code: 'TVLENS_EMBEDDINGS_IDENTITY_CHANGED' });
+  identity.model = 'A';
+  await assert.rejects(built.index.passageVector(scene[0]), { code: 'TVLENS_EMBEDDINGS_IDENTITY_CHANGED' });
+  assert.deepEqual(await fsp.readdir(root), []);
+});
+
+test('historical OpenRouter headers remain readable only for the exact historical provider identity', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-historical-identity-'));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
+  const file = path.join(root, 'embeddings.json');
+  const historical = new EmbeddingStore(file, 'openai/text-embedding-3-small');
+  await historical.put('moment-1', passageText(scene[0]), [1, 0]);
+  const original = await fsp.readFile(file, 'utf8');
+  const built = await composedIndex(t, root, HISTORICAL_IDENTITY);
+  assert.deepEqual(await built.index.passageVector(scene[0]), [1, 0]);
+  const local = await composedIndex(t, root, { ...HISTORICAL_IDENTITY, backend: 'ollama' });
+  assert.equal(await local.index.passageVector(scene[0]), null);
+  await local.index.ensure(scene);
+  await local.search.search({ query: 'chien', segments: scene, anchorMs: 16000 });
+  assert.equal(await fsp.readFile(file, 'utf8'), original);
+});
+
+test('a local identity known only by a mutable tag never reopens a persistent vector space', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-unknown-identity-'));
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
+  const a = await composedIndex(t, root, { backend: 'ollama', model: 'mutable-tag' });
+  await a.index.ensure(scene);
+  a.index.close(); await a.vectors.seal();
+  const b = await composedIndex(t, root, { backend: 'ollama', model: 'mutable-tag' });
+  assert.equal(await b.index.passageVector(scene[0]), null);
+  assert.notEqual(a.vectors.file, b.vectors.file);
+});

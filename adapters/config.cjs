@@ -60,8 +60,9 @@ async function stored(cached, safeStorage) {
 const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLENS_BACKGROUND_INDEX', 'TVLENS_PERCEPTION_BACKEND',
   'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
   'TVLENS_QUESTIONS_BACKEND', 'TVLENS_LOCAL_QUESTIONS_URL', 'TVLENS_LOCAL_QUESTIONS_MODEL',
-  'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE'];
-const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN'];
+  'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE',
+  'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL'];
+const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN'];
 // Only what a source really sets: an empty variable must not undo a setting written elsewhere.
 const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => typeof env[name] === 'string' && env[name] !== '').map(name => [name, env[name]]));
 function switches(env) {
@@ -74,6 +75,7 @@ function switches(env) {
     // the passages captured meanwhile. Still one visual call at a time. TVLENS_VISION_DURING_ASK=0 restores the gate.
     visionDuringAsk: flag(env.TVLENS_VISION_DURING_ASK, true),
     backgroundIndex: flag(env.TVLENS_BACKGROUND_INDEX, true),
+    ...embeddingsConfig(env),
     questionsBackend: env.TVLENS_QUESTIONS_BACKEND || 'codex',
     localQuestions: localQuestionsConfig(env),
     perceptionBackend: env.TVLENS_PERCEPTION_BACKEND || 'codex',
@@ -85,5 +87,10 @@ function localQuestionsConfig(env) {
   return { url: env.TVLENS_LOCAL_QUESTIONS_URL || null, model: env.TVLENS_LOCAL_QUESTIONS_MODEL || null,
     numCtx: env.TVLENS_LOCAL_QUESTIONS_NUM_CTX ? Number(env.TVLENS_LOCAL_QUESTIONS_NUM_CTX) : undefined,
     keepAlive: env.TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_QUESTIONS_TOKEN || null };
+}
+function embeddingsConfig(env) {
+  return { embeddingsBackend: env.TVLENS_EMBEDDINGS_BACKEND || undefined,
+    localEmbeddings: { url: env.TVLENS_LOCAL_EMBEDDINGS_URL || null,
+      model: env.TVLENS_LOCAL_EMBEDDINGS_MODEL || null, token: env.TVLENS_LOCAL_EMBEDDINGS_TOKEN || null } };
 }
 module.exports = { loadConfig };

@@ -4,6 +4,7 @@ const MAX_TEXTS = 32, MAX_BATCH_BYTES = 48000;
 const byteLength = text => { const bytes = typeof text === 'string' && text.trim() ? Buffer.byteLength(text, 'utf8') : Infinity; if (bytes > 6000) throw new Error('Texte trop volumineux pour les embeddings.'); return bytes; };
 const checked = vector => { if (!Array.isArray(vector) || vector.length < 8 || vector.length > 4096 || vector.some(x => !Number.isFinite(x))) throw new Error('Embedding invalide.'); return vector; };
 class OpenRouterEmbeddings {
+  get identity() { return { backend: 'openrouter', model: MODEL, parameters: { encodingFormat: 'float' } }; }
   constructor({ apiKey, budget, fetchImpl = fetch }) { Object.assign(this, { apiKey, budget, fetchImpl }); this.model = MODEL; this.cache = new Map(); }
   // One reservation and one settle per HTTP request, whatever the number of inputs.
   async request(input, signal) {

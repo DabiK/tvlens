@@ -11,11 +11,13 @@ const LOAD_MESSAGES = {
 // Append-only log: one header line naming the model, then one line per vector. A live session
 // indexes a passage every few seconds: rewriting every vector each time cost the square of its length.
 class EmbeddingStore {
-  constructor(file, model, { onDiagnostic = () => {}, readFile = fs.readFile } = {}) {
+  constructor(file, model, { onDiagnostic = () => {}, readFile = fs.readFile, assertIdentity = () => {}, identityScoped = false } = {}) {
     this.file = file;
     this.model = model;
     this.onDiagnostic = onDiagnostic;
     this.readFile = readFile;
+    this.assertIdentity = assertIdentity;
+    this.identityScoped = identityScoped;
     this.entries = {};
     this.byText = new Map();
     this.serial = Promise.resolve();
@@ -27,10 +29,20 @@ class EmbeddingStore {
     try {
       raw = await this.readFile(this.file, 'utf8');
     } catch (error) {
-      this.diagnose(error?.code === 'ENOENT' ? 'missing' : 'read-failed');
+      this.diagnose(error?.code === 'ENOENT' ? await this.missingCause() : 'read-failed');
       return;
     }
     this.loadLog(raw);
+  }
+  async missingCause() {
+    if (!this.identityScoped) return 'missing';
+    try {
+      const files = await fs.readdir(path.dirname(this.file));
+      return files.some(file => /^embeddings(?:-[a-f0-9]{64})?\.json$/.test(file)) ? 'model-mismatch' : 'missing';
+    } catch {
+      // Un répertoire absent ne nécessite ni écriture ni reconstruction à l'ouverture.
+      return 'missing';
+    }
   }
   loadLog(raw) {
     const lines = raw.split('\n').filter(Boolean);
@@ -86,16 +98,23 @@ class EmbeddingStore {
     }
   }
   remember(id, text, vector) { this.entries[id] = { text, vector }; this.byText.set(text, vector); }
-  async get(id, text) { await this.loaded; return this.entries[id]?.text === text ? this.entries[id].vector : this.byText.get(text)||null; }
+  async get(id, text) {
+    this.assertIdentity();
+    await this.loaded;
+    this.assertIdentity();
+    return this.entries[id]?.text === text ? this.entries[id].vector : this.byText.get(text)||null;
+  }
   put(id, text, vector) { return this.putMany([{ id, text, vector }]); }
   async putMany(items) {
     await this.loaded; if (!items.length) return;
+    this.assertIdentity();
     for (const { id, text, vector } of items) this.remember(id, text, vector);
     const line = ({ id, text, vector }) => JSON.stringify({ id, text, vector }) + '\n';
     // Serialised so lines never interleave; each call writes its own vectors only.
     this.serial = this.serial.catch(() => {}).then(async () => {
       // Checked when the write runs: a late vector must never give a deleted session its directory back.
       if (this.sealed) return;
+      this.assertIdentity();
       await fs.mkdir(path.dirname(this.file), { recursive:true, mode:0o700 });
       if (!this.restart) { try { return await fs.appendFile(this.file, items.map(line).join(''), { mode:0o600 }); } catch (error) { this.restart = true; throw error; } }
       // No usable log yet (new file, other model, former layout): write everything known once, atomically.
