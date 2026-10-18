@@ -6,6 +6,8 @@ const TVLENS_LOCAL_VLM_INPUT_REFUSED = 'TVLENS_LOCAL_VLM_INPUT_REFUSED';
 const TVLENS_LOCAL_VLM_UNREACHABLE = 'TVLENS_LOCAL_VLM_UNREACHABLE';
 const TVLENS_LOCAL_VLM_UNAVAILABLE = 'TVLENS_LOCAL_VLM_UNAVAILABLE';
 const TVLENS_LOCAL_VLM_CLOSED = 'TVLENS_LOCAL_VLM_CLOSED';
+const TVLENS_LOCAL_VLM_RESPONSE_INVALID = 'TVLENS_LOCAL_VLM_RESPONSE_INVALID';
+const TVLENS_LOCAL_VLM_TIMEOUT = 'TVLENS_LOCAL_VLM_TIMEOUT';
 const IMAGE = /^data:image\/[\w.+-]+;base64,([A-Za-z0-9+/]+=*)$/;
 // Ollama reports durations in nanoseconds.
 const TIMINGS = [['totalMs', 'total_duration', 1e6], ['loadMs', 'load_duration', 1e6], ['promptEvalMs', 'prompt_eval_duration', 1e6], ['evalMs', 'eval_duration', 1e6], ['promptTokens', 'prompt_eval_count', 1], ['evalTokens', 'eval_count', 1]];
@@ -21,6 +23,25 @@ function providerTimings(data) {
   }
   if (Object.keys(rawNs).length) timings.rawNs = rawNs;
   return timings;
+}
+function requestDiagnostic({ queueMs, requestMs, aborted, deadline, signal, closing, timeoutMs }) {
+  const diagnostic = { metrics: { clientTimings: { queueMs, requestMs }, modelState: 'unknown' } };
+  if (aborted.aborted && aborted.reason === deadline.reason && !signal?.aborted && !closing.aborted)
+    diagnostic.failure = { code: TVLENS_LOCAL_VLM_TIMEOUT, timeoutMs };
+  return diagnostic;
+}
+function parseOutput(text, onProviderTimings) {
+  let data, output;
+  try { data = JSON.parse(text); }
+  catch { throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID }); }
+  if (!data || typeof data !== 'object' || Array.isArray(data))
+    throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID });
+  onProviderTimings(providerTimings(data));
+  try { output = typeof data.message?.content === 'string' ? JSON.parse(data.message.content) : null; }
+  catch { throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID }); }
+  if (!output || typeof output !== 'object' || Array.isArray(output))
+    throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID });
+  return { data, output };
 }
 class LocalVlmAgent {
   // Private: an endpoint or Authorization header must not surface when the agent is logged or serialized.
@@ -50,7 +71,7 @@ class LocalVlmAgent {
     this.tail = pending;
     return pending;
   }
-  async run({ instructions, signal, mediaInput = [], outputSchema }, queuedAt) {
+  async run({ instructions, signal, mediaInput = [], outputSchema, onDiagnostic }, queuedAt) {
     const queueMs = this.now() - queuedAt;
     this.#closing.signal.throwIfAborted();
     signal?.throwIfAborted();
@@ -60,18 +81,22 @@ class LocalVlmAgent {
       return match[1];
     });
     const model = this.model;
-    const aborted = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(this.timeoutMs), this.#closing.signal]);
+    const deadline = AbortSignal.timeout(this.timeoutMs);
+    const aborted = AbortSignal.any([...(signal ? [signal] : []), deadline, this.#closing.signal]);
     const started = this.now();
     let response, text, requestMs;
     try {
       response = await this.fetchImpl(this.#endpoint, { method: 'POST', headers: this.#headers, signal: aborted,
         body: JSON.stringify({ model, stream: false, format: outputSchema, keep_alive: this.keepAlive, options: { temperature: 0, ...(this.numCtx ? { num_ctx: this.numCtx } : {}) }, messages: [{ role: 'user', content: instructions, images }] }) });
       text = await response.text();
-      requestMs = this.now() - started;
     } catch {
       // Le refus est transformé juste après : raison d'abandon prioritaire, sinon erreur
       // « injoignable ». Le détail du transport peut contenir URL ou en-têtes privés.
     }
+    requestMs = this.now() - started;
+    const diagnostic = requestDiagnostic({ queueMs, requestMs, aborted, deadline, signal,
+      closing: this.#closing.signal, timeoutMs: this.timeoutMs });
+    onDiagnostic?.(diagnostic);
     // Checked after the body as well: a result landing after cancellation, timeout or close is never returned.
     if (aborted.aborted) throw aborted.reason;
     // Transport errors can quote the URL or a header value: never forwarded.
@@ -79,9 +104,10 @@ class LocalVlmAgent {
     if (!response.ok) throw Object.assign(Error(`Backend local indisponible (HTTP ${response.status}).`), {
       code: TVLENS_LOCAL_VLM_UNAVAILABLE, httpStatus: response.status,
     });
-    let data, output;
-    try { data = JSON.parse(text); output = typeof data.message.content === 'string' ? JSON.parse(data.message.content) : null; } catch { throw Error(INVALID); }
-    if (!output || typeof output !== 'object' || Array.isArray(output)) throw Error(INVALID);
+    const { data, output } = parseOutput(text, timings => {
+      diagnostic.metrics.providerTimings = timings;
+      onDiagnostic?.(diagnostic);
+    });
     // Durées clientes en ms : attente depuis answer(), puis HTTP jusqu'au corps complet (inférence comprise).
     // elapsedMs garde sa portée historique sans attente de file ; ce n'est pas une mesure pure du réseau.
     // Les métriques suivent le JSON du modèle pour qu'il ne puisse pas les usurper.
@@ -98,4 +124,5 @@ class LocalVlmAgent {
 module.exports = {
   LocalVlmAgent,
   TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
+  TVLENS_LOCAL_VLM_RESPONSE_INVALID, TVLENS_LOCAL_VLM_TIMEOUT,
 };

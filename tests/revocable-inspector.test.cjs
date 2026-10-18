@@ -236,3 +236,21 @@ test("a revocable inspector reads the inner inspector, the cache and the counter
   assert.equal(inspector.hits, 1);
   assert.equal(inspector.cache.size, 1);
 });
+
+test('cache identity changes never reuse another backend or model and retain original provenance', async () => {
+  let identity = { role: 'inspection', backend: 'ollama', model: 'one' };
+  const memory = countingInspector(() => ({ observations: [{ text: 'A circle moves.' }], inspection: { ...identity } }));
+  Object.defineProperty(memory, 'identity', { get: () => identity });
+  const inspector = new RevocableInspector(new CachedInspector(memory), REVOKED);
+  const first = await inspector.inspect(inputOf('What moves?'));
+  identity = { role: 'inspection', backend: 'ollama', model: 'two' };
+  const second = await inspector.inspect(inputOf('What moves?'));
+  identity = { role: 'inspection', backend: 'codex', model: 'two' };
+  const third = await inspector.inspect(inputOf('What moves?'));
+  assert.deepEqual([first.cacheHit, second.cacheHit, third.cacheHit], [false, false, false]);
+  assert.equal(memory.calls, 3);
+  identity = { role: 'inspection', backend: 'ollama', model: 'one' };
+  const cached = await inspector.inspect(inputOf('What moves?'));
+  assert.deepEqual(cached.inspection, { ...first.inspection, cacheHit: true, modelCalled: false });
+  assert.equal(memory.calls, 3);
+});

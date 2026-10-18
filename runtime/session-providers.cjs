@@ -3,6 +3,7 @@ const { LocalTranscriber } = require("../adapters/local-transcriber.cjs");
 const { CodexPerception } = require("../adapters/codex-perception.cjs");
 const { LocalVlmAgent } = require("../adapters/local-vlm-agent.cjs");
 const { ClipInspector } = require("../adapters/clip-inspector.cjs");
+const { InspectionDiagnostics } = require("../adapters/perception/inspection-diagnostics.cjs");
 const { CachedInspector } = require("../core/cached-inspector.cjs");
 const { RevocableInspector } = require("../core/revocable-inspector.cjs");
 const { inspectionStrategy } = require("../adapters/inspection-strategies.cjs");
@@ -41,6 +42,7 @@ const indexProviders = {
 };
 const inspectionProviders = {
   CodexPerception,
+  LocalVlmAgent,
   ClipInspector,
   CachedInspector,
   RevocableInspector,
@@ -85,16 +87,19 @@ function createSessionInspection(
   },
   dependencies = {},
 ) {
+  validateInspectionSelection(config, { smoke, liveInspection, localInspection });
   const make = { ...inspectionProviders, ...dependencies };
+  const local = config.inspectionBackend === "local";
   const inspectorModel = localInspection
     ? make.simulatedInspectionModel()
     : new make.CodexPerception({
         binary: codexBinary,
         authHome: config.codexAuthHome,
-        model: selectedModels.inspectionModel,
+        model: local ? config.localVlm.model : selectedModels.inspectionModel,
         transcriber,
         quota,
         sessionId: id + "-inspect",
+        ...(local ? { agent: localVlmAgent(config.localVlm, make.LocalVlmAgent) } : {}),
       });
   const inner =
     smoke && !liveInspection && !localInspection
@@ -112,10 +117,31 @@ function createSessionInspection(
   // cached answer is refused after closure. A call in flight is told through its signal before reaching
   // the model; whatever it brings back despite that is neither answered nor left in the cache.
   const inspector = new make.RevocableInspector(
-    new make.CachedInspector(inner),
+    new make.CachedInspector(new InspectionDiagnostics(inner, inspectionIdentity({
+      config, inspectorModel, smoke, liveInspection, localInspection,
+    }))),
     REVOKED,
   );
   return { inspector, inspectorModel };
+}
+
+function validateInspectionSelection(config, { smoke, liveInspection, localInspection }) {
+  if (![undefined, "codex", "local"].includes(config.inspectionBackend) ||
+      (config.inspectionBackend === "local" && (localInspection || (smoke && !liveInspection)))) {
+    throw Object.assign(Error("Configuration du réexamen invalide : backend inconnu ou simulation demandée avec le backend local."), {
+      code: "TVLENS_INSPECTION_CONFIG_INVALID",
+    });
+  }
+  if (config.inspectionBackend === "local") validateOllamaConfig(config.localVlm);
+}
+
+function inspectionIdentity({ config, inspectorModel, smoke, liveInspection, localInspection }) {
+  const role = "inspection";
+  if (localInspection || (smoke && !liveInspection))
+    return { role, backend: "simulation", model: null, mode: localInspection ? "localInspection" : "smoke" };
+  if (config.inspectionBackend !== "local") return { role, backend: "codex", model: inspectorModel.model || null };
+  const { model, url, numCtx } = config.localVlm;
+  return { role, backend: "ollama", model, host: new URL(url).host, ...(numCtx ? { numCtx } : {}) };
 }
 
 function localVlmAgent(settings = {}, Agent = LocalVlmAgent) {

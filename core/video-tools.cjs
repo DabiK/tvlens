@@ -21,6 +21,11 @@ const consultationOf = view => ({ sessionId: view.session.id, anchorMs: view.clo
 // Fields of a consulted passage that the contract publishes as null when there is nothing to say.
 const OPTIONAL_FIELDS = ['revision', 'status', 'audioStatus', 'visionStatus', 'error', 'audioError', 'visionError',
   'visionSkipReason', 'stage', 'observation', 'topicSummary', 'summary'];
+const INSPECTION_IDENTITY_FIELDS = ['role', 'backend', 'model', 'host', 'numCtx', 'mode'];
+function inspectionProvenance(diagnostic) {
+  if (!diagnostic) return undefined;
+  return Object.fromEntries(INSPECTION_IDENTITY_FIELDS.filter(key => key in diagnostic).map(key => [key, diagnostic[key]]));
+}
 // The one translation from a consulted passage to the shape the search, the inspector and the evidence below have
 // always read. `available` says the video can be replayed and a reason is only given for one that cannot. A null
 // field is left absent, so that evidence, saved previews and tool outputs keep the exact shape they had.
@@ -62,6 +67,22 @@ class VideoTools {
     this.inFlight = 0;
     this.toolMetrics = []; this.memoryEvidence = []; this.transcriptEvidence = []; this.calls = 0; this.inspections = 0; this.busy = false;
     this.observations = []; this.hypotheses = []; this.limits = [];
+    this.inspectionDiagnostics = this.unexercisedInspection();
+  }
+  unexercisedInspection() {
+    if (!this.inspector?.identity) return undefined;
+    return { ...this.inspector.identity, exercised: false, modelCalled: false, cacheHit: false };
+  }
+  recordInspection(detail, diagnostic) {
+    if (!diagnostic) return;
+    detail.inspection = structuredClone(diagnostic);
+    // Le résumé garde les appels déjà exercés ; chaque détail décrit uniquement son propre appel.
+    this.inspectionDiagnostics = {
+      ...structuredClone(diagnostic),
+      exercised: this.inspectionDiagnostics?.exercised === true || diagnostic.exercised === true,
+      modelCalled: this.inspectionDiagnostics?.modelCalled === true || diagnostic.modelCalled === true,
+      ...(this.inspectionDiagnostics?.metrics && !diagnostic.metrics ? { metrics: structuredClone(this.inspectionDiagnostics.metrics) } : {}),
+    };
   }
   // The passages in the shape the tools read, at this instant: a concurrent refresh never changes a list handed out.
   toolPassages(passages = this.passages) {
@@ -170,6 +191,7 @@ class VideoTools {
     const startedAt = this.now();
     let status = 'completed';
     const detail = {};
+    if (name === 'inspect_clip' && this.inspector?.identity) detail.inspection = this.unexercisedInspection();
     this.inFlight++;
     try {
       const callSignal = signal && this.signal ? AbortSignal.any([signal, this.signal]) : signal || this.signal;
@@ -191,7 +213,7 @@ class VideoTools {
       throw error;
     }
   }
-  // `detail` receives counts for the tool metrics: never text.
+  // `detail` reçoit compteurs et identité diagnostique de l'adaptateur, sans texte du modèle.
   async invoke(name, args = {}, detail = {}, signal = this.signal) {
     signal?.throwIfAborted();
     if (++this.calls > VIDEO_TOOL_CALL_LIMIT) throw new Error('Limite de huit appels d’outils atteinte.');
@@ -233,7 +255,10 @@ class VideoTools {
     try {
       release = await this.leaseMedia(segments);
       signal?.throwIfAborted(); this.onProgress(`Réexamen ${Math.round(startMs/1000)}–${Math.round(endMs/1000)} s…`);
-      const value = await this.inspector.inspect({ question:args.question, startMs,endMs,segments,signal,onProgress:this.onProgress,...(args.exactSpeech&&{exactSpeech:true}) });
+      const value = await this.inspector.inspect({ question:args.question, startMs,endMs,segments,signal,
+        onProgress:this.onProgress, onDiagnostic: diagnostic => this.recordInspection(detail, diagnostic),
+        ...(args.exactSpeech&&{exactSpeech:true}) });
+      this.recordInspection(detail, value.inspection);
       signal?.throwIfAborted();
       if (this.released) throw new Error(RELEASED);
       if(value.cacheHit)this.inspectionCacheHits=(this.inspectionCacheHits||0)+1;
@@ -257,7 +282,11 @@ class VideoTools {
       if (said.some(x => x.failed)) limits.push('Paroles indisponibles pour ce réexamen : la transcription locale a échoué.');
       if (value.stillFrames) detail.stillFrames = value.stillFrames;
       detail.speech = { passages:said.length, reused:said.filter(x => x.reused === true).length, cached:said.filter(x => x.cacheHit === true).length, failed:said.filter(x => x.failed).length };
-      this.observations.push(...observations); this.hypotheses.push(...hypotheses); this.limits.push(...limits);
+      const provenance = inspectionProvenance(value.inspection || this.inspector.identity);
+      for (const observation of observations) delete observation.inspection;
+      // La provenance reste sur les preuves conservées ; l'agent ne reçoit que les observations.
+      const evidence = observations.map(observation => ({ ...observation, ...(provenance && { inspection: { ...provenance } }) }));
+      this.observations.push(...evidence); this.hypotheses.push(...hypotheses); this.limits.push(...limits);
       this.record('inspect_clip',segments,asOfMs,read);
       return { observations,hypotheses,limits, inspected:{ startMs,endMs }, intervals, sampledFrames:value.sampledFrames };
     } finally { this.busy = false; await release?.(); }

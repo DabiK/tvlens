@@ -107,3 +107,31 @@ test('embedding backend imports persist independently and never persist local to
   assert.equal(bare.embeddingsBackend, undefined);
   assert.deepEqual(bare.localEmbeddings, { url: null, model: null, token: null });
 });
+
+test('inspection backend persists file selection while environment wins without persisting local secrets', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-inspection-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'inspection.env');
+  await fs.writeFile(configPath, [
+    'TVLENS_INSPECTION_BACKEND=local', 'TVLENS_LOCAL_VLM_URL=http://127.0.0.1:9/private',
+    'TVLENS_LOCAL_VLM_MODEL=file-model', 'TVLENS_LOCAL_VLM_TOKEN=FILE_SECRET',
+  ].join('\n'));
+  const load = extra => loadConfig({ userData: root, safeStorage, environment: {}, ...extra });
+  const imported = await load({ configPath, environment: {
+    TVLENS_INSPECTION_BACKEND: 'codex', TVLENS_LOCAL_VLM_MODEL: 'env-model', TVLENS_LOCAL_VLM_TOKEN: 'ENV_SECRET',
+  } });
+  assert.equal(imported.inspectionBackend, 'codex');
+  assert.equal(imported.localVlm.model, 'env-model');
+  assert.equal(imported.localVlm.token, 'ENV_SECRET');
+  assert.doesNotMatch(await fs.readFile(path.join(root, 'provider.enc'), 'utf8'), /FILE_SECRET|ENV_SECRET|env-model/);
+  const restored = await load();
+  assert.equal(restored.inspectionBackend, 'local');
+  assert.equal(restored.localVlm.model, 'file-model');
+  assert.equal(restored.localVlm.token, null);
+  assert.deepEqual([restored.questionsBackend, restored.perceptionBackend], ['codex', 'codex']);
+  assert.equal((await load({ environment: { TVLENS_INSPECTION_BACKEND: 'invalid' } })).inspectionBackend, 'invalid');
+  assert.equal((await load({ configPath, environment: { TVLENS_INSPECTION_BACKEND: '' } })).inspectionBackend, 'local');
+  const bare = await loadConfig({ userData: root, environment: {}, safeStorage: { isEncryptionAvailable: () => false } });
+  assert.equal(bare.inspectionBackend, 'codex');
+});

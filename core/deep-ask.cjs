@@ -11,6 +11,12 @@ const plainAnswer=text=>typeof text==='string'?text.replace(/\[([^\]\n]{1,200})\
 // Product decision 1: one processing ceiling for a question on every host. It runs from the moment the
 // question leaves the queue; the wait before that is measured apart and never counted against it.
 const QUESTION_TIMEOUT_MS=300000,QUESTION_PROGRESS_MS=30000;
+// Les preuves d'un ancien réexamen gardent leur provenance quand une nouvelle question les cite.
+function citedInspectionEvidence(observations, priorEvidence, citations) {
+  const reused = priorEvidence.filter(evidence => evidence.inspection && citations.some(citation =>
+    citation.id === evidence.id && citation.startMs >= evidence.startMs && citation.endMs <= evidence.endMs));
+  return [...new Map([...observations, ...reused].map(evidence => [JSON.stringify(evidence), evidence])).values()];
+}
 const publicationContext = job => ({ sessionId: job?.sessionId, jobId: job?.id });
 // Wording of a ceiling for the viewer, derived from the value really enforced: whole minutes when exact,
 // otherwise seconds rounded up so that the announced limit is never shorter than the real one.
@@ -189,7 +195,7 @@ class DeepAsk {
           const external=job.mode==='chat'&&result.kind==='external'&&result.sources?.length;
           const missingSources=result.sourceValidation?.proposed>0&&!result.sources?.length;
           const conversational=!missingSources&&job.mode==='chat'&&['insufficient','explanation'].includes(result.kind);
-          job.result=(!missingSources&&citations.length&&result.kind!=='external')||external||conversational ? {...result,answer:plainAnswer(result.answer),citations,observations:[...observations],hypotheses:job.tools.hypotheses,limits:[...(result.limits||[]),...job.tools.limits]} : {...this.partial(job.tools,job.mode),answer:result.kind==='external'||missingSources ? 'Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.' : 'Je n’ai pas pu relier cette réponse aux passages consultés.',kind:'insufficient',citations:[],observations:[],hypotheses:[],sources:[],limits:['La réponse proposée n’a pas passé la validation des preuves.']};
+          job.result=(!missingSources&&citations.length&&result.kind!=='external')||external||conversational ? {...result,answer:plainAnswer(result.answer),citations,observations:citedInspectionEvidence(observations,priorEvidence,citations),hypotheses:job.tools.hypotheses,limits:[...(result.limits||[]),...job.tools.limits]} : {...this.partial(job.tools,job.mode),answer:result.kind==='external'||missingSources ? 'Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.' : 'Je n’ai pas pu relier cette réponse aux passages consultés.',kind:'insufficient',citations:[],observations:[],hypotheses:[],sources:[],limits:['La réponse proposée n’a pas passé la validation des preuves.']};
           job.sourcesReused=result.sourcesReused||0;
           if(job.firstUsefulAt===undefined&&job.result.kind!=='insufficient')job.firstUsefulAt=this.now();
           job.status='done';
@@ -210,13 +216,28 @@ class DeepAsk {
       }
       const lagAtStartMs=job.anchorMs-job.evidenceAtStart?.contextThroughMs;
       job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,firstAgentMs:job.firstAgentAt===undefined?null:job.firstAgentAt-job.startedAt,firstTextMs:job.firstTextAt===undefined?null:job.firstTextAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])],
+        inspection:job.tools.inspectionDiagnostics,
         evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};
-      if(job.mode==="chat")this.trace("job.finished",{jobId:job.id,sessionId:job.sessionId,status:job.status,totalMs:job.metrics.totalMs});
+      this.traceFinished(job);
       this.emit(publicationContext(job));
       // After the last read and the last publication, and only once the agent has really returned: at once for an
       // answer or an error, later after a ceiling or a cancellation, never if the agent never returns. No timer.
-      work.then(()=>this.release(job),()=>this.release(job));
+      work.then(()=>this.settleTools(job),()=>this.settleTools(job));
     }
+  }
+  settleTools(job) {
+    const tools = job.tools.toolMetrics || [];
+    if (job.tools.inspectionDiagnostics && tools.length !== job.metrics.tools.length) {
+      job.metrics = { ...job.metrics, tools: [...tools], inspection: job.tools.inspectionDiagnostics };
+      this.trace('inspection.settled', { jobId: job.id, sessionId: job.sessionId, status: job.status,
+        inspection: job.metrics.inspection, tools: job.metrics.tools });
+    }
+    this.release(job);
+  }
+  traceFinished(job) {
+    if (job.mode !== 'chat' && !job.metrics.inspection) return;
+    this.trace('job.finished', { jobId: job.id, sessionId: job.sessionId, status: job.status, totalMs: job.metrics.totalMs,
+      inspection: job.metrics.inspection, tools: job.metrics.tools });
   }
   progress(job,value){
     if(job.status!=='running')return;

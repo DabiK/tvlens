@@ -178,7 +178,8 @@ test("inspection selects smoke, live and local models and keeps its cache revoca
     assert.ok(built.inspector, "the public inspector is constructed");
     const [cached, message] = built.inspector.args;
     assert.match(message, /Session terminée/);
-    const [inner] = cached.args;
+    const [diagnosed] = cached.args;
+    const inner = diagnosed.inner;
     if (localInspection) assert.equal(built.inspectorModel, localModel);
     else
       assert.deepEqual(built.inspectorModel.args, [

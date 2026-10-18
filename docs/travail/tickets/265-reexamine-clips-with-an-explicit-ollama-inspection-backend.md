@@ -1,7 +1,7 @@
 ---
 id: T265
 titre: Reexamine clips with an explicit Ollama inspection backend
-statut: a-faire
+statut: termine
 bloque_par: T255, T270
 adr: non
 installe: non
@@ -126,3 +126,84 @@ Ollama n'est déduite des seuls tests. T263 n'est pas nécessaire pour exercer l
 
 - 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
   aussi T270.
+
+- 18/10, Codex : exploration de la composition, du rôle, des outils, du cache et des métriques T255.
+  État et périmètre consignés dans `.harness-state/tickets/T265/exploration.md` et `ecarts.md`.
+  Aucun essai réel, aucun sous-agent ; les dossiers non suivis préexistants sont préservés.
+
+- 18/10, Codex : sélection indépendante `inspectionBackend`, défaut Codex, configuration locale validée,
+  refus des mélanges simulation/mesure locale. Tests rouges observés dans `selection-red.log`, puis
+  `node --test --test-concurrency=1 tests/local-inspection.test.cjs tests/portable-config.test.cjs tests/session-providers.test.cjs`
+  : 28 réussites (`selection-green.log`).
+- 18/10, Codex : chaîne réelle planches → rôle inspect → faux Ollama → outils, provenance conservée,
+  cache par identité et révocation. Rouge puis vert dans `inspection-*.log` ; erreurs HTTP/JSON et
+  délai local de 45 s piloté dans `failures-*.log`. Réponses retenues après annulation/révocation :
+  aucun cache ni preuve tardive, bail détenu jusqu'au retour effectif.
+- 18/10, Codex : propagation vers métriques et traces des questions ; réutilisation d'une observation
+  antérieure avec son identité d'origine. Rouge puis vert dans `questions-*.log` et
+  `late-metrics-*.log` pour les métriques d'une inspection finissant après annulation.
+  Les mesures numériques T255 restent disponibles même si le contenu JSON modèle est invalide
+  (`invalid-content-*.log`) ; aucun champ textuel inattendu ne passe dans les métriques (`diagnostic-*.log`).
+- 18/10, Codex : première exécution séquentielle des huit suites demandées : 98 tests réussis
+  (`targeted.log`). `node scripts/check.mjs --changed` a signalé une méthode trop longue,
+  corrigée par extraction, puis une suppression devenue inutile ; élagage par
+  `node_modules/.bin/eslint --prune-suppressions` sur les modules modifiés : compteur de complexité
+  de `core/deep-ask.cjs` réduit de 3 à 2. Contrôle `--changed` ensuite vert, 53 tests réussis.
+  Une dernière passe ciblée et le contrôle complet suivent les derniers ajouts de diagnostics.
+- 18/10, Codex : passe ciblée finale en séquentiel sur les huit fichiers : 101/101 réussites
+  (`targeted-final.log`). Premier `node scripts/check.mjs` : règles, format, lint, gel et cliquet verts,
+  2 727/2 728 tests JavaScript réussis ; seul échec : contrat exhaustif de configuration dans
+  `media-asr-options`, qui n'attendait pas encore `inspectionBackend: 'codex'`. Les 47 tests Python passent.
+  Échec reproduit sur assertion (`config-contract-red.log`), ajout du nouveau défaut à l'attendu sans
+  retirer d'assertion, puis `node --test tests/media-asr-options.test.cjs` : 8/8 réussites
+  (`config-contract-green.log`). Contrôles `--changed` et complet relancés après cette correction.
+- 18/10, Codex : contrôles finaux verts : `node scripts/check.mjs --changed` (63/63 tests,
+  5 fichiers modifiés), puis `node scripts/check.mjs` (2 728/2 728 tests JavaScript, 148 fichiers
+  en séquentiel ; 47 tests Python). Règles, format, lint, gel et cliquet validés ; sorties conservées
+  dans `check-changed.log` et `check-full.log` du dossier d'état. `git diff --check` : succès.
+  Contrat disponible pour T259/T261 : `inspector.identity`, `metrics.inspection`,
+  `metrics.tools[].inspection`, traces `job.finished` et `inspection.settled` ; un cache conserve
+  les mesures originales avec `cacheHit: true` et `modelCalled: false`, l'absence d'appel reste
+  `exercised: false`. Verdict `TERMINÉ`, sans réserve. Aucun essai réel, commit ni push ;
+  relecture et intégration laissées à la boucle.
+- 18/10, Codex : reprise après `relecture-1.md`, lecture du rapport, du journal, des écarts et du diff.
+  Les trois mineurs sont acceptés : résumé diagnostique cumulatif, provenance réservée aux preuves
+  conservées, absence d'émission à la libération. Corrections prévues consignées dans `ecarts.md` ;
+  aucun nouveau périmètre ni ADR. Reproduction par les frontières publiques avant chaque correction.
+- 18/10, Codex, correction de relecture :
+  `node --test --test-name-pattern='question inspection summary retains' tests/local-inspection.test.cjs`
+  : quatre assertions rouges puis quatre tests verts (`correction-summary-*.log`). Résumé de question
+  avec indicateurs acquis, mesures antérieures conservées, refus limités au détail de leur appel.
+  Un succès après échec remplace aussi l'ancienne issue sans effacer les indicateurs
+  (`summary keeps the latest outcome`, rouge puis vert dans `correction-outcome-*.log`).
+- 18/10, Codex, correction de relecture :
+  `node --test --test-name-pattern='real tools send contact sheets' tests/local-inspection.test.cjs`
+  : assertion rouge sur la provenance exposée, puis test vert et réutilisation interquestions verte
+  (`correction-output-*.log`). Les preuves internes gardent l'identité d'origine ; les observations
+  rendues à l'agent, y compris en cache, n'exposent plus `inspection` ni l'adresse du serveur.
+- 18/10, Codex, correction de relecture :
+  `node --test --test-name-pattern='settling after question cancellation' tests/local-inspection.test.cjs`
+  : assertion rouge (6 publications au lieu de 5), puis test vert après retrait de l'émission
+  (`correction-settlement-*.log`). Mesures tardives et trace conservées, résultat annulé et bail
+  inchangés ; aucune publication supplémentaire à la libération (ADR 0004 §7).
+- 18/10, Codex, correction de relecture : suites demandées par
+  `node --test --test-concurrency=1 tests/local-inspection.test.cjs tests/session-providers.test.cjs tests/local-vlm-agent.test.cjs tests/revocable-inspector.test.cjs tests/reinspection-transcript-reuse.test.cjs tests/inspection-strategies.test.cjs tests/portable-config.test.cjs tests/review-regressions.test.cjs`
+  : 106/106 réussites (`correction-targeted.log`). `node scripts/check.mjs --changed` : vert,
+  68/68 tests, règles/format/lint/gel/cliquet validés (`correction-check-changed.log`).
+  `node scripts/check.mjs` lancé en entier, résultat attendu avant le nouveau verdict.
+- 18/10, Codex, correction de relecture : `node scripts/check.mjs` complet vert :
+  2 733/2 733 tests JavaScript (148 fichiers en séquentiel), 47 tests Python réussis ; règles,
+  format, lint, gel et cliquet validés (`correction-check-full.log`). `git diff --check` : succès.
+  Les trois constats mineurs sont corrigés, sans contestation ni nouvelle réserve propre.
+  Nouveau verdict `TERMINÉ` écrit dans le dossier d'état. Aucun essai réel, sous-agent, commit ou push ;
+  relecture de correction et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T265/relecture-2.md : 1. `runtime/state-views.cjs:79-82` (`lightJob`) : hors périmètre (réserve maintenue)
+
+  - **Problème :** c'est le constat 4 de la relecture 1. La correction ne touche pas ce fichier. Les vues légères (TV, chat, panneau) retirent `tools` et `evidence` des métriques, mais laissent encore passer `metrics.inspection`, qui contient l'identité avec `host`.
+  - **Bonne nouvelle :** les observations de `result` sont réduites à `{ id, startMs, endMs }` (`:86-88`). La provenance que la correction place sur les preuves conservées ne part donc pas vers ces clients.
+  - **Attendu :** réserve à reporter. Il faut décider si ce diagnostic doit quitter les vues légères, dans un ticket qui a ce fichier dans son périmètre.
+- .harness-state/tickets/T265/relecture-2.md : **Écart accepté, paragraphe 1 de `ecarts.md`** (décorateur de diagnostic, rappel dans le rôle et `LocalVlmAgent`, exposition dans `DeepAsk`) : décision de la relecture 1 maintenue. L'émission à la libération, qui n'était pas couverte par cet écart, est retirée.
+- .harness-state/tickets/T265/relecture-2.md : **Écart accepté, paragraphe 2** (`tests/media-asr-options.test.cjs`) : décision maintenue, puisque la comparaison exhaustive est complétée sans retrait.

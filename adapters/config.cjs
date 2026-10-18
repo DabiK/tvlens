@@ -58,7 +58,7 @@ async function stored(cached, safeStorage) {
 // either. A mistyped value is kept as typed: the session runtime refuses it at start instead of
 // running under another setting than intended.
 const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLENS_BACKGROUND_INDEX', 'TVLENS_PERCEPTION_BACKEND',
-  'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
+  'TVLENS_INSPECTION_BACKEND', 'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
   'TVLENS_QUESTIONS_BACKEND', 'TVLENS_LOCAL_QUESTIONS_URL', 'TVLENS_LOCAL_QUESTIONS_MODEL',
   'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE',
   'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL'];
@@ -79,6 +79,7 @@ function switches(env) {
     questionsBackend: env.TVLENS_QUESTIONS_BACKEND || 'codex',
     localQuestions: localQuestionsConfig(env),
     perceptionBackend: env.TVLENS_PERCEPTION_BACKEND || 'codex',
+    inspectionBackend: env.TVLENS_INSPECTION_BACKEND || 'codex',
     localVlm: { url: env.TVLENS_LOCAL_VLM_URL || null, model: env.TVLENS_LOCAL_VLM_MODEL || null,
       numCtx: env.TVLENS_LOCAL_VLM_NUM_CTX ? Number(env.TVLENS_LOCAL_VLM_NUM_CTX) : undefined,
       keepAlive: env.TVLENS_LOCAL_VLM_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_VLM_TOKEN || null } };
