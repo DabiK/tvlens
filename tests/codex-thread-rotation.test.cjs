@@ -372,3 +372,30 @@ test('transcribe marks a failed transcription explicitly; the legacy combined pa
     assert.equal(spoken.observation.transcript, ok.text);
   }
 });
+
+test('visual metrics distinguish a cold connection, warm turns, context rotation and reconnection through the real Codex agent', async (t) => {
+  let time = 0;
+  t.mock.method(Date, 'now', () => time);
+  const f = fixture({ handle: method => { if (method === 'initialize') time += 30; },
+    answer: () => { time += 20; return { ...observation, coldStart: 'usurpé', connectMs: -1 }; } });
+  const perception = new CodexPerception({ agent: new CodexAnalysisAgent({ client: f.client }), sessionId: 's' });
+  t.after(() => perception.close());
+  const reports = [];
+  reports.push(await perception.observeVisual(segment(1, 'moment-0')));
+  reports.push(await perception.observeVisual(segment(2, 'moment-0')));
+  reports.push(await perception.observeVisual(segment(3, 'moment-3')));
+  reports.push(await perception.observeVisual(segment(4, 'moment-3')));
+  await f.client.close();
+  reports.push(await perception.observeVisual(segment(5, 'moment-3')));
+  reports.push(await perception.observeVisual(segment(6, 'moment-3')));
+  assert.deepEqual(reports.map(({ metrics }) => [metrics.coldStart, metrics.connectMs, metrics.threadTurn, metrics.threadReset]), [
+    [true, 30, 1, true], [false, 0, 2, false], [false, 0, 1, true], [false, 0, 2, false],
+    [true, 30, 1, true], [false, 0, 2, false],
+  ]);
+  assert.deepEqual(f.sent('turn/start').map(request => request.params.threadId),
+    ['thread-1', 'thread-1', 'thread-2', 'thread-2', 'thread-3', 'thread-3']);
+  assert.equal(f.connections.length, 2);
+  for (const { metrics } of reports) {
+    assert.equal('clientTimings' in metrics || 'modelState' in metrics, false, 'local measurements are not invented on Codex');
+  }
+});

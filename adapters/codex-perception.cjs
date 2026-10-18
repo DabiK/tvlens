@@ -64,6 +64,16 @@ function passing(error, caller, deadline) {
   return TRANSIENT_CODES.has(error?.code) || localStatus(error, 500, 599) ||
     (error?.code === TVLENS_CODEX_REQUEST_TIMEOUT && ["initialize", "thread/start"].includes(error.method));
 }
+// Mesures annoncées par l'agent : ms clientes, ms arrondies et rawNs fournisseur en nanosecondes.
+// L'état inconnu du modèle reste indépendant de coldStart/connectMs et de la profondeur du fil.
+// Une liste explicite empêche de publier les autres champs de la réponse dans les métriques.
+function reportedMetrics(output) {
+  const metrics = Object.fromEntries(["backend", "providerTimings", "clientTimings"]
+    .filter((key) => output[key] && typeof output[key] === "object")
+    .map((key) => [key, output[key]]));
+  if (output.modelState === "unknown") metrics.modelState = output.modelState;
+  return metrics;
+}
 class CodexPerception {
   constructor({
     binary,
@@ -221,8 +231,7 @@ class CodexPerception {
         threadReset: this.resets > resets || output.coldStart === true,
         // Position of this call in its model context (1 = first): lets a live run relate latency to thread depth.
         threadTurn: this.count,
-        // Reported by the agent only (e.g. a local model backend); never inferred here.
-        ...Object.fromEntries(["backend", "providerTimings"].filter((k) => output[k] && typeof output[k] === "object").map((k) => [k, output[k]])),
+        ...reportedMetrics(output),
       },
       elapsedMs: Date.now() - started,
     };

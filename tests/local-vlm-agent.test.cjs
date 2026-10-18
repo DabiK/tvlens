@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const { inspect } = require('node:util');
-const { bounded, failure } = require('./helpers/wait.cjs');
+const { bounded, failure, deferred, tick } = require('./helpers/wait.cjs');
 const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 
@@ -58,7 +58,8 @@ test('request carries prompt, bare base64 images, schema and private header; res
   assert.equal(result.summary, 'Une image.');
   assert.deepEqual(result.backend, { kind: 'ollama', model: MODEL, host: server.host, numCtx: 8192 });
   assert.deepEqual([result.coldStart, result.connectMs], [false, 0], 'connection facts come from the agent, never from the model output');
-  assert.deepEqual(result.providerTimings, { totalMs: 2500, loadMs: 1200, promptEvalMs: 800, evalMs: 500, promptTokens: 321, evalTokens: 42 });
+  assert.deepEqual(result.providerTimings, { totalMs: 2500, loadMs: 1200, promptEvalMs: 800, evalMs: 500, promptTokens: 321, evalTokens: 42,
+    rawNs: { total_duration: 2500000000, load_duration: 1200000000, prompt_eval_duration: 800400000, eval_duration: 499600000 } });
   assert.ok(Number.isFinite(result.elapsedMs) && result.elapsedMs >= 0);
   assert.doesNotMatch(JSON.stringify(result) + inspect(agent, { depth: 6, showHidden: true }), /JETON_PRIVE/);
 
@@ -197,4 +198,212 @@ test('seam: CodexPerception builds the prompt and validates the observation infe
   assert.match(request.body.messages[0].content, /Bonjour à tous\./);
   assert.equal(request.body.format.type, 'object');
   assert.ok(request.body.format.required.includes('summary'));
+});
+
+// Chaque frontière du transport est retenue séparément, sans mesurer le temps de la machine.
+function heldTransport(count = 2) {
+  const calls = Array.from({ length: count }, () => ({
+    started: deferred(), headers: deferred(), reading: deferred(), body: deferred(),
+  }));
+  let sent = 0;
+  const fetchImpl = async (url, { signal }) => {
+    const call = calls[sent++];
+    call.started.resolve(signal);
+    await call.headers.promise;
+    return { ok: true, text: () => {
+      call.reading.resolve();
+      return call.body.promise;
+    } };
+  };
+  return { calls, fetchImpl, sent: () => sent };
+}
+function localBody(content = { ok: true }, durations = {}) {
+  return JSON.stringify({ message: { content: JSON.stringify(content) }, ...durations });
+}
+
+test('client timings separate time since answer from HTTP through the entire body without overlapping requests', async (t) => {
+  let time = 100;
+  const transport = heldTransport();
+  const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL, now: () => time, fetchImpl: transport.fetchImpl });
+  t.after(() => agent.close());
+  const [one, two] = transport.calls;
+  const first = agent.answer({ instructions: 'un' });
+  time = 110;
+  await one.started.promise;
+  time = 140;
+  const second = agent.answer({ instructions: 'deux' });
+  await tick();
+  assert.equal(transport.sent(), 1);
+  time = 170;
+  one.headers.resolve();
+  await one.reading.promise;
+  assert.equal(transport.sent(), 1, 'headers alone do not release serialization');
+  time = 210;
+  one.body.resolve(localBody({ clientTimings: { queueMs: -1, requestMs: -1 }, elapsedMs: -1 }));
+  const firstResult = await first;
+  await two.started.promise;
+  time = 230;
+  two.headers.resolve();
+  await two.reading.promise;
+  time = 260;
+  two.body.resolve(localBody());
+  const secondResult = await second;
+  assert.deepEqual(firstResult.clientTimings, { queueMs: 10, requestMs: 100 });
+  assert.deepEqual(secondResult.clientTimings, { queueMs: 70, requestMs: 50 });
+  assert.deepEqual([firstResult.elapsedMs, secondResult.elapsedMs], [100, 50]);
+  assert.equal(transport.sent(), 2);
+});
+
+test('provider timings retain exact nanoseconds and omit missing or invalid durations instead of inventing zero', async () => {
+  const durations = { total_duration: 12345678, load_duration: 1234567, prompt_eval_duration: 3456789, eval_duration: 7654321 };
+  let supplied = durations;
+  const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL,
+    fetchImpl: async () => ({ ok: true, text: async () => localBody({ providerTimings: { loadMs: 999, rawNs: { load_duration: 999 } } }, supplied) }) });
+  assert.deepEqual((await agent.answer({ instructions: 'un' })).providerTimings, {
+    totalMs: 12, loadMs: 1, promptEvalMs: 3, evalMs: 8, rawNs: durations,
+  });
+  for (const invalid of [undefined, null, '0', -1, NaN, Infinity, {}, []]) {
+    supplied = Object.fromEntries(Object.keys(durations).map(key => [key, invalid]));
+    assert.deepEqual((await agent.answer({ instructions: 'inconnu' })).providerTimings, {}, String(invalid));
+  }
+  supplied = { load_duration: 0 };
+  assert.deepEqual((await agent.answer({ instructions: 'zéro annoncé' })).providerTimings, { loadMs: 0, rawNs: { load_duration: 0 } });
+});
+
+test('local model state stays unknown for positive, zero, absent or invalid loading durations and resists model claims', async () => {
+  let supplied;
+  const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL,
+    fetchImpl: async () => ({ ok: true, text: async () => localBody({ modelState: 'warm', coldStart: true, connectMs: 999 }, supplied) }) });
+  for (const load_duration of [9000000000, 0, undefined, null, -1, 'inconnu']) {
+    supplied = { load_duration };
+    const result = await agent.answer({ instructions: 'un' });
+    assert.deepEqual([result.modelState, result.coldStart, result.connectMs], ['unknown', false, 0], String(load_duration));
+  }
+});
+
+test('seam: queued local client and provider timings reach visual metrics without turning a model load into a thread reset', async (t) => {
+  let time = 0;
+  const arrivals = [deferred(), deferred()];
+  const content = { topic: 'Sujet', continuity: 'continue', summary: 'Résumé', visual: 'Image', uncertainty: '',
+    topicSummary: 'Cumul', coldStart: true, connectMs: 999, modelState: 'warm', threadReset: true, threadTurn: 1,
+    backend: { host: 'usurpé' }, providerTimings: { loadMs: 999 }, clientTimings: { queueMs: -1, requestMs: -1 },
+    endpoint: 'CHEMIN_PRIVE', headers: { Authorization: SECRET } };
+  const durations = { total_duration: 1100000000, load_duration: 500000000, prompt_eval_duration: 400000000, eval_duration: 200000000 };
+  const server = await backend(t, (request, res, n) => {
+    if (n <= 2) arrivals[n - 1].resolve(res);
+    else reply(res, content);
+  });
+  const agent = new LocalVlmAgent({ url: server.url + '/CHEMIN_PRIVE', model: MODEL, now: () => time, headers: { Authorization: SECRET } });
+  const perception = new CodexPerception({ agent });
+  t.after(() => perception.close());
+  const segment = n => ({ id: 'moment-' + n, startMs: n * 8000, endMs: (n + 1) * 8000, frames: [],
+    context: { activeTopic: { firstId: 'moment-0', recent: [] }, previousTopic: 'Sujet' } });
+  const first = perception.observeVisual(segment(1));
+  const firstResponse = await arrivals[0].promise;
+  time = 20;
+  const second = perception.observeVisual(segment(2));
+  await tick();
+  assert.equal(server.requests.length, 1);
+  time = 70;
+  reply(firstResponse, content, durations);
+  const firstResult = await first;
+  const secondResponse = await arrivals[1].promise;
+  time = 100;
+  reply(secondResponse, content, durations);
+  const result = await second;
+  assert.deepEqual(firstResult.metrics.clientTimings, { queueMs: 0, requestMs: 70 });
+  assert.deepEqual(result.metrics.clientTimings, { queueMs: 50, requestMs: 30 });
+  assert.deepEqual(result.metrics.providerTimings, { totalMs: 1100, loadMs: 500, promptEvalMs: 400, evalMs: 200, rawNs: durations });
+  assert.deepEqual([result.metrics.modelState, result.metrics.coldStart, result.metrics.connectMs,
+    firstResult.metrics.threadReset, result.metrics.threadReset, result.metrics.threadTurn], ['unknown', false, 0, false, false, 2]);
+  assert.deepEqual(result.metrics.backend, { kind: 'ollama', model: MODEL, host: server.host });
+  assert.doesNotMatch(JSON.stringify([firstResult.metrics, result.metrics]), /JETON_PRIVE|CHEMIN_PRIVE|usurpé/);
+  const third = await perception.observeVisual(segment(3));
+  assert.deepEqual([third.metrics.modelState, third.metrics.providerTimings, third.metrics.threadTurn, third.metrics.threadReset],
+    ['unknown', {}, 3, false]);
+});
+
+test('cancelling a queued answer sends nothing for it and preserves serialization and timings for the next admissible call', async (t) => {
+  let time = 0;
+  const transport = heldTransport();
+  const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL, now: () => time, fetchImpl: transport.fetchImpl });
+  t.after(() => agent.close());
+  const first = agent.answer({ instructions: 'retenu' });
+  await transport.calls[0].started.promise;
+  time = 10;
+  const caller = new AbortController(), reason = Error('Question annulée.');
+  const refused = failure(agent.answer({ instructions: 'annulé en attente', signal: caller.signal }));
+  caller.abort(reason);
+  time = 20;
+  const third = agent.answer({ instructions: 'admissible' });
+  await tick();
+  assert.equal(transport.sent(), 1);
+  time = 70;
+  transport.calls[0].headers.resolve();
+  transport.calls[0].body.resolve(localBody());
+  await first;
+  assert.equal(await refused, reason);
+  await transport.calls[1].started.promise;
+  time = 90;
+  transport.calls[1].headers.resolve();
+  transport.calls[1].body.resolve(localBody());
+  const result = await third;
+  assert.equal(transport.sent(), 2, 'the cancelled queued answer never reaches fetch');
+  assert.deepEqual(result.clientTimings, { queueMs: 50, requestMs: 20 });
+});
+
+test('seam: bodies delivered after caller cancellation, either deadline or closure never produce an observation or success metrics', async (t) => {
+  let deadlines;
+  t.mock.method(AbortSignal, 'timeout', delay => deadlines.get(delay).signal);
+  const segment = { id: 'moment-1', startMs: 0, endMs: 8000, frames: [],
+    context: { activeTopic: { firstId: 'moment-0', recent: [] } } };
+  const content = { topic: 'Sujet', continuity: 'continue', summary: 'Résumé', visual: 'Image', uncertainty: '', topicSummary: 'Cumul' };
+  for (const stage of ['headers', 'body']) {
+    for (const mode of ['caller', 'localDeadline', 'visualDeadline', 'close']) {
+      deadlines = new Map([[123, new AbortController()], [321, new AbortController()]]);
+      const transport = heldTransport();
+      const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL, timeoutMs: 321, fetchImpl: transport.fetchImpl });
+      const perception = new CodexPerception({ agent, timeoutMs: 123 });
+      t.after(() => perception.close());
+      const caller = new AbortController(), successes = [];
+      const rejected = failure(perception.observeVisual({ ...segment, signal: caller.signal }).then(result => {
+        successes.push(result);
+        return result;
+      }));
+      const [one, two] = transport.calls;
+      const signal = await one.started.promise;
+      if (stage === 'body') {
+        one.headers.resolve();
+        await one.reading.promise;
+      }
+      const reason = new DOMException('Abandon piloté.', mode === 'caller' ? 'AbortError' : 'TimeoutError');
+      if (mode === 'caller') caller.abort(reason);
+      else if (mode === 'localDeadline') deadlines.get(321).abort(reason);
+      else if (mode === 'visualDeadline') deadlines.get(123).abort(reason);
+      else await perception.close();
+      assert.equal(signal.aborted, true, mode + ': ' + stage);
+      one.headers.resolve();
+      await one.reading.promise;
+      one.body.resolve(localBody(content, { load_duration: 9000000000 }));
+      const error = await rejected;
+      if (mode === 'visualDeadline') {
+        assert.deepEqual([error.code, error.cause], ['TVLENS_VISION_TRANSIENT', reason]);
+      } else if (mode === 'close') {
+        assert.equal(error.code, 'TVLENS_LOCAL_VLM_CLOSED');
+      } else assert.equal(error, reason);
+      assert.deepEqual(successes, [], mode + ': no observation or success metrics after ' + stage);
+      if (mode === 'close') {
+        await assert.rejects(perception.observeVisual(segment), { code: 'TVLENS_LOCAL_VLM_CLOSED' });
+        assert.equal(transport.sent(), 1);
+      } else {
+        deadlines = new Map([[123, new AbortController()], [321, new AbortController()]]);
+        two.headers.resolve();
+        two.body.resolve(localBody(content));
+        const next = await perception.observeVisual(segment);
+        assert.equal(next.observation.summary, 'Résumé');
+        assert.deepEqual([next.metrics.modelState, next.metrics.threadTurn, next.metrics.threadReset], ['unknown', 2, false]);
+        assert.equal(transport.sent(), 2);
+      }
+    }
+  }
 });

@@ -75,7 +75,7 @@
   },
   "adapters/local-vlm-agent.cjs": {
     "complexity": {
-      "count": 2
+      "count": 1
     }
   },
   "adapters/remote-media.cjs": {
