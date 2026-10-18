@@ -2,7 +2,7 @@
 id: T274
 titre: Check the question backend and the GX10 copy live on the Mac
 statut: a-faire
-bloque_par: T267, T276
+bloque_par: T267, T276, T277
 adr: non
 installe: non
 harnais: non
@@ -35,7 +35,7 @@ ticket n'est pas terminé, T268 attend.
      qui échoue, Ollama arrêté, garde l'identité de son agent ;
   2. répétition de la copie A : une vidéo convertie (T262), rejouée par la perception locale (T257), un échantillon noté
      (T258), puis des questions locales sur cette session ;
-  3. avec T269 à T273 et T276 terminés, poser le tag de la copie A sur ce commit ;
+  3. avec T269 à T273 et T276 terminés et T277 intégré, poser le tag de la copie A sur ce commit ;
   4. écrire le résultat dans le journal de ce ticket, avec le commit exercé et les chiffres relevés. Un écart devient
      un ticket correctif sans bloqueur ; ce ticket reste à faire jusqu'à ce que le correctif soit intégré et le
      contrôle refait. Quand le contrôle est concluant : statut `termine`, commit de ce seul fichier, boucle relancée.

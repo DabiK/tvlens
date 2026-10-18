@@ -55,6 +55,11 @@ un commit documentaire, environ 1 h après les outils de rejeu, notation et bila
   bilan T261, conversion vidéo T262, rôles locaux T263–T265, identité des questions T267
   et banc Whisper existant.
 - À modifier : `docs/README.md`, un lien vers `gx10-experiment.md`.
+- À modifier aussi, d'après les réserves de relecture de T255 et T263 : `docs/backend-latency-optimization.md`, le
+  protocole de l'essai A (`:357` à `9e84275`) qui doit citer `clientTimings.queueMs`, `clientTimings.requestMs`,
+  `providerTimings.rawNs` et `modelState`, et le tableau des réglages (`:395-396`) sans `TVLENS_QUESTIONS_BACKEND` ni
+  `TVLENS_LOCAL_QUESTIONS_*` ; `docs/architecture.md:148`, qui ne nomme que `CodexSessionAgent` dans la composition des
+  questions.
   Aucun changement de code, de harnais ni de configuration personnelle.
 - Donner les commandes depuis une copie explicite, les modes sans fournisseur et les préconditions
   des commandes réelles. Vérifier seulement les aides, validations et rejeux contrôlés déjà livrés ;
@@ -192,3 +197,6 @@ par l'opérateur. Le guide ne promet ni résultat de concours ni validation mat�
 de démonstration demeure `hackathon-rc` ; une réussite expérimentale ne vaut que pour son SHA figé.
 
 ## Journal
+
+- 18/10, orchestrateur : périmètre complété par les réserves de relecture de T255 (protocole de l'essai A) et de T263
+  (réglages et composition des questions locales), qui sortaient du périmètre de ces deux tickets.

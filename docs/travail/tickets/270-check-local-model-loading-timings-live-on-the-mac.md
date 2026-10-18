@@ -1,7 +1,7 @@
 ---
 id: T270
 titre: Check local model loading timings live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T255
 adr: non
 installe: non
@@ -55,3 +55,16 @@ Décision attendue du propriétaire : le contrôle réel de T255 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+
+- 18/10, orchestrateur : contrôle réel concluant au commit `9e84275`, sur le Mac (M5 Max, 36 Go, boucle arrêtée), Ollama
+  0.33.2, `gemma3:4b` déchargé au départ, perception de production réglée sur `local`, quatre passages réels de la
+  session du 17/10 (`ec55a89c`), sans aucun processus Codex.
+  - À froid : 6,7 s, dont 1,6 s de chargement annoncé par Ollama (`providerTimings.loadMs`), attente 0, aller-retour
+    HTTP 6,7 s ; `coldStart` faux, `modelState` `unknown`. À chaud : 5,2 s, chargement 3 ms.
+  - Deux passages envoyés ensemble : le second attend 4,6 s (`clientTimings.queueMs`), soit la durée du premier, puis
+    son propre aller-retour dure 5,4 s. L'attente et l'appel sont bien séparés.
+  - Ce matin, avant T255, le premier appel comptait 3,7 s de chargement mélangés à la durée totale, avec `coldStart`
+    faux et sans attente mesurée (`experiments/essais/2026-10-18-perception-locale-mac/`).
+  - Réserves de relecture de T255 : le JSON d'un modèle Codex peut revendiquer des mesures (T277, avant la copie A) ;
+    le protocole GX10 de `docs/backend-latency-optimization.md` ignore les nouveaux champs (confié à T260).
+    Statut `termine`.
