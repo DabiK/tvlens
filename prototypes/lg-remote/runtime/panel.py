@@ -5,6 +5,8 @@ APP='org.tvlens.sidebarprobe'
 stop=False
 GENERATION=Path('/tmp/tvlens-panel-generation')
 WATCHDOG_TIMEOUT=20
+SIDEBAR_APPEAR_TIMEOUT=8
+SIDEBAR_POLL_INTERVAL=.5
 LAYOUT_REQUEST=Path('/tmp/tvlens-panel-layout-request.json')
 LAYOUT_STATE=Path('/tmp/tvlens-panel-layout-state.json')
 LOCK='/tmp/tvlens-panel.lock'
@@ -17,9 +19,12 @@ TVLENS_PANEL_SOURCE_CROPPED='TVLENS_PANEL_SOURCE_CROPPED'
 TVLENS_PANEL_SOURCE_INVALID='TVLENS_PANEL_SOURCE_INVALID'
 TVLENS_PANEL_OUTPUT_INVALID='TVLENS_PANEL_OUTPUT_INVALID'
 TVLENS_PANEL_NOTIFICATION_FAILED='TVLENS_PANEL_NOTIFICATION_FAILED'
+TVLENS_PANEL_SIDEBAR_TIMEOUT='TVLENS_PANEL_SIDEBAR_TIMEOUT'
+TVLENS_PANEL_SIDEBAR_CLOSE_FAILED='TVLENS_PANEL_SIDEBAR_CLOSE_FAILED'
 PLAYBACK_MESSAGE='TVLens : lance une vidéo YouTube pour ouvrir le panneau.'
 OUTPUT_MESSAGE='TVLens : le rectangle vidéo est invalide ou dépasse l’écran.'
 pause=time.sleep
+clock=time.monotonic
 
 class PanelRefusal(ValueError):
     def __init__(self,code,detail,message):
@@ -141,6 +146,28 @@ def restore_original(saved):
             result=call('com.webos.service.videooutput/display/setDisplayWindow',saved)
             print('restore',json.dumps(result),flush=True)
 
+def wait_for_sidebar(deadline,heartbeat):
+    while not stop:
+        windows=call('com.webos.surfacemanager/getForegroundWindowInfo',{})
+        if any(window.get('appId')==APP for window in windows.get('windows',[])):
+            return True
+        remaining=deadline-clock()
+        if remaining<=0:
+            return False
+        heartbeat.touch()
+        pause(min(SIDEBAR_POLL_INTERVAL,remaining))
+    return False
+
+def abandon_unshown_sidebar():
+    try:
+        result=call('com.webos.applicationManager/closeByAppId',{'id':APP})
+        if not result.get('returnValue'):
+            print(TVLENS_PANEL_SIDEBAR_CLOSE_FAILED,json.dumps(result),flush=True)
+    except Exception as close_error:
+        print(TVLENS_PANEL_SIDEBAR_CLOSE_FAILED,str(close_error),flush=True)
+    notify_refusal(PanelRefusal(TVLENS_PANEL_SIDEBAR_TIMEOUT,'Sidebar window did not appear',
+                               "TVLens : le panneau n'a pas pu s'afficher."))
+
 def main():
     lock=open(LOCK,'w')
     try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -167,9 +194,14 @@ def main():
         if not result.get('returnValue'):raise RuntimeError(result)
         result=call('com.webos.applicationManager/launch',{'id':APP})
         if not result.get('returnValue'):raise RuntimeError(result)
+        sidebar_deadline=clock()+SIDEBAR_APPEAR_TIMEOUT
         # `video` is the logical rectangle the application must keep clear of its own overlay.
         write_layout({'active':True,'mode':mode,'requestId':request_id,'video':target['displayOutput']})
         pause(1)
+        if not wait_for_sidebar(sidebar_deadline,heartbeat):
+            if not stop:
+                abandon_unshown_sidebar()
+            return
         while not stop:
             v=video()
             if v.get('context')!=saved['context'] or v['displayOutput']!=physical_rect(target):

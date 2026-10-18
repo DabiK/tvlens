@@ -1,7 +1,7 @@
 ---
 id: T285
 titre: Keep the TV panel open while the sidebar takes time to appear
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -71,3 +71,54 @@ Aucune décision n'est attendue.
 
 - 19/10, propriétaire : les tickets TV T285 à T288 passent avant T283, « de façon prioritaire » ; leur contrôle réel
   T289 ne bloque rien.
+- 19/10, Codex : exploration terminée (consignes, code, appelant, tests et ADR 0017/0039) ;
+  cause confirmée : l'absence initiale de fenêtre est interprétée comme une fermeture après une seconde.
+  Exploration et absence d'écart consignées dans `.harness-state/tickets/T285/` ; début des tests simulés.
+- 19/10, Codex : `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_delayed_sidebar_stays_open_until_the_viewer_closes_it`
+  rouge observé sur l'absence de panneau actif ; après attente initiale bornée, `python3 prototypes/lg-remote/test_panel.py`
+  vert (23 tests). Apparition à 2,5 s simulées, maintien puis fermeture par le spectateur couverts.
+- 19/10, Codex : `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_missing_sidebar_is_closed_after_timeout_with_one_notification_and_restore`
+  rouge observé (aucune fermeture applicationManager), puis `python3 prototypes/lg-remote/test_panel.py` vert (24 tests)
+  après fermeture protégée et notification à 8 s. Sorties conservées dans le dossier d'état.
+  Les deux suites signalent aussi un ResourceWarning du test préexistant de verrou (fichier ouvert par le second appel).
+- 19/10, Codex : couverture complémentaire verte dès son ajout : arrêt à 2 s simulées, borne 8 s,
+  refus et exception de fermeture et de notification. `python3 prototypes/lg-remote/test_panel.py` : 27 tests verts,
+  tests préexistants inchangés ; même ResourceWarning du verrou, hors périmètre explicite.
+  Section « TV-local action » actualisée. `node scripts/check.mjs --changed` : vert.
+- 19/10, Codex : `node scripts/check.mjs` : vert (règles, format, lint, gel, cliquet,
+  153 fichiers JS / 2 901 tests réussis, 47 tests Python réussis). Les 27 tests du panneau ont été exécutés
+  séparément. Vérification AST : les 12 méthodes préexistantes de `PanelLifecycle` sont inchangées,
+  cinq tests ajoutés. `git diff --check` : vert. Aucun essai réel, aucun commit ni push.
+  Verdict `TERMINÉ` et preuves déposés dans `.harness-state/tickets/T285/` pour relecture par la boucle.
+- 19/10, Codex, reprise de relecture 1 : rapport, ticket/journal, écarts, témoin renouvelé et diff relus.
+  Les deux mineurs sont acceptés : injection locale de l'horloge et nom d'action pour la fermeture à expiration.
+  Aucun écart ni contestation. Le scénario préexistant de fermeture au premier sondage emprunte désormais
+  l'expiration ; la fermeture après apparition reste couverte par le nouveau test de sidebar retardée.
+  Ce scénario reste inchangé conformément au critère 3 ; les réserves hors périmètre du rapport restent à la boucle.
+- 19/10, Codex, correction des mineurs 1 et 2 :
+  `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_sidebar_timeout_uses_an_isolated_clock` rouge observé
+  sur l'identité de l'horloge standard remplacée ; ajout de `clock=time.monotonic`, injection de `panel.clock`
+  dans `Screen`, puis `python3 prototypes/lg-remote/test_panel.py` : 28 tests verts, délai de 8 s conservé.
+  Renommage de l'action en `abandon_unshown_sidebar`, couvert par les scénarios publics d'expiration existants.
+  `node scripts/check.mjs --changed` : vert. Même ResourceWarning préexistant du verrou, sans modification de cette zone.
+  Sorties dans `clock-isolation-red.log`, `panel-correction-1.log` et `check-changed-correction-1.log` du dossier d'état.
+- 19/10, Codex, fin de correction : `node scripts/check.mjs` : vert, 153 fichiers JS / 2 901 tests réussis,
+  47 tests Python réussis, règles/format/lint/gel/cliquet verts (`check-full-correction-1.log`).
+  Vérification AST contre HEAD : 12 méthodes préexistantes inchangées, six tests ajoutés au total.
+  `git diff --check` : vert. Les deux mineurs sont corrigés ; nouveau verdict `TERMINÉ` pour la boucle.
+  Aucun essai réel, aucun commit ni push.
+
+### Réserves à la clôture
+
+- ResourceWarning non bloquant dans le test préexistant du verrou : le second appel quitte main après BlockingIOError sans fermeture explicite du fichier. Le verrou est explicitement exclu du périmètre ; comportement laissé inchangé.
+- .harness-state/tickets/T285/relecture-2.md : 1. `prototypes/lg-remote/test_panel.py:409-414` — hors périmètre (repris de la relecture 1)
+  - **Problème :** `test_panel_closed_by_the_viewer_is_not_relaunched` (`vanish={1:[]}`) n'arrive plus jamais à voir la fenêtre.
+    - Il passe maintenant par l'expiration à 8 s, puis la fermeture par `applicationManager` et la notification.
+    - Ses deux assertions restent vraies par hasard.
+    - Le vrai cas « le spectateur ferme le panneau » est couvert par `test_delayed_sidebar_stays_open_until_the_viewer_closes_it`.
+  - **Attendu :** un ticket ultérieur rend à ce test son sens (fenêtre vue, puis disparue) ou le renomme. Le critère 3 interdit de le toucher ici.
+- .harness-state/tickets/T285/relecture-2.md : 2. `prototypes/lg-remote/runtime/panel.py:201-204` avec `restore_original` (`:140-147`) — hors périmètre (repris de la relecture 1)
+  - **Problème :** si le signal d'arrêt arrive pendant l'attente, le contrôleur rend la vidéo sans appeler `applicationManager/closeByAppId`. Il n'appelle que `surfacemanager/closeByAppId`. Une sidebar lente peut donc encore s'afficher ensuite au-dessus de la vidéo.
+    - Ce n'est pas une régression : l'ancien code sortait de toute façon après 1 s.
+    - Le ticket interdit de toucher à la restauration.
+  - **Attendu :** le contrôle réel T289 doit regarder ce cas.

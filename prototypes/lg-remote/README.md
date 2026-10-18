@@ -28,6 +28,14 @@ nomme la cause en français, par exemple « TVLens : lance une vidéo YouTube po
 vidéo intacte et ne lance pas l’app. Le diagnostic technique reste dans `/tmp/tvlens-panel.log` ; un échec de notification
 est journalisé sans interrompre le gestionnaire de touches.
 
+Après le lancement, le contrôleur attend jusqu’à 8 secondes que la fenêtre de la sidebar apparaisse au premier plan.
+Le signal d’arrêt reste pris en compte pendant cette attente. Une fois la fenêtre vue, sa disparition signifie que le
+spectateur a fermé le panneau : la vidéo est restaurée sans relancer l’app.
+Si la fenêtre n’apparaît pas dans le délai, le contrôleur ferme l’app lancée via `applicationManager/closeByAppId`,
+restaure le rectangle sauvegardé et affiche une seule notification : « TVLens : le panneau n'a pas pu s'afficher. ».
+Le journal contient `TVLENS_PANEL_SIDEBAR_TIMEOUT` ; les échecs de fermeture ou de notification y sont consignés
+sans empêcher la restauration. L’attente et son expiration sont couvertes avec une horloge simulée, sans essai réel.
+
 Un processus de récupération distinct couvre la mort inattendue du contrôleur. Un changement de contexte média ou de
 géométrie ferme le panneau ; les transitions publicitaires sans fermeture restent à traiter. Le verrou empêche les
 contrôleurs en double. L’ouverture ne démarre pas l’analyse, qui se lance depuis la sidebar ; le micro physique reste

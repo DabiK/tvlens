@@ -1,4 +1,4 @@
-import sys,unittest,tempfile,os,fcntl,json
+import sys,unittest,tempfile,os,fcntl,json,time
 from unittest.mock import patch,MagicMock
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).parent/'runtime'))
@@ -114,6 +114,7 @@ class Screen:
   root=Path(self.temp.name)
   self.now=100.0
   self.calls=[]
+  self.endpoints=[]
   self.windows=[]
   self.loops=loops
   self.layouts=[]
@@ -125,10 +126,15 @@ class Screen:
   self.toasts=[]
   self.toast_error=None
   self.toast_reply={'returnValue':True}
+  self.close_error=None
+  self.close_reply={'returnValue':True}
   self.vanish={}
+  self.sidebar_delay=0
+  self.launched_at=None
+  self.visible_until=None
   self.paths={'LOCK':str(root/'panel.lock'),'GENERATION':root/'generation','LAYOUT_STATE':root/'layout-state.json',
    'LAYOUT_REQUEST':root/'layout-request.json','HEARTBEAT_PREFIX':str(root/'beat-')}
-  for name,value in dict(self.paths,call=self.call,pause=self.pause,stop=False).items():
+  for name,value in dict(self.paths,call=self.call,pause=self.pause,clock=lambda:self.now,stop=False).items():
    patcher=patch.object(panel,name,value)
    patcher.start()
    test.addCleanup(patcher.stop)
@@ -152,6 +158,7 @@ class Screen:
    self.paths['LAYOUT_REQUEST'].write_text(json.dumps(self.requests.pop(0)))
  def call(self,endpoint,payload):
   name=endpoint.rsplit('/',1)[1]
+  self.endpoints.append((endpoint,payload,self.now))
   self.calls.append((name,payload,self.now))
   if name=='getStatus':
    video={'sink':'MAIN','appId':'youtube.leanback.v4','connected':True,'context':'c1','fullScreen':True,
@@ -162,17 +169,121 @@ class Screen:
    self.toasts.append(payload)
    if self.toast_error:raise self.toast_error
    return self.toast_reply
+  if endpoint=='com.webos.applicationManager/closeByAppId':
+   if self.close_error:raise self.close_error
+   if not self.close_reply.get('returnValue'):return self.close_reply
   if name=='setDisplayWindow':self.display={k:v*2 for k,v in payload['displayOutput'].items()}
-  if name=='launch':self.windows.append(payload['id'])
+  if name=='launch':
+   self.windows.append(payload['id'])
+   self.launched_at=self.now
   if name=='closeByAppId' and payload['id'] in self.windows:self.windows.remove(payload['id'])
   if name=='getForegroundWindowInfo':
    self.polls+=1
    if self.polls in self.vanish:self.windows=list(self.vanish[self.polls])
-   return {'returnValue':True,'windows':[{'appId':app} for app in self.windows]}
+   visible=list(self.windows)
+   if self.launched_at is not None:
+    elapsed=self.now-self.launched_at
+    if elapsed<self.sidebar_delay or (self.visible_until is not None and elapsed>=self.visible_until):
+     visible=[app for app in visible if app!=panel.APP]
+   return {'returnValue':True,'windows':[{'appId':app} for app in visible]}
   return {'returnValue':True}
  def named(self,name):return [call for call in self.calls if call[0]==name]
 
 class PanelLifecycle(unittest.TestCase):
+ def test_sidebar_timeout_uses_an_isolated_clock(self):
+  shared_clock=time.monotonic
+  screen=Screen(self,loops=99)
+  screen.sidebar_delay=float('inf')
+  panel.main()
+  self.assertEqual(screen.named('createToast')[0][2]-screen.launched_at,8)
+  self.assertIs(time.monotonic,shared_clock,'The simulated panel clock replaced the shared standard clock')
+
+ def test_stop_during_sidebar_wait_restores_without_reporting_a_timeout(self):
+  screen=Screen(self,loops=99)
+  screen.sidebar_delay=float('inf')
+  def pause_then_stop(seconds):
+   screen.pause(seconds)
+   if screen.now-screen.launched_at>=2:
+    panel.on_stop()
+  with patch.object(panel,'pause',pause_then_stop):
+   panel.main()
+  self.assertEqual(screen.named('setDisplayWindow')[-1][2]-screen.launched_at,2)
+  self.assertEqual(screen.display,{'x':0,'y':0,'width':3840,'height':2160})
+  self.assertEqual(screen.toasts,[])
+  self.assertNotIn('TVLENS_PANEL_SIDEBAR_TIMEOUT',' '.join(str(call) for call in screen.log.call_args_list))
+  self.assertEqual(len(screen.named('launch')),1)
+  screen.watchdog.terminate.assert_called_once_with()
+
+ def test_sidebar_at_the_deadline_opens_but_later_sidebar_times_out(self):
+  for delay,notifications in ((8,0),(8.5,1)):
+   with self.subTest(delay=delay):
+    screen=Screen(self)
+    screen.sidebar_delay=delay
+    panel.main()
+    self.assertEqual(len(screen.toasts),notifications)
+    self.assertEqual(bool(screen.layouts),notifications==0)
+    self.assertEqual(len(screen.named('launch')),1)
+    self.assertEqual(screen.display,{'x':0,'y':0,'width':3840,'height':2160})
+
+ def test_timeout_cleanup_failures_are_logged_without_escaping_or_retrying(self):
+  cases=[
+   ('close_error',OSError('close unavailable'),'TVLENS_PANEL_SIDEBAR_CLOSE_FAILED'),
+   ('close_reply',{'returnValue':False,'errorCode':500},'TVLENS_PANEL_SIDEBAR_CLOSE_FAILED'),
+   ('toast_error',OSError('notification unavailable'),'TVLENS_PANEL_NOTIFICATION_FAILED'),
+   ('toast_reply',{'returnValue':False,'errorCode':500},'TVLENS_PANEL_NOTIFICATION_FAILED')]
+  for field,value,code in cases:
+   with self.subTest(field=field):
+    screen=Screen(self,loops=99)
+    screen.sidebar_delay=float('inf')
+    setattr(screen,field,value)
+    panel.main()
+    closes=[call for call in screen.endpoints if call[0]=='com.webos.applicationManager/closeByAppId']
+    self.assertEqual(len(closes),1)
+    self.assertEqual(screen.toasts,[{'message':"TVLens : le panneau n'a pas pu s'afficher."}])
+    self.assertEqual(len(screen.named('launch')),1)
+    self.assertEqual(screen.display,{'x':0,'y':0,'width':3840,'height':2160})
+    self.assertIn(code,' '.join(str(call) for call in screen.log.call_args_list))
+    self.assertIn('TVLENS_PANEL_SIDEBAR_TIMEOUT',' '.join(str(call) for call in screen.log.call_args_list))
+    self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+    screen.watchdog.terminate.assert_called_once_with()
+
+ def test_missing_sidebar_is_closed_after_timeout_with_one_notification_and_restore(self):
+  screen=Screen(self,loops=99)
+  screen.sidebar_delay=float('inf')
+  screen.display={'x':960,'y':540,'width':1920,'height':1080}
+  screen.video_fields={'fullScreen':False}
+  panel.main()
+  closes=[call for call in screen.endpoints if call[0]=='com.webos.applicationManager/closeByAppId']
+  self.assertEqual(len(closes),1)
+  self.assertEqual(closes[0][1],{'id':panel.APP})
+  self.assertEqual(closes[0][2]-screen.launched_at,8)
+  restored=screen.named('setDisplayWindow')[-1][1]
+  self.assertEqual(restored['displayOutput'],{'x':480,'y':270,'width':960,'height':540})
+  self.assertFalse(restored['fullScreen'])
+  self.assertEqual(screen.toasts,[{'message':"TVLens : le panneau n'a pas pu s'afficher."}])
+  self.assertEqual(len(screen.named('launch')),1)
+  self.assertIn('TVLENS_PANEL_SIDEBAR_TIMEOUT',' '.join(str(call) for call in screen.log.call_args_list))
+  self.assertEqual(screen.windows,[])
+  self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+  screen.watchdog.terminate.assert_called_once_with()
+  screen.watchdog.wait.assert_called_once_with(timeout=3)
+
+ def test_delayed_sidebar_stays_open_until_the_viewer_closes_it(self):
+  screen=Screen(self,loops=99)
+  screen.sidebar_delay=2.5
+  screen.visible_until=5
+  panel.main()
+  target={'x':0,'y':135,'width':1440,'height':810}
+  self.assertTrue(screen.layouts,'The delayed sidebar never stayed open')
+  self.assertTrue(all(layout['active'] and layout['video']==target for layout in screen.layouts))
+  windows=screen.named('setDisplayWindow')
+  self.assertGreaterEqual(windows[-1][2]-screen.launched_at,5)
+  self.assertEqual([call[1]['displayOutput'] for call in windows],
+   [target,{'x':0,'y':0,'width':1920,'height':1080}])
+  self.assertEqual(len(screen.named('launch')),1)
+  self.assertEqual(screen.toasts,[])
+  self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+
  def assert_opening_refused(self,screen,message,code):
   before=dict(screen.display)
   try:
