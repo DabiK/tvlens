@@ -12,6 +12,51 @@ class Rectangles(unittest.TestCase):
   self.assertEqual(target['sourceInput'],v['sourceInput'])
   self.assertEqual(target['displayOutput']['width']/target['displayOutput']['height'],16/9)
   self.assertEqual(restore['displayOutput']['width'],1920)
+ def test_valid_output_layouts_restore_the_current_rectangle(self):
+  cases=[
+   ((1668,1080),{'x':252,'y':0,'width':3336,'height':2160},False,
+    {'x':126,'y':0,'width':1668,'height':1080},{'x':0,'y':74,'width':1440,'height':932}),
+   ((1920,800),{'x':0,'y':280,'width':3840,'height':1600},False,
+    {'x':0,'y':140,'width':1920,'height':800},{'x':0,'y':240,'width':1440,'height':600}),
+   ((1920,1080),{'x':960,'y':540,'width':1920,'height':1080},False,
+    {'x':480,'y':270,'width':960,'height':540},{'x':0,'y':135,'width':1440,'height':810}),
+   ((1920,1080),{'x':1,'y':3,'width':3839,'height':2157},False,
+    {'x':.5,'y':1.5,'width':1919.5,'height':1078.5},{'x':0,'y':135,'width':1440,'height':810}),
+   ((1920,1080),{'x':0,'y':0,'width':3840,'height':2160},True,
+    {'x':0,'y':0,'width':1920,'height':1080},{'x':0,'y':135,'width':1440,'height':810})]
+  for dimensions,output,full_screen,logical,target_output in cases:
+   with self.subTest(output=output):
+    v=self.source()
+    v['width'],v['height']=dimensions
+    v['sourceInput']=dict(x=0,y=0,width=dimensions[0],height=dimensions[1])
+    v.update(displayOutput=output,fullScreen=full_screen)
+    try:
+     restore,target=rectangles(v)
+    except ValueError as error:
+     self.fail(f'Valid output refused: {error}')
+    self.assertEqual(restore,dict(sink='MAIN',context='test',fullScreen=full_screen,
+     displayOutput=logical,appOutput=logical,sourceInput=v['sourceInput'],originalInput=v['sourceInput']))
+    self.assertEqual(physical_rect(restore),output)
+    self.assertEqual(target['displayOutput'],target_output)
+    self.assertEqual(target['appOutput'],target_output)
+    self.assertEqual(target['sourceInput'],v['sourceInput'])
+    self.assertFalse(target['fullScreen'])
+    self.assertEqual(v['displayOutput'],output)
+ def test_refuses_malformed_or_out_of_screen_output(self):
+  invalid=[None,[],{},dict(x=0,y=0,width=3840),dict(x=0,y=0,width=0,height=2160),
+   dict(x=0,y=0,width=3840,height=-1),dict(x=-1,y=0,width=100,height=100),dict(x=0,y=-1,width=100,height=100),
+   dict(x=252,y=0,width=3840,height=2160),dict(x=0,y=1,width=3840,height=2160)]
+  for field in ('x','y','width','height'):
+   for value in (True,None,'100',1.5):
+    output=dict(x=0,y=0,width=100,height=100)
+    output[field]=value
+    invalid.append(output)
+  for output in invalid:
+   with self.subTest(output=output):
+    v=self.source()
+    v['displayOutput']=output
+    with self.assertRaises(ValueError):
+     rectangles(v)
  def test_adaptive_resolution_keeps_reported_coordinate_space(self):
   for decoded,reported in [((1280,720),(1920,1080)),((1920,1080),(1280,720)),((3840,2160),(1920,1080)),((1280,720),(1280,720))]:
    with self.subTest(decoded=decoded,reported=reported):
@@ -75,6 +120,11 @@ class Screen:
   self.polls=0
   self.requests=[]
   self.display={'x':0,'y':0,'width':3840,'height':2160}
+  self.video_fields={}
+  self.status_videos=None
+  self.toasts=[]
+  self.toast_error=None
+  self.toast_reply={'returnValue':True}
   self.vanish={}
   self.paths={'LOCK':str(root/'panel.lock'),'GENERATION':root/'generation','LAYOUT_STATE':root/'layout-state.json',
    'LAYOUT_REQUEST':root/'layout-request.json','HEARTBEAT_PREFIX':str(root/'beat-')}
@@ -88,7 +138,8 @@ class Screen:
   test.addCleanup(patcher.stop)
   for target in ('panel.signal.signal','builtins.print'):
    patcher=patch(target)
-   patcher.start()
+   mocked=patcher.start()
+   if target=='builtins.print':self.log=mocked
    test.addCleanup(patcher.stop)
   test.addCleanup(os.umask,os.umask(0o077))
  def pause(self,seconds):
@@ -105,7 +156,12 @@ class Screen:
   if name=='getStatus':
    video={'sink':'MAIN','appId':'youtube.leanback.v4','connected':True,'context':'c1','fullScreen':True,
     'width':1920,'height':1080,'sourceInput':{'x':0,'y':0,'width':1920,'height':1080},'displayOutput':dict(self.display)}
-   return {'returnValue':True,'video':[video]}
+   video.update(self.video_fields)
+   return {'returnValue':True,'video':[video] if self.status_videos is None else self.status_videos}
+  if endpoint=='com.webos.notification/createToast':
+   self.toasts.append(payload)
+   if self.toast_error:raise self.toast_error
+   return self.toast_reply
   if name=='setDisplayWindow':self.display={k:v*2 for k,v in payload['displayOutput'].items()}
   if name=='launch':self.windows.append(payload['id'])
   if name=='closeByAppId' and payload['id'] in self.windows:self.windows.remove(payload['id'])
@@ -117,6 +173,105 @@ class Screen:
  def named(self,name):return [call for call in self.calls if call[0]==name]
 
 class PanelLifecycle(unittest.TestCase):
+ def assert_opening_refused(self,screen,message,code):
+  before=dict(screen.display)
+  try:
+   panel.main()
+  except Exception as error:
+   self.fail(f'Opening refusal escaped main: {error}')
+  self.assertEqual(screen.toasts,[{'message':message}])
+  self.assertEqual(len(screen.named('createToast')),1)
+  self.assertEqual(screen.named('setDisplayWindow'),[])
+  self.assertEqual(screen.named('launch'),[])
+  self.assertEqual(screen.named('closeByAppId'),[])
+  self.assertEqual(screen.display,before)
+  screen.launch.assert_not_called()
+  self.assertEqual({path.name for path in Path(screen.temp.name).iterdir()},{'panel.lock'})
+  self.assertIn(code,' '.join(str(call) for call in screen.log.call_args_list))
+
+ def test_refused_opening_names_the_cause_once_and_leaves_video_intact(self):
+  playback='TVLens : lance une vidéo YouTube pour ouvrir le panneau.'
+  crop='TVLens : la vidéo est rognée, le panneau ne peut pas s’ouvrir.'
+  dimensions='TVLens : les dimensions de la vidéo sont invalides.'
+  source='TVLens : la source vidéo est indisponible.'
+  aspect='TVLens : les proportions de la vidéo sont incohérentes.'
+  output='TVLens : le rectangle vidéo est invalide ou dépasse l’écran.'
+  cases=[
+   ({'appId':'netflix'},playback,'TVLENS_PANEL_PLAYBACK_REQUIRED'),
+   ({'connected':False},playback,'TVLENS_PANEL_PLAYBACK_REQUIRED'),
+   ({'sink':'SUB'},playback,'TVLENS_PANEL_PLAYBACK_REQUIRED'),
+   ({'sourceInput':dict(x=1,y=0,width=1920,height=1080)},crop,'TVLENS_PANEL_SOURCE_CROPPED'),
+   ({'sourceInput':dict(x=0,y=0,width=1440,height=1080)},aspect,'TVLENS_PANEL_SOURCE_INVALID'),
+   ({'sourceInput':None},source,'TVLENS_PANEL_SOURCE_INVALID'),
+   ({'width':0},dimensions,'TVLENS_PANEL_SOURCE_INVALID'),
+   ({'displayOutput':dict(x=252,y=0,width=3840,height=2160)},output,'TVLENS_PANEL_OUTPUT_INVALID'),
+   ({'displayOutput':dict(x=0,y=1,width=3840,height=2160)},output,'TVLENS_PANEL_OUTPUT_INVALID'),
+   ({'displayOutput':dict(x=0,y=0,width=0,height=2160)},output,'TVLENS_PANEL_OUTPUT_INVALID'),
+   ({'displayOutput':dict(x=True,y=0,width=100,height=100)},output,'TVLENS_PANEL_OUTPUT_INVALID'),
+   ({'displayOutput':{'width':1920}},output,'TVLENS_PANEL_OUTPUT_INVALID'),
+   ({'displayOutput':None},output,'TVLENS_PANEL_OUTPUT_INVALID')]
+  for video_fields,message,code in cases:
+   with self.subTest(video_fields=video_fields):
+    screen=Screen(self)
+    screen.video_fields=video_fields
+    self.assert_opening_refused(screen,message,code)
+
+ def test_no_video_names_the_missing_playback_once(self):
+  screen=Screen(self)
+  screen.status_videos=[]
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+   'TVLENS_PANEL_PLAYBACK_REQUIRED')
+
+ def test_notification_exception_is_logged_without_escaping_or_retrying(self):
+  for error in (OSError('notification unavailable'),ValueError('invalid notification reply')):
+   with self.subTest(error=error):
+    screen=Screen(self)
+    screen.video_fields={'connected':False}
+    screen.toast_error=error
+    self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+     'TVLENS_PANEL_PLAYBACK_REQUIRED')
+    self.assertIn('TVLENS_PANEL_NOTIFICATION_FAILED',' '.join(str(call) for call in screen.log.call_args_list))
+
+ def test_notification_service_refusal_is_logged_without_retrying(self):
+  screen=Screen(self)
+  screen.video_fields={'connected':False}
+  screen.toast_reply={'returnValue':False,'errorText':'service refused'}
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+   'TVLENS_PANEL_PLAYBACK_REQUIRED')
+  self.assertIn('TVLENS_PANEL_NOTIFICATION_FAILED',' '.join(str(call) for call in screen.log.call_args_list))
+
+ def test_failed_notification_allows_the_next_button_press_to_open(self):
+  screen=Screen(self)
+  screen.video_fields={'connected':False}
+  screen.toast_error=OSError('notification unavailable')
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+   'TVLENS_PANEL_PLAYBACK_REQUIRED')
+  screen.video_fields={}
+  screen.toast_error=None
+  panel.main()
+  self.assertEqual(len(screen.toasts),1)
+  self.assertEqual([call[1]['id'] for call in screen.named('launch')],[panel.APP])
+  self.assertEqual(screen.display,{'x':0,'y':0,'width':3840,'height':2160})
+
+ def test_letterboxed_video_opens_publishes_geometry_and_restores_saved_output(self):
+  screen=Screen(self)
+  screen.display={'x':252,'y':0,'width':3336,'height':2160}
+  screen.video_fields=dict(width=1668,height=1080,fullScreen=False,sourceInput=dict(x=0,y=0,width=1668,height=1080))
+  try:
+   panel.main()
+  except ValueError as error:
+   self.fail(f'Valid output refused: {error}')
+  target={'x':0,'y':74,'width':1440,'height':932}
+  saved={'x':126,'y':0,'width':1668,'height':1080}
+  self.assertEqual([call[1]['id'] for call in screen.named('launch')],[panel.APP])
+  self.assertEqual(screen.layouts[0],{'active':True,'mode':'chat','requestId':None,'video':target})
+  windows=screen.named('setDisplayWindow')
+  self.assertEqual([call[1]['displayOutput'] for call in windows],[target,saved])
+  self.assertEqual(windows[-1][1]['appOutput'],saved)
+  self.assertFalse(windows[-1][1]['fullScreen'])
+  self.assertEqual(screen.display,{'x':252,'y':0,'width':3336,'height':2160})
+  self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+
  def test_panel_lifecycle_creates_only_its_own_state(self):
   screen=Screen(self)
   panel.main()

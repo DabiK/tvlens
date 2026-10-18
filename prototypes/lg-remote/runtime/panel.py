@@ -9,7 +9,23 @@ LAYOUT_REQUEST=Path('/tmp/tvlens-panel-layout-request.json')
 LAYOUT_STATE=Path('/tmp/tvlens-panel-layout-state.json')
 LOCK='/tmp/tvlens-panel.lock'
 HEARTBEAT_PREFIX='/tmp/tvlens-panel-'
+SCREEN_WIDTH=3840
+SCREEN_HEIGHT=2160
+DISPLAY_SCALE=2
+TVLENS_PANEL_PLAYBACK_REQUIRED='TVLENS_PANEL_PLAYBACK_REQUIRED'
+TVLENS_PANEL_SOURCE_CROPPED='TVLENS_PANEL_SOURCE_CROPPED'
+TVLENS_PANEL_SOURCE_INVALID='TVLENS_PANEL_SOURCE_INVALID'
+TVLENS_PANEL_OUTPUT_INVALID='TVLENS_PANEL_OUTPUT_INVALID'
+TVLENS_PANEL_NOTIFICATION_FAILED='TVLENS_PANEL_NOTIFICATION_FAILED'
+PLAYBACK_MESSAGE='TVLens : lance une vidéo YouTube pour ouvrir le panneau.'
+OUTPUT_MESSAGE='TVLens : le rectangle vidéo est invalide ou dépasse l’écran.'
 pause=time.sleep
+
+class PanelRefusal(ValueError):
+    def __init__(self,code,detail,message):
+        super().__init__(detail)
+        self.code=code
+        self.user_message=message
 
 def layout_target(saved, mode):
     if mode not in ('chat','timeline'):raise ValueError('Unknown panel layout')
@@ -20,7 +36,7 @@ def layout_target(saved, mode):
     return dict(saved,fullScreen=False,displayOutput=rect,appOutput=rect)
 
 def physical_rect(target):
-    return {key:value*2 for key,value in target['displayOutput'].items()}
+    return {key:value*DISPLAY_SCALE for key,value in target['displayOutput'].items()}
 
 def write_layout(value):
     temporary=LAYOUT_STATE.with_suffix('.tmp')
@@ -50,7 +66,10 @@ def call(endpoint,payload):
     return parse_reply(r.stdout.decode('utf-8','replace'),r.stderr.decode('utf-8','replace'))
 
 def video():
-    return next(v for v in call('com.webos.service.videooutput/getStatus',{})['video'] if v['sink']=='MAIN')
+    try:
+        return next(v for v in call('com.webos.service.videooutput/getStatus',{})['video'] if v['sink']=='MAIN')
+    except StopIteration as error:
+        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'No MAIN video reported',PLAYBACK_MESSAGE) from error
 
 def reported_source(v):
     """Keep Luna's source coordinate space across adaptive decoder resolutions.
@@ -60,26 +79,42 @@ def reported_source(v):
     offset or aspect-changing crop still needs separate validation.
     """
     source=v.get('sourceInput')
-    if not isinstance(source,dict):raise ValueError('Missing source rectangle')
+    if not isinstance(source,dict):
+        raise PanelRefusal(TVLENS_PANEL_SOURCE_INVALID,'Missing source rectangle',
+                           'TVLens : la source vidéo est indisponible.')
     dimensions=[v.get('width'),v.get('height'),source.get('width'),source.get('height')]
     if any(type(value) is not int or value<=0 for value in dimensions):
-        raise ValueError('Invalid video dimensions')
+        raise PanelRefusal(TVLENS_PANEL_SOURCE_INVALID,'Invalid video dimensions',
+                           'TVLens : les dimensions de la vidéo sont invalides.')
     if source.get('x')!=0 or source.get('y')!=0:
-        raise ValueError('Cropped source not supported')
+        raise PanelRefusal(TVLENS_PANEL_SOURCE_CROPPED,'Cropped source not supported',
+                           'TVLens : la vidéo est rognée, le panneau ne peut pas s’ouvrir.')
     width,height,source_width,source_height=dimensions
     if source_width*height!=source_height*width:
-        raise ValueError('Source aspect ratio differs from decoded video')
+        raise PanelRefusal(TVLENS_PANEL_SOURCE_INVALID,'Source aspect ratio differs from decoded video',
+                           'TVLens : les proportions de la vidéo sont incohérentes.')
     return {key:source[key] for key in ('x','y','width','height')}
+
+def logical_output(v):
+    output=v.get('displayOutput')
+    if not isinstance(output,dict):
+        raise PanelRefusal(TVLENS_PANEL_OUTPUT_INVALID,'Missing output rectangle',OUTPUT_MESSAGE)
+    values=[output.get(key) for key in ('x','y','width','height')]
+    if any(type(value) is not int for value in values):
+        raise PanelRefusal(TVLENS_PANEL_OUTPUT_INVALID,'Invalid output coordinates',OUTPUT_MESSAGE)
+    x,y,width,height=values
+    if x<0 or y<0 or width<=0 or height<=0 or x+width>SCREEN_WIDTH or y+height>SCREEN_HEIGHT:
+        raise PanelRefusal(TVLENS_PANEL_OUTPUT_INVALID,'Output rectangle outside screen',OUTPUT_MESSAGE)
+    return {key:value//DISPLAY_SCALE if value%DISPLAY_SCALE==0 else value/DISPLAY_SCALE
+            for key,value in zip(('x','y','width','height'),values)}
 
 def rectangles(v):
     if v.get('appId')!='youtube.leanback.v4' or not v.get('connected'):
-        raise ValueError('YouTube playback required')
-    if v['displayOutput']!={'x':0,'y':0,'width':3840,'height':2160}:
-        raise ValueError('Requires tested full-screen 4K layout')
+        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'YouTube playback required',PLAYBACK_MESSAGE)
+    output=logical_output(v)
     source=reported_source(v)
     restore={'sink':'MAIN','context':v['context'],'fullScreen':v['fullScreen'],
-             'displayOutput':{'x':0,'y':0,'width':1920,'height':1080},
-             'appOutput':{'x':0,'y':0,'width':1920,'height':1080},
+             'displayOutput':output,'appOutput':output,
              'sourceInput':source,'originalInput':source}
     target=layout_target(restore,'chat')
     return restore,target
@@ -87,6 +122,15 @@ def rectangles(v):
 def on_stop(*_):
     global stop
     stop=True
+
+def notify_refusal(error):
+    print(error.code,str(error),flush=True)
+    try:
+        result=call('com.webos.notification/createToast',{'message':error.user_message})
+        if not result.get('returnValue'):
+            print(TVLENS_PANEL_NOTIFICATION_FAILED,json.dumps(result),flush=True)
+    except Exception as notification_error:
+        print(TVLENS_PANEL_NOTIFICATION_FAILED,str(notification_error),flush=True)
 
 def restore_original(saved):
     write_layout({"active":False,"mode":"chat"})
@@ -102,7 +146,14 @@ def main():
     try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     except BlockingIOError:return
     signal.signal(signal.SIGTERM,on_stop);signal.signal(signal.SIGINT,on_stop)
-    saved,target=rectangles(video())
+    try:
+        saved,target=rectangles(video())
+    except PanelRefusal as error:
+        try:
+            notify_refusal(error)
+        finally:
+            lock.close()
+        return
     mode="chat";request_id=None
     LAYOUT_REQUEST.unlink(missing_ok=True)
     # Renew a private heartbeat instead of closing a healthy panel on a fixed timer.

@@ -14,11 +14,28 @@ The managed loop grabs Magic Remote Builtin [0], forwarding unbound events to Bu
 
 ## TV-local action
 
-`tvlens_mapper.py` adds a single local action to the unmodified upstream action dispatcher. `panel.py` runs separately so opening the panel does not block remote event forwarding. It requires the already-installed `org.tvlens.sidebarprobe` app.
+`tvlens_mapper.py` ajoute une action locale au répartiteur amont inchangé. `panel.py` tourne dans un processus séparé :
+l’ouverture du panneau ne bloque pas la transmission des touches. L’app `org.tvlens.sidebarprobe` doit être installée.
 
-The controller accepts the tested YouTube/full-screen/4K geometry only, preserves the complete source image, reduces the video before opening the overlay, and restores on closure. A separate 180-second recovery process covers unexpected controller death. A media-context or geometry change closes the panel; seamless ad transitions remain future work. A file lock prevents duplicate controllers. On other applications the current prototype refuses to open rather than pretending it can manage their geometry.
+Le contrôleur accepte une vidéo YouTube connectée sur `MAIN` dont le rectangle `displayOutput` est entier, de dimensions
+strictement positives et contenu dans l’écran physique 3840×2160. Plein écran 16:9, bandes noires et petite fenêtre sont
+acceptés. La réduction conserve l’image source complète et son rapport ; la fermeture restaure le rectangle courant
+sauvegardé, avec son indicateur `fullScreen`. Les coordonnées logiques sont les coordonnées physiques divisées par deux,
+y compris les demi-pixels éventuels. Les sources rognées ou dont le rapport diffère de l’image décodée restent refusées.
 
-No inference is started by this button yet. Keyboard dictation reception works according to the user's prior test; direct physical microphone routing still goes to LG.
+Autre application, lecture absente, source invalide ou rectangle de sortie invalide : une seule notification système
+nomme la cause en français, par exemple « TVLens : lance une vidéo YouTube pour ouvrir le panneau. ». Le refus laisse la
+vidéo intacte et ne lance pas l’app. Le diagnostic technique reste dans `/tmp/tvlens-panel.log` ; un échec de notification
+est journalisé sans interrompre le gestionnaire de touches.
+
+Un processus de récupération distinct couvre la mort inattendue du contrôleur. Un changement de contexte média ou de
+géométrie ferme le panneau ; les transitions publicitaires sans fermeture restent à traiter. Le verrou empêche les
+contrôleurs en double. L’ouverture ne démarre pas l’analyse, qui se lance depuis la sidebar ; le micro physique reste
+routé vers LG.
+
+Ces dispositions et les refus sont couverts par l’écran simulé de `test_panel.py`. Cette correction n’a été ni déployée
+ni validée visuellement sur la TV. Après intégration, remplacer tout le répertoire `runtime` depuis un tag, avec sauvegarde,
+puis vérifier ouverture, fermeture et restauration sur une vidéo 16:9 et un autre format, ainsi que le message hors YouTube.
 
 ## Initial deployment and rollback
 

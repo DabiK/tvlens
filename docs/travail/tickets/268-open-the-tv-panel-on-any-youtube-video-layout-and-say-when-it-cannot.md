@@ -1,7 +1,7 @@
 ---
 id: T268
 titre: Open the TV panel on any YouTube video layout and say when it cannot
-statut: a-faire
+statut: termine
 bloque_par: T280
 adr: non
 installe: non
@@ -98,3 +98,55 @@ Aucune décision n'est attendue.
   aussi T274.
 - 18/10, propriétaire, sur l'avis d'Astra : la copie B (T259, T261, T260) et sa recette T280 passent avant ce
   ticket.
+
+- 18/10, Codex : exploration terminée à `70501e3` ; T280 terminé, témoin hooks présent. La garde plein écran
+  et la restauration constante reproduisent la cause attendue ; le lanceur séparé journalise déjà les erreurs.
+  Plan et absence d'écart consignés dans `.harness-state/tickets/T268/`. Aucun accès TV ni appel Luna.
+- 18/10, Codex : géométrie, rouge observé avec
+  `python3 prototypes/lg-remote/test_panel.py Rectangles.test_valid_output_layouts_restore_the_current_rectangle
+  Rectangles.test_refuses_malformed_or_out_of_screen_output
+  PanelLifecycle.test_letterboxed_video_opens_publishes_geometry_and_restores_saved_output` : 5 assertions en échec.
+  Après validation de la sortie et sauvegarde du rectangle courant, `python3 prototypes/lg-remote/test_panel.py` :
+  17 tests réussis. Bandes latérales, bandes haut/bas, petite fenêtre, coordonnées impaires et cycle complet couverts ;
+  tests existants inchangés. Sorties conservées dans le dossier d'état.
+- 18/10, Codex : `node scripts/check.mjs --changed` après géométrie : vert. Pour les refus,
+  `python3 prototypes/lg-remote/test_panel.py
+  PanelLifecycle.test_refused_opening_names_the_cause_once_and_leaves_video_intact
+  PanelLifecycle.test_no_video_names_the_missing_playback_once` : rouge, 14 assertions en échec.
+  Après codes stables, diagnostic technique et toast français unique,
+  `python3 prototypes/lg-remote/test_panel.py` : 19 tests réussis. Aucun déplacement ni lancement en cas de refus.
+- 18/10, Codex : `node scripts/check.mjs --changed` après refus : vert. Pour l'échec de notification,
+  `python3 prototypes/lg-remote/test_panel.py
+  PanelLifecycle.test_notification_exception_is_logged_without_escaping_or_retrying
+  PanelLifecycle.test_notification_service_refusal_is_logged_without_retrying
+  PanelLifecycle.test_failed_notification_allows_the_next_button_press_to_open` : rouge, 4 assertions en échec.
+  Après isolation et journalisation de cet échec, `python3 prototypes/lg-remote/test_panel.py` : 22 tests réussis ;
+  l'appui suivant peut ouvrir le panneau. `node scripts/check.mjs --changed` : vert. Section « TV-local action »
+  actualisée ; le guide d'installation ne décrivait pas la limite plein écran. Aucun déploiement ni essai réel.
+- 18/10, Codex : validation finale : `python3 prototypes/lg-remote/test_panel.py` : 22 tests réussis ;
+  `python3 -m py_compile prototypes/lg-remote/runtime/panel.py` : code 0 ;
+  `python3 prototypes/lg-remote/test_mapper.py` : 3 tests réussis ; `node scripts/check.mjs --changed` : vert ;
+  `node scripts/check.mjs` : vert, 152 fichiers JS, 2883 tests JS et 47 tests Python réussis.
+  `git diff --check` : code 0. Un ResourceWarning préexistant subsiste sur le descripteur de la branche
+  « verrou déjà détenu », inchangée selon le périmètre ; aucune assertion en échec. Verdict `TERMINÉ` déposé
+  dans `.harness-state/tickets/T268/verdict.json`. Déploiement et recette TV à effectuer après intégration par
+  l'orchestrateur, hors boucle ; aucun essai réel, commit ni push dans cette session.
+
+### Réserves à la clôture
+
+- Avertissement préexistant ResourceWarning dans test_panel_owner_lock_prevents_a_second_launch : la branche de verrou déjà détenu ne ferme pas explicitement son descripteur. Cette branche reste inchangée conformément au ticket.
+- Déploiement du runtime entier depuis un tag avec sauvegarde et recette TV 16:9/autre format/hors YouTube : réservés à l’orchestrateur après intégration, hors boucle. Aucun essai réel dans cette session.
+- .harness-state/tickets/T268/relecture-1.md : **`prototypes/lg-remote/runtime/panel.py:166-169` et `:150`, hors périmètre.**
+     - **Problème :** certains échecs d'ouverture ne sont pas dans la liste du ticket et ne montrent toujours aucun message à l'écran, seulement une trace dans le journal :
+       - Luna ne répond pas ou mal (`parse_reply`, `TimeoutExpired`) ;
+       - le statut n'a pas de `context`, de `fullScreen` ou de `video` (`KeyError`) ;
+       - `setDisplayWindow` ou `launch` est refusé.
+     - **Pourquoi hors périmètre :** la section « Ce que le ticket livre » promet un message « au lieu de rien », mais le périmètre énumère les refus concernés, et le diff les couvre tous.
+     - **Attendu :** un ticket séparé, si ces échecs doivent aussi afficher un message.
+- .harness-state/tickets/T268/relecture-1.md : **`prototypes/lg-remote/runtime/panel.py:147`, hors périmètre.**
+     - **Problème :** quand le verrou est déjà pris, la branche `except BlockingIOError:return` laisse le descripteur ouvert. C'est ce qui produit le `ResourceWarning` de `test_panel.py:319` dans `final-panel.log`. Le défaut existait avant ce ticket, et le ticket interdit de toucher au verrou.
+     - **Attendu :** fermer `lock` dans cette branche, dans un ticket qui autorise ce changement.
+- .harness-state/tickets/T268/relecture-1.md : **`prototypes/lg-remote/README.md:76-78`, hors périmètre.**
+     - **Problème :** la section « Adaptive YouTube resolution » affirme encore « untested output layouts remain rejected… not support for arbitrary video geometry », ce qui n'est plus vrai.
+     - **Pourquoi hors périmètre :** le ticket n'autorise à modifier que la section « TV-local action ». Le bandeau de la ligne 3 présente les sections suivantes comme l'historique du prototype.
+     - **Attendu :** rendre ce paragraphe explicitement daté, ou renvoyer à la section actuelle, lors du nettoyage de la documentation.
