@@ -2,9 +2,12 @@ const { DeepAsk, QUESTION_TIMEOUT_MS } = require("../core/deep-ask.cjs");
 const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
 const { domainError } = require("../core/shared/domain-error.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
+const { OllamaQuestionAgent } = require("../adapters/ollama/question-agent.cjs");
+const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const TVLENS_QUESTION_SCOPE_FOREIGN = "TVLENS_QUESTION_SCOPE_FOREIGN";
+const TVLENS_QUESTIONS_BACKEND_INVALID = 'TVLENS_QUESTIONS_BACKEND_INVALID';
 
 function hasPendingQuestion(jobs, sessionId) {
   return Boolean(sessionId) && jobs.some(job => job.sessionId === sessionId
@@ -20,10 +23,23 @@ function questionTimeout(value) {
   return value;
 }
 
+function createQuestionAgent({ config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota }) {
+  const backend = config.questionsBackend ?? 'codex';
+  if (!['codex', 'local'].includes(backend))
+    throw domainError(TVLENS_QUESTIONS_BACKEND_INVALID, 'Backend de questions inconnu (codex ou local).');
+  if (backend === 'local') validateOllamaConfig(config.localQuestions);
+  if (agent) return agent;
+  if (backend === 'local') return new LocalAgent(config.localQuestions);
+  return new CodexAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome,
+    model: selectedModels?.codexModel, reasoningEffort: config.chatReasoningEffort || 'low', quota });
+}
+
 // Both hosts supply the current session; a consultation kept by the question takes precedence over its view.
 function createConversationRuntime({
   getSession,
   agent,
+  CodexAgent = CodexSessionAgent,
+  LocalAgent = OllamaQuestionAgent,
   codexBinary,
   config = {},
   selectedModels,
@@ -34,15 +50,7 @@ function createConversationRuntime({
   getInstruction,
 }) {
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
-  const conversationAgent =
-    agent ||
-    new CodexSessionAgent({
-      binary: codexBinary || "codex",
-      authHome: config.codexAuthHome,
-      model: selectedModels.codexModel,
-      reasoningEffort: config.chatReasoningEffort || "low",
-      quota,
-    });
+  const conversationAgent = createQuestionAgent({ config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
     if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)
@@ -82,4 +90,4 @@ function createConversationRuntime({
     }),
   };
 }
-module.exports = { createConversationRuntime, hasPendingQuestion, TVLENS_QUESTION_SCOPE_FOREIGN };
+module.exports = { createConversationRuntime, hasPendingQuestion, TVLENS_QUESTION_SCOPE_FOREIGN, TVLENS_QUESTIONS_BACKEND_INVALID };

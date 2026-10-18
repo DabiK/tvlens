@@ -1,7 +1,7 @@
 ---
 id: T263
 titre: Answer session questions with Ollama and the existing video tools
-statut: a-faire
+statut: termine
 bloque_par:
 adr: oui
 installe: non
@@ -154,3 +154,48 @@ et traces, y compris les fins sans réponse. T240 n'est pas un prérequis : l'at
 pas par cette sélection d'agent qui lit déjà la consultation publique.
 
 ## Journal
+
+- Exploration : règles, skill tests, composition commune, DeepAsk, VideoTools, agents, configuration,
+  appels des hôtes et ADR 0004/0029/0030/0046 lus. État initial conservé ; détails dans
+  `.harness-state/tickets/T263/exploration.md`. Aucun écart prévu.
+- Configuration : `node --test --test-name-pattern='question backend imports' tests/portable-config.test.cjs`
+  rouge sur `questionsBackend` absent, puis `node --test tests/portable-config.test.cjs` vert (4 cas).
+- Composition et paroles : `node --test tests/ollama-question-agent.test.cjs` rouge sur la sélection,
+  puis sur l'absence de `answer` ; parcours HTTP/outils/citation ensuite vert.
+- Refus et cycle de vie : tests ciblés `invalid calls`, `malformed final|invented video`,
+  `concurrent answers|close aborts` rouges sur leurs assertions, puis fichier complet vert (7 cas).
+  Logs rouge/vert conservés dans `.harness-state/tickets/T263/`.
+- Contrôle intermédiaire : `node scripts/check.mjs --changed` vert, 11 tests observés.
+- Parcours complémentaires : recherche et inspection locales, stockage temporaire réel, suppression
+  différée pendant le bail, ancrage/session, identité et refus réseau vérifiés par le faux Ollama.
+  Échéances contrôlées par horloges injectées ; aucun fournisseur réel exercé.
+- Fermeture seule : `node --test --test-name-pattern='closing the agent during' tests/ollama-question-agent.test.cjs`
+  rouge (preuve tardive visible), puis vert après transmission d'un signal optionnel à `tools.call`.
+  Complément technique justifié dans `ecarts.md` ; aucune libération anticipée du bail.
+- Régression de configuration observée : l'assertion exhaustive de `media-asr-options` exigeait
+  les nouveaux champs ; attente complétée, puis test ciblé vert, sans retrait d'assertion.
+- `node --test --test-concurrency=1` sur ollama-question-agent, chat-codex, chat-sources,
+  question-ceiling, portable-config, review-regressions, architecture-f04, video-research,
+  evidence-refresh, codex-confinement, media-asr-options et local-vlm-agent : 140/140 verts.
+  Commande dans `preuves.md` et sorties dans `regressions-green.log` du dossier d'état.
+- ADR 0057 rédigé et lié dans la section Décisions de l'architecture.
+- Contrôle final : `node scripts/check.mjs` vert — règles, format, lint, gel et cliquet verts ;
+  2 678 tests JavaScript réussis sur 146 fichiers, 47 tests Python réussis.
+  Sortie conservée dans `.harness-state/tickets/T263/check-full.log`.
+- Verdict `TERMINÉ` enregistré dans le dossier d'état. Aucun commit ni push ; relecture et intégration
+  laissées à la boucle. Modèle réel, TV, VPS et fournisseurs non exercés conformément au périmètre.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T263/relecture-1.md : **1. `adapters/ollama/question-agent.cjs:61` et `adapters/ollama/http-client.cjs:48`** (hors périmètre)
+  - **Problème :** chaque requête envoie à la fois `tools` et `format: schema`. Avec Ollama, un `format` en schéma JSON contraint toute la génération. Le modèle pourrait alors ne jamais produire d'appel d'outil : il répondrait toujours directement au schéma. Dans ce cas, la recherche, les paroles et le réexamen seraient en pratique inactifs, sans qu'aucun test sur faux serveur puisse le voir. Je n'ai pas pu le vérifier ici.
+  - **Attendu :** lors de l'essai réel du propriétaire, vérifier que le modèle choisi émet bien des `tool_calls` quand `format` est fourni. Sinon, n'envoyer `format` qu'au dernier tour, celui qui est proposé sans outils.
+  - **Pourquoi hors périmètre :** le ticket exclut tout essai réel de la boucle (« Modèle local… restent à l'orchestrateur/propriétaire, hors boucle »). Une correction faite à l'aveugle ne pourrait pas être validée dans la session.
+- .harness-state/tickets/T263/relecture-1.md : **2. `app/main.cjs:156` et `:289`** (hors périmètre)
+  - **Problème :** `TVLENS_QUESTIONS_BACKEND` est maintenant persisté dans le cache comme les autres réglages. Sur le Mac, si l'on importe un fichier avec `local` mais sans URL ni modèle, l'import réussit sans rien dire et l'agent n'est pas recomposé. Au démarrage suivant, `createConversationRuntime` refuse et `app/main.cjs:593` affiche « TVLens ne peut pas démarrer ». Le gestionnaire d'import n'est enregistré qu'après ce refus : on ne peut plus corriger depuis l'application. Il faut passer par une variable d'environnement, par `--config=` ou supprimer `provider.enc`. Par ailleurs, un import valide ne change pas le backend avant un redémarrage.
+  - **Attendu :** valider la sélection des questions au moment de l'import, ou recomposer l'agent après l'import.
+  - **Pourquoi hors périmètre :** `app/main.cjs` n'est pas dans la liste des fichiers à modifier, et le refus au démarrage est exigé par le ticket.
+- .harness-state/tickets/T263/relecture-1.md : **3. `docs/architecture.md:148` et `docs/backend-latency-optimization.md:395-396`** (hors périmètre)
+  - **Problème :** la ligne 148 dit encore que `conversation-runtime` compose `CodexSessionAgent`, sans mentionner l'agent Ollama. Le tableau des réglages ne liste pas `TVLENS_QUESTIONS_BACKEND` ni `TVLENS_LOCAL_QUESTIONS_*`.
+  - **Attendu :** mettre à jour ces deux passages.
+  - **Pourquoi hors périmètre :** le ticket limite la modification de l'architecture à la section Décisions.

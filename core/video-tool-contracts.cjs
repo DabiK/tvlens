@@ -1,4 +1,5 @@
 const range = { startMs: { type: "number" }, endMs: { type: "number" } };
+const VIDEO_TOOL_CALL_LIMIT = 8;
 const videoToolDefinitions = [
   {
     name: "search_moments",
@@ -35,4 +36,4 @@ const videoToolDefinitions = [
   },
 ];
 const videoToolNames = videoToolDefinitions.map((tool) => tool.name);
-module.exports = { videoToolDefinitions, videoToolNames };
+module.exports = { videoToolDefinitions, videoToolNames, VIDEO_TOOL_CALL_LIMIT };

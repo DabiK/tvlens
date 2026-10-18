@@ -34,13 +34,14 @@ async function loadConfig({ configPath, userData, safeStorage, environment = pro
         await fs.writeFile(cached, safeStorage.encryptString(JSON.stringify({ ...(result.apiKey ? result : prior), switchEnv })), { mode: 0o600 });
       }
     }
-    return { ...result, ...switches({ ...switchEnv, ...set(environment), ...set(env, [LOCAL_VLM_TOKEN]) }) };
+    return { ...result, ...switches({ ...switchEnv, ...set(environment), ...set(env, LOCAL_TOKENS) }) };
   }
   if (safeStorage.isEncryptionAvailable()) {
     try {
       const { switchEnv = {}, ...provider } = JSON.parse(safeStorage.decryptString(await fs.readFile(cached)));
       // A cache written by an import without a key holds switches only.
-      return { ...(provider.apiKey ? provider : { apiKey: '', model: DEFAULT_MODEL }), ...switches({ ...set(switchEnv), ...set(environment, [...SWITCHES, LOCAL_VLM_TOKEN]) }) };
+      return { ...(provider.apiKey ? provider : { apiKey: '', model: DEFAULT_MODEL }),
+        ...switches({ ...set(switchEnv), ...set(environment, [...SWITCHES, ...LOCAL_TOKENS]) }) };
     }
     catch { /* Import remains available when no encrypted credentials exist. */ }
   }
@@ -57,8 +58,10 @@ async function stored(cached, safeStorage) {
 // either. A mistyped value is kept as typed: the session runtime refuses it at start instead of
 // running under another setting than intended.
 const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLENS_BACKGROUND_INDEX', 'TVLENS_PERCEPTION_BACKEND',
-  'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE'];
-const LOCAL_VLM_TOKEN = 'TVLENS_LOCAL_VLM_TOKEN';
+  'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
+  'TVLENS_QUESTIONS_BACKEND', 'TVLENS_LOCAL_QUESTIONS_URL', 'TVLENS_LOCAL_QUESTIONS_MODEL',
+  'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE'];
+const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN'];
 // Only what a source really sets: an empty variable must not undo a setting written elsewhere.
 const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => typeof env[name] === 'string' && env[name] !== '').map(name => [name, env[name]]));
 function switches(env) {
@@ -71,9 +74,16 @@ function switches(env) {
     // the passages captured meanwhile. Still one visual call at a time. TVLENS_VISION_DURING_ASK=0 restores the gate.
     visionDuringAsk: flag(env.TVLENS_VISION_DURING_ASK, true),
     backgroundIndex: flag(env.TVLENS_BACKGROUND_INDEX, true),
+    questionsBackend: env.TVLENS_QUESTIONS_BACKEND || 'codex',
+    localQuestions: localQuestionsConfig(env),
     perceptionBackend: env.TVLENS_PERCEPTION_BACKEND || 'codex',
     localVlm: { url: env.TVLENS_LOCAL_VLM_URL || null, model: env.TVLENS_LOCAL_VLM_MODEL || null,
       numCtx: env.TVLENS_LOCAL_VLM_NUM_CTX ? Number(env.TVLENS_LOCAL_VLM_NUM_CTX) : undefined,
       keepAlive: env.TVLENS_LOCAL_VLM_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_VLM_TOKEN || null } };
+}
+function localQuestionsConfig(env) {
+  return { url: env.TVLENS_LOCAL_QUESTIONS_URL || null, model: env.TVLENS_LOCAL_QUESTIONS_MODEL || null,
+    numCtx: env.TVLENS_LOCAL_QUESTIONS_NUM_CTX ? Number(env.TVLENS_LOCAL_QUESTIONS_NUM_CTX) : undefined,
+    keepAlive: env.TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_QUESTIONS_TOKEN || null };
 }
 module.exports = { loadConfig };

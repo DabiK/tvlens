@@ -44,3 +44,37 @@ test('explicit Whisper environment overrides win with and without an imported co
     assert.equal(config.whisperBinary, environment.TVLENS_WHISPER_BINARY);
   }
 });
+
+test('question backend imports persist while startup overrides and tokens stay out of the cache', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-questions-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = {
+    isEncryptionAvailable: () => true,
+    encryptString: text => Buffer.from(text),
+    decryptString: bytes => bytes.toString(),
+  };
+  const configPath = path.join(root, 'questions.env');
+  await fs.writeFile(configPath, [
+    'TVLENS_QUESTIONS_BACKEND=local', 'TVLENS_LOCAL_QUESTIONS_URL=http://127.0.0.1:11434/private',
+    'TVLENS_LOCAL_QUESTIONS_MODEL=local-file', 'TVLENS_LOCAL_QUESTIONS_NUM_CTX=8192',
+    'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE=30m', 'TVLENS_LOCAL_QUESTIONS_TOKEN=FILE_SECRET',
+  ].join('\n'));
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  const imported = await load({ configPath, environment: { TVLENS_LOCAL_QUESTIONS_MODEL: 'local-env',
+    TVLENS_LOCAL_QUESTIONS_TOKEN: 'ENV_SECRET' } });
+  assert.equal(imported.questionsBackend, 'local');
+  assert.equal(imported.perceptionBackend, 'codex');
+  assert.equal(imported.localVlm.model, null);
+  assert.deepEqual(imported.localQuestions, { url: 'http://127.0.0.1:11434/private', model: 'local-env',
+    numCtx: 8192, keepAlive: '30m', token: 'ENV_SECRET' });
+  const cached = await fs.readFile(path.join(root, 'provider.enc'), 'utf8');
+  assert.doesNotMatch(cached, /FILE_SECRET|ENV_SECRET|local-env/);
+  const restored = await load();
+  assert.deepEqual(restored.localQuestions, { ...imported.localQuestions, model: 'local-file', token: null });
+  assert.equal(restored.questionsBackend, 'local');
+  assert.equal((await load({ environment: { TVLENS_QUESTIONS_BACKEND: 'codex' } })).questionsBackend, 'codex');
+  assert.equal((await load({ configPath, environment: { TVLENS_LOCAL_QUESTIONS_MODEL: '' } })).localQuestions.model, 'local-file');
+  const bare = await loadConfig({ userData: root, safeStorage: { isEncryptionAvailable: () => false }, environment: {} });
+  assert.equal(bare.questionsBackend, 'codex');
+  assert.deepEqual(bare.localQuestions, { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null });
+});

@@ -434,3 +434,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0056](adr/0056-la-boucle-releve-son-processus-apres-integration-de-ses-modules.md) :
   La boucle relève son processus après intégration de ses modules, sans perdre le lancement ni les compteurs.
+
+- [ADR 0057](adr/0057-les-questions-locales-utilisent-ollama-et-les-outils-video-existants.md) :
+  La composition choisit Codex ou Ollama pour les questions ; Ollama utilise les trois outils vidéo existants sans repli ni accès web.
