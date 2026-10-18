@@ -1,7 +1,7 @@
 ---
 id: T273
 titre: Check the video file conversion live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T262
 adr: non
 installe: non
@@ -54,3 +54,16 @@ Décision attendue du propriétaire : le contrôle réel de T262 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+
+- 18/10, orchestrateur : contrôle réel concluant au commit `c13fd0e`, sur le Mac (M5 Max, 36 Go, boucle arrêtée),
+  ffmpeg 9.0.2, avec les échantillons du dépôt.
+  - Kennedy (`kennedy-rice-7min.mp4`, 0 à 65 s) : 9 blocs dont un dernier de 1 s, 3 s de calcul, images 1280×720 ;
+    Spring (`spring.mp4`, 60 à 90 s) : 4 blocs dont un dernier de 6 s, images 1280×536, format conservé ; son WAV mono
+    16 kHz ; empreintes des sources identiques à `media/samples/README.md` ; préparations et manifestes validés.
+  - Rejeu local `gemma3:4b` par le runner de T257 : 13 / 13 réussis, 4,0 à 5,8 s par bloc ; deux réponses en anglais
+    sur Kennedy, à mesurer en G2.
+  - Serveur headless local, session neuve : 4 blocs rattachés et envoyés au rythme réel, tous acceptés (200), 3
+    passages prêts et 1 partiel à l'archivage. Langue de transcription par défaut en français : discours anglais mal
+    transcrit, signalé par les résumés.
+  - Provenance `converted-video` complète (source, intervalle, ffmpeg). Trace :
+    `experiments/essais/2026-10-18-conversion-video-mac/`. Statut `termine`.
