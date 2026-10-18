@@ -2,7 +2,7 @@
 id: T274
 titre: Check the question backend and the GX10 copy live on the Mac
 statut: a-faire
-bloque_par: T267, T276, T277, T278
+bloque_par: T267, T276, T277, T278, T279
 adr: non
 installe: non
 harnais: non
@@ -56,3 +56,6 @@ Décision attendue du propriétaire : le contrôle réel de T267 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+- 18/10, orchestrateur : la copie A attend aussi T279 (réponses locales en français). Répétition élargie : essayer
+  `qwen3.8:27b`, qui a la vision, en réexamen et en perception sur les mêmes passages que `gemma3:4b`, `gemma3:12b` et
+  Codex ; noter la langue des réponses ; régler la langue de transcription par extrait.

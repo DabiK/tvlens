@@ -55,3 +55,5 @@ Décision attendue du propriétaire : le contrôle réel de T268 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+- 18/10, propriétaire : ce contrôle ne bloque plus T224. Il se fait dès que T268 est intégré et que la TV est libre,
+  sans arrêter la boucle.

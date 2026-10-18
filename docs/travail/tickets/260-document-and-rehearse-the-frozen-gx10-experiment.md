@@ -200,3 +200,5 @@ de démonstration demeure `hackathon-rc` ; une réussite expérimentale ne vaut 
 
 - 18/10, orchestrateur : périmètre complété par les réserves de relecture de T255 (protocole de l'essai A) et de T263
   (réglages et composition des questions locales), qui sortaient du périmètre de ces deux tickets.
+- 18/10, orchestrateur : le guide dit de régler la langue de transcription de chaque extrait (`fr`, `en`, `auto`)
+  et de l'indiquer avec ses résultats (contrôle T273).

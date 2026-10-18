@@ -182,3 +182,6 @@ longue non testée ; un corpus bouclé mesure cette charge répétée, pas trent
 La vidéo convertie répond au besoin de source continue, sans remplacer le témoin réel de capture TV.
 
 ## Journal
+- 18/10, orchestrateur : contrôle T273, un discours anglais transcrit avec la langue française par défaut est
+  inutilisable. Chaque extrait d'un scénario déclare sa langue de transcription (`fr` ou `en`), réglée sur la session
+  par `/v1/settings/transcription` avant son premier bloc et consignée dans le rapport ; `auto` seulement si déclaré.
