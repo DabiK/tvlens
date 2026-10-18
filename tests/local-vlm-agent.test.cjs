@@ -5,6 +5,8 @@ const { inspect } = require('node:util');
 const { bounded, failure, deferred, tick } = require('./helpers/wait.cjs');
 const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
+const { loadConfig } = require('../adapters/config.cjs');
+const { createSessionPerception, createSessionInspection } = require('../runtime/session-providers.cjs');
 
 // Contract tests against a fake Ollama on loopback: they prove the wire format and the
 // failure handling, never the quality or the speed of a real local model.
@@ -36,6 +38,47 @@ const englishObservation = { summary: 'The man is speaking about the future.', v
   topic: 'The speech', uncertainty: 'The identity is not confirmed.' };
 const languageSegment = { id: 'moment-language', startMs: 0, endMs: 8000, frames: [],
   observation: { transcript: 'We choose to go to the Moon.' } };
+
+for (const think of ['off', 'on', 'default', undefined]) {
+  test(`composed perception and inspection send the ${think ?? 'absent'} thinking setting and publish it`, async t => {
+    const server = await backend(t, (_request, res) => reply(res, {
+      ...frenchObservation, observations: [], hypotheses: [], limits: [], backend: { think: 'forged' },
+    }));
+    const environment = { TVLENS_PERCEPTION_BACKEND: 'local', TVLENS_INSPECTION_BACKEND: 'local',
+      TVLENS_LOCAL_VLM_URL: server.url, TVLENS_LOCAL_VLM_MODEL: MODEL,
+      ...(think && { TVLENS_LOCAL_VLM_THINK: think }), TVLENS_LOCAL_QUESTIONS_THINK: think === 'off' ? 'on' : 'off' };
+    const config = await loadConfig({ userData: '/unused', safeStorage: { isEncryptionAvailable: () => false }, environment });
+    const settings = { id: 'session', config, selectedModels: {}, transcriber: {}, store: {}, overrides: {} };
+    const perception = createSessionPerception(settings);
+    const { inspector, inspectorModel } = createSessionInspection(settings);
+    t.after(() => perception.close());
+    t.after(() => inspectorModel.close());
+    const result = await perception.observeVisual(languageSegment);
+    await inspectorModel.inspect({ question: 'Quel geste ?', segments: [] });
+    assert.equal(server.requests.length, 2);
+    for (const { body } of server.requests) {
+      if (think === 'on' || think === 'off') assert.equal(body.think, think === 'on');
+      else assert.equal(Object.hasOwn(body, 'think'), false);
+    }
+    assert.equal(result.metrics.backend.think, think ?? 'default');
+    assert.equal(inspector.identity.think, think ?? 'default');
+  });
+}
+
+test('local perception metrics count reasoning on both language attempts without publishing its text', async t => {
+  const thought = 'PRIVATE_PERCEPTION_REASONING';
+  const server = await backend(t, (_request, res, n) => reply(res, {}, { message: {
+    thinking: thought, content: JSON.stringify({ ...(n === 1 ? englishObservation : frenchObservation), thinkingChars: 9000 }),
+  } }));
+  const perception = createSessionPerception({ id: 'session', config: { perceptionBackend: 'local',
+    localVlm: { url: server.url, model: MODEL } }, selectedModels: {}, overrides: {} });
+  t.after(() => perception.close());
+  const result = await perception.observeVisual(languageSegment);
+  assert.equal(server.requests.length, 2);
+  assert.equal(result.metrics.thinkingChars, thought.length * 2);
+  assert.deepEqual(result.metrics.language, { judged: 'fr', attempts: 2 });
+  assert.doesNotMatch(JSON.stringify([result, server.requests]), /PRIVATE_PERCEPTION_REASONING/);
+});
 
 test('local perception appends the French instruction while the doubled Codex request stays identical', async t => {
   const { createHash } = require('node:crypto');
@@ -248,7 +291,7 @@ test('request carries prompt, bare base64 images, schema and private header; res
   assert.deepEqual(request.body, { model: MODEL, stream: false, format: schema, keep_alive: '30m', options: { temperature: 0, num_ctx: 8192 },
     messages: [{ role: 'user', content: 'Décris.\n\n' + LANGUAGE_INSTRUCTION, images: ['QUJD', 'REVGRw=='] }] });
   assert.equal(result.summary, 'Une image.');
-  assert.deepEqual(result.backend, { kind: 'ollama', model: MODEL, host: server.host, numCtx: 8192 });
+  assert.deepEqual(result.backend, { kind: 'ollama', model: MODEL, host: server.host, numCtx: 8192, think: 'default' });
   assert.deepEqual([result.coldStart, result.connectMs], [false, 0], 'connection facts come from the agent, never from the model output');
   assert.deepEqual(result.providerTimings, { totalMs: 2500, loadMs: 1200, promptEvalMs: 800, evalMs: 500, promptTokens: 321, evalTokens: 42,
     rawNs: { total_duration: 2500000000, load_duration: 1200000000, prompt_eval_duration: 800400000, eval_duration: 499600000 } });
@@ -591,7 +634,7 @@ test('seam: queued local client and provider timings reach visual metrics withou
   assert.deepEqual(result.metrics.providerTimings, { totalMs: 1100, loadMs: 500, promptEvalMs: 400, evalMs: 200, rawNs: durations });
   assert.deepEqual([result.metrics.modelState, result.metrics.coldStart, result.metrics.connectMs,
     firstResult.metrics.threadReset, result.metrics.threadReset, result.metrics.threadTurn], ['unknown', false, 0, false, false, 2]);
-  assert.deepEqual(result.metrics.backend, { kind: 'ollama', model: MODEL, host: server.host });
+  assert.deepEqual(result.metrics.backend, { kind: 'ollama', model: MODEL, host: server.host, think: 'default' });
   assert.doesNotMatch(JSON.stringify([firstResult.metrics, result.metrics]), /JETON_PRIVE|CHEMIN_PRIVE|usurpé/);
   const third = await perception.observeVisual(segment(3));
   assert.deepEqual([third.metrics.modelState, third.metrics.providerTimings, third.metrics.threadTurn, third.metrics.threadReset],

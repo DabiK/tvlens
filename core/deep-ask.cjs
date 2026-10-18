@@ -27,12 +27,17 @@ function limitLabel(ms){
 // Seuls les faits scalaires autorisés de l'adaptateur entrent dans le diagnostic, jamais son résultat.
 const knownResidency = value => Number.isFinite(value)
   || typeof value === 'string' && /^-?[\d.mshnuµ]+$/.test(value);
+const thinkingIdentity = value => value.kind === 'ollama' && ['default', 'on', 'off'].includes(value.think) ? { think: value.think } : {};
+function recordProviderMetrics(job, metrics) {
+  if (job.status === 'running' && Number.isSafeInteger(metrics?.thinkingChars) && metrics.thinkingChars >= 0)
+    job._diagnostics.thinkingChars = metrics.thinkingChars;
+}
 function agentIdentity(agent) {
   const unknown = { role: 'questions', kind: 'unknown', model: null, host: null };
   try {
     const value = agent.identity;
     if (!value || !['ollama', 'codex', 'simulated'].includes(value.kind)) return unknown;
-    const identity = { ...unknown, kind: value.kind };
+    const identity = { ...unknown, kind: value.kind, ...thinkingIdentity(value) };
     if (typeof value.model === 'string' && /^[\w.:-]+(?:\/[\w.:-]+)*$/.test(value.model)) identity.model = value.model;
     if (typeof value.host === 'string' && /^[\w.:[\]-]+$/.test(value.host)) identity.host = value.host;
     if (Number.isInteger(value.numCtx) && value.numCtx > 0) identity.numCtx = value.numCtx;
@@ -66,12 +71,13 @@ class DeepAsk {
   }
   traceJob(event, job, fields = {}) {
     this.trace(event, { jobId: job.id, sessionId: job.sessionId, mode: job.mode,
+      ...(job._diagnostics.thinkingChars === undefined ? {} : { thinkingChars: job._diagnostics.thinkingChars }),
       backend: job._diagnostics.backend, calls: { ...job._diagnostics.calls }, ...fields });
   }
   invokeAgent(job, input) {
     // L'entrée dans l'agent peut précéder sa file interne : seul l'adaptateur peut confirmer les tentatives de transport.
     job._diagnostics.calls = { agentInvoked: true, providerRequests: null };
-    return this.agent.answer({ ...input, onProviderRequest: count => {
+    return this.agent.answer({ ...input, onProviderMetrics: metrics => recordProviderMetrics(job, metrics), onProviderRequest: count => {
       if (job.status === 'running' && Number.isInteger(count) && count >= 0)
         job._diagnostics.calls.providerRequests = count;
     } });

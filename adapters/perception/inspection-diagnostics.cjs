@@ -31,7 +31,7 @@ class InspectionDiagnostics {
 
 // Ne calcule aucune mesure : filtre les métriques déjà fournies par l'agent.
 function inspectionMetrics(metrics) {
-  const result = {};
+  const result = numericFields(metrics, ['thinkingChars']);
   if (metrics.clientTimings) result.clientTimings = numericFields(metrics.clientTimings, ['queueMs', 'requestMs']);
   if (metrics.providerTimings) {
     result.providerTimings = numericFields(metrics.providerTimings,

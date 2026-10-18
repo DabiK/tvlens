@@ -2,6 +2,7 @@
 // Prompt, bounded context and observation validation stay in CodexPerception.
 // Contract-tested against a fake server only: no real backend has been exercised from here.
 const { judgeObservationLanguage } = require('../core/response-language.cjs');
+const { normalizeThink, thinkParameter, countThinking } = require('./ollama/thinking.cjs');
 const CLOSED = 'Backend local fermé.', INVALID = 'Réponse du modèle local invalide.';
 const TVLENS_LOCAL_VLM_INPUT_REFUSED = 'TVLENS_LOCAL_VLM_INPUT_REFUSED';
 const TVLENS_LOCAL_VLM_UNREACHABLE = 'TVLENS_LOCAL_VLM_UNREACHABLE';
@@ -43,7 +44,7 @@ function parseOutput(text, onProviderTimings) {
   catch { throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID }); }
   if (!data || typeof data !== 'object' || Array.isArray(data))
     throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID });
-  onProviderTimings(providerTimings(data));
+  onProviderTimings(providerTimings(data), data);
   try { output = typeof data.message?.content === 'string' ? JSON.parse(data.message.content) : null; }
   catch { throw Object.assign(Error(INVALID), { code: TVLENS_LOCAL_VLM_RESPONSE_INVALID }); }
   if (!output || typeof output !== 'object' || Array.isArray(output))
@@ -53,8 +54,9 @@ function parseOutput(text, onProviderTimings) {
 class LocalVlmAgent {
   // Private: an endpoint or Authorization header must not surface when the agent is logged or serialized.
   #endpoint; #headers; #closing = new AbortController();
-  constructor({ url, model, numCtx, keepAlive = '10m', timeoutMs = 45000, headers = {}, fetchImpl = fetch,
+  constructor({ url, model, numCtx, think, keepAlive = '10m', timeoutMs = 45000, headers = {}, fetchImpl = fetch,
     now = () => performance.now() } = {}) {
+    think = normalizeThink(think, 'TVLENS_LOCAL_VLM_THINK');
     if (!url || !model) throw Error('Backend local : URL et modèle requis.');
     if (numCtx !== undefined && !(Number.isInteger(numCtx) && numCtx > 0)) throw Error('Backend local : taille de contexte invalide (entier positif).');
     let endpoint; try { endpoint = new URL(url); } catch {
@@ -65,7 +67,7 @@ class LocalVlmAgent {
     endpoint.pathname = endpoint.pathname.replace(/\/+$/, '') + '/api/chat';
     try { this.#headers = new Headers(headers); this.#headers.set('Content-Type', 'application/json'); } catch { throw Error('Backend local : en-têtes invalides.'); }
     this.#endpoint = endpoint.href;
-    Object.assign(this, { host: endpoint.host, model, numCtx, keepAlive, timeoutMs, fetchImpl, now });
+    Object.assign(this, { host: endpoint.host, model, numCtx, think, keepAlive, timeoutMs, fetchImpl, now });
     this.tail = Promise.resolve();
   }
   // Pas de chargement implicite : seule la réponse Ollama peut annoncer une durée de chargement.
@@ -96,12 +98,13 @@ class LocalVlmAgent {
     const deadline = AbortSignal.timeout(this.timeoutMs);
     const aborted = AbortSignal.any([...(signal ? [signal] : []), deadline, this.#closing.signal]);
     const started = this.now();
-    const body = JSON.stringify({ model, stream: false, format: outputSchema, keep_alive: this.keepAlive,
+    const body = JSON.stringify({ model, ...thinkParameter(this.think), stream: false, format: outputSchema, keep_alive: this.keepAlive,
       options: { temperature: 0, ...(this.numCtx ? { num_ctx: this.numCtx } : {}) },
       messages: [{ role: 'user', content: this.prepareInstructions(instructions), images }] });
+    const usage = {};
     for (let attempts = 1; attempts <= MAX_LANGUAGE_ATTEMPTS; attempts++) {
       aborted.throwIfAborted();
-      const { result, diagnostic } = await this.request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs });
+      const { result, diagnostic } = await this.request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs, usage });
       const judged = judgeObservationLanguage(result);
       const language = Object.freeze({ judged, attempts });
       diagnostic.metrics.language = language;
@@ -109,13 +112,13 @@ class LocalVlmAgent {
       if (attempts === 1 && ['en', 'other'].includes(judged)) continue;
       // La perception ajoute cette limite après validation, sans réduire le texte valide du modèle.
       const languageLimit = ['en', 'other'].includes(judged) ? LANGUAGE_LIMIT : '';
-      const report = Object.freeze({ language, languageLimit });
+      const report = Object.freeze({ language, languageLimit, ...usage });
       const output = { ...result, ...report };
       languageReports.set(output, report);
       return output;
     }
   }
-  async request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs }) {
+  async request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs, usage }) {
     let response, text;
     try {
       response = await this.fetchImpl(this.#endpoint, { method: 'POST', headers: this.#headers, signal: aborted,
@@ -136,7 +139,9 @@ class LocalVlmAgent {
     if (!response.ok) throw Object.assign(Error(`Backend local indisponible (HTTP ${response.status}).`), {
       code: TVLENS_LOCAL_VLM_UNAVAILABLE, httpStatus: response.status,
     });
-    const { data, output } = parseOutput(text, timings => {
+    const { data, output } = parseOutput(text, (timings, responseData) => {
+      countThinking(responseData, usage);
+      Object.assign(diagnostic.metrics, usage);
       diagnostic.metrics.providerTimings = timings;
       onDiagnostic?.(diagnostic);
     });
@@ -148,7 +153,7 @@ class LocalVlmAgent {
     // Ollama n'annonce pas l'état du modèle : même loadMs positif ou nul ne prouve ni froid ni chaud.
     return { diagnostic, result: {
       ...output, elapsedMs: requestMs, clientTimings: { queueMs, requestMs }, modelState: 'unknown', coldStart: false, connectMs: 0,
-      backend: { kind: 'ollama', model: this.model, host: this.host, ...(this.numCtx ? { numCtx: this.numCtx } : {}) },
+      backend: { kind: 'ollama', model: this.model, host: this.host, think: this.think, ...(this.numCtx ? { numCtx: this.numCtx } : {}) },
       providerTimings: providerTimings(data),
     } };
   }

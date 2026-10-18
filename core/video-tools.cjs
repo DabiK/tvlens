@@ -21,7 +21,7 @@ const consultationOf = view => ({ sessionId: view.session.id, anchorMs: view.clo
 // Fields of a consulted passage that the contract publishes as null when there is nothing to say.
 const OPTIONAL_FIELDS = ['revision', 'status', 'audioStatus', 'visionStatus', 'error', 'audioError', 'visionError',
   'visionSkipReason', 'stage', 'observation', 'topicSummary', 'summary'];
-const INSPECTION_IDENTITY_FIELDS = ['role', 'backend', 'model', 'host', 'numCtx', 'mode'];
+const INSPECTION_IDENTITY_FIELDS = ['role', 'backend', 'model', 'host', 'numCtx', 'mode', 'think'];
 function inspectionProvenance(diagnostic) {
   if (!diagnostic) return undefined;
   return Object.fromEntries(INSPECTION_IDENTITY_FIELDS.filter(key => key in diagnostic).map(key => [key, diagnostic[key]]));

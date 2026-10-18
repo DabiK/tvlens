@@ -4,6 +4,7 @@ const { domainError } = require("../core/shared/domain-error.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
 const { OllamaQuestionAgent } = require("../adapters/ollama/question-agent.cjs");
 const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
+const { normalizeThink } = require("../adapters/ollama/thinking.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const TVLENS_QUESTION_SCOPE_FOREIGN = "TVLENS_QUESTION_SCOPE_FOREIGN";
@@ -55,6 +56,9 @@ function createConversationRuntime({
   // Late-bound by the host: the surveillance runtime is composed after the conversation.
   getInstruction,
 }) {
+  // Les deux hôtes composent les questions au démarrage, avant de créer une session de perception.
+  normalizeThink(config.localVlm?.think, 'TVLENS_LOCAL_VLM_THINK');
+  normalizeThink(config.localQuestions?.think, 'TVLENS_LOCAL_QUESTIONS_THINK');
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
   const backend = config.questionsBackend ?? 'codex';
   const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });

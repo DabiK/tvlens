@@ -2,6 +2,7 @@ const TVLENS_OLLAMA_CONFIG_INVALID = 'TVLENS_OLLAMA_CONFIG_INVALID';
 const TVLENS_OLLAMA_UNREACHABLE = 'TVLENS_OLLAMA_UNREACHABLE';
 const TVLENS_OLLAMA_UNAVAILABLE = 'TVLENS_OLLAMA_UNAVAILABLE';
 const TVLENS_OLLAMA_RESPONSE_INVALID = 'TVLENS_OLLAMA_RESPONSE_INVALID';
+const { normalizeThink, thinkParameter } = require('./thinking.cjs');
 
 function invalidConfig() {
   return Object.assign(Error('Backend local : URL http(s) sans identifiants, modèle et contexte valides requis.'), {
@@ -28,7 +29,8 @@ class OllamaHttpClient {
   #fetch;
   #parameters;
 
-  constructor({ url, model, numCtx, keepAlive = '10m', token, fetchImpl = fetch } = {}) {
+  constructor({ url, model, numCtx, keepAlive = '10m', think, token, fetchImpl = fetch } = {}) {
+    think = normalizeThink(think, 'TVLENS_LOCAL_QUESTIONS_THINK');
     validateOllamaConfig({ url, model, numCtx, token });
     const endpoint = new URL(url);
     endpoint.pathname = endpoint.pathname.replace(/\/+$/, '') + '/api/';
@@ -36,8 +38,8 @@ class OllamaHttpClient {
     this.#headers = new Headers({ 'Content-Type': 'application/json' });
     try { if (token) this.#headers.set('Authorization', `Bearer ${token}`); } catch { throw invalidConfig(); }
     this.#fetch = fetchImpl;
-    this.#parameters = { model, keep_alive: keepAlive, options: { temperature: 0, ...(numCtx && { num_ctx: numCtx }) } };
-    this.backend = Object.freeze({ kind: 'ollama', model, host: endpoint.host, ...(numCtx && { numCtx }), keepAlive });
+    this.#parameters = { model, ...thinkParameter(think), keep_alive: keepAlive, options: { temperature: 0, ...(numCtx && { num_ctx: numCtx }) } };
+    this.backend = Object.freeze({ kind: 'ollama', model, host: endpoint.host, ...(numCtx && { numCtx }), keepAlive, think });
   }
 
   get temperature() {

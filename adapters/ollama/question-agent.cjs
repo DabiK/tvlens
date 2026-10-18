@@ -1,4 +1,5 @@
 const { OllamaHttpClient } = require('./http-client.cjs');
+const { countThinking } = require('./thinking.cjs');
 const { VIDEO_TOOL_CALL_LIMIT } = require('../../core/video-tool-contracts.cjs');
 const { toolDefinitions, allowedToolCall } = require('./video-tools.cjs');
 const { schema, buildLocalPrompt } = require('../companion-prompt.cjs');
@@ -8,6 +9,12 @@ const TVLENS_OLLAMA_TOOL_REFUSED = 'TVLENS_OLLAMA_TOOL_REFUSED';
 const TVLENS_OLLAMA_TOOL_BUDGET = 'TVLENS_OLLAMA_TOOL_BUDGET';
 const TVLENS_OLLAMA_QUESTION_CLOSED = 'TVLENS_OLLAMA_QUESTION_CLOSED';
 const TVLENS_OLLAMA_QUESTION_TIMEOUT = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
+
+function reportUsage(input, usage) {
+  try { input.onProviderMetrics?.({ ...usage }); } catch {
+    // Le diagnostic numérique ne doit pas interrompre une réponse locale.
+  }
+}
 
 class OllamaQuestionAgent {
   #client;
@@ -75,15 +82,18 @@ class OllamaQuestionAgent {
     const { tools, signal } = input;
     const messages = [{ role: 'user', content: buildLocalPrompt(input) }];
     const audit = [];
+    const usage = {};
     let attempts = 0;
     while (true) {
       const availableTools = attempts < VIDEO_TOOL_CALL_LIMIT ? toolDefinitions : [];
       const data = await this.#client.chat({ messages, tools: availableTools, format: schema, signal });
       signal.throwIfAborted();
+      countThinking(data, usage);
+      reportUsage(input, usage);
       const message = readMessage(data);
       if (!message.tool_calls?.length) {
         const result = readAnswer(message.content);
-        return { ...result, audit, model: this.#client.backend.model,
+        return { ...result, ...usage, audit, model: this.#client.backend.model,
           backend: { role: 'questions', ...this.#client.backend }, elapsedMs: this.#now() - started, coldStart: false, connectMs: 0 };
       }
       messages.push(message);

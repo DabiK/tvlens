@@ -14,6 +14,7 @@ const {
 const { OllamaEmbeddings, validateEmbeddingTimeout } = require("../adapters/embeddings/ollama-embeddings.cjs");
 const { providerIdentity } = require("../adapters/embeddings/provider-identity.cjs");
 const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
+const { normalizeThink } = require("../adapters/ollama/thinking.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
 const { MemorySearch } = require("../core/moment-search.cjs");
@@ -140,8 +141,9 @@ function inspectionIdentity({ config, inspectorModel, smoke, liveInspection, loc
   if (localInspection || (smoke && !liveInspection))
     return { role, backend: "simulation", model: null, mode: localInspection ? "localInspection" : "smoke" };
   if (config.inspectionBackend !== "local") return { role, backend: "codex", model: inspectorModel.model || null };
-  const { model, url, numCtx } = config.localVlm;
-  return { role, backend: "ollama", model, host: new URL(url).host, ...(numCtx ? { numCtx } : {}) };
+  const { model, url, numCtx, think } = config.localVlm;
+  return { role, backend: "ollama", model, host: new URL(url).host,
+    think: normalizeThink(think, 'TVLENS_LOCAL_VLM_THINK'), ...(numCtx ? { numCtx } : {}) };
 }
 
 function localVlmAgent(settings = {}, Agent = LocalVlmAgent) {
@@ -149,6 +151,7 @@ function localVlmAgent(settings = {}, Agent = LocalVlmAgent) {
     url: settings.url,
     model: settings.model,
     numCtx: settings.numCtx,
+    ...(settings.think !== undefined ? { think: settings.think } : {}),
     ...(settings.keepAlive ? { keepAlive: settings.keepAlive } : {}),
     ...(settings.token
       ? { headers: { Authorization: "Bearer " + settings.token } }

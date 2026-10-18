@@ -116,11 +116,13 @@ TVLENS_LOCAL_VLM_URL=http://127.0.0.1:11434
 TVLENS_LOCAL_VLM_MODEL=gemma3:4b
 TVLENS_LOCAL_VLM_NUM_CTX=8192
 TVLENS_LOCAL_VLM_KEEP_ALIVE=10m
+TVLENS_LOCAL_VLM_THINK=default
 TVLENS_QUESTIONS_BACKEND=local
 TVLENS_LOCAL_QUESTIONS_URL=http://127.0.0.1:11434
 TVLENS_LOCAL_QUESTIONS_MODEL=MODELE_QUESTIONS_VALIDE
 TVLENS_LOCAL_QUESTIONS_NUM_CTX=8192
 TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE=10m
+TVLENS_LOCAL_QUESTIONS_THINK=default
 TVLENS_EMBEDDINGS_BACKEND=local
 TVLENS_LOCAL_EMBEDDINGS_URL=http://127.0.0.1:11434
 TVLENS_LOCAL_EMBEDDINGS_MODEL=MODELE_EMBEDDINGS_VALIDE
@@ -136,6 +138,24 @@ TVLENS_BACKGROUND_INDEX=1
 | Questions T263/T267 | `TVLENS_QUESTIONS_BACKEND=codex` (défaut) ou `local` | `TVLENS_LOCAL_QUESTIONS_*` ; aucun repli distant. |
 | Embeddings T264 | `TVLENS_EMBEDDINGS_BACKEND=local`, `openrouter` ou `disabled` | `openrouter` exige une clé ; backend inconnu refusé. |
 | Inspection T265 | `TVLENS_INSPECTION_BACKEND=codex` (défaut) ou `local` | Local utilise `localVlm`, avec un agent propre ; conflit avec simulation refusé. |
+| Raisonnement perception/réexamen | `TVLENS_LOCAL_VLM_THINK=default`, `on` ou `off` | Autre valeur refusée, réglage nommé. |
+| Raisonnement questions | `TVLENS_LOCAL_QUESTIONS_THINK=default`, `on` ou `off` | Indépendant du réglage VLM. |
+
+Pour ces deux réglages, `default` ou l’absence omet le champ `think` de `/api/chat` ; le modèle
+garde son défaut. `on` transmet `think:true`, `off` transmet `think:false`, à chaque tour, y compris
+après un outil ou une redemande de langue. Une variable vide garde le choix importé, comme les
+autres réglages. Ces choix persistent avec le fichier importé ; l’environnement reste prioritaire.
+La prise en charge dépend du modèle et de la version d’Ollama
+([documentation du raisonnement](https://docs.ollama.com/capabilities/thinking)) : l’identité publie
+la demande envoyée, sans prétendre prouver que le fournisseur l’a honorée.
+
+Consigner `think` depuis `metrics.backend` en perception, le diagnostic d’inspection, et
+`job.metrics.backend.identity` pour les questions. `default` désigne une omission, jamais un booléen
+déduit. Quand `message.thinking` est une chaîne, seul son nombre de caractères est publié dans
+`metrics.thinkingChars` (ou `job.metrics.thinkingChars`) : total des tentatives de langue ou des
+tours d’outils de l’appel. Une chaîne vide donne zéro ; un champ absent ou non textuel ne fournit
+aucune mesure. Le texte de raisonnement n’est ni publié ni renvoyé au modèle. Les embeddings
+n’ont aucun réglage de raisonnement et leurs requêtes restent sans champ `think`.
 
 Pour perception/questions/inspection locales : URL `http(s)` sans identifiants, modèle non vide,
 `NUM_CTX` entier strictement positif si fourni. `KEEP_ALIVE` est transmis tel quel au fournisseur,
@@ -483,10 +503,10 @@ Remplir **une ligne distincte par rôle**, y compris ceux qui n’ont pas tourn�
 
 | Rôle | Choix configuré | Backend effectif et identité modèle/version/digest ou poids | Paramètres | État et preuve |
 | --- | --- | --- | --- | --- |
-| Perception | à remplir | à remplir ou inconnu | `num_ctx`, `keep_alive`, température | exercé/non exercé/simulé |
-| Questions | à remplir | à remplir ou inconnu | contexte/résidence, effort si distant | exercé/non exercé/simulé |
+| Perception | à remplir | à remplir ou inconnu | `num_ctx`, `keep_alive`, température, `think` | exercé/non exercé/simulé |
+| Questions | à remplir | à remplir ou inconnu | contexte/résidence, `think`, effort si distant | exercé/non exercé/simulé |
 | Embeddings/recherche | à remplir | modèle/identité de l’index, révision/digest | troncature, timeout | état ; lexical/hybride |
-| Inspection | à remplir | identité de l’appel ou origine du cache | VLM, sélection/stratégie | état ; cache ou appel |
+| Inspection | à remplir | identité de l’appel ou origine du cache | VLM, `think`, sélection/stratégie | état ; cache ou appel |
 | Transcription | à remplir | binaire/version/empreinte et poids | langue, threads, audio-ctx | exercé/non exercé/simulé |
 | Surveillance : détection | Codex actuel ou non activé | à remplir ou inconnu | effort/workers configurés | exercé/non exercé |
 | Surveillance : web | distant ou non activé | à remplir ou inconnu | paramètres connus ou inconnu | exercé/non exercé |

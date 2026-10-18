@@ -18,7 +18,7 @@ test('explicit local inspection composes the shared role with its own local agen
   assert.equal(built.inspectorModel.model, 'vision-local');
   assert.equal(built.inspectorModel.agent.timeoutMs, 45000);
   assert.deepEqual(built.inspector.identity, { role: 'inspection', backend: 'ollama', model: 'vision-local',
-    host: '127.0.0.1:9', numCtx: 8192 });
+    host: '127.0.0.1:9', numCtx: 8192, think: 'default' });
 });
 
 test('invalid, incomplete and conflicting local selections are refused before any provider is constructed', () => {
@@ -114,7 +114,7 @@ fs.copyFileSync(args[args.indexOf('-i') + 1], args.at(-1).replace('%03d', '001')
   const tools = (signal, inspector = built.inspector) => new VideoTools({ consultation, inspector, signal,
     media: { lease: async () => { leases++; return async () => { leases--; }; } } });
   return { ...built, calls, agents, tools, speech, leases: () => leases, identity: {
-    role: 'inspection', backend: 'ollama', model: 'vision-local', host: new URL(url).host, numCtx: 8192,
+    role: 'inspection', backend: 'ollama', model: 'vision-local', host: new URL(url).host, numCtx: 8192, think: 'default',
   } };
 }
 
@@ -154,6 +154,25 @@ test('real tools send contact sheets to fake Ollama, admit bounded evidence and 
   await assert.rejects(f.tools().call('inspect_clip', request), /Session terminée/);
   assert.equal(f.calls.length, 1);
 });
+
+for (const invalid of [false, true]) {
+  test(`local inspection diagnostics count private reasoning with ${invalid ? 'invalid' : 'valid'} answer content`, async t => {
+    const thought = 'PRIVATE_INSPECTION_REASONING';
+    const f = await bench(t, { handler: (_input, res) => {
+      const data = JSON.parse(body());
+      data.message.thinking = thought;
+      if (invalid) data.message.content = 'not JSON';
+      res.end(JSON.stringify(data));
+    } });
+    const tools = f.tools();
+    const pending = tools.call('inspect_clip', request);
+    if (invalid) await assert.rejects(pending, { code: 'TVLENS_LOCAL_VLM_RESPONSE_INVALID' });
+    else await pending;
+    assert.equal(tools.toolMetrics[0].inspection.metrics.thinkingChars, thought.length);
+    assert.equal(tools.toolMetrics[0].inspection.think, 'default');
+    assert.doesNotMatch(JSON.stringify([tools.toolMetrics, tools.observations, f.calls]), /PRIVATE_INSPECTION_REASONING/);
+  });
+}
 
 for (const mode of ['http', 'json', 'content']) {
   test(`local inspection ${mode} failure records identity and available metrics without fallback`, async t => {

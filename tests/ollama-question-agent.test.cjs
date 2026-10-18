@@ -17,6 +17,7 @@ const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { createMemoryMedia } = require('../runtime/memory-media.cjs');
 
 const MODEL = 'question-model', SECRET = 'PRIVATE_QUESTION_TOKEN';
+const { loadConfig } = require('../adapters/config.cjs');
 const localConfig = (url = 'http://127.0.0.1:1/private') => ({ questionsBackend: 'local',
   localQuestions: { url, model: MODEL, numCtx: 8192, keepAlive: '30m', token: SECRET } });
 
@@ -62,10 +63,10 @@ const citation = { id: 'moment-1', startMs: 0, endMs: 8000 };
 const answer = extra => ({ answer: 'Selon les paroles, elle annonce une hausse.', kind: 'observation',
   citations: [citation], sources: [], limits: [], ...extra });
 const call = (name, args) => ({ function: { name, arguments: args } });
-function reply(res, content, toolCalls) {
+function reply(res, content, toolCalls, thinking) {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: { role: 'assistant', content: JSON.stringify(content),
-    ...(toolCalls && { tool_calls: toolCalls }) }, done: true, eval_count: 4 }));
+    ...(toolCalls && { tool_calls: toolCalls }), ...(thinking !== undefined && { thinking }) }, done: true, eval_count: 4 }));
 }
 function stage(t, url, options = {}) {
   let state = { id: 'session', elapsedMs: 16000, history: [], segments: [
@@ -96,6 +97,65 @@ function stage(t, url, options = {}) {
   return { ...runtime, used, ask, replace: value => { state = value; } };
 }
 
+for (const think of ['off', 'on', 'default', undefined]) {
+  test(`composed local questions send the ${think ?? 'absent'} thinking setting on every tool turn and publish it`, async t => {
+    const server = await backend(t, (_request, res, n) => n === 1
+      ? reply(res, {}, [call('get_transcript', { startMs: 0, endMs: 8000 })]) : reply(res, answer()));
+    const environment = { TVLENS_QUESTIONS_BACKEND: 'local', TVLENS_LOCAL_QUESTIONS_URL: server.url,
+      TVLENS_LOCAL_QUESTIONS_MODEL: MODEL, ...(think && { TVLENS_LOCAL_QUESTIONS_THINK: think }),
+      TVLENS_LOCAL_VLM_THINK: think === 'off' ? 'on' : 'off' };
+    const config = await loadConfig({ userData: '/unused', safeStorage: { isEncryptionAvailable: () => false }, environment });
+    const traces = [];
+    const s = stage(t, server.url, { config, onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    const job = s.ask();
+    await job.done;
+    assert.equal(job.status, 'done');
+    assert.equal(server.requests.length, 2);
+    for (const { body } of server.requests) {
+      if (think === 'on' || think === 'off') assert.equal(body.think, think === 'on');
+      else assert.equal(Object.hasOwn(body, 'think'), false);
+    }
+    assert.equal(s.agent.identity.think, think ?? 'default');
+    assert.equal(job.result.backend.think, think ?? 'default');
+    assert.equal(job.metrics.backend.identity.think, think ?? 'default');
+    for (const trace of traces) assert.equal(trace.backend.identity.think, think ?? 'default');
+  });
+}
+
+test('local question metrics count reasoning across tool turns without publishing or resending its text', async t => {
+  const thoughts = ['PRIVATE_REASONING_TOOL', 'PRIVATE_REASONING_FINAL'];
+  const server = await backend(t, (_request, res, n) => n === 1
+    ? reply(res, {}, [call('get_transcript', { startMs: 0, endMs: 8000 })], thoughts[0])
+    : reply(res, answer({ thinkingChars: 9000 }), undefined, thoughts[1]));
+  const traces = [], publications = [];
+  const s = stage(t, server.url, { onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }),
+    onChange: snapshot => publications.push(structuredClone(snapshot)) });
+  const job = s.ask();
+  await job.done;
+  const count = thoughts.join('').length;
+  assert.equal(job.status, 'done');
+  assert.equal(job.metrics.thinkingChars, count);
+  assert.equal(job.result.thinkingChars, count);
+  assert.equal(traces.at(-1).thinkingChars, count);
+  assert.doesNotMatch(JSON.stringify([s.deep.snapshot(), publications, traces, server.requests]), /PRIVATE_REASONING/);
+});
+
+test('local question reasoning counts survive an invalid final answer and reset for the next question', async t => {
+  const thought = 'PRIVATE_REASONING_INVALID';
+  const server = await backend(t, (_request, res, n) => reply(res,
+    n === 1 ? {} : answer({ kind: 'insufficient', citations: [] }), undefined, n === 1 ? thought : ''));
+  const s = stage(t, server.url);
+  const failed = s.ask();
+  await failed.done;
+  assert.equal(failed.status, 'error');
+  assert.equal(failed.metrics.thinkingChars, thought.length);
+  const next = s.ask();
+  await next.done;
+  assert.equal(next.status, 'done');
+  assert.equal(next.metrics.thinkingChars, 0);
+  assert.doesNotMatch(JSON.stringify(s.deep.snapshot()), /PRIVATE_REASONING/);
+});
+
 test('a local question reads real transcript tools and returns a citation accepted by DeepAsk', async t => {
   const server = await backend(t, (request, res, n) => n === 1
     ? reply(res, {}, [call('get_transcript', { startMs: 0, endMs: 8000 })])
@@ -108,7 +168,7 @@ test('a local question reads real transcript tools and returns a citation accept
   assert.deepEqual(job.result.citations, [citation]);
   assert.equal(job.validation.acceptedCitations, 1);
   assert.deepEqual(job.result.backend, { role: 'questions', kind: 'ollama', model: MODEL, host: server.host,
-    numCtx: 8192, keepAlive: '30m' });
+    numCtx: 8192, keepAlive: '30m', think: 'default' });
   assert.equal(job.result.model, MODEL);
   assert.doesNotMatch(JSON.stringify(job.result) + inspect(s.agent, { depth: 5, showHidden: true }), /PRIVATE_QUESTION_TOKEN|\/private/);
   assert.equal(server.requests.length, 2);
@@ -460,7 +520,7 @@ test('question metrics and every lifecycle trace keep the composed identity desp
     onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }),
   });
   const identity = { role: 'questions', kind: 'ollama', model: MODEL, host: server.host,
-    numCtx: 8192, keepAlive: '30m', temperature: 0, transport: 'http' };
+    numCtx: 8192, keepAlive: '30m', think: 'default', temperature: 0, transport: 'http' };
   assert.deepEqual(s.agent.identity, identity, 'available before answer');
   const job = s.ask();
   await job.done;

@@ -100,6 +100,7 @@ function reportedMetrics(output) {
   if (output.modelState === "unknown") metrics.modelState = output.modelState;
   const local = localLanguageReport(output);
   if (local) metrics.language = local.language;
+  if (local?.thinkingChars !== undefined) metrics.thinkingChars = local.thinkingChars;
   return metrics;
 }
 class CodexPerception {

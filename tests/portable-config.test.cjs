@@ -5,6 +5,75 @@ const os = require('node:os');
 const path = require('node:path');
 const {executable} = require('../adapters/system-paths.cjs');
 const {loadConfig} = require('../adapters/config.cjs');
+const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
+
+test('local thinking settings persist independently while startup overrides remain temporary', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-thinking-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'roles.env');
+  await fs.writeFile(configPath, 'TVLENS_LOCAL_VLM_THINK=off\nTVLENS_LOCAL_QUESTIONS_THINK=on\n');
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  const imported = await load({ configPath, environment: { TVLENS_LOCAL_VLM_THINK: 'on', TVLENS_LOCAL_QUESTIONS_THINK: 'off' } });
+  assert.deepEqual([imported.localVlm.think, imported.localQuestions.think], ['on', 'off']);
+  const restored = await load();
+  assert.deepEqual([restored.localVlm.think, restored.localQuestions.think], ['off', 'on']);
+  const defaults = await load({ environment: { TVLENS_LOCAL_VLM_THINK: 'default', TVLENS_LOCAL_QUESTIONS_THINK: 'default' } });
+  assert.deepEqual([defaults.localVlm.think, defaults.localQuestions.think], ['default', 'default']);
+  const empty = await load({ environment: { TVLENS_LOCAL_VLM_THINK: '', TVLENS_LOCAL_QUESTIONS_THINK: '' } });
+  assert.deepEqual([empty.localVlm.think, empty.localQuestions.think], ['off', 'on']);
+});
+
+test('invalid local thinking settings survive loading and refuse shared startup by name from every configuration source', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-thinking-invalid-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'roles.env');
+  const base = { OPENROUTER_API_KEY: 'IMPORTED_PROVIDER_KEY', TVLENS_PERCEPTION_BACKEND: 'local',
+    TVLENS_INSPECTION_BACKEND: 'local', TVLENS_QUESTIONS_BACKEND: 'local',
+    TVLENS_LOCAL_VLM_URL: 'http://127.0.0.1:9', TVLENS_LOCAL_VLM_MODEL: 'vision-local',
+    TVLENS_LOCAL_QUESTIONS_URL: 'http://127.0.0.1:9', TVLENS_LOCAL_QUESTIONS_MODEL: 'questions-local' };
+  const started = [];
+  t.after(() => Promise.allSettled(started.map(runtime => runtime.close())));
+  const checkStartup = async (options, setting, value) => {
+    let fallbackUsed = false;
+    const pending = loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+    const config = await pending.catch(() => { fallbackUsed = true; return {}; });
+    assert.equal(fallbackUsed, false, 'the Mac loading fallback must never swallow a mistyped runtime switch');
+    const role = setting === 'TVLENS_LOCAL_VLM_THINK' ? 'localVlm' : 'localQuestions';
+    assert.equal(config[role].think, value);
+    assert.deepEqual([config.perceptionBackend, config.inspectionBackend, config.questionsBackend], ['local', 'local', 'local']);
+    if (options.configPath || !options.environment) assert.equal(config.apiKey, 'IMPORTED_PROVIDER_KEY');
+    const rejectsSetting = error => error.code === 'TVLENS_LOCAL_THINK_INVALID'
+      && error.message.includes(setting) && !error.message.includes('PRIVATE_INVALID_VALUE');
+    for (const selected of [config, { ...config, perceptionBackend: 'codex', inspectionBackend: 'codex', questionsBackend: 'codex' }]) {
+      assert.throws(() => createConversationRuntime({ config: selected, agent: {} }), rejectsSetting);
+      assert.throws(() => started.push(new HeadlessRuntime({ config: selected, agent: {}, smoke: true,
+        userData: root, sessionsRoot: path.join(root, 'sessions'), transcriber: {} })), rejectsSetting);
+    }
+  };
+  for (const setting of ['TVLENS_LOCAL_VLM_THINK', 'TVLENS_LOCAL_QUESTIONS_THINK']) {
+    for (const value of ['true', 'false', 'ON', '0', ' ', 'PRIVATE_INVALID_VALUE']) {
+      await checkStartup({ safeStorage: { isEncryptionAvailable: () => false }, environment: { ...base, [setting]: value } }, setting, value);
+      await fs.writeFile(configPath, Object.entries({ ...base, [setting]: value }).map(([key, text]) => `${key}="${text}"`).join('\n'));
+      await checkStartup({ configPath }, setting, value);
+      await checkStartup({}, setting, value);
+    }
+  }
+});
+
+test('malformed cached switches keep configuration import available', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-malformed-switches-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, decryptString: bytes => bytes.toString() };
+  await fs.writeFile(path.join(root, 'provider.enc'), JSON.stringify({ switchEnv: null }));
+  const pending = loadConfig({ userData: root, safeStorage, environment: {} });
+  await assert.doesNotReject(pending);
+  const config = await pending;
+  assert.equal(config.apiKey, '');
+  assert.equal(config.questionsBackend, 'codex');
+});
 
 test('executable resolution handles PATH entries with spaces and explicit overrides', async t => {
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens path '));
