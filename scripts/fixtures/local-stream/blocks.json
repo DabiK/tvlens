@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "complete": true,
+  "blocks": [
+    {
+      "caseId": "capture-documentee",
+      "body": {
+        "path": "body.json",
+        "sha256": "3584ff98f65d974d132ee400a401bb76a0e07329b7949271a0de0df5abec1869"
+      },
+      "perception": {
+        "caseId": "capture-documentee",
+        "frameIndices": [0, 1, 3, 5, 7],
+        "manifest": {
+          "path": "source/manifest.json",
+          "sha256": "3391198924756246a2bbf8b10a22d700184f6e34eac816b17c2bd791915ad073"
+        }
+      }
+    }
+  ]
+}

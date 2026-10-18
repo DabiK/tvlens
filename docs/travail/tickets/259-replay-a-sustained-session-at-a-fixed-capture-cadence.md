@@ -1,7 +1,7 @@
 ---
 id: T259
 titre: Drive a fixed-cadence capture and question schedule through the headless server
-statut: a-faire
+statut: termine
 bloque_par: T262, T264, T265, T267, T274
 adr: non
 installe: non
@@ -187,3 +187,71 @@ La vidéo convertie répond au besoin de source continue, sans remplacer le tém
   par `/v1/settings/transcription` avant son premier bloc et consignée dans le rapport ; `auto` seulement si déclaré.
 - 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
   frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.
+- 18/10, Codex : exploration des frontières publiques et du transport TV terminée ; état initial et
+  découpage prévus consignés dans `.harness-state/tickets/T259/{exploration,ecarts}.md`.
+  Aucun essai réel ni fournisseur lancé ; implémentation et preuves déterministes à suivre.
+- 18/10, Codex : runner `scripts/replay-local-stream.cjs` livré avec validation sans fournisseur,
+  calendrier à origine fixe, transport TV borné, issues conservées, gardes d'identités et langues,
+  scénarios nominal de trente minutes/surcharge et documentation `scripts/local-stream-replay.md`.
+  Les rouges/verts et incidents de doublures sont conservés dans le dossier d'état.
+  `node scripts/check.mjs --changed` : vert, 29 tests du runner réussis ; aucun essai réel lancé.
+- 18/10, Codex : suites demandées et contrats d'ingestion, projection et fermeture joués en
+  séquentiel : `node --test --test-concurrency=1 tests/local-stream-replay.test.cjs tests/local-perception-replay.test.cjs
+  tests/server-ingest-path.test.cjs tests/question-ceiling.test.cjs tests/server-state-views.test.cjs tests/memory-projection.test.cjs
+  tests/headless-session-lifecycle.test.cjs tests/session-lifecycle.test.cjs tests/capture-intake.test.cjs` : 128 tests réussis.
+  `node scripts/check.mjs` : vert, 2 869 tests JavaScript et 47 tests Python réussis.
+  Verdict `TERMINÉ` consigné pour la relecture de la boucle ; aucun commit, push ou essai réel.
+- 18/10, Codex, reprise après relecture 1 : les sept constats mineurs sont acceptés.
+  Exploration et plan de correction consignés dans le dossier d'état ; aucun nouvel écart de
+  périmètre prévu. Reprise du travail présent dans l'arbre, tests d'abord, sans commit ni push.
+- 18/10, Codex : gardes corrigées sans perdre appels ni résultats produit ; rouges puis verts de
+  `node --test --test-name-pattern='local measurement rejects|a transcription language mismatch' tests/local-stream-replay.test.cjs`
+  (2 échecs d'assertion puis 2 réussites). Empreinte fabriquée retirée, octets PNG seuls conservés :
+  rouge de `node --test --test-name-pattern='raw HTTP frames fingerprint' tests/local-stream-replay.test.cjs`,
+  puis 2 réussites avec `--test-name-pattern='raw HTTP frames fingerprint|a declared selection from perception media'`.
+  Sorties conservées dans `correction-{guards,frame}-{red,green}.log` du dossier d'état.
+- 18/10, Codex : reprise des sauvegardes après écriture ou renommage refusé, diagnostic codé conservé,
+  y compris quand la sauvegarde finale était déjà en file. Rouges puis verts de
+  `node --test --test-name-pattern='report snapshots resume' tests/local-stream-replay.test.cjs` et
+  `node --test --test-name-pattern='a queued final snapshot' tests/local-stream-replay.test.cjs` ;
+  vert final des deux via `--test-name-pattern='report snapshots resume|a queued final snapshot'`.
+  Sorties dans `correction-report-{red,green}.log` et `correction-report-queued-{red,green}.log`.
+- 18/10, Codex : preuves ajoutées des états 200 bloqué/lecture seule et refus 507/409 réels,
+  identité Git et origines d'horloge non nulles, réponse tardive avant fermeture, seuils produit nommés
+  et testés aux bornes. Ces comportements existants étaient verts dès les nouvelles assertions :
+  `node --test --test-name-pattern='real session states and segment' tests/local-stream-replay.test.cjs`,
+  `node --test --test-name-pattern='run reports retain|the real headless HTTP composition' tests/local-stream-replay.test.cjs`,
+  `node --test --test-name-pattern='cancellation while upload transport' tests/local-stream-replay.test.cjs` et
+  `node --test --test-name-pattern='preflight retains the product' tests/local-stream-replay.test.cjs`.
+  `node scripts/check.mjs --changed` : vert, règles/format/lint/cliquet et 36 tests réussis
+  (`correction-check-changed.log`). Aucun fichier produit ou harnais modifié.
+- 18/10, Codex : suites demandées et contrats associés rejoués en séquentiel après correction :
+  `node --test --test-concurrency=1 tests/local-stream-replay.test.cjs tests/local-perception-replay.test.cjs
+  tests/server-ingest-path.test.cjs tests/question-ceiling.test.cjs tests/server-state-views.test.cjs tests/memory-projection.test.cjs
+  tests/headless-session-lifecycle.test.cjs tests/session-lifecycle.test.cjs tests/capture-intake.test.cjs` :
+  135 tests réussis, aucun échec (`correction-required-suites.log`).
+- 18/10, Codex : contrôle complet après les sept corrections : `node scripts/check.mjs` vert,
+  règles/format/lint/gel/cliquet, 2 876 tests JavaScript (152 fichiers) et 47 tests Python réussis
+  (`correction-check-full.log`). Bilan détaillé dans `corrections-1.md` du dossier d'état ; nouveau
+  verdict `TERMINÉ` rendu à la boucle pour relecture. Aucun commit, push, fournisseur réel ou essai réel.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T259/relecture-2.md : 1. Le plafond de 13 000 000 octets est vérifié sur le gabarit, pas sur le corps envoyé (réserve)
+  - **Où :** `scripts/local-stream-input.cjs:89`, test `tests/local-stream-replay.test.cjs:256-263`.
+  - **Le problème :** la validation mesure le corps gabarit. Le corps réellement envoyé est `bindBody(...)` (`scripts/local-stream-actions.cjs:21`), qui change deux choses :
+    - `sessionId` devient un UUID de 36 caractères (`runtime/session-runtime.cjs:80`), contre `template` (8 caractères) dans le test ;
+    - les temps sont translatés.
+  - **Conséquence :** un gabarit d'exactement 13 000 000 octets passe la validation, et le nouveau test l'affirme. Pourtant son envoi dépasse `SEGMENT_BODY_LIMIT`. Il reçoit alors `413 request-too-large` (`server/http.cjs:140`) pendant l'exécution, au lieu d'être refusé avant. En pratique, les médias valides plafonnent vers 12,8 Mo : seul un corps qui porte environ 200 Ko de champs supplémentaires atteint ce cas.
+  - **Attendu :** mesurer le corps lié dans le pire cas (identifiant de session de longueur UUID, temps maximaux), ou garder une marge explicite.
+  - **Classe :** hors périmètre. Le défaut existait déjà, et la correction n'a fait que renommer la constante.
+- .harness-state/tickets/T259/relecture-2.md : 2. Les erreurs de fin du produit n'ont pas de code (réserve reconduite, constat 8 de la relecture 1)
+  - **Où :** `runtime/headless-session-lifecycle.cjs:313-317`.
+  - **Le problème :** `lastEnd.errors` reste une liste de chaînes. Le test `:529` reconnaît donc encore la libération refusée par le texte de son message.
+  - **Classe :** hors périmètre (produit).
+- .harness-state/tickets/T259/relecture-2.md : 3. Le runner instrumente des objets internes du runtime (réserve reconduite, constat 9 de la relecture 1)
+  - **Où :** `scripts/local-stream-observe.cjs:40-171`.
+  - **Le problème :** inchangé. Le runner remplace encore les méthodes `perception`, `inspector`, `search`, `agent.answer` et `tools.call`, et lit `runtime.listeners` et `runtime.options`. Aucun point d'observation public n'existe pour ces appels.
+  - **Classe :** hors périmètre.
+- .harness-state/tickets/T259/relecture-2.md : **Écart accepté, décomposition en modules `scripts/local-stream-*.cjs` :** inchangé depuis la relecture 1, et toujours sans fichier existant touché.
+- .harness-state/tickets/T259/relecture-2.md : **Écart accepté, origine fixe prise à la création de la session :** inchangé, et désormais prouvé avec une origine non nulle (`:189-196`).

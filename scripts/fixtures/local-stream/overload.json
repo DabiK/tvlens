@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "kind": "overload",
+  "index": {
+    "path": "blocks.json",
+    "sha256": "9a63c354a6bd6569e96b6df7e5a4a3b7c7e7172eb8904892c0173c2e71f99b81"
+  },
+  "provenance": {
+    "kind": "looped-corpus",
+    "reference": "Exemple fictif de huit secondes, sélection déclarée de cinq prises originales, bouclé 225 fois ; aucun contenu inédit."
+  },
+  "plannedDurationMs": 60000,
+  "finalWaitMs": 360000,
+  "closeWaitMs": 30000,
+  "config": {
+    "perceptionBackend": "local",
+    "questionsBackend": "local",
+    "embeddingsBackend": "disabled",
+    "inspectionBackend": "local",
+    "localVlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "MODELE_VISION"
+    },
+    "localQuestions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "MODELE_QUESTIONS"
+    },
+    "visionDuringAsk": true,
+    "backgroundIndex": true
+  },
+  "selectedModels": {
+    "observationModel": "gpt-6-luna",
+    "inspectionModel": "gpt-6-luna",
+    "codexModel": "gpt-6"
+  },
+  "clips": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "fr"
+    },
+    {
+      "id": "clip-1",
+      "block": 0,
+      "occurrence": 1,
+      "atMs": 8000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-2",
+      "block": 0,
+      "occurrence": 2,
+      "atMs": 16000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-3",
+      "block": 0,
+      "occurrence": 3,
+      "atMs": 24000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-4",
+      "block": 0,
+      "occurrence": 4,
+      "atMs": 32000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-5",
+      "block": 0,
+      "occurrence": 5,
+      "atMs": 40000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-6",
+      "block": 0,
+      "occurrence": 6,
+      "atMs": 48000,
+      "language": "fr"
+    }
+  ],
+  "questions": [
+    {
+      "id": "burst-0",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 1."
+    },
+    {
+      "id": "burst-1",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 2."
+    },
+    {
+      "id": "burst-2",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 3."
+    },
+    {
+      "id": "burst-3",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 4."
+    },
+    {
+      "id": "burst-4",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 5."
+    },
+    {
+      "id": "burst-5",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 6."
+    },
+    {
+      "id": "burst-6",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 7."
+    },
+    {
+      "id": "burst-7",
+      "atMs": 12000,
+      "question": "Explique le passage récent, question 8."
+    }
+  ]
+}
