@@ -135,3 +135,19 @@ test('inspection backend persists file selection while environment wins without 
   const bare = await loadConfig({ userData: root, environment: {}, safeStorage: { isEncryptionAvailable: () => false } });
   assert.equal(bare.inspectionBackend, 'codex');
 });
+
+test('local embedding deadlines persist from imports while startup overrides remain temporary', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-embedding-deadline-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'embeddings.env');
+  await fs.writeFile(configPath, 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS=45000\n');
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  const imported = await load({ configPath, environment: { TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: '60000' } });
+  assert.equal(imported.localEmbeddings.timeoutMs, 60000);
+  assert.equal((await load()).localEmbeddings.timeoutMs, 45000);
+  assert.equal((await load({ environment: { TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: '1' } })).localEmbeddings.timeoutMs, 1);
+  const bare = await loadConfig({ userData: root, safeStorage: { isEncryptionAvailable: () => false },
+    environment: { TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: '25000' } });
+  assert.equal(bare.localEmbeddings.timeoutMs, 25000);
+});

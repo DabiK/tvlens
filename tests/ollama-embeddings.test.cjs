@@ -141,6 +141,148 @@ function fakeProvider(handler, extra = {}) {
 }
 const validReply = body => ({ model: body.model, embeddings: body.input.map(vector) });
 
+function timedDependencies(clock) {
+  return {
+    OllamaEmbeddings: class extends OllamaEmbeddings {
+      constructor(options) {
+        super({ ...options, timeoutSignal: (ms = 8000) => {
+          const deadline = new AbortController();
+          clock.io.setTimer(() => deadline.abort(new DOMException('Échéance', 'TimeoutError')), ms);
+          return deadline.signal;
+        } });
+      }
+    },
+    MomentIndex: class extends MomentIndex {
+      constructor(options) { super(options, clock.io); }
+    },
+    MemorySearch: class extends MemorySearch {
+      constructor(options) { super({ ...options, ...clock.io }); }
+    },
+  };
+}
+
+test('a cold local model can load beyond eight seconds while the first search keeps its bounded lexical fallback', async t => {
+  const { manualClock } = require('./helpers/clock.cjs');
+  const clock = manualClock(), batchEntered = deferred(), queryEntered = deferred();
+  const server = await backend(t, (req, res) => {
+    clock.io.setTimer(() => reply(res, validReply(req.body)), Math.max(0, 13200 - clock.io.now()));
+    (req.body.input.length > 1 ? batchEntered : queryEntered).resolve();
+  });
+  const root = await directory(t);
+  const built = compose(t, root, { embeddingsBackend: 'local', localEmbeddings: {
+    url: server.url, model: 'cold-model',
+  } }, {}, timedDependencies(clock));
+  built.index.request(segments);
+  await batchEntered.promise;
+  const first = built.search.search(input);
+  await clock.advance(1500);
+  await queryEntered.promise;
+  await clock.advance(2500);
+  const fallback = await first;
+  assert.equal(clock.io.now(), 4000);
+  assert.equal(fallback.mode, 'lexical');
+  assert.equal(fallback.moments[0].id, 'moment-1');
+  assert.match(fallback.warnings[0], /trop lente/);
+  assert.deepEqual(fallback.semantic, { eligible: 2, indexed: 0, pending: 2 });
+  await clock.advance(4001);
+  assert.equal(built.index.status().failed, 0, 'loading beyond eight seconds must not fail the batch');
+  assert.equal(built.index.status().inFlight, 2);
+  await clock.advance(5199);
+  assert.equal(await built.index.settle(Infinity), true);
+  assert.equal(built.index.status().indexed, 2);
+  const result = await built.search.search(input);
+  assert.equal(result.mode, 'hybrid');
+  assert.deepEqual(result.semantic, { eligible: 2, indexed: 2, pending: 0 });
+  assert.deepEqual(result.warnings, []);
+  assert.match(await fs.readFile(built.vectors.file, 'utf8'), /moment-1/);
+  assert.equal(server.requests.length, 2);
+});
+
+test('invalid local embedding deadlines refuse session startup with a named setting and code', async t => {
+  const { loadConfig } = require('../adapters/config.cjs');
+  const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
+  const root = await directory(t);
+  for (const value of ['0', '-1', '1.5', 'NaN', 'Infinity', 'no', ' ', '1e3', '0x10', '2147483648']) {
+    const config = await loadConfig({ userData: root, safeStorage: { isEncryptionAvailable: () => false }, environment: {
+      TVLENS_EMBEDDINGS_BACKEND: 'local', TVLENS_LOCAL_EMBEDDINGS_MODEL: 'local-model',
+      TVLENS_LOCAL_EMBEDDINGS_URL: 'http://private.invalid/SECRET', TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: value,
+    } });
+    assert.throws(() => createSessionRuntime({ config, userData: root, sessionsRoot: root, selectedModels: {}, smoke: true }), error => {
+      assert.equal(error.code, 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_INVALID');
+      assert.match(error.message, /TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS/);
+      assert.doesNotMatch(error.message, /private|SECRET/);
+      return true;
+    }, value);
+  }
+  for (const timeoutMs of [null, 0, -1, NaN, Infinity, 0.5, '30000']) {
+    assert.throws(() => new OllamaEmbeddings({ url: 'http://local.invalid', model: 'm', timeoutMs }), {
+      code: 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_INVALID',
+    });
+  }
+});
+
+test('a configured local deadline emits exactly one safe diagnostic per failed batch and caches no late reply', async t => {
+  const { manualClock } = require('./helpers/clock.cjs');
+  const { loadConfig } = require('../adapters/config.cjs');
+  const clock = manualClock(), entered = deferred(), traces = [];
+  const server = await backend(t, (req, res) => {
+    clock.io.setTimer(() => reply(res, validReply(req.body)), 13000);
+    entered.resolve();
+  });
+  const root = await directory(t);
+  const config = await loadConfig({ userData: root, safeStorage: { isEncryptionAvailable: () => false }, environment: {
+    TVLENS_EMBEDDINGS_BACKEND: 'local', TVLENS_LOCAL_EMBEDDINGS_URL: server.url + '/SECRET',
+    TVLENS_LOCAL_EMBEDDINGS_MODEL: 'local-model', TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: '12000',
+  } });
+  const built = createSessionIndex({ config, store: { root }, userData: root, overrides: {}, log: line => {
+    const event = JSON.parse(line);
+    if (event.code === 'TVLENS_LOCAL_EMBEDDINGS_BATCH_FAILED') traces.push(event);
+  } }, timedDependencies(clock));
+  t.after(async () => { built.index.close(); await built.vectors.seal(); });
+  built.index.request(segments);
+  await entered.promise;
+  const settled = built.index.settle(Infinity);
+  await clock.advance(11999);
+  assert.equal(built.index.status().inFlight, 2);
+  assert.deepEqual(traces, []);
+  await clock.advance(1);
+  await settled;
+  assert.equal(built.index.status().failed, 2, 'the configured deadline must end the batch');
+  assert.deepEqual(traces, [{ code: 'TVLENS_LOCAL_EMBEDDINGS_BATCH_FAILED', cause: 'timeout', passageCount: 2 }]);
+  await clock.advance(1000);
+  assert.equal(await built.index.passageVector(segments[0]), null);
+  assert.equal(traces.length, 1);
+  assert.equal(server.requests.length, 1);
+  assert.doesNotMatch(JSON.stringify(traces), /chien|voiture|SECRET|127\.0\.0\.1|http/);
+});
+
+test('failed local batches classify unavailable and invalid replies without copying provider content into the journal', async t => {
+  for (const [cause, respond] of [
+    ['unavailable', (_req, res) => { res.writeHead(503); res.end('SECRET http://private.invalid Un chien court.'); }],
+    ['unavailable', (_req, res) => res.destroy()],
+    ['invalid-response', (_req, res) => res.end('SECRET http://private.invalid Un chien court.')],
+    ['invalid-response', (req, res) => reply(res, { model: req.body.model, embeddings: [[1, 0]] })],
+  ]) {
+    await t.test(cause, async child => {
+      const { manualClock } = require('./helpers/clock.cjs');
+      const traces = [];
+      const server = await backend(child, respond), root = await directory(child);
+      const built = createSessionIndex({ config: { embeddingsBackend: 'local', localEmbeddings: {
+        url: server.url + '/SECRET', model: 'local-model', token: 'SECRET',
+      } }, store: { root }, userData: root, overrides: {}, log: line => {
+        const event = JSON.parse(line);
+        if (event.code === 'TVLENS_LOCAL_EMBEDDINGS_BATCH_FAILED') traces.push(event);
+      } }, timedDependencies(manualClock()));
+      child.after(async () => { built.index.close(); await built.vectors.seal(); });
+      built.index.request(segments);
+      await built.index.settle(Infinity);
+      assert.deepEqual(traces, [{ code: 'TVLENS_LOCAL_EMBEDDINGS_BATCH_FAILED', cause, passageCount: 2 }]);
+      assert.equal(server.requests.length, 1);
+      assert.doesNotMatch(JSON.stringify(traces), /chien|voiture|SECRET|127\.0\.0\.1|http/);
+    });
+  }
+});
+
 test('mixed cache hits and misses retain input order even when new results evict older cache entries', async () => {
   const { provider, calls } = fakeProvider(validReply);
   for (let batch = 0; batch < 8; batch++) await provider.embedMany(Array.from({ length: 32 }, (_, i) => `text-${batch * 32 + i}`));

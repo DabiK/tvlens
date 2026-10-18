@@ -11,7 +11,7 @@ const { UsageLedger } = require("../adapters/trial-budget.cjs");
 const {
   OpenRouterEmbeddings,
 } = require("../adapters/openrouter-embeddings.cjs");
-const { OllamaEmbeddings } = require("../adapters/embeddings/ollama-embeddings.cjs");
+const { OllamaEmbeddings, validateEmbeddingTimeout } = require("../adapters/embeddings/ollama-embeddings.cjs");
 const { providerIdentity } = require("../adapters/embeddings/provider-identity.cjs");
 const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
@@ -195,7 +195,7 @@ function createSessionIndex(
   dependencies = {},
 ) {
   const make = { ...indexProviders, ...dependencies };
-  const selectedEmbeddings = selectEmbeddings(config, smoke && !liveInspection, make, userData, overrides.embeddings);
+  const selectedEmbeddings = selectEmbeddings(config, smoke && !liveInspection, make, userData, overrides.embeddings, log);
   const identity = selectedEmbeddings ? providerIdentity(selectedEmbeddings, store.root) : null;
   const embeddingDiagnostics = indexDiagnostic(identity, config);
   const vectors = identity
@@ -225,13 +225,15 @@ function createSessionIndex(
   return { vectors, index, search, feedIndex, connectIndex, embeddingDiagnostics };
 }
 
-function selectEmbeddings(config, simulated, make, userData, override) {
+function selectEmbeddings(config, simulated, make, userData, override, log) {
   validateEmbeddingSelection(config);
   const backend = config.embeddingsBackend ?? (config.apiKey ? 'openrouter' : 'disabled');
   if (config.embeddingsBackend === 'disabled') return null;
   if (override) return override;
   if (backend === 'disabled') return null;
-  if (backend === 'local') return new make.OllamaEmbeddings(config.localEmbeddings || {});
+  if (backend === 'local') return new make.OllamaEmbeddings({
+    ...config.localEmbeddings, onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)),
+  });
   if (simulated) return null;
   const budget = new make.UsageLedger(config.researchBudgetFile || path.join(userData, 'research-budget.json'));
   return new make.OpenRouterEmbeddings({ apiKey: config.apiKey, budget });
@@ -242,7 +244,10 @@ function validateEmbeddingSelection(config) {
     || (config.embeddingsBackend === 'openrouter' && !config.apiKey)) {
     throw Object.assign(Error('Configuration des embeddings invalide : backend ou clé manquant.'), { code: 'TVLENS_EMBEDDINGS_CONFIG_INVALID' });
   }
-  if (config.embeddingsBackend === 'local') validateOllamaConfig(config.localEmbeddings);
+  if (config.embeddingsBackend === 'local') {
+    validateOllamaConfig(config.localEmbeddings);
+    validateEmbeddingTimeout(config.localEmbeddings?.timeoutMs);
+  }
 }
 
 function indexDiagnostic(identity, config) {

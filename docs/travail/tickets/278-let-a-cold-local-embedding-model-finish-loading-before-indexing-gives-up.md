@@ -1,7 +1,7 @@
 ---
 id: T278
 titre: Let a cold local embedding model finish loading before indexing gives up
-statut: a-faire
+statut: termine
 bloque_par: T267
 adr: non
 installe: non
@@ -64,3 +64,14 @@ Aucune décision n'est attendue.
 
 ## Journal
 
+
+- Exploration Codex : règles, skill de tests, adaptateur, composition, configuration, appelants et ADR 0019/0031/0039/0058 lus. État initial conservé ; détails dans `.harness-state/tickets/T278/exploration.md`. Tests prévus avec serveur factice et temps injecté, sans modèle local.
+- Reproduction puis correction : `node --test --test-name-pattern='a cold local model' tests/ollama-embeddings.test.cjs` — rouge observé (2 passages en échec à 8 s), puis vert ; index complet à 13,2 s virtuelles, première recherche lexicale à 4 s, suivante hybride. Sorties `cold-red.log` et `cold-green.log` dans le dossier d’état.
+- Configuration : `node --test --test-name-pattern='embedding deadlines' tests/ollama-embeddings.test.cjs tests/portable-config.test.cjs` — 2 tests rouges (aucun refus et réglage absent), puis 2 verts. Délai par défaut 30 s, variable importable et surcharge temporaire ; refus nommé des valeurs invalides, y compris celles au-delà de la limite des minuteries Node (2 147 483 647 ms).
+- Diagnostics : `node --test --test-name-pattern='configured local deadline|failed local batches classify' tests/ollama-embeddings.test.cjs` — rouge observé sur les diagnostics absents, puis 6 cas verts : délai réglé à 12 s, HTTP 503, connexion coupée, JSON invalide et vecteurs incomplets. Une ligne expurgée par lot, réponse tardive non cachée. Sorties `diagnostic-red.log` et `diagnostic-green.log`.
+- Suites concernées : `node --test --test-concurrency=1 tests/ollama-embeddings.test.cjs tests/portable-config.test.cjs tests/session-providers.test.cjs` — 51 tests verts, 0 échec (`targeted.log`).
+- Contrôle des fichiers modifiés : `node scripts/check.mjs --changed` — vert, règles/format/lint/gel/cliquet validés et 31 tests verts (`check-changed.log`).
+- Contrôle final : `node scripts/check.mjs` — vert, 151 fichiers JS, 2 826 tests JS et 47 tests Python réussis (`check-full.log`). `git diff --check` : aucune erreur. Aucun modèle local ni fournisseur réel lancé ; fichiers non suivis préexistants conservés. Verdict `TERMINÉ` enregistré dans `.harness-state/tickets/T278/verdict.json`, relecture et intégration laissées à la boucle ; aucun commit ni push.
+- Reprise après relecture 1 : constat mineur accepté sur le ternaire imbriqué ; extraction de la conversion prévue, sans changement de comportement. `node --test --test-concurrency=1 tests/portable-config.test.cjs tests/ollama-embeddings.test.cjs` lancé avant modification : 31 tests verts (`correction-1-before.log`). Nettoyage structurel couvert par les tests publics existants ; aucun nouveau test comparant le texte source. Aucun écart ni contestation.
+- Correction du constat 1 : conversion extraite dans `integerSetting`, lecture du délai par un seul ternaire. Même commande de tests après modification : 31 tests verts (`correction-1-after.log`). `node scripts/check.mjs --changed` : vert, 31 tests réussis (`correction-1-check-changed.log`) ; `git diff --check` : aucune erreur. Tests et gel du lint inchangés.
+- Contrôle complet après correction : `node scripts/check.mjs` — vert, 2 826 tests JS dans 151 fichiers et 47 tests Python réussis (`correction-1-check-full.log`). `git diff --check` : aucune erreur. Constat mineur 1 corrigé ; aucun constat à contester. Nouveau verdict `TERMINÉ` enregistré ; relecture et intégration laissées à la boucle, sans commit ni push. Aucun modèle local ni fournisseur réel lancé.

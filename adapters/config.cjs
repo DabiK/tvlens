@@ -61,7 +61,7 @@ const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLEN
   'TVLENS_INSPECTION_BACKEND', 'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
   'TVLENS_QUESTIONS_BACKEND', 'TVLENS_LOCAL_QUESTIONS_URL', 'TVLENS_LOCAL_QUESTIONS_MODEL',
   'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE',
-  'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL'];
+  'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL', 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS'];
 const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN'];
 // Only what a source really sets: an empty variable must not undo a setting written elsewhere.
 const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => typeof env[name] === 'string' && env[name] !== '').map(name => [name, env[name]]));
@@ -90,8 +90,13 @@ function localQuestionsConfig(env) {
     keepAlive: env.TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_QUESTIONS_TOKEN || null };
 }
 function embeddingsConfig(env) {
+  const timeout = env.TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS;
   return { embeddingsBackend: env.TVLENS_EMBEDDINGS_BACKEND || undefined,
     localEmbeddings: { url: env.TVLENS_LOCAL_EMBEDDINGS_URL || null,
+      ...(timeout ? { timeoutMs: integerSetting(timeout) } : {}),
       model: env.TVLENS_LOCAL_EMBEDDINGS_MODEL || null, token: env.TVLENS_LOCAL_EMBEDDINGS_TOKEN || null } };
+}
+function integerSetting(value) {
+  return /^\d+$/.test(value) ? Number(value) : NaN;
 }
 module.exports = { loadConfig };
