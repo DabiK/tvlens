@@ -17,7 +17,7 @@ nommée, puis corrigée dans le test ou dans le runtime. Le contrôle complet ne
 
 ## Sources
 
-- Tentative 1 de T287, le 19/10 vers 02:00 : `node scripts/check.mjs` rouge, 2 902 tests JS sur 2 903, un seul échec en
+- Tentative 1 de T287, le 19/10 à 01:43 : `node scripts/check.mjs` rouge, 2 902 tests JS sur 2 903, un seul échec en
   9,3 ms : `shared composition delivers each passage version while failed subscribers leave both lanes and saves
   running` (`tests/session-events.test.cjs:104`). Le contrôle ne garde que le titre, pas l'assertion en échec. Ce test
   n'importe aucun fichier touché par T287. Rejoué ensuite isolément : 1 succès, puis le fichier entier : 28 succès, puis
