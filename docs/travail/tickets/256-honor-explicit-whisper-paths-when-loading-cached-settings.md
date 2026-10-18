@@ -2,7 +2,7 @@
 id: T256
 titre: Honor explicit Whisper paths when loading cached settings
 statut: a-faire
-bloque_par: T247
+bloque_par: T247, T260
 adr: non
 installe: non
 harnais: non
@@ -85,3 +85,6 @@ empaquetée ; il n'est pas sur le chemin de la copie. La procédure T260 consign
 explicites, déjà honorés à l'import, et leur vérification externe.
 
 ## Journal
+
+- 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Dépendance d'ordre ajoutée
+  (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.
