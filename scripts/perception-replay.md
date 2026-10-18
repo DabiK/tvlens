@@ -43,7 +43,10 @@ L'exemple exécutable de validation est [fixtures/perception-replay/manifest.jso
 Il contient trois cas fictifs : capture documentée, capture dont l'entrée est inconnue, vidéo convertie.
 Les pixels et provenances sont des fixtures de format, aucune capture LG ni conversion réelle n'est revendiquée.
 
-La racine contient `version: 1` et `cases`, liste non vide. Chaque cas possède :
+La racine contient `version: 1` et `cases`, liste non vide. Le marqueur `preparation` est facultatif.
+Lorsqu'il est présent, toute valeur de `preparation.complete` autre que `true` entraîne le refus
+`TVLENS_REPLAY_PREPARATION_INCOMPLETE` avant de créer une campagne ou un fournisseur : un préfixe de
+conversion acquis ne constitue pas un corpus complet. Chaque cas possède :
 
 | Champ | Contrat |
 | --- | --- |

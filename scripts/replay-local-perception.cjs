@@ -60,11 +60,15 @@ async function initialReport(options, config, manifest, dependencies) {
     runtime: { node: process.version, platform: process.platform, arch: process.arch }, config,
     manifestSha256: manifest.sha256, annotationsSha256, g2Eligible: Boolean(annotationsSha256), complete: false, cases: [] };
 }
+function validatePreparationMarker(manifest) {
+  requireInput(manifest?.preparation === undefined || manifest.preparation?.complete === true, 'PREPARATION_INCOMPLETE');
+}
 async function runReplay(options, dependencies = {}) {
   requireInput(['local', 'codex'].includes(options.backend), 'BACKEND_REQUIRED');
   requireInput(options.execute === undefined || typeof options.execute === 'boolean', 'EXECUTE_INVALID');
   const config = effectiveConfig(options);
   const manifest = await readJson(options.manifestPath);
+  validatePreparationMarker(manifest.value);
   requireInput(manifest.value?.version === 1 && Array.isArray(manifest.value.cases)
     && manifest.value.cases.length > 0, 'MANIFEST_INVALID');
   const report = await initialReport(options, config, manifest, dependencies);
