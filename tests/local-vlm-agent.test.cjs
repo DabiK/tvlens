@@ -9,6 +9,7 @@ const { CodexPerception } = require('../adapters/codex-perception.cjs');
 // Contract tests against a fake Ollama on loopback: they prove the wire format and the
 // failure handling, never the quality or the speed of a real local model.
 const MODEL = 'modele-factice', SECRET = 'Bearer JETON_PRIVE';
+const LANGUAGE_INSTRUCTION = 'Réponds uniquement en français, même si la vidéo ou ses paroles sont dans une autre langue.';
 const image = (data) => ({ type: 'image', url: 'data:image/jpeg;base64,' + data });
 async function backend(t, handler) {
   const requests = [];
@@ -29,6 +30,197 @@ function reply(res, content, extra = {}) {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ model: MODEL, message: { role: 'assistant', content: typeof content === 'string' ? content : JSON.stringify(content) }, done: true, ...extra }));
 }
+
+const frenchObservation = { summary: 'Un homme parle.', visual: 'Un homme devant un micro.', topic: 'Discours', uncertainty: '' };
+const englishObservation = { summary: 'The man is speaking about the future.', visual: 'A man stands at the microphone.',
+  topic: 'The speech', uncertainty: 'The identity is not confirmed.' };
+const languageSegment = { id: 'moment-language', startMs: 0, endMs: 8000, frames: [],
+  observation: { transcript: 'We choose to go to the Moon.' } };
+
+test('local perception appends the French instruction while the doubled Codex request stays identical', async t => {
+  const { createHash } = require('node:crypto');
+  let codexInput;
+  const codex = new CodexPerception({ agent: { answer: async input => { codexInput = input; return frenchObservation; } } });
+  await codex.observeVisual(languageSegment);
+  assert.equal(createHash('sha256').update(codexInput.instructions).digest('hex'),
+    '7e367af224a6dfc0ec776fe2d7ce2822af4f2790e42e24da3a1e4257bf4bdd72');
+  assert.equal(createHash('sha256').update(JSON.stringify(codexInput.outputSchema)).digest('hex'),
+    '3cb8066d59013934162bc30a80782f3b426091542c118e451d07a13b1187142e');
+  const server = await backend(t, (_request, res) => reply(res, frenchObservation));
+  const local = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  t.after(() => local.close());
+  await local.observeVisual(languageSegment);
+  assert.equal(server.requests[0].body.messages[0].content, codexInput.instructions + '\n\n' + LANGUAGE_INSTRUCTION);
+  assert.deepEqual(server.requests[0].body.format, codexInput.outputSchema);
+  assert.equal(server.requests.length, 1);
+});
+
+test('local perception retries an English observation once and publishes the French answer with attempts', async t => {
+  const server = await backend(t, (_request, res, n) => reply(res, n === 1 ? englishObservation : frenchObservation));
+  const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  t.after(() => perception.close());
+  const result = await perception.observeVisual(languageSegment);
+  assert.equal(result.observation.summary, frenchObservation.summary);
+  assert.equal(server.requests.length, 2);
+  assert.deepEqual(result.metrics.language, { judged: 'fr', attempts: 2 });
+  assert.deepEqual(server.requests[1].body, server.requests[0].body, 'the retry keeps schema, images and final language instruction');
+});
+
+test('two English answers publish the unchanged prose with a named French limit and no further inference', async t => {
+  const server = await backend(t, (_request, res) => reply(res, { ...englishObservation, language: { judged: 'fr', attempts: 0 } }));
+  const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  t.after(() => perception.close());
+  const result = await perception.observeVisual(languageSegment);
+  assert.equal(result.observation.uncertainty,
+    englishObservation.uncertainty + ' Limite de langue : réponse jugée non française après deux tentatives.');
+  for (const field of ['summary', 'visual', 'topic']) assert.equal(result.observation[field], englishObservation[field]);
+  assert.deepEqual(result.metrics.language, { judged: 'en', attempts: 2 });
+  assert.equal(server.requests.length, 2);
+});
+
+test('a valid uncertainty at the text bound is retained in full before the language limit is added', async t => {
+  const uncertainty = 'The identity is not confirmed. '.padEnd(8000, ' ');
+  const server = await backend(t, (_request, res) => reply(res, { ...englishObservation, uncertainty }));
+  const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  t.after(() => perception.close());
+  const result = await perception.observeVisual(languageSegment);
+  assert.equal(result.observation.uncertainty, uncertainty + ' Limite de langue : réponse jugée non française après deux tentatives.');
+  assert.equal(server.requests.length, 2);
+});
+
+test('French prose quoting English titles or speech is published after one call', async t => {
+  for (const quote of ['"The man is speaking about the future"', '« The man is speaking about the future »',
+    '“The man is speaking about the future”', "'The man is speaking about the future'",
+    '"The man is speaking\nabout the future"', "'The man isn't speaking about the future'",
+    '‘The man’s speech is about the future’']) {
+    const content = { ...frenchObservation, summary: 'Un homme lit ' + quote + '.', visual: quote, topic: quote, uncertainty: '' };
+    const server = await backend(t, (_request, res) => reply(res, content));
+    const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+    t.after(() => perception.close());
+    const result = await perception.observeVisual(languageSegment);
+    assert.equal(result.observation.summary, content.summary);
+    assert.deepEqual(result.metrics.language, { judged: 'fr', attempts: 1 });
+    assert.equal(server.requests.length, 1, quote);
+  }
+});
+
+test('every authored observation field is judged separately and foreign languages remain visible', async t => {
+  for (const field of ['summary', 'visual', 'topic', 'uncertainty']) {
+    const server = await backend(t, (_request, res) => reply(res, { ...frenchObservation, [field]: englishObservation[field] }));
+    const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+    t.after(() => perception.close());
+    const result = await perception.observeVisual(languageSegment);
+    assert.deepEqual(result.metrics.language, { judged: 'en', attempts: 2 }, field);
+    assert.equal(server.requests.length, 2, field);
+  }
+  for (const summary of ['El hombre habla con una mujer.', 'Der Mann ist auf der Bühne.', 'Человек говорит о будущем.']) {
+    const server = await backend(t, (_request, res) => reply(res, { ...frenchObservation, summary }));
+    const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+    t.after(() => perception.close());
+    const result = await perception.observeVisual(languageSegment);
+    assert.equal(result.observation.summary, summary);
+    assert.deepEqual(result.metrics.language, { judged: 'other', attempts: 2 });
+    assert.equal(server.requests.length, 2);
+  }
+});
+
+test('indeterminate names and empty prose do not cause a language retry', async t => {
+  const content = { summary: 'Kennedy.', visual: '', topic: 'NASA', uncertainty: '' };
+  const server = await backend(t, (_request, res) => reply(res, content));
+  const agent = new LocalVlmAgent({ url: server.url, model: MODEL });
+  t.after(() => agent.close());
+  const result = await agent.answer({ instructions: 'Décris.' });
+  assert.equal(result.summary, content.summary);
+  assert.deepEqual(result.language, { judged: 'und', attempts: 1 });
+  assert.equal(server.requests.length, 1);
+});
+
+test('ordinary French prose and unquoted programme names do not trigger a language retry', async t => {
+  for (const prose of ["Texte en surimpression en bas de l'écran.", 'Le chanteur et son groupe en concert en plein air.',
+    'Débat en plateau en direct', 'Audition de The Voice', 'La présentatrice parle de son invité.',
+    'Elle reste face au public.']) {
+    for (const field of ['summary', 'visual', 'topic', 'uncertainty']) {
+      const content = { ...frenchObservation, [field]: prose };
+      const server = await backend(t, (_request, res) => reply(res, content));
+      const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+      t.after(() => perception.close());
+      const result = await perception.observeVisual(languageSegment);
+      assert.equal(server.requests.length, 1, field + ': ' + prose);
+      assert.ok(['fr', 'und'].includes(result.metrics.language.judged), field + ': ' + prose);
+      assert.equal(result.metrics.language.attempts, 1);
+      assert.equal(result.observation.uncertainty, content.uncertainty);
+    }
+  }
+});
+
+test('short English and Spanish prose triggers a retry instead of being reported as French', async t => {
+  for (const [prose, judged] of [
+    ['People are watching the stage.', 'en'],
+    ['Crowds are cheering but nobody moves.', 'en'],
+    ['El presentador es muy famoso.', 'other'],
+    ['La mujer habla con el público.', 'other'],
+    ['Las personas hablan con el público.', 'other'],
+  ]) {
+    for (const field of ['summary', 'visual', 'topic', 'uncertainty']) {
+      const content = { summary: '', visual: '', topic: '', uncertainty: '', [field]: prose };
+      const server = await backend(t, (_request, res) => reply(res, content));
+      const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+      t.after(() => perception.close());
+      const result = await perception.observeVisual(languageSegment);
+      assert.equal(server.requests.length, 2, field + ': ' + prose);
+      assert.deepEqual(result.metrics.language, { judged, attempts: 2 }, field + ': ' + prose);
+      for (const textField of ['summary', 'visual', 'topic']) assert.equal(result.observation[textField], content[textField]);
+      assert.equal(result.observation.uncertainty,
+        [content.uncertainty, 'Limite de langue : réponse jugée non française après deux tentatives.'].filter(Boolean).join(' '));
+    }
+  }
+});
+
+test('an invalid observation keeps its rejection path instead of being retried for language', async t => {
+  for (const invalid of [{ ...englishObservation, visual: null }, { ...englishObservation, summary: 'x'.repeat(8001) },
+    { ...englishObservation, continuity: 'invalid' }]) {
+    const server = await backend(t, (_request, res) => reply(res, invalid));
+    const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+    t.after(() => perception.close());
+    await assert.rejects(perception.observeVisual(languageSegment));
+    assert.equal(server.requests.length, 1);
+  }
+});
+
+test('an invalid second response is rejected after two calls without publishing the first answer', async t => {
+  const server = await backend(t, (_request, res, n) => reply(res, n === 1 ? englishObservation : 'invalid JSON'));
+  const perception = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  t.after(() => perception.close());
+  await assert.rejects(perception.observeVisual(languageSegment), { code: 'TVLENS_LOCAL_VLM_RESPONSE_INVALID' });
+  assert.equal(server.requests.length, 2);
+});
+
+test('local and Codex validation agree at every authored field and continuity boundary', async t => {
+  let content;
+  const server = await backend(t, (_request, res) => reply(res, content));
+  const local = new CodexPerception({ agent: new LocalVlmAgent({ url: server.url, model: MODEL }) });
+  const codex = new CodexPerception({ agent: { answer: async () => content } });
+  t.after(() => local.close());
+  const cases = ['summary', 'visual', 'topic', 'uncertainty'].flatMap(field => [
+    { valid: true, content: { ...frenchObservation, [field]: 'x'.repeat(8000) } },
+    ...[undefined, null, 42, true, [], {}, 'x'.repeat(8001)].map(value =>
+      ({ valid: false, content: { ...englishObservation, [field]: value } })),
+  ]);
+  for (const continuity of [undefined, 'continue', 'change', 'uncertain'])
+    cases.push({ valid: true, content: { ...frenchObservation, continuity } });
+  for (const continuity of [null, '', 'invalid', 42, true, [], {}])
+    cases.push({ valid: false, content: { ...englishObservation, continuity } });
+  for (const item of cases) {
+    content = item.content;
+    const before = server.requests.length;
+    for (const perception of [local, codex]) {
+      const pending = perception.observeVisual(languageSegment);
+      if (item.valid) assert.equal(typeof (await pending).observation.summary, 'string');
+      else await assert.rejects(pending);
+    }
+    assert.equal(server.requests.length - before, 1, 'invalid fields and neutral valid text never trigger a retry');
+  }
+});
 
 test('configuration requires a model and a plain http(s) URL, and never echoes a secret', () => {
   assert.throws(() => new LocalVlmAgent(), /URL et modèle requis/);
@@ -54,7 +246,7 @@ test('request carries prompt, bare base64 images, schema and private header; res
   assert.equal(request.headers.authorization, SECRET);
   assert.equal(request.headers['content-type'], 'application/json');
   assert.deepEqual(request.body, { model: MODEL, stream: false, format: schema, keep_alive: '30m', options: { temperature: 0, num_ctx: 8192 },
-    messages: [{ role: 'user', content: 'Décris.', images: ['QUJD', 'REVGRw=='] }] });
+    messages: [{ role: 'user', content: 'Décris.\n\n' + LANGUAGE_INSTRUCTION, images: ['QUJD', 'REVGRw=='] }] });
   assert.equal(result.summary, 'Une image.');
   assert.deepEqual(result.backend, { kind: 'ollama', model: MODEL, host: server.host, numCtx: 8192 });
   assert.deepEqual([result.coldStart, result.connectMs], [false, 0], 'connection facts come from the agent, never from the model output');
@@ -68,7 +260,8 @@ test('request carries prompt, bare base64 images, schema and private header; res
   const second = await plain.answer({ instructions: 'Encore.' });
   assert.equal(server.requests[1].path, '/prefixe/api/chat');
   assert.equal(server.requests[1].headers.authorization, undefined);
-  assert.deepEqual(server.requests[1].body, { model: MODEL, stream: false, keep_alive: '10m', options: { temperature: 0 }, messages: [{ role: 'user', content: 'Encore.', images: [] }] });
+  assert.deepEqual(server.requests[1].body, { model: MODEL, stream: false, keep_alive: '10m', options: { temperature: 0 },
+    messages: [{ role: 'user', content: 'Encore.\n\n' + LANGUAGE_INSTRUCTION, images: [] }] });
   assert.equal(second.backend.host, server.host);
   assert.deepEqual(second.providerTimings, { evalTokens: 7 });
 });
@@ -85,7 +278,7 @@ test('answers issued together never overlap on the backend and settle in order, 
   const track = (name) => agent.answer({ instructions: name }).then((value) => { settled.push(name); return value; }, (error) => { settled.push(name); return error; });
   const [first, second, third] = await Promise.all([track('un'), track('deux'), track('trois')]);
   assert.equal(peak, 1);
-  assert.deepEqual(server.requests.map((r) => r.body.messages[0].content), ['un', 'deux', 'trois']);
+  assert.deepEqual(server.requests.map((r) => r.body.messages[0].content), ['un', 'deux', 'trois'].map(text => text + '\n\n' + LANGUAGE_INSTRUCTION));
   assert.deepEqual(settled, ['un', 'deux', 'trois']);
   assert.equal(first.n, 1); assert.match(second.message, /HTTP 500/); assert.equal(third.n, 3);
   // elapsedMs spans the request itself (transport + backend time), not the 180 ms spent queued behind the others.
@@ -114,7 +307,7 @@ test('caller abort rejects promptly with its reason, drops the connection and le
 
 test('timeout, HTTP error and dropped connection reject with stable messages', { timeout: 10000 }, async (t) => {
   const server = await backend(t, (request, res) => {
-    const mode = request.body.messages[0].content;
+    const mode = request.body.messages[0].content.split('\n\n')[0];
     if (['500', '404'].includes(mode)) {
       res.writeHead(Number(mode), { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'détail interne ' + request.headers.authorization }));
@@ -220,6 +413,88 @@ function heldTransport(count = 2) {
 function localBody(content = { ok: true }, durations = {}) {
   return JSON.stringify({ message: { content: JSON.stringify(content) }, ...durations });
 }
+
+test('language retry shares one deadline and cancellation through headers and body, and keeps queued work serialized', async t => {
+  const deadlines = [];
+  t.mock.method(AbortSignal, 'timeout', ms => {
+    const controller = new AbortController();
+    deadlines.push({ ms, controller });
+    return controller.signal;
+  });
+  for (const mode of ['caller', 'localDeadline', 'visualDeadline', 'close']) {
+    for (const stage of ['headers', 'body']) {
+      deadlines.length = 0;
+      let time = 0;
+      const transport = heldTransport(3);
+      const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL,
+        timeoutMs: 321, fetchImpl: transport.fetchImpl, now: () => time });
+      const perception = new CodexPerception({ agent, timeoutMs: 123 });
+      t.after(() => perception.close());
+      const caller = new AbortController(), successes = [];
+      const rejected = failure(perception.observeVisual({ ...languageSegment, signal: caller.signal }).then(result => successes.push(result)));
+      const [one, two, three] = transport.calls;
+      const firstSignal = await one.started.promise;
+      time = 70;
+      one.headers.resolve();
+      one.body.resolve(localBody(englishObservation));
+      const retrySignal = await two.started.promise;
+      assert.equal(retrySignal, firstSignal, 'both attempts use the same combined signal');
+      assert.deepEqual(deadlines.map(entry => entry.ms), [123, 321], 'no fresh deadline for the retry');
+      const queuedCaller = new AbortController();
+      const queued = failure(agent.answer({ instructions: 'en file', signal: queuedCaller.signal }));
+      queuedCaller.abort(Error('Retiré de la file.'));
+      if (stage === 'body') { two.headers.resolve(); await two.reading.promise; }
+      const reason = new DOMException('Abandon piloté.', mode === 'caller' ? 'AbortError' : 'TimeoutError');
+      time = 100;
+      if (mode === 'caller') caller.abort(reason);
+      else if (mode === 'localDeadline') deadlines.find(entry => entry.ms === 321).controller.abort(reason);
+      else if (mode === 'visualDeadline') deadlines.find(entry => entry.ms === 123).controller.abort(reason);
+      else await perception.close();
+      assert.equal(retrySignal.aborted, true);
+      await tick();
+      assert.equal(transport.sent(), 2, 'the outstanding retry still holds the serial queue');
+      two.headers.resolve();
+      await two.reading.promise;
+      two.body.resolve(localBody(frenchObservation));
+      const error = await rejected;
+      if (mode === 'visualDeadline') assert.deepEqual([error.code, error.cause], ['TVLENS_VISION_TRANSIENT', reason]);
+      else if (mode === 'close') assert.equal(error.code, 'TVLENS_LOCAL_VLM_CLOSED');
+      else assert.equal(error, reason);
+      await queued;
+      assert.deepEqual(successes, [], mode + ': ' + stage);
+      assert.equal(transport.sent(), 2);
+      if (mode !== 'close') {
+        three.headers.resolve();
+        three.body.resolve(localBody(frenchObservation));
+        assert.equal((await perception.observeVisual(languageSegment)).observation.summary, frenchObservation.summary);
+        assert.equal(transport.sent(), 3, 'a later operation is still usable');
+      }
+    }
+  }
+});
+
+test('language attempts reach diagnostics while client timing spans both requests and provider timing describes the last', async t => {
+  let time = 0;
+  const diagnostics = [];
+  const transport = heldTransport();
+  const agent = new LocalVlmAgent({ url: 'http://127.0.0.1:9', model: MODEL, now: () => time, fetchImpl: transport.fetchImpl });
+  t.after(() => agent.close());
+  const pending = agent.answer({ instructions: 'Décris.', onDiagnostic: data => diagnostics.push(structuredClone(data)) });
+  await transport.calls[0].started.promise;
+  time = 70;
+  transport.calls[0].headers.resolve();
+  transport.calls[0].body.resolve(localBody(englishObservation, { load_duration: 60000000 }));
+  await transport.calls[1].started.promise;
+  time = 100;
+  transport.calls[1].headers.resolve();
+  transport.calls[1].body.resolve(localBody({ ...frenchObservation, languageLimit: 'FORGED_LIMIT' }, { load_duration: 0 }));
+  const result = await pending;
+  assert.deepEqual(result.clientTimings, { queueMs: 0, requestMs: 100 });
+  assert.equal(result.elapsedMs, 100);
+  assert.deepEqual(result.providerTimings, { loadMs: 0, rawNs: { load_duration: 0 } });
+  assert.deepEqual(diagnostics.at(-1).metrics.language, { judged: 'fr', attempts: 2 });
+  assert.equal(result.languageLimit, '', 'the model cannot invent an application limit');
+});
 
 test('client timings separate time since answer from HTTP through the entire body without overlapping requests', async (t) => {
   let time = 100;

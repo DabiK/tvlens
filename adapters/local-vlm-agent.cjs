@@ -1,6 +1,7 @@
 // Local HTTP VLM (Ollama /api/chat) behind the analysis-agent contract of codex-analysis-agent.cjs.
 // Prompt, bounded context and observation validation stay in CodexPerception.
 // Contract-tested against a fake server only: no real backend has been exercised from here.
+const { judgeObservationLanguage } = require('../core/response-language.cjs');
 const CLOSED = 'Backend local fermé.', INVALID = 'Réponse du modèle local invalide.';
 const TVLENS_LOCAL_VLM_INPUT_REFUSED = 'TVLENS_LOCAL_VLM_INPUT_REFUSED';
 const TVLENS_LOCAL_VLM_UNREACHABLE = 'TVLENS_LOCAL_VLM_UNREACHABLE';
@@ -9,6 +10,12 @@ const TVLENS_LOCAL_VLM_CLOSED = 'TVLENS_LOCAL_VLM_CLOSED';
 const TVLENS_LOCAL_VLM_RESPONSE_INVALID = 'TVLENS_LOCAL_VLM_RESPONSE_INVALID';
 const TVLENS_LOCAL_VLM_TIMEOUT = 'TVLENS_LOCAL_VLM_TIMEOUT';
 const IMAGE = /^data:image\/[\w.+-]+;base64,([A-Za-z0-9+/]+=*)$/;
+const LANGUAGE_INSTRUCTION = 'Réponds uniquement en français, même si la vidéo ou ses paroles sont dans une autre langue.';
+const LANGUAGE_LIMIT = 'Limite de langue : réponse jugée non française après deux tentatives.';
+const MAX_LANGUAGE_ATTEMPTS = 2;
+// La provenance ne peut pas être revendiquée par une clé du JSON d'un modèle.
+const languageReports = new WeakMap();
+function localLanguageReport(output) { return languageReports.get(output); }
 // Ollama reports durations in nanoseconds.
 const TIMINGS = [['totalMs', 'total_duration', 1e6], ['loadMs', 'load_duration', 1e6], ['promptEvalMs', 'prompt_eval_duration', 1e6], ['evalMs', 'eval_duration', 1e6], ['promptTokens', 'prompt_eval_count', 1], ['evalTokens', 'eval_count', 1]];
 // Champs absents ou invalides omis : aucune durée inconnue ne devient zéro.
@@ -65,6 +72,11 @@ class LocalVlmAgent {
   prepare() { return Promise.resolve(); }
   // Stateless: every request is independent, nothing can leak from one topic to the next.
   reset() { return Promise.resolve(); }
+  // Le rejeu doit pouvoir figer le prompt effectivement envoyé avant de lancer l'inférence.
+  prepareInstructions(instructions) {
+    const suffix = '\n\n' + LANGUAGE_INSTRUCTION;
+    return instructions.endsWith(suffix) ? instructions : instructions + suffix;
+  }
   answer(input) {
     const queuedAt = this.now();
     const pending = this.tail.catch(() => {}).then(() => this.run(input, queuedAt));
@@ -84,16 +96,36 @@ class LocalVlmAgent {
     const deadline = AbortSignal.timeout(this.timeoutMs);
     const aborted = AbortSignal.any([...(signal ? [signal] : []), deadline, this.#closing.signal]);
     const started = this.now();
-    let response, text, requestMs;
+    const body = JSON.stringify({ model, stream: false, format: outputSchema, keep_alive: this.keepAlive,
+      options: { temperature: 0, ...(this.numCtx ? { num_ctx: this.numCtx } : {}) },
+      messages: [{ role: 'user', content: this.prepareInstructions(instructions), images }] });
+    for (let attempts = 1; attempts <= MAX_LANGUAGE_ATTEMPTS; attempts++) {
+      aborted.throwIfAborted();
+      const { result, diagnostic } = await this.request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs });
+      const judged = judgeObservationLanguage(result);
+      const language = Object.freeze({ judged, attempts });
+      diagnostic.metrics.language = language;
+      onDiagnostic?.(diagnostic);
+      if (attempts === 1 && ['en', 'other'].includes(judged)) continue;
+      // La perception ajoute cette limite après validation, sans réduire le texte valide du modèle.
+      const languageLimit = ['en', 'other'].includes(judged) ? LANGUAGE_LIMIT : '';
+      const report = Object.freeze({ language, languageLimit });
+      const output = { ...result, ...report };
+      languageReports.set(output, report);
+      return output;
+    }
+  }
+  async request({ body, aborted, deadline, signal, onDiagnostic, started, queueMs }) {
+    let response, text;
     try {
       response = await this.fetchImpl(this.#endpoint, { method: 'POST', headers: this.#headers, signal: aborted,
-        body: JSON.stringify({ model, stream: false, format: outputSchema, keep_alive: this.keepAlive, options: { temperature: 0, ...(this.numCtx ? { num_ctx: this.numCtx } : {}) }, messages: [{ role: 'user', content: instructions, images }] }) });
+        body });
       text = await response.text();
     } catch {
       // Le refus est transformé juste après : raison d'abandon prioritaire, sinon erreur
       // « injoignable ». Le détail du transport peut contenir URL ou en-têtes privés.
     }
-    requestMs = this.now() - started;
+    const requestMs = this.now() - started;
     const diagnostic = requestDiagnostic({ queueMs, requestMs, aborted, deadline, signal,
       closing: this.#closing.signal, timeoutMs: this.timeoutMs });
     onDiagnostic?.(diagnostic);
@@ -108,13 +140,17 @@ class LocalVlmAgent {
       diagnostic.metrics.providerTimings = timings;
       onDiagnostic?.(diagnostic);
     });
-    // Durées clientes en ms : attente depuis answer(), puis HTTP jusqu'au corps complet (inférence comprise).
+    // Durées clientes en ms : attente depuis answer(), puis les deux essais HTTP éventuels jusqu'au corps complet.
+    // Les durées fournisseur décrivent seulement la dernière réponse, language.attempts expose la redemande.
     // elapsedMs garde sa portée historique sans attente de file ; ce n'est pas une mesure pure du réseau.
     // Les métriques suivent le JSON du modèle pour qu'il ne puisse pas les usurper.
     // coldStart/connectMs décrivent la connexion, jamais les poids ni un fil Codex.
     // Ollama n'annonce pas l'état du modèle : même loadMs positif ou nul ne prouve ni froid ni chaud.
-    return { ...output, elapsedMs: requestMs, clientTimings: { queueMs, requestMs }, modelState: 'unknown', coldStart: false, connectMs: 0,
-      backend: { kind: 'ollama', model, host: this.host, ...(this.numCtx ? { numCtx: this.numCtx } : {}) }, providerTimings: providerTimings(data) };
+    return { diagnostic, result: {
+      ...output, elapsedMs: requestMs, clientTimings: { queueMs, requestMs }, modelState: 'unknown', coldStart: false, connectMs: 0,
+      backend: { kind: 'ollama', model: this.model, host: this.host, ...(this.numCtx ? { numCtx: this.numCtx } : {}) },
+      providerTimings: providerTimings(data),
+    } };
   }
   close() {
     this.#closing.abort(Object.assign(Error(CLOSED), { code: TVLENS_LOCAL_VLM_CLOSED }));
@@ -123,6 +159,7 @@ class LocalVlmAgent {
 }
 module.exports = {
   LocalVlmAgent,
+  localLanguageReport,
   TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
   TVLENS_LOCAL_VLM_RESPONSE_INVALID, TVLENS_LOCAL_VLM_TIMEOUT,
 };

@@ -1,8 +1,10 @@
 const { validSummary, MAX_TOPIC_SUMMARY } = require('../core/memory/index.cjs');
+const { VISUAL_TEXT_FIELDS, VISUAL_CONTINUITIES, visualObservationIssue } = require('../core/visual-observation.cjs');
 const { CodexAnalysisAgent } = require("./codex-analysis-agent.cjs");
 const { TVLENS_CODEX_CONNECTION_LOST } = require("./codex-session-events.cjs");
 const { TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT } = require("./codex-rpc.cjs");
 const {
+  localLanguageReport,
   TVLENS_LOCAL_VLM_INPUT_REFUSED, TVLENS_LOCAL_VLM_UNREACHABLE, TVLENS_LOCAL_VLM_UNAVAILABLE, TVLENS_LOCAL_VLM_CLOSED,
 } = require("./local-vlm-agent.cjs");
 const { TVLENS_CODEX_INPUT_REFUSED } = require("./codex-session-run.cjs");
@@ -13,11 +15,11 @@ const observationSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    ...Object.fromEntries(["summary", "visual", "uncertainty", "topic"].map((k) => [k, { type: "string" }])),
+    ...Object.fromEntries(VISUAL_TEXT_FIELDS.map((k) => [k, { type: "string" }])),
     topicSummary: { type: "string" },
-    continuity: { type: "string", enum: ["continue", "change", "uncertain"] },
+    continuity: { type: "string", enum: VISUAL_CONTINUITIES },
   },
-  required: ["summary", "visual", "uncertainty", "topic", "continuity", "topicSummary"],
+  required: [...VISUAL_TEXT_FIELDS, "continuity", "topicSummary"],
 };
 const inspectionSchema = {
   type: "object",
@@ -96,6 +98,8 @@ function reportedMetrics(output) {
     .filter((key) => output[key] && typeof output[key] === "object")
     .map((key) => [key, output[key]]));
   if (output.modelState === "unknown") metrics.modelState = output.modelState;
+  const local = localLanguageReport(output);
+  if (local) metrics.language = local.language;
   return metrics;
 }
 class CodexPerception {
@@ -136,7 +140,7 @@ class CodexPerception {
       signal,
       mediaInput,
       outputSchema,
-      instructions,
+      instructions: this.agent.prepareInstructions?.(instructions) ?? instructions,
       ...(onDiagnostic ? { onDiagnostic } : {}),
     });
   }
@@ -211,11 +215,8 @@ class CodexPerception {
     });
     // The agent had to reconnect: this call was the first turn of a new thread, whatever the counter said.
     if (output.coldStart === true) this.count = 1;
-    for (const k of ["summary", "visual", "uncertainty", "topic"])
-      if (typeof output[k] !== "string" || output[k].length > 8000)
-        throw Error("Description Codex invalide.");
-    if (output.continuity !== undefined && !["continue", "change", "uncertain"].includes(output.continuity))
-      throw Error("Continuité du sujet invalide.");
+    const issue = visualObservationIssue(output);
+    if (issue) throw Error(issue === 'continuity' ? "Continuité du sujet invalide." : "Description Codex invalide.");
     // The transition is only known after inference. The next visual call must
     // not inherit images or text from the former subject's thread.
     if (output.continuity !== "continue") this.visualTopicScope = null;
@@ -234,6 +235,7 @@ class CodexPerception {
           : "Paroles indisponibles.",
         uncertainty: [
           output.uncertainty,
+          localLanguageReport(output)?.languageLimit,
           ...audio.limits,
           ...(segment.lightweight
             ? [

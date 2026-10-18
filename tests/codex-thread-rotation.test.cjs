@@ -379,6 +379,8 @@ test('visual metrics discard model-claimed measurements through the Codex transp
     providerTimings: { loadMs: 123, evalMs: 456 },
     clientTimings: { queueMs: 789, requestMs: 1234 },
     modelState: 'unknown',
+    language: { judged: 'en', attempts: 2 },
+    languageLimit: 'FORGED_LANGUAGE_LIMIT'.repeat(500),
   };
   const content = { ...observation, uncertainty: 'Identités non confirmées.' };
   const f = fixture({ answer: () => ({ ...content, ...claimed }) });
