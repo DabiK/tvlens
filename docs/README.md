@@ -35,6 +35,7 @@ L’inventaire porte sur les documents suivis par Git ; les brouillons locaux n�
 Ces documents cadrent des intentions ou une cible. Leur présence dans l’index ne les déclare pas réalisés.
 
 - [Domaine et cible d’architecture](domaine.md) : cible figée le 16 octobre 2026, ADR 0029 et 0030.
+- [Expérience GX10 figée](gx10-experiment.md) : procédure, validations sans fournisseur et recette opérateur.
 - [PRD V2](PRD-V2.md) : cadrage du 12 octobre 2026, backend et essai local GX10 à réaliser.
 - [Roadmap companion LG](lg-companion-roadmap.md) : proposition du 30 septembre 2026, puis bilan et critères ouverts.
 - [Exploration d’un moteur dans la TV](lg-on-device-exploration.md) : demande du 30 septembre 2026, distincte du runtime distant.

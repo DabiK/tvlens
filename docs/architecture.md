@@ -145,7 +145,11 @@ Codex reçoit images et texte ; le WAV est transcrit par `LocalTranscriber` sur 
 Une description échouant sur une erreur transitoire identifiée peut être redemandée une seule fois,
 uniquement si la voie est libre et la session encore utilisable (ADR 0008 et 0031).
 
-**Questions.** `conversation-runtime` compose `DeepAsk`, `CodexSessionAgent` et `VideoTools`.
+**Questions.** `conversation-runtime` compose `DeepAsk`, `VideoTools` et, selon `questionsBackend`,
+`CodexSessionAgent` (`codex`, défaut) ou `OllamaQuestionAgent` (`local`). Le choix local exige URL et
+modèle explicites, refuse les réglages invalides et ne déclenche aucun repli distant. Les questions
+locales utilisent les trois outils vidéo, sans web ; ce choix ne sélectionne ni embeddings ni inspection.
+L’identité composée de l’agent accompagne les métriques et les traces, même en cas de refus.
 `DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
 publie progression et annulation ciblée, et applique au traitement un plafond de cinq minutes,
 abaissable par `TVLENS_QUESTION_TIMEOUT_MS`. `job.timeoutMs` et `job.availability` décrivent le

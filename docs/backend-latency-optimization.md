@@ -354,7 +354,11 @@ Le parcours réel se rejoue sans déploiement : `server/main.cjs` lancé depuis 
 **GX10, quand il sera accessible**
 
 1. Ollama avec le modèle candidat, puis `TVLENS_PERCEPTION_BACKEND=local`, `TVLENS_LOCAL_VLM_URL`, `TVLENS_LOCAL_VLM_MODEL`, et `TVLENS_LOCAL_VLM_NUM_CTX` après vérification de la taille réelle du prompt et des images.
-2. Dix blocs identiques à froid puis à chaud. Lire par passage `metrics.providerTimings` (chargement, lecture du prompt, génération), `visionMs` (transport compris) et `latency` (attentes). C'est la séparation demandée pour l'essai A : fermeture du bloc, attente, transport, calcul.
+2. Dix blocs identiques à froid puis à chaud, avec méthode et preuve opérateur de résidence/libération.
+   Lire par passage `clientTimings.queueMs` (attente cliente), `clientTimings.requestMs` (jusqu’au corps complet),
+   `providerTimings.rawNs` (durées fournisseur brutes), `modelState`, `visionMs` (transport compris) et `latency` (files produit).
+   `modelState` reste `unknown` : aucun seuil sur `loadMs` ne prouve froid ou chaud. L’aller-retour ne sépare pas le réseau pur.
+   Après annulation, relever séparément la fin effective du calcul distant. Le [guide GX10](gx10-experiment.md) précise les preuves.
 3. Vérifier à la main le JSON et le français avant toute mesure de débit.
 
 Reste à écrire pour le GX10 : l'essai vidéo natif (variante A du PRD), que cet adaptateur image par image ne couvre pas.
@@ -394,3 +398,5 @@ Résolus à chaque démarrage, sur le serveur comme dans l'app Mac : d'abord le 
 | `TVLENS_WHISPER_AUDIO_CTX` | contexte complet | `auto` ou un entier de 64 à 1500 |
 | `TVLENS_PERCEPTION_BACKEND` | `codex` | `local` : modèle local pour la description des passages |
 | `TVLENS_LOCAL_VLM_URL`, `_MODEL`, `_NUM_CTX`, `_KEEP_ALIVE`, `_TOKEN` | — | accès au modèle local |
+| `TVLENS_QUESTIONS_BACKEND` | `codex` | `local` : questions Ollama avec outils vidéo, sans web ; choix indépendant de recherche/inspection |
+| `TVLENS_LOCAL_QUESTIONS_URL`, `_MODEL`, `_NUM_CTX`, `_KEEP_ALIVE`, `_TOKEN` | — | URL/modèle requis ; contexte positif ; jeton non persisté |

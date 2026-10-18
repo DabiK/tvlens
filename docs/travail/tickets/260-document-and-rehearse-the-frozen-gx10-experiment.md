@@ -1,7 +1,7 @@
 ---
 id: T260
 titre: Document the frozen GX10 experiment and check its offline commands
-statut: a-faire
+statut: termine
 bloque_par: T258, T261
 adr: non
 installe: non
@@ -205,3 +205,31 @@ de démonstration demeure `hackathon-rc` ; une réussite expérimentale ne vaut 
   et de l'indiquer avec ses résultats (contrôle T273).
 - 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
   frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.
+
+- 18/10, Codex : exploration de `0f0682d`, des runners/parseurs et de la configuration ;
+  constats conservés dans `.harness-state/tickets/T260/exploration.md`. Aucun fournisseur lancé.
+- 18/10, Codex : guide rédigé, index lié, protocole A et composition des questions actualisés.
+  `python3 .harness-state/tickets/T260/verify-offline.py` : cinq aides, validations G1/G2/G3,
+  notation fictive, conversion synthétique de 2 250 ms et validation G1 réussies (codes 0).
+  Commandes exactes et sorties dans `commands.jsonl` et `offline-00.log` à `offline-16.log` du dossier d’état.
+  Première commande : 78 tests réussis, aucun ignoré. Puis, en séquentiel, seconde commande :
+  107 tests réussis, aucun ignoré. Aucun modèle réel lancé.
+
+  ```sh
+  node --test --test-concurrency=1 tests/local-perception-replay.test.cjs \
+    tests/perception-replay-scoring.test.cjs tests/local-stream-replay.test.cjs
+  node --test --test-concurrency=1 tests/video-file-source.test.cjs \
+    tests/ollama-question-agent.test.cjs tests/ollama-embeddings.test.cjs \
+    tests/local-inspection.test.cjs tests/portable-config.test.cjs
+  ```
+
+  Fragment de préparation du calendrier converti exécuté, puis validation : trois envois planifiés,
+  code 0 (`offline-scenario-preparation.log`, `offline-scenario-validation.log`).
+  Exemple dotenv lu par `loadConfig` avec environnement vide et choix/paramètres contrôlés,
+  sans constructeur fournisseur (`configuration-example.log`).
+- 18/10, Codex : huit commandes `rg -n` du test d’acceptation exécutées, codes 0 ; sorties
+  `documentation-00.log` à `documentation-07.log`. Liens locaux vérifiés dans les quatre pages (`links.log`).
+  `git diff --check` : code 0. `node --test tests/documentation-index.test.cjs` : 12 tests réussis.
+  `node scripts/check.mjs --changed` : vert. `node scripts/check.mjs` : vert, 2 883 tests JS
+  sur 152 fichiers et 47 tests Python réussis ; sortie complète conservée dans `check-full.log`.
+  Répétition matérielle, fournisseurs, gel/tag et fidélité TV non exécutés, confiés à l’opérateur.
