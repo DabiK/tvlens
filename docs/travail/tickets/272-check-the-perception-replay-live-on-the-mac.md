@@ -1,7 +1,7 @@
 ---
 id: T272
 titre: Check the perception replay live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T257
 adr: non
 installe: non
@@ -53,3 +53,13 @@ Décision attendue du propriétaire : le contrôle réel de T257 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+
+- 18/10, orchestrateur : contrôle réel concluant au commit `b9f5d56`, sur le Mac (M5 Max, 36 Go, boucle arrêtée).
+  Corpus de 4 passages de la capture du 17/10 (`ec55a89c`), médias copiés octet pour octet, transcript de l'archive
+  marqué `availability: unknown`, contexte inconnu, `lightweight` des métriques sauvegardées.
+  - Validation : 4 cas `validated`, aucun agent construit.
+  - Local, Ollama 0.33.2, `gemma3:4b` : 4 / 4 `succeeded`, 5,1 à 6,8 s par cas, chargement 1,8 s au premier.
+  - Référence Codex, `gpt-6-luna` : 4 / 4 `succeeded`, 4,1 à 5,8 s, étiquetée `reference: codex`.
+  - Un octet ajouté à un média : `TVLENS_REPLAY_HASH_MISMATCH`, campagne incomplète, code 1, aucun appel à Ollama.
+  - Sorties lisibles pour G1 ; `g2Eligible: false` faute d'annotations. Codex résume la parole, le 4B décrit l'image.
+  - Trace : `experiments/essais/2026-10-18-rejeu-perception-mac/`. Statut `termine`.
