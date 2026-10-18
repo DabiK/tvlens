@@ -1,0 +1,421 @@
+{
+  "version": 1,
+  "runId": "exemple-fictif-sans-inference",
+  "mode": "execution",
+  "backend": "codex",
+  "reference": "codex",
+  "code": {
+    "kind": "synthetic-fixture"
+  },
+  "config": {
+    "model": "aucun-modele-execute"
+  },
+  "manifestSha256": "3391198924756246a2bbf8b10a22d700184f6e34eac816b17c2bd791915ad073",
+  "annotationsSha256": "ac892b3fcf7cacf63ce60e20287af9a6d3dbd30412095ffa55ea287f52a6bae2",
+  "g2Eligible": true,
+  "complete": true,
+  "cases": [
+    {
+      "id": "capture-documentee",
+      "index": 0,
+      "status": "succeeded",
+      "backend": "codex",
+      "input": {
+        "startMs": 8000,
+        "endMs": 16000,
+        "media": {
+          "path": "media.json",
+          "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+        },
+        "provenance": {
+          "kind": "tvlens-capture",
+          "sessionId": "session-fictive",
+          "passageId": "moment-2"
+        },
+        "transcript": {
+          "text": "Une question puis une réponse.",
+          "availability": "known",
+          "limits": "Exemple fictif de transcription disponible au départ de la vision.",
+          "provenance": {
+            "kind": "input-trace",
+            "reference": "Trace fictive jointe à cet exemple de format."
+          }
+        },
+        "context": {
+          "provenance": {
+            "kind": "input-trace",
+            "reference": "Trace fictive, aucun extrait réel."
+          },
+          "limits": "Contexte historique fictif et non vérifié.",
+          "prefix": [
+            {
+              "id": "moment-1",
+              "startMs": 0,
+              "endMs": 8000
+            }
+          ],
+          "value": {
+            "previousTopic": "Débat",
+            "previousTopicSummary": {
+              "text": "Question initiale.",
+              "firstId": "moment-1",
+              "lastId": "moment-1",
+              "startMs": 0,
+              "endMs": 8000,
+              "pendingPassages": []
+            },
+            "activeTopic": {
+              "firstId": "moment-1",
+              "startMs": 0,
+              "recent": [
+                {
+                  "id": "moment-1",
+                  "startMs": 0,
+                  "endMs": 8000,
+                  "summary": "Une question initiale."
+                }
+              ]
+            }
+          }
+        },
+        "lightweight": {
+          "value": false,
+          "source": "saved-metrics"
+        },
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 6,
+            "atMs": 14000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 7,
+            "atMs": 15000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "audioSha256": null
+      },
+      "request": {
+        "instructions": "Requête fictive jamais envoyée à un fournisseur.",
+        "promptSha256": "8c4ad604b360b8865ec4370f78d2244df7e4ff40b38204a68e5456edbb90e59c",
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "outputSchema": {}
+      },
+      "result": {
+        "observation": {
+          "summary": "Formes fictives.",
+          "visual": "Formes fictives.",
+          "uncertainty": "Fixture sans inférence."
+        }
+      }
+    },
+    {
+      "id": "capture-inconnue",
+      "index": 1,
+      "status": "succeeded",
+      "backend": "codex",
+      "input": {
+        "startMs": 8000,
+        "endMs": 16000,
+        "media": {
+          "path": "media.json",
+          "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+        },
+        "provenance": {
+          "kind": "tvlens-capture",
+          "sessionId": "session-fictive",
+          "passageId": "moment-2"
+        },
+        "transcript": {
+          "text": "",
+          "availability": "unknown",
+          "limits": "Transcript de départ non conservé ; aucune reconstitution depuis le résumé final."
+        },
+        "context": {
+          "value": null,
+          "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+        },
+        "lightweight": {
+          "value": false,
+          "source": "explicit-default"
+        },
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 6,
+            "atMs": 14000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 7,
+            "atMs": 15000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "audioSha256": null
+      },
+      "request": {
+        "instructions": "Requête fictive jamais envoyée à un fournisseur.",
+        "promptSha256": "8c4ad604b360b8865ec4370f78d2244df7e4ff40b38204a68e5456edbb90e59c",
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "outputSchema": {}
+      },
+      "result": {
+        "observation": {
+          "summary": "Formes fictives.",
+          "visual": "Formes fictives.",
+          "uncertainty": "Fixture sans inférence."
+        }
+      }
+    },
+    {
+      "id": "video-convertie",
+      "index": 2,
+      "status": "succeeded",
+      "backend": "codex",
+      "input": {
+        "startMs": 8000,
+        "endMs": 16000,
+        "media": {
+          "path": "media.json",
+          "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+        },
+        "provenance": {
+          "kind": "converted-video",
+          "sourceSha256": "0f885262ff999fe1dc4cd57e76d8682bfff783dd9e795fc35a33d46ead00ca6e",
+          "sourceInterval": {
+            "startMs": 20000,
+            "endMs": 28000
+          },
+          "conversion": {
+            "tool": "ffmpeg",
+            "version": "exemple-fictif",
+            "arguments": ["-ss", "20", "-t", "8", "-vf", "fps=1"]
+          }
+        },
+        "transcript": {
+          "text": "",
+          "availability": "unknown",
+          "limits": "Transcript de départ non conservé ; aucune reconstitution depuis le résumé final."
+        },
+        "context": {
+          "value": null,
+          "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+        },
+        "lightweight": {
+          "value": false,
+          "source": "explicit-default"
+        },
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 6,
+            "atMs": 14000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 7,
+            "atMs": 15000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "audioSha256": null
+      },
+      "request": {
+        "instructions": "Requête fictive jamais envoyée à un fournisseur.",
+        "promptSha256": "8c4ad604b360b8865ec4370f78d2244df7e4ff40b38204a68e5456edbb90e59c",
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 1,
+            "atMs": 9000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 2,
+            "atMs": 10000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 3,
+            "atMs": 11000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 4,
+            "atMs": 12000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          },
+          {
+            "index": 5,
+            "atMs": 13000,
+            "sha256": "9dd12a83bb58d509ad135bed6c087a17f81d7754c0061edecfa314a1eff860c0"
+          }
+        ],
+        "outputSchema": {}
+      },
+      "result": {
+        "observation": {
+          "summary": "Formes fictives.",
+          "visual": "Formes fictives.",
+          "uncertainty": "Fixture sans inférence."
+        }
+      }
+    }
+  ]
+}

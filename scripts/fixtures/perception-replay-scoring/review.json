@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "manifestSha256": "3391198924756246a2bbf8b10a22d700184f6e34eac816b17c2bd791915ad073",
+  "annotationsSha256": "ac892b3fcf7cacf63ce60e20287af9a6d3dbd30412095ffa55ea287f52a6bae2",
+  "reportSha256": "63ec19f46970d8fd963cac47c96ef6238ea9bfc993220a308207d4e6abca2573",
+  "runId": "exemple-fictif-sans-inference",
+  "reviewer": "Lecteur fictif : aucun résultat réel évalué",
+  "cases": [
+    {
+      "id": "capture-documentee",
+      "status": "reviewed",
+      "reason": "Exemple de saisie uniquement, sans valeur de validation G2.",
+      "dimensions": {
+        "accuracy": {
+          "value": "correct",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "invention": {
+          "value": "absent",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Dimension non applicable dans cette fiction de format."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Dimension non applicable dans cette fiction de format."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Dimension non applicable dans cette fiction de format."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Jugement fictif, aucune preuve réelle."
+        }
+      },
+      "citations": []
+    },
+    {
+      "id": "capture-inconnue",
+      "status": "unreviewed",
+      "reason": "Aucune revue dans cet exemple."
+    },
+    {
+      "id": "video-convertie",
+      "status": "unreviewed",
+      "reason": "Aucune revue dans cet exemple."
+    }
+  ]
+}

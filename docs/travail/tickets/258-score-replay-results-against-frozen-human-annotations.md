@@ -1,7 +1,7 @@
 ---
 id: T258
 titre: Score replay results against frozen human annotations
-statut: a-faire
+statut: termine
 bloque_par: T257, T262, T273
 adr: non
 installe: non
@@ -97,3 +97,51 @@ français ou des films. Les arbitrages produit après mesure restent au proprié
   numéro.
 - 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
   aussi T273.
+- 18/10, Codex : exploration du rejeu, de ses identités, des tests et des ADR 0016/0031 terminée.
+  Scoreur hors ligne prévu sur corpus revérifié, attendus figés et revue distincte liée aux octets du rapport.
+  Exploration et découpage prévu consignés dans `.harness-state/tickets/T258/` ; aucun essai réel.
+- 18/10, Codex : cycles rouge/vert par `node --test tests/perception-replay-scoring.test.cjs` observés :
+  identités, intégrité du corpus/sélection, jugements humains et dénominateurs, comparaison, références/échecs,
+  CLI et racines JSON invalides. Journaux `*-red.log` et `*-green.log` dans le dossier d'état.
+  La fixture traverse le vrai runner et la vraie perception avec un agent Codex doublé ; aucun fournisseur réel.
+- 18/10, Codex : scoreur et deux aides sous `scripts/`, schéma documenté et grille intégralement fictive livrés.
+  Les 15 tests couvrent notamment revue périmée, empreinte absente avant inférence, invention avec action correcte,
+  abstentions, preuves absentes/mal décrites, couverture différente, cas non appariés et violations individuelles.
+  L'aide, la validation, la notation et la comparaison passent avec imports fournisseurs, réseau et processus interdits.
+- 18/10, Codex : premier `node scripts/check.mjs --changed` vert (14 tests) ; contrôle après ajout de l'exemple :
+  15 tests verts, format du rapport JSON fictif rouge. Format corrigé puis empreinte de revue recalculée ;
+  aucune règle ni aucun test assoupli. Aucun essai réel et aucune conclusion de réussite G2.
+- 18/10, Codex : `node --test tests/perception-replay-scoring.test.cjs` : 15 tests réussis, 0 échec (`acceptance.log`).
+  `node scripts/check.mjs --changed` : vert, 15 tests réussis (`check-changed-corrected.log`).
+  `node scripts/check.mjs` : vert, 151 fichiers JS, 2 793 tests réussis, aucun échec ; 47 tests Python réussis
+  (`check-full.log`). Journaux conservés dans `.harness-state/tickets/T258/`.
+- 18/10, Codex : `node scripts/score-perception-replay.cjs --help` : sortie 0. Les commandes d'exemple de
+  `scripts/perception-replay-scoring.md`, avec et sans `--validate` : sorties 0 ; 3 cas fictifs, 1 revu, 2 non évalués.
+  `git diff --check` : sortie 0. Verdict `TERMINÉ` remis à la boucle pour relecture ; aucun commit ni push.
+- 18/10, Codex, reprise : relecture 1, ticket/journal, écarts, état et diff relus ; trois constats acceptés.
+  Prévu : isoler les mutations d'empreintes dans le test, borner les images reçues de l'exemple à six,
+  renommer les deux validations ambiguës. Aucun nouvel écart, fournisseur réel, commit ou push.
+- 18/10, Codex, correction du constat 1 : `saveReport` conserve désormais le JSON indenté du runner.
+  Le test vérifie une revue acceptée avant chaque mutation isolée et après restauration ; le `runId` de la revue
+  est également altéré seul. `node --test --test-name-pattern='stale reviews reject'
+  tests/perception-replay-scoring.test.cjs` : rouge sur le changement de formatage, puis vert après correction.
+  Le retrait temporaire du garde commun fait échouer le refus attendu ; retirer séparément son contrôle
+  `annotationsSha256` puis `manifestSha256` rend chaque fois le test rouge sur le champ concerné.
+  Garde restauré et vert observé ; preuves `reprise-format-*`, `reprise-review-identity-mutation-red.log`,
+  `reprise-mutation-*-red.log` et `reprise-identity-restored-green.log` dans le dossier d'état.
+- 18/10, Codex, correction du constat 2 : le test de l'exemple vérifie les indices reçus 0 à 5 pour chaque cas,
+  parmi huit candidats. `node --test --test-name-pattern='documented synthetic review'
+  tests/perception-replay-scoring.test.cjs` : rouge (indices 6 et 7 en trop), puis vert après correction de
+  `request.frames` et recalcul de `review.reportSha256` ; preuves `reprise-example-red.log` et `reprise-example-green.log`.
+- 18/10, Codex, correction du constat 3 : `rows` devient `validateCaseRows`, `text` devient `isNonEmptyText`.
+  `node --test tests/perception-replay-scoring.test.cjs` : 15 tests réussis, 0 échec (`reprise-acceptance.log`).
+  `node scripts/check.mjs --changed` : vert, 15 tests réussis (`reprise-check-changed.log`).
+  Aucun constat contesté ni critère assoupli ; les deux aides privées restent l'écart accepté en relecture.
+- 18/10, Codex, fin de correction : `node scripts/check.mjs` : vert, 151 fichiers JS,
+  2 793 tests réussis, aucun échec ; 47 tests Python réussis (`reprise-check-full.log`).
+  `git diff --check` : sortie 0. Trois constats traités, aucune contestation ni réserve.
+  Nouveau verdict `TERMINÉ` remis à la boucle pour relecture ; aucun essai réel, commit ou push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T258/relecture-2.md : **Écart accepté, critère « Périmètre / À créer » : deux aides privées sous `scripts/`** (`perception-replay-scoring-input.cjs`, `perception-replay-scoring-cli.cjs`). Je maintiens la décision de la relecture 1. Ces aides servent uniquement le scoreur, reprennent le découpage du rejeu, ne modifient aucun module existant et ne retirent aucun critère.
