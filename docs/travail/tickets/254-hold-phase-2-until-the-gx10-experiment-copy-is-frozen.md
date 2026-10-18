@@ -52,3 +52,5 @@ cette reprise se décide avec lui, après la copie B, et non à la seule pose du
 ## Journal
 - 18/10, propriétaire, sur l'avis d'Astra : gel de la copie B avant la phase Mémoire ; la reprise de la phase 2
   se décide avec le propriétaire, pas à la pose du tag.
+- 18/10, orchestrateur : copie B figée et recettée (T280), tag `gx10-copie-b`. La phase 2 reste retenue : sa reprise
+  attend la décision du propriétaire avec la feuille de route en parcours produit.

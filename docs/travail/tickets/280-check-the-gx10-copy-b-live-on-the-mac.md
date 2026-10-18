@@ -1,7 +1,7 @@
 ---
 id: T280
 titre: Check the GX10 copy B live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T260
 adr: non
 installe: non
@@ -52,3 +52,19 @@ que l'orchestrateur fait cette recette et ferme ce ticket quand elle est conclua
 
 ## Journal
 
+- 18/10, orchestrateur : recette concluante au commit `3c500b3`, sur le Mac (M5 Max, 36 Go, boucle arrêtée), de 22 h 54
+  à 23 h 24. Discours de Kennedy (7 min, `media/samples`) converti en 53 blocs, bouclé et déclaré sur 30 min (227
+  envois), transcription `en` ; tous les rôles en local : perception et réexamen `gemma3:4b`, questions
+  `qwen3.8:27b`, embeddings `qwen3-embedding:0.6b`, Whisper local ; 8 questions réparties.
+  - Campagne `complete` : 227 envois acceptés sur 227, archivage et libération confirmés, identité locale de chaque
+    rôle vérifiée (`localMeasurement: true`).
+  - Bilan T261 : audio intact (0 perte) ; vision 64 passages sautés par engorgement et 6 en erreur sur 227 (31 %),
+    163 appels de perception ; deux lots d'embeddings coupés à 30 s au plus fort de la charge, signalés par le
+    diagnostic de T278.
+  - 8 questions répondues, 56 à 169 s chacune : justes et citées ; abstentions justes sur le coût du programme
+    spatial (absent de l'extrait) et sur l'identité des personnes assises ; Vénus retrouvée deux fois, Mars déclarée
+    absente. Les réexamens du 4B aboutissent (15 à 18 s) sans observation retenue par la réponse.
+  - Mémoire : 77 % libre au départ, 17 % au plus bas, swap jusqu'à 26 Go.
+  - Lecture : sur le Mac, tout en local tient trente minutes sans perte audio mais perd un tiers des descriptions
+    visuelles quand le modèle des questions tourne ; c'est la mesure que le GX10 doit refaire. Trace :
+    `experiments/essais/2026-10-18-copie-b-g3-mac/`. Tag `gx10-copie-b`. Statut `termine`.
