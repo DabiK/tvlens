@@ -1,7 +1,7 @@
 ---
 id: T257
 titre: Replay captured TVLens inputs through the production perception
-statut: a-faire
+statut: termine
 bloque_par: T255, T265, T271
 adr: non
 installe: non
@@ -141,3 +141,48 @@ avec `hackathon-rc` en repli ; T254 retient la phase 2. Ce runner ne prouve pas 
   numéro.
 - 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
   aussi T271.
+- 18/10, Codex : exploration de la fabrique, de la perception, du stockage média et des ADR 0019/0029/0031/0046.
+  Manifeste explicite et campagne progressive prévus ; aucun essai réel ni reconstruction du contexte depuis l'archive.
+- 18/10, Codex : cycles rouge/vert par `node --test tests/local-perception-replay.test.cjs` : validation sans
+  fournisseur (1 test), refus avant appel (3), vraie perception vers faux Ollama et référence Codex doublée (5),
+  erreurs/interruption/CLI (9), images identiques (10), exemples et intégrité (13), fermeture sur disque plein (14).
+  Assertions rouges et sorties vertes conservées dans `.harness-state/tickets/T257/`.
+- 18/10, Codex : manifeste version 1, trois exemples fictifs et format documentés dans `scripts/perception-replay.md`.
+  Runner et aides sous `scripts/`, aucune modification de la perception produit, des archives ni de Mémoire.
+  Chaque appel conserve prompt et images effectivement sélectionnées ; les annotations restent hors inférence.
+- 18/10, Codex : `node scripts/replay-local-perception.cjs --help` : aide affichée, sortie 0.
+  `node scripts/replay-local-perception.cjs --manifest scripts/fixtures/perception-replay/manifest.json --out
+  .harness-state/tickets/T257/validation-local --backend local --validate` : 3 cas validés, campagne complète, sortie 0.
+  Même commande avec `--out .harness-state/tickets/T257/validation-codex --backend codex` sans `--validate` :
+  3 cas validés, campagne complète, sortie 0 ; aucune construction de fournisseur.
+- 18/10, Codex : `node --test --test-concurrency=1 tests/local-perception-replay.test.cjs tests/local-vlm-agent.test.cjs
+  tests/session-providers.test.cjs` : 49 tests réussis, 0 échec. Preuve : `acceptance-sequential-final.log`.
+  Contrôles initiaux rouges (complexité, ligne longue, format JSON) corrigés sans modifier le harnais ni le cliquet.
+- 18/10, Codex : `node scripts/check.mjs --changed` : vert, 14 tests du runner réussis, cliquet produit en hausse de 14.
+  `node scripts/check.mjs` : vert, 149 fichiers de tests JS, 2 747 tests réussis, 0 échec ; 47 tests Python réussis.
+  `git diff --check` : sortie 0. Preuves : `check-changed-complete.log` et `check-full.log` dans le dossier d'état.
+  Verdict `TERMINÉ` remis à la boucle pour relecture ; aucun essai réel, commit ou push.
+- 18/10, Codex, reprise : relecture 1, ticket/journal, écarts et arbre relus. Neuf constats acceptés.
+  Renforcement des preuves temporelles, des sorties persistées et des refus CLI ; corrections prévues
+  des diagnostics, de leur cause, des valeurs effectives et de l'empreinte Git, sans changer la perception produit.
+- 18/10, Codex, corrections de relecture 1 : constats 1 à 4 couverts par des assertions supplémentaires sur les
+  préfixes futurs cohérents, `campaign.json`, le contexte exact envoyé et les refus CLI avec manifeste valide.
+  `node --test --test-name-pattern='future context is refused' tests/local-perception-replay.test.cjs` :
+  rouge avec le garde temporel temporairement retiré (3 constructions contre 0 attendu), puis vert après restauration.
+  `node --test --test-name-pattern='execution traverses the shared' tests/local-perception-replay.test.cjs` :
+  rouge avec empreinte du manifeste temporairement retirée, puis vert après restauration dans la suite complète.
+- 18/10, Codex, corrections de relecture 1 : constats 5 à 8 corrigés après assertion rouge observée :
+  cause codée du HTTP 500 conservée, un seul diagnostic final par mesure HTTP, configuration lue sur l'agent
+  réellement construit, empreinte du diff suivi calculée en flux (fixture dépassant 1 Mio), portée documentée.
+  Commandes ciblées : `node --test --test-name-pattern='<motif>' tests/local-perception-replay.test.cjs`,
+  motifs `held calls preserve`, `one HTTP request leaves`, `configuration records`, `code identity hashes`.
+  Assertions rouges puis vertes observées ; journaux `reprise-cause-*`, `reprise-diagnostic-*`, `reprise-config-*`,
+  `reprise-diff-*` dans le dossier d'état. Constat 9 : instructions séparées sur leurs lignes dans la CLI et les tests.
+- 18/10, Codex, vérifications de correction : `node --test tests/local-perception-replay.test.cjs` : 20 tests verts.
+  `node --test --test-concurrency=1 tests/local-perception-replay.test.cjs tests/local-vlm-agent.test.cjs tests/session-providers.test.cjs` :
+  55 tests réussis, aucun échec (`reprise-acceptation-sequentielle.log`). Aide CLI et validation des trois exemples pour
+  chacun des backends : sorties 0 (`reprise-aide.log`, `reprise-validation-local.log`, `reprise-validation-codex.log`).
+- 18/10, Codex, fin de correction : `node scripts/check.mjs --changed` : vert, 20 tests du runner réussis.
+  `node scripts/check.mjs` : vert, 149 fichiers JS et 2 753 tests réussis, aucun échec ; 47 tests Python réussis.
+  Preuves : `reprise-check-changed-final.log` et `reprise-check-full.log`. `git diff --check` : sortie 0.
+  Nouveau verdict `TERMINÉ` pour la boucle, neuf constats traités, aucune contestation ni réserve ; aucun commit ou push.
