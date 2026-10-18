@@ -2,7 +2,7 @@
 id: T251
 titre: Resume a quota-stopped ticket with Claude when asked
 statut: a-faire
-bloque_par: T231, T268, T280
+bloque_par: T231, T268, T280, T284
 adr: oui
 installe: non
 harnais: oui
@@ -93,4 +93,6 @@ elle n'assouplit jamais le démarrage ordinaire. Relire les interfaces réelles 
 - 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Dépendance d'ordre ajoutée
   (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.
 - 18/10, propriétaire, sur l'avis d'Astra : la copie B (T259, T261, T260) et sa recette T280 passent avant ce
+  ticket.
+- 18/10, propriétaire : les réglages des modèles locaux (T282, T283) et leur contrôle T284 passent avant ce
   ticket.

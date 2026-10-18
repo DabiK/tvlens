@@ -2,7 +2,7 @@
 id: T224
 titre: Deliver the Mac window state from the same projection
 statut: a-faire
-bloque_par: T219, T210, T195, T233, T267, T268
+bloque_par: T219, T210, T195, T233, T267, T268, T284
 adr: oui
 installe: non
 harnais: non
@@ -84,3 +84,5 @@ nommée, jamais un motif à réécrire pour masquer une régression de câblage.
   aussi T275.
 - 18/10, propriétaire : le contrôle TV T275 ne bloque plus ce ticket. Un essai sur la TV ne charge pas le Mac et
   exige que le propriétaire ne regarde pas : il se fait à part, sans retenir la phase Mémoire.
+- 18/10, propriétaire : les réglages des modèles locaux (T282, T283) et leur contrôle T284 passent avant ce
+  ticket.
