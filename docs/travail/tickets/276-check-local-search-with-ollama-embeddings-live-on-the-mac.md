@@ -1,7 +1,7 @@
 ---
 id: T276
 titre: Check local search with Ollama embeddings live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T264
 adr: non
 installe: non
@@ -61,3 +61,8 @@ que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
     (reproduit : 13,2 s dont 12,7 s de chargement, contre 1,1 s modèle seul) ; aucun index construit, réponse par
     classement textuel, rien dans le journal du serveur. Correctif : T278. Ce contrôle reste à faire jusqu'à son
     intégration, puis sera refait par le serveur avec un autre modèle local résident.
+- 18/10, orchestrateur : contrôle refait au commit `318c711` (T278 intégré), boucle arrêtée. Par le serveur headless,
+  session tout en local (perception `gemma3:4b` résidente) : index construit en 3,1 s, cache
+  `embeddings-<identité>.json` écrit, recherches servies aux questions. Adaptateur réel, délai par défaut de 30 s, avec
+  `gemma3:12b` résident : 19 passages en 1,1 s. Le chargement lent de 12,7 s de l'après-midi ne s'est pas reproduit ;
+  la marge de 30 s reste prouvée par les tests de T278 (faux serveur lent), pas en réel. Statut `termine`.

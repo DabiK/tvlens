@@ -1,7 +1,7 @@
 ---
 id: T274
 titre: Check the question backend and the GX10 copy live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T267, T276, T277, T278, T279
 adr: non
 installe: non
@@ -59,3 +59,18 @@ que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 - 18/10, orchestrateur : la copie A attend aussi T279 (réponses locales en français). Répétition élargie : essayer
   `qwen3.8:27b`, qui a la vision, en réexamen et en perception sur les mêmes passages que `gemma3:4b`, `gemma3:12b` et
   Codex ; noter la langue des réponses ; régler la langue de transcription par extrait.
+- 18/10, orchestrateur : répétition concluante au commit `318c711`, sur le Mac (M5 Max, 36 Go, boucle arrêtée).
+  - Identité des questions (T267), session réelle du 17/10 : Ollama `qwen3.8:27b` (réglage `local`, agent composé,
+    hôte, 2 requêtes, 44 s), Codex (réglage `codex`, modèle `null`, réserve connue de T267, 11 s), Ollama injoignable
+    (erreur nommée, identité conservée, 1 requête).
+  - Copie A sur 4 blocs neufs de Kennedy (`media/samples`, 65 à 97 s), attendus figés avant inférence par
+    l'orchestrateur (répétition, pas G2) : `gemma3:4b` 4 / 4 en français (T279), mais inventions (insigne de l'Élysée,
+    drapeau tenu) ; Codex 4 / 4 sans invention ; scoreur T258 : Codex 4 réussites sur 4, `gemma3:4b` 0 sur 4, aucune
+    violation de causalité ou de provenance, identités vérifiées.
+  - `qwen3.8:27b` en vision : 4 / 4 refusés par le délai de 45 s de l'agent vision (raisonnement activé) ; en direct,
+    25 s pour 5 images, lecture juste du sceau. Inadapté à la perception continue sur le Mac.
+  - Session en direct tout en local (perception `gemma3:4b`, questions `qwen3.8:27b`, embeddings
+    `qwen3-embedding:0.6b`, réexamen local), transcription réglée sur l'anglais : 4 blocs acceptés, perception 5 à 6 s,
+    paroles justes, index en 3,1 s, deux questions répondues avec outils (84 et 51 s). Swap 26 Go, 13 % de mémoire
+    libre. Un premier essai a reçu `400 invalid-anchor` : repère vide envoyé par le script de l'orchestrateur.
+  - Trace : `experiments/essais/2026-10-18-copie-a-repetition/`. Tag `gx10-copie-a`. Statut `termine`.
