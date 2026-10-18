@@ -92,3 +92,11 @@ annoncé. Les formes fournisseur non caractérisées ne sont pas devinées. Le l
 continue à refuser un arbre modifié ; sa reprise contrôlée sera livrée séparément par T251.
 
 ## Journal
+
+- 18/10, orchestrateur : la première tentative a livré l'implémentation complète (2 661 tests JS et 47 tests Python
+  verts) et ne s'est bloquée que sur un fichier hors dépôt : la sonde `experiments/essais/…/sonde.cjs`, déposée par
+  l'orchestrateur avant le lancement, avait deux lignes de plus de 160 caractères. L'orchestrateur l'a corrigée ;
+  `node scripts/check.mjs --changed` est vert sans ce ticket. Le travail est archivé dans
+  `.harness-state/archives/T231-bloque-1/` : `code.patch`, `fichiers/scripts/loop/codex-quota.mjs`,
+  `ticket-journal.patch` et `etat/` (preuves). Le réappliquer, le vérifier contre le code du moment, puis passer la
+  relecture.
