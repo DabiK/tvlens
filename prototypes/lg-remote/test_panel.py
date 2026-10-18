@@ -83,8 +83,8 @@ class Rectangles(unittest.TestCase):
   self.assertEqual(physical_rect(target),{'x':640,'y':0,'width':2560,'height':1440})
   self.assertEqual(layout_target(restore,'chat')['displayOutput'],{'x':0,'y':135,'width':1440,'height':810})
   with self.assertRaises(ValueError):layout_target(restore,'arbitrary')
- def test_refuses_foreign_or_cropped_source(self):
-  for key,value in [('appId','netflix'),('connected',False),('sourceInput',{'x':1}),('displayOutput',{'width':1920})]:
+ def test_refuses_home_disconnected_or_cropped_source(self):
+  for key,value in [('appId','com.webos.app.home'),('connected',False),('sourceInput',{'x':1}),('displayOutput',{'width':1920})]:
    v=self.source();v[key]=value
    with self.assertRaises(ValueError):rectangles(v)
 class LunaReplies(unittest.TestCase):
@@ -123,6 +123,8 @@ class Screen:
   self.display={'x':0,'y':0,'width':3840,'height':2160}
   self.video_fields={}
   self.status_videos=None
+  self.foreground_app='youtube.leanback.v4'
+  self.extra_videos=[]
   self.toasts=[]
   self.toast_error=None
   self.toast_reply={'returnValue':True}
@@ -160,11 +162,13 @@ class Screen:
   name=endpoint.rsplit('/',1)[1]
   self.endpoints.append((endpoint,payload,self.now))
   self.calls.append((name,payload,self.now))
+  if name=='getForegroundAppInfo':
+   return {'returnValue':True,'appId':self.foreground_app}
   if name=='getStatus':
    video={'sink':'MAIN','appId':'youtube.leanback.v4','connected':True,'context':'c1','fullScreen':True,
     'width':1920,'height':1080,'sourceInput':{'x':0,'y':0,'width':1920,'height':1080},'displayOutput':dict(self.display)}
    video.update(self.video_fields)
-   return {'returnValue':True,'video':[video] if self.status_videos is None else self.status_videos}
+   return {'returnValue':True,'video':self.extra_videos+[video] if self.status_videos is None else self.status_videos}
   if endpoint=='com.webos.notification/createToast':
    self.toasts.append(payload)
    if self.toast_error:raise self.toast_error
@@ -176,6 +180,7 @@ class Screen:
   if name=='launch':
    self.windows.append(payload['id'])
    self.launched_at=self.now
+   self.foreground_app=payload['id']
   if name=='closeByAppId' and payload['id'] in self.windows:self.windows.remove(payload['id'])
   if name=='getForegroundWindowInfo':
    self.polls+=1
@@ -190,6 +195,111 @@ class Screen:
  def named(self,name):return [call for call in self.calls if call[0]==name]
 
 class PanelLifecycle(unittest.TestCase):
+ def test_lg_player_selects_its_connected_main_video_and_restores_with_sidebar_in_foreground(self):
+  screen=Screen(self)
+  screen.foreground_app='com.webos.app.mediadiscovery'
+  screen.display={'x':0,'y':40,'width':3840,'height':2080}
+  source=dict(x=0,y=0,width=1920,height=1040)
+  screen.video_fields=dict(appId=screen.foreground_app,width=1920,height=1040,fullScreen=False,sourceInput=source)
+  screen.extra_videos=[
+   dict(sink='MAIN',appId='youtube.leanback.v4',connected=True,context='other'),
+   dict(sink='MAIN',appId=screen.foreground_app,connected=False,context='disconnected'),
+   dict(sink='SUB',appId=screen.foreground_app,connected=True,context='secondary')]
+  panel.main()
+  target={'x':0,'y':150,'width':1440,'height':780}
+  saved={'x':0,'y':20,'width':1920,'height':1040}
+  self.assertEqual(screen.foreground_app,panel.APP)
+  self.assertEqual([call[1]['id'] for call in screen.named('launch')],[panel.APP])
+  self.assertEqual(len(screen.layouts),2,'The sidebar must remain open while the saved video is unchanged')
+  self.assertTrue(all(layout['active'] and layout['video']==target for layout in screen.layouts))
+  windows=screen.named('setDisplayWindow')
+  self.assertEqual([call[1]['displayOutput'] for call in windows],[target,saved])
+  for _,rectangle,_ in windows:
+   self.assertEqual(rectangle['context'],'c1')
+   self.assertEqual(rectangle['sourceInput'],source)
+   self.assertEqual(rectangle['originalInput'],source)
+   self.assertEqual(rectangle['appOutput'],rectangle['displayOutput'])
+   self.assertFalse(rectangle['fullScreen'])
+  self.assertEqual(screen.display,{'x':0,'y':40,'width':3840,'height':2080})
+  self.assertEqual(screen.toasts,[])
+  self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+  screen.watchdog.terminate.assert_called_once_with()
+
+ def test_home_with_preview_and_live_tv_refuses_opening_without_changing_video(self):
+  screen=Screen(self)
+  screen.foreground_app='com.webos.app.home'
+  screen.status_videos=[
+   dict(sink='MAIN',appId='com.webos.app.home',connected=True,context='preview',fullScreen=False,width=1600,height=900,
+    sourceInput=dict(x=0,y=0,width=1600,height=900),displayOutput=dict(x=300,y=46,width=1600,height=900)),
+   dict(sink='MAIN',appId='com.webos.app.livetv',connected=True,context='live',fullScreen=False,
+    displayOutput=dict(x=0,y=0,width=0,height=0))]
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.','TVLENS_PANEL_PLAYBACK_REQUIRED')
+
+ def test_missing_foreground_application_refuses_even_with_a_connected_video(self):
+  for app_id in (None,''):
+   with self.subTest(app_id=app_id):
+    screen=Screen(self)
+    screen.foreground_app=app_id
+    self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.','TVLENS_PANEL_PLAYBACK_REQUIRED')
+
+ def test_foreground_video_apps_share_the_same_opening_and_restoration_contract(self):
+  for app_id in ('youtube.leanback.v4','netflix','com.amazon.amazonvideo','custom.player'):
+   with self.subTest(app_id=app_id):
+    screen=Screen(self)
+    screen.foreground_app=app_id
+    screen.video_fields={'appId':app_id}
+    panel.main()
+    self.assertEqual([call[1]['id'] for call in screen.named('launch')],[panel.APP])
+    self.assertEqual(len(screen.layouts),2)
+    self.assertEqual([call[1]['displayOutput'] for call in screen.named('setDisplayWindow')],
+     [{'x':0,'y':135,'width':1440,'height':810},{'x':0,'y':0,'width':1920,'height':1080}])
+    self.assertEqual(screen.toasts,[])
+
+ def test_saved_video_transition_closes_the_panel_without_restoring_a_replacement(self):
+  for transition in ('context','missing','geometry'):
+   with self.subTest(transition=transition):
+    screen=Screen(self,loops=99)
+    def pause_then_transition(seconds):
+     screen.pause(seconds)
+     if seconds!=.7:return
+     if transition=='context':screen.video_fields={'context':'replacement'}
+     if transition=='missing':screen.status_videos=[]
+     if transition=='geometry':screen.display={'x':0,'y':0,'width':3840,'height':2160}
+    with patch.object(panel,'pause',pause_then_transition):
+     panel.main()
+    self.assertEqual(screen.foreground_app,panel.APP)
+    self.assertEqual(len(screen.layouts),1)
+    windows=screen.named('setDisplayWindow')
+    self.assertEqual(len(windows),2 if transition=='geometry' else 1)
+    if transition=='geometry':
+     self.assertEqual(windows[-1][1]['displayOutput'],{'x':0,'y':0,'width':1920,'height':1080})
+    self.assertEqual([call[1]['id'] for call in screen.named('closeByAppId')],[panel.APP])
+    self.assertEqual(len(screen.named('launch')),1)
+    self.assertEqual(screen.toasts,[])
+    self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+    screen.watchdog.terminate.assert_called_once_with()
+
+ def test_disconnected_saved_video_keeps_panel_open_and_restores_unchanged_geometry(self):
+  screen=Screen(self,loops=3)
+  def pause_then_disconnect(seconds):
+   screen.pause(seconds)
+   if seconds==.7:screen.video_fields={'connected':False}
+  with patch.object(panel,'pause',pause_then_disconnect):
+   panel.main()
+  target={'x':0,'y':135,'width':1440,'height':810}
+  self.assertEqual(len(screen.layouts),3,'A disconnection with stable geometry must keep the panel open')
+  self.assertTrue(all(layout['active'] and layout['video']==target for layout in screen.layouts))
+  self.assertEqual(screen.foreground_app,panel.APP)
+  windows=screen.named('setDisplayWindow')
+  self.assertEqual([call[1]['displayOutput'] for call in windows],[target,{'x':0,'y':0,'width':1920,'height':1080}])
+  self.assertEqual(windows[-1][1]['context'],'c1')
+  self.assertEqual(screen.display,{'x':0,'y':0,'width':3840,'height':2160})
+  self.assertEqual([call[1]['id'] for call in screen.named('closeByAppId')],[panel.APP])
+  self.assertEqual(len(screen.named('launch')),1)
+  self.assertEqual(screen.toasts,[])
+  self.assertEqual(json.loads(screen.paths['LAYOUT_STATE'].read_text()),{'active':False,'mode':'chat'})
+  screen.watchdog.terminate.assert_called_once_with()
+
  def test_sidebar_timeout_uses_an_isolated_clock(self):
   shared_clock=time.monotonic
   screen=Screen(self,loops=99)
@@ -301,7 +411,7 @@ class PanelLifecycle(unittest.TestCase):
   self.assertIn(code,' '.join(str(call) for call in screen.log.call_args_list))
 
  def test_refused_opening_names_the_cause_once_and_leaves_video_intact(self):
-  playback='TVLens : lance une vidéo YouTube pour ouvrir le panneau.'
+  playback='TVLens : lance une vidéo pour ouvrir le panneau.'
   crop='TVLens : la vidéo est rognée, le panneau ne peut pas s’ouvrir.'
   dimensions='TVLens : les dimensions de la vidéo sont invalides.'
   source='TVLens : la source vidéo est indisponible.'
@@ -330,7 +440,7 @@ class PanelLifecycle(unittest.TestCase):
  def test_no_video_names_the_missing_playback_once(self):
   screen=Screen(self)
   screen.status_videos=[]
-  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.',
    'TVLENS_PANEL_PLAYBACK_REQUIRED')
 
  def test_notification_exception_is_logged_without_escaping_or_retrying(self):
@@ -339,7 +449,7 @@ class PanelLifecycle(unittest.TestCase):
     screen=Screen(self)
     screen.video_fields={'connected':False}
     screen.toast_error=error
-    self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+    self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.',
      'TVLENS_PANEL_PLAYBACK_REQUIRED')
     self.assertIn('TVLENS_PANEL_NOTIFICATION_FAILED',' '.join(str(call) for call in screen.log.call_args_list))
 
@@ -347,7 +457,7 @@ class PanelLifecycle(unittest.TestCase):
   screen=Screen(self)
   screen.video_fields={'connected':False}
   screen.toast_reply={'returnValue':False,'errorText':'service refused'}
-  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.',
    'TVLENS_PANEL_PLAYBACK_REQUIRED')
   self.assertIn('TVLENS_PANEL_NOTIFICATION_FAILED',' '.join(str(call) for call in screen.log.call_args_list))
 
@@ -355,7 +465,7 @@ class PanelLifecycle(unittest.TestCase):
   screen=Screen(self)
   screen.video_fields={'connected':False}
   screen.toast_error=OSError('notification unavailable')
-  self.assert_opening_refused(screen,'TVLens : lance une vidéo YouTube pour ouvrir le panneau.',
+  self.assert_opening_refused(screen,'TVLens : lance une vidéo pour ouvrir le panneau.',
    'TVLENS_PANEL_PLAYBACK_REQUIRED')
   screen.video_fields={}
   screen.toast_error=None

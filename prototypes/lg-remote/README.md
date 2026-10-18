@@ -17,14 +17,17 @@ The managed loop grabs Magic Remote Builtin [0], forwarding unbound events to Bu
 `tvlens_mapper.py` ajoute une action locale au répartiteur amont inchangé. `panel.py` tourne dans un processus séparé :
 l’ouverture du panneau ne bloque pas la transmission des touches. L’app `org.tvlens.sidebarprobe` doit être installée.
 
-Le contrôleur accepte une vidéo YouTube connectée sur `MAIN` dont le rectangle `displayOutput` est entier, de dimensions
-strictement positives et contenu dans l’écran physique 3840×2160. Plein écran 16:9, bandes noires et petite fenêtre sont
+À l’ouverture, le contrôleur sélectionne la vidéo `MAIN` connectée de l’application au premier plan, identifiée par
+`applicationManager/getForegroundAppInfo`, quelle que soit cette application, sauf l’accueil `com.webos.app.home`.
+Son rectangle `displayOutput` doit être entier, de dimensions strictement positives et contenu dans l’écran physique
+3840×2160. Plein écran 16:9, bandes noires et petite fenêtre sont
 acceptés. La réduction conserve l’image source complète et son rapport ; la fermeture restaure le rectangle courant
 sauvegardé, avec son indicateur `fullScreen`. Les coordonnées logiques sont les coordonnées physiques divisées par deux,
 y compris les demi-pixels éventuels. Les sources rognées ou dont le rapport diffère de l’image décodée restent refusées.
 
-Autre application, lecture absente, source invalide ou rectangle de sortie invalide : une seule notification système
-nomme la cause en français, par exemple « TVLens : lance une vidéo YouTube pour ouvrir le panneau. ». Le refus laisse la
+Accueil, absence d’application au premier plan ou de vidéo `MAIN` connectée de cette application : un refus
+`TVLENS_PANEL_PLAYBACK_REQUIRED` affiche « TVLens : lance une vidéo pour ouvrir le panneau. ».
+Source invalide ou rectangle de sortie invalide : une seule notification système nomme aussi la cause en français. Le refus laisse la
 vidéo intacte et ne lance pas l’app. Le diagnostic technique reste dans `/tmp/tvlens-panel.log` ; un échec de notification
 est journalisé sans interrompre le gestionnaire de touches.
 
@@ -36,6 +39,8 @@ restaure le rectangle sauvegardé et affiche une seule notification : « TVLens 
 Le journal contient `TVLENS_PANEL_SIDEBAR_TIMEOUT` ; les échecs de fermeture ou de notification y sont consignés
 sans empêcher la restauration. L’attente et son expiration sont couvertes avec une horloge simulée, sans essai réel.
 
+Une fois ouvert, le panneau suit le contexte vidéo sauvegardé, même quand la sidebar est au premier plan ; les vidéos
+des autres applications ne sont pas retenues pour sa surveillance ou sa restauration.
 Un processus de récupération distinct couvre la mort inattendue du contrôleur. Un changement de contexte média ou de
 géométrie ferme le panneau ; les transitions publicitaires sans fermeture restent à traiter. Le verrou empêche les
 contrôleurs en double. L’ouverture ne démarre pas l’analyse, qui se lance depuis la sidebar ; le micro physique reste
@@ -43,7 +48,10 @@ routé vers LG.
 
 Ces dispositions et les refus sont couverts par l’écran simulé de `test_panel.py`. Cette correction n’a été ni déployée
 ni validée visuellement sur la TV. Après intégration, remplacer tout le répertoire `runtime` depuis un tag, avec sauvegarde,
-puis vérifier ouverture, fermeture et restauration sur une vidéo 16:9 et un autre format, ainsi que le message hors YouTube.
+puis vérifier ouverture, fermeture et restauration sur YouTube et le lecteur LG, ainsi que le refus sur l’accueil.
+Le cycle du lecteur LG (source 1920×1040, sortie physique 3840×2080 en (0, 40)) est couvert par simulation.
+Les applications protégées, dont Netflix et Prime, restent à observer sur la TV : leur réduction et la poursuite de la
+lecture derrière la sidebar ne sont pas validées. L’ouverture du panneau ne garantit pas la capture de leur contenu.
 
 ## Initial deployment and rollback
 

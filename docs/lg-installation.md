@@ -46,6 +46,12 @@ Le contrôleur local écoute sur `127.0.0.1:8788`, avec authentification. Son ho
 
 [Le module télécommande](../prototypes/lg-remote/README.md) décrit sa provenance, l’activation, la désactivation et les limites. Sur un autre modèle, vérifier le périphérique d’entrée et le code Rakuten avant activation. Le panneau gère réduction et restauration de la vidéo : ne pas lancer l’app seule en contournant ce contrôleur pour une session normale.
 
+L’ouverture accepte la vidéo `MAIN` connectée de l’application au premier plan, quelle qu’elle soit, sauf l’accueil LG.
+Sur l’accueil ou sans vidéo de cette application, le message est « TVLens : lance une vidéo pour ouvrir le panneau. ».
+Après ouverture, la surveillance suit le contexte vidéo sauvegardé même si la sidebar passe au premier plan.
+Le lecteur LG est couvert par simulation ; réduction et lecture derrière la sidebar sur Netflix ou Prime restent à
+valider sur la TV. Cette ouverture élargie ne valide pas la capture des contenus protégés.
+
 L’autostart est configuré et les relances ciblées ont été testées sur la référence ; un reboot complet TV/VPS n’a pas été validé par ces essais. Après redémarrage du serveur, la session mémoire est perdue et il faut redémarrer manuellement la capture.
 
 ## 5. Vérifier le parcours

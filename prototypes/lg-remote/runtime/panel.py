@@ -2,6 +2,7 @@
 import fcntl,json,os,signal,subprocess,time,uuid
 from pathlib import Path
 APP='org.tvlens.sidebarprobe'
+HOME_APP='com.webos.app.home'
 stop=False
 GENERATION=Path('/tmp/tvlens-panel-generation')
 WATCHDOG_TIMEOUT=20
@@ -21,7 +22,7 @@ TVLENS_PANEL_OUTPUT_INVALID='TVLENS_PANEL_OUTPUT_INVALID'
 TVLENS_PANEL_NOTIFICATION_FAILED='TVLENS_PANEL_NOTIFICATION_FAILED'
 TVLENS_PANEL_SIDEBAR_TIMEOUT='TVLENS_PANEL_SIDEBAR_TIMEOUT'
 TVLENS_PANEL_SIDEBAR_CLOSE_FAILED='TVLENS_PANEL_SIDEBAR_CLOSE_FAILED'
-PLAYBACK_MESSAGE='TVLens : lance une vidéo YouTube pour ouvrir le panneau.'
+PLAYBACK_MESSAGE='TVLens : lance une vidéo pour ouvrir le panneau.'
 OUTPUT_MESSAGE='TVLens : le rectangle vidéo est invalide ou dépasse l’écran.'
 pause=time.sleep
 clock=time.monotonic
@@ -70,11 +71,22 @@ def call(endpoint,payload):
     r=subprocess.run(['/usr/bin/luna-send','-t','1','-w','3000','luna://'+endpoint,json.dumps(payload)],capture_output=True,timeout=5)
     return parse_reply(r.stdout.decode('utf-8','replace'),r.stderr.decode('utf-8','replace'))
 
-def video():
-    try:
-        return next(v for v in call('com.webos.service.videooutput/getStatus',{})['video'] if v['sink']=='MAIN')
-    except StopIteration as error:
-        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'No MAIN video reported',PLAYBACK_MESSAGE) from error
+def foreground_video():
+    app_id=call('com.webos.applicationManager/getForegroundAppInfo',{}).get('appId')
+    if not app_id or app_id==HOME_APP:
+        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'No foreground playback application',PLAYBACK_MESSAGE)
+    videos=call('com.webos.service.videooutput/getStatus',{}).get('video',[])
+    for candidate in videos:
+        if candidate.get('sink')=='MAIN' and candidate.get('connected') and candidate.get('appId')==app_id:
+            return candidate
+    raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'No connected MAIN video for foreground application',PLAYBACK_MESSAGE)
+
+def saved_video(context):
+    videos=call('com.webos.service.videooutput/getStatus',{}).get('video',[])
+    for candidate in videos:
+        if candidate.get('sink')=='MAIN' and candidate.get('context')==context:
+            return candidate
+    return None
 
 def reported_source(v):
     """Keep Luna's source coordinate space across adaptive decoder resolutions.
@@ -114,8 +126,8 @@ def logical_output(v):
             for key,value in zip(('x','y','width','height'),values)}
 
 def rectangles(v):
-    if v.get('appId')!='youtube.leanback.v4' or not v.get('connected'):
-        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'YouTube playback required',PLAYBACK_MESSAGE)
+    if v.get('appId')==HOME_APP or not v.get('connected'):
+        raise PanelRefusal(TVLENS_PANEL_PLAYBACK_REQUIRED,'Connected playback required',PLAYBACK_MESSAGE)
     output=logical_output(v)
     source=reported_source(v)
     restore={'sink':'MAIN','context':v['context'],'fullScreen':v['fullScreen'],
@@ -142,7 +154,7 @@ def restore_original(saved):
     try:
         call('com.webos.surfacemanager/closeByAppId',{'id':APP})
     finally:
-        if video().get('context')==saved['context']:
+        if saved_video(saved['context']) is not None:
             result=call('com.webos.service.videooutput/display/setDisplayWindow',saved)
             print('restore',json.dumps(result),flush=True)
 
@@ -174,7 +186,7 @@ def main():
     except BlockingIOError:return
     signal.signal(signal.SIGTERM,on_stop);signal.signal(signal.SIGINT,on_stop)
     try:
-        saved,target=rectangles(video())
+        saved,target=rectangles(foreground_video())
     except PanelRefusal as error:
         try:
             notify_refusal(error)
@@ -203,8 +215,8 @@ def main():
                 abandon_unshown_sidebar()
             return
         while not stop:
-            v=video()
-            if v.get('context')!=saved['context'] or v['displayOutput']!=physical_rect(target):
+            v=saved_video(saved['context'])
+            if v is None or v['displayOutput']!=physical_rect(target):
                 print('Media transition: closing panel',flush=True);break
             windows=call('com.webos.surfacemanager/getForegroundWindowInfo',{})
             listed=[w.get('appId') for w in windows.get('windows',[])]

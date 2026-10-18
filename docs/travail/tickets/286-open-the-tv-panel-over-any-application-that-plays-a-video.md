@@ -1,7 +1,7 @@
 ---
 id: T286
 titre: Open the TV panel over any application that plays a video
-statut: a-faire
+statut: termine
 bloque_par: T285
 adr: non
 installe: non
@@ -72,3 +72,51 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : les tickets TV T285 à T288 passent avant T283, « de façon prioritaire ».
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T286/exploration.md`, aucun écart prévu.
+  Sélection initiale par application au premier plan, puis surveillance/restauration par contexte sauvegardé ; essais simulés uniquement.
+- 19/10, Codex : test d’acceptation LG écrit avant correction. Commande
+  `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_lg_player_selects_its_connected_main_video_and_restores_with_sidebar_in_foreground` :
+  rouge observé sur l’absence de lancement, puis vert après sélection de la vidéo connectée et suivi du contexte.
+  Sorties dans `lg-player-red.log` et `lg-player-green.log` du dossier d’état.
+- 19/10, Codex : commande
+  `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_home_with_preview_and_live_tv_refuses_opening_without_changing_video PanelLifecycle.test_missing_foreground_application_refuses_even_with_a_connected_video` :
+  rouge observé sur le texte affiché, corrigé avec le message générique. Sortie rouge dans `playback-red.log`.
+- 19/10, Codex : `python3 prototypes/lg-remote/test_panel.py` : 33 tests réussis, dont les transitions de contexte,
+  déconnexion, disparition et géométrie, et les applications sans liste autorisée. Documentation du panneau actualisée.
+  Sortie dans `panel-final.log` ; avertissement de ressource sur le scénario de verrou concurrent à examiner séparément.
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert (`check-changed.log`) ; `git diff --check` : code 0.
+  L’avertissement de fichier de verrou non fermé est reproduit sur les deux fichiers extraits de `HEAD`, avec
+  `python3 <dossier-temporaire>/test_panel.py PanelLifecycle.test_panel_owner_lock_prevents_a_second_launch` :
+  1 test réussi, même avertissement (`baseline-lock-warning.log`). Réserve préexistante, hors périmètre.
+- 19/10, Codex : `node scripts/check.mjs` : vert, 2 901 tests JavaScript (153 fichiers) et 47 tests Python réussis
+  (`check-full.log`). `git diff --check` final : code 0. Aucun essai réel ni déploiement ; contrôle matériel réservé à T289.
+  Verdict `TERMINÉ` dans `.harness-state/tickets/T286/verdict.json` ; aucune modification du harnais, aucun commit ni push.
+- 19/10, Codex, reprise après relecture 1 : les trois constats dans le périmètre sont acceptés. Le filtre `connected`
+  après ouverture sera retiré, avec test dédié avant correction ; sélection initiale et recherche par contexte seront
+  séparées et l’identifiant de l’accueil nommé. Plan et absence de contestation consignés dans le dossier d’état.
+- 19/10, Codex, correction :
+  `python3 prototypes/lg-remote/test_panel.py PanelLifecycle.test_disconnected_saved_video_keeps_panel_open_and_restores_unchanged_geometry` :
+  rouge observé sur `1 != 3` tours de surveillance, puis vert après retrait du filtre `connected` pour le contexte
+  sauvegardé. Journaux `correction-1-disconnected-red.log` et `correction-1-disconnected-green.log`.
+  Le test remplace l’ancien sous-cas erroné ; les refus d’ouverture sur déconnexion restent couverts.
+- 19/10, Codex, correction : sélection initiale et recherche par contexte séparées en `foreground_video()` et
+  `saved_video(context)` ; constante `HOME_APP` partagée par les deux gardes d’accueil.
+  `python3 prototypes/lg-remote/test_panel.py` : 34 tests réussis (`correction-1-panel.log`).
+  `node scripts/check.mjs --changed` : vert (`correction-1-check-changed.log`) ; `git diff --check` : code 0.
+- 19/10, Codex, fin de correction : `node scripts/check.mjs` : vert, 2 901 tests JavaScript dans 153 fichiers et
+  47 tests Python réussis (`correction-1-check-full.log`). `git diff --check` final : code 0.
+  Les constats 1 à 3 sont corrigés sans contestation ; nouveau verdict `TERMINÉ` dans le dossier d’état.
+  Les constats hors périmètre restent transmis par la boucle depuis la relecture. Aucun essai TV, commit ou push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T286/relecture-2.md : 1. `prototypes/lg-remote/README.md:92` — hors périmètre (repris de la relecture 1)
+
+  - **Le problème.** « Offset crops, mismatched aspect ratios, invalid dimensions, foreign apps … remain rejected » est faux depuis ce ticket pour « foreign apps ».
+  - **Pourquoi hors périmètre.** La phrase est dans la section historique « Adaptive YouTube resolution », alors que le ticket n'autorise que la section « TV-local action ». La correction ne la touche pas.
+  - **Attendu.** Une réserve, puis une note datée dans un ticket de documentation.
+- .harness-state/tickets/T286/relecture-2.md : 2. `prototypes/lg-remote/runtime/panel.py:186` — hors périmètre (repris de la relecture 1)
+
+  - **Le problème.** `except BlockingIOError:return` laisse le fichier de verrou ouvert. On voit le `ResourceWarning` dans `correction-1-panel.log`, sur `test_panel_owner_lock_prevents_a_second_launch`.
+  - **Pourquoi hors périmètre.** Le problème existait avant ce ticket : il est reproduit sur `HEAD` dans `baseline-lock-warning.log`. Le ticket ne couvre pas le verrou, et la correction ne touche pas cette ligne.
+  - **Attendu.** Une réserve.
