@@ -2,7 +2,7 @@
 id: T224
 titre: Deliver the Mac window state from the same projection
 statut: a-faire
-bloque_par: T219, T210, T195, T233, T267, T268, T284
+bloque_par: T219, T210, T195, T233, T267, T268, T284, T290
 adr: oui
 installe: non
 harnais: non
@@ -86,3 +86,4 @@ nommée, jamais un motif à réécrire pour masquer une régression de câblage.
   exige que le propriétaire ne regarde pas : il se fait à part, sans retenir la phase Mémoire.
 - 18/10, propriétaire : les réglages des modèles locaux (T282, T283) et leur contrôle T284 passent avant ce
   ticket.
+- 19/10, orchestrateur : attend aussi T290, l'échec intermittent d'un test des publications de passages.
