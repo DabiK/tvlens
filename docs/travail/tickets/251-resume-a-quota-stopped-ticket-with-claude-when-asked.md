@@ -2,7 +2,7 @@
 id: T251
 titre: Resume a quota-stopped ticket with Claude when asked
 statut: a-faire
-bloque_par: T231
+bloque_par: T231, T260
 adr: oui
 installe: non
 harnais: oui
@@ -89,3 +89,6 @@ est précisément le livrable. La seule option demandée autorise cette reprise 
 elle n'assouplit jamais le démarrage ordinaire. Relire les interfaces réelles de T229 et T231.
 
 ## Journal
+
+- 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Dépendance d'ordre ajoutée
+  (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.

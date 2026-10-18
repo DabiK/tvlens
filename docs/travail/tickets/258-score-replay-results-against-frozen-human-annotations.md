@@ -2,7 +2,7 @@
 id: T258
 titre: Score replay results against frozen human annotations
 statut: a-faire
-bloque_par: T257
+bloque_par: T257, T262
 adr: non
 installe: non
 harnais: non
@@ -91,3 +91,7 @@ retient la phase 2. Ni 8/10 historique ni quelques extraits ne prédisent la qua
 français ou des films. Les arbitrages produit après mesure restent au propriétaire, hors de ce ticket.
 
 ## Journal
+
+- 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
+  T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T262`), sans lien de code ; la retirer rend l'ordre par
+  numéro.

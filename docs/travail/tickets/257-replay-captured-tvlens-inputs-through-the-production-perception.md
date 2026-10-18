@@ -2,7 +2,7 @@
 id: T257
 titre: Replay captured TVLens inputs through the production perception
 statut: a-faire
-bloque_par: T255
+bloque_par: T255, T265
 adr: non
 installe: non
 harnais: non
@@ -135,3 +135,7 @@ pas les internes de Mémoire. La copie finale reste postérieure à T227, répé
 avec `hackathon-rc` en repli ; T254 retient la phase 2. Ce runner ne prouve pas une tenue de trente minutes.
 
 ## Journal
+
+- 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
+  T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T265`), sans lien de code ; la retirer rend l'ordre par
+  numéro.

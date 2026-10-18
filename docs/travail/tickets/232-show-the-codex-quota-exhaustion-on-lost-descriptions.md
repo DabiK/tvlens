@@ -2,7 +2,7 @@
 id: T232
 titre: Code the Codex quota exhaustion and keep it on the lost description
 statut: a-faire
-bloque_par: T227
+bloque_par: T227, T260
 adr: oui
 installe: non
 harnais: non
@@ -105,3 +105,6 @@ consigner leur provenance ; une fixture supposée est nommée comme telle. Sans 
 le message sans date s'applique. T227 est le dernier successeur de phase 1 des fichiers Mémoire.
 
 ## Journal
+
+- 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Son suivant T252 suit.
+  Dépendance d'ordre ajoutée (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.
