@@ -127,7 +127,10 @@ function watchInterruption(state, signal, interruption, effects) {
 
 function turnResult(state, active, raw, timing, effects) {
   active.signal.throwIfAborted();
-  const result = JSON.parse(raw);
+  const result = { ...JSON.parse(raw) };
+  // L'identité et les mesures appartiennent à l'adaptateur, jamais au JSON du modèle.
+  for (const key of ["backend", "providerTimings", "clientTimings", "modelState"])
+    delete result[key];
   return {
     ...result,
     audit: active.audit,

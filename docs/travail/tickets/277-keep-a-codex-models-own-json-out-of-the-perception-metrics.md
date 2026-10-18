@@ -1,7 +1,7 @@
 ---
 id: T277
 titre: Keep a Codex model's own JSON out of the perception metrics
-statut: a-faire
+statut: termine
 bloque_par: T267
 adr: non
 installe: non
@@ -59,3 +59,28 @@ Aucune décision n'est attendue.
 
 ## Journal
 
+- Exploration : fuite confirmée à la lecture de `turnResult`, en amont de `reportedMetrics` ; correction limitée aux quatre clés
+  réservées dans le JSON du modèle. Détails et absence d'écart consignés dans `.harness-state/tickets/T277/`.
+- Rouge observé : `node --test --test-name-pattern='visual metrics discard model-claimed' tests/codex-thread-rotation.test.cjs`
+  échoue sur l'assertion d'absence de `backend` inventé (`true !== false`), après validation de l'observation et du résumé.
+  Sortie conservée dans `test-red.log` du dossier d'état.
+- Vert observé : `node --test tests/codex-thread-rotation.test.cjs tests/codex-session-run.test.cjs tests/local-vlm-agent.test.cjs`
+  réussit, 47 tests sur 47. Les tests locaux restent inchangés ; sortie dans `test-green.log`.
+- `node scripts/check.mjs --changed` : vert (règles, format, lint, gel, cliquet, 16 tests sur 16) ;
+  sortie dans `check-changed.log`. `git diff --check` réussit également.
+- `node scripts/check.mjs` : vert (151 fichiers JavaScript, 2 817 tests sur 2 817 ; 47 tests Python réussis ;
+  règles, format, lint, gel et cliquet verts). Sortie conservée dans `check-full.log`.
+- Livraison : seules les quatre clés réservées sont retirées à la frontière JSON Codex ; observation, sujet, résumé et
+  incertitudes restent inchangés. Aucun changement du chemin local, des schémas ou du harnais. Verdict `TERMINÉ` écrit
+  dans `.harness-state/tickets/T277/verdict.json` ; relecture et intégration laissées à la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T277/relecture-1.md : 1. `adapters/codex-perception.cjs:317` — hors périmètre
+  - **Problème :** la correction dans `turnResult` protège aussi les métriques de diagnostic de l'inspection (`onDiagnostic?.({ metrics: reportedMetrics(result) })`). Mais aucun test ne le prouve par le transport Codex doublé. Le seul nouveau test passe par `observeVisual`. Si quelqu'un déplaçait un jour le filtre de `turnResult` vers `observeVisual`, l'inspection se remettrait à publier les clés inventées sans qu'aucun test ne casse.
+  - **Attendu :** un cas d'inspection où le modèle doublé revendique les quatre clés et où `onDiagnostic` ne les reçoit pas.
+  - **Pourquoi hors périmètre :** le ticket n'autorise à modifier qu'un seul test et ne demande que le chemin visuel.
+- .harness-state/tickets/T277/relecture-1.md : 2. `adapters/codex-session-run.cjs:132` avec `adapters/codex-perception.cjs:95-98` — hors périmètre
+  - **Problème :** les quatre clés retirées dans `turnResult` doivent rester identiques à celles que `reportedMetrics` publie. Rien ne les relie : si `reportedMetrics` publie une cinquième mesure, la fuite revient pour cette clé.
+  - **Attendu :** une liste unique des clés propres à l'adaptateur, ou un test qui les relie, sans faire dépendre le module générique des tours de la perception.
+  - **Pourquoi hors périmètre :** le ticket fixe explicitement « ces quatre clés ».

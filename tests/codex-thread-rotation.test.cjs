@@ -373,6 +373,31 @@ test('transcribe marks a failed transcription explicitly; the legacy combined pa
   }
 });
 
+test('visual metrics discard model-claimed measurements through the Codex transport while preserving the observation', async (t) => {
+  const claimed = {
+    backend: { kind: 'invented', model: 'invented' },
+    providerTimings: { loadMs: 123, evalMs: 456 },
+    clientTimings: { queueMs: 789, requestMs: 1234 },
+    modelState: 'unknown',
+  };
+  const content = { ...observation, uncertainty: 'Identités non confirmées.' };
+  const f = fixture({ answer: () => ({ ...content, ...claimed }) });
+  const perception = new CodexPerception({ agent: new CodexAnalysisAgent({ client: f.client }), sessionId: 's' });
+  t.after(() => perception.close());
+  const result = await perception.observeVisual(segment(1));
+  assert.deepEqual(result.observation, {
+    topic: content.topic,
+    topicContinuity: content.continuity,
+    summary: content.summary,
+    visual: content.visual,
+    transcript: '',
+    audio: 'Paroles indisponibles.',
+    uncertainty: content.uncertainty,
+  });
+  assert.equal(result.topicSummary, content.topicSummary);
+  for (const key of Object.keys(claimed)) assert.equal(key in result.metrics, false, key);
+});
+
 test('visual metrics distinguish a cold connection, warm turns, context rotation and reconnection through the real Codex agent', async (t) => {
   let time = 0;
   t.mock.method(Date, 'now', () => time);
