@@ -15,12 +15,23 @@ class OllamaQuestionAgent {
   #now;
   #setTimer;
   #clearTimer;
+  #onRequest;
+  #transport;
   constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, ...options } = {}) {
-    this.#client = new OllamaHttpClient(options);
+    const fetchImpl = options.fetchImpl || fetch;
+    this.#transport = options.fetchImpl ? 'injected' : 'http';
+    this.#client = new OllamaHttpClient({ ...options, fetchImpl: (...args) => {
+      this.#onRequest?.();
+      return fetchImpl(...args);
+    } });
     this.#now = now;
     this.#setTimer = setTimer;
     this.#clearTimer = clearTimer;
     this.tail = Promise.resolve();
+  }
+
+  get identity() {
+    return Object.freeze({ role: 'questions', ...this.#client.backend, temperature: this.#client.temperature, transport: this.#transport });
   }
 
   prepare() { return Promise.resolve(); }
@@ -33,8 +44,16 @@ class OllamaQuestionAgent {
   }
 
   answer(input) {
+    let requests = 0;
+    const report = () => {
+      try { input.onProviderRequest?.(requests); } catch {
+        // Une panne du diagnostic ne change ni l'envoi ni la réponse.
+      }
+    };
+    report();
     const signal = AbortSignal.any([this.#generation.signal, ...(input.signal ? [input.signal] : [])]);
-    const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal }));
+    const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal,
+      reportRequest: () => { requests++; report(); } }));
     this.tail = pending;
     return pending;
   }
@@ -46,8 +65,9 @@ class OllamaQuestionAgent {
       code: TVLENS_OLLAMA_QUESTION_TIMEOUT,
     })), QUESTION_TIMEOUT_MS);
     const signal = AbortSignal.any([input.signal, deadline.signal]);
+    this.#onRequest = input.reportRequest;
     try { return await this.infer({ ...input, signal }); }
-    finally { this.#clearTimer(timer); }
+    finally { this.#onRequest = undefined; this.#clearTimer(timer); }
   }
 
   async infer(input) {

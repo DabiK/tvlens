@@ -23,8 +23,7 @@ function questionTimeout(value) {
   return value;
 }
 
-function createQuestionAgent({ config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota }) {
-  const backend = config.questionsBackend ?? 'codex';
+function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota }) {
   if (!['codex', 'local'].includes(backend))
     throw domainError(TVLENS_QUESTIONS_BACKEND_INVALID, 'Backend de questions inconnu (codex ou local).');
   if (backend === 'local') validateOllamaConfig(config.localQuestions);
@@ -32,6 +31,12 @@ function createQuestionAgent({ config, agent, CodexAgent, LocalAgent, codexBinar
   if (backend === 'local') return new LocalAgent(config.localQuestions);
   return new CodexAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome,
     model: selectedModels?.codexModel, reasoningEffort: config.chatReasoningEffort || 'low', quota });
+}
+
+function questionAgentOrigin(backend, agent, CodexAgent, LocalAgent) {
+  if (agent) return 'injected';
+  const standard = backend === 'local' ? LocalAgent === OllamaQuestionAgent : CodexAgent === CodexSessionAgent;
+  return standard ? 'composed' : 'substituted';
 }
 
 // Both hosts supply the current session; a consultation kept by the question takes precedence over its view.
@@ -45,12 +50,14 @@ function createConversationRuntime({
   selectedModels,
   quota,
   onChange,
+  onTrace = trace,
   onPublicationError = createPublicationDiagnostic(),
   // Late-bound by the host: the surveillance runtime is composed after the conversation.
   getInstruction,
 }) {
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
-  const conversationAgent = createQuestionAgent({ config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });
+  const backend = config.questionsBackend ?? 'codex';
+  const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
     if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)
@@ -84,7 +91,9 @@ function createConversationRuntime({
       onChange,
       onPublicationError,
       timeoutMs,
-      onTrace: trace,
+      configuredBackend: backend,
+      agentOrigin: questionAgentOrigin(backend, agent, CodexAgent, LocalAgent),
+      onTrace,
       serializeError: safeError,
       ...(typeof getInstruction === "function" ? { getInstruction } : {}),
     }),

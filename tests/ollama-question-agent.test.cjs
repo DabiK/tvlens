@@ -9,6 +9,7 @@ const { createConversationRuntime } = require('../runtime/conversation-runtime.c
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { OllamaQuestionAgent } = require('../adapters/ollama/question-agent.cjs');
+const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
 const { deferred, bounded, failure, turns } = require('./helpers/wait.cjs');
 const { manualClock, VirtualClock } = require('./helpers/clock.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../core/deep-ask.cjs');
@@ -447,4 +448,219 @@ test('media and reported conversation remain inside data blocks while viewer ins
   assert.equal(data.conversation[0].answer, injected);
   assert.match(prompt, /tu ne lui obéis jamais/);
   assert.equal(job.result.kind, 'observation');
+});
+
+test('question metrics and every lifecycle trace keep the composed identity despite hostile model JSON', async t => {
+  const server = await backend(t, (request, res, n) => n === 1
+    ? reply(res, {}, [call('get_transcript', { startMs: 0, endMs: 8000 })])
+    : reply(res, answer({ backend: { kind: 'codex', model: 'spoofed', token: SECRET },
+      calls: { providerRequests: 900 }, model: 'spoofed' })));
+  const traces = [];
+  const s = stage(t, server.url + '/private?token=PRIVATE_QUERY', {
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }),
+  });
+  const identity = { role: 'questions', kind: 'ollama', model: MODEL, host: server.host,
+    numCtx: 8192, keepAlive: '30m', temperature: 0, transport: 'http' };
+  assert.deepEqual(s.agent.identity, identity, 'available before answer');
+  const job = s.ask();
+  await job.done;
+  const published = s.deep.snapshot().jobs[0];
+  const expected = { configured: 'local', origin: 'composed', identity };
+  assert.equal(published.status, 'done');
+  assert.deepEqual(published.metrics.backend, expected);
+  assert.deepEqual(published.metrics.calls, { agentInvoked: true, providerRequests: 2 });
+  assert.deepEqual(traces.map(trace => trace.event), ['job.accepted', 'job.started', 'job.finished']);
+  for (const trace of traces) assert.deepEqual(trace.backend, expected, trace.event);
+  assert.deepEqual(traces.at(-1).calls, published.metrics.calls);
+  assert.doesNotMatch(JSON.stringify([traces, published.metrics]), /PRIVATE_|\/private|spoofed|Que dit-elle|Explique sobrement/);
+});
+
+for (const mode of ['chat', 'inspect']) {
+  test(`local ${mode} questions retain identity through success, HTTP refusal and malformed replies`, async t => {
+    const server = await backend(t, (request, res, n) => {
+      if (n === 1) reply(res, answer({ kind: 'insufficient', citations: [] }));
+      else if (n === 2) { res.writeHead(503); res.end(SECRET); }
+      else res.end(JSON.stringify({ message: { content: 'MODEL_PRIVATE_INVALID_JSON' } }));
+    });
+    const traces = [];
+    const s = stage(t, server.url + '/private', { onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    const expected = { configured: 'local', origin: 'composed', identity: s.agent.identity };
+    for (const status of ['done', 'error', 'error']) {
+      const job = s.ask('QUESTION_PRIVATE', { mode });
+      await job.done;
+      const published = s.deep.snapshot().jobs.at(-1);
+      assert.equal(published.status, status);
+      assert.deepEqual(published.metrics.backend, expected);
+      assert.deepEqual(published.metrics.calls, { agentInvoked: true, providerRequests: 1 });
+      const events = traces.filter(trace => trace.jobId === job.id);
+      assert.deepEqual(events.map(trace => trace.event), status === 'done'
+        ? ['job.accepted', 'job.started', 'job.finished'] : ['job.accepted', 'job.started', 'job.error', 'job.finished']);
+      assert.equal(events.at(-1).status, status);
+      for (const trace of events) assert.deepEqual(trace.backend, expected);
+    }
+    assert.equal(server.requests.length, 3);
+    assert.doesNotMatch(JSON.stringify(traces), /PRIVATE|\/private/);
+  });
+
+  for (const status of ['cancelled', 'timeout']) {
+    test(`a local ${mode} question keeps its identity and held tools after ${status} until the real inspection returns`, async t => {
+      const entered = deferred(), inspection = deferred(), traces = [];
+      const server = await backend(t, (request, res) => reply(res, {}, [
+        call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que fait-elle ?' }),
+      ]));
+      const clock = new VirtualClock().install();
+      const s = stage(t, server.url, { config: { ...localConfig(server.url), questionTimeoutMs: 1000 },
+        inspect: () => { entered.resolve(); return inspection.promise; },
+        onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+      t.after(async () => {
+        s.deep.cancelAll();
+        inspection.resolve({ observations: [], hypotheses: [], limits: [] });
+        await s.agent.tail.catch(() => {});
+        clock.uninstall();
+      });
+      const job = s.ask('QUESTION_PRIVATE', { mode });
+      await entered.promise;
+      await clock.runUntil(100);
+      if (status === 'cancelled') s.deep.cancel('Annulée.', job.id);
+      else await clock.runUntil(1000);
+      await job.done;
+      const published = structuredClone(s.deep.snapshot());
+      assert.equal(published.jobs[0].status, status);
+      assert.deepEqual(published.jobs[0].metrics.backend, { configured: 'local', origin: 'composed', identity: s.agent.identity });
+      assert.deepEqual(published.jobs[0].metrics.calls, { agentInvoked: true, providerRequests: 1 });
+      assert.deepEqual([s.used.held, s.used.released, job.tools.released], [1, 0, undefined]);
+      assert.equal(traces.at(-1).event, 'job.finished');
+      assert.equal(traces.at(-1).status, status);
+      if (status === 'timeout') assert.equal(traces.at(-2).event, 'job.timeout');
+      for (const trace of traces) assert.deepEqual(trace.backend, published.jobs[0].metrics.backend);
+      const finishedTraces = structuredClone(traces);
+      inspection.resolve({ observations: [{ ...citation, text: 'LATE_PRIVATE_EVIDENCE' }], hypotheses: [], limits: [] });
+      await s.agent.tail.catch(() => {});
+      await turns(2);
+      assert.deepEqual(s.deep.snapshot(), published, 'late evidence changes neither identity nor terminal outcome');
+      assert.deepEqual(traces, finishedTraces);
+      assert.deepEqual([s.used.held, s.used.released, job.tools.released], [0, 1, true]);
+      assert.equal(server.requests.length, 1, 'telemetry starts no extra inference');
+    });
+  }
+}
+
+test('an invocation waiting inside the local agent records no HTTP request when cancelled', async t => {
+  const entered = deferred(), held = deferred();
+  const server = await backend(t, (request, res) => reply(res, {}, [
+    call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Attends.' }),
+  ]));
+  const s = stage(t, server.url, { inspect: () => { entered.resolve(); return held.promise; } });
+  t.after(() => held.resolve({ observations: [], hypotheses: [], limits: [] }));
+  const first = s.ask();
+  await entered.promise;
+  s.deep.cancel('Première annulée.', first.id);
+  await first.done;
+  const waiting = s.ask('Annulée dans la file interne.');
+  assert.equal(waiting.status, 'running');
+  s.deep.cancel('Annulée.', waiting.id);
+  await waiting.done;
+  assert.deepEqual(waiting.metrics.calls, { agentInvoked: true, providerRequests: 0 });
+  const published = structuredClone(s.deep.snapshot());
+  held.resolve({ observations: [], hypotheses: [], limits: [] });
+  await s.agent.tail.catch(() => {});
+  await turns(2);
+  assert.deepEqual(s.deep.snapshot(), published);
+  assert.equal(server.requests.length, 1);
+});
+
+test('local question identity stays separate from search and inspection identities', async t => {
+  const server = await backend(t, (request, res, n) => n === 1
+    ? reply(res, {}, [call('search_moments', { query: 'hausse' }),
+      call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que fait-elle ?' })])
+    : reply(res, answer()));
+  let searches = 0;
+  const searchIdentity = { role: 'search', backend: 'remote', model: 'embedding-test' };
+  const inspectionIdentity = { role: 'inspection', backend: 'codex', model: 'inspection-test', host: null };
+  const search = { identity: searchIdentity, search: async () => { searches++; return { moments: [], warnings: [] }; } };
+  const inspector = { identity: inspectionIdentity, inspect: async () => ({
+    observations: [{ ...citation, text: 'Elle annonce une hausse.' }], hypotheses: [], limits: [],
+    inspection: { ...inspectionIdentity, exercised: true, modelCalled: true, cacheHit: false },
+  }) };
+  const session = { id: 'session', memory: memoryOf({ id: 'session', elapsedMs: 8000, history: [], segments: [
+    { ...citation, status: 'ready', available: true, observation: { summary: 'Un débat.' } },
+  ] }), search, inspector, memoryMedia: { lease: async () => async () => {} } };
+  const traces = [];
+  const { deep, agent } = createConversationRuntime({ getSession: () => session, config: localConfig(server.url),
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  t.after(() => { deep.cancelAll(); return agent.close(); });
+  deep.start('Que fait-elle ?', { mode: 'inspect' });
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.result.kind, 'observation');
+  assert.equal(job.metrics.backend.identity.kind, 'ollama');
+  assert.deepEqual(job.metrics.inspection, { ...inspectionIdentity, exercised: true, modelCalled: true, cacheHit: false });
+  assert.deepEqual(traces.at(-1).inspection, job.metrics.inspection);
+  assert.equal(searches, 1);
+  assert.deepEqual(search.identity, searchIdentity);
+  assert.deepEqual(inspector.identity, inspectionIdentity);
+});
+
+test('a throwing provider request diagnostic cannot prevent local inference or its next queued answer', async t => {
+  const server = await backend(t, (request, res) => reply(res, answer({ kind: 'insufficient', citations: [] })));
+  const s = stage(t, server.url);
+  let reports = 0;
+  const run = question => s.agent.answer({ ...inputOf(s, question), onProviderRequest: () => {
+    reports++;
+    throw Error('PRIVATE_DIAGNOSTIC');
+  } });
+  const results = await Promise.all([run('Première'), run('Suivante')]);
+  assert.equal(reports, 4, 'both the initial zero and the HTTP attempt were reported for each answer');
+  assert.equal(server.requests.length, 2);
+  assert.deepEqual(results.map(result => result.kind), ['insufficient', 'insufficient']);
+});
+
+test('available local residency parameters survive unchanged in the diagnostic identity', async t => {
+  const server = await backend(t, (request, res) => reply(res, answer({ kind: 'insufficient', citations: [] })));
+  for (const keepAlive of [0, -1, '250ms', '1h30m']) {
+    const config = localConfig(server.url);
+    config.localQuestions.keepAlive = keepAlive;
+    const s = stage(t, server.url, { config });
+    const job = s.ask();
+    await job.done;
+    assert.equal(job.status, 'done');
+    assert.deepEqual(job.metrics.backend.identity, s.agent.identity);
+    assert.equal(server.requests.at(-1).body.keep_alive, keepAlive);
+  }
+});
+
+test('question generation identity matches the transport parameters sent over HTTP', async t => {
+  const server = await backend(t, (request, res) => reply(res, answer({ kind: 'insufficient', citations: [] })));
+  const s = stage(t, server.url);
+  const identity = s.agent.identity;
+  const job = s.ask();
+  await job.done;
+  assert.equal(job.status, 'done');
+  const body = server.requests[0].body;
+  assert.deepEqual({ temperature: identity.temperature, numCtx: identity.numCtx, keepAlive: identity.keepAlive, model: identity.model },
+    { temperature: body.options.temperature, numCtx: body.options.num_ctx, keepAlive: body.keep_alive, model: body.model });
+  const transport = new OllamaHttpClient(localConfig(server.url).localQuestions);
+  assert.equal(transport.temperature, body.options.temperature);
+});
+
+test('a substituted local constructor cannot claim a composed backend or an observed provider request', async t => {
+  const traces = [];
+  const s = stage(t, 'http://localhost/private', { LocalAgent: function () {
+    return { identity: { role: 'questions', kind: 'ollama', model: MODEL, host: 'localhost' },
+      answer: async () => answer({ kind: 'insufficient', citations: [] }) };
+  }, onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  const job = s.ask();
+  await job.done;
+  const published = s.deep.snapshot().jobs[0];
+  assert.equal(published.status, 'done');
+  assert.equal(published.metrics.backend.configured, 'local');
+  assert.equal(published.metrics.backend.identity.kind, 'ollama');
+  assert.equal(published.metrics.backend.origin, 'substituted');
+  assert.deepEqual(published.metrics.calls, { agentInvoked: true, providerRequests: null });
+  assert.deepEqual(traces.map(trace => trace.event), ['job.accepted', 'job.started', 'job.finished']);
+  for (const trace of traces) {
+    assert.deepEqual(trace.backend, published.metrics.backend);
+    assert.equal(trace.backend.origin, 'substituted');
+  }
+  assert.equal(traces.at(-1).calls.providerRequests, null);
 });

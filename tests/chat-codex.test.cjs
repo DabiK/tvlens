@@ -40,3 +40,119 @@ test('unrelated or out-of-range citations are rejected, even when memory exists'
  const service=new DeepAsk({makeTools:()=>tools,agent:{answer:async()=>({kind:'observation',answer:'Inventé',citations:[{id:'foreign',startMs:0,endMs:100}],limits:[]})}});
  service.start('Sujet ?', {mode:'chat'});await service.jobs[0].done;assert.equal(service.jobs[0].result.kind,'insufficient');
 });
+
+test('explicit Codex with a doubled client exposes identity before refusal and keeps unknown defaults unknown', async () => {
+  const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
+  const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+  const { memoryOf } = require('./helpers/memory-consultation.cjs');
+  for (const model of ['gpt-6-sol', '']) {
+    const client = { model, reasoningEffort: 'low', authHome: '/PRIVATE_ACCOUNT',
+      prepare: async () => { throw Object.assign(Error('Refus.'), { code: 'PROVIDER_REFUSED' }); } };
+    const agent = new CodexSessionAgent({ client });
+    const identity = { role: 'questions', kind: 'codex', model: model || null, host: null,
+      reasoningEffort: 'low', transport: 'injected' };
+    assert.deepEqual(agent.identity, identity);
+    const traces = [];
+    const session = { id: 's', memory: memoryOf({ id: 's', elapsedMs: 0, segments: [], history: [] }),
+      search: {}, inspector: {}, memoryMedia: {} };
+    const { deep } = createConversationRuntime({ config: { questionsBackend: 'codex' },
+      CodexAgent: function () { return agent; }, getSession: () => session,
+      onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    deep.start('QUESTION_PRIVATE', { mode: 'chat' });
+    await deep.jobs[0].done;
+    const job = deep.snapshot().jobs[0];
+    assert.equal(job.status, 'error');
+    assert.deepEqual(job.metrics.backend, { configured: 'codex', origin: 'substituted', identity });
+    assert.deepEqual(job.metrics.calls, { agentInvoked: true, providerRequests: null });
+    assert.deepEqual(traces.map(trace => trace.event), ['job.accepted', 'job.started', 'job.error', 'job.finished']);
+    for (const trace of traces) assert.deepEqual(trace.backend, job.metrics.backend);
+    agent.model = 'next-model';
+    assert.deepEqual(deep.snapshot().jobs[0].metrics.backend, job.metrics.backend);
+    assert.doesNotMatch(JSON.stringify([job.metrics, traces]), /PRIVATE_|QUESTION_PRIVATE|default/);
+  }
+});
+
+test('local configuration with an injected or simulated agent never counts an unobserved local inference', async () => {
+  const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
+  const { memoryOf } = require('./helpers/memory-consultation.cjs');
+  const session = { id: 's', memory: memoryOf({ id: 's', elapsedMs: 0, segments: [], history: [] }),
+    search: {}, inspector: {}, memoryMedia: {} };
+  for (const kind of [undefined, 'simulated']) {
+    const agent = { identity: kind && { role: 'other', kind, model: null, host: null,
+      token: 'PRIVATE_TOKEN', authHome: '/PRIVATE_ACCOUNT', prompt: 'PRIVATE_PROMPT', media: 'PRIVATE_MEDIA' },
+    answer: async () => ({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [],
+      backend: { kind: 'ollama', model: 'spoofed' } }) };
+    const traces = [];
+    const { deep } = createConversationRuntime({ getSession: () => session, agent,
+      config: { questionsBackend: 'local', localQuestions: { url: 'http://localhost/private?token=PRIVATE_TOKEN', model: 'local' } },
+      onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    deep.start('PRIVATE_QUESTION', { mode: 'chat' });
+    await deep.jobs[0].done;
+    const job = deep.snapshot().jobs[0];
+    assert.equal(job.status, 'done');
+    assert.deepEqual(job.metrics.backend, { configured: 'local', origin: 'injected',
+      identity: { role: 'questions', kind: kind || 'unknown', model: null, host: null } });
+    assert.deepEqual(job.metrics.calls, { agentInvoked: true, providerRequests: null });
+    assert.doesNotMatch(JSON.stringify([job.metrics, traces]), /PRIVATE|spoofed|\/private/);
+  }
+});
+
+test('unreadable identity and failing trace diagnostics cannot interrupt answers or queue progression', async () => {
+  const { deferred } = require('./helpers/wait.cjs');
+  const held = deferred();
+  let calls = 0;
+  const deep = new DeepAsk({ agent: {
+    get identity() { throw Error('PRIVATE_DIAGNOSTIC'); },
+    answer: async () => {
+      if (++calls === 1) await held.promise;
+      return { answer: 'Ok.', kind: 'explanation', citations: [], limits: [] };
+    },
+  }, makeTools: () => ({ observations: [], hypotheses: [], limits: [] }),
+  onTrace: () => { throw Error('PRIVATE_TRACE'); } });
+  deep.start('Première', { mode: 'chat' });
+  deep.start('Suivante', { mode: 'chat' });
+  held.resolve();
+  await Promise.all(deep.jobs.map(job => job.done));
+  assert.deepEqual(deep.snapshot().jobs.map(job => job.status), ['done', 'done']);
+  for (const job of deep.snapshot().jobs) {
+    assert.equal(job.result.answer, 'Ok.');
+    assert.deepEqual(job.metrics.backend.identity, { role: 'questions', kind: 'unknown', model: null, host: null });
+    assert.doesNotMatch(JSON.stringify(job.metrics), /PRIVATE/);
+  }
+});
+
+test('completed Codex question identities remain unchanged when the selected model changes', async () => {
+  const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
+  const client = { model: '', reasoningEffort: 'low', opened: new Set(), prepare: async () => {},
+    answer: async () => ({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [], audit: [],
+      backend: { kind: 'ollama', model: 'spoofed' } }) };
+  const agent = new CodexSessionAgent({ client });
+  const deep = new DeepAsk({ agent, makeTools: () => ({ sessionId: 's', observations: [], hypotheses: [], limits: [] }) });
+  deep.start('Première', { mode: 'chat' });
+  await deep.jobs[0].done;
+  const first = structuredClone(deep.snapshot().jobs[0]);
+  assert.equal(first.metrics.backend.identity.model, null);
+  assert.equal(first.result.backend.kind, 'codex');
+  agent.model = 'gpt-next';
+  deep.start('Suivante', { mode: 'chat' });
+  await deep.jobs[1].done;
+  assert.deepEqual(deep.snapshot().jobs[0], first);
+  assert.equal(deep.snapshot().jobs[1].metrics.backend.identity.model, 'gpt-next');
+  assert.deepEqual(deep.snapshot().jobs[1].metrics.calls, { agentInvoked: true, providerRequests: null });
+});
+
+test('an unavailable Codex diagnostic parameter cannot prevent a completed response', async () => {
+  const { CodexSessionAgent } = require('../adapters/codex-session-agent.cjs');
+  const agent = new CodexSessionAgent({ client: {
+    model: 'gpt-test', opened: new Set(), prepare: async () => {},
+    get reasoningEffort() { throw Error('PRIVATE_DIAGNOSTIC'); },
+    answer: async () => ({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [], audit: [] }),
+  } });
+  const deep = new DeepAsk({ agent, makeTools: () => ({ sessionId: 's', observations: [], hypotheses: [], limits: [] }) });
+  deep.start('Question', { mode: 'chat' });
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.status, 'done');
+  assert.equal(job.result.answer, 'Ok.');
+  assert.doesNotMatch(JSON.stringify(job.metrics), /PRIVATE_DIAGNOSTIC/);
+});

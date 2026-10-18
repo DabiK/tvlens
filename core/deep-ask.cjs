@@ -24,12 +24,36 @@ function limitLabel(ms){
   if(ms>=60000&&ms%60000===0){const minutes=ms/60000;return `${minutes} minute${minutes>1?'s':''}`;}
   const seconds=Math.max(1,Math.ceil(ms/1000));return `${seconds} seconde${seconds>1?'s':''}`;
 }
+// Seuls les faits scalaires autorisés de l'adaptateur entrent dans le diagnostic, jamais son résultat.
+const knownResidency = value => Number.isFinite(value)
+  || typeof value === 'string' && /^-?[\d.mshnuµ]+$/.test(value);
+function agentIdentity(agent) {
+  const unknown = { role: 'questions', kind: 'unknown', model: null, host: null };
+  try {
+    const value = agent.identity;
+    if (!value || !['ollama', 'codex', 'simulated'].includes(value.kind)) return unknown;
+    const identity = { ...unknown, kind: value.kind };
+    if (typeof value.model === 'string' && /^[\w.:-]+(?:\/[\w.:-]+)*$/.test(value.model)) identity.model = value.model;
+    if (typeof value.host === 'string' && /^[\w.:[\]-]+$/.test(value.host)) identity.host = value.host;
+    if (Number.isInteger(value.numCtx) && value.numCtx > 0) identity.numCtx = value.numCtx;
+    if (knownResidency(value.keepAlive)) identity.keepAlive = value.keepAlive;
+    if (Number.isFinite(value.temperature)) identity.temperature = value.temperature;
+    if ([null, 'low', 'medium', 'high', 'xhigh', 'max', 'minimal', 'none'].includes(value.reasoningEffort))
+      identity.reasoningEffort = value.reasoningEffort;
+    if (['http', 'codex', 'injected', 'unknown'].includes(value.transport)) identity.transport = value.transport;
+    return identity;
+  } catch {
+    // Une identité indisponible reste inconnue, sans bloquer la question ni exposer l'erreur du diagnostic.
+    return unknown;
+  }
+}
 class DeepAsk {
   constructor({ makeTools, agent, onChange = () => {}, onPublicationError = () => {}, now = Date.now,
     timeoutMs = QUESTION_TIMEOUT_MS, progressMs = QUESTION_PROGRESS_MS,
-    onTrace = () => {}, serializeError = () => ({}), getInstruction = () => undefined }) {
+    onTrace = () => {}, serializeError = () => ({}), getInstruction = () => undefined,
+    configuredBackend = null, agentOrigin = 'injected' }) {
     Object.assign(this, { makeTools, agent, onChange, onPublicationError, now, timeoutMs,
-      progressMs, onTrace, serializeError, getInstruction });
+      progressMs, onTrace, serializeError, getInstruction, configuredBackend, agentOrigin });
     this.jobs = [];
     this.sequence = 0;
     this.active = null;
@@ -40,7 +64,19 @@ class DeepAsk {
   }}
   describeError(error){try{const d=this.serializeError(error);return d&&typeof d==='object'?{...d}:{};}catch{return {};}
   }
-  snapshot() { return { jobs:this.jobs.map(({controller,tools,done,_finish,...j})=>({...j})) }; }
+  traceJob(event, job, fields = {}) {
+    this.trace(event, { jobId: job.id, sessionId: job.sessionId, mode: job.mode,
+      backend: job._diagnostics.backend, calls: { ...job._diagnostics.calls }, ...fields });
+  }
+  invokeAgent(job, input) {
+    // L'entrée dans l'agent peut précéder sa file interne : seul l'adaptateur peut confirmer les tentatives de transport.
+    job._diagnostics.calls = { agentInvoked: true, providerRequests: null };
+    return this.agent.answer({ ...input, onProviderRequest: count => {
+      if (job.status === 'running' && Number.isInteger(count) && count >= 0)
+        job._diagnostics.calls.providerRequests = count;
+    } });
+  }
+  snapshot() { return { jobs:this.jobs.map(({controller,tools,done,_finish,_diagnostics,...j})=>({...j})) }; }
   emit({ sessionId, jobId } = publicationContext(this.active)) {
     publishState(() => this.onChange(this.snapshot()), this.onPublicationError, {
       origin: 'deep-ask', sessionId, jobId,
@@ -53,6 +89,7 @@ class DeepAsk {
     // A question cancelled in the queue never reached the agent: nothing can still be using its tools.
     job.controller.abort(new Error(reason));
     if (queued) {
+      this.finishMetrics(job);
       job._finish();
       this.release(job);
     }
@@ -95,6 +132,8 @@ class DeepAsk {
     const controller=new AbortController();
     // The ceiling travels with the job: clients show elapsed / ceiling from the published state, without a literal of their own.
     const job={id:`deep-${++this.sequence}`,question,mode,intent,createdAt:this.now(),timeoutMs:this.timeoutMs,status:'queued',message:'En attente de la réponse précédente…',activity:[],preview:'',controller,result:null};
+    job._diagnostics = { backend: Object.freeze({ configured: this.configuredBackend, origin: this.agentOrigin,
+      identity: Object.freeze(agentIdentity(this.agent)) }), calls: { agentInvoked: false, providerRequests: 0 } };
     job.tools=this.makeTools(controller.signal,message=>this.progress(job,{message}),{consultation,anchorMs,startMs});
     if(anchorMs!==undefined||startMs!==undefined)job.tools.scope?.({anchorMs,startMs});
     job.sessionId=job.tools.sessionId;job.anchorMs=job.tools.anchorMs;
@@ -102,7 +141,7 @@ class DeepAsk {
     try{const available=job.tools.availability?.();if(available)job.availability={...available};}catch{
       // Le champ availability reste absent ; l'agent utilise ses outils et aucune plage consultable n'est inventée.
     }
-    if(mode==="chat")this.trace("job.accepted",{jobId:job.id,sessionId:job.sessionId,questionLength:question.length,mode,intent,anchorMs:job.anchorMs});
+    this.traceJob('job.accepted', job, { questionLength: question.length, intent, anchorMs: job.anchorMs });
     job.done = new Promise(resolve => { job._finish = resolve; });
     this.jobs.push(job);
     this.emit(publicationContext(job));
@@ -122,7 +161,7 @@ class DeepAsk {
   setDeadline(job, finish) {
     return setTimeout(() => {
       if (job.status !== 'running') return;
-      if (job.mode === 'chat') this.trace('job.timeout', { jobId: job.id, sessionId: job.sessionId });
+      this.traceJob('job.timeout', job);
       job.status = 'timeout';
       job.message = `Limite de ${limitLabel(job.timeoutMs)} atteinte.`;
       job.result = this.partial(job.tools, job.mode);
@@ -134,7 +173,7 @@ class DeepAsk {
   }
   async run(job) {
     let timer,progress,onAbort,work;
-    if(job.mode==="chat")this.trace("job.started",{jobId:job.id,sessionId:job.sessionId});
+    this.traceJob('job.started', job);
     const cancelled=new Promise(resolve=>{onAbort=resolve;job.controller.signal.addEventListener('abort',onAbort,{once:true});});
     const timeout = new Promise(resolve => { timer = this.setDeadline(job, resolve); });
     progress = setTimeout(() => {
@@ -176,7 +215,7 @@ class DeepAsk {
               // L'agent reçoit question et contexte sans champ instruction, comme en l'absence de consigne de l'hôte.
             }
           }
-          const result=await this.agent.answer({jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,...(instruction&&{instruction}),onProgress:value=>{if(job.firstAgentAt===undefined)job.firstAgentAt=this.now();this.progress(job,value);}});
+          const result=await this.invokeAgent(job,{jobId:job.id,context,question:job.question,tools:job.tools,signal:job.controller.signal,mode:job.mode,conversation,...(instruction&&{instruction}),onProgress:value=>{if(job.firstAgentAt===undefined)job.firstAgentAt=this.now();this.progress(job,value);}});
           if(job.status!=='running')return;
           // Only observed, validated evidence issued by our tool can justify a video answer.
           const observations=job.tools.observations;
@@ -201,7 +240,7 @@ class DeepAsk {
           job.status='done';
         } catch(error) {
           if(job.status!=='running')return;
-          if(job.mode==="chat")this.trace("job.error",{jobId:job.id,sessionId:job.sessionId,error:this.describeError(error)});
+          this.traceJob('job.error', job, { error: this.describeError(error) });
           // Redacted diagnostic kept on the job (sent in the snapshot): the fallback result is not an evidence verdict.
           job.status='error';job.message=error.message;job.errorDetail=this.describeError(error);job.result=this.partial(job.tools,job.mode);
         }
@@ -209,21 +248,30 @@ class DeepAsk {
         this.emit(publicationContext(job));
       })()]);
     } finally {clearTimeout(timer);clearTimeout(progress);job.controller.signal.removeEventListener('abort',onAbort);
-      const end=job.finishedAt??this.now();
-      // Freshness is a diagnostic: a tool set that cannot report it must not fail the job.
-      let fresh;try{fresh={...job.tools.freshness?.()};}catch{
-        // Les champs de fraîcheur finale restent absents ; durées et preuves de départ sont encore publiées ci-dessous.
-      }
-      const lagAtStartMs=job.anchorMs-job.evidenceAtStart?.contextThroughMs;
-      job.metrics={waitMs:job.startedAt-job.createdAt,contextMs:job.contextReadyAt===undefined?null:job.contextReadyAt-job.startedAt,firstProgressMs:job.firstProgressAt===undefined?null:job.firstProgressAt-job.startedAt,firstUsefulMs:job.firstUsefulAt===undefined?null:job.firstUsefulAt-job.startedAt,firstAgentMs:job.firstAgentAt===undefined?null:job.firstAgentAt-job.startedAt,firstTextMs:job.firstTextAt===undefined?null:job.firstTextAt-job.startedAt,totalMs:end-job.startedAt,endToEndMs:end-job.createdAt,sourcesReused:job.sourcesReused||0,inspectionCacheHits:job.tools.inspectionCacheHits||0,tools:[...(job.tools.toolMetrics||[])],
-        inspection:job.tools.inspectionDiagnostics,
-        evidence:{...fresh,...job.evidenceAtStart,lagAtStartMs:Number.isFinite(lagAtStartMs)?lagAtStartMs:null}};
-      this.traceFinished(job);
+      this.finishMetrics(job);
       this.emit(publicationContext(job));
       // After the last read and the last publication, and only once the agent has really returned: at once for an
       // answer or an error, later after a ceiling or a cancellation, never if the agent never returns. No timer.
       work.then(()=>this.settleTools(job),()=>this.settleTools(job));
     }
+  }
+  finishMetrics(job) {
+    const end = job.finishedAt ?? this.now();
+    const started = job.startedAt ?? end;
+    const elapsed = field => job[field] === undefined ? null : job[field] - started;
+    let fresh;
+    try { fresh = { ...job.tools.freshness?.() }; } catch {
+      // La fraîcheur indisponible reste absente ; aucune mesure n'est retentée au retour tardif de l'agent.
+    }
+    const lagAtStartMs = job.anchorMs - job.evidenceAtStart?.contextThroughMs;
+    job.metrics = { ...job._diagnostics, waitMs: started - job.createdAt, contextMs: elapsed('contextReadyAt'),
+      firstProgressMs: elapsed('firstProgressAt'), firstUsefulMs: elapsed('firstUsefulAt'),
+      firstAgentMs: elapsed('firstAgentAt'), firstTextMs: elapsed('firstTextAt'), totalMs: end - started,
+      endToEndMs: end - job.createdAt, sourcesReused: job.sourcesReused || 0,
+      inspectionCacheHits: job.tools.inspectionCacheHits || 0, tools: [...(job.tools.toolMetrics || [])],
+      inspection: job.tools.inspectionDiagnostics,
+      evidence: { ...fresh, ...job.evidenceAtStart, lagAtStartMs: Number.isFinite(lagAtStartMs) ? lagAtStartMs : null } };
+    this.traceFinished(job);
   }
   settleTools(job) {
     const tools = job.tools.toolMetrics || [];
@@ -235,8 +283,7 @@ class DeepAsk {
     this.release(job);
   }
   traceFinished(job) {
-    if (job.mode !== 'chat' && !job.metrics.inspection) return;
-    this.trace('job.finished', { jobId: job.id, sessionId: job.sessionId, status: job.status, totalMs: job.metrics.totalMs,
+    this.traceJob('job.finished', job, { status: job.status, totalMs: job.metrics.totalMs,
       inspection: job.metrics.inspection, tools: job.metrics.tools });
   }
   progress(job,value){

@@ -40,6 +40,10 @@ class OllamaHttpClient {
     this.backend = Object.freeze({ kind: 'ollama', model, host: endpoint.host, ...(numCtx && { numCtx }), keepAlive });
   }
 
+  get temperature() {
+    return this.#parameters.options.temperature;
+  }
+
   async chat({ messages, tools, format, signal }) {
     return this.request('chat', { ...this.#parameters, stream: false, messages, tools, format }, signal);
   }

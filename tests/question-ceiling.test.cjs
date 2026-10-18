@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { VirtualClock } = require('./helpers/clock.cjs');
-const { until } = require('./helpers/wait.cjs');
+const { until, deferred, turns } = require('./helpers/wait.cjs');
 const { WatchSession } = require('../core/session.cjs');
 const { DeepAsk, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel } = require('../core/deep-ask.cjs');
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
@@ -207,4 +207,64 @@ test('an external MCP context lasts as long as a question may be processed, and 
   const read = file => fs.readFile(path.join(__dirname, '..', file), 'utf8');
   assert.match(await read('mcp/server.cjs'), /AbortSignal\.timeout\(QUESTION_TIMEOUT_MS\)/);
   for (const file of ['mcp/server.cjs', 'adapters/video-bridge.cjs']) assert.doesNotMatch(await read(file), /60000|60 secondes/, file);
+});
+
+for (const mode of ['chat', 'inspect']) {
+  test(`a queued cancellation in ${mode} publishes its identity, zero calls and waiting time without entering the agent`, async t => {
+    const clock = new VirtualClock().install();
+    const held = deferred(), traces = [], releases = [], invocations = [];
+    const identity = { role: 'questions', kind: 'ollama', model: 'local-test', host: 'localhost:1234' };
+    const deep = new DeepAsk({ agent: { identity, answer: input => { invocations.push(input); return held.promise; } },
+      configuredBackend: 'local', agentOrigin: 'injected',
+      makeTools: () => ({ sessionId: 'session', observations: [], hypotheses: [], limits: [],
+        release: () => releases.push(clock.t) }),
+      onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    t.after(async () => {
+      deep.cancelAll();
+      held.resolve({ answer: 'Tardif.', kind: 'insufficient', citations: [], limits: [] });
+      await turns(2);
+      clock.uninstall();
+    });
+    deep.start('En cours', { mode });
+    const { id } = deep.start('En attente', { mode });
+    await clock.runUntil(45);
+    deep.cancel('Annulée.', id);
+    await deep.jobs[1].done;
+    const job = deep.snapshot().jobs[1];
+    assert.equal(job.status, 'cancelled');
+    assert.equal(job.metrics.waitMs, 45);
+    assert.equal(job.metrics.totalMs, 0);
+    assert.equal(job.metrics.endToEndMs, 45);
+    assert.equal(job.metrics.contextMs, null);
+    assert.deepEqual(job.metrics.backend, { configured: 'local', origin: 'injected', identity });
+    assert.deepEqual(job.metrics.calls, { agentInvoked: false, providerRequests: 0 });
+    assert.equal(invocations.length, 1);
+    assert.deepEqual(releases, [45]);
+    const events = traces.filter(trace => trace.jobId === id);
+    assert.deepEqual(events.map(trace => trace.event), ['job.accepted', 'job.finished']);
+    assert.equal(events[1].status, 'cancelled');
+    assert.deepEqual(events[1].calls, job.metrics.calls);
+    for (const trace of events) assert.deepEqual(trace.backend, job.metrics.backend);
+  });
+}
+
+test('lifecycle traces carry identity while timing metrics remain unpublished until the question settles', async t => {
+  const held = deferred(), traces = [];
+  const identity = { role: 'questions', kind: 'ollama', model: 'local-test', host: 'localhost' };
+  const deep = new DeepAsk({ agent: { identity, answer: () => held.promise },
+    makeTools: () => ({ observations: [], hypotheses: [], limits: [] }),
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  t.after(() => {
+    deep.cancelAll();
+    held.resolve({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [] });
+  });
+  deep.start('Question', { mode: 'chat' });
+  assert.equal(deep.snapshot().jobs[0].metrics, undefined, 'metrics still marks the completed timing publication');
+  assert.deepEqual(traces[0].backend.identity, identity);
+  held.resolve({ answer: 'Ok.', kind: 'explanation', citations: [], limits: [] });
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.status, 'done');
+  assert.ok(Number.isFinite(job.metrics.totalMs));
+  assert.deepEqual(job.metrics.backend.identity, identity);
 });
