@@ -2,7 +2,7 @@
 id: T283
 titre: Give clip reexamination its own local model
 statut: a-faire
-bloque_par: T282
+bloque_par: T282, T287, T288
 adr: non
 installe: non
 harnais: non
@@ -57,4 +57,4 @@ pendant que la perception interroge `modele-a`.
 Aucune décision n'est attendue.
 
 ## Journal
-
+- 19/10, propriétaire : les tickets TV T285 à T288 passent avant ce ticket, « de façon prioritaire ».

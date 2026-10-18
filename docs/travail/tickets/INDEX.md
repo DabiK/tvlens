@@ -467,7 +467,8 @@ Ordre décidé par le propriétaire le 18/10, révisé le soir sur l'avis d'Astr
 lien de code : copie A (T263, T264, T255, T265, T257, T262, T258, T267, puis T277, T278, T279, contrôles
 réels T269 à T273 et T276, tag par T274) ; copie B avant la phase Mémoire (T259, T261, T260, recette T280, tag) ; puis T268,
 la phase Mémoire T224, T225, T220, T226, T227 et sa recette TV et VPS T281, qui ne bloque rien ; enfin T251, T256,
-T232 et T252. Le contrôle TV T275 ne bloque rien. La phase 2 (T235, T250) reste retenue par T254 jusqu'à
+T232 et T252. Le contrôle TV T275 ne bloque rien. Le 19/10, le propriétaire fait passer avant T283 les tickets TV T285 à T288 (panneau et capture au-delà
+de YouTube) ; leur contrôle réel T289 ne bloque rien. La phase 2 (T235, T250) reste retenue par T254 jusqu'à
 la décision du propriétaire, prise avec la feuille de route en parcours produit. T257 définit d'abord le format ; T262 le produit depuis une vidéo, sans dépendance inverse. T264
 réutilise le transport de T263 ; T267 transmet l'identité des questions après T263. T259 attend T262, T264, T265,
 T267 et la copie A taguée ; T261 ajoute le bilan avant T260.
