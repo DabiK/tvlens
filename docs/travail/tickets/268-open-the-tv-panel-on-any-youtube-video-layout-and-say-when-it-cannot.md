@@ -25,14 +25,14 @@ un court message en français à l'écran, au lieu de rien.
   dans `/tmp/tvlens-panel.log`, sans aucun retour visible.
 - Décision du propriétaire, le 18/10 : « il faut un message et l'ouvrir peu importe la résolution ».
 - Code à `97fb54c`, `prototypes/lg-remote/runtime/panel.py` :
-  - `:75-86` `rectangles` : la garde `:77-78` exige `displayOutput == {x: 0, y: 0, width: 3840, height: 2160}` ; le
+  - `:74-85` `rectangles` : la garde `:77-78` exige `displayOutput == {x: 0, y: 0, width: 3840, height: 2160}` ; le
     rectangle de restauration `:80-83` est toujours le plein écran logique 1920×1080 ;
   - `:14-20` `layout_target` garde déjà le rapport de la source pour n'importe quel format, centré dans la zone
     `chat` (1440×1080) ou `timeline` (1920×720) ;
   - `:22-23` `physical_rect` : coordonnées logiques ×2, la convention d'un écran 4K ;
-  - `:60-73` `reported_source` refuse une source rognée ou dont le rapport diffère de l'image décodée ;
-  - `:92-99` `restore_original` ne restaure que si le contexte vidéo n'a pas changé ;
-  - `:101-143` `main` : la boucle ferme le panneau sur un changement de contexte ou de géométrie (`:118-120`).
+  - `:55-72` `reported_source` refuse une source rognée ou dont le rapport diffère de l'image décodée ;
+  - `:91-98` `restore_original` ne restaure que si le contexte vidéo n'a pas changé ;
+  - `:100-144` `main` : la boucle ferme le panneau sur un changement de contexte ou de géométrie (`:122-125`).
 - `prototypes/lg-remote/README.md`, section « TV-local action » : « accepts the tested YouTube/full-screen/4K geometry
   only ».
 - Tests : `prototypes/lg-remote/test_panel.py` (`Rectangles`, `PanelLifecycle` avec l'écran simulé `Screen`).
