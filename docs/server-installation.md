@@ -122,7 +122,6 @@ Réglages facultatifs, à écrire dans `/etc/tvlens/runtime.env`. Mal saisis, il
 | Variable | Défaut | Effet |
 | --- | --- | --- |
 | `TVLENS_QUESTION_TIMEOUT_MS` | `300000` | Plafond de traitement d’une question, de 1 à 300 000 ms |
-| `TVLENS_MEDIA_RETENTION_MS` | absent : jusqu’à suppression | Une durée positive rétablit la fenêtre glissante |
 | `TVLENS_DISK_MIN_FREE_MB` | `1024` | Plancher d’espace libre sous lequel la capture est refusée |
 | `TVLENS_DISK_WARN_FREE_MB` | `2048` | Seuil de l’état « espace faible » |
 | `TVLENS_SURVEILLANCE_WORKERS` | `1` | Vérifications de surveillance en parallèle, de 1 à 3 |

@@ -1,5 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { memoryOf, consultationFrom, rereadOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
@@ -11,9 +13,9 @@ const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { heldWhisper } = require('./helpers/held-whisper.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
 const { MomentIndex } = require('../core/moment-index.cjs');
-const { MomentSearch } = require('../core/moment-search.cjs');
+const { MemorySearch } = require('../core/moment-search.cjs');
 const { VideoTools } = require('../core/video-tools.cjs');
-const { passageText } = require('../core/passage-text.cjs');
+const { passageText } = require('../core/shared/passage-text.cjs');
 const { momentDetail } = require('../core/session-timeline.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
@@ -167,7 +169,7 @@ test('during an embeddings outage searches do not multiply failing requests: one
   const clock = manualClock({ turns: 6 });
   let requests = 0;
   const index = new MomentIndex({ embeddings: { embedMany: async () => { requests++; throw Error('HTTP 503'); } }, cache: memoryCache(), ...clock.io });
-  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
+  const search = new MemorySearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = async () => {
     const found = search.search({ query: 'il est question du budget', segments, anchorMs: 800000, budgetMs: 1500, queryBudgetMs: 100 });
@@ -233,7 +235,7 @@ test('an older read returned late never replaces the newer consulted version, ev
   let live, releaseSearch;
   const snapshot = { id: 's', elapsedMs: 9000, history: [], segments: [{ id: 'moment-1', startMs: 0, endMs: 8000, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing', available: true, revision: 1, observation: { transcript: 'Paroles' } }] };
   live = snapshot;
-  const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), reread:rereadOf(() => live), media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
   await turns(6);
@@ -330,7 +332,7 @@ test('a search during the pause that follows a provider failure answers at once 
       return reply(texts.map(() => [1, 0]));
     },
   }, cache, ...clock.io });
-  const search = new MomentSearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
+  const search = new MemorySearch({ index, setTimer: clock.io.setTimer, clearTimer: clock.io.clearTimer });
   const segments = Array.from({ length: 100 }, (_, i) => passage(i + 1));
   const ask = () => { const found = {}; search.search({ query: 'il est question du budget', segments, anchorMs: 800000 }).then(value => { found.value = value; }); return found; };
   // No timer fires below unless the clock is advanced: an answer means the search did not wait.
@@ -375,12 +377,12 @@ test('a passage whose transcription failed says so wherever its empty transcript
   const failed = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', audioFailed: true, available: true, revision: 2, observation: { summary: 'Un plateau.', visual: 'Deux personnes.', transcript: '' } };
   const heard = { ...failed, id: 'moment-2', startMs: 8000, endMs: 16000, audioFailed: undefined, observation: { ...failed.observation, transcript: 'Bonsoir.' } };
   const snapshot = { id: 's', elapsedMs: 17000, history: [], segments: [failed, heard] };
-  const tools = new VideoTools({ snapshot, search: {}, inspector: {}, media: {} });
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), search: {}, inspector: {}, media: {} });
   const read = await tools.call('get_transcript', { startMs: 0, endMs: 16000 });
   assert.deepEqual(read.passages.map(p => [p.id, p.audioStatus, p.audioFailed]), [['moment-1', 'ready', true], ['moment-2', 'ready', undefined]]);
   assert.equal('audioFailed' in read.passages[1], false, 'a passage that was heard carries no flag');
   assert.equal(tools.memoryEvidence.find(e => e.id === 'moment-1').audioFailed, true);
-  const detail = momentDetail(snapshot, ['moment-1', 'moment-2']);
+  const detail = momentDetail(viewOf(snapshot), ['moment-1', 'moment-2']);
   assert.deepEqual(detail.passages.map(p => p.audioFailed), [true, undefined]);
 });
 
@@ -389,7 +391,7 @@ test('with the session clock stopped by a pause, an older read returned late sti
   const passage = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing', available: true, revision: 1, observation: { transcript: 'Paroles' } };
   const snapshot = { id: 's', elapsedMs: 9000, history: [], segments: [passage] };
   live = snapshot;
-  const tools = new VideoTools({ snapshot, live: () => live, media: { lease: async () => async () => {} },
+  const tools = new VideoTools({ consultation:consultationFrom(snapshot), reread:rereadOf(() => live), media: { lease: async () => async () => {} },
     search: { search: async ({ segments }) => { await new Promise(resolve => { releaseSearch = resolve; }); return { mode: 'lexical', moments: segments.map(s => ({ id: s.id })), warnings: [] }; } } });
   const searching = tools.call('search_moments', { query: 'paroles' });
   await turns(6);

@@ -9,6 +9,7 @@ const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { SavedMomentStore } = require('../adapters/saved-moment-store.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
+const { copyPrunedArchive } = require('./helpers/pruned-archive.cjs');
 
 // F10: a range of a stored clip reads the bytes it answers with, and no others.
 // Offline: synthetic clips in a temporary directory, behind the real store, the real archive of kept moments and
@@ -72,8 +73,8 @@ async function stored(t, clips = { 'moment-1': pattern(10) }) {
 async function served(t, clip) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-f10-http-')), f = { clock: 0 };
   const agent = { answer: async ({ question }) => ({ answer: question, kind: 'explanation', citations: [], limits: [] }) };
-  // Media are kept until deletion by default: the rolling window is asked for, so that an expired passage can be shown.
-  const runtime = new HeadlessRuntime({ userData: dir, sessionsRoot: path.join(dir, 'sessions'), config: {}, selectedModels: { observationModel: 'test', inspectionModel: 'test', codexModel: 'test' }, smoke: true, agent, readClock: () => f.clock, retentionMs: 300000 });
+  // La capture courante est durable ; les refus historiques viennent du corpus figé.
+  const runtime = new HeadlessRuntime({ userData: dir, sessionsRoot: path.join(dir, 'sessions'), config: {}, selectedModels: { observationModel: 'test', inspectionModel: 'test', codexModel: 'test' }, smoke: true, agent, readClock: () => f.clock });
   const media = { assemble: async input => ({ ...input, clip, frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null }) };
   const server = await new RemoteServer({ runtime, media, token }).listen(0, '127.0.0.1');
   t.after(async () => { await server.close(); await runtime.close(); await fs.rm(dir, { recursive: true, force: true }); });
@@ -83,6 +84,12 @@ async function served(t, clip) {
   do { await tick(); } while (runtime.session.watch.running);
   await runtime.session.store.serial;
   f.get = (route, headers = {}, init = {}) => fetch(server.url + route, { ...init, headers: { Authorization: 'Bearer ' + token, ...headers } });
+  f.openHistorical = async () => {
+    await runtime.end();
+    const expected = await copyPrunedArchive(runtime.library.root);
+    await runtime.open(expected.id);
+    return fs.readFile(path.join(runtime.library.root, expected.id, 'media', 'moment-4.webm'));
+  };
   return Object.assign(f, { runtime, server, d: disk(t) });
 }
 
@@ -262,16 +269,23 @@ test('GET /v1/media answers one byte of a two-megabyte clip by reading one byte,
   const unknown = await fetch(f.server.url + '/v1/media/moment-1', { headers: { Range: 'bytes=0-0' } });
   assert.deepEqual([unknown.status, await unknown.json()], [401, { error: 'Appareil non authentifié.', code: 'unauthenticated' }]);
   assert.deepEqual([(await got(`/v1/media/${randomUUID()}/moment-1`, 'bytes=0-0')).status, (await got('/v1/media/moment-7', 'bytes=0-0')).status, (await got('/v1/media/..%2Fmoment-1', 'bytes=0-0')).status], [410, 410, 404]);
-  f.clock = 301000; await f.runtime.session.watch.prune();
+  const historicalClip = await f.openHistorical();
+  d.reset();
   assert.deepEqual([(await got('/v1/media/moment-1', 'bytes=0-0')).status, (await got('/v1/media/moment-1', 'bytes=x')).status], [410, 410], 'an expired passage is refused before its range is looked at');
   assert.deepEqual([d.bytes, d.opened, d.closed], [0, 0, 0]);
+  const archivedRange = await got('/v1/media/moment-4', 'bytes=1-3');
+  assert.deepEqual([archivedRange.status, archivedRange.body], [206, historicalClip.subarray(1, 4)]);
+  assert.equal(archivedRange.headers['content-range'], `bytes 1-3/${historicalClip.length}`);
+  assert.deepEqual([d.bytes, d.opened, d.closed], [3, 1, 1]);
 });
 
 test('a client that gives up while its range is being read leaves no descriptor open, and the server goes on answering', async t => {
-  const clip = pattern(4096), f = await served(t, clip), d = f.d, held = deferred(), client = new AbortController();
+  const f = await served(t, pattern(4096)), d = f.d, held = deferred(), client = new AbortController();
+  const clip = await f.openHistorical();
+  d.reset();
   // The read is held: the request is inside the store when its client goes away.
   d.hook = () => held.promise;
-  const given = f.get('/v1/media/moment-1', { Range: 'bytes=0-99' }, { signal: client.signal }).then(() => 'answered', error => error.name);
+  const given = f.get('/v1/media/moment-4', { Range: 'bytes=0-99' }, { signal: client.signal }).then(() => 'answered', error => error.name);
   await until(() => d.opened === 1, 'the clip is opened for the request');
   client.abort();
   assert.equal(await given, 'AbortError');
@@ -280,7 +294,7 @@ test('a client that gives up while its range is being read leaves no descriptor 
   await until(() => d.closed === 1, 'the descriptor is closed');
   // Kept as it was: the answer is prepared whole before it is sent, so the read under way is finished, for nobody.
   assert.deepEqual([d.bytes, d.opened, d.closed], [100, 1, 1]);
-  const next = await answer(await f.get('/v1/media/moment-1', { Range: 'bytes=100-103' }));
-  assert.deepEqual([next.status, next.headers['content-range']], [206, 'bytes 100-103/4096']); assert.ok(next.body.equals(clip.subarray(100, 104)));
+  const next = await answer(await f.get('/v1/media/moment-4', { Range: 'bytes=100-103' }));
+  assert.deepEqual([next.status, next.headers['content-range']], [206, `bytes 100-103/${clip.length}`]); assert.ok(next.body.equals(clip.subarray(100, 104)));
   assert.deepEqual([d.bytes, d.opened, d.closed], [104, 2, 2]);
 });

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Deterministic replay of a capture stream through the real orchestration (WatchSession,
-// CodexPerception, DeepAsk, VideoTools, MomentSearch) with controlled providers and a
+// CodexPerception, DeepAsk, VideoTools, MemorySearch) with controlled providers and a
 // virtual clock. It checks ordering, bounded budgets, losses and evidence freshness.
 // Provider latencies are MODELS taken from the historical measurements quoted in
 // docs/backend-latency-optimization.md: results validate orchestration, never the real
@@ -51,25 +51,22 @@ const QUESTIONS = {
 const every = (kinds, firstMs, stepMs, untilMs) => { const list = []; for (let at = firstMs, i = 0; at < untilMs; at += stepMs, i++) list.push({ atMs: at, kind: kinds[i % kinds.length] }); return list; };
 const SCENARIOS = {
   // LG cadence to a CPU host: 8 s blocks, four frames ~2 s apart, upload then assembly.
-  'lg-vps': { description: 'LG → hôte CPU, 10 min, questions intercalées, annulation, file de deux questions', source: 'lg', model: 'vps', durationMs: 600000, topicEveryMs: 96000, retentionMs: 300000,
+  'lg-vps': { description: 'LG → hôte CPU, 10 min, questions intercalées, annulation, file de deux questions', source: 'lg', model: 'vps', durationMs: 600000, topicEveryMs: 96000,
     questions: [{ atMs: 70000, kind: 'recent' }, { atMs: 131000, kind: 'transcript' }, { atMs: 203000, kind: 'search' }, { atMs: 262000, kind: 'inspect' }, { atMs: 331000, kind: 'recent' }, { atMs: 331400, kind: 'transcript' },
       { atMs: 402000, kind: 'search', cancelAfterMs: 1500 }, { atMs: 469000, kind: 'transcript' }, { atMs: 541000, kind: 'inspect' }] },
   // Mac cadence: first block of 2 s, then 8 s, native capture, fast local Whisper.
-  mac: { description: 'Mac natif, 10 min, premier bloc 2 s, questions intercalées', source: 'mac', model: 'mac', durationMs: 600000, topicEveryMs: 96000, retentionMs: 300000,
+  mac: { description: 'Mac natif, 10 min, premier bloc 2 s, questions intercalées', source: 'mac', model: 'mac', durationMs: 600000, topicEveryMs: 96000,
     questions: [{ atMs: 12000, kind: 'recent' }, { atMs: 75000, kind: 'transcript' }, { atMs: 140000, kind: 'search' }, { atMs: 206000, kind: 'inspect' }, { atMs: 290000, kind: 'transcript' }, { atMs: 372000, kind: 'inspect' }, { atMs: 455000, kind: 'recent' }, { atMs: 530000, kind: 'transcript' }] },
   // A Whisper slowdown fills the bounded lanes: losses must stay explicit.
-  'lg-vps-backlog': { description: 'LG → hôte CPU, 6 min, Whisper ralenti de 120 à 200 s, questions fréquentes', source: 'lg', model: 'vps', durationMs: 360000, topicEveryMs: 96000, retentionMs: 300000,
+  'lg-vps-backlog': { description: 'LG → hôte CPU, 6 min, Whisper ralenti de 120 à 200 s, questions fréquentes', source: 'lg', model: 'vps', durationMs: 360000, topicEveryMs: 96000,
     asrBurst: { fromMs: 120000, toMs: 200000, ms: [10500, 13000] }, questions: every(['transcript', 'recent', 'inspect'], 45000, 40000, 350000) },
-  // Short retention: media expire while questions still reach summaries.
-  expiry: { description: 'LG → hôte CPU, 8 min, rétention 60 s, inspection d’un passage expiré', source: 'lg', model: 'vps', durationMs: 480000, topicEveryMs: 96000, retentionMs: 60000,
-    questions: [{ atMs: 150000, kind: 'search' }, { atMs: 240000, kind: 'inspect', targetMs: 20000 }, { atMs: 330000, kind: 'transcript' }, { atMs: 420000, kind: 'inspect' }] },
   // Sustained session in accelerated time: every third question searches, so the index is caught up every 21 min.
-  'long-lg': { description: 'LG → hôte CPU, 2 h en temps accéléré, une recherche toutes les 21 min', source: 'lg', model: 'vps', durationMs: 7200000, topicEveryMs: 240000, retentionMs: 300000,
+  'long-lg': { description: 'LG → hôte CPU, 2 h en temps accéléré, une recherche toutes les 21 min', source: 'lg', model: 'vps', durationMs: 7200000, topicEveryMs: 240000,
     questions: [...every(['recent', 'transcript', 'inspect'], 300000, 420000, 6500000), { atMs: 6600000, kind: 'search' }, { atMs: 6720000, kind: 'search' }, { atMs: 6900000, kind: 'transcript' }] },
 };
 
 // The worst case for an index fed on demand: nothing searches for 110 minutes, then two searches follow.
-SCENARIOS['late-first-search'] = { description: 'LG → hôte CPU, 2 h, aucune recherche avant 110 min, puis deux recherches', source: 'lg', model: 'vps', durationMs: 7200000, topicEveryMs: 240000, retentionMs: 300000,
+SCENARIOS['late-first-search'] = { description: 'LG → hôte CPU, 2 h, aucune recherche avant 110 min, puis deux recherches', source: 'lg', model: 'vps', durationMs: 7200000, topicEveryMs: 240000,
   questions: [...every(['recent', 'transcript'], 300000, 420000, 6500000), { atMs: 6600000, kind: 'search' }, { atMs: 6720000, kind: 'search' }] };
 
 const WORDS = ['budget', 'santé', 'retraites', 'ministre', 'opposition', 'audit', 'vote', 'chiffres', 'réforme', 'hôpital', 'impôts', 'débat', 'jeudi', 'plateau', 'invité'];
@@ -91,9 +88,11 @@ async function runScenario(root, name, seed, variant = {}) {
   const { CodexPerception } = load('adapters/codex-perception.cjs');
   const { CachedInspector } = load('core/cached-inspector.cjs');
   const { MomentIndex } = load('core/moment-index.cjs');
-  const { MomentSearch } = load('core/moment-search.cjs');
+  const { MemorySearch } = load('core/moment-search.cjs');
   const { createConversationRuntime, hasPendingQuestion } = load('runtime/conversation-runtime.cjs');
-  const { hasUsableObservation } = load('core/passage-text.cjs');
+  const { createMemoryMedia } = load('runtime/memory-media.cjs');
+  const { consultationOf } = load('core/video-tools.cjs');
+  const { hasUsableObservation } = load('core/shared/passage-text.cjs');
   const started = performance.now();
   const clock = new VirtualClock().install();
   const rng = { asr: mulberry32(seed), vision: mulberry32(seed + 1), chat: mulberry32(seed + 2), feed: mulberry32(seed + 3) };
@@ -198,7 +197,7 @@ async function runScenario(root, name, seed, variant = {}) {
       async put(id, text, value) { counters.embeddingWrites++; this.entries.set(id, { text, vector: value }); this.byText.set(text, value); },
       async putMany(items) { counters.embeddingWrites++; for (const item of items) { this.entries.set(item.id, { text: item.text, vector: item.vector }); this.byText.set(item.text, item.vector); } } };
     const momentIndex = new MomentIndex({ embeddings, cache, flushMs: 30000, maxPending: 2048 }); // INDEX_FLUSH_MS and INDEX_MAX_PENDING of runtime/session-runtime.cjs
-    const search = new MomentSearch({ index: momentIndex });
+    const search = new MemorySearch({ index: momentIndex });
     // Same feed as runtime/session-runtime.cjs: published passages go to the bounded background index.
     const feedIndex = variant.backgroundIndex !== false && typeof momentIndex.observe === 'function';
 
@@ -217,7 +216,7 @@ async function runScenario(root, name, seed, variant = {}) {
       lag.push(snapshot.analysisLagMs);
     };
     const lag = [];
-    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onChange: observe, retentionMs: scenario.retentionMs, ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
+    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onChange: observe, ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
 
     const records = [];
     const livePrefix = (anchorMs, startMs, endMs) => [...watch.history, ...watch.segments].filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);
@@ -261,7 +260,7 @@ async function runScenario(root, name, seed, variant = {}) {
           return { answer: 'Le passage retrouvé.', kind: 'observation', citations: cite([best]), limits: [] };
         }
         // inspect: the newest passage inside the prefix, or an explicit older target.
-        const pool = [...tools.segments].sort((a, b) => a.endMs - b.endMs);
+        const pool = tools.consultationScope().passages.sort((a, b) => a.endMs - b.endMs);
         const target = record.targetMs === undefined ? pool.at(-1) : pool.find(s => s.startMs <= record.targetMs && s.endMs >= record.targetMs);
         if (!target) return { answer: 'Aucun passage à réexaminer.', kind: 'insufficient', citations: [], limits: [] };
         try {
@@ -275,7 +274,8 @@ async function runScenario(root, name, seed, variant = {}) {
           return { answer: 'Le média de ce passage n’est plus disponible.', kind: 'insufficient', citations: [], limits: [error.message] };
         }
       } };
-    conversation = createConversationRuntime({ getSession: () => ({ watch, search, inspector, store: media }), agent: chatAgent,
+    const memory = { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) }, memoryMedia = createMemoryMedia(media);
+    conversation = createConversationRuntime({ getSession: () => ({ id: watch.id, memory, memoryMedia, search, inspector }), agent: chatAgent,
       onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });
     const deep = conversation.deep;
 
@@ -296,14 +296,14 @@ async function runScenario(root, name, seed, variant = {}) {
       }, arrivalMs);
       startMs = endMs + (lg ? 300 : 0); // the LG capture loop spends a moment between two blocks
     }
-    setInterval(() => watch.prune().catch(() => {}), 5000);
+    if (!lg) setInterval(() => watch.emit(), 5000);
     if (!lg) visionAgent.prepare(); // the Mac host warms the observation agent at session start
     for (const q of scenario.questions) {
       setTimeout(() => {
         const record = { ...q, question: `${QUESTIONS[q.kind]} (${Math.round(q.atMs / 1000)} s)` };
         records.push(record);
         try {
-          const options = lg ? { mode: 'chat', anchorMs: clock.t, snapshot: watch.snapshot() } : { mode: 'chat' };
+          const options = lg ? { mode: 'chat', anchorMs: clock.t, consultation: consultationOf(watch.memoryView()) } : { mode: 'chat' };
           record.jobId = deep.start(record.question, options).id;
           if (q.cancelAfterMs) setTimeout(() => deep.cancel('Question annulée.', record.jobId), q.cancelAfterMs);
         } catch (error) { record.rejected = error.message; }

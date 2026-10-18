@@ -1,3 +1,5 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const {
@@ -39,7 +41,7 @@ test("panel projections keep forty recent passages and thirty recent questions p
   }));
   jobs[0].status = "queued";
   jobs[1].status = "running";
-  const derived = deriveStateViews({ state, jobs, title: "Débat" });
+  const derived = deriveStateViews({ memory: viewOf(state), jobs, title: "Débat" });
 
   assert.equal(derived.segments.length, 40);
   assert.deepEqual(
@@ -62,15 +64,12 @@ test("panel projections keep forty recent passages and thirty recent questions p
 });
 
 test("the polled session header keeps only allowed fields and bounded gap counters", () => {
-  const state = publishedState(1);
-  state.privateDiagnostics = { transcript: "Texte à exclure" };
-  state.gaps = Array.from({ length: 25 }, (_, i) => ({
-    startMs: i * 1000,
-    endMs: (i + 1) * 1000,
-  }));
-  state.audioGaps = [{ startMs: 0, endMs: 1000 }];
-  state.visionGaps = [{ startMs: 1000, endMs: 2000 }];
-  const { header } = deriveStateViews({ state, jobs: [], title: "Débat" });
+  const state = publishedState(26);
+  for (const passage of state.segments.slice(0, 25)) passage.status = 'error';
+  Object.assign(state.segments[25], { status: 'partial', audioStatus: 'error', visionStatus: 'error' });
+  const memory = viewOf(state);
+  memory.session.privateDiagnostics = { transcript: "Texte à exclure" };
+  const { header } = deriveStateViews({ memory, jobs: [], title: "Débat" });
 
   assert.ok(header);
   assert.equal(header.id, state.id);
@@ -79,9 +78,9 @@ test("the polled session header keeps only allowed fields and bounded gap counte
   assert.equal("privateDiagnostics" in header, false);
   assert.equal("segments" in header, false);
   assert.equal("history" in header, false);
-  assert.equal(header.passages, 1);
+  assert.equal(header.passages, 26);
   assert.equal(header.gapCount, 25);
-  assert.deepEqual(header.gaps, state.gaps.slice(-20));
+  assert.deepEqual(header.gaps, memory.coverage.gaps.slice(-20));
   assert.equal(header.audioGapCount, 1);
   assert.equal(header.visionGapCount, 1);
 });
@@ -91,7 +90,9 @@ test("older timeline cards keep an excerpt while the twelve latest cards keep th
   for (const passage of state.segments)
     passage.observation.summary = "r".repeat(300);
   const original = structuredClone(state);
-  const { timeline } = deriveStateViews({ state, jobs: [], title: null });
+  const memory = viewOf(state);
+  const originalMemory = structuredClone(memory);
+  const { timeline } = deriveStateViews({ memory, jobs: [], title: null });
 
   assert.equal(timeline.cards[0].summaryClipped, true);
   assert.equal(timeline.cards[0].summary, "r".repeat(240) + "…");
@@ -100,6 +101,7 @@ test("older timeline cards keep an excerpt while the twelve latest cards keep th
   assert.equal(timeline.cards.filter((card) => card.summaryClipped).length, 2);
   assert.equal(timeline.cards.at(-1).summary, "r".repeat(300));
   assert.equal(timeline.cards.at(-1).summaryClipped, undefined);
+  assert.deepStrictEqual(memory, originalMemory);
   assert.deepEqual(state, original);
 });
 
@@ -127,7 +129,7 @@ test("chat and panel assemble live values over the published header without chan
     status: "done",
   }));
   const derived = deriveStateViews({
-    state: publishedState(2),
+    memory: viewOf(publishedState(2)),
     jobs,
     title: "Débat",
   });
@@ -216,4 +218,38 @@ test("overlay without a session has null identifiers and elapsed time and only t
     revision: 3,
     serverNowMs: 123000,
   });
+});
+
+test('panel projects frozen cards, retained passages, availability and gaps from the consultation contract', () => {
+  const { createMemoryView } = require('../core/memory/index.cjs');
+  const { memoryState } = require('../scripts/memory-fixture.cjs');
+  const source = require('./fixtures/state-view-memory.json');
+  const expected = require('./fixtures/state-view-responses.json')['/v1/state?view=panel'];
+  const memory = createMemoryView({ ...memoryState(source), losses: source.losses });
+  let derived;
+  assert.doesNotThrow(() => { derived = deriveStateViews({ memory, jobs: [], title: null }); });
+  assert.deepStrictEqual(derived.timeline, expected.timeline);
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(derived.segments)), expected.session.segments);
+  assert.deepStrictEqual(derived.unavailableIds, expected.session.unavailableIds);
+  assert.deepStrictEqual(derived.captureGaps, expected.captureGaps);
+  assert.equal(derived.captureGapCount, expected.captureGapCount);
+  assert.deepStrictEqual(derived.header.coverage, { passages: 56, ...source.losses, visionBlockedMs: 0 });
+  assert.equal(derived.header.audioGapCount, expected.session.audioGapCount);
+  assert.equal(derived.header.visionGapCount, expected.session.visionGapCount);
+});
+
+test('polled views take the published identity from consultation and the question flag from live values', () => {
+  const memory = viewOf(publishedState(2));
+  const derived = deriveStateViews({
+    memory, jobs: [], title: 'Débat',
+    publicationStatus: { id: 'another-session', asking: false, lastError: 'Erreur étrangère' },
+  });
+  assert.equal(derived.header.id, memory.session.id);
+  assert.equal(derived.header.lastError, memory.session.lastError);
+  for (const name of ['chat', 'panel']) {
+    const live = liveValues();
+    assert.equal(stateView(name, derived, live).session.asking, true);
+    live.liveSession.asking = false;
+    assert.equal(stateView(name, derived, live).session.asking, false);
+  }
 });

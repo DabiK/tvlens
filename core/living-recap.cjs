@@ -1,4 +1,4 @@
-const {passageText}=require('./passage-text.cjs');
+const {passageText}=require('./shared/passage-text.cjs');
 
 // Set as `code` by a synthesis adapter on an input it refuses for its size, before any provider call: the one
 // failure that waiting does not cure.
@@ -44,17 +44,18 @@ class LivingRecap {
     this.emitted=JSON.stringify(this.snapshot());
     return this.snapshot();
   }
-  observe(snapshot) {
-    if(!snapshot||!snapshot.id)return this.snapshot();
-    if(this.sessionId!==snapshot.id)this.reset(snapshot.id);
-    const segments=[...(snapshot.history||[]).map(s=>({...s,available:false})),...(snapshot.segments||[])];
-    // If an older source drops out of an upstream snapshot, keep its text but do not advertise replay.
+  /** @param {import('./memory/index.cjs').MemoryView} memory */
+  observe(memory, { silent = false } = {}) {
+    if (!memory?.session?.id || this.sessionId && this.sessionId !== memory.session.id) return this.snapshot();
+    if (!this.sessionId) this.sessionId = memory.session.id;
+    const segments = memory.passages;
+    // Une source absente de la vue garde son texte, sans annoncer de relecture.
     for(const source of this.originals.values())source.available=false;
     for(const segment of segments){
       if(segment.status!=='ready'||!passageText(segment).trim())continue;
       const text=passageText(segment),known=this.originals.get(segment.id);
       if(!known||known.startMs!==segment.startMs||known.endMs!==segment.endMs||known.text!==text)this.revision++;
-      this.originals.set(segment.id,{id:segment.id,startMs:segment.startMs,endMs:segment.endMs,text,available:Boolean(segment.available)});
+      this.originals.set(segment.id,{id:segment.id,startMs:segment.startMs,endMs:segment.endMs,text,available:Boolean(segment.availability.replayable)});
     }
     const pending=segments.filter(s=>['queued','analyzing'].includes(s.status)||['queued','analyzing'].includes(s.visionStatus)).length;
     const partial=segments.filter(s=>s.status==='partial').length;
@@ -68,7 +69,9 @@ class LivingRecap {
     if(holes)this.limits.push(`${holes} interruption(s) de capture : ces intervalles ne sont pas résumés.`);
     if(previous.length!==this.limits.length||previous.some((limit,i)=>limit!==this.limits[i]))this.revision++;
     if(!this.active)this.status=this.error?this.failure():this.originals.size?(this.pending().length?'waiting':'ready'):'idle';
-    this.emit();return this.snapshot();
+    if (silent) this.emitted = JSON.stringify(this.snapshot());
+    else this.emit();
+    return this.snapshot();
   }
   // What a failed attempt leaves shown until the next one: a ceiling is not said as a passing failure.
   failure(){return this.refused===null?'error':'capacity';}

@@ -6,7 +6,14 @@
  * @typedef {{atMs:number, dataUrl:string}} Frame
  * @typedef {{startMs:number,endMs:number,clip:Uint8Array,frames:Frame[],audio:Uint8Array|null}} CapturedSegment
  * @typedef {{summary:string,visual:string,audio:string,transcript:string,uncertainty?:string}} Observation
- * @typedef {{observation:Partial<Observation>,cost?:number,metrics?:object,elapsedMs?:number,failed?:boolean,error?:string}} PerceptionResult
+ * @typedef {object} PerceptionResult
+ * @property {Partial<Observation>} observation
+ * @property {number} [cost]
+ * @property {object} [metrics]
+ * @property {number} [elapsedMs]
+ * @property {boolean} [failed]
+ * @property {string} [error]
+ * @property {string} [code] Cause stable facultative d'un échec de transcription.
  * @typedef {{transcribe:(segment:object)=>Promise<PerceptionResult>,observeVisual:(segment:object)=>Promise<PerceptionResult>}} PerceptionPort
  * @typedef {{put:(id:string,input:CapturedSegment)=>Promise<{bytes:number}>,read:(id:string)=>Promise<{frames:Frame[],audio:Uint8Array|null}>,remove:(id:string)=>Promise<void>}} MediaPort
  * put() resolves to the volume it stored; a refusal for lack of room rejects with code 'TVLENS_STORAGE_FULL'
@@ -22,7 +29,7 @@ module.exports = {};
 /**
  * @typedef {{embed:(text:string,signal?:AbortSignal)=>Promise<number[]>,embedMany?:(texts:string[],signal?:AbortSignal)=>Promise<number[][]>}} EmbeddingPort
  * embedMany is optional: one bounded request for several texts, vectors in input order.
- * @typedef {{search:(request:{query:string,segments:object[],anchorMs:number,signal?:AbortSignal})=>Promise<object>}} MomentSearchPort
+ * @typedef {{search:(request:{query:string,segments:object[],anchorMs:number,signal?:AbortSignal})=>Promise<object>}} MemorySearchPort
  * @typedef {{inspect:(request:{question:string,startMs:number,endMs:number,segments:object[],signal?:AbortSignal})=>Promise<{observations:object[],hypotheses:string[],limits:string[]}>}} ClipInspectionPort
  * @typedef {{answer:(request:{question:string,tools:object,signal:AbortSignal})=>Promise<object>}} VideoAgentPort
  * @typedef {{lease:(ids:string[])=>Promise<()=>Promise<void>>}} MediaLeasePort
@@ -30,7 +37,7 @@ module.exports = {};
  */
 
 /**
- * @typedef {{transcribe:(audio:Uint8Array|null,signal?:AbortSignal)=>Promise<{text:string,limits:string[]}>}} TranscriptionPort
+ * @typedef {{transcribe:(audio:Uint8Array|null,signal?:AbortSignal)=>Promise<{text:string,limits:string[],code?:string}>}} TranscriptionPort
  * @typedef {{answer:(request:{question:string,tools:object,signal:AbortSignal,context?:object,conversation?:object[],mode:string,onProgress?:(event:{message?:string,preview?:string})=>void})=>Promise<object>,close?:()=>Promise<void>}} SessionAgentPort
  * Session agent implementations may retain a provider thread; the domain owns
  * session identity, time limits, validated evidence and cancellation.
@@ -66,15 +73,17 @@ module.exports = {};
  * observation (including transcript) and returns an observation patch. The core
  * serializes each lane, bounds each backlog, and passes a close cancellation signal.
  * Partial observations retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
- * A transcribe() result carrying failed:true is counted (coverage.audioError) and flagged on the passage
- * (audioFailed, listed in audioGaps); statuses stay unchanged so that image-only passages still complete.
+ * Un résultat transcribe() portant failed:true incrémente coverage.audioError et marque audioFailed sur le passage.
+ * Son code facultatif devient audioFailureCode sur le passage et code dans audioGaps ; il identifie la cause de la perte.
+ * Les statuts restent inchangés pour que les passages sans paroles transcrites puissent terminer leur analyse visuelle.
  * Every published change of an observation increments the passage revision; reception,
  * lane starts and publications are stamped on the session clock (core/latency-trace.cjs).
  * The visionDuringAsk option lets a new visual call start while a question is pending.
  *
- * VideoTools keeps session, scope start, anchor and passage ids fixed for one question.
- * With a live snapshot provider it re-reads those passages at consultation boundaries
- * (answer start, search, transcript, inspection); the journal records each revision read.
+ * VideoTools keeps session, scope start, anchor and passage ids fixed for one question, from the consultation
+ * frozen out of a memory view. With a bounded reread port it re-reads those passages at consultation boundaries
+ * (answer start, search, transcript, inspection); the journal records each revision read. Media are leased
+ * through the memory media port, for the passages an inspection admits only.
  */
 
 /**

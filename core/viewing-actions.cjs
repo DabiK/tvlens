@@ -2,42 +2,47 @@
 class ViewingActions {
   constructor({ makeId }) { this.makeId = makeId; this.reset(); }
   reset() { this.sessionId = null; this.markerMs = 0; this.tokens = new Map(); }
-  sync(snapshot) {
-    if (!snapshot) throw Error('Lance TVLens sur une vidéo pour utiliser cette action.');
-    if (this.sessionId !== snapshot.id) { this.reset(); this.sessionId = snapshot.id; }
+  // Every action reads a memory view: its session identity, its clock and how far capture went.
+  sync(view) {
+    if (!view) throw Error('Lance TVLens sur une vidéo pour utiliser cette action.');
+    if (this.sessionId !== view.session.id) { this.reset(); this.sessionId = view.session.id; }
   }
-  freeze(snapshot, { kind = 'explain' } = {}) {
-    this.sync(snapshot);
+  freeze(view, { kind = 'explain' } = {}) {
+    this.sync(view);
     if (!['explain', 'catch-up'].includes(kind)) throw Error('Action inconnue.');
-    const anchorMs = snapshot.elapsedMs;
+    const anchorMs = view.clock.elapsedMs;
     if (!Number.isFinite(anchorMs)) throw Error('Instant indisponible.');
-    const value = { token: this.makeId(), sessionId: snapshot.id, kind, anchorMs,
+    const value = { token: this.makeId(), sessionId: view.session.id, kind, anchorMs,
       startMs: kind === 'catch-up' ? this.markerMs : Math.max(0, anchorMs - 20000), endMs: anchorMs };
     this.tokens.set(value.token, value);
     while (this.tokens.size > 30) this.tokens.delete(this.tokens.keys().next().value);
     return { ...value };
   }
-  resolve(snapshot, token, kind) {
-    this.sync(snapshot);
+  resolve(view, token, kind) {
+    this.sync(view);
     const value = this.tokens.get(token);
-    if (!value || value.sessionId !== snapshot.id || value.kind !== kind) throw Error('Cet instant a expiré. Sélectionne à nouveau le moment.');
+    if (!value || value.sessionId !== view.session.id || value.kind !== kind) throw Error('Cet instant a expiré. Sélectionne à nouveau le moment.');
     return { ...value };
   }
-  mark(snapshot) {
-    this.sync(snapshot);
+  mark(view) {
+    this.sync(view);
     // The marker follows a complete captured segment so no half-segment is silently lost.
-    this.markerMs = snapshot.capturedThroughMs || 0;
+    this.markerMs = view.clock.capturedThroughMs || 0;
     return { sessionId: this.sessionId, atMs: this.markerMs };
   }
-  reexamination(job, snapshot) {
-    this.sync(snapshot);
-    if (!job?.intent || job.sessionId !== snapshot.id || !job.tools?.segments) throw Error('Ce moment n’est plus disponible dans cette session.');
-    const anchorMs = job.anchorMs, startMs = job.tools.startMs ?? 0;
+  // The finished moment action kept its consultation: the re-examination reads it again, same session, instant and
+  // interval, never the passages captured since.
+  reexamination(job, view) {
+    this.sync(view);
+    const kept = job?.intent && job.sessionId === view.session.id && typeof job.tools?.consultationScope === 'function'
+      ? job.tools.consultationScope() : null;
+    if (!kept || kept.sessionId !== view.session.id) throw Error('Ce moment n’est plus disponible dans cette session.');
+    const anchorMs = job.anchorMs, startMs = kept.startMs ?? 0;
     return {
       question: job.question,
       options: { mode: 'inspect', intent: job.intent, anchorMs, startMs,
-        snapshot: { id: job.sessionId, elapsedMs: anchorMs, history: [],
-          segments: JSON.parse(JSON.stringify(job.tools.segments)).filter(s => s.startMs >= startMs && s.endMs <= anchorMs) } }
+        consultation: { sessionId: kept.sessionId, anchorMs, startMs,
+          passages: kept.passages.filter(p => p.startMs >= startMs && p.endMs <= anchorMs) } }
     };
   }
   acknowledgeResult(value, job, segments) {

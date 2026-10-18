@@ -8,8 +8,12 @@ const childProcess = require("node:child_process");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const { LocalSessionStore } = require("../adapters/local-store.cjs");
 const { HeadlessRuntime } = require("../runtime/headless-runtime.cjs");
+const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
+const { DeepAsk } = require("../core/deep-ask.cjs");
+const { until } = require("./helpers/wait.cjs");
 
 const CORPUS = path.join(__dirname, "fixtures", "archives", "durable-v1");
+const PRUNED = path.join(__dirname, "fixtures", "archives", "pruned-v1");
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const COPY_TIME = new Date("2024-01-02T03:04:05.000Z");
 const SUMS = "SHA256SUMS";
@@ -19,6 +23,24 @@ const VARIANTS = [
   "rolling-history", "historical-questions", "interrupted-analysis", "retry-counters",
   "unknown-retention", "invalid-retry-counters",
 ];
+
+test("the pruned archive is a frozen witness with text history, absent media and a surviving clip", async () => {
+  const entries = await fs.readdir(PRUNED).catch(error => {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  });
+  assert.equal(entries.filter(name => UUID.test(name)).length, 1);
+  await withCopy(async (root, expected) => {
+    const library = new SessionLibrary({ root });
+    const [summary] = await library.list();
+    const archive = await library.read(expected.id);
+    assert.deepEqual(summary, archive.summary);
+    assertSelected(summary, expected.summary);
+    assertSelected(archive.snapshot, expected.saved);
+    assertSelected(inventoryFacts(archive.inventory), expected.inventory);
+    assertSelected(archive.chat.jobs, expected.chat);
+  }, PRUNED);
+});
 
 test("the historical corpus freezes every named archive variant independently of its readers", async () => {
   const entries = await fs.readdir(HISTORICAL, { withFileTypes: true }).catch(error => {
@@ -267,6 +289,7 @@ test("Git ignore rules retain every required frozen file, including WebM clips",
   const root = gitRoot.stdout.trim();
   const files = (await filesUnder(CORPUS)).map(name => path.join(CORPUS, name));
   files.push(...(await filesUnder(HISTORICAL)).map(name => path.join(HISTORICAL, name)));
+  files.push(...(await filesUnder(PRUNED)).map(name => path.join(PRUNED, name)));
   for (const file of files) {
     const relative = path.relative(root, file);
     const result = childProcess.spawnSync("git", ["check-ignore", "--no-index", "--verbose", "--", relative], { cwd: root, encoding: "utf8" });
@@ -504,10 +527,175 @@ test("an explicit resume numbers a new passage past recovered media and both kin
       }
       const archive = await new SessionLibrary({ root: resumedRoot }).read(id);
       assert.equal(archive.snapshot.segments.at(-1).id, expected.resume.nextId);
+      // The resumed life saves in the current version; the copy it started from is the historical witness.
+      const { format, version, ...saved } = JSON.parse(await fs.readFile(path.join(resumedRoot, id, "session.json"), "utf8"));
+      assert.deepEqual([format, version], ["tvlens-viewing-memory", 1]);
+      assert.deepEqual(archive.snapshot, saved, "the library reads the version it wrote back to the saved model");
       assert.deepEqual(inventoryFacts(archive.inventory).orphans, [...expected.inventory.orphans].sort());
       assert.deepEqual(providers.calls, []);
     } finally {
       await fs.rm(temp, { recursive: true, force: true });
     }
   }, path.join(HISTORICAL, "modern-without-manifest"));
+});
+
+function mediaFacts(state) {
+  return [...state.history, ...state.segments].map(passage => [
+    passage.id, Boolean(passage.available), passage.mediaReason ?? null, passage.revision,
+  ]);
+}
+
+async function assertHistoricalQuestionTools(runtime) {
+  const makeTools = signal => new VideoTools({
+    consultation: consultationOf(runtime.session.memory.view()), signal,
+    search: runtime.session.search, media: runtime.session.memoryMedia,
+    inspector: { inspect: async () => assert.fail("unavailable media must never reach an inspector") },
+  });
+  const tools = makeTools();
+  const found = await tools.call("search_moments", { query: "cercle bleu" });
+  assert.ok(found.moments.some(passage => passage.id === "moment-1" && passage.text.includes("cercle bleu")));
+  const text = await tools.call("get_transcript", { startMs: 0, endMs: 1000 });
+  assert.equal(text.passages[0].transcript, "Un cercle bleu traverse l’écran.");
+  assert.equal(text.passages[0].available, false);
+  await assert.rejects(tools.call("inspect_clip", { startMs: 0, endMs: 1000, question: "Quelle forme ?" }), /Média expiré/);
+  await assert.rejects(tools.call("inspect_clip", { startMs: 8000, endMs: 9000, question: "Quelle forme ?" }), /Média introuvable/);
+  assert.deepEqual(tools.observations, []);
+  assert.equal(tools.inspections, 0);
+  tools.release();
+
+  // Le second passage du corpus n'a jamais été analysé : son placeholder ne justifie aucune citation.
+  const deep = new DeepAsk({ makeTools, agent: { answer: async ({ context, tools }) => {
+    assert.deepEqual(context.passages, []);
+    await tools.call("get_transcript", { startMs: 1000, endMs: 2000 });
+    assert.deepEqual(tools.memoryEvidence, []);
+    assert.deepEqual(tools.transcriptEvidence, []);
+    return { answer: "Une image inventée.", kind: "observation",
+      citations: [{ id: "moment-2", startMs: 1000, endMs: 2000 }], limits: [] };
+  } } });
+  deep.start("Que voyait-on ?", { mode: "chat", startMs: 1000, anchorMs: 2000 });
+  await deep.jobs[0].done;
+  const job = deep.snapshot().jobs[0];
+  assert.equal(job.status, "done");
+  assert.equal(job.result.kind, "insufficient");
+  assert.deepEqual(job.result.citations, []);
+  assert.deepEqual(job.result.observations, []);
+  assert.notEqual(job.result.answer, "Une image inventée.");
+  assert.equal(job.validation.acceptedCitations, 0);
+}
+
+test("the pruned archive opens without writes or providers and resumes durably without recovering missing media", async t => {
+  const providers = forbidProviders(t);
+  await withCopy(async (root, expected) => {
+    let clock = 0;
+    const runtime = historicalRuntime(root, providers, () => clock);
+    try {
+      await runtime.open(expected.id);
+      const state = runtime.snapshot().session;
+      assert.deepEqual([state.retention, state.retentionMs], ["until-deleted", null]);
+      assert.deepEqual(mediaFacts(state), expected.restored);
+      assert.deepEqual(runtime.snapshot().captureGaps, expected.captureGaps);
+      assertSelected(state, { questions: expected.saved.questions, coverage: expected.saved.coverage });
+      await assertHistoricalQuestionTools(runtime);
+    } finally {
+      await runtime.close();
+    }
+    assert.deepEqual(providers.calls, []);
+    const temp = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-pruned-resume-"));
+    const resumedRoot = path.join(temp, "copy");
+    try {
+      await fs.cp(root, resumedRoot, { recursive: true });
+      const before = await fingerprint(resumedRoot);
+      providers.agent.prepare = async () => {};
+      providers.overrides.perception = {
+        prepare: async () => {},
+        transcribe: async () => ({ observation: { transcript: "Nouvelles paroles." } }),
+        observeVisual: async () => ({ observation: { summary: "Nouvelle image." } }),
+      };
+      const resumed = historicalRuntime(resumedRoot, providers, () => clock);
+      let oldState;
+      try {
+        await resumed.open(expected.id);
+        oldState = resumed.snapshot().session;
+        assert.deepEqual(await fingerprint(resumedRoot), before);
+        await resumed.resume(expected.id);
+        const input = await resumed.session.store.read("moment-4");
+        clock = 1000;
+        const id = await resumed.ingest({
+          sessionId: expected.id, startMs: expected.resume.startMs, endMs: expected.resume.endMs,
+          clip: await fs.readFile(path.join(resumedRoot, expected.id, "media", "moment-4.webm")),
+          audio: input.audio, frames: input.frames.map(frame => ({ ...frame, atMs: expected.resume.startMs })),
+        });
+        assert.equal(id, expected.resume.nextId);
+        await until(() => !resumed.session.watch.running, "new analysis finishes");
+        clock += 3600000;
+        resumed.session.watch.emit();
+        await resumed.pause();
+        clock += 3600000;
+        resumed.session.watch.emit();
+        const state = resumed.snapshot().session;
+        assert.deepEqual(mediaFacts(state), [...expected.restored, ["moment-5", true, null, 3]]);
+        assert.deepEqual(state.questions, oldState.questions);
+        assert.deepEqual(state.gaps, oldState.gaps);
+        assert.deepEqual(state.history.slice(0, 2), oldState.history);
+        assert.deepEqual(state.coverage, { ...oldState.coverage, passages: 5 });
+        assert.deepEqual([state.apiCalls, state.apiCost], [oldState.apiCalls + 1, oldState.apiCost]);
+        assertChat(resumed.snapshot().chat.jobs, expected.chat, expected.id);
+      } finally {
+        await resumed.close();
+      }
+      assert.equal(resumed.lastEnd.archived, true);
+      const after = new Map((await fingerprint(resumedRoot)).map(row => [row.name, row]));
+      for (const row of before.filter(row => /\/(media|thumbs)\//.test(row.name))) assert.deepEqual(after.get(row.name), row);
+      const library = new SessionLibrary({ root: resumedRoot });
+      const archive = await library.read(expected.id);
+      assert.deepEqual([...archive.inventory.ids].sort(), ["moment-4", "moment-5"]);
+      assert.deepEqual([archive.manifest.state, archive.manifest.media.retention], ["archived", "until-deleted"]);
+      const reopened = historicalRuntime(resumedRoot, providers);
+      try {
+        await reopened.open(expected.id);
+        assert.deepEqual(mediaFacts(reopened.snapshot().session), [...expected.restored, ["moment-5", true, null, 3]]);
+        assert.deepEqual(reopened.snapshot().session.questions, oldState.questions);
+      } finally {
+        await reopened.close();
+      }
+      assert.deepEqual(providers.calls, []);
+    } finally {
+      await fs.rm(temp, { recursive: true, force: true });
+    }
+  }, PRUNED);
+});
+
+test("a resumed pruned archive cannot confirm its new life when the state or final manifest is refused", async t => {
+  for (const refused of ["session.json", "manifest.json"]) {
+    await t.test(refused, async t => {
+      const temp = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-pruned-refusal-"));
+      const root = path.join(temp, "copy");
+      await fs.cp(PRUNED, root, { recursive: true });
+      const expected = JSON.parse(await fs.readFile(path.join(root, "expected.json"), "utf8"));
+      const providers = forbidProviders(t);
+      providers.agent.prepare = async () => {};
+      providers.overrides.perception.prepare = async () => {};
+      const runtime = historicalRuntime(root, providers);
+      try {
+        await runtime.open(expected.id);
+        const target = path.join(root, expected.id, refused);
+        const before = await fs.readFile(target);
+        const writeFile = fs.writeFile;
+        t.mock.method(fs, "writeFile", (file, ...args) => {
+          if (file === target + ".tmp") return Promise.reject(Object.assign(new Error("Écriture refusée."), { code: "EIO" }));
+          return writeFile(file, ...args);
+        });
+        await runtime.resume(expected.id);
+        const ended = await runtime.end();
+        assert.equal(ended.archived, false);
+        assert.ok(ended.errors.length > 0);
+        assert.deepEqual(await fs.readFile(target), before);
+        assert.equal((await runtime.library.read(expected.id)).inventory.ids.has("moment-4"), true);
+        assert.deepEqual(providers.calls, []);
+      } finally {
+        await runtime.close();
+        await fs.rm(temp, { recursive: true, force: true });
+      }
+    });
+  }
 });

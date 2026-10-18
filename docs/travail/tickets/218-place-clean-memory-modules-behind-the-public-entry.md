@@ -1,7 +1,7 @@
 ---
 id: T218
 titre: Place clean memory modules behind the public entry and share topic continuity
-statut: a-faire
+statut: termine
 bloque_par: T214
 adr: oui
 installe: non
@@ -129,3 +129,59 @@ L'inventaire du gel vaut avant les prérequis. Aucun changement métier de compa
 n'est demandé : si une identité unifiée est souhaitée, elle demande une décision séparée.
 
 ## Journal
+
+
+- Exploration : règles, skill, code et contrats relus ; état initial conservé dans
+  `.harness-state/tickets/T218/exploration.md`. Aucun écart prévu.
+  Déplacements retenus : `topic-summary` vers `core/memory/`, `passage-text` vers `core/shared/`.
+  `perception-context`, `living-recap`, `moment-search`, `moment-index`, `session-timeline`
+  restent sur place avec leur gel actuel.
+
+- Placement, rouge puis vert :
+  `node --test --test-name-pattern='topic summaries belong' tests/architecture.test.cjs`
+  échoue sur l'assertion de présence de l'ancien `core/topic-summary.cjs`.
+  Après déplacement et suppression des trois exceptions devenues inutiles,
+  `node --test --test-concurrency=1 tests/topic-summary.test.cjs tests/perception-context.test.cjs tests/session-timeline.test.cjs tests/architecture.test.cjs`
+  passe (sorties `placement-red.log` et `placement-green.log` dans le dossier d'état).
+- Continuité : `node --test tests/perception-context.test.cjs` passe avant extraction
+  avec les nouveaux cas 1000/1001 ms, casse/accents, passage sans sujet court et retour après rupture.
+  Après extraction de `continuesTopic`,
+  `node --test --test-concurrency=1 tests/perception-context.test.cjs tests/topic-summary.test.cjs tests/session-timeline.test.cjs`
+  passe : 32 tests, 0 échec. Les résultats existants servent de caractérisation du refactoring.
+- Recherche, rouge observé :
+  `node --test --test-name-pattern='indexing selects embeddings' tests/session-providers.test.cjs`
+  échoue sur l'assertion des arguments du constructeur injecté sous `MemorySearch`.
+  Classe, export, port, injection, tests et scripts sont ensuite renommés ; le fichier gelé et
+  toutes les données historiques restent inchangés. Sonde réelle adaptée sans exécution.
+- ADR 0053 ajouté : placement du texte partagé et maintien des identités propres aux projections.
+  `node_modules/.bin/eslint --prune-suppressions core/perception-context.cjs core/session-timeline.cjs core/memory/topic-summary.cjs core/memory/topic-continuity.cjs core/shared/passage-text.cjs`
+  passe ; aucune suppression devenue inutile, gel inchangé.
+
+- Vérification séquentielle :
+  `node --test --test-concurrency=1 tests/session-providers.test.cjs tests/moment-index.test.cjs tests/video-research.test.cjs tests/refactor-boundaries.test.cjs tests/review-regressions.test.cjs tests/stream-simulation.test.cjs tests/architecture.test.cjs tests/architecture-guard.test.cjs`
+  passe : 622 tests, 0 échec (sortie `search-guard-green.log`).
+- `node scripts/check.mjs --changed` : vert ; règles, format, lint, gel et cliquet verts,
+  131 tests JS, 0 échec (sortie `check-changed.log`). `git diff --check` passe.
+  Les deux fichiers déplacés sont identiques octet par octet à leur contenu dans HEAD.
+  Aucun symbole actif `MomentSearch` ne reste dans le code, les tests ou les scripts.
+
+- Premier `node scripts/check.mjs` : règles, format, lint, gel, cliquet et Python verts
+  (47 tests Python). JS : 2557 réussites sur 2558, un échec documentaire déterministe :
+  index de l'ADR 0053 absent dans `docs/architecture.md` (sortie `check-full.log`).
+  `node --test tests/documentation-index.test.cjs` reproduit l'assertion rouge précise
+  (`documentation-red.log`). L'index, la carte de placement et le nom du service dans
+  `docs/architecture.md` sont complétés ; aucune modification des tests.
+
+- `node --test tests/documentation-index.test.cjs` après correction : 12 tests réussis,
+  0 échec (`documentation-green.log`). Relance complète en séquentiel, sortie conservée dans
+  `check-full-final.log`.
+
+- Contrôle final `node scripts/check.mjs` : vert. Règles, format, lint, gel et cliquet conformes ;
+  2558 tests JS réussis dans 143 fichiers, 0 échec ; 47 tests Python réussis.
+  Sortie : `.harness-state/tickets/T218/check-full-final.log`.
+  Aucun cas supprimé, aucune hausse du gel ou modification du plancher.
+  Verdict `TERMINÉ` enregistré pour la relecture par la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T218/relecture-1.md : `docs/domaine.md:99` et `docs/domaine.md:322` citent encore `core/topic-summary.cjs` et `core/passage-text.cjs:8`, deux chemins qui n'existent plus. Ce document est la cible figée du découpage, et le ticket ne l'ouvre pas à la modification. Il faudra mettre ces références à jour lors d'une prochaine révision de la cible. Classe : **hors périmètre**.

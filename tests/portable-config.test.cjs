@@ -31,3 +31,16 @@ test('fresh installation works without an optional env file and keeps writable u
   assert.equal(d.whisperBinary,'/custom/whisper');
   await assert.rejects(loadConfig({...opts,configPath:root}),{code:'EISDIR'});
 });
+
+test('explicit Whisper environment overrides win with and without an imported configuration', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-whisper-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const configPath = path.join(root, 'speech.env');
+  await fs.writeFile(configPath, 'TVLENS_WHISPER_MODEL=/file/model.bin\nTVLENS_WHISPER_BINARY=/file/whisper\n');
+  const environment = { TVLENS_WHISPER_MODEL: '/environment/model.bin', TVLENS_WHISPER_BINARY: '/environment/whisper' };
+  for (const imported of [configPath, undefined]) {
+    const config = await loadConfig({ configPath: imported, userData: root, safeStorage: { isEncryptionAvailable: () => false }, environment });
+    assert.equal(config.whisperModel, environment.TVLENS_WHISPER_MODEL);
+    assert.equal(config.whisperBinary, environment.TVLENS_WHISPER_BINARY);
+  }
+});

@@ -18,7 +18,7 @@ test('capture continues with bounded analysis backlog and explicit skipped passa
   } });
   await f.add(0); await tick();
   for (let i = 1; i < 9; i++) await f.add(i);
-  assert.equal(f.watch.queue.length, 6);
+  assert.equal(f.watch.snapshot().audioPending, 6);
   assert.equal(f.files.size, 9);
   assert.equal(f.watch.segments.filter(s => s.status === 'skipped').length, 2);
   gate.resolve(); await tick(); await tick();

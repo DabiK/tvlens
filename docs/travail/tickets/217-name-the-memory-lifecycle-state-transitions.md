@@ -1,7 +1,7 @@
 ---
 id: T217
 titre: Name the memory lifecycle state transitions in an internal value object
-statut: a-faire
+statut: termine
 bloque_par: T214
 adr: oui
 installe: non
@@ -94,3 +94,59 @@ transition produit. Si une simplification impose de rendre illégale une combina
 exposée, consigner cette hypothèse et demander une décision au lieu de changer la règle en refactorant.
 
 ## Journal
+
+- Exploration : table des quatre axes et dix combinaisons atteignables consignée dans
+  `.harness-state/tickets/T217/exploration.md`. Effets, garde disque et propriétaires des voies
+  restent inchangés ; aucun écart de périmètre prévu (`ecarts.md`).
+- Tests d'abord : `node --test --test-name-pattern='lifecycle reads cannot' tests/watch-session-ending.test.cjs`
+  rouge sur l'affectation de `closed` ; `node --test tests/memory-lifecycle-state.test.cjs` rouge sur
+  l'export attendu. Sorties conservées dans `red-lifecycle-reads.log` et `red-value.log` du dossier d'état.
+- Valeur et lectures : `node --test --test-concurrency=1 tests/memory-lifecycle-state.test.cjs tests/watch-session-ending.test.cjs`
+  vert, 11/11. Référence privée, transitions pures et getters ; effets conservés dans les commandes.
+- Migration vision : le lancement ciblé de `architecture-f08` observe deux refus manquants à cause des
+  anciennes affectations ignorées (`red-vision-fixtures.log`). Remplacement par `beginEnding` et
+  restauration ; le banc des voies garde le refus en lecture seule avant et après relecture média.
+- `node --test --test-concurrency=1 tests/memory-lanes.test.cjs tests/architecture-f08.test.cjs tests/session-lifecycle.test.cjs`
+  vert, 41/41 (`green-vision-lifecycle-corrected.log`). Le premier lancement avait une attente de test
+  erronée sur le manifeste automatique lors d'une reprise ; la preuve concerne la sauvegarde de Mémoire,
+  retenue jusqu'à libération de la promesse. Aucun comportement produit modifié pour cette attente.
+- ADR 0052 ajouté sur les axes et la propriété des transitions.
+- `node scripts/check.mjs --changed` : vert, règles, format, lint, gel, cliquet et 52/52 tests JS.
+  Aucune suppression ESLint devenue inutile. Sortie : `check-changed.log`.
+- Acceptation : `node --test --test-concurrency=1 tests/memory-lifecycle-state.test.cjs tests/watch-session-ending.test.cjs tests/session-lifecycle.test.cjs tests/session-optimization.test.cjs tests/session-latency.test.cjs tests/architecture-f08.test.cjs tests/disk-guard.test.cjs tests/capture-intake.test.cjs tests/server-ingest-path.test.cjs tests/architecture-f06.test.cjs tests/session-durable.test.cjs tests/session-events.test.cjs tests/architecture.test.cjs tests/architecture-guard.test.cjs`
+  vert, 701/701 en séquentiel (`acceptance.log`). La garde protège toujours les quatre drapeaux
+  et son banc rejette leurs écritures par les hôtes ; aucune permission ni exemption ajoutée.
+- Premier `node scripts/check.mjs` : contrôles statiques verts, 2551/2552 JS et 47 Python verts ;
+  seul l'index de l'ADR 0052 manque dans `docs/architecture.md` (`check-full.log`).
+  `node --test tests/documentation-index.test.cjs` confirme l'assertion précise (11/12),
+  puis passe après ajout du lien et de la description du propriétaire (12/12).
+  Sorties : `red-documentation-index.log` et `green-documentation-index.log`.
+- Contrôle final : `node scripts/check.mjs` vert, 2552/2552 JS (143 fichiers) et 47 Python ;
+  règles, format, lint, gel et cliquet verts (`check-full-final.log`).
+  `git diff --check` vert ; recherche sans affectation directe des quatre drapeaux dans la racine.
+  Verdict `TERMINÉ` consigné dans le dossier d'état ; remise à la boucle pour relecture, sans commit ni push.
+- Reprise après `relecture-1.md` : constat mineur accepté (refus de restauration sans code et règle
+  de fermeture dupliquée). Rapport, journal, écarts, témoin de hooks, état Git et diff relus.
+  Correction prévue dans `exploration.md` et `ecarts.md`, sans élargissement du périmètre.
+- Correction du refus : `node --test tests/memory-lifecycle-state.test.cjs` rouge sur le code
+  absent de `restore` (1/2), puis vert (2/2) après ajout de `TVLENS_MEMORY_RESTORE_REFUSED`.
+  Sorties : `correction-1-red-value.log` et `correction-1-green-value.log`.
+- Preuve publique : `node --test --test-name-pattern='restoration refusals' tests/watch-session-ending.test.cjs`
+  rouge sur le refus non codé de la racine (0/1, `correction-1-red-root.log`).
+  La racine prépare désormais la valeur en tête et ne l'installe qu'à la fin ; le refus de fermeture
+  appartient à la valeur. Sa précondition de mémoire déjà commencée partage la fabrique d'erreur,
+  sans duplication du message. ADR 0052 précisé.
+- `node --test --test-concurrency=1 tests/memory-lifecycle-state.test.cjs tests/watch-session-ending.test.cjs tests/session-lifecycle.test.cjs tests/session-durable.test.cjs`
+  vert, 52/52 (`correction-1-green-restoration.log`). Les refus fermé/déjà commencé gardent leur
+  priorité ; une archive invalide ne change ni axes, ni mémoire, ni publications ou sauvegardes.
+- `node scripts/check.mjs --changed` : vert, 53/53 JS et contrôles statiques
+  (`correction-1-check-changed.log`). Recherche : un seul message de refus défini, aucune condition
+  `closed` dans la restauration de la racine ; aucun test supprimé ni permission changée.
+- Validation finale de correction : `node scripts/check.mjs` vert, 2553/2553 JS et 47 Python,
+  règles, format, lint, gel et cliquet verts (`correction-1-check-full.log`). `git diff --check` vert.
+  Constat 1 corrigé ; nouveau verdict `TERMINÉ` écrit, sans réserve, commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T217/relecture-2.md : **Écart accepté, migration de la fixture lecture seule (critère 4).** Il est inchangé depuis la relecture 1, et la raison tient toujours : on ne fabrique pas un état qu'aucune commande ne produit, et le refus reste prouvé dans `memory-lanes.test.cjs:233`.
+- .harness-state/tickets/T217/relecture-2.md : **Écart accepté, index de l'ADR 0052 dans `docs/architecture.md`.** Il est inchangé et reste nécessaire pour livrer l'ADR.

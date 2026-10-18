@@ -76,7 +76,7 @@ class DeepAsk {
     this.sequence=Math.max(this.sequence,...this.jobs.map(j=>Number(/^deep-(\d+)$/.exec(j.id)?.[1])||0));
     return this.snapshot();
   }
-  start(question, {mode='inspect',intent,snapshot,anchorMs,startMs} = {}) {
+  start(question, {mode='inspect',intent,consultation,anchorMs,startMs} = {}) {
     if (typeof question !== 'string' || !question.trim() || question.length > 2000)
       throw domainError(TVLENS_QUESTION_INVALID, 'Question invalide.');
     if (this.jobs.filter(j => j.status === 'queued').length >= 5)
@@ -89,7 +89,7 @@ class DeepAsk {
     const controller=new AbortController();
     // The ceiling travels with the job: clients show elapsed / ceiling from the published state, without a literal of their own.
     const job={id:`deep-${++this.sequence}`,question,mode,intent,createdAt:this.now(),timeoutMs:this.timeoutMs,status:'queued',message:'En attente de la réponse précédente…',activity:[],preview:'',controller,result:null};
-    job.tools=this.makeTools(controller.signal,message=>this.progress(job,{message}),{snapshot,anchorMs,startMs});
+    job.tools=this.makeTools(controller.signal,message=>this.progress(job,{message}),{consultation,anchorMs,startMs});
     if(anchorMs!==undefined||startMs!==undefined)job.tools.scope?.({anchorMs,startMs});
     job.sessionId=job.tools.sessionId;job.anchorMs=job.tools.anchorMs;
     // Freshness shown to the viewer: what was consultable when the question froze. Times and counts only.

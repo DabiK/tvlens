@@ -11,8 +11,14 @@ function stage(options = {}) {
   const calls = [];
   const deep = { jobs: [] };
   const viewingActions = new ViewingActions({ makeId: () => 'token' });
+  const reads = { snapshots: 0 };
+  // The memory view of the loaded session, as these actions read it: identity, clock and observed passages.
+  const view = () => ({ session: { id: state.id }, clock: { elapsedMs: state.elapsedMs, capturedThroughMs: state.capturedThroughMs },
+    passages: [...state.history, ...state.segments] });
   const runtime = {
-    watch: { snapshot: () => state },
+    // Still read by the search, which keeps the session state; no moment action reaches it.
+    watch: { snapshot: () => { reads.snapshots++; return state; } },
+    memory: { view },
     search: { search: async () => ({ moments: [] }) },
     store: { read: async () => ({ frames: [{ dataUrl: 'preview-a' }] }) },
   };
@@ -25,7 +31,7 @@ function stage(options = {}) {
       return { id: 'question-1', status: 'queued' };
     },
   });
-  return { actions, state, runtime, calls, deep, load: value => { loaded = value; } };
+  return { actions, state, runtime, calls, deep, reads, view, load: value => { loaded = value; } };
 }
 
 test('search without a loaded session asks the viewer to start observing', async () => {
@@ -142,6 +148,7 @@ test('mark and freeze read the currently loaded session and retain the catch-up 
   assert.deepEqual(h.actions.freeze({ kind: 'catch-up' }), {
     token: 'token', sessionId: 'session-a', kind: 'catch-up', startMs: 28000, anchorMs: 30000, endMs: 30000,
   });
+  assert.equal(h.reads.snapshots, 0, 'mark and freeze read the memory view, not the session snapshot');
   h.load(null);
   assert.throws(() => h.actions.freeze(), { message: 'Lance TVLens sur une vidéo pour utiliser cette action.' });
 });
@@ -156,8 +163,10 @@ test('catch-up asks about the captured interval in seconds with the recap intent
   assert.deepEqual(h.calls, [{
     question: 'J’ai décroché. Résume en quelques phrases ce que j’ai manqué entre 8 et 16 secondes. '
       + 'Mentionne les passages non analysés ou manquants. Appuie les points importants sur deux ou trois passages cités.',
-    options: { mode: 'chat', intent: 'recap', snapshot: h.state, startMs: 8000, anchorMs: 30000 },
+    options: { mode: 'chat', intent: 'recap', consultation: { sessionId: 'session-a', anchorMs: 30000, passages: h.view().passages },
+      startMs: 8000, anchorMs: 30000 },
   }]);
+  assert.equal(h.reads.snapshots, 0);
 });
 
 test('catch-up advances the next interval only once the completed answer covers the passages', async () => {
@@ -185,8 +194,10 @@ test('explain sends the chosen question and the selected instant with the frozen
   assert.deepEqual(h.calls, [{
     question: 'Pourquoi ? Instant sélectionné : 30 secondes. '
       + 'Réponds uniquement sur les passages de cet intervalle, en signalant ce qui manque.',
-    options: { mode: 'chat', intent: 'explain-moment', snapshot: h.state, startMs: 10000, anchorMs: 30000 },
+    options: { mode: 'chat', intent: 'explain-moment', consultation: { sessionId: 'session-a', anchorMs: 30000, passages: h.view().passages },
+      startMs: 10000, anchorMs: 30000 },
   }]);
+  assert.equal(h.reads.snapshots, 0);
 });
 
 test('explain refuses questions longer than sixteen hundred characters', () => {
@@ -224,16 +235,18 @@ test('reexamination asks the original question with inspection options limited t
   const segment = { id: 'moment-1', startMs: 8000, endMs: 16000 };
   h.deep.jobs.push({
     id: 'original', sessionId: 'session-a', question: 'Pourquoi ?', intent: 'explain-moment', anchorMs: 16000,
-    tools: { startMs: 8000, segments: [segment, { id: 'later', startMs: 16000, endMs: 24000 }] },
+    tools: { consultationScope: () => ({ sessionId: 'session-a', anchorMs: 16000, startMs: 8000,
+      passages: [segment, { id: 'later', startMs: 16000, endMs: 24000 }] }) },
   });
   assert.deepEqual(h.actions.reexamine('original'), { id: 'question-1', status: 'queued' });
   assert.deepEqual(h.calls, [{
     question: 'Pourquoi ?', options: {
       mode: 'inspect', intent: 'explain-moment', startMs: 8000, anchorMs: 16000,
-      snapshot: { id: 'session-a', elapsedMs: 16000, history: [], segments: [segment] },
+      consultation: { sessionId: 'session-a', anchorMs: 16000, startMs: 8000, passages: [segment] },
     },
   }]);
-  h.load({ runtime: { watch: { snapshot: () => ({ ...h.state, id: 'session-b' }) } } });
+  assert.equal(h.reads.snapshots, 0);
+  h.load({ runtime: { memory: { view: () => ({ ...h.view(), session: { id: 'session-b' } }) } } });
   assert.throws(() => h.actions.reexamine('original'), { message: 'Ce moment n’est plus disponible dans cette session.' });
 });
 

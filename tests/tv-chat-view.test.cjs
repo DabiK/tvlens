@@ -483,3 +483,18 @@ test('the real selected-moment form sends fixed passage bounds and releases the 
   assert.equal(page.activeId(), 'capture');
   assert.equal(calls.filter(call => call.route === '/v1/state').length, 2, 'success accelerates the real poll controller');
 });
+
+
+test('media labels use historical reasons and never infer expiration from a retired session policy', t => {
+  const { view, list } = harness(t);
+  for (const [reason, label] of [[undefined, 'vidéo indisponible'], ['expired', 'vidéo expirée'],
+    ['missing', 'vidéo introuvable'], ['not-kept', 'vidéo non conservée']]) {
+    const state = snapshot([job({ status: 'done', result: {
+      kind: 'explanation', answer: 'Texte conservé.', citations: [{ id: 'moment-1', startMs: 0, endMs: 1000 }],
+    } })]);
+    state.session.retention = 'rolling';
+    state.session.segments = [{ id: 'moment-1', available: false, mediaReason: reason }];
+    view.receive(state, 0);
+    assert.ok(list.textContent.includes('0:00–0:01 · ' + label));
+  }
+});

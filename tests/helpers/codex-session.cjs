@@ -38,6 +38,7 @@ const stdinIsDevice = fs.fstatSync(0).isCharacterDevice();
 const stdin = stdinIsDevice ? fs.readFileSync(0, "utf8") : null;
 const call = {
   args, cwd: process.cwd(), stdin, stdinIsDevice, env, engine: process.env.TVLENS_ENGINE,
+  loopPid: process.ppid, loopLock: fs.readFileSync(".harness-state/loop/lock", "utf8"),
   session, run: process.env.TVLENS_HOOK_RUN, greetingPresent: fs.existsSync("core/greeting.cjs"),
 };
 fs.appendFileSync(calls, JSON.stringify(call) + "\\n");

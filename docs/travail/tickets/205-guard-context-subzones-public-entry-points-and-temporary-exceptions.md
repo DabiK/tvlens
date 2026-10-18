@@ -1,7 +1,7 @@
 ---
 id: T205
 titre: Guard context subzones, public entry points and temporary exceptions
-statut: a-faire
+statut: termine
 bloque_par: T202, T228
 adr: oui
 installe: non
@@ -104,3 +104,130 @@ garde lexicale. Une arête produit contraire à la cible est signalée, sans per
 pour masquer le conflit. Le stock gelé du temps et les gardes existantes restent indépendants.
 
 ## Journal
+
+- Exploration : règles, skill, garde, banc, appelant et ADR lus ; état initial conservé dans
+  `.harness-state/tickets/T205/exploration.md`. Six zones racines, aucun contexte produit ; noyau
+  `core/shared/` déjà présent. Aucun écart prévu (`ecarts.md`).
+- Tests d'abord, sorties conservées dans `.harness-state/tickets/T205/` :
+  `node --test --test-name-pattern='^context declaration' tests/architecture-guard.test.cjs` :
+  rouge sur le diagnostic manquant, puis 1/1 vert (`subzone-red.log`, `subzone-green.log`).
+  `node --test --test-name-pattern='^context domains' tests/architecture-guard.test.cjs` :
+  rouge sur le refus entre domaines ; `node --test --test-name-pattern='^context ' tests/architecture-guard.test.cjs` :
+  12/12 verts après implémentation (`domain-red.log`, `domain-green.log`). Lors de l'élargissement,
+  deux fixtures de commentaires multilignes laissaient un import actif ; corrigées sans changement du lexer.
+- `node --test --test-name-pattern='^context modules require' tests/architecture-guard.test.cjs` :
+  rouge observé (import accepté à tort), puis 1/1 vert (`flat-red.log`, `flat-green.log`).
+  `node --test --test-name-pattern='^migration exceptions permit' tests/architecture-guard.test.cjs` :
+  rouge sur les arêtes exactes encore refusées, puis 2/2 verts (`migration-red.log`, `migration-green.log`).
+- `node --test --test-name-pattern='^migration exceptions (expire|require|reject)' tests/architecture-guard.test.cjs` :
+  rouge sur les exceptions inutiles ou invalides ; `node --test --test-name-pattern='^migration exceptions' tests/architecture-guard.test.cjs` :
+  14/14 verts après validation (`exception-validation-red.log`, `exception-validation-green.log`).
+- `node --test --test-name-pattern='^guard fixture reports' tests/architecture-guard.test.cjs` :
+  rouge sur l'identification du défaut du banc. Après correction,
+  `node --test --test-name-pattern='^(context |migration exceptions|guard fixture reports)' tests/architecture-guard.test.cjs` :
+  35/35 verts (`bench-red.log`, `context-migration-green.log`), dont les gardes indépendantes du temps et de pureté.
+- Zones réellement ajoutées : uniquement `core/shared/**`, déjà présent. Permission exacte ajoutée
+  à `core/**`, `adapters/**`, `runtime/**`, `server/**`, `mcp/**`, `app/**` ; noyau limité à lui-même.
+  Aucun contexte ou exception produit ajouté. `node --test tests/architecture.test.cjs` : 10/10 verts
+  (`architecture.log`) ; arêtes vers le noyau observées : 5 depuis `core/**`, 2 depuis `adapters/**`.
+- Banc complet avant nettoyage : `node --test tests/architecture-guard.test.cjs` : 472/472 verts
+  (`architecture-guard.log`). `node_modules/.bin/eslint tests/architecture.test.cjs tests/architecture-guard.test.cjs` :
+  rouge sur un échappement inutile et une complexité de 17 ; extraction de la vérification d'une
+  arête et correction de la regex, puis lint vert sans suppression (`lint-red.log`, `lint-green.log`).
+  `node --test tests/architecture.test.cjs` relancé après nettoyage : 10/10 verts (`architecture-final.log`).
+- Après nettoyage, exécution séquentielle : `node --test tests/architecture.test.cjs` : 10/10 verts ;
+  `node --test tests/architecture-guard.test.cjs` : 472/472 verts (`architecture-guard-final.log`) ;
+  `node --test --test-concurrency=1 tests/tv-*.test.cjs` : 149/149 verts (`tv-suites.log`).
+  `git diff --check` : vert. ADR 0044 et consignes de déclaration ajoutés à `CONTRIBUTING.md`.
+- `node scripts/check.mjs --changed` : vert (règles, format, lint, gel du lint, cliquet ;
+  482 tests JS réussis dans les deux fichiers modifiés). Le compteur textuel des cas produit
+  passe de 1211 à 1228, sans modifier son plancher (`check-changed.log`).
+- Premier contrôle complet `node scripts/check.mjs` : règles, format, lint, gel et cliquet verts ;
+  2349/2350 tests JS réussis, 47 tests Python réussis. Seul échec : lien de `CONTRIBUTING.md` vers
+  l’ADR 0044 encore non suivie par Git, exclue volontairement de l'inventaire documentaire.
+  `node --test tests/documentation-index.test.cjs` reproduit le rouge (10/11, `documentation-index-red.log`).
+  Référence conservée sous forme de chemin explicite ; même commande : 11/11 verts
+  (`documentation-index-green.log`). Aucune assertion modifiée. Réserve d'indexation de l'ADR dans
+  `docs/architecture.md` après intégration consignée dans `ecarts.md` ; ce fichier est hors périmètre.
+- Contrôle final `node scripts/check.mjs` : **vert**, 2350/2350 tests JavaScript et 47 tests Python
+  réussis ; règles, format, lint, gel et cliquet verts (`check-full-final.log`). `git diff --check` : vert.
+  Verdict `TERMINÉ` dans `.harness-state/tickets/T205/verdict.json`, avec la réserve documentaire
+  d’indexation de l’ADR 0044 à l’intégration. Aucun commit ni push ; relecture laissée à la boucle.
+- Reprise après relecture 1 : rapport, ticket/journal, écarts, état Git et diff relus ; trois constats
+  mineurs acceptés, aucun nouveau périmètre. Validation des métadonnées, diagnostic neutre et
+  preuve séparée des zones/permission prévus dans `ecarts.md`, tests d'abord. Les deux constats
+  hors périmètre seront transmis par la boucle depuis le rapport, sans duplication dans `reste`.
+- Constat 1 : `node --test --test-name-pattern='^zone metadata' tests/architecture-guard.test.cjs` :
+  12 rouges observés sur des déclarations acceptées à tort (`correction-1-metadata-red.log`).
+  Validation ajoutée ; `node --test --test-name-pattern='^(zone metadata|context |layer table selects)' tests/architecture-guard.test.cjs` :
+  26/26 verts (`correction-1-metadata-green.log`). L'ancien cas de sous-zone conserve toutes ses
+  assertions et déclare désormais sa couche, son contexte et son entrée.
+- Constat 1, noyau : `node --test --test-name-pattern='^zone metadata rejects a context replacing' tests/architecture-guard.test.cjs` :
+  rouge observé si un contexte remplace le marqueur du noyau (`correction-1-kernel-marker-red.log`).
+  Marqueur rendu obligatoire pour la zone du noyau ; `node --test --test-name-pattern='^zone metadata' tests/architecture-guard.test.cjs` :
+  13/13 verts (`correction-1-kernel-marker-green.log`). Consignes et ADR mis en cohérence.
+- Constats 2 et 3 : `node --test --test-name-pattern='^(layer diagnostics|context declaration)' tests/architecture-guard.test.cjs` :
+  3 rouges puis 3 verts (`correction-1-diagnostic-red.log`, `correction-1-diagnostic-green.log`).
+  Permission décrite sans impératif ; le test du critère 1 exige séparément la paire de zones et le
+  droit précis manquant pour sa zone source, ainsi que les deux chemins.
+- Sensibilité du constat 3 : `node .harness-state/tickets/T205/correction-1-diagnostic-sensitivity.cjs` :
+  deux mutations dans des copies temporaires refusées sur les assertions respectives (zones retirées,
+  détail de permission retiré), puis témoin non modifié vert (`correction-1-diagnostic-sensitivity.log`
+  et journaux `zones`, `permission`, `control`). Le premier script attendait un champ TAP `expected`
+  absent de cette sortie : correction du détecteur pour lire l'assertion réellement affichée, sans
+  changer les tests ; première sortie conservée dans `correction-1-diagnostic-sensitivity-bench-red.log`.
+- Validation après correction, en séquentiel : `node --test tests/architecture.test.cjs` : 10/10 verts
+  (`correction-1-architecture.log`) ; `node --test tests/architecture-guard.test.cjs` : 487/487 verts
+  (`correction-1-architecture-guard.log`) ; `node --test --test-concurrency=1 tests/tv-*.test.cjs` :
+  149/149 verts (`correction-1-tv.log`). Lint des deux fichiers et `git diff --check` verts.
+- `node scripts/check.mjs --changed` après correction : **vert**, 497 tests JS réussis ; règles,
+  format, lint, gel et cliquet verts (`correction-1-check-changed.log`). Le compteur textuel des
+  cas produit monte à 1232, sans modification du plancher. Le contrôle complet est lancé.
+- Contrôle complet après correction : `node scripts/check.mjs` : **vert**, 2365/2365 tests JS
+  et 47 tests Python réussis, règles/format/lint/gel/cliquet verts (`correction-1-check-full.log`).
+  `git diff --check` : vert. Constats 1, 2 et 3 corrigés ; nouveau verdict `TERMINÉ`, aucune
+  réserve propre. Constats hors périmètre transmis par la boucle depuis le rapport accepté.
+  Aucun commit ni push ; relecture laissée à la boucle.
+- Reprise après relecture 2 : rapport, ticket/journal, écarts, état Git et diff relus ; constat mineur
+  sur la couche non contrôlée accepté. Correction prévue dans `ecarts.md` : cohérence racine/couche,
+  sans exiger de contexte pour `runtime/compose/`. Trois constats hors périmètre laissés à la boucle.
+- Relecture 2, constat 1 : ajout de trois couches erronées à la fixture `core/memory/**`, sans contexte
+  ni entrée, et de cinq sous-zones couvrant les autres racines. Commande ciblée :
+  `node --test --test-name-pattern='^zone metadata rejects (an application layer|an adapter layer|a host layer|a .* layer under)' tests/architecture-guard.test.cjs` :
+  8/8 rouges sur des lignes acceptées à tort (`correction-2-layer-red.log`). Association fixe de la
+  racine à sa couche ajoutée avant la validation des rôles, sans permissions ni inventaire associés.
+  `node --test --test-name-pattern='^zone metadata' tests/architecture-guard.test.cjs` : 21/21 verts
+  (`correction-2-layer-green.log`). Le cas `runtime/compose/**` redevient vert avec sa couche correcte,
+  sans contexte. Consignes et ADR explicitent la contrainte.
+- Validation séquentielle après correction de la relecture 2 :
+  `node --test tests/architecture.test.cjs` : 10/10 verts (`correction-2-architecture.log`) ;
+  `node --test tests/architecture-guard.test.cjs` : 495/495 verts (`correction-2-architecture-guard.log`) ;
+  `node --test --test-concurrency=1 tests/tv-*.test.cjs` : 149/149 verts (`correction-2-tv.log`).
+  Lint des deux fichiers vert (`correction-2-lint.log`) et `git diff --check` vert.
+- `node scripts/check.mjs --changed` : **vert**, 505 tests JS réussis ; règles, format, lint, gel
+  et cliquet verts (`correction-2-check-changed.log`). Compteur textuel produit à 1233, sans changer
+  le plancher. Contrôle complet lancé sur cet état.
+- Contrôle complet après correction de la relecture 2 : `node scripts/check.mjs` : **vert**,
+  2373/2373 tests JS et 47 tests Python réussis ; règles/format/lint/gel/cliquet verts
+  (`correction-2-check-full.log`). `git diff --check` : vert. Constat mineur 1 corrigé ; nouveau
+  verdict `TERMINÉ`, aucune réserve propre. Les trois constats hors périmètre restent transmis
+  par la boucle depuis le rapport de relecture. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T205/relecture-3.md : 1. `tests/architecture.test.cjs:311-313` et `:353` : hors périmètre (constat 2 de la relecture 2, reconduit)
+
+  **Problème.** Une exception de migration peut encore autoriser une arête qui va contre le sens des couches, par exemple `core/memory/x.cjs` → `runtime/module.cjs`. Le diagnostic du code plat conseille même d'en déclarer une dans ce cas. La correction n'a pas touché ce code. La table d'exceptions du produit est vide, donc rien ne régresse aujourd'hui.
+
+  **Attendu.** Dans un ticket ultérieur :
+  - limiter les exceptions aux arêtes dont la racine de destination est permise à la racine d'origine ;
+  - ne pas conseiller d'exception pour une arête du domaine vers `runtime/`.
+
+  En attendant, cela reste une réserve.
+- .harness-state/tickets/T205/relecture-3.md : 2. `docs/architecture.md`, section « Décisions » : hors périmètre (reconduit)
+
+  L'ADR 0044 doit y être indexé dès l'intégration. Sinon, `tests/documentation-index.test.cjs` sera rouge sur HEAD. La réserve est inchangée.
+- .harness-state/tickets/T205/relecture-3.md : 3. `docs/architecture.md:17-21` : hors périmètre (reconduit)
+
+  La table des couches ne mentionne ni `core/shared/**`, ni les métadonnées de contexte, ni les exceptions de migration. Elle ne dit pas non plus que la racine fixe la couche. La réserve est inchangée.
+- .harness-state/tickets/T205/relecture-3.md : **Écart accepté, critère 6 (référence à l'ADR 0044 en chemin explicite) :** je maintiens la décision des relectures 1 et 2. Rien n'a changé sur ce point, et aucun test ni aucune assertion n'a été modifié.

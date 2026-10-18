@@ -1,3 +1,4 @@
+const { consultationOf } = require('../core/video-tools.cjs');
 const SEARCH_TIMEOUT_MS = 15000;
 // Doit égaler le maxlength du champ #moment-question dans app/index.html pour garder la même limite côté hôte et interface.
 const QUESTION_MAX_LENGTH = 1600;
@@ -6,9 +7,10 @@ const SEARCH_RESULT_LIMIT = 6;
 function createMomentActions({ getSession, ask, viewingActions, deep, timeoutSignal = ms => AbortSignal.timeout(ms) }) {
   let searchController;
   const startMomentAction = (input, kind) => {
-    const snapshot = getSession()?.runtime.watch.snapshot();
-    const frozen = viewingActions.resolve(snapshot, input?.token, kind);
-    const eligible = [...snapshot.history, ...snapshot.segments].filter(s => s.startMs >= frozen.startMs && s.endMs <= frozen.anchorMs);
+    // One view for the whole action: the passages it checks are the ones the question will consult.
+    const view = getSession()?.runtime.memory.view();
+    const frozen = viewingActions.resolve(view, input?.token, kind);
+    const eligible = view.passages.filter(s => s.startMs >= frozen.startMs && s.endMs <= frozen.anchorMs);
     if (!eligible.length) throw Error('Aucun nouveau passage capturé pour cet instant. Laisse tourner la vidéo quelques secondes.');
     const endMs = Math.max(...eligible.map(s => s.endMs));
     let question;
@@ -27,7 +29,8 @@ function createMomentActions({ getSession, ask, viewingActions, deep, timeoutSig
         + 'Réponds uniquement sur les passages de cet intervalle, en signalant ce qui manque.';
     }
     const result = ask(question, {
-      mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', snapshot, startMs: frozen.startMs, anchorMs: frozen.anchorMs,
+      mode: 'chat', intent: kind === 'catch-up' ? 'recap' : 'explain-moment', consultation: consultationOf(view),
+      startMs: frozen.startMs, anchorMs: frozen.anchorMs,
     });
     if (kind === 'catch-up') {
       const job = deep.jobs.find(j => j.id === result.id);
@@ -57,13 +60,13 @@ function createMomentActions({ getSession, ask, viewingActions, deep, timeoutSig
       searchController?.abort(new Error(reason));
       searchController = null;
     },
-    freeze: value => viewingActions.freeze(getSession()?.runtime.watch.snapshot(), value),
-    mark: () => viewingActions.mark(getSession()?.runtime.watch.snapshot()),
+    freeze: value => viewingActions.freeze(getSession()?.runtime.memory.view(), value),
+    mark: () => viewingActions.mark(getSession()?.runtime.memory.view()),
     explain: input => startMomentAction(input, 'explain'),
     catchUp: input => startMomentAction(input, 'catch-up'),
     reexamine: jobId => {
       const original = deep.jobs.find(job => job.id === jobId);
-      const { question, options } = viewingActions.reexamination(original, getSession()?.runtime.watch.snapshot());
+      const { question, options } = viewingActions.reexamination(original, getSession()?.runtime.memory.view());
       return ask(question, options);
     },
   };

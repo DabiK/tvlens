@@ -1,7 +1,8 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const {test}=require('node:test');const assert=require('node:assert/strict');
 const {LivingRecap}=require('../core/living-recap.cjs');
 const source=(id,startMs,endMs,text='Une scène',status='ready')=>({id,startMs,endMs,status,available:true,observation:status==='ready'?{summary:text}:null});
-const snapshot=(segments,history=[],id='s')=>({id,segments,history});
+const snapshot=(segments,history=[],id='s')=>memoryOf({id,segments,history}).view();
 const synthesize=({chapters,newPassages})=>({overview:'Vue d’ensemble de la session. Les sujets évoluent.',chapters:[...chapters.map(c=>({...c})),...newPassages.filter(p=>!chapters.some(c=>c.sourceIds.includes(p.id))).map(p=>({title:'Sujet '+p.id,summary:p.text,sourceIds:[p.id]}))]});
 
 test('first ready passage synthesizes immediately, later passages throttle and pending-to-ready changes trigger work',async()=>{
@@ -156,4 +157,16 @@ test('restoring abandons a synthesis in flight; a missing recap or a chapter wit
   sourcePassages:[{id:'a',startMs:0,endMs:100,text:'Texte a',available:true},{id:'b',startMs:100,endMs:200,text:'Texte b',available:true},{id:'bad',startMs:'0',endMs:1,text:'ignoré'}]});
  assert.deepEqual(odd.chapters.map(c=>[c.title,c.sourceIds]),[['Gardé',['a']]]);assert.equal(odd.sourceCount,2);assert.equal(odd.pendingCount,1,'what no chapter covers is sent at the next synthesis');
  assert.equal(changes,before);
+});
+
+test('memory consultation supplies recap sources and foreign sessions leave the current recap intact',async()=>{
+ const recap=new LivingRecap({summarize:async input=>synthesize(input)});
+ recap.reset('s');
+ recap.observe(snapshot([source('a',0,100,'Texte établi')]));
+ await recap.tick();
+ assert.equal(recap.snapshot().sourceCount,1);
+ assert.deepEqual(recap.snapshot().overviewSourceIds,['a']);
+ const before=recap.snapshot();
+ recap.observe(snapshot([source('b',0,100,'Autre session')],[],'other'));
+ assert.deepEqual(recap.snapshot(),before);
 });

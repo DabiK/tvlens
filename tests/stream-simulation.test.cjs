@@ -44,15 +44,6 @@ test('a Whisper slowdown sheds transcriptions but keeps the images, and every lo
   assert.equal(result.audioGaps, c.audioSkipped, 'described passages without speech are listed');
 });
 
-test('an expired medium is refused with an explicit limit while its summary stays searchable', async () => {
-  const result = await runScenario(root, 'expiry', seed);
-  accounted(result);
-  const refused = result.questions.find(q => q.inspectError);
-  assert.match(refused.inspectError, /Média expiré/);
-  assert.equal(refused.resultKind, 'insufficient');
-  assert.ok(result.questions.some(q => q.kind === 'search' && q.searchResults > 0));
-});
-
 test('two simulated hours with a search every 21 minutes: no question is spent catching up the index', async () => {
   const result = await runScenario(root, 'long-lg', seed);
   accounted(result);

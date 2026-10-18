@@ -11,6 +11,9 @@
 const fs = require('node:fs/promises');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
 const { sentences, acceptableText } = require('../core/surveillance.cjs');
+const { createMemoryView } = require('../core/memory/index.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
+const { memoryState } = require('./memory-fixture.cjs');
 
 const option = (name, fallback) => { const i = process.argv.indexOf(`--${name}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback; };
 const instruction = option('instruction', 'Je compte sur toi pour vérifier tous les chiffres qui sont balancés.');
@@ -30,9 +33,10 @@ const PASSAGES = [
 (async () => {
   const started = Date.now(), elapsed = () => Date.now() - started;
   const segments = [], saved = { writes: 0, last: null };
-  // An in-memory session: the role only ever sees text snapshots, exactly as with a real one.
+  // An in-memory session exposes the same consultation port as the hosts.
   const session = {
-    watch: { snapshot: () => ({ id: 'probe-surveillance', elapsedMs: segments.at(-1)?.endMs ?? 0, history: [], segments: segments.map(s => ({ ...s })) }) },
+    memory: { view: () => createMemoryView(memoryState({ id: 'probe-surveillance', segments })) },
+    events: createEventPublisher(),
     store: { saveSurveillance: async snapshot => { saved.writes++; saved.last = snapshot; } },
   };
   const runtime = createSurveillanceRuntime({
@@ -47,7 +51,7 @@ const PASSAGES = [
     runtime.start({ instruction });
     for (const { id, startMs, endMs, transcript } of PASSAGES)
       segments.push({ id, startMs, endMs, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', observation: { transcript, summary: '', visual: '', uncertainty: 'Transcription automatique.' } });
-    runtime.observe(session.watch.snapshot());
+    runtime.observe(session.memory.view());
     await new Promise(resolve => {
       timer = setInterval(() => {
         runtime.tick();

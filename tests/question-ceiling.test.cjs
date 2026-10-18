@@ -10,6 +10,7 @@ const { DeepAsk, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel } = requi
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 
 // The ceiling tests drive the real session core, the real question queue and the composition shared by both
 // hosts on a virtual clock. Providers are in-memory fakes: they prove orchestration, never provider speed.
@@ -32,10 +33,12 @@ function stage(clock, config, answers) {
   const perception = {
     transcribe: async s => { await sleep(TRANSCRIBE_MS); return { observation: { transcript: `Paroles ${s.id}` }, elapsedMs: TRANSCRIBE_MS }; },
     observeVisual: async s => { await sleep(VISION_MS); return { observation: { summary: `Images ${s.id}`, visual: 'Plan fixe' }, elapsedMs: VISION_MS }; } };
-  // One hour of retention keeps expiry out of the picture: only the question may hold anything back here.
-  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, retentionMs: 3600000, visionDuringAsk: config.visionDuringAsk === true });
+  // Seule la politique des questions peut retenir la vision dans ce scénario.
+  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, visionDuringAsk: config.visionDuringAsk === true });
   const agent = scriptedAgent(answers);
-  const { deep } = createConversationRuntime({ agent, config, selectedModels: {}, getSession: () => ({ watch, search: {}, inspector: {}, store: media }),
+  const memory = { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) };
+  const { deep } = createConversationRuntime({ agent, config, selectedModels: {},
+    getSession: () => ({ id: watch.id, memory, memoryMedia: {}, search: {}, inspector: {} }),
     onChange: state => watch.setQuestionPending(hasPendingQuestion(state.jobs, watch.id)) });
   let index = 0;
   const feed = setInterval(() => {
@@ -152,7 +155,7 @@ test('with the vision gate restored (TVLENS_VISION_DURING_ASK=0) a five-minute q
 });
 
 test('the shared composition applies a lowered questionTimeoutMs, refuses any other value and defaults to five minutes', async () => {
-  const session = { watch: { id: 's', snapshot: () => ({ id: 's', elapsedMs: 0, history: [], segments: [] }) }, search: {}, inspector: {}, store: {} };
+  const session = { id: 's', memory: memoryOf({ id: 's', elapsedMs: 0, history: [], segments: [] }), memoryMedia: {}, search: {}, inspector: {} };
   const build = config => createConversationRuntime({ getSession: () => session, agent: scriptedAgent(), config, selectedModels: {} }).deep;
   for (const value of [0, -1, 300001, 1.5, NaN, Infinity, 'abc', '150', true])
     assert.throws(() => build({ questionTimeoutMs: value }), /^Error: Réglage questionTimeoutMs invalide\.$/, String(value));

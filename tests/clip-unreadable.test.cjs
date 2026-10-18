@@ -6,7 +6,7 @@ const path = require('node:path');
 const sharp = require('sharp');
 const { holdsMedia } = require('../core/clip-container.cjs');
 const { WatchSession } = require('../core/session.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
 const { spawnSync } = require('node:child_process');
@@ -96,7 +96,7 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   const empty = await fixture('chromium-webm-no-frame.webm'), head = await fixture('chromium-webm-head.webm');
   f.clock = 2000; await live.watch.ingest({ startMs: 0, endMs: 2000, clip: empty, frames: [{ atMs: 0, dataUrl: f.jpeg }, { atMs: 1200, dataUrl: f.jpeg }], audio: null });
   f.clock = 10000; await live.watch.ingest({ startMs: 2000, endMs: 10000, clip: head, frames: [{ atMs: 2000, dataUrl: f.jpeg }], audio: null });
-  await settle(live.watch); await live.watch.prune();
+  await settle(live.watch);
   // Analysed like any passage, from its images; its video alone is said unreadable. The next one is untouched.
   assert.deepEqual(live.watch.segments.map(s => [s.id, s.status, s.available, s.mediaReason, s.thumbnailAvailable]), [['moment-1', 'ready', false, 'unreadable', true], ['moment-2', 'ready', true, undefined, true]]);
   assert.equal(live.watch.history.length, 0, 'the passage is not archived as if its media had expired');
@@ -110,7 +110,7 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   // Re-examination is not refused: it goes through the real inspector, on the files really stored.
   const dir = await fs.mkdtemp(path.join(f.root, 'decoders-')), tools = await decoders(dir), seen = [];
   const inspector = new ClipInspector({ media: live.store, ffmpeg: tools.works, ...looking(seen) });
-  const video = new VideoTools({ snapshot: live.watch.snapshot(), search: live.search, inspector, media: live.store });
+  const video = new VideoTools({ consultation: consultationOf(live.memory.view()), search: live.search, inspector, media: live.memoryMedia });
   const result = await video.call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' });
   assert.deepEqual(await tools.calls(), [], 'the container known to be empty is not handed to the decoder');
   assert.deepEqual(seen[0].frames, [{ atMs: 0, dataUrl: f.jpeg }, { atMs: 1200, dataUrl: f.jpeg }]);
@@ -149,7 +149,8 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   await fs.rm(path.join(media, 'moment-1.webm'));
   const emptied = await f.reopen(id);
   assert.deepEqual(emptied.watch.segments.map(s => [s.id, s.available, s.mediaReason]), [['moment-1', false, 'missing'], ['moment-2', true, undefined]]);
-  await assert.rejects(new VideoTools({ snapshot: emptied.watch.snapshot(), search: emptied.search, inspector, media: emptied.store }).call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' }), /Média introuvable/);
+  const consulted = new VideoTools({ consultation: consultationOf(emptied.memory.view()), search: emptied.search, inspector, media: emptied.memoryMedia });
+  await assert.rejects(consulted.call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' }), /Média introuvable/);
 });
 
 test('with speech and images analysed apart, the unreadable passage still gets its images described', async () => {
@@ -167,15 +168,6 @@ test('with speech and images analysed apart, the unreadable passage still gets i
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles.' }, elapsedMs: 1 }), observeVisual: async () => ({ observation: { summary: 'Images.' }, elapsedMs: 1 }) } });
   await assert.rejects(strict.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [] }), /disque plein/);
   assert.deepEqual([strict.segments.length, strict.snapshot().coverage.videoUnreadable], [0, undefined]);
-});
-
-test('a rolling window still expires an unreadable passage, and removes its files then', async t => {
-  const f = await runtime(t), live = f.open({ retentionMs: 60000 }), media = path.join(f.sessionsRoot, live.id, 'media');
-  f.clock = 2000; await live.watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), frames: [{ atMs: 0, dataUrl: f.jpeg }], audio: null });
-  await settle(live.watch); await live.watch.prune();
-  assert.deepEqual([live.watch.segments[0].mediaReason, (await fs.readdir(media)).sort()], ['unreadable', ['moment-1.json', 'moment-1.webm']]);
-  f.clock = 120000; await live.watch.prune();
-  assert.deepEqual([live.watch.segments.length, live.watch.history.map(s => [s.id, s.mediaReason]), await fs.readdir(media)], [0, [['moment-1', 'expired']], []]);
 });
 
 test('re-examination falls back on the images kept at capture only when the video itself cannot be decoded', async t => {

@@ -15,8 +15,6 @@ function settings(env=process.env){
   // Converted only: the question and surveillance runtimes own the bounds (1 to 300000 ms, 1 to 3 workers) and refuse the rest at construction.
   questionTimeoutMs:set('TVLENS_QUESTION_TIMEOUT_MS')?Number(env.TVLENS_QUESTION_TIMEOUT_MS):undefined,
   surveillance:set('TVLENS_SURVEILLANCE_WORKERS')?{workers:Number(env.TVLENS_SURVEILLANCE_WORKERS)}:undefined,
-  // Media are kept until the session is deleted; a duration brings the rolling window back. Checked here: the session runtime would only refuse it at the first capture.
-  retentionMs:checked('TVLENS_MEDIA_RETENTION_MS',v=>Number.isFinite(v)&&v>0,'durée positive en millisecondes attendue')??Infinity,
   // Below the floor capture is refused and nothing is deleted; below the warning the state says "low".
   disk:{minFreeBytes:megabytes('TVLENS_DISK_MIN_FREE_MB',1024),warnFreeBytes:megabytes('TVLENS_DISK_WARN_FREE_MB',2048)}};
 }
@@ -37,7 +35,7 @@ async function main(){
  await cleanupCodexContexts({ sweep: confinement.sweepStaleContexts, root: os.tmpdir(), log: line => console.error(line) });
  // Sessions are durable: nothing is swept at start, and a session cut short by the last stop is found listed, whole.
  const sessionsRoot=path.join(root,'sessions');
- const runtime=new HeadlessRuntime({userData:root,sessionsRoot,host:'server',guard:new DiskGuard({path:sessionsRoot,...host.disk}),retentionMs:host.retentionMs,config,transcriptionSettings,selectedModels,codexBinary:executable('codex', {override:process.env.TVLENS_CODEX_BINARY})});
+ const runtime=new HeadlessRuntime({userData:root,sessionsRoot,host:'server',guard:new DiskGuard({path:sessionsRoot,...host.disk}),config,transcriptionSettings,selectedModels,codexBinary:executable('codex', {override:process.env.TVLENS_CODEX_BINARY})});
  const server=await new RemoteServer({
   runtime,media:new RemoteMedia({ffmpeg:config.ffmpeg}),token:token.trim(),
   logError:entry=>console.error('Erreur HTTP inattendue.',entry),

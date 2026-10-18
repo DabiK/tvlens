@@ -6,6 +6,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const { createSessionRuntime } = require("../runtime/session-runtime.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { deferred } = require("./helpers/wait.cjs");
 
 test("default smoke ingestion publishes speech before vision and keeps the next audio independent", async (t) => {
@@ -117,12 +118,12 @@ test("transcription keeps explicit options and reads the current language", () =
   assert.equal(options.getLanguage(), "en");
 });
 
-test("transcription defaults keep the model path and omit an unrequested audio context", () => {
+test("transcription defaults use the application root independently of the budget and omit an unrequested audio context", () => {
   for (const [config, model] of [
-    [{}, path.join(process.cwd(), ".local", "models", "ggml-base.bin")],
+    [{}, path.resolve(__dirname, "../.local/models/ggml-base.bin")],
     [
       { researchBudgetFile: "/research/budget.json" },
-      "/research/models/ggml-base.bin",
+      path.resolve(__dirname, "../.local/models/ggml-base.bin"),
     ],
   ]) {
     const [options] = providers.createSessionTranscriber(
@@ -274,7 +275,7 @@ test("indexing selects embeddings by smoke mode and key and shares its vector ca
       OpenRouterEmbeddings: recordedConstructor(),
       EmbeddingStore: recordedConstructor(),
       MomentIndex: recordedConstructor(),
-      MomentSearch: recordedConstructor(),
+      MemorySearch: recordedConstructor(),
     });
     assert.ok(built.search, "search is available with or without embeddings");
     assert.deepEqual(built.search.args, [{ index: built.index }]);
@@ -358,7 +359,7 @@ function indexDependencies(extra = {}) {
         this.observed = passages;
       }
     },
-    MomentSearch: recordedConstructor(),
+    MemorySearch: recordedConstructor(),
     ...extra,
   };
 }
@@ -376,9 +377,15 @@ test("embeddings overrides bypass smoke and key selection and background indexin
     id: `moment-${i + 1}`,
     status: "ready",
     observation: { summary: `Passage ${i + 1}` },
+    usableObservation: true,
+    revision: 2,
   }));
   segments[20].observation = {};
-  built.feedIndex({ segments });
+  segments[20].usableObservation = false;
+  built.connectIndex({
+    id: "session", events: createEventPublisher(), readOnly: () => false,
+    memory: { recentPassages: limit => segments.slice(-limit) },
+  });
   assert.deepEqual(
     built.index.observed,
     segments.slice(12).filter((segment) => segment.id !== "moment-21"),
@@ -509,4 +516,139 @@ test("the exposed inspector caches results and refuses cached and in-flight call
   await assert.rejects(inspector.inspect(input), /Session terminée/);
   assert.equal(calls, 2);
   assert.equal(inspector.cache.size, 0);
+});
+
+
+test("transcription finds its default model from a different launch folder and explicit configuration wins", async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-launch-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const previous = process.cwd();
+  const expected = path.resolve(__dirname, "../.local/models/ggml-base.bin");
+  try {
+    process.chdir(root);
+    for (const config of [{}, { researchBudgetFile: path.join(root, "budget.json") }, { whisperModel: "/explicit/model.bin" }]) {
+      const installed = new Map([[expected, "Paroles par défaut."], ["/explicit/model.bin", "Paroles explicites."]]);
+      class ModelTranscriber {
+        constructor({ model }) { this.model = model; }
+        async transcribe() { return { text: installed.get(this.model), failed: !installed.has(this.model) }; }
+      }
+      const transcriber = providers.createSessionTranscriber({ config }, { LocalTranscriber: ModelTranscriber });
+      assert.equal(transcriber.model, config.whisperModel || expected);
+      assert.deepEqual(await transcriber.transcribe(), { text: installed.get(config.whisperModel || expected), failed: false });
+    }
+  } finally {
+    process.chdir(previous);
+  }
+});
+
+for (const missing of ['model', 'binary']) {
+  test(`host exposes a missing ${missing} before capture and keeps a coded audio loss after visual success`, async t => {
+    const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
+    const { CodexPerception } = require('../adapters/codex-perception.cjs');
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-speech-host-'));
+    const binary = path.join(root, 'whisper'), model = path.join(root, 'model');
+    await fs.writeFile(binary, '#!/bin/sh\nexit 0\n', { mode: 0o700 });
+    await fs.writeFile(model, 'model');
+    await fs.rm(missing === 'model' ? model : binary);
+    const code = `TVLENS_WHISPER_${missing.toUpperCase()}_MISSING`;
+    const done = deferred();
+    let host;
+    const perception = {
+      transcribe: input => CodexPerception.prototype.transcribe.call({ transcriber: host.transcriber }, input),
+      observeVisual: async () => ({ observation: { summary: 'Images disponibles.' } }),
+    };
+    host = new HeadlessRuntime({
+      sessionsRoot: path.join(root, 'sessions'), userData: root, smoke: true, liveObservation: true,
+      config: { whisperBinary: binary, whisperModel: model }, selectedModels: {}, overrides: { perception },
+    });
+    t.after(async () => { await host.close(); await fs.rm(root, { recursive: true, force: true }); });
+    for (const view of [undefined, 'panel', 'chat']) {
+      assert.equal(host.snapshot(view).transcription.available, false);
+      assert.equal(host.snapshot(view).transcription.code, code);
+      assert.doesNotMatch(JSON.stringify(host.snapshot(view).transcription), new RegExp(root));
+    }
+    const session = await host.start();
+    host.listeners.add(state => {
+      if (state.session?.segments[0]?.visionStatus === 'ready') done.resolve(state);
+    });
+    await host.session.watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array([1]), audio: new Uint8Array([1]), frames: [] });
+    const state = await done.promise;
+    assert.equal(state.session.id, session.id);
+    assert.equal(state.session.coverage.audioError, 1);
+    assert.equal(state.session.segments[0].audioFailed, true);
+    assert.equal(state.session.segments[0].audioFailureCode, code);
+    assert.equal(state.session.audioGaps[0].code, code);
+    assert.equal(host.session.memory.view().coverage.audioGaps[0].code, code);
+    assert.equal(host.snapshot('panel').transcription.code, code);
+  });
+}
+
+test('successful empty speech keeps coverage complete and both real views free of transcription warnings', async t => {
+  const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
+  const { CodexPerception } = require('../adapters/codex-perception.cjs');
+  const { rendererHarness } = require('./helpers/mac-renderer.cjs');
+  const { loadTvPage } = require('./helpers/tv-page.cjs');
+  const { tick } = require('./helpers/wait.cjs');
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-silent-speech-'));
+  const binary = path.join(root, 'whisper'), model = path.join(root, 'model');
+  await fs.writeFile(model, 'model');
+  await fs.writeFile(binary, `#!${process.execPath}\nconst fs = require('node:fs'); const a = process.argv.slice(2);
+fs.writeFileSync(a[a.indexOf('-of') + 1] + '.json', JSON.stringify({ transcription: [] }));\n`, { mode: 0o700 });
+  const done = deferred();
+  let host;
+  host = new HeadlessRuntime({
+    sessionsRoot: path.join(root, 'sessions'), userData: root, smoke: true, liveObservation: true,
+    config: { whisperBinary: binary, whisperModel: model }, selectedModels: {},
+    overrides: { perception: {
+      transcribe: input => CodexPerception.prototype.transcribe.call({ transcriber: host.transcriber }, input),
+      observeVisual: async () => ({ observation: { summary: 'Images disponibles.' } }),
+    } },
+  });
+  t.after(async () => { await host.close(); await fs.rm(root, { recursive: true, force: true }); });
+  await host.start();
+  host.listeners.add(state => { if (state.session?.segments[0]?.visionStatus === 'ready') done.resolve(state); });
+  await host.session.watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array([1]), audio: new Uint8Array([1]), frames: [] });
+  const state = await done.promise;
+  assert.equal(state.session.segments[0].observation.transcript, '');
+  assert.equal(state.session.segments[0].audioFailed, undefined);
+  assert.equal(state.session.coverage.audioError, 0);
+  assert.deepEqual(state.session.audioGaps, []);
+  assert.equal(state.transcription.available, true);
+  const mac = await rendererHarness(t, { configuration: { transcription: state.transcription } });
+  mac.publish('onState', { ...state.session, transcription: state.transcription });
+  mac.frame();
+  assert.equal(mac.get('transcription-warning').hidden, true);
+  const response = value => ({ status: 200, ok: true, headers: { get: () => null }, json: async () => structuredClone(value) });
+  const page = loadTvPage({
+    config: { url: 'https://host.test', controlUrl: 'https://control.test', token: 'fake' },
+    fetch: async url => {
+      const route = new URL(url).pathname;
+      if (route === '/v1/state') return response(state);
+      if (route === '/capture') return response({ active: false });
+      return response({ active: true, mode: 'chat' });
+    },
+  });
+  t.after(() => page.cleanup());
+  await tick();
+  assert.equal(page.document.getElementById('transcription-warning').hidden, true);
+});
+
+test('packaged transcription retains the legacy default path while explicit models still win', () => {
+  for (const [config, model] of [
+    [{}, path.join(process.cwd(), '.local/models/ggml-base.bin')],
+    [{ researchBudgetFile: '/packaged/budget.json' }, '/packaged/models/ggml-base.bin'],
+    [{ whisperModel: '/explicit/model.bin' }, '/explicit/model.bin'],
+  ]) {
+    const [options] = providers.createSessionTranscriber({ config, packaged: true }, { LocalTranscriber: recordedConstructor() }).args;
+    assert.equal(options.model, model);
+  }
+});
+
+test('transcription composition forwards availability failures to its injected publication diagnostic', () => {
+  const onAvailability = () => {}, onPublicationError = () => {};
+  const [options] = providers.createSessionTranscriber({ config: {}, onAvailability, onPublicationError }, {
+    LocalTranscriber: recordedConstructor(),
+  }).args;
+  assert.equal(options.onAvailability, onAvailability);
+  assert.equal(options.onPublicationError, onPublicationError);
 });

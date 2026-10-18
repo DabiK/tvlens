@@ -3,6 +3,8 @@ const assert = require('node:assert/strict');
 const { turns } = require('./helpers/wait.cjs');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
+const { consultationOf } = require('../core/video-tools.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 
 // F04: a finished question keeps its answer, not its working memory. Every case goes through the composition shared
 // by both hosts, on synthetic passages and in-memory doubles: they prove structure and orchestration, never a provider.
@@ -31,15 +33,17 @@ const isCopy = value => typeof value === 'object' && 'observation' in value;
 const copies = root => [...reachable(root)].filter(isCopy);
 
 // One session of a hundred analysed passages. Every question is answered by `answer`; the search, the inspector and
-// the media store are the session's own objects, so that a context still holding them can be told by identity.
+// the media port are the session's own objects, so that a context still holding them can be told by identity. The
+// session publishes its memory through the view contract only: it has no snapshot to read.
 function stage(t, { answer, inspect, config = {} }) {
   const state = { id: 'session-f04', elapsedMs: 100 * BLOCK_MS, history: [], segments: Array.from({ length: 100 }, (_, i) => passage(i + 1)) };
   const used = { searches: [], inspections: [], leases: [], held: 0 }, changes = [], inputs = [];
   const session = {
-    watch: { id: state.id, snapshot: () => ({ id: state.id, elapsedMs: state.elapsedMs, history: [...state.history], segments: state.segments.map(s => ({ ...s })) }) },
+    id: state.id,
+    memory: memoryOf(state),
     search: { search: async ({ segments, anchorMs }) => { used.searches.push({ ids: segments.map(s => s.id), anchorMs }); return { mode: 'lexical', moments: segments.slice(-1).map(({ id, startMs, endMs }) => ({ id, startMs, endMs })), warnings: [] }; } },
     inspector: { inspect: input => { used.inspections.push(input.segments.map(s => s.id)); return inspect ? inspect(input) : { observations: input.segments.map(({ id, startMs, endMs }) => ({ id, startMs, endMs, text: `Vu ${id}.` })), hypotheses: [], limits: [] }; } },
-    store: { lease: async ids => { used.leases.push(ids); used.held++; return async () => { used.held--; }; } },
+    memoryMedia: { lease: async ids => { used.leases.push(ids); used.held++; return async () => { used.held--; }; } },
   };
   const { deep, makeTools } = createConversationRuntime({ getSession: () => session, config, selectedModels: {},
     // Cloned as a host would send it: what was published can be compared later, whatever happens to the question.
@@ -49,7 +53,7 @@ function stage(t, { answer, inspect, config = {} }) {
   // A failed assertion must not leave a question running with its five-minute ceiling still armed.
   t.after(() => deep.cancelAll('Fin du test.'));
   // What `root` still holds: copied passages, and how many of the session's three dependencies.
-  const holds = root => { const found = reachable(root); return { passages: [...found].filter(isCopy).length, dependencies: [session.search, session.inspector, session.store].filter(dependency => found.has(dependency)).length }; };
+  const holds = root => { const found = reachable(root); return { passages: [...found].filter(isCopy).length, dependencies: [session.search, session.inspector, session.memoryMedia].filter(dependency => found.has(dependency)).length }; };
   return { state, session, used, changes, inputs, deep, makeTools, ask, holds };
 }
 
@@ -58,7 +62,7 @@ test('twenty finished questions on a hundred passages keep their answers, citati
   const s = stage(t, { answer: async ({ tools }) => {
     // While its question is processed, a context holds the whole frozen prefix and the session's dependencies.
     const mine = copies(tools);
-    working.push({ passages: mine.length, bytes: bytes(mine), dependencies: s.holds(tools).dependencies, reachable: copies(s.deep.jobs).length, live: tools.live, progress: tools.onProgress });
+    working.push({ passages: mine.length, bytes: bytes(mine), dependencies: s.holds(tools).dependencies, reachable: copies(s.deep.jobs).length, live: tools.reread, progress: tools.onProgress });
     return { answer: `Réponse ${working.length}.`, kind: 'observation', citations: [cite(100)], limits: [] };
   } });
   for (let i = 1; i <= 20; i++) await s.ask(`Question ${i} ?`).done;
@@ -78,7 +82,7 @@ test('twenty finished questions on a hundred passages keep their answers, citati
   assert.equal(kept.length, 0, 'no copied passage is reachable from a finished question');
   assert.deepEqual(working.map(w => w.reachable), Array(20).fill(100), 'while a question is processed, only its own prefix is held');
   assert.deepEqual(s.holds(s.deep.jobs), NOTHING);
-  assert.equal(working.some(w => found.has(w.live) || found.has(w.progress)), false, 'neither the live provider nor the progress callback of a context is still referenced');
+  assert.equal(working.some(w => found.has(w.live) || found.has(w.progress)), false, 'neither the reread port nor the progress callback of a context is still referenced');
   // The durable history is whole: what was last published is what a host still reads.
   const { jobs } = structuredClone(s.deep.snapshot());
   assert.deepEqual({ jobs }, s.changes.at(-1));
@@ -206,7 +210,7 @@ test('a finished moment action keeps the passages of its own interval, and only 
     const seen = await tools.call('inspect_clip', { startMs: 10 * BLOCK_MS, endMs: 12 * BLOCK_MS, question: 'Que voit-on ?' });
     return { answer: 'Réexamen.', kind: 'observation', citations: seen.observations.map(({ id, startMs, endMs }) => ({ id, startMs, endMs })), limits: [] };
   } });
-  const moment = s.ask('Explique ce moment.', { intent: 'explain-moment', snapshot: s.session.watch.snapshot(), startMs: 10 * BLOCK_MS, anchorMs: 12 * BLOCK_MS });
+  const moment = s.ask('Explique ce moment.', { intent: 'explain-moment', consultation: consultationOf(s.session.memory.view()), startMs: 10 * BLOCK_MS, anchorMs: 12 * BLOCK_MS });
   const ordinary = s.ask('Et le reste ?');
   await moment.done; await ordinary.done;
   const kept = copies(moment);
@@ -215,14 +219,14 @@ test('a finished moment action keeps the passages of its own interval, and only 
 
   // The host's re-examination reads the finished question: same instant, same interval, same passages.
   const actions = new ViewingActions({ makeId: () => 'token' });
-  const { question, options } = actions.reexamination(moment, s.session.watch.snapshot());
-  assert.deepEqual([options.mode, options.intent, options.startMs, options.anchorMs, options.snapshot.segments.map(p => p.id)], ['inspect', 'explain-moment', 10 * BLOCK_MS, 12 * BLOCK_MS, ['moment-11', 'moment-12']]);
+  const { question, options } = actions.reexamination(moment, s.session.memory.view());
+  assert.deepEqual([options.mode, options.intent, options.startMs, options.anchorMs, options.consultation.passages.map(p => p.id)], ['inspect', 'explain-moment', 10 * BLOCK_MS, 12 * BLOCK_MS, ['moment-11', 'moment-12']]);
   const { id } = s.deep.start(question, options), again = s.deep.jobs.find(job => job.id === id);
   await again.done;
   assert.deepEqual([again.status, again.result.kind, again.result.citations.map(c => c.id), s.used.inspections, s.used.held], ['done', 'observation', ['moment-11', 'moment-12'], [['moment-11', 'moment-12']], 0]);
   assert.deepEqual(s.holds(again), { passages: 2, dependencies: 0 });
   // An ordinary question was never a moment to re-examine.
-  assert.throws(() => actions.reexamination(ordinary, s.session.watch.snapshot()), /plus disponible/);
+  assert.throws(() => actions.reexamination(ordinary, s.session.memory.view()), /plus disponible/);
 });
 
 test('once released, a context refuses every consultation without reading, leasing or recording anything; a context no question owns is untouched', async t => {

@@ -1,9 +1,10 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
+const {consultationFrom}=require('./helpers/memory-consultation.cjs');
 const {DeepAsk}=require('../core/deep-ask.cjs');
 const {VideoTools}=require('../core/video-tools.cjs');
 const segment=(id,startMs,endMs,status='ready')=>({id,startMs,endMs,status,available:true,observation:status==='ready'?{summary:`Résumé ${id}`} : null});
-function factory(snapshot,extras={}){return ()=>new VideoTools({snapshot,search:{},inspector:{},media:{},...extras});}
+function factory(snapshot,extras={}){return ()=>new VideoTools({consultation:consultationFrom(snapshot),search:{},inspector:{},media:{},...extras});}
 
 test('recap publishes sourced memory immediately while synthesis is pending, without inspection',async()=>{
  let finish,received;let now=0;const changes=[];
@@ -18,7 +19,7 @@ test('recap publishes sourced memory immediately while synthesis is pending, wit
 
 test('focused recap cannot borrow earlier conversation or citations and preserves its frozen bounds',async()=>{
  let received,options;const snapshot={id:'s',elapsedMs:500,history:[],segments:[segment('old',0,100),segment('crossing',100,250),segment('target',250,300),segment('future',300,500)]};
- const service=new DeepAsk({makeTools:(signal,onProgress,opts)=>{options=opts;return new VideoTools({snapshot,signal,onProgress});},agent:{answer:async input=>{received=input;return {answer:'Ancien',kind:'observation',citations:[{id:'old',startMs:0,endMs:100}],limits:[]};}}});
+ const service=new DeepAsk({makeTools:(signal,onProgress,opts)=>{options=opts;return new VideoTools({consultation:consultationFrom(snapshot),signal,onProgress});},agent:{answer:async input=>{received=input;return {answer:'Ancien',kind:'observation',citations:[{id:'old',startMs:0,endMs:100}],limits:[]};}}});
  service.start('Sujet ?', {mode:'chat'});await service.jobs[0].done;
  service.start('Résume cet intervalle',{mode:'chat',intent:'recap',startMs:200,anchorMs:300});await service.jobs[1].done;
  assert.equal(options.anchorMs,300);assert.deepEqual(received.conversation,[]);assert.deepEqual(received.context.passages.map(p=>p.id),['target']);assert.equal(service.jobs[1].result.kind,'insufficient');
@@ -32,13 +33,15 @@ test('metrics survive errors and ungrounded empty deltas do not count as useful 
 });
 
 test('tool timing records failures and completed memory reads separately',async()=>{
- let now=1;const tools=new VideoTools({snapshot:{id:'s',elapsedMs:100,history:[],segments:[segment('m',0,100)]},now:()=>now++,search:{search:async()=>({moments:[]})}});
+ let now=1;const tools=new VideoTools({consultation:consultationFrom({id:'s',elapsedMs:100,history:[],segments:[segment('m',0,100)]}),
+  now:()=>now++,search:{search:async()=>({moments:[]})}});
  await tools.call('search_moments',{query:'Sujet'});await assert.rejects(tools.call('get_transcript',{startMs:0,endMs:200}));
  assert.deepEqual(tools.toolMetrics.map(x=>[x.tool,x.status]),[['search_moments','completed'],['get_transcript','failed']]);assert.ok(tools.toolMetrics.every(x=>x.durationMs>0));
 });
 
 test('recap context reports omissions and does not silently limit itself to six recent passages',()=>{
- const tools=new VideoTools({snapshot:{id:'s',elapsedMs:1300,history:[],segments:Array.from({length:130},(_,i)=>segment('m'+i,i*10,(i+1)*10))}});
+ const tools=new VideoTools({consultation:consultationFrom({id:'s',elapsedMs:1300,history:[],
+  segments:Array.from({length:130},(_,i)=>segment('m'+i,i*10,(i+1)*10))})});
  assert.equal(tools.context({intent:'recap'}).passages.length,120);assert.equal(tools.context({intent:'recap'}).omittedCount,10);
 });
 
@@ -53,6 +56,7 @@ test('recap exposes capture holes and partial interval boundaries, with applicat
 });
 
 test('coverage unions overlapping segments and ignores recorder jitter up to 250ms',()=>{
- const tools=new VideoTools({snapshot:{id:'s',elapsedMs:2500,history:[],segments:[segment('a',0,1000),segment('b',900,1800),segment('c',2050,2500)]}});
+ const tools=new VideoTools({consultation:consultationFrom({id:'s',elapsedMs:2500,history:[],
+  segments:[segment('a',0,1000),segment('b',900,1800),segment('c',2050,2500)]})});
  assert.deepEqual(tools.context({intent:'recap'}).coverageGaps,[]);assert.equal(tools.context().uncoveredMs,0);
 });

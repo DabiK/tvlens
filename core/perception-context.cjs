@@ -1,4 +1,4 @@
-const { validSummary } = require('./topic-summary.cjs');
+const { validSummary, continuesTopic } = require('./memory/index.cjs');
 // Provider-independent, extractive context. It never manufactures new evidence or
 // makes another model call. The original passages remain the source of truth.
 const clipped = (value, limit) => String(value || '').slice(0, limit);
@@ -23,7 +23,8 @@ function perceptionContext(snapshot, current) {
     const topic = observedTopic(p);
     if (!topic) continue;
     let item = outline.at(-1);
-    if (!item || item.topic !== topic || ['change', 'uncertain'].includes(p.observation?.topicContinuity) || p.startMs - item.endMs > 1000) {
+    if (!continuesTopic({ previousTopic: item?.topic, topic,
+      continuity: p.observation?.topicContinuity, gapMs: p.startMs - item?.endMs })) {
       item = { topic, firstId: p.id, startMs: p.startMs };
       outline.push(item);
       if (outline.length > 8) outline.shift();
@@ -34,13 +35,15 @@ function perceptionContext(snapshot, current) {
   }
   const last = previous.at(-1);
   // A missing analysis or capture gap cannot prove subject continuity.
-  const previousTopic = last && current.startMs - last.endMs <= 1000 ? observedTopic(last) : '';
+  const lastTopic = last ? observedTopic(last) : '';
+  const previousTopic = continuesTopic({ previousTopic: lastTopic, topic: lastTopic,
+    gapMs: current.startMs - last?.endMs }) ? lastTopic : '';
   let activeFirst = null;
   if (previousTopic) {
     for (let i = previous.length - 1; i >= 0; i--) {
       const p = previous[i], next = previous[i + 1];
-      if (observedTopic(p) !== previousTopic || (next && (next.startMs - p.endMs > 1000 ||
-        ['change', 'uncertain'].includes(next.observation?.topicContinuity)))) break;
+      if (!continuesTopic({ previousTopic: observedTopic(p), topic: previousTopic,
+        continuity: next?.observation?.topicContinuity, gapMs: next ? next.startMs - p.endMs : 0 })) break;
       activeFirst = p;
     }
   }
@@ -52,8 +55,8 @@ function perceptionContext(snapshot, current) {
   // observations. Never bridge a missing analysis, topic boundary or capture hole.
   if (previousTopic) for (let i = previous.length - 1; i >= 0 && pendingPassages.length <= 3; i--) {
     const p = previous[i], next = previous[i + 1], aggregate = p.topicSummary;
-    if (observedTopic(p) !== previousTopic || (next && (next.startMs - p.endMs > 1000 ||
-      ['change', 'uncertain'].includes(next.observation?.topicContinuity)))) break;
+    if (!continuesTopic({ previousTopic: observedTopic(p), topic: previousTopic,
+      continuity: next?.observation?.topicContinuity, gapMs: next ? next.startMs - p.endMs : 0 })) break;
     if (aggregate && validSummary(aggregate.text) && aggregate.lastId === p.id && aggregate.endMs === p.endMs) {
       previousTopicSummary = { ...aggregate, pendingPassages };
       break;

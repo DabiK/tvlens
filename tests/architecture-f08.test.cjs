@@ -1,3 +1,4 @@
+'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { tick, turns, deferred, until, failure } = require('./helpers/wait.cjs');
@@ -81,7 +82,7 @@ test('a description that fails twice is lost after exactly two calls, counted as
   await f.add(0);
   const [p] = f.watch.segments, state = f.watch.snapshot();
   assert.deepEqual(calls, ['moment-1', 'moment-1']);
-  assert.deepEqual([p.status, p.visionStatus, p.visionError, p.revision, p.observation.transcript, p.visionPublishedMs], ['partial', 'error', 'Coupure 2', 1, 'Paroles moment-1', undefined]);
+  assert.deepEqual([p.status, p.visionStatus, p.visionError, p.revision, p.observation.transcript, p.visionPublishedMs], ['partial', 'error', 'Coupure 2', 2, 'Paroles moment-1', undefined]);
   assert.deepEqual(state.coverage, { passages: 1, ...BASE, visionRetried: 1, visionError: 1 }, 'tried again, never recovered, lost once');
   assert.deepEqual([state.lastError, state.apiCalls, state.visionGaps], ['Coupure 2', 2, [{ id: 'moment-1', startMs: 0, endMs: 1000, visionStatus: 'error' }]]);
   await f.add(1);
@@ -107,16 +108,30 @@ test('an error its adapter did not mark stays final at the first call, and a ses
 });
 
 test('nothing is described again once the session is ending, read-only or closed', async () => {
-  for (const [name, end] of [['ending', w => { w.ending = true; }], ['readOnly', w => { w.readOnly = true; }]]) {
+  {
     const gate = deferred(); let calls = 0;
     const f = fixture({ transcribe, observeVisual: async () => { calls++; await gate.promise; throw passing(); } });
     await f.add(0);
-    end(f.watch);
+    f.watch.beginEnding();
     gate.resolve();
     await turns(8);
     const [p] = f.watch.segments;
-    assert.deepEqual([calls, f.reads.length, p.visionStatus, p.visionError, f.watch.losses.visionRetried, f.watch.losses.visionError], [1, 2, 'error', 'Connexion coupée', undefined, 1], name);
+    assert.deepEqual(
+      [calls, f.reads.length, p.visionStatus, p.visionError, f.watch.losses.visionRetried, f.watch.losses.visionError],
+      [1, 2, 'error', 'Connexion coupée', undefined, 1], 'ending');
   }
+  const archive = fixture({ transcribe, observeVisual: async () => { throw passing(); } });
+  archive.watch.restore({ id: 's', retention: 'until-deleted', segments: [{
+    id: 'moment-1', startMs: 0, endMs: 1000, available: true, status: 'partial', audioStatus: 'ready',
+    visionStatus: 'error', visionError: 'Connexion coupée', observation: { transcript: 'Paroles conservées.' },
+  }], coverage: { visionError: 1 } }, { hasMedia: () => true });
+  archive.watch.drain();
+  await turns(8);
+  const restored = archive.watch.snapshot();
+  assert.equal(restored.readOnly, true);
+  assert.deepEqual([archive.reads, archive.snapshots, archive.saves], [[], [], []]);
+  assert.deepEqual([restored.segments[0].visionError, restored.coverage.visionRetried, restored.coverage.visionError],
+    ['Connexion coupée', undefined, 1], 'the restored loss is neither retried nor published');
   const gate = deferred(); let calls = 0, signal;
   const f = fixture({ transcribe, observeVisual: async s => { calls++; signal = s.signal; await gate.promise; throw passing(); } });
   await f.add(0); await f.watch.close();
@@ -149,11 +164,12 @@ test('a session closed during the second call publishes nothing more and reopens
 });
 
 test('what allows the second call is checked again once the media have been read again', async () => {
-  const changes = { ending: f => { f.watch.ending = true; }, question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
-    expiry: async f => { f.setTime(5000); await f.watch.prune(); }, closed: f => f.watch.close() };
+  const changes = { ending: f => f.watch.beginEnding(), question: f => { f.watch.setQuestionPending(true); }, queue: f => f.add(1),
+    intake: f => { f.watch.closeIntake(); f.watch.setQuestionPending(false); },
+    closed: f => f.watch.close() };
   for (const [name, change] of Object.entries(changes)) {
     const reread = deferred(), calls = []; let reads = 0;
-    const f = fixture({ transcribe, observeVisual: async s => { calls.push(s.id); if (s.id === 'moment-1') throw passing(); return visual(s); } }, { retentionMs: 1000 });
+    const f = fixture({ transcribe, observeVisual: async s => { calls.push(s.id); if (s.id === 'moment-1') throw passing(); return visual(s); } });
     const read = f.media.read;
     // The third read of the passage is the one made for the second call: it has its content, and returns late.
     f.media.read = async id => { const content = await read(id); if (id === 'moment-1' && ++reads === 3) await reread.promise; return content; };
@@ -169,7 +185,7 @@ test('what allows the second call is checked again once the media have been read
   }
 });
 
-test('media that cannot be read again, or are no longer kept, end the description at its first failure', async () => {
+test('media that cannot be read again end the description at its first failure', async () => {
   let calls = 0, reads = 0;
   const f = fixture({ transcribe, observeVisual: async () => { calls++; throw passing(); } });
   const read = f.media.read;
@@ -177,23 +193,14 @@ test('media that cannot be read again, or are no longer kept, end the descriptio
   await f.add(0);
   assert.deepEqual([calls, reads, f.watch.segments[0].visionStatus, f.watch.segments[0].visionError, f.watch.lastError], [1, 3, 'error', 'Connexion coupée', 'Connexion coupée'], 'the loss keeps the words of the failure, never those of the disk');
   assert.deepEqual(f.watch.snapshot().coverage, { passages: 1, ...BASE, visionError: 1 }, 'no second call was made: none is counted');
-  // Out of the rolling window during the first call, its files still there because their removal failed:
-  // a passage that is no longer kept is not read again, let alone described again.
-  const gate = deferred(); let described = 0;
-  const g = fixture({ transcribe, observeVisual: async () => { described++; await gate.promise; throw passing(); } }, { retentionMs: 1000 });
-  g.media.remove = async () => { throw Error('EPERM'); };
-  await g.add(0); g.setTime(5000); await g.watch.prune();
-  assert.deepEqual([g.files.has('moment-1'), g.watch.segments[0].available, g.watch.segments[0].mediaReason], [true, false, 'expired']);
-  gate.resolve();
-  await turns(8);
-  assert.deepEqual([described, g.reads.length, g.watch.losses.visionRetried, g.watch.losses.visionError], [1, 2, undefined, 1]);
+  // Les refus de disponibilité avant et après relecture sont conduits par le port injecté dans memory-lanes.
 });
 
 test('the second call only takes a free lane: not while a passage waits behind it, nor while a question holds vision back', async () => {
   const gate = deferred(), calls = [];
   const f = fixture({ transcribe, observeVisual: async s => { calls.push(s.id); if (s.id === 'moment-1') { await gate.promise; throw passing(); } return visual(s); } });
   await f.add(0); await f.add(1);
-  assert.deepEqual(f.watch.visionQueue.map(s => s.id), ['moment-2']);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').map(s => s.id), ['moment-2']);
   gate.resolve();
   await turns(8);
   assert.deepEqual(calls, ['moment-1', 'moment-2'], 'the passage that waited is described next, in observation order');

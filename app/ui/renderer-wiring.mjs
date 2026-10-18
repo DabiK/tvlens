@@ -1,3 +1,4 @@
+import { renderTranscriptionWarning } from "./transcription-view.mjs";
 import { createRendererCommands } from "./renderer-commands.mjs";
 import { describeMemory } from "./sessions-view.mjs";
 import { cleanError } from "./text.mjs";
@@ -87,11 +88,17 @@ class RendererWiring {
       this.commands.search.clear();
     }
     this.session = state;
+    this.transcription = state.transcription || this.transcription;
     // Indexer une fois par état évite de parcourir tous les passages pour chaque carte ou citation.
     this.passages = new Map();
     for (const list of [state.history || [], state.segments])
       for (const passage of list) this.passages.set(passage.id, passage);
     this.views.adopted(state);
+  }
+
+  receiveTranscription(state) {
+    this.transcription = state;
+    this.scheduleState();
   }
 
   receiveState(state) {
@@ -106,6 +113,7 @@ class RendererWiring {
   }
 
   drawState() {
+    renderTranscriptionWarning(this.get, this.transcription || this.configuration()?.transcription);
     if (this.session) {
       if (
         this.recapState?.sessionId &&

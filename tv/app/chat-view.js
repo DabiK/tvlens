@@ -18,7 +18,7 @@
     // « unreadable » signale une vidéo sans image exploitable ; le résumé et les captures restent conservés.
     return {
       "not-kept": "vidéo non conservée", missing: "vidéo introuvable", expired: "vidéo expirée", unreadable: "vidéo illisible",
-    }[segment && segment.mediaReason] || (s.retention === "rolling" ? "vidéo expirée" : "vidéo indisponible");
+    }[segment && segment.mediaReason] || "vidéo indisponible";
   }
   function renderAnswer(context, node, view, cited) {
     if (view.error) {

@@ -64,6 +64,8 @@ const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => t
 function switches(env) {
   const flag = (value, fallback) => value === undefined || value === '' ? fallback : value === '1' ? true : value === '0' ? false : value;
   return {
+    ...(env.TVLENS_WHISPER_MODEL ? { whisperModel: env.TVLENS_WHISPER_MODEL } : {}),
+    ...(env.TVLENS_WHISPER_BINARY ? { whisperBinary: env.TVLENS_WHISPER_BINARY } : {}),
     whisperAudioCtx: env.TVLENS_WHISPER_AUDIO_CTX ? (env.TVLENS_WHISPER_AUDIO_CTX === 'auto' ? 'auto' : Number(env.TVLENS_WHISPER_AUDIO_CTX)) : undefined,
     // On by default: a question may now run five minutes and must not withhold the visual description of
     // the passages captured meanwhile. Still one visual call at a time. TVLENS_VISION_DURING_ASK=0 restores the gate.

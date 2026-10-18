@@ -4,8 +4,8 @@ const fsp = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { MomentIndex } = require('../core/moment-index.cjs');
-const { MomentSearch } = require('../core/moment-search.cjs');
-const { passageText } = require('../core/passage-text.cjs');
+const { MemorySearch } = require('../core/moment-search.cjs');
+const { passageText } = require('../core/shared/passage-text.cjs');
 const { OpenRouterEmbeddings } = require('../adapters/openrouter-embeddings.cjs');
 const { EmbeddingStore } = require('../adapters/embedding-store.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
@@ -36,7 +36,7 @@ function memoryCache({ many = true } = {}) {
 const passage = (n, summary = `Passage ${n}`) => ({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, observation: { summary } });
 function setup({ embeddings = provider(), cache = memoryCache(), ...options } = {}) {
   const clock = manualClock(), index = new MomentIndex({ embeddings, cache, ...clock.io, ...options });
-  return { clock, embeddings, cache, index, search: new MomentSearch({ index, ...clock.io }) };
+  return { clock, embeddings, cache, index, search: new MemorySearch({ index, ...clock.io }) };
 }
 
 test('background indexing waits for the hold, then makes ceil(N/32) provider calls and one cache write per batch', async () => {
@@ -175,7 +175,7 @@ test('a rejected passage vector preserves lexical ranking, partial semantic coun
       return [0, 1];
     },
   };
-  const search = new MomentSearch({ index, ...clock.io });
+  const search = new MemorySearch({ index, ...clock.io });
   const input = { query: 'chien', segments: scene, anchorMs: 16000 };
   let result;
   await assert.doesNotReject(async () => { result = await search.search(input); });
@@ -189,7 +189,7 @@ test('a rejected passage vector preserves lexical ranking, partial semantic coun
 
 test('a rejected passage vector keeps the lexical fallback warning when the query vector also fails', async () => {
   const clock = manualClock();
-  const search = new MomentSearch({ ...clock.io, index: {
+  const search = new MemorySearch({ ...clock.io, index: {
     ensure: async () => {},
     queryVector: async () => { throw Error('fournisseur indisponible'); },
     passageVector: async () => { throw Error('cache illisible'); },
@@ -209,7 +209,7 @@ test('an aborted search still rejects before reading an unreadable passage cache
   const clock = manualClock(), controller = new AbortController();
   const reason = Object.assign(Error('Recherche annulée.'), { code: 'SEARCH_CANCELLED' });
   let reads = 0;
-  const search = new MomentSearch({ ...clock.io, index: {
+  const search = new MemorySearch({ ...clock.io, index: {
     ensure: async () => {},
     queryVector: async () => { controller.abort(reason); throw reason; },
     passageVector: async () => { reads++; throw Error('cache illisible'); },
@@ -425,11 +425,11 @@ test('a legacy index with only ensure keeps the blocking path; no index means le
   const ensured = [];
   const legacy = { ensure: async segments => { ensured.push(segments.map(s => s.id)); }, queryVector: async () => [0, 1], passageVector: async segment => vector(passageText(segment)) };
   const input = { query: 'chien', segments: [...scene, passage(3, 'Un chien futur.')], anchorMs: 16000 };
-  const result = await new MomentSearch({ index: legacy }).search(input);
+  const result = await new MemorySearch({ index: legacy }).search(input);
   assert.deepEqual(ensured, [['moment-1', 'moment-2']]);
   assert.equal(result.mode, 'hybrid');
   assert.deepEqual(result.semantic, { eligible: 2, indexed: 2, pending: 0 });
-  const bare = await new MomentSearch({}).search(input);
+  const bare = await new MemorySearch({}).search(input);
   assert.equal(bare.mode, 'lexical');
   assert.deepEqual(bare.warnings, []);
   assert.deepEqual(bare.semantic, { eligible: 2, indexed: 0, pending: 0 });

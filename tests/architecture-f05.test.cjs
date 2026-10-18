@@ -14,9 +14,11 @@ const { CodexSessionClient } = require('../adapters/codex-session-client.cjs');
 const { CodexSurveillanceAgent } = require('../adapters/codex-surveillance-agent.cjs');
 const { VideoBridge } = require('../adapters/video-bridge.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { createSessionRuntime, openArchivedSession } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime } = require('../runtime/surveillance-runtime.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 
 // F05: a Codex process group has one owner until it is gone, a reconnection waits for the group it replaces, and the
 // end of a session revokes what was opened on it. Offline: Node children stand for Codex behind the real transport, a
@@ -499,7 +501,7 @@ test('a host with nothing else to do is still there once the group it waits for 
 });
 
 test('a surveillance stopped and started again starts no Codex process while the ones it stopped are not seen gone', async t => {
-  const server = appServer(), session = { watch: { snapshot: () => ({ id: 'session-f05', elapsedMs: 0, history: [], segments: [] }) }, store: {} };
+  const server = appServer(), session = { memory: memoryOf({ id: 'session-f05', elapsedMs: 0 }), events: createEventPublisher(), store: {} };
   const runtime = createSurveillanceRuntime({ getSession: () => session, config: { surveillance: { workers: 2 } },
     agent: new CodexSurveillanceAgent({ authHome, workers: 2, rpcFactory: server.rpcFactory }) });
   t.after(async () => { server.release(); await runtime.close(); });
@@ -589,7 +591,7 @@ test('a closed session runtime re-examines nothing more: a late call is refused 
     seen.model++;
     return simulated(input);
   };
-  const ask = (session, question) => new VideoTools({ snapshot: session.watch.snapshot(), search: session.search, inspector: session.inspector, media: session.store })
+  const ask = (session, question) => new VideoTools({ consultation: consultationOf(session.memory.view()), search: session.search, inspector: session.inspector, media: session.memoryMedia })
     .call('inspect_clip', { startMs: 0, endMs: 8000, question });
   // While the runtime lives: served, then served from its cache.
   assert.equal((await ask(live, 'Que voit-on ?')).observations.length, 1);
@@ -636,6 +638,7 @@ async function launchMac(t, wrap = {}) {
     loadFile() { loaded(true); return Promise.resolve(); } show() {} focus() {} setMinimumSize() {} setAlwaysOnTop() {} setBounds() {}
   }
   const app = Object.assign(new EventEmitter(), { isPackaged: false, setName() {}, setPath() {}, getPath: () => userData, requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(),
+    commandLine: { getSwitchValue: () => '', appendSwitch() {} },
     // As Electron does: quitting asks first, and a handler may hold it back until its own work is done.
     quit() { const event = { prevented: false, preventDefault() { this.prevented = true; } }; app.emit('before-quit', event); if (!event.prevented) { finished(); loaded(false); } } });
   const electron = { app, BrowserWindow, ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },

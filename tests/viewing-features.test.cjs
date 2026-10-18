@@ -1,4 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
+const {consultationFrom}=require('./helpers/memory-consultation.cjs');
 const {CachedInspector}=require('../core/cached-inspector.cjs');const {CodexQuota}=require('../adapters/codex-quota.cjs');
 const segment=(id,startMs,endMs)=>({id,startMs,endMs,status:'ready',available:true,observation:{summary:'A claim'}});
 // The two Auto tests that stood here froze a contract the product reversed (decision 8): a background
@@ -23,10 +24,10 @@ test('saved moments survive the deletion of their session, replay and explicit d
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-saved-test-'));try{const id=randomUUID(),root=path.join(dir,'sessions'),media=LocalSessionStore.forSession(path.join(root,id));await media.put('moment-1',{clip:Buffer.from('video'),frames:[],audio:null});const archive=new SavedMomentStore(path.join(dir,'saved'));const service=new SavedMoments({archive,makeId:randomUUID});const saved=await service.keep({snapshot:{id,segments:[segment('moment-1',0,1000)]},media});await media.seal();await new SessionLibrary({root}).remove(id);await assert.rejects(fs.access(path.join(root,id)));assert.equal((await service.list()).length,1);assert.equal(await (await archive.response(saved.id,'moment-1')).text(),'video');await service.remove(saved.id);assert.equal((await service.list()).length,0);}finally{await fs.rm(dir,{recursive:true,force:true});}
 });
 test('temporal anchor is the send time, not the end of the last stored segment',()=>{
- const {VideoTools}=require('../core/video-tools.cjs');const tools=new VideoTools({snapshot:{id:'s',elapsedMs:19000,segments:[segment('m',0,16000)],history:[]}});assert.equal(tools.anchorMs,19000);assert.equal(tools.context().capturedThroughMs,16000);
+ const {VideoTools}=require('../core/video-tools.cjs');const tools=new VideoTools({consultation:consultationFrom({id:'s',elapsedMs:19000,segments:[segment('m',0,16000)],history:[]})});assert.equal(tools.anchorMs,19000);assert.equal(tools.context().capturedThroughMs,16000);
 });
 test('queued relative request remains bound to original moment even if capture advances',async()=>{
  const {DeepAsk}=require('../core/deep-ask.cjs');const {VideoTools}=require('../core/video-tools.cjs');let snapshot={id:'s',elapsedMs:10000,history:[],segments:[segment('old',0,10000)]};let unblock;const seen=[];
- const service=new DeepAsk({makeTools:signal=>new VideoTools({snapshot,signal,search:{},inspector:{},media:{}}),agent:{answer:async({question,tools})=>{if(question==='first')await new Promise(r=>unblock=r);else seen.push(await tools.call('get_transcript',{startMs:0,endMs:tools.anchorMs}));return {kind:'explanation',answer:'Done',citations:[],limits:[]};}}});
+ const service=new DeepAsk({makeTools:signal=>new VideoTools({consultation:consultationFrom(snapshot),signal,search:{},inspector:{},media:{}}),agent:{answer:async({question,tools})=>{if(question==='first')await new Promise(r=>unblock=r);else seen.push(await tools.call('get_transcript',{startMs:0,endMs:tools.anchorMs}));return {kind:'explanation',answer:'Done',citations:[],limits:[]};}}});
  service.start('first',{mode:'chat'});service.start('Ce qu’il vient de dire ?',{mode:'chat'});snapshot={...snapshot,elapsedMs:20000,segments:[...snapshot.segments,segment('future',10000,20000)]};unblock();await Promise.all(service.jobs.map(j=>j.done));assert.deepEqual(seen[0].passages.map(p=>p.id),['old']);assert.equal(service.jobs[1].anchorMs,10000);
 });

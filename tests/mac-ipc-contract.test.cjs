@@ -172,14 +172,45 @@ const digest = async dir => {
 };
 const HOST_SETTINGS = ['TVLENS_QUESTION_TIMEOUT_MS', 'TVLENS_SURVEILLANCE_WORKERS', 'TVLENS_MEDIA_RETENTION_MS', 'TVLENS_DISK_MIN_FREE_MB', 'TVLENS_DISK_WARN_FREE_MB', 'TVLENS_VISION_DURING_ASK'];
 
+function commandLineStub(disabledFeatures) {
+  const switches = new Map(disabledFeatures ? [['disable-features', disabledFeatures]] : []);
+  return {
+    switches,
+    commandLine: { getSwitchValue: name => switches.get(name) || '', appendSwitch: (name, value) => switches.set(name, value) },
+  };
+}
+
+function wrapClosingModule(loaded, wrapClosing) {
+  if (!wrapClosing) return loaded;
+  return { ...loaded, closeSession: options => wrapClosing(loaded.closeSession, options) };
+}
+
+function wrapProvider(factory, wrap) {
+  if (!wrap) return factory;
+  return (...args) => wrap(factory(...args));
+}
+
+function wrapSimulatedProviders(loaded, wrap) {
+  return {
+    ...loaded,
+    simulatedVerifier: wrapProvider(loaded.simulatedVerifier, wrap.verifier),
+    simulatedRecap: wrapProvider(loaded.simulatedRecap, wrap.recap),
+  };
+}
+
 // Loads app/main.cjs in its own simulated mode with `electron` replaced. IPC goes through the real preload,
 // structured-cloned both ways and with Electron's error prefix, as between two processes. Two things of the
 // machine are kept out: the sweep of stale Codex contexts (a test run must not clean a real temporary directory)
 // and, when `disk` is given, the free space measured by the real DiskGuard (its documented `freeBytes` option).
 // `wrap` expose les compositions et leur diagnostic pour injecter une panne aux frontières du vrai hôte.
-async function launch(userData, { env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false } = {}) {
+async function launch(userData, {
+  env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock,
+  platform = process.platform, disabledFeatures = '',
+} = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
   const registeredShortcuts = new Map();
+  const { switches, commandLine } = commandLineStub(disabledFeatures);
+  let startupSwitches;
   let bridge, finished, loaded;
   const quitting = new Promise(resolve => { finished = resolve; }), ready = new Promise(resolve => { loaded = resolve; });
   const webContents = { mainFrame: {}, setWindowOpenHandler() {}, on() {}, send: (channel, value) => {
@@ -191,7 +222,10 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     isDestroyed() { return false; } getBounds() { return { x: 0, y: 0, width: 1340, height: 920 }; } getContentBounds() { return { x: 0, y: 0, width: 1340, height: 892 }; }
     loadFile() { loaded(true); return Promise.resolve(); } show() {} focus() {} setMinimumSize() {} setAlwaysOnTop() {} setBounds() {}
   }
-  const app = Object.assign(new EventEmitter(), { isPackaged: false, setName() {}, setPath() {}, getPath: () => userData, requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(),
+  const app = Object.assign(new EventEmitter(), { isPackaged: false, setName() {}, setPath() {}, getPath: () => userData,
+    requestSingleInstanceLock: () => true,
+    commandLine,
+    whenReady: () => { startupSwitches = Object.fromEntries(switches); return Promise.resolve(); },
     // As Electron does: quitting asks first, and a handler may hold it back until its own work is done.
     quit() { const event = { prevented: false, preventDefault() { this.prevented = true; } }; app.emit('before-quit', event); if (!event.prevented) { finished(); loaded(false); } } });
   const electron = { app, BrowserWindow, ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
@@ -211,7 +245,7 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
   const argv = [...process.argv], saved = Object.fromEntries(HOST_SETTINGS.map(name => [name, process.env[name]])), consoleError = console.error, load = Module._load;
   const restore = () => { process.argv.splice(0, process.argv.length, ...argv); for (const name of HOST_SETTINGS) if (saved[name] === undefined) delete process.env[name]; else process.env[name] = saved[name]; console.error = consoleError; };
   for (const name of HOST_SETTINGS) delete process.env[name];
-  Object.assign(process.env, env); process.argv.push('--smoke-test');
+  Object.assign(process.env, env); process.argv.push('--smoke-test', ...flags);
   if (shortcuts) process.argv.push('--live-shortcut');
   console.error = error => failures.push(String(error?.message || error));
   Module._load = function (request, parent, ...rest) {
@@ -219,10 +253,14 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     const loaded = load.call(this, request, parent, ...rest);
     if (!parent?.filename?.endsWith(path.join('app', 'main.cjs'))) return loaded;
     if (request === '../adapters/codex-confinement.cjs') return { ...loaded, sweepStaleContexts: (...args) => { sweeps.push(args); return sweep(...args); } };
-    if (request === '../adapters/simulated-providers.cjs' && wrap.verifier)
-      return { ...loaded, simulatedVerifier: (...args) => wrap.verifier(loaded.simulatedVerifier(...args)) };
+    if (request === '../runtime/session-closing.cjs') return wrapClosingModule(loaded, wrap.closing);
+    if (request === '../adapters/simulated-providers.cjs') return wrapSimulatedProviders(loaded, wrap);
     // Measured afresh at every check, so that a change of free space is seen at once instead of five seconds later.
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
+    if (request === '../runtime/session-runtime.cjs' && readClock) return { ...loaded, createSessionRuntime: options => {
+      const runtime = loaded.createSessionRuntime({ ...options, readClock });
+      return wrap.session ? wrap.session(runtime) : runtime;
+    } };
     const factories = {
       '../runtime/conversation-runtime.cjs': ['createConversationRuntime', wrap.conversation],
       '../runtime/session-runtime.cjs': ['createSessionRuntime', wrap.session],
@@ -236,12 +274,14 @@ async function launch(userData, { env = {}, sweep = async () => [], disk = null,
     }
     return loaded;
   };
+  const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform');
+  Object.defineProperty(process, 'platform', { value: platform });
   try { delete require.cache[require.resolve('../app/main.cjs')]; require('../app/main.cjs'); }
   catch (error) { restore(); throw error; }
-  finally { Module._load = load; }
+  finally { Module._load = load; Object.defineProperty(process, 'platform', platformDescriptor); }
   const started = await ready;
   let stopped;
-  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, events: [],
+  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, startupSwitches, events: [],
     pressShortcut: key => registeredShortcuts.get(key)(),
     fetch: (url, headers = {}) => schemes.get('tvlens-media')(new Request(url, { headers })),
     quit: () => (stopped ||= (async () => { app.quit(); await quitting; restore(); })()) };
@@ -295,6 +335,74 @@ async function capture(host, sessionId, { after = 0, frames = 1, audio = null } 
 }
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
+
+test('Mac system audio fallback is set before readiness and preserves existing disabled features on each platform', async t => {
+  const { launch } = await stage(t);
+  const feature = 'MacCatapLoopbackAudioForScreenShare';
+  for (const [platform, disabledFeatures, expected] of [
+    ['darwin', '', feature],
+    ['darwin', 'OtherFeature,AnotherFeature', `OtherFeature,AnotherFeature,${feature}`],
+    ['darwin', `OtherFeature,${feature}`, `OtherFeature,${feature}`],
+    ['linux', '', undefined],
+    ['win32', 'OtherFeature', 'OtherFeature'],
+  ]) {
+    const host = await launch({ platform, disabledFeatures });
+    assert.equal(host.started, true, host.failures.join(' '));
+    assert.deepEqual(host.startupSwitches, expected ? { 'disable-features': expected } : {}, platform);
+    await host.quit();
+  }
+});
+
+test('retired Mac retention options cannot expire media and capture refreshes the manifest before analysis finishes', async t => {
+  const { launch, folder } = await stage(t), gate = deferred();
+  let clock = 0, runtime;
+  t.after(() => gate.resolve({ observation: { transcript: 'Paroles conservées.' } }));
+  const host = await launch({
+    env: { TVLENS_MEDIA_RETENTION_MS: '1' }, flags: ['--retention-ms=1'], readClock: () => clock,
+    wrap: { session: built => {
+      runtime = built;
+      built.perception.transcribe = () => gate.promise;
+      return built;
+    } },
+  });
+  assert.equal(host.started, true);
+  const config = await host.config();
+  assert.deepEqual([config.retention, config.retentionMs], ['until-deleted', null]);
+  const { id } = await host.start();
+  clock = 1000;
+  await host.ingest({ sessionId: id, startMs: 0, endMs: 1000, clip: new Uint8Array([1]),
+    frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,YQ==' }] });
+  await runtime.store.flush();
+  const manifest = () => JSON.parse(fs.readFileSync(path.join(folder(id), 'manifest.json'), 'utf8'));
+  const initial = manifest().elapsedMs;
+  host.events.length = 0;
+  clock = 3600000;
+  t.mock.timers.tick(5000);
+  await runtime.store.flush();
+  const state = await host.state();
+  assert.deepEqual([state.elapsedMs, state.segments[0].available, state.segments[0].audioStatus], [clock, true, 'analyzing']);
+  assert.ok(host.events.some(event => event.channel === 'watch:state' && event.value.elapsedMs === clock));
+  assert.ok(manifest().elapsedMs > initial, 'manifest cadence does not wait for a ready passage');
+  await host.stop();
+  host.events.length = 0;
+  const before = await digest(folder(id));
+  clock += 3600000;
+  t.mock.timers.tick(3600000);
+  await runtime.store.flush();
+  assert.equal(host.events.filter(event => event.channel === 'watch:state').length, 0);
+  assert.deepEqual(await digest(folder(id)), before);
+  assert.deepEqual([(await host.state()).elapsedMs, (await host.state()).segments[0].available], [3600000, true]);
+});
+
+test('invalid retired Mac retention values are ignored at startup', async t => {
+  const { launch } = await stage(t);
+  for (const value of ['abc', '-1', '0']) {
+    const host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: value }, flags: ['--retention-ms=' + value] });
+    assert.equal(host.started, true, value);
+    assert.deepEqual([(await host.config()).retention, (await host.config()).retentionMs], ['until-deleted', null]);
+    await host.quit();
+  }
+});
 
 test('the Mac IPC host publishes both default smoke lanes with the simulated observations', async t => {
   const { launch } = await stage(t), host = await launch();
@@ -737,11 +845,11 @@ test('host settings come from the environment; a full disk stops capture, refuse
   // One archived passage to protect, captured with room to spare.
   let host = await launch({ env: { TVLENS_QUESTION_TIMEOUT_MS: '60000', TVLENS_MEDIA_RETENTION_MS: '300000' } });
   let config = await host.config();
-  assert.deepEqual([config.questionTimeoutMs, config.retention, config.retentionMs], [60000, 'rolling', 300000], 'both rollbacks are read and published');
+  assert.deepEqual([config.questionTimeoutMs, config.retention, config.retentionMs], [60000, 'until-deleted', null], 'the question ceiling changes, the retired retention does not');
   const session = await host.start();
   await capture(host, session.id);
   const live = await until(t, analysed(host, 1), 'the passage');
-  assert.deepEqual([live.retention, live.retentionMs], ['rolling', 300000]);
+  assert.deepEqual([live.retention, live.retentionMs], ['until-deleted', null]);
   await host.ask('Que voit-on maintenant ?');
   assert.equal((await host.deepState()).jobs[0].timeoutMs, 60000, 'the lowered ceiling is the one enforced');
   await host.cancelDeep((await host.deepState()).jobs[0].id);
@@ -808,7 +916,7 @@ test('host settings come from the environment; a full disk stops capture, refuse
 
   // Mistyped settings: the app says so and quits instead of running under another value.
   for (const [name, value, message] of [['TVLENS_QUESTION_TIMEOUT_MS', 'abc', /questionTimeoutMs invalide/], ['TVLENS_QUESTION_TIMEOUT_MS', '300001', /questionTimeoutMs invalide/],
-    ['TVLENS_SURVEILLANCE_WORKERS', '4', /surveillance\.workers invalide/], ['TVLENS_MEDIA_RETENTION_MS', '-1', /TVLENS_MEDIA_RETENTION_MS invalide/], ['TVLENS_DISK_MIN_FREE_MB', 'beaucoup', /TVLENS_DISK_MIN_FREE_MB invalide/],
+    ['TVLENS_SURVEILLANCE_WORKERS', '4', /surveillance\.workers invalide/], ['TVLENS_DISK_MIN_FREE_MB', 'beaucoup', /TVLENS_DISK_MIN_FREE_MB invalide/],
     ['TVLENS_DISK_WARN_FREE_MB', '-5', /TVLENS_DISK_WARN_FREE_MB invalide/]]) {
     const refused = await launch({ env: { [name]: value } });
     assert.equal(refused.started, false, `${name}=${value}`);
@@ -831,7 +939,7 @@ test('an archive kept until deletion keeps that contract on a Mac host set to a 
   // The same data under a host set back to a rolling window, far shorter than the real time that follows.
   host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: '50' } });
   const config = await host.config();
-  assert.deepEqual([config.retention, config.retentionMs], ['rolling', 50]);
+  assert.deepEqual([config.retention, config.retentionMs], ['until-deleted', null]);
   await host.openSession(a.id);
   let state = await host.state();
   assert.deepEqual([state.readOnly, state.retention, state.retentionMs, (await host.sessions()).current.retention], [true, 'until-deleted', null, 'until-deleted'], 'the archive states its own contract, not the setting of the host');
@@ -855,12 +963,15 @@ test('an archive kept until deletion keeps that contract on a Mac host set to a 
   assert.deepEqual([state.history.length, state.segments.map(s => [s.id, s.available])], [0, [['moment-1', true], ['moment-2', true], ['moment-3', true]]]);
   await host.stop(); await host.newSession();
 
-  // The window of this host is real: a session born under it promised nothing and does expire.
+  // Le paramètre retiré reste sans effet sur les nouvelles captures.
   const b = await host.start();
   await capture(host, b.id);
-  const rolling = await until(t, async () => { await pause(60); const s = await host.state(); return [...s.history, ...s.segments].some(p => p.id === 'moment-1' && !p.available) && s; }, 'the passage of a rolling session expires', 5000);
-  assert.deepEqual([rolling.retention, rolling.retentionMs, (await host.sessions()).current.retention], ['rolling', 50, 'rolling']);
-  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), false);
+  await until(t, analysed(host, 1), 'the new passage finishes');
+  await sweep();
+  const durable = await host.state();
+  assert.deepEqual([durable.retention, durable.retentionMs, (await host.sessions()).current.retention],
+    ['until-deleted', null, 'until-deleted']);
+  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true);
   assert.deepEqual([await fsp.readFile(media('moment-1.webm'), 'utf8'), await fsp.readFile(media('moment-3.webm'), 'utf8')], [a1.clip, a3.clip], 'while the archive is still whole');
 });
 
@@ -1003,7 +1114,7 @@ test('a passage search belongs to the session that asked: its thumbnails are tha
   assert.deepEqual({ otherSessionLoaded: refused, noSessionLoaded: await orphan }, { otherSessionLoaded: 'Session obsolète.', noSessionLoaded: 'Session obsolète.' });
 });
 
-test('the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; a rolling window is still swept while its session is paused', async t => {
+test('the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; the retired setting cannot expire paused media', async t => {
   const { folder, launch } = await stage(t);
   let host = await launch();
   assert.equal(host.started, true, host.failures.join(' '));
@@ -1030,16 +1141,18 @@ test('the loaded Mac session is pushed every five seconds while it captures, and
   assert.equal(pushed().length, 1);
   await host.stop(); await host.newSession(); await host.quit();
 
-  // A session promised a rolling window is swept on that same timer whether it captures or not: a passage
-  // that left the window just before the pause (the session clock stops with it) is still erased.
+  // Même avec l'ancien réglage, la pause reste silencieuse et les médias restent présents.
   host = await launch({ env: { TVLENS_MEDIA_RETENTION_MS: '50' } });
   const b = await host.start();
   await capture(host, b.id);
-  await pause(150);
-  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true, 'out of the window, and not swept yet');
+  await until(t, analysed(host, 1), 'the passage finishes before pause');
   await host.stop();
-  const expired = await until(t, async () => { await pause(60); const s = await host.state(); return [...s.history, ...s.segments].some(p => p.id === 'moment-1' && !p.available) && s; }, 'the passage of a paused rolling session expires', 5000);
-  assert.deepEqual([expired.accepting, expired.retention, fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm'))], [false, 'rolling', false]);
+  await quiet();
+  for (let i = 0; i < 5; i++) await sweep();
+  const paused = await host.state();
+  assert.deepEqual([paused.accepting, paused.retention, pushed().length], [false, 'until-deleted', 0]);
+  assert.equal(fs.existsSync(path.join(folder(b.id), 'media', 'moment-1.webm')), true);
+
 });
 
 test('on the Mac host the draft of an answer reaches the window each time it moves and the disk at most once a second, its last state included when the answer stalls; ending the session saves the final state at once and leaves nothing to write later', async t => {
@@ -1347,4 +1460,192 @@ test('on the Mac host both agents are warmed up with the id of the session when 
   await host.stop(); await host.newSession();
   const b = await host.start();
   assert.deepEqual([took(), host.failures], [[`chat:${b.id}`, `observe:${b.id}-observe`], []], 'a rejecting warm-up fails neither start nor the host');
+});
+
+test('Mac startup exposes transcription availability before capture and publishes its coded cause with session states', async t => {
+  const { launch, userData } = await stage(t);
+  const configFile = path.join(userData, 'speech.env');
+  await fsp.writeFile(configFile, 'TVLENS_WHISPER_MODEL=/missing/private-model.bin\nTVLENS_WHISPER_BINARY=/missing/whisper\n');
+  const host = await launch({ flags: ['--live-inspection', '--config=' + configFile] });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const availability = (await host.config()).transcription;
+  assert.deepEqual(availability, { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' });
+  const session = await host.start();
+  assert.equal((await host.state()).id, session.id);
+  assert.deepEqual((await host.state()).transcription, availability);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state').at(-1).value.transcription, availability);
+});
+
+test('Mac recap follows passage events without session state publications and waits for both lanes', async t => {
+  const visual = deferred(), visionEntered = deferred(), complete = deferred();
+  let runtime;
+  const { launch } = await stage(t);
+  const host = await launch({ wrap: { session: built => {
+    runtime = built;
+    built.watch.onChange = () => {};
+    built.perception.transcribe = async () => ({ observation: { transcript: 'Paroles seules' } });
+    built.perception.observeVisual = async () => {
+      visionEntered.resolve();
+      await visual.promise;
+      return { observation: { summary: 'Images et paroles' } };
+    };
+    built.events.subscribe(event => {
+      if (event.type === 'PassageUpdated' && built.memory.passage(event.passageId)?.status === 'ready') complete.resolve(event);
+    });
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  await capture(host, session.id, { audio: new Uint8Array([1]) });
+  await visionEntered.promise;
+  t.mock.timers.tick(1000);
+  const partial = await host.recapState();
+  assert.equal(partial.sourceCount, 0);
+  assert.ok(partial.limits.includes('1 passage(s) avec une analyse partielle, non inclus dans le résumé.'));
+  visual.resolve();
+  const event = await complete.promise;
+  await tick();
+  assert.equal((await host.recapState()).sourceCount, 1);
+  t.mock.timers.tick(1000);
+  await until(t, async () => (await host.recapState()).status === 'ready', 'recap synthesized from the passage event');
+  const ready = await host.recapState();
+  assert.deepEqual(ready.overviewSourceIds, ['moment-1']);
+  assert.match(ready.sourcePassages[0].text, /Images et paroles/);
+  runtime.events.publish(event);
+  await tick();
+  assert.deepEqual(await host.recapState(), ready);
+});
+
+test('Mac closing detaches recap before capture drains and preserves the archived chapters through a late analysis', async t => {
+  const visual = deferred(), visionEntered = deferred(), thumbnail = deferred(), thumbnailEntered = deferred();
+  const captureEntered = deferred();
+  let runtime, saves = 0;
+  const { launch, folder } = await stage(t);
+  t.after(() => {
+    visual.resolve();
+    thumbnail.resolve();
+  });
+  const host = await launch({ wrap: {
+    closing: (close, options) => close({ ...options, steps: options.steps.map(([name, work]) => [name, () => {
+      if (name === 'capture') captureEntered.resolve();
+      return work();
+    }]) }),
+    session: built => {
+      runtime = built;
+      built.perception.transcribe = async () => ({ observation: { transcript: 'Paroles' } });
+      built.perception.observeVisual = async input => {
+        if (input.id === 'moment-2') {
+          visionEntered.resolve();
+          await visual.promise;
+        }
+        return { observation: { summary: 'Sujet ' + input.id } };
+      };
+      const save = built.store.saveRecap.bind(built.store);
+      built.store.saveRecap = state => {
+        saves++;
+        return save(state);
+      };
+      const put = built.thumbnails.put.bind(built.thumbnails);
+      built.thumbnails.put = async (id, ...args) => {
+        if (id === 'moment-2') {
+          thumbnailEntered.resolve();
+          await thumbnail.promise;
+        }
+        return put(id, ...args);
+      };
+      return built;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, async () => (await host.state()).segments[0]?.status === 'ready', 'first complete passage');
+  t.mock.timers.tick(1000);
+  await until(t, async () => (await host.recapState()).status === 'ready', 'first chapter');
+  const ready = await host.recapState();
+  const ingesting = capture(host, session.id);
+  await thumbnailEntered.promise;
+  await visionEntered.promise;
+  const delivered = deferred();
+  runtime.events.subscribe(event => {
+    if (event.type === 'PassageUpdated' && runtime.memory.passage(event.passageId)?.status === 'ready') delivered.resolve(event);
+  });
+  const beforeClosing = saves;
+  const ending = host.quit();
+  await captureEntered.promise;
+  assert.equal((await host.recapState()).sessionId, null, 'recap reset precedes the capture step');
+  visual.resolve();
+  const event = await delivered.promise;
+  await tick();
+  assert.equal((await host.recapState()).sessionId, null, 'late passage events cannot rebind the recap during capture');
+  assert.equal(saves, beforeClosing, 'late analysis requests no recap save while capture is draining');
+  thumbnail.resolve();
+  await ingesting;
+  await ending;
+  const archived = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+  assert.deepEqual(archived.chapters, ready.chapters);
+  const empty = await host.recapState();
+  runtime.events.publish({ ...event, revision: event.revision + 1 });
+  await tick();
+  assert.equal(saves, beforeClosing);
+  assert.deepEqual(await host.recapState(), empty);
+});
+
+test('Mac quitting saves a completed synthesis while session closing waits for the current transition', async t => {
+  const synthesis = deferred();
+  const synthesisEntered = deferred();
+  const pauseEntered = deferred();
+  const pauseReleased = deferred();
+  const recapReady = deferred();
+  let runtime;
+  const { launch, folder } = await stage(t);
+  const host = await launch({ wrap: {
+    recap: adapter => ({ ...adapter, summarize: input => {
+      synthesisEntered.resolve(input);
+      return synthesis.promise;
+    } }),
+    session: built => {
+      runtime = built;
+      const pause = built.pause;
+      built.pause = async () => {
+        pauseEntered.resolve();
+        await pauseReleased.promise;
+        return pause();
+      };
+      return built;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  host.onRecap(state => {
+    if (state.status === 'ready') recapReady.resolve(state);
+  });
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, analysed(host, 1), 'complete passage before synthesis');
+  t.mock.timers.tick(1000);
+  const input = await synthesisEntered.promise;
+  const stopping = host.stop();
+  let quitting;
+  let ready;
+  try {
+    await pauseEntered.promise;
+    quitting = host.quit();
+    synthesis.resolve({
+      overview: 'Synthèse achevée pendant la fermeture.',
+      chapters: [{ title: 'Sujet observé', summary: 'Chapitre conservé.', sourceIds: input.sourcePassages.map(p => p.id) }],
+    });
+    ready = await recapReady.promise;
+    assert.equal(ready.sessionId, session.id, 'the queued closing has not reset the recap');
+    await runtime.store.flush();
+    const saved = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+    assert.equal(saved.pendingCount, 0, 'a completed synthesis is saved even after before-quit');
+    assert.deepEqual(saved.chapters, ready.chapters);
+  } finally {
+    pauseReleased.resolve();
+    await stopping;
+    await quitting;
+  }
+  const archived = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
+  assert.deepEqual(archived.chapters, ready.chapters);
+  assert.equal(archived.pendingCount, 0);
 });

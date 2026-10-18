@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const { WatchSession } = require("../core/session.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const { RevocableInspector } = require("../core/revocable-inspector.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { createSessionManifest } = require("../runtime/session-manifest.cjs");
 const { createSessionLifecycle } = require("../runtime/session-lifecycle.cjs");
 
@@ -109,6 +110,7 @@ function fixture({ restore = null } = {}) {
     restore ? { elapsedMs: restore.snapshot.elapsedMs, paused: true } : {},
   );
   let watch, lifecycle;
+  const events = createEventPublisher();
   const manifest = createSessionManifest({
     id: "session",
     host: "server",
@@ -118,6 +120,8 @@ function fixture({ restore = null } = {}) {
     readClock: () => f.time,
     wallClock: () => f.wall,
     readOnly: () => watch.readOnly,
+    accepting: () => watch.accepting,
+    memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
   watch = new WatchSession({
@@ -126,9 +130,10 @@ function fixture({ restore = null } = {}) {
     perception,
     media: store,
     archive: store,
+    onEvents: pending => pending.forEach(event => events.publish(event)),
     onChange(state) {
       if (!state.readOnly) f.indexed.push(state);
-      manifest.publish(state);
+      manifest.publish();
     },
   });
   const guard = {
@@ -154,6 +159,7 @@ function fixture({ restore = null } = {}) {
     index: resource("index"),
     restore,
   });
+  manifest.connect(events);
   return Object.assign(f, { lifecycle, watch, sessionClock, store, thumbnails, inspector });
 }
 
@@ -249,6 +255,27 @@ test("a refused resume keeps the archive stopped, its clock and its capture list
     [true, false, 24000],
   );
   assert.deepEqual([f.events, f.saves, f.writes], [["guard requested"], [], []]);
+});
+
+test('pause and resume publish immediately and settle only after the memory state is saved', async () => {
+  for (const command of ['pause', 'resume']) {
+    const f = fixture(command === 'resume' ? { restore: archiveFacts() } : {});
+    f.time = 1000;
+    f.saveGate = deferred();
+    f.saveEntered = deferred();
+    let settled = false;
+    const pending = f.lifecycle[command]().then(() => { settled = true; });
+    await f.saveEntered.promise;
+    const accepting = command === 'resume';
+    assert.equal(f.watch.snapshot().accepting, accepting, command);
+    assert.equal(f.indexed.at(-1)?.accepting, accepting, 'the published state precedes the disk');
+    assert.equal(f.watch.snapshot().readOnly, false);
+    assert.deepEqual([settled, f.saves], [false, []], command);
+    f.saveGate.resolve();
+    await pending;
+    assert.equal(settled, true);
+    assert.equal(f.saves.at(-1).accepting, accepting, command);
+  }
 });
 
 test("overlapping closes revoke inspection before waiting and release resources once after the admitted passage lands without analysis", async () => {

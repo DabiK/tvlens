@@ -10,6 +10,7 @@ const {
 const { createConversationRuntime, hasPendingQuestion } = require("./conversation-runtime.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const { publishState } = require("../core/state-publication.cjs");
+const { consultationOf } = require("../core/video-tools.cjs");
 const { createSurveillanceRuntime, tickSurveillance } = require("./surveillance-runtime.cjs");
 const { createHeadlessSessionLifecycle } = require("./headless-session-lifecycle.cjs");
 const { createQuestionCheckpoint } = require("./question-checkpoint.cjs");
@@ -35,6 +36,8 @@ const {
   stateView,
   overlayView,
 } = require("./state-views.cjs");
+
+const { createSessionTranscriber } = require("./session-providers.cjs");
 
 const SESSIONS_LISTED = 50;
 
@@ -71,10 +74,7 @@ function createHeadlessLifecycle(host, conversation) {
     },
     warmUp,
     guard: host.guard,
-    onAdopt: (_session, state) => {
-      host.sessionState = state;
-      host.emit();
-    },
+    onAdopt: () => host.emit(),
     publish: () => host.emit(),
     log: (line) => host.log(line),
   });
@@ -95,7 +95,11 @@ class HeadlessRuntime {
     // Journal of the host; a test hands its own.
     this.log = options.log || ((line) => console.error(line));
     this.onPublicationError = options.onPublicationError || createPublicationDiagnostic(line => this.log(line));
+    this.transcriber = options.transcriber || createSessionTranscriber({
+      ...options, config: options.config || {}, onAvailability: () => this.emit(), onPublicationError: this.onPublicationError,
+    });
     this.sessionState = null;
+    this.sessionMemory = null;
     this.derived = null;
     // When the questions of the session in memory reach its folder (runtime/question-checkpoint.cjs).
     const { setTimer, clearTimer } = options;
@@ -157,14 +161,6 @@ class HeadlessRuntime {
       probe: () => ({ chatBusy: this.deep.jobs.some(active) }),
     });
     this.lifecycle = createHeadlessLifecycle(this, conversation);
-    this.timer = setInterval(() => {
-      const watch = this.session?.watch;
-      // Durable retention has nothing to sweep between two passages (each ingest sweeps): an idle
-      // session publishes nothing, so its polls are answered 304.
-      if (watch && (Number.isFinite(watch.retentionMs) || watch.unremoved?.size))
-        watch.prune().catch(() => {});
-    }, 5000);
-    this.timer.unref();
     this.ticker = setInterval(() => this.tick(), 1000);
     this.ticker.unref();
     // One measurement at start, off the critical path: the state says more than "unknown" before the
@@ -242,9 +238,13 @@ class HeadlessRuntime {
     // One revision per published change, never one per second: a poll that already holds it is
     // answered without a body.
     this.revision++;
+    const projection = this.session?.memoryProjection.read();
+    this.sessionState = projection?.session || null;
+    this.sessionMemory = projection?.memory || null;
     this.storageKey = JSON.stringify(this.storage());
+    let delivered;
     for (const listener of this.listeners) {
-      publishState(() => listener(this.snapshot()), this.onPublicationError, {
+      publishState(() => listener(delivered ||= this.fullState(projection)), this.onPublicationError, {
         origin: "headless-runtime", sessionId: this.session?.id, revision: this.revision,
       });
     }
@@ -252,8 +252,6 @@ class HeadlessRuntime {
   // Session onChange. A session that is no longer the one in memory publishes nothing.
   published(state) {
     if (this.session?.id !== state.id) return;
-    this.sessionState = state;
-    this.surveillance.observe(state);
     this.emit();
   }
   // Figures already in memory (last measurement of the guard, volume written by this session): a
@@ -283,17 +281,17 @@ class HeadlessRuntime {
   }
   snapshot(view) {
     if (this.viewName(view) !== "full") return this.view(view);
-    const session = this.session?.watch.snapshot() || null;
-    if (session) session.title = this.session.manifest()?.title || null;
+    return this.fullState(this.session?.memoryProjection.read());
+  }
+  fullState(projection) {
+    const session = projection ? { ...projection.session, title: this.session.manifest()?.title || null } : null;
+    const memory = projection?.memory || null;
     return {
       session,
-      transcription: { language: this.options.config?.transcriptionLanguage || "fr" },
-      timeline: sessionTimeline(session),
+      transcription: { language: this.options.config?.transcriptionLanguage || "fr", ...this.transcriber.availability() },
+      timeline: sessionTimeline(memory),
       chat: { ...this.deep.snapshot(), timeoutMs: this.deep.timeoutMs },
-      captureGaps: captureGapsOf([
-        ...(session?.history || []),
-        ...(session?.segments || []),
-      ]),
+      captureGaps: captureGapsOf(memory?.passages || []),
       // Counters only: background indexing that fails or falls behind must be visible somewhere.
       index: this.session?.search.index?.status?.() || null,
       quota: this.quota.snapshot(),
@@ -306,7 +304,7 @@ class HeadlessRuntime {
     };
   }
   // Everything of a view that only moves with a published change, computed once per revision from
-  // the last state the session published: a poll never copies or walks the passages again.
+  // the consultation at the last session publication: a poll never copies or walks the passages again.
   derive() {
     const sessionId = this.session?.id || null;
     if (
@@ -314,33 +312,27 @@ class HeadlessRuntime {
       this.derived.sessionId === sessionId
     )
       return this.derived;
-    const state = sessionId ? this.sessionState : null;
+    const memory = sessionId ? this.sessionMemory : null;
     return (this.derived = {
       revision: this.revision,
       sessionId,
       ...deriveStateViews({
-        state,
+        memory,
         jobs: this.deep.snapshot().jobs,
-        title: state ? this.session.manifest()?.title || null : null,
+        title: memory ? this.session.manifest()?.title || null : null,
       }),
     });
   }
   view(name) {
-    const derived = this.derive(),
-      watch = this.session?.watch;
+    const derived = this.derive();
     // What moves without a publication is read live: the clock, and the flags a closing does not announce.
     return stateView(name, derived, {
-      liveSession: derived.header && {
-        accepting: watch.accepting,
-        asking: watch.asking,
-        readOnly: watch.readOnly,
-        elapsedMs: watch.now(),
-        storage: this.session.storage(),
-      },
+      liveSession: derived.header && this.session.memoryProjection.live(),
       timeoutMs: this.deep.timeoutMs,
       revision: this.revision,
       serverNowMs: this.wallClock(),
       transcriptionLanguage: this.options.config?.transcriptionLanguage,
+      transcriptionAvailability: this.transcriber.availability(),
       surveillance: this.surveillance.snapshot({ brief: true }),
       storage: this.storage(),
     });
@@ -367,6 +359,7 @@ class HeadlessRuntime {
     return {
       host: "server",
       ...this.options,
+      transcriber: this.transcriber,
       guard: this.guard,
       quota: this.quota,
       onChange: (state) => this.published(state),
@@ -428,20 +421,20 @@ class HeadlessRuntime {
       anchorMs > session.watch.now() + 3000
     )
       throw refusal(400, "Ancrage invalide.", "invalid-anchor");
-    const snapshot = session.watch.snapshot();
-    const selected = moment ? momentDetail(snapshot, moment.segmentIds || moment) : null;
+    const memory = session.memory.view();
+    const selected = moment ? momentDetail(memory, moment.segmentIds || moment) : null;
     return this.deep.start(question, {
       mode: "chat",
       anchorMs: selected ? selected.endMs : anchorMs,
       ...(selected
         ? { startMs: selected.startMs, intent: "explain-moment" }
         : {}),
-      snapshot,
+      consultation: consultationOf(memory),
     });
   }
   detail({ sessionId, segmentIds, firstId, lastId }) {
     const session = this.loaded(sessionId);
-    return momentDetail(session.watch.snapshot(), segmentIds || { firstId, lastId });
+    return momentDetail(session.memory.view(), segmentIds || { firstId, lastId });
   }
   // The real outcome: a question already finished, or unknown, was not cancelled.
   cancel(id) {
@@ -469,7 +462,7 @@ class HeadlessRuntime {
     const loaded = this.session;
     if (!loaded) return { current: null, snapshot: null, capturing: false, storage: null };
     // L'état publié et la référence sont transférés ensemble ; aucun objet mutable ne traverse l'attente.
-    const state = this.sessionState?.id === loaded.id ? this.sessionState : loaded.watch.snapshot();
+    const state = this.sessionState;
     return {
       current: { ...this.described(loaded), title: loaded.manifest()?.title || null },
       snapshot: {
@@ -556,7 +549,6 @@ class HeadlessRuntime {
     return surveillanceDetail(this.surveillanceRegistry(), id);
   }
   close() {
-    clearInterval(this.timer);
     clearInterval(this.ticker);
     return this.lifecycle.close();
   }

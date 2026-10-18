@@ -1305,6 +1305,25 @@ test('HTTP library requests retain real invalid identifier, missing archive and 
   }
 });
 
+test('HTTP opening refuses a saved state of another format or version as an invalid archive, without a write', async t => {
+  const { randomUUID } = require('node:crypto');
+  const f = await applicationFixture(t);
+  const files = async dir => Promise.all((await fs.readdir(dir, { recursive: true })).sort().map(async name => {
+    const target = path.join(dir, name);
+    return [name, (await fs.stat(target)).isFile() ? (await fs.readFile(target)).toString('base64') : 'dir'];
+  }));
+  for (const envelope of [
+    { format: 'tvlens-viewing-memory', version: 2 }, { format: 'tvlens-viewing-memory' }, { version: 1 }, { format: 'tvlens-session', version: 1 },
+  ]) {
+    const id = randomUUID(), dir = f.runtime.library.dir(id);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, 'session.json'), JSON.stringify({ ...envelope, id, elapsedMs: 0, retention: 'until-deleted', segments: [] }));
+    const before = await files(dir);
+    expectRefusal(await f.request('/v1/sessions/' + id + '/open', {}), 'invalid-archive', 'Archive illisible.');
+    assert.deepEqual(await files(dir), before, JSON.stringify(envelope));
+  }
+});
+
 test('HTTP closing refusals retain their historical 400 while admitted capture closing stays 503', async t => {
   const { deferred } = require('./helpers/wait.cjs');
   const f = await applicationFixture(t);

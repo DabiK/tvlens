@@ -1,5 +1,5 @@
 const fs=require('node:fs/promises');const os=require('node:os');const path=require('node:path');const assert=require('node:assert/strict');
-const {CodexSessionAgent:CodexVideoAgent}=require('../adapters/codex-session-agent.cjs');const {VideoBridge}=require('../adapters/video-bridge.cjs');const {VideoTools}=require('../core/video-tools.cjs');const {DeepAsk}=require('../core/deep-ask.cjs');
+const {CodexSessionAgent:CodexVideoAgent}=require('../adapters/codex-session-agent.cjs');const {VideoBridge}=require('../adapters/video-bridge.cjs');const {VideoTools}=require('../core/video-tools.cjs');const {consultationFrom}=require('./memory-fixture.cjs');const {DeepAsk}=require('../core/deep-ask.cjs');
 (async()=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-memory-live-'));let bridge,agent;
  try{
@@ -8,7 +8,7 @@ const {CodexSessionAgent:CodexVideoAgent}=require('../adapters/codex-session-age
   {id:'moment-2',startMs:15027.498,endMs:30045.198,status:'error',available:false},
   {id:'moment-3',startMs:30046.498,endMs:45065.898,status:'ready',available:false,observation:{summary:'Un présentateur commente cette polémique politique devant un titre à l’écran.'}}
  ]};
- const makeTools=(signal,onProgress)=>new VideoTools({snapshot,signal,onProgress,search:{search:async()=>({moments:snapshot.segments})},inspector:{inspect:async()=>{throw Error('Pas de vidéo dans cette fixture');}},media:{}});
+ const makeTools=(signal,onProgress)=>new VideoTools({consultation:consultationFrom(snapshot),signal,onProgress,search:{search:async()=>({moments:snapshot.segments})},inspector:{inspect:async()=>{throw Error('Pas de vidéo dans cette fixture');}},media:{}});
  bridge=await new VideoBridge({descriptor:path.join(dir,'bridge.json'),makeTools}).start();
  agent=new CodexVideoAgent({bridge,model:process.env.TVLENS_TEST_CODEX_MODEL||''});
  const service=new DeepAsk({makeTools,agent});

@@ -1,5 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { createSessionManifest } = require("../runtime/session-manifest.cjs");
 const {
   sessionTitle,
@@ -35,6 +36,12 @@ function fixture(extra = {}) {
   };
   f.store = store;
   f.thumbnails = { bytes: 66 };
+  const events = createEventPublisher();
+  f.current = state({ history: [], segments: [], coverage: { passages: 0 } });
+  const memory = {
+    view: () => f.current,
+    passages: () => ({ clock: { capturedThroughMs: f.current.passages.at(-1)?.endMs || 0 } }),
+  };
   f.manifest = createSessionManifest({
     id: "session",
     host: "server",
@@ -42,15 +49,27 @@ function fixture(extra = {}) {
     thumbnails: f.thumbnails,
     readClock: () => f.clock,
     wallClock: () => f.wall,
-    readOnly: () => f.readOnly,
+    readOnly: () => f.readOnly || f.current.session.readOnly,
+    accepting: () => f.current.session.accepting,
+    memory,
     hasConfirmedEnd: () => f.archived,
     ...extra,
   });
+  f.manifest.connect(events);
+  f.publish = current => {
+    f.current = current;
+    if (current.coverage.passages) events.publish({ type: "PassageReceived", sessionId: "session" });
+    return f.manifest.publish();
+  };
+  f.record = (current, ...args) => {
+    f.current = current;
+    return f.manifest.record(...args);
+  };
   return f;
 }
 
 function state(extra = {}) {
-  return {
+  const source = {
     accepting: true,
     readOnly: false,
     elapsedMs: 24000,
@@ -68,12 +87,18 @@ function state(extra = {}) {
     coverage: { passages: 3 },
     ...extra,
   };
+  return {
+    session: { accepting: source.accepting, readOnly: source.readOnly, retention: source.retention },
+    clock: { elapsedMs: source.elapsedMs, capturedThroughMs: source.capturedThroughMs },
+    passages: [...source.history, ...source.segments],
+    coverage: { ...source.coverage, replayablePassages: source.segments.filter(p => p.available).length },
+  };
 }
 
 test("a manifest keeps session totals and wall dates with the original title and topic fallbacks", async () => {
   const f = fixture();
   f.wall = 2000;
-  await f.manifest.record(state());
+  await f.record(state());
   assert.deepEqual(f.writes[0], {
     format: MANIFEST_FORMAT,
     version: MANIFEST_VERSION,
@@ -104,11 +129,11 @@ test("the first eligible publication writes at once and the monotonic clock limi
     state({ accepting: false }),
     state({ readOnly: true }),
   ])
-    f.manifest.publish(ineligible);
+    f.publish(ineligible);
   assert.equal(f.writes.length, 0);
   f.clock = 500;
   f.wall = 7000;
-  const first = f.manifest.publish(state());
+  const first = f.publish(state());
   assert.equal(
     f.writes.length,
     1,
@@ -117,7 +142,7 @@ test("the first eligible publication writes at once and the monotonic clock limi
   assert.equal(f.store.confirmed, null);
   f.clock = 30499;
   f.wall = 900000;
-  f.manifest.publish(state());
+  f.publish(state());
   assert.equal(
     f.writes.length,
     1,
@@ -125,7 +150,7 @@ test("the first eligible publication writes at once and the monotonic clock limi
   );
   f.clock = 30500;
   f.wall = 6000;
-  const second = f.manifest.publish(state({ elapsedMs: 54000 }));
+  const second = f.publish(state({ elapsedMs: 54000 }));
   assert.deepEqual(
     f.writes.map((value) => [value.updatedAt, value.elapsedMs]),
     [
@@ -151,9 +176,9 @@ test("an archive opened read-only never writes a current or final manifest", asy
     },
   });
   f.readOnly = true;
-  f.manifest.publish(state({ readOnly: true }));
-  await f.manifest.record(state());
-  await f.manifest.record(state(), {}, true);
+  f.publish(state({ readOnly: true }));
+  await f.record(state());
+  await f.record(state(), {}, true);
   assert.deepEqual(f.writes, []);
 });
 
@@ -164,7 +189,7 @@ test("resuming appends a wall-clock capture at the session offset and keeps the 
   });
   f.wall = 5000;
   f.manifest.captureResumed(24000);
-  await f.manifest.record(state());
+  await f.record(state());
   assert.deepEqual(f.writes[0].captures, [
     { startedAt: 50, fromMs: 0 },
     { startedAt: 5000, fromMs: 24000 },
@@ -178,7 +203,7 @@ test("resuming appends a wall-clock capture at the session offset and keeps the 
     f.wall = 5000 + i;
     f.manifest.captureResumed(24000 + i * 1000);
   }
-  await f.manifest.record(state());
+  await f.record(state());
   const last = f.writes.at(-1);
   assert.equal(
     last.createdAt,
@@ -202,22 +227,22 @@ test("a current manifest refusal is absorbed while the final refusal is returned
   });
   f.refusal = refusal;
   f.clock = 100;
-  await assert.doesNotReject(f.manifest.record(state()));
+  await assert.doesNotReject(f.record(state()));
   assert.equal(f.store.confirmed, null);
   f.clock = 30099;
-  f.manifest.publish(state());
+  f.publish(state());
   assert.equal(
     f.writes.length,
     1,
     "a refusal still advances the publication cadence",
   );
   await assert.rejects(
-    f.manifest.record(state(), {}, true),
+    f.record(state(), {}, true),
     (error) => error === refusal,
   );
   assert.equal(f.store.confirmed, null);
   f.refusal = null;
-  await f.manifest.record(state());
+  await f.record(state());
   assert.equal(
     f.store.confirmed.state,
     "live",
@@ -235,7 +260,7 @@ test("a late pause keeps a confirmed end but a resumed life does not inherit its
     state: "archived",
     closedAt: 100,
   };
-  await f.manifest.record(state());
+  await f.record(state());
   assert.deepEqual(
     [
       f.store.confirmed.state,
@@ -252,7 +277,7 @@ test("a late pause keeps a confirmed end but a resumed life does not inherit its
     release = resolve;
   });
   f.wall = 9000;
-  const final = f.manifest.record(state(), {}, true);
+  const final = f.record(state(), {}, true);
   assert.equal(
     f.store.confirmed.state,
     "live",
@@ -262,7 +287,7 @@ test("a late pause keeps a confirmed end but a resumed life does not inherit its
   await final;
   f.archived = true;
   f.wall = 12000;
-  await f.manifest.record(state({ accepting: false }));
+  await f.record(state({ accepting: false }));
   assert.deepEqual(
     [f.store.confirmed.state, f.store.confirmed.closedAt],
     ["archived", 9000],
@@ -277,13 +302,13 @@ test("legacy restoration falls back to its creation date or the wall clock and e
   ]) {
     const f = fixture({ restore });
     f.wall = 3000;
-    await f.manifest.record(blank);
+    await f.record(blank);
     assert.deepEqual(
       [f.writes[0].createdAt, f.writes[0].firstTopic, f.writes[0].captures],
       [createdAt, null, []],
     );
     const media = { stored: 0, missing: 3, bytes: 0, retention: "rolling" };
-    await f.manifest.record(state(), { media, title: "Titre choisi" }, true);
+    await f.record(state(), { media, title: "Titre choisi" }, true);
     assert.deepEqual(
       [f.writes[1].media, f.writes[1].title, f.writes[1].state],
       [media, "Titre choisi", "archived"],

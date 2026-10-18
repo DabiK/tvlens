@@ -2,7 +2,9 @@ const { refusal } = require("./errors.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
-const { WatchSession, restorable } = require("../core/session.cjs");
+const { WatchSession } = require("../core/session.cjs");
+const { fromArchive, TVLENS_ARCHIVE_INVALID } = require("../core/memory/index.cjs");
+const { createEventPublisher } = require("../core/shared/events.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const {
   LocalSessionStore,
@@ -26,6 +28,25 @@ const {
 } = require("./session-manifest.cjs");
 const { createSessionLifecycle } = require("./session-lifecycle.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
+const { createMemoryMedia } = require("./memory-media.cjs");
+const { createMemoryProjection } = require("./memory/memory-projection.cjs");
+// Decoded before anything is built on it: a saved state of another shape, format or version, or a manifest
+// of another shape, is refused in plain words. Hands back the archive with the model to restore.
+function readableRestore(restore) {
+  if (!restore.snapshot || !restore.inventory)
+    throw refusal(400, "Archive incomplète : état et inventaire requis.", "invalid-archive");
+  let snapshot;
+  try {
+    snapshot = fromArchive(restore.snapshot);
+  } catch (error) {
+    if (error?.code === TVLENS_ARCHIVE_INVALID)
+      throw refusal(400, error.message, "invalid-archive");
+    throw error;
+  }
+  if (!readableManifest(restore.manifest))
+    throw refusal(400, "Archive illisible.", "invalid-archive");
+  return { ...restore, snapshot };
+}
 // Shared composition for Electron and headless hosts; platform capture stays outside.
 function createSessionRuntime({
   id,
@@ -40,39 +61,23 @@ function createSessionRuntime({
   localInspection = false,
   liveObservation = false,
   strategy = "sheets-diverse",
-  // Media are kept until the session is deleted; a finite value brings the rolling window back.
-  retentionMs = Infinity,
   onChange = () => {},
   log = () => {},
   onPublicationError = createPublicationDiagnostic(),
+  events = createEventPublisher({ onError: onPublicationError }),
   readClock = () => performance.now(),
   wallClock = Date.now,
   host = null,
   guard,
   restore = null,
   overrides = {},
+  transcriber = null,
 }) {
-  let watch, lifecycle;
-  if (restore && (!restore.snapshot || !restore.inventory))
-    throw refusal(400, "Archive incomplète : état et inventaire requis.", "invalid-archive");
-  // Checked before anything is built on it: a saved state of another shape is refused in plain words.
-  if (
-    restore &&
-    (!restorable(restore.snapshot) || !readableManifest(restore.manifest))
-  )
-    throw refusal(400, "Archive illisible.", "invalid-archive");
+  let watch, lifecycle, indexConsumer;
+  if (restore) restore = readableRestore(restore);
   if (restore && id !== undefined && id !== restore.snapshot.id)
     throw refusal(400, "Archive d’une autre session.", "invalid-archive");
   id ??= restore ? restore.snapshot.id : randomUUID();
-  // null is how a saved state spells "no expiry"; anything else must be a real duration.
-  if (
-    retentionMs !== null &&
-    retentionMs !== Infinity &&
-    !(Number.isFinite(retentionMs) && retentionMs > 0)
-  )
-    throw new Error(
-      "Réglage retentionMs invalide : durée positive en millisecondes attendue.",
-    );
   // An unknown value must not silently fall back to Codex and be read as a local measurement.
   if (!["codex", "local", undefined].includes(config.perceptionBackend))
     throw new Error("Backend de perception inconnu (codex ou local).");
@@ -111,10 +116,11 @@ function createSessionRuntime({
     store,
     userData,
     log,
+    onPublicationError,
   };
-  const { vectors, index, search, feedIndex } =
+  const { vectors, index, search, connectIndex } =
     createSessionIndex(providerOptions);
-  const transcriber = createSessionTranscriber(providerOptions);
+  transcriber ||= createSessionTranscriber(providerOptions);
   const { inspector, inspectorModel } = createSessionInspection({
     ...providerOptions,
     transcriber,
@@ -156,6 +162,15 @@ function createSessionRuntime({
           : null,
     };
   };
+  const memory = {
+    view: () => watch.memoryView(),
+    passage: id => watch.memoryPassage(id),
+    passages: ids => watch.memoryPassages(ids),
+    recentPassages: limit => watch.recentMemoryPassages(limit),
+    readPublicationStatus: () => watch.readPublicationStatus(),
+    readHistoricalQuestions: () => watch.readHistoricalQuestions(),
+    readUsage: () => watch.readUsage(),
+  };
   const manifest = createSessionManifest({
     id,
     host,
@@ -165,11 +180,12 @@ function createSessionRuntime({
     readClock,
     wallClock,
     readOnly: () => watch.readOnly,
+    accepting: () => watch.accepting,
+    memory,
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
   watch = new WatchSession({
     id,
-    retentionMs: retentionMs,
     now: () => sessionClock.now(),
     perception,
     media: store,
@@ -178,9 +194,11 @@ function createSessionRuntime({
     storage,
     visionDuringAsk: config.visionDuringAsk === true,
     onPublicationError,
+    onEvents: (pending) => {
+      for (const event of pending) events.publish(event);
+    },
     onChange: (state) => {
-      if (!state.readOnly) feedIndex?.(state);
-      manifest.publish(state);
+      manifest.publish();
       onChange(state);
     },
   });
@@ -197,11 +215,22 @@ function createSessionRuntime({
     inspectorModel,
     guard: diskGuard,
     restore,
+    disconnectConsumers: () => {
+      indexConsumer?.close();
+      manifest.disconnect();
+    },
+    resumeConsumers: () => indexConsumer?.resume(),
   });
+  manifest.connect(events);
+  indexConsumer = connectIndex?.({ id, events, memory, readOnly: () => watch.readOnly });
 
   return {
     id,
     watch,
+    events,
+    memory,
+    memoryMedia: createMemoryMedia(store),
+    memoryProjection: createMemoryProjection({ memory, now: () => sessionClock.now(), storage }),
     store,
     search,
     inspector,

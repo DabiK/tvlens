@@ -41,7 +41,7 @@ function tickSurveillance(runtime, onPublicationError, context) {
 }
 
 // Shared composition for both hosts, like the conversation runtime. The host supplies the current
-// session ({ watch, store }), forwards session changes to observe() and calls tick() every second:
+// session ({ memory, events, store }) and calls tick() every second:
 // no timer lives here. Nothing in this file knows about the chat; `probe` only feeds an informative
 // overlap counter.
 //
@@ -66,6 +66,7 @@ function createSurveillanceRuntime({
   onPublicationError = createPublicationDiagnostic(),
   now = Date.now,
   probe,
+  schedule = queueMicrotask,
 }) {
   const {
     workers = 1,
@@ -87,7 +88,8 @@ function createSurveillanceRuntime({
       quota,
       workers,
     });
-  let store = null,
+  let observer = null,
+    store = null,
     // The session `store` belongs to. Only an activation binds a folder; the end of the session, or an
     // archive opened in its place, lets it go.
     bound = null,
@@ -100,7 +102,7 @@ function createSurveillanceRuntime({
     released = true,
     lastSaveAt = -Infinity,
     // The activation waiting for the registry already saved in its session folder:
-    // { id, epoch, instruction, snapshot, since, settled, release }.
+    // { id, epoch, instruction, view, since, settled, release }.
     adopting = null,
     // The session whose saved registry is not held: nothing is written over that file. Known of one binding
     // of its folder, like a failed write: it goes when the folder is let go, and what is activated on that
@@ -282,8 +284,43 @@ function createSurveillanceRuntime({
   // What the session received while its saved registry was being read is read now, from the activation's t0.
   const catchUp = () => {
     const session = getSession?.();
-    if (surveillance.enabled && session?.watch)
-      surveillance.observe(session.watch.snapshot());
+    if (!adopting && surveillance.enabled && observer?.session === session)
+      surveillance.observe(session.memory.view());
+  };
+  const observeCurrent = () => {
+    try {
+      catchUp();
+    } catch (error) {
+      try {
+        Promise.resolve(onPublicationError({
+          code: 'TVLENS_SURVEILLANCE_OBSERVATION_FAILED', origin: 'surveillance-runtime', sessionId: bound, error,
+        })).catch(() => {
+          // Un diagnostic refusé ne possède ni l'abonnement ni la libération.
+        });
+      } catch {
+        // Le tick peut relire la vue courante même si le journal est indisponible.
+      }
+    }
+  };
+  const disconnect = () => {
+    const previous = observer;
+    observer = null;
+    previous?.unsubscribe();
+  };
+  const connect = (session) => {
+    disconnect();
+    const connection = { session, scheduled: false, unsubscribe: null };
+    observer = connection;
+    connection.unsubscribe = session.events.subscribe(event => {
+      if (observer !== connection || event.sessionId !== bound || adopting || !surveillance.enabled) return;
+      if (!['PassageReceived', 'PassageUpdated'].includes(event.type) || connection.scheduled) return;
+      connection.scheduled = true;
+      schedule(() => {
+        connection.scheduled = false;
+        if (observer !== connection) return;
+        observeCurrent();
+      });
+    });
   };
   const awaited = (id) => {
     let release;
@@ -389,7 +426,7 @@ function createSurveillanceRuntime({
       // again at its own t0, so claim-N, lot-N and act-N go on and the history is kept. The restored-and-stopped
       // state in between is neither announced nor written.
       silently(() => quietly(() => surveillance.restore(saved)));
-      surveillance.start({ instruction: pending.instruction }, pending.snapshot);
+      surveillance.start({ instruction: pending.instruction }, pending.view);
     } else if (saved) {
       // Stopped while its folder was being read: the registry is shown as an archive, not rewritten.
       quietly(() => surveillance.restore(saved));
@@ -425,6 +462,8 @@ function createSurveillanceRuntime({
   // Final states are written at once; provider processes are released in the background. An activation that
   // follows starts none before the ones released here are gone: each Codex client waits for the process it left.
   const stop = (reason) => {
+    observeCurrent();
+    disconnect();
     const state = surveillance.stop(reason);
     write();
     if (!released) {
@@ -447,11 +486,11 @@ function createSurveillanceRuntime({
     persistence,
     start({ instruction } = {}) {
       const session = getSession?.();
-      if (!session?.watch)
+      if (!session?.memory || !session?.events)
         throw refusal(400, "Démarre une session avant d’activer la surveillance.", "surveillance-session-required");
-      const snapshot = session.watch.snapshot();
+      const view = session.memory.view();
       // The registry of a former session is closed in its own folder before this one is bound.
-      if (surveillance.sessionId && surveillance.sessionId !== snapshot.id) {
+      if (surveillance.sessionId && surveillance.sessionId !== view.session.id) {
         surveillance.stop("Session remplacée.");
         write();
       }
@@ -459,25 +498,25 @@ function createSurveillanceRuntime({
         formerly = bound,
         waiting = adopting;
       store = session.store || null;
-      bound = snapshot.id;
+      bound = view.session.id;
       // The core holds this session's registry when it built it or when the host restored it. Otherwise the
       // folder may hold one (archive resumed then activated again, process restarted): it is read before
       // anything is written, set before the activation so that not even its first state reaches the file.
       // A folder that did not answer in time is read again, whatever the core holds since.
-      const again = overdue?.id === snapshot.id;
+      const again = overdue?.id === view.session.id;
       const pending =
-        adopting?.id === snapshot.id
+        adopting?.id === view.session.id
           ? adopting
-          : (surveillance.sessionId !== snapshot.id || again) &&
+          : (surveillance.sessionId !== view.session.id || again) &&
               typeof store?.loadSurveillance === "function"
-            ? awaited(snapshot.id)
+            ? awaited(view.session.id)
             : null;
       adopting = pending;
       let state;
       const previousRefusal = refusedAs;
       if (formerly !== bound) refusedAs = null;
       try {
-        state = surveillance.start({ instruction }, snapshot);
+        state = surveillance.start({ instruction }, pending ? { ...view, passages: [] } : view);
       } catch (error) {
         store = previous;
         bound = formerly;
@@ -485,35 +524,36 @@ function createSurveillanceRuntime({
         refusedAs = previousRefusal;
         throw error;
       }
+      connect(session);
       released = false;
       // Another folder: what the former one failed to take is not held against this one.
       if (formerly !== bound) failing = null;
       // A wait for another session is over: its folder is left as it is.
       if (waiting !== pending) waiting?.release();
       if (pending) {
-        const reading = Boolean(pending.snapshot);
+        const reading = Boolean(pending.view);
         // The latest instruction and t0 are the ones activated on top of the saved registry.
-        Object.assign(pending, { instruction, snapshot });
+        Object.assign(pending, { instruction, view: { ...view, passages: [] } });
         if (!reading) {
           // The reading that ran out of time is superseded by this one.
           if (again) overdue = null;
           adopt(pending, store);
         }
-      } else if (unreadable === snapshot.id) {
+      } else if (unreadable === view.session.id) {
         // Still not written: an activation on that session says it again.
         tellUnread();
         state = surveillance.snapshot();
       }
       // Warm-up off the critical path; the first reading reports a real connection failure itself.
       Promise.resolve()
-        .then(() => surveillanceAgent.prepare?.(snapshot.id))
+        .then(() => surveillanceAgent.prepare?.(view.session.id))
         .catch(() => {});
       return told(state);
     },
     stop,
-    observe(snapshot) {
+    observe(view) {
       // Held while the saved registry is read; catchUp() then reads everything since the activation.
-      if (!adopting) surveillance.observe(snapshot);
+      if (!adopting) surveillance.observe(view);
     },
     tick() {
       const before = publications;
@@ -522,6 +562,7 @@ function createSurveillanceRuntime({
           if (now() - adopting.since >= ADOPT_TIMEOUT_MS) outwaited(adopting);
           return;
         }
+        observeCurrent();
         surveillance.tick();
       } finally {
         writeIfDue();

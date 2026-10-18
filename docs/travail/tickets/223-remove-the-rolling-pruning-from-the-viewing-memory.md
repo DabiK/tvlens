@@ -1,7 +1,7 @@
 ---
 id: T223
 titre: Remove the rolling pruning from the viewing memory
-statut: a-faire
+statut: termine
 bloque_par: T215
 adr: oui
 installe: non
@@ -131,3 +131,183 @@ pas sur le compte initial incomplet de trois. Le tableau est revalidé au démar
 choix de conservation ou de suppression de garanties indépendantes n'est autorisé.
 
 ## Journal
+
+### Exploration — 17/10/2026
+
+- Lectures : consignes, standards, skill tests, ADR concernés, racine Mémoire, voies extraites, projections,
+  stockage, outils hors ligne et inventaire des usages. `git status --short` et `git diff` : statut en-cours
+  préexistant ; design/continuous-context/ et experiments/ préexistants, hors travail.
+- `rg` sur `retentionMs`, `prune`, `pruneChain`, `unremoved` : inventaire dans
+  `.harness-state/tickets/T223/inventaire-initial.txt`, classement dans `exploration.md`.
+- Huit cas dédiés présents (les cinq du tableau et trois de session-events) : n = 8 ; P = 1378,
+  nouveau plancher produit prévu 1370. Compteur harnais 381 inchangé. Aucun retrait de dépendance recompté.
+- Aucun écart de périmètre ; précisions consignées dans `ecarts.md` avant implémentation.
+
+### Conservation durable — preuves avant retrait
+
+- `node --test --test-name-pattern='legacy retention option|completed speech and active enrichment survive' tests/session-durable.test.cjs tests/split-perception.test.cjs`
+  : rouge observé sur les deux assertions attendues (premier passage retiré, média annoncé indisponible).
+  Sortie : `red-conservation.log` dans le dossier d’état.
+- Retrait dans la racine de la durée active, de sa normalisation, de `unremoved`, `pruneChain`, `prune`
+  et de son appel après ingestion. Aucun déplacement automatique vers history ; les miniatures tardives
+  enrichissent le passage conservé. Décodeur historique et ordonnanceur des voies inchangés.
+- `node --test --test-concurrency=1 --test-name-pattern='legacy retention option|completed speech and active enrichment survive' tests/session-durable.test.cjs tests/split-perception.test.cjs`
+  : 2/2 verts, avant suppression du cas split-perception. Le premier compare les octets et dates des
+  médias après capture, avances longues, pause, reprise et réouverture ; le second garde les paroles
+  des trois passages et l’enrichissement actif puis libère les visions en attente sans perte.
+- `node --test --test-concurrency=1 tests/session-rows.test.cjs` : 3 verts / 2 rouges sur la politique
+  encore dérivée du champ interne, puis 5/5 verts après publication constante until-deleted/null dans
+  les façades Mac/headless. Sorties : `red-session-rows.log`, `green-session-rows.log`.
+
+### Cas dédiés effectivement supprimés — n = 8
+
+Aucun fichier de test supprimé. Les noms ci-dessous sont ceux présents au démarrage ; le texte retiré
+est conservé dans `cas-dedies-retires.txt`. Les trois cas session-events complètent l’inventaire initial
+du ticket. Aucun retrait déjà intégré par une dépendance n’est recompté.
+
+| Fichier sous tests/ | Nom exact | Ancien comportement | Remplacement ou preuve conservée |
+| --- | --- | --- | --- |
+| session-latency.test.cjs | a passage that expires while still waiting for its transcription is counted on both lanes | Expiration des files audio/vision | Compteurs historiques restaurés ; surcharge audio indépendante conservée |
+| split-perception.test.cjs | retention preserves completed speech while expiring queued vision and does not lose active enrichment | Vision en attente expirée, enrichissement actif | Nouveau cas durable paroles/enrichissement vert avant retrait |
+| clip-unreadable.test.cjs | a rolling window still expires an unreadable passage, and removes its files then | Suppression à échéance d’un clip illisible | Illisibilité, réexamen sur images et suppression explicite restent couverts |
+| session-latency.test.cjs | a failed media removal or publication never poisons later prunes and ingests | Retrait retenté et continuation du balayage | Continuation après publication refusée, ingestions et sauvegardes : cas split-perception existant |
+| stream-simulation.test.cjs | an expired medium is refused with an explicit limit while its summary stays searchable | Expiration active dans le scénario expiry | Recherche et transcription via VideoTools, refus expired/missing et rejet de citation sur pruned-v1 dans archive-compat |
+| session-events.test.cjs | expiry announces only the queued lane losses and the later handoff loss of the active transcription | Faits et pertes d’expiration | Compteurs/motifs historiques ; faits des autres pertes conservés |
+| session-events.test.cjs | a transcription finishing during media removal gets its own revision after the consultable expiry | Révision d’expiration puis audio | Révisions ordinaires audio/vision/miniature et faits avant publication conservés |
+| session-events.test.cjs | expired queued vision and active enrichment keep their final versions in history without repeating removal losses | Expiration, enrichissement tardif et retrait retenté | Enrichissement durable, versions persistées et restauration silencieuse conservés |
+
+P = 1378, n = 8, a = 2 nouvelles preuves utiles : seul `cas_de_test_produit` passe à 1370.
+Mesure du contrôle ciblé : M = 1372 = P − n + a. `cas_de_test_harnais` reste à 381.
+
+### Cas mixtes — attentes adaptées et garanties conservées
+
+- `session-latency` : horodatages et diagnostics par appel toujours vérifiés après analyses conduites ;
+  restauration d’une forme historique sans diagnostics volumineux, révision 2 au lieu de 3 car aucune
+  expiration nouvelle. Le drapeau d’échec audio survit à fermeture/restauration. Pertes audio et retenue
+  de 2500 ms restent vérifiées ; les visions en attente restent queued, sans faux trou ni compteur
+  d’expiration. Les compteurs audioExpired/visionExpired sont vérifiés sur état historique restauré.
+  Seule la branche de fin de retenue par expiration disparaît : fermeture à 800 ms et libération à
+  600 ms restent. Deux ingestions attendent leur miniature tandis que leurs analyses avancent ; refus
+  de miniature conservé. La miniature tardive est sauvegardée à fermeture après une pause.
+- `session-durable` : appels de balayage remplacés par publications d’horloge, sans retrait d’assertion
+  sur octets, reprise, numérotation, disque, index ou manifeste. L’assertion interne Infinity devient
+  l’assertion publique until-deleted/null. Le dédoublonnage après history part d’une archive historique
+  restaurée : aucun put pour le doublon, numéro suivant moment-2. La coalescence se prouve par un second
+  bloc admis pendant la fermeture : l’écriture demandée avant ce bloc reste figée sur moment-1 ; la
+  sauvegarde finale contient les deux passages. Aucun élagage ne prépare ces cas.
+- `split-perception` : placeholder expiré préparé par restauration historique ; contexte, preuves
+  mémoire et preuves de transcription restent vides. Le cas de publication refusée reste intact.
+- `session-events` : émissions répétées à la place du balayage, mêmes faits drainés une seule fois.
+  Miniatures tardives conservées dans segments : révision initiale 2, finale 3 si disponible, sinon 2 ;
+  quatre ou trois événements, sans révision d’expiration artificielle. Version et disponibilité finale
+  toujours comparées à la sauvegarde ; pas de pertes ajoutées.
+- `session-event-consumers` : cadence à 30/60 s inchangée, trois demandes de manifeste. Suppression de
+  l’émission finale du balayage : snapshots 14 → 13, notifications hôte 10 → 9 ; bornes de projections
+  inchangées. Totaux d’historique et refus de réindexer des faits tardifs partent de passages historiques
+  restaurés ; enrichissement de thème et octets de miniature tardive restent vérifiés.
+- `memory-projection` : fraîcheur avant publication hôte conduite au fait d’illisibilité d’un nouveau
+  média ; le corps complet égale le snapshot courant dès ce fait, avant tout onChange.
+- `architecture-f08` / `memory-lanes` : refus de relire conservé dans le premier ; indisponibilité
+  avant/après relecture déplacée dans le cas existant du propriétaire des voies, avec son port injecté.
+  Les quatre combinaisons lecture seule/indisponibilité et échec/relecture vérifient un seul appel,
+  deux/trois lectures, aucune relance et une seule perte portant l’erreur initiale. Ordonnanceur inchangé.
+- `session-timeline` : suppression explicite par media.remove à la place de l’expiration ; miniature
+  conservée malgré la disparition du média, pause, reprise et fermeture, puis supprimée explicitement.
+- `topic-summary` : résumé cumulatif placé dans l’historique avant restore ; pause/reprise, transcription,
+  bornes temporelles et absence de mutation du cumul restent vérifiées.
+- `archive-compat` : recherche directe remplacée par les vrais outils de questions sur pruned-v1,
+  avec transcription, refus d’inspection expired/missing sans inspecteur appelé, et réponse inventée
+  sur le placeholder rejetée sans citation. L’ouverture reste sans écriture ni fournisseur ; reprise,
+  compteurs, trous, textes, numéro moment-5 et conservation des anciens octets restent vérifiés.
+- `remote-server`, `server-sessions`, `timeline-server` : publications explicites après avance d’horloge ;
+  parcours HTTP, conservation, inspection et reprise inchangés. Le 410 historique reste exercé par
+  remote-server et architecture-f10. Aucun corpus ni somme modifié.
+- `session-rows` : politique publique constante même avec un ancien champ interne ; mêmes métadonnées,
+  ordre et équivalence Mac/headless. `headless-session-lifecycle` et `question-ceiling` perdent seulement
+  l’option incidente. `clip-unreadable` garde ingestion, parole, images, motifs et réexamen sans balayage.
+- `stream-simulation` : tous les scénarios restants sont durables ; mêmes assertions de déterminisme,
+  cadence, surcharge, files, concurrence, recherche après 110 minutes, budgets et recyclage. Le Mac
+  conserve son rafraîchissement périodique. `bench-perceived` propose durable par défaut ou la disposition
+  synthétique explicitement nommée historical-pruned, sans lecture d’une durée du cœur.
+- Les cas déjà adaptés de mac-ipc-contract, architecture-f05/f07/f10, evidence-refresh, session-manifest
+  et mac-ui restent présents. Baux autoritatifs, indisponibilité, suppression explicite, disque plein et
+  scellement restent testés. ADR 0055 ajoutée ; ADR 0048 complétée par un lien. Une suppression ESLint
+  complexity devenue inutile est retirée (4 → 3) ; aucune suppression ajoutée.
+
+### Exécutions ciblées
+
+Les sorties complètes sont dans `.harness-state/tickets/T223/` ; aucune commande live exécutée.
+
+- `node --test --test-concurrency=1 tests/session-latency.test.cjs` : 19/19 verts (`session-latency.log`).
+- `node --test --test-concurrency=1 tests/split-perception.test.cjs tests/session-events.test.cjs tests/session-event-consumers.test.cjs`
+  : 60/62 verts (`memory-suites.log`). Deux attentes à adapter : émission supprimée et préparation
+  historique restée en segments. Corrections décrites ci-dessus ; aucune relance sans explication.
+- `node --test --test-concurrency=1 tests/session-durable.test.cjs tests/session-event-consumers.test.cjs tests/topic-summary.test.cjs tests/session-timeline.test.cjs tests/memory-projection.test.cjs`
+  : 63/63 verts (`mixed-suites.log`).
+- `node --test --test-concurrency=1 tests/memory-lanes.test.cjs` : 2/2 verts, quatre combinaisons du refus
+  de relance conduites avant retrait des branches d’expiration dans architecture-f08 (`retry-availability.log`).
+- `node --test --test-concurrency=1 tests/stream-simulation.test.cjs` : 7/7 verts (`stream-simulation.log`).
+- `node --test --test-concurrency=1 tests/archive-compat.test.cjs tests/architecture-f04.test.cjs tests/architecture-f06.test.cjs tests/architecture-f08.test.cjs tests/architecture-f10.test.cjs tests/evidence-refresh.test.cjs tests/capture-intake.test.cjs tests/session-lifecycle.test.cjs tests/watch-session-ending.test.cjs tests/session-manifest.test.cjs`
+  : 151/151 verts (`compatibility-and-barriers.log`), dont les outils sur pruned-v1, corpus/sommes,
+  baux, annulation, reprise, admission et fermeture.
+- `node scripts/bench-perceived.cjs --only bytes --sizes 75 --layout durable --out .harness-state/tickets/T223/bench-durable.json`
+  et `node scripts/bench-perceived.cjs --only bytes --sizes 75 --layout historical-pruned --out .harness-state/tickets/T223/bench-historical-pruned.json`
+  : sorties 0, rapports portant respectivement durable et historical-pruned, serveur local et agent simulé.
+- Premier `node scripts/check.mjs --changed` : 252/252 tests verts ; règles, format et cliquet verts,
+  lint rouge sur paramètre inutilisé et suppression obsolète (`check-changed-initial.log`). Paramètre
+  retiré puis `node_modules/.bin/eslint --prune-suppressions core/session.cjs scripts/simulate-stream.cjs scripts/bench-perceived.cjs runtime/headless-session-lifecycle.cjs tests/session-durable.test.cjs tests/session-latency.test.cjs tests/session-events.test.cjs tests/architecture-f08.test.cjs tests/clip-unreadable.test.cjs tests/session-rows.test.cjs`
+  : sortie 0 (`prune-eslint.log`).
+- Second `node scripts/check.mjs --changed` : vert, 252/252 tests, règles/format/lint/gel/cliquet verts
+  (`check-changed.log`). Mesure produit 1372, plancher 1370 ; aucune hausse du gel.
+- Audit des occurrences `test(` avant/après HEAD : delta total −6 = −8 + 2 (`audit-final.json`).
+  Seul fichier protégé modifié : scripts/quality/baseline.json, seule ligne cas_de_test_produit.
+  `git diff --check` : sortie 0 ; aucun fichier du corpus modifié. Recherche finale conservée dans
+  `usages-restants.txt` : plus de balayage actif, uniquement les champs publics constants, leur lecture,
+  les compatibilités historiques et le générateur nommé du témoin pruned-v1.
+- Premier `node scripts/check.mjs` : règles/format/lint/gel/cliquet verts, 2559/2560 tests JS verts
+  et 47 tests Python verts (`check-full.log`). Seul refus : lien vers la nouvelle ADR absent de
+  la section Décisions de docs/architecture.md. `node --test --test-concurrency=1 tests/documentation-index.test.cjs`
+  reproduit exactement ce diagnostic (11/12 verts, `red-documentation-index.log`). Ajout du lien
+  et mise à jour des mentions du second lot achevé, puis même commande : 12/12 verts
+  (`green-documentation-index.log`). Aucun test ni règle d’index documentaire modifié.
+- Second `node scripts/check.mjs` : **vert**, 2560/2560 tests JavaScript (144 fichiers), 47 tests
+  Python, règles, format, lint, gel et cliquet verts (`check-full-final.log`). Exécution séquentielle,
+  aucune vérification déclarée sur TV, VPS ou fournisseur réel. Verdict TERMINÉ écrit dans le dossier
+  d’état ; relecture et intégration laissées à la boucle. Aucun commit ni push.
+
+### Reprise après relecture 1 — 17/10/2026
+
+- Rapport, journal, écarts, état Git et diff relus ; les trois constats mineurs sont acceptés.
+  Exploration et validation prévues dans `exploration-correction-1.md`, précisions dans `ecarts.md`.
+  Le générateur doit refuser avant écriture avec le commit producteur ; les deux corrections de
+  test retirent uniquement une assertion tautologique et un commentaire périmé. Corpus figés.
+- `node --test --test-concurrency=1 tests/write-pruned-archive.test.cjs` : **rouge observé** sur
+  l'assertion d'absence d'écriture, avec `archive` présent dans le dossier temporaire au lieu de `[]`.
+  Sortie : `red-generator-correction-1.log`. Le test lance la vraie commande, sans fournisseur.
+- `node --test --test-concurrency=1 tests/session-latency.test.cjs tests/session-durable.test.cjs` :
+  44/44 verts avant nettoyage (`before-cleanup-correction-1.log`). Les constats 2 et 3 n'ajoutent
+  aucun comportement à tester ; aucun test de comparaison de source n'a été ajouté.
+- Constat 1 corrigé : contrôle de l'API historique avant `mkdir`, refus avec le code stable
+  `TVLENS_HISTORICAL_PRUNING_REQUIRED` et le commit producteur `5e3f479`. Le commentaire du
+  générateur donne également cette provenance. Le test vérifie sortie 1, dossier parent vide,
+  code stable et commit dans le diagnostic.
+- Constat 2 corrigé : seule l'assertion `archived.metrics === undefined` et son message sont retirés.
+  Horodatages, révision, `ingest`, durées et diagnostics du passage vivant restent vérifiés.
+  Constat 3 corrigé : commentaire Infinity/JSON retiré ; assertion until-deleted/null conservée.
+- `node --test --test-concurrency=1 tests/write-pruned-archive.test.cjs tests/session-latency.test.cjs tests/session-durable.test.cjs tests/archive-compat.test.cjs` :
+  **72/72 verts** (`green-correction-1.log`), dont les sommes et la compatibilité des corpus figés.
+- `node scripts/check.mjs --changed` : **vert**, 253/253 tests JS, règles, format, lint, gel et
+  cliquet verts (`check-changed-correction-1.log`). Mesure produit 1373, plancher 1370 inchangé.
+- Audit `audit-correction-1.json` : n = 8 retraits inchangés, a = 3 ajouts utiles avec le test du
+  générateur, delta total −5 ; M = 1373 = P − n + a. Seul fichier protégé modifié : la ligne déjà
+  autorisée de `scripts/quality/baseline.json`. Aucun fichier de corpus ni somme modifié.
+- `node scripts/check.mjs` : **vert**, 2561/2561 tests JavaScript (145 fichiers), 47 tests Python,
+  règles, format, lint, gel et cliquet verts (`check-full-correction-1.log`). Exécution séquentielle.
+  Les trois constats mineurs sont corrigés ; aucune contestation. Verdict `TERMINÉ` écrit dans le
+  dossier d'état, sans réserve propre. La boucle assure la relecture de correction et l'intégration.
+  Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T223/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
+- .harness-state/tickets/T223/relecture-2.md : **Écart accepté, critère 5 :** n = 8 au lieu de 5. Je maintiens la décision de la relecture 1 : l'inventaire refait au démarrage est exigé par le ticket, et les trois cas session-events ne portaient que l'élagage.

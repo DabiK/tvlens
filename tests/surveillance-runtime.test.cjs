@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { tick, turns, until: waitUntil } = require('./helpers/wait.cjs');
+const { tick, turns, deferred, until: waitUntil } = require('./helpers/wait.cjs');
 const os = require('node:os');
 const path = require('node:path');
 const fsp = require('node:fs/promises');
@@ -9,6 +9,9 @@ const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { CodexSurveillanceAgent } = require('../adapters/codex-surveillance-agent.cjs');
 const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillance-agent.cjs');
 const { detectionSchema, verificationSchema } = require('../adapters/surveillance-prompt.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
+const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 
 // La préparation du client écrit sur disque : après les tours rapides, une grâce réelle borne l’attente.
 const until = async (check, label, fastTurns = 500, graceMs = 5000) => {
@@ -21,15 +24,16 @@ const until = async (check, label, fastTurns = 500, graceMs = 5000) => {
 // Never an existing directory: connect() must not link real credentials during tests.
 const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 
-// What a host hands over: the current session ({ watch, store }), here with an in-memory store.
+// What a host hands over: consultation, events and an in-memory store.
 function fakeSession(id = 'session-1') {
   const session = { id, elapsedMs: 0, segments: [], writes: [] };
-  session.watch = { snapshot: () => ({ id, elapsedMs: session.elapsedMs, history: [], segments: session.segments.map(s => ({ ...s, observation: { ...s.observation } })) }) };
+  session.memory = memoryOf(() => session);
+  session.events = createEventPublisher();
   session.store = { saveSurveillance: async snapshot => { session.writes.push(JSON.parse(JSON.stringify(snapshot))); } };
   session.add = (n, transcript) => {
     session.segments.push({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', topicSummary: 'CUMUL', observation: { transcript, summary: '', visual: '', uncertainty: '' } });
     session.elapsedMs = n * 8000;
-    return session.watch.snapshot();
+    return session.memory.view();
   };
   return session;
 }
@@ -116,6 +120,289 @@ function appServer(script) {
 }
 const refuseTool = ({ options, threadId, turnId }, tool) => assert.rejects(options.onRequest('item/tool/call', { threadId, turnId, tool, arguments: { query: 'la suite du programme' } }), /non autorisé/);
 const source = url => ({ url, title: 'Titre de la page', publisher: 'Éditeur', publishedAt: null, evidence: 'La page donne ce chiffre.', relation: 'supports' });
+
+test('passage events coalesce a consultation read outside delivery and a pending received passage counts at stop', async t => {
+  const session = fakeSession(), scheduled = [], calls = [];
+  let reads = 0;
+  const view = session.memory.view;
+  session.memory.view = () => { reads++; return view(); };
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => 0, schedule: task => scheduled.push(task),
+    agent: { detect: async request => { calls.push(request); return { claims: [] }; } },
+  });
+  t.after(() => runtime.close());
+  let started;
+  assert.doesNotThrow(() => { started = runtime.start({ instruction: 'Vérifie.' }); });
+  assert.equal(started.activation.t0Ms, 0);
+  session.add(1, FIGURES[0]);
+  const before = reads;
+  const event = { type: 'PassageReceived', sessionId: session.id, passageId: 'moment-1', revision: 0 };
+  session.events.publish(event);
+  session.events.publish({ ...event, type: 'PassageUpdated', revision: 1 });
+  assert.equal(reads, before, 'delivery never constructs a consultation');
+  assert.equal(scheduled.length, 1, 'events are coalesced');
+  scheduled.shift()();
+  await turns(20);
+  assert.deepEqual(calls.map(call => call.passages.map(p => p.id)), [['moment-1']]);
+  session.add(2, '');
+  Object.assign(session.segments[1], { status: 'queued', audioStatus: 'queued', visionStatus: 'queued', observation: null });
+  session.events.publish({ ...event, passageId: 'moment-2' });
+  const stopped = runtime.stop();
+  assert.deepEqual([stopped.coverage.total, stopped.coverage.waiting, stopped.coverage.stoppedWithPending], [2, 1, 1]);
+  scheduled.shift()();
+  await turns(20);
+  assert.equal(calls.length, 1);
+});
+
+test('a tick without a passage event dates the finished lot and its video lag from the current consultation clock', async t => {
+  const session = fakeSession(), verification = deferred();
+  let request;
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => 1000,
+    agent: {
+      detect: async ({ passages }) => ({ claims: [{ passageId: passages[0].id, quote: FIGURES[0],
+        statement: FIGURES[0], kind: 'figure', checkable: true }] }),
+      verify: input => { request = input; return verification.promise; },
+    },
+  });
+  t.after(() => runtime.close());
+  runtime.start({ instruction: 'Vérifie.' });
+  session.add(1, FIGURES[0]);
+  session.events.publish({ type: 'PassageReceived', sessionId: session.id, passageId: 'moment-1', revision: 0 });
+  await turns(20);
+  assert.equal(runtime.snapshot().counts.running, 1);
+  session.elapsedMs = 41000;
+  runtime.tick();
+  verification.resolve({ summary: 'La source donne ce chiffre.', verdicts: [{ claimId: request.claims[0].id,
+    assessment: 'supported', conclusion: 'La source donne ce chiffre.', sources: [source('https://source.example/chiffre')], limitations: [] }],
+  research: { webSearches: 1, openedUrls: ['https://source.example/chiffre'] } });
+  await turns(20);
+  const state = runtime.snapshot({ full: true });
+  assert.equal(state.overlay.cards[0].publishedAtMs, 41000);
+  assert.equal(state.metrics.verify.videoLagMs.last, 33000);
+  await runtime.flush();
+  assert.equal(session.writes.at(-1).lots[0].publishedAtMs, 41000);
+});
+
+test('a refused consultation at tick cannot hold an overdue verification even when its diagnostic throws', async t => {
+  const session = fakeSession(), verification = deferred(), diagnostics = [];
+  const failure = Object.assign(new Error('lecture refusée'), { code: 'MEMORY_READ_FAILED' });
+  const view = session.memory.view;
+  let clock = 0, refusing = false, request;
+  session.memory.view = () => { if (refusing) throw failure; return view(); };
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => clock,
+    config: { surveillance: { verifyTimeoutMs: 1000, verifyRetries: 0 } },
+    onPublicationError: event => { diagnostics.push(event); throw Error('journal refusé'); },
+    agent: {
+      detect: async ({ passages }) => ({ claims: [{ passageId: passages[0].id, quote: FIGURES[0],
+        statement: FIGURES[0], kind: 'figure', checkable: true }] }),
+      verify: input => { request = input; return verification.promise; },
+    },
+  });
+  t.after(() => { refusing = false; return runtime.close(); });
+  runtime.start({ instruction: 'Vérifie.' });
+  runtime.observe(session.add(1, FIGURES[0]));
+  await turns(20);
+  assert.equal(runtime.snapshot().counts.running, 1);
+  assert.equal(request.signal.aborted, false);
+  const written = session.writes.length;
+  clock = 1000;
+  refusing = true;
+  assert.doesNotThrow(() => runtime.tick());
+  await turns(20);
+  assert.equal(request.signal.aborted, true, 'the verification deadline still cancels the provider');
+  const state = runtime.snapshot();
+  assert.deepEqual([state.counts.running, state.counts.error, state.metrics.verify.timeouts, state.error], [0, 1, 1, null]);
+  assert.deepEqual(diagnostics.map(({ code, error }) => [code, error]), [['TVLENS_SURVEILLANCE_OBSERVATION_FAILED', failure]]);
+  assert.ok(session.writes.length > written, 'the due registry write is still attempted');
+  await runtime.flush();
+  assert.equal(session.writes.at(-1).claims[0].status, 'error');
+});
+
+test('the session memory events drive speech grace and exactly one visual rereading without forwarding host snapshots', async t => {
+  const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'tvlens-surveillance-memory-'));
+  const audio = deferred(), vision = deferred(), thumbnail = deferred();
+  const audioEntered = deferred(), visionEntered = deferred(), visionPublished = deferred();
+  const scheduled = [], calls = [], delivered = [];
+  let clock = 0, wall = 0;
+  const session = createSessionRuntime({
+    id: 'session', sessionsRoot: root, userData: root, selectedModels: {}, smoke: true, localInspection: true,
+    config: { backgroundIndex: false }, readClock: () => clock,
+    overrides: { perception: {
+      transcribe: () => { audioEntered.resolve(); return audio.promise; },
+      observeVisual: () => { visionEntered.resolve(); return vision.promise; },
+    } },
+  });
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => wall, schedule: task => scheduled.push(task),
+    agent: { detect: async request => { calls.push(request); return { claims: [] }; } },
+  });
+  t.after(async () => {
+    audio.resolve({ observation: {} });
+    vision.resolve({ observation: {} });
+    thumbnail.resolve();
+    await runtime.close();
+    await session.close();
+    await fsp.rm(root, { recursive: true, force: true });
+  });
+  session.events.subscribe(event => {
+    delivered.push(event);
+    if (session.memory.passage(event.passageId)?.visionStatus === 'ready') visionPublished.resolve();
+  });
+  const flushEvents = () => { for (const task of scheduled.splice(0)) task(); };
+  t.mock.method(session.thumbnails, 'put', () => thumbnail.promise);
+  runtime.start({ instruction: 'Vérifie.' });
+  await runtime.ready();
+  clock = 8000;
+  const ingested = session.watch.ingest({ startMs: 0, endMs: 8000, clip: new Uint8Array([1]), audio: new Uint8Array([2]), frames: [] });
+  await audioEntered.promise;
+  flushEvents();
+  assert.equal(runtime.snapshot().coverage.waiting, 1);
+  assert.ok(delivered.some(event => event.type === 'PassageReceived'));
+  audio.resolve({ observation: { transcript: FIGURES[0] } });
+  await visionEntered.promise;
+  flushEvents();
+  assert.equal(calls.length, 0);
+  wall = 9999;
+  runtime.tick();
+  assert.equal(calls.length, 0);
+  wall = 10000;
+  runtime.tick();
+  await turns(20);
+  assert.deepEqual([calls.length, calls[0].passages[0].visual, runtime.snapshot().coverage.textOnly], [1, '', 1]);
+  vision.resolve({ observation: { summary: 'Un plateau.', visual: 'Un bandeau indique 17 %.' } });
+  await visionPublished.promise;
+  flushEvents();
+  await turns(20);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[1].passages[0].visual, 'Un bandeau indique 17 %.');
+  session.events.publish(delivered.at(-1));
+  thumbnail.resolve();
+  await ingested;
+  assert.equal(session.memory.passage('moment-1').thumbnailAvailable, true);
+  flushEvents();
+  runtime.tick();
+  await turns(20);
+  assert.equal(calls.length, 2, 'duplicate notification and thumbnail availability add no reading');
+  assert.deepEqual([runtime.snapshot().coverage.scanned, runtime.snapshot().metrics.detect.rescans], [1, 1]);
+});
+
+test('events received during adoption are caught from the current consultation under the latest activation time', async t => {
+  const session = held(durableSession()), scheduled = [], calls = [];
+  session.file = { version: 1, sessionId: session.id, claims: [], lots: [], sequences: { activation: 4 } };
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => 0, schedule: task => scheduled.push(task),
+    agent: { detect: async request => { calls.push(request); return { claims: [] }; } },
+  });
+  t.after(() => runtime.close());
+  const notify = n => session.events.publish({ type: 'PassageReceived', sessionId: session.id, passageId: `moment-${n}`, revision: 0 });
+  session.elapsedMs = 20000;
+  runtime.start({ instruction: 'Vérifie les chiffres.' });
+  await turns(20);
+  session.add(3, 'À cheval sur le premier départ.');
+  session.add(4, 'Après le premier départ, avant le second.');
+  notify(3);
+  notify(4);
+  session.elapsedMs = 30000;
+  runtime.start({ instruction: 'Vérifie les dates.' });
+  session.add(5, 'Le traité a été signé en 1957.');
+  notify(5);
+  assert.deepEqual([scheduled.length, calls.length, session.writes.length, session.asked], [0, 0, 0, 1]);
+  session.release();
+  await runtime.ready();
+  await turns(20);
+  const state = runtime.snapshot();
+  assert.deepEqual([state.activation.id, state.activation.t0Ms, state.coverage.total, state.coverage.scanned], ['act-5', 30000, 1, 1]);
+  assert.deepEqual(calls.map(call => [call.instruction, call.passages.map(p => p.id)]), [['Vérifie les dates.', ['moment-5']]]);
+  await runtime.flush();
+  assert.ok(session.writes.every(write => write.activation.t0Ms === 30000 && write.activation.id === 'act-5'));
+});
+
+test('reset, restore, replacement and close detach memory subscriptions and invalidate queued events and late registry answers', async t => {
+  for (const transition of ['reset', 'restore', 'replace', 'close']) await t.test(transition, async t => {
+    const former = held(durableSession('former')), next = fakeSession('next');
+    const scheduled = [], calls = [], listeners = new Set();
+    let session = former, clock = 0;
+    const subscribe = former.events.subscribe;
+    former.events.subscribe = listener => {
+      listeners.add(listener);
+      const unsubscribe = subscribe(listener);
+      return () => { listeners.delete(listener); unsubscribe(); };
+    };
+    const runtime = createSurveillanceRuntime({
+      getSession: () => session, now: () => clock, schedule: task => scheduled.push(task),
+      agent: { detect: async request => { calls.push(request); return { claims: [] }; } },
+    });
+    t.after(() => runtime.close());
+    runtime.start({ instruction: 'Vérifie.' });
+    await turns(20);
+    assert.equal(listeners.size, 1);
+    // The adoption timed out: events can queue while its registry answer remains outstanding.
+    const late = former.release;
+    clock = 5000;
+    runtime.tick();
+    former.add(1, FIGURES[0]);
+    former.events.publish({ type: 'PassageReceived', sessionId: former.id, passageId: 'moment-1', revision: 0 });
+    assert.equal(scheduled.length, 1);
+    if (transition === 'reset') await runtime.reset();
+    if (transition === 'restore') {
+      runtime.restore({ version: 1, sessionId: next.id, claims: [], lots: [] });
+      assert.equal(runtime.snapshot().enabled, false);
+    }
+    if (transition === 'close') await runtime.close();
+    if (transition !== 'replace') assert.equal(listeners.size, 0, 'the transition detaches before any new activation');
+    session = next;
+    runtime.start({ instruction: 'Vérifie les dates.' });
+    assert.equal(listeners.size, 0);
+    for (const task of scheduled.splice(0)) task();
+    late();
+    former.events.publish({ type: 'PassageUpdated', sessionId: former.id, passageId: 'moment-1', revision: 1 });
+    next.add(2, FIGURES[1]);
+    next.events.publish({ type: 'PassageReceived', sessionId: next.id, passageId: 'moment-2', revision: 0 });
+    for (const task of scheduled.splice(0)) task();
+    await turns(20);
+    await runtime.flush();
+    assert.deepEqual(calls.filter(call => call.sessionId === next.id).map(call => call.passages.map(p => p.id)), [['moment-2']]);
+    assert.ok(next.writes.every(write => write.sessionId === next.id && write.passages.every(p => p.id === 'moment-2')));
+    assert.equal(runtime.snapshot().sessionId, next.id);
+    assert.equal(runtime.snapshot().enabled, true);
+  });
+});
+
+test('a refused consultation is diagnosed and cannot prevent subscription or provider release at close', async t => {
+  const session = fakeSession(), scheduled = [], diagnostics = [], listeners = new Set();
+  const failure = Object.assign(new Error('lecture refusée'), { code: 'MEMORY_READ_FAILED' });
+  const view = session.memory.view;
+  const subscribe = session.events.subscribe;
+  session.events.subscribe = listener => {
+    listeners.add(listener);
+    const unsubscribe = subscribe(listener);
+    return () => { listeners.delete(listener); unsubscribe(); };
+  };
+  let refusing = false, releases = 0;
+  session.memory.view = () => { if (refusing) throw failure; return view(); };
+  const runtime = createSurveillanceRuntime({
+    getSession: () => session, now: () => 0, schedule: task => scheduled.push(task),
+    onPublicationError: event => { diagnostics.push(event); throw Error('journal refusé'); },
+    agent: { close: async () => { releases++; } },
+  });
+  t.after(() => { refusing = false; return runtime.close(); });
+  runtime.start({ instruction: 'Vérifie.' });
+  assert.equal(listeners.size, 1);
+  refusing = true;
+  session.events.publish({ type: 'PassageUpdated', sessionId: session.id, passageId: 'moment-1', revision: 1 });
+  assert.doesNotThrow(() => scheduled.shift()());
+  assert.equal(diagnostics[0].code, 'TVLENS_SURVEILLANCE_OBSERVATION_FAILED');
+  assert.equal(diagnostics[0].error, failure);
+  await assert.doesNotReject(runtime.close());
+  assert.equal(listeners.size, 0, 'close releases the subscription while consultation is unavailable');
+  assert.equal(releases, 1);
+  assert.equal(runtime.snapshot().enabled, false);
+  assert.equal(runtime.snapshot().error, null);
+  session.events.publish({ type: 'PassageUpdated', sessionId: session.id, passageId: 'moment-1', revision: 2 });
+  assert.equal(scheduled.length, 0);
+});
 
 test('a refused persistence notice is delivered on the next tick when only the observer recovers, without duplicates', async t => {
   let clock = 0, refusing = true, rejectingPublication = true, attempts = 0;

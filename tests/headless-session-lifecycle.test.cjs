@@ -71,7 +71,6 @@ function fixture() {
       readOnly,
       questions: [],
       now: () => 8000,
-      retentionMs: Infinity,
       snapshot: () => ({ id, coverage: { passages: f.passages ?? 1 } }),
       beginEnding: () => record("ending"),
       ingest: async () => {

@@ -1,7 +1,7 @@
 ---
 id: T213
 titre: Build the timeline and TV state views from the memory consultation view
-statut: a-faire
+statut: termine
 bloque_par: T207, T038
 adr: non
 installe: non
@@ -97,3 +97,86 @@ dans `MemoryView` (`docs/domaine.md:88`). S'il en manque un, compléter le contr
 avant la migration. Cette règle ne change pas l'exception du champ `session` complet ci-dessus.
 
 ## Journal
+
+### Cadrage
+
+- Lecture du ticket, des standards, des skills, des ADR et des lecteurs/appelants/tests concernés.
+- Exploration et écarts prévus consignés dans `.harness-state/tickets/T213/` ; aucun critère retiré.
+- Les témoins HTTP seront figés avant modification de production. Les fichiers non suivis présents à l'entrée restent intacts.
+
+### Témoins et migration
+
+- Quatre corps HTTP figés avant modification de production : `tests/fixtures/state-view-memory.json` et `state-view-responses.json`.
+  Génération hors ligne via session réelle, HTTP local et horloges injectées ; sortie dans `freeze-wire.log` du dossier d'état.
+- `node --test --test-name-pattern='frozen memory scenario' tests/server-state-views.test.cjs` : 1/1 vert avant migration.
+- `node --test --test-name-pattern='explicit null metadata' tests/memory-view.test.cjs` : rouge sur l'assertion de distinction absent/null.
+  Contrat complété explicitement ; `node --test tests/memory-view.test.cjs` : 13/13 verts.
+- `node --test --test-name-pattern='consultation' tests/session-timeline.test.cjs` : 2 assertions rouges, puis 2/2 verts après migration.
+- `node --test --test-name-pattern='panel projects frozen' tests/state-views.test.cjs` : rouge sur les cartes attendues ;
+  `node --test tests/state-views.test.cjs` : 6/6 verts après migration.
+- `node --test --test-name-pattern='timeline views and moment selection' tests/server-state-views.test.cjs` : rouge sur assertion,
+  puis `node --test --test-name-pattern='frozen memory scenario|timeline views and moment selection' tests/server-state-views.test.cjs` : 2/2 verts.
+- Frise, détails, panneau/chat et projections de l'état complet lisent la consultation. Le champ `session` complet garde son snapshot.
+  Cache toujours invalidé par révision/identité ; consultation figée à la publication de la session pour conserver les compteurs temporels.
+- `node --test --test-concurrency=1 tests/session-timeline.test.cjs tests/topic-summary.test.cjs tests/state-views.test.cjs tests/server-state-views.test.cjs tests/timeline-server.test.cjs tests/wire-contract.test.cjs` : 41/41 verts.
+- `node scripts/check.mjs --changed` : 93 tests verts ; contrôle rouge sur deux lignes trop longues des bancs adaptés, ensuite découpées.
+  Sorties rouges/vertes conservées dans le dossier d'état.
+
+### Contrôle complet et correction de doublure
+
+- `node scripts/check.mjs --changed` après découpage : vert, 93/93 tests JS.
+- Premier `node scripts/check.mjs` : règles/format/lint/cliquet verts ; 2443/2444 tests JS verts,
+  échec de `both host facades project the same library facts while preserving their titles and dates` ; 47/47 Python verts.
+- `node --test tests/session-rows.test.cjs` reproduit l'échec : sa doublure adoptée ne fournit pas `memory.view`.
+  Ajout du port réel de consultation à sa préparation, assertions de bibliothèque conservées.
+- `node --test tests/session-rows.test.cjs` après correction : 5/5 verts.
+
+### Livraison à la boucle
+
+- Dernier `node scripts/check.mjs --changed` : vert, 98/98 tests JS (9 fichiers modifiés).
+- Dernier `node scripts/check.mjs` : vert, règles/format/lint/gel/cliquet validés,
+  2444/2444 tests JS (137 fichiers) et 47/47 tests Python réussis.
+- `git diff --check` : aucune erreur d'espacement. Aucune suppression ESLint devenue inutile.
+- Les quatre réponses figées sont égales par `assert.deepStrictEqual`, avec ordre JSON conservé.
+  Le banc `wire-contract` conserve ses preuves du vrai client TV, des 304, de l'enrichissement et des refus/replis.
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T213/verdict.json`. Aucun commit ni push ; relecture et intégration laissées à la boucle.
+
+### Reprise après relecture 1
+
+- Rapport, journal, écarts, état Git et diff relus ; les trois constats bloquant et mineurs sont acceptés.
+- Exploration de correction dans `.harness-state/tickets/T213/exploration-correction-1.md`.
+- Corrections prévues : garde sur la MemoryView effectivement passée, titre explicite identique aux témoins figés, import regroupé.
+  Aucun changement de production ni réécriture des corps figés prévu.
+
+### Corrections de la relecture 1
+
+- Constat 1 : la vue passée à `deriveStateViews` est maintenant conservée et clonée avant l'appel,
+  puis comparée après l'appel. L'ancienne assertion sur la source reste présente.
+  `node --require ./.harness-state/tickets/T213/mutate-consultation.cjs --test --test-name-pattern='older timeline cards' tests/state-views.test.cjs` :
+  rouge sur la nouvelle assertion après une mutation contrôlée de l'entrée via l'export public.
+  `node --test tests/state-views.test.cjs` sans mutation : 6/6 verts. Aucun code de production modifié.
+- Constat 2 : `TZ=UTC node --test --test-name-pattern='frozen memory scenario' tests/server-state-views.test.cjs` :
+  rouge observé sur le titre (14:13 au lieu de 16:13). Le scénario pose désormais le titre explicite déjà figé
+  via `store.saveManifest` avant publication et adoption ; aucun corps figé n'a été réécrit.
+  Même commande sous `TZ=UTC`, puis `TZ=America/Los_Angeles` : 1/1 vert dans chaque fuseau.
+- Constat 3 : import de `memory-consultation.cjs` regroupé dans une seule déstructuration.
+  `node --test tests/review-regressions.test.cjs` : 19/19 verts.
+- Sorties conservées sous `correction-1-*.log` dans le dossier d'état.
+
+### Validation de la correction 1
+
+- `TZ=UTC node --test --test-concurrency=1 tests/session-timeline.test.cjs tests/topic-summary.test.cjs tests/state-views.test.cjs tests/server-state-views.test.cjs tests/timeline-server.test.cjs tests/wire-contract.test.cjs` : 41/41 verts.
+- `node scripts/check.mjs --changed` : vert, 98/98 tests JS ; règles, format, lint, gel et cliquet validés.
+- `node scripts/check.mjs` : vert, 2444/2444 tests JS et 47/47 tests Python ; règles, format, lint, gel et cliquet validés.
+- Les trois constats bloquant et mineurs sont corrigés. Les corps figés restent inchangés.
+  La garde de non-mutation a été prouvée rouge avec mutation contrôlée, puis verte sur la production conservée.
+- `git diff --check` : aucune erreur d'espacement. Nouveau verdict `TERMINÉ` écrit pour la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T213/relecture-2.md : 1. `asking` dans la vue de consultation — hors périmètre (réserve reconduite)
+  - **Fichiers :** `core/memory/memory-view.cjs:78` et `runtime/state-views.cjs:200-212`.
+  - **Ce qui ne va pas :** `MemoryView.session` expose encore `asking`, alors que `docs/domaine.md:88` l'exclut de `MemoryView`. Le fil n'en dépend pas, puisque `stateView` remplace la valeur par `watch.asking`.
+  - **Pourquoi hors périmètre :** le champ existait avant ce ticket (T207), et la correction n'y touche pas.
+  - **Attendu :** le retirer du contrat dans un ticket dédié.
+- .harness-state/tickets/T213/relecture-2.md : **Écart accepté, la correction après relecture 1 (`ecarts.md`, dernière section) :** elle ne déclare aucun nouvel écart, et c'est exact. La correction rétablit la garde, fixe un titre identique au témoin et regroupe un import, sans changement de production ni des corps figés.

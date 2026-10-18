@@ -1,0 +1,135 @@
+{
+  "id": "4473f9a2-3179-4ba8-b5f5-e5462d11fb52",
+  "provenance": {
+    "producerCommit": "5e3f479",
+    "windowMs": 12000,
+    "kind": "core-capture-and-prune"
+  },
+  "summary": {
+    "state": "archived",
+    "passages": 4,
+    "elapsedMs": 16000,
+    "media": {
+      "stored": 2,
+      "missing": 2,
+      "bytes": 3549
+    },
+    "legacy": false
+  },
+  "saved": {
+    "retention": "rolling",
+    "retentionMs": 12000,
+    "apiCalls": 4,
+    "apiCost": 0,
+    "history": [
+      {
+        "id": "moment-1",
+        "status": "ready",
+        "revision": 2,
+        "mediaReason": "expired",
+        "summary": "Le cercle bleu continue son trajet."
+      },
+      {
+        "id": "moment-2",
+        "status": "error",
+        "revision": 0,
+        "mediaReason": "expired",
+        "summary": "Passage non analysé."
+      }
+    ],
+    "segments": [
+      {
+        "id": "moment-3",
+        "available": true,
+        "revision": 2
+      },
+      {
+        "id": "moment-4",
+        "available": true,
+        "revision": 2
+      }
+    ],
+    "questions": [
+      {
+        "question": "Quelle forme ?",
+        "answer": "Un cercle bleu.",
+        "atMs": 1000
+      }
+    ],
+    "coverage": {
+      "passages": 4,
+      "audioError": 1,
+      "visionError": 1
+    }
+  },
+  "inventory": {
+    "ids": [
+      "moment-4"
+    ],
+    "legacy": [],
+    "partial": [],
+    "orphans": [],
+    "recovered": [],
+    "thumbs": [
+      "moment-1",
+      "moment-2",
+      "moment-3",
+      "moment-4"
+    ],
+    "mediaBytes": 1204,
+    "thumbBytes": 1144,
+    "bytes": 2348
+  },
+  "chat": [
+    {
+      "id": "deep-1",
+      "sessionId": "4473f9a2-3179-4ba8-b5f5-e5462d11fb52",
+      "status": "done",
+      "question": "Quelle forme ?",
+      "result": {
+        "answer": "Un cercle bleu."
+      }
+    }
+  ],
+  "restored": [
+    [
+      "moment-1",
+      false,
+      "expired",
+      2
+    ],
+    [
+      "moment-2",
+      false,
+      "expired",
+      0
+    ],
+    [
+      "moment-3",
+      false,
+      "missing",
+      2
+    ],
+    [
+      "moment-4",
+      true,
+      null,
+      2
+    ]
+  ],
+  "captureGaps": [
+    {
+      "startMs": 2000,
+      "endMs": 8000
+    },
+    {
+      "startMs": 9000,
+      "endMs": 15000
+    }
+  ],
+  "resume": {
+    "nextId": "moment-5",
+    "startMs": 16000,
+    "endMs": 17000
+  }
+}

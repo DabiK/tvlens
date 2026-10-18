@@ -2,7 +2,7 @@
 id: T224
 titre: Deliver the Mac window state from the same projection
 statut: a-faire
-bloque_par: T219, T210, T195
+bloque_par: T219, T210, T195, T233
 adr: oui
 installe: non
 harnais: non

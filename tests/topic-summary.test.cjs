@@ -1,9 +1,11 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const viewOf = state => memoryOf(state).view();
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { WatchSession } = require('../core/session.cjs');
 const { perceptionContext } = require('../core/perception-context.cjs');
-const { completeTopicSummary } = require('../core/topic-summary.cjs');
+const { completeTopicSummary } = require('../core/memory/index.cjs');
 const { sessionTimeline, momentDetail } = require('../core/session-timeline.cjs');
 const passage = (n, summary = `Réponse ${n}`) => ({ id:`moment-${n}`, startMs:n*8000,
   endMs:(n+1)*8000, status:'ready', observation:{topic:'Économie', summary, transcript:`Paroles ${n}`, topicContinuity:'continue'} });
@@ -33,10 +35,10 @@ test('cumulative card preserves the initial attributed argument through updates 
     assert.equal(p.observation.topicSummary,undefined);
   }
   assert.equal(calls,4);
-  const card=sessionTimeline(snapshot).cards[0];
+  const card=sessionTimeline(viewOf(snapshot)).cards[0];
   assert.equal(card.summaryKind,'cumulative');
   assert.match(card.summary,/^A affirme/); assert.match(card.summary,/B conteste/);
-  assert.equal(momentDetail(snapshot,card.segmentIds).summary,card.summary);
+  assert.equal(momentDetail(viewOf(snapshot),card.segmentIds).summary,card.summary);
 });
 test('frozen details never include future or preceding sub-selection material', () => {
   const snapshot={id:'s',history:[],segments:[]};
@@ -44,9 +46,9 @@ test('frozen details never include future or preceding sub-selection material', 
   append(snapshot,passage(1,'Passage B'),'Début A puis B');
   const selection={firstId:'moment-0',lastId:'moment-1'};
   append(snapshot,passage(2,'Secret C'),'Début A puis B et Secret C');
-  const frozen=momentDetail(snapshot,selection);
+  const frozen=momentDetail(viewOf(snapshot),selection);
   assert.equal(frozen.summary,'Début A puis B');
-  const subset=momentDetail(snapshot,['moment-1','moment-2']);
+  const subset=momentDetail(viewOf(snapshot),['moment-1','moment-2']);
   assert.equal(subset.summaryKind,'bounded-excerpts');
   assert.equal(subset.summary,'Passage B Secret C');
   assert.doesNotMatch(subset.summary,/Début A/);
@@ -63,7 +65,7 @@ test('same-title changes, uncertainty, missing analyses and capture gaps reset a
     append(snapshot,p,'Ancien argument contaminant');
     assert.equal(p.topicSummary.text,'Nouveau constat',boundary);
     assert.equal(p.topicSummary.firstId,p.id,boundary);
-    assert.equal(sessionTimeline(snapshot).cards.at(-1).summary,'Nouveau constat');
+    assert.equal(sessionTimeline(viewOf(snapshot)).cards.at(-1).summary,'Nouveau constat');
   }
 });
 test('invalid aggregate fails gracefully without losing current observation or claiming whole-topic coverage', async () => {
@@ -76,7 +78,7 @@ test('invalid aggregate fails gracefully without losing current observation or c
     assert.equal(result.observation.summary,'Actuel');
     p.observation=result.observation; p.topicSummary=completeTopicSummary(p,result,context); snapshot.segments.push(p);
     assert.equal(p.topicSummary,null);
-    const card=sessionTimeline(snapshot).cards[0];
+    const card=sessionTimeline(viewOf(snapshot)).cards[0];
     assert.equal(card.summaryKind,'bounded-excerpts'); assert.match(card.summaryLimits,/aucun résumé cumulatif/);
   }
 });
@@ -84,15 +86,16 @@ test('legacy observations remain honestly bounded and cannot seed a false full-t
   const snapshot={id:'s',history:[passage(0,'Ancien sans résumé')],segments:[]};
   const p=passage(1); append(snapshot,p,'Prétend tout résumer');
   assert.equal(p.topicSummary,null);
-  assert.equal(sessionTimeline(snapshot).cards[0].summaryKind,'bounded-excerpts');
+  assert.equal(sessionTimeline(viewOf(snapshot)).cards[0].summaryKind,'bounded-excerpts');
 });
 test('aggregate survives archival and pause/resume while original transcript and timestamps remain unchanged', async () => {
   let now=8000;
-  const watch=new WatchSession({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}},retentionMs:10000});
-  const p={...passage(0,'Argument initial'),available:true};
-  append(watch,p);
+  const watch=new WatchSession({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}}});
+  const historical={id:'s',history:[],segments:[]};
+  append(historical,passage(0,'Argument initial'));
+  watch.restore({...historical,history:historical.segments,segments:[],retention:'rolling',retentionMs:10000});
   await watch.stop(); await watch.resume();
-  now=30000; await watch.prune();
+  now=30000; watch.emit();
   assert.equal(watch.history[0].topicSummary.text,'Argument initial');
   assert.equal(watch.history[0].observation.transcript,'Paroles 0');
   const next=passage(1); const context=perceptionContext(watch,next);
@@ -113,7 +116,7 @@ test('one rejected cumulative output recovers through bounded intact observation
   append(snapshot,p,'Argument initial, réponse importante et désaccord.');
   assert.equal(p.topicSummary.firstId,'moment-0');
   assert.equal(p.topicSummary.pendingPassages,undefined);
-  assert.equal(sessionTimeline(snapshot).cards[0].summaryKind,'cumulative');
+  assert.equal(sessionTimeline(viewOf(snapshot)).cards[0].summaryKind,'cumulative');
   for(let n=3;n<7;n++) append(snapshot,passage(n),null);
   assert.equal(perceptionContext(snapshot,passage(7)).previousTopicSummary,null);
 });

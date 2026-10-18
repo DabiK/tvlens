@@ -47,6 +47,42 @@ table de couches et leur résolution relative :
   sa pureté porte sur ses dépendances, et permet ces minuteries par défaut. Les interdictions
   s'appliquent aussi aux expressions des gabarits et aux propriétés calculées par chaîne littérale.
 
+Pour créer une sous-zone, ajouter sa ligne à `DEPENDENCY_ZONES` et la permission exacte à chacun de
+ses lecteurs : `core/**` ne donne aucun droit sur une zone déclarée `core/memory/**`. Renseigner
+`layer` (`domain` ou `application`), `context` et, pour le domaine, `entryPoint` avec
+`core/<contexte>/index.cjs`. Ces données sont explicites ; un préfixe anglais ne crée aucun contexte.
+Un lecteur extérieur au contexte ne lit que cet index résolu, y compris via l'import du dossier.
+Les imports internes au même contexte suivent leurs permissions de zone. Un domaine n'importe jamais
+un autre domaine, index compris ; un service `runtime/<contexte>/` peut lire une entrée étrangère si
+sa ligne le permet. `core/shared/**`, marqué `shared: true`, est un noyau sans contexte ; chaque ligne
+de contexte déclare aussi cette permission. Les zones racines qui lisaient `core/**` la possèdent déjà.
+
+La garde valide les métadonnées avant les imports (`zone-metadata-invalid`). La couche est fixée
+par la racine : `core` → `domain`, `runtime` → `application`, `adapters` → `adapter`,
+`server`/`mcp`/`app` → `host`. Une sous-zone conserve cette couche. `core/shared/**` exige
+`shared: true`, sans `context` ni `entryPoint`. Toute autre sous-zone de domaine déclare un contexte,
+un motif exactement `core/<contexte>/**` et l'entrée `core/<contexte>/index.cjs` ; un module interne
+ne peut pas être déclaré public à sa place. Un contexte d'application a un motif
+`runtime/<contexte>/**` cohérent avec son champ `context`. Les sous-zones du runtime peuvent rester
+sans contexte, comme `runtime/compose/**`.
+
+Le code plat de `core/` et `runtime/` reste sans contexte. Il accède aux contextes par leur entrée
+publique avec permission ; un module contextualisé ne revient vers ce code plat que par une exception.
+Déclarer cette arête dans `TEMPORARY_IMPORT_EXCEPTIONS` : `name` stable, `source` et `target` comme
+fichiers exacts et normalisés relatifs au dépôt, `reason` expliquant la migration. `target` désigne
+le fichier résolu, jamais un dossier ni un joker. Une exception peut aussi maintenir une façade ou un
+réexport temporaire vers un module devenu interne. Retirer sa déclaration dès que le fichier ou
+l'import disparaît, ou que les permissions et la visibilité permettent l'arête sans elle : la garde
+refuse toute exception inutile. Elle ne peut autoriser un domaine étranger ni lever les autres gardes.
+Voir l’ADR 0044 : `docs/adr/0044-la-garde-declare-les-contextes-et-les-exceptions-de-migration.md`.
+
+Les diagnostics `zone-permission-missing`, `context-private-import`,
+`context-domain-import-forbidden` et `context-flat-import-requires-exception` distinguent les refus.
+`migration-exception-invalid` et `migration-exception-unused` signalent une déclaration à corriger.
+Le banc signale séparément une garde sélectionnée mais non exécutée (`fixture-guard-not-executed`).
+Les imports calculés et les spécificateurs entre accents graves restent hors de la résolution
+lexicale ; la garde n'évalue pas le JavaScript.
+
 ## Vérifier une modification
 
 ```sh

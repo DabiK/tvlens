@@ -180,12 +180,12 @@ Références : [Codex App Server](https://learn.chatgpt.com/docs/app-server),
 
 - « Garde ce moment » (overlay ou mode complet) copie les segments couvrant les
   30 dernières secondes disponibles. La copie et le texte sont conservés après
-  fermeture, hors de la rétention glissante ; suppression explicite dans la bibliothèque.
+  fermeture et suppression de la session ; suppression explicite dans la bibliothèque.
 - Le raccourci global par défaut est `CommandOrControl+Shift+S`. Modifier la combinaison
   dans « Rechercher / moments gardés ». Un conflit de raccourci est signalé.
 - Rechercher dans la session renvoie des cartes et aperçus si le média est
-  disponible. S'il ne l'est pas (session ancienne, fichier absent, fenêtre glissante
-  réactivée), le texte reste interrogeable, la relecture est désactivée et le motif est dit.
+  disponible. S'il ne l'est pas (session ancienne, fichier absent ou média expiré
+  dans une ancienne archive), le texte reste interrogeable, la relecture est désactivée et le motif est dit.
 - Surveillance (onglet du même nom, qui remplace Auto) : consigne libre, démarre à
   l’activation et ne relit pas le passé. Elle continue pendant les questions
   manuelles, qui restent entre elles en file FIFO. Ses résultats sourcés arrivent en
@@ -207,8 +207,7 @@ node scripts/check-codex-quota.cjs
 
 Le test réel substitue seulement le sélecteur de capture macOS par le flux décodé
 par Chromium : vidéo, son, transcription locale, perception et chat/web sont réels.
-La rétention est accélérée à 45 secondes dans ce test ; en production, les médias
-sont gardés jusqu'à la suppression de la session. Le script appelle `startSurveillance` avec une consigne libre.
+Les médias sont gardés jusqu'à la suppression de la session, comme en production. Le script appelle `startSurveillance` avec une consigne libre.
 Aucun rejeu n’est consigné depuis ce réalignement, signalé dans le
 [livrable du 13 octobre 2026](night-features-delivery.md).
 
@@ -224,7 +223,6 @@ refuse de démarrer avec un message.
 | Variable | Défaut | Effet |
 | --- | --- | --- |
 | `TVLENS_QUESTION_TIMEOUT_MS` | `300000` | Plafond de traitement d'une question, de 1 à 300 000 ms |
-| `TVLENS_MEDIA_RETENTION_MS` | absent : jusqu'à suppression | Une durée positive rétablit la fenêtre glissante |
 | `TVLENS_DISK_MIN_FREE_MB` | `1024` | Plancher d'espace libre sous lequel la capture est refusée |
 | `TVLENS_DISK_WARN_FREE_MB` | `2048` | Seuil du bandeau « espace faible » |
 | `TVLENS_SURVEILLANCE_WORKERS` | `1` | Vérifications de surveillance en parallèle, de 1 à 3 |

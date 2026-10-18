@@ -5,8 +5,8 @@ l’état d’une installation TV ou VPS de l’état des sources. Les relevés 
 époque dans l’[index documentaire](README.md).
 
 La [cible du domaine](domaine.md), figée le 16 octobre 2026, et les ADR 0029 et 0030 décrivent
-l’évolution prévue. Le rangement par contextes et le coordinateur unique des deux hôtes ne sont
-pas encore réalisés dans cette carte.
+l’évolution prévue. Le rangement par contextes commence avec l’entrée publique de Mémoire ;
+le coordinateur unique des deux hôtes reste à réaliser.
 
 ## Couches et frontières
 
@@ -54,6 +54,22 @@ les accès qualifiés, optionnels, calculés par chaîne littérale et les expre
 Les deux hôtes composent `runtime/session-runtime.cjs`, `conversation-runtime.cjs` et
 `surveillance-runtime.cjs`. Le premier construit les objets de session et expose leur façade ;
 les choix de fournisseur et les transitions ont leurs propriétaires propres.
+
+`core/memory/index.cjs` publie le contrat de consultation de Mémoire. La façade de session expose
+`memory.view()`, `memory.passage(id)` et `memory.recentPassages(limit)` ; ces lectures détachées
+ne rappellent pas le snapshot. `memoryMedia.read(id)` et `memoryMedia.lease(ids)` donnent séparément
+accès aux images et au son conservés, avec baux, sans chemin local ni mutateur de stockage.
+Les lecteurs actuels conservent leur snapshot pendant leur migration progressive. Le même index publie
+`toArchive` et `fromArchive`, seuls à écrire et à décoder le format versionné de `session.json`.
+
+`core/memory/lifecycle-state.cjs` porte les transitions pures d'une valeur immuable à quatre axes.
+`WatchSession` en possède la référence privée et garde les commandes, leurs effets et leurs attentes ;
+les compositions lisent toujours `closed`, `ending`, `accepting` et `readOnly` par des getters.
+
+`core/memory/topic-summary.cjs` porte les résumés cumulatifs, accessibles par l'index public.
+`topic-continuity.cjs` partage la décision de continuité : la perception prépare une identité exacte,
+la frise une identité normalisée. `core/shared/passage-text.cjs` fournit le texte propre à un passage
+aux contextes qui en ont besoin, sans y inclure de synthèse cumulative.
 
 | Module | Responsabilité et frontière |
 | --- | --- |
@@ -106,7 +122,10 @@ ciblée. Sur LG, `tv/capture.py` envoie images et audio au serveur ; `RemoteMedi
 Le WebM reconstruit à partir d’images fixes n’est pas une vidéo native. Les deux captures rejoignent
 `WatchSession` après validation par leur hôte et stockage par `LocalSessionStore`.
 
-**Deux voies.** Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
+**Deux voies.** `core/memory/lanes.cjs` possède les deux FIFO privées, leurs appels et une retenue
+vision générique. `WatchSession` traduit encore l'activité des questions et les noms historiques,
+puis publie les versions et sauvegarde. Snapshot et consultation lisent les mêmes comptes détachés.
+Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
 
 - L’audio appelle `transcribe`, puis publie immédiatement les paroles. Par défaut `maxPending = 2` :
   seuls les deux derniers passages en attente gardent leur transcription ; les plus anciens sont
@@ -147,9 +166,22 @@ Ouvrir puis refermer une archive ne réanalyse ni ne réécrit son contenu.
 
 ## Mémoire, recherche et surveillance
 
+`WatchSession` enregistre `PassageReceived` après ajout du passage et `AdmissionSuspended` après
+fermeture de l'admission pour disque plein. `PassageUpdated` annonce les enrichissements, disponibilités
+et miniatures ; `PassageLost` nomme la voie et la cause de chaque perte comptée. Ces changements font
+avancer la révision du passage ; les faits acquis dans une même transition partagent cette version.
+La composition partagée livre ces messages bornés par
+`core/shared/events.cjs`, via son diffuseur injectable `events` : abonnements synchrones, publications
+imbriquées en FIFO, données immuables et échecs isolés. Les messages nomment session, passage et
+révision ; le refus sans passage porte deux identités nulles. Aucun lecteur actuel ne migre et
+`onChange` garde son contrat. Les faits ne sont ni rejoués à la restauration ni chargés de sauvegarder.
+
 L’horloge suit l’ordre d’observation, même si le lecteur revient en arrière. Les médias et miniatures
-restent jusqu’à suppression explicite par défaut ; `TVLENS_MEDIA_RETENTION_MS` peut rétablir une
-fenêtre glissante. Une archive durable conserve son contrat quand elle est reprise sur un autre réglage.
+restent jusqu’à suppression explicite. Les anciens réglages de rétention ne sont plus lus par les hôtes.
+Une archive rouverte devient durable après décodage de ses motifs historiques, sans réécriture à l’ouverture.
+L’[ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) décrit
+la conservation des hôtes ; l’[ADR 0055](adr/0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md)
+achève le retrait du balayage temporel dans la Mémoire et les simulations.
 `session.json`, `manifest.json`, `media/` et `thumbs/` portent état, liste et médias ; les usages ajoutent
 questions, résumé vivant, surveillance et embeddings. `SessionLibrary` liste par manifeste et supprime
 une session ciblée. Les archives anciennes sans manifeste restent lisibles comme texte seul.
@@ -161,7 +193,7 @@ sur les images conservées, en annonçant sa limite. Les autres indisponibilité
 supprimer ; l’hôte met la capture et son horloge en pause. `SavedMoments` copie les médias gardés
 hors de la session, jusqu’à suppression propre de ces moments.
 
-`MomentSearch` combine classement lexical et embeddings optionnels ; une référence temporelle
+`MemorySearch`, encore dans `core/moment-search.cjs`, combine classement lexical et embeddings optionnels ; une référence temporelle
 reconnue contourne l’index. `session-providers` compose `MomentIndex`, `EmbeddingStore` et
 `OpenRouterEmbeddings`. L’indexation de fond est bornée et groupée ; sans clé ou en échec, la recherche
 reste lexicale avec ses limites signalées. Le texte vectorisé part vers OpenRouter.
@@ -221,6 +253,9 @@ Les tests locaux et les bancs simulés protègent ces contrats ; ils ne prouvent
 ni le débit soutenu, ni l’état installé. Les mesures datées et leurs limites sont dans
 [validation](validation.md). Le backend local optionnel est raccordé par `LocalVlmAgent` ; une validation
 matérielle GX10 reste distincte des preuves contre un faux serveur.
+
+La boucle de tickets confie ses processus successifs à `scripts/loop/restart.mjs` : après intégration
+de ses modules, elle conserve verrou, lancement et compteurs en rechargeant le code (ADR 0056).
 
 ## Décisions
 
@@ -357,3 +392,45 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0043](adr/0043-les-raccords-du-renderer-mac-passent-par-une-composition-importable.md) :
   Les raccords du renderer Mac passent par une composition importable, vérifiée par ses comportements publics.
+
+- [ADR 0044](adr/0044-la-garde-declare-les-contextes-et-les-exceptions-de-migration.md) :
+  La garde déclare les contextes, le noyau partagé, les entrées publiques et les exceptions exactes de migration.
+
+- [ADR 0045](adr/0045-les-faits-de-memoire-sont-livres-par-un-diffuseur-isole.md) :
+  Les faits de réception et de suspension sont livrés après transition, par un diffuseur isolé sans rejeu.
+
+- [ADR 0046](adr/0046-la-memoire-publie-une-vue-detachee-et-des-capacites-media-separees.md) :
+  La Mémoire publie une vue détachée, des lectures bornées et des capacités média séparées avec baux.
+
+- [ADR 0047](adr/0047-session-json-porte-un-format-et-une-version-lus-par-un-convertisseur.md) :
+  session.json porte un format et une version, écrits et lus par le seul convertisseur de la Mémoire.
+
+- [ADR 0048](adr/0048-les-hotes-et-les-archives-reprises-conservent-les-medias-jusqua-suppression.md) :
+  Les hôtes conservent les médias jusqu'à suppression ; la reprise garde les motifs historiques,
+  sans réactiver de fenêtre. L’ADR 0055 achève le retrait de l’élagage interne.
+
+- [ADR 0049](adr/0049-la-capture-mac-utilise-le-repli-screen-capture-kit-et-signale-le-silence.md) :
+  La capture Mac utilise le repli ScreenCaptureKit d'Electron 39–44 et avertit durablement quand le son manque.
+
+- [ADR 0050](adr/0050-les-versions-consultables-et-les-pertes-de-voie-publient-leur-revision.md) :
+  Les versions consultables et les pertes de voie publient leur révision, après transition et sans snapshot.
+
+- [ADR 0051](adr/0051-les-voies-de-perception-possedent-leurs-files-et-une-retenue-generique.md) :
+  Les voies possèdent files, appels et retenue générique ; la session traduit la politique et publie les versions.
+
+- [ADR 0052](adr/0052-les-transitions-de-memoire-remplacent-une-valeur-immuable.md) :
+  Les transitions remplacent une valeur immuable à quatre axes ; la racine conserve les effets et les lectures publiques.
+
+- [ADR 0053](adr/0053-le-texte-de-passage-est-partage-et-les-identites-de-sujet-restent-propres-aux-projections.md) :
+  Le texte de passage rejoint le noyau partagé ; les projections partagent la continuité en gardant leurs identités de sujet.
+
+- [ADR 0054](adr/0054-le-serveur-publie-une-projection-applicative-de-la-memoire.md) :
+  Le serveur publie une projection de la consultation et de ports publics distincts ; les lectures
+  complètes restent fraîches et les vues légères gardent leur cache et leurs ETags.
+
+- [ADR 0055](adr/0055-la-memoire-conserve-les-passages-sans-balayage-temporel.md) :
+  La Mémoire conserve les passages sans balayage temporel ; les archives historiques restent lisibles
+  et les simulations utilisent la conservation durable.
+
+- [ADR 0056](adr/0056-la-boucle-releve-son-processus-apres-integration-de-ses-modules.md) :
+  La boucle relève son processus après intégration de ses modules, sans perdre le lancement ni les compteurs.

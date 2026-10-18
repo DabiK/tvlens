@@ -6,13 +6,30 @@ const { builtinModules } = require('node:module');
 const vm = require('node:vm');
 const REPOSITORY = path.join(__dirname, '..');
 const LAYER_EXTENSIONS = ['.js', '.cjs', '.mjs'];
+const ROOT_LAYERS = {
+  core: 'domain',
+  runtime: 'application',
+  adapters: 'adapter',
+  server: 'host',
+  mcp: 'host',
+  app: 'host',
+};
 const DEPENDENCY_ZONES = [
-  { pattern: 'core/**', imports: ['core/**'] },
-  { pattern: 'adapters/**', imports: ['adapters/**', 'core/**'] },
-  { pattern: 'runtime/**', imports: ['runtime/**', 'core/**', 'adapters/**'] },
-  { pattern: 'server/**', imports: ['server/**', 'core/**', 'adapters/**', 'runtime/**'] },
-  { pattern: 'mcp/**', imports: ['mcp/**', 'core/**'] },
-  { pattern: 'app/**', imports: ['app/**', 'core/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'core/**', layer: 'domain', imports: ['core/**', 'core/shared/**', 'core/memory/**'] },
+  { pattern: 'core/memory/**', layer: 'domain', context: 'memory', entryPoint: 'core/memory/index.cjs',
+    imports: ['core/memory/**', 'core/shared/**'] },
+  { pattern: 'core/shared/**', layer: 'domain', shared: true, imports: ['core/shared/**'] },
+  { pattern: 'adapters/**', layer: 'adapter', imports: ['adapters/**', 'core/**', 'core/shared/**', 'core/memory/**'] },
+  { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'runtime/memory/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
+  { pattern: 'runtime/memory/**', layer: 'application', context: 'memory',
+    imports: ['runtime/memory/**', 'core/memory/**', 'core/shared/**'] },
+  { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
+  { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**', 'runtime/memory/**'] },
+];
+const TEMPORARY_IMPORT_EXCEPTIONS = [
+  { name: 'memory-public-latency-summary', source: 'core/memory/index.cjs', target: 'core/latency-trace.cjs',
+    reason: 'Le calcul public de latence reste dans son module plat jusqu’à la contraction de la façade de mémoire.' },
 ];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
@@ -31,6 +48,16 @@ const PURE_MODULE_POLICIES = [
   { filename: 'runtime/question-checkpoint.cjs', allowTimers: true },
 ];
 const NETWORK_GLOBALS = ['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource'];
+
+test('topic summaries belong to memory and passage text belongs to the shared kernel without legacy modules', () => {
+  const filenames = inventory().map(module => module.relative);
+  for (const filename of ['core/topic-summary.cjs', 'core/passage-text.cjs']) {
+    assert.equal(filenames.includes(filename), false, `${filename}: remove the legacy module`);
+  }
+  for (const filename of ['core/memory/topic-summary.cjs', 'core/shared/passage-text.cjs']) {
+    assert.ok(filenames.includes(filename), `${filename}: missing module`);
+  }
+});
 
 function literalMemberTokens(tokens) {
   const normalized = [];
@@ -254,9 +281,104 @@ function uiImportAllowed(relative, target) {
   return relative === 'app/ui/browser-capture.mjs' && target === 'app/recording.js';
 }
 
+function validateContextZone(zone, root, diagnostic) {
+  assert.ok(typeof zone.context === 'string' && /^[a-z][a-z0-9-]*$/.test(zone.context), diagnostic);
+  assert.equal(zone.pattern, `${root}/${zone.context}/**`, diagnostic);
+}
+
+function validateDomainZone(zone, diagnostic) {
+  if (zone.pattern === 'core/**') {
+    assert.ok(!Object.hasOwn(zone, 'context') && !Object.hasOwn(zone, 'entryPoint'), diagnostic);
+    return;
+  }
+  validateContextZone(zone, 'core', diagnostic);
+  assert.equal(zone.entryPoint, `core/${zone.context}/index.cjs`, diagnostic);
+}
+
+function validateDependencyZones() {
+  for (const zone of DEPENDENCY_ZONES) {
+    const diagnostic = `zone-metadata-invalid: ${zone.pattern}`;
+    const root = zone.pattern.split('/')[0];
+    assert.ok(Object.hasOwn(ROOT_LAYERS, root), diagnostic);
+    assert.equal(zone.layer, ROOT_LAYERS[root], diagnostic);
+    assert.ok(zone.shared === undefined || zone.shared === true, diagnostic);
+    if (zone.pattern === 'core/shared/**') assert.equal(zone.shared, true, diagnostic);
+    if (zone.shared) {
+      assert.equal(zone.pattern, 'core/shared/**', diagnostic);
+      assert.equal(zone.layer, 'domain', diagnostic);
+      assert.ok(!Object.hasOwn(zone, 'context') && !Object.hasOwn(zone, 'entryPoint'), diagnostic);
+    } else if (zone.layer === 'domain') validateDomainZone(zone, diagnostic);
+    else {
+      assert.ok(!Object.hasOwn(zone, 'entryPoint'), diagnostic);
+      if (Object.hasOwn(zone, 'context')) {
+        assert.equal(zone.layer, 'application', diagnostic);
+        validateContextZone(zone, 'runtime', diagnostic);
+      }
+    }
+  }
+}
+
+function foreignDomainImport(origin, destination) {
+  return origin.layer === 'domain' && origin.context && destination?.layer === 'domain' &&
+    destination.context && origin.context !== destination.context;
+}
+
+function importPolicyViolation(origin, destination, target) {
+  if (foreignDomainImport(origin, destination)) return 'context-domain-import-forbidden: domains cannot import another context';
+  if (origin.context && /^(?:core|runtime)\/[^/]+$/.test(target)) {
+    return 'context-flat-import-requires-exception: declare the exact migration edge';
+  }
+  if (!destination || !origin.imports.includes(destination.pattern)) {
+    return `zone-permission-missing: ${origin.pattern} does not list ${destination?.pattern ?? target}`;
+  }
+  if (destination.shared) return null;
+  if (destination.layer === 'domain' && destination.context && origin.context !== destination.context && target !== destination.entryPoint) {
+    return `context-private-import: use ${destination.entryPoint}`;
+  }
+  return null;
+}
+
+function exactModulePath(filename) {
+  return typeof filename === 'string' && !/[?*[\]{}\\]/.test(filename) &&
+    !path.posix.isAbsolute(filename) && !filename.startsWith('../') &&
+    path.posix.normalize(filename) === filename && LAYER_EXTENSIONS.includes(path.posix.extname(filename));
+}
+
+function validateMigrationExceptions() {
+  const names = new Set();
+  const edges = new Set();
+  const filenames = new Set(inventory().map(module => module.relative));
+  for (const exception of TEMPORARY_IMPORT_EXCEPTIONS) {
+    const { name, source, target, reason } = exception;
+    const diagnostic = `migration-exception-invalid: ${JSON.stringify(exception)}`;
+    assert.ok(typeof name === 'string' && /^[a-z][a-z0-9-]*$/.test(name), diagnostic);
+    assert.ok(typeof reason === 'string' && reason.trim().length > 0, diagnostic);
+    assert.ok(exactModulePath(source) && exactModulePath(target), diagnostic);
+    const edge = `${source} -> ${target}`;
+    assert.ok(!names.has(name) && !edges.has(edge), diagnostic);
+    names.add(name);
+    edges.add(edge);
+    assert.ok(filenames.has(source) && filenames.has(target), `${name}: ${edge}: migration-exception-unused: a module disappeared`);
+  }
+}
+
+function assertRelativeImport(relative, specifier, target, origin, usedExceptions) {
+  const destination = zoneFor(target);
+  const violation = importPolicyViolation(origin, destination, target);
+  const zones = `zones ${origin.pattern} -> ${destination?.pattern ?? 'undeclared'}`;
+  const exception = TEMPORARY_IMPORT_EXCEPTIONS.find(item => item.source === relative && item.target === target);
+  const migrationAllowed = violation && exception && !foreignDomainImport(origin, destination);
+  if (migrationAllowed) usedExceptions.add(exception.name);
+  assert.ok(violation === null || migrationAllowed, `${relative} depends on ${specifier} -> ${target}; ${zones}; ${violation}`);
+  return `${origin.pattern} -> ${destination?.pattern ?? 'undeclared'}`;
+}
+
 test('layer dependency table permits only declared zones', t => {
+  validateDependencyZones();
   const { dependencies = {} } = JSON.parse(fs.readFileSync(path.join(REPOSITORY, 'package.json'), 'utf8'));
   const edges = new Map();
+  validateMigrationExceptions();
+  const usedExceptions = new Set();
   for (const { relative, imports } of inventory()) {
     if (relative.startsWith('tv/app/')) continue;
     const origin = zoneFor(relative);
@@ -267,11 +389,12 @@ test('layer dependency table permits only declared zones', t => {
         assert.ok(externalImportAllowed(relative, specifier, dependencies), `${relative} depends on ${specifier}`);
         continue;
       }
-      const destination = zoneFor(target);
-      assert.ok(destination && origin.imports.includes(destination.pattern), `${relative} depends on ${specifier} -> ${target}`);
-      const edge = `${origin.pattern} -> ${destination.pattern}`;
+      const edge = assertRelativeImport(relative, specifier, target, origin, usedExceptions);
       edges.set(edge, (edges.get(edge) ?? 0) + 1);
     }
+  }
+  for (const { name, source, target } of TEMPORARY_IMPORT_EXCEPTIONS) {
+    assert.ok(usedExceptions.has(name), `${name}: ${source} -> ${target}: migration-exception-unused: remove the obsolete declaration`);
   }
   for (const root of new Set(inventory().map(module => module.root))) {
     t.diagnostic(`${root}: ${inventory().filter(module => module.root === root).length} fichiers JavaScript`);
@@ -391,7 +514,7 @@ test('shared runtime and headless transport do not import Electron', () => {
   }
 });
 test('compositions leave watch session lifecycle flags to the domain', () => {
-  const flags = 'ending|accepting|readOnly|closed|asking';
+  const flags = 'ending|accepting|readOnly|closed|asking|queue|visionQueue|audioRunning|visionRunning|visionHeldSince|visionBlockedMs';
   const member = String.raw`\bwatch\s*(?:\.\s*(?:${flags})\b|\[\s*(['"])(?:${flags})\1\s*\])`;
   const assignment = String.raw`\s*(?:=(?!=|>)|(?:\*\*|<<|>>>?|&&|\|\||\?\?|[-+*/%&|^])=|\+\+|--)`;
   const write = new RegExp(member + assignment);
@@ -400,6 +523,13 @@ test('compositions leave watch session lifecycle flags to the domain', () => {
     const match = write.exec(source);
     assert.equal(match?.[0] ?? null, null, `${relative} writes ${match?.[0]}`);
   }
+});
+test('memory perception lanes own their queues and use a generic hold policy', () => {
+  const lanes = inventory().find(module => module.relative === 'core/memory/lanes.cjs');
+  assert.ok(lanes, 'the memory context must own perception lanes');
+  assert.doesNotMatch(lanes.source, /asking|question|deep-?ask|surveillance|duringask/i, lanes.relative);
+  const session = inventory().find(module => module.relative === 'core/session.cjs');
+  assert.doesNotMatch(session.source, /this\.(?:queue|visionQueue|audioRunning|visionRunning|visionHeldSince|controller)\b/);
 });
 test('core services do not import the session use case', () => {
   for (const { relative, root, imports } of inventory()) {

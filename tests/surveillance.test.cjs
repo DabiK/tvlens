@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { deferred } = require('./helpers/wait.cjs');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { Surveillance, COVERAGE_BUCKETS, CLAIM_STATES, claimKey, sameClaim, applyVerdicts, composeLotText, sentences } = require('../core/surveillance.cjs');
 
 // Everything is promise-driven and the clock is injected: no timer, real or fake, is ever armed here.
@@ -28,10 +29,13 @@ const instantResearcher = (reply = answer) => { const calls = []; return { calls
 
 function harness({ limits = {}, detector, researcher, probe, t0 = 0 } = {}) {
   const h = { clock: 0, elapsedMs: t0, history: [], segments: [], states: [], chatReads: 0 };
-  // A host snapshot carries the chat flag; the surveillance must never look at it.
-  h.snapshot = () => ({ id: 'session-1', elapsedMs: h.elapsedMs, history: h.history, segments: h.segments, get asking() { h.chatReads++; return true; } });
+  h.view = () => {
+    const view = memoryOf({ id: 'session-1', elapsedMs: h.elapsedMs, history: h.history, segments: h.segments }).view();
+    Object.defineProperty(view.session, 'asking', { get() { h.chatReads++; return true; } });
+    return view;
+  };
   h.surveillance = new Surveillance({ detector, researcher, probe, now: () => h.clock, limits: { visionGraceMs: 0, retryDelayMs: 2000, ...limits }, onChange: state => h.states.push(state) });
-  h.add = (...passages) => { h.segments.push(...passages); h.elapsedMs = Math.max(h.elapsedMs, ...passages.map(p => p.endMs)); h.surveillance.observe(h.snapshot()); };
+  h.add = (...passages) => { h.segments.push(...passages); h.elapsedMs = Math.max(h.elapsedMs, ...passages.map(p => p.endMs)); h.surveillance.observe(h.view()); };
   h.state = options => h.surveillance.snapshot(options);
   return h;
 }
@@ -40,6 +44,23 @@ function invariants(state) {
   assert.equal(COVERAGE_BUCKETS.reduce((sum, bucket) => sum + state.coverage[bucket], 0), state.coverage.total, 'every passage after t0 sits in exactly one bucket');
   assert.equal(CLAIM_STATES.reduce((sum, status) => sum + state.counts[status], 0), state.totals.claims, 'every claim sits in exactly one state');
 }
+
+test('activation reads the consultation clock and counts a received passage still waiting at stop', () => {
+  const surveillance = new Surveillance({ now: () => 0 });
+  const state = { id: 'memory-session', elapsedMs: 20000, segments: [
+    passage(1, 'Avant activation.'), passage(3, 'À cheval sur activation.'),
+  ] };
+  let started;
+  assert.doesNotThrow(() => { started = surveillance.start({ instruction: 'Vérifie.' }, memoryOf(state).view()); });
+  assert.equal(started.activation.t0Ms, 20000);
+  assert.equal(started.coverage.total, 0);
+  state.segments.push(passage(4, '', { status: 'queued', audioStatus: 'queued', visionStatus: 'queued', observation: null }));
+  state.elapsedMs = 32000;
+  surveillance.observe(memoryOf(state).view());
+  const stopped = surveillance.stop();
+  assert.deepEqual([stopped.coverage.total, stopped.coverage.waiting, stopped.coverage.stoppedWithPending], [1, 1, 1]);
+  invariants(stopped);
+});
 
 test('surveillance reads only what starts after the activation, and no evidence ever contains the future', async () => {
   const detector = scripted(p => ({
@@ -53,11 +74,11 @@ test('surveillance reads only what starts after the activation, and no evidence 
   const researcher = instantResearcher();
   const h = harness({ detector, researcher, t0: 20000, limits: { detectBatchPassages: 1 } });
   assert.throws(() => h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, null), /Démarre une session/);
-  assert.throws(() => h.surveillance.start({ instruction: '   ' }, h.snapshot()), /consigne/);
-  assert.throws(() => h.surveillance.start({ instruction: 'x'.repeat(1501) }, h.snapshot()), /consigne/);
+  assert.throws(() => h.surveillance.start({ instruction: '   ' }, h.view()), /consigne/);
+  assert.throws(() => h.surveillance.start({ instruction: 'x'.repeat(1501) }, h.view()), /consigne/);
   // Passages 1 and 2 end before t0, passage 3 (16–24 s) straddles it.
   h.segments.push(passage(1, 'avant activation alpha 11 %'), passage(2, 'avant activation beta 22 %'), passage(3, 'à cheval gamma 33 %'));
-  const started = h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  const started = h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   assert.equal(started.activation.t0Ms, 20000);
   assert.equal(started.coverage.total, 0);
   h.add(passage(4, 'Il affirme que le chômage est à 7 % en France.'));
@@ -93,7 +114,7 @@ test('a backlog of forty passages is drained oldest first without any silent los
   const detector = scripted(p => { const n = Number(p.id.split('-')[1]); return [found(p.id, `la mesure ${n} coûte ${n * 11} millions`, `Selon le ministre, la mesure ${n} coûte ${n * 11} millions d’euros par an.`)]; });
   const researcher = gatedResearcher();
   const h = harness({ detector, researcher, limits: { verifyConcurrency: 1, verifyBatchClaims: 2, maxQueuedClaims: 4, maxDetectedBacklog: 6 } });
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   h.add(...Array.from({ length: 40 }, (_, i) => passage(i + 1, `Le ministre annonce que la mesure ${i + 1} coûte ${(i + 1) * 11} millions d’euros par an.`)));
   await flush();
 
@@ -144,14 +165,14 @@ test('a backlog of forty passages is drained oldest first without any silent los
   h.states.forEach(invariants);
   // A passage read for good is not even looked at again: a long session costs nothing per old passage.
   let reads = 0;
-  h.surveillance.observe({ ...h.snapshot(), segments: h.segments.map(p => ({ ...p, get observation() { reads++; return p.observation; } })) });
+  h.surveillance.observe({ ...h.view(), passages: h.view().passages.map(p => ({ ...p, get observation() { reads++; return p.observation; } })) });
   assert.equal(reads, 0);
 });
 
 test('stop cancels what is in flight and ignores late results; a new instruction starts at a new t0 and keeps the registry', async () => {
   const detector = gatedDetector(), researcher = gatedResearcher();
   const h = harness({ detector, researcher, limits: { verifyBatchClaims: 1, detectBatchPassages: 1 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   h.add(passage(1, 'Le budget est de 10 millions. La dette atteint 20 millions. Le déficit est de 30 millions.'));
   await flush();
   detector.calls[0].gate.resolve({ claims: [found('moment-1', 'Le budget est de 10 millions', 'Selon lui, le budget est de 10 millions.'),
@@ -178,13 +199,13 @@ test('stop cancels what is in flight and ignores late results; a new instruction
   const emitted = h.states.length;
   assert.deepEqual(h.state(), stopped);
   assert.deepEqual(h.surveillance.stop('Encore.'), stopped, 'stop is idempotent');
-  h.surveillance.tick(); h.surveillance.observe(h.snapshot()); await flush();
+  h.surveillance.tick(); h.surveillance.observe(h.view()); await flush();
   assert.deepEqual([h.states.length, detector.calls.length, researcher.calls.length], [emitted, 2, 1]);
   assert.throws(() => h.surveillance.retry('claim-2'), /Active la surveillance/);
 
   // Another instruction: a new t0, nothing older is read again, the registry and its numbering go on.
   h.elapsedMs = 100000; h.clock = 6000;
-  const restarted = h.surveillance.start({ instruction: 'Vérifie les dates.' }, h.snapshot());
+  const restarted = h.surveillance.start({ instruction: 'Vérifie les dates.' }, h.view());
   assert.deepEqual([restarted.activation.id, restarted.activation.t0Ms, restarted.counts.cancelled, restarted.coverage.total], ['act-2', 100000, 3, 0]);
   await flush();
   assert.equal(detector.calls.length, 2, 'the passage left unread by the first activation is before the new t0');
@@ -221,7 +242,7 @@ test('different figures are different claims; a repetition adds a mention and is
   });
   const researcher = instantResearcher(request => ({ ...answer(request), verdicts: request.claims.map(c => verdict(c.id, 'insufficient')) }));
   const h = harness({ detector, researcher, limits: { maxClaimsPerBatch: 3 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   const lines = ['Il dit que le chômage est à 7 % en France.', 'Elle répond que le chômage est à 9 % en France.', 'Il répète que le chômage est à 7 % en France.',
     'Pour elle le chômage serait de 11 % en réalité.', 'Elle redit : neuf pour cent, enfin 9 %.', 'Le poste 1 pèse 20 millions, le poste 2 pèse 21 millions, le poste 3 pèse 22 millions, le poste 4 pèse 23 millions.'];
   for (const [i, line] of lines.entries()) { h.add(passage(i + 1, line)); await flush(); }
@@ -271,7 +292,7 @@ test('statements one word apart are different claims: each keeps its identifier 
   });
   const researcher = instantResearcher();
   const h = harness({ detector, researcher, limits: { detectBatchPassages: 1 } });
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   for (const [i, line] of said.entries()) { h.add(passage(i + 1, `Il dit que ${line}.`)); await flush(); }
   h.add(passage(13, 'Elle répète : le chômage des jeunes est de 17 pour cent en France !'));
   await flush();
@@ -307,7 +328,7 @@ test('a finished lot yields at most one card, limited to claims whose cited page
     research: { webSearches: 2, openedUrls: [page('claim-6'), page('claim-7')], elapsedMs: 7 } })];
   const researcher = instantResearcher(request => replies[researcher.calls.length - 1](request));
   const h = harness({ detector, researcher, limits: { verifyBatchClaims: 3 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   h.add(passage(1, 'Pour lui le chômage des jeunes est de 17 %. La dette publique dépasse 3 000 milliards. Et le pays compte 68 millions d’habitants.'));
   await flush();
   h.elapsedMs = 31000;
@@ -401,7 +422,7 @@ test('an adapter that never answers cannot freeze the module: deadline, one retr
   const verify = researcher.verify;
   researcher.verify = request => (hang ? (researcher.calls.push(request), new Promise(() => {})) : verify(request));
   const h = harness({ detector, researcher, limits: { detectBatchPassages: 1, verifyBatchClaims: 1 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   h.add(passage(1, 'Il dit que le chantier 1 coûte 5 millions.'), passage(2, 'Puis que le chantier 2 coûte 10 millions.'), passage(3, 'Enfin que le chantier 3 coûte 15 millions.'));
   await flush();
   const step = async ms => { h.clock += ms; h.surveillance.tick(); await flush(); };
@@ -468,7 +489,7 @@ test('a reading outage is never published as a quiet programme; when reading com
   const say = async n => { h.add(passage(n, `Le poste ${n} vaut ${n}7 millions.`)); await flush(); };
   const told = () => { const s = h.state({ brief: true }); return [s.activity.state, s.activity.label, s.backlog.reason, s.backlog.passagesFailed, s.backlog.failure]; };
   const read = () => detector.calls.map(call => call.passages.map(p => p.id.split('-')[1]).join('+')).join(' ');
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   assert.deepEqual(told(), ['listening', 'Surveillance active.', null, 0, null]);
 
   // The very first failure is told, before the passage is even given up.
@@ -549,7 +570,7 @@ test('a signal is a video observation with its interval: never a web verificatio
       found(p.id, 'elle ne passera jamais', 'Selon l’invité, la réforme ne passera jamais.', { kind: 'other', checkable: false, reason: 'Prédiction.' })]));
   const researcher = instantResearcher();
   const h = harness({ detector, researcher });
-  h.surveillance.start({ instruction: 'Préviens-moi quand ils parlent des retraites.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Préviens-moi quand ils parlent des retraites.' }, h.view());
   h.add(passage(1, 'On passe maintenant à la réforme des retraites. Les syndicats appellent à la grève mardi.'));
   await flush();
   h.add(passage(2, 'La réforme des retraites coûterait 12 milliards. À mon avis elle ne passera jamais.'));
@@ -584,7 +605,7 @@ test('words first: a partial passage is read without waiting for vision, which t
     ...(p.visual.includes('dette') ? [found(p.id, 'dette publique à 3 000 milliards', 'Un bandeau affiche une dette publique à 3 000 milliards.')] : [])]);
   const researcher = instantResearcher();
   const h = harness({ detector, researcher, limits: { visionGraceMs: 10000 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   // Words published, vision still waiting (as when a question withholds the visual lane).
   const first = passage(1, 'Le chômage est tombé à 7 % ce trimestre.', { status: 'partial', visionStatus: 'queued' });
   h.add(first);
@@ -597,13 +618,13 @@ test('words first: a partial passage is read without waiting for vision, which t
   // The description arrives afterwards: one second reading, with the image text this time.
   Object.assign(first, { status: 'ready', visionStatus: 'ready' });
   Object.assign(first.observation, { visual: 'Bandeau : dette publique à 3 000 milliards', summary: 'Un plateau de débat.' });
-  h.surveillance.observe(h.snapshot());
+  h.surveillance.observe(h.view());
   // The passage changes again while it is being read for the second time, and once more afterwards.
   first.observation.summary = 'Une autre formulation du résumé.';
-  h.surveillance.observe(h.snapshot()); await flush();
+  h.surveillance.observe(h.view()); await flush();
   assert.deepEqual([detector.calls.length, detector.calls[1].passages[0].visual, detector.calls[1].known.length], [2, 'Bandeau : dette publique à 3 000 milliards', 1]);
   first.observation.summary = 'Une troisième formulation.';
-  h.surveillance.observe(h.snapshot()); h.surveillance.tick(); await flush();
+  h.surveillance.observe(h.view()); h.surveillance.tick(); await flush();
   assert.equal(detector.calls.length, 2, 'never a third reading');
   let state = h.state({ full: true });
   // The words read twice are one mention, and the figure shown on screen is a new claim.
@@ -621,11 +642,41 @@ test('words first: a partial passage is read without waiting for vision, which t
   assert.equal(h.chatReads, 0);
 });
 
+test('consultation updates preserve empty and unreadable buckets and keep usable speech when vision fails or is skipped', async () => {
+  for (const visionStatus of ['error', 'skipped']) {
+    const detector = scripted(() => []), h = harness({ detector, limits: { visionGraceMs: 10000 } });
+    h.surveillance.start({ instruction: 'Vérifie.' }, h.view());
+    const spoken = passage(1, 'Les paroles restent utilisables après la perte vision.', { status: 'partial', visionStatus: 'queued' });
+    const silent = passage(2, '', { status: 'analyzing', visionStatus: 'analyzing' });
+    const unreadable = passage(3, '', { status: 'analyzing', visionStatus: 'analyzing', observation: null });
+    h.add(spoken, silent, unreadable);
+    assert.equal(h.state().coverage.waiting, 3);
+    h.clock = 10000;
+    h.surveillance.tick();
+    await flush();
+    assert.equal(detector.calls.length, 1);
+    Object.assign(spoken, { visionStatus, revision: 2 });
+    Object.assign(silent, { status: 'partial', visionStatus, revision: 2 });
+    Object.assign(unreadable, { status: 'error', visionStatus, revision: 2 });
+    h.surveillance.observe(h.view());
+    await flush();
+    Object.assign(spoken, { available: false, mediaReason: 'expired', revision: 3 });
+    h.surveillance.observe(h.view());
+    h.surveillance.observe(h.view());
+    h.surveillance.tick();
+    await flush();
+    const state = h.state();
+    assert.deepEqual([state.coverage.total, state.coverage.scanned, state.coverage.empty, state.coverage.unscannable], [3, 1, 1, 1]);
+    assert.equal(detector.calls.length, 1, 'stability, revisions and availability alone never invent another reading');
+    h.states.forEach(invariants);
+  }
+});
+
 test('a busy chat never suspends the surveillance: the probe only counts the overlap, in metrics of its own', async () => {
   const run = async probe => {
     const detector = scripted(p => [found(p.id, 'le chômage est à 7 %', 'Selon lui, le chômage est à 7 % en France.')]), researcher = instantResearcher();
     const h = harness({ detector, researcher, probe });
-    h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+    h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
     h.add(passage(1, 'Il assure que le chômage est à 7 % en France.'));
     h.clock = 400;
     await flush();
@@ -642,7 +693,7 @@ test('a busy chat never suspends the surveillance: the probe only counts the ove
   assert.equal(alone.metrics.verify.claimToResultMs.n, 1);
   // A reversible setting trades delay for provider calls: readings spaced out, passages grouped, none skipped.
   const detector = scripted(() => []), h = harness({ detector, researcher: instantResearcher(), limits: { detectIntervalMs: 15000 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   for (const n of [1, 2, 3]) { h.clock = (n - 1) * 8000; h.add(passage(n, `Le chantier ${n} coûte ${n * 5} millions.`)); await flush(); }
   assert.deepEqual([detector.calls.map(call => call.passages.map(p => p.id)), h.state().coverage.scanned], [[['moment-1'], ['moment-2', 'moment-3']], 3]);
   assert.throws(() => new Surveillance({ limits: { verifyConcurrency: 4 } }), /verifyConcurrency/);
@@ -653,7 +704,7 @@ test('a busy chat never suspends the surveillance: the probe only counts the ove
 test('a saved registry is reopened read-only: nothing is relaunched, and an explicit start resumes its numbering', async () => {
   const detector = gatedDetector(), researcher = gatedResearcher();
   const h = harness({ detector, researcher, limits: { verifyBatchClaims: 1, detectBatchPassages: 1 } });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les chiffres.' }, h.view());
   h.add(passage(1, 'Le budget est de 10 millions. La dette atteint 20 millions. Le déficit est de 30 millions.'));
   await flush();
   detector.calls[0].gate.resolve({ claims: [found('moment-1', 'Le budget est de 10 millions', 'Selon lui, le budget est de 10 millions.'),
@@ -677,16 +728,16 @@ test('a saved registry is reopened read-only: nothing is relaunched, and an expl
   assert.deepEqual(state.overlay, saved.overlay);
   assert.deepEqual([state.coverage.total, state.coverage.scanned, state.coverage.pending, state.coverage.stoppedWithPending], [2, 1, 1, 1]);
   invariants(state);
-  reopened.tick(); reopened.observe({ id: 'session-1', elapsedMs: 50000, history: [], segments: [passage(9, 'La dette atteint 40 millions.')] });
+  reopened.tick(); reopened.observe(memoryOf({ id: 'session-1', elapsedMs: 50000, segments: [passage(9, 'La dette atteint 40 millions.')] }).view());
   await flush();
   assert.deepEqual(calls, []);
   assert.throws(() => reopened.retry('claim-2'), /Active la surveillance/);
   assert.equal(new Surveillance({}).restore(null).activity.state, 'idle');
   // Capture resumed and surveillance explicitly restarted on the same session: identifiers stay unique.
-  const restarted = reopened.start({ instruction: 'Vérifie les chiffres.' }, { id: 'session-1', elapsedMs: 60000, history: [], segments: [] });
+  const restarted = reopened.start({ instruction: 'Vérifie les chiffres.' }, memoryOf({ id: 'session-1', elapsedMs: 60000 }).view());
   assert.deepEqual([restarted.activation.id, restarted.restored, restarted.totals.claims, restarted.coverage.total], ['act-2', false, 3, 0]);
   reopened.detector.detect = async request => ({ claims: [found(request.passages[0].id, 'La dette atteint 40 millions', 'Selon lui, la dette atteint 40 millions.')] });
-  reopened.observe({ id: 'session-1', elapsedMs: 80000, history: [], segments: [passage(9, 'La dette atteint 40 millions.')] });
+  reopened.observe(memoryOf({ id: 'session-1', elapsedMs: 80000, segments: [passage(9, 'La dette atteint 40 millions.')] }).view());
   await flush();
   assert.deepEqual(reopened.snapshot({ full: true }).claims.map(c => [c.id, c.status]).slice(-1), [['claim-4', 'sourced']]);
   assert.deepEqual(reopened.snapshot().lots.map(l => l.id), ['lot-1', 'lot-2', 'lot-3']);
@@ -709,7 +760,7 @@ test('an answer as long as one answer may be is not a complete reading: passages
   const researcher = instantResearcher();
   const h = harness({ detector, researcher, limits: { maxClaimsPerBatch: 4 } });
   const read = () => calls.map(call => call.passages.map(p => p.id.split('-')[1]).join('+')).join(' ');
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   h.add(...[1, 2, 3, 4, 5, 6].map(n => passage(n, line(n))));
   await flush(1500);
   let state = h.state({ full: true });
@@ -753,7 +804,7 @@ test('an element the detector raised and validation dropped leaves a trace on it
   }[p.id] || []));
   const h = harness({ detector, researcher: instantResearcher(), limits: { detectBatchPassages: 1 } });
   h.clock = 500;
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   for (const [i, line] of ['Il dit que le chômage est à 7 % en France et que la dette atteint 3 000 milliards.', 'Demain la croissance sera de 4 %.', 'On passe à la météo de demain.'].entries()) { h.add(passage(i + 1, line)); await flush(); }
   const state = h.state({ full: true });
   // The passages are read; the two that lost an element say how many, and why.
@@ -782,7 +833,7 @@ test('an element the detector raised and validation dropped leaves a trace on it
   const together = scripted((p, request) => (request.passages.length > 1 && p.id === 'moment-1' ? [found('moment-99', 'une phrase sans passage', 'Selon lui, une phrase que rien ne situe.')]
     : [found(p.id, `le lot ${p.id.at(-1)} vaut 5 millions`, `Selon lui, le lot ${p.id.at(-1)} vaut 5 millions.`)]));
   const g = harness({ detector: together, researcher: instantResearcher() });
-  g.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, g.snapshot());
+  g.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, g.view());
   g.add(passage(1, 'Le lot 1 vaut 5 millions.'), passage(2, 'Le lot 2 vaut 5 millions.'));
   await flush(600);
   const after = g.state({ full: true });
@@ -795,7 +846,7 @@ test('a full registry stops the reading and says so: the cursor no longer moves 
   const detector = scripted(p => { const n = p.id.split('-')[1]; return [found(p.id, `le site ${n} emploie ${n}00 personnes`, `Selon lui, le site ${n} emploie ${n}00 personnes.`)]; });
   const h = harness({ detector, researcher: instantResearcher(), limits: { maxClaims: 3, detectBatchPassages: 1 } });
   const say = async n => { h.add(passage(n, `Le site ${n} emploie ${n}00 personnes.`)); await flush(); };
-  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie tous les chiffres.' }, h.view());
   for (const n of [1, 2]) await say(n);
   assert.deepEqual([h.state().backlog.reason, h.state().activity.state], [null, 'listening']);
   for (const n of [3, 4, 5]) await say(n);
@@ -809,7 +860,7 @@ test('a full registry stops the reading and says so: the cursor no longer moves 
   state = h.state({ brief: true });
   assert.deepEqual([detector.calls.length, state.coverage.scannedThroughMs, state.coverage.pending, state.backlog.reason, state.totals.claims, state.activity.state], [3, 24000, 3, 'registry-full', 3, 'late']);
   // The registry belongs to the session: another instruction does not empty it, and is told the same.
-  h.surveillance.start({ instruction: 'Vérifie les dates.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Vérifie les dates.' }, h.view());
   await say(7);
   state = h.state({ brief: true });
   assert.deepEqual([detector.calls.length, state.activation.id, state.coverage.total, state.coverage.pending, state.backlog.reason], [3, 'act-2', 1, 1, 'registry-full']);
@@ -831,7 +882,7 @@ test('the polled states stay bounded and say so: sixty claims and twenty lots at
     research: { webSearches: request.claims.length, openedUrls: request.claims.map(c => link(c.id)), elapsedMs: 1 } }));
   const detector = scripted(p => { const n = Number(p.id.split('-')[1]); return [found(p.id, `le dispositif d’aide numéro ${n} a coûté ${n * 13 + 7} millions d’euros`, `Selon l’intervenant, ${topic(n)}.`)]; });
   const h = harness({ detector, researcher });
-  h.surveillance.start({ instruction: 'Je compte sur toi pour vérifier tous les chiffres qui sont annoncés.' }, h.snapshot());
+  h.surveillance.start({ instruction: 'Je compte sur toi pour vérifier tous les chiffres qui sont annoncés.' }, h.view());
   h.add(...Array.from({ length: 66 }, (_, i) => passage(i + 1, `Il affirme que ${topic(i + 1)}.`)));
   await flush(6000);
   const compact = h.state(), full = h.state({ full: true }), brief = h.state({ brief: true });
@@ -861,10 +912,10 @@ test('a single verification running late, with nothing queued behind it, is neve
   let now = 1_800_000_000_000;
   const quote = 'le chômage est à 7,4 % ce trimestre selon le ministre';
   const surveillance = new Surveillance({ now: () => now, detector: scripted(p => [found(p.id, quote, 'Le chômage est à 7,4 %.')]), researcher: { verify: () => new Promise(() => {}) } });
-  surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, { id: 's1', elapsedMs: 0, segments: [], history: [] });
+  surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, memoryOf({ id: 's1', elapsedMs: 0 }).view());
   const session = { id: 's1', elapsedMs: 10000, segments: [passage(1, quote)], history: [] };
   const labels = new Set();
-  for (let second = 0; second < 100; second++) { now += 1000; surveillance.observe(session); surveillance.tick(); await flush(20); labels.add(surveillance.snapshot({ brief: true }).activity.label); }
+  for (let second = 0; second < 100; second++) { now += 1000; surveillance.observe(memoryOf(session).view()); surveillance.tick(); await flush(20); labels.add(surveillance.snapshot({ brief: true }).activity.label); }
   const state = surveillance.snapshot({ brief: true });
   assert.deepEqual([state.activity.state, state.backlog.reason, state.backlog.claimsWaiting, state.counts.running, state.activity.label], ['late', 'verification', 0, 1, 'Vérification en cours : elle a pris du retard.']);
   for (const label of labels) assert.doesNotMatch(label, /\b0 (affirmation|passage)/, label);
@@ -875,16 +926,16 @@ for (const [condition, code, message, run] of [
     h.surveillance.start({ instruction: 'Vérifie.' }, null);
   }],
   ['empty instruction', 'TVLENS_SURVEILLANCE_INSTRUCTION_INVALID', 'Écris une consigne de surveillance de 1 à 1 500 caractères.', h => {
-    h.surveillance.start({ instruction: ' ' }, h.snapshot());
+    h.surveillance.start({ instruction: ' ' }, h.view());
   }],
   ['disabled retry', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Active la surveillance avant de relancer.', h => h.surveillance.retry('claim-1')],
   ['nonfailed passage', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Ce passage n’est pas en échec.', h => {
-    h.surveillance.start({ instruction: 'Vérifie.' }, h.snapshot());
+    h.surveillance.start({ instruction: 'Vérifie.' }, h.view());
     h.add(passage(1, ''));
     h.surveillance.retry('moment-1');
   }],
   ['unknown retry', 'TVLENS_SURVEILLANCE_RETRY_INVALID', 'Cet élément ne peut pas être relancé.', h => {
-    h.surveillance.start({ instruction: 'Vérifie.' }, h.snapshot());
+    h.surveillance.start({ instruction: 'Vérifie.' }, h.view());
     h.surveillance.retry('claim-99');
   }],
 ]) {

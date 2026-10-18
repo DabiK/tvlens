@@ -6,6 +6,8 @@ const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const { createMemoryProjection } = require('../runtime/memory/memory-projection.cjs');
 
 function loadedSession({ readOnly = false, accepting = true, retentionMs = Infinity } = {}) {
   return {
@@ -50,7 +52,7 @@ test('an existing session keeps its metadata and position while its figures are 
       media: { stored: 1, missing: 2, bytes: 1200 }, current: true, readOnly: false, capturing: false },
   ]);
   assert.deepEqual(result.current, {
-    id: 'session-a', title: 'Vidéo', elapsedMs: 32000, readOnly: false, accepting: false, retention: 'rolling', retentionMs: 60000,
+    id: 'session-a', title: 'Vidéo', elapsedMs: 32000, readOnly: false, accepting: false, retention: 'until-deleted', retentionMs: null,
   });
   assert.equal(listed[1], stored);
 });
@@ -74,12 +76,12 @@ test('without a loaded session current is null and all library rows are inactive
   assert.deepEqual(sessionRows([], null, 500), { current: null, sessions: [] });
 });
 
-function projectionMetadata(loaded, item) {
+function projectionMetadata(loaded) {
   return Object.freeze({
     current: loaded ? Object.freeze({
       id: 'session-a', title: loaded.title, elapsedMs: 32000, readOnly: loaded.runtime.readOnly,
       accepting: loaded.runtime.watch.accepting,
-      retention: item.retentionMs ? 'rolling' : 'until-deleted', retentionMs: item.retentionMs ?? null,
+      retention: 'until-deleted', retentionMs: null,
     }) : null,
     capturing: loaded?.runtime.watch.accepting ?? false,
     fallback: Object.freeze({ host: 'mac', createdAt: 100, updatedAt: 500 }),
@@ -132,16 +134,34 @@ test('both host facades project the same library facts while preserving their ti
       Object.assign(loaded.runtime, {
         id: 'session-a', manifest: () => ({ title: 'Titre du runtime' }),
         storage: () => ({ sessionBytes: snapshot.storage?.sessionBytes ?? 0 }),
+        memory: memoryOf({
+          id: 'session-a', elapsedMs: snapshot.elapsedMs,
+          history: [{ id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready' }],
+          segments: snapshot.segments.map((p, i) => ({
+            ...p, id: `moment-${i + 2}`, startMs: (i + 1) * 8000, endMs: (i + 2) * 8000, status: 'ready',
+          })),
+        }),
       });
       loaded.runtime.watch.snapshot = () => snapshot;
       loaded.runtime.watch.readOnly = loaded.runtime.readOnly;
+      const { memory, watch, storage } = loaded.runtime;
+      Object.assign(memory, {
+        readPublicationStatus: () => ({
+          accepting: watch.accepting, readOnly: watch.readOnly, asking: false, unplacedMedia: 0,
+          retention: 'until-deleted', retentionMs: null,
+          pending: 0, audioPending: 0, visionPending: 0, analyzing: false, lastError: null, visionBlockedMs: 0,
+        }),
+        readHistoricalQuestions: () => [],
+        readUsage: () => ({ apiCalls: 0, apiCost: 0 }),
+      });
+      loaded.runtime.memoryProjection = createMemoryProjection({ memory, now: watch.now, storage });
     }
     server.adopt(loaded?.runtime ?? null);
     server.library.list = async () => listed;
     server.library.usage = async rows => ({ sessions: rows.length, bytes: rows.reduce((sum, row) => sum + row.media.bytes, 0) });
     const mac = sessionRows(listed, loaded, 500);
     const headless = await server.sessions();
-    const metadata = projectionMetadata(loaded, item);
+    const metadata = projectionMetadata(loaded);
     const metadataBefore = structuredClone(metadata);
     assert.deepEqual(projectSessionRows(listed, snapshot, metadata), mac, item.name + ' pure projection');
     assert.deepEqual(metadata, metadataBefore);

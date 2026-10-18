@@ -6,7 +6,7 @@ const { videoToolDefinitions } = require("../core/video-tool-contracts.cjs");
 const { dynamicTools } = require("../adapters/codex-tool-definitions.cjs");
 const { mcpToolDefinitions } = require("../mcp/tool-definitions.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
-const { MomentSearch } = require("../core/moment-search.cjs");
+const { MemorySearch } = require("../core/moment-search.cjs");
 
 function rpcFixture(onTurn) {
   const requests = [];
@@ -180,7 +180,7 @@ test("index is lazy, reuses vectors, and search never embeds passages after the 
       put: async (id, text, vector) => values.set(id + text, vector),
     },
   });
-  const search = new MomentSearch({ index });
+  const search = new MemorySearch({ index });
   assert.equal(calls.length, 0);
   const segments = [
     { id: "past", startMs: 0, endMs: 8000, observation: { summary: "chien" } },

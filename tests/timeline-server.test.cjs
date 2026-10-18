@@ -98,7 +98,7 @@ test("authenticated timeline thumbnails and media outlive the former five-minute
   assert.match(thumb.headers.get("content-type"), /image\/jpeg/);
   // Past the former rolling window: the media is kept until the session is deleted.
   clock = 320000;
-  await runtime.session.watch.prune();
+  runtime.session.watch.emit();
   assert.equal((await request("/v1/media/moment-1")).status, 200);
   assert.equal((await request(thumbRoute)).status, 200);
   clock = 328000;

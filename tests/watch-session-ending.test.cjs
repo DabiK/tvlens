@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { WatchSession } = require('../core/session.cjs');
-const { tick } = require('./helpers/wait.cjs');
+const { tick, deferred } = require('./helpers/wait.cjs');
 
 function fixture() {
   const publications = [];
@@ -42,6 +42,42 @@ const block = () => ({
   clip: new Uint8Array([1]),
   audio: new Uint8Array([1]),
   frames: [],
+});
+
+test('lifecycle reads cannot change the state owned by the memory', () => {
+  const { watch, publications, saves } = fixture();
+  const before = flags(watch);
+  for (const flag of ['closed', 'ending', 'accepting', 'readOnly']) {
+    assert.equal(Reflect.set(watch, flag, !before[flag]), false, flag);
+  }
+  const snapshot = watch.snapshot();
+  snapshot.accepting = false;
+  snapshot.readOnly = true;
+  assert.deepEqual(flags(watch), before);
+  assert.deepEqual([publications, saves], [[], []]);
+});
+
+test('restoration refusals preserve the memory and precede all effects', async () => {
+  for (const state of ['closed', 'started', 'invalid archive']) {
+    const { watch, publications, saves, calls, files } = fixture();
+    if (state === 'closed') await watch.close();
+    if (state === 'started') watch.restore({ id: 'session', segments: [{
+      id: 'moment-1', startMs: 0, endMs: 1000, status: 'ready', observation: { summary: 'Un plateau.' },
+    }] });
+    const before = structuredClone(watch.snapshot());
+    const previousFlags = flags(watch);
+    const counts = [publications.length, saves.length];
+    const events = [];
+    watch.onEvents = pending => events.push(...pending);
+    const archived = state === 'invalid archive' ? { id: 'session', segments: null } : { id: 'other', segments: [] };
+    const code = state === 'invalid archive' ? 'TVLENS_ARCHIVE_INVALID' : 'TVLENS_MEMORY_RESTORE_REFUSED';
+
+    assert.throws(() => watch.restore(archived), { code }, state);
+    assert.deepEqual(watch.snapshot(), before, state);
+    assert.deepEqual(flags(watch), previousFlags, state);
+    assert.deepEqual([publications.length, saves.length], counts, state);
+    assert.deepEqual([calls, files.size, events], [[], 0, []], state);
+  }
 });
 
 test(`beginEnding silently keeps intake open and stores passages without analysis (audio and vision)`, async () => {
@@ -149,3 +185,29 @@ test('a question completion cannot reopen the intake closed silently during sess
   assert.deepEqual([publications.length, calls, saves.length], [published, [], 0]);
   await watch.close();
 });
+
+for (const [lane, heldRead, expected] of [['audio', 1, []], ['vision', 2, ['transcribe']]]) {
+  test(`ending during the ${lane} media read starts no new provider call`, async t => {
+    const { watch, calls, files } = fixture();
+    const entered = deferred(), release = deferred();
+    const read = watch.media.read;
+    let reads = 0;
+    watch.media.read = async id => {
+      if (++reads === heldRead) {
+        entered.resolve();
+        await release.promise;
+      }
+      return read(id);
+    };
+    t.after(() => watch.close());
+    const landing = watch.ingest(block());
+    await entered.promise;
+    watch.beginEnding();
+    release.resolve();
+    await landing;
+    await tick();
+    assert.deepEqual(calls, expected, 'media returning during teardown cannot start an analysis');
+    assert.equal(files.size, 1, 'the admitted media stay stored');
+    assert.equal(watch.snapshot().apiCalls, 0);
+  });
+}

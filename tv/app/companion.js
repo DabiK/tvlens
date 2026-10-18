@@ -229,6 +229,21 @@ var describeJob = tvlensChatModel.describeJob,
   var languageBusy = false;
   var languages = ["fr", "en", "auto"];
   var languageLabels = {fr: "Français", en: "Anglais", auto: "Détection automatique"};
+  function renderTranscriptionWarning() {
+    var status = state && state.transcription,
+      failed = status && status.available === false,
+      causes = {
+        TVLENS_WHISPER_MODEL_MISSING: "modèle introuvable",
+        TVLENS_WHISPER_BINARY_MISSING: "binaire introuvable",
+        TVLENS_WHISPER_FAILED: "échec de Whisper",
+      },
+      node = el("transcription-warning");
+    flag(node, "hidden", !failed);
+    node.dataset.code = failed ? status.code || "" : "";
+    set(node, failed
+      ? "Transcription locale indisponible : " + (causes[status.code] || "cause inconnue") + ". Vérifie Whisper et son modèle sur le serveur."
+      : "");
+  }
   function renderLanguage() {
     var language = state && state.transcription && state.transcription.language;
     flag(el("transcription-language"), "disabled", languageBusy || !language);
@@ -241,7 +256,7 @@ var describeJob = tvlensChatModel.describeJob,
     try {
       var current = state.transcription.language;
       var value = await client.request("/v1/settings/transcription", {language: languages[(languages.indexOf(current) + 1) % languages.length]});
-      state.transcription = value;
+      state.transcription = Object.assign({}, state.transcription, value);
       el("language-state").textContent = "Enregistré · prochaines transcriptions. OK pour changer.";
     } catch (error) { el("language-state").textContent = error.message; }
     finally { languageBusy = false; renderLanguage(); el("transcription-language").focus(); }
@@ -512,6 +527,7 @@ var describeJob = tvlensChatModel.describeJob,
     var s = state.session;
     stats.renders++;
     renderLanguage();
+    renderTranscriptionWarning();
     timeline.update(state);
     capture.setContext({
       sessionId: s ? s.id : null,

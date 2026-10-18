@@ -69,6 +69,9 @@ body.floating #close-watch { padding: 6px 10px; font-size: 11px; white-space: no
 #usage { margin-left: 0; }
 body.floating #float-bar { display: flex; align-items: center; height: 64px; gap: 8px; padding: 0 12px; background: #0b2028; border: 0; border-bottom: 1px solid var(--line); }
 body.floating .float-grip { display: flex; gap: 0; align-items: center; min-width: 80px; font-size: 15px; }
+body.floating #float-bar.audio-missing .float-grip,
+body.floating #float-bar.transcription-missing .float-grip { display: none; }
+#audio-warning, #transcription-warning, body.floating #float-audio-warning, body.floating #float-transcription-warning { color: var(--warning); background: #382b18; }
 .float-grip .small-dot { margin-right: 9px; width: 7px; height: 7px; }
 body.floating .float-action, body.floating #float-keep { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 12px; border-radius: 10px; font-size: 13px; line-height: 1; font-weight: 500; flex-shrink: 0; }
 body.floating .float-action.square, body.floating #float-keep { width: 36px; padding: 0; font-size: 20px; }
@@ -100,3 +103,5 @@ body.floating .quick-actions .secondary { font-size: 12px; }
 .response-details > summary { cursor: pointer; }
 body[data-health=pending] .coverage-details > summary::before, body[data-health=pending] .chat-health > summary::before { background: var(--warning); }
 body[data-health=idle] .coverage-details > summary::before, body[data-health=idle] .chat-health > summary::before { background: var(--muted); }
+
+body.floating #float-transcription-warning { flex-shrink: 1; min-width: 45px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

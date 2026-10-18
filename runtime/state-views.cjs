@@ -1,4 +1,4 @@
-const { sessionTimeline } = require("../core/session-timeline.cjs");
+const { sessionTimeline, optionalPassageField, CAPTURE_GAP_MS } = require("../core/session-timeline.cjs");
 const { CARD_LABELS } = require("../core/surveillance.cjs");
 const { refusal } = require("./errors.cjs");
 
@@ -47,10 +47,10 @@ const lightPassage = (p) => ({
   startMs: p.startMs,
   endMs: p.endMs,
   status: p.status,
-  audioStatus: p.audioStatus,
-  visionStatus: p.visionStatus,
-  available: Boolean(p.available),
-  ...(p.mediaReason ? { mediaReason: p.mediaReason } : {}),
+  audioStatus: optionalPassageField(p, 'audioStatus'),
+  visionStatus: optionalPassageField(p, 'visionStatus'),
+  available: p.availability.replayable,
+  ...(p.availability.reason ? { mediaReason: p.availability.reason } : {}),
   thumbnailAvailable: Boolean(p.thumbnailAvailable),
   observation: p.observation
     ? { topic: p.observation.topic, summary: clip(p.observation.summary, 600) }
@@ -98,7 +98,7 @@ function captureGapsOf(passages) {
   const gaps = [];
   let through = 0;
   for (const passage of passages) {
-    if (passage.startMs - through > 1000)
+    if (passage.startMs - through > CAPTURE_GAP_MS)
       gaps.push({ startMs: through, endMs: passage.startMs });
     through = Math.max(through, passage.endMs);
   }
@@ -196,7 +196,22 @@ function surveillanceDetail(registry, id) {
   };
 }
 
-function deriveStateViews({ state, jobs, title }) {
+// Les noms historiques du fil sont construits ici, à partir du seul contrat de consultation.
+function sessionHeader(memory) {
+  const { session, clock, coverage, losses } = memory;
+  const state = {
+    ...session,
+    ...clock,
+    analyzing: coverage.analyzing,
+    pending: coverage.pending,
+    audioPending: coverage.audioPending,
+    visionPending: coverage.visionPending,
+    coverage: { passages: coverage.passages, ...losses, visionBlockedMs: coverage.visionBlockedMs },
+  };
+  return Object.fromEntries(HEADER.map(key => [key, state[key]]));
+}
+
+function deriveStateViews({ memory, jobs, title }) {
   const derived = { jobTotal: jobs.length };
   // Every question still moving, then the most recent ones: a client merges by id and never reads
   // an absence as a deletion.
@@ -206,7 +221,7 @@ function deriveStateViews({ state, jobs, title }) {
       .map(lightJob);
   derived.chatJobs = recent(CHAT_JOBS);
   derived.panelJobs = recent(PANEL_JOBS);
-  if (!state)
+  if (!memory)
     return {
       ...derived,
       header: null,
@@ -214,9 +229,11 @@ function deriveStateViews({ state, jobs, title }) {
       captureGaps: [],
       captureGapCount: 0,
     };
-  const all = [...state.history, ...state.segments],
+  const all = memory.passages,
+    retained = all.filter(p => p.origin === 'retained'),
+    coverage = memory.coverage,
     gaps = captureGapsOf(all),
-    timeline = sessionTimeline(state),
+    timeline = sessionTimeline(memory),
     full = timeline.cards.length - PANEL_FULL_CARDS;
   // Older cards keep their place, title, interval and thumbnail, with an excerpt of their summary:
   // the whole text comes back with the detail of the moment.
@@ -233,19 +250,19 @@ function deriveStateViews({ state, jobs, title }) {
   return {
     ...derived,
     header: {
-      ...Object.fromEntries(HEADER.map((key) => [key, state[key]])),
+      ...sessionHeader(memory),
       title,
       passages: all.length,
-      gapCount: state.gaps.length,
-      gaps: state.gaps.slice(-GAPS_TAIL),
-      audioGapCount: state.audioGaps.length,
-      visionGapCount: state.visionGaps.length,
+      gapCount: coverage.gaps.length,
+      gaps: coverage.gaps.slice(-GAPS_TAIL),
+      audioGapCount: coverage.audioGaps.length,
+      visionGapCount: coverage.visionGaps.length,
     },
-    segments: state.segments.slice(-PANEL_SEGMENTS).map(lightPassage),
+    segments: retained.slice(-PANEL_SEGMENTS).map(lightPassage),
     // History entries are summaries without media; everything else is replayable unless listed here.
     unavailableIds: [
-      ...state.history.map((p) => p.id),
-      ...state.segments.filter((p) => !p.available).map((p) => p.id),
+      ...all.filter(p => p.origin === 'history').map(p => p.id),
+      ...retained.filter(p => !p.availability.replayable).map(p => p.id),
     ],
     timeline,
     captureGaps: gaps.slice(-GAPS_TAIL),
@@ -262,6 +279,7 @@ function stateView(
     revision,
     serverNowMs,
     transcriptionLanguage,
+    transcriptionAvailability,
     surveillance,
     storage,
   },
@@ -280,7 +298,7 @@ function stateView(
     view: name,
     revision,
     serverNowMs,
-    transcription: { language: transcriptionLanguage || "fr" },
+    transcription: { language: transcriptionLanguage || "fr", ...transcriptionAvailability },
     surveillance,
     storage,
   };

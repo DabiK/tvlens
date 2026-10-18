@@ -18,6 +18,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { admitWorker, integratedModules, receiveLaunch, retireWorker, supervise } from "./restart.mjs";
 import { runCodex } from "./codex.mjs";
 import { BASELINE } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
@@ -29,11 +30,12 @@ import { awaitingDecision, describe, list, next, setStatus, spec, validate } fro
 import { tuneInstructions } from "./tune.mjs";
 
 const root = process.cwd();
+const launch = await receiveLaunch();
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(name);
 const option = (name, fallback) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : fallback);
 const tuneEveryArg = option("--tune-every", "0");
-const options = {
+const options = launch?.options ?? {
   engine: option("--engine", "claude"),
   max: Number(option("--max", 1)),
   attempts: argv.includes("--attempts") ? Number(option("--attempts")) : null,
@@ -95,18 +97,10 @@ function statusEntries() {
   return entries;
 }
 
-function preflight() {
-  if (!["claude", "codex"].includes(options.engine)) stop(1, "--engine attend claude ou codex.");
-  if (!fs.existsSync(path.join(root, "scripts/check.mjs"))) stop(1, "À lancer depuis la racine du projet.");
-  if (options.tuneEvery === null) stop(1, `--tune-every attend un nombre entier de tickets, 0 ou plus (0 : jamais), pas « ${tuneEveryArg ?? ""} ».`);
-  const branch = git("branch", "--show-current").stdout.trim();
-  if (!branch) stop(1, "HEAD détachée : la boucle travaille sur une branche.");
-  if (["main", "master"].includes(branch)) stop(1, `La boucle ne travaille pas sur ${branch} : créer une branche dédiée.`);
-  const tracked = git("status", "--porcelain", "--untracked-files=no").stdout.trim();
-  if (tracked) stop(1, "Des fichiers suivis sont modifiés. Committer ou remiser avant de lancer la boucle :\n" + tracked);
-  const problems = validate(list(root));
-  if (problems.length) stop(1, "File de tickets invalide :\n" + problems.join("\n"));
-  if (!options.dryRun) {
+function acquireLock() {
+  if (launch) {
+    if (fs.readFileSync(lockFile, "utf8") !== String(process.ppid)) stop(1, "La relève ne possède pas le verrou du superviseur.");
+  } else if (!options.dryRun) {
     fs.mkdirSync(loopDir, { recursive: true });
     if (fs.existsSync(lockFile)) {
       const pid = Number(fs.readFileSync(lockFile, "utf8"));
@@ -118,9 +112,29 @@ function preflight() {
         alive = false;
       }
       if (alive) stop(1, `Une boucle tourne déjà (processus ${pid}).`);
+      fs.rmSync(lockFile);
     }
-    fs.writeFileSync(lockFile, String(process.pid));
+    try {
+      fs.writeFileSync(lockFile, String(process.pid), { flag: "wx" });
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      stop(1, "Une autre boucle a pris le verrou.");
+    }
   }
+}
+
+function preflight() {
+  if (!["claude", "codex"].includes(options.engine)) stop(1, "--engine attend claude ou codex.");
+  if (!fs.existsSync(path.join(root, "scripts/check.mjs"))) stop(1, "À lancer depuis la racine du projet.");
+  if (options.tuneEvery === null) stop(1, `--tune-every attend un nombre entier de tickets, 0 ou plus (0 : jamais), pas « ${tuneEveryArg ?? ""} ».`);
+  const branch = git("branch", "--show-current").stdout.trim();
+  if (!branch) stop(1, "HEAD détachée : la boucle travaille sur une branche.");
+  if (["main", "master"].includes(branch)) stop(1, `La boucle ne travaille pas sur ${branch} : créer une branche dédiée.`);
+  const tracked = git("status", "--porcelain", "--untracked-files=no").stdout.trim();
+  if (tracked) stop(1, "Des fichiers suivis sont modifiés. Committer ou remiser avant de lancer la boucle :\n" + tracked);
+  const problems = validate(list(root));
+  if (problems.length) stop(1, "File de tickets invalide :\n" + problems.join("\n"));
+  acquireLock();
   // `untrackedBefore` est lu par `git status -z`, comme l'état relu : un nom hors ASCII y est le même des deux côtés.
   return { branch, untracked: new Set(statusEntries().flatMap((e) => e.paths)), untrackedBefore: untrackedPaths(root) };
 }
@@ -378,7 +392,7 @@ function commitMessage(ticket, reserves, trailer) {
 function commitPaths(paths, paragraphs) {
   git("add", "-A", "--", ...paths);
   const commit = git("commit", ...paragraphs.flatMap((paragraph) => ["-m", paragraph]));
-  if (commit.code !== 0) return { problem: commit.out };
+  if (commit.code !== 0) return { problem: commit.out || `git commit refusé (code ${commit.code}).` };
   return { head: git("rev-parse", "--short", "HEAD").stdout.trim() };
 }
 
@@ -499,9 +513,18 @@ function tuneCadence(every) {
 }
 
 const context = preflight();
+if (!launch && !options.dryRun) {
+  const state = { options, done: 0, integrated: 0, untracked: [...context.untracked], untrackedBefore: context.untrackedBefore };
+  stop(await supervise(root, state, { event, say }));
+}
+if (launch) {
+  context.untracked = new Set(launch.untracked);
+  context.untrackedBefore = launch.untrackedBefore;
+  await admitWorker();
+}
 // Tickets intégrés depuis le lancement : l'harmonisation des consignes part tous les `--tune-every` d'entre eux.
-let integrated = 0;
-for (let done = 0; done < options.max; done++) {
+let integrated = launch?.integrated ?? 0;
+for (let done = launch?.done ?? 0; done < options.max; done++) {
   const wanted = done === 0 ? options.ticket : null;
   const queue = list(root);
   const { ticket, reason } = next(queue, wanted);
@@ -532,6 +555,7 @@ for (let done = 0; done < options.max; done++) {
     say(`Harmonisation des consignes : ${tuneCadence(options.tuneEvery)}.`);
     stop(0);
   }
+  const before = git("rev-parse", "HEAD").stdout.trim();
   const run = await processTicket(ticket, context);
   if (options.retro) retrospective(ticket, run);
   if (run.code !== 0) stop(run.code);
@@ -540,6 +564,19 @@ for (let done = 0; done < options.max; done++) {
     const io = { say, event, launch: launchSession, commit: commitPaths, push: (id) => pushBranch(context.branch, id) };
     const tuned = await tuneInstructions(root, io);
     if (tuned !== 0) stop(tuned);
+  }
+  if (done + 1 < options.max) {
+    try {
+      const modules = integratedModules(git, before);
+      if (modules.length) {
+        event("relance-demandee", { ticket: ticket.id, modules });
+        await retireWorker({ done: done + 1, integrated });
+        stop(0);
+      }
+    } catch (error) {
+      event("relance-echouee", { raison: error.message, cause: error.code ?? "LOOP_PATHS_FAILED" });
+      stop(1, `La relève de la boucle a échoué : ${error.message}`);
+    }
   }
 }
 stop(0, "Nombre de tickets demandé atteint.");

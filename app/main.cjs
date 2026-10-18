@@ -4,6 +4,7 @@ const {
   simulatedRecap,
 } = require("../adapters/simulated-providers.cjs");
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
+const { createSessionTranscriber } = require('../runtime/session-providers.cjs');
 const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
 const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
@@ -14,6 +15,7 @@ const { createPublicationDiagnostic } = require('../runtime/publication-diagnost
 const { warmUp } = require('../runtime/session-warm-up.cjs');
 const { activeInstruction } = require('../runtime/active-instruction.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
+const { createLivingRecapRuntime } = require('../runtime/memory/living-recap-runtime.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
 const { ViewingActions } = require('../core/viewing-actions.cjs');
 const {SavedMoments}=require('../core/saved-moments.cjs');
@@ -42,13 +44,20 @@ const { createMomentActions } = require('./moment-actions.cjs');
 const { sessionRows: buildSessionRows } = require('./session-rows.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
+if (process.platform === 'darwin') {
+  // CoreAudio Tap peut livrer un flux muet sans erreur sous macOS 14.2+ ; ce repli ne vaut qu'en Electron 39–44.
+  // Avant Electron 45, il faudra accorder et vérifier la permission Tap, ou choisir une autre voie de capture.
+  const feature = 'MacCatapLoopbackAudioForScreenShare';
+  const disabled = app.commandLine.getSwitchValue('disable-features').split(',').filter(Boolean);
+  app.commandLine.appendSwitch('disable-features', [...new Set([...disabled, feature])].join(','));
+}
 // Mirrors the bound DeepAsk enforces on waiting questions; published so that the renderer carries no literal.
 const QUESTION_QUEUE_LIMIT = 5;
 let verifierAdapter, verification;
 let surveillance, surveillanceTimer, storageTimer;
-let recap, recapAdapter, recapTimer, switching = false;
+let recap, recapAdapter, recapTimer, recapConsumer, switching = false;
 let deep, bridge, videoAgent;
-let window, pruneTimer, config, sessionsRoot, archiveOnQuit, closing = false;
+let window, captureRefreshTimer, config, sessionsRoot, archiveOnQuit, closing = false;
 let loaded = null;
 const viewingActions = new ViewingActions({ makeId: randomUUID });
 const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
@@ -76,11 +85,6 @@ app.whenReady().then(async () => {
   config.questionTimeoutMs = setting('TVLENS_QUESTION_TIMEOUT_MS');
   const workers = setting('TVLENS_SURVEILLANCE_WORKERS');
   config.surveillance = { ...config.surveillance, ...(workers === undefined ? {} : { workers }) };
-  // Media are kept until their session is deleted. TVLENS_MEDIA_RETENTION_MS (or --retention-ms= in a
-  // test run) brings the rolling window back.
-  const retentionFlag = smoke ? process.argv.find(x => x.startsWith('--retention-ms='))?.split('=')[1] : undefined;
-  const retentionMs = retentionFlag ? Number(retentionFlag) : setting('TVLENS_MEDIA_RETENTION_MS') ?? Infinity;
-  if (!(retentionMs > 0)) throw new Error('Réglage TVLENS_MEDIA_RETENTION_MS invalide : durée positive en millisecondes attendue.');
   // Durable retention never deletes to make room: below the floor, capture is refused and says why.
   // A simulated run only depends on the free space of its machine when a threshold is set for it.
   const guard = smoke && !process.env.TVLENS_DISK_MIN_FREE_MB && !process.env.TVLENS_DISK_WARN_FREE_MB ? null
@@ -102,6 +106,12 @@ app.whenReady().then(async () => {
     return fn(...args);
   });
   const send = (channel, value) => { if (!window.isDestroyed()) window.webContents.send(channel, value); };
+  const onPublicationError = createPublicationDiagnostic(line => console.error(line));
+  const makeTranscriber = () => createSessionTranscriber({
+    config, packaged: app.isPackaged, onPublicationError,
+    onAvailability: () => { if (loaded) send('watch:state', sessionState()); },
+  });
+  let transcriber = makeTranscriber();
   // Session transitions (start, pause, new, open, resume, delete, quit) never interleave: each one sees
   // the state the previous one left.
   let transition = Promise.resolve();
@@ -130,7 +140,6 @@ app.whenReady().then(async () => {
   handle('window:mode', value => windowMode(value));
   const codexBinary = await findCodex();
   const quota=new CodexQuota();
-  const onPublicationError = createPublicationDiagnostic(line => console.error(line));
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
   // A question accepted while its session is being closed would be orphaned: it is refused for that instant.
@@ -262,7 +271,8 @@ app.whenReady().then(async () => {
   const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
   // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
   const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
-    questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: Number.isFinite(retentionMs) ? 'rolling' : 'until-deleted', retentionMs: Number.isFinite(retentionMs) ? retentionMs : null });
+    transcription: (loaded?.runtime.transcriber || transcriber).availability(),
+    questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: 'until-deleted', retentionMs: null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);
   handle('models:choices',()=>modelChoices(config.codexAuthHome));
@@ -277,6 +287,7 @@ app.whenReady().then(async () => {
   handle('app:import-config', async () => {
     const result = await dialog.showOpenDialog(window, { title: 'Sélectionner .env.local', properties: ['openFile', 'showHiddenFiles'] });
     if (!result.canceled) { const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance }; config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); Object.assign(config, host); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome;for(const client of surveillanceClients())client.authHome=config.codexAuthHome; }
+    if (!result.canceled) transcriber = makeTranscriber();
     return configuration();
   });
   const captureSources = await createCaptureSources({
@@ -290,7 +301,9 @@ app.whenReady().then(async () => {
   let storageShown = null;
   const ingestions = new Set();
   // The core state plus its additive title: what the renderer receives for the loaded session.
-  const sessionState = () => (loaded ? { ...loaded.runtime.watch.snapshot(), title: loaded.title } : null);
+  const sessionState = () => (loaded ? {
+    ...loaded.runtime.watch.snapshot(), title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
+  } : null);
   const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
     ? simulatedRecap()
     : new CodexRecap({
@@ -300,27 +313,33 @@ app.whenReady().then(async () => {
         quota,
       });
   // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
-  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,retentionMs,restore,
-    smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
+  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,restore,
+    transcriber, smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
     strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
     log: line => console.error(line),
     onPublicationError,
     onChange: state => {
-      if (!closing && !switching) recap.observe(state);
-      surveillance.observe(state);
-      send('watch:state', { ...state, title: loaded?.title ?? null });
+      send('watch:state', { ...state, title: loaded?.title ?? null, transcription: (loaded?.runtime.transcriber || transcriber).availability() });
     },
   });
   const adopt = (runtime, name, at, fresh = false) => {
     loaded = { runtime, title: name, startedAt: at, fresh };
     saved.transcriber = runtime.transcriber;
+    recapConsumer?.close();
+    recapConsumer = createLivingRecapRuntime({
+      id: runtime.id, recap,
+      readView: runtime.memory.view,
+      subscribe: runtime.events.subscribe,
+      schedule: queueMicrotask,
+      isBlocked: () => closing || switching || loaded?.runtime !== runtime,
+      onError: onPublicationError,
+      silent: runtime.readOnly,
+    });
   };
-  // Every five seconds while something of the loaded session moves without an event of its own: its clock while
-  // it captures, a rolling window to sweep, a removal to try again. A durable session that is paused pushes
-  // nothing: its state is the one already shown.
-  const sweep = () => {
-    if (loaded && (loaded.runtime.watch.accepting || Number.isFinite(loaded.runtime.watch.retentionMs) || loaded.runtime.watch.unremoved?.size))
-      loaded.runtime.watch.prune().catch(() => {});
+  // L'horloge et la cadence du manifeste avancent même sans analyse prête.
+  // En pause, aucun de ces faits ne change : la fenêtre garde le dernier état publié.
+  const refreshCapture = () => {
+    if (loaded?.runtime.watch.accepting) loaded.runtime.watch.emit();
   };
   // Same shape as the server host. The manifest of the session in memory is up to thirty seconds old, or
   // not written yet: its row carries the figures in memory instead.
@@ -367,7 +386,17 @@ app.whenReady().then(async () => {
         // while the session closes finds none of them, and one still running is refused instead of answered.
         begin: ['contextes MCP', () => ended && bridge?.revoke(ended.id)],
         steps: [
-          ['résumé vivant', async () => { clearInterval(pruneTimer); try { recap.reset(); await recapAdapter?.close?.(); } finally { recapAdapter = null; } }],
+          ['résumé vivant', async () => {
+            clearInterval(captureRefreshTimer);
+            recapConsumer?.close();
+            recapConsumer = null;
+            try {
+              recap.reset();
+              await recapAdapter?.close?.();
+            } finally {
+              recapAdapter = null;
+            }
+          }],
           // The last surveillance states reach the session folder before the session closes.
           ['surveillance', () => surveillance.reset(reason)],
           // Final states are saved as they are published; whatever still waited for its second is handed over too,
@@ -423,7 +452,7 @@ app.whenReady().then(async () => {
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at, true);
-    pruneTimer = setInterval(sweep, 5000);
+    captureRefreshTimer = setInterval(refreshCapture, 5000);
     loaded.runtime.watch.emit();
     // Never for an archive that is only being read: opening one warms nothing up.
     warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: id });
@@ -494,7 +523,7 @@ app.whenReady().then(async () => {
       publishStorage();
       throw error;
     });
-    clearInterval(pruneTimer); pruneTimer = setInterval(sweep, 5000);
+    clearInterval(captureRefreshTimer); captureRefreshTimer = setInterval(refreshCapture, 5000);
     // Same as at the start: never for an archive that is only being read.
     warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: loaded.runtime.watch.id });
     send('sessions:changed');
@@ -525,7 +554,7 @@ app.whenReady().then(async () => {
   if (!smoke || process.argv.includes('--live-shortcut')) {
     explainShortcutRegistered = globalShortcut.register(explainShortcut, () => {
       try {
-        const frozen = viewingActions.freeze(loaded?.runtime.watch.snapshot());
+        const frozen = viewingActions.freeze(loaded?.runtime.memory.view());
         window.show();
         window.webContents.send('moments:explain-requested', frozen);
       } catch (error) { window.webContents.send('saved:error', error.message); }
@@ -580,7 +609,7 @@ app.on('window-all-closed', () => app.quit());
 app.on('before-quit', event => {
   if (closing) return;
   event.preventDefault(); closing = true;
-  for (const timer of [pruneTimer, recapTimer, surveillanceTimer, storageTimer]) clearInterval(timer);
+  for (const timer of [captureRefreshTimer, recapTimer, surveillanceTimer, storageTimer]) clearInterval(timer);
   globalShortcut.unregisterAll();
   verifierAdapter?.cancel?.();
   // Quitting archives the loaded session like "Nouvelle session" does: nothing is purged, now or at the next start.

@@ -8,7 +8,7 @@ const { DiskGuard, StorageFullError } = require('../adapters/disk-guard.cjs');
 const { LocalSessionStore } = require('../adapters/local-store.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 const { SessionLibrary } = require('../adapters/session-library.cjs');
-const { VideoTools } = require('../core/video-tools.cjs');
+const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 
 const GIB = 1024 ** 3, MIB = 1024 ** 2;
 const { tick } = require('./helpers/wait.cjs');
@@ -122,7 +122,8 @@ test('below the floor a passage is refused before any write, capture stops, noth
   const again = await session.resume().catch(error => error);
   assert.deepEqual([again.code, again.message, session.watch.accepting], ['TVLENS_STORAGE_FULL', refused.message.replace('257 Mo', '246 Mo'), false]);
   // Consulting what exists still works: text, replay and re-examination of the stored passage.
-  const tools = new VideoTools({ snapshot: session.watch.snapshot(), search: session.search, inspector: session.inspector, media: session.store });
+  const tools = new VideoTools({ consultation: consultationOf(session.memory.view()),
+    search: session.search, inspector: session.inspector, media: session.memoryMedia });
   assert.equal((await tools.call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que voit-on ?' })).observations[0].id, 'moment-1');
   assert.equal((await session.store.response('moment-1')).status, 200);
   // A late analysis must not erase the reason of the stop.

@@ -1,3 +1,5 @@
+const { memoryOf } = require('./helpers/memory-consultation.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -183,11 +185,12 @@ async function watchedSession(limits = {}) {
   h.surveillance = new Surveillance({ detector: { detect: async request => ({ claims: request.passages.flatMap(p => script[p.id] || []) }) }, researcher, now: () => h.clock,
     limits: { visionGraceMs: 0, detectBatchPassages: 1, verifyRetries: 0, ...limits } });
   h.snapshot = () => ({ id: 'session-mac', elapsedMs: h.elapsedMs, history: [], segments: h.segments });
-  h.surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, h.snapshot());
+  h.view = () => memoryOf(h.snapshot()).view();
+  h.surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, h.view());
   for (let n = 1; n <= 5; n++) {
     h.segments.push({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true, observation: { transcript: text[`moment-${n}`], summary: '', visual: '', uncertainty: '' } });
     h.elapsedMs = n * 8000; h.clock += 8000;
-    h.surveillance.observe(h.snapshot());
+    h.surveillance.observe(h.view());
     await flush();
   }
   return h;
@@ -297,8 +300,8 @@ test('a saved history still being read is told as a restoration, and a history k
   const session = { id: 'session-mac', readOnly: false };
   let answer;
   const store = { saveSurveillance: async () => {}, loadSurveillance: () => new Promise(resolve => { answer = resolve; }) };
-  const watch = { snapshot: () => ({ id: 'session-mac', elapsedMs: 12000, history: [], segments: [] }) };
-  const runtime = createSurveillanceRuntime({ getSession: () => ({ watch, store }), agent: new SimulatedSurveillanceAgent(), now: () => T0 });
+  const current = { memory: memoryOf({ id: 'session-mac', elapsedMs: 12000 }), events: createEventPublisher(), store };
+  const runtime = createSurveillanceRuntime({ getSession: () => current, agent: new SimulatedSurveillanceAgent(), now: () => T0 });
   const reading = runtime.start({ instruction: 'Vérifie les chiffres annoncés.' }), restoring = describeSurveillance(reading, { session });
   assert.deepEqual([reading.activity.state, reading.registry.status], ['restoring', 'restoring']);
   // Its own state, worded by the core: neither late, nor a check in progress, nor a surveillance already listening.
@@ -434,12 +437,12 @@ test('a reading that fails is told as a failed reading, with the passages left u
     const h = { clock: T0, elapsedMs: 0, segments: [] };
     const surveillance = new Surveillance({ now: () => h.clock, limits: { visionGraceMs: 0, detectBatchPassages: 1, detectRetries: 0 }, researcher: { verify: () => new Promise(() => {}) },
       detector: { detect: async request => { if (request.passages.some(p => down.includes(p.id))) throw new Error('Codex indisponible (401).'); return { claims: [] }; } } });
-    const snapshot = () => ({ id: 'session-mac', elapsedMs: h.elapsedMs, history: [], segments: h.segments });
-    surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, snapshot());
+    const view = () => memoryOf({ id: 'session-mac', elapsedMs: h.elapsedMs, segments: h.segments }).view();
+    surveillance.start({ instruction: 'Vérifie les chiffres annoncés.' }, view());
     for (let n = 1; n <= passages; n++) {
       h.segments.push({ id: `moment-${n}`, startMs: (n - 1) * 8000, endMs: n * 8000, status: 'ready', audioStatus: 'ready', visionStatus: 'ready', available: true, observation: { transcript: 'Il affirme que le chômage est à 7 % cette année.', summary: '', visual: '', uncertainty: '' } });
       h.elapsedMs = n * 8000; h.clock += 8000;
-      surveillance.observe(snapshot()); await flush(); surveillance.tick(); await flush();
+      surveillance.observe(view()); await flush(); surveillance.tick(); await flush();
     }
     if (later) { h.clock += later; surveillance.tick(); await flush(); }
     return surveillance.snapshot();
@@ -539,13 +542,13 @@ test('sessions: a session being captured cannot be deleted, an old archive is te
     ['vidéo indisponible', 'vidéo expirée', 'vidéo indisponible', true]);
   assert.ok(!/\bmediaNote\b/.test(fs.readFileSync(app('ui', 'recap-view.js'), 'utf8')));
   assert.deepEqual([retentionNote({ retention: 'until-deleted', retentionMs: null }), retentionNote({ retention: 'rolling', retentionMs: 1800000 }), retentionNote(null)],
-    ['Vidéo conservée jusqu’à la suppression de la session', 'Vidéo conservée 30 min, résumés gardés ensuite', '']);
+    ['Vidéo conservée jusqu’à la suppression de la session', 'Vidéo conservée jusqu’à la suppression de la session', '']);
   // The retention shown is the loaded session's own. A durable archive opened on a host set to a rolling window
   // says "until deleted": the setting of the host is not even an input of what the Mémoire view writes.
   const durable = { id: 'kept', readOnly: true, retention: 'until-deleted', retentionMs: null, history: [], segments: [{ available: true, status: 'ready' }, { available: false, status: 'ready' }] };
   assert.equal(sessionRetention(durable), 'Vidéo conservée jusqu’à la suppression de la session');
   assert.equal(describeMemory(durable), '2 passages · 1 à revoir · 2 analysés · Vidéo conservée jusqu’à la suppression de la session');
-  assert.equal(sessionRetention({ id: 'live', retention: 'rolling', retentionMs: 1800000 }), 'Vidéo conservée 30 min, résumés gardés ensuite');
+  assert.equal(sessionRetention({ id: 'live', retention: 'rolling', retentionMs: 1800000 }), 'Vidéo conservée jusqu’à la suppression de la session');
   // A state that does not say it: the entry of that same session in the library (sessions().current), never the
   // entry of another session, and otherwise nothing rather than a guess.
   const silent = { id: 'kept', history: [], segments: [] }, entry = id => ({ current: { id, retention: 'until-deleted', retentionMs: null } });
@@ -1851,6 +1854,7 @@ test("browser composition uses every injected factory and the real rolling recor
     [
       ["interval", 400],
       ["timeout", 2000],
+      ["timeout", 10_000],
     ],
   );
   now = 1000;
@@ -1889,4 +1893,41 @@ test("browser composition uses every injected factory and the real rolling recor
     [1, 1, null],
   );
   assert.deepEqual(errors, []);
+});
+
+test('transcription failures keep one coded banner through redraws and reset, and a successful silence clears it', async t => {
+  const f = await rendererHarness(t, { configuration: { transcription: { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' } } });
+  f.wiring.drawState();
+  assert.equal(f.get('transcription-warning').hidden, false);
+  assert.match(f.get('transcription-warning').textContent, /modèle introuvable/);
+  assert.equal(f.get('transcription-warning').dataset.code, 'TVLENS_WHISPER_MODEL_MISSING');
+  assert.equal(f.get('float-transcription-warning').hidden, false);
+  assert.equal(f.get('float-bar').classList.contains('transcription-missing'), true);
+  const banner = f.get('transcription-warning');
+  for (let i = 0; i < 3; i++) f.wiring.drawState();
+  assert.equal(f.get('transcription-warning'), banner, 'redraws keep the same banner');
+  f.publish('onState', { id: 'session', segments: [], transcription: { available: false, code: 'TVLENS_WHISPER_BINARY_MISSING' } });
+  f.frame();
+  assert.match(f.get('transcription-warning').textContent, /binaire introuvable/);
+  f.publish('onReset');
+  assert.equal(f.get('transcription-warning').hidden, false);
+  f.publish('onState', { id: 'new-session', segments: [], transcription: { available: true, code: null } });
+  f.frame();
+  assert.equal(f.get('transcription-warning').hidden, true);
+  assert.equal(f.get('transcription-warning').textContent, '');
+  assert.equal(f.get('float-transcription-warning').hidden, true);
+  assert.equal(f.get('float-bar').classList.contains('transcription-missing'), false);
+});
+
+test('a configuration refresh clears the retained transcription warning after leaving a session', async t => {
+  const failed = { available: false, code: 'TVLENS_WHISPER_MODEL_MISSING' };
+  const f = await rendererHarness(t, { configuration: { transcription: failed } });
+  f.publish('onState', { id: 'session', segments: [], transcription: failed });
+  f.frame();
+  f.publish('onReset');
+  assert.equal(f.get('transcription-warning').hidden, false);
+  assert.equal(typeof f.wiring.receiveTranscription, 'function');
+  f.wiring.receiveTranscription({ available: true, code: null });
+  f.frame();
+  assert.equal(f.get('transcription-warning').hidden, true);
 });
