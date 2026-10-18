@@ -1,7 +1,7 @@
 ---
 id: T271
 titre: Check local clip reexamination live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T265
 adr: non
 installe: non
@@ -53,3 +53,17 @@ Décision attendue du propriétaire : le contrôle réel de T265 est-il concluan
 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
+
+- 18/10, orchestrateur : contrôle réel concluant au commit `258d910`, sur le Mac (M5 Max, 36 Go, boucle arrêtée), Ollama
+  0.33.2. Session réelle `ec55a89c` du 17/10 (copies temporaires), serveur headless, questions sur Codex (défaut),
+  `TVLENS_INSPECTION_BACKEND=local` avec `gemma3:12b`.
+  - « Qu'est-ce qui est écrit à l'écran au début du live ? » : un réexamen local, 29 s ; diagnostic `inspection`,
+    `ollama`, `gemma3:12b`, modèle appelé, 4,4 s de chargement ; preuve gardant sa provenance. Lecture « RD SECQURS »,
+    signalée incertaine, là où Codex et `qwen3.8:27b` lisaient « SECOURS ».
+  - « Décris précisément ce qu'on voit à l'image dans les vingt dernières secondes » : deux réexamens locaux, 53 s,
+    chargement 17 ms à chaud ; quatre citations ; la réponse signale elle-même une contradiction entre les résumés
+    d'origine et la description locale.
+  - Modèle absent (`modele-absent:1b`) : réexamen en échec nommé `TVLENS_LOCAL_VLM_UNAVAILABLE`, backend `ollama`
+    conservé, aucun repli sur Codex ; la réponse est `insufficient` avec la limite « backend indisponible (HTTP 404) ».
+  - Backends des questions et de la perception inchangés. Qualité visuelle du 12B en retrait : à mesurer en G2.
+    Statut `termine`.

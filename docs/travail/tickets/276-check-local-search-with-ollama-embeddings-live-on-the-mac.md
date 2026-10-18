@@ -52,3 +52,12 @@ que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
 
+
+- 18/10, orchestrateur : contrôle refait en partie au commit `258d910`, avec `qwen3-embedding:0.6b` (téléchargé avec
+  l'accord du propriétaire). Sonde de la recherche sur les 19 passages réels : index en 2,3 s, trois paraphrases
+  retrouvées (hybride, environ 20 ms chacune), recherche temporelle sans appel ; une seconde instance ouvre un autre
+  cache et signale le premier comme « modèle différent », aucun vecteur mélangé.
+  - Écart par le serveur headless : avec `gemma3:12b` résident, le premier appel d'embeddings dépasse le délai de 8 s
+    (reproduit : 13,2 s dont 12,7 s de chargement, contre 1,1 s modèle seul) ; aucun index construit, réponse par
+    classement textuel, rien dans le journal du serveur. Correctif : T278. Ce contrôle reste à faire jusqu'à son
+    intégration, puis sera refait par le serveur avec un autre modèle local résident.
