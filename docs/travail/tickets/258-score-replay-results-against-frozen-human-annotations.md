@@ -2,7 +2,7 @@
 id: T258
 titre: Score replay results against frozen human annotations
 statut: a-faire
-bloque_par: T257, T262
+bloque_par: T257, T262, T273
 adr: non
 installe: non
 harnais: non
@@ -95,3 +95,5 @@ français ou des films. Les arbitrages produit après mesure restent au proprié
 - 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
   T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T262`), sans lien de code ; la retirer rend l'ordre par
   numéro.
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T273.

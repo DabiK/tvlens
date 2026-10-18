@@ -2,7 +2,7 @@
 id: T257
 titre: Replay captured TVLens inputs through the production perception
 statut: a-faire
-bloque_par: T255, T265
+bloque_par: T255, T265, T271
 adr: non
 installe: non
 harnais: non
@@ -139,3 +139,5 @@ avec `hackathon-rc` en repli ; T254 retient la phase 2. Ce runner ne prouve pas 
 - 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
   T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T265`), sans lien de code ; la retirer rend l'ordre par
   numéro.
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T271.

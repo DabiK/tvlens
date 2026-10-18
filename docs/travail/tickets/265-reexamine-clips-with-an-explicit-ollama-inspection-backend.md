@@ -2,7 +2,7 @@
 id: T265
 titre: Reexamine clips with an explicit Ollama inspection backend
 statut: a-faire
-bloque_par: T255
+bloque_par: T255, T270
 adr: non
 installe: non
 harnais: non
@@ -123,3 +123,6 @@ les planches. Le nombre d'images effectivement accepté et la qualité du modèl
 Ollama n'est déduite des seuls tests. T263 n'est pas nécessaire pour exercer le port d'inspection.
 
 ## Journal
+
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T270.

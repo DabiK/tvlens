@@ -2,7 +2,7 @@
 id: T224
 titre: Deliver the Mac window state from the same projection
 statut: a-faire
-bloque_par: T219, T210, T195, T233, T267, T268
+bloque_par: T219, T210, T195, T233, T267, T268, T275
 adr: oui
 installe: non
 harnais: non
@@ -80,3 +80,5 @@ nommée, jamais un motif à réécrire pour masquer une régression de câblage.
 
 - 18/10, propriétaire : ordre décidé le 18/10 (« ok on fait ça comme ordre »). La copie A du GX10 passe avant la phase
   Mémoire, puis le correctif du panneau de la TV relevé en recette T233 : ce ticket attend aussi T267 et T268.
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T275.

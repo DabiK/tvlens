@@ -2,7 +2,7 @@
 id: T255
 titre: Separate model loading from session cold starts
 statut: a-faire
-bloque_par: T264
+bloque_par: T264, T269
 adr: non
 installe: non
 harnais: non
@@ -86,3 +86,5 @@ la requête HTTP ne prouve pas l'arrêt du calcul GPU. Aucun ADR nouveau n'est n
 - 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
   T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T264`), sans lien de code ; la retirer rend l'ordre par
   numéro.
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T269.

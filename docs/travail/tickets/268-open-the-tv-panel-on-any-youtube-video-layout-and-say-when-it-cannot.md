@@ -2,7 +2,7 @@
 id: T268
 titre: Open the TV panel on any YouTube video layout and say when it cannot
 statut: a-faire
-bloque_par:
+bloque_par: T274
 adr: non
 installe: non
 harnais: non
@@ -93,3 +93,6 @@ complet de `main()` sur l'écran simulé, jusqu'à la restauration.
 Aucune décision n'est attendue.
 
 ## Journal
+
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T274.

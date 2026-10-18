@@ -2,7 +2,7 @@
 id: T262
 titre: Convert a video file into TV blocks and a perception replay manifest
 statut: a-faire
-bloque_par: T257
+bloque_par: T257, T272
 adr: non
 installe: non
 harnais: non
@@ -136,3 +136,6 @@ fichier choisi restent à vérifier par l'opérateur. Aucun contenu de trente mi
 La vraie session TV témoin et les conversions du corpus réel restent hors boucle.
 
 ## Journal
+
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T272.

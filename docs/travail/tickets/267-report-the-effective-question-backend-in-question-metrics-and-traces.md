@@ -2,7 +2,7 @@
 id: T267
 titre: Report the effective question backend in question metrics and traces
 statut: a-faire
-bloque_par: T263
+bloque_par: T263, T258
 adr: non
 installe: non
 harnais: non
@@ -121,3 +121,6 @@ le traitement annoncé. Ni l'identité composée ni ces tests ne prouvent le GPU
 ou le débit du modèle réel ; ces mesures restent hors boucle.
 
 ## Journal
+
+- 18/10, propriétaire : ordre décidé le 18/10, T267 après T258. Sans ce bloqueur, T267 passerait devant les
+  contrôles réels de la copie A (T269 à T273) dès qu'un d'eux attend.
