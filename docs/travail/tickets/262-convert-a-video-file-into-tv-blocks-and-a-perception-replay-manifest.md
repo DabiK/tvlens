@@ -1,8 +1,8 @@
 ---
 id: T262
 titre: Convert a video file into TV blocks and a perception replay manifest
-statut: a-faire
-bloque_par: T257
+statut: termine
+bloque_par: T257, T272
 adr: non
 installe: non
 harnais: non
@@ -136,3 +136,64 @@ fichier choisi restent à vérifier par l'opérateur. Aucun contenu de trente mi
 La vraie session TV témoin et les conversions du corpus réel restent hors boucle.
 
 ## Journal
+
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T272.
+- 18/10, Codex : exploration du contrat média, du runner et des ADR 0029/0030 terminée ; détails et
+  adaptations prévues dans `.harness-state/tickets/T262/`. Preuve principale prévue sur faux ffmpeg,
+  ingestion HTTP et perception réelles avec fournisseurs doublés ; aucun essai réel.
+- 18/10, Codex : cycles rouge/vert observés pour publication des blocs, aide/CLI et refus du manifeste
+  incomplet (sorties `red-*` et `green-*` dans l'état du ticket). Intégrations perception/Ollama doublé
+  et HTTP/RemoteMedia observées. Correction de l'attente HTTP : le contrat existant refuse une session
+  obsolète avec `400 stale-session`. Trente minutes simulées couvertes et empreintées progressivement.
+- 18/10, Codex : le test d'annulation par surveillance de fichier a rencontré `EMFILE` ; remplacé par
+  une notification HTTP locale explicite du double. `node --test --test-name-pattern='cancellation kills'
+  tests/video-file-source.test.cjs` : 1 test vert, processus mort et nettoyage vérifiés après son arrêt.
+- 18/10, Codex : ajout du refus d'un WAV sans échantillons après rouge observé sur son assertion,
+  puis vert. Exemple livré dans `scripts/prepare-video-replay.md` ; conversion, validation sans
+  fournisseur, manifeste de perception et index des corps HTTP documentés séparément.
+- 18/10, Codex : `node --test --test-concurrency=1 tests/video-file-source.test.cjs
+  tests/local-perception-replay.test.cjs tests/remote-media.test.cjs tests/clip-audio.test.cjs
+  tests/media-asr-options.test.cjs tests/video-research.test.cjs tests/clip-unreadable.test.cjs
+  tests/reinspection-transcript-reuse.test.cjs tests/inspection-strategies.test.cjs` :
+  104 tests réussis, aucun échec ni saut (`tests-sequential.log` dans l'état du ticket).
+- 18/10, Codex : `node scripts/check.mjs --changed` après nettoyage final : vert, 16 tests réussis
+  (`check-changed-final.log`). `node scripts/check.mjs` : vert, 150 fichiers JS, 2 769 tests JS
+  et 47 tests Python réussis (`check-full.log`). `git diff --check` : sans anomalie.
+  Verdict `TERMINÉ` écrit dans l'état du ticket ; relecture et intégration laissées à la boucle.
+  Aucun essai réel, installation, commit ou push ; changements initiaux conservés.
+- 18/10, Codex : reprise de la relecture 1 ; six constats acceptés. Travail présent, journal et écarts
+  relus. Preuves à renforcer sur les octets d'images, positions source et progression ; sorties absentes
+  ou illisibles à coder explicitement. Complément prévu sur fixture synthétique ffmpeg, sans corpus réel.
+- 18/10, Codex : `node --test --test-name-pattern='generated media traverses'
+  tests/video-file-source.test.cjs` : rouge sur images identiques, puis vert avec JPEG distinct par position
+  et égalité ordonnée corps/média/Ollama. Positions `-ss` de chaque image et couples `-ss`/`-t` audio
+  vérifiés avec origine source non nulle ; fenêtre de trente minutes également reliée aux arguments.
+- 18/10, Codex : `node --test --test-name-pattern='thirty minutes' tests/video-file-source.test.cjs` :
+  rouge sur la mesure de progression absente, puis vert après observation dans le double ffmpeg,
+  sans mock de fs.writeFile. Les appels voient successivement 0 à 179 blocs publiés.
+- 18/10, Codex : `node --test --test-name-pattern='conversion identifies (missing|unreadable|undecodable)'
+  tests/video-file-source.test.cjs` : cinq rouges sur codes attendus, puis verts après identification
+  des lectures/décodages de sortie. Dimensions excédentaires et PNG refusés en IMAGE_INVALID,
+  après rouge lorsque ces scénarios ne produisaient encore qu'un JPEG admissible.
+- 18/10, Codex : `node --test --test-name-pattern='synthetic video|CLI reports'
+  tests/video-file-source.test.cjs` : deux tests réussis, aucun sauté. Fixture vidéo synthétique
+  temporaire avec ffmpeg installé : sondage, recherche avant entrée, mise à l'échelle, WAV PCM
+  et validation du corpus observés. Erreur CLI sans chemin interne vérifiée. Aucun corpus réel ni modèle.
+  Documentation du marqueur facultatif de préparation complétée dans `scripts/perception-replay.md`.
+- 18/10, Codex : correction des six constats achevée. `node scripts/check.mjs --changed` : vert,
+  25 tests réussis. Séquence ciblée du journal rejouée avec `--test-concurrency=1` : 113 tests réussis,
+  aucun échec ni saut (`correction-tests-sequential.log`). `node scripts/check.mjs` : vert,
+  2 778 tests JS dans 150 fichiers et 47 tests Python réussis (`correction-check-full.log`).
+  `git diff --check` : sans anomalie. Nouveau verdict `TERMINÉ` et relevé `correction-preuves.md`
+  enregistrés dans l'état du ticket ; relecture laissée à la boucle, aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T262/relecture-2.md : 1. `adapters/media/video-file-source.cjs:10-11` : constantes en double (hors périmètre, reconduit)
+  - **Problème.** 1280×720, 1920×1080 et 16 000 Hz reprennent toujours les littéraux non nommés de `adapters/remote-media.cjs:48,50,112`. La règle « une constante vit à un seul endroit » n'est pas tenue.
+  - **Attendu.** Nommer et exporter ces bornes dans `remote-media.cjs`, qui est hors de la liste du ticket.
+  - **Classe.** Réserve.
+- .harness-state/tickets/T262/relecture-2.md : **Écart accepté, `adapters/ffmpeg.cjs`.** Inchangé depuis la relecture 1. Même raison : c'est la capture minimale de stderr, nécessaire pour lire la durée avec le seul `config.ffmpeg`. Les appelants et les codes sont compatibles.
+- .harness-state/tickets/T262/relecture-2.md : **Écart accepté, `scripts/replay-local-perception.cjs`.** Inchangé depuis la relecture 1. La garde est unique et testée, et ne crée pas de second format. Le manque de documentation est résolu par le constat 6.
+- .harness-state/tickets/T262/relecture-2.md : **Écart accepté, `scripts/perception-replay.md`.** C'est le complément documentaire de l'écart précédent, demandé par le constat 6 de la relecture 1. Il ne change aucun format.

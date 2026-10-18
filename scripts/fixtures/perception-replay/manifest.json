@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "capture-documentee",
+      "startMs": 8000,
+      "endMs": 16000,
+      "media": {
+        "path": "media.json",
+        "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "session-fictive",
+        "passageId": "moment-2"
+      },
+      "transcript": {
+        "text": "Une question puis une réponse.",
+        "availability": "known",
+        "limits": "Exemple fictif de transcription disponible au départ de la vision.",
+        "provenance": {
+          "kind": "input-trace",
+          "reference": "Trace fictive jointe à cet exemple de format."
+        }
+      },
+      "context": {
+        "provenance": {
+          "kind": "input-trace",
+          "reference": "Trace fictive, aucun extrait réel."
+        },
+        "limits": "Contexte historique fictif et non vérifié.",
+        "prefix": [
+          {
+            "id": "moment-1",
+            "startMs": 0,
+            "endMs": 8000
+          }
+        ],
+        "value": {
+          "previousTopic": "Débat",
+          "previousTopicSummary": {
+            "text": "Question initiale.",
+            "firstId": "moment-1",
+            "lastId": "moment-1",
+            "startMs": 0,
+            "endMs": 8000,
+            "pendingPassages": []
+          },
+          "activeTopic": {
+            "firstId": "moment-1",
+            "startMs": 0,
+            "recent": [
+              {
+                "id": "moment-1",
+                "startMs": 0,
+                "endMs": 8000,
+                "summary": "Une question initiale."
+              }
+            ]
+          }
+        }
+      },
+      "lightweight": {
+        "value": false,
+        "source": "saved-metrics"
+      }
+    },
+    {
+      "id": "capture-inconnue",
+      "startMs": 8000,
+      "endMs": 16000,
+      "media": {
+        "path": "media.json",
+        "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "session-fictive",
+        "passageId": "moment-2"
+      },
+      "transcript": {
+        "text": "",
+        "availability": "unknown",
+        "limits": "Transcript de départ non conservé ; aucune reconstitution depuis le résumé final."
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "explicit-default"
+      }
+    },
+    {
+      "id": "video-convertie",
+      "startMs": 8000,
+      "endMs": 16000,
+      "media": {
+        "path": "media.json",
+        "sha256": "f4b4c8cdd493606ec562cfcc52db752f1a42bf440fd9f8e316108f337fc61318"
+      },
+      "provenance": {
+        "kind": "converted-video",
+        "sourceSha256": "0f885262ff999fe1dc4cd57e76d8682bfff783dd9e795fc35a33d46ead00ca6e",
+        "sourceInterval": {
+          "startMs": 20000,
+          "endMs": 28000
+        },
+        "conversion": {
+          "tool": "ffmpeg",
+          "version": "exemple-fictif",
+          "arguments": ["-ss", "20", "-t", "8", "-vf", "fps=1"]
+        }
+      },
+      "transcript": {
+        "text": "",
+        "availability": "unknown",
+        "limits": "Transcript de départ non conservé ; aucune reconstitution depuis le résumé final."
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "explicit-default"
+      }
+    }
+  ]
+}

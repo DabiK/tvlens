@@ -157,7 +157,11 @@ test('configuration exposes the latency switches with safe defaults and leaves e
  const bare = await load({});
  // Vision during a question is on by default since questions may run five minutes (rollback: TVLENS_VISION_DURING_ASK=0).
  assert.deepEqual(added(bare), { whisperAudioCtx: undefined, visionDuringAsk: true, backgroundIndex: true, perceptionBackend: 'codex', localVlm: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null } });
- assert.deepEqual(existing(bare), { apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, codexAuthHome: null, whisperModel: null, whisperThreads: undefined, whisperBinary: '/usr/bin/whisper-cli', ffmpeg: '/usr/bin/ffmpeg',
+ assert.deepEqual(existing(bare), { apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true,
+  inspectionBackend: 'codex',
+  embeddingsBackend: undefined, localEmbeddings: { url: null, model: null, token: null },
+  questionsBackend: 'codex', localQuestions: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null },
+  codexAuthHome: null, whisperModel: null, whisperThreads: undefined, whisperBinary: '/usr/bin/whisper-cli', ffmpeg: '/usr/bin/ffmpeg',
   inspectionModel: 'google/gemini-3.8-flash', inspectionStrategy: 'native-slow', researchBudgetFile: path.join(root, 'config', '.local', 'research-budget.json'), budgetFile: path.join(root, 'config', '.local', 'trial-budget.json') });
  await fs.writeFile(configPath, ['OPENROUTER_API_KEY=key', 'TVLENS_WHISPER_AUDIO_CTX=auto', 'TVLENS_VISION_DURING_ASK=1', 'TVLENS_BACKGROUND_INDEX=0', 'TVLENS_PERCEPTION_BACKEND=local', 'TVLENS_LOCAL_VLM_URL=http://127.0.0.1:11434',
   'TVLENS_LOCAL_VLM_MODEL=qwen', 'TVLENS_LOCAL_VLM_NUM_CTX=8192', 'TVLENS_LOCAL_VLM_KEEP_ALIVE=30m', 'TVLENS_LOCAL_VLM_TOKEN=secret-token', ''].join('\n'));

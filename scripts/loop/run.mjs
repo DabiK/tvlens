@@ -13,13 +13,15 @@
 //   --tune-every <n> (harmonise les consignes du harnais tous les n tickets intégrés ; 0, par défaut, jamais)
 //
 // Codes de sortie : 0 terminé, 1 refus au démarrage, 2 ticket bloqué, 3 push refusé,
-// 4 harmonisation refusée que la boucle n'a pas pu défaire (arbre laissé sale, aucun ticket lancé ensuite).
+// 4 harmonisation refusée que la boucle n'a pas pu défaire (arbre laissé sale, aucun ticket lancé ensuite),
+// 5 quota Codex épuisé (ticket à faire, travail conservé, reprise annoncée ou absence indiquée).
 import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { admitWorker, integratedModules, receiveLaunch, retireWorker, supervise } from "./restart.mjs";
 import { runCodex } from "./codex.mjs";
+import { quotaDiagnostic } from "./codex-quota.mjs";
 import { BASELINE } from "../quality/ratchet.mjs";
 import { attemptsToTop, displayName, levelOf, plan } from "./models.mjs";
 import { runRetro } from "./retro.mjs";
@@ -60,6 +62,7 @@ const PROTECTED = [
 const stateDir = path.join(root, ".harness-state");
 const loopDir = path.join(stateDir, "loop");
 const lockFile = path.join(loopDir, "lock");
+const QUOTA_EXIT_CODE = 5;
 
 function sh(command, args, extra = {}) {
   const result = spawnSync(command, args, { cwd: root, encoding: "utf8", maxBuffer: 256 * 1024 * 1024, ...extra });
@@ -440,6 +443,17 @@ function block(ticket, why, history) {
   return 2;
 }
 
+function interruptForQuota(ticket, quota, { untracked }) {
+  const file = path.join(root, ticket.file);
+  fs.writeFileSync(file, setStatus(fs.readFileSync(file, "utf8"), "a-faire"));
+  event("quota-epuise", { ticket: ticket.id, reprise: quota.reprise });
+  say(`${ticket.id} : ${quotaDiagnostic(quota.reprise)} La boucle s'arrête ; le ticket est remis à faire.`);
+  const entries = statusEntries().filter((e) => !e.paths.every((p) => untracked.has(p)));
+  const tree = entries.length ? "L'arbre contient du travail modifié ou non suivi." : "L'arbre ne contient pas de travail modifié.";
+  say(`${tree} Le travail et les traces sont conservés sur disque.`);
+  return QUOTA_EXIT_CODE;
+}
+
 /** Traite un ticket jusqu'à l'intégration ou au blocage. Renvoie le code de sortie et ce qui s'est passé, pour la rétrospective. */
 async function processTicket(ticket, context) {
   const dir = ticketDir(root, ticket.id);
@@ -463,6 +477,7 @@ async function processTicket(ticket, context) {
       ? await session(root, ...args, { event, timeoutMin: options.timeoutMin })
       : await session(...args);
     const { code, report, problem } = result;
+    if (result.quota?.code === "CODEX_QUOTA_EXHAUSTED") return ended(interruptForQuota(ticket, result.quota, context), "quota-épuisé", null);
     const entry = { attempt, plan: step, report, failure: null };
     history.push(entry);
     const verdict = readVerdict(dir);
@@ -557,6 +572,7 @@ for (let done = launch?.done ?? 0; done < options.max; done++) {
   }
   const before = git("rev-parse", "HEAD").stdout.trim();
   const run = await processTicket(ticket, context);
+  if (run.code === QUOTA_EXIT_CODE) stop(run.code);
   if (options.retro) retrospective(ticket, run);
   if (run.code !== 0) stop(run.code);
   integrated++;

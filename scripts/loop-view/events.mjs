@@ -1,5 +1,6 @@
 // Événements de la boucle (`events.jsonl`) : quel ticket est en cours, où en est la boucle à son sujet, ce qui est fini.
 // Fonction pure : elle lit une liste d'événements déjà décodés et n'en garde que ce que la vue affiche (jamais `charge`).
+import { quotaDiagnostic } from "../loop/codex-quota.mjs";
 
 const TUNING_ID = /^H\d+$/;
 // Les issues d'une harmonisation des consignes : ensuite la boucle passe au ticket suivant.
@@ -78,6 +79,10 @@ const HANDLERS = {
     addCost(state, event, since);
   },
   "tentative-refusee": (state, event) => setStage(state, "refused", event, event.raison ?? null),
+  "quota-epuise": (state, event) => {
+    setStage(state, "quota", event, quotaDiagnostic(event.reprise ?? null));
+    state.retroPending = false;
+  },
   integre: (state, event, since) => finishTicket(state, event, "integre", since),
   bloque: (state, event, since) => finishTicket(state, event, "bloque", since),
   "push-refuse": (state) => {
@@ -98,7 +103,7 @@ const HANDLERS = {
  * coût au lancement de la boucle ; sans lui, tout l'historique compte.
  *
  * `stage` : none (aucun événement), session (une session tourne), gates (la session est finie, la boucle contrôle),
- * refused, integrated, blocked, harmonisation (choisie, pas encore lancée), between (entre deux tickets).
+ * refused, integrated, blocked, quota, harmonisation (choisie, pas encore lancée), between (entre deux tickets).
  */
 export function analyzeEvents(events, { since = null } = {}) {
   const state = {

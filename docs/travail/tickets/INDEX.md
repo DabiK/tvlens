@@ -463,9 +463,9 @@ dénominateur de couverture et identifie séparément le backend de chaque rôle
 Questions, embeddings et inspection choisissent chacun leur backend, sans repli implicite Codex/OpenRouter.
 Le web des questions locales n'est pas porté dans T263 ; le web de la surveillance reste distant.
 
-Ordre d'exécution recommandé ci-dessous ; la boucle, qui prend le plus petit numéro prêt,
-suit un ordre compatible. T255/T256, T263/T264, puis T265 après T255, peuvent avancer
-pendant une attente de recette Mémoire. T257 définit d'abord le format ; T262 le produit depuis
+Ordre décidé par le propriétaire le 18/10, tenu par des dépendances d'ordre sans lien de code :
+copie A d'abord, T263, T264, T255, T265, T257, T262, T258, T267 ; puis la fin de la Mémoire, T259, T261 et T260
+(copie B). T251, T256 et T232 (avec T252) passent après T260, hors du chemin GX10. T257 définit d'abord le format ; T262 le produit depuis
 une vidéo, sans dépendance inverse. T264 réutilise le transport de T263 ; T267 transmet l'identité
 des questions dans leurs métriques et traces après T263. T259 attend T227, T262, T264, T265 et T267 ;
 T261 ajoute le bilan avant T260.

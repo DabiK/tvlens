@@ -1,3 +1,4 @@
+const { HISTORICAL_IDENTITY } = require("../adapters/embeddings/provider-identity.cjs");
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -216,7 +217,7 @@ function forbidProviders(t) {
   const surveillanceAgent = {
     detect: forbidden("detect"), verify: forbidden("verify"), prepare: forbidden("surveillance.prepare"),
   };
-  const embeddings = { embed: forbidden("embed"), embedMany: forbidden("embedMany") };
+  const embeddings = { identity: HISTORICAL_IDENTITY, embed: forbidden("embed"), embedMany: forbidden("embedMany") };
   return { calls, agent, surveillanceAgent, overrides: { perception, embeddings } };
 }
 

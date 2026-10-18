@@ -13,7 +13,10 @@ const { dynamicTools } = require("./codex-tool-definitions.cjs");
 // Conversation policy: memory deltas, source provenance and one bounded repair.
 // Process, RPC, streaming and cancellation belong to CodexSessionClient.
 class CodexSessionAgent {
+  #transport;
   constructor({ client, ...options } = {}) {
+    // Le client construit peut cacher une doublure : seul un client explicitement fourni est identifié ici.
+    this.#transport = client ? 'injected' : 'unknown';
     this.webSearch = options.webSearch ?? true;
     this.client =
       client ||
@@ -25,6 +28,15 @@ class CodexSessionAgent {
       });
     this.sent = new Map();
     this.tail = Promise.resolve();
+  }
+
+  get identity() {
+    let reasoningEffort = null;
+    try { reasoningEffort = this.client.reasoningEffort ?? null; } catch {
+      // Ce paramètre diagnostique indisponible ne peut pas faire échouer une réponse du client.
+    }
+    return Object.freeze({ role: 'questions', kind: 'codex', model: this.model || null, host: null,
+      reasoningEffort, transport: this.#transport });
   }
 
   get model() {
@@ -173,6 +185,7 @@ class CodexSessionAgent {
         ? 0
         : sources.length,
       model: this.model || "default",
+      backend: this.identity,
       elapsedMs: Date.now() - started,
       coldStart,
       connectMs,

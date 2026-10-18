@@ -1,19 +1,19 @@
 // Codex écrit ; un processus Claude séparé juge l'état enregistré avant les contrôles de la boucle.
-import { spawn, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { createInterface } from "node:readline";
+import { setTimeout as sleep } from "node:timers/promises";
+import { retryCapacity } from "./codex-capacity.mjs";
+import { MAX_DIAGNOSTIC_LENGTH, sessionState, streamSession } from "./codex-stream.mjs";
 import { lastReviewReport, record, recordReview, reviewVerdict, uncorrectedFindings } from "./reviewed-state.mjs";
 
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
-const MAX_ACTION_LENGTH = 160;
 const MAX_REVIEW_OUTPUT = 64 * 1024 * 1024;
 const MAX_CORRECTIONS = 2;
 const DISABLED_FEATURES = ["plugins", "apps", "memories", "image_generation"];
 const DEFAULT_DISCOVERY_TIMEOUT_MS = SECONDS_PER_MINUTE * MS_PER_SECOND;
-const TOKEN_FIELDS = ["input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens"];
 
 function sessionEnv(ticket) {
   return {
@@ -32,27 +32,41 @@ function checkResumeOptions(root, disabled, directories, env, timeoutMs) {
     cwd: root, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: timeoutMs,
   });
   if (result.status !== 0) {
+    if (result.error?.code === "ETIMEDOUT") throw timeoutError();
     const reason = result.error?.message || result.stderr || `code ${result.status}`;
     throw Object.assign(new Error(`Codex : options requises de reprise indisponibles : ${reason}`), { code: "CODEX_RESUME_UNAVAILABLE" });
   }
 }
 
+function timeoutError() {
+  return Object.assign(new Error("Codex : délai maximal dépassé."), { code: "CODEX_TIMEOUT" });
+}
+
+function remainingTime(deadline) {
+  const remaining = deadline - Date.now();
+  if (remaining <= 0) throw timeoutError();
+  return remaining;
+}
+
 export function codexArgs(root, step, prompt, {
   env = process.env, timeoutMs = DEFAULT_DISCOVERY_TIMEOUT_MS, session = null,
 } = {}) {
+  const deadline = Date.now() + timeoutMs;
   const disabled = DISABLED_FEATURES.flatMap((name) => ["--disable", name]);
   const directories = env.TVLENS_HARNESS === "1" ? [".codex", ".agents"].flatMap((dir) => ["--add-dir", path.join(root, dir)]) : [];
-  if (session) checkResumeOptions(root, disabled, directories, env, timeoutMs);
+  if (session) checkResumeOptions(root, disabled, directories, env, remainingTime(deadline));
   let servers;
   try {
     const listed = spawnSync(env.TVLENS_CODEX_BIN || "codex", ["mcp", "list", "--json", ...disabled], {
-      cwd: root, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: timeoutMs,
+      cwd: root, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: remainingTime(deadline),
     });
+    if (listed.error?.code === "ETIMEDOUT") throw timeoutError();
     if (listed.status !== 0) throw new Error(listed.error?.message || `processus en échec (code ${listed.status})`);
     servers = JSON.parse(listed.stdout);
     const valid = (server) => server && typeof server.name === "string" && server.name.trim() && typeof server.enabled === "boolean";
     if (!Array.isArray(servers) || !servers.every(valid)) throw new Error("format inattendu");
   } catch (error) {
+    if (error.code === "CODEX_TIMEOUT") throw error;
     throw Object.assign(new Error(`Codex : liste des serveurs MCP en échec ou illisible : ${error.message}`), { code: "CODEX_MCP_LIST" });
   }
   const mcp = servers.filter((server) => server.enabled).flatMap(({ name }) => {
@@ -73,68 +87,10 @@ export function codexArgs(root, step, prompt, {
   return [...args, prompt];
 }
 
-function showAction(root, item, started) {
-  const actions = [];
-  if (item?.type === "command_execution") actions.push(`Bash ${item.command}`);
-  if (item?.type === "file_change") {
-    const files = (item.changes || []).map((change) => path.isAbsolute(change.path) ? path.relative(root, change.path) : change.path);
-    actions.push(`Write ${files.join(", ")}`);
-  }
-  const seconds = Math.round((Date.now() - started) / MS_PER_SECOND);
-  const minutes = String(Math.floor(seconds / SECONDS_PER_MINUTE)).padStart(2, "0");
-  const remainder = String(seconds % SECONDS_PER_MINUTE).padStart(2, "0");
-  for (const action of actions) console.log(`[boucle] ${minutes}:${remainder}  ${action.replace(/\s+/g, " ").slice(0, MAX_ACTION_LENGTH)}`);
-}
-
-function consumeLine(root, line, state, started, stream) {
-  let message;
-  try {
-    message = JSON.parse(line);
-  } catch (error) {
-    // Le flux brut reste archivé même si une ligne de diagnostic ne suit pas le protocole JSONL.
-    return;
-  }
-  if (message.type === "thread.started") state.session = message.thread_id;
-  if (message.type === "turn.started" || message.type === "turn.completed") state.turnStarted = true;
-  if (message.type === "turn.completed") {
-    for (const reason of stream.errors) stream.reportRecovery(reason);
-    stream.errors = [];
-    state.tours++;
-    for (const field of TOKEN_FIELDS) state.jetons[field] += message.usage?.[field] || 0;
-  }
-  if (message.type === "error") stream.errors.push(`Codex : ${message.error?.message || message.message || "erreur du flux"}`);
-  if (message.type === "turn.failed") {
-    state.problem = `Codex : ${message.error?.message || message.message || "échec du tour"}`;
-  }
-  if (message.type === "item.completed") showAction(root, message.item, started);
-}
-
-function streamSession(root, args, env, file, state, timeoutMs, started, reportRecovery) {
-  return new Promise((resolve) => {
-    const child = spawn(process.env.TVLENS_CODEX_BIN || "codex", args, { cwd: root, env, stdio: ["ignore", "pipe", "pipe"] });
-    const timer = setTimeout(() => {
-      state.problem = "Codex : délai maximal dépassé.";
-      child.kill("SIGTERM");
-    }, timeoutMs);
-    const stream = { errors: [], reportRecovery };
-    let stderr = "";
-    const lines = createInterface({ input: child.stdout });
-    lines.on("line", (line) => consumeLine(root, line, state, started, stream));
-    child.stdout.on("data", (chunk) => fs.appendFileSync(file, chunk));
-    child.stderr.setEncoding("utf8");
-    child.stderr.on("data", (chunk) => (stderr += chunk));
-    child.on("error", (error) => { state.problem = `Codex : ${error.code} (${error.message})`; });
-    child.on("close", (code) => {
-      clearTimeout(timer);
-      if (stderr) fs.appendFileSync(file + ".stderr", stderr);
-      state.problem ||= stream.errors.at(-1);
-      if (code !== 0) state.problem ||= `Codex : processus en échec (code ${code}). ${stderr}`;
-      resolve(state.problem ? 1 : 0);
-    });
-  });
-}
-
 function sessionProblem(request, state, marker, run) {
+  if (!state.session && state.turnStarted) {
+    return { reason: "Codex : identité de session absente après le début du travail ; reprise refusée.", resumeImpossible: false };
+  }
   if (request.session && state.session && state.session !== request.session) {
     const reason = `Codex : session changée lors de la reprise : ${request.session} attendue, ${state.session} reçue.`;
     return { reason, resumeImpossible: true };
@@ -149,21 +105,26 @@ function sessionProblem(request, state, marker, run) {
 }
 
 async function hookedSession(root, request, env, file, state, timeoutMs, started, dir) {
+  const deadline = Date.now() + timeoutMs;
   const markerFile = path.join(dir, "hooks-started.json");
-  const run = randomUUID();
+  const run = request.invocation;
   fs.rmSync(markerFile, { force: true });
   state.session = null;
   state.turnStarted = false;
   let args;
+  let remaining;
   try {
     args = codexArgs(root, request.step, request.prompt, { env, timeoutMs, session: request.session });
+    remaining = remainingTime(deadline);
   } catch (error) {
-    if (!["CODEX_MCP_LIST", "CODEX_RESUME_UNAVAILABLE"].includes(error.code)) throw error;
+    if (!["CODEX_MCP_LIST", "CODEX_RESUME_UNAVAILABLE", "CODEX_TIMEOUT"].includes(error.code)) throw error;
     state.problem = error.message;
-    return { code: 1, resumeImpossible: Boolean(request.session) };
+    state.terminal = error.code === "CODEX_TIMEOUT";
+    return { code: 1, resumeImpossible: Boolean(request.session && !state.terminal) };
   }
   const reportRecovery = (reason) => request.reportRecovery(run, reason);
-  const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, file, state, timeoutMs, started, reportRecovery);
+  const files = [file, request.trace];
+  const code = await streamSession(root, args, { ...env, TVLENS_HOOK_RUN: run }, files, state, remaining, started, reportRecovery);
   let marker;
   try {
     marker = JSON.parse(fs.readFileSync(markerFile, "utf8"));
@@ -171,22 +132,78 @@ async function hookedSession(root, request, env, file, state, timeoutMs, started
     // Un témoin absent ou illisible ne prouve pas le chargement des hooks.
     marker = null;
   }
+  return sessionOutcome(request, state, marker, run, code);
+}
+
+function sessionOutcome(request, state, marker, run, code) {
+  if (state.quota) return { code: 1, resumeImpossible: false };
+  // Sans fil ni début de travail, le fournisseur a refusé avant qu'une session puisse être reprise.
+  const beforeSession = !request.session && !state.session && !state.turnStarted && state.capacity && !state.terminal;
+  if (beforeSession) return { code, resumeImpossible: false };
   const problem = sessionProblem(request, state, marker, run);
   if (problem) {
-    state.problem = state.problem ? `${state.problem} ${problem.reason}` : problem.reason;
-    return { code: 1, resumeImpossible: problem.resumeImpossible };
+    // Le motif de confinement et son remède doivent survivre à la coupe d'un long diagnostic fournisseur.
+    state.problem = [problem.reason, state.problem].filter(Boolean).join(" ");
+    const resumeImpossible = !state.capacity && !state.terminal && problem.resumeImpossible;
+    state.capacity = null;
+    return { code: 1, resumeImpossible };
   }
-  return { code, resumeImpossible: Boolean(request.session && code !== 0 && !state.turnStarted) };
+  const resumeImpossible = request.session && code !== 0 && !state.turnStarted;
+  return { code, resumeImpossible: Boolean(resumeImpossible && !state.capacity && !state.terminal) };
+}
+
+async function capacitySession(root, request, env, file, state, timeoutMs, started, dir, event) {
+  const skipWait = env.TVLENS_CODEX_SKIP_CAPACITY_WAIT === "1";
+  const result = await retryCapacity(async ({ session, timeoutMs: remaining, retry }) => {
+    fs.rmSync(path.join(dir, "verdict.json"), { force: true });
+    const invocation = randomUUID();
+    const trace = path.join(dir, `${path.basename(file, ".jsonl")}-${invocation}.jsonl`);
+    fs.writeFileSync(trace, "");
+    const current = sessionState();
+    const next = { ...request, session, invocation, trace };
+    const launched = Date.now();
+    const outcome = await hookedSession(root, next, env, file, current, remaining, started, dir);
+    current.problem = current.problem?.slice(0, MAX_DIAGNOSTIC_LENGTH) ?? null;
+    const report = {
+      invocation, session: current.session, reprise: retry, code: outcome.code, trace: path.relative(root, trace),
+      tours: current.tours, jetons: current.jetons, duree_ms: Date.now() - launched, delai_ms: remaining,
+      capacity: current.capacity, quota: current.quota, problem: current.problem,
+    };
+    state.invocations.push(report);
+    state.session = current.session;
+    state.tours += current.tours;
+    for (const field of Object.keys(state.jetons)) state.jetons[field] += current.jetons[field];
+    event("invocation-terminee", { ticket: env.TVLENS_TICKET, ...report });
+    return { ...outcome, session: current.session, capacity: current.capacity, quota: current.quota, problem: current.problem,
+      resumeImpossible: retry === 0 && outcome.resumeImpossible };
+  }, {
+    timeoutMs, session: request.session, wait: delay => skipWait ? Promise.resolve() : sleep(delay),
+    onRetry: ({ result: previous, retry, delay }) => {
+      const invocation = state.invocations.at(-1).invocation;
+      event("capacite-reprise", {
+        ticket: env.TVLENS_TICKET, invocation, reprise: retry, attente_ms: delay, session: previous.session, raison: previous.capacity.diagnostic,
+      });
+      const label = `${env.TVLENS_TICKET} tentative ${request.attempt} invocation ${invocation}`;
+      console.log(`[boucle] ${label} : capacité indisponible, reprise ${retry} après ${delay} ms.`);
+    },
+  });
+  state.problem = result.problem;
+  state.capacity = result.capacity || null;
+  state.quota = result.quota || null;
+  if (result.exhausted) {
+    event("capacite-epuisee", { ticket: env.TVLENS_TICKET, invocation: state.invocations.at(-1)?.invocation, cause: result.exhausted });
+  }
+  return result;
 }
 
 async function correctionSession(root, request, env, file, state, timeoutMs, started, dir, event) {
   fs.rmSync(path.join(dir, "verdict.json"), { force: true });
-  const result = await hookedSession(root, request, env, file, state, timeoutMs, started, dir);
+  const result = await capacitySession(root, request, env, file, state, timeoutMs, started, dir, event);
   if (!result.resumeImpossible) return result.code;
   event("reprise-impossible", { ticket: env.TVLENS_TICKET, session: request.session, raison: state.problem });
   state.problem = null;
   fs.rmSync(path.join(dir, "verdict.json"), { force: true });
-  const fresh = await hookedSession(root, { ...request, session: null }, env, file, state, timeoutMs, started, dir);
+  const fresh = await capacitySession(root, { ...request, session: null }, env, file, state, timeoutMs, started, dir, event);
   return fresh.code;
 }
 
@@ -329,7 +346,7 @@ function reviewReserves(report, reference) {
 export async function runCodex(root, ticket, attempt, dir, failureReport, step, { event, timeoutMin }) {
   const started = Date.now();
   const timeoutMs = timeoutMin * SECONDS_PER_MINUTE * MS_PER_SECOND;
-  const state = { session: null, tours: 0, jetons: Object.fromEntries(TOKEN_FIELDS.map((field) => [field, 0])), problem: null };
+  const state = { ...sessionState(), invocations: [] };
   const env = sessionEnv(ticket);
   const retry = failureReport ? ` Lis ${path.relative(root, failureReport)} et le journal, puis reprends le travail.` : "";
   const prompt = `Traite le ticket ${ticket.id} (${ticket.file}) en suivant .agents/skills/ticket-codex/SKILL.md.${retry}`;
@@ -340,7 +357,9 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
     event("reconnexion", { ticket: ticket.id, attempt, invocation, raison });
     console.log(`[boucle] ${ticket.id} tentative ${attempt} invocation ${invocation} : reconnexion récupérée (${raison}).`);
   };
-  let { code } = await hookedSession(root, { step, prompt, reportRecovery }, env, file, state, timeoutMs, started, dir);
+  const invocationEvent = (phase, data) => event(phase, { ...data, attempt });
+  const initial = { step, prompt, reportRecovery, attempt };
+  let { code } = await capacitySession(root, initial, env, file, state, timeoutMs, started, dir, invocationEvent);
   let relectures = 0;
   let reserves = [];
   for (let correction = 0; code === 0; correction++) {
@@ -369,11 +388,11 @@ export async function runCodex(root, ticket, attempt, dir, failureReport, step, 
       ` Lis ${reportFile}, le ticket et son journal, les écarts, git status et git diff, puis reprends le travail présent dans l'arbre.` +
       ` Corrige chaque constat bloquant et mineur de cette relecture, tests d'abord, puis rends un nouveau verdict.\n\n${reviewed.report}`;
     const fallbackEvent = (phase, data) => event(phase, { ...data, attempt });
-    const request = { step, prompt: fix, session: state.session, reportRecovery };
+    const request = { step, prompt: fix, session: state.session, reportRecovery, attempt };
     code = await correctionSession(root, request, env, file, state, timeoutMs, started, dir, fallbackEvent);
   }
-  const { problem, turnStarted, ...usage } = state;
+  const { problem, turnStarted, terminal, ...usage } = state;
   const report = { ...usage, moteur: "codex", duree_s: Math.round((Date.now() - started) / MS_PER_SECOND), relectures, cout_usd: null };
   event("session-terminee", { ticket: ticket.id, attempt, code, ...report });
-  return { code, report, problem, reserves };
+  return { code, report, problem, reserves, quota: state.quota };
 }

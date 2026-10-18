@@ -4,6 +4,7 @@
 import { codexCommandPhase, shellCommand } from "./codex-commands.mjs";
 import { ORCHESTRATOR, isVerdictPath, relativePath } from "./session-state.mjs";
 import { PHASES } from "./phases.mjs";
+import { quotaDiagnostic, quotaFailure } from "../loop/codex-quota.mjs";
 
 /** Lignes gardées par fil : assez pour remonter une session, pas assez pour peser sur le navigateur. */
 export const MAX_ENTRIES = 400;
@@ -112,7 +113,9 @@ function foldCodex(feed, message, root) {
     push(feed, CODEX_AGENT, { k: "turn", text: `fin du tour · ${output} jetons en sortie` });
   }
   if (message.type === "turn.failed" || message.type === "error") {
-    push(feed, CODEX_AGENT, { k: "warn", text: clip(message.error?.message || message.message || "Échec Codex", MAX_TEXT) });
+    const quota = quotaFailure(message);
+    const diagnostic = quota ? quotaDiagnostic(quota.reprise) : message.error?.message || message.message || "Échec Codex";
+    push(feed, CODEX_AGENT, { k: "warn", text: clip(diagnostic, MAX_TEXT) });
   }
   if (message.type === "item.started" || message.type === "item.completed") codexItem(feed, message.item, message.type === "item.completed", root);
 }

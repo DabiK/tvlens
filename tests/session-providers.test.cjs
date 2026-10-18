@@ -6,6 +6,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const { createSessionRuntime } = require("../runtime/session-runtime.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
+const { HISTORICAL_IDENTITY } = require("../adapters/embeddings/provider-identity.cjs");
 const { createEventPublisher } = require("../core/shared/events.cjs");
 const { deferred } = require("./helpers/wait.cjs");
 
@@ -177,7 +178,8 @@ test("inspection selects smoke, live and local models and keeps its cache revoca
     assert.ok(built.inspector, "the public inspector is constructed");
     const [cached, message] = built.inspector.args;
     assert.match(message, /Session terminée/);
-    const [inner] = cached.args;
+    const [diagnosed] = cached.args;
+    const inner = diagnosed.inner;
     if (localInspection) assert.equal(built.inspectorModel, localModel);
     else
       assert.deepEqual(built.inspectorModel.args, [
@@ -272,7 +274,9 @@ test("indexing selects embeddings by smoke mode and key and shares its vector ca
     options.config.apiKey = apiKey;
     const built = providers.createSessionIndex(options, {
       UsageLedger: recordedConstructor(),
-      OpenRouterEmbeddings: recordedConstructor(),
+      OpenRouterEmbeddings: class extends recordedConstructor() {
+        get identity() { return HISTORICAL_IDENTITY; }
+      },
       EmbeddingStore: recordedConstructor(),
       MomentIndex: recordedConstructor(),
       MemorySearch: recordedConstructor(),
@@ -365,14 +369,14 @@ function indexDependencies(extra = {}) {
 }
 
 test("embeddings overrides bypass smoke and key selection and background indexing feeds a usable bounded tail", () => {
-  const embeddings = {};
+  const embeddings = { identity: HISTORICAL_IDENTITY };
   const options = sessionOptions({
     userData: "/data",
     smoke: true,
     overrides: { embeddings },
   });
   const built = providers.createSessionIndex(options, indexDependencies());
-  assert.equal(built.index.args[0].embeddings, embeddings);
+  assert.equal(built.index.args[0].embeddings.identity, embeddings.identity);
   const segments = Array.from({ length: 60 }, (_, i) => ({
     id: `moment-${i + 1}`,
     status: "ready",
@@ -419,11 +423,11 @@ test("embeddings overrides bypass smoke and key selection and background indexin
       },
       dependencies,
     );
-    assert.equal(custom.index.args[0].embeddings, embeddings);
+    assert.equal(custom.index.args[0].embeddings.identity, embeddings.identity);
   }
   assert.deepEqual(
     budgets.map((budget) => budget.args),
-    Array(3).fill(["/custom/budget.json"]),
+    [],
   );
 });
 
@@ -434,7 +438,7 @@ test("shared index composition sends the real cache load diagnostic to the injec
   const journal = [], calls = [];
   const built = providers.createSessionIndex(sessionOptions({
     userData: root, store: { root }, smoke: true, log: line => journal.push(line),
-    overrides: { embeddings: { embed: async text => {
+    overrides: { embeddings: { identity: HISTORICAL_IDENTITY, embed: async text => {
       calls.push(text);
       return [1, 0];
     } } },
@@ -464,7 +468,7 @@ test("shared index composition installs the journal before the cache constructor
     code: "TVLENS_EMBEDDING_CACHE_LOAD", cause: "read-failed", rebuild: "total", providerCallsPossible: true,
   };
   providers.createSessionIndex(sessionOptions({
-    userData: "/data", smoke: true, overrides: { embeddings: {} }, log: line => journal.push(line),
+    userData: "/data", smoke: true, overrides: { embeddings: { identity: HISTORICAL_IDENTITY } }, log: line => journal.push(line),
   }), indexDependencies({
     EmbeddingStore: class {
       constructor(_file, _model, { onDiagnostic = () => {} } = {}) {
@@ -651,4 +655,48 @@ test('transcription composition forwards availability failures to its injected p
   }).args;
   assert.equal(options.onAvailability, onAvailability);
   assert.equal(options.onPublicationError, onPublicationError);
+});
+
+test('embedding selection rejects unknown and incomplete choices before constructors and disabled never spends a provider budget', () => {
+  const forbidden = class { constructor() { assert.fail('invalid or disabled selection must construct no provider or budget'); } };
+  const dependencies = { UsageLedger: forbidden, OpenRouterEmbeddings: forbidden, OllamaEmbeddings: forbidden };
+  for (const config of [{ embeddingsBackend: 'invalid', apiKey: 'key' }, { embeddingsBackend: 'openrouter' },
+    { embeddingsBackend: 'local' }, { embeddingsBackend: 'local', localEmbeddings: { model: 'm' } }]) {
+    assert.throws(() => providers.createSessionIndex(sessionOptions({ config, userData: '/data' }), dependencies), error =>
+      ['TVLENS_EMBEDDINGS_CONFIG_INVALID', 'TVLENS_OLLAMA_CONFIG_INVALID'].includes(error.code));
+  }
+  for (const config of [{}, { embeddingsBackend: 'disabled', apiKey: 'key' },
+    { questionsBackend: 'local', perceptionBackend: 'local' }]) {
+    const built = providers.createSessionIndex(sessionOptions({ config, userData: '/data' }), dependencies);
+    assert.equal(built.index, null);
+    assert.equal(built.embeddingDiagnostics.enabled, false);
+    assert.equal(built.embeddingDiagnostics.backend, 'disabled');
+    assert.equal(built.embeddingDiagnostics.selection, config.embeddingsBackend ? 'explicit' : 'legacy');
+  }
+});
+
+test('explicit OpenRouter selection uses its declared identity and is the only selection that constructs a remote budget', () => {
+  const options = sessionOptions({ userData: '/data', config: {
+    embeddingsBackend: 'openrouter', apiKey: 'test-key', researchBudgetFile: '/custom/budget.json',
+    questionsBackend: 'local', perceptionBackend: 'local',
+  } });
+  const built = providers.createSessionIndex(options, {
+    UsageLedger: recordedConstructor(),
+    OpenRouterEmbeddings: class extends recordedConstructor() { get identity() { return HISTORICAL_IDENTITY; } },
+    OllamaEmbeddings: class { constructor() { assert.fail('embedding selection is independent of the other roles'); } },
+    EmbeddingStore: recordedConstructor(), MomentIndex: recordedConstructor(), MemorySearch: recordedConstructor(),
+  });
+  assert.equal(built.embeddingDiagnostics.enabled, true);
+  assert.equal(built.embeddingDiagnostics.backend, 'openrouter');
+  assert.equal(built.embeddingDiagnostics.model, HISTORICAL_IDENTITY.model);
+  assert.equal(built.embeddingDiagnostics.selection, 'explicit');
+  assert.equal(built.vectors.args[0], '/sessions/session/embeddings.json');
+  assert.equal(built.vectors.args[1], HISTORICAL_IDENTITY.model);
+  assert.deepEqual(built.index.args[0].embeddings.args[0].budget.args, ['/custom/budget.json']);
+  const disabled = providers.createSessionIndex({ ...options, config: { ...options.config, embeddingsBackend: 'disabled' },
+    overrides: { embeddings: { identity: HISTORICAL_IDENTITY } } }, {
+    UsageLedger: class { constructor() { assert.fail('disabled embeddings allocate no remote budget'); } },
+  });
+  assert.equal(disabled.index, null);
+  assert.equal(disabled.embeddingDiagnostics.enabled, false);
 });

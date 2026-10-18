@@ -75,7 +75,7 @@
   },
   "adapters/local-vlm-agent.cjs": {
     "complexity": {
-      "count": 2
+      "count": 1
     }
   },
   "adapters/remote-media.cjs": {
@@ -185,7 +185,7 @@
   },
   "core/deep-ask.cjs": {
     "complexity": {
-      "count": 3
+      "count": 2
     },
     "no-unused-vars": {
       "count": 1

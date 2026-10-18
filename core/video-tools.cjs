@@ -1,5 +1,6 @@
 const { passageText, hasUsableObservation } = require('./shared/passage-text.cjs');
 const { domainError } = require('./shared/domain-error.cjs');
+const { VIDEO_TOOL_CALL_LIMIT } = require('./video-tool-contracts.cjs');
 // Why a passage cannot be re-examined, in the viewer's words. Without a reason the media went through the
 // rolling window: that wording is the historical one and stays as it is.
 const MEDIA_GONE = {
@@ -20,6 +21,11 @@ const consultationOf = view => ({ sessionId: view.session.id, anchorMs: view.clo
 // Fields of a consulted passage that the contract publishes as null when there is nothing to say.
 const OPTIONAL_FIELDS = ['revision', 'status', 'audioStatus', 'visionStatus', 'error', 'audioError', 'visionError',
   'visionSkipReason', 'stage', 'observation', 'topicSummary', 'summary'];
+const INSPECTION_IDENTITY_FIELDS = ['role', 'backend', 'model', 'host', 'numCtx', 'mode'];
+function inspectionProvenance(diagnostic) {
+  if (!diagnostic) return undefined;
+  return Object.fromEntries(INSPECTION_IDENTITY_FIELDS.filter(key => key in diagnostic).map(key => [key, diagnostic[key]]));
+}
 // The one translation from a consulted passage to the shape the search, the inspector and the evidence below have
 // always read. `available` says the video can be replayed and a reason is only given for one that cannot. A null
 // field is left absent, so that evidence, saved previews and tool outputs keep the exact shape they had.
@@ -61,6 +67,22 @@ class VideoTools {
     this.inFlight = 0;
     this.toolMetrics = []; this.memoryEvidence = []; this.transcriptEvidence = []; this.calls = 0; this.inspections = 0; this.busy = false;
     this.observations = []; this.hypotheses = []; this.limits = [];
+    this.inspectionDiagnostics = this.unexercisedInspection();
+  }
+  unexercisedInspection() {
+    if (!this.inspector?.identity) return undefined;
+    return { ...this.inspector.identity, exercised: false, modelCalled: false, cacheHit: false };
+  }
+  recordInspection(detail, diagnostic) {
+    if (!diagnostic) return;
+    detail.inspection = structuredClone(diagnostic);
+    // Le résumé garde les appels déjà exercés ; chaque détail décrit uniquement son propre appel.
+    this.inspectionDiagnostics = {
+      ...structuredClone(diagnostic),
+      exercised: this.inspectionDiagnostics?.exercised === true || diagnostic.exercised === true,
+      modelCalled: this.inspectionDiagnostics?.modelCalled === true || diagnostic.modelCalled === true,
+      ...(this.inspectionDiagnostics?.metrics && !diagnostic.metrics ? { metrics: structuredClone(this.inspectionDiagnostics.metrics) } : {}),
+    };
   }
   // The passages in the shape the tools read, at this instant: a concurrent refresh never changes a list handed out.
   toolPassages(passages = this.passages) {
@@ -165,10 +187,23 @@ class VideoTools {
       failedCount:segments.filter(s=>['error','skipped','expired'].includes(s.status)).length,
       precision:'Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes.'};
   }
-  async call(name,args={}) {
-    const startedAt=this.now();let status='completed';const detail={};this.inFlight++;
-    try{return await this.invoke(name,args,detail);}catch(error){status='failed';throw error;}
-    finally{this.toolMetrics.push({tool:name,durationMs:Math.max(0,this.now()-startedAt),status,...detail});if(!--this.inFlight&&this.released)this.letGo();}
+  async call(name,args={}, {signal}={}) {
+    const startedAt = this.now();
+    let status = 'completed';
+    const detail = {};
+    if (name === 'inspect_clip' && this.inspector?.identity) detail.inspection = this.unexercisedInspection();
+    this.inFlight++;
+    try {
+      const callSignal = signal && this.signal ? AbortSignal.any([signal, this.signal]) : signal || this.signal;
+      return await this.invoke(name, args, detail, callSignal);
+    } catch (error) {
+      status = 'failed';
+      throw error;
+    } finally {
+      this.toolMetrics.push({ tool: name, durationMs: Math.max(0, this.now() - startedAt), status, ...detail });
+      this.inFlight--;
+      if (!this.inFlight && this.released) this.letGo();
+    }
   }
   // Only the passages admitted for this inspection. A refusal of the port keeps the words the agent has always read.
   async leaseMedia(segments) {
@@ -178,16 +213,17 @@ class VideoTools {
       throw error;
     }
   }
-  // `detail` receives counts for the tool metrics: never text.
-  async invoke(name, args = {}, detail = {}) {
-    this.signal?.throwIfAborted();
-    if (++this.calls > 8) throw new Error('Limite de huit appels d’outils atteinte.');
+  // `detail` reçoit compteurs et identité diagnostique de l'adaptateur, sans texte du modèle.
+  async invoke(name, args = {}, detail = {}, signal = this.signal) {
+    signal?.throwIfAborted();
+    if (++this.calls > VIDEO_TOOL_CALL_LIMIT) throw new Error('Limite de huit appels d’outils atteinte.');
     if (name === 'search_moments') {
       if (this.released) throw new Error(RELEASED);
       this.onProgress('Recherche des passages…');
       // Keep the versions handed to the search and their date: a concurrent call may refresh the passages meanwhile.
       this.refresh(); const segments=this.toolPassages(), asOfMs=this.evidenceAsOfMs, read=this.reads;
-      const found=await this.search.search({ query:args.query, segments, anchorMs:this.anchorMs, signal:this.signal });
+      const found=await this.search.search({ query:args.query, segments, anchorMs:this.anchorMs, signal });
+      signal?.throwIfAborted();
       // Given back meanwhile: what came late is not evidence of a question whose answer is settled.
       if (this.released) throw new Error(RELEASED);
       this.remember(segments.filter(s=>(found.moments||[]).some(m=>m.id===s.id)),'search_moments',asOfMs,read);
@@ -218,9 +254,12 @@ class VideoTools {
     let release;
     try {
       release = await this.leaseMedia(segments);
-      this.signal?.throwIfAborted(); this.onProgress(`Réexamen ${Math.round(startMs/1000)}–${Math.round(endMs/1000)} s…`);
-      const value = await this.inspector.inspect({ question:args.question, startMs,endMs,segments,signal:this.signal,onProgress:this.onProgress,...(args.exactSpeech&&{exactSpeech:true}) });
-      this.signal?.throwIfAborted();
+      signal?.throwIfAborted(); this.onProgress(`Réexamen ${Math.round(startMs/1000)}–${Math.round(endMs/1000)} s…`);
+      const value = await this.inspector.inspect({ question:args.question, startMs,endMs,segments,signal,
+        onProgress:this.onProgress, onDiagnostic: diagnostic => this.recordInspection(detail, diagnostic),
+        ...(args.exactSpeech&&{exactSpeech:true}) });
+      this.recordInspection(detail, value.inspection);
+      signal?.throwIfAborted();
       if (this.released) throw new Error(RELEASED);
       if(value.cacheHit)this.inspectionCacheHits=(this.inspectionCacheHits||0)+1;
       // Images and speech are two intervals per passage. Speech is what its transcription covered: the whole passage,
@@ -243,7 +282,11 @@ class VideoTools {
       if (said.some(x => x.failed)) limits.push('Paroles indisponibles pour ce réexamen : la transcription locale a échoué.');
       if (value.stillFrames) detail.stillFrames = value.stillFrames;
       detail.speech = { passages:said.length, reused:said.filter(x => x.reused === true).length, cached:said.filter(x => x.cacheHit === true).length, failed:said.filter(x => x.failed).length };
-      this.observations.push(...observations); this.hypotheses.push(...hypotheses); this.limits.push(...limits);
+      const provenance = inspectionProvenance(value.inspection || this.inspector.identity);
+      for (const observation of observations) delete observation.inspection;
+      // La provenance reste sur les preuves conservées ; l'agent ne reçoit que les observations.
+      const evidence = observations.map(observation => ({ ...observation, ...(provenance && { inspection: { ...provenance } }) }));
+      this.observations.push(...evidence); this.hypotheses.push(...hypotheses); this.limits.push(...limits);
       this.record('inspect_clip',segments,asOfMs,read);
       return { observations,hypotheses,limits, inspected:{ startMs,endMs }, intervals, sampledFrames:value.sampledFrames };
     } finally { this.busy = false; await release?.(); }

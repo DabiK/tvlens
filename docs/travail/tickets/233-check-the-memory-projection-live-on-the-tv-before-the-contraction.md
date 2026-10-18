@@ -1,7 +1,7 @@
 ---
 id: T233
 titre: Check the memory projection live on the TV before the contraction
-statut: a-faire
+statut: termine
 bloque_par: T219
 adr: non
 installe: non
@@ -56,3 +56,21 @@ Décision attendue du propriétaire : la projection de la Mémoire livrée par T
 le VPS ? Le propriétaire a décidé le 17/10 que l'orchestrateur fait ce test et ferme ce ticket quand il est concluant.
 
 ## Journal
+
+- 18/10, orchestrateur : recette réelle concluante. Tag `recette-t233` (`e2696c2`), release figée
+  `recette-t233-20261018-e2696c2` sur le VPS, page et compagnon de la TV déployés depuis ce tag, avec sauvegarde.
+  - Session `5c07dc06` (parcours nominal, environ 5 min 30) : 35 passages prêts sur 35, chacun avec transcription et
+    description ; aucun trou audio ni image, aucune erreur, retard d'analyse nul à l'arrêt ; 9 sujets regroupés ; frise
+    et vues `chat` et `panel` servies sans erreur. Question « De quoi ça parle » : réponse en 11 s avec 5 citations,
+    affichées sur la TV en lignes horaires (non cliquables, faute de pointeur).
+  - Session `78b2173e` (environ 5 min) : surveillance « Vérifie les chiffres annoncés. » activée ; une carte « Sources
+    consultées » sourcée (3 sources acceptées, 6 recherches web) et une affirmation indéterminée (preuves
+    insuffisantes). Une détection a dépassé son délai, puis le passage a été relu. Fin de session, puis archive rouverte
+    en lecture seule depuis « Sessions » : vu par le propriétaire.
+  - Écarts, antérieurs à T219 et hors de la projection : panneau refusé sur une vidéo à bandes noires (T268) ; titre de
+    session à l'heure UTC du VPS, puisque le serveur le formate au fuseau de l'hôte, corrigé le 18/10 par le drop-in
+    `tvlens.service.d/timezone.conf` (`TZ=Europe/Paris`) et documenté dans `deploy/runtime.env.example` ; la TV exécute
+    un `panel.py` antérieur au dépôt, remplacé au déploiement de T268.
+  - À suivre : Whisper sur le VPS prend 7,3 s en moyenne pour 8 s d'audio (18 s au pire), l'audio attend jusqu'à 11 s ;
+    un passage est prêt 16 s en moyenne après la fin de son bloc (26 s au pire).
+  - Propriétaire, 18/10 : fermeture acceptée avec ces écarts traités à part. Statut `termine`.

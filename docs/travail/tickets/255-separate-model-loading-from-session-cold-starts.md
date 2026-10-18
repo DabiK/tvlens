@@ -1,8 +1,8 @@
 ---
 id: T255
 titre: Separate model loading from session cold starts
-statut: a-faire
-bloque_par:
+statut: termine
+bloque_par: T264, T269
 adr: non
 installe: non
 harnais: non
@@ -82,3 +82,43 @@ Le résidu durée cliente moins durée fournisseur n'est pas une mesure pure du 
 la requête HTTP ne prouve pas l'arrêt du calcul GPU. Aucun ADR nouveau n'est nécessaire.
 
 ## Journal
+
+- 18/10, propriétaire : ordre de la copie GX10 A : questions et recherche locales d'abord (T263, T264), puis T255,
+  T265, T257, T262, T258, T267. Dépendance d'ordre ajoutée (`T264`), sans lien de code ; la retirer rend l'ordre par
+  numéro.
+- 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
+  aussi T269.
+
+- 18/10, Codex : exploration consignée dans `.harness-state/tickets/T255/exploration.md` ;
+  aucun écart prévu. Conservation des changements initiaux. Contrat prévu : attente cliente,
+  requête jusqu’au corps complet, nanosecondes fournisseur et état de modèle inconnu.
+- 18/10, Codex : cycles rouge/vert observés par `node --test --test-name-pattern='<motif>'
+  tests/local-vlm-agent.test.cjs`, motifs `client timings separate`, `provider timings retain`,
+  `local model state stays`, `seam: queued local` ; assertion attendue rouge puis verte pour chacun.
+  Sorties intégrales `red-*.log` et `green-*.log` dans le dossier d’état.
+- 18/10, Codex : caractérisations vertes des protections existantes :
+  `node --test --test-name-pattern='cancelling a queued|seam: bodies delivered' tests/local-vlm-agent.test.cjs`
+  (2/2), et `node --test --test-name-pattern='visual metrics distinguish' tests/codex-thread-rotation.test.cjs`
+  (1/1). Abandons pilotés avant en-têtes ou pendant le corps, deux échéances distinguées, aucun succès
+  tardif ; prochain appel admissible préservé. Aucun changement de politique d’annulation.
+- 18/10, Codex : `node_modules/.bin/eslint --prune-suppressions adapters/local-vlm-agent.cjs` : succès ;
+  une suppression de complexité devenue inutile retirée après extraction de la lecture des durées.
+- 18/10, Codex : `node scripts/check.mjs --changed` : vert (règles, format, lint, gel, cliquet,
+  30/30 tests des deux fichiers modifiés). Puis, en séquentiel :
+  `node --test tests/local-vlm-agent.test.cjs` : 15/15 ;
+  `node --test tests/codex-thread-rotation.test.cjs` : 15/15 ;
+  `node --test tests/architecture-f08.test.cjs` : 23/23. Sorties conservées dans le dossier d’état.
+- 18/10, Codex : `node scripts/check.mjs` : vert ; règles, format, lint, gel et cliquet validés,
+  2 709/2 709 tests JavaScript (147 fichiers, séquentiels), 47 tests Python réussis.
+  `git diff --check` : succès. Verdict `TERMINÉ` écrit dans le dossier d’état, sans réserve.
+  Aucun essai réel, commit ni push ; relecture et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T255/relecture-1.md : **`adapters/codex-perception.cjs:71`** (avec `adapters/codex-session-run.cjs:131-138`) : hors périmètre.
+     - **Le problème :** `reportedMetrics` publie maintenant `clientTimings` pour tout agent, Codex compris, au même titre que `backend` et `providerTimings`. Sur le chemin Codex, `turnResult` recopie d'abord le JSON du modèle (`...result`) et ne réécrit ensuite que `elapsedMs`, `coldStart` et `connectMs`. Un JSON Codex contenant un `clientTimings` objet arriverait donc dans les métriques comme une mesure cliente. Il en va de même pour `modelState: "unknown"`, seule valeur que laisse passer le filtre `=== "unknown"`.
+     - **La limite du risque :** le schéma d'observation impose `additionalProperties: false`, ce qui ferme cette voie si l'App Server l'applique en mode strict. Je ne l'ai pas vérifié. Le test Codex ajouté (`tests/codex-thread-rotation.test.cjs:398-400`) prouve seulement que la perception n'invente pas ces champs. Il ne prouve pas qu'elle résiste à un modèle qui les revendique.
+     - **Ce qui est attendu :** retirer ces clés du JSON du modèle dans `codex-session-run.cjs`, avec un test où le modèle revendique `clientTimings`, `providerTimings` et `modelState`. Ce fichier sort du périmètre du ticket. La faiblesse existait déjà pour `backend` et `providerTimings`.
+- .harness-state/tickets/T255/relecture-1.md : **`docs/backend-latency-optimization.md:357`** : hors périmètre.
+     - **Le problème :** le protocole GX10 de l'essai A dit encore de lire `metrics.providerTimings`, `visionMs` et `latency`. Il ignore `clientTimings.queueMs` et `clientTimings.requestMs`, `providerTimings.rawNs` et `modelState: "unknown"`, alors que ce sont précisément les champs qui séparent l'attente de l'aller-retour.
+     - **Ce qui est attendu :** mettre ce paragraphe à jour avec T257, T259 ou T260. Le ticket limite la documentation à celle « dans le code ».

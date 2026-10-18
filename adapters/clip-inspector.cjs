@@ -9,7 +9,7 @@ const MIN_EXACT_SPEECH_MS=1000;
 const seconds=ms => (ms/1000).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
 class ClipInspector {
   constructor({ media, model, ffmpeg = executable('ffmpeg'), strategy = new NativeVideoStrategy() }) { Object.assign(this,{media,model,ffmpeg,strategy}); }
-  async inspect({ question,startMs,endMs,segments,signal,onProgress,exactSpeech }) {
+  async inspect({ question,startMs,endMs,segments,signal,onProgress,onDiagnostic,exactSpeech }) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-inspect-'));
     try {
       const evidence=[], stills=[]; let count=0;
@@ -49,7 +49,7 @@ class ClipInspector {
       }
       const prepared=await this.strategy.prepare({question,segments:evidence,model:this.model,ffmpeg:this.ffmpeg,dir,signal});
       signal?.throwIfAborted();
-      const result=await this.model.inspect({question,segments:prepared.segments,signal,onProgress});
+      const result=await this.model.inspect({question,segments:prepared.segments,signal,onProgress,onDiagnostic});
       // Said first: the tool keeps a handful of limits, and this one changes what the answer rests on. Only a
       // container known to be empty is called unreadable; a decoder that drew nothing says just that.
       const stillLimits=stills.map(x => `${x.empty?'Vidéo illisible pour le passage':'Aucune image n’a pu être tirée de la vidéo sur'} ${seconds(x.startMs)}–${seconds(x.endMs)} s : réexamen fait sur ${x.frames>1?`${x.frames} images conservées`:'une seule image conservée'} à la capture, sans le mouvement${x.frames>1?' entre elles':''}.`);

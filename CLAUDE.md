@@ -41,8 +41,19 @@ que tu n'as pas observé.
 
 ## Machine
 
-Ce Mac sature vite en mémoire : deux sous-agents au plus à la fois, un seul navigateur ou Electron,
-tests en séquentiel. Un échec sous charge se reproduit et s'explique avant d'être écarté.
+Mac M5 Max, 36 Go de mémoire unifiée : quatre sous-agents au plus à la fois, un navigateur et Electron
+ensemble si besoin. Un modèle local (Ollama) ou une charge lourde ne tourne jamais pendant un contrôle
+chronométré, boucle comprise : le 18/10, un modèle de 12 milliards de paramètres a fait dépasser son budget
+au contrôle d'arrêt d'un ticket. Un échec sous charge se reproduit et s'explique avant d'être écarté.
+
+## Essais réels
+
+Tout essai réel laisse une trace pour le rapport : recette sur la TV ou le VPS, contrôle réel sur le Mac,
+sonde d'un modèle ou d'un fournisseur. Un dossier `experiments/essais/<date>-<sujet>/` contient un README
+(question, configuration exacte, résultats, lecture, limites et incidents), les résultats bruts et les
+scripts ; une ligne s'ajoute à `experiments/essais/README.md`. Ces fichiers se déposent boucle arrêtée : les
+règles par fichier lisent aussi les scripts non suivis, et un fichier ajouté pendant un ticket peut faire
+échouer son contrôle.
 
 ## Langue
 

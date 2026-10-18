@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "manifestSha256": "3391198924756246a2bbf8b10a22d700184f6e34eac816b17c2bd791915ad073",
+  "cases": [
+    {
+      "id": "capture-documentee",
+      "expected": "Description fictive de formes, sans mouvement supplémentaire inventé.",
+      "reason": "Exemple de format uniquement ; aucune annotation de média réel.",
+      "citations": []
+    },
+    {
+      "id": "capture-inconnue",
+      "expected": "Description fictive de formes, sans mouvement supplémentaire inventé.",
+      "reason": "Exemple de format uniquement ; aucune annotation de média réel.",
+      "citations": []
+    },
+    {
+      "id": "video-convertie",
+      "expected": "Description fictive de formes, sans mouvement supplémentaire inventé.",
+      "reason": "Exemple de format uniquement ; aucune annotation de média réel.",
+      "citations": []
+    }
+  ]
+}

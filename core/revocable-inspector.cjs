@@ -16,6 +16,10 @@ class RevocableInspector {
     return this.#decorated.inner;
   }
 
+  get identity() {
+    return this.#decorated.identity;
+  }
+
   get cache() {
     return this.#decorated.cache;
   }

@@ -2,9 +2,12 @@ const { DeepAsk, QUESTION_TIMEOUT_MS } = require("../core/deep-ask.cjs");
 const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
 const { domainError } = require("../core/shared/domain-error.cjs");
 const { CodexSessionAgent } = require("../adapters/codex-session-agent.cjs");
+const { OllamaQuestionAgent } = require("../adapters/ollama/question-agent.cjs");
+const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
 const TVLENS_QUESTION_SCOPE_FOREIGN = "TVLENS_QUESTION_SCOPE_FOREIGN";
+const TVLENS_QUESTIONS_BACKEND_INVALID = 'TVLENS_QUESTIONS_BACKEND_INVALID';
 
 function hasPendingQuestion(jobs, sessionId) {
   return Boolean(sessionId) && jobs.some(job => job.sessionId === sessionId
@@ -20,29 +23,41 @@ function questionTimeout(value) {
   return value;
 }
 
+function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota }) {
+  if (!['codex', 'local'].includes(backend))
+    throw domainError(TVLENS_QUESTIONS_BACKEND_INVALID, 'Backend de questions inconnu (codex ou local).');
+  if (backend === 'local') validateOllamaConfig(config.localQuestions);
+  if (agent) return agent;
+  if (backend === 'local') return new LocalAgent(config.localQuestions);
+  return new CodexAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome,
+    model: selectedModels?.codexModel, reasoningEffort: config.chatReasoningEffort || 'low', quota });
+}
+
+function questionAgentOrigin(backend, agent, CodexAgent, LocalAgent) {
+  if (agent) return 'injected';
+  const standard = backend === 'local' ? LocalAgent === OllamaQuestionAgent : CodexAgent === CodexSessionAgent;
+  return standard ? 'composed' : 'substituted';
+}
+
 // Both hosts supply the current session; a consultation kept by the question takes precedence over its view.
 function createConversationRuntime({
   getSession,
   agent,
+  CodexAgent = CodexSessionAgent,
+  LocalAgent = OllamaQuestionAgent,
   codexBinary,
   config = {},
   selectedModels,
   quota,
   onChange,
+  onTrace = trace,
   onPublicationError = createPublicationDiagnostic(),
   // Late-bound by the host: the surveillance runtime is composed after the conversation.
   getInstruction,
 }) {
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
-  const conversationAgent =
-    agent ||
-    new CodexSessionAgent({
-      binary: codexBinary || "codex",
-      authHome: config.codexAuthHome,
-      model: selectedModels.codexModel,
-      reasoningEffort: config.chatReasoningEffort || "low",
-      quota,
-    });
+  const backend = config.questionsBackend ?? 'codex';
+  const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
     if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)
@@ -76,10 +91,12 @@ function createConversationRuntime({
       onChange,
       onPublicationError,
       timeoutMs,
-      onTrace: trace,
+      configuredBackend: backend,
+      agentOrigin: questionAgentOrigin(backend, agent, CodexAgent, LocalAgent),
+      onTrace,
       serializeError: safeError,
       ...(typeof getInstruction === "function" ? { getInstruction } : {}),
     }),
   };
 }
-module.exports = { createConversationRuntime, hasPendingQuestion, TVLENS_QUESTION_SCOPE_FOREIGN };
+module.exports = { createConversationRuntime, hasPendingQuestion, TVLENS_QUESTION_SCOPE_FOREIGN, TVLENS_QUESTIONS_BACKEND_INVALID };

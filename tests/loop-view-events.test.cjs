@@ -59,6 +59,22 @@ test("the stage follows the events of the ticket: gates after the session ends, 
   assert.equal(stageAfter(...ended, stream.blockedEvent(6, "T015")), "blocked");
 });
 
+for (const reprise of [null, "Oct 22nd, 2026 8:41 AM"]) {
+  test(`quota exhaustion leaves the ticket pending without a failure or retrospective: ${reprise}`, async () => {
+    const { analyzeEvents } = await loopView();
+    const quota = stream.loopEvent(6, "quota-epuise", { ticket: "T015", reprise });
+    const state = analyzeEvents([stream.sessionEvent(0, "T015"), stream.endedEvent(5, "T015"), quota]);
+    assert.equal(state.stage, "quota");
+    assert.equal(state.current.id, "T015");
+    assert.equal(state.stageAt, Date.parse(quota.at));
+    assert.equal(state.retroPending, false);
+    assert.deepEqual(state.finished, []);
+    assert.match(state.reason, /Quota Codex épuisé/);
+    if (reprise) assert.ok(state.reason.includes(reprise));
+    else assert.match(state.reason, /Reprise non fournie/);
+  });
+}
+
 test("a refusal and a block keep their reason, and the retrospective changes neither the stage nor the reason", async () => {
   const { analyzeEvents } = await loopView();
   const blocked = [stream.sessionEvent(0, "T015"), stream.endedEvent(5, "T015"), stream.blockedEvent(6, "T015", "ticket is wrong")];

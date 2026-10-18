@@ -1,3 +1,4 @@
+const { HISTORICAL_IDENTITY } = require('../adapters/embeddings/provider-identity.cjs');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -29,7 +30,7 @@ async function fixture(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-delete-')), sessionsRoot = path.join(root, 'sessions');
   const jpeg = 'data:image/jpeg;base64,' + (await sharp({ create: { width: 64, height: 36, channels: 3, background: '#173952' } }).jpeg().toBuffer()).toString('base64');
   const f = { root, sessionsRoot, jpeg, clock: 0, opened: [] };
-  const embeddings = { embed: async () => [1, 0], embedMany: async texts => texts.map(() => [1, 0]) };
+  const embeddings = { identity: HISTORICAL_IDENTITY, embed: async () => [1, 0], embedMany: async texts => texts.map(() => [1, 0]) };
   f.block = (startMs, endMs) => ({ startMs, endMs, clip: Buffer.from(`clip ${startMs}`), frames: [{ atMs: startMs, dataUrl: jpeg }], audio: null });
   f.session = async extra => {
     const session = createSessionRuntime({ sessionsRoot, userData: root, config: {}, selectedModels: {}, smoke: true, readClock: () => f.clock, overrides: { embeddings }, ...extra });

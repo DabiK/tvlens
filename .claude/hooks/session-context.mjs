@@ -28,6 +28,6 @@ const lines = [
     : `Mode interactif. Pour traiter un ticket de docs/travail/tickets/, suivre la skill ${skill}.`,
   "Contrôle qualité : node scripts/check.mjs (--changed pour les fichiers modifiés). Règles : docs/standards.md.",
 ];
-if (swap) lines.push(`Mémoire d'échange : ${swap}. Machine vite saturée : deux sous-agents au plus à la fois, tests en séquentiel.`);
+if (swap) lines.push(`Mémoire d'échange : ${swap}. Mac 36 Go : quatre sous-agents au plus ; aucun modèle local pendant un contrôle chronométré.`);
 
 console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: lines.join("\n") } }));

@@ -1,8 +1,8 @@
 ---
 id: T267
 titre: Report the effective question backend in question metrics and traces
-statut: a-faire
-bloque_par: T263
+statut: termine
+bloque_par: T263, T258
 adr: non
 installe: non
 harnais: non
@@ -121,3 +121,110 @@ le traitement annoncé. Ni l'identité composée ni ces tests ne prouvent le GPU
 ou le débit du modèle réel ; ces mesures restent hors boucle.
 
 ## Journal
+
+- 18/10, propriétaire : ordre décidé le 18/10, T267 après T258. Sans ce bloqueur, T267 passerait devant les
+  contrôles réels de la copie A (T269 à T273) dès qu'un d'eux attend.
+
+- 18/10, Codex : exploration consignée dans `.harness-state/tickets/T267/exploration.md` ;
+  ADR 0004/0046/0057 et frontières de composition relus. Aucun écart prévu (`ecarts.md`).
+
+- 18/10, Codex : cycles rouge → vert observés sur les assertions :
+  `node --test --test-name-pattern='question metrics and every lifecycle trace' tests/ollama-question-agent.test.cjs`
+  (identité absente → 1/1),
+  `node --test --test-name-pattern='a queued cancellation' tests/question-ceiling.test.cjs`
+  (durées absentes → 2/2),
+  `node --test --test-name-pattern='explicit Codex with a doubled client' tests/chat-codex.test.cjs`
+  (identité absente → 1/1),
+  `node --test --test-name-pattern='an unavailable Codex diagnostic parameter' tests/chat-codex.test.cjs`
+  (réponse mise en erreur → 1/1),
+  `node --test --test-name-pattern='available local residency parameters' tests/ollama-question-agent.test.cjs`
+  (résidence numérique omise → 1/1). Sorties conservées dans le dossier d’état, fichiers `*-red.log` et `*-green.log`.
+- 18/10, Codex : `metrics.backend` distingue configuration, origine (`composed`, `injected`, `substituted`)
+  et identité de l’agent, copiée à l’admission. `metrics.calls` distingue l’entrée dans l’agent des
+  tentatives de transport confirmées par l’adaptateur ; `null` signifie inconnu. Un envoi HTTP ne
+  prouve ni une inférence ni l’usage du GPU. Les traces `job.*` couvrent les deux modes et chaque fin,
+  y compris l’annulation en file. Les rôles recherche et inspection gardent leur identité.
+- 18/10, Codex : matrice locale succès/refus/réponse mal formée/annulation/timeout dans les deux modes,
+  file interne sans envoi, agents injectés/simulés, diagnostic défaillant et baux retenus couverts.
+  Contrats affectés joués en séquentiel : 165/165, sortie `contracts-sequential.log` :
+
+  ```sh
+  node --test --test-concurrency=1 tests/ollama-question-agent.test.cjs tests/question-ceiling.test.cjs \
+    tests/chat-codex.test.cjs tests/conversation-runtime.test.cjs tests/architecture-f04.test.cjs \
+    tests/deep-ask-restore.test.cjs tests/chat-trace.test.cjs tests/chat-sources.test.cjs \
+    tests/latency.test.cjs tests/evidence-refresh.test.cjs tests/video-research.test.cjs \
+    tests/local-inspection.test.cjs tests/refactor-boundaries.test.cjs tests/codex-session-run.test.cjs \
+    tests/session-optimization.test.cjs
+  ```
+
+- 18/10, Codex : `node scripts/check.mjs --changed` vert, 44/44 tests ; règles, format, lint,
+  gel et cliquet verts (`check-changed-final.log`). Contrôle complet lancé, résultat en attente.
+
+- 18/10, Codex : le premier contrôle complet est resté sans résultat ; la lecture du contrat Mac
+  de sauvegarde retenue a révélé une incompatibilité : `metrics` était publié dès l’admission, alors que sa présence marque les durées finales.
+  `node --test --test-name-pattern='lifecycle traces carry identity while timing' tests/question-ceiling.test.cjs`
+  rouge sur cette publication anticipée, puis vert après séparation des diagnostics privés de la question.
+  `node --test --test-name-pattern='a question is at rest on disk once' tests/mac-ipc-contract.test.cjs`
+  vert (1/1). Premier contrôle interrompu (code 130), jamais déclaré réussi.
+- 18/10, Codex : même commande séquentielle des contrats, complétée de
+  `tests/mac-ipc-contract.test.cjs` : 204/204 verts (`contracts-sequential-final.log`).
+  `node scripts/check.mjs --changed` relancé : 45/45 et tous les contrôles verts.
+  `node scripts/check.mjs` relancé sur la correction (`check-full-final.log`), résultat en attente.
+
+- 18/10, Codex : second `node scripts/check.mjs` rouge : 2811/2812 tests JS verts, 47/47 Python verts ;
+  une garde d’architecture réserve la connaissance du transport au client Codex (`check-full-final.log`).
+  `node --test --test-name-pattern='no product code injects a transport' tests/codex-confinement.test.cjs`
+  rouge reproduit puis vert après retrait de cette connaissance de l’agent. Son transport construit reste
+  `unknown` ; un client explicitement fourni reste `injected`. Aucun contrôle ni transport modifié.
+  `node scripts/check.mjs --changed` vert (45/45, `check-changed-after-confinement.log`).
+  Contrôle complet relancé (`check-full-validated.log`), résultat en attente.
+
+- 18/10, Codex : `node scripts/check.mjs` vert sur la correction finale : 151 fichiers JS,
+  2812/2812 tests JS et 47/47 tests Python (`check-full-validated.log`).
+  `git diff --check` : sortie 0. Aucun contrôle ni test affaibli, aucun commit ni push.
+  Le dernier relevé `lsof` n’affiche plus les deux processus de la première exécution interrompue
+  (`interrupted-processes-final.json`). Verdict `TERMINÉ` consigné pour la relecture de la boucle.
+
+- 18/10, Codex, reprise de la relecture 1 : rapport, ticket/journal, écarts, état Git et diff relus ;
+  quatre mineurs acceptés, aucun écart ni contestation. Exploration consignée dans
+  `.harness-state/tickets/T267/reprise-1-exploration.md`. Correction limitée à la source de température,
+  aux preuves de composition, à la résolution commune du backend et à l’import des aides d’attente.
+
+- 18/10, Codex, correction du constat 1 :
+  `node --test --test-name-pattern='question generation identity matches' tests/ollama-question-agent.test.cjs`
+  rouge sur la lecture de température absente du transport, puis vert après exposition de la valeur privée
+  et lecture par l’agent (`reprise-temperature-red.log`, `reprise-temperature-green.log`). Le test confronte
+  température, contexte, résidence et modèle de l’identité au premier corps HTTP capturé. Aucun envoi modifié.
+- 18/10, Codex, correction du constat 2 :
+  `node --test --test-name-pattern='a substituted local constructor' tests/ollama-question-agent.test.cjs`
+  déjà vert sur le comportement existant ; mutation contrôlée de la branche locale vers une origine `composed`
+  détectée sur l’assertion (`reprise-local-constructor-mutation-red.log`), puis branche restaurée et test vert
+  (`reprise-local-constructor-green.log`). La doublure prétend être Ollama ; métriques et traces restent
+  `substituted`, et l’envoi fournisseur reste inconnu à la fin.
+- 18/10, Codex, correction du constat 3 : `node --test tests/conversation-runtime.test.cjs` : le cas
+  `config: {}` vérifie Codex ; le cas d’une configuration consultable changeant après sa première lecture
+  reproduit l’annonce erronée de `local` pour un agent Codex. Rouge puis 3/3 verts après résolution unique
+  du backend et transmission aux deux helpers et à DeepAsk (`reprise-backend-resolution-red.log`,
+  `reprise-backend-resolution-green.log`).
+- 18/10, Codex, correction du constat 4 : import unique des aides `until`, `deferred`, `turns` dans
+  `question-ceiling`. Aucun nouveau test de texte source pour ce nettoyage.
+
+- 18/10, Codex, contrôles de la reprise : même commande séquentielle des contrats affectés, suite Mac comprise,
+  208/208 verts (`reprise-contracts-sequential.log`). `node scripts/check.mjs --changed` vert : règles,
+  format, lint, gel, cliquet et 50/50 tests (`reprise-check-changed.log`).
+  `node scripts/check.mjs` complet lancé (`reprise-check-full.log`), résultat en attente.
+
+- 18/10, Codex, validation finale de la reprise : `node scripts/check.mjs` vert, règles, format,
+  lint, gel et cliquet verts ; 151 fichiers JS, 2816/2816 tests JS et 47/47 tests Python
+  (`reprise-check-full.log`). `git diff --check` : sortie 0. Les quatre constats mineurs sont corrigés ;
+  aucun test ni contrôle affaibli, aucun commit ni push. Nouveau verdict `TERMINÉ` écrit pour la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T267/relecture-2.md : 1. `adapters/codex-session-agent.cjs:38` : hors périmètre (réserve reprise de la relecture 1, constat 5)
+  - **Problème** : `identity.model` reprend la sélection au moment de l'admission, alors que le fil Codex peut encore tourner sur le modèle fixé à son `thread/start`. La correction n'a pas touché ce code.
+  - **Attendu** : le client expose le modèle du fil réellement ouvert, dans `codex-session-client.cjs`, hors des fichiers autorisés par le ticket.
+- .harness-state/tickets/T267/relecture-2.md : **Écart accepté, critère 1 (constat 1)** : `ecarts.md` déclare un getter de lecture ajouté au transport Ollama (`adapters/ollama/http-client.cjs`). Le ticket range le transport de T263 dans « À ne pas toucher ». J'accepte l'ajout pour trois raisons :
+    - il ne change ni les paramètres envoyés, ni le protocole, ni la configuration (le test de la ligne 121 le vérifie toujours) ;
+    - il donne à l'identité la source unique qu'exigent l'ADR 0057 et la règle « les constantes vivent à un seul endroit » ;
+    - la relecture 1 proposait elle-même une constante partagée avec le transport, qui aurait touché le même fichier.

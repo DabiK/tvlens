@@ -84,6 +84,21 @@ test("a stopped loop is stopped whatever its last event says, and keeps the phas
   assert.equal(view.eta, null);
 });
 
+test("a quota stop remains visible after the lock is released and announces no checks or retrospective", async () => {
+  const reprise = "Oct 22nd, 2026 8:41 AM";
+  const events = [stream.sessionEvent(0, "T015"), stream.endedEvent(80, "T015"),
+    stream.loopEvent(81, "quota-epuise", { ticket: "T015", reprise })];
+  for (const alive of [true, false]) {
+    const view = await viewOf({ events, loop: { alive }, tickets: stream.QUEUE.map(t => t.id === "T015" ? { ...t, statut: "a-faire" } : t) });
+    assert.equal(alive ? view.phase.label : view.phase.detail, "Quota Codex épuisé");
+    assert.ok(view.reason.includes(reprise));
+    assert.equal(view.finished.some(t => t.id === "T015"), false);
+    assert.deepEqual(view.cycles, []);
+    assert.equal(view.timeline.some(entry => entry.state === "todo"), false);
+    assert.ok(view.remaining.tickets.some(t => t.id === "T015"));
+  }
+});
+
 test("the view of a tuning session is a tuning, not a ticket of the queue", async () => {
   const tuning = stream.loopEvent(1, "harmonisation", { id: "H001", sujets: ["a"], observations: ["R-1"] });
   const events = [stream.integratedEvent(0, "T001"), tuning, stream.sessionEvent(2, "H001")];

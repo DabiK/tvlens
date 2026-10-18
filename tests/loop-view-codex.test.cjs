@@ -1,8 +1,16 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const stream = require("./helpers/loop-stream.cjs");
+const { QUOTA_EVENTS } = require("./helpers/codex-session.cjs");
 const { loopView, playSteps } = stream;
 const labels = (states) => states.map((state) => state.phase?.label ?? null);
+
+test("Codex quota actions and their diagnostic expose only the announced retry text", async () => {
+  const [state] = await playSteps([QUOTA_EVENTS.map(event => JSON.stringify(event))], { engine: "codex" });
+  assert.match(state.problem, /Quota Codex épuisé/);
+  assert.ok(state.problem.includes("Oct 22nd, 2026 8:41 AM"));
+  assert.doesNotMatch(JSON.stringify(state.actions) + state.problem, /https?:|chatgpt\.com|You’ve/);
+});
 
 test("a Codex stream follows exploration, first file change, full check and verdict without subagents", async () => {
   const session = stream.codexSession();

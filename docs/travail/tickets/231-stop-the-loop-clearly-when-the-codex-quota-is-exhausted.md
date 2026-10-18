@@ -1,7 +1,7 @@
 ---
 id: T231
 titre: Stop the loop clearly when the Codex quota is exhausted
-statut: a-faire
+statut: termine
 bloque_par: T230
 adr: non
 installe: non
@@ -92,3 +92,107 @@ annoncé. Les formes fournisseur non caractérisées ne sont pas devinées. Le l
 continue à refuser un arbre modifié ; sa reprise contrôlée sera livrée séparément par T251.
 
 ## Journal
+
+- 18/10, orchestrateur : la première tentative a livré l'implémentation complète (2 661 tests JS et 47 tests Python
+  verts) et ne s'est bloquée que sur un fichier hors dépôt : la sonde `experiments/essais/…/sonde.cjs`, déposée par
+  l'orchestrateur avant le lancement, avait deux lignes de plus de 160 caractères. L'orchestrateur l'a corrigée ;
+  `node scripts/check.mjs --changed` est vert sans ce ticket. Le travail est archivé dans
+  `.harness-state/archives/T231-bloque-1/` : `code.patch`, `fichiers/scripts/loop/codex-quota.mjs`,
+  `ticket-journal.patch` et `etat/` (preuves). Le réappliquer, le vérifier contre le code du moment, puis passer la
+  relecture.
+- Reprise : archive de la première tentative, traces et code courant relus, ainsi que les ADR 0012 et 0056.
+  `git apply --check .harness-state/archives/T231-bloque-1/code.patch` : code 0.
+  Exploration et absence d’écart consignées dans `.harness-state/tickets/T231/` ; preuves rejouées dans cette session.
+- Rouge observé après restauration des tests :
+  `node --test --test-name-pattern='Codex stops on quota after work: both' tests/ticket-loop.test.cjs` :
+  code 1, assertion `0 !== 5` ; la boucle escalade puis intègre après le quota dans le dépôt jetable.
+  Les quatre suites de lecteurs avec `--test-concurrency=1 --test-name-pattern='quota'` échouent sur
+  5 assertions (phase de contrôle et diagnostic brut). Commandes et sorties dans `commandes.json`,
+  `quota-stop-red.log` et `quota-readers-red.log` du dossier d’état.
+- Implémentation archivée restaurée, helper `codex-quota.mjs` inclus ; aucun conflit avec le code courant.
+  Arrêt avant l’historique des échecs, code 5 documenté, statut à faire, traces et travail conservés ;
+  reconnaissance limitée aux événements fournisseur et diagnostics français dans les lecteurs.
+- Vert ciblé observé : `node --test --test-name-pattern='quota' tests/ticket-loop.test.cjs` :
+  26 tests réussis, 0 échec (`quota-green.log`). Formes des événements, date bornée sans fuseau,
+  absence d’URL, distinction des erreurs, reprises de capacité/correction et conservation des consommations couvertes.
+- Suites complètes observées, en séquentiel : `node --test tests/ticket-loop.test.cjs` :
+  304 tests réussis, 0 échec, en 244 s (`ticket-loop.log`). Les suites
+  `tests/loop-view-events.test.cjs tests/loop-view-state.test.cjs tests/loop-view-feed.test.cjs tests/loop-view-codex.test.cjs`,
+  lancées par `node --test --test-concurrency=1` : 91 tests réussis, 0 échec (`readers.log`).
+  Commandes exactes dans `commandes.json` du dossier d’état.
+- `node scripts/check.mjs --changed` : code 0, contrôle vert ; règles, format, lint, gel,
+  cliquet et 395 tests JS réussis (`check-changed.log`). Le refus expérimental de la première tentative
+  ne se reproduit plus. Aucun contrôle ni plancher affaibli.
+- `node scripts/check.mjs` : code 0, contrôle complet vert ; règles, format, lint, gel et cliquet verts,
+  2 661 tests JavaScript (145 fichiers) et 47 tests Python réussis (`check-full.log`).
+  `git diff --check` : code 0. Les fichiers préexistants hors périmètre restent intacts ; aucun commit ni push effectué par cette session.
+- Des commits documentaires concurrents ont avancé HEAD pendant la validation : leurs chemins concernent
+  d’autres tickets et leur index, sans toucher le code restauré ni T231 (`branche.log`).
+- Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T231/verdict.json`, sans réserve restante.
+  Travail prêt pour la relecture et l’intégration par la boucle ; statut en-cours conservé pour cette remise.
+- Après remise, le contrôle Stop est ROUGE : `node scripts/check.mjs --changed`, exécuté par le hook
+  avec `TVLENS_TEST_BUDGET_MS=240000`, interrompt les tests JS à 240 s (`hook-stop-failure.log`).
+  La suite autonome précédente durait déjà 244,48 s ; les contrôles standards verts ci-dessus ne prouvent
+  pas le respect de ce budget. Diagnostic dans `diagnostic-controle-stop.md` du dossier d’état.
+- Verdict corrigé en `PARTIEL` : implémentation conservée, validation finale sous 240 s restante.
+  Il faut réduire la durée du banc en conservant ses assertions, puis observer ce contrôle vert.
+  Aucun budget, contrôle, test ou plancher assoupli ; aucune relance opportuniste, aucun commit ni push.
+
+- Reprise après `echec-1.txt` : rouge du contrôle Stop confirmé par les traces. Profilage
+  du banc : premier lancement de chaque copie de faux agent à 122–168 ms, suivants à
+  19–23 ms ; script partagé dans trois dépôts jetables à 180/18/21 ms. Préparation
+  des exécutables immuables à mutualiser, avec processus et état isolés par scénario.
+  Exploration et absence d’écart consignées avant modification ; aucune assertion retirée.
+- Mutualisation limitée aux scripts des doublures dans `tests/ticket-loop.test.cjs` :
+  deux fichiers temporaires en lecture seule, liens par dépôt, nettoyage après la suite.
+  Aucun scénario, appel de hook, assertion ou contrôle modifié.
+- `node --test --test-concurrency=1 tests/ticket-loop.test.cjs tests/loop-view-events.test.cjs
+  tests/loop-view-state.test.cjs tests/loop-view-feed.test.cjs tests/loop-view-codex.test.cjs` :
+  code 0, 395 tests réussis, 0 échec, 196,14 s. Commande, sortie et durée conservées dans
+  `commandes-reprise.jsonl` et `suites-reprise.log` du dossier d’état. Les 13 empreintes
+  des fichiers préexistants hors périmètre sont inchangées (`preexisting-reprise.log`).
+- `TVLENS_TEST_BUDGET_MS=240000 node scripts/check.mjs --changed` : code 0,
+  contrôle vert, 395 tests JS réussis ; durée totale 196,10 s, sous le budget de 240 s
+  des tests du hook. Règles, format, lint, gel et cliquet verts (`check-stop-reprise.log`).
+  Le rouge de durée est corrigé sans modifier de budget ni retirer de preuve.
+- `node scripts/check.mjs` : code 0, contrôle complet vert en 380,90 s ;
+  2 661 tests JavaScript sur 145 fichiers et 47 tests Python réussis, règles, format,
+  lint, gel et cliquet verts (`check-full-reprise.log`). `git diff --check` : code 0.
+- Verdict `TERMINÉ` réécrit dans `.harness-state/tickets/T231/verdict.json`, sans réserve.
+  Le refus de durée de `echec-1.txt` est corrigé et sa preuve conservée. Ticket laissé
+  en cours pour la relecture et l’intégration par la boucle ; aucun commit ni push.
+
+- Reprise après `relecture-1.md` : trois constats mineurs confirmés, aucune contestation.
+  Consignes, ticket, journal, écarts, statut, diff, code, bancs et ADR concernés relus.
+  Exploration et correction prévue consignées avant modification dans le dossier d’état.
+- Constat 1, rouge observé :
+  `node --test --test-name-pattern='Codex stops on quota before work' tests/ticket-loop.test.cjs` :
+  code 1, trois échecs sur le message d’arbre attendu avec un fichier non suivi préexistant
+  (`correction-1-tree-red.log`). Filtrage de `context.untracked` ajouté au diagnostic quota.
+  `node --test --test-name-pattern='Codex stops on quota' tests/ticket-loop.test.cjs` :
+  code 0, six cas avant/après verts (`correction-1-tree-green.log`).
+- Constat 2 : le test exige maintenant deux entrées `warn` avant d’examiner leur texte.
+  `python3 .harness-state/tickets/T231/check-feed-mutation.py` : code 1 attendu dans
+  une copie jetable privée des avertissements, assertion `[]` contre `["warn", "warn"]`
+  (`correction-1-feed-mutation-red.log`). Aucun module du dépôt altéré par cette mutation.
+  `node --test tests/loop-view-feed.test.cjs` : code 0, 11 tests verts (`correction-1-feed-green.log`).
+- Constat 3 : renommage du booléen en `afterWork` après le vert des six scénarios.
+  `node --test --test-concurrency=1 --test-name-pattern=quota tests/ticket-loop.test.cjs
+  tests/loop-view-feed.test.cjs` : code 0, 27 tests verts (`correction-1-quota-green.log`).
+  Commandes, codes et durées conservés dans `commandes-reprise.jsonl` du dossier d’état.
+- `TVLENS_TEST_BUDGET_MS=240000 node scripts/check.mjs --changed` : code 0,
+  395 tests JS réussis dans les cinq suites modifiées, exécutées en séquentiel ; règles,
+  format, lint, gel et cliquet verts, durée totale 214,04 s (`correction-1-check-changed.log`).
+  Les 13 empreintes des fichiers préexistants hors périmètre sont inchangées
+  (`correction-1-preexisting.json`). Aucun contrôle ni budget affaibli.
+- `node scripts/check.mjs` : code 0, contrôle complet vert en 397,32 s ; 2 661 tests
+  JavaScript sur 145 fichiers et 47 tests Python réussis. Règles, format, lint, gel et
+  cliquet verts (`correction-1-check-full.log`). `git diff --check` : code 0.
+- Verdict `TERMINÉ` réécrit dans `.harness-state/tickets/T231/verdict.json` : les trois
+  constats mineurs sont corrigés, sans réserve propre ni écart à trancher. Le diff de
+  cette correction est conservé dans `correction-1.diff` du dossier d’état.
+  Ticket laissé en cours pour la relecture de correction par la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T231/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 2 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

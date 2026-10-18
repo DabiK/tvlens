@@ -3,14 +3,17 @@ const { LocalTranscriber } = require("../adapters/local-transcriber.cjs");
 const { CodexPerception } = require("../adapters/codex-perception.cjs");
 const { LocalVlmAgent } = require("../adapters/local-vlm-agent.cjs");
 const { ClipInspector } = require("../adapters/clip-inspector.cjs");
+const { InspectionDiagnostics } = require("../adapters/perception/inspection-diagnostics.cjs");
 const { CachedInspector } = require("../core/cached-inspector.cjs");
 const { RevocableInspector } = require("../core/revocable-inspector.cjs");
 const { inspectionStrategy } = require("../adapters/inspection-strategies.cjs");
 const { UsageLedger } = require("../adapters/trial-budget.cjs");
 const {
   OpenRouterEmbeddings,
-  EMBEDDING_MODEL,
 } = require("../adapters/openrouter-embeddings.cjs");
+const { OllamaEmbeddings } = require("../adapters/embeddings/ollama-embeddings.cjs");
+const { providerIdentity } = require("../adapters/embeddings/provider-identity.cjs");
+const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { EmbeddingStore } = require("../adapters/embedding-store.cjs");
 const { MomentIndex } = require("../core/moment-index.cjs");
 const { MemorySearch } = require("../core/moment-search.cjs");
@@ -32,12 +35,14 @@ const INDEX_OBSERVE_TAIL = 48;
 const indexProviders = {
   UsageLedger,
   OpenRouterEmbeddings,
+  OllamaEmbeddings,
   EmbeddingStore,
   MomentIndex,
   MemorySearch,
 };
 const inspectionProviders = {
   CodexPerception,
+  LocalVlmAgent,
   ClipInspector,
   CachedInspector,
   RevocableInspector,
@@ -82,16 +87,19 @@ function createSessionInspection(
   },
   dependencies = {},
 ) {
+  validateInspectionSelection(config, { smoke, liveInspection, localInspection });
   const make = { ...inspectionProviders, ...dependencies };
+  const local = config.inspectionBackend === "local";
   const inspectorModel = localInspection
     ? make.simulatedInspectionModel()
     : new make.CodexPerception({
         binary: codexBinary,
         authHome: config.codexAuthHome,
-        model: selectedModels.inspectionModel,
+        model: local ? config.localVlm.model : selectedModels.inspectionModel,
         transcriber,
         quota,
         sessionId: id + "-inspect",
+        ...(local ? { agent: localVlmAgent(config.localVlm, make.LocalVlmAgent) } : {}),
       });
   const inner =
     smoke && !liveInspection && !localInspection
@@ -109,10 +117,31 @@ function createSessionInspection(
   // cached answer is refused after closure. A call in flight is told through its signal before reaching
   // the model; whatever it brings back despite that is neither answered nor left in the cache.
   const inspector = new make.RevocableInspector(
-    new make.CachedInspector(inner),
+    new make.CachedInspector(new InspectionDiagnostics(inner, inspectionIdentity({
+      config, inspectorModel, smoke, liveInspection, localInspection,
+    }))),
     REVOKED,
   );
   return { inspector, inspectorModel };
+}
+
+function validateInspectionSelection(config, { smoke, liveInspection, localInspection }) {
+  if (![undefined, "codex", "local"].includes(config.inspectionBackend) ||
+      (config.inspectionBackend === "local" && (localInspection || (smoke && !liveInspection)))) {
+    throw Object.assign(Error("Configuration du réexamen invalide : backend inconnu ou simulation demandée avec le backend local."), {
+      code: "TVLENS_INSPECTION_CONFIG_INVALID",
+    });
+  }
+  if (config.inspectionBackend === "local") validateOllamaConfig(config.localVlm);
+}
+
+function inspectionIdentity({ config, inspectorModel, smoke, liveInspection, localInspection }) {
+  const role = "inspection";
+  if (localInspection || (smoke && !liveInspection))
+    return { role, backend: "simulation", model: null, mode: localInspection ? "localInspection" : "smoke" };
+  if (config.inspectionBackend !== "local") return { role, backend: "codex", model: inspectorModel.model || null };
+  const { model, url, numCtx } = config.localVlm;
+  return { role, backend: "ollama", model, host: new URL(url).host, ...(numCtx ? { numCtx } : {}) };
 }
 
 function localVlmAgent(settings = {}, Agent = LocalVlmAgent) {
@@ -166,40 +195,71 @@ function createSessionIndex(
   dependencies = {},
 ) {
   const make = { ...indexProviders, ...dependencies };
-  const researchBudget = new make.UsageLedger(
-    config.researchBudgetFile || path.join(userData, "research-budget.json"),
-  );
-  const embeddings =
-    overrides.embeddings ||
-    ((smoke && !liveInspection) || !config.apiKey
-      ? null
-      : new make.OpenRouterEmbeddings({
-          apiKey: config.apiKey,
-          budget: researchBudget,
-        }));
-  const vectors = embeddings
+  const selectedEmbeddings = selectEmbeddings(config, smoke && !liveInspection, make, userData, overrides.embeddings);
+  const identity = selectedEmbeddings ? providerIdentity(selectedEmbeddings, store.root) : null;
+  const embeddingDiagnostics = indexDiagnostic(identity, config);
+  const vectors = identity
     ? new make.EmbeddingStore(
-        path.join(store.root, "embeddings.json"),
-        EMBEDDING_MODEL,
-        { onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)) },
+        identity.file,
+        identity.model,
+        { onDiagnostic: diagnostic => log(JSON.stringify(diagnostic)),
+          assertIdentity: identity.assertIdentity, identityScoped: identity.identityScoped },
       )
     : null;
-  const index = embeddings
+  const index = identity
     ? new make.MomentIndex({
-        embeddings,
+        embeddings: identity.provider,
         cache: vectors,
         flushMs: INDEX_FLUSH_MS,
         maxPending: INDEX_MAX_PENDING,
       })
     : null;
   const search = new make.MemorySearch({ index });
+  diagnoseSearch(search, embeddingDiagnostics);
   // Published passages feed the bounded background index; a search never waits for a full catch-up.
   const feedIndex =
     index?.observe && config.backgroundIndex !== false
       ? (passages) => index.observe(passages.filter(passage => passage.usableObservation))
       : null;
   const connectIndex = feedIndex ? options => subscribeSessionIndex({ ...options, feedIndex, onPublicationError }) : null;
-  return { vectors, index, search, feedIndex, connectIndex };
+  return { vectors, index, search, feedIndex, connectIndex, embeddingDiagnostics };
+}
+
+function selectEmbeddings(config, simulated, make, userData, override) {
+  validateEmbeddingSelection(config);
+  const backend = config.embeddingsBackend ?? (config.apiKey ? 'openrouter' : 'disabled');
+  if (config.embeddingsBackend === 'disabled') return null;
+  if (override) return override;
+  if (backend === 'disabled') return null;
+  if (backend === 'local') return new make.OllamaEmbeddings(config.localEmbeddings || {});
+  if (simulated) return null;
+  const budget = new make.UsageLedger(config.researchBudgetFile || path.join(userData, 'research-budget.json'));
+  return new make.OpenRouterEmbeddings({ apiKey: config.apiKey, budget });
+}
+
+function validateEmbeddingSelection(config) {
+  if (![undefined, 'local', 'openrouter', 'disabled'].includes(config.embeddingsBackend)
+    || (config.embeddingsBackend === 'openrouter' && !config.apiKey)) {
+    throw Object.assign(Error('Configuration des embeddings invalide : backend ou clé manquant.'), { code: 'TVLENS_EMBEDDINGS_CONFIG_INVALID' });
+  }
+  if (config.embeddingsBackend === 'local') validateOllamaConfig(config.localEmbeddings);
+}
+
+function indexDiagnostic(identity, config) {
+  const diagnostic = identity?.diagnostic || { enabled: false, backend: 'disabled', model: null, identity: null };
+  return Object.freeze({ ...diagnostic, selection: config.embeddingsBackend === undefined ? 'legacy' : 'explicit' });
+}
+
+function diagnoseSearch(search, diagnostic) {
+  search.embeddingDiagnostics = diagnostic;
+  if (typeof search.search !== 'function') return;
+  const run = search.search.bind(search);
+  search.search = async input => {
+    const result = await run(input);
+    // Le journal des hôtes signale des erreurs ; une recherche réussie y ferait annoncer une panne.
+    search.lastEmbeddingTrace = Object.freeze({ code: 'TVLENS_EMBEDDINGS_SEARCH', ...diagnostic, mode: result.mode });
+    return { ...result, embeddings: diagnostic };
+  };
 }
 
 function subscribeSessionIndex({ id, events, memory, readOnly, feedIndex, onPublicationError }) {
