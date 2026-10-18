@@ -2,7 +2,7 @@
 id: T259
 titre: Drive a fixed-cadence capture and question schedule through the headless server
 statut: a-faire
-bloque_par: T227, T262, T264, T265, T267
+bloque_par: T262, T264, T265, T267, T274
 adr: non
 installe: non
 harnais: non
@@ -48,7 +48,7 @@ Cette première part de la tranche E d'Astra tient dans une session et un commit
   et identités effectives à utiliser ici ; le runner ne les réimplémente pas.
 - Coutures d'horloge existantes : `readClock` et `wallClock` (`runtime/session-runtime.cjs:68-69`,
   `runtime/headless-runtime.cjs:90`). T223 a retiré le balayage temporel (ADR 0055) ;
-  T227 impose les contrats finaux de Mémoire et de coordination.
+  La mesure précède la phase Mémoire (T224 à T227) : elle lit les contrats actuels, sans les anticiper.
 - `runtime/session-runtime.cjs:251-254` expose les refus de libération de fournisseurs,
   distincts du refus d'archive : une sauvegarde confirmée ne prouve pas une libération complète.
 - Tests de raccord : `tests/server-ingest-path.test.cjs`, `tests/server-state-views.test.cjs`,
@@ -57,8 +57,8 @@ Cette première part de la tranche E d'Astra tient dans une session et un commit
 ## Périmètre
 
 - À créer : `scripts/replay-local-stream.cjs` et `tests/local-stream-replay.test.cjs` ; réutiliser
-  les identités d'entrées, empreintes et sorties de T257. Lire les interfaces après T224/T225/T227,
-  sans dépendre des anciens noms de racine ou collections privées migrés par T220/T226.
+  les identités d'entrées, empreintes et sorties de T257. Lire les frontières publiques actuelles
+  (HTTP du serveur headless, ingestion, questions), jamais les collections privées que T220/T226 migreront.
 - Composer vrai runtime headless, ingestion et questions par leurs frontières publiques, perception
   de production ; les fournisseurs et le temps restent injectables pour les tests. Doubler aussi
   transcription, chat, inspection, surveillance et embeddings : aucun rôle auxiliaire réel en test.
@@ -168,13 +168,13 @@ jamais le débit matériel G3 ; T261 étendra ce fichier pour les mesures de cam
 
 Aucune décision n'est attendue.
 
-Les dépendances directes minimales sont T227, T262, T264, T265 et T267.
+Les dépendances directes minimales sont T262, T264, T265, T267 et le contrôle T274 (copie A taguée).
 T262 apporte T257, qui apporte T255 ; T264 et T267 apportent T263.
-T263–T265 et T267 apportent les trois sélections locales et leurs identités. T219 est terminé ; T224/T225, T220/T226
-et la recette T233 sont couverts transitivement par T227. T232/T252 aident à lire les pertes
+T263–T265 et T267 apportent les trois sélections locales et leurs identités. T219 et la recette T233 sont terminés ;
+la phase Mémoire (T224 à T227) vient après la copie B. T232/T252 aident à lire les pertes
 de quota sans bloquer ce runner ; un refus inconnu ne devient pas un quota. T240 n'est pas requis.
 
-Décision du propriétaire du 17/10 : préparation avant la phase 2 retenue par T254, copie après T227,
+Décision du propriétaire du 17/10 : préparation avant la phase 2 retenue par T254, copie après T261 (décision du 18/10, qui remplace « après T227 »),
 répétition Mac avant accès et `hackathon-rc` en repli. Son corpus français réel est préparé au format
 T257 avec grille T258 par l'orchestrateur. Seule une exécution réelle complète de trente minutes,
 avec le bilan T261, hors session Codex, pourra établir G3. Un test accéléré laisse la stabilité
@@ -185,3 +185,5 @@ La vidéo convertie répond au besoin de source continue, sans remplacer le tém
 - 18/10, orchestrateur : contrôle T273, un discours anglais transcrit avec la langue française par défaut est
   inutilisable. Chaque extrait d'un scénario déclare sa langue de transcription (`fr` ou `en`), réglée sur la session
   par `/v1/settings/transcription` avant son premier bloc et consignée dans le rapport ; `auto` seulement si déclaré.
+- 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
+  frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.

@@ -15,7 +15,7 @@ niveau:
 Ce ticket ne se traite pas en session : c'est un point de contrôle réel, sur la TV, jamais pendant que le
 propriétaire regarde. Les tests du dépôt simulent les modèles et les appareils ; avant de construire la suite
 dessus, l'orchestrateur vérifie en réel l'ouverture du panneau de la TV sur toute disposition YouTube, et son
-message de refus (T268). Tant que ce ticket n'est pas terminé, T224 attend.
+message de refus (T268). Ce ticket ne bloque aucun autre ticket : il se fait quand la TV est libre.
 
 ## Sources
 
@@ -41,8 +41,8 @@ message de refus (T268). Tant que ce ticket n'est pas terminé, T224 attend.
 
 ## Critères d'acceptation
 
-1. Tant que ce ticket est à faire, `node scripts/loop/run.mjs --dry-run` ne propose ni T224 ni aucun ticket
-   qui en dépend.
+1. Ce ticket ne figure dans les bloqueurs d'aucun autre ticket ; il reste à faire tant que le contrôle n'est pas
+   concluant.
 2. `node scripts/loop/tickets.mjs validate` ne signale aucun problème.
 
 ## Test d'acceptation attendu

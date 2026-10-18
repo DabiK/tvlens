@@ -23,7 +23,7 @@ un commit documentaire, environ 1 h après les outils de rejeu, notation et bila
   Sections 2 et 3, F, « Document and rehearse the frozen GX10 experiment »,
   base `beb9589` ; analyses `synthese-croisee-gx10.md`, `astra-gx10.md` et `claude-gx10.md`.
 - Décisions du propriétaire du 17/10 : préparer le GX10 avant la phase 2 retenue par T254 ;
-  copie prise après T227, répétée sur Mac avant l'accès ; `hackathon-rc` gardé en repli.
+  copie prise après T261 (révisé le 18/10 : avant la phase Mémoire), répétée sur Mac avant l'accès ; `hackathon-rc` gardé en repli.
   Il constitue une dizaine d'extraits français réels pour G2 ; l'orchestrateur prépare format et grille.
 - Décisions du 17/10 au soir : source vidéo T262 et trois rôles locaux T263–T265 avant l'accès ;
   T267 transmet l'identité des questions aux métriques et traces. La détection locale de
@@ -92,12 +92,13 @@ un commit documentaire, environ 1 h après les outils de rejeu, notation et bila
   l'orchestrateur prépare format/grille, organise annotations/revue et arrête la charge concurrente
   avant répétition ; le propriétaire fournit les extraits et l'accès matériel. La répétition Ollama
   sur Mac, tunnel privé, vérification GPU, appels réels et éventuel essai Whisper GPU restent hors boucle.
-- Décrire le gel après T227 et intégration des préparatifs, avec vérification après contraction
-  sur le même SHA que la répétition. T233 est antérieur à T224–T227 et ne suffit pas à les recetter.
+- Décrire le gel de la copie B après T261 et intégration des préparatifs, avant la phase Mémoire, sur le même
+  SHA que la répétition. La contraction T224–T227 sera recettée à part, après coup (T281).
   La recette opérateur relève réouverture d'archives, capture audio Mac et disponibilité de Whisper
   (réserves T208/T246/T247), ainsi que les anomalies de fermeture ou libération. Un échec Whisper
   intermittent n'est pas réputé corrigé par T256 ; aucun délai produit n'est augmenté pour le masquer.
-  L'orchestrateur consigne répétition, tag et clôture de T254 selon ce ticket ; Codex ne les effectue pas.
+  L'orchestrateur consigne répétition et tag, et note le tag dans T254, dont la clôture attend la décision du
+  propriétaire sur la phase 2 ; Codex ne les effectue pas.
 - Conserver pour chaque campagne SHA/tag, empreintes du corpus et des annotations, identité de
   rapport/revue, versions, modèle/digest/poids et paramètres, machine, mémoire annoncée et backend
   GPU effectivement observé, sorties brutes et incidents. Une identité indisponible reste inconnue.
@@ -171,7 +172,7 @@ ne se déduit d'une mesure. Cette vérification de contenu ne constitue pas une 
 ```sh
 rg -n 'TVLENS_SERVER_DATA|TVLENS_CONFIG|userData|provider.enc|--root' docs/gx10-experiment.md
 rg -n 'SHA|empreinte|version|digest|poids|paramètre|machine|mémoire|GPU|revue|inconnu' docs/gx10-experiment.md
-rg -n 'T227|T254|hackathon-rc|Mac|G1|G2|G3|froid|chaud' docs/gx10-experiment.md
+rg -n 'T261|T254|hackathon-rc|Mac|G1|G2|G3|froid|chaud' docs/gx10-experiment.md
 rg -n 'gemma3:4b|num_ctx|keep_alive|Codex|CPU|RAM|causalité|provenance|geste|répétition|annotation' docs/gx10-experiment.md
 rg -n 'T208|T246|T247|Whisper|fermeture|libération' docs/gx10-experiment.md
 rg -n 'validé|fonctionnel|incompatible|non testé|incomplet|p95|T240|ASR' docs/gx10-experiment.md
@@ -185,7 +186,7 @@ Aucune décision n'est attendue.
 
 Les dépendances directes minimales restent T258 et T261 : elles couvrent T255/T257/T259,
 la source T262, les rôles locaux T263–T265 et l'identité des questions T267, prérequis de T259. Les ajouter ici
-serait redondant. T259 impose aussi T227 et la fin de Mémoire ; T266 attend l'après-expérience
+serait redondant. T259 précède la phase Mémoire depuis le 18/10 ; T266 attend l'après-expérience
 et ne bloque pas le guide. T247 est terminé. T256 corrige l'app empaquetée
 et n'est pas sur le chemin de la copie. Pas de dépendance à la Bibliothèque ou à T254,
 qui attend au contraire cette préparation.
@@ -202,3 +203,5 @@ de démonstration demeure `hackathon-rc` ; une réussite expérimentale ne vaut 
   (réglages et composition des questions locales), qui sortaient du périmètre de ces deux tickets.
 - 18/10, orchestrateur : le guide dit de régler la langue de transcription de chaque extrait (`fr`, `en`, `auto`)
   et de l'indiquer avec ses résultats (contrôle T273).
+- 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
+  frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.

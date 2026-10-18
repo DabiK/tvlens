@@ -13,7 +13,7 @@ niveau:
 ## Ce que le ticket livre
 
 Ce ticket ne se traite pas en session : il retient la phase 2 (Bibliothèque). Le 17/10, le propriétaire a choisi de
-préparer d'abord l'expérience sur l'ASUS GX10 (accès la semaine du 19/10), à partir d'un commit pris après la fin de la
+préparer d'abord l'expérience sur l'ASUS GX10 (accès la semaine du 19/10) ; le 18/10, la copie B est figée avant la
 phase Mémoire. Tant que ce ticket n'est pas terminé, T250 et T235, les deux portes d'entrée de la phase 2, attendent :
 la copie de l'expérience n'embarque aucune migration de la Bibliothèque en cours. Les tickets de préparation du GX10,
 le harnais et le message de quota passent pendant ce temps.
@@ -29,9 +29,9 @@ le harnais et le message de quota passent pendant ce temps.
 ## Périmètre
 
 - À modifier : rien. Ce ticket n'est pas lancé par la boucle, puisqu'il attend une décision.
-- Hors boucle, par l'orchestrateur, quand la phase Mémoire est terminée et que les tickets de préparation du GX10 sont
-  intégrés : poser un tag sur le commit retenu pour l'expérience, le consigner dans le journal de ce ticket, passer le
-  statut à `termine` et committer ce seul fichier. La phase 2 reprend alors.
+- Hors boucle, par l'orchestrateur, quand la recette de la copie B (T280) est concluante : consigner son tag dans le
+  journal de ce ticket. La phase 2 ne reprend pas pour autant : sa reprise se décide avec le propriétaire, lors de la
+  réécriture de la feuille de route en parcours produit. Ce ticket passe à `termine` sur cette décision seulement.
 
 ## Critères d'acceptation
 
@@ -45,7 +45,10 @@ Aucun test : ce ticket ne change ni le code ni le harnais. Le critère 1 se vér
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : la copie de l'expérience GX10 est-elle figée ? Le propriétaire a décidé le 17/10
-que l'orchestrateur ferme ce ticket quand le tag de la copie est posé.
+Décision attendue du propriétaire : la copie B de l'expérience GX10 est-elle figée, et la reprise de la phase 2
+(Bibliothèque) est-elle retenue dans la feuille de route en parcours produit ? Le propriétaire a décidé le 18/10 que
+cette reprise se décide avec lui, après la copie B, et non à la seule pose du tag.
 
 ## Journal
+- 18/10, propriétaire, sur l'avis d'Astra : gel de la copie B avant la phase Mémoire ; la reprise de la phase 2
+  se décide avec le propriétaire, pas à la pose du tag.

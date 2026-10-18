@@ -2,7 +2,7 @@
 id: T232
 titre: Code the Codex quota exhaustion and keep it on the lost description
 statut: a-faire
-bloque_par: T227, T260
+bloque_par: T227, T280
 adr: oui
 installe: non
 harnais: non
@@ -108,3 +108,5 @@ le message sans date s'applique. T227 est le dernier successeur de phase 1 des f
 
 - 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Son suivant T252 suit.
   Dépendance d'ordre ajoutée (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.
+- 18/10, propriétaire, sur l'avis d'Astra : la copie B (T259, T261, T260) et sa recette T280 passent avant ce
+  ticket.

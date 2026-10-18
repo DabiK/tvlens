@@ -41,15 +41,15 @@ d'Astra tient dans une session et un commit.
 - `scripts/replay-lg-stream.cjs:121` suit les publications par identifiant : les versions sont
   écrasées. `core/latency-trace.cjs:12` ne résume que quarante passages ;
   `runtime/state-views.cjs:8-15` borne aussi les vues légères. Aucune n'est un bilan complet.
-- `runtime/headless-runtime.cjs:237` publie les révisions d'état ; le canal à retenir doit être
-  relu après T225. ADR 0046, 0050, 0051 et 0054 : consultation, révisions, pertes et projection.
+- `runtime/headless-runtime.cjs:237` publie les révisions d'état ; le canal à retenir est celui
+  d'avant T225 (sondage), la contraction venant après. ADR 0046, 0050, 0051 et 0054 : consultation, révisions, pertes et projection.
   `runtime/session-runtime.cjs:165-173` fournit les lectures publiques et `:227-233` expose
   les événements et la consultation de la même session. Une révision d'hôte n'est pas une révision de passage.
   Tests existants : `tests/memory-view.test.cjs`, `tests/session-events.test.cjs`,
   `tests/memory-projection.test.cjs`, `tests/server-state-views.test.cjs`.
 - T259 livre `scripts/replay-local-stream.cjs` et `tests/local-stream-replay.test.cjs` : scénario,
   validation sans agent, calendrier à origine fixe, réessais TV, questions et fin bornée.
-  Les noms et interfaces définitifs de Mémoire sont ceux livrés après T227, prérequis transitif.
+  La mesure précède la phase Mémoire : elle lit les interfaces publiques actuelles.
 - `runtime/conversation-runtime.cjs:37-45`, `runtime/session-providers.cjs:86-95` et
   `:172-184` composent aujourd'hui les rôles questions, inspection et embeddings ;
   `runtime/surveillance-runtime.cjs:251-254` donne le même agent aux deux rôles de surveillance.
@@ -77,10 +77,10 @@ d'Astra tient dans une session et un commit.
 - Lire intervalles, trous et pertes en processus, dans la vue de la session chargée (aujourd'hui
   `session.memory.view()`, `runtime/headless-runtime.cjs:424`), avant la fin de session.
   Consigner à part le `captureGaps` de `/v1/state`, calculé à 1 000 ms. Nommer le canal des
-  révisions (abonné en processus après T225, ou sondage de `/v1/state` marqué échantillonné).
+  révisions : sondage de `/v1/state` marqué échantillonné (l'abonné en processus n'existe qu'après T225).
   Un canal échantillonné ne prétend pas avoir observé toutes les publications intermédiaires.
   L'abonné de passage utilise la lecture bornée par identifiant pour conserver sa version ;
-  ne pas reconstruire un état complet à chaque événement, conformément à la contraction T225.
+  ne pas reconstruire un état complet à chaque événement.
 - Calculer le bilan sur tous les intervalles et pertes de la campagne, y compris les publications
   antérieures aux quarante derniers passages. Distinguer capture, preuves audio et preuves vision ;
   un refus d'ingestion ne devient pas une perte de voie d'un passage qui n'existe pas.
@@ -153,17 +153,19 @@ jamais la qualité, le GPU ou le débit matériel G3.
 
 Aucune décision n'est attendue.
 
-T259 est le seul prérequis direct ; il apporte T262/T257/T255, les rôles locaux T263–T265, T267
-et la contraction Mémoire T227. T266 attend la fin de l'expérience et ne bloque pas ce bilan.
-L'implémentation relit les interfaces livrées après T225/T227 sans utiliser les collections privées.
+T259 est le seul prérequis direct ; il apporte T262/T257/T255, les rôles locaux T263–T265 et T267 ;
+la phase Mémoire vient après. T266 attend la fin de l'expérience et ne bloque pas ce bilan.
+L'implémentation lit les interfaces publiques actuelles, sans utiliser les collections privées.
 T232/T252 aident à identifier et afficher les quotas sans bloquer ce bilan ; un refus inconnu
 ne devient pas un quota. T240 n'est pas requis : avant lui, l'attente réelle de l'agent peut rester
 incluse dans le traitement annoncé. Cette limite doit figurer dans le rapport.
 
-Décision du 17/10 : copie après T227 et intégration des préparatifs, répétition Mac avant accès,
+Décision du 17/10, révisée le 18/10 : copie après T261 et intégration des préparatifs, répétition Mac avant accès,
 `hackathon-rc` en repli, phase 2 retenue par T254. Le propriétaire fournit les extraits français ;
 l'orchestrateur prépare manifeste et grille. La source des trente minutes est consignée par T259 :
 enregistrement fourni, vidéo convertie ou corpus bouclé déclaré. Un test accéléré ne constitue pas G3 ; une campagne
 réelle complète n'établit la stabilité que pour son SHA, ses entrées et ses paramètres.
 
 ## Journal
+- 18/10, propriétaire, sur l'avis d'Astra : G3 se mesure avant la phase Mémoire (T224 à T227), contre les
+  frontières publiques actuelles, pour obtenir une référence de trente minutes avant toute contraction.

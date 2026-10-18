@@ -2,7 +2,7 @@
 id: T268
 titre: Open the TV panel on any YouTube video layout and say when it cannot
 statut: a-faire
-bloque_par: T274
+bloque_par: T280
 adr: non
 installe: non
 harnais: non
@@ -96,3 +96,5 @@ Aucune décision n'est attendue.
 
 - 18/10, propriétaire : un contrôle réel sur le Mac suit chaque ticket critique (T269 à T275). Ce ticket attend
   aussi T274.
+- 18/10, propriétaire, sur l'avis d'Astra : la copie B (T259, T261, T260) et sa recette T280 passent avant ce
+  ticket.

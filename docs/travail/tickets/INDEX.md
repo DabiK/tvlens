@@ -451,7 +451,7 @@ T266, attend la fin de l'expérience.
 T263 et T264 demandent un ADR court ; aucun ticket de ce lot n'autorise installation ou modification du harnais.
 
 [T254](254-hold-phase-2-until-the-gx10-experiment-copy-is-frozen.md) retient la phase 2 pendant
-cette préparation. La copie sera prise après T227 et intégration des préparatifs, répétée sur
+cette préparation. La copie B sera prise après T261, avant la phase Mémoire (décision du 18/10), répétée sur
 le Mac avant l'accès puis figée par l'orchestrateur ; `hackathon-rc` reste le repli de démonstration.
 Le propriétaire constitue une dizaine d'extraits français réels pour G2 ; l'orchestrateur prépare
 le format et la grille d'annotation livrés par T257/T258. La répétition et G1–G3 réels restent hors boucle.
@@ -463,12 +463,17 @@ dénominateur de couverture et identifie séparément le backend de chaque rôle
 Questions, embeddings et inspection choisissent chacun leur backend, sans repli implicite Codex/OpenRouter.
 Le web des questions locales n'est pas porté dans T263 ; le web de la surveillance reste distant.
 
-Ordre décidé par le propriétaire le 18/10, tenu par des dépendances d'ordre sans lien de code :
-copie A d'abord, T263, T264, T255, T265, T257, T262, T258, T267 ; puis la fin de la Mémoire, T259, T261 et T260
-(copie B). T251, T256 et T232 (avec T252) passent après T260, hors du chemin GX10. T257 définit d'abord le format ; T262 le produit depuis
-une vidéo, sans dépendance inverse. T264 réutilise le transport de T263 ; T267 transmet l'identité
-des questions dans leurs métriques et traces après T263. T259 attend T227, T262, T264, T265 et T267 ;
-T261 ajoute le bilan avant T260.
+Ordre décidé par le propriétaire le 18/10, révisé le soir sur l'avis d'Astra, tenu par des dépendances d'ordre sans
+lien de code : copie A (T263, T264, T255, T265, T257, T262, T258, T267, puis T277, T278, T279, contrôles
+réels T269 à T273 et T276, tag par T274) ; copie B avant la phase Mémoire (T259, T261, T260, recette T280, tag) ; puis T268,
+la phase Mémoire T224, T225, T220, T226, T227 et sa recette TV et VPS T281, qui ne bloque rien ; enfin T251, T256,
+T232 et T252. Le contrôle TV T275 ne bloque rien. La phase 2 (T235, T250) reste retenue par T254 jusqu'à
+la décision du propriétaire, prise avec la feuille de route en parcours produit. T257 définit d'abord le format ; T262 le produit depuis une vidéo, sans dépendance inverse. T264
+réutilise le transport de T263 ; T267 transmet l'identité des questions après T263. T259 attend T262, T264, T265,
+T267 et la copie A taguée ; T261 ajoute le bilan avant T260.
+**Plafond GX10, décidé le 18/10 :** après la recette de la copie B (T280), aucun nouveau ticket GX10, sauf le
+correctif d'un défaut trouvé en réel. Contrôle réel : une sonde ciblée à chaque nouvelle frontière externe et une
+recette par copie figée ; aucun pour un changement purement interne, documentaire ou mécanique.
 Le guide reçoit ainsi source et rôles locaux transitivement, sans dépendances redondantes.
 T256 corrige l'app empaquetée ; il n'est pas sur le chemin de la copie.
 T232/T252 aident à lire les pertes de quota sans bloquer ces préparatifs ; T240 garde l'accès
@@ -497,7 +502,7 @@ décision attestant la fin de l'expérience, pas seulement ce gel** ; la boucle 
   — Report the effective question backend in question metrics and traces (sensible ; dépend de T263).
 - [T259](259-replay-a-sustained-session-at-a-fixed-capture-cadence.md)
   — Drive a fixed-cadence capture and question schedule through the headless server
-  (sensible ; dépend de T227, T262, T264, T265, T267).
+  (sensible ; dépend de T262, T264, T265, T267 et de la copie A taguée par T274).
 - [T261](261-report-revisions-lane-losses-and-whole-run-coverage-of-a-sustained-replay.md)
   — Report revisions, lane losses and whole-run coverage of a sustained replay (sensible ; dépend de T259).
 - [T260](260-document-and-rehearse-the-frozen-gx10-experiment.md)
