@@ -58,6 +58,10 @@ renommage ne change ni preuve, ni identifiant, ni résultat.
 
 ## Périmètre
 
+- Aussi, réserves de clôture de T220 (`.harness-state/tickets/T220/relecture-1.md`, constats 2 et 3) : une instruction
+  par ligne dans `core/memory/viewing-memory.cjs` (lignes à plusieurs instructions en `:116-117`, `:241`, `:325` à
+  `41ef3e3`) ; `docs/domaine.md:72`, `:92`, `:99` cessent de citer `WatchSession` et `core/session.cjs` comme état
+  d'aujourd'hui (seules ces mentions, la cible DDD figée ne change pas).
 - Renommer variables, paramètres et listes internes de la mémoire de segment vers passage,
   selon le glossaire. Garder `CapturedSegment` à l'entrée Capture ; ne pas renommer les autres
   usages du mot dans les hôtes et domaines sans correspondance établie.
@@ -106,3 +110,4 @@ T194/T223 n'est pas recréé pour satisfaire le compte initial. Les scripts avec
 sont seulement adaptés, jamais exécutés dans ce lot.
 
 ## Journal
+- 19/10, orchestrateur : réserves 2 et 3 de la clôture de T220 ajoutées au périmètre.
