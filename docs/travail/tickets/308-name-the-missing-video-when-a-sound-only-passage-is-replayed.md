@@ -30,6 +30,9 @@ de « Média expiré. », qui laisse croire que le fichier a disparu.
 
 - À modifier : `server/session-routes.cjs`, `tests/server-routes.test.cjs` (une ligne de plus dans la table) ; si les
   codes publics sont listés, `server/http.cjs` (`APPLICATION_CODES`).
+- Aussi (réserve de clôture de T305) : `docs/adr/0042-le-fil-v1-conserve-les-comportements-lus-par-les-clients-tv.md:109-112`
+  dit que toute déclaration `audio: false` est refusée en 400 `invalid-media-block`, bloc avec images compris, et que le
+  fil peut rendre le code public `capture-audio-required` ; une phrase pour le nouveau code `media-images-absent`.
 - Raison `images-absent` : 410, message « Ce passage n'a que le son : aucune vidéo à rejouer. », code nommé
   `media-images-absent`. Les autres raisons gardent leur message et leur code.
 - À ne pas toucher : le cœur, les vues du Mac et de la TV, le rejeu du son lui-même (décision produit à part).
@@ -39,7 +42,8 @@ de « Média expiré. », qui laisse croire que le fichier a disparu.
 1. Passage `available: false`, `mediaReason: 'images-absent'` : les deux routes de média répondent 410 avec le
    message et le code nommés. Le test échoue avant la correction.
 2. Les lignes existantes de la table de `tests/server-routes.test.cjs` passent sans modification.
-3. `node scripts/check.mjs`.
+3. L'ADR 0042 décrit le refus des blocs déclarés sans son et les deux codes publics.
+4. `node scripts/check.mjs`.
 
 ## Test d'acceptation attendu
 
@@ -52,3 +56,4 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, orchestrateur : ticket ouvert depuis la réserve de clôture de T304.
+- 19/10, orchestrateur : la réserve documentaire de T305 (ADR 0042) rejoint ce ticket.
