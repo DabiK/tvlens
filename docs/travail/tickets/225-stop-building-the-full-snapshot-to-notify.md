@@ -2,7 +2,7 @@
 id: T225
 titre: Stop building the full snapshot to notify
 statut: a-faire
-bloque_par: T224, T208
+bloque_par: T224, T208, T292
 adr: oui
 installe: non
 harnais: non
@@ -92,3 +92,4 @@ avant de contracter : ne pas réimplémenter la persistance dans ce lot critique
 invalidation manquante n'autorise pas à confier la sauvegarde au diffuseur.
 
 ## Journal
+- 19/10, orchestrateur : attend aussi T292, pour que les échecs du contrôle complet restent lisibles.
