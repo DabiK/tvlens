@@ -184,8 +184,28 @@ if (process.env.TVLENS_TUNE === "1") {
   process.exit(0);
 }
 const scenario = process.env.FAKE_SCENARIO;
+fs.appendFileSync(path.join(dir, "fake-prompts"), JSON.stringify(argument("-p")) + "\\n");
 if (scenario === "silent") process.exit(0);
+if (process.env.FAKE_EXPECT_QUOTA_WORK === id) {
+  const assert = require("node:assert/strict");
+  assert.equal(fs.readFileSync("core/greeting.cjs", "utf8"), "module.exports = () => 'hello';\\n");
+  assert.match(fs.readFileSync(process.env.TVLENS_TICKET_FILE, "utf8"), /travail Codex conservé/);
+  const observed = {
+    args: process.argv.slice(2), prompt: argument("-p"), pid: process.ppid,
+    lock: fs.readFileSync(".harness-state/loop/lock", "utf8"),
+    launchedAt: fs.statSync(".harness-state/loop/lock").mtimeMs,
+    diff: spawnSync("git", ["diff", "HEAD"], { encoding: "utf8" }).stdout,
+    partial: fs.readFileSync("core/partial.cjs", "utf8"),
+    exclusions: JSON.parse(fs.readFileSync(path.join(dir, "untracked-before.json"), "utf8")),
+    window: process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW, engine: process.env.TVLENS_ENGINE ?? null,
+  };
+  write(path.join(dir, "fallback-observed.json"), JSON.stringify(observed));
+}
 fs.appendFileSync(process.env.TVLENS_TICKET_FILE, "- jalon : attempt " + attempt + "\\n");
+if (process.env.FAKE_CLAUDE_STAGE) {
+  const staged = spawnSync("git", ["add", "--", process.env.FAKE_CLAUDE_STAGE]);
+  if (staged.status !== 0) throw new Error("fake staging failed");
+}
 const scenarios = {
   "stop-worker"() {
     process.kill(process.ppid, process.env.FAKE_WORKER_SIGNAL);
@@ -255,6 +275,10 @@ const scenarios = {
     greeting();
     review();
     verdict(attempt === 1 ? "PARTIEL" : "TERMINÉ", { reste: ["tests"] });
+  },
+  "partial-then-failure"() {
+    if (attempt === 1) verdict("PARTIEL", { reste: ["tests"] });
+    else process.exitCode = 1;
   },
   "with-adr"() {
     write("docs/adr/0011-greeting.md", "# 0011\\n");
@@ -390,6 +414,7 @@ const scenarios = {
   },
 };
 scenarios[scenario]();
+if (process.env.FAKE_CLAUDE_FAILURE === "1") process.exitCode = 1;
 `;
 
 // Réutiliser les scripts immuables évite le coût du premier lancement de chaque copie sur macOS.
@@ -1800,8 +1825,8 @@ test("an unknown engine is refused before any session or state change", (t) => {
 
 const codexDir = ".harness-state/tickets/T001/";
 const jsonLines = (repo, file) => repo.read(codexDir + file).trim().split("\n").map(JSON.parse);
-function codexRepo(fields = {}) {
-  const repo = loopRepo({ "docs/travail/tickets/001-add-greeting.md": ticketText(fields) });
+function codexRepo(fields = {}, files = {}) {
+  const repo = loopRepo({ "docs/travail/tickets/001-add-greeting.md": ticketText(fields), ...files });
   const bin = linkFakeAgent(repo, "codex");
   const codex = (args = [], env = {}) => repo.loop("done", ["--engine", "codex", "--no-retro", ...args], { TVLENS_CODEX_BIN: bin, ...env });
   return { ...repo, codex };
@@ -1892,6 +1917,455 @@ test("a Codex ticket accepted on its first review is integrated with safe option
 const rejectedReview = "VERDICT : à corriger\nCONSTATS : 1 bloquant, 1 mineur, 0 hors périmètre\n- core/greeting.cjs:1 : preuve manquante.\n- nom à préciser.";
 const acceptedReview = "VERDICT : accepté\nCONSTATS : 0 bloquant, 0 mineur, 0 hors périmètre";
 const correctedReview = (report) => report.replace(/^(CONSTATS[^\n]*)/m, "$1\nNON CORRIGÉS : 0");
+
+const quotaAfterWork = [
+  { type: "thread.started", thread_id: "codex-thread-1" }, { type: "turn.started" },
+  { type: "turn.completed", usage: { input_tokens: 13, output_tokens: 7 } }, { type: "turn.started" }, ...QUOTA_EVENTS,
+];
+const quotaWorkEnv = {
+  FAKE_CODEX_EVENTS: JSON.stringify([quotaAfterWork]), FAKE_CODEX_JOURNAL: "- jalon : travail Codex conservé\n",
+  FAKE_CODEX_EDIT: "core/partial.cjs", FAKE_EXPECT_QUOTA_WORK: "T001",
+};
+
+test("a requested quota fallback hands the existing work once to Claude at the same useful rung", (t) => {
+  const repo = codexRepo({ niveau: "sensible" }, {
+    "core/greeting.cjs": "module.exports = () => 'before';\n",
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002" }),
+  });
+  t.after(repo.cleanup);
+  repo.write("notes/café personnel.md", "mine\n");
+  const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1", "--max", "1",
+    "--model", "custom Codex model", "--effort", "max", "--budget-usd", "3", "--compact-window", "12345"], quotaWorkEnv);
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.status(), "termine");
+  const calls = jsonLines(repo, "fake-codex-calls");
+  assert.equal(calls.length, 1);
+  const resumed = JSON.parse(repo.read(codexDir + "fallback-observed.json"));
+  assert.notEqual(resumed.pid, calls[0].loopPid);
+  assert.equal(resumed.lock, String(resumed.pid));
+  assert.ok(Math.abs(resumed.launchedAt - calls[0].launchedAt) < 0.01);
+  assert.equal(resumed.engine, null);
+  assert.deepEqual(resumed.exclusions, ["notes/café personnel.md"]);
+  assert.match(resumed.diff, /-module.exports = \(\) => 'before'/);
+  assert.match(resumed.diff, /travail Codex conservé/);
+  assert.match(resumed.partial, /modification interdite/);
+  assert.match(resumed.prompt, /journal.*diff/i);
+  assert.match(resumed.prompt, /releve-quota-.*\.diff/);
+  assert.deepEqual(repo.plans(), [{ model: "claude-opus-5-5", effort: "high", review: "opus" }]);
+  assert.equal(resumed.window, "12345");
+  assert.equal(resumed.args[resumed.args.indexOf("--max-budget-usd") + 1], "3");
+  const events = repo.events();
+  assert.equal(events.filter(e => e.phase === "quota-epuise").length, 1);
+  assert.equal(events.filter(e => e.phase === "relance").length, 1);
+  assert.equal(events.some(e => ["tentative-refusee", "retro", "harmonisation"].includes(e.phase)), false);
+  assert.equal(events.find(e => e.phase === "integre").tentatives, 1);
+  assert.equal(events.find(e => e.phase === "integre").cout_usd, null);
+  const codexEnded = events.find(e => e.phase === "session-terminee" && e.moteur === "codex");
+  assert.equal(codexEnded.jetons.input_tokens, 13);
+  assert.equal(codexEnded.invocations.length, 1);
+  const reviewed = JSON.parse(repo.read(codexDir + "reviewed-state.json"));
+  assert.ok(reviewed.fichiers["core/partial.cjs"]);
+  assert.ok(reviewed.fichiers["core/greeting.cjs"]);
+  assert.equal(jsonLines(repo, "relectures.jsonl").at(-1).verdict, "accepté");
+  assert.match(repo.git("log", "-1", "--format=%B").stdout, /Claude Opus 5\.5 <noreply@anthropic.com>/);
+  assert.equal(repo.git("ls-files", "notes/café personnel.md").stdout, "");
+  assert.equal(repo.read("notes/café personnel.md"), "mine\n");
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T002")), false);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+  for (const call of calls) noProcess(call.loopPid);
+  noProcess(resumed.pid);
+});
+
+test("invalid or repeated fallback options are refused before any agent or ticket change", (t) => {
+  const invalid = [
+    ["--fallback-engine", "codex"], ["--fallback-engine", "unknown"], ["--fallback-engine", ""], ["--fallback-engine"],
+    ["--engine", "claude", "--fallback-engine", "claude"],
+    ["--engine", "codex", "--fallback-engine", "claude", "--fallback-engine", "claude"],
+    ["--engine", "codex", "--fallback-engine", "claude", "--fallback-engine", "unknown"],
+  ];
+  for (const args of invalid) {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop("done", args, { TVLENS_CODEX_BIN: path.join(repo.root, ".harness-state/fake-codex.cjs") });
+    assert.equal(result.code, 1, args.join(" ") + "\n" + result.out);
+    assert.match(result.out, /--fallback-engine/);
+    assert.equal(repo.git("status", "--porcelain").stdout, "");
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets")), false);
+  }
+});
+
+for (const engine of ["codex", "claude"]) {
+  test(`a quota fallback protects initially untracked files staged by ${engine}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    repo.write("notes/personal.md", "mine\n");
+    const env = { ...quotaWorkEnv, [engine === "codex" ? "FAKE_CODEX_STAGE" : "FAKE_CLAUDE_STAGE"]: "notes/personal.md" };
+    const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], env);
+    assert.equal(result.code, engine === "codex" ? 1 : 2, result.out);
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.match(engine === "codex" ? result.out : repo.failure(), /non suivis préexistants/);
+    assert.equal(repo.read("notes/personal.md"), "mine\n");
+    assert.match(repo.git("diff", "--cached", "--name-only").stdout, /notes\/personal\.md/);
+  });
+}
+
+for (const engine of ["codex", "claude"]) {
+  test(`a quota fallback refuses changed initial non-tracked content from ${engine} and leaves it intact`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    repo.write("notes/personal.md", "mine\n");
+    const env = engine === "codex" ? { FAKE_CODEX_EDIT: "notes/personal.md" } : { FAKE_SCENARIO: "edits-untracked-after-review" };
+    const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], { ...quotaWorkEnv, ...env });
+    assert.equal(result.code, engine === "codex" ? 1 : 2, result.out);
+    assert.match(engine === "codex" ? result.out : repo.failure(), /non suivis préexistants/);
+    assert.match(repo.read("notes/personal.md"), engine === "codex" ? /modification interdite/ : /changed after the review/);
+    assert.deepEqual(repo.commits(), ["init"]);
+  });
+}
+
+for (const stage of ["capacity", "correction"]) {
+  test(`a requested quota fallback also resumes the work interrupted during a ${stage} retry`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], {
+      ...quotaWorkEnv, FAKE_CODEX_EVENTS: "null", FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([null, QUOTA_EVENTS]),
+      FAKE_CODEX_FAILURES: JSON.stringify(stage === "capacity" ? ["capacity-after-usage", ""] : ["", ""]),
+      FAKE_REVIEWS: JSON.stringify(stage === "correction" ? [rejectedReview] : []), TVLENS_CODEX_SKIP_CAPACITY_WAIT: "1",
+    });
+    assert.equal(result.code, 0, result.out);
+    const calls = jsonLines(repo, "fake-codex-calls");
+    assert.equal(calls.length, 2);
+    assert.deepEqual(calls[1].args.slice(0, 3), ["exec", "resume", calls[0].session]);
+    assert.equal(repo.attempts(), "1");
+    const ended = repo.events().find(e => e.phase === "session-terminee" && e.moteur === "codex");
+    assert.equal(ended.invocations.length, 2);
+    assert.equal(ended.relectures, stage === "correction" ? 1 : 0);
+    assert.equal(ended.jetons.input_tokens, 10);
+    assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 1);
+    assert.equal(repo.events().filter(e => e.phase === "relance").length, 1);
+    assert.equal(jsonLines(repo, "relectures.jsonl").at(-1).verdict, "accepté");
+  });
+}
+
+test("a quota fallback preserves prior refusals and maps a forced Codex model to the current Claude rung", (t) => {
+  const repo = codexRepo({ niveau: "sensible" });
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--attempts", "2", "--model", "custom codex", "--effort", "max"], {
+    ...quotaWorkEnv, FAKE_CODEX_EVENTS: JSON.stringify([null, quotaAfterWork]), FAKE_CODEX_FAILURES: JSON.stringify(["error", ""]),
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 2);
+  assert.deepEqual(repo.plans(), [{ model: "claude-opus-5-5", effort: "xhigh", review: "opus" }]);
+  assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+  assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 2);
+  assert.ok(JSON.parse(repo.read(codexDir + "fallback-observed.json")).prompt.includes("echec-1.txt"));
+  assert.match(repo.failure(), /simulated Codex failure/);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.attempt), [1, 2, 2]);
+});
+
+test("a partial Claude fallback uses the remaining attempts without another engine transition", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--attempts", "2"], {
+    ...quotaWorkEnv, FAKE_SCENARIO: "partial-then-done",
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+  assert.equal(repo.attempts(), "2");
+  assert.deepEqual(repo.plans().map(p => p.effort), ["high", "high"]);
+  assert.equal(repo.events().filter(e => e.phase === "relance").length, 1);
+  assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 2);
+  const prompts = jsonLines(repo, "fake-prompts");
+  assert.equal(prompts.length, 2);
+  assert.match(prompts[0], /Codex a été interrompu par son quota.*releve-quota-.*\.diff/);
+  assert.match(prompts[1], /echec-1\.txt/);
+  assert.doesNotMatch(prompts[1], /Codex a été interrompu par son quota|releve-quota-/);
+});
+
+for (const retro of [true, false]) {
+  test(`a nonzero Claude exit after a partial quota fallback counts toward blocking with retrospective ${retro}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.loop("partial-then-failure", [
+      "--engine", "codex", "--fallback-engine", "claude", "--attempts", "2", ...(retro ? [] : ["--no-retro"]),
+    ], { ...quotaWorkEnv, TVLENS_CODEX_BIN: path.join(repo.root, ".harness-state/fake-codex.cjs") });
+    assert.equal(result.code, 2, result.out);
+    assert.equal(repo.status(), "bloque");
+    assert.equal(repo.attempts(), "2");
+    assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+    const events = repo.events();
+    assert.deepEqual(events.filter(e => e.phase === "tentative-refusee").map(e => e.attempt), [1, 2]);
+    const failure = repo.read(codexDir + "echec-2.txt");
+    assert.match(failure, /sans verdict.*code de sortie 1/);
+    assert.equal(events.some(e => e.phase === "relance-echouee"), false);
+    assert.equal(events.find(e => e.phase === "bloque").tentatives, 2);
+    assert.equal(events.filter(e => e.phase === "retro").length, retro ? 1 : 0);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir + "fake-retro-call")), retro);
+    if (retro) {
+      const digest = repo.read(codexDir + "retro-entree.md");
+      assert.match(digest, /Issue : bloqué/);
+      assert.ok(digest.includes(failure.trim()), digest);
+      assert.ok(events.findIndex(e => e.phase === "retro") > events.findIndex(e => e.phase === "bloque"));
+    }
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.match(repo.read("core/partial.cjs"), /modification interdite/);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+  });
+}
+
+test("a forced Codex model keeps its implicit three-attempt budget after a quota fallback", (t) => {
+  const repo = codexRepo({ niveau: "simple" });
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--model", "custom codex"], {
+    ...quotaWorkEnv, FAKE_SCENARIO: "silent",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.equal(repo.attempts(), "3");
+  assert.deepEqual(repo.plans().map(p => [p.model, p.effort]), [
+    ["claude-sonnet-5-5", "high"], ["claude-opus-5-5", "high"], ["claude-opus-5-5", "xhigh"],
+  ]);
+  assert.equal(repo.events().find(e => e.phase === "bloque").tentatives, 3);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+});
+
+for (const [scenario, diagnostic] of [
+  ["changes-after-review", /modifié depuis la dernière relecture/],
+  ["done-without-review", /Aucune relecture n'est enregistrée/],
+  ["review-rejected", /dernier relecteur n'a pas accepté/],
+  ["long-line", /contrôle qualité complet est rouge/],
+  ["edits-harness", /harnais a été modifié sans/],
+]) {
+  test(`a quota fallback still requires the ordinary integration gates: ${scenario}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], { ...quotaWorkEnv, FAKE_SCENARIO: scenario });
+    assert.equal(result.code, 2, result.out);
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.equal(repo.status(), "bloque");
+    assert.match(repo.failure(), diagnostic);
+    assert.equal(repo.events().filter(e => e.phase === "relance").length, 1);
+    assert.equal(repo.events().filter(e => e.phase === "tentative-refusee").length, 1);
+    assert.ok(fs.existsSync(path.join(repo.root, "core/partial.cjs")));
+  });
+}
+
+for (const failure of ["missing executable", "failed session"]) {
+  test(`a refused Claude quota fallback leaves a recoverable ticket and all its work: ${failure}`, (t) => {
+    const repo = codexRepo();
+    t.after(repo.cleanup);
+    const env = failure === "missing executable" ? { TVLENS_CLAUDE_BIN: path.join(repo.root, ".harness-state/absent") } :
+      { FAKE_CLAUDE_FAILURE: "1" };
+    const result = repo.codex(["--fallback-engine", "claude", "--attempts", "2"], { ...quotaWorkEnv, ...env });
+    assert.equal(result.code, 1, result.out);
+    assert.equal(repo.status(), "a-faire");
+    assert.deepEqual(repo.commits(), ["init"]);
+    assert.match(result.out, /relève Claude a échoué/);
+    assert.match(repo.read("core/greeting.cjs"), /hello/);
+    assert.match(repo.read("core/partial.cjs"), /modification interdite/);
+    assert.match(repo.read("docs/travail/tickets/001-add-greeting.md"), /travail Codex conservé/);
+    assert.equal(repo.events().some(e => ["tentative-refusee", "bloque", "integre"].includes(e.phase)), false);
+    assert.equal(repo.events().filter(e => e.phase === "session" && e.moteur !== "codex").length, 1);
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+  });
+}
+
+test("a quota before any work can fall back without consuming an attempt", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], {
+    FAKE_CODEX_BEFORE_WORK_EVENTS: JSON.stringify([QUOTA_EVENTS]),
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.equal(repo.events().find(e => e.phase === "integre").tentatives, 1);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+  assert.equal(repo.attempts(), "1");
+});
+
+test("a quota fallback requires a new Claude review even when an older accepted state matches its final work", async (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  repo.write("core/greeting.cjs", "module.exports = () => 'hello';\n");
+  const recorded = repo.node("scripts/loop/reviewed-state.mjs", ["record", "--ticket", "T001"]);
+  assert.equal(recorded.code, 0, recorded.out);
+  const { recordReview } = await import(pathToFileURL(path.join(repo.root, "scripts/loop/reviewed-state.mjs")).href);
+  recordReview(repo.root, "T001", { verdict: "accepté", modele: "opus", report: acceptedReview });
+  fs.rmSync(path.join(repo.root, "core/greeting.cjs"));
+  const result = repo.codex(["--fallback-engine", "claude", "--attempts", "1"], {
+    FAKE_CODEX_EVENTS: JSON.stringify([quotaAfterWork]), FAKE_SCENARIO: "done-without-review",
+  });
+  assert.equal(result.code, 2, result.out);
+  assert.match(repo.failure(), /nouvelle relecture.*Claude.*quota/i);
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a captured quota handoff is consumed once and a manifest alone cannot authorize an ordinary dirty launch", async (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const { describe, spec } = await tickets();
+  const { captureQuotaHandoff, consumeQuotaHandoff } = await import(pathToFileURL(path.join(repo.root, "scripts/loop/quota-handoff.mjs")).href);
+  repo.write(codexDir + "untracked-before.json", "[]\n");
+  repo.write("core/partial.cjs", "module.exports = 'partial';\n");
+  const file = "docs/travail/tickets/001-add-greeting.md";
+  const text = repo.read(file) + "- travail en cours\n";
+  repo.write(file, text);
+  const expected = {
+    ticket: describe(file, text), specification: spec(text), branch: "work",
+    head: repo.git("rev-parse", "HEAD").stdout.trim(), untrackedBefore: [], preexisting: {},
+  };
+  const handoff = captureQuotaHandoff(repo.root, expected);
+  const refused = repo.codex(["--fallback-engine", "claude"]);
+  assert.equal(refused.code, 1, refused.out);
+  assert.match(refused.out, /fichiers suivis sont modifiés/);
+  const status = repo.git("status", "--porcelain", "-z").stdout;
+  const first = consumeQuotaHandoff(repo.root, handoff, expected);
+  assert.match(repo.read(first.diff), /partial/);
+  assert.equal(repo.git("status", "--porcelain", "-z").stdout, status);
+  assert.throws(() => consumeQuotaHandoff(repo.root, handoff, expected), {
+    code: "QUOTA_HANDOFF_REFUSED", message: /déjà consommé/,
+  });
+  assert.deepEqual(repo.commits(), ["init"]);
+});
+
+test("a fallback dry run documents the translation and leaves the ticket untouched", (t) => {
+  const repo = codexRepo();
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--dry-run", "--model", "custom codex"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /Secours après quota : Claude.*palier.*--model.*--effort/);
+  assert.equal(repo.git("status", "--porcelain").stdout, "");
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets")), false);
+});
+
+test("a quota on the second ticket preserves the global max and runs each due retrospective and tuning once", (t) => {
+  const repo = codexRepo({}, {
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002", titre: "Add the farewell" }),
+    "docs/travail/tickets/003-add-welcome.md": ticketText({ id: "T003", titre: "Add the welcome" }),
+    ".claude/skills/ticket/SKILL.md": "# Ticket\n",
+  });
+  t.after(repo.cleanup);
+  seedJournal(repo, [observation({ id: "R-T008-1", impact: "fort" })]);
+  const result = repo.loop("done", ["--engine", "codex", "--fallback-engine", "claude", "--max", "2", "--ticket", "T001",
+    "--tune-every", "2", "--permission-mode", "mode with spaces", "--budget-usd", "3", "--timeout-min", "7"], {
+    ...quotaWorkEnv, FAKE_CODEX_EVENTS: "null", FAKE_CODEX_EVENTS_BY_TICKET: JSON.stringify({ T002: [quotaAfterWork] }),
+    FAKE_EXPECT_QUOTA_WORK: "T002", TVLENS_CODEX_BIN: path.join(repo.root, ".harness-state/fake-codex.cjs"), FAKE_TUNE: "edits-skill",
+  });
+  assert.equal(result.code, 0, result.out);
+  const events = repo.events();
+  assert.deepEqual(events.filter(e => e.phase === "integre").map(e => e.ticket), ["T001", "T002"]);
+  assert.deepEqual(events.filter(e => e.phase === "retro").map(e => e.ticket), ["T001", "T002"]);
+  assert.equal(events.filter(e => e.phase === "harmonisation-integree").length, 1);
+  assert.equal(events.filter(e => e.phase === "relance").length, 1);
+  assert.equal(events.find(e => e.phase === "relance").termines, 1);
+  assert.equal(events.find(e => e.phase === "relance").integres, 1);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T003")), false);
+  const resumed = JSON.parse(repo.read(".harness-state/tickets/T002/fallback-observed.json"));
+  assert.equal(resumed.args[resumed.args.indexOf("--permission-mode") + 1], "mode with spaces");
+  assert.equal(resumed.args[resumed.args.indexOf("--max-budget-usd") + 1], "3");
+  const digest = repo.read(".harness-state/tickets/T002/retro-entree.md");
+  assert.match(digest, /codex-1\.jsonl/);
+  assert.match(digest, /session-1\.jsonl/);
+  assert.match(digest, /Quota Codex épuisé/);
+});
+
+test("Claude remains the engine after a quota fallback integrates a loop module and starts the next ticket", (t) => {
+  const repo = codexRepo({ harnais: "oui", niveau: "simple" }, {
+    "docs/travail/tickets/002-add-farewell.md": ticketText({ id: "T002" }),
+    "docs/travail/tickets/003-add-welcome.md": ticketText({ id: "T003" }),
+  });
+  t.after(repo.cleanup);
+  const result = repo.codex(["--fallback-engine", "claude", "--max", "2"], {
+    ...quotaWorkEnv, FAKE_SCENARIO: "reload-module", FAKE_RELOAD_MODULE: "scripts/loop/models.mjs",
+  });
+  assert.equal(result.code, 0, result.out);
+  assert.deepEqual(repo.events().filter(e => e.phase === "session").map(e => e.moteur ?? "claude"), ["codex", "claude", "claude"]);
+  assert.equal(jsonLines(repo, "fake-codex-calls").length, 1);
+  assert.notEqual(observedLoop(repo, "T001").pid, observedLoop(repo, "T002").pid);
+  assert.equal(repo.events().filter(e => e.phase === "relance").length, 2);
+  assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/tickets/T003")), false);
+});
+
+function observeQuotaHandoff(repo) {
+  const file = path.join(repo.root, ".harness-state/quota-observer.cjs");
+  repo.write(".harness-state/quota-observer.cjs", `
+const fs = require("node:fs");
+process.on("message", message => {
+  if (message.type !== "loop-start" || !message.state.quotaResume) return;
+  if (process.env.FAKE_INCOMPLETE_HANDOFF === "1") delete message.state.quotaResume.handoff;
+  fs.writeFileSync(".harness-state/quota-message.json", JSON.stringify(message.state));
+  const notify = 'process.kill(Number(process.argv[1]), "SIGSTOP");' +
+    'require("node:fs").writeFileSync(".harness-state/quota-ready", process.argv[1]);' +
+    'process.kill(Number(process.env.FAKE_OBSERVER_PID), "SIGWINCH");';
+  require("node:child_process").spawnSync(process.execPath, ["-e", notify, String(process.pid)]);
+});
+`);
+  return { NODE_OPTIONS: `--require=${file}`, TVLENS_CODEX_BIN: path.join(repo.root, ".harness-state/fake-codex.cjs") };
+}
+
+const handoffChanges = {
+  head(repo) { assert.equal(repo.git("commit", "--allow-empty", "-q", "-m", "external commit").code, 0); },
+  branch(repo) { assert.equal(repo.git("branch", "-m", "external-branch").code, 0); },
+  specification(repo) {
+    const file = "docs/travail/tickets/001-add-greeting.md";
+    repo.write(file, repo.read(file).replace("says hello", "says something else"));
+  },
+  completed(repo) {
+    const file = "docs/travail/tickets/001-add-greeting.md";
+    repo.write(file, repo.read(file).replace("statut: a-faire", "statut: termine"));
+  },
+  tracked(repo) { repo.write("core/greeting.cjs", "module.exports = 'changed';\n"); },
+  added(repo) { repo.write("core/other.cjs", "module.exports = 'extra';\n"); },
+  removed(repo) { fs.rmSync(path.join(repo.root, "core/partial.cjs")); },
+  index(repo) { assert.equal(repo.git("add", "--", "core/greeting.cjs").code, 0); },
+  mode(repo) { fs.chmodSync(path.join(repo.root, "core/greeting.cjs"), 0o755); },
+  preexisting(repo) { repo.write("notes/café personnel.md", "changed externally\n"); },
+  exclusions(repo) { repo.write(codexDir + "untracked-before.json", JSON.stringify(["core/partial.cjs"])); },
+  manifest(repo, base) { repo.write(base + ".json", "{}\n"); },
+  missing(repo, base) { fs.rmSync(path.join(repo.root, base + ".json")); },
+  patch(repo, base) { repo.write(base + ".diff", "changed patch\n"); },
+  consumed(repo, base) { repo.write(base + ".consumed", "already used\n"); },
+  incomplete() { /* Le préchargement retire le descripteur IPC avant sa réception. */ },
+};
+
+for (const [change, mutate] of Object.entries(handoffChanges)) {
+  test(`a retained quota handoff refuses a changed ${change} boundary without modifying the work`, { timeout: 20000 }, async (t) => {
+    const repo = codexRepo({}, { "core/greeting.cjs": "module.exports = 'before';\n" });
+    repo.write("notes/café personnel.md", "mine\n");
+    const run = startObservedLoop(t, repo, ["--engine", "codex", "--fallback-engine", "claude", "--no-retro"], {
+      ...quotaWorkEnv, ...observeQuotaHandoff(repo), FAKE_SCENARIO: "done", FAKE_INCOMPLETE_HANDOFF: change === "incomplete" ? "1" : "0",
+    });
+    t.after(repo.cleanup);
+    const successor = Number(await run.waitFor("quota-ready"));
+    const first = jsonLines(repo, "fake-codex-calls")[0];
+    noProcess(first.loopPid);
+    assert.equal(repo.read(".harness-state/loop/lock"), String(run.child.pid));
+    const state = JSON.parse(repo.read(".harness-state/quota-message.json"));
+    const base = codexDir + "releve-quota-" + state.quotaResume.handoff?.token;
+    const ordinary = repo.codex(["--fallback-engine", "claude"]);
+    assert.equal(ordinary.code, 1, ordinary.out);
+    assert.match(ordinary.out, /fichiers suivis sont modifiés/);
+    mutate(repo, base);
+    const before = {
+      status: repo.git("status", "--porcelain", "-z", "--untracked-files=all").stdout,
+      index: repo.git("diff", "--cached", "--binary").stdout,
+      diff: repo.git("diff", "HEAD", "--binary").stdout,
+      head: repo.git("rev-parse", "HEAD").stdout, personal: repo.read("notes/café personnel.md"),
+    };
+    process.kill(successor, "SIGCONT");
+    assert.deepEqual(await run.ended, { code: 1, signal: null });
+    assert.equal(repo.git("status", "--porcelain", "-z", "--untracked-files=all").stdout, before.status);
+    assert.equal(repo.git("diff", "--cached", "--binary").stdout, before.index);
+    assert.equal(repo.git("diff", "HEAD", "--binary").stdout, before.diff);
+    assert.equal(repo.git("rev-parse", "HEAD").stdout, before.head);
+    assert.equal(repo.read("notes/café personnel.md"), before.personal);
+    assert.equal(fs.existsSync(path.join(repo.root, codexDir + "fake-plans")), false);
+    assert.match(repo.read(".harness-state/output.log"), /relève Claude est refusée/i);
+    assert.ok(repo.events().some(e => e.phase === "relance-echouee"));
+    assert.equal(fs.existsSync(path.join(repo.root, ".harness-state/loop/lock")), false);
+    noProcess(successor);
+    noProcess(run.child.pid);
+  });
+}
 
 for (const stage of ["before", "after"]) {
   for (const [form, quota] of [["error", QUOTA_EVENTS.slice(0, 1)], ["turn.failed", QUOTA_EVENTS.slice(1)], ["both", QUOTA_EVENTS]]) {

@@ -1,7 +1,7 @@
 ---
 id: T251
 titre: Resume a quota-stopped ticket with Claude when asked
-statut: a-faire
+statut: termine
 bloque_par: T231, T268, T280, T284
 adr: oui
 installe: non
@@ -90,9 +90,78 @@ elle n'assouplit jamais le démarrage ordinaire. Relire les interfaces réelles 
 
 ## Journal
 
+- 19/10, Codex : reprise après `relecture-1.md`, lecture du journal, des écarts, de `git status` et de
+  `git diff`. Les deux mineurs sont confirmés : contexte de relève répété et complexité excessive.
+  Exploration de correction dans `.harness-state/tickets/T251/exploration.md`, aucun nouvel écart prévu.
+- 19/10, Codex : `node --test --test-name-pattern='partial Claude fallback|nonzero Claude exit'
+  tests/ticket-loop.test.cjs` : trois rouges observés sur les assertions attendues (consigne répétée,
+  sortie 1 au lieu de 2), puis trois verts après correction minimale ; sorties
+  `correction-1-rouge.log` et `correction-1-vert.log` dans le dossier d'état. État initial, refus de
+  relève et évaluation du verdict extraits ; validation de réception découpée en options, historique
+  et bornes. Mesure par la règle ESLint locale : `processTicket` 32 → 10, `receiveQuotaWork` 16 → 5,
+  fonctions extraites de complexité au plus 12 et de moins de 80 lignes.
+- 19/10, Codex : vérification après découpe : les 41 cas ciblés de relève passent (`correction-1-releve.log`).
+  `node scripts/check.mjs --changed` : vert, dont 346 tests de boucle ; règles, format, lint, gel et
+  cliquet verts, aucun plancher modifié (`correction-1-check-changed.log`).
+- 19/10, Codex : `node --test --test-concurrency=1 tests/reviewed-state.test.cjs
+  tests/loop-view-events.test.cjs tests/loop-view-codex.test.cjs tests/loop-view-state.test.cjs
+  tests/watch-loop.test.cjs` : 129 tests réussis (`correction-1-lecteurs.log`). Puis
+  `node scripts/check.mjs` : vert, 2 960 tests JavaScript sur 153 fichiers et 54 tests Python réussis
+  (`correction-1-check-complet.log`). Spécification inchangée, deux constats mineurs corrigés,
+  aucune contestation ; nouveau verdict `TERMINÉ`, sans réserve propre, sans commit ni push.
+- 19/10, Codex : exploration des interfaces réelles T229/T231 terminée, consignée dans
+  `.harness-state/tickets/T251/exploration.md`. Aucun écart prévu ; reprise par IPC, empreintes du travail
+  et des non-suivis initiaux, budget utile conservé et traduction vers le palier Claude.
+- 19/10, Codex : rouges observés puis corrigés sur la relève (arrêt 5 au lieu de reprise), les options
+  répétées, l'indexation des non-suivis initiaux et l'obligation d'une nouvelle revue Claude. Commandes
+  ciblées `node --test --test-name-pattern='<comportement>' tests/ticket-loop.test.cjs` et sorties dans
+  `.harness-state/tickets/T251/{rouge-*,vert-*}.log`. Le premier rouge des options répétées a invoqué
+  par erreur le binaire Codex réel, faute de doublure sur ce chemin ; refus de processus et de hooks,
+  aucune action d'agent observée dans la sortie, puis banc corrigé.
+- 19/10, Codex : `node --test tests/ticket-loop.test.cjs` : 338 tests réussis, 0 échec (237,1 s), sortie
+  `ticket-loop.log`. Ajout ensuite des cas de capacité/correction, contenus préexistants, budget implicite
+  et rechargement de module après relève ; vérification finale en cours. ADR 0060 écrit et lié.
+- 19/10, Codex : vérification finale ciblée de la relève : 39 tests réussis, 0 échec (`releve-finale.log`).
+  `node --test --test-concurrency=1 tests/reviewed-state.test.cjs tests/loop-view-events.test.cjs
+  tests/loop-view-codex.test.cjs tests/loop-view-state.test.cjs tests/watch-loop.test.cjs` : 129 tests réussis,
+  0 échec (`lecteurs.log`). `node scripts/check.mjs --changed` : vert, dont les 344 tests de boucle.
+  Contrôle complet lancé en séquentiel ; résultat à suivre dans `check-complet.log`.
+- 19/10, Codex : `node scripts/check.mjs` : vert ; règles, format, lint, gel du lint, cliquet,
+  2 958 tests JavaScript (153 fichiers) et 54 tests Python réussis. `git diff --check` : aucune erreur.
+  Preuves et sorties conservées dans `.harness-state/tickets/T251/`. Verdict `TERMINÉ`, sans commit ni push.
+  Réserve propre hors périmètre : le total financier de `scripts/loop/retro.mjs:64` assimile déjà les coûts
+  inconnus à zéro ; la ligne par session et le bilan d'intégration conservent leur caractère inconnu.
+
 - 18/10, propriétaire : ticket hors du chemin GX10, repoussé après la copie B (T260). Dépendance d'ordre ajoutée
   (`T260`), sans lien de code ; la retirer rend l'ordre par numéro.
 - 18/10, propriétaire, sur l'avis d'Astra : la copie B (T259, T261, T260) et sa recette T280 passent avant ce
   ticket.
 - 18/10, propriétaire : les réglages des modèles locaux (T282, T283) et leur contrôle T284 passent avant ce
   ticket.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T251/relecture-2.md : 1. `scripts/loop/run.mjs:151` (`preflight`) — hors périmètre
+
+  - **Ce qui ne va pas.** La complexité de `preflight` est de 26 selon la règle ESLint `complexity` (`correction-1-complexite-apres.json`). La limite des standards est de 15. Avant le ticket, je compte 9 sur les lignes de contexte de `revue-2.diff`. Le ticket a ajouté environ 17 points :
+    - le refus d'un `--fallback-engine` répété ;
+    - la validation du secours ;
+    - `&& !launch?.quotaResume` ;
+    - l'appel de `receiveQuotaWork` ;
+    - les trois `launch?.… ?? …` ;
+    - le `try/catch` et le ternaire de `preexisting`.
+    
+    La première relecture ne l'avait pas relevé.
+  - **Ce qui est attendu.** Extraire la validation des options de secours et le calcul du contexte (`untrackedBefore`, `preexisting`, `untracked`) en fonctions dédiées.
+  - **Classe.** La correction n'a pas touché cette fonction et ce n'est pas bloquant. Je la classe donc hors périmètre et en réserve, comme le demande la relecture de correction.
+- .harness-state/tickets/T251/relecture-2.md : 2. `scripts/loop/run.mjs:377` (`gates`) — hors périmètre
+
+  - **Ce qui ne va pas.** La complexité de `gates` est de 16 selon le même outil, au-dessus de 15. Avant le ticket, je compte 12. Les ajouts sont `preexisting && …`, `if (changed)` et `if (reviewBefore && …)`.
+  - **Ce qui est attendu.** Regrouper les deux contrôles propres à la relève (non suivis préexistants et nouvelle relecture) dans une fonction que `gates` appelle.
+  - **Classe.** Code non touché par la correction : hors périmètre, en réserve.
+- .harness-state/tickets/T251/relecture-2.md : 3. `scripts/loop/retro.mjs:64` — hors périmètre (repris de la relecture 1)
+
+  Le « Coût total des sessions » compte toujours un coût inconnu comme zéro. Ce défaut existait avant le ticket et `ecarts.md` le déclare. Il est à traiter dans un ticket qui touche `retro.mjs`.
+- .harness-state/tickets/T251/relecture-2.md : 4. `scripts/loop/quota-handoff.mjs:17` — hors périmètre (repris de la relecture 1)
+
+  La valeur `256 * 1024 * 1024` est écrite telle quelle à trois endroits : ici, dans `run.mjs:72` et dans `reviewed-state.mjs:29`. Lui donner un nom unique demande de modifier `reviewed-state.mjs`, qui n'est pas dans la liste du périmètre.

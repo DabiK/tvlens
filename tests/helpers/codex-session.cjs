@@ -73,6 +73,7 @@ if (rank > 0) {
 const call = {
   args, cwd: process.cwd(), stdin, stdinIsDevice, env, engine: process.env.TVLENS_ENGINE,
   loopPid: process.ppid, loopLock: fs.readFileSync(".harness-state/loop/lock", "utf8"),
+  launchedAt: fs.statSync(".harness-state/loop/lock").mtimeMs,
   session, run: process.env.TVLENS_HOOK_RUN, greetingPresent: fs.existsSync("core/greeting.cjs"),
   greeting: fs.existsSync("core/greeting.cjs") ? fs.readFileSync("core/greeting.cjs", "utf8") : null,
   pid: process.pid, previousAlive, reviewCount: fs.existsSync(path.join(dir, "fake-review-calls")) ?
@@ -127,6 +128,11 @@ if (process.env.FAKE_CODEX_EDIT) {
   const file = process.env.FAKE_CODEX_EDIT;
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.appendFileSync(file, "\\n// La doublure simule une modification interdite du harnais.\\n");
+}
+if (process.env.FAKE_CODEX_STAGE) {
+  const { spawnSync } = require("node:child_process");
+  const staged = spawnSync("git", ["add", "--", process.env.FAKE_CODEX_STAGE]);
+  if (staged.status !== 0) throw new Error("fake staging failed");
 }
 const verdict = {
   statut: blocked ? "BLOQUÉ" : "TERMINÉ", resume: blocked ? "Quel fournisseur choisir ?" : "fake codex",
@@ -188,7 +194,8 @@ if (failure === "capacity-signal") {
   for (const event of capacity) console.log(JSON.stringify(event));
   process.kill(process.pid, "SIGTERM");
 }
-const custom = JSON.parse(process.env.FAKE_CODEX_EVENTS || "null")?.[rank];
+const byTicket = JSON.parse(process.env.FAKE_CODEX_EVENTS_BY_TICKET || "null")?.[process.env.TVLENS_TICKET];
+const custom = byTicket?.[rank] ?? JSON.parse(process.env.FAKE_CODEX_EVENTS || "null")?.[rank];
 if (custom) events.splice(0, events.length, ...custom);
 if (process.env.FAKE_CODEX_STDERR) process.stderr.write(process.env.FAKE_CODEX_STDERR);
 for (const event of events) console.log(JSON.stringify(event));

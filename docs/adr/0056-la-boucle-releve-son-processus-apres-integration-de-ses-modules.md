@@ -48,6 +48,9 @@ son autonomie ; aucune interface de détachement n'est ajoutée.
 Une boucle déjà en mémoire avant ce correctif ne sait pas se relever : sa première intégration
 nécessite encore un redémarrage par l'orchestrateur.
 
+L'[ADR 0060](0060-la-boucle-reprend-sur-claude-apres-quota-sur-demande.md) étend cette relève au travail
+interrompu par quota, uniquement sur demande explicite et après validation d'un état consommable une fois.
+
 ## Protégée par
 
 `tests/ticket-loop.test.cjs` remplace des modules dans des dépôts jetables et observe leur

@@ -450,3 +450,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0059](adr/0059-la-fenetre-mac-lit-la-projection-applicative-partagee.md) :
   La fenêtre Mac lit la projection applicative partagée pour ses lectures et ses poussées ; les
   bascules de session révoquent les anciennes invalidations et les lectures en attente.
+
+- [ADR 0060](adr/0060-la-boucle-reprend-sur-claude-apres-quota-sur-demande.md) :
+  Sur demande, un quota Codex transmet une seule fois le travail vérifié à Claude, avec le même
+  lancement, les budgets restants et une nouvelle revue avant intégration.

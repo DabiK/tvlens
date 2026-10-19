@@ -112,7 +112,7 @@ export async function supervise(root, state, { event, say }) {
   try {
     const result = await runWorker(root, state);
     if (!result.restart) {
-      if (state.done > 0 && !result.admitted && (result.code !== 0 || result.signal)) {
+      if ((state.done > 0 || state.quotaResume) && !result.admitted && (result.code !== 0 || result.signal)) {
         if (result.failure) throw result.failure;
         const reason = result.signal ? `signal ${result.signal}` : `code ${result.code}`;
         throw new Error(`La nouvelle instance de boucle a échoué (${reason}).`);
