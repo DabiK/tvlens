@@ -1,7 +1,7 @@
 ---
 id: T303
 titre: Measure the ready latency of a sound-only passage from its transcript
-statut: a-faire
+statut: termine
 bloque_par: T298, T306
 adr: non
 installe: non
@@ -57,3 +57,18 @@ Aucune décision n'est attendue.
 
 - 19/10, orchestrateur : ticket ouvert depuis la réserve de clôture de T298, rangé dans le chantier « son seul » avant
   T220 et T293.
+- 19/10, Codex : exploration terminée (calcul partagé, appelants, voies, tests et ADR 0062/0054).
+  Aucun écart prévu ; notes dans `.harness-state/tickets/T303/exploration.md` et `ecarts.md`.
+- 19/10, Codex : rouge observé avec `node --test tests/session-latency.test.cjs` : 21 succès, un échec
+  sur `null !== 1400` pour le passage son seul prêt (`.harness-state/tickets/T303/tests-red.log`).
+- 19/10, Codex : correction limitée au choix de l'horodatage dans `passageLatency`.
+  `node --test tests/session-latency.test.cjs` : 22 tests réussis, assertions existantes intactes ; le passage
+  son seul mesure 1 400 ms et le résumé contient `{ n: 1, mean: 1400, max: 1400 }` (`tests-green.log`).
+  `node scripts/check.mjs --changed` : vert, règles, format, lint, gel, cliquet et 22 tests (`check-changed.log`).
+- 19/10, Codex : `node scripts/check.mjs` : vert, 154 fichiers JS, 3 028 tests JS réussis et 71 tests Python
+  réussis, règles, format, lint, gel et cliquet verts (`.harness-state/tickets/T303/check-full.log`).
+  Verdict `TERMINÉ` enregistré pour la relecture par la boucle ; aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T303/relecture-1.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

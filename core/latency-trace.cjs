@@ -3,11 +3,12 @@
 const span = (to, from) => Number.isFinite(to) && Number.isFinite(from) ? to - from : null;
 function passageLatency(p) {
   p = p || {};
+  const readyPublishedMs = p.visionStatus === 'absent' ? p.transcriptPublishedMs : p.visionPublishedMs;
   return { blockMs: span(p.endMs, p.startMs), arrivalMs: span(p.receivedMs, p.endMs),
     audioWaitMs: span(p.audioStartedMs, p.receivedMs), audioMs: span(p.audioMs, 0),
     visionWaitMs: span(p.visionStartedMs, p.visionQueuedMs), visionMs: span(p.visionMs, 0),
     transcriptAfterCloseMs: span(p.transcriptPublishedMs, p.endMs),
-    readyAfterCloseMs: p.status === 'ready' ? span(p.visionPublishedMs, p.endMs) : null };
+    readyAfterCloseMs: p.status === 'ready' ? span(readyPublishedMs, p.endMs) : null };
 }
 function latencySummary(passages, limit = 40) {
   const rows = (Array.isArray(passages) && limit > 0 ? passages.slice(-limit) : []).map(passageLatency);

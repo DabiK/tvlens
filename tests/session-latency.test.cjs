@@ -306,6 +306,43 @@ test('analysis starts before a slow thumbnail finishes, while ingest still waits
   assert.equal(await g.add(0), 'moment-1');
   assert.equal(g.watch.snapshot().segments[0].thumbnailAvailable, false);
 });
+test('a ready sound-only passage measures readiness at transcript publication and enters the session summary', async t => {
+  const audio = deferred();
+  const f = fixture({ transcribe: async s => { await audio.promise; return transcribe(s); }, observeVisual: visual });
+  t.after(() => f.watch.close());
+  await f.add(0, { media: { video: false, audio: true } });
+  assert.deepEqual(f.watch.snapshot().latency.readyAfterCloseMs, { n: 0 });
+  f.setTime(2400);
+  audio.resolve();
+  await tick();
+  const [passage] = f.watch.snapshot().segments;
+  assert.equal(passage.status, 'ready');
+  assert.equal(passage.visionStatus, 'absent');
+  assert.equal(passage.transcriptPublishedMs, 2400);
+  assert.equal(passage.visionPublishedMs, undefined);
+  assert.equal(passageLatency(passage).readyAfterCloseMs, 1400);
+  assert.deepEqual(f.watch.snapshot().latency.readyAfterCloseMs, { n: 1, mean: 1400, max: 1400 });
+});
+
+test('sound-only readiness still requires ready status and finite transcript and end stamps', () => {
+  const passage = { status: 'ready', visionStatus: 'absent', endMs: 1000, transcriptPublishedMs: 2400 };
+  for (const status of ['queued', 'analyzing', 'partial', 'error', 'skipped', undefined]) {
+    assert.equal(passageLatency({ ...passage, status }).readyAfterCloseMs, null);
+  }
+  for (const value of [undefined, null, NaN, Infinity, '2400']) {
+    assert.equal(passageLatency({ ...passage, transcriptPublishedMs: value }).readyAfterCloseMs, null);
+    assert.equal(passageLatency({ ...passage, endMs: value }).readyAfterCloseMs, null);
+  }
+});
+
+test('passages with images keep vision publication as their readiness stamp', () => {
+  const passage = { status: 'ready', endMs: 1000, transcriptPublishedMs: 2400 };
+  for (const visionStatus of ['ready', 'queued', 'analyzing', 'error', 'skipped', undefined]) {
+    assert.equal(passageLatency({ ...passage, visionStatus }).readyAfterCloseMs, null);
+    assert.equal(passageLatency({ ...passage, visionStatus, visionPublishedMs: 3500 }).readyAfterCloseMs, 2500);
+  }
+});
+
 test('latency arithmetic tolerates missing stamps, honours the limit and rounds', () => {
   const empty = { blockMs: null, arrivalMs: null, audioWaitMs: null, audioMs: null, visionWaitMs: null, visionMs: null, transcriptAfterCloseMs: null, readyAfterCloseMs: null };
   assert.deepEqual(passageLatency({}), empty); assert.deepEqual(passageLatency(null), empty);
