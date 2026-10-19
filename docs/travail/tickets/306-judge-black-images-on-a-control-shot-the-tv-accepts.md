@@ -1,7 +1,7 @@
 ---
 id: T306
 titre: Judge black images on a control shot the TV accepts
-statut: a-faire
+statut: termine
 bloque_par: T301
 adr: non
 installe: non
@@ -67,3 +67,27 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, orchestrateur : ticket ouvert après la sonde du contrôle sur la vraie TV, avant le contrôle réel T302.
+
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T306/exploration.md` ; aucun écart prévu, arbre initial conservé.
+- 19/10, Codex : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_control_shots_smaller` :
+  rouge observé (5 assertions `returnValue`), puis vert après refus des tailles trop petites par le faux (`minimum-{red,green}.log`).
+- 19/10, Codex : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_block_without_a_card` :
+  rouge observé (`0 != 1` bloc envoyé), puis vert après passage du contrôle en BMP 256×144 (`capture-{red,green}.log`).
+- 19/10, Codex : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_bmp_orientation` :
+  rouge observé (4 assertions de BMP valide refusé) ; `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k ControlBlackness` :
+  vert, 4 tests (`bmp-{red,green}.log`). En-têtes, orientation, décalage, seuil, pixel tardif et rectangles couverts.
+- 19/10, Codex : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -v` : vert, 38 tests en 49,560 s,
+  transitions et sidebar comprises (`capture-suite.log`). Guides mis à jour ; aucun essai matériel ni déploiement.
+- 19/10, Codex : `node scripts/check.mjs --changed` : `check : vert` (`check-changed.log`). Contrôle complet lancé séparément.
+- 19/10, Codex : `node scripts/check.mjs` : `check : vert`, 154 fichiers JavaScript, 3 025 tests réussis,
+  70 tests Python réussis en 66,147 s (`.harness-state/tickets/T306/check-full.log`). Critères couverts par simulation ;
+  validation TV après intégration laissée au contrôle réel prévu séparément. Aucun commit ni push.
+
+- 19/10, Codex, reprise de relecture 1 : mineur 1 accepté ; correction du format des réponses scriptées du faux Luna, tests d’abord.
+- 19/10, Codex, correction 1 : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_a_scripted_png` :
+  rouge observé sur l’égalité des octets (PNG écrit à la place du BMP), puis vert après condition sur `format == 'PNG'`.
+  Traces : `.harness-state/tickets/T306/correction-1-format-{red,green}.log`. Aucun test existant modifié ou assoupli.
+- 19/10, Codex, correction 1 : `node scripts/check.mjs --changed` : `check : vert` (`correction-1-check-changed.log`).
+- 19/10, Codex, correction 1 : `node scripts/check.mjs` : `check : vert`, 154 fichiers JavaScript,
+  3 025 tests réussis, 71 tests Python réussis en 65,544 s (`correction-1-check-full.log`).
+  Mineur 1 corrigé ; nouveau verdict remis à la boucle, sans commit, push ni essai matériel.

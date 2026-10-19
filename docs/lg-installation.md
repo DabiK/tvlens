@@ -2,8 +2,9 @@
 
 Ce guide relie les composants du dépôt. Il concerne une TV **déjà rootée**, avec SSH, Python 3, `arecord` et les services webOS nécessaires.
 Le modèle validé est la LG 75QNED87T sous webOS 25. Le parcours YouTube est testé ; le lecteur LG a fait l’objet d’une sonde image et son.
-Le code accepte ces deux applications ; le parcours complet sur le lecteur LG reste à vérifier sur la TV.
-Netflix/DRM, autres modèles et autres firmwares restent non validés. Ce dépôt ne fournit ni root universel ni installation en un clic.
+Le code accepte YouTube, le lecteur LG et Netflix ; la sonde Netflix a confirmé le son avec une image noire.
+Le parcours complet sur le lecteur LG et le passage automatique en son seul restent à vérifier sur la TV.
+Autres applications, modèles et firmwares restent non validés. Ce dépôt ne fournit ni root universel ni installation en un clic.
 
 ## 1. Installer le moteur sur Mac ou Linux
 
@@ -19,7 +20,7 @@ Démarrer l’hôte ; son jeton est créé dans `$TVLENS_SERVER_DATA/device-toke
 | Sources du dépôt | Destination de référence sur la LG |
 | --- | --- |
 | `tv/app/` | App enregistrée `org.tvlens.sidebarprobe` |
-| `tv/controller.py`, `tv/capture.py`, `tv/transport.py` | `/media/developer/tvlens-companion/` |
+| `tv/controller.py`, `tv/capture.py`, `tv/transport.py`, `tv/blackness.py` | `/media/developer/tvlens-companion/` |
 | `prototypes/lg-remote/control.py`, `runtime/`, `vendor/`, `rakuten.json` | `/media/developer/tvlens-remote/` avec la même arborescence |
 | `prototypes/lg-remote/30-tvlens-remote` | `/var/lib/webosbrew/init.d/30-tvlens-remote` |
 | `tv/35-tvlens-capture-control` | `/var/lib/webosbrew/init.d/35-tvlens-capture-control` |
@@ -67,9 +68,13 @@ L’autostart est configuré et les relances ciblées ont été testées sur la 
 6. **Mémoire** ouvre la frise ; OK ouvre le détail. Retour revient au niveau précédent. Dans le chat, OK active le défilement, Retour en sort puis ferme le panneau.
 7. Arrêter puis reprendre la capture : même contexte tant que le serveur reste vivant. Fermer le panneau seul laisse la capture active.
 
-La capture suit la première vidéo `MAIN` connectée de YouTube ou du lecteur LG. Toute autre application coûte un bloc
+La capture suit la première vidéo `MAIN` connectée de YouTube, du lecteur LG ou de Netflix. Toute autre application coûte un bloc
 compté `foreignApp`, même si elle est également autorisée. Le rapport nomme l’application suivie ; elle reste la même
-jusqu’à l’arrêt. La capture est bornée à six heures et à dix minutes sans image de cette application, puis exige une relance manuelle.
+jusqu’à l’arrêt. Un bloc dont tous les contrôles conservés sont noirs produit un passage son seul,
+sans envoyer d’image ; après deux blocs noirs valides d’affilée, un seul contrôle par bloc suffit jusqu’au retour des images.
+Le panneau indique « Son seul · image noire ou protégée ».
+La capture est bornée à six heures et à dix minutes sans image conservée ni bloc son seul admissible mis en file
+de l’application suivie, puis exige une relance manuelle. Les blocs étrangers ou invalides ne prolongent pas ce délai.
 Les publicités et changements de géométrie peuvent provoquer fermeture/restauration du panneau.
 Frise sans relecture vidéo ; Auto, marque-pages durables et recherche dédiée restent dans l’interface Mac.
 Voir [capture](lg-capture-control.md), [frise](lg-timeline.md), [validation](validation.md) et [dépannage serveur](vps-deployment.md).

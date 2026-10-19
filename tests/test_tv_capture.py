@@ -14,7 +14,6 @@ import sys
 import tempfile
 import threading
 import unittest
-import zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,29 +28,18 @@ PNG = base64.b64decode(
 )
 
 
-def control_png(pixel=lambda _x, _y: (0, 0, 0), width=160, height=90, filter_type=0, color_type=2):
-    """PNG RGB autonome, sans dépendance à l'encodeur de production."""
-    def chunk(kind, data):
-        return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
-    channels = len(pixel(0, 0))
-    previous = bytes(width * channels)
+def control_bmp(pixel=lambda _x, _y: (0, 0, 0), width=256, height=144, top_down=True, pixel_offset=54):
+    """BMP 24 bits autonome ; chaque pixel est fourni en RGB, stocké en BGR."""
+    stride = (width * 3 + 3) // 4 * 4
     rows = bytearray()
-    for y in range(height):
-        row = bytes(value for x in range(width) for value in pixel(x, y))
-        rows.append(filter_type)
-        for index, value in enumerate(row):
-            a = row[index - channels] if index >= channels else 0
-            b = previous[index]
-            c = previous[index - channels] if index >= channels else 0
-            prediction = 0
-            if filter_type in (1, 2, 3):
-                prediction = {1: a, 2: b, 3: (a + b) // 2}[filter_type]
-            elif filter_type == 4:
-                prediction = min((a, b, c), key=lambda candidate: abs(a + b - c - candidate))
-            rows.append((value - prediction) % 256)
-        previous = row
-    return (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, color_type, 0, 0, 0))
-            + chunk(b'IDAT', zlib.compress(rows)) + chunk(b'IEND', b''))
+    indices = range(height) if top_down else reversed(range(height))
+    for y in indices:
+        rows.extend(value for x in range(width) for value in reversed(pixel(x, y)))
+        rows.extend(b'\xff' * (stride - width * 3))
+    header = struct.pack('<2sIHHI', b'BM', pixel_offset + len(rows), 0, 0, pixel_offset)
+    header += struct.pack('<IiiHHIIiiII', 40, width, -height if top_down else height,
+                          1, 24, 0, len(rows), 0, 0, 0, 0)
+    return header + b'\xff' * (pixel_offset - len(header)) + rows
 
 
 CAPTURE_PROCESS = '''
@@ -132,35 +120,50 @@ class Server:
 
 
 class ControlBlackness(unittest.TestCase):
-    def test_all_png_filters_are_decoded_and_a_single_late_nonblack_pixel_is_seen(self):
+    def test_bmp_threshold_and_a_single_late_nonblack_pixel_are_seen(self):
         rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
-        for filter_type in range(5):
-            with self.subTest(filter=filter_type):
-                dark = control_png(lambda x, y: (x % 17, y % 17, (x + y) % 17), filter_type=filter_type)
-                self.assertTrue(blackness.is_black(dark, rect))
-                for channel in range(3):
+        dark = control_bmp(lambda x, y: (x % 17, y % 17, (x + y) % 17))
+        self.assertTrue(blackness.is_black(dark, rect))
+        for channel in range(3):
+            with self.subTest(channel=channel):
+                def pixel(x, y):
+                    values = [16, 16, 16]
+                    if x == 255 and y == 143:
+                        values[channel] = 17
+                    return values
+                self.assertFalse(blackness.is_black(control_bmp(pixel), rect))
+
+    def test_bmp_orientation_and_pixel_offset_preserve_the_video_rectangle(self):
+        rect = {'x': 640, 'y': 240, 'width': 2560, 'height': 1440}
+        for top_down in (True, False):
+            for pixel_offset in (54, 70):
+                with self.subTest(top_down=top_down, pixel_offset=pixel_offset):
                     def pixel(x, y):
-                        values = [16, 16, 16]
-                        if x == 159 and y == 89:
-                            values[channel] = 17
-                        return values
-                    self.assertFalse(blackness.is_black(control_png(pixel, filter_type=filter_type), rect))
+                        return (16, 16, 16) if 43 <= x < 213 and 16 <= y < 112 else (255, 255, 255)
+                    image = control_bmp(pixel, top_down=top_down, pixel_offset=pixel_offset)
+                    try:
+                        result = blackness.is_black(image, rect)
+                    except ValueError as error:
+                        self.fail('BMP de contrôle valide refusé : ' + str(error))
+                    self.assertTrue(result)
+                    def bright(x, y):
+                        return (17, 0, 0) if (x, y) == (100, 16) else pixel(x, y)
+                    self.assertFalse(blackness.is_black(control_bmp(bright, top_down=top_down, pixel_offset=pixel_offset), rect))
 
-    def test_png_alpha_is_not_a_color_component_and_grayscale_is_decoded(self):
+    def test_incomplete_invalid_or_unsupported_bmps_are_refused_instead_of_called_black(self):
         rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
-        for color_type, components in ((6, (16, 16, 16, 255)), (0, (16,)), (4, (16, 255))):
-            with self.subTest(color=color_type):
-                self.assertTrue(blackness.is_black(control_png(lambda *_: components, color_type=color_type), rect))
-                bright = (17,) + components[1:]
-                self.assertFalse(blackness.is_black(control_png(lambda *_: bright, color_type=color_type), rect))
-
-    def test_incomplete_invalid_or_unsupported_pngs_are_refused_instead_of_called_black(self):
-        rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
-        black = control_png()
-        invalid = (b'', black[:-8], black[:40] + bytes([black[40] ^ 1]) + black[41:],
-                   control_png(width=1), control_png(filter_type=5), control_png(color_type=3))
-        for image in invalid:
-            with self.subTest(size=len(image)):
+        black = control_bmp()
+        invalid = [b'', b'BM', black[:53], black[:-8], black + b'\0',
+                   control_bmp(width=255), control_bmp(height=143), PNG]
+        for offset, encoding, value in ((0, '<2s', b'ZZ'), (2, '<I', len(black) - 1),
+                                        (10, '<I', 53), (10, '<I', len(black)), (14, '<I', 12),
+                                        (26, '<H', 2), (28, '<H', 32), (28, '<H', 8),
+                                        (30, '<I', 1), (34, '<I', 1)):
+            image = bytearray(black)
+            struct.pack_into(encoding, image, offset, value)
+            invalid.append(bytes(image))
+        for index, image in enumerate(invalid):
+            with self.subTest(case=index):
                 with self.assertRaises(ValueError):
                     blackness.is_black(image, rect)
 
@@ -171,7 +174,7 @@ class ControlBlackness(unittest.TestCase):
                      {'x': 1, 'y': 1, 'width': 1, 'height': 1}):
             with self.subTest(rect=rect):
                 with self.assertRaises(ValueError):
-                    blackness.is_black(control_png(), rect)
+                    blackness.is_black(control_bmp(), rect)
 
 class CaptureRun(unittest.TestCase):
     """The real capture.py, in its own process, against the fakes. Only the pace between frames is shortened."""
@@ -192,6 +195,50 @@ class CaptureRun(unittest.TestCase):
             TVLENS_AMBIENT_RUN=str(self.root / 'run'),
             TVLENS_FAKE_ARECORD_SECONDS='0.05',
         )
+
+    def test_control_shots_smaller_than_the_tv_minimum_are_refused(self):
+        for width, height in ((160, 90), (160, 96), (192, 108), (255, 144), (256, 143)):
+            with self.subTest(size=(width, height)):
+                path = self.root / 'control.png'
+                done = subprocess.run([
+                    str(ROOT / 'tests' / 'tv_fakes' / 'luna-send'), '-t', '1',
+                    'luna://com.webos.service.capture/executeOneShot',
+                    json.dumps({'path': str(path), 'method': 'DISPLAY', 'format': 'PNG', 'width': width, 'height': height}),
+                ], env=self.environment(), capture_output=True, check=True)
+                reply, _ = json.JSONDecoder().raw_decode(done.stderr.decode().split('timingServiceResponse: ')[1])
+                self.assertFalse(reply['returnValue'])
+                self.assertEqual(reply['errorCode'], 'ERROR_INTERNAL')
+                self.assertFalse(path.exists())
+
+    def test_bmp_control_shot_matches_the_tv_header_and_top_down_pixels(self):
+        path = self.root / 'control.bmp'
+        done = subprocess.run([
+            str(ROOT / 'tests' / 'tv_fakes' / 'luna-send'), '-t', '1',
+            'luna://com.webos.service.capture/executeOneShot',
+            json.dumps({'path': str(path), 'method': 'DISPLAY', 'format': 'BMP', 'width': 256, 'height': 144}),
+        ], env=self.environment(), capture_output=True, check=True)
+        reply, _ = json.JSONDecoder().raw_decode(done.stderr.decode().split('timingServiceResponse: ')[1])
+        self.assertTrue(reply['returnValue'])
+        image = path.read_bytes()
+        self.assertEqual(len(image), 110646)
+        self.assertEqual(struct.unpack_from('<2sIHHI', image), (b'BM', 110646, 0, 0, 54))
+        self.assertEqual(struct.unpack_from('<IiiHHII', image, 14), (40, 256, -144, 1, 24, 0, 110592))
+        self.assertEqual(image[54:], b'\xff\0\0' * (256 * 144))
+
+    def test_a_scripted_png_does_not_replace_a_requested_bmp(self):
+        image = control_bmp()
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.capture/executeOneShot': {
+                'returnValue': True, 'bmp': base64.b64encode(image).decode(), 'png': base64.b64encode(PNG).decode(),
+            },
+        }))
+        path = self.root / 'control.bmp'
+        subprocess.run([
+            str(ROOT / 'tests' / 'tv_fakes' / 'luna-send'), '-t', '1',
+            'luna://com.webos.service.capture/executeOneShot',
+            json.dumps({'path': str(path), 'method': 'DISPLAY', 'format': 'BMP', 'width': 256, 'height': 144}),
+        ], env=self.environment(), capture_output=True, check=True, timeout=5)
+        self.assertEqual(path.read_bytes(), image)
 
     def run_capture(self, server, seconds=8, idle=600, method='DISPLAY'):
         (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64, 'captureMethod': method}))
@@ -230,7 +277,7 @@ class CaptureRun(unittest.TestCase):
         self.assertGreater(len(audio), 44)
 
     def test_black_blocks_send_declared_sound_reduce_checks_and_restore_images_on_the_next_block(self):
-        black = {'returnValue': True, 'png': base64.b64encode(control_png()).decode()}
+        black = {'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode()}
         visible = {'returnValue': True}
         # Deux blocs noirs à quatre contrôles, un noir réduit, un contrôle visible et son image,
         # quatre contrôles visibles avec leurs images, puis un retour au noir à quatre contrôles.
@@ -263,18 +310,19 @@ class CaptureRun(unittest.TestCase):
         calls = [json.loads(line) for line in (self.root / 'luna' / 'calls.jsonl').read_text().splitlines()]
         shots = [call['payload'] for call in calls if call['endpoint'].endswith('/executeOneShot')]
         sizes = [(shot['width'], shot['height']) for shot in shots]
-        self.assertEqual(sizes, [(160, 90)] * 10 + [(1280, 720)] + [(160, 90), (1280, 720)] * 4 + [(160, 90)] * 4)
-        self.assertTrue(all(shot['method'] == 'DISPLAY' for shot in shots if shot['width'] == 160))
+        self.assertEqual(sizes, [(256, 144)] * 10 + [(1280, 720)] + [(256, 144), (1280, 720)] * 4 + [(256, 144)] * 4)
+        self.assertTrue(all(shot['method'] == 'DISPLAY' and shot['format'] == 'BMP' for shot in shots if shot['width'] == 256))
+        self.assertTrue(all(shot['format'] == 'PNG' for shot in shots if shot['width'] == 1280))
 
     def test_black_video_beside_a_bright_sidebar_is_checked_only_inside_its_rectangle(self):
         video = {
             'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'sidebar-video',
             'displayOutput': {'x': 640, 'y': 240, 'width': 2560, 'height': 1440},
         }
-        image = control_png(lambda x, y: (0, 0, 0) if 27 <= x < 133 and 10 <= y < 70 else (255, 255, 255))
+        image = control_bmp(lambda x, y: (0, 0, 0) if 43 <= x < 213 and 16 <= y < 112 else (255, 255, 255))
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({
             'com.webos.service.videooutput/getStatus': {'video': [video]},
-            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(image).decode()},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'bmp': base64.b64encode(image).decode()},
         }))
         server = Server()
         try:
@@ -285,10 +333,10 @@ class CaptureRun(unittest.TestCase):
         self.assertTrue(all(block['frames'] == [] and block['media'] == {'video': False, 'audio': True} for block in server.segments))
         calls = [json.loads(line) for line in (self.root / 'luna' / 'calls.jsonl').read_text().splitlines()]
         shots = [call['payload'] for call in calls if call['endpoint'].endswith('/executeOneShot')]
-        self.assertEqual([(shot['method'], shot['width'], shot['height']) for shot in shots], [('DISPLAY', 160, 90)] * 9)
+        self.assertEqual([(shot['method'], shot['width'], shot['height']) for shot in shots], [('DISPLAY', 256, 144)] * 9)
 
     def test_one_visible_control_keeps_only_its_image_and_does_not_declare_sound_only(self):
-        black = {'returnValue': True, 'png': base64.b64encode(control_png()).decode()}
+        black = {'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode()}
         visible = {'returnValue': True}
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({
             'com.webos.service.capture/executeOneShot': [black, visible, visible, black, black],
@@ -313,7 +361,7 @@ class CaptureRun(unittest.TestCase):
         beside = dict(full, displayOutput={'x': 640, 'y': 0, 'width': 2560, 'height': 1440})
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({
             'com.webos.service.videooutput/getStatus': [{'video': [video]} for video in (full, full, full, beside, beside)],
-            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode()},
         }))
         server = Server()
         try:
@@ -338,7 +386,7 @@ class CaptureRun(unittest.TestCase):
                 (self.root / 'luna' / 'replies.json').write_text(json.dumps({
                     'com.webos.service.videooutput/getStatus': [{'video': [video]} for video in readings],
                     'com.webos.service.capture/executeOneShot': {
-                        'returnValue': True, 'png': base64.b64encode(control_png()).decode(),
+                        'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode(),
                     },
                 }))
                 server = Server()
@@ -353,7 +401,7 @@ class CaptureRun(unittest.TestCase):
 
     def test_a_rejected_sound_only_delivery_counts_as_dropped_instead_of_sound_only_sent(self):
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({
-            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode()},
         }))
         server = Server(segment=(400, {'code': 'invalid-media-block'}))
         try:
@@ -367,7 +415,7 @@ class CaptureRun(unittest.TestCase):
 
     def test_unreadable_or_refused_controls_never_prove_a_sound_only_block(self):
         for reply in ({'returnValue': False},
-                      {'returnValue': True, 'png': base64.b64encode(control_png()[:-8]).decode()}):
+                      {'returnValue': True, 'bmp': base64.b64encode(control_bmp()[:-8]).decode()}):
             with self.subTest(reply=reply['returnValue']):
                 (self.root / 'luna' / 'replies.json').write_text(json.dumps({
                     'com.webos.service.capture/executeOneShot': reply,
@@ -388,6 +436,7 @@ class CaptureRun(unittest.TestCase):
             self.run_capture(server)
         finally:
             server.close()
+        self.assertEqual(len(server.segments), 1)
         block, = server.segments
         self.assert_block_media(block)
 
@@ -417,7 +466,7 @@ class CaptureRun(unittest.TestCase):
         }
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({
             'com.webos.service.videooutput/getStatus': {'video': [video]},
-            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'bmp': base64.b64encode(control_bmp()).decode()},
         }))
         server = Server()
         try:
@@ -719,8 +768,8 @@ class CaptureRun(unittest.TestCase):
                 if video:
                     current.update(video(len(recordings)))
                 return {'video': [current]}
-            image = control_png(lambda _x, _y: (0, 0, 255)) if payload['width'] == 160 else PNG
-            if control and payload['width'] == 160:
+            image = control_bmp(lambda _x, _y: (0, 0, 255)) if payload['width'] == 256 else PNG
+            if control and payload['width'] == 256:
                 image = control(len(recordings))
             Path(payload['path']).write_bytes(image)
             return {'returnValue': True}
@@ -760,7 +809,7 @@ class CaptureRun(unittest.TestCase):
     def test_sound_only_blocks_refresh_the_idle_timer_through_the_reduced_cadence(self):
         server = Server()
         try:
-            report = self.controlled_capture(server, blocks=4, idle=10, control=lambda _: control_png())
+            report = self.controlled_capture(server, blocks=4, idle=10, control=lambda _: control_bmp())
         finally:
             server.close()
         self.assertEqual((report['stopReason'], report['sent'], report['soundOnly'], report['dropped'], report['frames']),
@@ -772,7 +821,7 @@ class CaptureRun(unittest.TestCase):
     def test_foreign_blocks_after_sound_only_do_not_refresh_the_idle_timer(self):
         server = Server()
         try:
-            report = self.controlled_capture(server, blocks=6, idle=10, control=lambda _: control_png(),
+            report = self.controlled_capture(server, blocks=6, idle=10, control=lambda _: control_bmp(),
                                              video=lambda block: {'appId': 'netflix' if block <= 2 else 'unverified.app'})
         finally:
             server.close()

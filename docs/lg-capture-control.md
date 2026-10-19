@@ -19,13 +19,21 @@ et après chaque image refusent aussi une vidéo déconnectée et un changement 
 Le rapport local transmis par `GET /capture` publie `application:{appId,name}`, ou `null` avant la première
 vidéo admissible. Les blocs avec images gardent leur format antérieur.
 
-Avant chaque image, un contrôle `DISPLAY` de 160×90 est entièrement décodé en Python, sans bibliothèque
-supplémentaire. Le détecteur accepte les PNG 8 bits non entrelacés RGB, RGBA, gris et gris avec alpha,
-avec les cinq filtres PNG. Seuls les pixels intérieurs au rectangle vidéo sont jugés : le panneau ou
+Avant chaque image, un contrôle `DISPLAY` au format BMP 256×144 est lu par tranches d’octets en Python,
+sans bibliothèque supplémentaire. Le détecteur accepte les BMP 24 bits non compressés avec un en-tête
+BITMAPINFOHEADER de 40 octets, à lignes de haut en bas ou de bas en haut. Il vérifie la taille,
+le décalage des pixels et la longueur des lignes, bourrage compris.
+Seuls les pixels intérieurs au rectangle vidéo sont jugés : le panneau ou
 les bandes autour n'empêchent pas de détecter une vidéo noire. Le rectangle est projeté depuis les
 coordonnées d'écran 3840×2160 ; les pixels à cheval sur un bord sont exclus. Une image est noire si
-aucune composante de couleur ne dépasse 16 sur 255 ; l'alpha n'est pas une composante de couleur.
-Un PNG invalide ou non pris en charge reste un refus de capture, jamais une preuve de noir.
+aucune composante de couleur ne dépasse 16 sur 255.
+Un BMP invalide ou non pris en charge reste un refus de capture, jamais une preuve de noir.
+L’image envoyée lorsque le contrôle est visible reste un PNG 1280×720.
+
+La sonde matérielle du 19 octobre citée dans le ticket de correction a refusé les contrôles PNG
+160×90, 160×96 et 192×108. Elle a accepté le BMP 256×144 de 110 646 octets, à en-tête de 54 octets
+et hauteur négative ; le contrôle des tranches du rectangle vidéo prenait 8 à 10 ms.
+Cette sonde ne valide pas le parcours complet de capture après intégration.
 
 Un bloc dont tous les contrôles conservés sont noirs part sans images, avec son audio et la déclaration
 `media:{video:false,audio:true}`. Le noir n'est pas envoyé. Un bloc mixte garde seulement les images

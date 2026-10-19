@@ -9,20 +9,20 @@ Put this directory ahead in PATH and point TVLENS_FAKE_LUNA at a scenario direct
 The answer has the shape the TV really gives: on stderr, "timingServiceResponse: {json on several lines}" then
 "Timing: 2ms". Without TVLENS_FAKE_LUNA it answers a full-screen YouTube and records nothing.
 """
-import base64, fcntl, json, os, struct, sys, time, zlib
+import base64, fcntl, json, os, struct, sys, time
 
-# Image historique des tests de transport ; les contrôles réduits reçoivent un PNG à leur taille.
+# Image historique des tests de transport ; le contrôle BMP reproduit le format de la TV.
 PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==')
 VIDEO = {'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'fake-context', 'fullScreen': True,
          'width': 1920, 'height': 1080, 'sourceInput': {'x': 0, 'y': 0, 'width': 1920, 'height': 1080},
          'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}}
 
-def blue_png(width, height):
-    def chunk(kind, data):
-        return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
-    rows = (b'\0' + b'\0\0\xff' * width) * height
-    return (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0))
-            + chunk(b'IDAT', zlib.compress(rows)) + chunk(b'IEND', b''))
+def blue_bmp(width, height):
+    stride = (width * 3 + 3) // 4 * 4
+    rows = (b'\xff\0\0' * width + b'\0' * (stride - width * 3)) * height
+    header = struct.pack('<2sIHHI', b'BM', 54 + len(rows), 0, 0, 54)
+    header += struct.pack('<IiiHHIIiiII', 40, width, -height, 1, 24, 0, len(rows), 0, 0, 0, 0)
+    return header + rows
 
 def load(path, default):
     try:
@@ -58,11 +58,15 @@ def main():
             if endpoint.endswith('/getForegroundWindowInfo') and reply is None: reply = {'returnValue': True, 'windows': [{'appId': w} for w in load(windows_path, [])]}
     if reply is None:
         reply = {'returnValue': True, 'video': [VIDEO]} if endpoint.endswith('/getStatus') else {'returnValue': True}
+    if endpoint.endswith('/executeOneShot') and (payload.get('width', 0) < 256 or payload.get('height', 0) < 144):
+        reply = {'returnValue': False, 'errorCode': 'ERROR_INTERNAL'}
     if endpoint.endswith('/executeOneShot') and reply.get('returnValue') and payload.get('path'):
         image_data = PNG
-        if payload.get('width') == 160:
-            image_data = blue_png(payload['width'], payload['height'])
-        if 'png' in reply:
+        if payload.get('format') == 'BMP':
+            image_data = blue_bmp(payload['width'], payload['height'])
+        if 'bmp' in reply and payload.get('format') == 'BMP':
+            image_data = base64.b64decode(reply['bmp'])
+        if 'png' in reply and payload.get('format') == 'PNG':
             image_data = base64.b64decode(reply['png'])
         with open(payload['path'], 'wb') as image: image.write(image_data)
     sys.stderr.write('timingServiceResponse: ' + json.dumps(reply, indent=1) + '\nTiming: 2ms\n')

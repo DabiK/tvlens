@@ -144,10 +144,10 @@ def run(argv=None):
        reason=reason or 'foreignApp'
        continue
       reply=luna('com.webos.service.capture/executeOneShot',{
-       'path':str(tmp/'control.png'),'method':'DISPLAY','format':'PNG','width':CONTROL_WIDTH,'height':CONTROL_HEIGHT})
+       'path':str(tmp/'control.bmp'),'method':'DISPLAY','format':'BMP','width':CONTROL_WIDTH,'height':CONTROL_HEIGHT})
       if not reply.get('returnValue'):valid=False;reason=reason or 'captureFailed';continue
       try:
-       black=is_black((tmp/'control.png').read_bytes(),video['displayOutput'])
+       black=is_black((tmp/'control.bmp').read_bytes(),video['displayOutput'])
       except ValueError:
        valid=False
        reason=reason or 'captureFailed'
