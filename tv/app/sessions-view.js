@@ -277,6 +277,7 @@
             : report.sent
               ? "Capture active · " + plural(report.sent, "passage envoyé", "passages envoyés")
               : "Capture en cours · premier passage sous ≈10 s";
+      if (report.soundOnlyActive) view.label += " · Son seul · image noire ou protégée";
       // The bounds are told while the capture runs, not only once it has stopped.
       var bounds = [
         limit(limits.seconds) ? "après " + limit(limits.seconds) : "",

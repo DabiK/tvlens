@@ -511,6 +511,25 @@ test('active capture names the application in its idle bound', () => {
   }
 });
 
+test('active sound-only capture explains the black image and clears the label when images return', () => {
+  const report = {
+    connection: 'connected', sent: 3, soundOnly: 3, soundOnlyActive: true,
+    application: { appId: 'netflix', name: 'Netflix' }, limits: { seconds: 21600, idleSeconds: 600 },
+  };
+  const sound = sessions.describeCapture({ active: true, report });
+  assert.equal(sound.label,
+    'Capture active · 3 passages envoyés · Son seul · image noire ou protégée' +
+    ' · arrêt automatique après 6 h ou après 10 min sans lecture de Netflix');
+  assert.equal(sound.action, 'stop');
+  const visible = sessions.describeCapture({ active: true, report: { ...report, sent: 4, soundOnlyActive: false } });
+  assert.equal(visible.label,
+    'Capture active · 4 passages envoyés · arrêt automatique après 6 h ou après 10 min sans lecture de Netflix');
+  const reconnecting = sessions.describeCapture({ active: true, report: { ...report, connection: 'reconnecting' } });
+  assert.match(reconnecting.label, /^Réseau coupé.*Son seul · image noire ou protégée/);
+  const stopped = sessions.describeCapture({ active: false, report: { ...report, stopReason: 'stopped' } });
+  assert.equal(stopped.label, 'Capture arrêtée · contexte conservé');
+});
+
 test('capture button: every end of capture comes with its cause, and an open archive asks for a choice', () => {
   const limits = { seconds: 21600, idleSeconds: 600 };
   const stopped = (report, context) => sessions.describeCapture({ active: false, stopping: false, exitCode: 0, report: { stopped: true, limits, ...report } }, context);

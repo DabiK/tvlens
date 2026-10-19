@@ -7,19 +7,46 @@ Livré le 30 septembre 2026 sur la LG déjà rootée. Complète le [premier bran
 ## Utilisation
 
 Dans le code du 19 octobre 2026, la capture suit la première application vérifiée dont une vidéo `MAIN` est
-connectée : YouTube (`youtube.leanback.v4`) ou le lecteur de la TV (`com.webos.app.mediadiscovery`). Cette table
+connectée : YouTube (`youtube.leanback.v4`), le lecteur de la TV (`com.webos.app.mediadiscovery`) ou Netflix (`netflix`). Cette table
 nommée `VERIFIED_APPLICATIONS` vit dans `tv/capture.py` ; toute nouvelle entrée exige une sonde réelle image et son.
 La sonde du lecteur LG a été rapportée le 19 octobre ; le parcours complet de capture sera vérifié séparément sur la TV.
-Netflix, Prime et Disney+ restent refusés : leur capture n’a pas été vérifiée.
+La sonde Netflix du 19 octobre a rendu des images entièrement noires, mais a confirmé la présence du son.
+Prime et Disney+ restent refusés : leur capture n’a pas été vérifiée.
 
 L’application suivie reste fixée pour toute cette exécution. Passer à une autre application, même vérifiée,
 fait perdre le bloc (`foreignApp`) ; revenir à l’application suivie permet de continuer. Les contrôles avant
 et après chaque image refusent aussi une vidéo déconnectée et un changement d’application pendant la prise.
 Le rapport local transmis par `GET /capture` publie `application:{appId,name}`, ou `null` avant la première
-vidéo admissible. Le format des blocs envoyés au serveur reste identique.
+vidéo admissible. Les blocs avec images gardent leur format antérieur.
 
-Le contrôleur borne chaque exécution à six heures et à dix minutes sans image conservée de l’application
-suivie. Une image étrangère ne repousse pas l’arrêt. Le message de fin et le panneau disent par exemple
+Avant chaque image, un contrôle `DISPLAY` de 160×90 est entièrement décodé en Python, sans bibliothèque
+supplémentaire. Le détecteur accepte les PNG 8 bits non entrelacés RGB, RGBA, gris et gris avec alpha,
+avec les cinq filtres PNG. Seuls les pixels intérieurs au rectangle vidéo sont jugés : le panneau ou
+les bandes autour n'empêchent pas de détecter une vidéo noire. Le rectangle est projeté depuis les
+coordonnées d'écran 3840×2160 ; les pixels à cheval sur un bord sont exclus. Une image est noire si
+aucune composante de couleur ne dépasse 16 sur 255 ; l'alpha n'est pas une composante de couleur.
+Un PNG invalide ou non pris en charge reste un refus de capture, jamais une preuve de noir.
+
+Un bloc dont tous les contrôles conservés sont noirs part sans images, avec son audio et la déclaration
+`media:{video:false,audio:true}`. Le noir n'est pas envoyé. Un bloc mixte garde seulement les images
+dont le contrôle n'est pas noir. Après deux blocs noirs valides d'affilée, la capture ne fait plus
+qu'un contrôle par bloc de huit secondes. Dès que ce contrôle redevient visible, le bloc peut garder
+une image et le suivant retrouve quatre prises. Un bloc refusé interrompt la série de blocs noirs.
+Un contrôle pris pendant un déplacement de rectangle est écarté ; les autres contrôles stables
+permettent encore d'envoyer le son. Un bloc sans aucun contrôle stable garde le refus `geometryChanged`.
+Cette règle concerne toutes les applications suivies, y compris une scène noire de YouTube.
+
+Le rapport ajoute `soundOnly`, nombre de blocs son seul livrés avec succès, inclus dans `sent` et
+exclus de `dropped`, et `soundOnlyActive`, indicateur du mode son seul courant. Il revient à faux
+dès qu'un bloc est perdu avant sa mise en file ou que les images reviennent. Le panneau affiche
+« Son seul · image noire ou protégée » pendant cet état ; le compteur historique seul ne maintient
+pas le libellé après une perte ou le retour des images. Un ancien serveur qui refuse la déclaration produit une
+perte `deliveryRejected`, sans incrémenter `soundOnly`.
+
+Le contrôleur borne chaque exécution à six heures et à dix minutes sans image conservée ni bloc son seul
+admissible mis en file de l’application suivie. Les blocs étrangers ou invalides avant la mise en file
+ne repoussent pas l’arrêt.
+Le message de fin et le panneau disent par exemple
 « 10 min sans lecture de YouTube » ou « 10 min sans lecture du lecteur de la TV » ; sans application suivie,
 ils disent « sans lecture vidéo ». Le démarrage et la reprise restent manuels.
 Ces comportements sont couverts par simulation locale ; ils ne décrivent aucun déploiement ni nouvel essai réel.
@@ -63,11 +90,19 @@ La sidebar utilise désormais un heartbeat privé renouvelé par son contrôleur
 
 ## Installation effectuée
 
-Sources sous `/media/developer/tvlens-companion/` : `controller.py`, `capture.py`, `transport.py`. Configuration privée root `0600` : `connection.json`, avec `url` et `token`. L’interface utilise sa copie `connection.js`, propriétaire `wam`, permissions `0600`. Aucun secret n’est ajouté au dépôt.
+Sources sous `/media/developer/tvlens-companion/` : `controller.py`, `capture.py`, `transport.py`.
+La version son seul ajoute `blackness.py`, à copier avec le worker lors de sa prochaine installation.
+Configuration privée root `0600` : `connection.json`, avec `url` et `token`. L’interface utilise sa copie
+`connection.js`, propriétaire `wam`, permissions `0600`. Aucun secret n’est ajouté au dépôt.
 
 Le hook isolé `/var/lib/webosbrew/init.d/35-tvlens-capture-control` démarre seulement le contrôleur au boot. Les hooks SSH, VPN et Rakuten existants sont conservés. Le service a été redémarré et vérifié capture inactive ; aucun reboot complet de la TV n’a été imposé.
 
-Pour mettre à jour le code, arrêter d’abord la capture, copier les trois fichiers puis redémarrer uniquement le processus identifié comme `controller.py`. Ne pas utiliser un `pkill python` global. Pour désinstaller, retirer ce hook, arrêter le contrôleur identifié puis retirer son dossier après sauvegarde de la configuration. Le panneau mis à jour reste dans l’app existante ; son package système peut encore afficher la version du prototype.
+Pour mettre à jour le code, arrêter d’abord la capture, copier les quatre modules Python puis redémarrer
+uniquement le processus identifié comme `controller.py`. Ne pas utiliser un `pkill python` global. Pour
+désinstaller, retirer ce hook, arrêter le contrôleur identifié puis retirer son dossier après sauvegarde
+de la configuration. Le panneau mis à jour reste dans l’app existante ; son package système peut encore
+afficher la version du prototype. La bascule son seul est couverte par simulation locale ; son contrôle
+réel après intégration reste à effectuer séparément.
 
 ## Validation et échecs conservés
 

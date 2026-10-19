@@ -1,14 +1,18 @@
 """Manual, bounded TV -> host capture. Never launches, pauses or resizes a TV app."""
 import argparse,base64,fcntl,json,os,queue,shutil,signal,subprocess,tempfile,threading,time
 from transport import Transport, SessionChanged, drop, refusal, STORAGE_FULL, READ_ONLY
+from blackness import is_black, CONTROL_WIDTH, CONTROL_HEIGHT
 from pathlib import Path
 FRAME_STEP=2          # seconds between two frames of a block
+FRAMES_PER_BLOCK=4
 MAX_SECONDS=21600     # six hours, then a manual restart
 LUNA_PATIENCE=5       # blocks in a row lost to a mute Luna before the capture stops with an error
+BLACK_BLOCK_PATIENCE=2
 # Une entrée s'ajoute seulement après une sonde réelle d'image et de son sur la TV.
 VERIFIED_APPLICATIONS={
  'youtube.leanback.v4':'YouTube',
  'com.webos.app.mediadiscovery':'lecteur de la TV',
+ 'netflix':'Netflix',
 }
 
 def luna(endpoint,payload):
@@ -49,7 +53,8 @@ def run(argv=None):
  stop_event=threading.Event();done=threading.Event();save_lock=threading.Lock()
  limits={'seconds':args.seconds,'idleSeconds':args.idle_seconds}
  report={'sessionId':None,'sent':0,'dropped':0,'dropReasons':{},'errors':[],'frames':0,'retries':0,'connection':'starting','stopped':False,'queued':0,
-  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits,'lastRefusal':None,'application':None}
+  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits,'lastRefusal':None,'application':None,
+  'soundOnly':0,'soundOnlyActive':False}
  def save():
   with save_lock:
    target=Path(args.report);tmp_report=target.with_suffix('.tmp')
@@ -88,7 +93,8 @@ def run(argv=None):
    except queue.Empty:continue
    try:
     created=item.pop('_created')
-    transport.deliver(item,created)
+    if transport.deliver(item,created) and item.get('media',{}).get('video') is False:
+     report['soundOnly']+=1
    except SessionChanged as error:
     report['connection']=error.reason;report['errors']=(report['errors']+[str(error)])[-10:];end(error.reason,False);stop_event.set()
    except Exception as error:
@@ -99,14 +105,15 @@ def run(argv=None):
  thread=threading.Thread(target=upload);thread.start()
  def stamp():return offset+(time.monotonic()-anchor)*1000
  os.umask(0o077);tmp=Path(tempfile.mkdtemp(prefix='tvlens-capture-'))
- last_frame=time.monotonic()
+ last_activity=time.monotonic()
  mute=0
+ black_blocks=0
  try:
   for chunk in range(args.seconds//8):
    if args.parent_pid and os.getppid()!=args.parent_pid:end('parent');stop_event.set()
    if stop_event.is_set():break
    # Une autre application ne prolonge jamais la capture suivie.
-   if args.idle_seconds and time.monotonic()-last_frame>=args.idle_seconds:
+   if args.idle_seconds and time.monotonic()-last_activity>=args.idle_seconds:
     end('idle')
     break
    start=stamp()
@@ -115,8 +122,10 @@ def run(argv=None):
    frames=[]
    audio=subprocess.Popen(['arecord','-D','hw:0,13','-t','wav','-f','S16_LE','-r','48000','-c','2','-d','8',str(audiofile)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
    valid=True;reason=None;failure=None;moved=0
+   black_frames=0
+   shots=1 if black_blocks>=BLACK_BLOCK_PATIENCE else FRAMES_PER_BLOCK
    try:
-    for i in range(4):
+    for i in range(shots):
      if args.parent_pid and os.getppid()!=args.parent_pid:end('parent');stop_event.set()
      if stop_event.wait(max(0,began+i*FRAME_STEP-time.monotonic())):valid=False;reason=reason or 'stopped';break
      try:
@@ -134,8 +143,22 @@ def run(argv=None):
        valid=False
        reason=reason or 'foreignApp'
        continue
-      reply=luna('com.webos.service.capture/executeOneShot',{'path':str(tmp/'frame.png'),'method':method,'format':'PNG','width':1280,'height':720})
+      reply=luna('com.webos.service.capture/executeOneShot',{
+       'path':str(tmp/'control.png'),'method':'DISPLAY','format':'PNG','width':CONTROL_WIDTH,'height':CONTROL_HEIGHT})
       if not reply.get('returnValue'):valid=False;reason=reason or 'captureFailed';continue
+      try:
+       black=is_black((tmp/'control.png').read_bytes(),video['displayOutput'])
+      except ValueError:
+       valid=False
+       reason=reason or 'captureFailed'
+       continue
+      if not black:
+       reply=luna('com.webos.service.capture/executeOneShot',{
+        'path':str(tmp/'frame.png'),'method':method,'format':'PNG','width':1280,'height':720})
+       if not reply.get('returnValue'):
+        valid=False
+        reason=reason or 'captureFailed'
+        continue
       after=next((x for x in luna('com.webos.service.videooutput/getStatus',{})['video'] if x['sink']=='MAIN'),{})
       if after.get('appId')!=app_id or not after.get('connected'):
        valid=False
@@ -147,8 +170,11 @@ def run(argv=None):
       # Same context, and only the video rectangle moved while this frame was taken (the panel opened or
       # closed): the frame cannot be cut reliably and is left out. Its block keeps its sound and its other frames.
       if after.get('displayOutput')!=video['displayOutput']:moved+=1;continue
+      if black:
+       black_frames+=1
+       continue
       rect=video['displayOutput'];crop={k:round(v/3) for k,v in rect.items()}
-      last_frame=time.monotonic()
+      last_activity=time.monotonic()
       frames.append({
        'atMs':before,
        'data':base64.b64encode((tmp/'frame.png').read_bytes()).decode(),
@@ -158,6 +184,9 @@ def run(argv=None):
      except (RuntimeError,ValueError,KeyError,TypeError,OSError,subprocess.SubprocessError) as error:
       # One mute Luna call costs its block, counted with its cause, not a six-hour capture.
       valid=False;reason=reason or 'lunaFailed';failure=type(error).__name__+': '+str(error)
+    # Le son dure toujours huit secondes : la cadence réduite retrouve le même point d'attente que quatre prises.
+    if shots<FRAMES_PER_BLOCK:
+     stop_event.wait(max(0,began+(FRAMES_PER_BLOCK-1)*FRAME_STEP-time.monotonic()))
     if stop_event.is_set():audio.kill()
     audio.wait(timeout=5)
    finally:
@@ -166,18 +195,26 @@ def run(argv=None):
    report['framesMoved']+=moved
    mute=mute+1 if reason=='lunaFailed' else 0
    if mute>=LUNA_PATIENCE:raise RuntimeError(failure or 'Luna muette')
-   if not valid or not frames or audio.returncode or end_ms-start>10000:
+   sound_only=black_frames>0 and not frames
+   if not valid or (not frames and not sound_only) or audio.returncode or end_ms-start>10000:
+    black_blocks=0
+    report['soundOnlyActive']=False
     if not reason:
      if stop_event.is_set():reason='stopped'
      # Si toutes les prises traversent un déplacement, le bloc sans image garde cette cause explicite.
      elif moved and not frames:reason='geometryChanged'
-     elif not frames:reason='noFrames'
+     elif not frames and not sound_only:reason='noFrames'
      elif audio.returncode:reason='audioFailed'
      else:reason='tooLong'
     drop(report,reason)
     save()
     continue
    item={'sessionId':session['id'],'sequence':sequence+chunk,'startMs':start,'endMs':end_ms,'frames':frames,'audio':base64.b64encode(audiofile.read_bytes()).decode(),'_created':time.monotonic()}
+   black_blocks=black_blocks+1 if sound_only else 0
+   report['soundOnlyActive']=sound_only
+   if sound_only:
+    item['media']={'video':False,'audio':True}
+    last_activity=time.monotonic()
    if pending.full():pending.get_nowait();pending.task_done();drop(report,'queueOverflow')
    pending.put_nowait(item);report['queued']=pending.qsize();save()
   else:end('duration')

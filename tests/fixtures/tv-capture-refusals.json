@@ -22,7 +22,9 @@
     "lastRefusal": {
       "status": 409,
       "code": "read-only"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "storage-full": {
     "sessionId": null,
@@ -47,7 +49,9 @@
     "lastRefusal": {
       "status": 507,
       "code": "storage-full"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "stale-sequence": {
     "sessionId": null,
@@ -72,7 +76,9 @@
     "lastRefusal": {
       "status": 409,
       "code": "stale-sequence"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "sequence-conflict": {
     "sessionId": null,
@@ -97,7 +103,9 @@
     "lastRefusal": {
       "status": 409,
       "code": "sequence-conflict"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "capture-changed": {
     "sessionId": null,
@@ -122,7 +130,9 @@
     "lastRefusal": {
       "status": 409,
       "code": "capture-changed"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "legacy-conflict": {
     "sessionId": null,
@@ -147,7 +157,9 @@
     "lastRefusal": {
       "status": 409,
       "code": null
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "legacy-storage-full": {
     "sessionId": null,
@@ -172,7 +184,9 @@
     "lastRefusal": {
       "status": 507,
       "code": null
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   },
   "foreign-storage-status": {
     "sessionId": null,
@@ -197,6 +211,8 @@
     "lastRefusal": {
       "status": 507,
       "code": "other-refusal"
-    }
+    },
+    "soundOnly": 0,
+    "soundOnlyActive": false
   }
 }

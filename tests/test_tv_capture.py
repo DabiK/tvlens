@@ -8,22 +8,52 @@ import json
 import os
 from pathlib import Path
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
 import threading
 import unittest
+import zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
 REFUSED_REPORTS = json.loads((ROOT / 'tests' / 'fixtures' / 'tv-capture-refusals.json').read_text())
 sys.path.insert(0, str(ROOT / 'tv'))
 import capture
+import blackness
 
 FULL = {'x': 0, 'y': 0, 'width': 1280, 'height': 720}
 PNG = base64.b64decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
 )
+
+
+def control_png(pixel=lambda _x, _y: (0, 0, 0), width=160, height=90, filter_type=0, color_type=2):
+    """PNG RGB autonome, sans dépendance à l'encodeur de production."""
+    def chunk(kind, data):
+        return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
+    channels = len(pixel(0, 0))
+    previous = bytes(width * channels)
+    rows = bytearray()
+    for y in range(height):
+        row = bytes(value for x in range(width) for value in pixel(x, y))
+        rows.append(filter_type)
+        for index, value in enumerate(row):
+            a = row[index - channels] if index >= channels else 0
+            b = previous[index]
+            c = previous[index - channels] if index >= channels else 0
+            prediction = 0
+            if filter_type in (1, 2, 3):
+                prediction = {1: a, 2: b, 3: (a + b) // 2}[filter_type]
+            elif filter_type == 4:
+                prediction = min((a, b, c), key=lambda candidate: abs(a + b - c - candidate))
+            rows.append((value - prediction) % 256)
+        previous = row
+    return (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, color_type, 0, 0, 0))
+            + chunk(b'IDAT', zlib.compress(rows)) + chunk(b'IEND', b''))
+
+
 CAPTURE_PROCESS = '''
 import json, sys
 sys.path.insert(0, sys.argv.pop(1))
@@ -100,6 +130,49 @@ class Server:
         self.http.server_close()
         self.thread.join()
 
+
+class ControlBlackness(unittest.TestCase):
+    def test_all_png_filters_are_decoded_and_a_single_late_nonblack_pixel_is_seen(self):
+        rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
+        for filter_type in range(5):
+            with self.subTest(filter=filter_type):
+                dark = control_png(lambda x, y: (x % 17, y % 17, (x + y) % 17), filter_type=filter_type)
+                self.assertTrue(blackness.is_black(dark, rect))
+                for channel in range(3):
+                    def pixel(x, y):
+                        values = [16, 16, 16]
+                        if x == 159 and y == 89:
+                            values[channel] = 17
+                        return values
+                    self.assertFalse(blackness.is_black(control_png(pixel, filter_type=filter_type), rect))
+
+    def test_png_alpha_is_not_a_color_component_and_grayscale_is_decoded(self):
+        rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
+        for color_type, components in ((6, (16, 16, 16, 255)), (0, (16,)), (4, (16, 255))):
+            with self.subTest(color=color_type):
+                self.assertTrue(blackness.is_black(control_png(lambda *_: components, color_type=color_type), rect))
+                bright = (17,) + components[1:]
+                self.assertFalse(blackness.is_black(control_png(lambda *_: bright, color_type=color_type), rect))
+
+    def test_incomplete_invalid_or_unsupported_pngs_are_refused_instead_of_called_black(self):
+        rect = {'x': 0, 'y': 0, 'width': 3840, 'height': 2160}
+        black = control_png()
+        invalid = (b'', black[:-8], black[:40] + bytes([black[40] ^ 1]) + black[41:],
+                   control_png(width=1), control_png(filter_type=5), control_png(color_type=3))
+        for image in invalid:
+            with self.subTest(size=len(image)):
+                with self.assertRaises(ValueError):
+                    blackness.is_black(image, rect)
+
+    def test_empty_or_outside_video_rectangles_are_refused(self):
+        for rect in ({'x': 0, 'y': 0, 'width': 0, 'height': 2160},
+                     {'x': 0, 'y': 0, 'width': 4000, 'height': 2160},
+                     {'x': -24, 'y': 0, 'width': 100, 'height': 100},
+                     {'x': 1, 'y': 1, 'width': 1, 'height': 1}):
+            with self.subTest(rect=rect):
+                with self.assertRaises(ValueError):
+                    blackness.is_black(control_png(), rect)
+
 class CaptureRun(unittest.TestCase):
     """The real capture.py, in its own process, against the fakes. Only the pace between frames is shortened."""
 
@@ -120,8 +193,8 @@ class CaptureRun(unittest.TestCase):
             TVLENS_FAKE_ARECORD_SECONDS='0.05',
         )
 
-    def run_capture(self, server, seconds=8, idle=600):
-        (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64}))
+    def run_capture(self, server, seconds=8, idle=600, method='DISPLAY'):
+        (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64, 'captureMethod': method}))
         args = [
             '--config', str(self.root / 'connection.json'), '--seconds', str(seconds),
             '--idle-seconds', str(idle), '--lock', str(self.root / 'capture.lock'),
@@ -156,6 +229,159 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual(audio[8:12], b'WAVE')
         self.assertGreater(len(audio), 44)
 
+    def test_black_blocks_send_declared_sound_reduce_checks_and_restore_images_on_the_next_block(self):
+        black = {'returnValue': True, 'png': base64.b64encode(control_png()).decode()}
+        visible = {'returnValue': True}
+        # Deux blocs noirs à quatre contrôles, un noir réduit, un contrôle visible et son image,
+        # quatre contrôles visibles avec leurs images, puis un retour au noir à quatre contrôles.
+        replies = [black] * 9 + [visible] * 10 + [black] * 4
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.capture/executeOneShot': replies,
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server, seconds=48)
+        finally:
+            server.close()
+        blocks = sorted(server.segments, key=lambda block: block['sequence'])
+        self.assertEqual([len(block['frames']) for block in blocks], [0, 0, 0, 1, 4, 0])
+        self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['dropReasons']), (6, 4, 0, {}))
+        self.assertTrue(report['soundOnlyActive'])
+        self.assertEqual(report['frames'], 5)
+        for index in (0, 1, 2, 5):
+            block = blocks[index]
+            self.assertEqual(set(block), {'sessionId', 'sequence', 'startMs', 'endMs', 'frames', 'audio', 'media'})
+            self.assertEqual(block['media'], {'video': False, 'audio': True})
+            audio = base64.b64decode(block['audio'], validate=True)
+            self.assertEqual((audio[:4], audio[8:12]), (b'RIFF', b'WAVE'))
+            self.assertGreater(len(audio), 44)
+        for index in (3, 4):
+            self.assertNotIn('media', blocks[index])
+            self.assertTrue(all(frame['data'] == base64.b64encode(PNG).decode() for frame in blocks[index]['frames']))
+        self.assert_block_media(blocks[4])
+        self.assertEqual([block['sequence'] - blocks[0]['sequence'] for block in blocks], list(range(6)))
+        calls = [json.loads(line) for line in (self.root / 'luna' / 'calls.jsonl').read_text().splitlines()]
+        shots = [call['payload'] for call in calls if call['endpoint'].endswith('/executeOneShot')]
+        sizes = [(shot['width'], shot['height']) for shot in shots]
+        self.assertEqual(sizes, [(160, 90)] * 10 + [(1280, 720)] + [(160, 90), (1280, 720)] * 4 + [(160, 90)] * 4)
+        self.assertTrue(all(shot['method'] == 'DISPLAY' for shot in shots if shot['width'] == 160))
+
+    def test_black_video_beside_a_bright_sidebar_is_checked_only_inside_its_rectangle(self):
+        video = {
+            'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'sidebar-video',
+            'displayOutput': {'x': 640, 'y': 240, 'width': 2560, 'height': 1440},
+        }
+        image = control_png(lambda x, y: (0, 0, 0) if 27 <= x < 133 and 10 <= y < 70 else (255, 255, 255))
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.videooutput/getStatus': {'video': [video]},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(image).decode()},
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server, seconds=24, method='VIDEO')
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['soundOnly'], report['frames'], report['dropped']), (3, 3, 0, 0))
+        self.assertTrue(all(block['frames'] == [] and block['media'] == {'video': False, 'audio': True} for block in server.segments))
+        calls = [json.loads(line) for line in (self.root / 'luna' / 'calls.jsonl').read_text().splitlines()]
+        shots = [call['payload'] for call in calls if call['endpoint'].endswith('/executeOneShot')]
+        self.assertEqual([(shot['method'], shot['width'], shot['height']) for shot in shots], [('DISPLAY', 160, 90)] * 9)
+
+    def test_one_visible_control_keeps_only_its_image_and_does_not_declare_sound_only(self):
+        black = {'returnValue': True, 'png': base64.b64encode(control_png()).decode()}
+        visible = {'returnValue': True}
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.capture/executeOneShot': [black, visible, visible, black, black],
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['frames']), (1, 0, 0, 1))
+        self.assertFalse(report['soundOnlyActive'])
+        block, = server.segments
+        self.assertNotIn('media', block)
+        self.assertEqual(len(block['frames']), 1)
+        self.assertEqual(block['frames'][0]['data'], base64.b64encode(PNG).decode())
+
+    def test_one_moving_black_control_does_not_lose_the_other_black_controls_and_their_sound(self):
+        full = {
+            'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        beside = dict(full, displayOutput={'x': 640, 'y': 0, 'width': 2560, 'height': 1440})
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.videooutput/getStatus': [{'video': [video]} for video in (full, full, full, beside, beside)],
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['framesMoved']), (1, 1, 0, 1))
+        block, = server.segments
+        self.assertEqual((block['frames'], block['media']), ([], {'video': False, 'audio': True}))
+
+    def test_reduced_black_controls_still_refuse_foreign_video_context_changes_and_moving_rectangles(self):
+        full = {
+            'sink': 'MAIN', 'appId': 'netflix', 'connected': True, 'context': 'video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        for change, reason in (({'appId': 'unverified.app'}, 'foreignApp'), ({'connected': False}, 'foreignApp'),
+                               ({'context': 'another-video'}, 'geometryChanged'),
+                               ({'displayOutput': {'x': 640, 'y': 0, 'width': 2560, 'height': 1440}}, 'geometryChanged')):
+            with self.subTest(change=change):
+                (self.root / 'luna' / 'counts.json').unlink(missing_ok=True)
+                readings = [full] * 17 + [dict(full, **change)]
+                (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+                    'com.webos.service.videooutput/getStatus': [{'video': [video]} for video in readings],
+                    'com.webos.service.capture/executeOneShot': {
+                        'returnValue': True, 'png': base64.b64encode(control_png()).decode(),
+                    },
+                }))
+                server = Server()
+                try:
+                    report = self.run_capture(server, seconds=24)
+                finally:
+                    server.close()
+                self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['dropReasons']),
+                                 (2, 2, 1, {reason: 1}))
+                self.assertEqual(len(server.segments), 2)
+                self.assertFalse(report['soundOnlyActive'])
+
+    def test_a_rejected_sound_only_delivery_counts_as_dropped_instead_of_sound_only_sent(self):
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+        }))
+        server = Server(segment=(400, {'code': 'invalid-media-block'}))
+        try:
+            report = self.run_capture(server, seconds=16)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['dropReasons']),
+                         (0, 0, 2, {'deliveryRejected': 2}))
+        self.assertEqual(len(server.segments), 2)
+        self.assertTrue(all(block['media'] == {'video': False, 'audio': True} for block in server.segments))
+
+    def test_unreadable_or_refused_controls_never_prove_a_sound_only_block(self):
+        for reply in ({'returnValue': False},
+                      {'returnValue': True, 'png': base64.b64encode(control_png()[:-8]).decode()}):
+            with self.subTest(reply=reply['returnValue']):
+                (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+                    'com.webos.service.capture/executeOneShot': reply,
+                }))
+                server = Server()
+                try:
+                    report = self.run_capture(server)
+                finally:
+                    server.close()
+                self.assertEqual((report['sent'], report['soundOnly'], report['dropped'], report['dropReasons']),
+                                 (0, 0, 1, {'captureFailed': 1}))
+                self.assertFalse(report['soundOnlyActive'])
+                self.assertEqual(server.segments, [])
+
     def test_block_without_a_card_is_exactly_the_block_of_before(self):
         server = Server()
         try:
@@ -183,6 +409,25 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual(len(server.segments), 2)
         for block in server.segments:
             self.assert_block_media(block)
+
+    def test_netflix_is_followed_and_sends_black_video_as_sound_only(self):
+        video = {
+            'sink': 'MAIN', 'appId': 'netflix', 'connected': True, 'context': 'netflix-video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.videooutput/getStatus': {'video': [video]},
+            'com.webos.service.capture/executeOneShot': {'returnValue': True, 'png': base64.b64encode(control_png()).decode()},
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server, seconds=16)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['dropped']), (2, 0))
+        self.assertEqual(report['application'], {'appId': 'netflix', 'name': 'Netflix'})
+        self.assertEqual(report['soundOnly'], 2)
+        self.assertTrue(all(block['media'] == {'video': False, 'audio': True} and not block['frames'] for block in server.segments))
 
     def test_switching_from_youtube_to_lg_player_drops_the_foreign_block_then_resumes_youtube(self):
         youtube = {
@@ -257,6 +502,7 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual(set(report), {
             'sessionId', 'sent', 'dropped', 'dropReasons', 'errors', 'frames', 'retries', 'connection',
             'stopped', 'queued', 'pid', 'framesMoved', 'stopReason', 'stopMessage', 'limits', 'lastRefusal', 'application',
+            'soundOnly', 'soundOnlyActive',
         })
         self.assertEqual(report['application'], {'appId': 'youtube.leanback.v4', 'name': 'YouTube'})
         self.assertIsNone(report['lastRefusal'])
@@ -361,7 +607,7 @@ class CaptureRun(unittest.TestCase):
 
     def test_no_youtube_playback_stops_the_capture_as_idle_and_counts_every_block(self):
         foreign = {
-            'sink': 'MAIN', 'appId': 'netflix', 'connected': True, 'context': 'x',
+            'sink': 'MAIN', 'appId': 'unverified.app', 'connected': True, 'context': 'x',
             'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
         }
         (self.root / 'luna' / 'replies.json').write_text(json.dumps({'com.webos.service.videooutput/getStatus': {'returnValue': True, 'video': [foreign]}}))
@@ -423,7 +669,7 @@ class CaptureRun(unittest.TestCase):
             self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['framesMoved'], segments),
                              (0, 1, {'geometryChanged': 1}, 0, []))
 
-    def controlled_capture(self, server, blocks=1, before_audio=lambda *_: None, video=None, idle=0):
+    def controlled_capture(self, server, blocks=1, before_audio=lambda *_: None, video=None, idle=0, control=None):
         """Horloge pilotée et médias locaux ; capture.run, thread d'envoi et HTTP réels."""
         clock = [100.0]
         stop = threading.Event()
@@ -458,8 +704,10 @@ class CaptureRun(unittest.TestCase):
             def kill(self):
                 self.returncode = -9
 
-            def wait(self, **_):
+            def wait(self, timeout=None):
                 if self.returncode is None:
+                    if timeout is not None and self.started + 8 - clock[0] > timeout:
+                        raise subprocess.TimeoutExpired('arecord', timeout)
                     clock[0] = self.started + 8
                     self.path.write_bytes(b'RIFF' + b'\0' * 4 + b'WAVE' + b'\0' * 40)
                     self.returncode = 0
@@ -471,7 +719,10 @@ class CaptureRun(unittest.TestCase):
                 if video:
                     current.update(video(len(recordings)))
                 return {'video': [current]}
-            Path(payload['path']).write_bytes(PNG)
+            image = control_png(lambda _x, _y: (0, 0, 255)) if payload['width'] == 160 else PNG
+            if control and payload['width'] == 160:
+                image = control(len(recordings))
+            Path(payload['path']).write_bytes(image)
             return {'returnValue': True}
 
         (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64}))
@@ -506,6 +757,30 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual(report['dropped'], sum(report['dropReasons'].values()))
         return report
 
+    def test_sound_only_blocks_refresh_the_idle_timer_through_the_reduced_cadence(self):
+        server = Server()
+        try:
+            report = self.controlled_capture(server, blocks=4, idle=10, control=lambda _: control_png())
+        finally:
+            server.close()
+        self.assertEqual((report['stopReason'], report['sent'], report['soundOnly'], report['dropped'], report['frames']),
+                         ('duration', 4, 4, 0, 0))
+        self.assertEqual([(block['startMs'], block['endMs']) for block in server.segments],
+                         [(0, 8000), (8000, 16000), (16000, 24000), (24000, 32000)])
+        self.assertTrue(all(not block['frames'] and block['media'] == {'video': False, 'audio': True} for block in server.segments))
+
+    def test_foreign_blocks_after_sound_only_do_not_refresh_the_idle_timer(self):
+        server = Server()
+        try:
+            report = self.controlled_capture(server, blocks=6, idle=10, control=lambda _: control_png(),
+                                             video=lambda block: {'appId': 'netflix' if block <= 2 else 'unverified.app'})
+        finally:
+            server.close()
+        self.assertEqual((report['stopReason'], report['sent'], report['soundOnly'], report['dropped'], report['dropReasons']),
+                         ('idle', 2, 2, 2, {'foreignApp': 2}))
+        self.assertEqual(report['application'], {'appId': 'netflix', 'name': 'Netflix'})
+        self.assertFalse(report['soundOnlyActive'])
+
     def test_idle_timeout_names_the_followed_application_and_foreign_frames_do_not_extend_it(self):
         for app_id, name, playback in (
             ('youtube.leanback.v4', 'YouTube', 'de YouTube'),
@@ -526,10 +801,10 @@ class CaptureRun(unittest.TestCase):
                                  '10 s sans lecture '+playback+' : relance la capture quand la vidéo reprend.')
                 self.assertEqual(len(server.segments), 1)
 
-    def test_idle_timeout_without_a_followed_application_says_video_and_refuses_netflix(self):
+    def test_idle_timeout_without_a_followed_application_says_video_and_refuses_an_unverified_app(self):
         server = Server()
         try:
-            report = self.controlled_capture(server, blocks=4, idle=10, video=lambda _: {'appId': 'netflix'})
+            report = self.controlled_capture(server, blocks=4, idle=10, video=lambda _: {'appId': 'unverified.app'})
         finally:
             server.close()
         self.assertEqual((report['stopReason'], report['sent'], report['dropped'], report['dropReasons']),
@@ -548,7 +823,7 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual((report['stopReason'], report['sent'], report['dropped'], report['frames']), ('duration', 3, 0, 12))
 
     def test_only_a_verified_connected_main_video_selects_the_followed_application(self):
-        for unavailable in ({'appId': 'netflix'}, {'connected': False},
+        for unavailable in ({'appId': 'unverified.app'}, {'connected': False},
                             {'appId': 'com.webos.app.mediadiscovery', 'connected': False}, {'sink': 'SUB'}):
             with self.subTest(first=unavailable):
                 server = Server()

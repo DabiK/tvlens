@@ -1,7 +1,7 @@
 ---
 id: T301
 titre: Switch the TV capture to sound only when its images are black
-statut: a-faire
+statut: termine
 bloque_par: T299
 adr: non
 installe: non
@@ -83,3 +83,67 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : le chantier « son seul » (T297 à T302) passe en tête de file, après T225.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T301/exploration.md` ;
+  consignes, appelants, tests et ADR 0011/0041/0042/0062 lus. Aucun écart prévu (`ecarts.md`).
+- 19/10, Codex : rouges observés puis verts pour la transition noir/images/noir,
+  l'admission Netflix et le libellé du panneau. Commandes :
+  `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_black_blocks_send_declared_sound -v`,
+  même commande avec `-k test_netflix_is_followed`,
+  `node --test --test-name-pattern='active sound-only capture' tests/tv-panel.test.cjs`.
+  Sorties conservées dans `.harness-state/tickets/T301/{transition,netflix,panel}-{red,green}.log`.
+- 19/10, Codex : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k sound_only -v`
+  passe (6 tests) ; `-k ControlBlackness` passe (4 tests). Sidebar, bloc mixte, refus de livraison,
+  contrôles illisibles, PNG filtrés et seuil exact couverts. L'horloge pilotée confirme 32 s de
+  capture son seul malgré une borne idle de 10 s, puis l'arrêt sur application étrangère.
+  `node scripts/check.mjs --changed` : vert (22 tests JS). Ce mode ne lance pas les tests Python ;
+  le contrôle complet reste à lancer.
+- 19/10, Codex : déplacement d'un contrôle noir reproduit rouge avec
+  `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_one_moving_black_control -v`,
+  puis corrigé : les contrôles stables restants gardent leur son. La commande avec `-k black_control`
+  passe (2 tests), y compris les refus application, déconnexion, contexte et rectangle en cadence réduite.
+  Sorties `moving-control-{red,green}.log` dans le dossier d'état. Documentation mise à jour ;
+  aucun essai réel ni changement au serveur, au cœur ou au harnais.
+- 19/10, Codex : le faux audio vérifie désormais le délai demandé à `wait`. Rouge observé avec
+  `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_sound_only_blocks_refresh -v` :
+  arrêt `error` au troisième bloc, car un seul contrôle laissait huit secondes d'audio face à une attente
+  maximale de cinq. Correction : attendre, avec l'événement d'arrêt, le créneau de la quatrième prise
+  avant de rejoindre l'attente audio habituelle. Trace `audio-wait-red.log` dans le dossier d'état.
+- 19/10, Codex : même commande ciblée verte après correction (`audio-wait-green.log`).
+  `node scripts/check.mjs` : vert, 3 025 tests JS dans 154 fichiers, 68 tests Python,
+  règles, format, lint, gel et cliquet verts. Trace complète :
+  `.harness-state/tickets/T301/check-full.log`. Verdict `TERMINÉ` déposé pour la boucle ;
+  contrôle réel réservé à T302 par le périmètre, aucun commit ni push.
+- 19/10, Codex, reprise après relecture 1 : rapport, journal, écarts, état Git et diff relus.
+  Les deux mineurs sont acceptés : effacer l'indicateur son seul sur perte locale et restituer
+  la raison des bornes dans le commentaire du contrôleur. Aucun écart ni contestation prévu.
+- 19/10, Codex, correction 1 :
+  `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_foreign_blocks_after_sound_only -v`
+  rouge sur `soundOnlyActive` resté vrai, puis vert après sa remise à faux dans la branche de perte locale.
+  Même commande avec `-k test_reduced_black_controls_still_refuse` : verte, avec la même assertion sur
+  les pertes d'application, de connexion, de contexte et de rectangle. Traces
+  `correction-1-mode-{red,green}.log` et `correction-1-refusals-green.log` dans le dossier d'état.
+  Documentation du rapport précisée ; commentaire du contrôleur corrigé pour rappeler que les bornes
+  empêchent un enregistreur permanent, son seul compris. `node scripts/check.mjs --changed` : vert,
+  22 tests JS (`correction-1-check-changed.log`).
+- 19/10, Codex, correction 1 : `node scripts/check.mjs` vert sur l'état corrigé : 3 025 tests JS
+  dans 154 fichiers et 68 tests Python ; règles, format, lint, gel et cliquet verts.
+  Trace `.harness-state/tickets/T301/correction-1-check-full.log` ; les deux mineurs sont corrigés,
+  nouveau verdict `TERMINÉ` déposé pour la boucle. Aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T301/relecture-2.md : 1. `tv/blackness.py:6-7`, `tv/capture.py:146-154` (hors périmètre, réserve de déploiement)
+  - **Ce qui ne va pas.** C'est le constat 4 de la relecture 1, désormais confirmé sur la vraie TV par la sonde citée dans T306. `executeOneShot` `DISPLAY` refuse le PNG 160×90 (`ERROR_INTERNAL`). Installée telle quelle, cette version perdrait tous les blocs de toutes les applications en `captureFailed`, YouTube compris.
+  - **Pourquoi pas bloquant.**
+    - Le ticket proposait lui-même 160×90 comme exemple.
+    - L'orchestrateur a ouvert T306 pour passer à un BMP 256×144. T306 est bloqué par T301, et le contrôle réel T302 est bloqué par T306.
+    - L'installation sur la TV est manuelle.
+  - **Attendu.** Ne pas installer la branche sur la TV entre l'intégration de T301 et celle de T306.
+- .harness-state/tickets/T301/relecture-2.md : 2. `docs/lg-installation.md:22`, `:70-72` (hors périmètre, réserve reconduite)
+  - **Ce qui ne va pas.** Ce document n'a pas changé depuis la relecture 1 (constat 3) :
+    - le tableau d'installation ne cite toujours pas `blackness.py`, alors que `capture.py` l'importe ;
+    - les lignes 70-72 ne parlent ni de Netflix ni du son seul.
+  - **Attendu.** Le mettre à jour avant le déploiement de T302, ou dans T306.
+- .harness-state/tickets/T301/relecture-2.md : 3. `tv/capture.py:43-234` (hors périmètre, réserve reconduite)
+  - **Ce qui ne va pas.** `run()` dépasse toujours de loin 80 lignes et une complexité de 15. Python n'est pas vérifié par ESLint. C'est le constat 5 de la relecture 1.
+  - **Attendu.** Un ticket de refactorisation qui sort la boucle de prise de `run()`.
