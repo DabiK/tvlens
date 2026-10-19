@@ -41,7 +41,7 @@ async function loadConfig({ configPath, userData, safeStorage, environment = pro
       const { switchEnv = {}, ...provider } = JSON.parse(safeStorage.decryptString(await fs.readFile(cached)));
       // A cache written by an import without a key holds switches only.
       return { ...(provider.apiKey ? provider : { apiKey: '', model: DEFAULT_MODEL }),
-        ...switches({ ...set(switchEnv), ...set(environment, [...SWITCHES, ...LOCAL_TOKENS]) }) };
+        ...switches({ ...set(switchEnv), ...set(environment, [...SWITCHES, ...LOCAL_TOKENS, ...WHISPER_PATHS]) }) };
     }
     catch { /* Import remains available when no encrypted credentials exist. */ }
   }
@@ -65,6 +65,8 @@ const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLEN
   'TVLENS_LOCAL_INSPECTION_KEEP_ALIVE', 'TVLENS_LOCAL_INSPECTION_THINK',
   'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL', 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS'];
 const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN', 'TVLENS_LOCAL_INSPECTION_TOKEN'];
+// Ces chemins remplacent ceux du cache au démarrage ; leur persistance à l'import reste celle du fournisseur.
+const WHISPER_PATHS = ['TVLENS_WHISPER_MODEL', 'TVLENS_WHISPER_BINARY'];
 // Only what a source really sets: an empty variable must not undo a setting written elsewhere.
 const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => typeof env[name] === 'string' && env[name] !== '').map(name => [name, env[name]]));
 function switches(env) {

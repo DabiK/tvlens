@@ -1,7 +1,7 @@
 ---
 id: T256
 titre: Honor explicit Whisper paths when loading cached settings
-statut: a-faire
+statut: termine
 bloque_par: T247, T268, T280, T284
 adr: non
 installe: non
@@ -92,3 +92,27 @@ explicites, déjà honorés à l'import, et leur vérification externe.
   ticket.
 - 18/10, propriétaire : les réglages des modèles locaux (T282, T283) et leur contrôle T284 passent avant ce
   ticket.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T256/exploration.md` ; défaut localisé au
+  filtre de l'environnement sur la voie cache. Correction limitée à cette voie pour conserver la persistance
+  historique de l'import. Aucun écart prévu ; tests de régression à écrire avant le correctif.
+- 19/10, Codex : `node --test --test-name-pattern='cached Whisper paths' tests/portable-config.test.cjs`
+  observé rouge : 2 échecs d'assertion sur les chemins (avec et sans clé), puis vert : 2/2 après ajout
+  des seuls chemins au filtre de démarrage. Sorties `whisper-cache-red.log` et `whisper-cache-green.log`
+  dans le dossier d'état.
+- 19/10, Codex : `node --test tests/portable-config.test.cjs` réussi, 16/16 ; preuves ajoutées pour les
+  quatre voies, les remplacements indépendants, les valeurs absentes/vides, la composition empaquetée,
+  l'absence d'écriture et la persistance historique de l'import avec ou sans clé. Sortie
+  `.harness-state/tickets/T256/portable-config-green.log`.
+- 19/10, Codex : `node --test --test-concurrency=1 tests/session-providers.test.cjs tests/local-transcriber.test.cjs tests/review-regressions.test.cjs tests/media-asr-options.test.cjs`
+  réussi : 52/52, aucune omission ; portable-config avait été joué juste avant. Les diagnostics binaire
+  absent, modèle absent et silence réussi restent verts. Sortie `targeted-sequential.log` dans le dossier d'état.
+- 19/10, Codex : `node scripts/check.mjs --changed` réussi : règles, format, lint, gel, cliquet et
+  16 tests verts. Sortie `.harness-state/tickets/T256/check-changed.log`.
+- 19/10, Codex : `node scripts/check.mjs` réussi en entier : règles, format, lint, gel et cliquet verts,
+  2 965/2 965 tests JavaScript (153 fichiers), 54 tests Python réussis. Sortie
+  `.harness-state/tickets/T256/check-full.log`. `git diff --check` réussi. Verdict `TERMINÉ` déposé
+  dans le dossier d'état ; relecture et intégration laissées à la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T256/relecture-1.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.

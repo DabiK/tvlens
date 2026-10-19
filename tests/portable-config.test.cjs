@@ -7,6 +7,114 @@ const {executable} = require('../adapters/system-paths.cjs');
 const {loadConfig} = require('../adapters/config.cjs');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
+const { createSessionTranscriber } = require('../runtime/session-providers.cjs');
+
+async function whisperConfigFixture(t, apiKey) {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-whisper-cache-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = {
+    isEncryptionAvailable: () => true,
+    encryptString: text => Buffer.from(text).map(byte => byte ^ 0x5a),
+    decryptString: bytes => Buffer.from(bytes).map(byte => byte ^ 0x5a).toString(),
+  };
+  const configPath = path.join(root, 'speech.env');
+  await fs.writeFile(configPath, [
+    `OPENROUTER_API_KEY=${apiKey}`, 'OPENROUTER_MODEL=file/provider',
+    'TVLENS_WHISPER_MODEL=/file/model.bin', 'TVLENS_WHISPER_BINARY=/file/whisper',
+    'TVLENS_WHISPER_THREADS=3', 'TVLENS_WHISPER_AUDIO_CTX=512',
+    'TVLENS_BACKGROUND_INDEX=0', 'TVLENS_FFMPEG=/file/ffmpeg',
+  ].join('\n'));
+  return { configPath, safeStorage, cached: path.join(root, 'provider.enc'), root,
+    load: options => loadConfig({ userData: root, safeStorage, environment: {}, ...options }) };
+}
+
+function assertWhisperComposition(config, environment) {
+  class RecordedTranscriber {
+    constructor(options) { this.options = options; }
+  }
+  const { options } = createSessionTranscriber({ config, packaged: true }, { LocalTranscriber: RecordedTranscriber });
+  assert.equal(options.model, environment.TVLENS_WHISPER_MODEL);
+  assert.equal(options.binary, environment.TVLENS_WHISPER_BINARY);
+}
+
+for (const apiKey of ['imported-key', '']) {
+  test(`cached Whisper paths accept temporary startup overrides (provider key: ${Boolean(apiKey)})`, async t => {
+    const f = await whisperConfigFixture(t, apiKey);
+    await f.load({ configPath: f.configPath });
+    const baseline = await f.load();
+    assert.equal(baseline.whisperModel, apiKey ? '/file/model.bin' : undefined);
+    assert.equal(baseline.whisperBinary, apiKey ? '/file/whisper' : undefined);
+    const bytes = await fs.readFile(f.cached);
+    const writes = t.mock.method(fs, 'writeFile');
+    const environment = { TVLENS_WHISPER_MODEL: '/environment/model.bin', TVLENS_WHISPER_BINARY: '/environment/whisper' };
+    const overridden = await f.load({ environment });
+    assert.deepEqual(overridden, { ...baseline, whisperModel: environment.TVLENS_WHISPER_MODEL, whisperBinary: environment.TVLENS_WHISPER_BINARY });
+    assert.equal(overridden.apiKey, apiKey);
+    assertWhisperComposition(overridden, environment);
+    for (const [selected, expected] of [
+      [{}, baseline],
+      [{ TVLENS_WHISPER_MODEL: '', TVLENS_WHISPER_BINARY: '' }, baseline],
+      [{ TVLENS_WHISPER_MODEL: environment.TVLENS_WHISPER_MODEL }, { ...baseline, whisperModel: environment.TVLENS_WHISPER_MODEL }],
+      [{ TVLENS_WHISPER_BINARY: environment.TVLENS_WHISPER_BINARY }, { ...baseline, whisperBinary: environment.TVLENS_WHISPER_BINARY }],
+      [{ ...environment, TVLENS_WHISPER_MODEL: '' }, { ...baseline, whisperBinary: environment.TVLENS_WHISPER_BINARY }],
+      [{ ...environment, TVLENS_WHISPER_BINARY: '' }, { ...baseline, whisperModel: environment.TVLENS_WHISPER_MODEL }],
+    ]) {
+      assert.deepEqual(await f.load({ environment: selected }), expected);
+    }
+    assert.deepEqual(await f.load(), baseline);
+    assert.equal(writes.mock.callCount(), 0, 'cached starts never write, including when overridden');
+    assert.deepEqual(await fs.readFile(f.cached), bytes);
+  });
+}
+
+for (const apiKey of ['imported-key', '']) {
+  test(`Whisper imports retain their path precedence and persistence (provider key: ${Boolean(apiKey)})`, async t => {
+    const f = await whisperConfigFixture(t, apiKey);
+    for (const [environment, expected] of [
+      [{}, { TVLENS_WHISPER_MODEL: '/file/model.bin', TVLENS_WHISPER_BINARY: '/file/whisper' }],
+      [{ TVLENS_WHISPER_MODEL: '/environment/model.bin', TVLENS_WHISPER_BINARY: '/environment/whisper' },
+        { TVLENS_WHISPER_MODEL: '/environment/model.bin', TVLENS_WHISPER_BINARY: '/environment/whisper' }],
+      [{ TVLENS_WHISPER_MODEL: '', TVLENS_WHISPER_BINARY: '' },
+        { TVLENS_WHISPER_MODEL: null, TVLENS_WHISPER_BINARY: executable('whisper-cli', { environment: {} }) }],
+    ]) {
+      const imported = await f.load({ configPath: f.configPath, environment });
+      assert.equal(imported.apiKey, apiKey);
+      assert.equal(imported.whisperModel, expected.TVLENS_WHISPER_MODEL);
+      assert.equal(imported.whisperBinary, expected.TVLENS_WHISPER_BINARY);
+      if (expected.TVLENS_WHISPER_MODEL) assertWhisperComposition(imported, expected);
+      const stored = JSON.parse(f.safeStorage.decryptString(await fs.readFile(f.cached)));
+      assert.deepEqual(stored.switchEnv, { TVLENS_WHISPER_AUDIO_CTX: '512', TVLENS_BACKGROUND_INDEX: '0' });
+      if (apiKey) {
+        assert.equal(stored.whisperModel, expected.TVLENS_WHISPER_MODEL);
+        assert.equal(stored.whisperBinary, expected.TVLENS_WHISPER_BINARY);
+      } else {
+        assert.deepEqual(Object.keys(stored), ['switchEnv'], 'keyless imports still persist switches only');
+      }
+      const restored = await f.load();
+      assert.equal(restored.apiKey, apiKey);
+      assert.equal(restored.whisperModel, apiKey ? expected.TVLENS_WHISPER_MODEL : undefined);
+      assert.equal(restored.whisperBinary, apiKey ? expected.TVLENS_WHISPER_BINARY : undefined);
+    }
+  });
+}
+
+test('explicit Whisper paths reach packaged transcription without a cache or a provider key and write nothing', async t => {
+  const f = await whisperConfigFixture(t, '');
+  const userData = path.join(f.root, 'uncached');
+  const environment = { TVLENS_WHISPER_MODEL: '/environment/model.bin', TVLENS_WHISPER_BINARY: '/environment/whisper' };
+  const writes = t.mock.method(fs, 'writeFile');
+  const config = await f.load({ userData, environment });
+  assert.equal(config.apiKey, '');
+  assert.equal(config.whisperModel, environment.TVLENS_WHISPER_MODEL);
+  assert.equal(config.whisperBinary, environment.TVLENS_WHISPER_BINARY);
+  assertWhisperComposition(config, environment);
+  const fresh = await f.load({ userData });
+  const { whisperModel, whisperBinary, ...otherSettings } = config;
+  assert.deepEqual(fresh, otherSettings);
+  assert.deepEqual(await f.load({ userData, environment: { TVLENS_WHISPER_MODEL: '', TVLENS_WHISPER_BINARY: '' } }), fresh);
+  assert.equal(writes.mock.callCount(), 0);
+  await assert.rejects(fs.access(userData), { code: 'ENOENT' });
+});
 
 test('dedicated inspection settings persist independently while tokens and environment overrides remain temporary', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-inspection-model-'));
