@@ -5,7 +5,8 @@ const {
 } = require("../adapters/simulated-providers.cjs");
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
 const { createSessionTranscriber } = require('../runtime/session-providers.cjs');
-const { createSessionRuntime, validateSegment } = require('../runtime/session-runtime.cjs');
+const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
+const { validateCapturedSegment } = require('../runtime/segment-contract.cjs');
 const { createSurveillanceRuntime, tickSurveillance } = require('../runtime/surveillance-runtime.cjs');
 const { closeSession, settleQuestions } = require('../runtime/session-closing.cjs');
 const { isEmptySession } = require('../runtime/empty-session.cjs');
@@ -469,7 +470,7 @@ app.whenReady().then(async () => {
   }));
   handle('watch:ingest', async input => {
     if (!loaded || input?.sessionId !== loaded.runtime.watch.id) throw new Error('Session obsolète.');
-    validateSegment(input, loaded.runtime.watch.now());
+    validateCapturedSegment(input, { now: loaded.runtime.watch.now() });
     const session = loaded.runtime;
     const work = loaded.runtime.watch.ingest(input);
     ingestions.add(work);

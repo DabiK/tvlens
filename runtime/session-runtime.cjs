@@ -1,4 +1,5 @@
 const { refusal } = require("./errors.cjs");
+const { validateCapturedSegment } = require("./segment-contract.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
@@ -288,39 +289,7 @@ async function openArchivedSession({ library, id, ...options }) {
   return { session, archive };
 }
 function validateSegment(input, now) {
-  if (
-    !input ||
-    !Number.isFinite(input.startMs) ||
-    !Number.isFinite(input.endMs) ||
-    input.endMs > now + 3000
-  )
-    throw refusal(400, "Horodatage de capture invalide.", "invalid-captured-segment");
-  if (
-    !(input.clip instanceof Uint8Array) ||
-    input.clip.byteLength < 1 ||
-    input.clip.byteLength > 20000000
-  )
-    throw refusal(400, "Segment vidéo trop volumineux ou vide.", "invalid-captured-segment");
-  if (
-    input.audio &&
-    (!(input.audio instanceof Uint8Array) || input.audio.byteLength > 2100000)
-  )
-    throw refusal(400, "Audio invalide.", "invalid-captured-segment");
-  if (
-    !Array.isArray(input.frames) ||
-    input.frames.length < 1 ||
-    input.frames.length > 8 ||
-    input.frames.some(
-      (f) =>
-        typeof f.dataUrl !== "string" ||
-        f.dataUrl.length > 1000000 ||
-        !/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(f.dataUrl) ||
-        !Number.isFinite(f.atMs) ||
-        f.atMs < input.startMs - 100 ||
-        f.atMs > input.endMs + 100,
-    )
-  )
-    throw refusal(400, "Images de capture invalides.", "invalid-captured-segment");
+  return validateCapturedSegment(input, { now });
 }
 module.exports = {
   createSessionRuntime,

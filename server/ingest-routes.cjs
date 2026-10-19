@@ -1,15 +1,15 @@
 const { createHash } = require("node:crypto");
 const { validateRemote } = require("../adapters/remote-media.cjs");
 const { refusal } = require("../runtime/errors.cjs");
+const { SEGMENT_LIMITS } = require("../runtime/segment-contract.cjs");
 const SEGMENTS_PATH = "/v1/segments";
-const FUTURE_TOLERANCE_MS = 3000;
 const MAX_ACCEPTED_BLOCKS = 100;
 
 async function ingestBlock({ runtime, media, transport }, { body, raw, send }) {
   validateRemote(body);
   // L'admission métier refuse avant tout assemblage : session obsolète, archive, capture arrêtée ou disque plein.
   const session = runtime.admit(body.sessionId);
-  if (body.endMs > session.watch.now() + FUTURE_TOLERANCE_MS)
+  if (body.endMs > session.watch.now() + SEGMENT_LIMITS.futureToleranceMs)
     throw refusal(400, "Horodatage futur.", "invalid-capture-time");
   // Une TV qui relance sa capture n'envoie pas de pause : sa nouvelle capture numérote depuis une autre origine,
   // même pour la même session. Un bloc de l'ancienne capture rejoué ensuite est refusé par la session elle-même,

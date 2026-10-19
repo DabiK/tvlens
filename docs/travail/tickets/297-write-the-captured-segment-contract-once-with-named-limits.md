@@ -1,7 +1,7 @@
 ---
 id: T297
 titre: Write the captured segment contract once with named limits
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -65,3 +65,33 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : le chantier « son seul » (T297 à T302) passe en tête de file, après T225.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T297/exploration.md` ; contrat actuel et différences
+  du transport relevés, raccord des bornes et compatibilité de l'export historique expliqués dans `ecarts.md`.
+- 19/10, Codex : `node --test tests/segment-contract.test.cjs`, rouge sur l'assertion de refus puis vert, successivement
+  pour horodatages, clip, audio et images ; sorties `timestamps-*`, `clips-*`, `audio-*`, `frames-*` dans le dossier d'état.
+  Test d'acceptation sans mutation ajouté, bornes inclusives conservées.
+- 19/10, Codex : `node --test --test-concurrency=1 tests/segment-contract.test.cjs tests/session-runtime.test.cjs
+  tests/remote-media.test.cjs tests/server-ingest-path.test.cjs tests/wire-contract.test.cjs` : 62 tests réussis,
+  aucune assertion existante modifiée (`targeted-green.log`).
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert, 5 tests ; `git grep -n '3000\|3_000' -- runtime server app`
+  ne relève plus la tolérance dans les fichiers suivis ; `rg -n '3000|3_000' runtime server app` confirme son unique
+  définition dans `runtime/segment-contract.cjs` (encore non suivi), les autres résultats sont des valeurs distinctes.
+- 19/10, Codex : `node scripts/check.mjs` : vert, règles, format, lint, gel et cliquet réussis ; 2 988 tests JS dans
+  154 fichiers et 54 tests Python réussis (`.harness-state/tickets/T297/check-full.log`). `git diff --check` réussi.
+  Verdict `TERMINÉ` déposé dans le dossier d'état pour relecture par la boucle, sans commit ni push.
+- 19/10, Codex, reprise après `relecture-1.md` : rapport, ticket, journal, écarts, témoin de hooks, état Git et diff relus.
+  Constat mineur accepté : le test annonce désormais seulement l'acceptation d'un bloc valide, selon la première option
+  proposée ; ses assertions restent identiques. La mention antérieure « sans mutation » ne constituait pas une preuve
+  d'absence de mutation. Le constat documentaire hors périmètre reste transmis par la boucle depuis le rapport.
+- 19/10, Codex : `node --test tests/segment-contract.test.cjs` avant puis après renommage : 5 tests réussis à chaque fois
+  (`correction-1-before.log`, `correction-1-after.log`). Correction de libellé, sans nouveau comportement ni rouge artificiel.
+  `node scripts/check.mjs --changed` : vert, 5 tests réussis (`correction-1-check-changed.log`).
+- 19/10, Codex, correction : `node scripts/check.mjs` : vert, règles, format, lint, gel et cliquet réussis ; 2 988 tests JS
+  dans 154 fichiers et 54 tests Python réussis (`correction-1-check-full.log`). `git diff --check` réussi.
+  Nouveau verdict `TERMINÉ` déposé pour relecture de correction par la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T297/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 1 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
+- .harness-state/tickets/T297/relecture-2.md : **Écart accepté : raccord des bornes communes.** `REMOTE_MEDIA_LIMITS` est défini dans `adapters/remote-media.cjs` et le contrat le lit (`runtime/segment-contract.cjs:9-10`). La raison n'a pas changé depuis la première relecture : la garde d'architecture interdit `adapters → runtime` et autorise l'inverse. Le seul autre endroit commun possible, `core/`, est exclu par le ticket. Chaque borne commune garde une seule définition.
+- .harness-state/tickets/T297/relecture-2.md : **Écart accepté : `validateSegment` gardé comme délégation d'une ligne.** Le critère 3 interdit de modifier l'assertion de `tests/session-runtime.test.cjs:34`, qui l'appelle encore. Il n'y a aucune logique en double, et les appelants en production passent directement par `validateCapturedSegment`.

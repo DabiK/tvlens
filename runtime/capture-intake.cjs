@@ -1,6 +1,6 @@
 const { STORAGE_FULL } = require("../adapters/disk-guard.cjs");
 const { refusal } = require("./errors.cjs");
-const { validateSegment } = require("./session-runtime.cjs");
+const { validateCapturedSegment } = require("./segment-contract.cjs");
 const { shouldPauseForStorageFull } = require("./capture-storage.cjs");
 
 const READ_ONLY =
@@ -103,7 +103,7 @@ async function ingest(intake, input, operation) {
       ? operation.controller.signal.reason
       : refusal(409, "La capture a changé pendant la préparation de ce bloc.", "capture-changed");
   const session = admit(intake, input?.sessionId);
-  validateSegment(input, session.watch.now());
+  validateCapturedSegment(input, { now: session.watch.now() });
   if (intake.isMoving()) throw closing();
   // Aucun await entre la validité et ce passage : la fin attend désormais ce stockage entier.
   if (operation) operation.storing = true;

@@ -21,6 +21,7 @@ const { CodexQuota } = require("../adapters/codex-quota.cjs");
 const { DiskGuard } = require("../adapters/disk-guard.cjs");
 const { createCaptureIntake, READ_ONLY } = require("./capture-intake.cjs");
 const { refusal } = require("./errors.cjs");
+const { SEGMENT_LIMITS } = require("./segment-contract.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const {
   SimulatedSurveillanceAgent,
@@ -423,7 +424,7 @@ class HeadlessRuntime {
     if (
       !Number.isFinite(anchorMs) ||
       anchorMs < 0 ||
-      anchorMs > session.watch.now() + 3000
+      anchorMs > session.watch.now() + SEGMENT_LIMITS.futureToleranceMs
     )
       throw refusal(400, "Ancrage invalide.", "invalid-anchor");
     const memory = session.memory.view();

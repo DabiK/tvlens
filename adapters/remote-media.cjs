@@ -7,6 +7,11 @@ const os=require('node:os');
 const path=require('node:path');
 const {spawn}=require('node:child_process');
 const sharp=require('sharp');
+const REMOTE_MEDIA_LIMITS = Object.freeze({
+  minFrames: 1,
+  maxFrames: 5,
+  maxAudioBytes: 2100000,
+});
 // Checks a base64 payload without decoding it: a block carries several megabytes, decoded once in assemble().
 function base64(value, max) {
   if (typeof value !== 'string' || value.length > Math.ceil(max / 3) * 4 || !value.length || !/^[A-Za-z0-9+/]+={0,2}$/.test(value))
@@ -23,7 +28,8 @@ function validateRemote(input) {
   if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs)
     || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 10000)
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Intervalle invalide.');
-  if (!Array.isArray(input.frames) || input.frames.length < 1 || input.frames.length > 5)
+  if (!Array.isArray(input.frames)
+    || input.frames.length < REMOTE_MEDIA_LIMITS.minFrames || input.frames.length > REMOTE_MEDIA_LIMITS.maxFrames)
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Nombre d’images invalide.');
   let previous = -Infinity;
   for (const f of input.frames) {
@@ -39,7 +45,7 @@ function validateRemote(input) {
         throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Cadrage invalide.');
     }
   }
-  if (input.audio) base64(input.audio, 2100000);
+  if (input.audio) base64(input.audio, REMOTE_MEDIA_LIMITS.maxAudioBytes);
   validated.add(input);
 }
 // Seule la chaîne sharp identifie un contenu image illisible ; le disque et l’annulation gardent leur refus.
@@ -152,6 +158,6 @@ class RemoteMedia {
   }
 }
 module.exports = {
-  RemoteMedia, validateRemote,
+  RemoteMedia, validateRemote, REMOTE_MEDIA_LIMITS,
   TVLENS_MEDIA_BLOCK_INVALID, TVLENS_MEDIA_IMAGE_UNREADABLE, TVLENS_MEDIA_TOOL_REFUSED,
 };
