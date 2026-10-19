@@ -52,6 +52,6 @@ lieu de s'arrêter : une option absente des réglages transmis par l'ancienne in
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : ce ticket modifie le harnais (`scripts/loop/run.mjs`) ; l'autorises-tu ?
+Aucune décision n'est attendue. Le propriétaire a autorisé ce ticket de harnais le 19/10 (« Oui pour les points 1 et 2 »).
 
 ## Journal
