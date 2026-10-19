@@ -26,14 +26,15 @@ function captureGapsOf(passages) {
 function historicalModalities(passage) {
   let audio = 'unknown';
   if (typeof passage.hasAudio === 'boolean') audio = passage.hasAudio ? 'present' : 'absent';
-  return { audio, images: 'unknown', video: 'unknown' };
+  const images = passage.hasImages === false ? 'absent' : 'unknown';
+  return { audio, images, video: images };
 }
 
 function passageView(passage, origin, known) {
   const modalities = known || historicalModalities(passage);
   const replayable = origin === 'retained' && Boolean(passage.available);
   const reason = replayable ? null : passage.mediaReason || 'expired';
-  const kept = origin === 'retained' && (replayable || reason === 'unreadable');
+  const kept = origin === 'retained' && (replayable || ['unreadable', 'images-absent'].includes(reason));
   const available = modality => {
     if (!kept || modality === 'absent') return false;
     return modality === 'present' ? true : null;

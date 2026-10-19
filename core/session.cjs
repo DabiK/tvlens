@@ -1,6 +1,7 @@
 const { domainError } = require('./shared/domain-error.cjs');
 const TVLENS_CAPTURE_TIME_INVALID = 'TVLENS_CAPTURE_TIME_INVALID';
 const TVLENS_CAPTURE_ORDER_INVALID = 'TVLENS_CAPTURE_ORDER_INVALID';
+const TVLENS_CAPTURE_AUDIO_REQUIRED = 'TVLENS_CAPTURE_AUDIO_REQUIRED';
 const { perceptionContext } = require('./perception-context.cjs');
 const { hasUsableObservation } = require('./shared/passage-text.cjs');
 const { latencySummary } = require('./latency-trace.cjs');
@@ -18,16 +19,28 @@ const unfinished = status => status === 'queued' || status === 'analyzing';
 // The files of a passage are there, whether or not its video plays: a recorder that received no frame leaves a
 // container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
 // `available` only says that the video can be replayed.
-const UNREADABLE = 'unreadable', stored = segment => Boolean(segment.available) || segment.mediaReason === UNREADABLE;
+const UNREADABLE = 'unreadable', IMAGES_ABSENT = 'images-absent';
+const stored = segment => Boolean(segment.available) || [UNREADABLE, IMAGES_ABSENT].includes(segment.mediaReason);
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
 // place on the session clock, replayable and unanalysed; nothing is analysed again.
 const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
 function capturedModalities(input, hasAudio) {
   return {
     audio: hasAudio ? 'present' : 'absent',
-    images: input.frames?.length ? 'present' : 'absent',
-    video: input.clip?.byteLength ? 'present' : 'absent',
+    images: input.media?.video !== false && input.frames?.length ? 'present' : 'absent',
+    video: input.media?.video !== false && input.clip?.byteLength ? 'present' : 'absent',
   };
+}
+
+function capturedMedia(input) {
+  if (input.media?.video === false) {
+    return { available: false, mediaReason: IMAGES_ABSENT, hasImages: false, visionStatus: 'absent' };
+  }
+  // Un refus de lecture du conteneur ne prouve pas l'absence du média.
+  try {
+    if (holdsMedia(input.clip) === false) return { available: false, mediaReason: UNREADABLE };
+  } catch { /* aucune conclusion sur ce clip */ }
+  return { available: true };
 }
 
 // Portable application core: no Electron, filesystem or provider dependency.
@@ -67,6 +80,7 @@ class WatchSession {
       transcribe: input => this.perception.transcribe(input),
       observeVisual: input => this.perception.observeVisual(input),
       hasMedia: stored,
+      hasImages: segment => segment.hasImages !== false,
       isEnding: () => this.ending,
       isReadOnly: () => this.readOnly,
       contextFor: segment => perceptionContext(this, segment),
@@ -139,6 +153,8 @@ class WatchSession {
     if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs) || input.startMs < 0
       || input.endMs <= input.startMs || input.endMs - input.startMs > 60000)
       throw domainError(TVLENS_CAPTURE_TIME_INVALID, 'Horodatage invalide.');
+    if (input.media?.audio === false || (input.media?.video === false && !input.audio?.byteLength))
+      throw domainError(TVLENS_CAPTURE_AUDIO_REQUIRED, 'Le passage déclaré doit contenir du son.');
     // Tracked until it has landed whole (media, passage, thumbnail): a host ending the session waits on landed().
     const landing = this.land(input, this.now());
     this.landing.add(landing);
@@ -154,12 +170,11 @@ class WatchSession {
       const previous = this.segments.at(-1) ?? this.history.at(-1);
       if (previous && input.startMs < previous.endMs - 100)
         throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
-      const segment = { id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs, status: 'queued', hasAudio: Boolean(input.audio?.byteLength), available: true, observation: null, receivedMs, revision: 0 };
-      // A container without a media block is kept as it came, analysed from its images and its sound, and never
-      // announced as a video that can be replayed. Reading the container must never cost the passage.
-      let empty = false;
-      try { empty = holdsMedia(input.clip) === false; } catch { /* nothing is claimed about this clip */ }
-      if (empty) { segment.available = false; segment.mediaReason = UNREADABLE; }
+      const segment = {
+        id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs,
+        status: 'queued', hasAudio: Boolean(input.audio?.byteLength), ...capturedMedia(input),
+        observation: null, receivedMs, revision: 0,
+      };
       const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
       if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
       try { await this.media.put(segment.id, input); }
@@ -179,8 +194,10 @@ class WatchSession {
       this.segments.push(segment);
       this.#events.received(segment);
       // Counted once the passage exists: a refused write leaves no passage and no count.
-      if (empty) {
-        this.losses.videoUnreadable = (this.losses.videoUnreadable || 0) + 1;
+      const captureLoss = segment.hasImages === false ? 'imagesAbsent' : null;
+      const loss = captureLoss || (segment.mediaReason === UNREADABLE ? 'videoUnreadable' : null);
+      if (loss) {
+        this.losses[loss] = (this.losses[loss] || 0) + 1;
         this.#events.update(segment);
       }
       // A write that was under way when the session closed still lands, but nothing is queued for analysis.
@@ -196,7 +213,7 @@ class WatchSession {
     });
     const segment = await admitted;
     // La miniature ne retarde pas le départ des analyses ; son écriture reste attendue par l’ingestion.
-    if (this.thumbnails) {
+    if (this.thumbnails && segment.hasImages !== false) {
       let available;
       try {
         await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl);
@@ -256,12 +273,13 @@ class WatchSession {
       const passage = { ...source };
       // Availability is what the disk says now, not what the session believed when it stopped.
       const present = kept && Boolean(hasMedia(passage.id));
-      // A container known to hold no image stays unreadable for as long as its files are there; once they are
-      // gone it is missing like any other.
-      const unreadable = source.mediaReason === UNREADABLE;
-      passage.available = present && !unreadable;
+      // Une absence déclarée survit au disque ; la disparition des fichiers ne retire que leur disponibilité.
+      const reason = source.hasImages === false ? IMAGES_ABSENT : source.mediaReason;
+      const withoutVideo = [UNREADABLE, IMAGES_ABSENT].includes(reason);
+      passage.available = present && !withoutVideo;
       if (passage.available) delete passage.mediaReason;
-      else passage.mediaReason = unreadable ? (present ? UNREADABLE : 'missing') : source.mediaReason || (formerFormat ? 'not-kept' : source.available ? 'missing' : 'expired');
+      else if (withoutVideo) passage.mediaReason = present ? reason : 'missing';
+      else passage.mediaReason = source.mediaReason || (formerFormat ? 'not-kept' : source.available ? 'missing' : 'expired');
       if (hasThumbnail) passage.thumbnailAvailable = Boolean(hasThumbnail(passage.id));
       // No analysis is resumed: what was in flight is closed as partial evidence or as an explicit failure.
       if (unfinished(passage.audioStatus)) { passage.audioStatus = 'error'; passage.audioError = INTERRUPTED; this.losses.audioError++; }
@@ -276,6 +294,7 @@ class WatchSession {
     for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
     // Counted only where it happened: a session without such a passage keeps the counters it always had.
     if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
+    if (saved.coverage?.imagesAbsent > 0) this.losses.imagesAbsent = saved.coverage.imagesAbsent;
     // Likewise, and only as counts this session can have written: one second description per passage at most, and
     // no more recoveries than second descriptions.
     const counted = (value, most) => Number.isInteger(value) && value > 0 && value <= most ? value : 0;
@@ -385,4 +404,6 @@ class WatchSession {
   }
 }
 
-module.exports = { WatchSession, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_SESSION_STOPPED };
+module.exports = {
+  WatchSession, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_CAPTURE_AUDIO_REQUIRED, TVLENS_SESSION_STOPPED,
+};

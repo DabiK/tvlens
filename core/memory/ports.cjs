@@ -6,7 +6,8 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  * Présence dans la capture, indépendante de son analyse et de sa conservation actuelle.
  * L'absence de métadonnées historiques se traduit par unknown, jamais par ready.
  *
- * @typedef {'expired'|'missing'|'not-kept'|'unreadable'} MediaReason
+ * @typedef {'expired'|'missing'|'not-kept'|'unreadable'|'images-absent'} MediaReason
+ * images-absent : son conservé, images et vidéo explicitement absentes à la capture.
  * @typedef {object} MemoryAvailability
  * @property {boolean} replayable
  * @property {MediaReason|null} reason
@@ -60,6 +61,7 @@ const TVLENS_MEMORY_MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
  *
  * @typedef {object} MemoryPassageMetadata
  * @property {boolean} [hasAudio]
+ * @property {false} [hasImages] Absence déclarée et sauvegardée ; un champ absent laisse la modalité inconnue.
  * @property {MediaReason|null} [mediaReason]
  * @property {number} [receivedMs]
  * @property {number} [audioStartedMs]

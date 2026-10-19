@@ -235,7 +235,7 @@
       "count": 3
     },
     "no-nested-ternary": {
-      "count": 2
+      "count": 1
     }
   },
   "core/surveillance.cjs": {

@@ -17,6 +17,136 @@ function fixture(perception, options = {}) {
 const transcribe = async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 10 });
 const visual = async s => ({ observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 20 });
 
+test('declared sound-only capture transcribes to ready without vision, thumbnail or a visual lane loss', async t => {
+  const speech = [], descriptions = [], thumbnails = [], events = [];
+  const f = fixture({
+    transcribe: async input => { speech.push(input.id); return transcribe(input); },
+    observeVisual: async input => { descriptions.push(input.id); return visual(input); },
+  }, {
+    thumbnails: { put: async id => thumbnails.push(id) },
+    onEvents: pending => events.push(...pending),
+  });
+  t.after(() => f.watch.close());
+  assert.equal(Object.hasOwn(f.watch.memoryView().losses, 'imagesAbsent'), false);
+  f.setTime(1000);
+  await f.watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array(), frames: [],
+    audio: new Uint8Array([1]), media: { video: false, audio: true } });
+  await tick();
+  assert.deepEqual(descriptions, []);
+  assert.deepEqual(speech, ['moment-1']);
+  assert.deepEqual(thumbnails, []);
+  const view = f.watch.memoryView(), passage = view.passages[0];
+  assert.deepEqual([passage.status, passage.audioStatus, passage.visionStatus], ['ready', 'ready', 'absent']);
+  assert.equal(passage.observation.transcript, 'Paroles moment-1');
+  assert.deepEqual(passage.modalities, { audio: 'present', images: 'absent', video: 'absent' });
+  assert.deepEqual(passage.availability, { replayable: false, reason: 'images-absent', images: false, audio: true });
+  assert.equal(passage.thumbnailAvailable, false);
+  assert.equal(view.losses.imagesAbsent, 1);
+  assert.equal(Object.hasOwn(view.losses, 'videoUnreadable'), false);
+  assert.equal(view.clock.analyzedThroughMs, 1000);
+  assert.equal(view.clock.contextThroughMs, 1000);
+  assert.deepEqual([view.coverage.pending, view.coverage.analyzing], [0, false]);
+  assert.deepEqual(view.coverage.visionGaps, [
+    { id: 'moment-1', startMs: 0, endMs: 1000, visionStatus: 'absent', reason: 'images-absent' },
+  ]);
+  assert.deepEqual(events.filter(event => event.type === 'PassageLost'), []);
+  assert.equal(view.session.lastError, null);
+  f.watch.emit();
+  await f.watch.stop();
+  await f.watch.resume();
+  assert.equal(f.watch.memoryView().losses.imagesAbsent, 1);
+});
+
+test('a declared sound-only capture requires sound before storage, publication or identifier allocation', async t => {
+  const stored = [], events = [];
+  const f = fixture({ transcribe, observeVisual: visual }, {
+    media: { put: async id => stored.push(id), read: async () => ({}) },
+    onEvents: pending => events.push(...pending),
+  });
+  t.after(() => f.watch.close());
+  const input = { startMs: 0, endMs: 1000, clip: new Uint8Array(), frames: [], media: { video: false, audio: true } };
+  for (const audio of [undefined, null, new Uint8Array()]) {
+    await assert.rejects(f.watch.ingest({ ...input, audio }), { code: 'TVLENS_CAPTURE_AUDIO_REQUIRED' });
+  }
+  await assert.rejects(f.watch.ingest({ ...input, audio: new Uint8Array([1]), media: { video: false, audio: false } }),
+    { code: 'TVLENS_CAPTURE_AUDIO_REQUIRED' });
+  assert.deepEqual([stored, events, f.watch.memoryView().passages], [[], [], []]);
+  assert.equal(Object.hasOwn(f.watch.memoryView().losses, 'imagesAbsent'), false);
+  assert.equal(await f.watch.ingest({ ...input, audio: new Uint8Array([1]) }), 'moment-1');
+});
+
+test('audio overload sheds declared sound-only passages without inventing a visual backlog loss', async t => {
+  const gate = deferred(), events = [], descriptions = [];
+  const f = fixture({
+    transcribe: async input => { await gate.promise; return transcribe(input); },
+    observeVisual: async input => { descriptions.push(input.id); return visual(input); },
+  }, { maxPending: 1, onEvents: pending => events.push(...pending) });
+  t.after(async () => { gate.resolve(); await f.watch.close(); });
+  f.watch.setQuestionPending(true);
+  for (let i = 0; i < 5; i++) {
+    f.setTime((i + 1) * 1000);
+    await f.watch.ingest({ startMs: i * 1000, endMs: (i + 1) * 1000, clip: new Uint8Array(), frames: [],
+      audio: new Uint8Array([i]), media: { video: false, audio: true } });
+  }
+  assert.deepEqual(events.filter(event => event.type === 'PassageLost' && event.lane === 'vision'), []);
+  gate.resolve();
+  await tick();
+  const view = f.watch.memoryView();
+  assert.deepEqual(view.passages.map(p => [p.status, p.visionStatus]), [
+    ['ready', 'absent'], ['skipped', 'absent'], ['skipped', 'absent'], ['skipped', 'absent'], ['ready', 'absent'],
+  ]);
+  assert.deepEqual(descriptions, []);
+  assert.equal(view.losses.audioSkipped, 3);
+  assert.equal(view.losses.imagesAbsent, 5);
+  assert.deepEqual([view.losses.visionSkippedBacklog, view.losses.visionSkippedAsking, view.coverage.visionBlockedMs], [0, 0, 0]);
+  assert.deepEqual([view.coverage.pending, view.coverage.analyzing], [0, false]);
+});
+
+for (const failure of ['rejected', 'reported']) {
+  test(`a ${failure} sound-only transcription stays unanalysed without a visual error`, async t => {
+    const descriptions = [], events = [];
+    const f = fixture({
+      transcribe: async () => {
+        if (failure === 'rejected') throw Error('Transcription indisponible.');
+        return { observation: { transcript: '' }, failed: true, code: 'TRANSCRIPTION_UNAVAILABLE' };
+      },
+      observeVisual: async input => { descriptions.push(input.id); return visual(input); },
+    }, { onEvents: pending => events.push(...pending) });
+    t.after(() => f.watch.close());
+    f.setTime(1000);
+    await f.watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array(), frames: [],
+      audio: new Uint8Array([1]), media: { video: false, audio: true } });
+    await tick();
+    const view = f.watch.memoryView(), passage = view.passages[0];
+    assert.equal(passage.status, 'error');
+    assert.equal(passage.visionStatus, 'absent');
+    assert.deepEqual(descriptions, []);
+    assert.equal(view.clock.analyzedThroughMs, 0);
+    assert.deepEqual([view.losses.audioError, view.losses.imagesAbsent, view.losses.visionError], [1, 1, 0]);
+    assert.deepEqual(events.filter(event => event.type === 'PassageLost').map(event => [event.lane, event.cause.code]), [['audio', 'error']]);
+  });
+}
+
+test('successful sound-only transcription clears the previous session error and becomes a recap source', async t => {
+  const { LivingRecap } = require('../core/living-recap.cjs');
+  const f = fixture({ transcribe, observeVisual: async () => { throw Error('Vision indisponible.'); } });
+  t.after(() => f.watch.close());
+  await f.add(0);
+  assert.equal(f.watch.memoryView().session.lastError, 'Vision indisponible.');
+  f.setTime(2000);
+  f.watch.setQuestionPending(true);
+  await f.watch.ingest({ startMs: 1000, endMs: 2000, clip: new Uint8Array(), frames: [],
+    audio: new Uint8Array([1]), media: { video: false, audio: true } });
+  await tick();
+  const view = f.watch.memoryView();
+  assert.equal(view.session.lastError, null);
+  assert.equal(view.passages[0].visionError, 'Vision indisponible.');
+  const recap = new LivingRecap({ now: () => 2000 });
+  recap.observe(view);
+  assert.deepEqual(recap.snapshot().sourcePassages.map(p => [p.id, p.text]), [['moment-2', 'Paroles moment-2']]);
+  assert.equal(view.coverage.visionPending, 0);
+});
+
 test('question pending publishes each transition once and resumes held vision while audio continues', async t => {
   const audio = deferred(), vision = deferred(), scheduled = [], described = [];
   const f = fixture({

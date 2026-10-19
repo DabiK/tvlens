@@ -459,6 +459,36 @@ function assertCountedLosses(f) {
   assert.equal(new Set(delivered.map(event => `${event.passageId}:${event.lane}`)).size, delivered.length);
 }
 
+test('sound-only audio drops publish their terminal revision without a second lane loss', async t => {
+  const audio = deferred();
+  const f = coreFixture(t, { maxPending: 1, perception: {
+    transcribe: async () => { await audio.promise; return audioResult; },
+    observeVisual: async () => assert.fail('no images were declared'),
+  } });
+  t.after(() => audio.resolve());
+  const add = index => {
+    f.time = (index + 1) * 1000;
+    return f.watch.ingest({ ...block(index), media: { video: false, audio: true } });
+  };
+  for (let index = 0; index < 4; index++) await add(index);
+  const before = f.watch.memoryPassage('moment-2');
+  assert.deepEqual([before.status, before.audioStatus], ['queued', 'skipped']);
+  await add(4);
+  const dropped = f.watch.memoryPassage('moment-2');
+  assert.equal(dropped.status, 'skipped');
+  assert.equal(dropped.revision, before.revision + 1);
+  const terminal = f.seen.filter(item => item.event.passageId === 'moment-2').at(-1);
+  assert.deepEqual(terminal.event, updated(1, dropped.revision));
+  assert.deepEqual([terminal.passage.status, terminal.passage.visionStatus], ['skipped', 'absent']);
+  const awaitingTransfer = f.watch.memoryPassage('moment-3');
+  audio.resolve();
+  await tick();
+  const transferred = f.watch.memoryPassage('moment-3');
+  assert.deepEqual([transferred.status, transferred.revision], ['skipped', awaitingTransfer.revision + 1]);
+  assert.deepEqual(f.events.filter(event => event.type === 'PassageLost').map(event => [event.lane, event.cause.code]),
+    Array(3).fill(['audio', 'backlog']));
+});
+
 test('bounded audio overload announces every shed lane and whole passage drop exactly once', async t => {
   const audio = deferred();
   const f = coreFixture(t, { perception: {

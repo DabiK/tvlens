@@ -211,3 +211,34 @@ for (const [lane, heldRead, expected] of [['audio', 1, []], ['vision', 2, ['tran
     assert.equal(watch.snapshot().apiCalls, 0);
   });
 }
+
+test('ending during a sound-only media read preserves the passage revision without publishing a change', async t => {
+  const { watch, calls, files } = fixture();
+  const entered = deferred(), release = deferred(), settled = deferred(), events = [];
+  t.after(async () => { release.resolve(); await watch.close(); });
+  watch.onEvents = pending => events.push(...pending);
+  t.mock.method(watch.media, 'read', async id => {
+    entered.resolve();
+    await release.promise;
+    return files.get(id);
+  });
+  const save = watch.archive.save;
+  t.mock.method(watch.archive, 'save', async state => {
+    await save(state);
+    if (watch.ending) settled.resolve();
+  });
+  const landing = watch.ingest({ ...block(), media: { video: false, audio: true } });
+  await entered.promise;
+  await landing;
+  const before = watch.memoryPassage('moment-1'), published = structuredClone(events);
+  assert.deepEqual([before.status, before.audioStatus, before.visionStatus], ['analyzing', 'analyzing', 'absent']);
+  watch.beginEnding();
+  release.resolve();
+  await settled.promise;
+  const after = watch.memoryPassage('moment-1');
+  assert.equal(after.revision, before.revision);
+  assert.deepEqual(after, before);
+  assert.deepEqual(events, published);
+  assert.deepEqual(calls, []);
+  assert.equal(watch.running, false);
+});

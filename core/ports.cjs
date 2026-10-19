@@ -4,7 +4,16 @@
  * All times are milliseconds in observation order, relative to session start.
  *
  * @typedef {{atMs:number, dataUrl:string}} Frame
- * @typedef {{startMs:number,endMs:number,clip:Uint8Array,frames:Frame[],audio:Uint8Array|null}} CapturedSegment
+ * @typedef {{video:boolean,audio:boolean}} CapturedMedia
+ * video:false déclare un passage son seul : audio non vide obligatoire, aucune vision ni miniature.
+ * Sans déclaration, frames:[] garde le traitement visuel historique.
+ * @typedef {object} CapturedSegment
+ * @property {number} startMs
+ * @property {number} endMs
+ * @property {Uint8Array} clip
+ * @property {Frame[]} frames
+ * @property {Uint8Array|null} audio
+ * @property {CapturedMedia} [media]
  * @typedef {{summary:string,visual:string,audio:string,transcript:string,uncertainty?:string}} Observation
  * @typedef {object} PerceptionResult
  * @property {Partial<Observation>} observation
@@ -73,6 +82,8 @@ module.exports = {};
  * observation (including transcript) and returns an observation patch. The core
  * serializes each lane, bounds each backlog, and passes a close cancellation signal.
  * Partial observations retain the same ID/time range; audioStatus/visionStatus describe missing evidence.
+ * Un passage déclaré son seul porte visionStatus:absent et devient ready après sa transcription.
+ * L'absence d'images est une perte de capture imagesAbsent, sans PassageLost de vision.
  * Un résultat transcribe() portant failed:true incrémente coverage.audioError et marque audioFailed sur le passage.
  * Son code facultatif devient audioFailureCode sur le passage et code dans audioGaps ; il identifie la cause de la perte.
  * Les statuts restent inchangés pour que les passages sans paroles transcrites puissent terminer leur analyse visuelle.

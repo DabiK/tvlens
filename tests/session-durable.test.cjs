@@ -79,6 +79,46 @@ async function fixture(t) {
   return f;
 }
 
+test('a declared sound-only passage reopens with its saved absence and loss without writing or calling perception', async t => {
+  const f = await fixture(t), calls = [], completed = deferred();
+  const perception = {
+    transcribe: async input => {
+      calls.push(['audio', input.id]);
+      assert.deepEqual([...input.audio], [7]);
+      return { observation: { transcript: 'Paroles sans image.' } };
+    },
+    observeVisual: async input => { calls.push(['vision', input.id]); return { observation: {} }; },
+  };
+  const live = f.open({ overrides: { perception }, onInvalidate: () => {
+    if (live.memory.passage('moment-1')?.audioStatus === 'ready') completed.resolve();
+  } });
+  const thumbnails = t.mock.method(live.thumbnails, 'put');
+  f.clock = 1000;
+  await live.watch.ingest({ startMs: 0, endMs: 1000, clip: new Uint8Array(), frames: [],
+    audio: new Uint8Array([7]), media: { video: false, audio: true } });
+  await completed.promise;
+  await live.archive();
+  const saved = JSON.parse(await fs.readFile(path.join(live.store.root, 'session.json'), 'utf8'));
+  assert.deepEqual([saved.format, saved.version, saved.coverage.imagesAbsent], ['tvlens-viewing-memory', 1, 1]);
+  assert.equal(saved.segments[0].hasImages, false);
+  const before = await tree(live.store.root);
+  const { session } = await f.reopen(new SessionLibrary({ root: f.sessionsRoot }), live.id, { overrides: { perception } });
+  const view = session.memory.view(), passage = session.memory.passage('moment-1');
+  assert.equal(view.losses.imagesAbsent, 1);
+  assert.deepEqual([passage.status, passage.audioStatus, passage.visionStatus], ['ready', 'ready', 'absent']);
+  assert.equal(passage.observation.transcript, 'Paroles sans image.');
+  assert.deepEqual(passage.modalities, { audio: 'present', images: 'absent', video: 'absent' });
+  assert.deepEqual(passage.availability, { replayable: false, reason: 'images-absent', images: false, audio: true });
+  assert.deepEqual(view.coverage.visionGaps, live.memory.view().coverage.visionGaps);
+  assert.equal(view.clock.analyzedThroughMs, 1000);
+  assert.equal(view.losses.visionError, 0);
+  assert.equal(view.session.readOnly, true);
+  assert.deepEqual(calls, [['audio', 'moment-1']]);
+  assert.equal(thumbnails.mock.callCount(), 0);
+  await session.close();
+  assert.deepEqual(await tree(live.store.root), before);
+});
+
 test('a legacy retention option cannot remove captured bytes across long advances, pause, resume and reopening', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-conservation-'));
   const store = LocalSessionStore.forSession(root);

@@ -11,8 +11,9 @@ function calculateCoverage({ passages, losses = {}, visionBlockedMs = 0 }) {
     audioGaps: passages.filter(p => p.audioFailed || (p.status === 'partial' && AUDIO_GAP_STATUSES.has(p.audioStatus)))
       .map(p => ({ ...interval(p), audioStatus: p.audioFailed ? 'failed' : p.audioStatus,
         ...(p.audioFailureCode ? { code: p.audioFailureCode } : {}) })),
-    visionGaps: passages.filter(p => p.status === 'partial' && VISION_GAP_STATUSES.has(p.visionStatus))
-      .map(p => ({ ...interval(p), visionStatus: p.visionStatus, reason: p.visionSkipReason })),
+    visionGaps: passages.filter(p => p.visionStatus === 'absent' || (p.status === 'partial' && VISION_GAP_STATUSES.has(p.visionStatus)))
+      .map(p => ({ ...interval(p), visionStatus: p.visionStatus,
+        reason: p.visionStatus === 'absent' ? 'images-absent' : p.visionSkipReason })),
     coverage: { passages: passages.length, ...losses, visionBlockedMs },
   };
 }

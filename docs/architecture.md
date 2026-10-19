@@ -458,3 +458,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0061](adr/0061-la-memoire-invalide-sans-construire-son-snapshot.md) :
   La Mémoire publie des invalidations bornées ; hôtes et consommateurs partagent la projection,
   tandis que les sauvegardes et leurs barrières restent explicites.
+
+- [ADR 0062](adr/0062-les-passages-declares-son-seul-conservent-leur-absence-d-images.md) :
+  Les passages déclarés son seul terminent après transcription et conservent leur absence d’images et sa perte à la réouverture.

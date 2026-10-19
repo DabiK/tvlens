@@ -15,6 +15,7 @@ const AUDIO_REFERENCE_MULTIPLIER = 3;
  * @property {(input:object)=>Promise<object>} transcribe
  * @property {(input:object)=>Promise<object>} observeVisual
  * @property {(passage:object)=>boolean} hasMedia
+ * @property {(passage:object)=>boolean} [hasImages] Présence déclarée, indépendante du nombre d'images reçues.
  * @property {()=>boolean} isEnding
  * @property {()=>boolean} isReadOnly
  * @property {(passage:object)=>object} contextFor
@@ -40,9 +41,9 @@ class PerceptionLanes {
   #heldMs = 0;
 
   /** @param {LanePorts & {maxPending:number}} options */
-  constructor({ maxPending, ...ports }) {
+  constructor({ maxPending, hasImages = () => true, ...ports }) {
     this.#maxPending = maxPending;
-    this.#ports = ports;
+    this.#ports = { ...ports, hasImages };
   }
 
   state(now = this.#ports.now()) {
@@ -106,6 +107,10 @@ class PerceptionLanes {
     }
     while (this.#audioQueue.length > this.#maxPending * AUDIO_REFERENCE_MULTIPLIER) {
       const dropped = this.#audioQueue.shift();
+      if (!this.#ports.hasImages(dropped)) {
+        this.#toVision(dropped);
+        continue;
+      }
       Object.assign(dropped, { status: 'skipped', visionStatus: 'skipped' });
       this.#ports.update(dropped, 'vision', 'backlog');
     }
@@ -120,6 +125,14 @@ class PerceptionLanes {
   }
 
   #toVision(segment) {
+    if (!this.#ports.hasImages(segment)) {
+      const previousStatus = segment.status;
+      segment.visionStatus = 'absent';
+      segment.status = segment.audioFailed ? 'error' : segment.audioStatus;
+      if (segment.status === 'ready') this.#ports.clearErrorThrough(segment);
+      if (segment.status !== previousStatus) this.#ports.update(segment);
+      return;
+    }
     segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
     if (!this.#ports.hasMedia(segment)) {
       segment.visionStatus = 'expired';
