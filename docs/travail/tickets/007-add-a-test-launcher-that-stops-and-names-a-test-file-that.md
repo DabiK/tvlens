@@ -2,7 +2,7 @@
 id: T007
 titre: Add a test launcher that stops and names a test file that hangs
 statut: a-faire
-bloque_par: T145
+bloque_par: T294
 adr: non
 installe: non
 harnais: oui
@@ -21,29 +21,40 @@ le branchement sur `npm test` et sur `scripts/check.mjs` est le ticket suivant.
 ## Sources
 
 - Constats : FLK-05, FLK-13, OUBLI-37
-- Code concerné, à la version `0d5a954` :
+- Code concerné, à la version `11e601f` :
   - `package.json`, script `test` (ligne 11) : `node --test tests/*.test.cjs`, sans `--test-timeout` ni
     `--test-concurrency`.
-  - `scripts/check.mjs`, fonction `jsTests(files)` (ligne 114) : `node --test --test-concurrency=1` sur
-    les fichiers, sous `TEST_BUDGET_MS` (ligne 27, vingt minutes, variable `TVLENS_TEST_BUDGET_MS`). Son
-    résumé ne garde que les lignes `ℹ tests`, `ℹ pass`, `ℹ fail` et celles qui commencent par `✖`.
-  - `scripts/check.mjs`, fonction `run(command, commandArgs, budgetMs)` (ligne 29) : avec un budget, la
+  - `scripts/check.mjs`, fonction `jsTests(files)` (lignes 178 à 191) : `node --test --test-concurrency=1`
+    sur les fichiers (ligne 185), sous `TEST_BUDGET_MS` (ligne 27, vingt minutes, variable
+    `TVLENS_TEST_BUDGET_MS`). Son résumé garde les lignes `ℹ tests`, `ℹ pass`, `ℹ fail` et celles qui
+    commencent par `✖` (ligne 186).
+  - `scripts/check.mjs`, fonction `jsFailureDetail(output, summary)` (lignes 169 à 176), livrée par T292 :
+    quand les tests échouent hors délai, le détail de l'étape ajoute au résumé le bloc qui suit
+    `✖ failing tests:` dans la sortie de `node --test` : titre, `fichier:ligne`, message et valeurs de chaque
+    assertion en échec, 120 lignes au plus (`JS_FAILURE_DETAIL_MAX_LINES`, ligne 28).
+  - `scripts/check.mjs`, fonction `run(command, commandArgs, budgetMs)` (ligne 30) : avec un budget, la
     commande mène son groupe de processus et tout le groupe reçoit `SIGKILL` à l'échéance. Le message
-    `overBudget` (ligne 45), « Délai dépassé (N s) : … ne se termine pas. Ses processus ont été
+    `overBudget` (ligne 46), « Délai dépassé (N s) : … ne se termine pas. Ses processus ont été
     arrêtés. », ne nomme pas le fichier.
   - `scripts/check.mjs`, ligne 17 : `const root = process.cwd()`. Le contrôle travaille dans le dossier
     courant ; le lanceur fait de même.
   - `tests/helpers/harness-repo.cjs`, constante `HARNESS` (ligne 9) : le dépôt jetable des tests du
     harnais copie `scripts/check.mjs`, `scripts/quality`, `scripts/loop` et `.claude/hooks`. Un lanceur
-    placé dans `scripts/quality/` y est donc présent sans autre changement. La même aide retire
-    `NODE_TEST_CONTEXT` de l'environnement de ses commandes (lignes 20 à 24) : sans cela, un test lancé
-    depuis un test change de sortie.
+    placé dans `scripts/quality/` y est donc présent sans autre changement. La même aide, fonction
+    `env(extra)` (lignes 21 à 26, exportée par `harnessRepo`), retire `NODE_TEST_CONTEXT` de
+    l'environnement de ses commandes : sans cela, un test lancé depuis un test change de sortie. Elle
+    retire aussi les variables héritées `TVLENS_*` et `CLAUDE_PROJECT_DIR` : une variable `TVLENS_TEST_*`
+    se passe par `options.env`.
   - `tests/media-asr-options.test.cjs`, aide `privateTmp(t)` (lignes 27 à 33) : un test qui remplace
     `process.env.TMPDIR`. Exemple de ce qui impose un processus par fichier.
-- Mesures du découpage, Node 24.12.0, sur un fichier d'essai hors dépôt arrêté par une garde de 5 s. Le
-  fichier contient un test vide, un test bloqué dans `do { await tick(); } while (true)` (`tick` = un
-  tour de `setImmediate`) et un test qui échoue en laissant une minuterie réarmée
-  (`const arm = () => setTimeout(arm, 1000)`).
+  - `scripts/quality/metrics.mjs`, ensemble `HARNESS_TESTS` (lignes 17 à 33) : les fichiers de test comptés
+    dans `cas_de_test_harnais`, dont `tests/quality-check.test.cjs`. Un fichier absent de la liste compte
+    dans `cas_de_test_produit`. `docs/standards.md`, section « Tests » (lignes 51 à 53) : les tests de
+    qualité y sont déclarés comme harnais.
+- Mesures du découpage, Node 24.12.0 (encore la version du poste le 19/10), sur un fichier d'essai hors
+  dépôt arrêté par une garde de 5 s. Le fichier contient un test vide, un test bloqué dans
+  `do { await tick(); } while (true)` (`tick` = un tour de `setImmediate`) et un test qui échoue en
+  laissant une minuterie réarmée (`const arm = () => setTimeout(arm, 1000)`).
   - `node --test --test-timeout=500 --test-reporter=tap <fichier>` et
     `node --test-timeout=500 --test-reporter=tap <fichier>` (fichier lancé directement) donnent la même
     chose : `ok 1` aussitôt, `not ok 2` et `not ok 3` vers 520 à 550 ms, puis le processus ne se termine
@@ -57,8 +68,10 @@ le branchement sur `npm test` et sur `scripts/check.mjs` est le ticket suivant.
 
 - À créer : `scripts/quality/run-tests.mjs`, et un fichier de test à plat, `tests/test-launcher.test.cjs`,
   qui écrit ses fichiers d'essai dans un dépôt jetable (`harnessRepo`) et y lance le lanceur par
-  `repo.node` — ou par un `spawn` dans `repo.root`, sans `NODE_TEST_CONTEXT`, quand le test doit agir
-  pendant le lancement (critère du signal). `tests/helpers/harness-repo.cjs` n'est pas modifié.
+  `repo.node` — ou par un `spawn` dans `repo.root`, avec l'environnement de `repo.env(…)`, quand le test
+  doit agir pendant le lancement (critère du signal). `tests/helpers/harness-repo.cjs` n'est pas modifié.
+- À modifier : `scripts/quality/metrics.mjs`, pour déclarer `tests/test-launcher.test.cjs` dans
+  `HARNESS_TESTS`, comme les autres tests du contrôle qualité.
 - À ne pas modifier dans ce ticket : `scripts/check.mjs`, `package.json`, `CONTRIBUTING.md`, les tests
   existants. Le lanceur est livré et prouvé seul.
 - `harnais: oui` parce que `scripts/quality/` est protégé. Le ticket ajoute un outil au harnais ; il ne
@@ -84,6 +97,10 @@ le branchement sur `npm test` et sur `scripts/check.mjs` est le ticket suivant.
   - Signal : le lanceur qui reçoit `SIGINT` ou `SIGTERM` arrête ses fichiers en cours avec leurs
     groupes avant de sortir, code non nul. Sans cela, un Ctrl-C laisserait vivre des fichiers qui ne
     sont plus dans le groupe du terminal.
+  - Détail des échecs : pour chaque test en échec, la sortie du lanceur garde ce que `node --test` en
+    dit : titre, emplacement (`fichier:ligne`), message de l'assertion, valeurs obtenue et attendue. Le
+    contrôle montre ce détail depuis T292 ; le ticket qui branche le lanceur sur `scripts/check.mjs` doit
+    le retrouver dans cette sortie.
   - Résumé final, que le lanceur calcule lui-même : trois lignes `ℹ tests <n>`, `ℹ pass <n>`,
     `ℹ fail <n>` sur tous les fichiers, et une ligne commençant par `✖` par test et par fichier en
     échec. Code de sortie 0 seulement si tout passe.
@@ -117,7 +134,10 @@ d'essai écrit son numéro de processus dans un fichier quand le critère demand
 8. Signal : le lanceur, arrêté par `SIGTERM` pendant qu'un fichier est bloqué, sort, et le processus
    du fichier a disparu.
 9. Sans argument, le lanceur joue tous les `tests/*.test.cjs` du dépôt jetable et aucun autre fichier.
-10. `node scripts/check.mjs` est vert.
+10. Un fichier dont un test échoue sur `assert.equal(1, 2)` : la sortie du lanceur contient le titre du
+    test, le fichier avec la ligne de l'assertion, `AssertionError` et les valeurs `1` et `2`.
+11. `node scripts/check.mjs` est vert ; la mesure `cas_de_test_harnais` monte et `cas_de_test_produit`
+    garde sa valeur de départ.
 
 ## Test d'acceptation attendu
 
@@ -128,8 +148,16 @@ les processus qu'il laisse.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Le drapeau `harnais: oui` a été posé au découpage et attend la relecture
-du propriétaire avant le premier lancement. Si le lanceur ne peut pas savoir, depuis la sortie d'un
-fichier encore vivant, qu'aucun test n'y est en cours : verdict BLOQUÉ, avec l'essai qui le montre.
+Aucune décision n'est attendue. Le drapeau `harnais: oui` a été relu et autorisé par le propriétaire le
+19/10. Si le lanceur ne peut pas savoir, depuis la sortie d'un fichier encore vivant, qu'aucun test n'y
+est en cours : verdict BLOQUÉ, avec l'essai qui le montre.
 
 ## Journal
+
+- 19/10, orchestrateur : rouvert sur décision du propriétaire (sélection du tri d'Astra) ; sources mises à
+  jour à `11e601f` (`1178657` plus T292, intégré pendant la mise à jour, qui modifie `jsTests`) : lignes
+  de `scripts/check.mjs` et de `harness-repo.cjs` ; détail des échecs gardé par le contrôle depuis T292,
+  d'où le comportement « Détail des échecs » et le critère 10, pour que le branchement le conserve ;
+  cliquet scindé par T196, d'où la déclaration du test dans `HARNESS_TESTS` (critère 11). Bloqueurs
+  revus : T145 retiré (file parquée, rouverte par le propriétaire) ; T294 ajouté (passe après la file en
+  cours). Harnais autorisé par le propriétaire le 19/10.

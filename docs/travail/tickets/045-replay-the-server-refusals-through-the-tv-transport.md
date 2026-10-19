@@ -2,7 +2,7 @@
 id: T045
 titre: Replay the server refusals through the TV transport
 statut: a-faire
-bloque_par: T042, T145
+bloque_par: T042
 adr: non
 installe: non
 harnais: non
@@ -11,32 +11,38 @@ supprime_tests: non
 
 ## Ce que le ticket livre
 
-Les tests de la capture Python rejouent des refus écrits à la main dans le test : un couple statut et
-code qui ne vient pas du serveur. Si le serveur change une réponse, ces tests restent verts. Après ce
-ticket, un test Python lit la table des refus que le vrai serveur rend, figée par T042, sert chaque
-ligne au vrai transport de la capture, et vérifie ce que la capture en fait : renvoyer, rejeter, arrêter
-pour stockage plein ou arrêter pour lecture seule. Le code de la TV ne change pas.
+Les tests de la capture Python rejouent des refus écrits à la main, dans le test ou dans
+`tests/fixtures/tv-capture-refusals.json` : un couple statut et code qui ne vient pas du serveur. Si
+le serveur change une réponse, ces tests restent verts. Après ce ticket, un test Python lit la table
+des refus que le vrai serveur rend, figée par T042, sert chaque ligne au vrai transport de la capture,
+et vérifie ce que la capture en fait : renvoyer, rejeter, arrêter pour stockage plein ou arrêter pour
+lecture seule. Le code de la TV ne change pas.
 
 ## Sources
 
 - Constats : GAP3-05, GAP3-02
-- Code vérifié à la version `0d5a954` :
-  - `tv/transport.py` : `refusal(error)` lignes 22-29 (rend statut, code et message) ; `drop` lignes
-    31-35 ; `Transport.request(route, data=None, timeout=5)` lignes 43-48 ;
-    `Transport.deliver(item, created, ttl=30)` lignes 50-95 : 507 ou code `storage-full` lève
-    `StorageFull` (lignes 79-81) ; 409 avec code `read-only` lève `ReadOnly` (lignes 82-84) ; un statut
-    sous 500, hors 408 et 429, ajoute `'HTTP ' + statut` à `errors` et compte `deliveryRejected` (lignes
-    85-88) ; sinon `connection` passe à `reconnecting`, `retries` augmente (lignes 89-92) et le renvoi
-    attend au plus une seconde par `self.stop.wait(…)`. `Transport(config, stop, report)` reçoit `stop`
-    de son appelant.
-  - `tests/test_tv_control.py`, classe `DeliveryTests` ligne 82 : `setUp` lignes 83-103 monte un faux
-    serveur HTTP dont `self.refuse` fixe la réponse à `POST` ;
-    `test_full_storage_is_an_answer_of_the_server_never_a_network_cut` ligne 120 et
-    `test_archive_open_read_only_stops_by_name_and_a_plain_conflict_stays_a_rejected_block` ligne 131
-    écrivent leurs refus à la main (lignes 121, 132, 135).
-  - `scripts/check.mjs`, `pythonTests` lignes 127-133 : le contrôle complet lance
-    `python3 -B -m unittest discover -s tests -p test_*.py` ; un nouveau fichier `tests/test_*.py` est
-    donc lancé par la boucle.
+- Code vérifié à la version `1178657` (le constat d'origine porte sur `0d5a954`) :
+  - `tv/transport.py` : `refusal(error)` l.22-29 (rend statut, code et message) ; `drop` l.31-35 ;
+    `Transport(config, stop, report, changed=lambda: None)` l.38 reçoit `stop` de son appelant ;
+    `Transport.request(route, data=None, timeout=5)` l.43-48 ; `Transport.deliver(item, created,
+    ttl=30)` l.50-98 : `GET /v1/session` avant chaque envoi (l.55-66) ; le dernier refus est noté dans
+    `lastRefusal` (l.78-79) ; code `storage-full`, ou 507 sans code, lève `StorageFull` (l.80-84) ; 409
+    avec code `read-only` lève `ReadOnly` (l.85-87) ; un statut sous 500, hors 408 et 429, ajoute
+    `'HTTP ' + statut` à `errors` et compte `deliveryRejected` (l.88-91) ; sinon `connection` passe à
+    `reconnecting`, `retries` augmente (l.92-94) et le renvoi attend au plus une seconde par
+    `self.stop.wait(…)` (l.95). Depuis T189 (`8d3933e`, ADR 0041), un 507 qui porte un autre code que
+    `storage-full` est renvoyé comme un 5xx.
+  - `tests/test_tv_control.py`, classe `DeliveryTests` l.199 : `setUp` l.200-238 monte un faux serveur
+    HTTP ; `self.refuse` fixe la réponse à `POST`, `self.refusals` en donne une suite consommée dans
+    l'ordre (l.230-231). `test_full_storage_is_an_answer_of_the_server_never_a_network_cut` l.456 et
+    `test_archive_open_read_only_stops_by_name_and_a_plain_conflict_stays_a_rejected_block` l.467
+    écrivent leurs refus à la main (l.457, l.468, l.471), comme ceux des l.408, l.438 et l.474.
+    `test_delivery_keeps_each_http_refusal_and_rejects_sequence_conflicts_without_retry` l.390 prend
+    statut et code dans `tests/fixtures/tv-capture-refusals.json`, rapports de capture écrits à la main
+    eux aussi : aucun test ne les compare à ce que le vrai serveur rend.
+  - `scripts/check.mjs`, `pythonTests` l.193-199 : le contrôle complet (appel l.224, pas `--changed`)
+    lance `python3 -B -m unittest discover -s tests -p test_*.py` ; un nouveau fichier `tests/test_*.py`
+    est donc lancé par la boucle.
 - Livré par T042 : `tests/fixtures/wire-v1/refusals.json`, dont chaque ligne porte `route`, `cause`,
   `status`, `code`, `message` et `capture` (`retry`, `rejected`, `stop-storage`, `stop-read-only`).
 
@@ -90,3 +96,9 @@ dans `capture` : verdict BLOQUÉ, avec la ligne et le comportement constaté ; n
 `tv/transport.py` ne sont corrigés dans ce ticket.
 
 ## Journal
+
+- 19/10, orchestrateur : rouvert sur décision du propriétaire (sélection du tri d'Astra) ; sources mises à
+  jour à `1178657` : lignes de `tv/transport.py` (règle du 507 changée par T189, `lastRefusal`), de
+  `DeliveryTests` et de `pythonTests` ; refus déjà lus dans `tests/fixtures/tv-capture-refusals.json`,
+  écrits à la main eux aussi. Bloqueurs revus : T145 retiré (file rouverte) ; T042 gardé, non terminé
+  (`a-faire`) : ce ticket lit la table que T042 livre. Critères inchangés.

@@ -2,7 +2,7 @@
 id: T014
 titre: Run every Python test from npm test and from the quality check
 statut: a-faire
-bloque_par: T009, T012, T145
+bloque_par: T009, T012
 adr: non
 installe: non
 harnais: oui
@@ -11,50 +11,61 @@ supprime_tests: non
 
 ## Ce que le ticket livre
 
-Le code Python installé sur la TV a 117 tests dans deux dossiers. `npm test` n'en lance aucun, et le
-contrôle qualité ne lance que ceux de `tests/` : les 33 de `prototypes/lg-remote` ne tournent que si
-quelqu'un recopie trois commandes d'un document. Après ce ticket, une seule liste dit où sont les tests
-Python ; `npm test`, `npm run test:python` et `scripts/check.mjs` la lisent tous les trois.
+Le code Python installé sur la TV a 96 tests dans deux dossiers. `npm test` n'en lance aucun, et le
+contrôle qualité ne lance que ceux de `tests/` : les 42 de `prototypes/lg-remote` ne tournent que si
+quelqu'un lance leurs fichiers un par un, comme `docs/lg-capture-control.md` le fait pour le seul
+`test_panel.py`. Après ce ticket, une seule liste dit où sont les tests Python ; `npm test`,
+`npm run test:python` et `scripts/check.mjs` la lisent tous les trois.
 
 ## Sources
 
 - Constats : TSTC-08, OUBLI-41, OPS-06, FLK-14
-- Code concerné, à la version `0d5a954` :
+- Code concerné, à la version `11e601f` :
   - `package.json`, script `test` (ligne 11) : Node seulement. Aucun script ne lance Python.
-  - `scripts/check.mjs`, fonction `pythonTests()` (ligne 127) : `python3 -B -m unittest discover -s tests
-    -p test_*.py`, sous le budget `TEST_BUDGET_MS` ; l'étape s'appelle « tests Python » et n'existe que
-    dans le contrôle complet (ligne 157).
-  - `tests/test_tv_ambient.py` (55 tests), `tests/test_tv_capture_gate.py` (20), `tests/test_tv_control.py`
-    (9) : 84 tests, comptés par `grep -c "def test_"`. Le journal du ticket T001
-    (`docs/travail/tickets/001-resent-block-duplicate-without-race.md`) relève, pour le contrôle
-    complet du 2026-10-14, `Ran 84 tests in 29.160s` et `OK (skipped=1)` ; le test sauté est le scénario
-    au rythme réel (`TVLENS_SLOW`, `tests/test_tv_capture_gate.py` ligne 231).
-  - `prototypes/lg-remote/test_ambient_relay.py` (17), `test_panel.py` (15), `test_control.py` (1) : 33
-    tests, comptés de la même façon, non lancés au découpage. Ils chargent leur code par
-    `sys.path.insert(0, …/'runtime')` ou par `Path(__file__)` : le dossier courant n'importe pas. Ils
-    écrivent dans des dossiers temporaires (`tempfile.TemporaryDirectory`) et lancent des processus
-    (`subprocess`). `docs/lg-ambient.md` les lance un par un comme des scripts
-    (`python3 prototypes/lg-remote/test_panel.py`) ; qu'ils passent aussi par
-    `unittest discover` n'a pas été observé : c'est le premier critère.
-  - `prototypes/lg-remote/test_ambient_relay.py` ligne 325 : un test lit une ancienne version d'un
-    fichier par `git show 9758633:…`. Il dépend de l'historique Git du dépôt.
-  - Les deux dossiers ont des modules de même rôle chargés par `sys.path` : une découverte par dossier,
-    dans deux processus, évite qu'ils se masquent.
-  - `README.md` ligne 169 : « 287 tests Node et 6 tests Python (`tests/test_tv_control.py`) passaient
-    sur la base de la mission du 13 octobre 2026 » — un relevé daté.
-  - `docs/lg-ambient.md`, section « Tests (simulation et navigateur, exécutés) » : quatre commandes
-    Python séparées (lignes 144 à 147) et le relevé daté du 13 octobre (lignes 161 et 162).
-  - `CONTRIBUTING.md`, section « Vérifier une modification » (lignes 15 à 21) : `npm ci`, `npm test`,
+  - `scripts/check.mjs`, fonction `pythonTests()` (lignes 193 à 199) : `python3 -B -m unittest discover -s
+    tests -p test_*.py` (ligne 196), sous le budget `TEST_BUDGET_MS` ; l'étape s'appelle « tests Python »
+    et n'existe que dans le contrôle complet (ligne 224).
+  - `tests/test_tv_capture.py` (22 tests) et `tests/test_tv_control.py` (32) : 54 tests, comptés par
+    `grep -c "def test_"`. Le contrôle complet de T292, le 19/10, relève `Ran 54 tests in 47.611s` puis
+    `OK` (`.harness-state/tickets/T292/check-full.log`). Aucun n'est sauté : le scénario au rythme réel
+    (`TVLENS_SLOW`) a disparu avec `tests/test_tv_capture_gate.py`, retiré par T181 (`566b4a2`) ;
+    `tests/test_tv_ambient.py` a été retiré par T166 (`13c5890`).
+  - `prototypes/lg-remote/test_panel.py` (38), `test_mapper.py` (3) et `test_control.py` (1) : 42 tests,
+    comptés de la même façon, non lancés par le contrôle. `test_panel.py` et `test_mapper.py` chargent
+    leur code par `sys.path.insert(0, …/'runtime')`, `test_control.py` par `Path(__file__)` : le dossier
+    courant n'importe pas. Ils écrivent dans des dossiers temporaires (`tempfile.TemporaryDirectory`) et
+    lancent ou simulent des processus (`subprocess`). `test_mapper.py` remplace depuis T166
+    `test_ambient_relay.py`, retiré. Le journal de T166 a observé le 16/10
+    `python3 -B -m unittest discover -s prototypes/lg-remote -p 'test_*.py' -v` vert sur 18 tests ;
+    `test_panel.py` a grandi depuis (T268, T285, T286, T288) et, d'après leurs journaux, n'a été relancé
+    que comme script : le passage par `unittest discover` à la version courante reste le premier critère.
+  - `prototypes/lg-remote/test_mapper.py` lignes 94 et 95 : un test lit une ancienne version d'un fichier
+    par `git -C <dossier> show 9758633:…` ; sans cet historique, il se déclare sauté (`skipTest`).
+  - Les deux dossiers modifient `sys.path` pour charger leurs modules (`tv/` d'un côté,
+    `prototypes/lg-remote/runtime/` de l'autre) : une découverte par dossier, dans deux processus, évite
+    qu'ils se masquent, même si aucun nom de module ne leur est commun à cette version.
+  - `README.md` ligne 177 : « 287 tests Node et 6 tests Python (`tests/test_tv_control.py`) passaient
+    sur la base de la mission du 13 octobre 2026 » — un relevé daté. La commande `npm test` de la
+    section « Ce qui est prouvé, ce qui reste à mesurer » (ligne 175) est à la ligne 184.
+  - `docs/lg-ambient.md` : page historique depuis T182 (`c96a46a`). Son en-tête (lignes 10 à 13 et 34
+    à 39) dit que les commandes qui suivent sont des traces datées du 13 octobre, plus des instructions
+    applicables. Sa section « Tests » (lignes 183 à 215) cite trois fichiers Python retirés depuis
+    (lignes 186 à 190).
+  - `docs/lg-capture-control.md`, section « Validation et échecs conservés » (ligne 72), bloc
+    « Commandes : » (lignes 81 à 89) : `npm test`, puis
+    `python3 -m unittest discover -s tests -p 'test_tv_*.py' -v` (ligne 85) et
+    `python3 prototypes/lg-remote/test_panel.py` (ligne 86).
+  - `CONTRIBUTING.md`, section « Vérifier une modification » (lignes 86 à 92) : `npm ci`, `npm test`,
     `npm run test:electron`.
   - `tests/quality-check.test.cjs` et `tests/helpers/harness-repo.cjs` : les tests du contrôle qualité,
-    joués dans un dépôt jetable qui copie `scripts/quality`.
-  - `scripts/quality/run-tests.mjs` : le lanceur des tests Node livré par un ticket antérieur, et
-    branché sur `npm test` et sur `scripts/check.mjs` par un ticket prérequis ; il n'existe pas encore
-    à cette version.
-  - `tests/helpers/tools.cjs`, fonction `requireTool(nom)` : l'aide livrée par un autre ticket
-    prérequis. Elle tient une table des outils connus (à cette étape : `ffmpeg`), rend le chemin résolu
-    et la valeur `skip` d'un test, et change le saut en échec avec `TVLENS_REQUIRE_TOOLS=1`. Elle
-    n'existe pas encore à cette version.
+    joués dans un dépôt jetable qui copie `scripts/quality`. Dans un dépôt sans test Python, la sortie
+    verte exigée contient `– tests Python : non lancé (aucun test)` (ligne 30).
+  - `scripts/quality/run-tests.mjs` : le lanceur des tests Node livré par T007, et branché sur
+    `npm test` et sur `scripts/check.mjs` par T012 ; il n'existe pas encore à cette version.
+  - `tests/helpers/tools.cjs`, fonction `requireTool(nom)` : l'aide livrée par T009. Elle tient une
+    table des outils connus (à cette étape : `ffmpeg`), rend le chemin résolu et la valeur `skip` d'un
+    test, et change le saut en échec avec `TVLENS_REQUIRE_TOOLS=1`. Elle n'existe pas encore à cette
+    version.
 
 ## Périmètre
 
@@ -69,9 +80,9 @@ Python ; `npm test`, `npm run test:python` et `scripts/check.mjs` la lisent tous
   - `package.json` : `test:node` (le lanceur des tests Node), `test:python` (ce module), et `test` qui
     lance les deux à la suite. C'est le seul nom retenu pour l'entrée Python.
   - `CONTRIBUTING.md` : `npm test` couvre Node et Python ; `python3` est requis.
-  - `docs/lg-ambient.md` : les quatre commandes Python des lignes 144 à 147 deviennent
-    `npm run test:python`, plus la ligne `TVLENS_SLOW=1` gardée telle quelle. `README.md` : la commande
-    `npm test` de la section « Ce qui est prouvé » dit qu'elle lance aussi les tests Python.
+  - `docs/lg-capture-control.md` : les deux commandes Python des lignes 85 et 86 deviennent
+    `npm run test:python`. `README.md` : la commande `npm test` de la section « Ce qui est prouvé, ce qui
+    reste à mesurer » (ligne 184) dit qu'elle lance aussi les tests Python.
   - `tests/quality-check.test.cjs` : les tests nouveaux. Ceux qui lancent `python3` sont gardés par
     `requireTool('python3')` ; `tests/helpers/tools.cjs` reçoit pour cela une ligne dans sa table
     (`python3`, arguments `--version`, pas de variable de chemin forcé). Aucune seconde aide n'est
@@ -79,9 +90,10 @@ Python ; `npm test`, `npm run test:python` et `scripts/check.mjs` la lisent tous
 - `harnais: oui` parce que `scripts/check.mjs` et `scripts/quality/` sont protégés. Le contrôle lance
   plus de tests qu'avant : il n'en retire aucun.
 - À ne pas toucher : les fichiers `test_*.py` et le code Python ; les relevés datés (`README.md` ligne
-  169, `docs/lg-ambient.md` lignes 161 et 162), qui disent ce qui a été observé ce jour-là — aucun
-  décompte nouveau n'est écrit dans un document ; les scripts `*:live`.
-- Les attentes en temps réel des tests Python (une trentaine de secondes) ne sont pas réduites ici.
+  177) et `docs/lg-ambient.md` en entier, page historique, qui disent ce qui a été observé ce jour-là —
+  aucun décompte nouveau n'est écrit dans un document ; les scripts `*:live`.
+- Les attentes en temps réel des tests Python (environ 48 s pour `tests/` au contrôle complet du 19/10)
+  ne sont pas réduites ici.
 
 ## Critères d'acceptation
 
@@ -102,9 +114,8 @@ jetable.
 6. `node -p "require('./package.json').scripts"` montre `test:node` (le lanceur des tests Node),
    `test:python` (ce module) et `test` égal à `npm run test:node && npm run test:python`. La suite Node
    n'est pas relancée pour ce critère : le critère 5 et le contrôle complet prouvent les deux moitiés.
-7. `grep -n "unittest" scripts/check.mjs package.json docs/lg-ambient.md` : la commande de découverte
-   n'est plus écrite dans `scripts/check.mjs` ni dans `package.json`, et `docs/lg-ambient.md` ne garde
-   que la ligne `TVLENS_SLOW=1`. Sortie dans le journal.
+7. `grep -n "unittest" scripts/check.mjs package.json docs/lg-capture-control.md` ne rend rien : la
+   commande de découverte n'est plus écrite dans ces trois fichiers. Sortie dans le journal.
 8. `grep -n "python3" tests/helpers/tools.cjs` montre la ligne de table, et
    `TVLENS_REQUIRE_TOOLS=1 node --test tests/quality-check.test.cjs` passe sans test sauté.
 9. `node scripts/check.mjs` est vert, et son étape « tests Python » montre un résultat pour `tests` et
@@ -119,10 +130,18 @@ fichier.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue. Le drapeau `harnais: oui` a été posé au découpage et attend la relecture
-du propriétaire avant le premier lancement. Si un test de `prototypes/lg-remote` échoue à la version
-courante (critère 1), ne passe pas par `unittest discover`, ou ouvre une connexion ailleurs que sur la
-machine : verdict BLOQUÉ, avec le test et la sortie ; il n'est ni corrigé, ni sauté, ni retiré de la
-liste.
+Aucune décision n'est attendue. Le drapeau `harnais: oui` a été relu et autorisé par le propriétaire le
+19/10. Si un test de `prototypes/lg-remote` échoue à la version courante (critère 1), ne passe pas par
+`unittest discover`, ou ouvre une connexion ailleurs que sur la machine : verdict BLOQUÉ, avec le test et
+la sortie ; il n'est ni corrigé, ni sauté, ni retiré de la liste.
 
 ## Journal
+
+- 19/10, orchestrateur : rouvert sur décision du propriétaire (sélection du tri d'Astra) ; sources mises à
+  jour à `11e601f` (`1178657` plus T292, intégré pendant la mise à jour, qui modifie `scripts/check.mjs`) :
+  fichiers Python retirés ou créés par T166 et T181 (54 tests dans `tests/`, 42 dans
+  `prototypes/lg-remote`, plus de `TVLENS_SLOW`), dépendance à Git déplacée dans `test_mapper.py` ;
+  `docs/lg-ambient.md`, devenue page historique avec T182, n'est plus modifiée : les commandes à remplacer
+  sont celles de `docs/lg-capture-control.md` (périmètre et critère 7 ajustés). Bloqueurs revus : T145
+  retiré (file parquée, rouverte par le propriétaire) ; T009 et T012 gardés, `a-faire`, dépendances
+  réelles (`requireTool` et le lanceur branché). Harnais autorisé par le propriétaire le 19/10.

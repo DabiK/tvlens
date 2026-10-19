@@ -2,7 +2,7 @@
 id: T011
 titre: Declare the Node version the project runs on and refuse older ones
 statut: a-faire
-bloque_par: T145
+bloque_par: T294
 adr: non
 installe: non
 harnais: non
@@ -19,17 +19,22 @@ plus ancienne.
 ## Sources
 
 - Constats : OPS-01, TSTC-11, FLK-14
-- État à la version `0d5a954` :
+- État relu à la version `1178657` (le constat d'origine porte sur `0d5a954`) :
   - `package.json` : pas de champ `engines`. Ni `.nvmrc` ni `.npmrc` à la racine.
-  - `README.md` ligne 111, `docs/installation.md` ligne 9, `docs/server-installation.md` ligne 9 :
+  - `README.md` ligne 119, `docs/installation.md` ligne 9, `docs/server-installation.md` ligne 9 :
     « Node.js 24+ ». `docs/vps-deployment.md` ligne 9 : Node 24.13.0 sur le serveur.
   - `package-lock.json` : `electron` 44.4.5 et `@electron/packager` 20.3.0 déclarent `node >= 22.12.0`,
     `sharp` 0.35.5 `>= 20.9.0`. D'après l'audit, Electron 44.4.5 embarque Node 24.21.0.
-  - `CONTRIBUTING.md`, section « Vérifier une modification » (lignes 15 à 21).
+  - `CONTRIBUTING.md`, section « Vérifier une modification » (lignes 86 à 92) : `npm ci`, `npm test`,
+    `npm run test:electron`, sans version de Node.
 - Mesures du découpage, Node 24.12.0 et npm 11.6.2, sur une copie hors dépôt de `package.json` et
   `package-lock.json` :
-  - Les 131 paquets verrouillés qui déclarent `engines.node` acceptent 24.0.0, 24.12.0 et 24.13.0, sauf
-    un : `@img/sharp-win32-ia32` (`^20.9.0`), optionnel et réservé à Windows 32 bits.
+  - À `0d5a954`, 131 paquets verrouillés déclaraient `engines.node`. Relu à `1178657` par le script
+    ci-dessous : 190 paquets le déclarent (ESLint, `@eslint/js`, `globals` et Prettier sont entrés depuis) ; tous
+    acceptent 24.0.0, 24.12.0 et 24.13.0, sauf un : `@img/sharp-win32-ia32` (`^20.9.0`), optionnel et
+    réservé à Windows 32 bits.
+  - Les deux mesures `npm ci` qui suivent datent de `0d5a954` ; elles n'ont pas été rejouées à
+    `1178657`.
   - Avec `"engines": { "node": ">=24" }` et un `.npmrc` contenant `engine-strict=true`,
     `npm ci --dry-run --offline --ignore-scripts` se termine avec le code 0 (146 paquets) : le paquet
     optionnel ne bloque pas.
@@ -107,3 +112,8 @@ Aucune décision n'est attendue. Si le critère 4 échoue hors ligne pour une ra
 (cache `npm` absent, verrou jugé incohérent) : verdict BLOQUÉ, avec la sortie, sans passer en ligne.
 
 ## Journal
+
+- 19/10, orchestrateur : rouvert sur décision du propriétaire (sélection du tri d'Astra) ; sources mises à
+  jour à `1178657` (README ligne 119, `CONTRIBUTING.md` lignes 86 à 92, 190 paquets déclarant
+  `engines.node`, toujours la seule exception optionnelle) ; bloqueurs revus : T145 retiré (file
+  rouverte), T294 ajouté (le ticket passe après la file en cours). Critères inchangés.

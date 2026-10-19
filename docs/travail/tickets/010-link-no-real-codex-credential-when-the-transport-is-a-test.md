@@ -2,7 +2,7 @@
 id: T010
 titre: Link no real Codex credential when the transport is a test double
 statut: a-faire
-bloque_par: T145
+bloque_par: T294
 adr: non
 installe: non
 harnais: non
@@ -20,16 +20,16 @@ seule aide qui vérifie qu'il est bien absent.
 ## Sources
 
 - Constats : TSTB-01, FLK-15
-- Code concerné, à la version `0d5a954` :
+- Code concerné, à la version `1178657` :
   - `adapters/codex-confinement.cjs`, fonction `createContext(prefix, authHome, root = os.tmpdir())`
-    (lignes 237 à 262) : `source = authHome || process.env.CODEX_HOME || ~/.codex`, puis lien symbolique
-    de `auth.json` et `models_cache.json` quand ils existent.
+    (lignes 238 à 273) : `source = authHome || process.env.CODEX_HOME || ~/.codex` (lignes 253 et 254),
+    puis lien symbolique de `auth.json` et `models_cache.json` quand ils existent (lignes 255 à 268).
   - `adapters/codex-session-client.cjs`, constructeur de `CodexSessionClient` : commentaire « TEST SEAM,
-    the only one of this client » (lignes 90 à 97) et `const transportDouble = rpcFactory !== spawnRpc
-    && features === undefined` (ligne 116). Deux usages existants : la tolérance de confinement (ligne
-    428) et `checkSubAgents` (ligne 454).
+    the only one of this client » (lignes 82 à 89) et `const transportDouble = rpcFactory !== spawnRpc
+    && features === undefined` (ligne 109). Deux usages existants : la tolérance de confinement (ligne
+    435) et `checkSubAgents` (ligne 467).
   - `adapters/codex-session-client.cjs`, connexion : `createContext("tvlens-codex-session-",
-    this.authHome)` (ligne 272).
+    this.authHome)` (ligne 270).
   - Clients construits sans `authHome` sur un faux transport : `tests/chat-sources.test.cjs`, aide
     `fixture(steps)` (ligne 4) ; `tests/session-optimization.test.cjs`, tests « one warm Codex thread
     handles successive turns, streams answer only and carries context deltas » (ligne 9) et « interrupt
@@ -39,13 +39,15 @@ seule aide qui vérifie qu'il est bien absent.
     exige le lien vers `auth.json` (lignes 156, 176, 180) avec `authHome` et `features` — ce n'est pas un
     transport de substitution. C'est le test qui protège le lien du produit.
   - `tests/codex-confinement.test.cjs`, test « no product code injects a transport or a feature answer,
-    nor passes a weaker mode than the default; a transport double never claims a block » (ligne 457).
+    nor passes a weaker mode than the default; a transport double never claims a block » (ligne 467).
   - Constante recopiée `path.join(os.tmpdir(), 'tvlens-test-absent-codex-home')` :
-    `tests/architecture-f05.test.cjs:43`, `tests/architecture-f08.test.cjs:24`,
-    `tests/codex-confinement.test.cjs:19`, `tests/codex-connect-race.test.cjs:9`,
-    `tests/codex-thread-rotation.test.cjs:14`, `tests/review-regressions.test.cjs:25`,
-    `tests/surveillance-runtime.test.cjs:21`, `tests/verification.test.cjs:75`. Binaire absent
-    `tvlens-test-absent-codex` : `tests/codex-confinement.test.cjs:495`, `tests/verification.test.cjs:181`.
+    `tests/architecture-f05.test.cjs:35`, `tests/architecture-f08.test.cjs:29`,
+    `tests/codex-confinement.test.cjs:23`, `tests/codex-connect-race.test.cjs:9`,
+    `tests/codex-thread-rotation.test.cjs:13`, `tests/review-regressions.test.cjs:25`,
+    `tests/surveillance-runtime.test.cjs:25`, `tests/verification.test.cjs:97`. Binaire absent
+    `tvlens-test-absent-codex` : `tests/codex-confinement.test.cjs:505`, `tests/verification.test.cjs:201`.
+  - `tests/helpers/codex-session.cjs` existe déjà : c'est le faux Codex des tests de la boucle, sans
+    rapport avec ce ticket. L'aide nouvelle ne le modifie pas.
 
 ## Périmètre
 
@@ -57,16 +59,17 @@ seule aide qui vérifie qu'il est bien absent.
   vérifie à son chargement que ces deux chemins n'existent pas, avec un message qui nomme le chemin
   trouvé.
 - À modifier, tests : tout fichier de `tests/` qui écrit l'un des deux chemins littéraux — les huit
-  fichiers cités à la version `0d5a954` — remplace sa constante locale par l'aide, et les deux usages
+  fichiers cités à la version `1178657` — remplace sa constante locale par l'aide, et les deux usages
   du binaire absent aussi ; `tests/chat-sources.test.cjs` (ligne 4) et
   `tests/session-optimization.test.cjs` (lignes 10 et 21) passent `authHome: ABSENT_CODEX_HOME` à leurs
   trois constructions `new CodexSessionAgent({…})` — une ceinture en plus de la règle de production,
   qui les protège déjà ; deux tests nouveaux dans `tests/codex-confinement.test.cjs` (la règle, et
   l'aide).
 - À ne pas toucher : les assertions des tests existants ; `tvlens-absent-sessions`
-  (`tests/server-sessions.test.cjs:627`), que le dossier temporaire privé du lanceur couvre ; le reste
-  de `createContext`. Aucun `catch` vide n'est ajouté en production, aucune ligne de plus de 160
-  caractères nulle part : dans les fichiers à lignes longues, la ligne ajoutée est un `require` court.
+  (`tests/server-sessions.test.cjs:859`), que couvrira le dossier temporaire privé par fichier de test
+  prévu par T013 ; le reste de `createContext`. Aucun `catch` vide n'est ajouté en production, aucune
+  ligne de plus de 160 caractères nulle part : dans les fichiers à lignes longues, la ligne ajoutée est
+  un `require` court.
 
 ## Critères d'acceptation
 
@@ -102,3 +105,10 @@ identifiant, ou si la règle ne peut pas s'écrire sans toucher au chemin du pro
 le test ou le code en cause.
 
 ## Journal
+
+- 19/10, orchestrateur : rouvert sur décision du propriétaire (sélection du tri d'Astra) ; sources mises à
+  jour à `1178657` (inchangées à `11e601f`) : lignes de `createContext`, de la couture de test et des dix
+  chemins recopiés, toujours dans les mêmes huit fichiers ; `tvlens-absent-sessions` déplacé ligne 859 et
+  rattaché à T013, pas encore fait ; aide voisine `tests/helpers/codex-session.cjs` signalée. Bloqueurs
+  revus : T145 retiré (file parquée, rouverte par le propriétaire) ; T294 ajouté (passe après la file en
+  cours).
