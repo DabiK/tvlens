@@ -106,14 +106,18 @@ son annulation et sa borne d'attente restent décrites par les ADR 0006 et 0023.
 
 POST `/v1/segments` accepte le champ facultatif `media: { video: false, audio: true }`, avec `frames: []`
 et `audio` obligatoire : base64 d'un WAV décodable contenant des échantillons, dans les bornes existantes.
-Seul `media.video === false` déclare le son seul, selon l'ADR 0062. Une déclaration `media.audio === false`
-ou la présence d'images contredit ce bloc et rend 400 `invalid-media-block`. L'absence de son, un encodage
-invalide et un son non WAV portent aussi ce code ; un WAV sans échantillon ou refusé par FFmpeg rend
+Seul `media.video === false` déclare le son seul, selon l'ADR 0062. Toute déclaration `media.audio === false`
+rend 400 `invalid-media-block`, y compris pour un bloc avec images. La présence d'images dans un bloc
+déclaré son seul porte aussi ce refus. Si l'exigence de son est refusée par le cœur après préparation,
+le fil rend 400 `capture-audio-required`. L'absence de son dans un bloc déclaré son seul, un encodage
+invalide et un son non WAV portent 400 `invalid-media-block` ; un WAV sans échantillon ou refusé par FFmpeg rend
 400 `media-tool-refused`. Les pannes de l'hôte gardent leurs refus propres.
 
 Le serveur conserve un clip WebM Opus audio seul et le WAV mono 16 kHz, avec les mêmes fichiers et baux.
 Le cœur reçoit la déclaration, ne lance ni vision ni miniature et compte l'absence d'images. Le clip peut
 être décodé en audio depuis le stockage ; la route de rejeu vidéo garde sa règle de disponibilité vidéo.
+Les deux routes GET `/v1/media/:sessionId/:id` et `/v1/media/:id` refusent un passage son seul de raison
+`images-absent` en 410 `media-images-absent`, avec « Ce passage n'a que le son : aucune vidéo à rejouer. ».
 Un bloc sans déclaration exige toujours des images et conserve son refus 400 `invalid-media-block`,
 « Nombre d’images invalide. ». Les identités, séquences, empreintes et doublons sont inchangés.
 

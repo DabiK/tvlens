@@ -962,6 +962,7 @@ test("HTTP codes unavailable thumbnails and media by their structured reason", a
     ["missing", "Média indisponible.", "media-missing"],
     ["not-kept", "Média indisponible.", "media-missing"],
     ["unreadable", unreadable, "media-unreadable"],
+    ["images-absent", "Ce passage n'a que le son : aucune vidéo à rejouer.", "media-images-absent"],
     [undefined, "Média expiré.", "media-expired"],
     ["raison inconnue", "Média expiré.", "media-expired"],
   ]) {

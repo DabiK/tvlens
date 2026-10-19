@@ -1,7 +1,7 @@
 ---
 id: T308
 titre: Name the missing video when a sound-only passage is replayed
-statut: a-faire
+statut: termine
 bloque_par: T305
 adr: non
 installe: non
@@ -57,3 +57,14 @@ Aucune décision n'est attendue.
 
 - 19/10, orchestrateur : ticket ouvert depuis la réserve de clôture de T304.
 - 19/10, orchestrateur : la réserve documentaire de T305 (ADR 0042) rejoint ce ticket.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T308/exploration.md` ; les deux routes partagent le refus média.
+  Aucun écart prévu ; `APPLICATION_CODES` ne filtre pas leurs réponses directes.
+- 19/10, Codex : rouge observé avec
+  `node --test --test-name-pattern='HTTP codes unavailable thumbnails and media by their structured reason' tests/server-routes.test.cjs` :
+  1 échec sur l'assertion `images-absent` (code et message reçus : `media-expired`, « Média expiré. »).
+  Sortie conservée dans `.harness-state/tickets/T308/test-red.log`. Branche de refus et ADR 0042 corrigés ensuite.
+- 19/10, Codex : `node --test tests/server-routes.test.cjs` : 48 tests réussis, aucun échec ; la table couvre les deux routes,
+  le message demandé et le code `media-images-absent`, sans modifier les lignes existantes (`test-green.log`).
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert, dont 48 tests ; `node scripts/check.mjs` : vert,
+  3 031 tests JavaScript (154 fichiers) et 73 tests Python réussis. Sorties dans `check-changed.log` et `check-full.log`
+  du dossier d'état. `git diff --check` : sortie 0. Verdict `TERMINÉ`, sans réserve ; relecture laissée à la boucle.

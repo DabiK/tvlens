@@ -14,6 +14,8 @@ async function serveThumbnail(runtime, { params, res, send }) {
 }
 
 function unavailableMedia(reason) {
+  if (reason === "images-absent")
+    return { error: "Ce passage n'a que le son : aucune vidéo à rejouer.", code: "media-images-absent" };
   if (reason === "unreadable")
     return { error: "Vidéo illisible : le fichier enregistré ne contient aucune image.", code: "media-unreadable" };
   if (["missing", "not-kept"].includes(reason))
