@@ -480,16 +480,53 @@ test('storage: figures of the server, a banner only when low or blocked, nothing
   assert.deepEqual([0, 45000, 240000, 5520000, 36000000].map(sessions.duration), ['0 s', '45 s', '4 min', '1 h 32', '10 h 00']);
 });
 
+test('capture idle label names the followed application or says video when none is known', () => {
+  for (const [application, playback] of [
+    [{ appId: 'youtube.leanback.v4', name: 'YouTube' }, 'de YouTube'],
+    [{ appId: 'com.webos.app.mediadiscovery', name: 'lecteur de la TV' }, 'du lecteur de la TV'],
+    [null, 'vidéo'],
+    [undefined, 'vidéo'],
+  ]) {
+    const view = sessions.describeCapture({ active: false, report: {
+      application, stopReason: 'idle', limits: { idleSeconds: 600 },
+    } });
+    assert.equal(view.label, 'Capture arrêtée : 10 min sans lecture ' + playback + '. Elle ne reprend pas seule.');
+    assert.equal(view.ended, 'idle');
+    assert.equal(view.action, 'start');
+  }
+});
+
+test('active capture names the application in its idle bound', () => {
+  for (const [application, playback] of [
+    [{ appId: 'youtube.leanback.v4', name: 'YouTube' }, 'de YouTube'],
+    [{ appId: 'com.webos.app.mediadiscovery', name: 'lecteur de la TV' }, 'du lecteur de la TV'],
+    [null, 'vidéo'],
+  ]) {
+    const view = sessions.describeCapture({ active: true, report: {
+      application, connection: 'connected', sent: 1, limits: { seconds: 21600, idleSeconds: 600 },
+    } });
+    assert.equal(view.label,
+      'Capture active · 1 passage envoyé · arrêt automatique après 6 h ou après 10 min sans lecture ' + playback);
+    assert.equal(view.action, 'stop');
+  }
+});
+
 test('capture button: every end of capture comes with its cause, and an open archive asks for a choice', () => {
   const limits = { seconds: 21600, idleSeconds: 600 };
   const stopped = (report, context) => sessions.describeCapture({ active: false, stopping: false, exitCode: 0, report: { stopped: true, limits, ...report } }, context);
   const active = sessions.describeCapture({ active: true, stopping: false, report: { connection: 'connected', sent: 12, limits } }, {});
-  assert.deepEqual(active, { button: 'Arrêter la capture', label: 'Capture active · 12 passages envoyés · arrêt automatique après 6 h ou après 10 min sans lecture', action: 'stop', ended: null });
+  assert.deepEqual(active, {
+    button: 'Arrêter la capture',
+    label: 'Capture active · 12 passages envoyés · arrêt automatique après 6 h ou après 10 min sans lecture vidéo',
+    action: 'stop', ended: null,
+  });
   assert.equal(sessions.describeCapture({ active: true, report: { connection: 'starting' } }, {}).label, 'Connexion au serveur…', 'an older controller reports no bounds: none is invented');
   assert.equal(sessions.describeCapture({ active: true, report: { connection: 'reconnecting' } }, {}).label, 'Réseau coupé · tampon court, nouvel essai…');
   assert.deepEqual(sessions.describeCapture({ active: true, stopping: true, report: {} }, {}), { button: 'Arrêt en cours…', label: 'Arrêt du micro et des captures…', action: null, ended: null });
   assert.deepEqual(stopped({ stopReason: 'duration' }), { button: 'Démarrer l’analyse', label: 'Capture terminée : limite de 6 h atteinte. Elle ne reprend pas seule : relance-la pour continuer.', action: 'start', ended: 'duration' });
-  assert.deepEqual([stopped({ stopReason: 'idle' }).label, stopped({ stopReason: 'idle' }).ended], ['Capture arrêtée : 10 min sans lecture YouTube. Elle ne reprend pas seule.', 'idle']);
+  assert.deepEqual([stopped({ stopReason: 'idle' }).label, stopped({ stopReason: 'idle' }).ended], [
+    'Capture arrêtée : 10 min sans lecture vidéo. Elle ne reprend pas seule.', 'idle',
+  ]);
   assert.equal(stopped({ stopReason: 'duration', limits: { seconds: 1800 } }).label, 'Capture terminée : limite de 30 min atteinte. Elle ne reprend pas seule : relance-la pour continuer.', 'the bound shown is the one reported, whatever it is');
   assert.equal(stopped({ stopReason: 'stopped' }).label, 'Capture arrêtée · contexte conservé');
   assert.equal(stopped({ stopReason: 'stopped', stopMessage: 'Capture arrêtée à la demande.', errors: ['Capture arrêtée à la demande.'] }).label, 'Capture arrêtée · contexte conservé', 'a stop the viewer asked for is not shown as an error');

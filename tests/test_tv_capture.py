@@ -165,6 +165,72 @@ class CaptureRun(unittest.TestCase):
         block, = server.segments
         self.assert_block_media(block)
 
+    def test_lg_player_capture_sends_its_images_and_reports_the_followed_application(self):
+        video = {
+            'sink': 'MAIN', 'appId': 'com.webos.app.mediadiscovery', 'connected': True, 'context': 'lg-video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.videooutput/getStatus': {'returnValue': True, 'video': [video]},
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server, seconds=16)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['dropped'], report['frames'], report['dropReasons']), (2, 0, 8, {}))
+        self.assertEqual(report['application'], {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'})
+        self.assertEqual(len(server.segments), 2)
+        for block in server.segments:
+            self.assert_block_media(block)
+
+    def test_switching_from_youtube_to_lg_player_drops_the_foreign_block_then_resumes_youtube(self):
+        youtube = {
+            'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        player = dict(youtube, appId='com.webos.app.mediadiscovery')
+        # Huit lectures par bloc accepté, quatre pour celui refusé avant la prise.
+        readings = [youtube] * 8 + [player] * 4 + [youtube] * 8
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+            'com.webos.service.videooutput/getStatus': [{'video': [v]} for v in readings],
+        }))
+        server = Server()
+        try:
+            report = self.run_capture(server, seconds=24)
+        finally:
+            server.close()
+        self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['frames']),
+                         (2, 1, {'foreignApp': 1}, 8))
+        self.assertEqual(report['application'], {'appId': 'youtube.leanback.v4', 'name': 'YouTube'})
+        first, last = sorted(server.segments, key=lambda block: block['sequence'])
+        self.assertEqual(last['sequence'] - first['sequence'], 2)
+        for block in server.segments:
+            self.assert_block_media(block)
+
+    def test_application_changed_or_disconnected_during_a_shot_rejects_the_block_as_foreign(self):
+        youtube = {
+            'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True, 'context': 'video',
+            'displayOutput': {'x': 0, 'y': 0, 'width': 3840, 'height': 2160},
+        }
+        for changed in (dict(youtube, appId='com.webos.app.mediadiscovery'),
+                        dict(youtube, appId='netflix', context='foreign-context'),
+                        dict(youtube, connected=False), {}):
+            with self.subTest(after=changed):
+                (self.root / 'luna' / 'counts.json').unlink(missing_ok=True)
+                (self.root / 'luna' / 'replies.json').write_text(json.dumps({
+                    'com.webos.service.videooutput/getStatus': [{'video': [youtube]}, {'video': [changed] if changed else []}],
+                }))
+                server = Server()
+                try:
+                    report = self.run_capture(server)
+                finally:
+                    server.close()
+                self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['frames']),
+                                 (0, 1, {'foreignApp': 1}, 0))
+                self.assertEqual(report['application'], {'appId': 'youtube.leanback.v4', 'name': 'YouTube'})
+                self.assertEqual(server.segments, [])
+
     def test_an_old_closed_gate_is_never_opened_and_does_not_change_media_or_report(self):
         self.gate.write_text(json.dumps({
             'v': 2, 'epoch': 5, 'state': 'shown', 'rect': None, 'shownMono': -1e9,
@@ -190,8 +256,9 @@ class CaptureRun(unittest.TestCase):
         self.assertIn('32 s', report['stopMessage'])
         self.assertEqual(set(report), {
             'sessionId', 'sent', 'dropped', 'dropReasons', 'errors', 'frames', 'retries', 'connection',
-            'stopped', 'queued', 'pid', 'framesMoved', 'stopReason', 'stopMessage', 'limits', 'lastRefusal',
+            'stopped', 'queued', 'pid', 'framesMoved', 'stopReason', 'stopMessage', 'limits', 'lastRefusal', 'application',
         })
+        self.assertEqual(report['application'], {'appId': 'youtube.leanback.v4', 'name': 'YouTube'})
         self.assertIsNone(report['lastRefusal'])
         self.assertEqual(json.loads((self.root / 'gate-reads.json').read_text()), [])
         self.assertEqual(self.gate.read_bytes(), original)
@@ -243,7 +310,7 @@ class CaptureRun(unittest.TestCase):
                     report = self.run_capture(server)
                 finally:
                     server.close()
-                self.assertEqual({key: value for key, value in report.items() if key != 'pid'}, expected)
+                self.assertEqual({key: value for key, value in report.items() if key != 'pid'}, dict(expected, application=None))
                 self.assertIsInstance(report['pid'], int)
                 self.assertEqual((server.starts, server.segments), (1, []))
 
@@ -356,7 +423,7 @@ class CaptureRun(unittest.TestCase):
             self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['framesMoved'], segments),
                              (0, 1, {'geometryChanged': 1}, 0, []))
 
-    def controlled_capture(self, server, blocks=1, before_audio=lambda *_: None, video=None):
+    def controlled_capture(self, server, blocks=1, before_audio=lambda *_: None, video=None, idle=0):
         """Horloge pilotée et médias locaux ; capture.run, thread d'envoi et HTTP réels."""
         clock = [100.0]
         stop = threading.Event()
@@ -410,7 +477,7 @@ class CaptureRun(unittest.TestCase):
         (self.root / 'connection.json').write_text(json.dumps({'url': server.url, 'token': 'x' * 64}))
         args = [
             '--config', str(self.root / 'connection.json'), '--seconds', str(blocks * 8),
-            '--idle-seconds', '0', '--lock', str(self.root / 'capture.lock'),
+            '--idle-seconds', str(idle), '--lock', str(self.root / 'capture.lock'),
             '--report', str(self.root / 'report.json'),
         ]
         output = io.StringIO()
@@ -438,6 +505,62 @@ class CaptureRun(unittest.TestCase):
         self.assertEqual(report['queued'], 0)
         self.assertEqual(report['dropped'], sum(report['dropReasons'].values()))
         return report
+
+    def test_idle_timeout_names_the_followed_application_and_foreign_frames_do_not_extend_it(self):
+        for app_id, name, playback in (
+            ('youtube.leanback.v4', 'YouTube', 'de YouTube'),
+            ('com.webos.app.mediadiscovery', 'lecteur de la TV', 'du lecteur de la TV'),
+        ):
+            with self.subTest(application=app_id):
+                other_id = 'com.webos.app.mediadiscovery' if app_id == 'youtube.leanback.v4' else 'youtube.leanback.v4'
+                server = Server()
+                try:
+                    report = self.controlled_capture(server, blocks=4, idle=10,
+                                                     video=lambda block: {'appId': app_id if block == 1 else other_id})
+                finally:
+                    server.close()
+                self.assertEqual((report['stopReason'], report['sent'], report['dropped'], report['dropReasons']),
+                                 ('idle', 1, 1, {'foreignApp': 1}))
+                self.assertEqual(report['application'], {'appId': app_id, 'name': name})
+                self.assertEqual(report['stopMessage'],
+                                 '10 s sans lecture '+playback+' : relance la capture quand la vidéo reprend.')
+                self.assertEqual(len(server.segments), 1)
+
+    def test_idle_timeout_without_a_followed_application_says_video_and_refuses_netflix(self):
+        server = Server()
+        try:
+            report = self.controlled_capture(server, blocks=4, idle=10, video=lambda _: {'appId': 'netflix'})
+        finally:
+            server.close()
+        self.assertEqual((report['stopReason'], report['sent'], report['dropped'], report['dropReasons']),
+                         ('idle', 0, 2, {'foreignApp': 2}))
+        self.assertIsNone(report['application'])
+        self.assertEqual(report['stopMessage'], '10 s sans lecture vidéo : relance la capture quand la vidéo reprend.')
+        self.assertEqual(server.segments, [])
+
+    def test_lg_player_frames_refresh_the_idle_timer(self):
+        server = Server()
+        try:
+            report = self.controlled_capture(server, blocks=3, idle=4,
+                                             video=lambda _: {'appId': 'com.webos.app.mediadiscovery'})
+        finally:
+            server.close()
+        self.assertEqual((report['stopReason'], report['sent'], report['dropped'], report['frames']), ('duration', 3, 0, 12))
+
+    def test_only_a_verified_connected_main_video_selects_the_followed_application(self):
+        for unavailable in ({'appId': 'netflix'}, {'connected': False},
+                            {'appId': 'com.webos.app.mediadiscovery', 'connected': False}, {'sink': 'SUB'}):
+            with self.subTest(first=unavailable):
+                server = Server()
+                try:
+                    report = self.controlled_capture(server, blocks=2,
+                                                     video=lambda block: unavailable if block == 1 else {'appId': 'com.webos.app.mediadiscovery'})
+                finally:
+                    server.close()
+                self.assertEqual((report['sent'], report['dropped'], report['dropReasons'], report['frames']),
+                                 (1, 1, {'foreignApp': 1}, 4))
+                self.assertEqual(report['application'], {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'})
+                self.assertEqual(len(server.segments), 1)
 
     def test_incomplete_block_is_counted_before_queueing_and_the_next_block_delivers(self):
         server = Server()

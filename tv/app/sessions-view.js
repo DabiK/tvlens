@@ -43,6 +43,12 @@
     return seconds + " s";
   }
 
+  function playback(application) {
+    if (!application || !application.name) return "lecture vidéo";
+    var name = application.name;
+    return "lecture " + (name.indexOf("lecteur ") === 0 ? "du " : "de ") + name;
+  }
+
   /**
    * Disk state of the server. Accepts the library shape ({sessions, bytes, freeBytes, minFreeBytes,
    * warnFreeBytes, state}) and the session shape of the polled state ({state, freeBytes, minFreeBytes,
@@ -274,7 +280,9 @@
       // The bounds are told while the capture runs, not only once it has stopped.
       var bounds = [
         limit(limits.seconds) ? "après " + limit(limits.seconds) : "",
-        limit(limits.idleSeconds) ? "après " + limit(limits.idleSeconds) + " sans lecture" : "",
+        limit(limits.idleSeconds)
+          ? "après " + limit(limits.idleSeconds) + " sans " + playback(report.application)
+          : "",
       ].filter(Boolean);
       if (bounds.length) view.label += " · arrêt automatique " + bounds.join(" ou ");
       if (full)
@@ -300,7 +308,9 @@
         view.label =
           "Capture arrêtée : " +
           (limit(limits.idleSeconds) || "trop longtemps") +
-          " sans lecture YouTube. Elle ne reprend pas seule.";
+          " sans " +
+          playback(report.application) +
+          ". Elle ne reprend pas seule.";
       } else if (reason === "session-changed" || report.connection === "session-changed") {
         view.ended = "session-changed";
         view.label = "Serveur redémarré ou session changée · redémarre l’analyse.";

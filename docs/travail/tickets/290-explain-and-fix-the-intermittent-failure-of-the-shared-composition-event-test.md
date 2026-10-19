@@ -1,7 +1,7 @@
 ---
 id: T290
 titre: Explain and fix the intermittent failure of the shared composition event test
-statut: a-faire
+statut: termine
 bloque_par: T284
 adr: non
 installe: non
@@ -69,3 +69,11 @@ Aucune décision n'est attendue.
 
 - 19/10, orchestrateur : rangé après le contrôle T284 et avant la phase Mémoire (T224), qui touche les mêmes
   publications.
+- 19/10, orchestrateur : traité dans le commit de T287, sur décision de l'orchestrateur, propriétaire absent. Reproduction
+  provoquée par Codex : une lecture média du premier passage retenue jusqu'à la fin de la lecture du second
+  (`.harness-state/tickets/T287/reproduce-lane-order.cjs`) fait échouer l'assertion de l'ordre des appels. Cause : les
+  voies audio et vision lisent le média en parallèle (`core/memory/lanes.cjs:179-183`) ; l'entrelacement entre
+  passages ne dépend que de la fin des lectures disque et n'est garanti par aucun ADR. La correction n'est pas un arrêt
+  PARTIEL : elle ne change pas ce que l'assertion affirme, elle fixe le scénario par une barrière dans la doublure de
+  transcription. Rouge sans elle, vert avec ; contrôle complet vert. Le détail de l'échec initial n'ayant pas été
+  gardé, son identité avec cette cause reste une inférence.

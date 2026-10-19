@@ -6,9 +6,30 @@ Livré le 30 septembre 2026 sur la LG déjà rootée. Complète le [premier bran
 
 ## Utilisation
 
+Dans le code du 19 octobre 2026, la capture suit la première application vérifiée dont une vidéo `MAIN` est
+connectée : YouTube (`youtube.leanback.v4`) ou le lecteur de la TV (`com.webos.app.mediadiscovery`). Cette table
+nommée `VERIFIED_APPLICATIONS` vit dans `tv/capture.py` ; toute nouvelle entrée exige une sonde réelle image et son.
+La sonde du lecteur LG a été rapportée le 19 octobre ; le parcours complet de capture sera vérifié séparément sur la TV.
+Netflix, Prime et Disney+ restent refusés : leur capture n’a pas été vérifiée.
+
+L’application suivie reste fixée pour toute cette exécution. Passer à une autre application, même vérifiée,
+fait perdre le bloc (`foreignApp`) ; revenir à l’application suivie permet de continuer. Les contrôles avant
+et après chaque image refusent aussi une vidéo déconnectée et un changement d’application pendant la prise.
+Le rapport local transmis par `GET /capture` publie `application:{appId,name}`, ou `null` avant la première
+vidéo admissible. Le format des blocs envoyés au serveur reste identique.
+
+Le contrôleur borne chaque exécution à six heures et à dix minutes sans image conservée de l’application
+suivie. Une image étrangère ne repousse pas l’arrêt. Le message de fin et le panneau disent par exemple
+« 10 min sans lecture de YouTube » ou « 10 min sans lecture du lecteur de la TV » ; sans application suivie,
+ils disent « sans lecture vidéo ». Le démarrage et la reprise restent manuels.
+Ces comportements sont couverts par simulation locale ; ils ne décrivent aucun déploiement ni nouvel essai réel.
+
 Rakuten ouvre le companion. **Démarrer l’analyse** lance image + son en arrière-plan ; le premier passage arrive après environ 8–10 secondes. Le bouton devient **Arrêter la capture**. Pendant l’arrêt, il garde le focus de la télécommande et ignore les doubles appuis. Les passages déjà reçus peuvent finir d’être analysés ; les questions et le contexte restent disponibles. Redémarrer la capture réutilise la même session si l’hôte n’a pas redémarré.
 
-Le panneau indique séparément l’état de la capture, le nombre de passages envoyés, le contenu capturé et le contenu analysé. Une coupure est affichée avec les abandons éventuels. Fermer le panneau ne stoppe pas la capture : utiliser le bouton Arrêter. Une exécution est bornée à **30 minutes**, puis il faut la relancer manuellement. Aucun enregistrement ne démarre automatiquement au boot.
+Le panneau indique séparément l’état de la capture, le nombre de passages envoyés, le contenu capturé et le contenu analysé.
+Une coupure est affichée avec les abandons éventuels. Fermer le panneau ne stoppe pas la capture : utiliser le bouton Arrêter.
+Les bornes actuelles sont décrites ci-dessus ; la limite historique était de 30 minutes.
+Aucun enregistrement ne démarre automatiquement au boot.
 
 La fermeture historique du panneau après 170 secondes a été supprimée. Le panneau reste ouvert tant que son contrôleur fonctionne et que le contexte YouTube reste compatible. Une publicité ou un changement de contexte peut toujours provoquer sa fermeture de protection ; ce n’est pas un arrêt de capture. Ce comportement n’est pas encore une transition publicitaire transparente.
 

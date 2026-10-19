@@ -109,6 +109,12 @@ test('shared composition delivers each passage version while failed subscribers 
   events.subscribe(() => new Promise(() => {}));
   events.subscribe(event => delivered.push(event));
   const f = await runtimeFixture(t, { events });
+  const transcribe = f.session.perception.transcribe;
+  // Le scénario impose cet entrelacement, indépendamment de l'ordre des lectures disque.
+  t.mock.method(f.session.perception, 'transcribe', async input => {
+    if (input.id === 'moment-2') await f.started.vision[0].promise;
+    return transcribe(input);
+  });
   f.onState = state => {
     if (state.segments.length === 2 && state.segments.every(p => p.status === 'ready')) completed.resolve();
   };

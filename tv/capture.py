@@ -5,6 +5,11 @@ from pathlib import Path
 FRAME_STEP=2          # seconds between two frames of a block
 MAX_SECONDS=21600     # six hours, then a manual restart
 LUNA_PATIENCE=5       # blocks in a row lost to a mute Luna before the capture stops with an error
+# Une entrée s'ajoute seulement après une sonde réelle d'image et de son sur la TV.
+VERIFIED_APPLICATIONS={
+ 'youtube.leanback.v4':'YouTube',
+ 'com.webos.app.mediadiscovery':'lecteur de la TV',
+}
 
 def luna(endpoint,payload):
  r=subprocess.run(['luna-send','-t','1','-w','3000','luna://'+endpoint,json.dumps(payload)],capture_output=True,timeout=5)
@@ -19,10 +24,14 @@ def span(seconds):
  parts=[(seconds//3600,' h'),(seconds%3600//60,' min'),(seconds%60,' s')]
  return ' '.join(str(count)+unit for count,unit in parts if count) or '0 s'
 
-def stop_message(reason,limits):
+def stop_message(reason,limits,application=None):
  """Every end of capture says why, in words the panel can show as they are. Nothing restarts by itself."""
+ source='vidéo'
+ if application:
+  name=application['name']
+  source=('du ' if name.startswith('lecteur ') else 'de ')+name
  return {'duration':'Limite de '+span(limits['seconds'])+' atteinte : relance la capture pour continuer.',
-  'idle':span(limits['idleSeconds'])+' sans lecture YouTube : relance la capture quand la vidéo reprend.',
+  'idle':span(limits['idleSeconds'])+' sans lecture '+source+' : relance la capture quand la vidéo reprend.',
   'stopped':'Capture arrêtée à la demande.','parent':'Contrôleur arrêté.',
   'session-changed':'Session serveur changée ou suspendue. Redémarrage manuel requis.',
   'storage-full':STORAGE_FULL,'read-only':READ_ONLY,'error':'Capture arrêtée sur une erreur.'}[reason]
@@ -40,7 +49,7 @@ def run(argv=None):
  stop_event=threading.Event();done=threading.Event();save_lock=threading.Lock()
  limits={'seconds':args.seconds,'idleSeconds':args.idle_seconds}
  report={'sessionId':None,'sent':0,'dropped':0,'dropReasons':{},'errors':[],'frames':0,'retries':0,'connection':'starting','stopped':False,'queued':0,
-  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits,'lastRefusal':None}
+  'pid':os.getpid(),'framesMoved':0,'stopReason':None,'stopMessage':None,'limits':limits,'lastRefusal':None,'application':None}
  def save():
   with save_lock:
    target=Path(args.report);tmp_report=target.with_suffix('.tmp')
@@ -48,7 +57,8 @@ def run(argv=None):
  def end(reason,say=True):
   # The first cause wins: a stop asked while the storage is full still says storage.
   if report['stopReason']:return
-  report['stopReason']=reason;report['stopMessage']=stop_message(reason,limits)
+  report['stopReason']=reason
+  report['stopMessage']=stop_message(reason,limits,report['application'])
   if say and report['stopMessage'] not in report['errors']:report['errors']=(report['errors']+[report['stopMessage']])[-10:]
  def stop(_signal,_frame):
   stop_event.set()
@@ -89,13 +99,16 @@ def run(argv=None):
  thread=threading.Thread(target=upload);thread.start()
  def stamp():return offset+(time.monotonic()-anchor)*1000
  os.umask(0o077);tmp=Path(tempfile.mkdtemp(prefix='tvlens-capture-'))
- last_youtube=time.monotonic();mute=0
+ last_frame=time.monotonic()
+ mute=0
  try:
   for chunk in range(args.seconds//8):
    if args.parent_pid and os.getppid()!=args.parent_pid:end('parent');stop_event.set()
    if stop_event.is_set():break
-   # Ten minutes without a single YouTube frame: this is not a permanent recorder of the TV.
-   if args.idle_seconds and time.monotonic()-last_youtube>=args.idle_seconds:end('idle');break
+   # Une autre application ne prolonge jamais la capture suivie.
+   if args.idle_seconds and time.monotonic()-last_frame>=args.idle_seconds:
+    end('idle')
+    break
    start=stamp()
    began=time.monotonic()
    audiofile=tmp/'audio.wav'
@@ -109,10 +122,25 @@ def run(argv=None):
      try:
       before=stamp();state=luna('com.webos.service.videooutput/getStatus',{})
       video=next((x for x in state['video'] if x['sink']=='MAIN'),{})
-      if video.get('appId')!='youtube.leanback.v4' or not video.get('connected'):valid=False;reason=reason or 'foreignApp';continue
+      app_id=video.get('appId')
+      if not video.get('connected') or app_id not in VERIFIED_APPLICATIONS:
+       valid=False
+       reason=reason or 'foreignApp'
+       continue
+      if report['application'] is None:
+       report['application']={'appId':app_id,'name':VERIFIED_APPLICATIONS[app_id]}
+       save()
+      if app_id!=report['application']['appId']:
+       valid=False
+       reason=reason or 'foreignApp'
+       continue
       reply=luna('com.webos.service.capture/executeOneShot',{'path':str(tmp/'frame.png'),'method':method,'format':'PNG','width':1280,'height':720})
       if not reply.get('returnValue'):valid=False;reason=reason or 'captureFailed';continue
       after=next((x for x in luna('com.webos.service.videooutput/getStatus',{})['video'] if x['sink']=='MAIN'),{})
+      if after.get('appId')!=app_id or not after.get('connected'):
+       valid=False
+       reason=reason or 'foreignApp'
+       continue
       # Another video context during the shot is another media pipeline (a change of video, of source): the
       # whole block is refused, as it always was.
       if after.get('context')!=video.get('context'):valid=False;reason=reason or 'geometryChanged';continue
@@ -120,7 +148,7 @@ def run(argv=None):
       # closed): the frame cannot be cut reliably and is left out. Its block keeps its sound and its other frames.
       if after.get('displayOutput')!=video['displayOutput']:moved+=1;continue
       rect=video['displayOutput'];crop={k:round(v/3) for k,v in rect.items()}
-      last_youtube=time.monotonic()
+      last_frame=time.monotonic()
       frames.append({
        'atMs':before,
        'data':base64.b64encode((tmp/'frame.png').read_bytes()).decode(),

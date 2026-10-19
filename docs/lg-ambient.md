@@ -32,6 +32,8 @@ rendus ne disparaissent pas. `/v1/surveillance/overlay`, sa projection runtime, 
 restent aussi : leur retrait attend un cadrage distinct, sans présumer l’absence d’autres consommateurs.
 
 Le reste de cette page conserve l’historique du 13 octobre et le protocole natif alors proposé.
+La mention historique d’une inactivité liée à YouTube est remplacée dans le code du 19 octobre par le suivi
+de YouTube ou du lecteur LG : voir [le fonctionnement actuel de la capture](lg-capture-control.md#utilisation).
 **Ce protocole est abandonné avec la capacité ; il n’a pas été exécuté.** Les simulations et tests datés
 ne deviennent pas des validations matérielles. Les mentions d’installation ci-dessous sont des faits
 rapportés à cette date, sans nouvelle vérification ni déploiement annoncé par ce retrait.

@@ -894,14 +894,15 @@ try {
     await t.until(() => document.querySelector("#archive-banner").hidden, "bandeau d’archive retiré");
     // End of capture and its cause; nothing restarts by itself.
     Object.assign(controller.capture, { active: false, exitCode: 0,
-      report: { stopped: true, sent: 412, stopReason: "duration", limits: { seconds: 21600, idleSeconds: 600 } },
+      report: { stopped: true, sent: 412, stopReason: "duration", limits: { seconds: 21600, idleSeconds: 600 },
+        application: { appId: "youtube.leanback.v4", name: "YouTube" } },
     });
     await t.until(() => /limite/.test(document.querySelector("#capture-state").textContent), "fin de capture par durée");
     assert.equal(await t.text("#capture-state"),
       "Capture terminée : limite de 6 h atteinte. Elle ne reprend pas seule : relance-la pour continuer.");
     Object.assign(controller.capture.report, { stopReason: "idle" });
     await t.until(() => /sans lecture/.test(document.querySelector("#capture-state").textContent), "fin de capture par inactivité");
-    assert.equal(await t.text("#capture-state"), "Capture arrêtée : 10 min sans lecture YouTube. Elle ne reprend pas seule.");
+    assert.equal(await t.text("#capture-state"), "Capture arrêtée : 10 min sans lecture de YouTube. Elle ne reprend pas seule.");
     await t.advance(5000);
     assert.deepEqual(t.controllerCalls(STARTERS), ["POST /capture/start"], "an ended capture is never restarted without the viewer");
     // Delete with confirmation, Cancel focused first.

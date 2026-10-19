@@ -15,7 +15,8 @@ class CaptureController:
     def __init__(self, config, report, command=None, lock_file="/tmp/tvlens-capture.lock"):
         self.config, self.report = Path(config), Path(report)
         self.lock_file = lock_file
-        # Six hours at most, and ten minutes without YouTube playback end it: never a permanent recorder of the TV.
+        # Six hours at most, and ten minutes without a frame of the followed application end it: never a
+        # permanent recorder of the TV.
         self.command = command or [sys.executable or "/usr/bin/python3", str(Path(__file__).with_name('capture.py')),
             '--config', str(self.config), '--seconds', '21600', '--idle-seconds', '600', '--report', str(self.report),
             '--lock', str(self.lock_file), '--parent-pid', str(os.getpid())]

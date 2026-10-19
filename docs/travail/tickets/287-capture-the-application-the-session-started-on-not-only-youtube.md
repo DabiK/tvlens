@@ -1,7 +1,7 @@
 ---
 id: T287
 titre: Capture the application the session started on, not only YouTube
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -72,3 +72,38 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : les tickets TV T285 à T288 passent avant T283, « de façon prioritaire ».
+
+- 19/10, Codex — Cadrage : règles, skills, code de capture/contrôle/vue, tests et ADR concernés lus. `git status --short` et `git diff` : seul le statut du ticket est modifié, avec deux dossiers préexistants non suivis ; aucun échec antérieur. Exploration et écarts consignés dans `.harness-state/tickets/T287/`.
+- 19/10, Codex — Capture, tests d’abord : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_lg_player_capture -v` rouge (0 bloc envoyé, deux `foreignApp`), puis vert (un test). Même commande avec `-k test_application_changed_or_disconnected` rouge sur les compteurs et causes, puis vert après garde après prise (un test, quatre scénarios). La simulation « MAIN absente » a été corrigée en `video:[]` ; son premier faux `{}` était une réponse mal formée, sorties conservées.
+- 19/10, Codex — Inactivité : même commande avec `-k test_idle_timeout` rouge sur les messages attendus, puis `python3 -B -m unittest discover -s tests -p test_tv_capture.py -v` vert : 22 tests en 30,389 s. Lecteur LG, YouTube → lecteur → YouTube, Netflix, sélection MAIN connectée, délais pilotés et format des médias vérifiés. Sorties dans `.harness-state/tickets/T287/`.
+- 19/10, Codex — Page : `node --test --test-name-pattern='capture idle label|active capture names' tests/tv-panel.test.cjs` rouge (deux assertions de libellé), puis `node --test tests/tv-panel.test.cjs` vert : 21 tests. Documentation actualisée, preuves matérielles historiques distinguées des simulations ; aucun essai TV ni fournisseur réel.
+- 19/10, Codex — `node scripts/check.mjs --changed` vert, puis `node scripts/check.mjs` **rouge** : règles, format, lint, gel et cliquet verts ; 54 tests Python réussis en 47,270 s ; 2 902/2 903 tests JS réussis. Échec : `shared composition delivers each passage version while failed subscribers leave both lanes and saves running`, dans `tests/session-events.test.cjs:104` (inchangé). Le contrôle ne publie pas le détail de cette assertion. Bilan conservé dans `check-full.log` du dossier d’état.
+- 19/10, Codex — Diagnostic de l’échec global : `node --test --test-name-pattern='shared composition delivers each passage version' tests/session-events.test.cjs` vert (1 test) ; `node --test tests/session-events.test.cjs` vert (28 tests) ; protocole fixé de 30 exécutions ciblées : 30 succès, échec initial non reproduit et cause indéterminée. Aucun changement de ce test ou du runtime/core. Le contrôle complet reste rouge, sans relance pour obtenir un vert.
+- 19/10, Codex — Dernier `node scripts/check.mjs --changed` vert (21 tests JS) ; `git diff --check` sans erreur. Verdict **PARTIEL** écrit dans `.harness-state/tickets/T287/verdict.json` : implémentation et preuves ciblées livrées, critère 5 manquant à cause de l’échec global non expliqué. Aucun commit, push ni essai réel ; fichiers préexistants préservés.
+- 19/10, Codex — Reprise après `echec-1.txt` : journal, écarts, diff et preuves relus. Diagnostic de l’ordre des lectures média dans `session-events` préparé dans le dossier d’état, sans modification hors périmètre. Aucun sous-agent, commit, push ni essai réel.
+- 19/10, Codex — Diagnostic maîtrisé : `node --require ./.harness-state/tickets/T287/reproduce-lane-order.cjs --test --test-name-pattern='shared composition delivers each passage version' tests/session-events.test.cjs` rouge sur l’ordre global des appels (ligne 136). Proposition de six lignes, assertions intactes, compilée en mémoire avec `verify-proposed-session-events.cjs` : verte sous la même inversion des lectures. Exception de périmètre demandée avant application ; sorties conservées dans le dossier d’état.
+- 19/10, Codex — Vérifications de reprise : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -v` vert (22 tests en 30,463 s) ; `node --test tests/tv-panel.test.cjs` vert (21 tests) ; proposition en mémoire : `node --test .harness-state/tickets/T287/verify-proposed-session-events.cjs` vert (28 tests). `node scripts/check.mjs --changed` vert ; `git diff --check` sans erreur. Contrôle complet non relancé avant correction de l’instabilité : son dernier résultat reste rouge. Verdict **BLOQUÉ** sur la seule décision d’exception de périmètre, correction prête et non appliquée.
+- 19/10, orchestrateur, propriétaire absent : décision sur le blocage. La correction de `tests/session-events.test.cjs`
+  entre dans ce ticket : l'ordre des appels audio et vision entre deux passages n'est garanti ni par le produit
+  (`core/memory/lanes.cjs:179-183`, lectures média en parallèle) ni par les ADR 0003 et 0050. La barrière fixe
+  l'entrelacement que le scénario pilote déjà ; aucune assertion n'est retirée ni élargie ; l'ordre garanti reste
+  vérifié par `tests/split-perception.test.cjs:170`. `scripts/smoke-tv-overlay.mjs`, relevé par la relecture, entre
+  aussi.
+- 19/10, orchestrateur : correction appliquée. `node --require ./.harness-state/tickets/T287/reproduce-lane-order.cjs
+  --test --test-name-pattern='shared composition delivers each passage version' tests/session-events.test.cjs` : rouge
+  sans la barrière (ordre réel audio 1, audio 2, vision 1, vision 2), vert avec ; `node --test
+  tests/session-events.test.cjs` : 28 tests réussis. `node scripts/check.mjs` : vert, 2 903 tests JS sur 2 903 et
+  54 tests Python.
+- 19/10, relecture (agent relecteur) : à corriger, un bloquant et deux mineurs, corrigés. Le smoke du panneau attendait
+  « sans lecture YouTube » : rapport simulé avec l'application suivie et texte « sans lecture de YouTube ». Le
+  commentaire de `tv/controller.py` a retrouvé sa raison. Ensuite : `node scripts/smoke-tv-overlay.mjs` réussi ;
+  `node scripts/check.mjs --changed` vert, 49 tests JS ; tests Python : 54 réussis.
+- 19/10, orchestrateur : intégré hors boucle, qui refuse de démarrer sur un arbre modifié ; T290 fermé par ce commit.
+
+### Réserves à la clôture
+
+- `docs/lg-capture-control.md:34` dit encore « tant que … le contexte YouTube reste compatible » : la phrase parle de
+  l'ouverture du panneau, élargie par T286. À reprendre au ménage de la documentation.
+- `tests/fixtures/tv-capture-refusals.json` ne porte pas le champ `application` du rapport réel ;
+  `tests/test_tv_capture.py:313` le complète. Fixture et rapport divergent.
+- La cause exacte de l'échec du 19/10 à 01:43 reste une inférence : le contrôle complet n'a gardé que le titre du test.
