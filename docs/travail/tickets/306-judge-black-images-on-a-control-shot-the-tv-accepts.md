@@ -36,7 +36,10 @@ applications partiraient en `captureFailed`, YouTube compris.
 ## Périmètre
 
 - À modifier : `tv/blackness.py`, `tv/capture.py`, `tests/tv_fakes/luna-send`, `tests/test_tv_capture.py`,
-  `docs/lg-capture-control.md`.
+  `docs/lg-capture-control.md`, `docs/lg-installation.md`.
+- `docs/lg-installation.md` (réserve de clôture de T301) : le tableau d'installation (`:22`) cite `blackness.py`, que
+  `capture.py` importe ; les lignes `:70-72` disent les applications suivies (Netflix comprise) et le son seul quand
+  l'image est noire, au lieu de « dix minutes sans image ».
 - Image de contrôle : `format: 'BMP'`, 256×144, méthode `DISPLAY` ; le détecteur lit l'en-tête (taille, 24 bits, sens
   des lignes, décalage des pixels, bourrage des lignes) et refuse tout autre BMP par `ValueError`, comme aujourd'hui
   pour un PNG invalide ; les pixels de bord restent exclus et le seuil nommé reste 16.
@@ -50,7 +53,8 @@ applications partiraient en `captureFailed`, YouTube compris.
    de haut en bas pour `format: 'BMP'`. Les tests de transition et de sidebar de `tests/test_tv_capture.py` passent avec
    ce contrôle. Le test du refus échoue avant la correction.
 2. Un BMP de bas en haut (hauteur positive) est lu dans le bon sens ; un BMP d'une autre taille ou profondeur est refusé.
-3. `node scripts/check.mjs`.
+3. `docs/lg-installation.md` liste les quatre modules Python et décrit le son seul.
+4. `node scripts/check.mjs`.
 
 ## Test d'acceptation attendu
 
