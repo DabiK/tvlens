@@ -196,6 +196,78 @@ class CaptureRun(unittest.TestCase):
             TVLENS_FAKE_ARECORD_SECONDS='0.05',
         )
 
+    def capture_block_alone(self, replies):
+        clock = [100.0]
+        stop = threading.Event()
+        waits = []
+        report = {'application': None, 'frames': 0}
+        (self.root / 'luna' / 'replies.json').write_text(json.dumps(replies))
+
+        def wait(delay):
+            waits.append(delay)
+            clock[0] += delay
+            return False
+
+        class Audio:
+            returncode = None
+
+            def __init__(self, command, **_):
+                self.path = Path(command[-1])
+
+            def poll(self):
+                return self.returncode
+
+            def wait(self, timeout=None):
+                clock[0] = 108.0
+                self.path.write_bytes(b'RIFF' + b'\0' * 4 + b'WAVE' + b'\0' * 40)
+                self.returncode = 0
+
+        with patch.dict(os.environ, self.environment()), \
+                patch.object(capture, 'time', SimpleNamespace(monotonic=lambda: clock[0])), \
+                patch.object(stop, 'wait', side_effect=wait), \
+                patch.object(capture, 'subprocess', SimpleNamespace(
+                    Popen=Audio, run=subprocess.run, DEVNULL=subprocess.DEVNULL,
+                    SubprocessError=subprocess.SubprocessError)):
+            block = capture.capture_block(self.root, 'DISPLAY', 0, stop,
+                               lambda: (clock[0] - 100) * 1000, lambda: None, report, lambda: None)
+        return block, report, waits
+
+    def test_one_block_can_be_captured_alone_as_sound_only_or_with_images(self):
+        take_block = getattr(capture, 'capture_block', None)
+        self.assertTrue(callable(take_block), 'La prise d’un bloc doit être appelable sans démarrer une session')
+        for black in (True, False):
+            with self.subTest(black=black):
+                reply = {'returnValue': True}
+                if black:
+                    reply['bmp'] = base64.b64encode(control_bmp()).decode()
+                block, report, waits = self.capture_block_alone({
+                    'com.webos.service.capture/executeOneShot': reply,
+                })
+                self.assertEqual((block.start_ms, block.end_ms, block.reason, block.failure, block.moved),
+                                 (0, 8000, None, None, 0))
+                self.assertEqual(block.sound_only, black)
+                self.assertEqual(waits, [0, 2, 2, 2])
+                self.assertEqual(report['application'], {'appId': 'youtube.leanback.v4', 'name': 'YouTube'})
+                expected = [] if black else [
+                    {'atMs': stamp, 'data': base64.b64encode(PNG).decode(), 'crop': FULL}
+                    for stamp in (0, 2000, 4000, 6000)
+                ]
+                self.assertEqual(block.frames, expected)
+                self.assertEqual(report['frames'], len(expected))
+                self.assertEqual(block.last_activity, None if black else 106.0)
+                self.assertEqual((self.root / 'audio.wav').read_bytes()[:4], b'RIFF')
+
+    def test_refused_control_keeps_capture_failed_even_without_a_video_rectangle(self):
+        block, report, _ = self.capture_block_alone({
+            'com.webos.service.videooutput/getStatus': {'video': [{
+                'sink': 'MAIN', 'appId': 'youtube.leanback.v4', 'connected': True,
+            }]},
+            'com.webos.service.capture/executeOneShot': {'returnValue': False},
+        })
+        self.assertEqual(block.reason, 'captureFailed')
+        self.assertIsNone(block.failure)
+        self.assertEqual((block.frames, block.sound_only, report['frames']), ([], False, 0))
+
     def test_control_shots_smaller_than_the_tv_minimum_are_refused(self):
         for width, height in ((160, 90), (160, 96), (192, 108), (255, 144), (256, 143)):
             with self.subTest(size=(width, height)):

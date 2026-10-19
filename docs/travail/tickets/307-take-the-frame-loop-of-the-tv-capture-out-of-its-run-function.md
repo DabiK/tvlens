@@ -1,7 +1,7 @@
 ---
 id: T307
 titre: Take the frame loop of the TV capture out of its run function
-statut: a-faire
+statut: termine
 bloque_par: T306
 adr: non
 installe: non
@@ -57,3 +57,30 @@ Aucune décision n'est attendue.
 
 - 19/10, orchestrateur : ticket ouvert depuis la réserve de clôture de T301, en fin de file (aucun comportement ne
   change).
+- 19/10, Codex : exploration terminée (capture, appelants, tests et ADR concernés). Extraction de la prise et de la
+  classification d'un bloc, puis aides d'orchestration dans le même fichier pour respecter 80 lignes ; aucun écart prévu.
+  État initial : statut du ticket et dossiers non suivis du propriétaire conservés. Détails dans le dossier d'état.
+- 19/10, Codex : test direct ajouté, rouge observé sur l'absence d'une fonction de bloc, puis vert sur noir et images
+  (`python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_one_block_can_be_captured_alone`).
+  `capture_block` retourne médias, horodatages, activité, déplacements et cause ; `classify_block` décide du résultat.
+  Suite capture intermédiaire : 40 tests OK. `node scripts/check.mjs --changed` : vert (ne lance pas Python).
+- 19/10, Codex : le découpage de la prise conserve aussi la priorité d'un contrôle refusé avant lecture du rectangle.
+  Test direct ajouté : rouge `lunaFailed` au lieu de `captureFailed`, puis vert après correction ; test noir/images
+  encore vert. Commande : `python3 -B -m unittest discover -s tests -p test_tv_capture.py -k test_refused_control_keeps`.
+  Sorties conservées dans le dossier d'état. Contrôle complet lancé après ces corrections.
+- 19/10, Codex : inspection AST (`python3 -B .harness-state/tickets/T307/inspect_structure.py`) : `run` 72 lignes,
+  toutes les fonctions sous 80 lignes, au plus une boucle explicite par fonction ; complexité indicative au plus 13.
+  Les 46 méthodes préexistantes de tests capture restent identiques, assertions incluses.
+  `node scripts/check.mjs` : vert (sortie complète dans `check-full.log` du dossier d'état).
+  Aucun essai réel, commit ou push ; la relecture et l'intégration reviennent à la boucle.
+- 19/10, Codex, reprise après relecture 1 : mineur sur l'import de `dataclasses` accepté. Correction limitée à une
+  classe simple avec les mêmes champs et valeurs initiales, sans nouvel import. Les tests ajoutés restent inchangés.
+  Préparation d'une preuve rouge/verte locale avec ce module volontairement indisponible, sans essai TV.
+- 19/10, Codex : `python3 -B .harness-state/tickets/T307/check_capture_without_dataclasses.py` : rouge sur
+  l'assertion de chargement sans `dataclasses`, puis vert après remplacement par un constructeur simple.
+  La sonde précharge les dépendances du banc Mac avant l'interdiction ; une erreur de sonde est conservée et expliquée.
+  Champs initiaux, listes indépendantes et deux tests directs inchangés : verts. Empreintes des tests inchangées.
+  Inspection structurelle et `node scripts/check.mjs --changed` : verts ; contrôle complet relancé pour cette correction.
+- 19/10, Codex, correction 1 : `node scripts/check.mjs` : vert, 3 031 tests JavaScript et 73 tests Python OK
+  (`check-full-correction.log`). Mineur 1 corrigé, sans contestation ni réserve ; nouveau verdict remis à la boucle.
+  Aucun essai TV, commit ou push.
