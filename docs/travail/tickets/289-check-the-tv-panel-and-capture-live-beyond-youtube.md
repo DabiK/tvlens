@@ -1,7 +1,7 @@
 ---
 id: T289
 titre: Check the TV panel and capture live beyond YouTube
-statut: a-faire
+statut: termine
 bloque_par: T287, T288
 adr: non
 installe: non
@@ -56,3 +56,20 @@ Décision attendue du propriétaire : le contrôle réel de T285 à T288 est-il 
 que l'orchestrateur fait ces contrôles et ferme le ticket quand il est concluant.
 
 ## Journal
+- 19/10, orchestrateur : contrôle réel sur la TV, de 09:29 à 09:58, avec le propriétaire, tag `recette-t289`
+  (`e26ac28`). Sauvegardes du runtime, de la capture et de la page dans `TVLens-backups` (`*-avant-recette-t289.tar`),
+  retour arrière prêt, non utilisé. Déployés : `prototypes/lg-remote/runtime`, `tv/capture.py`, `tv/controller.py`,
+  `tv/app/sessions-view.js` ; empreintes identiques au tag, fichier d'appairage intact, serveur du VPS inchangé.
+  - YouTube 16:9 : ouverture en 2880×1620 en (0, 270), sidebar au premier plan ; fermeture en 3840×2160.
+  - YouTube 4:3 (source 320×240, sortie 2880×2160 en x = 480) : ouverture en 2400×1800 en (480, 180), vidéo entière
+    visible, plus de bande noire ; fermeture : retour en 2880×2160 en x = 480, observé.
+  - Lecteur de la TV (vidéo du disque, sortie 3840×2080 en y = 40) : le panneau reste ouvert, 2880×1560 en (0, 300) ;
+    fermeture : retour au rectangle d'origine.
+  - Capture sur le lecteur, lancée par le propriétaire depuis la sidebar : application suivie « lecteur de la TV »,
+    49 blocs envoyés, 198 images, aucune perte ; une question du propriétaire, réponse jugée juste. Retour à
+    l'accueil pendant la capture : une perte `foreignApp`, application suivie inchangée.
+  - Accueil : refus `TVLENS_PANEL_PLAYBACK_REQUIRED` (« No foreground playback application »), un seul message
+    « TVLens : lance une vidéo pour ouvrir le panneau. », rien d'autre ne change.
+  - Non observé : l'étiquette d'inactivité nommant l'application (dix minutes), couverte par les tests ; une sortie à
+    coordonnées impaires (réserve de T288).
+  - Concluant. Statut `termine`.
