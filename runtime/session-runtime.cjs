@@ -61,7 +61,7 @@ function createSessionRuntime({
   localInspection = false,
   liveObservation = false,
   strategy = "sheets-diverse",
-  onChange = () => {},
+  onInvalidate = () => {},
   log = () => {},
   onPublicationError = createPublicationDiagnostic(),
   events = createEventPublisher({ onError: onPublicationError }),
@@ -73,7 +73,7 @@ function createSessionRuntime({
   overrides = {},
   transcriber = null,
 }) {
-  let watch, lifecycle, indexConsumer;
+  let watch, lifecycle, indexConsumer, disconnectPublication;
   if (restore) restore = readableRestore(restore);
   if (restore && id !== undefined && id !== restore.snapshot.id)
     throw refusal(400, "Archive d’une autre session.", "invalid-archive");
@@ -171,6 +171,7 @@ function createSessionRuntime({
     readHistoricalQuestions: () => watch.readHistoricalQuestions(),
     readUsage: () => watch.readUsage(),
   };
+  const memoryProjection = createMemoryProjection({ memory, now: () => sessionClock.now(), storage });
   const manifest = createSessionManifest({
     id,
     host,
@@ -182,6 +183,7 @@ function createSessionRuntime({
     readOnly: () => watch.readOnly,
     accepting: () => watch.accepting,
     memory,
+    readPublishedView: () => memoryProjection.published().memory,
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
   watch = new WatchSession({
@@ -195,11 +197,12 @@ function createSessionRuntime({
     visionDuringAsk: config.visionDuringAsk === true,
     onPublicationError,
     onEvents: (pending) => {
+      memoryProjection.invalidate();
       for (const event of pending) events.publish(event);
     },
-    onChange: (state) => {
-      manifest.publish();
-      onChange(state);
+    onInvalidate: (event) => {
+      memoryProjection.invalidate();
+      events.publish(event);
     },
   });
   lifecycle = createSessionLifecycle({
@@ -218,11 +221,15 @@ function createSessionRuntime({
     disconnectConsumers: () => {
       indexConsumer?.close();
       manifest.disconnect();
+      disconnectPublication?.();
     },
     resumeConsumers: () => indexConsumer?.resume(),
   });
   manifest.connect(events);
   indexConsumer = connectIndex?.({ id, events, memory, readOnly: () => watch.readOnly });
+  disconnectPublication = events.subscribe(event => {
+    if (event.sessionId === id && event.type === 'MemoryInvalidated') onInvalidate(event);
+  });
 
   return {
     id,
@@ -230,7 +237,7 @@ function createSessionRuntime({
     events,
     memory,
     memoryMedia: createMemoryMedia(store),
-    memoryProjection: createMemoryProjection({ memory, now: () => sessionClock.now(), storage }),
+    memoryProjection,
     store,
     search,
     inspector,

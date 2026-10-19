@@ -34,7 +34,7 @@ async function createScenario(
       ...fields,
     });
   const views = await makeViews({ env, delays, record });
-  const { session, deep, tools, checkpoint } = createModel({
+  const { session, deep, tools, checkpoint, readSession } = createModel({
     env,
     delays,
     views,
@@ -43,6 +43,7 @@ async function createScenario(
   const capture = await createCapture({
     env,
     session,
+    readSession,
     record,
     ingest: simulatedIngest({ env, delays, session, record }),
   });
@@ -73,6 +74,7 @@ async function createScenario(
     views,
     deep,
     session,
+    readSession,
     driveUntil,
     advance,
     release,
@@ -144,6 +146,7 @@ function scenarioRunner({
   views,
   deep,
   session,
+  readSession,
   driveUntil,
   advance,
   release,
@@ -168,7 +171,7 @@ function scenarioRunner({
       if (delays.refuse !== "media") {
         if (id !== "perception-delayed")
           await driveUntil(() =>
-            session.snapshot().segments.every((p) => p.status === "ready"),
+            readSession().segments.every((p) => p.status === "ready"),
           );
         deep.start("Que montrent les passages ?", {
           mode: "chat",
@@ -182,7 +185,7 @@ function scenarioRunner({
         views.tv.request();
         await driveUntil(() => deep.snapshot().jobs.every((j) => j.metrics));
         await driveUntil(() =>
-          session.snapshot().segments.every((p) => p.status === "ready"),
+          readSession().segments.every((p) => p.status === "ready"),
         );
       }
       views.tv.request();
@@ -194,7 +197,7 @@ function scenarioRunner({
         id,
         delays,
         events,
-        session: session.snapshot(),
+        session: readSession(),
         deep: copy(deep.snapshot()),
         tools,
         cards: views.cards(),

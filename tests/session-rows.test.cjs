@@ -8,11 +8,17 @@ const os = require('node:os');
 const path = require('node:path');
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { createMemoryProjection } = require('../runtime/memory/memory-projection.cjs');
+const { createEventPublisher } = require('../core/shared/events.cjs');
 
 function loadedSession({ readOnly = false, accepting = true, retentionMs = Infinity } = {}) {
   return {
     title: 'Vidéo', startedAt: 100,
     runtime: {
+      events: createEventPublisher(),
+      memoryProjection: { read: () => ({ session: {
+        elapsedMs: 30000, coverage: { passages: 3 }, storage: { sessionBytes: 1200 },
+        segments: [{ available: true }, { available: false }],
+      } }) },
       readOnly, watch: {
         id: 'session-a', accepting, retentionMs, now: () => 32000,
         snapshot: () => ({

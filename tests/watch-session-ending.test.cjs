@@ -23,7 +23,7 @@ function fixture() {
       remove: async id => { files.delete(id); },
     },
     archive: { save: async state => { saves.push(state); } },
-    onChange: state => publications.push(state),
+    onInvalidate: () => publications.push(watch.snapshot()),
     visionDuringAsk: true,
   });
   return { watch, publications, saves, calls, files };

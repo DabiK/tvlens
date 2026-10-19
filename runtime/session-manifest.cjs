@@ -65,6 +65,7 @@ function createSessionManifest({
   readOnly,
   accepting,
   memory,
+  readPublishedView = () => memory.view(),
 }) {
   const captures = restore
     ? [...(restore.manifest?.captures || [])]
@@ -80,6 +81,7 @@ function createSessionManifest({
       hasPassages = memory.passages([]).clock.capturedThroughMs > 0;
       unsubscribe = events.subscribe(event => {
         if (event.sessionId === id && ['PassageReceived', 'PassageUpdated'].includes(event.type)) hasPassages = true;
+        if (event.sessionId === id && event.type === 'MemoryInvalidated') this.publish();
       });
     },
     disconnect() {
@@ -97,10 +99,10 @@ function createSessionManifest({
         hasPassages &&
         readClock() - manifestAt >= MANIFEST_EVERY_MS
       )
-        return this.record();
+        return this.record({}, false, readPublishedView);
     },
     // `final` vouches for the last states already on disk: it is the write that first says "archived".
-    record(patch = {}, final = false) {
+    record(patch = {}, final = false, readView = () => memory.view()) {
       // Opening and closing a reopened archive without resuming must leave its directory intact.
       if (readOnly()) return Promise.resolve();
       manifestAt = readClock();
@@ -109,7 +111,7 @@ function createSessionManifest({
       // must not look archived, nor inherit confirmation from the manifest of an earlier life.
       return store
         .saveManifest({
-          ...buildManifest(facts, memory.view(), final || hasConfirmedEnd()),
+          ...buildManifest(facts, readView(), final || hasConfirmedEnd()),
           ...patch,
         })
         .catch((error) => {

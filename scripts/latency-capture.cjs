@@ -1,6 +1,6 @@
 const { RECORDER_SEGMENT_MS } = require("./latency-fixture.cjs");
 
-async function createCapture({ env, session, ingest, record }) {
+async function createCapture({ env, session, readSession, ingest, record }) {
   const { createCaptureController } =
     await import("../app/ui/capture-controller.mjs");
   const { RollingRecorder } = await import("../app/recording.js");
@@ -21,7 +21,7 @@ async function createCapture({ env, session, ingest, record }) {
         elapsedMs: io.now(),
         segmentMs: RECORDER_SEGMENT_MS,
       }),
-      state: async () => session.snapshot(),
+      state: async () => readSession(),
       stop: () => session.stop(),
     },
     selectSource: async () => {},
@@ -30,7 +30,7 @@ async function createCapture({ env, session, ingest, record }) {
     timers: { setTimeout: io.setTimer, clearTimeout: io.clearTimer },
     uuid: () => "flush-1",
     video: { videoWidth: 1280, videoHeight: 720, play: async () => {} },
-    session: () => session.snapshot(),
+    session: readSession,
     view: new Proxy({}, { get: () => () => {} }),
     createRecorder: (options) => {
       const recorder = new RollingRecorder({

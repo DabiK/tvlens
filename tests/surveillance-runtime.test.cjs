@@ -28,6 +28,7 @@ const authHome = path.join(os.tmpdir(), 'tvlens-test-absent-codex-home');
 function fakeSession(id = 'session-1') {
   const session = { id, elapsedMs: 0, segments: [], writes: [] };
   session.memory = memoryOf(() => session);
+  session.memoryProjection = { published: () => ({ memory: session.memory.view() }) };
   session.events = createEventPublisher();
   session.store = { saveSurveillance: async snapshot => { session.writes.push(JSON.parse(JSON.stringify(snapshot))); } };
   session.add = (n, transcript) => {

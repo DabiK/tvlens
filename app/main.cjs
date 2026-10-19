@@ -120,7 +120,7 @@ app.whenReady().then(async () => {
   const saved=new SavedMoments({archive:savedArchive,makeId:randomUUID});
   const keepMoment = async () => {
     if (!loaded) throw Error('Démarre une observation.');
-    const value = await saved.keep({ snapshot: loaded.runtime.watch.snapshot(), media: loaded.runtime.store });
+    const value = await saved.keep({ snapshot: loaded.runtime.memoryProjection.read().session, media: loaded.runtime.store });
     window.webContents.send('saved:changed');
     return value;
   };
@@ -301,11 +301,11 @@ app.whenReady().then(async () => {
   let storageShown = null;
   const ingestions = new Set();
   // La lecture explicite et le push partagent la projection ; une lecture garde ses ports publics frais.
-  const sessionState = () => (loaded ? {
-    ...loaded.runtime.memoryProjection.read().session, title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
+  const sessionState = (projection = loaded?.runtime.memoryProjection.read()) => (loaded ? {
+    ...projection.session, title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
   } : null);
-  const publishSessionState = () => {
-    if (loaded && !closing && !switching) send('watch:state', sessionState());
+  const publishSessionState = (projection) => {
+    if (loaded && !closing && !switching) send('watch:state', sessionState(projection));
   };
   const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
     ? simulatedRecap()
@@ -323,9 +323,9 @@ app.whenReady().then(async () => {
       strategy: process.argv.find(a => a.startsWith('--inspection-strategy='))?.split('=')[1] || 'sheets-diverse',
       log: line => console.error(line),
       onPublicationError,
-      onChange: () => {
+      onInvalidate: () => {
         // Une invalidation appartient à cette vie de session, même si une archive reprend le même identifiant.
-        if (loaded?.runtime === runtime) publishSessionState();
+        if (loaded?.runtime === runtime) publishSessionState(runtime.memoryProjection.published());
       },
     });
     return runtime;
@@ -336,7 +336,7 @@ app.whenReady().then(async () => {
     recapConsumer?.close();
     recapConsumer = createLivingRecapRuntime({
       id: runtime.id, recap,
-      readView: runtime.memory.view,
+      readView: () => runtime.memoryProjection.published().memory,
       subscribe: runtime.events.subscribe,
       schedule: queueMicrotask,
       isBlocked: () => closing || switching || loaded?.runtime !== runtime,
@@ -388,7 +388,7 @@ app.whenReady().then(async () => {
         session: ended, library, remove,
         empty: () => isEmptySession({
           fresh: loaded.fresh, jobs: deep.jobs.length, questions: ended.watch.questions.length,
-          passages: ended.watch.snapshot().coverage.passages,
+          passages: ended.memoryProjection.read().session.coverage.passages,
         }),
         // The external MCP contexts opened on this session end here, before anything is awaited: a call that arrives
         // while the session closes finds none of them, and one still running is refused instead of answered.
@@ -569,7 +569,7 @@ app.whenReady().then(async () => {
     });
   }
   handle('moments:shortcuts', () => ({ explainShortcut, explainShortcutRegistered }));
-  handle('watch:state', sessionState);
+  handle('watch:state', () => sessionState());
   // tvlens-media://<session>/<moment-N> serves any passage of the loaded session whose media exists, archive
   // included; tvlens-media://<session>/thumb/<moment-N> serves its thumbnail, which outlives the media.
   protocol.handle('tvlens-media', async request => {

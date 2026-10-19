@@ -7,6 +7,23 @@ const {
 } = require("../scripts/latency-environment.cjs");
 const { measureLatency } = require("../scripts/measure-latency.cjs");
 
+test("offline memory publications read the application projection without legacy snapshots", async (t) => {
+  const { createEnvironment } = require("../scripts/latency-environment.cjs");
+  const { createModel } = require("../scripts/latency-model.cjs");
+  const env = createEnvironment();
+  const delivered = [];
+  const { session } = createModel({
+    env, delays: DEFAULT_DELAYS,
+    views: { publish: (value) => delivered.push(value) }, record() {},
+  });
+  t.after(async () => { await session.close(); env.release(); });
+  const snapshots = t.mock.method(session, "snapshot");
+  session.emit();
+  session.setQuestionPending(true);
+  assert.deepEqual(delivered.map((value) => value.session.asking), [false, true]);
+  assert.equal(snapshots.mock.callCount(), 0);
+});
+
 test("fresh offline runs produce identical versioned traces through both real card views", async () => {
   const first = await measureLatency();
   assert.equal(first?.schemaVersion, 1);

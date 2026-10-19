@@ -16,9 +16,10 @@ function stage(options = {}) {
   const view = () => ({ session: { id: state.id }, clock: { elapsedMs: state.elapsedMs, capturedThroughMs: state.capturedThroughMs },
     passages: [...state.history, ...state.segments] });
   const runtime = {
-    // Still read by the search, which keeps the session state; no moment action reaches it.
+    // Le snapshot reste compté pour interdire son emploi par les lecteurs applicatifs.
     watch: { snapshot: () => { reads.snapshots++; return state; } },
     memory: { view },
+    memoryProjection: { read: () => ({ session: state }) },
     search: { search: async () => ({ moments: [] }) },
     store: { read: async () => ({ frames: [{ dataUrl: 'preview-a' }] }) },
   };
@@ -273,4 +274,11 @@ test('explain refuses non-string questions with the viewer-facing validation err
     assert.throws(() => h.actions.explain({ ...frozen, question }), { message: 'Question invalide.' });
     assert.deepEqual(h.calls, []);
   }
+});
+
+
+test('search reads the application projection without constructing a legacy snapshot', async () => {
+  const h = stage();
+  await h.actions.search('cercle');
+  assert.equal(h.reads.snapshots, 0);
 });

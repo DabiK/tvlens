@@ -90,7 +90,8 @@ test("thumbnail exists before analysis, survives explicit media removal, pause a
       transcribe: async () => { await audio.promise; return { observation: {} }; },
       observeVisual: async () => ({ observation: { summary: "Résumé conservé." } }),
     },
-    onChange: state => {
+    onInvalidate: () => {
+      const state = watch.snapshot();
       if (state.segments[0]?.status === "ready") described.resolve();
     },
   });

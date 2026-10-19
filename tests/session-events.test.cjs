@@ -8,6 +8,21 @@ const { createEventPublisher } = require('../core/shared/events.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 const { deferred, tick } = require('./helpers/wait.cjs');
 
+// Ces contrats portent sur les faits de passage ; l'invalidation conserve sa forme bornée distincte.
+function subscribeFacts(t, events, listener) {
+  const invalidations = [];
+  t.after(() => {
+    for (const event of invalidations) assert.deepEqual(event, { type: 'MemoryInvalidated', sessionId: 'session' });
+  });
+  return events.subscribe(event => {
+    if (event.type === 'MemoryInvalidated') {
+      invalidations.push(event);
+      return;
+    }
+    return listener(event);
+  });
+}
+
 const block = index => ({
   startMs: index * 1000, endMs: (index + 1) * 1000, clip: new Uint8Array([1]),
   audio: new Uint8Array([2]), frames: [],
@@ -42,7 +57,7 @@ async function runtimeFixture(t, extra = {}) {
     id: 'session', sessionsRoot: root, userData: root, smoke: true, localInspection: true,
     selectedModels: {}, readClock: () => f.time, wallClock: () => 10000,
     overrides: { perception }, onPublicationError: () => {},
-    onChange: state => { f.states.push(structuredClone(state)); f.onState?.(state); }, ...extra,
+    onInvalidate: () => { const state = session.memoryProjection.published().session; f.states.push(structuredClone(state)); f.onState?.(state); }, ...extra,
   });
   const save = session.store.save.bind(session.store);
   t.mock.method(session.store, 'save', state => { f.saves.push(structuredClone(state)); return save(state); });
@@ -64,7 +79,7 @@ test('memory records reception only after a complete admission and drains its fa
     },
     archive: { save: async () => {} },
     onEvents: events => { batches.push(events); states.push(watch.snapshot()); },
-    onChange: () => { throw Error('state observer failed'); },
+    onInvalidate: () => { throw Error('state observer failed'); },
   });
   t.after(() => watch.close());
   const ingesting = watch.ingest(block(0));
@@ -87,7 +102,7 @@ test('an admitted write landing after core closure still delivers its received f
     id: 'session', now: () => 1000, perception: {},
     media: { put: async () => { entered.resolve(); await writing.promise; } },
     archive: { save: async state => saves.push(state) },
-    onEvents: batch => events.push(...batch), onChange: state => states.push(state),
+    onEvents: batch => events.push(...batch), onInvalidate: () => states.push(watch.snapshot()),
   });
   const ingesting = watch.ingest(block(0));
   await entered.promise;
@@ -104,10 +119,10 @@ test('an admitted write landing after core closure still delivers its received f
 test('shared composition delivers each passage version while failed subscribers leave both lanes and saves running', async t => {
   const failures = [], delivered = [], completed = deferred();
   const events = createEventPublisher({ onError: failure => failures.push(failure) });
-  events.subscribe(() => { throw Error('subscriber threw'); });
-  events.subscribe(() => Promise.reject(Error('subscriber rejected')));
-  events.subscribe(() => new Promise(() => {}));
-  events.subscribe(event => delivered.push(event));
+  subscribeFacts(t, events, () => { throw Error('subscriber threw'); });
+  subscribeFacts(t, events, () => Promise.reject(Error('subscriber rejected')));
+  subscribeFacts(t, events, () => new Promise(() => {}));
+  subscribeFacts(t, events, event => delivered.push(event));
   const f = await runtimeFixture(t, { events });
   const transcribe = f.session.perception.transcribe;
   // Le scénario impose cet entrelacement, indépendamment de l'ordre des lectures disque.
@@ -160,14 +175,14 @@ for (const diagnostic of ['throws', 'rejects']) {
     const { watch, store, events } = f.session;
     const refusal = Object.assign(Error('/private/media: volume plein'), { code: 'TVLENS_STORAGE_FULL' });
     t.mock.method(store, 'put', async () => { throw refusal; });
-    events.subscribe(() => { throw Error('subscriber threw'); });
-    events.subscribe(() => Promise.reject(Error('subscriber rejected')));
-    events.subscribe(() => new Promise(() => {}));
-    events.subscribe(event => {
+    subscribeFacts(t, events, () => { throw Error('subscriber threw'); });
+    subscribeFacts(t, events, () => Promise.reject(Error('subscriber rejected')));
+    subscribeFacts(t, events, () => new Promise(() => {}));
+    subscribeFacts(t, events, event => {
       Reflect.set(event, 'passageId', 'phantom');
       Reflect.set(event.cause, 'code', 'changed');
     });
-    events.subscribe(event => { delivered.push(event); observed.push(watch.snapshot()); });
+    subscribeFacts(t, events, event => { delivered.push(event); observed.push(watch.snapshot()); });
     await assert.rejects(f.add(0), error => error === refusal);
     assert.deepEqual(delivered, [{
       type: 'AdmissionSuspended', sessionId: 'session', passageId: null, revision: null,
@@ -191,7 +206,7 @@ test('concurrent storage refusals preserve both original errors but suspend admi
   const { watch, store, events } = f.session;
   const refusals = ['first', 'second'].map(message => Object.assign(Error(message), { code: 'TVLENS_STORAGE_FULL' }));
   const put = t.mock.method(store, 'put', async id => { throw refusals[Number(id.slice(7)) - 1]; });
-  events.subscribe(event => delivered.push(event));
+  subscribeFacts(t, events, event => delivered.push(event));
   const results = await Promise.allSettled([f.add(0), f.add(1)]);
   assert.equal(put.mock.callCount(), 2, 'both already admitted writes reach the store');
   assert.deepEqual(results.map(result => result.status), ['rejected', 'rejected']);
@@ -219,7 +234,7 @@ for (const closingMethod of ['stop', 'closeIntake', 'close']) {
     const { watch, store, events } = f.session;
     const refusal = Object.assign(Error('storage full during landing'), { code: 'TVLENS_STORAGE_FULL' });
     t.mock.method(store, 'put', async () => { entered.resolve(); await writing.promise; throw refusal; });
-    events.subscribe(event => delivered.push(event));
+    subscribeFacts(t, events, event => delivered.push(event));
     const ingesting = assert.rejects(f.add(0), error => error === refusal);
     await entered.promise;
     await watch[closingMethod]();
@@ -239,7 +254,7 @@ for (const closingMethod of ['stop', 'closeIntake', 'close']) {
 for (const lane of ['audio', 'vision']) {
   test(`closing before a late ${lane} result keeps the received revision and emits no enrichment`, async t => {
     const f = await runtimeFixture(t), delivered = [];
-    f.session.events.subscribe(event => delivered.push(event));
+    subscribeFacts(t, f.session.events, event => delivered.push(event));
     if (lane === 'vision') f.audio[0].resolve();
     await f.add(0);
     const input = await f.started[lane][0].promise;
@@ -262,7 +277,7 @@ for (const lane of ['audio', 'vision']) {
 for (const lane of ['ready', 'audio', 'vision']) {
   test(`restoration of ${lane} never replays facts or changes revisions and only resumed ingestion emits a new fact`, async t => {
     const events = createEventPublisher(), delivered = [];
-    events.subscribe(event => delivered.push(event));
+    subscribeFacts(t, events, event => delivered.push(event));
     const passage = { id: 'moment-1', startMs: 0, endMs: 1000, status: 'ready', revision: 7, observation: { summary: 'Conservé' } };
     if (lane !== 'ready') {
       passage.status = 'analyzing';
@@ -300,7 +315,7 @@ test('storage refusal of an unreadable clip emits only suspension without a phan
   const { watch, store, events } = f.session;
   const refusal = Object.assign(Error('storage full'), { code: 'TVLENS_STORAGE_FULL' });
   t.mock.method(store, 'put', async () => { throw refusal; });
-  events.subscribe(event => delivered.push(event));
+  subscribeFacts(t, events, event => delivered.push(event));
   await assert.rejects(watch.ingest({ ...block(0), clip: new Uint8Array() }), error => error === refusal);
   assert.deepEqual(delivered, [{
     type: 'AdmissionSuspended', sessionId: 'session', passageId: null, revision: null,
@@ -334,7 +349,7 @@ function coreFixture(t, options = {}) {
         event, passage: watch.memoryPassage(event.passageId), losses: watch.memoryView().losses,
       });
     },
-    onChange: state => { f.states.push(structuredClone(state)); }, ...options,
+    onInvalidate: () => { f.states.push(structuredClone(watch.snapshot())); }, ...options,
   });
   t.after(() => watch.close());
   return Object.assign(f, { watch, add: async index => {
@@ -580,10 +595,10 @@ test('passage events precede snapshot construction and both lanes finish while t
     return save(state);
   });
   t.mock.method(watch, 'snapshot', () => { trace.push('snapshot'); return snapshot(); });
-  events.subscribe(() => { throw Error('failed observer'); });
-  events.subscribe(() => Promise.reject(Error('rejected observer')));
-  events.subscribe(() => new Promise(() => {}));
-  events.subscribe(event => {
+  subscribeFacts(t, events, () => { throw Error('failed observer'); });
+  subscribeFacts(t, events, () => Promise.reject(Error('rejected observer')));
+  subscribeFacts(t, events, () => new Promise(() => {}));
+  subscribeFacts(t, events, event => {
     trace.push('event');
     delivered.push(event);
     seen.push(f.session.memory.passage(event.passageId));

@@ -275,8 +275,10 @@ test('HTTP session listing owns the published figures even if their input object
   const f = await fixture(t);
   const A = (await f.req('/v1/session/start', {})).value.id;
   await f.block(A, 1, 8000);
-  const published = f.runtime.session.watch.snapshot();
-  f.runtime.published(published);
+  const revision = f.runtime.revision;
+  f.runtime.session.watch.emit();
+  assert.equal(f.runtime.revision, revision + 1);
+  const published = f.runtime.sessionState;
   const before = currentFacts((await f.req('/v1/sessions')).value);
   const held = holdLibrary(t, f.runtime.library, 'list');
   const pending = f.req('/v1/sessions');

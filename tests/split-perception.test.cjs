@@ -10,7 +10,7 @@ function fixture(perception, options = {}) {
   const files = new Map(), snapshots = [];
   const watch = new WatchSession({ id: 's', now: () => time, perception,
     media: { put: async (id, s) => files.set(id, s), read: async id => { if (!files.has(id)) throw Error('expired'); return files.get(id); }, remove: async id => files.delete(id) },
-    archive: { save: async () => {} }, onChange: s => snapshots.push(s), ...options });
+    archive: { save: async () => {} }, ...options, onInvalidate: () => (options.onChange || (s => snapshots.push(s)))(watch.snapshot()) });
   return { watch, snapshots, setTime: t => time = t,
     add: async i => { time = (i + 1) * 1000; await watch.ingest({ startMs: i * 1000, endMs: time, audio: new Uint8Array([i]), frames: [] }); await tick(); } };
 }

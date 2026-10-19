@@ -76,7 +76,7 @@ class HeadlessSessionLifecycle {
     this.session = session;
     this.fresh = false;
     this.captureEpoch++;
-    this.onAdopt(session, session ? session.watch.snapshot() : null);
+    this.onAdopt(session);
   }
   moving() {
     return Boolean(this.ending || this.releasing || this.closing);
@@ -137,7 +137,7 @@ class HeadlessSessionLifecycle {
           fresh: this.fresh,
           jobs: this.deep.jobs.length,
           questions: session.watch.questions.length,
-          passages: session.watch.snapshot().coverage.passages,
+          passages: session.memoryProjection.read().session.coverage.passages,
         }),
         // Before anything is awaited: a block whose preparation ends meanwhile is not stored in passing.
         begin: [

@@ -46,7 +46,7 @@ test('a new session saved by the shared runtime writes the archive markers besid
   let clock = 0;
   const published = [];
   const options = { sessionsRoot: root, userData: root, config: {}, selectedModels: {}, smoke: true, readClock: () => clock };
-  const live = createSessionRuntime({ ...options, onChange: state => published.push(state) });
+  const live = createSessionRuntime({ ...options, onInvalidate: () => published.push(live.memoryProjection.published().session) });
   clock = 8000;
   await live.watch.ingest(segment());
   do await tick(); while (live.watch.running);

@@ -49,8 +49,8 @@ Une horloge seule ne change aucun ETag et un 304 ne construit aucune projection.
 
 | Transition | Invalidation conservée |
 | --- | --- |
-| Réception, départ/progression/résultat de voie, pertes, miniature et disponibilité | `WatchSession.onChange` puis `published` et `emit` |
-| Retenue/question, suspension d'admission, pause/reprise, erreur ou retour de sauvegarde | Même publication d'état ; aucun faux événement de passage |
+| Réception, départ/progression/résultat de voie, pertes, miniature et disponibilité | `MemoryInvalidated` puis `published` et `emit` |
+| Retenue/question, suspension d'admission, pause/reprise, erreur ou retour de sauvegarde | Même invalidation bornée ; aucun faux événement de passage |
 | Adoption ou chargement d'archive | `onAdopt`, remplacement atomique des références puis `emit` |
 | Question de chat, surveillance et disponibilité de transcription | Callbacks d'hôte existants vers `emit` |
 | Mesure disque changée | Comparaison du cache dans `tick`, puis `emit` |
@@ -64,8 +64,8 @@ Aucun accès interne de Mémoire n'est donné à un autre contexte.
 
 Depuis l'ADR 0059, lecture IPC `watch:state` et push Mac appellent le même lecteur de
 `runtime.memoryProjection`. Le Mac ajoute le titre chargé et la disponibilité de transcription
-au résultat. Il ignore le snapshot du callback `onChange`, conservé comme invalidation publique
-pour toutes les transitions de statut, files, erreurs, sauvegarde, historique et stockage.
+au résultat. Depuis l’ADR 0061, `MemoryInvalidated` remplace le callback complet pour les
+transitions de statut, files, erreurs et sauvegarde ; les invalidations propres à l’hôte restent en place.
 Chaque push construit une projection, commune aux destinataires de son message ; une lecture
 IPC explicite relit les ports publics pour préserver leur fraîcheur entre deux publications.
 
@@ -83,9 +83,10 @@ Résumé et surveillance conservent leurs abonnements spécialisés, sans second
 
 ## Conséquences
 
-Le callback complet du domaine et sa construction dans `emit()` restent provisoirement présents,
-sans consommation de leur snapshot par la fenêtre. Les sauvegardes et les lectures de cycle de vie
-ne sont pas migrées ici.
+La contraction est achevée par l’[ADR 0061](0061-la-memoire-invalide-sans-construire-son-snapshot.md) :
+`emit()` ne construit plus de snapshot. La projection publiée est partagée avec le manifeste et les
+consommateurs différés ; les sauvegardes restent explicites et séparées. Cet ADR complète aussi
+la matrice des invalidations et consigne le comptage avant/après pour 0, 1 et 3 auditeurs.
 Une projection ne confirme aucune écriture. Les noms persistés, le convertisseur, l'IPC et la TV
 restent inchangés. Les fichiers nouveaux ne portent aucune infraction gelée.
 

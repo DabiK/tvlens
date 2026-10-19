@@ -30,7 +30,8 @@ function fixture(t, perception = {}) {
       f.effects.push('storage');
       return null;
     },
-    onChange: state => {
+    onInvalidate: () => {
+      const state = f.watch.snapshot();
       f.effects.push('emit');
       f.onState?.(state);
     },

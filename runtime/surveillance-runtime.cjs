@@ -282,14 +282,14 @@ function createSurveillanceRuntime({
     }
   };
   // What the session received while its saved registry was being read is read now, from the activation's t0.
-  const catchUp = () => {
+  const catchUp = (published = false) => {
     const session = getSession?.();
     if (!adopting && surveillance.enabled && observer?.session === session)
-      surveillance.observe(session.memory.view());
+      surveillance.observe(published ? session.memoryProjection.published().memory : session.memory.view());
   };
-  const observeCurrent = () => {
+  const observeCurrent = (published = false) => {
     try {
-      catchUp();
+      catchUp(published);
     } catch (error) {
       try {
         Promise.resolve(onPublicationError({
@@ -318,7 +318,7 @@ function createSurveillanceRuntime({
       schedule(() => {
         connection.scheduled = false;
         if (observer !== connection) return;
-        observeCurrent();
+        observeCurrent(true);
       });
     });
   };

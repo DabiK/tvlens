@@ -102,7 +102,9 @@ test('below the floor a passage is refused before any write, capture stops, noth
   const f = await fixture(t), guard = f.guard({ minFreeBytes: GIB, warnFreeBytes: 2 * GIB });
   const neighbour = f.open({ guard }); await f.ingest(neighbour, 1); await neighbour.close();
   const others = await tree(path.join(f.sessionsRoot, neighbour.id));
-  const states = [], session = f.open({ guard, onChange: state => states.push(state) }), dir = path.join(f.sessionsRoot, session.id);
+  const states = [];
+  const session = f.open({ guard, onInvalidate: () => states.push(session.memoryProjection.published().session) });
+  const dir = path.join(f.sessionsRoot, session.id);
   assert.equal(await f.ingest(session, 1), 'moment-1');
   assert.deepEqual([session.watch.snapshot().storage.state, session.watch.snapshot().storage.minFreeBytes], ['ok', GIB]);
   const kept = await tree(path.join(dir, 'media'));

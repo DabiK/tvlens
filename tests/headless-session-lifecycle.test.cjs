@@ -83,6 +83,7 @@ function fixture() {
     return {
       id,
       watch,
+      memoryProjection: { read: () => ({ session: watch.snapshot() }) },
       get readOnly() {
         return watch.readOnly;
       },
@@ -204,7 +205,8 @@ function fixture() {
       const session = makeSession(id, true);
       return { session };
     },
-    onAdopt: (session, state) => {
+    onAdopt: session => {
+      const state = session?.memoryProjection.read().session || null;
       f.publications.push({
         session,
         state,

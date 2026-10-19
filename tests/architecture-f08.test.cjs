@@ -32,7 +32,7 @@ function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [], saves = [], reads = [];
   const media = { put: async (id, s) => { files.set(id, s); }, read: async id => { reads.push(id); if (!files.has(id)) throw Error('expired'); return files.get(id); }, remove: async id => { files.delete(id); } };
-  const watch = new WatchSession({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(JSON.parse(JSON.stringify(s))); } }, onChange: s => snapshots.push(s), ...options });
+  const watch = new WatchSession({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(JSON.parse(JSON.stringify(s))); } }, onInvalidate: () => snapshots.push(watch.snapshot()), ...options });
   return { watch, files, media, snapshots, saves, reads, setTime: t => { time = t; },
     add: async i => {
       time = Math.max(time, (i + 1) * 1000);

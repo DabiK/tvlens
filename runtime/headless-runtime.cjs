@@ -55,6 +55,7 @@ function createHeadlessIntake(host) {
 }
 
 function createHeadlessLifecycle(host, conversation) {
+  let unsubscribe;
   return createHeadlessSessionLifecycle({
     library: host.library,
     createSession: () => createSessionRuntime({ ...host.sessionOptions(), id: randomUUID() }),
@@ -74,7 +75,13 @@ function createHeadlessLifecycle(host, conversation) {
     },
     warmUp,
     guard: host.guard,
-    onAdopt: () => host.emit(),
+    onAdopt: session => {
+      unsubscribe?.();
+      unsubscribe = session?.events.subscribe(event => {
+        if (event.sessionId === session.id && event.type === 'MemoryInvalidated') host.published(session);
+      });
+      host.emit();
+    },
     publish: () => host.emit(),
     log: (line) => host.log(line),
   });
@@ -234,11 +241,10 @@ class HeadlessRuntime {
       this.session?.search.index?.status?.() || null,
     ]);
   }
-  emit() {
+  emit(projection = this.session?.memoryProjection.read()) {
     // One revision per published change, never one per second: a poll that already holds it is
     // answered without a body.
     this.revision++;
-    const projection = this.session?.memoryProjection.read();
     this.sessionState = projection?.session || null;
     this.sessionMemory = projection?.memory || null;
     this.storageKey = JSON.stringify(this.storage());
@@ -249,10 +255,10 @@ class HeadlessRuntime {
       });
     }
   }
-  // Session onChange. A session that is no longer the one in memory publishes nothing.
-  published(state) {
-    if (this.session?.id !== state.id) return;
-    this.emit();
+  // L'invalidation reste attachée à cette vie, même après réouverture du même identifiant.
+  published(session) {
+    if (this.session !== session) return;
+    this.emit(session.memoryProjection.published());
   }
   // Figures already in memory (last measurement of the guard, volume written by this session): a
   // state poll never becomes a filesystem call.
@@ -362,7 +368,6 @@ class HeadlessRuntime {
       transcriber: this.transcriber,
       guard: this.guard,
       quota: this.quota,
-      onChange: (state) => this.published(state),
       log: (line) => this.log(line),
       onPublicationError: this.onPublicationError,
     };

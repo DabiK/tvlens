@@ -121,8 +121,9 @@ test('the server composition reports session and question publication failures t
   const { id } = runtime.ask({ question: 'Une question ?', sessionId: session.id, anchorMs: 0 });
   await runtime.deep.jobs[0].done;
   assert.equal(runtime.snapshot().chat.jobs[0].status, 'done');
-  assert.ok(logs.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
-    && event.origin === 'watch-session' && event.sessionId === session.id));
+  assert.ok(logs.some(event => event.code === 'TVLENS_EVENT_DELIVERY_FAILED'
+    && event.event.type === 'MemoryInvalidated' && event.event.sessionId === session.id
+    && event.error.message === 'publication session refusée'));
   assert.ok(logs.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
     && event.origin === 'deep-ask' && event.sessionId === session.id && event.jobId === id));
 });

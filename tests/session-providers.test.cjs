@@ -19,7 +19,8 @@ test("default smoke ingestion publishes speech before vision and keeps the next 
   const runtime = createSessionRuntime({
     sessionsRoot: path.join(root, "sessions"), userData: root,
     selectedModels: {}, smoke: true, readClock: () => clock,
-    onChange: (state) => {
+    onInvalidate: () => {
+      const state = runtime.memoryProjection.published().session;
       published.push(structuredClone(state));
       for (let i = 0; i < 2; i++) {
         const passage = state.segments[i];

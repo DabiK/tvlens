@@ -131,7 +131,8 @@ function fixture({ restore = null } = {}) {
     media: store,
     archive: store,
     onEvents: pending => pending.forEach(event => events.publish(event)),
-    onChange(state) {
+    onInvalidate() {
+      const state = watch.snapshot();
       if (!state.readOnly) f.indexed.push(state);
       manifest.publish();
     },

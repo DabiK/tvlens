@@ -238,10 +238,11 @@ async function launch(userData, {
     shell: { openExternal: async url => { opened.push(url); } }, dialog: { showErrorBox() {}, showOpenDialog: async () => ({ canceled: true }) },
     safeStorage: { isEncryptionAvailable: () => false }, screen: { getDisplayMatching: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) } };
   const sender = { sender: webContents, senderFrame: webContents.mainFrame };
-  bridge = loadBridge(async (channel, ...args) => {
+  const invoke = async (channel, ...args) => {
     try { const result = await handlers.get(channel)(sender, ...structuredClone(args)); return result === undefined ? undefined : structuredClone(result); }
     catch (error) { throw new Error(`Error invoking remote method '${channel}': ${error}`); }
-  });
+  };
+  bridge = loadBridge(invoke);
   const argv = [...process.argv], saved = Object.fromEntries(HOST_SETTINGS.map(name => [name, process.env[name]])), consoleError = console.error, load = Module._load;
   const restore = () => { process.argv.splice(0, process.argv.length, ...argv); for (const name of HOST_SETTINGS) if (saved[name] === undefined) delete process.env[name]; else process.env[name] = saved[name]; console.error = consoleError; };
   for (const name of HOST_SETTINGS) delete process.env[name];
@@ -259,7 +260,7 @@ async function launch(userData, {
     if (request === '../adapters/disk-guard.cjs' && disk) return { ...loaded, DiskGuard: class extends loaded.DiskGuard { constructor(options) { super({ ...options, freeBytes: async () => disk.free, maxAgeMs: 0 }); } } };
     if (request === '../runtime/session-runtime.cjs' && readClock) return { ...loaded, createSessionRuntime: options => {
       const runtime = loaded.createSessionRuntime({ ...options, readClock });
-      return wrap.session ? wrap.session(runtime) : runtime;
+      return wrap.session ? wrap.session(runtime, options) : runtime;
     } };
     const factories = {
       '../runtime/conversation-runtime.cjs': ['createConversationRuntime', wrap.conversation],
@@ -270,7 +271,7 @@ async function launch(userData, {
     const factory = factories[request];
     if (factory?.[1]) {
       const [name, wrapFactory] = factory;
-      return { ...loaded, [name]: (...args) => wrapFactory(loaded[name](...args)) };
+      return { ...loaded, [name]: (...args) => wrapFactory(loaded[name](...args), ...args) };
     }
     return loaded;
   };
@@ -281,7 +282,7 @@ async function launch(userData, {
   finally { Module._load = load; Object.defineProperty(process, 'platform', platformDescriptor); }
   const started = await ready;
   let stopped;
-  const host = { ...bridge.tvlens, capture: bridge.capture, started, failures, opened, handlers, sweeps, sent, startupSwitches, events: [],
+  const host = { ...bridge.tvlens, capture: bridge.capture, invoke, started, failures, opened, handlers, sweeps, sent, startupSwitches, events: [],
     pressShortcut: key => registeredShortcuts.get(key)(),
     fetch: (url, headers = {}) => schemes.get('tvlens-media')(new Request(url, { headers })),
     quit: () => (stopped ||= (async () => { app.quit(); await quitting; restore(); })()) };
@@ -514,6 +515,17 @@ for (const resume of [false, true]) {
     assert.deepEqual(host.failures, []);
   });
 }
+
+test('Mac state IPC ignores renderer arguments and reads its own current projection', async t => {
+  const { launch } = await stage(t);
+  const host = await launch({ readClock: () => 0 });
+  assert.equal(host.started, true, host.failures.join(' '));
+  await host.start();
+  const expected = await host.state();
+  for (const argument of [{ session: { id: 'renderer-supplied' } }, null, {}]) {
+    assert.deepEqual(await host.invoke('watch:state', argument), expected);
+  }
+});
 
 test('a Mac session is archived instead of purged, listed, reopened read-only without a write, resumed only explicitly, and deleted alone', async t => {
   const { folder, launch } = await stage(t), host = await launch();
@@ -1348,11 +1360,11 @@ test('the Mac composition journals failed state deliveries and still saves compl
   assert.equal(await host.newSession(), true);
   assert.deepEqual((await host.deepState()).jobs, []);
   const diagnostics = host.failures.map(line => JSON.parse(line));
-  assert.ok(diagnostics.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
-    && event.origin === 'watch-session' && event.sessionId === session.id));
+  assert.ok(diagnostics.some(event => event.code === 'TVLENS_EVENT_DELIVERY_FAILED'
+    && event.event?.type === 'MemoryInvalidated' && event.event.sessionId === session.id));
   assert.ok(diagnostics.some(event => event.code === 'TVLENS_STATE_PUBLICATION_FAILED'
     && event.origin === 'deep-ask' && event.sessionId === session.id && event.jobId === id));
-  assert.ok(diagnostics.every(event => event.sessionId === session.id), 'reset diagnostics still identify the session being left');
+  assert.ok(diagnostics.every(event => (event.sessionId || event.event?.sessionId) === session.id), 'reset diagnostics still identify the session being left');
   unwatch();
   unchat();
 });
@@ -1462,7 +1474,7 @@ test('on the Mac host both agents are warmed up with the id of the session when 
   assert.deepEqual([took(), host.failures], [[`chat:${b.id}`, `observe:${b.id}-observe`], []], 'a rejecting warm-up fails neither start nor the host');
 });
 
-test('Mac IPC reads and pushes share the public projection while legacy snapshots remain confined to publication', async t => {
+test('Mac IPC reads and pushes share the public projection without legacy snapshots', async t => {
   const { launch } = await stage(t);
   let runtime, clock = 0;
   const host = await launch({ readClock: () => clock, wrap: { session: built => {
@@ -1487,11 +1499,11 @@ test('Mac IPC reads and pushes share the public projection while legacy snapshot
     const expected = () => ({ ...legacy(), title: read.title, transcription: runtime.transcriber.availability() });
     assert.deepStrictEqual(read, expected());
     runtime.watch.emit();
-    assert.equal(snapshot.mock.callCount(), 1, 'the domain still builds its retained callback once');
+    assert.equal(snapshot.mock.callCount(), 0, 'the domain invalidation builds no snapshot');
     assert.equal(projection.mock.callCount(), 2, 'one projection serves the pushed state');
     for (const values of received) assert.deepStrictEqual(values, [expected()]);
     assert.deepStrictEqual(await host.state(), received[0][0]);
-    assert.equal(snapshot.mock.callCount(), 1, 'reading the pushed state adds no legacy work');
+    assert.equal(snapshot.mock.callCount(), 0, 'reading the pushed state adds no legacy work');
     assert.equal(projection.mock.callCount(), 3, 'an explicit read consults fresh public ports');
     assert.equal(read.id, session.id);
   } finally {
@@ -1577,11 +1589,15 @@ test('Mac projection retains textless queues, acquired usage, save failures, his
 });
 
 test('Mac session switching detaches publications before draining and before reopening the same identity', async t => {
-  const draining = deferred(), release = deferred(), runtimes = [];
+  const draining = deferred(), release = deferred(), runtimes = [], publications = [];
   t.after(() => release.resolve());
   const { launch } = await stage(t);
   const host = await launch({ wrap: {
-    session: built => { runtimes.push(built); return built; },
+    session: (built, options) => {
+      runtimes.push(built);
+      publications.push(options.onInvalidate);
+      return built;
+    },
     closing: (close, options) => close({ ...options, steps: options.steps.map(([name, work]) => [name, async () => {
       if (name === 'capture') {
         draining.resolve();
@@ -1594,13 +1610,17 @@ test('Mac session switching detaches publications before draining and before reo
   const a = await host.start();
   runtimes[0].watch.questions.push({ question: 'Question historique', answer: { text: 'Conservée' } });
   await host.stop();
-  const late = runtimes[0].watch.onChange;
+  const late = runtimes[0].watch.onInvalidate;
   const old = runtimes[0].watch.snapshot();
+  const invalidation = { type: 'MemoryInvalidated', sessionId: a.id };
+  host.events.length = 0;
+  late(invalidation);
+  assert.equal(host.events.filter(event => event.channel === 'watch:state').length, 1, 'the live relay reaches the host');
   const opening = host.openSession(a.id);
   try {
     await draining.promise;
     host.events.length = 0;
-    late(old);
+    late(invalidation);
     assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'no state is pushed while switching');
   } finally {
     release.resolve();
@@ -1610,19 +1630,28 @@ test('Mac session switching detaches publications before draining and before reo
   assert.equal((await host.state()).readOnly, true);
   assert.deepEqual((await host.state()).questions, old.questions);
   host.events.length = 0;
-  late(old);
+  late(invalidation);
   assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'an old runtime cannot publish into a new one with the same id');
+  // Le callback retenu éprouve l'identité même après détachement de son relais.
+  publications[0](invalidation);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'the host also rejects a retained callback of the same id');
+  runtimes[1].watch.emit();
+  const reopened = host.events.filter(event => event.channel === 'watch:state');
+  assert.equal(reopened.length, 1, 'the reopened runtime has its own live subscription');
+  assert.equal(reopened[0].value.readOnly, true);
   await host.newSession();
   const b = await host.start();
   assert.notEqual(b.id, a.id);
   host.events.length = 0;
-  late(old);
+  late(invalidation);
+  publications[0](invalidation);
   assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'A cannot publish after B is adopted');
   assert.equal((await host.state()).id, b.id);
   assert.deepEqual((await host.state()).questions, []);
   await host.quit();
   host.events.length = 0;
-  late(old);
+  late(invalidation);
+  publications[0](invalidation);
   assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'a closed window receives no late state');
 });
 
@@ -1646,7 +1675,7 @@ test('Mac recap follows passage events without session state publications and wa
   const { launch } = await stage(t);
   const host = await launch({ wrap: { session: built => {
     runtime = built;
-    built.watch.onChange = () => {};
+    built.watch.onInvalidate = () => {};
     built.perception.transcribe = async () => ({ observation: { transcript: 'Paroles seules' } });
     built.perception.observeVisual = async () => {
       visionEntered.resolve();

@@ -256,7 +256,7 @@ test('server state, views, moments and listing consult the public projection wit
   snapshot.mock.restore();
 });
 
-test('one server delivery shares its projection and keeps legacy snapshot work distinct from replay readers', async t => {
+test('one server delivery shares its projection without legacy snapshot work', async t => {
   const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
   const { runtime, session } = await stateViewScenario(t);
   const snapshot = t.mock.method(session.watch, 'snapshot');
@@ -267,7 +267,7 @@ test('one server delivery shares its projection and keeps legacy snapshot work d
   runtime.listeners.add(second);
   try {
     session.watch.emit();
-    assert.equal(snapshot.mock.callCount(), 1, 'the retained domain callback builds its legacy snapshot once');
+    assert.equal(snapshot.mock.callCount(), 0, 'the domain invalidation builds no snapshot');
     assert.equal(projected.mock.callCount(), 1, 'the application builds once for this delivery');
     assert.equal(seen.length, 2);
     assert.equal(seen[0], seen[1], 'listeners share the delivered state');
@@ -276,7 +276,7 @@ test('one server delivery shares its projection and keeps legacy snapshot work d
     runtime.snapshot('panel');
     runtime.snapshot('chat');
     runtime.sessionListingRead();
-    assert.equal(snapshot.mock.callCount(), 1, 'server reads add no legacy snapshots');
+    assert.equal(snapshot.mock.callCount(), 0, 'server reads add no legacy snapshots');
     assert.equal(projected.mock.callCount(), 2, 'the explicit complete read consults fresh memory');
   } finally {
     runtime.listeners.delete(first);
@@ -340,14 +340,16 @@ test('server projection follows textless queues, acquired usage and save failure
   save.mock.restore();
   await watch.persist();
   assert.equal((await latest()).session.lastError, null);
-  const old = watch.snapshot();
   await host.runtime.end();
   await host.runtime.start();
   const current = host.runtime.snapshot(), revision = host.runtime.revision;
-  host.runtime.published(old);
+  session.events.publish({ type: 'MemoryInvalidated', sessionId: session.id });
+  host.runtime.published(session);
   assert.equal(host.runtime.revision, revision);
   assert.equal(host.runtime.snapshot().session.id, current.session.id);
   assert.equal(host.runtime.snapshot().session.coverage.passages, 0, 'A cannot append its passages to B');
+  host.runtime.session.watch.emit();
+  assert.equal(host.runtime.revision, revision + 1, 'the adopted runtime still publishes');
 });
 
 test('archive loading publishes historical questions separately from current chat jobs through public ports', async t => {

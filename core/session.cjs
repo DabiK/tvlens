@@ -40,10 +40,10 @@ class WatchSession {
   #modalities = new Map();
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
-    onChange = () => {}, onEvents = () => {}, onPublicationError = () => {},
+    onInvalidate = () => {}, onEvents = () => {}, onPublicationError = () => {},
     maxPending = 2, visionDuringAsk = false }) {
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
-      onChange, onEvents, onPublicationError, maxPending, visionDuringAsk });
+      onInvalidate, onEvents, onPublicationError, maxPending, visionDuringAsk });
     this.#events = new PassageEvents(id);
     this.segments = [];
     this.history = [];
@@ -365,7 +365,8 @@ class WatchSession {
   emit() {
     this.#events.publish(events => this.onEvents(events), this.onPublicationError);
     if (this.closed) return;
-    publishState(() => this.onChange(this.snapshot()), this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
+    publishState(() => this.onInvalidate({ type: 'MemoryInvalidated', sessionId: this.id }),
+      this.onPublicationError, { origin: 'watch-session', sessionId: this.id });
   }
   async persist() {
     // Opening, pausing or closing a reopened archive leaves its files untouched.

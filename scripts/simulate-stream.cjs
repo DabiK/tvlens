@@ -85,6 +85,7 @@ async function runScenario(root, name, seed, variant = {}) {
   const model = { ...MODELS[scenario.model], ...(Number.isFinite(variant.embedRequestMs) ? { embedRequestMs: variant.embedRequestMs } : {}) };
   const load = file => require(path.join(root, file));
   const { WatchSession } = load('core/session.cjs');
+  const { createMemoryProjection } = load('runtime/memory/memory-projection.cjs');
   const { CodexPerception } = load('adapters/codex-perception.cjs');
   const { CachedInspector } = load('core/cached-inspector.cjs');
   const { MomentIndex } = load('core/moment-index.cjs');
@@ -216,7 +217,11 @@ async function runScenario(root, name, seed, variant = {}) {
       lag.push(snapshot.analysisLagMs);
     };
     const lag = [];
-    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onChange: observe, ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
+    const projection = createMemoryProjection({ memory: {
+      view: () => watch.memoryView(), readPublicationStatus: () => watch.readPublicationStatus(),
+      readHistoricalQuestions: () => watch.readHistoricalQuestions(), readUsage: () => watch.readUsage(),
+    }, now: () => clock.t, storage: () => null });
+    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onInvalidate: () => observe(projection.read().session), ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
 
     const records = [];
     const livePrefix = (anchorMs, startMs, endMs) => [...watch.history, ...watch.segments].filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);
@@ -311,7 +316,7 @@ async function runScenario(root, name, seed, variant = {}) {
     }
 
     await clock.runUntil(scenario.durationMs + 90000);
-    const final = watch.snapshot();
+    const final = projection.read().session;
     for (const s of [...final.history, ...final.segments]) { const p = passages.get(s.id); if (p) Object.assign(p, { status: s.status, audioStatus: s.audioStatus, visionStatus: s.visionStatus }); }
     deep.cancelAll('Fin de la simulation.');
     const indexStatus = typeof momentIndex.status === 'function' ? momentIndex.status() : undefined;

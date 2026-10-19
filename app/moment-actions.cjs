@@ -46,7 +46,7 @@ function createMomentActions({ getSession, ask, viewingActions, deep, timeoutSig
       searchController?.abort();
       searchController = new AbortController();
       const signal = AbortSignal.any([searchController.signal, timeoutSignal(SEARCH_TIMEOUT_MS)]);
-      const state = session.watch.snapshot();
+      const state = session.memoryProjection.read().session;
       const found = await session.search.search({
         query, segments: [...state.history, ...state.segments], anchorMs: state.capturedThroughMs, signal, limit: SEARCH_RESULT_LIMIT,
       });

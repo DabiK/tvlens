@@ -1,6 +1,7 @@
 const { WatchSession } = require("../core/session.cjs");
 const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
 const { hasPendingQuestion } = require("../runtime/conversation-runtime.cjs");
+const { createMemoryProjection } = require("../runtime/memory/memory-projection.cjs");
 const {
   createQuestionCheckpoint,
 } = require("../runtime/question-checkpoint.cjs");
@@ -44,11 +45,22 @@ function createModel({ env, delays, views, record }) {
   let session,
     deep,
     publication = 0;
+  const projection = createMemoryProjection({
+    memory: {
+      view: () => session.memoryView(),
+      readPublicationStatus: () => session.readPublicationStatus(),
+      readHistoricalQuestions: () => session.readHistoricalQuestions(),
+      readUsage: () => session.readUsage(),
+    },
+    now: env.io.now,
+    storage: () => null,
+  });
+  const readSession = () => projection.read().session;
   const publish = (source, value) => {
     const envelope = copy({
       id: ++publication,
       source,
-      session: source === "session" ? value : session.snapshot(),
+      session: source === "session" ? value : readSession(),
       deep: source === "deep" ? value : deep?.snapshot() || { jobs: [] },
     });
     record("server.published", "server-wall", env.serverNow(), {
@@ -77,7 +89,7 @@ function createModel({ env, delays, views, record }) {
     archive: store,
     media: createMedia(files, delays),
     perception: createPerception(env, delays),
-    onChange: (s) => publish("session", s),
+    onInvalidate: () => publish("session", readSession()),
   });
   const DeepAsk = controlledDeepAsk(env.io);
   deep = new DeepAsk({
@@ -97,7 +109,7 @@ function createModel({ env, delays, views, record }) {
       checkpoint.checkpoint(store, s);
     },
   });
-  return { session, deep, tools, checkpoint };
+  return { session, deep, tools, checkpoint, readSession };
 }
 function createMedia(files, delays) {
   return {

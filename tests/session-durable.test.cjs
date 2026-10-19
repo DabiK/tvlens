@@ -713,7 +713,7 @@ test('a save the disk refused stays said by the session until a save lands: an a
   let time = 0, refuse = true; const files = new Map(), states = [], described = deferred();
   // Split perception, as in production: each lane publishes before it saves. The description is held until the
   // first saves have been refused.
-  const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
+  const watch = new WatchSession({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles' } }), observeVisual: async () => { await described.promise; return { observation: { summary: 'Images', visual: 'Image' } }; } },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
     archive: { save: async () => { if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
@@ -1054,7 +1054,7 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   let time = 0, gate = null, refuse = false, describing = null; const files = new Map(), states = [];
   const hold = () => { gate = deferred(); }, release = () => { const held = gate; gate = null; held?.resolve(); };
   // La transcription porte la synchronisation : les passages suivants attendent encore leur analyse.
-  const watch = new WatchSession({ id: 's', now: () => time, onChange: state => states.push(state),
+  const watch = new WatchSession({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
     perception: { transcribe: async segment => { await describing?.promise; return { observation: { transcript: 'Passage ' + segment.id } }; },
       observeVisual: async segment => ({ observation: { summary: 'Passage ' + segment.id } }) },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
@@ -1109,3 +1109,87 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   release(); await closing;
   assert.deepEqual(settled, ['pause', 'resume', 'close']);
 });
+
+for (const refusalPoint of ['state', 'barrier']) {
+  test(`failed observers cannot confirm a refused final ${refusalPoint} or lose a passage landing during closure`, async t => {
+    const { createEventPublisher } = require('../core/shared/events.cjs');
+    const putEntered = deferred(), putGate = deferred(), finalEntered = deferred(), finalGate = deferred();
+    const barrierEntered = deferred(), barrierGate = deferred();
+    t.after(() => { putGate.resolve(); finalGate.resolve(); barrierGate.resolve(); });
+    const f = await fixture(t);
+    let diagnostics = 0;
+    const events = createEventPublisher({ onError: () => { diagnostics++; throw Error('diagnostic refused'); } });
+    events.subscribe(() => { throw Error('subscriber refused'); });
+    const completed = deferred(), received = [];
+    const session = f.open({
+      events,
+      overrides: { perception: {
+        close: async () => {},
+        transcribe: async () => ({ observation: { transcript: 'Paroles acquises' } }),
+        observeVisual: async () => ({ observation: { summary: 'Images acquises' } }),
+      } },
+      onInvalidate: () => {
+        const state = session.memoryProjection.published().session;
+        received.push(state);
+        if (state.segments[0]?.status === 'ready') completed.resolve();
+      },
+    });
+    f.clock = 1000;
+    await session.watch.ingest(f.block(0, 1000));
+    await completed.promise;
+    await session.store.flush();
+    assert.ok(diagnostics > 0);
+    assert.equal(received.at(-1).segments[0].status, 'ready');
+    const put = session.store.put.bind(session.store), save = session.store.save.bind(session.store);
+    const flush = session.store.flush.bind(session.store);
+    t.mock.method(session.store, 'put', async (...args) => {
+      putEntered.resolve();
+      await putGate.promise;
+      return put(...args);
+    });
+    let refuse = true;
+    t.mock.method(session.store, 'save', async state => {
+      if (!state.accepting) {
+        finalEntered.resolve();
+        await finalGate.promise;
+        if (refuse && refusalPoint === 'state') throw Object.assign(Error('state refused'), { code: 'EIO' });
+      }
+      return save(state);
+    });
+    t.mock.method(session.store, 'flush', async () => {
+      await flush();
+      barrierEntered.resolve();
+      await barrierGate.promise;
+      if (refuse && refusalPoint === 'barrier') throw Object.assign(Error('barrier refused'), { code: 'EIO' });
+    });
+    const resources = [t.mock.method(session.perception, 'close', async () => {}), t.mock.method(session.thumbnails, 'close')];
+    f.clock = 2000;
+    const landing = session.watch.ingest(f.block(1000, 2000));
+    await putEntered.promise;
+    const ending = session.archive().then(() => null, error => error);
+    putGate.resolve();
+    assert.equal(await landing, 'moment-2');
+    await finalEntered.promise;
+    assert.notEqual(session.store.confirmed?.state, 'archived');
+    finalGate.resolve();
+    await barrierEntered.promise;
+    assert.notEqual(session.store.confirmed?.state, 'archived');
+    barrierGate.resolve();
+    assert.ok(await ending, 'a refusal prevents archive confirmation');
+    assert.notEqual(session.store.confirmed?.state, 'archived');
+    assert.deepEqual(resources.map(resource => resource.mock.callCount()), [1, 1]);
+    refuse = false;
+    assert.equal((await session.archive()).state, 'archived');
+    assert.deepEqual(resources.map(resource => resource.mock.callCount()), [1, 1], 'retry does not release resources twice');
+    const saved = await session.store.load();
+    assert.deepEqual([saved.format, saved.version, saved.accepting], ['tvlens-viewing-memory', 1, false]);
+    assert.deepEqual(saved.segments.map(p => [p.id, p.status, p.available]), [
+      ['moment-1', 'ready', true], ['moment-2', 'queued', true],
+    ]);
+    assert.equal(saved.segments[0].observation.summary, 'Images acquises');
+    await session.seal();
+    await new SessionLibrary({ root: f.sessionsRoot }).remove(session.id);
+    await session.watch.persist();
+    await assert.rejects(fs.stat(session.store.root), { code: 'ENOENT' });
+  });
+}

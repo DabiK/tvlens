@@ -45,14 +45,15 @@ async function fixture(t, { testClock, ...extra } = {}) {
         },
       },
     },
-    onChange(state) {
+    onInvalidate() {
+      const state = f.runtime.memoryProjection.published().session;
       f.hosts++;
       if (state.segments[0]?.visionStatus === 'ready') ready.resolve();
     },
     ...extra,
   });
   const runtime = f.runtime;
-  runtime.events.subscribe(event => f.events.push(event));
+  runtime.events.subscribe(event => { if (event.type !== 'MemoryInvalidated') f.events.push(event); });
   const saveManifest = runtime.store.saveManifest.bind(runtime.store);
   t.mock.method(runtime.store, 'saveManifest', value => {
     f.writes.push(structuredClone(value));
@@ -111,9 +112,9 @@ test('one passage with held analyses keeps cadence opportunities and reports con
   const measured = { ...counts(), hosts: f.hosts,
     updates: f.events.filter(e => e.type === 'PassageUpdated').length, manifestRequests: f.writes.length };
   t.diagnostic(JSON.stringify(measured));
-  assert.equal(measured.snapshot, 13);
+  assert.equal(measured.snapshot, 4, 'only explicit archive saves construct snapshots');
   assert.equal(measured.hosts, 9);
-  assert.equal(measured.createMemoryView, measured.manifestRequests, 'complete views are constructed only for manifest writes');
+  assert.equal(measured.createMemoryView, measured.hosts, 'the host and manifests share each complete publication');
   assert.equal(measured.readMemoryPassage, measured.updates, 'at most the named passage is projected for each update');
   assert.equal(measured.readMemoryPassages, 1, 'manifest initialization projects no passage');
   assert.equal(measured.recentMemoryPassages, 1, 'index initialization reads only its bounded tail');
@@ -284,7 +285,7 @@ test('closing removes each consumer subscription and late events cannot feed a s
   first.audio.resolve();
   await first.visualEntered.promise;
   await first.clock.runUntil(30000);
-  assert.equal(active.size, 3, 'one subscription per consumer and one host test observer');
+  assert.equal(active.size, 4, 'index, manifest, host invalidation and test observer each subscribe once');
   const late = first.events.find(event => event.type === 'PassageUpdated');
   await first.runtime.close();
   assert.equal(active.size, 1);

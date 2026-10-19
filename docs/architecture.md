@@ -454,3 +454,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0060](adr/0060-la-boucle-reprend-sur-claude-apres-quota-sur-demande.md) :
   Sur demande, un quota Codex transmet une seule fois le travail vérifié à Claude, avec le même
   lancement, les budgets restants et une nouvelle revue avant intégration.
+
+- [ADR 0061](adr/0061-la-memoire-invalide-sans-construire-son-snapshot.md) :
+  La Mémoire publie des invalidations bornées ; hôtes et consommateurs partagent la projection,
+  tandis que les sauvegardes et leurs barrières restent explicites.

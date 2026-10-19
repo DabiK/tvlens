@@ -37,10 +37,14 @@ function projectSession(memory, status, questions, usage, storage) {
 }
 
 function createMemoryProjection({ memory, now, storage }) {
+  // Les réactions différées partagent la dernière consultation ; read conserve la fraîcheur des requêtes explicites.
+  let published;
   return {
+    invalidate() { published = null; },
+    published() { return published ||= this.read(); },
     read() {
       const view = memory.view();
-      return {
+      return published = {
         memory: view,
         session: projectSession(view, memory.readPublicationStatus(), memory.readHistoricalQuestions(), memory.readUsage(), storage()),
       };
