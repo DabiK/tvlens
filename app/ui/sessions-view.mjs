@@ -9,6 +9,8 @@ const finite = value => (Number.isFinite(value) ? value : null);
 
 /** Why the video of a passage cannot be replayed, in the viewer's words (mediaReason of core/session.cjs). */
 export function mediaNote(passage) {
+  if (passage?.hasImages === false || passage?.mediaReason === 'images-absent')
+    return { short: 'Son seul', long: 'Son seul · image indisponible. Les paroles restent consultables si elles ont été transcrites.' };
   if (passage?.available) return null;
   const kept = ' Son résumé reste disponible.';
   return {

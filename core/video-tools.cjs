@@ -9,13 +9,18 @@ const MEDIA_GONE = {
 };
 // Why a passage has no video to replay, said to the agent only where it changes what it can do: an unreadable video
 // is still re-examined, on the images kept at capture. An expired or missing one is not, and looks as it always did.
-const stills = s => s.mediaReason === 'unreadable' ? { mediaReason: 'unreadable' } : {};
+const mediaEvidenceFields = s => {
+  if (s.hasImages === false) return { hasImages: false, mediaReason: 'images-absent' };
+  return s.mediaReason === 'unreadable' ? { mediaReason: 'unreadable' } : {};
+};
 const unfinished = status => status === 'queued' || status === 'analyzing';
 // A consultation asked of a context its question has given back: nothing is read, leased or recorded for it.
 const RELEASED = 'Question terminée : ses passages ne sont plus consultables.';
 // The refusal code of the memory media port, read as data: the questions do not import the memory context.
 const MEDIA_UNAVAILABLE = 'TVLENS_MEMORY_MEDIA_UNAVAILABLE';
 const TVLENS_QUESTION_CONSULTATION_INVALID = 'TVLENS_QUESTION_CONSULTATION_INVALID';
+const TVLENS_QUESTION_IMAGES_ABSENT = 'TVLENS_QUESTION_IMAGES_ABSENT';
+const IMAGES_ABSENT_MESSAGE = "Ce passage n'a que le son : lire ses paroles.";
 // What a question freezes of a memory view: its session, its clock as anchor, and the passages it observed.
 const consultationOf = view => ({ sessionId: view.session.id, anchorMs: view.clock.elapsedMs, passages: view.passages });
 // Fields of a consulted passage that the contract publishes as null when there is nothing to say.
@@ -32,6 +37,7 @@ function inspectionProvenance(diagnostic) {
 function toolPassage(passage) {
   const read = { id: passage.id, startMs: passage.startMs, endMs: passage.endMs };
   for (const key of OPTIONAL_FIELDS) if (passage[key] !== null && passage[key] !== undefined) read[key] = passage[key];
+  if (passage.metadata.hasImages === false) read.hasImages = false;
   if (passage.audioFailed) read.audioFailed = true;
   if (passage.thumbnailAvailable) read.thumbnailAvailable = true;
   read.available = passage.availability.replayable;
@@ -119,7 +125,7 @@ class VideoTools {
   }
   remember(segments,source,asOfMs=this.evidenceAsOfMs,read=this.reads) {
     this.record(source,segments,asOfMs,read);
-    const evidence=segments.filter(hasUsableObservation).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,text:passageText(s),precision:s.status==='partial'?'partial-observation':'automatic-summary',audioStatus:s.audioStatus,visionStatus:s.visionStatus,audioError:s.audioError,visionError:s.visionError,...(s.audioFailed?{audioFailed:true}:{}),available:Boolean(s.available),...stills(s),...(s.revision===undefined?{}:{revision:s.revision})}));
+    const evidence=segments.filter(hasUsableObservation).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,text:passageText(s),precision:s.status==='partial'?'partial-observation':'automatic-summary',audioStatus:s.audioStatus,visionStatus:s.visionStatus,audioError:s.audioError,visionError:s.visionError,...(s.audioFailed?{audioFailed:true}:{}),available:Boolean(s.available),...mediaEvidenceFields(s),...(s.revision===undefined?{}:{revision:s.revision})}));
     // The recorded evidence is the latest consultation: a read made earlier and returned late by a concurrent
     // call never replaces it, even at an unchanged revision or an unchanged clock. The journal keeps every version.
     for(const item of evidence){
@@ -198,6 +204,8 @@ class VideoTools {
       return await this.invoke(name, args, detail, callSignal);
     } catch (error) {
       status = 'failed';
+      if (error?.code === TVLENS_QUESTION_IMAGES_ABSENT)
+        detail.refusal = { code: TVLENS_QUESTION_IMAGES_ABSENT, message: IMAGES_ABSENT_MESSAGE };
       throw error;
     } finally {
       this.toolMetrics.push({ tool: name, durationMs: Math.max(0, this.now() - startedAt), status, ...detail });
@@ -227,7 +235,11 @@ class VideoTools {
       // Given back meanwhile: what came late is not evidence of a question whose answer is settled.
       if (this.released) throw new Error(RELEASED);
       this.remember(segments.filter(s=>(found.moments||[]).some(m=>m.id===s.id)),'search_moments',asOfMs,read);
-      return { sessionId:this.sessionId, anchorMs:this.anchorMs, ...found };
+      const moments = (found.moments || []).map(moment => {
+        const passage = segments.find(s => s.id === moment.id);
+        return passage?.hasImages === false ? { ...moment, ...mediaEvidenceFields(passage) } : moment;
+      });
+      return { sessionId:this.sessionId, anchorMs:this.anchorMs, ...found, moments };
     }
     const { startMs, endMs } = args;
     if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs < this.startMs || endMs <= startMs || endMs > this.anchorMs) throw this.outOfReach('Intervalle invalide ou postérieur à la question.');
@@ -239,14 +251,20 @@ class VideoTools {
     if (name === 'get_transcript') {
       if (endMs-startMs > 60000) throw new Error('Transcription limitée à 60 secondes par appel.');
       this.remember(segments,'get_transcript');
-      this.transcriptEvidence.push(...segments.filter(hasUsableObservation).filter(s=>s.observation?.transcript||s.summary||s.observation?.summary).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs})));
-      return { passages:segments.map(s => ({ id:s.id,startMs:s.startMs,endMs:s.endMs, transcript:s.observation?.transcript || '', summary:s.summary || s.observation?.summary || '', precision:'segment', audioStatus:s.audioStatus, visionStatus:s.visionStatus, ...(s.audioFailed?{audioFailed:true}:{}), available:Boolean(s.available), ...stills(s) })) };
+      this.transcriptEvidence.push(...segments.filter(hasUsableObservation).filter(s=>s.observation?.transcript||s.summary||s.observation?.summary).map(s=>({id:s.id,startMs:s.startMs,endMs:s.endMs,
+        ...(s.hasImages === false && s.audioStatus === 'ready' && !s.audioFailed && s.observation?.transcript?.trim()
+          ? { hasImages: false } : {})})));
+      return { passages:segments.map(s => ({ id:s.id,startMs:s.startMs,endMs:s.endMs, transcript:s.observation?.transcript || '', summary:s.summary || s.observation?.summary || '', precision:'segment', audioStatus:s.audioStatus, visionStatus:s.visionStatus, ...(s.audioFailed?{audioFailed:true}:{}), available:Boolean(s.available), ...mediaEvidenceFields(s) })) };
     }
     if (name !== 'inspect_clip') throw new Error('Outil inconnu.');
     if (endMs-startMs > 20000 || segments.length > 4) throw new Error('Réexamen limité à 20 secondes et quatre segments.');
     if (args.exactSpeech != null && typeof args.exactSpeech !== 'boolean') throw new Error('Option exactSpeech invalide : true ou false.');
     if (this.busy || this.inspections >= 2) throw new Error('Au plus deux inspections, une à la fois.');
     if (typeof args.question !== 'string' || !args.question.trim() || args.question.length > 2000) throw new Error('Question de réexamen invalide.');
+    if (consulted.some(passage => passage.metadata.hasImages === false)) {
+      if (!this.limits.includes(IMAGES_ABSENT_MESSAGE)) this.limits.push(IMAGES_ABSENT_MESSAGE);
+      throw domainError(TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE);
+    }
     // A passage whose video holds no image is still re-examined, on the images kept at capture: the inspector says so.
     const gone = consulted.find(passage => !reexaminable(passage));
     if (gone) throw new Error(MEDIA_GONE[gone.availability.reason] || 'Média expiré : seul son résumé peut être consulté.');
@@ -292,4 +310,6 @@ class VideoTools {
     } finally { this.busy = false; await release?.(); }
   }
 }
-module.exports = { VideoTools, consultationOf, TVLENS_QUESTION_CONSULTATION_INVALID };
+module.exports = {
+  VideoTools, consultationOf, TVLENS_QUESTION_CONSULTATION_INVALID, TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE,
+};

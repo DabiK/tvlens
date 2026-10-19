@@ -24,7 +24,9 @@ function passageButton(item, context, sameSession, className, label) {
   if (className === 'preview-passage') {
     const image = available && context.preview(item.id);
     if (image) { const img = el('img'); img.src = image; img.alt = label; button.append(img); }
-    button.append(document.createTextNode(`${formatTime(item.startMs)}${available ? ' ↗' : ''}`));
+    const soundOnly = passage?.hasImages === false || passage?.mediaReason === 'images-absent';
+    const suffix = soundOnly ? ' · Son seul' : '';
+    button.append(document.createTextNode(`${formatTime(item.startMs)}${available ? ' ↗' : suffix}`));
   } else button.textContent = `${range(item)}${available ? ' ↗' : ` · ${mediaNote(passage).short}`}`;
   button.disabled = !available;
   if (!available) button.title = mediaNote(passage).long;

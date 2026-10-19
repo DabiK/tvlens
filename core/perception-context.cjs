@@ -3,6 +3,7 @@ const { validSummary, continuesTopic } = require('./memory/index.cjs');
 // makes another model call. The original passages remain the source of truth.
 const clipped = (value, limit) => String(value || '').slice(0, limit);
 function observedTopic(passage) {
+  if (passage.hasImages === false) return '';
   return passage.status === 'ready' || passage.visionStatus === 'ready'
     ? clipped(passage.observation?.topic, 120) : '';
 }
@@ -11,6 +12,7 @@ function perceptionContext(snapshot, current) {
     .filter(p => p.id !== current.id && p.endMs <= current.startMs);
   const recent = previous.slice(-3).map(p => ({
     id: p.id, startMs: p.startMs, endMs: p.endMs, status: p.status,
+    ...(p.hasImages === false ? { hasImages: false } : {}),
     topic: observedTopic(p),
     summary: clipped(p.observation?.summary, 500),
     transcript: clipped(p.observation?.transcript, 800),

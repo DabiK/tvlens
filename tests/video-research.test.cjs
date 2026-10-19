@@ -111,6 +111,105 @@ const watched = (n, extra = {}) => ({ id: `moment-${n}`, startMs: (n - 1) * 8000
   visionStatus: 'ready', available: true, revision: 1, observation: { summary: `Passage ${n}`, transcript: `Paroles ${n}` }, ...extra });
 const frozenTools = (state, extra = {}) => new VideoTools({ consultation: consultationFrom(state), ...extra });
 
+test('inspection instructions keep an upper limit and reserve speech-only answers for declared sound-only passages', () => {
+  const { buildPrompt, buildLocalPrompt } = require('../adapters/companion-prompt.cjs');
+  const previous = process.env.TVLENS_COMPANION_PROMPT;
+  const input = { question: 'Que se passe-t-il ?', tools: { anchorMs: 8000 }, mode: 'inspect' };
+  try {
+    delete process.env.TVLENS_COMPANION_PROMPT;
+    const prompts = [buildPrompt(input), buildPrompt({ ...input, inThread: true }), buildLocalPrompt(input)];
+    process.env.TVLENS_COMPANION_PROMPT = 'legacy';
+    prompts.push(buildPrompt(input));
+    for (const prompt of prompts) {
+      assert.match(prompt, /inspect_clip.*au plus deux fois sur 20 secondes/);
+      assert.match(prompt, /observations issues du réexamen/);
+      assert.match(prompt, /paroles des passages son seul/);
+    }
+  } finally {
+    if (previous === undefined) delete process.env.TVLENS_COMPANION_PROMPT;
+    else process.env.TVLENS_COMPANION_PROMPT = previous;
+  }
+});
+
+test('missing capture keyframes alone never declare sound-only evidence or refuse a replayable inspection', async () => {
+  const consultation = consultationFrom({ id: 's', elapsedMs: 8000, segments: [watched(1)] });
+  consultation.passages[0].modalities.images = 'absent';
+  consultation.passages[0].availability.images = false;
+  let calls = 0;
+  const tools = new VideoTools({ consultation, media: leasing(), inspector: { inspect: async () => {
+    calls++;
+    return { observations: [{ id: 'moment-1', startMs: 0, endMs: 8000, text: 'Une image décodée.' }] };
+  } } });
+  assert.equal(tools.context().passages[0].hasImages, undefined);
+  const inspected = await tools.call('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que voit-on ?' });
+  assert.equal(calls, 1);
+  assert.equal(inspected.observations[0].text, 'Une image décodée.');
+});
+
+for (const mode of ['chat', 'inspect']) {
+  test(`a ${mode} question refuses sound-only vision by name then answers from cited speech`, async t => {
+    const { OllamaQuestionAgent } = require('../adapters/ollama/question-agent.cjs');
+    const state = { id: 's', elapsedMs: 24000, segments: [1, 2, 3].map(n => watched(n, {
+      hasImages: false, available: mode === 'inspect', mediaReason: 'images-absent', visionStatus: 'absent',
+      observation: { transcript: `Le budget annoncé est de ${n} millions.` },
+    })) };
+    const requests = [], media = leasing();
+    let visionCalls = 0;
+    const tool = (name, args) => ({ function: { name, arguments: args } });
+    const agent = new OllamaQuestionAgent({ url: 'http://questions.invalid', model: 'scripted', numCtx: 8192,
+      fetchImpl: async (_url, init) => {
+        const input = JSON.parse(init.body);
+        requests.push(input);
+        const calls = [
+          tool('search_moments', { query: 'budget' }),
+          tool('inspect_clip', { startMs: 0, endMs: 8000, question: 'Que dit ce passage ?' }),
+          tool('get_transcript', { startMs: 0, endMs: 24000 }),
+        ];
+        const read = input.messages.find(m => m.role === 'tool' && m.tool_name === 'get_transcript');
+        const message = calls[requests.length - 1]
+          ? { role: 'assistant', content: '', tool_calls: [calls[requests.length - 1]] }
+          : { role: 'assistant', content: JSON.stringify({
+            answer: `Selon les paroles : « ${JSON.parse(read.content).passages[0].transcript} » L’image est indisponible.`,
+            kind: 'observation', citations: [{ id: 'moment-1', startMs: 0, endMs: 8000 }], sources: [], limits: [],
+          }) };
+        return new Response(JSON.stringify({ message, done: true }), { status: 200 });
+      } });
+    t.after(() => agent.close());
+    const deep = new DeepAsk({ agent, makeTools: signal => frozenTools(state, {
+      signal, media, search: new MemorySearch({}), inspector: { inspect: async () => {
+        visionCalls++;
+        return { observations: [] };
+      } },
+    }) });
+    deep.start('Que dit-on du budget ?', { mode, ...(mode === 'chat' ? { intent: 'explain-moment' } : {}) });
+    await deep.jobs[0].done;
+    const job = deep.snapshot().jobs[0];
+    const refused = requests[2].messages.find(m => m.role === 'tool' && m.tool_name === 'inspect_clip');
+    const reason = { code: 'TVLENS_QUESTION_IMAGES_ABSENT', message: "Ce passage n'a que le son : lire ses paroles." };
+    assert.deepEqual(JSON.parse(refused.content).error, reason);
+    assert.deepEqual([visionCalls, media.leased], [0, []]);
+    assert.equal(job.status, 'done');
+    assert.equal(job.result.kind, 'observation');
+    assert.match(job.result.answer, /Le budget annoncé est de 1 millions/);
+    assert.deepEqual(job.result.citations, [{ id: 'moment-1', startMs: 0, endMs: 8000 }]);
+    assert.ok(job.audit.some(entry => entry.tool === 'inspect_clip' && entry.refusal?.code === reason.code));
+    assert.deepEqual(job.audit, [
+      { tool: 'search_moments', status: 'completed' },
+      { tool: 'inspect_clip', status: 'failed', refusal: reason },
+      { tool: 'get_transcript', status: 'completed' },
+    ]);
+    assert.deepEqual(job.metrics.tools.find(entry => entry.tool === 'inspect_clip').refusal, reason);
+    assert.equal(job.validation.evidenceCount, mode === 'chat' ? 6 : 3);
+    const searchResult = requests[1].messages.find(m => m.role === 'tool').content;
+    assert.ok(JSON.parse(searchResult).moments.every(p => p.hasImages === false));
+    assert.match(requests[0].messages[0].content, /son seul.*get_transcript/i);
+    if (mode === 'chat') {
+      assert.equal(job.evidenceAtStart.unanalyzedTailMs, 0);
+      assert.ok(!job.result.limits.some(limit => /pas encore.*analys/.test(limit)));
+    }
+  });
+}
+
 test('an inspection leases only the passages it admits, holds them for its whole call and gives them back on success and on failure', async () => {
   const media = leasing(), inspector = heldInspector();
   const tools = frozenTools({ id: 's', elapsedMs: 24000, segments: [watched(1), watched(2), watched(3)] }, { media, inspector });

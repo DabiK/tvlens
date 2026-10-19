@@ -14,6 +14,12 @@ const topicKey = (value) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+function continuesCard(card, passage, topic) {
+  const gapMs = passage.startMs - card?.endMs;
+  if (passage.metadata.hasImages === false) return card?.hasImages === false && gapMs <= CAPTURE_GAP_MS;
+  if (card?.hasImages === false) return false;
+  return continuesTopic({ previousTopic: card?.topicKey, topic, continuity: passage.observation?.topicContinuity, gapMs });
+}
 /** @param {import('./memory/ports.cjs').MemoryView|null} memory */
 function sessionTimeline(memory) {
   if (!memory) return { sessionId: null, cards: [] };
@@ -21,11 +27,12 @@ function sessionTimeline(memory) {
   for (const passage of memory.passages) {
     const observation = passage.observation || {};
     const ready = passage.status === "ready";
-    const topic = ready || passage.visionStatus === "ready" ? topicKey(observation.topic) : "";
+    const soundOnly = passage.metadata.hasImages === false;
+    let topic = ready || passage.visionStatus === "ready" ? topicKey(observation.topic) : "";
+    if (soundOnly) topic = "";
     let card = cards.at(-1);
     // Never group across an unanalysed passage or a capture gap. No guessed topics.
-    if (!continuesTopic({ previousTopic: card?.topicKey, topic,
-      continuity: observation.topicContinuity, gapMs: passage.startMs - card?.endMs })) {
+    if (!continuesCard(card, passage, topic)) {
       card = {
         id: passage.id,
         startMs: passage.startMs,
@@ -43,13 +50,14 @@ function sessionTimeline(memory) {
         failed: 0,
         mediaAvailable: false,
       };
+      if (soundOnly) Object.assign(card, { title: 'Son seul · image indisponible', hasImages: false });
       cards.push(card);
     }
     card.segmentIds.push(passage.id);
     card.passages.push(passage);
     card.endMs = passage.endMs;
     card.statuses.push(passage.status);
-    if (passage.thumbnailAvailable && !card.thumbnailId)
+    if (!soundOnly && passage.thumbnailAvailable && !card.thumbnailId)
       card.thumbnailId = passage.id;
     if (
       (ready || passage.status === "partial") &&
@@ -68,7 +76,7 @@ function sessionTimeline(memory) {
       ...summaryForPassages(passages),
       status: card.failed ? "error" : card.pending ? "pending" : statuses.includes("partial") ? "partial" : "ready",
       title:
-        card.failed && !summaries.length ? "Passage non analysé" : card.title,
+        card.failed && !summaries.length && card.hasImages !== false ? "Passage non analysé" : card.title,
     })),
   };
 }
@@ -111,6 +119,7 @@ function momentDetail(memory, selection) {
       startMs: p.startMs,
       endMs: p.endMs,
       status: p.status,
+      ...(p.metadata.hasImages === false ? { hasImages: false } : {}),
       audioStatus: optionalPassageField(p, 'audioStatus'),
       visionStatus: optionalPassageField(p, 'visionStatus'),
       audioError: optionalPassageField(p, 'audioError'),

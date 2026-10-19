@@ -4,6 +4,7 @@ const { VIDEO_TOOL_CALL_LIMIT } = require('../../core/video-tool-contracts.cjs')
 const { toolDefinitions, allowedToolCall } = require('./video-tools.cjs');
 const { schema, buildLocalPrompt } = require('../companion-prompt.cjs');
 const { readMessage, readAnswer } = require('./question-response.cjs');
+const { TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE } = require('../../core/video-tools.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../../core/deep-ask.cjs');
 const TVLENS_OLLAMA_TOOL_REFUSED = 'TVLENS_OLLAMA_TOOL_REFUSED';
 const TVLENS_OLLAMA_TOOL_BUDGET = 'TVLENS_OLLAMA_TOOL_BUDGET';
@@ -114,10 +115,12 @@ class OllamaQuestionAgent {
       if (!allowedToolCall(call)) throw Object.assign(Error('Appel d’outil invalide.'), { code: TVLENS_OLLAMA_TOOL_REFUSED });
       value = await tools.call(name, call.function.arguments, { signal });
       status = 'completed';
-    } catch {
+    } catch (error) {
       // Les erreurs d'un port peuvent exposer des chemins ou la sortie d'un fournisseur ; elles restent internes.
       value = { error: { code: TVLENS_OLLAMA_TOOL_REFUSED,
         message: 'Outil refusé : nom, arguments ou intervalle invalides, média indisponible ou limite atteinte.' } };
+      if (error?.code === TVLENS_QUESTION_IMAGES_ABSENT)
+        value = { error: { code: TVLENS_QUESTION_IMAGES_ABSENT, message: IMAGES_ABSENT_MESSAGE } };
     }
     signal.throwIfAborted();
     audit.push({ tool: allowedToolCall(call) ? name : 'unknown', status });

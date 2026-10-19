@@ -24,6 +24,27 @@ const T0 = 1_760_000_000_000;
 const insufficient = { answer: 'Je n’ai pas obtenu de preuve suffisante pour répondre.', kind: 'insufficient', citations: [], observations: [], hypotheses: [], limits: ['Résultat limité aux observations déjà obtenues.'] };
 const observed = { ...insufficient, answer: 'Un intervenant lève la main.', kind: 'observation', observations: [{ id: 'moment-1', startMs: 0, endMs: 1000, text: 'Un intervenant lève la main.' }] };
 
+test('Mac sound-only citations and previews show the missing image with no replay or thumbnail', async t => {
+  const { mediaNote } = await ui('sessions-view');
+  const passage = { id: 'moment-1', startMs: 0, endMs: 8000, hasImages: false, available: false, mediaReason: 'images-absent' };
+  assert.equal(mediaNote(passage).short, 'Son seul');
+  assert.match(mediaNote(passage).long, /image indisponible/);
+  assert.equal(mediaNote({ ...passage, mediaReason: 'missing' }).short, 'Son seul');
+  const f = await rendererHarness(t);
+  f.publish('onState', { id: 'session', segments: [passage], history: [] });
+  f.publish('onDeepState', { jobs: [{ id: 'deep-1', sessionId: 'session', question: 'Que dit-on ?', status: 'done', intent: 'recap',
+    result: { ...observed, answer: 'Selon les paroles, le budget augmente.', citations: [{ id: 'moment-1', startMs: 0, endMs: 8000 }] } }] });
+  f.frame();
+  const card = f.get('message-list').children[0];
+  assert.match(card.querySelectorAll('.references')[0].textContent, /Son seul/);
+  assert.match(card.querySelectorAll('.preview-passages')[0].textContent, /Son seul/);
+  const descendants = node => node.children.flatMap(child => [child, ...descendants(child)]);
+  assert.equal(descendants(card).filter(node => node.tagName === 'IMG').length, 0);
+  const replay = card.querySelectorAll('[data-action]').filter(button => button.dataset.action === 'replay');
+  assert.ok(replay.length >= 2);
+  assert.ok(replay.every(button => button.disabled));
+});
+
 test('a running question shows elapsed over its own ceiling, and a queued one its place, from the injected clock', async () => {
   const { describeJob } = await ui('job-view');
   const job = { id: 'deep-2', status: 'running', createdAt: T0 - 5000, startedAt: T0, timeoutMs: 300000, message: 'Recherche des passages…' };

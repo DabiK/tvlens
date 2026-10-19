@@ -18,6 +18,17 @@ function citedInspectionEvidence(observations, priorEvidence, citations) {
   return [...new Map([...observations, ...reused].map(evidence => [JSON.stringify(evidence), evidence])).values()];
 }
 const publicationContext = job => ({ sessionId: job?.sessionId, jobId: job?.id });
+function answerAudit(audit = [], metrics = []) {
+  const pending = [...metrics];
+  const enriched = audit.map(entry => {
+    const at = pending.findIndex(metric => metric.tool === entry.tool && metric.status === entry.status);
+    if (at < 0) return entry;
+    const [metric] = pending.splice(at, 1);
+    return metric.refusal ? { ...entry, refusal: metric.refusal } : entry;
+  });
+  const unreported = pending.filter(metric => metric.refusal).map(({ tool, status, refusal }) => ({ tool, status, refusal }));
+  return [...enriched, ...unreported];
+}
 // Wording of a ceiling for the viewer, derived from the value really enforced: whole minutes when exact,
 // otherwise seconds rounded up so that the announced limit is never shorter than the real one.
 function limitLabel(ms){
@@ -226,7 +237,8 @@ class DeepAsk {
           // Only observed, validated evidence issued by our tool can justify a video answer.
           const observations=job.tools.observations;
           const priorEvidence=job.mode==='chat'&&!job.intent?this.jobs.filter(j=>j!==job&&j.sessionId===job.sessionId&&j.status==='done').flatMap(j=>[...(j.result?.observations||[]),...(j.tools?.memoryEvidence||[])]).filter(e=>e.endMs<=job.tools.anchorMs):[];
-          const evidence=[...observations,...priorEvidence,...(job.mode==='chat' ? [...(job.tools.transcriptEvidence||[]),...(job.tools.memoryEvidence||[])] : [])];
+          const speechEvidence = job.mode === 'chat' ? [] : (job.tools.transcriptEvidence || []).filter(p => p.hasImages === false);
+          const evidence=[...speechEvidence,...observations,...priorEvidence,...(job.mode==='chat' ? [...(job.tools.transcriptEvidence||[]),...(job.tools.memoryEvidence||[])] : [])];
           const citations=(result.citations||[]).flatMap(c=>{
             if(!Number.isFinite(c.startMs)||!Number.isFinite(c.endMs)||c.endMs<=c.startMs)return [];
             // Model JSON may round fractional recorder milliseconds. Clamp back to the actual evidence.
@@ -236,7 +248,7 @@ class DeepAsk {
             return endMs>startMs?[{id:c.id,startMs,endMs}]:[];
           });
           job.validation={evidenceCount:evidence.length,proposedCitations:(result.citations||[]).length,acceptedCitations:citations.length,sourceValidation:result.sourceValidation,sourceRepair:result.sourceRepair};
-          job.audit=result.audit||[];
+          job.audit = answerAudit(result.audit, job.tools.toolMetrics);
           const external=job.mode==='chat'&&result.kind==='external'&&result.sources?.length;
           const missingSources=result.sourceValidation?.proposed>0&&!result.sources?.length;
           const conversational=!missingSources&&job.mode==='chat'&&['insufficient','explanation'].includes(result.kind);

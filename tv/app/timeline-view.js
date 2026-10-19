@@ -5,6 +5,11 @@
   };
   // A film is longer than an hour: 1:32:15, not 92:15.
   var time = root.TVLensText.clock;
+  function cardExcerpt(card) {
+    if (card.summary) return (card.summaryKind === 'bounded-excerpts' ? 'Extraits récents · ' : '') + card.summary;
+    if (card.hasImages === false) return 'Son seul · paroles en attente ou indisponibles';
+    return card.status === 'error' ? 'Image conservée · analyse indisponible' : 'Image reçue · description à venir';
+  }
   function TimelineView(options) {
     this.options = options;
     this.mode = "chat";
@@ -171,7 +176,7 @@
       ].find((p) => p.id === pinned.id);
       if (passage?.status === "ready" && pinned.segmentIds.length === 1)
         Object.assign(pinned, {
-          title: passage.observation?.topic || "Moment sélectionné",
+          title: passage.hasImages === false ? 'Son seul · image indisponible' : passage.observation?.topic || "Moment sélectionné",
           summary: passage.observation?.summary || "",
           summaryKind: "bounded-excerpts",
           summaryLimits: "Extrait du passage sélectionné uniquement.",
@@ -244,18 +249,15 @@
       node.querySelector("h2").textContent = card.title;
       node.querySelector("small").textContent =
         time(card.startMs) + " — " + time(card.endMs);
-      node.querySelector("p").textContent =
-        (card.summary ? (card.summaryKind === "bounded-excerpts" ? "Extraits récents · " : "") + card.summary : "") ||
-        (card.status === "error"
-          ? "Image conservée · analyse indisponible"
-          : "Image reçue · description à venir");
+      node.querySelector("p").textContent = cardExcerpt(card);
       node.querySelector(".card-status").textContent =
         card.status === "pending"
           ? "◌ Analyse en cours"
           : card.status === "error"
             ? "Analyse incomplète"
             : card.status === "partial" ? "Analyse partielle" : "Observations automatiques";
-      self.loadThumbnail(node.querySelector("img"), card.thumbnailId);
+      node.querySelector("img").hidden = card.hasImages === false;
+      self.loadThumbnail(node.querySelector("img"), card.hasImages === false ? null : card.thumbnailId);
     });
     var expected = visible.map((c) => c.id).join(",");
     if ([...rail.children].map((n) => n.dataset.id).join(",") !== expected) {
@@ -293,6 +295,7 @@
       generation = this.generation;
     if (!id) {
       image.removeAttribute("src");
+      delete image.dataset.thumbnail;
       return;
     }
     image.dataset.thumbnail = id;
@@ -345,7 +348,8 @@
     el("detail-transcript").hidden = true;
     el("detail-words").textContent = "Voir les paroles";
     el("detail-scroll").scrollTop = 0;
-    this.loadThumbnail(el("detail-image"), card.thumbnailId);
+    el("detail-image").hidden = card.hasImages === false;
+    this.loadThumbnail(el("detail-image"), card.hasImages === false ? null : card.thumbnailId);
     el("detail-words").focus();
     try {
       var detail = await this.options.client.detail(
@@ -363,8 +367,9 @@
         el("detail-transcript").appendChild(text);
       });
       el("detail-limits").textContent =
+        (card.hasImages === false ? 'Son seul · image indisponible. ' : '') +
         (detail.summaryLimits || "") + " Observations et transcription automatiques, potentiellement imprécises. " +
-        (detail.passages.some((p) => !p.available)
+        (detail.passages.some((p) => !p.available && p.hasImages !== false)
           ? "Vidéo indisponible pour une partie de ce moment ; miniature et textes conservés avec la session. "
           : "") +
         [...new Set(detail.passages.map((p) => p.uncertainty).filter(Boolean))]

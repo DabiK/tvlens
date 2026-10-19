@@ -8,6 +8,17 @@ const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const passage = (n, topic = 'Débat économique') => ({ id: `moment-${n}`, startMs: n * 8000,
   endMs: (n + 1) * 8000, status: 'ready', observation: { topic, summary: `Résumé ${n}`,
     transcript: `Paroles ${n}`, uncertainty: 'Accusation rapportée, non vérifiée.' } });
+
+test('sound-only historical context keeps speech and missing images without inventing topic continuity', () => {
+  const audio = { ...passage(1), hasImages: false, visionStatus: 'absent',
+    observation: { transcript: 'Le budget est évoqué.' } };
+  const context = perceptionContext({ history: [passage(0)], segments: [audio] }, passage(2));
+  assert.equal(context.recent.at(-1).hasImages, false);
+  assert.equal(context.recent.at(-1).transcript, audio.observation.transcript);
+  assert.equal(context.recent.at(-1).topic, '');
+  assert.equal(context.previousTopic, '');
+  assert.equal(context.activeTopic, null);
+});
 test('context bounds history and preserves source provenance, uncertainty and the last three passages only', () => {
   const previous = Array.from({length: 1000}, (_, i) => passage(i, `Sujet ${i}`));
   previous.forEach(p => { p.observation.summary += 'x'.repeat(8000); p.observation.transcript += 'x'.repeat(8000); });

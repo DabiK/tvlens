@@ -1,7 +1,7 @@
 ---
 id: T300
 titre: Answer and show sound-only passages without pretending to see
-statut: a-faire
+statut: termine
 bloque_par: T299
 adr: non
 installe: non
@@ -67,3 +67,22 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : le chantier « son seul » (T297 à T302) passe en tête de file, après T225.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T300/exploration.md` ; absence déclarée déjà durable, projections et réexamen à adapter. Tests d'abord, sans essai matériel ni fournisseur réel.
+- 19/10, Codex : `node --test --test-name-pattern='question refuses sound-only' tests/video-research.test.cjs` : deux rouges observés sur le refus générique, puis deux verts après refus nommé, audit et citations des paroles en chat/réexamen (`red-question.log`, `green-question.log`).
+- 19/10, Codex : garde défensive de l'inspecteur, frise/résumé/contexte et vues TV/Mac : rouges sur leurs assertions puis verts ; commandes et sorties conservées dans `.harness-state/tickets/T300/` (`red-inspector`, `red-projections`, `red-views` et leurs verts). Le premier contrôle a révélé un nom masqué et un sélecteur non pris en charge par le banc Mac, corrigés sans modifier le harnais.
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert, 157 tests réussis. `node --test tests/video-research.test.cjs tests/ollama-question-agent.test.cjs tests/session-timeline.test.cjs tests/living-recap.test.cjs tests/perception-context.test.cjs tests/clip-unreadable.test.cjs tests/tv-chat-view.test.cjs tests/mac-ui.test.cjs tests/state-views.test.cjs` : 192/192 réussis (`targeted.log`). Contrôle complet à suivre.
+- 19/10, Codex : premier `node scripts/check.mjs` : 3015/3018 tests JS réussis, 54 tests Python réussis. Trois régressions observées (`check-full-red.log`) : consignes de tour trop longues et confusion entre absence de clés d'image et déclaration son seul. Un test supplémentaire reproduit la seconde ; correction par `metadata.hasImages === false`, et consigne commune portée par le rôle du fil. Aucun test existant modifié.
+- 19/10, Codex : `node --test tests/video-research.test.cjs tests/codex-confinement.test.cjs tests/living-recap-runtime.test.cjs tests/split-perception.test.cjs tests/session-timeline.test.cjs tests/living-recap.test.cjs tests/state-views.test.cjs tests/tv-chat-view.test.cjs tests/mac-ui.test.cjs` : 209/209 réussis (`green-regressions.log`). `node scripts/check.mjs --changed` : vert, 158 tests réussis (`check-changed-final.log`).
+- 19/10, Codex : second `node scripts/check.mjs` : vert, 3019/3019 tests JS (154 fichiers) et 54 tests Python réussis ; règles, format, lint, gel et cliquet validés (`check-full.log`). `git diff --check` sans erreur. Verdict `TERMINÉ` écrit dans `.harness-state/tickets/T300/verdict.json`. Vues exercées sur bancs simulés ; aucun essai TV/VPS ou fournisseur réel, aucun commit ni push.
+- 19/10, Codex, reprise : lecture de `relecture-1.md`, du journal, des écarts, de l'état et du diff sur `96cce95`. Les sept constats sont acceptés ; corrections prévues dans `.harness-state/tickets/T300/corrections-1.md`, sans nouveau périmètre.
+- 19/10, Codex, correction : `node --test --test-name-pattern='question refuses sound-only' tests/video-research.test.cjs` : deux rouges sur l'audit doublé, puis deux verts ; ajout de l'assertion de comptage : rouge `9 !== 6` en chat, puis deux verts après correction. Sorties `correction-audit-{red,green}.log` et `correction-evidence-{red,green}.log` dans le dossier d'état.
+- 19/10, Codex, correction : `node --test --test-name-pattern='inspection instructions keep' tests/video-research.test.cjs` : rouge puis vert ; plafond et restriction des paroles couverts en Codex, local et legacy (`correction-prompt-{red,green}.log`).
+- 19/10, Codex, correction : `node --test --test-name-pattern='outside the panel window' tests/tv-chat-view.test.cjs` : rouge puis vert pour les citations historiques et hors fenêtre. `node --test --test-name-pattern='pinned TV' tests/tv-chat-view.test.cjs` : deux rouges puis deux verts ; un contrôle complémentaire inclut la demande de miniature contradictoire. Sorties `correction-old-citations-{red,green}.log` et `correction-pinned-{red,green}.log`.
+- 19/10, Codex, correction : `node --test --test-name-pattern='light speech excerpts' tests/state-views.test.cjs` : rouge puis vert sur la préservation des résumés d'images vides ou null. `node --test --test-name-pattern='inspector refuses a declared|Mac sound-only citations' tests/clip-unreadable.test.cjs tests/mac-ui.test.cjs` : deux verts après import du message partagé et décision du suffixe Mac sur les données.
+- 19/10, Codex, correction : `node --test tests/video-research.test.cjs tests/codex-confinement.test.cjs tests/ollama-question-agent.test.cjs tests/chat-codex.test.cjs tests/clip-unreadable.test.cjs tests/tv-chat-view.test.cjs tests/tv-paired-page.test.cjs tests/state-views.test.cjs tests/server-state-views.test.cjs tests/mac-ui.test.cjs` : 234/234 verts (`correction-targeted.log`). `node scripts/check.mjs --changed` : vert, 163/163 tests (`correction-check-changed-final.log`).
+- 19/10, Codex, correction : `node scripts/check.mjs` : vert, 3024/3024 tests JS (154 fichiers), 54 tests Python réussis ; règles, format, lint, gel et cliquet validés (`correction-check-full.log`). `git diff --check` sans erreur. Nouveau verdict `TERMINÉ`, sept constats corrigés, aucune réserve ; aucun commit ni push, aucun essai matériel ni fournisseur réel.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T300/relecture-2.md : **Écart accepté, raccord `adapters/ollama/question-agent.cjs` :** même raison qu'en relecture 1. Sans lui, le critère 1 était impossible. Seul le code nommé passe, avec un message fixe.
+- .harness-state/tickets/T300/relecture-2.md : **Écart accepté, `tv/app/chat-view.js` au lieu de `companion.js` :** `mediaLabel` se trouve désormais dans ce fichier. Le changement reste un libellé de passage, sans toucher au transport.

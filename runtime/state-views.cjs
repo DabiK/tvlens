@@ -9,6 +9,7 @@ const PANEL_SEGMENTS = 40,
   PANEL_JOBS = 30,
   CHAT_JOBS = 8,
   PANEL_FULL_CARDS = 12,
+  PASSAGE_EXCERPT = 600,
   CARD_EXCERPT = 240,
   GAPS_TAIL = 20,
   HISTORY_PAGE = 20,
@@ -41,20 +42,25 @@ const clip = (value, max) =>
     : value;
 const ordinal = (id) => Number(String(id).split("-").pop()) || 0;
 
-// Passage of the panel view: what a card label or a citation needs, never the transcript.
+function lightObservation(passage) {
+  if (!passage.observation) return null;
+  const { topic, summary, transcript } = passage.observation;
+  const text = passage.metadata.hasImages === false ? summary || transcript : summary;
+  return { topic, summary: clip(text, PASSAGE_EXCERPT) };
+}
+// A pinned card keeps a bounded excerpt; no complete transcript travels with the panel.
 const lightPassage = (p) => ({
   id: p.id,
   startMs: p.startMs,
   endMs: p.endMs,
   status: p.status,
+  ...(p.metadata.hasImages === false ? { hasImages: false } : {}),
   audioStatus: optionalPassageField(p, 'audioStatus'),
   visionStatus: optionalPassageField(p, 'visionStatus'),
   available: p.availability.replayable,
   ...(p.availability.reason ? { mediaReason: p.availability.reason } : {}),
   thumbnailAvailable: Boolean(p.thumbnailAvailable),
-  observation: p.observation
-    ? { topic: p.observation.topic, summary: clip(p.observation.summary, 600) }
-    : null,
+  observation: lightObservation(p),
 });
 // Question of a polled view: everything a card shows, whatever a later change adds to a job. The
 // diagnostics named here stay in the complete state, and a finished answer no longer travels with
@@ -264,6 +270,7 @@ function deriveStateViews({ memory, jobs, title }) {
       ...all.filter(p => p.origin === 'history').map(p => p.id),
       ...retained.filter(p => !p.availability.replayable).map(p => p.id),
     ],
+    imagesAbsentIds: all.filter(p => p.metadata.hasImages === false).map(p => p.id),
     timeline,
     captureGaps: gaps.slice(-GAPS_TAIL),
     captureGapCount: gaps.length,
@@ -310,6 +317,7 @@ function stateView(
       ...session,
       segments: derived.segments,
       unavailableIds: derived.unavailableIds,
+      ...(derived.imagesAbsentIds.length ? { imagesAbsentIds: derived.imagesAbsentIds } : {}),
     },
     timeline: derived.timeline,
     captureGaps: derived.captureGaps,

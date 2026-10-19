@@ -14,6 +14,8 @@
       segment = (s.segments || []).find(function (item) { return item.id === id; }),
       // La vue légère ne liste que les indisponibles ; l'état complet détaille chaque segment.
       missing = s.unavailableIds ? s.unavailableIds.indexOf(id) >= 0 : !(segment && segment.available);
+    if ((s.imagesAbsentIds || []).includes(id) || segment && (segment.hasImages === false || segment.mediaReason === 'images-absent'))
+      return 'Son seul · image indisponible';
     if (!missing) return "passage conservé";
     // « unreadable » signale une vidéo sans image exploitable ; le résumé et les captures restent conservés.
     return {

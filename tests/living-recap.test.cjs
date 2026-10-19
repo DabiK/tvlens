@@ -5,6 +5,22 @@ const source=(id,startMs,endMs,text='Une scène',status='ready')=>({id,startMs,e
 const snapshot=(segments,history=[],id='s')=>memoryOf({id,segments,history}).view();
 const synthesize=({chapters,newPassages})=>({overview:'Vue d’ensemble de la session. Les sujets évoluent.',chapters:[...chapters.map(c=>({...c})),...newPassages.filter(p=>!chapters.some(c=>c.sourceIds.includes(p.id))).map(p=>({title:'Sujet '+p.id,summary:p.text,sourceIds:[p.id]}))]});
 
+test('sound-only recap sources use their speech and explicitly limit the missing image', async () => {
+  const inputs = [];
+  const recap = new LivingRecap({ summarize: async input => { inputs.push(input); return synthesize(input); } });
+  const audio = { ...source('a', 0, 8000), hasImages: false, available: false, mediaReason: 'images-absent',
+    audioStatus: 'ready', visionStatus: 'absent', observation: { transcript: 'Le budget augmente de trois millions.' } };
+  recap.observe(snapshot([audio]));
+  await recap.tick();
+  assert.equal(inputs.length, 1);
+  assert.equal(inputs[0].sourcePassages[0].text, audio.observation.transcript);
+  assert.ok(inputs[0].limits.some(limit => /son seul.*image indisponible/i.test(limit)));
+  assert.deepEqual(recap.snapshot().chapters[0].sourceIds, ['a']);
+  assert.match(recap.snapshot().chapters[0].summary, /trois millions/);
+  assert.equal(recap.snapshot().chapters[0].available, false);
+  assert.ok(!recap.snapshot().limits.some(limit => /analyse partielle|encore en analyse/.test(limit)));
+});
+
 test('first ready passage synthesizes immediately, later passages throttle and pending-to-ready changes trigger work',async()=>{
  let now=0,calls=0;const recap=new LivingRecap({now:()=>now,summarize:async input=>{calls++;return synthesize(input);}});
  recap.observe(snapshot([source('a',0,8000,'Premier sujet')]));await recap.tick();assert.equal(calls,1);assert.equal(recap.snapshot().status,'ready');

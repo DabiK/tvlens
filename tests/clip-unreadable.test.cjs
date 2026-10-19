@@ -83,6 +83,23 @@ const looking = seen => ({
   strategy: { name: 'test', diverse: false, prepare: async ({ segments }) => ({ segments, metadata: { warnings: ['Avertissement de préparation.'] }, cost: 0 }) },
   model: { inspect: async ({ segments }) => { seen.push(...segments); return { observations: segments.map(s => ({ id: s.id, startMs: s.startMs, endMs: s.endMs, text: 'Un cercle clair sur fond sombre.' })), hypotheses: [], limits: ['Limite du modèle.'], cost: 0 }; } },
 });
+
+test('the inspector refuses a declared image absence before reading media, decoding or preparing a model call', async () => {
+  const calls = [];
+  const inspector = new ClipInspector({
+    ffmpeg: '/decoder-must-not-run',
+    media: { file: () => { calls.push('file'); return '/absent'; }, read: async () => { calls.push('read'); return {}; } },
+    strategy: { prepare: async () => { calls.push('prepare'); return { segments: [], metadata: {} }; } },
+    model: { inspect: async () => { calls.push('vision'); return {}; } },
+  });
+  for (const declaration of [{ hasImages: false }, { mediaReason: 'images-absent' }]) {
+    await assert.rejects(inspector.inspect({ question: 'Que voit-on ?', startMs: 0, endMs: 8000,
+      segments: [{ id: 'moment-1', startMs: 0, endMs: 8000, ...declaration }] }), {
+      code: 'TVLENS_INSPECTION_IMAGES_ABSENT', message: "Ce passage n'a que le son : lire ses paroles.",
+    });
+  }
+  assert.deepEqual(calls, []);
+});
 // Stand-ins for ffmpeg: each leaves a line in a log, so that "never called" can be told from "failed".
 async function decoders(dir) {
   const log = path.join(dir, 'decoder.log'), write = async (name, body) => { const file = path.join(dir, name); await fs.writeFile(file, `#!/usr/bin/env node\nrequire('node:fs').appendFileSync(${JSON.stringify(log)}, process.argv[process.argv.indexOf('-i') + 1] + '\\n');\n${body}\n`, { mode: 0o755 }); return file; };

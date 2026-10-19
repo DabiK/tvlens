@@ -24,6 +24,38 @@ function harness(t, actions = {}) {
   return { page, view, advance: value => { now = value; }, list: page.el('conversation') };
 }
 
+test('TV citations label sound-only passages without promising a picture or thumbnail', t => {
+  const { view, list, page } = harness(t);
+  const state = snapshot([job({ status: 'done', result: { kind: 'observation', answer: 'Selon les paroles, le budget augmente.',
+    citations: [{ id: 'moment-1', startMs: 0, endMs: 8000 }] } })]);
+  state.session.segments = [{ id: 'moment-1', hasImages: false, available: false, mediaReason: 'images-absent' }];
+  view.receive(state, 0);
+  assert.match(list.textContent, /Son seul · image indisponible/);
+  assert.equal(list.querySelector('img'), null);
+  assert.equal(page.calls.requests, 0);
+});
+
+test('TV citations keep the missing-image label for historical and retained passages outside the panel window', t => {
+  const { memoryOf } = require('./helpers/memory-consultation.cjs');
+  const { deriveStateViews, stateView, PANEL_SEGMENTS } = require('../runtime/state-views.cjs');
+  const { view, list } = harness(t);
+  const passage = n => ({ id: `moment-${n}`, startMs: n * 8000, endMs: (n + 1) * 8000,
+    status: 'ready', audioStatus: 'ready', visionStatus: 'absent', hasImages: false,
+    available: false, mediaReason: 'missing', observation: { transcript: `Paroles ${n}` } });
+  const source = { id: 's1', elapsedMs: (PANEL_SEGMENTS + 3) * 8000, history: [passage(0)],
+    segments: Array.from({ length: PANEL_SEGMENTS + 2 }, (_, i) => passage(i + 1)) };
+  const jobs = [job({ status: 'done', result: { kind: 'observation', answer: 'Selon les paroles conservées.',
+    citations: [0, 1].map(n => ({ id: `moment-${n}`, startMs: n * 8000, endMs: (n + 1) * 8000 })) } })];
+  const derived = deriveStateViews({ memory: memoryOf(source).view(), jobs, title: null });
+  const panel = stateView('panel', derived, { liveSession: { accepting: false, asking: false } });
+  assert.equal(panel.session.segments.length, PANEL_SEGMENTS);
+  assert.ok(panel.session.segments.every(p => !['moment-0', 'moment-1'].includes(p.id)));
+  view.receive(panel, 0);
+  const citations = list.querySelectorAll('small').filter(node => /Son seul · image indisponible/.test(node.textContent));
+  assert.equal(citations.length, 2);
+  assert.doesNotMatch(list.textContent, /vidéo indisponible/);
+});
+
 test('a repeated job keeps one article from queued through running to a cited answer rendered as text', t => {
   const { page, view, list } = harness(t);
   view.receive(snapshot([job()]), 0);
@@ -390,6 +422,58 @@ function paired(t) {
   });
   t.after(page.cleanup);
   return { page, calls, answer, held, advance: value => { now = value; }, respond: value => { body = value; } };
+}
+
+test('the TV timeline and detail mark sound-only passages and request no thumbnails', async t => {
+  const { page, calls, held } = paired(t);
+  Object.assign(held.timeline.cards[0], { hasImages: false, title: 'Son seul · image indisponible',
+    summary: '', status: 'pending', pending: 1, thumbnailId: 'moment-1' });
+  await tick();
+  await page.window.tvlensTimeline.switchMode('timeline');
+  const card = page.el('timeline-rail').querySelector('button');
+  assert.match(card.textContent, /Son seul · image indisponible/);
+  assert.doesNotMatch(card.textContent, /Image reçue|Image conservée/);
+  assert.equal(card.querySelector('img').hidden, true);
+  await page.window.tvlensTimeline.openDetail(held.timeline.cards[0]);
+  assert.match(page.el('detail-limits').textContent, /Son seul · image indisponible/);
+  assert.equal(page.el('detail-image').hidden, true);
+  assert.equal(page.el('detail-image').hasAttribute('src'), false);
+  assert.ok(!calls.some(call => /thumbnail/.test(call.route)));
+});
+
+for (const soundOnly of [true, false]) {
+  test(`a pinned TV ${soundOnly ? 'sound-only' : 'image'} card updates without a generic transcript fallback`, async t => {
+    const { memoryOf } = require('./helpers/memory-consultation.cjs');
+    const { deriveStateViews } = require('../runtime/state-views.cjs');
+    const { page, held } = paired(t);
+    const card = { id: 'moment-2', startMs: 8000, endMs: 16000, segmentIds: ['moment-2'],
+      title: soundOnly ? 'Son seul · image indisponible' : 'Moment en analyse',
+      pending: 1, status: 'pending', ...(soundOnly ? { hasImages: false } : {}) };
+    held.timeline.cards = [card];
+    await tick();
+    const timeline = page.window.tvlensTimeline;
+    await timeline.switchMode('timeline');
+    page.el('timeline-rail').querySelector('button').focus();
+    const passage = { id: card.id, startMs: 8000, endMs: 16000, status: 'ready',
+      audioStatus: 'ready', visionStatus: soundOnly ? 'absent' : 'ready', available: !soundOnly,
+      ...(soundOnly ? { hasImages: false, mediaReason: 'images-absent' } : {}),
+      observation: { transcript: 'Des paroles conservées. ' + 'x'.repeat(1000) } };
+    const projected = deriveStateViews({ memory: memoryOf({ id: SESSION, segments: [passage] }).view(), jobs: [], title: null });
+    timeline.update({ ...held, session: { ...held.session, segments: soundOnly ? projected.segments : [passage] },
+      timeline: { sessionId: SESSION, cards: [{ ...card, id: 'moment-1', segmentIds: ['moment-1', 'moment-2'], pending: 0 }] } });
+    const pinned = [...page.el('timeline-rail').children].find(node => node.dataset.id === card.id);
+    assert.ok(pinned);
+    if (soundOnly) {
+      assert.match(pinned.textContent, /Son seul · image indisponible/);
+      assert.match(pinned.querySelector('p').textContent, /Des paroles conservées/);
+      assert.doesNotMatch(pinned.textContent, /paroles en attente ou indisponibles/);
+      assert.equal('transcript' in projected.segments[0].observation, false);
+      assert.ok(projected.segments[0].observation.summary.length <= 601);
+    } else {
+      assert.doesNotMatch(pinned.textContent, /Des paroles conservées/);
+      assert.equal(pinned.querySelector('p').textContent, 'Image reçue · description à venir');
+    }
+  });
 }
 
 test('the paired form delegates submission and a late old-session response cannot clear its text', async t => {

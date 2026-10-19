@@ -61,6 +61,8 @@ class LivingRecap {
     const partial=segments.filter(s=>s.status==='partial').length;
     const missing=segments.filter(s=>['error','skipped','expired'].includes(s.status)).length,previous=this.limits;
     this.limits=['Résumé issu d’analyses automatiques, susceptible d’imprécisions.'];
+    const soundOnly = segments.filter(s => s.metadata.hasImages === false).length;
+    if (soundOnly) this.limits.push(`${soundOnly} passage(s) son seul : image indisponible, seules les paroles sont résumées.`);
     if(pending)this.limits.push(`${pending} passage(s) encore en analyse.`);
     if(partial)this.limits.push(`${partial} passage(s) avec une analyse partielle, non inclus dans le résumé.`);
     if(missing)this.limits.push(`${missing} passage(s) sans analyse exploitable.`);

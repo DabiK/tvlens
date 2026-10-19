@@ -26,6 +26,33 @@ const passage = (id, start, topic, status = "ready") => ({
       ? { topic, summary: "Résumé " + id, transcript: "Paroles " + id }
       : null,
 });
+
+test('three consecutive sound-only passages form one honest card with speech and no thumbnail', () => {
+  const segments = [1, 2, 3].map(n => ({ ...passage(n, (n - 1) * 8000, ''),
+    hasImages: false, available: false, mediaReason: 'images-absent', thumbnailAvailable: false,
+    audioStatus: 'ready', visionStatus: 'absent', observation: { transcript: `Paroles ${n}` },
+  }));
+  const view = viewOf({ id: 's', history: [], segments });
+  const cards = sessionTimeline(view).cards;
+  assert.equal(cards.length, 1);
+  assert.deepEqual([cards[0].title, cards[0].hasImages, cards[0].status, cards[0].thumbnailId],
+    ['Son seul · image indisponible', false, 'ready', null]);
+  assert.deepEqual(cards[0].segmentIds, ['moment-1', 'moment-2', 'moment-3']);
+  assert.deepEqual([cards[0].startMs, cards[0].endMs], [0, 24000]);
+  assert.match(cards[0].summary, /Paroles 2.*Paroles 3/);
+  const detail = momentDetail(view, cards[0].segmentIds);
+  assert.ok(detail.passages.every(p => p.hasImages === false));
+  assert.deepEqual(detail.passages.map(p => p.transcript), ['Paroles 1', 'Paroles 2', 'Paroles 3']);
+  for (const gap of [1000, 1001]) {
+    const later = structuredClone(segments[1]);
+    later.startMs += gap;
+    later.endMs += gap;
+    const split = sessionTimeline(viewOf({ id: 's', segments: [segments[0], later] })).cards;
+    assert.equal(split.length, gap === 1000 ? 1 : 2);
+  }
+  const mixed = sessionTimeline(viewOf({ id: 's', segments: [segments[0], passage(4, 8000, 'Images'), segments[2]] })).cards;
+  assert.deepEqual(mixed.map(card => card.segmentIds), [['moment-1'], ['moment-4'], ['moment-3']]);
+});
 test("timeline groups only contiguous known subjects and retains unanalysed/failed passages", () => {
   const snapshot = {
     id: "session",

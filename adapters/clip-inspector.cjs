@@ -4,12 +4,18 @@ const path = require('node:path');
 const os = require('node:os');
 const { run, DECODE_FAILED } = require('./ffmpeg.cjs');
 const { NativeVideoStrategy } = require('./inspection-strategies.cjs');
+const { domainError } = require('../core/shared/domain-error.cjs');
+const { IMAGES_ABSENT_MESSAGE } = require('../core/video-tools.cjs');
+const TVLENS_INSPECTION_IMAGES_ABSENT = 'TVLENS_INSPECTION_IMAGES_ABSENT';
 // Under one second Whisper invents words: such an excerpt never gets a transcription of its own.
 const MIN_EXACT_SPEECH_MS=1000;
 const seconds=ms => (ms/1000).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
 class ClipInspector {
   constructor({ media, model, ffmpeg = executable('ffmpeg'), strategy = new NativeVideoStrategy() }) { Object.assign(this,{media,model,ffmpeg,strategy}); }
   async inspect({ question,startMs,endMs,segments,signal,onProgress,onDiagnostic,exactSpeech }) {
+    signal?.throwIfAborted();
+    if (segments.some(s => s.hasImages === false || s.mediaReason === 'images-absent'))
+      throw domainError(TVLENS_INSPECTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE);
     const dir = await fs.mkdtemp(path.join(os.tmpdir(),'tvlens-inspect-'));
     try {
       const evidence=[], stills=[]; let count=0;
@@ -76,4 +82,4 @@ function trimWav(bytes,start,end) {
   header.writeUInt32LE(16,16); b.copy(header,20,fmt,fmt+16); header.write('data',36,'ascii'); header.writeUInt32LE(data.length,40);
   return Buffer.concat([header,data]);
 }
-module.exports={ClipInspector,trimWav,run};
+module.exports={ClipInspector,trimWav,run,TVLENS_INSPECTION_IMAGES_ABSENT};

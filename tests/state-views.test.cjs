@@ -33,6 +33,31 @@ function publishedState(count = 0) {
   };
 }
 
+test('the light panel preserves declared image absence independently of missing audio files', () => {
+  const state = publishedState(2);
+  for (const p of state.segments) Object.assign(p, { hasImages: false, available: false,
+    mediaReason: 'images-absent', audioStatus: 'ready', visionStatus: 'absent', observation: { transcript: 'Paroles.' } });
+  state.segments[1].mediaReason = 'missing';
+  const panel = stateView('panel', deriveStateViews({ memory: viewOf(state), jobs: [], title: null }), liveValues());
+  assert.ok(panel.session.segments.every(p => p.hasImages === false));
+  assert.deepEqual(panel.session.segments.map(p => p.mediaReason), ['images-absent', 'missing']);
+  assert.equal(panel.timeline.cards[0].title, 'Son seul · image indisponible');
+});
+
+test('light speech excerpts leave empty and null image summaries intact', () => {
+  const state = publishedState(3);
+  state.segments[0].observation = { summary: '', transcript: 'Paroles à ne pas substituer aux images.' };
+  state.segments[1].observation = { summary: null, transcript: 'Autres paroles.' };
+  Object.assign(state.segments[2], { hasImages: false, available: false, visionStatus: 'absent',
+    observation: { transcript: 'Paroles son seul. ' + 'x'.repeat(1000) } });
+  const { segments } = deriveStateViews({ memory: viewOf(state), jobs: [], title: null });
+  assert.equal(segments[0].observation.summary, '');
+  assert.equal(segments[1].observation.summary, null);
+  assert.match(segments[2].observation.summary, /^Paroles son seul/);
+  assert.ok(segments[2].observation.summary.length <= 601);
+  assert.ok(segments.every(p => !('transcript' in p.observation)));
+});
+
 test("panel projections keep forty recent passages and thirty recent questions plus every active question", () => {
   const state = publishedState(55);
   const jobs = Array.from({ length: 45 }, (_, i) => ({
