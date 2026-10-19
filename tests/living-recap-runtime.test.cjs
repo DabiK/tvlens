@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { createEventPublisher } = require('../core/shared/events.cjs');
 const { createLivingRecapRuntime } = require('../runtime/memory/living-recap-runtime.cjs');
@@ -22,7 +22,7 @@ function fixture(t, options = {}) {
     if (!map.has(id)) map.set(id, deferred());
     return map.get(id);
   };
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: 's', now: () => f.time,
     perception: {
       transcribe: input => lane(audio, input.id).promise,

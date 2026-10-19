@@ -5,6 +5,7 @@
  * @typedef {import('./ports.cjs').MemoryMediaPort} MemoryMediaPort
  */
 module.exports = {
+  ...require('./viewing-memory.cjs'),
   ...require('./topic-continuity.cjs'),
   ...require('./topic-summary.cjs'),
   ...require('./lifecycle-state.cjs'),

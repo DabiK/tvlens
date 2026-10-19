@@ -1,4 +1,3 @@
-const { validSummary, continuesTopic } = require('./memory/index.cjs');
 // Provider-independent, extractive context. It never manufactures new evidence or
 // makes another model call. The original passages remain the source of truth.
 const clipped = (value, limit) => String(value || '').slice(0, limit);
@@ -8,6 +7,8 @@ function observedTopic(passage) {
     ? clipped(passage.observation?.topic, 120) : '';
 }
 function perceptionContext(snapshot, current) {
+  // La racine importe ce contexte : son entrée publique doit avoir fini de se charger.
+  const { validSummary, continuesTopic } = require('./memory/index.cjs');
   const previous = [...snapshot.history, ...snapshot.segments]
     .filter(p => p.id !== current.id && p.endMs <= current.startMs);
   const recent = previous.slice(-3).map(p => ({

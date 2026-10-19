@@ -455,10 +455,11 @@ for (const source of ['session.watch["ending"] = true;', 'watch.closed ||= true;
 
 test('core service guard preserves its session exception and rejects nested service imports', t => {
   const root = fixture(t);
-  write(root, 'core/session.cjs', "require('./session.cjs');");
+  write(root, 'core/memory/viewing-memory.cjs', "require('./viewing-memory.cjs');");
+  write(root, 'core/memory/index.cjs', "module.exports = require('./viewing-memory.cjs');");
   assert.equal(runGuard(root).status, 0);
   const filename = 'core/nested/service.cjs';
-  write(root, filename, "require('../session.cjs');");
+  write(root, filename, "require('../memory/viewing-memory.cjs');");
   t.diagnostic(assertRejected(root, filename, /core services[\s\S]*depends on the session use case/).output);
   write(root, filename, "require('../module.cjs');");
   const result = runGuard(root);
@@ -728,7 +729,7 @@ for (const identifier of [
   test(`memory lane vocabulary guard rejects the compound name ${identifier} and accepts generic policy`, t => {
     const root = contextFixture(t);
     const filename = 'core/memory/lanes.cjs';
-    write(root, 'core/session.cjs', 'module.exports = {};');
+    write(root, 'core/memory/viewing-memory.cjs', 'module.exports = {};');
     write(root, filename, `module.exports = { ${JSON.stringify(identifier)}: false };`);
     assertRejected(root, filename, new RegExp(identifier), LANES_GUARD, [LANES_GUARD]);
     write(root, filename, 'module.exports = { visionHeld: false, audioPending: 0 };');
@@ -824,9 +825,10 @@ test('context declaration requires the precise permission before exposing only i
   assertAccepted(root, GUARD_NAMES, t);
 });
 
-for (const target of ['index.cjs', 'lanes.cjs']) {
+for (const target of ['index.cjs', 'lanes.cjs', 'viewing-memory.cjs']) {
   test(`context domains reject foreign ${target} despite an explicit permission`, t => {
     const root = contextFixture(t);
+    write(root, 'core/memory/viewing-memory.cjs', 'module.exports = {};');
     declareZone(root, MEMORY_ZONE);
     declareZone(root, { pattern: 'core/inquiry/**', layer: 'domain', context: 'inquiry',
       entryPoint: 'core/inquiry/index.cjs', imports: ['core/inquiry/**', 'core/memory/**', 'core/shared/**'] });
@@ -860,11 +862,11 @@ test('context members access their own internals and shared kernel while flat mo
   declareZone(root, MEMORY_ZONE);
   write(root, 'core/memory/lanes.cjs', "require('../shared/value.cjs');");
   declareZone(root, { pattern: 'core/**', imports: ['core/**', 'core/shared/**', 'core/memory/**'] });
-  write(root, 'core/session.cjs', "require('./memory');");
+  write(root, 'core/reader.cjs', "require('./memory');");
   assertAccepted(root, GUARD_NAMES, t);
-  write(root, 'core/session.cjs', "require('./memory/lanes.cjs');");
-  assertRejected(root, 'core/session.cjs', /context-private-import/, GUARD_NAMES[0]);
-  write(root, 'core/session.cjs', "require('./memory/index.cjs');");
+  write(root, 'core/reader.cjs', "require('./memory/lanes.cjs');");
+  assertRejected(root, 'core/reader.cjs', /context-private-import/, GUARD_NAMES[0]);
+  write(root, 'core/reader.cjs', "require('./memory/index.cjs');");
   assertAccepted(root, GUARD_NAMES, t);
 });
 
@@ -985,9 +987,10 @@ for (const duplicate of ['name', 'edge']) {
   });
 }
 
-for (const target of ['index.cjs', 'lanes.cjs']) {
+for (const target of ['index.cjs', 'lanes.cjs', 'viewing-memory.cjs']) {
   test(`migration exceptions cannot authorize a foreign domain ${target}`, t => {
     const root = contextFixture(t);
+    write(root, 'core/memory/viewing-memory.cjs', 'module.exports = {};');
     declareZone(root, MEMORY_ZONE);
     declareZone(root, { pattern: 'core/inquiry/**', layer: 'domain', context: 'inquiry',
       entryPoint: 'core/inquiry/index.cjs', imports: ['core/inquiry/**', 'core/memory/**', 'core/shared/**'] });
@@ -1104,12 +1107,12 @@ for (const [form, statement] of IMPORT_FORMS) {
   test(`core service guard resolves the session use case in ${form}`, t => {
     const root = fixture(t);
     const filename = 'core/nested/service.mjs';
-    write(root, 'core/session.cjs', 'module.exports = {};');
-    write(root, filename, statement('../nested/../session.cjs'));
+    write(root, 'core/memory/viewing-memory.cjs', 'module.exports = {};');
+    write(root, filename, statement('../memory/../memory/viewing-memory.cjs'));
     assertRejected(root, filename, /depends on the session use case/, GUARD_NAMES[4]);
     // Un homonyme local n'est pas le cas d'usage session à la racine.
-    write(root, 'core/nested/session.cjs', 'module.exports = {};');
-    write(root, filename, statement('./session.cjs'));
+    write(root, 'core/nested/viewing-memory.cjs', 'module.exports = {};');
+    write(root, filename, statement('./viewing-memory.cjs'));
     const result = runGuard(root);
     assert.equal(result.status, 0, result.output);
   });

@@ -1,15 +1,18 @@
-const { domainError } = require('./shared/domain-error.cjs');
+const { domainError } = require('../shared/domain-error.cjs');
 const TVLENS_CAPTURE_TIME_INVALID = 'TVLENS_CAPTURE_TIME_INVALID';
 const TVLENS_CAPTURE_ORDER_INVALID = 'TVLENS_CAPTURE_ORDER_INVALID';
 const TVLENS_CAPTURE_AUDIO_REQUIRED = 'TVLENS_CAPTURE_AUDIO_REQUIRED';
-const { perceptionContext } = require('./perception-context.cjs');
-const { hasUsableObservation } = require('./shared/passage-text.cjs');
-const { latencySummary } = require('./latency-trace.cjs');
-const { holdsMedia } = require('./clip-container.cjs');
-const { publishState } = require('./state-publication.cjs');
-const { PassageEvents } = require('./passage-events.cjs');
-const memory = require('./memory/index.cjs');
-const { TVLENS_SESSION_STOPPED } = memory;
+const { perceptionContext } = require('../perception-context.cjs');
+const { hasUsableObservation } = require('../shared/passage-text.cjs');
+const { latencySummary } = require('../latency-trace.cjs');
+const { holdsMedia } = require('../clip-container.cjs');
+const { publishState } = require('../state-publication.cjs');
+const { PassageEvents } = require('../passage-events.cjs');
+const { MemoryLifecycleState, restorationRefusal, TVLENS_SESSION_STOPPED } = require('./lifecycle-state.cjs');
+const { PerceptionLanes } = require('./lanes.cjs');
+const { fromArchive, toArchive } = require('./archive.cjs');
+const { calculateCoverage } = require('./coverage.cjs');
+const memoryView = require('./memory-view.cjs');
 const STORAGE_FULL = 'TVLENS_STORAGE_FULL', INTERRUPTED = 'Analyse interrompue à la fermeture de la session.';
 const LANE_LOSSES = {
   audio: { backlog: 'audioSkipped', expired: 'audioExpired', error: 'audioError' },
@@ -83,8 +86,8 @@ function reopenedPassage(source, { kept, hasMedia, hasThumbnail, formerFormat },
 }
 
 // Portable application core: no Electron, filesystem or provider dependency.
-class WatchSession {
-  #lifecycle = new memory.MemoryLifecycleState();
+class ViewingMemory {
+  #lifecycle = new MemoryLifecycleState();
   #questionPending = false;
   #questionIntakeClosed = false;
   #events;
@@ -112,7 +115,7 @@ class WatchSession {
     // Ingests under way, and media found on disk at reopening that no passage could be made of.
     this.landing = new Set(); this.unplacedMedia = 0;
     this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.ingestChain = Promise.resolve();
-    this.#lanes = new memory.PerceptionLanes({
+    this.#lanes = new PerceptionLanes({
       maxPending,
       now: () => this.now(),
       readMedia: passageId => this.media.read(passageId),
@@ -307,10 +310,10 @@ class WatchSession {
   // analysed or sent anywhere, and capture only comes back through an explicit resume().
   restore(archived, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
     const restoredLifecycle = this.#lifecycle.restore();
-    if (this.sequence || this.segments.length || this.history.length || this.questions.length) throw memory.restorationRefusal();
+    if (this.sequence || this.segments.length || this.history.length || this.questions.length) throw restorationRefusal();
     if (!archived || archived.id !== this.id) throw new Error('Archive incompatible avec cette session.');
     // Decoded before anything is restored: a historical document comes back as saved, a versioned one without its markers.
-    const saved = memory.fromArchive(archived);
+    const saved = fromArchive(archived);
     // Saved before durable retention existed: its raw media were never meant to be kept.
     const formerFormat = saved.retention === undefined;
     const reopen = (source, kept) => reopenedPassage(source, { kept, hasMedia, hasThumbnail, formerFormat }, this.losses);
@@ -321,7 +324,8 @@ class WatchSession {
     this.questions = (saved.questions || []).map(question => ({ ...question }));
     this.apiCalls = Number.isFinite(saved.apiCalls) ? saved.apiCalls : 0; this.apiCost = Number.isFinite(saved.apiCost) ? saved.apiCost : 0;
     // Past every number already used, including media left on disk by an interrupted ingest: never overwritten.
-    this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id).concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
+    this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id)
+      .concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
     // Counted and reported, never shown as a passage: nothing says where they belong on the session clock.
     this.unplacedMedia = orphans.length || 0;
     this.#lifecycle = restoredLifecycle;
@@ -344,7 +348,7 @@ class WatchSession {
     if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.#lanes.restoreHeldMs(saved.coverage.visionBlockedMs);
   }
   memoryView() {
-    return memory.createMemoryView(this, this.#modalities);
+    return memoryView.createMemoryView(this, this.#modalities);
   }
 
   readPublicationStatus() {
@@ -368,15 +372,15 @@ class WatchSession {
   }
 
   memoryPassage(id) {
-    return memory.readMemoryPassage(this, id, this.#modalities);
+    return memoryView.readMemoryPassage(this, id, this.#modalities);
   }
 
   memoryPassages(ids) {
-    return memory.readMemoryPassages(this, ids, this.#modalities);
+    return memoryView.readMemoryPassages(this, ids, this.#modalities);
   }
 
   recentMemoryPassages(limit) {
-    return memory.recentMemoryPassages(this, limit, this.#modalities);
+    return memoryView.recentMemoryPassages(this, limit, this.#modalities);
   }
 
   snapshot() {
@@ -384,7 +388,7 @@ class WatchSession {
     const capturedThroughMs = all.at(-1)?.endMs || 0;
     const analyzedThroughMs = all.filter(s => s.status === 'ready').at(-1)?.endMs || 0;
     const lanes = this.perceptionState(now);
-    const { gaps, audioGaps, visionGaps, coverage } = memory.calculateCoverage({
+    const { gaps, audioGaps, visionGaps, coverage } = calculateCoverage({
       passages: all, losses: this.losses, visionBlockedMs: lanes.visionBlockedMs,
     });
     return {
@@ -422,7 +426,7 @@ class WatchSession {
     // Never rejects: an analysis or a pause must not fail for it. A host that needs the state confirmed on
     // disk, as before saying a session archived, asks its archive (see the shared runtime).
     let refused = null;
-    try { await this.archive.save(memory.toArchive(this.snapshot())); }
+    try { await this.archive.save(toArchive(this.snapshot())); }
     catch { refused = 'Impossible de sauvegarder le résumé de session.'; }
     // States are published before they are saved: what the save answered is said when it changes what the
     // state says, a refusal or its end, and only then. Compared when the answer comes, not when it was asked
@@ -434,5 +438,5 @@ class WatchSession {
 }
 
 module.exports = {
-  WatchSession, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_CAPTURE_AUDIO_REQUIRED, TVLENS_SESSION_STOPPED,
+  ViewingMemory, recoveredPassage, TVLENS_CAPTURE_TIME_INVALID, TVLENS_CAPTURE_ORDER_INVALID, TVLENS_CAPTURE_AUDIO_REQUIRED, TVLENS_SESSION_STOPPED,
 };

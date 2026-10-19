@@ -3,7 +3,7 @@ const viewOf = state => memoryOf(state).view();
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { perceptionContext } = require('../core/perception-context.cjs');
 const { completeTopicSummary } = require('../core/memory/index.cjs');
 const { sessionTimeline, momentDetail } = require('../core/session-timeline.cjs');
@@ -90,7 +90,7 @@ test('legacy observations remain honestly bounded and cannot seed a false full-t
 });
 test('aggregate survives archival and pause/resume while original transcript and timestamps remain unchanged', async () => {
   let now=8000;
-  const watch=new WatchSession({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}}});
+  const watch=new ViewingMemory({id:'s',now:()=>now,perception:{},media:{remove:async()=>{}},archive:{save:async()=>{}}});
   const historical={id:'s',history:[],segments:[]};
   append(historical,passage(0,'Argument initial'));
   watch.restore({...historical,history:historical.segments,segments:[],retention:'rolling',retentionMs:10000});

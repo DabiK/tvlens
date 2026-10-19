@@ -47,7 +47,7 @@ const inspectionSchema = {
 };
 // The longest one description of the images may take.
 const VISUAL_TIMEOUT_MS = 45000;
-// Set as `code` on a failed description the session may ask for once more (core/session.cjs).
+// Set as `code` on a failed description the session may ask for once more (core/memory/index.cjs).
 const VISION_TRANSIENT = "TVLENS_VISION_TRANSIENT";
 // A pending request cut by the guard and an unacknowledged turn/start may still hide a running turn.
 const TRANSIENT_CODES = new Set([

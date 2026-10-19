@@ -1,7 +1,7 @@
 ---
 id: T220
 titre: Move the memory root to core/memory/viewing-memory.cjs as ViewingMemory
-statut: a-faire
+statut: termine
 bloque_par: T225, T223, T216, T217, T218, T301, T303, T304, T305, T306, T309
 adr: oui
 installe: non
@@ -97,3 +97,49 @@ second lot de retrait de rétention et la décision déjà reçue.
   3 031 tests JS et 71 tests Python réussis ; sortie dans `.harness-state/tickets/T220/check-complet.log`.
   Verdict `BLOQUÉ` déposé : nettoyage séparé des quatre suppressions requis avant reprise, aucun code modifié.
 - 19/10, orchestrateur : nettoyage préalable confié à T309 ; ce ticket repart à faire après lui.
+- 19/10, Codex : reprise à `f86df64` après T309 ; relevé source/cible sans aucune suppression.
+  Inventaire actualisé : runtime, bibliothèque, HTTP, quatre bancs, générateur historique et 16 suites.
+  Exploration et adaptations d'import consignées dans `.harness-state/tickets/T220/` avant implémentation.
+- 19/10, Codex : test de construction publique rouge sur `typeof ViewingMemory` (`undefined`),
+  puis vert après déplacement et migration des importeurs. Huit fixtures de garde rouges sur le refus
+  attendu, puis vertes pour la nouvelle racine et l'homonyme. Aucun alias ni façade conservé ; ADR 0063 rédigé.
+- 19/10, Codex : premier `node scripts/check.mjs --changed` rouge : une ligne longue dans le nouveau
+  fichier, neuf fixtures des voies restées à l'ancien chemin et un compteur branché sur l'ancien export.
+  Corrections du format et des coutures ; les douze cas ciblés passent, avec les mêmes comptes attendus
+  (4 snapshots, 9 vues complètes, 2 lectures unitaires, 1 lecture par identifiants, 1 lecture de fin de liste).
+- 19/10, Codex : suites mémoire/archive/fil/ADR/gardes exécutées en séquentiel : 861 tests réussis,
+  puis outils/Mac/runtime : 79 réussis. Le corpus figé est lu depuis ses copies temporaires ; les tests
+  conservent données, médias, motifs et numérotation après orphelins. Sorties et commandes dans le dossier d'état.
+- 19/10, Codex : `node scripts/check.mjs --changed` final : `check : vert`, 18 fichiers de tests,
+  754 tests réussis. Format, lint, gel et cliquet verts ; aucun gel déplacé ni ajouté.
+- 19/10, Codex : premier contrôle complet de reprise rouge uniquement sur l'index documentaire
+  (ADR 0063 absent de la section Décisions). Les 3 033 autres tests JS et les 73 tests Python passent.
+  Lien et phrase ajoutés à `docs/architecture.md`, carte actuelle de la racine mise à jour ;
+  `node --test tests/documentation-index.test.cjs` : 12 tests réussis. Nouvelle passe complète lancée.
+- 19/10, Codex : `node scripts/check.mjs` final : `check : vert`, 154 fichiers de tests JS,
+  3 034 tests JS et 73 tests Python réussis (Python : 66,394 s). Règles, format, lint, gel et cliquet verts.
+  `git diff --check` sans anomalie. Verdict `TERMINÉ` déposé dans `.harness-state/tickets/T220/verdict.json` ;
+  relecture et intégration laissées à la boucle, sans commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T220/relecture-1.md : **1. `tests/architecture.test.cjs:545-554`, `docs/architecture.md:39-40` et ADR 0063 (« La garde des services du cœur refuse l'import direct… »)** — hors périmètre
+
+  - **Le problème :** la règle « les services du cœur n'importent pas la racine » ne bloque plus que l'import direct. `core/memory/index.cjs` exporte désormais `ViewingMemory`. Un service plat du cœur peut donc écrire `require('./memory/index.cjs').ViewingMemory` sans faire échouer aucune garde. Avant ce ticket, l'index n'exposait pas `WatchSession`, et ce chemin n'existait pas.
+  - **La règle est devenue redondante :** dans la vraie politique, l'import direct par un module plat est déjà refusé par `context-private-import`. Elle ne protège plus que contre les autres modules internes de Mémoire.
+  - **La documentation suit ce relâchement :** `docs/architecture.md:39-40` présente l'index comme la voie d'accès des services (« Les services du cœur accèdent à la racine… par l'entrée publique »). Elle ne dit plus que les services ne dépendent pas de la racine.
+  - **Pourquoi hors périmètre :** le ticket impose ce dessin. Il demande d'exporter la racine par l'index et seulement d'« adapter » des gardes qu'il décrit comme fondées sur le chemin. Le résultat livré est conforme à cette lettre et à l'ADR.
+  - **Attendu, dans un ticket ultérieur :** une garde au niveau de l'identifiant, en ignorant les commentaires (`core/ports.cjs:120` cite `ViewingMemory` en JSDoc) :
+    - aucun module de `core/` hors `core/memory/` ne référence `ViewingMemory` ;
+    - une fixture rejette un service qui l'obtient par l'index ;
+    - la phrase de `docs/architecture.md` redevient une interdiction.
+- .harness-state/tickets/T220/relecture-1.md : **2. `docs/domaine.md:72`, `:92` et `:99`** — hors périmètre
+
+  - **Le problème :** le document dit encore « aujourd'hui `WatchSession`, `core/session.cjs:47` » et cite `core/session.cjs:293`, `:351`. Ces lignes sont désormais fausses.
+  - **Pourquoi hors périmètre :** `domaine.md` est la cible DDD figée et le ticket ne l'ouvre pas à la modification.
+  - **Attendu :** mettre à jour ces mentions « aujourd'hui » lors d'une révision de ce document.
+- .harness-state/tickets/T220/relecture-1.md : **3. `core/memory/viewing-memory.cjs:116-117`, `:241` et `:325`** — hors périmètre
+
+  - **Le problème :** le code déplacé garde des lignes à plusieurs instructions, par exemple `this.landing = new Set(); this.unplacedMedia = 0;` ou `this.emit(); this.drain();`. C'est contraire à la règle « une instruction par ligne », que seule la relecture vérifie.
+  - **Pourquoi hors périmètre :** la phrase des standards « Du code déplacé… y arrive sans infraction » s'applique, dans son contexte, au gel ESLint. Ce gel est bien vide aux deux chemins. Le ticket limite par ailleurs le déplacement au nom, au chemin, aux importeurs et aux gardes.
+  - **Attendu :** corriger ces lignes quand T226 ou T227 retouchent la racine.

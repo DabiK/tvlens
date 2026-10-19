@@ -3,13 +3,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 const { deferred } = require('./helpers/wait.cjs');
 
 function fixture(t, perception = {}) {
   const f = { time: 0, effects: [], files: new Map() };
-  f.watch = new WatchSession({
+  f.watch = new ViewingMemory({
     id: 'session', now: () => f.time, perception,
     media: {
       put: async (id, input) => {
@@ -233,8 +233,7 @@ test('bounded reads project only one passage or the requested retained tail with
     },
   });
   f.watch.restore(saved, { hasMedia: () => true });
-  const memory = require('../core/memory/index.cjs');
-  const complete = t.mock.method(memory, 'createMemoryView', () => assert.fail('full view is forbidden'));
+  const complete = t.mock.method(f.watch, 'memoryView', () => assert.fail('full view is forbidden'));
   const snapshot = t.mock.method(f.watch, 'snapshot', () => assert.fail('snapshot is forbidden'));
   const single = f.watch.memoryPassage('moment-1');
   assert.equal(single.origin, 'history');
@@ -287,8 +286,7 @@ test('a bounded read by identifiers publishes the identity, the clock and the re
       return 'Image hors demande';
     },
   });
-  const memory = require('../core/memory/index.cjs');
-  const complete = t.mock.method(memory, 'createMemoryView', () => assert.fail('full view is forbidden'));
+  const complete = t.mock.method(f.watch, 'memoryView', () => assert.fail('full view is forbidden'));
   const snapshot = t.mock.method(f.watch, 'snapshot', () => assert.fail('snapshot is forbidden'));
   f.effects.length = 0;
   const read = f.watch.memoryPassages(['moment-4', 'absent', 'moment-1', 'moment-3']);

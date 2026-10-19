@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { createEventPublisher } = require('../core/shared/events.cjs');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
 const { deferred, tick } = require('./helpers/wait.cjs');
@@ -70,7 +70,7 @@ async function runtimeFixture(t, extra = {}) {
 
 test('memory records reception only after a complete admission and drains its facts independently of onChange', async t => {
   const writing = deferred(), entered = deferred(), batches = [], states = [], files = new Map();
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: 'session', now: () => 2000,
     perception: { transcribe: () => new Promise(() => {}), observeVisual: async () => visionResult },
     media: {
@@ -98,7 +98,7 @@ test('memory records reception only after a complete admission and drains its fa
 
 test('an admitted write landing after core closure still delivers its received fact without reviving state publication', async () => {
   const writing = deferred(), entered = deferred(), events = [], saves = [], states = [];
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: 'session', now: () => 1000, perception: {},
     media: { put: async () => { entered.resolve(); await writing.promise; } },
     archive: { save: async state => saves.push(state) },
@@ -331,7 +331,7 @@ test('storage refusal of an unreadable clip emits only suspension without a phan
 
 function coreFixture(t, options = {}) {
   const f = { time: 0, events: [], seen: [], saves: [], states: [], files: new Map() };
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: 'session', now: () => f.time,
     perception: { transcribe: async () => audioResult, observeVisual: async () => visionResult },
     media: {

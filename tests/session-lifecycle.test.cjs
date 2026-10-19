@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { WatchSession } = require("../core/session.cjs");
+const { ViewingMemory } = require("../core/memory/index.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const { RevocableInspector } = require("../core/revocable-inspector.cjs");
 const { createEventPublisher } = require("../core/shared/events.cjs");
@@ -124,7 +124,7 @@ function fixture({ restore = null } = {}) {
     memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
-  watch = new WatchSession({
+  watch = new ViewingMemory({
     id: "session",
     now: () => sessionClock.now(),
     perception,

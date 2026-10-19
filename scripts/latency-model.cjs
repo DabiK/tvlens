@@ -1,4 +1,4 @@
-const { WatchSession } = require("../core/session.cjs");
+const { ViewingMemory } = require("../core/memory/index.cjs");
 const { VideoTools, consultationOf } = require("../core/video-tools.cjs");
 const { hasPendingQuestion } = require("../runtime/conversation-runtime.cjs");
 const { createMemoryProjection } = require("../runtime/memory/memory-projection.cjs");
@@ -83,7 +83,7 @@ function createModel({ env, delays, views, record }) {
     });
     views.publish(envelope);
   };
-  session = new WatchSession({
+  session = new ViewingMemory({
     id: "session-1",
     now: env.io.now,
     archive: store,

@@ -9,7 +9,7 @@ const {
   TVLENS_CAPTURE_ORDER_INVALID,
   TVLENS_CAPTURE_AUDIO_REQUIRED,
   TVLENS_SESSION_STOPPED,
-} = require("../core/session.cjs");
+} = require("../core/memory/index.cjs");
 const {
   TVLENS_MOMENT_SELECTION_INVALID,
   TVLENS_MOMENT_MISSING,

@@ -4,8 +4,7 @@ const TVLENS_SESSION_NOT_FOUND = 'TVLENS_SESSION_NOT_FOUND';
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { LocalSessionStore } = require('./local-store.cjs');
-const { recoveredPassage } = require('../core/session.cjs');
-const { fromArchive, TVLENS_ARCHIVE_INVALID } = require('../core/memory/index.cjs');
+const { recoveredPassage, fromArchive, TVLENS_ARCHIVE_INVALID } = require('../core/memory/index.cjs');
 
 const MANIFEST_FORMAT = 'tvlens-session', MANIFEST_VERSION = 1;
 // Session directories are named by randomUUID(): anything else is neither listed, opened nor deleted.
@@ -27,7 +26,7 @@ const readableManifest = manifest => manifest == null || (record(manifest)
   && optional(manifest.media, record) && optional(manifest.captures, value => Array.isArray(value) && value.every(record)));
 const passagesOf = snapshot => [...(snapshot.history || []), ...snapshot.segments];
 const firstTopic = passages => passages.find(passage => passage.observation?.topic)?.observation.topic || null;
-// The retentions a saved state names since sessions are durable (core/session.cjs). A state that names
+// The retentions a saved state names since sessions are durable (core/memory/index.cjs). A state that names
 // one was written by a version that writes a manifest too; one written before manifests names none.
 const RETENTIONS = ['rolling', 'until-deleted'];
 

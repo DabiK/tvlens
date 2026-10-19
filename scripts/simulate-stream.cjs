@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Deterministic replay of a capture stream through the real orchestration (WatchSession,
+// Deterministic replay of a capture stream through the real orchestration (ViewingMemory,
 // CodexPerception, DeepAsk, VideoTools, MemorySearch) with controlled providers and a
 // virtual clock. It checks ordering, bounded budgets, losses and evidence freshness.
 // Provider latencies are MODELS taken from the historical measurements quoted in
@@ -84,7 +84,7 @@ async function runScenario(root, name, seed, variant = {}) {
   if (!scenario) throw Error(`Scénario inconnu : ${name}`);
   const model = { ...MODELS[scenario.model], ...(Number.isFinite(variant.embedRequestMs) ? { embedRequestMs: variant.embedRequestMs } : {}) };
   const load = file => require(path.join(root, file));
-  const { WatchSession } = load('core/session.cjs');
+  const { ViewingMemory } = load('core/memory/index.cjs');
   const { createMemoryProjection } = load('runtime/memory/memory-projection.cjs');
   const { CodexPerception } = load('adapters/codex-perception.cjs');
   const { CachedInspector } = load('core/cached-inspector.cjs');
@@ -221,7 +221,7 @@ async function runScenario(root, name, seed, variant = {}) {
       view: () => watch.memoryView(), readPublicationStatus: () => watch.readPublicationStatus(),
       readHistoricalQuestions: () => watch.readHistoricalQuestions(), readUsage: () => watch.readUsage(),
     }, now: () => clock.t, storage: () => null });
-    watch = new WatchSession({ id: 'sim-session', now: () => clock.t, perception, media, archive, onInvalidate: () => observe(projection.read().session), ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
+    watch = new ViewingMemory({ id: 'sim-session', now: () => clock.t, perception, media, archive, onInvalidate: () => observe(projection.read().session), ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
 
     const records = [];
     const livePrefix = (anchorMs, startMs, endMs) => [...watch.history, ...watch.segments].filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);

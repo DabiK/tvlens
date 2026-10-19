@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { tick, turns, deferred, until, failure } = require('./helpers/wait.cjs');
 const os = require('node:os');
 const path = require('node:path');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { CodexAnalysisAgent } = require('../adapters/codex-analysis-agent.cjs');
 const {
@@ -32,7 +32,7 @@ function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [], saves = [], reads = [];
   const media = { put: async (id, s) => { files.set(id, s); }, read: async id => { reads.push(id); if (!files.has(id)) throw Error('expired'); return files.get(id); }, remove: async id => { files.delete(id); } };
-  const watch = new WatchSession({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(JSON.parse(JSON.stringify(s))); } }, onInvalidate: () => snapshots.push(watch.snapshot()), ...options });
+  const watch = new ViewingMemory({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(JSON.parse(JSON.stringify(s))); } }, onInvalidate: () => snapshots.push(watch.snapshot()), ...options });
   return { watch, files, media, snapshots, saves, reads, setTime: t => { time = t; },
     add: async i => {
       time = Math.max(time, (i + 1) * 1000);

@@ -3,8 +3,7 @@ const { validateCapturedSegment } = require("./segment-contract.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
-const { WatchSession } = require("../core/session.cjs");
-const { fromArchive, TVLENS_ARCHIVE_INVALID } = require("../core/memory/index.cjs");
+const { ViewingMemory, fromArchive, TVLENS_ARCHIVE_INVALID } = require("../core/memory/index.cjs");
 const { createEventPublisher } = require("../core/shared/events.cjs");
 const { SessionClock } = require("../core/session-clock.cjs");
 const {
@@ -187,7 +186,7 @@ function createSessionRuntime({
     readPublishedView: () => memoryProjection.published().memory,
     hasConfirmedEnd: () => lifecycle.hasConfirmedEnd(),
   });
-  watch = new WatchSession({
+  watch = new ViewingMemory({
     id,
     now: () => sessionClock.now(),
     perception,

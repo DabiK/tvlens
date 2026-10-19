@@ -23,13 +23,23 @@ const DEPENDENCY_ZONES = [
   { pattern: 'runtime/**', layer: 'application', imports: ['runtime/**', 'runtime/memory/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**'] },
   { pattern: 'runtime/memory/**', layer: 'application', context: 'memory',
     imports: ['runtime/memory/**', 'core/memory/**', 'core/shared/**'] },
-  { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**'] },
+  { pattern: 'server/**', layer: 'host', imports: ['server/**', 'core/**', 'core/shared/**', 'core/memory/**', 'adapters/**', 'runtime/**'] },
   { pattern: 'mcp/**', layer: 'host', imports: ['mcp/**', 'core/**', 'core/shared/**'] },
   { pattern: 'app/**', layer: 'host', imports: ['app/**', 'core/**', 'core/shared/**', 'adapters/**', 'runtime/**', 'runtime/memory/**'] },
 ];
 const TEMPORARY_IMPORT_EXCEPTIONS = [
   { name: 'memory-public-latency-summary', source: 'core/memory/index.cjs', target: 'core/latency-trace.cjs',
     reason: 'Le calcul public de latence reste dans son module plat jusqu’à la contraction de la façade de mémoire.' },
+  { name: 'memory-root-perception-context', source: 'core/memory/viewing-memory.cjs', target: 'core/perception-context.cjs',
+    reason: 'Le contexte de perception reste plat ; retirer cette arête quand son module rejoint la Mémoire.' },
+  { name: 'memory-root-latency-summary', source: 'core/memory/viewing-memory.cjs', target: 'core/latency-trace.cjs',
+    reason: 'Le calcul de latence reste plat ; retirer cette arête quand son module rejoint la Mémoire ou le noyau partagé.' },
+  { name: 'memory-root-clip-container', source: 'core/memory/viewing-memory.cjs', target: 'core/clip-container.cjs',
+    reason: 'La lecture du conteneur reste plate ; retirer cette arête quand son module rejoint le noyau partagé.' },
+  { name: 'memory-root-state-publication', source: 'core/memory/viewing-memory.cjs', target: 'core/state-publication.cjs',
+    reason: 'La publication isolée reste plate ; retirer cette arête quand son module rejoint le noyau partagé.' },
+  { name: 'memory-root-passage-events', source: 'core/memory/viewing-memory.cjs', target: 'core/passage-events.cjs',
+    reason: 'Les événements de passage restent plats ; retirer cette arête quand leur module rejoint la Mémoire.' },
 ];
 const GLOBAL_TIME_OPERATIONS = ['Date.now', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'AbortSignal.timeout'];
 // Chaque couple conserve son effectif exact : ni compensation ni exception devenue inutile.
@@ -528,14 +538,17 @@ test('memory perception lanes own their queues and use a generic hold policy', (
   const lanes = inventory().find(module => module.relative === 'core/memory/lanes.cjs');
   assert.ok(lanes, 'the memory context must own perception lanes');
   assert.doesNotMatch(lanes.source, /asking|question|deep-?ask|surveillance|duringask/i, lanes.relative);
-  const session = inventory().find(module => module.relative === 'core/session.cjs');
+  const session = inventory().find(module => module.relative === 'core/memory/viewing-memory.cjs');
+  assert.ok(session, 'the memory context must own the root');
   assert.doesNotMatch(session.source, /this\.(?:queue|visionQueue|audioRunning|visionRunning|visionHeldSince|controller)\b/);
 });
 test('core services do not import the session use case', () => {
+  const rootPath = 'core/memory/viewing-memory.cjs';
+  const publicEntry = 'core/memory/index.cjs';
   for (const { relative, root, imports } of inventory()) {
-    if (root !== 'core' || relative === 'core/session.cjs') continue;
+    if (root !== 'core' || relative === rootPath || relative === publicEntry) continue;
     for (const { target } of imports) {
-      assert.notEqual(target, 'core/session.cjs', `${relative} depends on the session use case`);
+      assert.notEqual(target, rootPath, `${relative} depends on the session use case`);
     }
   }
 });

@@ -117,6 +117,6 @@ module.exports = {};
  * @typedef {{list:(options?:{current?:string|null})=>Promise<SessionSummary[]>,read:(id:string,options?:{current?:string|null})=>Promise<{summary:SessionSummary,manifest:object|null,snapshot:object,chat:object|null,recap:object|null,auto:object|null,surveillance:object|null,inventory:object}>,remove:(id:string)=>Promise<{id:string,freedBytes:number}>,usage:(sessions?:SessionSummary[])=>Promise<{sessions:number,bytes:number,freeBytes:number|null,minFreeBytes:number|null,warnFreeBytes:number|null,state:string}>}} SessionLibraryPort
  * Listing and reading never write. The only deletion is one whole session, named by a strict identifier;
  * a session in memory is stopped and sealed by its host first. Nothing is ever evicted to make room.
- * A reopened session is stopped and read-only until an explicit resume: WatchSession.restore,
+ * A reopened session is stopped and read-only until an explicit resume: ViewingMemory.restore,
  * DeepAsk.restore, LivingRecap.restore and Surveillance.restore are silent (no emission, no write, no provider).
  */

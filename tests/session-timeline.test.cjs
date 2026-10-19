@@ -11,7 +11,7 @@ const {
   sessionTimeline,
   momentDetail,
 } = require("../core/session-timeline.cjs");
-const { WatchSession } = require("../core/session.cjs");
+const { ViewingMemory } = require("../core/memory/index.cjs");
 const { SessionThumbnails } = require("../adapters/session-thumbnails.cjs");
 const { LocalSessionStore } = require("../adapters/local-store.cjs");
 const passage = (id, start, topic, status = "ready") => ({
@@ -107,7 +107,7 @@ test("thumbnail exists before analysis, survives explicit media removal, pause a
     .toBuffer();
   let now = 8000;
   const audio = deferred(), described = deferred();
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: "session",
     now: () => now,
     media,

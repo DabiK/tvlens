@@ -52,9 +52,9 @@ function passage(i, archived) {
   return archived ? { ...base, ...stamps, summary: observation.summary } : { ...base, ...stamps, hasAudio: true, available: true, analysisMs: 9300, metrics };
 }
 function populatedSession(count) {
-  const { WatchSession } = load('core/session.cjs');
+  const { ViewingMemory } = load('core/memory/index.cjs');
   let saved = 0;
-  const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000,
+  const watch = new ViewingMemory({ id: 'bench', now: () => 2000 + count * 8000,
     perception: { transcribe: async () => ({}), observeVisual: async () => ({}) },
     media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} },
     archive: { save: async () => { saved++; } } });

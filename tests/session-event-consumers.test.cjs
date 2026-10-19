@@ -5,10 +5,9 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { MomentIndex } = require('../core/moment-index.cjs');
 const { createEventPublisher } = require('../core/shared/events.cjs');
-const memory = require('../core/memory/index.cjs');
 const { VirtualClock } = require('./helpers/clock.cjs');
 const { deferred, turns } = require('./helpers/wait.cjs');
 
@@ -77,10 +76,13 @@ const block = n => ({
 });
 
 function constructionSpies(t) {
-  const snapshot = t.mock.method(WatchSession.prototype, 'snapshot');
-  const views = Object.fromEntries([
-    'createMemoryView', 'readMemoryPassage', 'readMemoryPassages', 'recentMemoryPassages',
-  ].map(name => [name, t.mock.method(memory, name)]));
+  const snapshot = t.mock.method(ViewingMemory.prototype, 'snapshot');
+  const methods = {
+    createMemoryView: 'memoryView', readMemoryPassage: 'memoryPassage',
+    readMemoryPassages: 'memoryPassages', recentMemoryPassages: 'recentMemoryPassages',
+  };
+  const views = Object.fromEntries(Object.entries(methods)
+    .map(([name, method]) => [name, t.mock.method(ViewingMemory.prototype, method)]));
   return () => ({ snapshot: snapshot.mock.callCount(),
     ...Object.fromEntries(Object.entries(views).map(([name, spy]) => [name, spy.mock.callCount()])) });
 }
@@ -121,8 +123,8 @@ test('one passage with held analyses keeps cadence opportunities and reports con
 });
 
 test('event consumers consult memory even when host snapshots omit passages', async t => {
-  const snapshot = WatchSession.prototype.snapshot;
-  t.mock.method(WatchSession.prototype, 'snapshot', function () {
+  const snapshot = ViewingMemory.prototype.snapshot;
+  t.mock.method(ViewingMemory.prototype, 'snapshot', function () {
     return { ...snapshot.call(this), history: [], segments: [], coverage: { passages: 0 } };
   });
   const f = await fixture(t);

@@ -1,8 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {SessionClock}=require('../core/session-clock.cjs');const {WatchSession}=require('../core/session.cjs');
+const {SessionClock}=require('../core/session-clock.cjs');const {ViewingMemory}=require('../core/memory/index.cjs');
 const {CodexSessionAgent,streamedAnswer}=require('../adapters/codex-session-agent.cjs');
 test('pause freezes observation time; resume keeps media IDs, memory, counters and chronology',async()=>{
- let wall=0;const clock=new SessionClock(()=>wall);const watch=new WatchSession({id:'s',now:()=>clock.now(),perception:{transcribe:async()=>({observation:{}}),observeVisual:async()=>({observation:{summary:'Remember me'},cost:0})},media:{put:async()=>{},read:async()=>({})},archive:{save:async()=>{}}});
+ let wall=0;const clock=new SessionClock(()=>wall);const watch=new ViewingMemory({id:'s',now:()=>clock.now(),perception:{transcribe:async()=>({observation:{}}),observeVisual:async()=>({observation:{summary:'Remember me'},cost:0})},media:{put:async()=>{},read:async()=>({})},archive:{save:async()=>{}}});
  wall=1000;await watch.ingest({startMs:0,endMs:1000,frames:[]});await new Promise(r=>setImmediate(r));clock.pause();await watch.stop();wall=90000;
  assert.equal(watch.snapshot().elapsedMs,1000);assert.equal(watch.segments[0].observation.summary,'Remember me');clock.resume();await watch.resume();wall+=1000;await watch.ingest({startMs:1000,endMs:2000,frames:[]});assert.equal(watch.id,'s');assert.deepEqual(watch.segments.map(s=>s.id),['moment-1','moment-2']);assert.equal(watch.now(),2000);
 });

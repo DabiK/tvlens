@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { passageLatency, latencySummary } = require('../core/latency-trace.cjs');
 const { tick, deferred } = require('./helpers/wait.cjs');
 // One gate per passage: the test decides when each lane call or media write returns.
@@ -9,7 +9,7 @@ function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [];
   const media = { put: async (id, s) => files.set(id, s), read: async id => { if (!files.has(id)) throw Error('expired'); return files.get(id); }, remove: async id => files.delete(id) };
-  const watch = new WatchSession({ id: 's', now: () => time, perception, media, archive: { save: async () => {} }, onInvalidate: () => snapshots.push(watch.snapshot()), ...options });
+  const watch = new ViewingMemory({ id: 's', now: () => time, perception, media, archive: { save: async () => {} }, onInvalidate: () => snapshots.push(watch.snapshot()), ...options });
   const block = (i, extra) => ({ startMs: i * 1000, endMs: (i + 1) * 1000, audio: new Uint8Array([i]), frames: [], ...extra });
   return { watch, files, media, snapshots, block, setTime: t => { time = t; },
     add: async (i, extra) => { time = Math.max(time, (i + 1) * 1000); const id = await watch.ingest(block(i, extra)); await tick(); return id; } };

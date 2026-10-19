@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const sharp = require('sharp');
 const { holdsMedia } = require('../core/clip-container.cjs');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { inspectionStrategy } = require('../adapters/inspection-strategies.cjs');
@@ -173,7 +173,7 @@ test('a passage recorded without a frame is kept, analysed and never announced a
 
 test('with speech and images analysed apart, the unreadable passage still gets its images described', async () => {
   let time = 0; const files = new Map(), described = [];
-  const watch = new WatchSession({ id: 's', now: () => time, media: { put: async (id, s) => files.set(id, s), read: async id => files.get(id), remove: async id => files.delete(id) }, archive: { save: async () => {} },
+  const watch = new ViewingMemory({ id: 's', now: () => time, media: { put: async (id, s) => files.set(id, s), read: async id => files.get(id), remove: async id => files.delete(id) }, archive: { save: async () => {} },
     perception: { transcribe: async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 1 }), observeVisual: async s => { described.push(s.id); return { observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 1 }; } } });
   time = 2000; await watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,AAAA' }] });
   await settle(watch);
@@ -182,7 +182,7 @@ test('with speech and images analysed apart, the unreadable passage still gets i
   assert.equal(files.has('moment-1'), true);
   // A write that is refused leaves no passage, and nothing counted.
   let refuse = true;
-  const strict = new WatchSession({ id: 's2', now: () => 2000, media: { put: async () => { if (refuse) throw new Error('disque plein'); }, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} },
+  const strict = new ViewingMemory({ id: 's2', now: () => 2000, media: { put: async () => { if (refuse) throw new Error('disque plein'); }, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} },
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles.' }, elapsedMs: 1 }), observeVisual: async () => ({ observation: { summary: 'Images.' }, elapsedMs: 1 }) } });
   await assert.rejects(strict.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [] }), /disque plein/);
   assert.deepEqual([strict.segments.length, strict.snapshot().coverage.videoUnreadable], [0, undefined]);

@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { VirtualClock } = require('./helpers/clock.cjs');
 const { until, deferred, turns } = require('./helpers/wait.cjs');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { DeepAsk, QUESTION_TIMEOUT_MS, QUESTION_PROGRESS_MS, limitLabel } = require('../core/deep-ask.cjs');
 const { createConversationRuntime, hasPendingQuestion } = require('../runtime/conversation-runtime.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
@@ -34,7 +34,7 @@ function stage(clock, config, answers) {
     transcribe: async s => { await sleep(TRANSCRIBE_MS); return { observation: { transcript: `Paroles ${s.id}` }, elapsedMs: TRANSCRIBE_MS }; },
     observeVisual: async s => { await sleep(VISION_MS); return { observation: { summary: `Images ${s.id}`, visual: 'Plan fixe' }, elapsedMs: VISION_MS }; } };
   // Seule la politique des questions peut retenir la vision dans ce scénario.
-  const watch = new WatchSession({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, visionDuringAsk: config.visionDuringAsk === true });
+  const watch = new ViewingMemory({ id: 'session', now: () => clock.t, perception, media, archive: { save: async () => {} }, visionDuringAsk: config.visionDuringAsk === true });
   const agent = scriptedAgent(answers);
   const memory = { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) };
   const { deep } = createConversationRuntime({ agent, config, selectedModels: {},

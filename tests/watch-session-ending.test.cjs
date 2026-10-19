@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { tick, deferred } = require('./helpers/wait.cjs');
 
 function fixture() {
@@ -13,7 +13,7 @@ function fixture() {
     return { observation: { summary: 'Un plateau.', transcript: 'Bonjour.' } };
   };
   const perception = { transcribe: provider('transcribe'), observeVisual: provider('observeVisual') };
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: 'session',
     now: () => 1000,
     perception,

@@ -274,13 +274,13 @@ async function benchLedger() {
 
 // Cost of the state when every passage stays in `segments` instead of moving to `history`.
 function benchAllLive() {
-  const { WatchSession } = load('core/session.cjs');
+  const { ViewingMemory } = load('core/memory/index.cjs');
   const { sessionTimeline } = load('core/session-timeline.cjs');
   const { VideoTools, consultationOf } = load('core/video-tools.cjs');
   const time = (fn, repeats = 9) => { const s = []; for (let i = 0; i < repeats; i++) { const t = performance.now(); fn(); s.push(performance.now() - t); } s.sort((a, b) => a - b); return round(s[Math.floor(s.length / 2)]); };
   const rows = [];
   for (const count of [450, 900]) for (const mode of ['historical-pruned', 'tout-en-segments']) {
-    const watch = new WatchSession({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
+    const watch = new ViewingMemory({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
     const live = mode === 'tout-en-segments' ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
     for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
     const snapshot = watch.snapshot(), view = watch.memoryView();

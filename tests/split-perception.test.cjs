@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { sessionTimeline } = require('../core/session-timeline.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
@@ -8,7 +8,7 @@ const { tick, deferred, until } = require('./helpers/wait.cjs');
 function fixture(perception, options = {}) {
   let time = 0;
   const files = new Map(), snapshots = [];
-  const watch = new WatchSession({ id: 's', now: () => time, perception,
+  const watch = new ViewingMemory({ id: 's', now: () => time, perception,
     media: { put: async (id, s) => files.set(id, s), read: async id => { if (!files.has(id)) throw Error('expired'); return files.get(id); }, remove: async id => files.delete(id) },
     archive: { save: async () => {} }, ...options, onInvalidate: () => (options.onChange || (s => snapshots.push(s)))(watch.snapshot()) });
   return { watch, snapshots, setTime: t => time = t,

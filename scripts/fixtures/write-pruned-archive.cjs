@@ -1,6 +1,6 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const { WatchSession } = require("../../core/session.cjs");
+const { ViewingMemory } = require("../../core/memory/index.cjs");
 const { createEventPublisher } = require("../../core/shared/events.cjs");
 const { LocalSessionStore } = require("../../adapters/local-store.cjs");
 const { SessionThumbnails } = require("../../adapters/session-thumbnails.cjs");
@@ -12,7 +12,7 @@ const EPOCH_MS = 1792195200000;
 
 async function main(destination) {
   if (!destination) throw new Error("Indique un nouveau dossier de sortie.");
-  if (typeof WatchSession.prototype.prune !== "function") {
+  if (typeof ViewingMemory.prototype.prune !== "function") {
     throw Object.assign(new Error("Ce générateur exige l’élagage historique. Utilise le code du commit producteur 5e3f479."), {
       code: "TVLENS_HISTORICAL_PRUNING_REQUIRED",
     });
@@ -31,7 +31,7 @@ async function main(destination) {
     memory: { view: () => watch.memoryView(), passages: ids => watch.memoryPassages(ids) },
   });
   // Le témoin figé provient du commit 5e3f479 : sa fenêtre exige le cœur historique.
-  const watch = new WatchSession({
+  const watch = new ViewingMemory({
     id: ID, now: () => clock, retentionMs: WINDOW_MS, media: store, archive: store, thumbnails,
     onEvents: pending => pending.forEach(event => events.publish(event)),
     perception: {

@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
 const sharp = require('sharp');
-const { WatchSession } = require('../core/session.cjs');
+const { ViewingMemory } = require('../core/memory/index.cjs');
 const { SessionClock } = require('../core/session-clock.cjs');
 const { VideoTools, consultationOf } = require('../core/video-tools.cjs');
 const { createSessionRuntime, openArchivedSession, INDEX_OBSERVE_TAIL, MANIFEST_EVERY_MS } = require('../runtime/session-runtime.cjs');
@@ -185,7 +185,7 @@ test('a legacy retention option cannot remove captured bytes across long advance
   let time = 1000;
   const opened = [];
   const make = () => {
-    const watch = new WatchSession({
+    const watch = new ViewingMemory({
       id: 'durable', now: () => time, retentionMs: 1000, media: store, archive: store,
       perception: {
         transcribe: async () => ({ observation: { transcript: 'Paroles conservées' } }),
@@ -354,7 +354,7 @@ test('reopening settles what was in flight, trusts the disk for availability, nu
   const media = { put: async (id, s) => { files.set(id, s); }, read: async id => files.get(id), remove: async id => { removed.push(id); files.delete(id); } };
   const perception = { transcribe: async s => { await audio(s.id).promise; return { observation: { transcript: `Paroles ${s.id}` } }; },
     observeVisual: async s => { await vision(s.id).promise; return { observation: { summary: `Images ${s.id}` } }; } };
-  const make = options => new WatchSession({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(s); } }, ...options });
+  const make = options => new ViewingMemory({ id: 's', now: () => time, perception, media, archive: { save: async s => { saves.push(s); } }, ...options });
   const block = i => ({ startMs: i * 1000, endMs: (i + 1) * 1000, audio: new Uint8Array([i]), frames: [] });
   const live = make();
   for (const id of ['moment-1', 'moment-2']) audio(id).resolve();
@@ -567,7 +567,7 @@ test('a core session closed without waiting still saves a passage that lands aft
   const gate = deferred(), saves = [], files = new Map();
   // Only the second write is slow: the first passage is stored, analysed and saved as usual.
   const media = { put: async (id, input) => { if (id === 'moment-2') await gate.promise; files.set(id, input); }, read: async id => files.get(id), remove: async () => {} };
-  const watch = new WatchSession({ id: 's', now: () => 2000, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) }, media, archive: { save: async state => { saves.push(state); } } });
+  const watch = new ViewingMemory({ id: 's', now: () => 2000, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) }, media, archive: { save: async state => { saves.push(state); } } });
   const block = i => ({ startMs: i * 1000, endMs: (i + 1) * 1000, frames: [], audio: null });
   assert.equal(await watch.ingest(block(0)), 'moment-1'); await settle(watch);
   const writing = watch.ingest(block(1)); await tick();
@@ -666,7 +666,7 @@ test('a saved state that parses but has another shape is an unreadable archive, 
   const shapes = [id => ({ ...base(id), segments: [null] }), id => ({ ...base(id), history: 7 }), id => ({ ...base(id), questions: 'aucune' }), id => ({ ...base(id), questions: [null] }),
     id => ({ ...base(id), segments: [{ id: '../moment-1', startMs: 0, endMs: 8000 }] }), id => ({ ...base(id), segments: [{ id: 'moment-1', startMs: '0' }] }), id => ({ ...base(id), history: [{ summary: 'Sans identifiant' }] }), id => ({ ...base(id), segments: {} })];
   const save = async shape => { const id = randomUUID(), dir = path.join(f.sessionsRoot, id); await fs.mkdir(dir, { recursive: true }); await fs.writeFile(path.join(dir, 'session.json'), JSON.stringify(shape(id))); return id; };
-  const core = () => new WatchSession({ id: 's', now: () => 0, perception: {}, media: {}, archive: { save: async () => {} } });
+  const core = () => new ViewingMemory({ id: 's', now: () => 0, perception: {}, media: {}, archive: { save: async () => {} } });
   const inventory = { ids: new Set(), legacy: new Set(), partial: [], thumbs: new Set(), mediaBytes: 0, thumbBytes: 0, bytes: 0 };
   for (const shape of shapes) {
     const id = await save(shape), label = JSON.stringify(shape('s'));
@@ -707,7 +707,7 @@ test('a saved state of another format or version is refused by its code wherever
   const f = await fixture(t), library = new SessionLibrary({ root: f.sessionsRoot });
   const passage = { id: 'moment-1', startMs: 0, endMs: 8000, status: 'ready', available: true, observation: { summary: 'Résumé' } };
   const model = id => ({ id, elapsedMs: 8000, retention: 'until-deleted', history: [], questions: [], segments: [{ ...passage }] });
-  const core = () => new WatchSession({ id: 's', now: () => 0, perception: {}, media: {}, archive: { save: async () => {} } });
+  const core = () => new ViewingMemory({ id: 's', now: () => 0, perception: {}, media: {}, archive: { save: async () => {} } });
   const inventory = { ids: new Set(), legacy: new Set(), partial: [], thumbs: new Set(), mediaBytes: 0, thumbBytes: 0, bytes: 0 };
   const code = { code: 'TVLENS_ARCHIVE_INVALID' }, refusal = { code: 'invalid-archive', status: 400 };
   const envelopes = [
@@ -761,7 +761,7 @@ test('a passage that lands while its session is being ended is kept and saved, b
 
 test('a resumed historical archive refuses replayed blocks and continues numbering after its last passage', async () => {
   let time = 0; const stored = [];
-  const watch = new WatchSession({ id: 's', now: () => time, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) },
+  const watch = new ViewingMemory({ id: 's', now: () => time, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) },
     media: { put: async id => { stored.push(id); }, read: async () => ({ frames: [] }), remove: async () => {} }, archive: { save: async () => {} } });
   const block = { startMs: 0, endMs: 1000, frames: [], audio: null };
   watch.restore({ id: 's', retention: 'rolling', retentionMs: 1000, segments: [], history: [{
@@ -813,7 +813,7 @@ test('a save the disk refused stays said by the session until a save lands: an a
   let time = 0, refuse = true; const files = new Map(), states = [], described = deferred();
   // Split perception, as in production: each lane publishes before it saves. The description is held until the
   // first saves have been refused.
-  const watch = new WatchSession({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
+  const watch = new ViewingMemory({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles' } }), observeVisual: async () => { await described.promise; return { observation: { summary: 'Images', visual: 'Image' } }; } },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },
     archive: { save: async () => { if (refuse) throw Object.assign(new Error('EIO: i/o error, write'), { code: 'EIO' }); } } });
@@ -1125,7 +1125,7 @@ test('a state waiting for its turn on disk keeps its captured passages while a l
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const store = LocalSessionStore.forSession(dir), saved = async name => JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'));
   let time = 0;
-  const watch = new WatchSession({ id: 's', now: () => time, media: store, archive: store, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) } });
+  const watch = new ViewingMemory({ id: 's', now: () => time, media: store, archive: store, perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => ({ observation: { summary: 'Résumé' } }) } });
   time = 1000; await watch.ingest({ startMs: 0, endMs: 1000, clip: Buffer.from('clip'), frames: [], audio: null }); await settle(watch); await store.serial;
   const held = disk(t, 'session.json');
   held.hold();
@@ -1154,7 +1154,7 @@ test('a state is published before the disk has taken it: an analysed passage, a 
   let time = 0, gate = null, refuse = false, describing = null; const files = new Map(), states = [];
   const hold = () => { gate = deferred(); }, release = () => { const held = gate; gate = null; held?.resolve(); };
   // La transcription porte la synchronisation : les passages suivants attendent encore leur analyse.
-  const watch = new WatchSession({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
+  const watch = new ViewingMemory({ id: 's', now: () => time, onInvalidate: () => states.push(watch.snapshot()),
     perception: { transcribe: async segment => { await describing?.promise; return { observation: { transcript: 'Passage ' + segment.id } }; },
       observeVisual: async segment => ({ observation: { summary: 'Passage ' + segment.id } }) },
     media: { put: async (id, input) => { files.set(id, input); }, read: async id => files.get(id), remove: async () => {} },

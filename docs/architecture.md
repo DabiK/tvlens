@@ -36,7 +36,8 @@ Ses chargements CommonJS sont relatifs, internes au dossier et sous garde Node e
 
 La garde interdit aussi aux compositions `.cjs` des hôtes et du runtime d’écrire directement
 `watch.ending`, `accepting`, `readOnly`, `closed` ou `asking`. Le domaine porte ces transitions.
-Les services du cœur n’importent pas `core/session.cjs` ; `Surveillance` ne dépend ni de `DeepAsk`
+Les services du cœur accèdent à la racine `core/memory/viewing-memory.cjs` par l’entrée publique
+de Mémoire ; seul son index l’importe directement. `Surveillance` ne dépend ni de `DeepAsk`
 ni des indicateurs de planification du chat.
 
 **Temps et modules purs.** `CORE_TIME_STOCK` fige par fichier et opération les accès globaux au
@@ -55,7 +56,8 @@ Les deux hôtes composent `runtime/session-runtime.cjs`, `conversation-runtime.c
 `surveillance-runtime.cjs`. Le premier construit les objets de session et expose leur façade ;
 les choix de fournisseur et les transitions ont leurs propriétaires propres.
 
-`core/memory/index.cjs` publie le contrat de consultation de Mémoire. La façade de session expose
+`core/memory/index.cjs` expose la racine `ViewingMemory` et le contrat de consultation de Mémoire.
+La façade de session expose
 `memory.view()`, `memory.passage(id)` et `memory.recentPassages(limit)` ; ces lectures détachées
 ne rappellent pas le snapshot. `memoryMedia.read(id)` et `memoryMedia.lease(ids)` donnent séparément
 accès aux images et au son conservés, avec baux, sans chemin local ni mutateur de stockage.
@@ -63,7 +65,7 @@ Les lecteurs actuels conservent leur snapshot pendant leur migration progressive
 `toArchive` et `fromArchive`, seuls à écrire et à décoder le format versionné de `session.json`.
 
 `core/memory/lifecycle-state.cjs` porte les transitions pures d'une valeur immuable à quatre axes.
-`WatchSession` en possède la référence privée et garde les commandes, leurs effets et leurs attentes ;
+`ViewingMemory` en possède la référence privée et garde les commandes, leurs effets et leurs attentes ;
 les compositions lisent toujours `closed`, `ending`, `accepting` et `readOnly` par des getters.
 
 `core/memory/topic-summary.cjs` porte les résumés cumulatifs, accessibles par l'index public.
@@ -122,10 +124,10 @@ Sur Mac, `RollingRecorder` produit un premier segment de 2 secondes puis des seg
 avec clip WebM, images JPEG horodatées et audio WAV. Un checkpoint ferme le segment pour une action
 ciblée. Sur LG, `tv/capture.py` envoie images et audio au serveur ; `RemoteMedia` prépare les fichiers.
 Le WebM reconstruit à partir d’images fixes n’est pas une vidéo native. Les deux captures rejoignent
-`WatchSession` après validation par leur hôte et stockage par `LocalSessionStore`.
+`ViewingMemory` après validation par leur hôte et stockage par `LocalSessionStore`.
 
 **Deux voies.** `core/memory/lanes.cjs` possède les deux FIFO privées, leurs appels et une retenue
-vision générique. `WatchSession` traduit encore l'activité des questions et les noms historiques,
+vision générique. `ViewingMemory` traduit encore l'activité des questions et les noms historiques,
 puis publie les versions et sauvegarde. Snapshot et consultation lisent les mêmes comptes détachés.
 Chaque voie possède un appel actif et une FIFO de références, sans médias bruts :
 
@@ -155,7 +157,7 @@ L’identité composée de l’agent accompagne les métriques et les traces, m�
 `DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
 publie progression et annulation ciblée, et applique au traitement un plafond de cinq minutes,
 abaissable par `TVLENS_QUESTION_TIMEOUT_MS`. `job.timeoutMs` et `job.availability` décrivent le
-plafond et la disponibilité figée. `WatchSession.setQuestionPending` possède le fait `asking`.
+plafond et la disponibilité figée. `ViewingMemory.setQuestionPending` possède le fait `asking`.
 La transcription continue ; la vision continue avec le réglage hôte par défaut
 `TVLENS_VISION_DURING_ASK=1`. Avec `0`, les questions retiennent la vision en attente et les pertes
 sont classées `asking` ou `backlog` selon la cause. La surveillance n’utilise pas cette file.
@@ -172,7 +174,7 @@ Ouvrir puis refermer une archive ne réanalyse ni ne réécrit son contenu.
 
 ## Mémoire, recherche et surveillance
 
-`WatchSession` enregistre `PassageReceived` après ajout du passage et `AdmissionSuspended` après
+`ViewingMemory` enregistre `PassageReceived` après ajout du passage et `AdmissionSuspended` après
 fermeture de l'admission pour disque plein. `PassageUpdated` annonce les enrichissements, disponibilités
 et miniatures ; `PassageLost` nomme la voie et la cause de chaque perte comptée. Ces changements font
 avancer la révision du passage ; les faits acquis dans une même transition partagent cette version.
@@ -461,3 +463,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0062](adr/0062-les-passages-declares-son-seul-conservent-leur-absence-d-images.md) :
   Les passages déclarés son seul terminent après transcription et conservent leur absence d’images et sa perte à la réouverture.
+
+- [ADR 0063](adr/0063-la-racine-de-memoire-se-nomme-viewing-memory-et-se-construit-par-son-entree-publique.md) :
+  La racine se nomme ViewingMemory dans la Mémoire et se construit par son entrée publique ;
+  ses dépendances encore plates restent contrôlées par des exceptions exactes.

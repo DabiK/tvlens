@@ -7,7 +7,7 @@ import { formatBytes, formatClock, formatDay, formatDuration, formatMinutes, plu
  */
 const finite = value => (Number.isFinite(value) ? value : null);
 
-/** Why the video of a passage cannot be replayed, in the viewer's words (mediaReason of core/session.cjs). */
+/** Why the video of a passage cannot be replayed, in the viewer's words (mediaReason of the memory public view). */
 export function mediaNote(passage) {
   if (passage?.hasImages === false || passage?.mediaReason === 'images-absent')
     return { short: 'Son seul', long: 'Son seul · image indisponible. Les paroles restent consultables si elles ont été transcrites.' };
