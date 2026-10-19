@@ -98,11 +98,8 @@ vérifie par les commandes des critères 1 à 4.
 
 ## Hypothèses bloquantes
 
-Décision attendue du propriétaire : le `README.md` peut-il de nouveau changer ? Le 16/10, le propriétaire a voulu
-que le README de présentation reste celui de `main` pendant le hackathon ; la décision du 17/10 ci-dessous en
-tirait que le README ne change pas. Depuis le 18/10 (`e927cd7`), `main` porte le README de la branche, avec les
-trois passages périmés des lignes 89, 111 et 178. Si oui, ils renvoient au document unique ; si non, le README
-reste tel quel et ces passages restent faux (critère 4).
+Aucune décision n'est attendue. Décision du propriétaire, le 19/10 : « Oui, update le README au besoin ». Les
+trois passages périmés du `README.md` (lignes 89, 111 et 178 au 19/10) renvoient au document unique (critère 4).
 
 Faits établis, que la session ne revérifie pas : aucune commande n'est lancée sur la TV ou le VPS.
 
@@ -115,7 +112,8 @@ Faits établis, que la session ne revérifie pas : aucune commande n'est lancée
 - Mise à jour du 19/10, d'après les journaux de T233, T275 et T289 :
   - VPS : release figée `recette-t233-20261018-e2696c2` (tag `recette-t233`, `e2696c2`), installée le 18/10 ;
     fuseau `TZ=Europe/Paris` posé le même jour par le drop-in `tvlens.service.d/timezone.conf`. Serveur inchangé
-    depuis (T275, T289). Les journaux ne nomment pas le drop-in qui choisit cette release.
+    depuis (T275, T289). La release est choisie par le drop-in `tvlens.service.d/night-release.conf`
+    (scripts de recette T233 de l'orchestrateur).
   - TV, page `org.tvlens.sidebarprobe` et compagnon (`controller.py`, `capture.py`, `transport.py`) : déployés
     depuis `recette-t233` le 18/10, écrans de surveillance et de sessions compris ; puis `tv/capture.py`,
     `tv/controller.py` et `tv/app/sessions-view.js` depuis `recette-t289` (`e26ac28`) le 19/10. Fichier
@@ -134,3 +132,4 @@ Faits établis, que la session ne revérifie pas : aucune commande n'est lancée
   (111 et 178) ; `docs/interface.md:72` et `docs/vps-deployment.md:5` affirment aussi un état installé : ajoutés.
   Le critère sur `tests/documentation-links.test.cjs`, qui n'existe pas, passe à `tests/documentation-index.test.cjs`.
   Le sort du README redevient une question pour le propriétaire depuis `e927cd7`.
+- 19/10, propriétaire : le README peut changer ; drop-in de la release du VPS précisé par l'orchestrateur.
