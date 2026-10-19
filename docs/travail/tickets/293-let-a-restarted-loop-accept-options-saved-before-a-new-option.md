@@ -2,7 +2,7 @@
 id: T293
 titre: Let a restarted loop accept options saved before a new option existed
 statut: a-faire
-bloque_par:
+bloque_par: T301
 adr: non
 installe: non
 harnais: oui
@@ -55,3 +55,4 @@ lieu de s'arrêter : une option absente des réglages transmis par l'ancienne in
 Aucune décision n'est attendue. Le propriétaire a autorisé ce ticket de harnais le 19/10 (« Oui pour les points 1 et 2 »).
 
 ## Journal
+- 19/10, propriétaire : attend le chantier « son seul » (T297 à T301), traité en premier.

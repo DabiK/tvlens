@@ -2,7 +2,7 @@
 id: T220
 titre: Move the memory root to core/memory/viewing-memory.cjs as ViewingMemory
 statut: a-faire
-bloque_par: T225, T223, T216, T217, T218
+bloque_par: T225, T223, T216, T217, T218, T301
 adr: oui
 installe: non
 harnais: non
@@ -88,3 +88,4 @@ pas une permission de nettoyer sans limite dans ce déplacement. La dépendance 
 second lot de retrait de rétention et la décision déjà reçue.
 
 ## Journal
+- 19/10, propriétaire : attend le chantier « son seul » (T297 à T301), traité en premier.
