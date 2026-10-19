@@ -25,6 +25,7 @@ const step = (name, status, detail = "") => steps.push({ name, status, detail })
 // Durée maximale d'une suite de tests. Sans elle, un fichier de test qui ne se termine pas bloque le contrôle,
 // donc la boucle, sans fin et sans message.
 const TEST_BUDGET_MS = Number(process.env.TVLENS_TEST_BUDGET_MS) || 20 * 60 * 1000;
+const JS_FAILURE_DETAIL_MAX_LINES = 120;
 
 function run(command, commandArgs, budgetMs = 0) {
   const options = { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 };
@@ -165,6 +166,15 @@ function ratchet() {
   step("cliquet", "ok", improvements.length ? "Mesures améliorées : " + improvements.map(line).join(", ") : "");
 }
 
+function jsFailureDetail(output, summary) {
+  const start = output.search(/^✖ failing tests:/m);
+  if (start === -1) return summary;
+  const lines = (summary + "\n\n" + output.slice(start).trimEnd()).split("\n");
+  if (lines.length <= JS_FAILURE_DETAIL_MAX_LINES) return lines.join("\n");
+  const notice = `… Détail tronqué (limite de ${JS_FAILURE_DETAIL_MAX_LINES} lignes).`;
+  return [...lines.slice(0, JS_FAILURE_DETAIL_MAX_LINES - 1), notice].join("\n");
+}
+
 function jsTests(files) {
   const all = fs.existsSync(path.join(root, "tests"))
     ? fs.readdirSync(path.join(root, "tests")).filter((f) => f.endsWith(".test.cjs")).map((f) => "tests/" + f)
@@ -174,7 +184,9 @@ function jsTests(files) {
   // Séquentiel : sous charge, les fichiers lancés en parallèle se perturbent (échecs intermittents déjà observés).
   const result = run(process.execPath, ["--test", "--test-concurrency=1", ...targets], TEST_BUDGET_MS);
   const summary = result.out.split("\n").filter((l) => /^ℹ (tests|pass|fail)|^✖/.test(l)).slice(0, 40).join("\n");
-  const detail = result.timedOut ? overBudget("un fichier de test") + "\n" + tail(result.out, 15) : summary;
+  let detail = summary;
+  if (result.timedOut) detail = overBudget("un fichier de test") + "\n" + tail(result.out, 15);
+  else if (result.code !== 0) detail = jsFailureDetail(result.out, summary);
   step(`tests JS (${targets.length} fichier(s))`, result.code === 0 ? "ok" : "ko", detail);
 }
 

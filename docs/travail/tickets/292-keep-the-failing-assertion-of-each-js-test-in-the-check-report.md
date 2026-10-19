@@ -1,7 +1,7 @@
 ---
 id: T292
 titre: Keep the failing assertion of each JS test in the check report
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -62,3 +62,42 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, orchestrateur : passe juste après T224, avant le reste de la phase Mémoire.
+- 19/10, Codex — exploration : règles, skill, contrôle, tests et ADR du harnais lus ; le filtre de
+  `jsTests` supprime les blocs d'assertion. Aucun écart prévu (`.harness-state/tickets/T292/ecarts.md`).
+- 19/10, Codex — assertions : `node --test --test-name-pattern='retains every failing assertion'
+  tests/quality-check.test.cjs` : 4 rouges observés sur l'absence du fichier et de la ligne d'assertion.
+  Après conservation du bloc Node, `node --test --test-name-pattern='retains every failing assertion|green check keeps'
+  tests/quality-check.test.cjs` : 6 verts (texte/JSON, complet/modifiés, sortie verte inchangée).
+- 19/10, Codex — volume : `node --test --test-name-pattern='bounds many failing assertions'
+  tests/quality-check.test.cjs` : 2 rouges sur 1 090 lignes au lieu de 120, puis 2 verts avec une limite
+  nommée, coupe signalée comprise. Une première fixture à 200 échecs dépassait la sortie récupérée par
+  le processus ; ramenée à 50 pour observer le rouge sur l'assertion de volume. Sorties conservées dans
+  `.harness-state/tickets/T292/` ; documentation du rapport ajoutée aux standards.
+- 19/10, Codex — vérifications : `node --test tests/quality-check.test.cjs` : 49/49 verts, arrêt sur
+  délai dépassé compris ; `node scripts/check.mjs --changed` : vert (règles, format, lint, gel,
+  cliquet et 49 tests). Journaux `quality-check.log` et `check-changed.log` dans le dossier d'état.
+- 19/10, Codex — contrôle final : `node scripts/check.mjs` : vert, 2 973 tests JS sur 153 fichiers et
+  54 tests Python ; règles, format, lint, gel et cliquet verts (`check-full.log`). Verdict `TERMINÉ`
+  écrit dans le dossier d'état ; relecture et intégration laissées à la boucle, sans commit ni push.
+- 19/10, Codex — reprise après relecture 1 : constat mineur accepté, paragraphe hors périmètre retiré
+  de `docs/standards.md`, désormais identique à HEAD. Avant correction documentaire,
+  `node --test tests/quality-check.test.cjs` : 49/49 verts (`correction-1-quality-check.log`).
+  Aucun comportement ni test modifié, aucun écart ni contestation.
+- 19/10, Codex — vérification de correction : `git diff --exit-code -- docs/standards.md` et
+  `git diff --check` : codes 0 ; `node scripts/check.mjs --changed` : vert, 49 tests JS ;
+  `node scripts/check.mjs` : vert, 2 973 tests JS et 54 tests Python. Preuves dans
+  `correction-1-check-changed.log` et `correction-1-check-full.log`. Nouveau verdict `TERMINÉ`,
+  sans commit ni push ; relecture et intégration laissées à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T292/relecture-2.md : 2. `scripts/check.mjs:229-239`, rapport coupé vers 64 Ko (hors périmètre) : toujours une réserve
+
+  - **Ce qui ne va pas.** Le constat tient toujours :
+    - `console.log` est suivi d'un `process.exit` immédiat (ligne 239) ;
+    - les lignes `actual:` et `expected:` ne sont pas bornées en largeur ;
+    - en sortie par tube, plusieurs échecs sur de longues valeurs peuvent couper la sortie, et `--json` devient alors illisible.
+  - **Pourquoi hors périmètre.** La correction ne touche pas ce code. Le ticket ne borne le volume qu'en lignes et ne demande pas de modifier la sortie du script.
+  - **Ce qui est attendu.** Un ticket de suite, qui fait l'une de ces deux choses :
+    - borner aussi le détail en caractères ;
+    - remplacer `process.exit` par `process.exitCode`.

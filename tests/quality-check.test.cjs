@@ -11,6 +11,100 @@ const testSource = (count) => "const { test } = require('node:test');\n" +
   Array.from({ length: count }, (_, index) => `test('case ${index}', () => {});\n`).join("");
 
 for (const mode of [[], ["--changed"]]) {
+  test(`the ${mode.length ? "changed" : "full"} green check keeps its existing output`, (t) => {
+    const repo = harnessRepo();
+    t.after(repo.cleanup);
+    repo.write("tests/sample.test.cjs", testSource(2));
+    const text = repo.node("scripts/check.mjs", mode);
+    assert.equal(text.code, 0, text.out);
+    assert.equal(text.out, [
+      "✔ règles par fichier",
+      "– format : non lancé (Prettier n'est pas installé)",
+      "– lint : non lancé (ESLint n'est pas installé ou pas configuré)",
+      "✔ gel du lint",
+      "– cliquet : non lancé (aucun plancher (node scripts/quality/ratchet.mjs --init))",
+      "✔ tests JS (1 fichier(s))",
+      "    ℹ tests 2",
+      "    ℹ pass 2",
+      "    ℹ fail 0",
+      ...(mode.length ? [] : ["– tests Python : non lancé (aucun test)"]),
+      "check : vert",
+      "",
+    ].join("\n"));
+    const json = repo.node("scripts/check.mjs", [...mode, "--json"]);
+    assert.equal(json.code, 0, json.out);
+    const report = JSON.parse(json.out);
+    assert.equal(report.ok, true);
+    assert.deepEqual(report.steps.find((step) => step.name.startsWith("tests JS")), {
+      name: "tests JS (1 fichier(s))", status: "ok", detail: "ℹ tests 2\nℹ pass 2\nℹ fail 0",
+    });
+  });
+}
+
+for (const mode of [[], ["--changed"]]) {
+  for (const json of [false, true]) {
+    const label = `${mode.length ? "changed" : "full"} ${json ? "JSON" : "text"}`;
+    test(`the ${label} check retains every failing assertion with its location and values`, (t) => {
+      const repo = harnessRepo();
+      t.after(repo.cleanup);
+      repo.write("tests/assertion.test.cjs", [
+        "const { test } = require('node:test');",
+        "const assert = require('node:assert/strict');",
+        "test('compares numbers', () => {",
+        "  assert.equal(1, 2);",
+        "});",
+        "test('explains another comparison', () => {",
+        "  assert.equal(3, 4, 'the second comparison failed');",
+        "});",
+      ].join("\n") + "\n");
+      const result = repo.node("scripts/check.mjs", [...mode, ...(json ? ["--json"] : [])]);
+      assert.equal(result.code, 1, result.out);
+      const report = json ? JSON.parse(result.out) : null;
+      if (json) assert.equal(report.ok, false);
+      const step = report?.steps.find((entry) => entry.name.startsWith("tests JS"));
+      if (json) assert.equal(step.status, "ko");
+      const detail = json ? step.detail : result.out;
+      assert.match(detail, /compares numbers/);
+      assert.match(detail, /explains another comparison/);
+      assert.match(detail, /tests\/assertion\.test\.cjs:4:\d+/);
+      assert.match(detail, /tests\/assertion\.test\.cjs:7:\d+/);
+      assert.match(detail, /AssertionError \[ERR_ASSERTION\]/);
+      assert.match(detail, /the second comparison failed/);
+      assert.match(detail, /actual: 1,\s+expected: 2/);
+      assert.match(detail, /actual: 3,\s+expected: 4/);
+    });
+  }
+}
+
+for (const json of [false, true]) {
+  test(`the ${json ? "JSON" : "text"} check bounds many failing assertions and announces truncation`, (t) => {
+    const source = [
+      "const { test } = require('node:test');",
+      "const assert = require('node:assert/strict');",
+      ...Array.from({ length: 50 }, (_, index) =>
+        `test('comparison ${index}', () => assert.equal(${index}, ${index + 1}));`),
+    ].join("\n") + "\n";
+    const repo = harnessRepo({ "tests/assertion.test.cjs": source });
+    t.after(repo.cleanup);
+    const result = repo.node("scripts/check.mjs", json ? ["--json"] : []);
+    assert.equal(result.code, 1, result.out);
+    let detail;
+    if (json) detail = JSON.parse(result.out).steps.find((step) => step.name.startsWith("tests JS")).detail;
+    else {
+      const block = result.out.match(/✖ tests JS \(2 fichier\(s\)\)\n([\s\S]*?)\n– tests Python/);
+      assert.ok(block, result.out);
+      detail = block[1].replace(/^ {4}/gm, "");
+    }
+    const lines = detail.split("\n");
+    assert.ok(lines.length <= 120, `expected at most 120 lines, got ${lines.length}`);
+    assert.match(lines.at(-1), /tronqué.*120 lignes/);
+    assert.match(detail, /comparison 0/);
+    assert.match(detail, /tests\/assertion\.test\.cjs:3:\d+/);
+    assert.match(detail, /actual: 0,\s+expected: 1/);
+  });
+}
+
+for (const mode of [[], ["--changed"]]) {
   const label = mode.length ? "changed" : "full";
   const frozen = { "core/legacy.cjs": { complexity: { count: 3 } } };
   for (const [name, current, file, rule, before, now] of [
