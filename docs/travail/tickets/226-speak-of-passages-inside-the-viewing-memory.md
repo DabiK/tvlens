@@ -111,3 +111,13 @@ sont seulement adaptés, jamais exécutés dans ce lot.
 
 ## Journal
 - 19/10, orchestrateur : réserves 2 et 3 de la clôture de T220 ajoutées au périmètre.
+
+- 19/10, Codex : skill et standards lus, témoin hooks présent ; inventaire refait à d26337d.
+  Exploration et adaptations prévues consignées dans `.harness-state/tickets/T226/`.
+  Les accès de `server-routes` appartiennent à un faux hôte ; les accès réels supplémentaires
+  de consultation, projection et protocole Mac sont inclus. Aucun fournisseur réel prévu.
+- 19/10, orchestrateur : quota Codex épuisé pendant ce ticket ; relève native refusée (HEAD déplacé par un commit de
+  ticket de l'orchestrateur, d26337d). Travail de Codex conservé en patch, arbre remis propre :
+  `.harness-state/archives/T226-quota-codex-20261019-2230/code.patch` (34 fichiers, `git apply --check` vérifié sur
+  `d26337d`), état et preuves rouges/vertes dans `etat/` du même dossier. Reprise par Claude : appliquer ce patch,
+  le relire contre ce ticket, le terminer et refaire les contrôles ; il n'est pas une preuve en soi.
