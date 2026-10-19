@@ -1,7 +1,7 @@
 ---
 id: T284
 titre: Check local reasoning and the reexamination model live on the Mac
-statut: a-faire
+statut: termine
 bloque_par: T283
 adr: non
 installe: non
@@ -51,4 +51,12 @@ Décision attendue du propriétaire : le contrôle réel du raisonnement et du m
 propriétaire a décidé le 18/10 que l'orchestrateur fait ce contrôle et ferme ce ticket quand il est concluant.
 
 ## Journal
-
+- 19/10, orchestrateur : contrôle réel sur le Mac, de 08:49 à 09:11, à `479b376`, boucle arrêtée ; dossier
+  `experiments/essais/2026-10-19-raisonnement-reexamen-mac`.
+  - Questions, `qwen3.8:27b`, cinq paires en ordre alterné : `default` 30,1 s et 39,2 s de médiane, 5 réponses sur 5 à
+    la question de résumé, avec 1 à 4 citations ; `off` 13,6 s, mais 10 réponses sur 10 refusées par la validation des
+    preuves, aucun outil appelé. Perte critique : `off` n'est pas retenu.
+  - Réexamen, trois paires : `gemma3:4b` 3 réponses sur 3 avec citation, 60 à 99 s ; `qwen3.8:27b` en `off` 3 abstentions
+    sur 3, 117 à 154 s, observations datées refusées. Non retenu.
+  - Étape 3 non faite : aucun modèle local plus petit n'a la capacité `tools`, et le GX10 fait tourner le 27B.
+  - Conclusion : aucun réglage ne justifie `gx10-copie-b2` ; `gx10-copie-b` reste la copie du GX10. Statut `termine`.
