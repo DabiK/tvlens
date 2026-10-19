@@ -109,7 +109,7 @@ app.whenReady().then(async () => {
   const onPublicationError = createPublicationDiagnostic(line => console.error(line));
   const makeTranscriber = () => createSessionTranscriber({
     config, packaged: app.isPackaged, onPublicationError,
-    onAvailability: () => { if (loaded) send('watch:state', sessionState()); },
+    onAvailability: () => publishSessionState(),
   });
   let transcriber = makeTranscriber();
   // Session transitions (start, pause, new, open, resume, delete, quit) never interleave: each one sees
@@ -300,10 +300,13 @@ app.whenReady().then(async () => {
   // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
   let storageShown = null;
   const ingestions = new Set();
-  // The core state plus its additive title: what the renderer receives for the loaded session.
+  // La lecture explicite et le push partagent la projection ; une lecture garde ses ports publics frais.
   const sessionState = () => (loaded ? {
-    ...loaded.runtime.watch.snapshot(), title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
+    ...loaded.runtime.memoryProjection.read().session, title: loaded.title, transcription: loaded.runtime.transcriber.availability(),
   } : null);
+  const publishSessionState = () => {
+    if (loaded && !closing && !switching) send('watch:state', sessionState());
+  };
   const newRecapAdapter = () => smoke && !process.argv.includes('--live-recap')
     ? simulatedRecap()
     : new CodexRecap({
@@ -313,15 +316,20 @@ app.whenReady().then(async () => {
         quota,
       });
   // One composition for a new session and for a reopened archive (`restore`): same layout, same guard.
-  const compose = (id, restore) => createSessionRuntime({id, sessionsRoot, userData:app.getPath('userData'),config,selectedModels,codexBinary,quota,host:'mac',guard,restore,
-    transcriber, smoke,liveInspection,localInspection,liveObservation:process.argv.includes('--live-observation'),
-    strategy:process.argv.find(a=>a.startsWith('--inspection-strategy='))?.split('=')[1]||'sheets-diverse',
-    log: line => console.error(line),
-    onPublicationError,
-    onChange: state => {
-      send('watch:state', { ...state, title: loaded?.title ?? null, transcription: (loaded?.runtime.transcriber || transcriber).availability() });
-    },
-  });
+  const compose = (id, restore) => {
+    const runtime = createSessionRuntime({
+      id, sessionsRoot, userData: app.getPath('userData'), config, selectedModels, codexBinary, quota, host: 'mac', guard, restore,
+      transcriber, smoke, liveInspection, localInspection, liveObservation: process.argv.includes('--live-observation'),
+      strategy: process.argv.find(a => a.startsWith('--inspection-strategy='))?.split('=')[1] || 'sheets-diverse',
+      log: line => console.error(line),
+      onPublicationError,
+      onChange: () => {
+        // Une invalidation appartient à cette vie de session, même si une archive reprend le même identifiant.
+        if (loaded?.runtime === runtime) publishSessionState();
+      },
+    });
+    return runtime;
+  };
   const adopt = (runtime, name, at, fresh = false) => {
     loaded = { runtime, title: name, startedAt: at, fresh };
     saved.transcriber = runtime.transcriber;

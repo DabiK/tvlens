@@ -944,6 +944,105 @@ test('fresh initial reads draw real cards and all retained reads become inert wh
   assert.equal(f.listeners.size, 0);
 });
 
+for (const action of ['switch', 'reset']) {
+  test(`a retained initial session read cannot undo a ${action}`, async t => {
+    const f = await rendererHarness(t);
+    const initial = f.reads.find(read => read.name === 'state');
+    f.publish('onState', { id: 'a', history: [], segments: [] });
+    if (action === 'switch') f.publish('onState', { id: 'b', history: [], segments: [] });
+    else f.publish('onReset');
+    const before = [...f.draws];
+    initial.resolve({ id: 'a', history: [], segments: [{ id: 'moment-1', startMs: 0, endMs: 1000 }] });
+    await turns(1);
+    assert.equal(f.wiring.session?.id ?? null, action === 'switch' ? 'b' : null);
+    assert.deepEqual(f.draws, before, 'the stale response is never adopted');
+    f.frame();
+    assert.equal(f.wiring.passages.size, 0, 'a pending frame reads only the current session');
+    assert.equal(f.draws.filter(item => Array.isArray(item) && item[1] === 'a').length, 1);
+  });
+}
+
+for (const phase of ['session', 'companions']) {
+  test(`an archive read held at ${phase} cannot restore A after reset and adoption of B`, async t => {
+    const f = await rendererHarness(t);
+    const reading = f.wiring.pullSession();
+    const session = f.reads.filter(read => read.name === 'state').at(-1);
+    if (phase === 'companions') {
+      session.resolve({ id: 'a', history: [], segments: [] });
+      await turns(1);
+    }
+    const companionStart = phase === 'companions' ? f.reads.length - 3 : f.reads.length;
+    f.publish('onReset');
+    f.publish('onState', { id: 'b', history: [], segments: [] });
+    f.publish('onDeepState', { jobs: [{ id: 'b-question', status: 'running', createdAt: T0, preview: 'Question de B' }] });
+    f.publish('onRecap', { sessionId: 'b', status: 'ready', overview: 'Résumé de B', chapters: [] });
+    f.publish('onSurveillance', { sessionId: 'b', activity: { state: 'listening' } });
+    f.frame();
+    const before = [...f.draws];
+    if (phase === 'session') session.resolve({ id: 'a', history: [], segments: [] });
+    await turns(1);
+    const replies = {
+      deepState: {
+        jobs: [{ id: 'a-question', status: 'running', createdAt: T0, preview: 'Question de A' }],
+      },
+      recapState: {
+        sessionId: 'a', status: 'ready', overview: 'Résumé de A', chapters: [],
+      },
+      surveillanceState: {
+        sessionId: 'a', activity: { state: 'listening' },
+      },
+    };
+    for (const read of f.reads.slice(companionStart)) read.resolve(replies[read.name]);
+    await reading;
+    assert.equal(f.wiring.session?.id, 'b');
+    assert.equal(f.wiring.surveillanceState?.sessionId, 'b');
+    assert.match(f.get('message-list').textContent, /Question de B/);
+    assert.match(f.get('recap-content').textContent, /Résumé de B/);
+    assert.deepEqual(f.draws, before, 'the old archive schedules and adopts nothing');
+    assert.equal(f.frames.size, 0);
+  });
+}
+
+test('a push from the same archive preserves companion reads and bottom scrolling while its state read is pending', async t => {
+  const f = await rendererHarness(t);
+  const archive = { id: 'archive', readOnly: true, elapsedMs: 0, history: [], segments: [] };
+  f.publish('onState', archive);
+  f.frame();
+  f.get('messages').scrollHeight = 2000;
+  f.get('messages').scrollTop = 0;
+  const reading = f.wiring.pullSession();
+  const state = f.reads.filter(read => read.name === 'state').at(-1);
+  const latest = { ...archive, elapsedMs: 42 };
+  f.publish('onState', latest);
+  f.frame();
+  assert.equal(f.get('messages').scrollTop, 0, 'the push alone does not force scrolling');
+  const companionStart = f.reads.length;
+  state.resolve(archive);
+  await turns(1);
+  const companions = f.reads.slice(companionStart);
+  assert.deepEqual(companions.map(read => read.name), ['deepState', 'recapState', 'surveillanceState'],
+    'a push of the same session discards only the stale state');
+  assert.equal(f.wiring.session, latest, 'the pushed state stays adopted');
+  companions.find(read => read.name === 'deepState').resolve({ jobs: [{
+    id: 'archived-answer', status: 'done', createdAt: T0, question: 'Question archivée',
+    result: { ...observed, answer: 'Réponse de l’archive' },
+  }] });
+  companions.find(read => read.name === 'recapState').resolve({
+    sessionId: 'archive', status: 'ready', overview: 'Résumé de l’archive', chapters: [],
+  });
+  companions.find(read => read.name === 'surveillanceState').resolve({
+    sessionId: 'archive', activity: { state: 'listening' },
+    registry: { ready: true, persisted: false, message: 'Archive en mémoire seulement.' },
+  });
+  await reading;
+  assert.equal(f.wiring.session, latest);
+  f.frame();
+  assert.match(f.get('message-list').textContent, /Réponse de l’archive/);
+  assert.match(f.get('recap-content').textContent, /Résumé de l’archive/);
+  assert.equal(f.get('watch-notice-text').textContent, 'Archive en mémoire seulement.');
+  assert.equal(f.get('messages').scrollTop, 2000, 'archive loading still follows its latest answer');
+});
+
 test('an archive question read checks freshness after another member of Promise.all answers', async (t) => {
   const f = await rendererHarness(t);
   f.get('messages').scrollHeight = 2000;

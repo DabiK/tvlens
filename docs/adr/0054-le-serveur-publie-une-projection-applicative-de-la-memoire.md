@@ -32,7 +32,7 @@ une publication d'une autre identité ne les modifie pas.
 | `latency` | Horodatages consultables, calcul `latencySummary` exporté par l'entrée publique de Mémoire |
 | `elapsedMs` des vues légères | `SessionClock.now()`, horloge injectée dans la composition |
 | `storage` | `session.storage()`, mesure existante en cache, sans I/O |
-| `title` | `session.manifest()`, titre déjà en mémoire |
+| `title` | `session.manifest()` côté serveur, titre de la session chargée côté Mac, déjà en mémoire |
 
 La façade de compatibilité fournit le statut sans snapshot ; `lastError` garde la priorité stockage,
 puis sauvegarde, puis traitement. `asking` quitte la consultation métier. Les questions historiques
@@ -60,6 +60,20 @@ La garde autorise explicitement la composition plate vers `runtime/memory/**`. L
 de latence garde une exception limitée à l'arête index de Mémoire → module pur plat existant.
 Aucun accès interne de Mémoire n'est donné à un autre contexte.
 
+### Livraison Mac
+
+Depuis l'ADR 0059, lecture IPC `watch:state` et push Mac appellent le même lecteur de
+`runtime.memoryProjection`. Le Mac ajoute le titre chargé et la disponibilité de transcription
+au résultat. Il ignore le snapshot du callback `onChange`, conservé comme invalidation publique
+pour toutes les transitions de statut, files, erreurs, sauvegarde, historique et stockage.
+Chaque push construit une projection, commune aux destinataires de son message ; une lecture
+IPC explicite relit les ports publics pour préserver leur fraîcheur entre deux publications.
+
+L'invalidation est liée à l'identité du runtime adopté, pas seulement à son identifiant persistant.
+Closing et switching empêchent tout push. Le renderer révoque les lectures de session dépassées
+et les lots d'archive d'une vie de session précédente ; l'ADR 0025 garde ses dessins regroupés.
+Résumé et surveillance conservent leurs abonnements spécialisés, sans seconde alimentation.
+
 ## Alternatives écartées
 
 - Reprendre le callback complet ou un snapshot de secours : maintient le couplage du lecteur serveur.
@@ -69,8 +83,9 @@ Aucun accès interne de Mémoire n'est donné à un autre contexte.
 
 ## Conséquences
 
-Le callback complet du domaine, sa construction dans `emit()`, les sauvegardes et la livraison Mac
-restent provisoirement présents. Les lectures de cycle de vie ne sont pas migrées ici.
+Le callback complet du domaine et sa construction dans `emit()` restent provisoirement présents,
+sans consommation de leur snapshot par la fenêtre. Les sauvegardes et les lectures de cycle de vie
+ne sont pas migrées ici.
 Une projection ne confirme aucune écriture. Les noms persistés, le convertisseur, l'IPC et la TV
 restent inchangés. Les fichiers nouveaux ne portent aucune infraction gelée.
 
@@ -87,3 +102,6 @@ compte séparément le callback hérité, vérifie files sans texte, usage acqui
 chargement de questions historiques et rejet d'une publication tardive.
 `session-rows`, `server-sessions`, `timeline-server`, `state-views`, `wire-contract`, `memory-view`, les contrats Mac
 et les gardes conservent les contrats de session, caches et 304.
+La part Mac est protégée par les espions séparés snapshot/projection de `mac-ipc-contract`, ses
+transitions de files, usage acquis, historique et erreurs, et les courses de lectures de `mac-ui`.
+`state-delivery` vérifie aussi trois états de session rapprochés et les deux ordres frame/secours.

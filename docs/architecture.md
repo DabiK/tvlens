@@ -88,6 +88,8 @@ communes de session vide, de liste et de pause disque. Les lectures de biblioth�
 faits de la session avant leur première attente (ADR 0036 et 0037).
 
 **Mac.** `app/main.cjs` compose Electron et garde la table IPC ; `preload.cjs` expose un bridge limité.
+Lecture IPC et push de session utilisent `memoryProjection`, comme le serveur, avec le titre chargé
+et la transcription. Les invalidations d'un ancien runtime et les lectures dépassées sont ignorées.
 Les fabriques de fenêtre, sources et actions reçoivent leurs dépendances et gardent leur état dans
 leur instance. Le renderer compose `app/ui/capture-controller.mjs` via `browser-capture.mjs` :
 ce contrôleur possède flux, audio, recorder et flushes. Les actions et contrôles lui délèguent ;
@@ -444,3 +446,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0058](adr/0058-les-vecteurs-sont-lies-au-fournisseur-et-a-son-identite.md) :
   Les embeddings locaux réutilisent le transport Ollama et chaque cache reste lié à l’identité effective de son fournisseur.
+
+- [ADR 0059](adr/0059-la-fenetre-mac-lit-la-projection-applicative-partagee.md) :
+  La fenêtre Mac lit la projection applicative partagée pour ses lectures et ses poussées ; les
+  bascules de session révoquent les anciennes invalidations et les lectures en attente.

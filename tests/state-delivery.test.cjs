@@ -292,6 +292,31 @@ const verification = {
   ],
 };
 
+for (const first of ["frame", "timer"]) {
+  test(`three session pushes adopt immediately and the ${first} draws the latest state only once`, async t => {
+    const f = await connected(t);
+    for (const elapsedMs of [1, 2, 3]) {
+      const state = { id: "session", elapsedMs, segments: [] };
+      f.listeners.get("onState")(state);
+      assert.equal(f.state.session, state);
+      assert.equal(f.frames.size, 1);
+      assert.deepEqual(f.draws, []);
+    }
+    const oldFrame = f.allFrames[0], oldTimer = f.allTimers[0];
+    if (first === "frame") f.frame();
+    else await f.clock.advance(100);
+    assert.equal(f.get("elapsed").textContent, "3");
+    assert.deepEqual(f.draws, ["session", "chat"]);
+    oldFrame();
+    oldTimer();
+    await f.clock.advance(100);
+    assert.deepEqual(f.draws, ["session", "chat"]);
+    assert.deepEqual(f.events.filter(event => event.kind === "applied").map(event => event.emissionId), [3]);
+    assert.equal(f.frames.size, 0);
+    assert.equal(f.clock.armed, 0);
+  });
+}
+
 test("session, deep and verification pushes retain independent effects on one page and reject both stale initial reads", async (t) => {
   const f = await connected(t);
   assert.deepEqual(

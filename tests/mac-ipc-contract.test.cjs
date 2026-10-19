@@ -1462,6 +1462,170 @@ test('on the Mac host both agents are warmed up with the id of the session when 
   assert.deepEqual([took(), host.failures], [[`chat:${b.id}`, `observe:${b.id}-observe`], []], 'a rejecting warm-up fails neither start nor the host');
 });
 
+test('Mac IPC reads and pushes share the public projection while legacy snapshots remain confined to publication', async t => {
+  const { launch } = await stage(t);
+  let runtime, clock = 0;
+  const host = await launch({ readClock: () => clock, wrap: { session: built => {
+    runtime = built;
+    return built;
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  await host.capture.sources();
+  await host.capture.select('test-source');
+  const session = await host.start();
+  const legacy = runtime.watch.snapshot.bind(runtime.watch);
+  const snapshot = t.mock.method(runtime.watch, 'snapshot');
+  const projection = t.mock.method(runtime.memoryProjection, 'read');
+  const received = [[], []];
+  const subscriptions = received.map(values => host.onState(state => values.push(state)));
+  try {
+    clock = 1000;
+    const read = await host.state();
+    assert.equal(snapshot.mock.callCount(), 0, 'IPC reads never construct the domain snapshot');
+    assert.equal(projection.mock.callCount(), 1);
+    assert.match(read.title, /^Vidéo de démonstration · /);
+    const expected = () => ({ ...legacy(), title: read.title, transcription: runtime.transcriber.availability() });
+    assert.deepStrictEqual(read, expected());
+    runtime.watch.emit();
+    assert.equal(snapshot.mock.callCount(), 1, 'the domain still builds its retained callback once');
+    assert.equal(projection.mock.callCount(), 2, 'one projection serves the pushed state');
+    for (const values of received) assert.deepStrictEqual(values, [expected()]);
+    assert.deepStrictEqual(await host.state(), received[0][0]);
+    assert.equal(snapshot.mock.callCount(), 1, 'reading the pushed state adds no legacy work');
+    assert.equal(projection.mock.callCount(), 3, 'an explicit read consults fresh public ports');
+    assert.equal(read.id, session.id);
+  } finally {
+    for (const unsubscribe of subscriptions) unsubscribe();
+    snapshot.mock.restore();
+    projection.mock.restore();
+  }
+});
+
+test('Mac projection retains textless queues, acquired usage, save failures, history and storage through IPC', async t => {
+  const audio = deferred(), visual = deferred(), audioEntered = deferred(), visionEntered = deferred();
+  const partial = deferred(), complete = deferred();
+  t.after(() => {
+    audio.resolve({ observation: { transcript: 'Paroles' }, elapsedMs: 20, cost: 0.125 });
+    visual.resolve({ observation: { summary: 'Images' }, elapsedMs: 30, cost: 0.25 });
+  });
+  const { launch } = await stage(t);
+  let runtime, publishQuestion, clock = 0;
+  const host = await launch({ readClock: () => clock, wrap: {
+    conversation: built => { publishQuestion = built.deep.onChange; return built; },
+    session: built => {
+      runtime = built;
+      built.watch.visionDuringAsk = false;
+      built.perception.transcribe = () => { audioEntered.resolve(); return audio.promise; };
+      built.perception.observeVisual = () => { visionEntered.resolve(); return visual.promise; };
+      return built;
+    },
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const session = await host.start();
+  const legacy = runtime.watch.snapshot.bind(runtime.watch);
+  const title = (await host.state()).title;
+  host.onState(state => {
+    if (state.segments[0]?.audioStatus === 'ready') partial.resolve();
+    if (state.segments[0]?.status === 'ready') complete.resolve();
+  });
+  const latest = async () => {
+    const state = await host.state();
+    assert.deepStrictEqual(state, { ...legacy(), title, transcription: runtime.transcriber.availability() });
+    return state;
+  };
+  const pushed = () => host.events.filter(event => event.channel === 'watch:state').at(-1).value;
+  runtime.watch.history.push({ id: 'moment-0', startMs: 0, endMs: 1000, status: 'expired', summary: 'Début conservé' });
+  runtime.watch.questions.push({ question: 'Question historique', answer: { text: 'Réponse conservée' } });
+  publishQuestion({ jobs: [{ id: 'own', sessionId: session.id, status: 'running' }] });
+  clock = 2000;
+  await host.ingest({ sessionId: session.id, startMs: 1000, endMs: 2000,
+    clip: new Uint8Array([1]), audio: new Uint8Array([1]), frames: [{ atMs: 1000, dataUrl: 'data:image/jpeg;base64,YQ==' }] });
+  await audioEntered.promise;
+  assert.deepStrictEqual(pushed(), await latest());
+  audio.resolve({ observation: { transcript: 'Paroles' }, elapsedMs: 20, cost: 0.125 });
+  await bounded(partial.promise);
+  const waiting = await latest();
+  assert.deepEqual([waiting.asking, waiting.analyzing, waiting.pending, waiting.audioPending, waiting.visionPending], [true, false, 1, 0, 1]);
+  assert.equal(waiting.apiCost, 0.125);
+  assert.equal(waiting.coverage.passages, 2);
+  assert.deepStrictEqual(pushed(), waiting);
+  publishQuestion({ jobs: [] });
+  await visionEntered.promise;
+  const active = await latest();
+  assert.deepEqual([active.asking, active.analyzing, active.visionPending, active.apiCalls], [false, true, 0, 1]);
+  assert.equal(active.segments[0].observation.summary, undefined, 'activity changes before new text exists');
+  assert.equal(pushed().apiCalls, 0, 'an explicit read observes acquired usage before the next publication');
+  visual.resolve({ observation: { summary: 'Images' }, elapsedMs: 30, cost: 0.25 });
+  await bounded(complete.promise);
+  await runtime.store.flush();
+  const ready = await latest();
+  assert.deepStrictEqual(pushed(), ready);
+  assert.deepEqual([ready.apiCalls, ready.apiCost, ready.latency.audioMs.mean, ready.latency.visionMs.mean], [1, 0.375, 20, 30]);
+  assert.equal(ready.storage.sessionBytes > 0, true);
+  assert.equal(ready.history[0].summary, 'Début conservé');
+  assert.equal(ready.questions[0].answer.text, 'Réponse conservée');
+  const saving = t.mock.method(runtime.store, 'save', async () => { throw Object.assign(Error('refus'), { code: 'EIO' }); });
+  await runtime.watch.persist();
+  assert.ok((await latest()).lastError);
+  assert.deepStrictEqual(pushed(), await latest());
+  saving.mock.restore();
+  await runtime.watch.persist();
+  assert.equal((await latest()).lastError, null);
+  assert.deepStrictEqual(pushed(), await latest());
+  assert.equal('asking' in runtime.memory.view().session, false);
+  assert.equal('questions' in runtime.memory.view(), false);
+});
+
+test('Mac session switching detaches publications before draining and before reopening the same identity', async t => {
+  const draining = deferred(), release = deferred(), runtimes = [];
+  t.after(() => release.resolve());
+  const { launch } = await stage(t);
+  const host = await launch({ wrap: {
+    session: built => { runtimes.push(built); return built; },
+    closing: (close, options) => close({ ...options, steps: options.steps.map(([name, work]) => [name, async () => {
+      if (name === 'capture') {
+        draining.resolve();
+        await release.promise;
+      }
+      return work();
+    }]) }),
+  } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  runtimes[0].watch.questions.push({ question: 'Question historique', answer: { text: 'Conservée' } });
+  await host.stop();
+  const late = runtimes[0].watch.onChange;
+  const old = runtimes[0].watch.snapshot();
+  const opening = host.openSession(a.id);
+  try {
+    await draining.promise;
+    host.events.length = 0;
+    late(old);
+    assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'no state is pushed while switching');
+  } finally {
+    release.resolve();
+    await opening;
+  }
+  assert.equal(runtimes.length, 2);
+  assert.equal((await host.state()).readOnly, true);
+  assert.deepEqual((await host.state()).questions, old.questions);
+  host.events.length = 0;
+  late(old);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'an old runtime cannot publish into a new one with the same id');
+  await host.newSession();
+  const b = await host.start();
+  assert.notEqual(b.id, a.id);
+  host.events.length = 0;
+  late(old);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'A cannot publish after B is adopted');
+  assert.equal((await host.state()).id, b.id);
+  assert.deepEqual((await host.state()).questions, []);
+  await host.quit();
+  host.events.length = 0;
+  late(old);
+  assert.deepEqual(host.events.filter(event => event.channel === 'watch:state'), [], 'a closed window receives no late state');
+});
+
 test('Mac startup exposes transcription availability before capture and publishes its coded cause with session states', async t => {
   const { launch, userData } = await stage(t);
   const configFile = path.join(userData, 'speech.env');

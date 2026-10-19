@@ -1,7 +1,7 @@
 ---
 id: T224
 titre: Deliver the Mac window state from the same projection
-statut: a-faire
+statut: termine
 bloque_par: T219, T210, T195, T233, T267, T268, T284, T290
 adr: oui
 installe: non
@@ -77,6 +77,78 @@ prérequis de la part Mac ; une assertion conservée pour une branche inaccessib
 nommée, jamais un motif à réécrire pour masquer une régression de câblage.
 
 ## Journal
+
+- Exploration Codex : consignes, coutures T195, projection T219, hôte, tests et ADR concernés lus.
+  Témoin de hooks présent. Correspondance des champs, invalidations et plan de preuve consignés dans
+  `.harness-state/tickets/T224/exploration.md` ; aucun écart prévu (`ecarts.md`). Les deux dossiers
+  non suivis préexistants restent hors lot. Aucun sous-agent ni relecteur lancé par cette session.
+- Projection : `node --test --test-name-pattern='Mac IPC reads and pushes' tests/mac-ipc-contract.test.cjs`
+  rouge observé (une construction snapshot lors de la lecture IPC), puis vert après raccordement à
+  `memoryProjection.read()`. Les espions distinguent callback hérité, projection et lecture explicite.
+- Bascule : `node --test --test-name-pattern='Mac session switching detaches' tests/mac-ipc-contract.test.cjs`
+  rouge sur une notification pendant switching, puis vert avec garde de runtime et de fermeture.
+  Réouverture du même identifiant, adoption de B et notification après quit couvertes.
+- Fraîcheur renderer : les motifs `a retained initial session read` puis `an archive read held at`
+  de `tests/mac-ui.test.cjs` donnent chacun deux rouges sur A réadopté ou sa surveillance restaurée
+  dans B. Gardes de lecture et génération locale ajoutées ; six cas ciblés verts, dont les deux
+  scénarios existants de lecture d'archive et de garde deep après `Promise.all`.
+- Préservation des champs : `node --test --test-name-pattern='Mac projection retains' tests/mac-ipc-contract.test.cjs`
+  vert pour files sans nouveau texte, usage acquis avant publication, coûts, latence, historique,
+  stockage et refus/retour de sauvegarde. Le premier essai avait une attente de test erronée (`p50`
+  au lieu de `mean` dans le contrat existant de latence) ; seul cet accès a été corrigé.
+- Dessins : `node --test --test-name-pattern='three session pushes' tests/state-delivery.test.cjs`
+  donne deux rouges après mutation temporaire retirant la garde d'identité du lot, puis deux verts
+  après restauration. Adoption immédiate des trois états et absence de double dessin vérifiées.
+  `app/ui/state-delivery.mjs` reste inchangé dans le diff final.
+- Premier `node scripts/check.mjs --changed` vert : règles, format, lint, gel et cliquet,
+  113 tests réussis sur trois fichiers. ADR 0054 complété et ADR 0059 rédigé. Commandes et sorties
+  conservées dans `.harness-state/tickets/T224/` ; acceptation séquentielle puis contrôle complet à suivre.
+- Acceptation en séquentiel : commande ci-dessous, **692 tests réussis**, aucun échec ; sortie
+  `.harness-state/tickets/T224/acceptance.log`. Les chapitres conservés pendant closing, les refus
+  de publication/diagnostic et les corps HTTP figés restent protégés par leurs scénarios existants.
+
+  ```sh
+  node --test --test-concurrency=1 tests/memory-projection.test.cjs tests/mac-ipc-contract.test.cjs \
+    tests/state-delivery.test.cjs tests/mac-ui.test.cjs tests/living-recap.test.cjs \
+    tests/living-recap-runtime.test.cjs tests/server-state-views.test.cjs tests/split-perception.test.cjs \
+    tests/host-error-handling.test.cjs tests/architecture.test.cjs tests/architecture-guard.test.cjs
+  ```
+
+- `node scripts/check.mjs --changed` final vert : règles, format, lint, gel et cliquet,
+  **113 tests réussis sur trois fichiers** (`check-changed-final.log`). Aucun test, plancher,
+  motif source hérité de T195 ou fichier du harnais modifié.
+- Premier `node scripts/check.mjs` rouge : **2 916/2 917 tests JavaScript réussis sur 153 fichiers**
+  et **54 tests Python réussis**. Seul échec : index documentaire incomplet pour l'ADR 0059.
+  `node --test tests/documentation-index.test.cjs` reproduit le diagnostic (11/12), puis passe
+  (12/12) après ajout du lien et de sa phrase dans `docs/architecture.md`. Aucun test changé.
+  Sorties : `check-full-final.log`, `documentation-index-red.log`, `documentation-index-green.log`.
+- Après correction documentaire, `node scripts/check.mjs` **vert** : règles, format, lint, gel,
+  cliquet, **2 917/2 917 tests JavaScript sur 153 fichiers** et **54 tests Python** réussis.
+  Sortie : `.harness-state/tickets/T224/check-full-corrected.log`. `git diff --check` vert.
+- Verdict `TERMINÉ` enregistré dans `.harness-state/tickets/T224/verdict.json`, avec la matrice
+  des critères dans `preuves.md`. Aucune réserve propre ; aucun commit ni push. La boucle garde
+  la responsabilité de la relecture et de l'intégration.
+
+- Reprise après `relecture-1.md` : rapport, ticket/journal, écarts, status/diff et couture renderer
+  relus, nouveau témoin de hooks présent. Constat mineur 1 accepté : séparer fraîcheur de lecture et
+  génération pour préserver accompagnements et défilement lors d'une poussée de la même archive.
+  Préparation du rouge dans `mac-ui`, sans nouvel écart ni modification du harnais.
+- Correction du constat mineur 1 :
+  `node --test --test-name-pattern='a push from the same archive' tests/mac-ui.test.cjs` rouge
+  sur l'absence des trois lectures d'accompagnement, puis vert après séparation de la garde de
+  génération et de la fraîcheur de l'état. Le test conserve l'état poussé, applique deep/résumé/
+  surveillance et vérifie `scrollTop` en bas après dessin. ADR 0059 précisé ; sorties
+  `correction-1-same-archive-red.log` et `correction-1-same-archive-green.log` dans le dossier d'état.
+- Vérifications de correction :
+  `node --test --test-concurrency=1 tests/mac-ui.test.cjs tests/state-delivery.test.cjs` vert,
+  **74/74 cas**, puis `node scripts/check.mjs --changed` vert, **114/114 cas** et tous les
+  contrôles qualité. Sorties : `correction-1-renderer-green.log` et `correction-1-check-changed.log`.
+  Le contrôle complet de correction est lancé ; aucun autre constat ni contestation.
+- Contrôle complet après correction : `node scripts/check.mjs` **vert**, règles, format, lint,
+  gel et cliquet validés, **2 918/2 918 tests JavaScript sur 153 fichiers** et **54 tests Python**
+  réussis. Sortie : `.harness-state/tickets/T224/correction-1-check-full.log`.
+  `git diff --check` vert. Nouveau verdict `TERMINÉ` enregistré : constat mineur 1 corrigé,
+  aucune réserve propre, aucun commit ni push ; relecture et intégration laissées à la boucle.
 
 - 18/10, propriétaire : ordre décidé le 18/10 (« ok on fait ça comme ordre »). La copie A du GX10 passe avant la phase
   Mémoire, puis le correctif du panneau de la TV relevé en recette T233 : ce ticket attend aussi T267 et T268.

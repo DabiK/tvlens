@@ -14,6 +14,7 @@ import { reduceRecap } from "./recap-state.mjs";
 import { renderRecapView } from "./recap-view.js";
 import { createStateDelivery, bindPushedStates } from "./state-delivery.mjs";
 import { createChatView } from "./chat-view.mjs";
+import { createFreshness } from "./freshness.mjs";
 
 const STACK_MIN_DELAY_MS = 50;
 const STACK_TIMER_MARGIN_MS = 20;
@@ -48,6 +49,8 @@ class RendererWiring {
     this.recapRevision = 0;
     this.recapKey = "";
     this.session = null;
+    this.sessionFreshness = createFreshness();
+    this.sessionGeneration = 0;
     this.deepState = { jobs: [] };
     this.verificationState = { busy: false, jobs: [] };
     this.passages = new Map();
@@ -83,7 +86,9 @@ class RendererWiring {
   }
 
   adoptState(state) {
+    this.sessionFreshness.pushed();
     if (this.session?.id !== state.id) {
+      this.sessionGeneration++;
       this.recapKey = "";
       this.commands.search.clear();
     }
@@ -179,9 +184,12 @@ class RendererWiring {
       }),
     ];
     // Au rechargement, la fenêtre retrouve la session que l’hôte détient encore.
+    const sessionIsFresh = this.sessionFreshness.beginRead();
     this.bridge
       .state()
-      .then((state) => this.receiveState(state))
+      .then((state) => {
+        if (!this.released && sessionIsFresh()) this.receiveState(state);
+      })
       .catch(() => {
         // La fenêtre peut rester sans session ; une publication ultérieure la remettra à jour.
       });
@@ -209,17 +217,23 @@ class RendererWiring {
   }
 
   async pullSession() {
+    const generationBeforeRead = this.sessionGeneration;
+    const sessionIsFresh = this.sessionFreshness.beginRead();
     const state = await this.bridge.state();
-    if (this.released) return;
-    if (!state) return this.clearSession();
-    this.receiveState(state);
+    if (this.released || generationBeforeRead !== this.sessionGeneration) return;
+    // Une poussée de la même session remplace sa lecture, pas le chargement de l'archive.
+    if (sessionIsFresh()) {
+      if (!state) return this.clearSession();
+      this.receiveState(state);
+    }
+    const generation = this.sessionGeneration;
     const deepIsFresh = this.pushed.beginDeepRead();
     const [deep, recap, surveillance] = await Promise.all([
       this.bridge.deepState(),
       this.bridge.recapState().catch(() => null),
       this.bridge.surveillanceState?.().catch(() => null),
     ]);
-    if (this.released) return;
+    if (this.released || generation !== this.sessionGeneration) return;
     // Une autre lecture peut retenir le lot après la réponse deep : vérifier seulement ici.
     if (deepIsFresh()) this.deepState = deep;
     if (recap) this.receiveRecap(recap);
@@ -266,6 +280,8 @@ class RendererWiring {
 
   clearSession() {
     if (this.released) return;
+    this.sessionFreshness.pushed();
+    this.sessionGeneration++;
     this.recapRevision++;
     this.recapState = null;
     this.session = null;
