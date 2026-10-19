@@ -1,7 +1,7 @@
 ---
 id: T283
 titre: Give clip reexamination its own local model
-statut: a-faire
+statut: termine
 bloque_par: T282, T287, T288
 adr: non
 installe: non
@@ -58,3 +58,45 @@ Aucune décision n'est attendue.
 
 ## Journal
 - 19/10, propriétaire : les tickets TV T285 à T288 passent avant ce ticket, « de façon prioritaire ».
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T283/exploration.md` ; aucun écart prévu.
+- 19/10, Codex : `node --test --test-name-pattern='dedicated inspection settings' tests/portable-config.test.cjs` :
+  rouge observé (configuration dédiée absente), puis vert (1 test). Sorties `config-red.log` et `config-green.log` dans le dossier d'état.
+- 19/10, Codex : `node --test --test-name-pattern='composed clip reexamination' tests/local-inspection.test.cjs` :
+  rouge observé (requête sur A au lieu de B), puis vert (1 test). Sorties `composition-red.log` et `composition-green.log`.
+- 19/10, Codex : `node --test tests/portable-config.test.cjs tests/local-inspection.test.cjs tests/session-providers.test.cjs tests/local-vlm-agent.test.cjs` :
+  93 tests réussis ; faux Ollama uniquement, séparation des modèles et des hôtes, paramètres dédiés, compatibilité et refus sans repli.
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert, 39 tests réussis (`check-changed.log`).
+- 19/10, Codex : premier `node scripts/check.mjs` : 2 907/2 908 tests JS réussis et 54 tests Python réussis ;
+  le test de configuration par défaut de `media-asr-options.test.cjs` attendait encore l'objet sans `localInspection`.
+  Rouge reproduit par `node --test --test-name-pattern='configuration exposes the latency' tests/media-asr-options.test.cjs` ;
+  attendu complété explicitement avec les valeurs par défaut du nouveau rôle, sans retirer d'assertion.
+- 19/10, Codex : même test de configuration après correction : vert, 1 test (`default-config-green.log`) ;
+  `node scripts/check.mjs --changed` : vert, 47 tests (`check-changed-final.log`).
+- 19/10, Codex : `node scripts/check.mjs` après correction : vert ; règles, format, lint, gel et cliquet conformes,
+  2 908 tests JS et 54 tests Python réussis (`check-full.log`). Verdict `TERMINÉ`, sans réserve ; relecture laissée à la boucle.
+- 19/10, Codex, reprise après relecture 1 : les deux constats mineurs sont acceptés ; test d'absence d'héritage à renforcer,
+  puis clé réelle à renommer `localInspectionVlm` pour la distinguer du drapeau de simulation `localInspection`.
+  Aucun écart prévu ; exploration de reprise consignée dans le dossier d'état.
+- 19/10, Codex : `node --test --test-name-pattern='an unreachable dedicated inspection' tests/local-inspection.test.cjs` :
+  vert, 1 test renforcé ; avec `--require ./.harness-state/tickets/T283/mutate-inspection-inheritance.cjs`,
+  rouge sur l'en-tête Bearer hérité après fusion introduite uniquement en mémoire (`review-inheritance-mutation-red.log`).
+- 19/10, Codex : `node --test --test-name-pattern='dedicated inspection settings' tests/portable-config.test.cjs` :
+  rouge sur la clé `localInspectionVlm` absente avant renommage (`review-config-name-red.log`).
+  Après renommage, `node --test tests/local-inspection.test.cjs tests/portable-config.test.cjs tests/media-asr-options.test.cjs` :
+  vert, 47 tests (`review-targeted-green.log`) ; drapeau de simulation et variables d'environnement conservés.
+- 19/10, Codex : après corrections, `node scripts/check.mjs --changed` : vert, 47 tests (`review-check-changed.log`) ;
+  `node scripts/check.mjs` : vert, 2 908 tests JS et 54 tests Python, règles, format, lint, gel et cliquet conformes
+  (`review-check-full.log`). Les deux constats mineurs sont corrigés ; nouveau verdict `TERMINÉ`, relecture laissée à la boucle.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T283/relecture-2.md : 1. `scripts/local-stream-host.cjs:17-20` — hors périmètre
+
+  **Ce qui ne va pas.** Le rejeu G3 ne fusionne par rôle que `localVlm`, `localQuestions` et `localEmbeddings`. Le scénario ne peut pas déclarer `localInspectionVlm` : `CONFIG_KEYS` le refuse (`scripts/local-stream-input.cjs:12-13`). Si le fichier `--config` porte `TVLENS_LOCAL_INSPECTION_MODEL`, le réexamen du rejeu tourne sur le modèle du fichier, pas sur celui du scénario. Les paramètres publiés ne correspondent plus non plus.
+
+  **Ce qui est attendu.** Un ticket de suivi avant toute campagne G3 avec un modèle de réexamen dédié.
+- .harness-state/tickets/T283/relecture-2.md : 2. `runtime/conversation-runtime.cjs:60-61` — hors périmètre
+
+  **Ce qui ne va pas.** Au démarrage de l'hôte, seuls `TVLENS_LOCAL_VLM_THINK` et `TVLENS_LOCAL_QUESTIONS_THINK` sont validés. Une valeur invalide de `TVLENS_LOCAL_INSPECTION_THINK` n'est refusée qu'au démarrage d'une session. Le refus est bien nommé, donc le critère 3 reste tenu.
+
+  **Ce qui est attendu.** Valider ce réglage dans la composition de démarrage. Cela passe par `conversation-runtime.cjs`, que le ticket ne permet pas de modifier.

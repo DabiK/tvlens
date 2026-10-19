@@ -61,8 +61,10 @@ const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLEN
   'TVLENS_INSPECTION_BACKEND', 'TVLENS_LOCAL_VLM_URL', 'TVLENS_LOCAL_VLM_MODEL', 'TVLENS_LOCAL_VLM_NUM_CTX', 'TVLENS_LOCAL_VLM_KEEP_ALIVE',
   'TVLENS_QUESTIONS_BACKEND', 'TVLENS_LOCAL_QUESTIONS_URL', 'TVLENS_LOCAL_QUESTIONS_MODEL',
   'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE', 'TVLENS_LOCAL_QUESTIONS_THINK', 'TVLENS_LOCAL_VLM_THINK',
+  'TVLENS_LOCAL_INSPECTION_URL', 'TVLENS_LOCAL_INSPECTION_MODEL', 'TVLENS_LOCAL_INSPECTION_NUM_CTX',
+  'TVLENS_LOCAL_INSPECTION_KEEP_ALIVE', 'TVLENS_LOCAL_INSPECTION_THINK',
   'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL', 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS'];
-const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN'];
+const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN', 'TVLENS_LOCAL_INSPECTION_TOKEN'];
 // Only what a source really sets: an empty variable must not undo a setting written elsewhere.
 const set = (env, names = SWITCHES) => Object.fromEntries(names.filter(name => typeof env[name] === 'string' && env[name] !== '').map(name => [name, env[name]]));
 function switches(env) {
@@ -80,10 +82,17 @@ function switches(env) {
     localQuestions: localQuestionsConfig(env),
     perceptionBackend: env.TVLENS_PERCEPTION_BACKEND || 'codex',
     inspectionBackend: env.TVLENS_INSPECTION_BACKEND || 'codex',
+    localInspectionVlm: localInspectionVlmConfig(env),
     localVlm: { url: env.TVLENS_LOCAL_VLM_URL || null, model: env.TVLENS_LOCAL_VLM_MODEL || null,
       ...(env.TVLENS_LOCAL_VLM_THINK ? { think: env.TVLENS_LOCAL_VLM_THINK } : {}),
       numCtx: env.TVLENS_LOCAL_VLM_NUM_CTX ? Number(env.TVLENS_LOCAL_VLM_NUM_CTX) : undefined,
       keepAlive: env.TVLENS_LOCAL_VLM_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_VLM_TOKEN || null } };
+}
+function localInspectionVlmConfig(env) {
+  return { url: env.TVLENS_LOCAL_INSPECTION_URL || null, model: env.TVLENS_LOCAL_INSPECTION_MODEL || null,
+    ...(env.TVLENS_LOCAL_INSPECTION_THINK ? { think: env.TVLENS_LOCAL_INSPECTION_THINK } : {}),
+    numCtx: env.TVLENS_LOCAL_INSPECTION_NUM_CTX ? Number(env.TVLENS_LOCAL_INSPECTION_NUM_CTX) : undefined,
+    keepAlive: env.TVLENS_LOCAL_INSPECTION_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_INSPECTION_TOKEN || null };
 }
 function localQuestionsConfig(env) {
   return { url: env.TVLENS_LOCAL_QUESTIONS_URL || null, model: env.TVLENS_LOCAL_QUESTIONS_MODEL || null,

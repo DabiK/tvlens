@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { createSessionInspection } = require('../runtime/session-providers.cjs');
+const { createSessionInspection, createSessionPerception } = require('../runtime/session-providers.cjs');
+const { loadConfig } = require('../adapters/config.cjs');
 const { CodexPerception } = require('../adapters/codex-perception.cjs');
 const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
 
@@ -61,14 +62,15 @@ function content() {
 function body(value = content()) {
   return JSON.stringify({ message: { content: JSON.stringify(value) }, ...timings });
 }
-async function bench(t, { handler, fetchImpl, now, transcribe } = {}) {
+async function bench(t, { handler, fetchImpl, now, transcribe, configure = config => config } = {}) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-local-inspection-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  const calls = [], speech = [], agents = [];
+  const calls = [], speech = [], agents = [], transports = [];
   const server = http.createServer((req, res) => {
     const chunks = [];
     req.on('data', chunk => chunks.push(chunk)).on('end', () => {
       calls.push(JSON.parse(Buffer.concat(chunks).toString()));
+      transports.push({ path: req.url, authorization: req.headers.authorization });
       if (handler) handler(calls.at(-1), res);
       else res.end(body());
     });
@@ -88,8 +90,9 @@ fs.copyFileSync(args[args.indexOf('-i') + 1], args.at(-1).replace('%03d', '001')
   audio.writeUInt32LE(16, 16); audio.writeUInt16LE(1, 20); audio.writeUInt16LE(1, 22);
   audio.writeUInt32LE(16000, 24); audio.writeUInt32LE(32000, 28); audio.writeUInt16LE(2, 32); audio.writeUInt16LE(16, 34);
   audio.write('data', 36); audio.writeUInt32LE(audio.length - 44, 40);
-  const built = createSessionInspection(options({ config: { inspectionBackend: 'local', ffmpeg: decoder,
-    localVlm: { url: url + '/PRIVATE_PATH', model: 'vision-local', token: 'PRIVATE_SECRET', numCtx: 8192 } },
+  const config = await configure({ inspectionBackend: 'local', ffmpeg: decoder,
+    localVlm: { url: url + '/PRIVATE_PATH', model: 'vision-local', token: 'PRIVATE_SECRET', numCtx: 8192 } });
+  const built = createSessionInspection(options({ config,
   store: { file: id => path.join(root, id + '.webm'), read: async () => ({ audio, frames: [] }) },
   transcriber: { transcribe: async bytes => {
     speech.push(bytes.length);
@@ -113,10 +116,120 @@ fs.copyFileSync(args[args.indexOf('-i') + 1], args.at(-1).replace('%03d', '001')
   ] });
   const tools = (signal, inspector = built.inspector) => new VideoTools({ consultation, inspector, signal,
     media: { lease: async () => { leases++; return async () => { leases--; }; } } });
-  return { ...built, calls, agents, tools, speech, leases: () => leases, identity: {
+  return { ...built, config, calls, transports, agents, tools, speech, leases: () => leases, identity: {
     role: 'inspection', backend: 'ollama', model: 'vision-local', host: new URL(url).host, numCtx: 8192, think: 'default',
   } };
 }
+
+test('composed clip reexamination sends its dedicated model and settings while perception keeps its own', async t => {
+  const perceptionCalls = [], perceptionTransports = [];
+  const server = http.createServer((req, res) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk)).on('end', () => {
+      perceptionCalls.push(JSON.parse(Buffer.concat(chunks).toString()));
+      perceptionTransports.push({ path: req.url, authorization: req.headers.authorization });
+      res.end(body({ summary: 'Un geste visible.', visual: 'Un geste visible.', topic: 'Un geste',
+        uncertainty: '', continuity: 'change', topicSummary: 'Un geste visible.' }));
+    });
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => { server.closeAllConnections(); server.close(resolve); }));
+  const perceptionUrl = 'http://127.0.0.1:' + server.address().port;
+  const f = await bench(t, { configure: async original => {
+    const config = await loadConfig({ userData: '/unused', safeStorage: { isEncryptionAvailable: () => false }, environment: {
+      TVLENS_PERCEPTION_BACKEND: 'local', TVLENS_INSPECTION_BACKEND: 'local',
+      TVLENS_LOCAL_VLM_URL: perceptionUrl + '/PRIVATE_PATH', TVLENS_LOCAL_VLM_MODEL: 'modele-a',
+      TVLENS_LOCAL_VLM_NUM_CTX: '8192', TVLENS_LOCAL_VLM_KEEP_ALIVE: '10m', TVLENS_LOCAL_VLM_THINK: 'on',
+      TVLENS_LOCAL_INSPECTION_URL: original.localVlm.url.replace('/PRIVATE_PATH', '/INSPECTION_PATH'),
+      TVLENS_LOCAL_INSPECTION_MODEL: 'modele-b', TVLENS_LOCAL_INSPECTION_NUM_CTX: '16384',
+      TVLENS_LOCAL_INSPECTION_KEEP_ALIVE: '2m', TVLENS_LOCAL_INSPECTION_THINK: 'off', TVLENS_LOCAL_INSPECTION_TOKEN: 'INSPECTION_SECRET',
+    } });
+    return { ...config, ffmpeg: original.ffmpeg };
+  } });
+  const perception = createSessionPerception({ ...options({ config: f.config }), overrides: {} }, {
+    CodexPerception: class extends CodexPerception {
+      constructor(settings) {
+        assert.ok(settings.agent instanceof LocalVlmAgent);
+        super(settings);
+      }
+    },
+  });
+  t.after(() => perception.close());
+  const observation = await perception.observeVisual({ id: 'moment-1', startMs: 0, endMs: 8000, frames: [] });
+  const tools = f.tools();
+  await tools.call('inspect_clip', request);
+  assert.deepEqual([...perceptionCalls, ...f.calls].map(input => [input.model, input.options.num_ctx, input.keep_alive, input.think]),
+    [['modele-a', 8192, '10m', true], ['modele-b', 16384, '2m', false]]);
+  assert.deepEqual([...perceptionTransports, ...f.transports], [
+    { path: '/PRIVATE_PATH/api/chat', authorization: undefined },
+    { path: '/INSPECTION_PATH/api/chat', authorization: 'Bearer INSPECTION_SECRET' },
+  ]);
+  assert.equal(f.calls[0].messages[0].images.length, 1);
+  assert.equal(observation.metrics.backend.model, 'modele-a');
+  const diagnostic = tools.toolMetrics[0].inspection;
+  assert.deepEqual(f.inspector.identity, { role: 'inspection', backend: 'ollama', model: 'modele-b',
+    host: new URL(f.config.localInspectionVlm.url).host, numCtx: 16384, think: 'off' });
+  assert.equal(diagnostic.model, 'modele-b');
+  assert.equal(diagnostic.host, f.inspector.identity.host);
+  assert.notEqual(diagnostic.host, observation.metrics.backend.host);
+  assert.equal(diagnostic.modelCalled, true);
+  assert.doesNotMatch(JSON.stringify(diagnostic), /INSPECTION_PATH|INSPECTION_SECRET/);
+});
+
+test('without a dedicated model every inspection request and identity keeps the complete perception configuration', async t => {
+  const f = await bench(t, { configure: config => ({ ...config, localInspectionVlm: {
+    url: 'INVALID_UNUSED_URL', numCtx: NaN, keepAlive: 'unused', think: 'INVALID_UNUSED_THINK', token: 'UNUSED_SECRET',
+  }, localVlm: { ...config.localVlm, think: 'on', keepAlive: '3m' } }) });
+  const tools = f.tools();
+  await tools.call('inspect_clip', request);
+  assert.deepEqual(f.inspector.identity, { ...f.identity, think: 'on' });
+  const [input] = f.calls;
+  assert.equal(f.calls.length, 1);
+  assert.deepEqual([input.model, input.options.num_ctx, input.keep_alive, input.think], ['vision-local', 8192, '3m', true]);
+  assert.deepEqual(f.transports, [{ path: '/PRIVATE_PATH/api/chat', authorization: 'Bearer PRIVATE_SECRET' }]);
+  assert.deepEqual(tools.observations[0].inspection, f.inspector.identity);
+});
+
+test('dedicated inspection refuses incomplete or invalid settings by name before constructing any provider', async () => {
+  const forbidden = class { constructor() { assert.fail('invalid inspection must construct no provider'); } };
+  const valid = { url: 'http://127.0.0.1:9', model: 'modele-b' };
+  for (const invalid of [
+    { url: null }, { url: 'INVALID_PRIVATE_URL' }, { url: 'file:///PRIVATE_PATH' },
+    { url: 'http://PRIVATE_USER:PRIVATE_PASSWORD@127.0.0.1:9' }, { model: ' ' },
+    { numCtx: NaN }, { numCtx: 0 }, { numCtx: 1.5 }, { token: 'PRIVATE_SECRET\r\n' },
+    { think: 'PRIVATE_INVALID_VALUE' },
+  ]) {
+    const config = { ...options().config, localInspectionVlm: { ...valid, ...invalid } };
+    assert.throws(() => createSessionInspection(options({ config }), { CodexPerception: forbidden, LocalVlmAgent: forbidden }), error => {
+      assert.ok(['TVLENS_INSPECTION_CONFIG_INVALID', 'TVLENS_LOCAL_THINK_INVALID'].includes(error.code));
+      assert.match(error.message, /TVLENS_LOCAL_INSPECTION_/);
+      assert.doesNotMatch(error.message, /PRIVATE/);
+      return true;
+    });
+  }
+});
+
+test('an unreachable dedicated inspection returns a named failure without calling the perception model or Codex', async t => {
+  const f = await bench(t, { configure: config => ({ ...config,
+    localVlm: { ...config.localVlm, keepAlive: '3m', think: 'on' }, localInspectionVlm: {
+    url: config.localVlm.url.replace('/PRIVATE_PATH', '/INSPECTION_PATH'), model: 'modele-b',
+  } }), handler: (_input, res) => res.destroy() });
+  const tools = f.tools();
+  await assert.rejects(tools.call('inspect_clip', request), { code: 'TVLENS_LOCAL_VLM_UNREACHABLE' });
+  assert.deepEqual(f.calls.map(input => input.model), ['modele-b']);
+  assert.deepEqual(f.transports, [{ path: '/INSPECTION_PATH/api/chat', authorization: undefined }]);
+  assert.equal(Object.hasOwn(f.calls[0].options, 'num_ctx'), false);
+  assert.equal(Object.hasOwn(f.calls[0], 'think'), false);
+  assert.equal(f.calls[0].keep_alive, '10m');
+  assert.deepEqual(f.inspector.identity, { role: 'inspection', backend: 'ollama', model: 'modele-b',
+    host: new URL(f.config.localInspectionVlm.url).host, think: 'default' });
+  assert.equal(f.inspectorModel.model, 'modele-b');
+  const diagnostic = tools.toolMetrics[0].inspection;
+  assert.equal(diagnostic.model, 'modele-b');
+  assert.equal(diagnostic.failure.code, 'TVLENS_LOCAL_VLM_UNREACHABLE');
+  assert.equal(f.inspector.cache.size, 0);
+  assert.equal(f.leases(), 0);
+});
 
 test('real tools send contact sheets to fake Ollama, admit bounded evidence and preserve provenance through cache and revocation', async t => {
   const f = await bench(t);

@@ -91,16 +91,17 @@ function createSessionInspection(
   validateInspectionSelection(config, { smoke, liveInspection, localInspection });
   const make = { ...inspectionProviders, ...dependencies };
   const local = config.inspectionBackend === "local";
+  const settings = local ? localInspectionVlmSettings(config) : null;
   const inspectorModel = localInspection
     ? make.simulatedInspectionModel()
     : new make.CodexPerception({
         binary: codexBinary,
         authHome: config.codexAuthHome,
-        model: local ? config.localVlm.model : selectedModels.inspectionModel,
+        model: local ? settings.model : selectedModels.inspectionModel,
         transcriber,
         quota,
         sessionId: id + "-inspect",
-        ...(local ? { agent: localVlmAgent(config.localVlm, make.LocalVlmAgent) } : {}),
+        ...(local ? { agent: localVlmAgent(settings, make.LocalVlmAgent) } : {}),
       });
   const inner =
     smoke && !liveInspection && !localInspection
@@ -119,7 +120,7 @@ function createSessionInspection(
   // the model; whatever it brings back despite that is neither answered nor left in the cache.
   const inspector = new make.RevocableInspector(
     new make.CachedInspector(new InspectionDiagnostics(inner, inspectionIdentity({
-      config, inspectorModel, smoke, liveInspection, localInspection,
+      config, settings, inspectorModel, smoke, liveInspection, localInspection,
     }))),
     REVOKED,
   );
@@ -133,17 +134,30 @@ function validateInspectionSelection(config, { smoke, liveInspection, localInspe
       code: "TVLENS_INSPECTION_CONFIG_INVALID",
     });
   }
-  if (config.inspectionBackend === "local") validateOllamaConfig(config.localVlm);
 }
 
-function inspectionIdentity({ config, inspectorModel, smoke, liveInspection, localInspection }) {
+function localInspectionVlmSettings(config) {
+  // Seul un modèle dédié active le rôle : sans lui, tous les réglages historiques restent ensemble.
+  const dedicated = Boolean(config.localInspectionVlm?.model);
+  const settings = dedicated ? config.localInspectionVlm : config.localVlm;
+  try { validateOllamaConfig(settings); } catch (error) {
+    if (!dedicated) throw error;
+    throw Object.assign(Error('TVLENS_LOCAL_INSPECTION_* : URL http(s) sans identifiants, modèle, contexte et jeton valides requis.'), {
+      code: 'TVLENS_INSPECTION_CONFIG_INVALID',
+    });
+  }
+  normalizeThink(settings.think, dedicated ? 'TVLENS_LOCAL_INSPECTION_THINK' : 'TVLENS_LOCAL_VLM_THINK');
+  return settings;
+}
+
+function inspectionIdentity({ config, settings, inspectorModel, smoke, liveInspection, localInspection }) {
   const role = "inspection";
   if (localInspection || (smoke && !liveInspection))
     return { role, backend: "simulation", model: null, mode: localInspection ? "localInspection" : "smoke" };
   if (config.inspectionBackend !== "local") return { role, backend: "codex", model: inspectorModel.model || null };
-  const { model, url, numCtx, think } = config.localVlm;
+  const { model, url, numCtx, think } = settings;
   return { role, backend: "ollama", model, host: new URL(url).host,
-    think: normalizeThink(think, 'TVLENS_LOCAL_VLM_THINK'), ...(numCtx ? { numCtx } : {}) };
+    think: think ?? 'default', ...(numCtx ? { numCtx } : {}) };
 }
 
 function localVlmAgent(settings = {}, Agent = LocalVlmAgent) {

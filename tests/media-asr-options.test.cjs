@@ -159,6 +159,7 @@ test('configuration exposes the latency switches with safe defaults and leaves e
  assert.deepEqual(added(bare), { whisperAudioCtx: undefined, visionDuringAsk: true, backgroundIndex: true, perceptionBackend: 'codex', localVlm: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null } });
  assert.deepEqual(existing(bare), { apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true,
   inspectionBackend: 'codex',
+  localInspectionVlm: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null },
   embeddingsBackend: undefined, localEmbeddings: { url: null, model: null, token: null },
   questionsBackend: 'codex', localQuestions: { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null },
   codexAuthHome: null, whisperModel: null, whisperThreads: undefined, whisperBinary: '/usr/bin/whisper-cli', ffmpeg: '/usr/bin/ffmpeg',

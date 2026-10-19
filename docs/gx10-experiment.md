@@ -137,11 +137,14 @@ TVLENS_BACKGROUND_INDEX=1
 | Perception | `TVLENS_PERCEPTION_BACKEND=codex` (défaut) ou `local` ; `TVLENS_LOCAL_VLM_*` | Choix inconnu/incomplet refusé. |
 | Questions T263/T267 | `TVLENS_QUESTIONS_BACKEND=codex` (défaut) ou `local` | `TVLENS_LOCAL_QUESTIONS_*` ; aucun repli distant. |
 | Embeddings T264 | `TVLENS_EMBEDDINGS_BACKEND=local`, `openrouter` ou `disabled` | `openrouter` exige une clé ; backend inconnu refusé. |
-| Inspection T265 | `TVLENS_INSPECTION_BACKEND=codex` (défaut) ou `local` | Local utilise `localVlm`, avec un agent propre ; conflit avec simulation refusé. |
-| Raisonnement perception/réexamen | `TVLENS_LOCAL_VLM_THINK=default`, `on` ou `off` | Autre valeur refusée, réglage nommé. |
+| Inspection | `TVLENS_INSPECTION_BACKEND=codex` (défaut) ou `local` | Agent propre ; conflit avec simulation refusé ; aucun repli en cas d'échec local. |
+| Modèle de réexamen local | `TVLENS_LOCAL_INSPECTION_MODEL` et `_URL` | Modèle absent : tous les réglages `TVLENS_LOCAL_VLM_*` restent utilisés. Modèle présent : URL propre requise et validée ; aucun héritage des réglages de perception. |
+| Paramètres de réexamen local | `TVLENS_LOCAL_INSPECTION_NUM_CTX`, `_KEEP_ALIVE`, `_TOKEN` | Facultatifs ; mêmes règles que la perception. Diagnostic : modèle et hôte réellement sélectionnés. |
+| Raisonnement perception | `TVLENS_LOCAL_VLM_THINK=default`, `on` ou `off` | Utilisé aussi par le réexamen sans modèle dédié ; autre valeur refusée, réglage nommé. |
+| Raisonnement réexamen dédié | `TVLENS_LOCAL_INSPECTION_THINK=default`, `on` ou `off` | Indépendant de la perception ; valeur invalide refusée avec le nom du réglage. |
 | Raisonnement questions | `TVLENS_LOCAL_QUESTIONS_THINK=default`, `on` ou `off` | Indépendant du réglage VLM. |
 
-Pour ces deux réglages, `default` ou l’absence omet le champ `think` de `/api/chat` ; le modèle
+Pour ces réglages de raisonnement, `default` ou l’absence omet le champ `think` de `/api/chat` ; le modèle
 garde son défaut. `on` transmet `think:true`, `off` transmet `think:false`, à chaque tour, y compris
 après un outil ou une redemande de langue. Une variable vide garde le choix importé, comme les
 autres réglages. Ces choix persistent avec le fichier importé ; l’environnement reste prioritaire.
@@ -160,7 +163,7 @@ n’ont aucun réglage de raisonnement et leurs requêtes restent sans champ `th
 Pour perception/questions/inspection locales : URL `http(s)` sans identifiants, modèle non vide,
 `NUM_CTX` entier strictement positif si fourni. `KEEP_ALIVE` est transmis tel quel au fournisseur,
 avec `10m` par défaut ; il n’est pas validé comme une durée par le chargeur. Consigner sa valeur
-réellement acceptée. Les jetons facultatifs `TVLENS_LOCAL_VLM_TOKEN`, `TVLENS_LOCAL_QUESTIONS_TOKEN`,
+réellement acceptée. Les jetons facultatifs `TVLENS_LOCAL_VLM_TOKEN`, `TVLENS_LOCAL_INSPECTION_TOKEN`, `TVLENS_LOCAL_QUESTIONS_TOKEN`,
 `TVLENS_LOCAL_EMBEDDINGS_TOKEN` viennent du fichier privé ou de l’environnement ; ils ne sont pas
 persistés dans le cache. Le transport partagé refuse notamment les retours ligne dans les jetons.
 Le timeout embeddings est un entier de 1 à 2 147 483 647 ms, défaut 30 000 ; ce budget fournisseur

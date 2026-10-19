@@ -8,6 +8,35 @@ const {loadConfig} = require('../adapters/config.cjs');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 
+test('dedicated inspection settings persist independently while tokens and environment overrides remain temporary', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-inspection-model-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const configPath = path.join(root, 'inspection.env');
+  const environment = { TVLENS_INSPECTION_BACKEND: 'local', TVLENS_LOCAL_VLM_MODEL: 'modele-a',
+    TVLENS_LOCAL_INSPECTION_URL: 'http://127.0.0.1:9/private', TVLENS_LOCAL_INSPECTION_MODEL: 'modele-b',
+    TVLENS_LOCAL_INSPECTION_NUM_CTX: '16384', TVLENS_LOCAL_INSPECTION_KEEP_ALIVE: '2m',
+    TVLENS_LOCAL_INSPECTION_TOKEN: 'FILE_SECRET', TVLENS_LOCAL_INSPECTION_THINK: 'off' };
+  await fs.writeFile(configPath, Object.entries(environment).map(([key, value]) => `${key}=${value}`).join('\n'));
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  const expected = { url: environment.TVLENS_LOCAL_INSPECTION_URL, model: 'modele-b', numCtx: 16384,
+    keepAlive: '2m', token: 'FILE_SECRET', think: 'off' };
+  const bare = await load({ safeStorage: { isEncryptionAvailable: () => false }, environment });
+  assert.deepEqual(bare.localInspectionVlm, expected);
+  assert.equal(Object.hasOwn(bare, 'localInspection'), false);
+  const imported = await load({ configPath, environment: { TVLENS_LOCAL_INSPECTION_MODEL: 'env-model',
+    TVLENS_LOCAL_INSPECTION_TOKEN: 'ENV_SECRET', TVLENS_LOCAL_INSPECTION_THINK: 'on' } });
+  assert.deepEqual(imported.localInspectionVlm, { ...expected, model: 'env-model', token: 'ENV_SECRET', think: 'on' });
+  assert.equal(imported.localVlm.model, 'modele-a');
+  assert.doesNotMatch(await fs.readFile(path.join(root, 'provider.enc'), 'utf8'), /FILE_SECRET|ENV_SECRET|env-model/);
+  const restored = await load();
+  assert.deepEqual(restored.localInspectionVlm, { ...expected, token: null });
+  const empty = await load({ environment: { TVLENS_LOCAL_INSPECTION_MODEL: '', TVLENS_LOCAL_INSPECTION_THINK: '' } });
+  assert.deepEqual(empty.localInspectionVlm, restored.localInspectionVlm);
+  const defaults = await load({ safeStorage: { isEncryptionAvailable: () => false } });
+  assert.deepEqual(defaults.localInspectionVlm, { url: null, model: null, numCtx: undefined, keepAlive: undefined, token: null });
+});
+
 test('local thinking settings persist independently while startup overrides remain temporary', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-thinking-config-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
