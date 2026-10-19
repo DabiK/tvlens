@@ -2,7 +2,7 @@
 id: T220
 titre: Move the memory root to core/memory/viewing-memory.cjs as ViewingMemory
 statut: a-faire
-bloque_par: T225, T223, T216, T217, T218, T301, T303, T304, T305, T306
+bloque_par: T225, T223, T216, T217, T218, T301, T303, T304, T305, T306, T309
 adr: oui
 installe: non
 harnais: non
@@ -89,3 +89,11 @@ second lot de retrait de rétention et la décision déjà reçue.
 
 ## Journal
 - 19/10, propriétaire : attend le chantier « son seul » (T297 à T301), traité en premier.
+- 19/10, Codex : condition préalable non satisfaite à `8d64bb6` : `core/session.cjs` conserve
+  `complexity: 3` et `no-nested-ternary: 1` dans `eslint-suppressions.json` ; aucune entrée au chemin cible.
+  Arrêt avant déplacement conformément au périmètre. Relevé JSON, commande exacte, inventaire des importeurs
+  et proposition de nettoyage séparé consignés dans `.harness-state/tickets/T220/`.
+- 19/10, Codex : `node scripts/check.mjs` : `check : vert`, 154 fichiers JavaScript,
+  3 031 tests JS et 71 tests Python réussis ; sortie dans `.harness-state/tickets/T220/check-complet.log`.
+  Verdict `BLOQUÉ` déposé : nettoyage séparé des quatre suppressions requis avant reprise, aucun code modifié.
+- 19/10, orchestrateur : nettoyage préalable confié à T309 ; ce ticket repart à faire après lui.

@@ -2,7 +2,7 @@
 id: T293
 titre: Let a restarted loop accept options saved before a new option existed
 statut: a-faire
-bloque_par: T301, T303, T304, T305, T306
+bloque_par: T301, T303, T304, T305, T306, T309, T227
 adr: non
 installe: non
 harnais: oui
