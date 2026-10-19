@@ -48,7 +48,9 @@ function validateRemote(input) {
         throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Cadrage invalide.');
     }
   }
-  if (input.media?.video === false && (!input.audio || input.media.audio === false))
+  if (input.media?.audio === false)
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Le bloc déclaré doit contenir du son.');
+  if (input.media?.video === false && !input.audio)
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Le bloc déclaré son seul doit contenir du son.');
   if (input.audio) base64(input.audio, REMOTE_MEDIA_LIMITS.maxAudioBytes);
   validated.add(input);

@@ -7,6 +7,7 @@ const {
 const {
   TVLENS_CAPTURE_TIME_INVALID,
   TVLENS_CAPTURE_ORDER_INVALID,
+  TVLENS_CAPTURE_AUDIO_REQUIRED,
   TVLENS_SESSION_STOPPED,
 } = require("../core/session.cjs");
 const {
@@ -61,6 +62,7 @@ const PUBLIC_CODES = new Map([
   [TVLENS_QUESTION_INTERVAL_INVALID, "invalid-question-interval"],
   [TVLENS_CAPTURE_TIME_INVALID, "invalid-capture-time"],
   [TVLENS_CAPTURE_ORDER_INVALID, "invalid-capture-order"],
+  [TVLENS_CAPTURE_AUDIO_REQUIRED, "capture-audio-required"],
   [TVLENS_SESSION_STOPPED, "session-stopped"],
   [TVLENS_MOMENT_SELECTION_INVALID, "invalid-moment-selection"],
   [TVLENS_MOMENT_MISSING, "moment-missing"],

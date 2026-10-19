@@ -167,6 +167,51 @@ test('HTTP ingestion refuses missing or denied sound in a declared sound-only bl
   assert.equal(f.server.accepted.size, 0);
 });
 
+test('HTTP ingestion refuses a block with images declared without sound before preparation', async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  const media = new RemoteMedia(), assemble = t.mock.method(media, 'assemble');
+  const entries = [];
+  const f = await fixture(t, { media, logError: entry => entries.push(entry) });
+  const { id } = (await f.req('/v1/session/start', {})).value;
+  const scratch = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-denied-audio-'));
+  t.after(() => fs.rm(scratch, { recursive: true, force: true }));
+  t.mock.method(os, 'tmpdir', () => scratch);
+  const data = (await require('sharp')({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer())
+    .toString('base64');
+  const response = await f.req('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 1000,
+    frames: [{ atMs: 0, data }], audio: soundWav().toString('base64'), media: { audio: false } });
+  assert.equal(response.status, 400);
+  assert.equal(response.value.code, 'invalid-media-block');
+  assert.equal(response.value.error, 'Le bloc déclaré doit contenir du son.');
+  assert.equal(assemble.mock.callCount(), 0);
+  assert.deepEqual(await fs.readdir(scratch), []);
+  assert.deepEqual(f.runtime.session.memory.view().passages, []);
+  await assert.rejects(fs.stat(f.runtime.session.store.mediaRoot), { code: 'ENOENT' });
+  assert.equal(f.runtime.admitted.size, 0);
+  assert.equal(f.server.accepted.size, 0);
+  assert.deepEqual(entries, []);
+});
+
+test('HTTP ingestion exposes a core sound requirement refusal as a named client error', async t => {
+  const entries = [];
+  const f = await fixture(t, { logError: entry => entries.push(entry), media: {
+    assemble: async input => ({ ...input, clip: Buffer.from('fixture'), audio: new Uint8Array([1]),
+      frames: [{ atMs: input.startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], media: { audio: false } }),
+  } });
+  const { id } = (await f.req('/v1/session/start', {})).value;
+  const response = await f.req('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 1000,
+    frames: [{ atMs: 0, data: 'YQ==' }] });
+  assert.equal(response.status, 400);
+  assert.equal(response.value.code, 'capture-audio-required');
+  assert.equal(response.value.error, 'Le passage déclaré doit contenir du son.');
+  assert.deepEqual(entries, []);
+  assert.deepEqual(f.runtime.session.memory.view().passages, []);
+  assert.equal(f.runtime.admitted.size, 0);
+  assert.equal(f.server.ingesting, false);
+  assert.equal(f.server.accepted.size, 0);
+  await assert.rejects(fs.stat(f.runtime.session.store.mediaRoot), { code: 'ENOENT' });
+});
+
 test('HTTP ingestion refuses images contradicting a sound-only declaration before preparation', async t => {
   const { RemoteMedia } = require('../adapters/remote-media.cjs');
   const media = new RemoteMedia(), assemble = t.mock.method(media, 'assemble');
