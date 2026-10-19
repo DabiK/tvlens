@@ -2,7 +2,7 @@
 id: T302
 titre: Check sound-only analysis live on Netflix
 statut: a-faire
-bloque_par: T300, T301
+bloque_par: T300, T301, T303
 adr: non
 installe: non
 harnais: non

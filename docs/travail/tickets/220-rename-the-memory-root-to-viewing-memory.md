@@ -2,7 +2,7 @@
 id: T220
 titre: Move the memory root to core/memory/viewing-memory.cjs as ViewingMemory
 statut: a-faire
-bloque_par: T225, T223, T216, T217, T218, T301
+bloque_par: T225, T223, T216, T217, T218, T301, T303
 adr: oui
 installe: non
 harnais: non
