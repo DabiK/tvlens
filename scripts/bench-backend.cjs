@@ -51,16 +51,18 @@ function passage(i, archived) {
     thumbnailAvailable: true, audioMs: 5200, visionMs: 4100, transcriptPublishedMs: endMs + 5600 };
   return archived ? { ...base, ...stamps, summary: observation.summary } : { ...base, ...stamps, hasAudio: true, available: true, analysisMs: 9300, metrics };
 }
-function populatedSession(count) {
+async function populatedSession(count) {
   const { ViewingMemory } = load('core/memory/index.cjs');
-  let saved = 0;
+  let saves = 0;
   const watch = new ViewingMemory({ id: 'bench', now: () => 2000 + count * 8000,
     perception: { transcribe: async () => ({}), observeVisual: async () => ({}) },
     media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} },
-    archive: { save: async () => { saved++; } } });
+    archive: { save: async () => { saves++; } } });
   const live = Math.min(count, 37); // five minutes of 8 s passages stay detailed
-  for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
-  watch.sequence = count;
+  const saved = { id: watch.id, retention: 'until-deleted', history: [], segments: [] };
+  for (let i = 0; i < count; i++) (i < count - live ? saved.history : saved.segments).push(passage(i, i < count - live));
+  watch.restore(saved, { hasMedia: () => true });
+  await watch.resume();
   return watch;
 }
 
@@ -70,7 +72,7 @@ async function benchState() {
   const { perceptionContext } = load('core/perception-context.cjs');
   const rows = [];
   for (const count of [75, 450, 900, 1800]) {
-    const watch = populatedSession(count);
+    const watch = await populatedSession(count);
     const snapshot = watch.snapshot(), view = watch.memoryView();
     const state = () => {
       const session = watch.snapshot();
@@ -85,7 +87,7 @@ async function benchState() {
       statePollMs: timeSync(() => JSON.stringify(state())),
       statePollBytes: Buffer.byteLength(payload),
       questionToolsMs: timeSync(() => new VideoTools({ consultation: consultationOf(view), search: {}, inspector: {}, media: {} })),
-      perceptionContextMs: timeSync(() => perceptionContext(watch, watch.segments.at(-1))) });
+      perceptionContextMs: timeSync(() => perceptionContext(snapshot, snapshot.segments.at(-1))) });
   }
   return rows;
 }

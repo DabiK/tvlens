@@ -467,3 +467,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0063](adr/0063-la-racine-de-memoire-se-nomme-viewing-memory-et-se-construit-par-son-entree-publique.md) :
   La racine se nomme ViewingMemory dans la Mémoire et se construit par son entrée publique ;
   ses dépendances encore plates restent contrôlées par des exceptions exactes.
+
+- [ADR 0064](adr/0064-la-memoire-parle-de-passages-et-traduit-ses-noms-historiques-aux-frontieres.md) :
+  La Mémoire parle de passages en interne ; les noms historiques des archives, de `/v1/state` et des médias
+  sont traduits à des frontières explicites, et les appelants consultent par l’accès public et fabriquent leurs jeux par `restore`.

@@ -295,10 +295,11 @@ test('the session runtime feeds published passages to the index, honours the opt
   assert.equal(fed.transcriber.audioCtx, 512);
   await fed.watch.ingest(block);
   await until(
-    () => fed.watch.segments[0].status === 'ready' && fed.search.index.status().pending === 1,
+    () => fed.watch.snapshot().segments[0].status === 'ready' && fed.search.index.status().pending === 1,
     'published passage queued for indexing',
   );
-  assert.deepEqual([fed.search.index.status().pending, fed.watch.segments[0].status], [1, 'ready'], 'the published passage waits in the background queue');
+  assert.deepEqual([fed.search.index.status().pending, fed.watch.snapshot().segments[0].status], [1, 'ready'],
+    'the published passage waits in the background queue');
   await fed.close();
   await turns(6);
   assert.equal(fed.search.index.status().closed, true);
@@ -306,7 +307,7 @@ test('the session runtime feeds published passages to the index, honours the opt
   const silent = build({ backgroundIndex: false });
   assert.equal(silent.watch.visionDuringAsk, false);
   await silent.watch.ingest(block);
-  await until(() => silent.watch.segments[0].status === 'ready', 'passage ready with background indexing disabled');
+  await until(() => silent.watch.snapshot().segments[0].status === 'ready', 'passage ready with background indexing disabled');
   await turns(6);
   assert.equal(silent.search.index.status().pending, 0, 'opted out: only a search may request an embedding');
   await silent.close();

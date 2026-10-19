@@ -5,6 +5,8 @@ const { HeadlessRuntime } = require('../../runtime/headless-runtime.cjs');
 const { createSessionRuntime } = require('../../runtime/session-runtime.cjs');
 const { RemoteServer } = require('../../server/http.cjs');
 const input = require('../fixtures/state-view-memory.json');
+const { createMemoryView, readMemoryPassage, readMemoryPassages, recentMemoryPassages } = require('../../core/memory/index.cjs');
+const { memoryState } = require('../../scripts/memory-fixture.cjs');
 
 const TOKEN = 's'.repeat(64);
 const SCENARIO_TITLE = 'Session du 21 sept. 2026, 16:13';
@@ -30,8 +32,6 @@ async function stateViewScenario(t) {
   await session.store.saveManifest({ title: SCENARIO_TITLE });
   const state = structuredClone(input);
   Object.assign(session.watch, {
-    history: state.history, segments: state.segments, losses: state.losses,
-    sequence: state.history.length + state.segments.length,
     lastError: 'Dernière analyse indisponible.', saveError: 'Sauvegarde indisponible.',
     storageError: 'Stockage indisponible.',
   });
@@ -43,6 +43,16 @@ async function stateViewScenario(t) {
     return { pending: audioPending + visionPending, audioPending, visionPending, analyzing: true,
       visionBlockedMs: 1500 + Math.max(0, now - 500000) };
   });
+  // Faux port de consultation : les états en vol du témoin ne sont pas une archive à rouvrir.
+  // Les vrais scénarios de restauration et d'ingestion sont exercés dans les suites de mémoire.
+  const source = () => ({ ...memoryState({ ...state, elapsedMs: clock }),
+    losses: state.losses, storageError: session.watch.storageError,
+    perceptionState: now => session.watch.perceptionState(now),
+  });
+  t.mock.method(session.memory, 'view', () => createMemoryView(source()));
+  t.mock.method(session.memory, 'passage', id => readMemoryPassage(source(), id));
+  t.mock.method(session.memory, 'passages', ids => readMemoryPassages(source(), ids));
+  t.mock.method(session.memory, 'recentPassages', limit => recentMemoryPassages(source(), limit));
   clock = input.elapsedMs;
   runtime.adopt(session, Array.from({ length: 35 }, (_, i) => ({
     id: `deep-${i + 1}`, question: `Question ${i + 1} ?`, status: 'done', createdAt: 1000 + i,

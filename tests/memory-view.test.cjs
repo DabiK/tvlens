@@ -268,10 +268,11 @@ test('bounded reads project only one passage or the requested retained tail with
 test('a bounded read by identifiers publishes the identity, the clock and the requested passages without the complete view', t => {
   const f = fixture(t);
   assert.equal(typeof f.watch.memoryPassages, 'function');
+  const unrequested = savedPassage(2);
   f.watch.restore({
     id: 'session', retention: 'until-deleted', history: [savedPassage(1)],
     segments: [
-      savedPassage(2), savedPassage(3, { mediaReason: 'unreadable', available: false }),
+      unrequested, savedPassage(3, { mediaReason: 'unreadable', available: false }),
       savedPassage(4, { revision: undefined, status: 'partial', audioStatus: 'ready', visionStatus: 'analyzing' }),
       savedPassage(5, { status: 'error', observation: null, summary: null }),
     ],
@@ -279,7 +280,7 @@ test('a bounded read by identifiers publishes the identity, the clock and the re
   f.time = 7000;
   const expected = f.watch.memoryView();
   let unrequestedReads = 0;
-  Object.defineProperty(f.watch.segments[0].observation, 'visual', {
+  Object.defineProperty(unrequested.observation, 'visual', {
     enumerable: true,
     get() {
       unrequestedReads++;
@@ -300,6 +301,9 @@ test('a bounded read by identifiers publishes the identity, the clock and the re
   assert.deepEqual(read.passages.map(p => [p.origin, p.revision, p.availability.reason]),
     [['retained', null, null], ['history', 7, 'missing'], ['retained', 7, 'unreadable']]);
   assert.equal(unrequestedReads, 0, 'a passage that is neither requested nor needed by the clock is never projected');
+  // The sentinel sits on what the memory holds: requesting that passage does trip it, so the zero above is not vacuous.
+  assert.equal(f.watch.memoryPassages(['moment-2']).passages[0].observation.visual, 'Image hors demande');
+  assert.ok(unrequestedReads > 0, 'reading the requested passage goes through the sentinel');
   assert.deepEqual(f.watch.memoryPassages([]), { session: { id: 'session' }, clock: expected.clock, passages: [] });
   for (const invalid of [undefined, 'moment-1', [1], new Set(['moment-1'])]) {
     assert.throws(() => f.watch.memoryPassages(invalid), { code: 'TVLENS_MEMORY_IDS_INVALID' });
@@ -537,10 +541,10 @@ test('processing header exposes held vision, pending counts and blocked duration
 
 test('consultation distinguishes explicit null metadata from absent metadata for historical projections', t => {
   const f = fixture(t);
-  f.watch.segments.push(
+  f.watch.restore({ id: 'session', retention: 'until-deleted', segments: [
     savedPassage(1),
     savedPassage(2, { audioStatus: null, visionStatus: null, audioError: null, visionError: null }),
-  );
+  ] }, { hasMedia: () => true });
   const view = f.watch.memoryView();
   assert.deepEqual(view.passages.map(p => p.explicitNulls), [[], ['audioStatus', 'visionStatus', 'audioError', 'visionError']]);
   view.passages[1].explicitNulls.push('summary');

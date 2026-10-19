@@ -39,14 +39,14 @@ test('capture continues with bounded analysis backlog and explicit skipped passa
   for (let i = 1; i < 9; i++) await f.add(i);
   assert.equal(f.watch.snapshot().audioPending, 6);
   assert.equal(f.files.size, 9);
-  assert.equal(f.watch.segments.filter(s => s.status === 'skipped').length, 2);
+  assert.equal(f.watch.snapshot().segments.filter(s => s.status === 'skipped').length, 2);
   gate.resolve(); await tick(); await tick();
 });
 
 test('upstream failure leaves media available and is visible', async () => {
   const f = fixture({ perception: { transcribe: async () => ({ observation: {} }), observeVisual: async () => { throw new Error('Quota atteint'); } } });
   await f.add(0); await tick();
-  assert.equal(f.watch.segments[0].status, 'error');
+  assert.equal(f.watch.snapshot().segments[0].status, 'error');
   assert.equal(f.watch.lastError, 'Quota atteint');
   assert.equal(f.files.has('moment-1'), true);
 });
@@ -77,3 +77,17 @@ for (const [condition, code, message, run] of [
     });
   });
 }
+
+test('a historical archive with a null history resumes after its orphan identifiers and refuses a repeated block', async t => {
+  const { toArchive, fromArchive } = require('../core/memory/index.cjs');
+  const f = fixture();
+  t.after(() => f.watch.close());
+  const historical = { id: 'session', history: null, segments: [], questions: null };
+  assert.deepEqual(fromArchive(toArchive(historical)), historical);
+  assert.doesNotThrow(() => f.watch.restore(toArchive(historical), { orphans: ['moment-7'] }));
+  assert.deepEqual(f.watch.memoryView().passages, []);
+  await f.watch.resume();
+  assert.equal(await f.add(0), 'moment-8');
+  await assert.rejects(f.add(0), { code: 'TVLENS_CAPTURE_ORDER_INVALID' });
+  assert.deepEqual(f.watch.snapshot().segments.map(p => p.id), ['moment-8']);
+});

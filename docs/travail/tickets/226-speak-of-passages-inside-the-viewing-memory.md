@@ -1,7 +1,7 @@
 ---
 id: T226
 titre: Speak of passages inside the viewing memory
-statut: a-faire
+statut: termine
 bloque_par: T220
 adr: oui
 installe: non
@@ -121,3 +121,87 @@ sont seulement adaptés, jamais exécutés dans ce lot.
   `.harness-state/archives/T226-quota-codex-20261019-2230/code.patch` (34 fichiers, `git apply --check` vérifié sur
   `d26337d`), état et preuves rouges/vertes dans `etat/` du même dossier. Reprise par Claude : appliquer ce patch,
   le relire contre ce ticket, le terminer et refaire les contrôles ; il n'est pas une preuve en soi.
+- 19/10, Claude (reprise) : patch Codex appliqué sur `1e43ebf` (`git apply`, 33 fichiers et non 34). Exploration
+  neuve dans `.harness-state/tickets/T226/exploration.md`, sans écart de périmètre :
+  - aucun accès réel restant aux listes ni à la séquence ;
+  - un rouge latent en `session-durable:275` ;
+  - sept lignes longues ;
+  - un cas `available: null` devenu vacant dans `memory-projection` ;
+  - une sentinelle de vue sans témoin positif ;
+  - des octets de banc modifiés par `mediaReason` ;
+  - ADR 0063 à compléter, sans 0064 (écart 4).
+
+  Écarts déclarés dans `ecarts.md` : périmètre élargi, faux port HTTP, bancs, ADR.
+- 19/10, implémenteur, corrections :
+  - le test de `session-durable` relit le snapshot ;
+  - lignes longues et instructions multiples ajoutées : scindées ;
+  - `core/passage-events.cjs` en passages ;
+  - publication d'un `available` nul prouvée par la projection : rouge avec la conservation du null neutralisée,
+    puis vert ;
+  - témoin positif de la sentinelle : rouge avec une copie profonde dans `restore`, puis vert ;
+  - mutation du contexte de `topic-summary` de nouveau prouvée.
+
+  Bancs hors ligne, HEAD extrait comparé à l'arbre (`bancs-avant-apres.md`) :
+  - seuls les octets en disposition historique changent : +32 o par passage d'historique dans l'archive, +24 o dans
+    le sondage ;
+  - la disposition durable et la disposition tout-en-segments sont à 0 o d'écart ;
+  - les états, sans `mediaReason`, sont identiques.
+
+  Suites touchées et liées en séquentiel : 34 fichiers, 0 échec. `node scripts/check.mjs` : vert, 3036 cas, à
+  contrôler de nouveau après la relecture.
+- 19/10, orchestrateur : ADR 0063 complété (vocabulaire interne et table des traductions). Noms historiques
+  restants, reliés à leur frontière :
+
+  | Nom historique | Frontière qui traduit |
+  | --- | --- |
+  | `segments`, `history` (`session.json` v1) | `ViewingMemory.restore` et `snapshot()`, convertisseurs `core/memory/archive.cjs` |
+  | `{ history, segments }` du contexte de perception | `contextFor` de la racine, `core/memory/viewing-memory.cjs` |
+  | `origin: 'history' \| 'retained'`, `coverage.historyPassages` et `retainedPassages` | vue `core/memory/memory-view.cjs` |
+  | `segments`, `history`, `questions`, `observation`, `moments` de `/v1/state` | projection `runtime/memory/memory-projection.cjs` |
+  | `moment-N`, `tvlens-media://`, `/v1/media` | `memory.passage(id)` du port de session, hôtes `app/main.cjs` et `server/session-routes.cjs` |
+  | `/v1/segments`, champ de transport `sequence` | `server/ingest-routes.cjs`, numérotation de transport sans lien avec `#passageSequence` |
+  | `CapturedSegment`, `TVLENS_CAPTURE_ORDER_INVALID` | entrée Capture, gardée par le ticket |
+
+  Faux objets d'hôte, à part : `server-routes`, `surveillance(-runtime)`, `mac-ui`, `moment-actions`,
+  `architecture-f04`, `evidence-refresh` et le faux port `tests/helpers/state-view-scenario.cjs` (écart 2).
+- 19/10, relecture 1 (`relecture-1.md`) : à corriger, 3 mineurs et 1 hors périmètre. Les écarts 1 à 4 sont acceptés.
+  - Mineurs :
+    - lectures média d'historique non prouvées sur les deux hôtes ;
+    - traduction de l'historique dans `contextFor` non prouvée ;
+    - une ligne à deux instructions.
+  - Correction 1, par l'implémenteur :
+    - trois tests sur les vrais protocoles et la frontière publique, chacun vu rouge sous mutation puis vert
+      (`server-routes` 49 cas, `mac-ipc-contract` 42, `topic-summary` 11) ;
+    - `node scripts/check.mjs --changed` : vert.
+- 19/10, relecture 2 (`relecture-2.md`, correction) : accepté, non corrigés 0, 1 hors périmètre (`docs/domaine.md:99`).
+- 19/10, contrôle final : `node scripts/check.mjs` vert.
+  - 154 fichiers, 3039 cas, 0 échec ; Python 73 OK.
+  - Cliquet : `lignes_longues_tests` 1581 → 1575 et `cas_de_test_produit` 1640 → 1645.
+  - Journal : `.harness-state/tickets/T226/check-final.log`.
+- 19/10, orchestrateur, tentative 2 : la boucle a refusé la tentative 1, car aucun ADR n'avait été ajouté
+  (`echec-1.txt`). Le complément de l'ADR 0063 passe dans l'ADR 0064
+  (`docs/adr/0064-la-memoire-parle-de-passages-et-traduit-ses-noms-historiques-aux-frontieres.md`, « complète l'ADR
+  0063 »). L'ADR 0063 y renvoie désormais.
+  - Écart 4 révisé dans `ecarts.md`.
+  - `node scripts/loop/reviewed-state.mjs record` : `revue-3`. L'interdiff ne touche que les deux ADR.
+- 19/10, relecture 3 (`relecture-3.md`, complète) : à corriger, 1 bloquant et 1 hors périmètre. Les écarts 1 à 4
+  sont acceptés.
+  - Bloquant : l'ADR 0064 manquait dans la section « Décisions » de `docs/architecture.md`. Rouge observé :
+    `node --test tests/documentation-index.test.cjs` échoue en `:121` (`rouge-index-adr.log`).
+  - Correction 1, par l'implémenteur : entrée ADR 0064 ajoutée.
+    - `documentation-index` : 12 cas sur 12 (`vert-index-adr.log`).
+    - `node scripts/check.mjs --changed` : vert, 332 cas (`check-changed-tentative-2.log`).
+- 19/10, relecture 4 (`relecture-4.md`, correction) : accepté, non corrigés 0, 1 hors périmètre (`docs/domaine.md:99`).
+- 20/10, contrôle final, tentative 2 : `node scripts/check.mjs` vert.
+  - 154 fichiers, 3039 cas, 0 échec ; Python 73 OK.
+  - Lancé en même temps qu'un contrôle complet de la boucle `lg-launcher` (autre dépôt) : charge partagée, aucun échec.
+  - Journal : `.harness-state/tickets/T226/check-final-tentative-2.log`.
+
+### Réserves à la clôture
+
+- Hors périmètre : docs/domaine.md:99 cite encore core/topic-summary.cjs au lieu de core/memory/topic-summary.cjs.
+- Écart accepté, critère 1 : périmètre élargi à tests/memory-view, tests/memory-projection, tests/mac-ipc-contract et scripts/memory-fixture.cjs, vrais accès découverts après T220 ; tests/server-routes reste un faux hôte.
+- Écart accepté, critère 4 : tests/helpers/state-view-scenario.cjs est un faux port de consultation, parce que restore interromprait ses états en vol ; il passe par les vraies fonctions de vue et de projection, et les JSON figés sont intacts.
+- Écart accepté, critère 2 : les bancs fabriqués par restore comptent mediaReason: 'expired' en disposition historique (+32 o par passage en archive, +24 o en sondage), avec les mêmes jeux, tailles et rétention.
+- Écart accepté, ADR : le complément de l'ADR 0063 passe dans l'ADR 0064 (« complète l'ADR 0063 »), et l'ADR 0063 y renvoie.
+- Non vérifié : le rouge du test de contexte historique (topic-summary) a été observé sur une version plus courte d'une ligne ; la version actuelle n'a pas été rejouée sous mutation.

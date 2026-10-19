@@ -116,9 +116,10 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   f.clock = 10000; await live.watch.ingest({ startMs: 2000, endMs: 10000, clip: head, frames: [{ atMs: 2000, dataUrl: f.jpeg }], audio: null });
   await settle(live.watch);
   // Analysed like any passage, from its images; its video alone is said unreadable. The next one is untouched.
-  assert.deepEqual(live.watch.segments.map(s => [s.id, s.status, s.available, s.mediaReason, s.thumbnailAvailable]), [['moment-1', 'ready', false, 'unreadable', true], ['moment-2', 'ready', true, undefined, true]]);
-  assert.equal(live.watch.history.length, 0, 'the passage is not archived as if its media had expired');
   const state = live.watch.snapshot();
+  assert.deepEqual(state.segments.map(s => [s.id, s.status, s.available, s.mediaReason, s.thumbnailAvailable]),
+    [['moment-1', 'ready', false, 'unreadable', true], ['moment-2', 'ready', true, undefined, true]]);
+  assert.equal(state.history.length, 0, 'the passage is not archived as if its media had expired');
   assert.equal(state.coverage.videoUnreadable, 1);
   assert.ok(state.segments[0].observation, 'the unreadable video did not cost the passage its description');
   // Nothing is purged and nothing is rewritten: the file is there as it came, next to its images.
@@ -160,13 +161,15 @@ test('a passage recorded without a frame is kept, analysed and never announced a
   assert.deepEqual(live.manifest().media.stored, 1);
   await live.close();
   const reopened = await f.reopen(id);
-  assert.deepEqual(reopened.watch.segments.map(s => [s.id, s.available, s.mediaReason]), [['moment-1', false, 'unreadable'], ['moment-2', true, undefined]]);
+  assert.deepEqual(reopened.watch.snapshot().segments.map(s => [s.id, s.available, s.mediaReason]),
+    [['moment-1', false, 'unreadable'], ['moment-2', true, undefined]]);
   assert.equal(reopened.watch.snapshot().coverage.videoUnreadable, 1);
   await reopened.close();
   // Its files gone, it is missing like any other passage.
   await fs.rm(path.join(media, 'moment-1.webm'));
   const emptied = await f.reopen(id);
-  assert.deepEqual(emptied.watch.segments.map(s => [s.id, s.available, s.mediaReason]), [['moment-1', false, 'missing'], ['moment-2', true, undefined]]);
+  assert.deepEqual(emptied.watch.snapshot().segments.map(s => [s.id, s.available, s.mediaReason]),
+    [['moment-1', false, 'missing'], ['moment-2', true, undefined]]);
   const consulted = new VideoTools({ consultation: consultationOf(emptied.memory.view()), search: emptied.search, inspector, media: emptied.memoryMedia });
   await assert.rejects(consulted.call('inspect_clip', { startMs: 0, endMs: 2000, question: 'Que voit-on ?' }), /Média introuvable/);
 });
@@ -177,7 +180,8 @@ test('with speech and images analysed apart, the unreadable passage still gets i
     perception: { transcribe: async s => ({ observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 1 }), observeVisual: async s => { described.push(s.id); return { observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 1 }; } } });
   time = 2000; await watch.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [{ atMs: 0, dataUrl: 'data:image/jpeg;base64,AAAA' }] });
   await settle(watch);
-  assert.deepEqual([described, watch.segments.map(s => [s.status, s.available, s.mediaReason, s.audioStatus, s.visionStatus, s.observation.summary]), watch.snapshot().coverage.videoUnreadable],
+  const state = watch.snapshot();
+  assert.deepEqual([described, state.segments.map(s => [s.status, s.available, s.mediaReason, s.audioStatus, s.visionStatus, s.observation.summary]), state.coverage.videoUnreadable],
     [['moment-1'], [['ready', false, 'unreadable', 'ready', 'ready', 'Images moment-1']], 1]);
   assert.equal(files.has('moment-1'), true);
   // A write that is refused leaves no passage, and nothing counted.
@@ -185,7 +189,7 @@ test('with speech and images analysed apart, the unreadable passage still gets i
   const strict = new ViewingMemory({ id: 's2', now: () => 2000, media: { put: async () => { if (refuse) throw new Error('disque plein'); }, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} },
     perception: { transcribe: async () => ({ observation: { transcript: 'Paroles.' }, elapsedMs: 1 }), observeVisual: async () => ({ observation: { summary: 'Images.' }, elapsedMs: 1 }) } });
   await assert.rejects(strict.ingest({ startMs: 0, endMs: 2000, clip: await fixture('chromium-webm-no-frame.webm'), audio: new Uint8Array([1]), frames: [] }), /disque plein/);
-  assert.deepEqual([strict.segments.length, strict.snapshot().coverage.videoUnreadable], [0, undefined]);
+  assert.deepEqual([strict.snapshot().segments.length, strict.snapshot().coverage.videoUnreadable], [0, undefined]);
 });
 
 test('re-examination falls back on the images kept at capture only when the video itself cannot be decoded', async t => {

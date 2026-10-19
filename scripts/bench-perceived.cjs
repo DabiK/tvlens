@@ -132,8 +132,11 @@ async function run(count, policyName, seed) {
     // Disposition synthétique historique sur demande ; la conservation courante reste durable.
     const durable = layout === 'durable';
     const live = durable ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
-    for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
-    watch.sequence = count; base = 2000 + count * 8000;
+    const saved = { id: watch.id, retention: 'until-deleted', history: [], segments: [] };
+    for (let i = 0; i < count; i++) (i < count - live ? saved.history : saved.segments).push(passage(i, i < count - live));
+    watch.restore(saved, { hasMedia: () => true });
+    await watch.resume();
+    base = 2000 + count * 8000;
     // Published like any change: the light views are built from the last published state.
     watch.emit();
     const views = (await raw('/v1/state?view=chat')).status === 200;
@@ -236,8 +239,12 @@ async function pollBytes(count) {
     const { id } = await runtime.start(), watch = runtime.session.watch;
     const durable = layout === 'durable';
     const live = durable ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
-    for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
-    watch.sequence = count; base = 2000 + count * 8000; watch.emit();
+    const saved = { id: watch.id, retention: 'until-deleted', history: [], segments: [] };
+    for (let i = 0; i < count; i++) (i < count - live ? saved.history : saved.segments).push(passage(i, i < count - live));
+    watch.restore(saved, { hasMedia: () => true });
+    await watch.resume();
+    base = 2000 + count * 8000;
+    watch.emit();
     // Six answered questions, as after the perceived-delay loop.
     for (let k = 0; k < 6; k++) { const asked = runtime.ask({ sessionId: id, question: `Question ${k + 1} ?`, anchorMs: 1000 }); await runtime.deep.jobs.find(job => job.id === asked.id).done; }
     await delay(20);
@@ -273,7 +280,7 @@ async function benchLedger() {
 }
 
 // Cost of the state when every passage stays in `segments` instead of moving to `history`.
-function benchAllLive() {
+async function benchAllLive() {
   const { ViewingMemory } = load('core/memory/index.cjs');
   const { sessionTimeline } = load('core/session-timeline.cjs');
   const { VideoTools, consultationOf } = load('core/video-tools.cjs');
@@ -282,7 +289,10 @@ function benchAllLive() {
   for (const count of [450, 900]) for (const mode of ['historical-pruned', 'tout-en-segments']) {
     const watch = new ViewingMemory({ id: 'bench', now: () => 2000 + count * 8000, perception: { transcribe: async () => ({}), observeVisual: async () => ({}) }, media: { put: async () => {}, read: async () => ({ frames: [], audio: null }), remove: async () => {} }, archive: { save: async () => {} } });
     const live = mode === 'tout-en-segments' ? count : Math.min(count, HISTORICAL_RETAINED_PASSAGES);
-    for (let i = 0; i < count; i++) (i < count - live ? watch.history : watch.segments).push(passage(i, i < count - live));
+    const saved = { id: watch.id, retention: 'until-deleted', history: [], segments: [] };
+    for (let i = 0; i < count; i++) (i < count - live ? saved.history : saved.segments).push(passage(i, i < count - live));
+    watch.restore(saved, { hasMedia: () => true });
+    await watch.resume();
     const snapshot = watch.snapshot(), view = watch.memoryView();
     const state = () => {
       const session = watch.snapshot();
@@ -317,7 +327,7 @@ function benchAllLive() {
     }
   }
   if (only.has('ledger')) report.ledger = await benchLedger();
-  if (only.has('allLive')) report.allLive = benchAllLive();
+  if (only.has('allLive')) report.allLive = await benchAllLive();
   const text = JSON.stringify(report, null, 1);
   if (option('--out')) await fs.writeFile(option('--out'), text);
   else console.log(text);

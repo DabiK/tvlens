@@ -103,20 +103,35 @@ test('polled views of a two-hour session stay small whatever its length, are ans
     return { status: res.status, etag: res.headers.get('etag'), bytes: Buffer.byteLength(text), text, value: text ? JSON.parse(text) : null };
   };
   const post = async (route, body) => (await fetch(server.url + route, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
-  const id = (await post('/v1/session/start', {})).id, watch = runtime.session.watch;
+  const id = (await post('/v1/session/start', {})).id;
+  let watch = runtime.session.watch;
   // The session as it stands after `count` passages of 8 s: all kept, as durable retention keeps them.
-  const grow = count => { for (let i = watch.segments.length; i < count; i++) watch.segments.push(passage(i)); watch.sequence = count; clock = count * 8000; watch.emit(); };
+  const grow = async count => {
+    const { createSessionRuntime } = require('../runtime/session-runtime.cjs');
+    const jobs = runtime.deep.snapshot().jobs;
+    await runtime.session.close();
+    clock = count * 8000;
+    const session = createSessionRuntime({ ...runtime.sessionOptions(), id,
+      restore: { snapshot: { id, elapsedMs: clock, retention: 'until-deleted',
+        segments: Array.from({ length: count }, (_, i) => passage(i)) },
+      inventory: { ids: new Set(Array.from({ length: count }, (_, i) => `moment-${i + 1}`)),
+        thumbs: new Set(Array.from({ length: count }, (_, i) => `moment-${i + 1}`)), bytes: 0, thumbBytes: 0 } },
+    });
+    await session.resume();
+    runtime.adopt(session, jobs);
+    watch = session.watch;
+  };
   const sizes = async () => {
     const [full, panel, chat] = [await get('/v1/state'), await get('/v1/state?view=panel'), await get('/v1/state?view=chat')];
     const unchanged = await get('/v1/state?view=panel', { 'If-None-Match': panel.etag });
     return { full, panel, chat, row: { full: full.bytes, panel: panel.bytes, chat: chat.bytes, notModified: unchanged.bytes, status: unchanged.status } };
   };
 
-  grow(75);
+  await grow(75);
   for (let n = 1; n <= 35; n++) { const { id: jobId } = await post('/v1/questions', { sessionId: id, question: `Question numéro ${n} ?`, anchorMs: 1000 }); await runtime.deep.jobs.find(job => job.id === jobId).done; }
   await tick();
   const tenMinutes = await sizes();
-  grow(900);
+  await grow(900);
   const twoHours = await sizes(), { full, panel, chat } = twoHours;
   t.diagnostic('octets par interrogation, 10 min (75 passages, 35 questions) : ' + JSON.stringify(tenMinutes.row));
   t.diagnostic('octets par interrogation, 2 h (900 passages, 35 questions) : ' + JSON.stringify(twoHours.row));
@@ -228,7 +243,7 @@ test('server state, views, moments and listing consult the public projection wit
   const { stateViewScenario } = require('./helpers/state-view-scenario.cjs');
   const expected = require('./fixtures/state-view-responses.json');
   const { runtime, session } = await stateViewScenario(t);
-  const legacy = session.watch.snapshot();
+  const legacy = expected['/v1/state'].session;
   const snapshot = t.mock.method(session.watch, 'snapshot', () => assert.fail('snapshot is unavailable to server readers'));
   let full;
   assert.doesNotThrow(() => { full = runtime.snapshot(); });

@@ -140,7 +140,7 @@ test('below the floor a passage is refused before any write, capture stops, noth
   assert.deepEqual([session.watch.accepting, session.watch.snapshot().lastError], [true, null]);
   assert.equal(await f.ingest(session, 3), 'moment-3');
   assert.deepEqual(await moments(dir), ['media/moment-1.json', 'media/moment-1.webm', 'media/moment-3.json', 'media/moment-3.webm']);
-  assert.deepEqual(session.watch.segments.map(s => [s.id, s.available]), [['moment-1', true], ['moment-3', true]]);
+  assert.deepEqual(session.watch.snapshot().segments.map(s => [s.id, s.available]), [['moment-1', true], ['moment-3', true]]);
 });
 
 test('a write that runs out of space mid-way leaves no partial pair, with or without a guard', async t => {

@@ -12,15 +12,15 @@ function passageEvent(type, sessionId, { id: passageId, revision, startMs, endMs
 
 class PassageEvents {
   #pending = [];
-  #updated = new Set();
+  #updatedPassages = new Set();
   #sessionId;
 
   constructor(sessionId) {
     this.#sessionId = sessionId;
   }
 
-  received(segment) {
-    this.#pending.push(passageEvent('PassageReceived', this.#sessionId, segment));
+  received(passage) {
+    this.#pending.push(passageEvent('PassageReceived', this.#sessionId, passage));
   }
 
   suspended({ startMs, endMs }, code) {
@@ -35,13 +35,13 @@ class PassageEvents {
   }
 
   // Plusieurs pertes acquises sans attente partagent une seule version consultable.
-  update(segment, lane, code) {
-    const changed = !this.#updated.has(segment);
+  update(passage, lane, code) {
+    const changed = !this.#updatedPassages.has(passage);
     if (changed) {
-      segment.revision++;
-      this.#updated.add(segment);
+      passage.revision++;
+      this.#updatedPassages.add(passage);
     }
-    const event = passageEvent('PassageUpdated', this.#sessionId, segment);
+    const event = passageEvent('PassageUpdated', this.#sessionId, passage);
     if (changed) this.#pending.push(event);
     if (lane) this.#pending.push({ ...event, type: 'PassageLost', lane, cause: { code } });
   }
@@ -49,7 +49,7 @@ class PassageEvents {
   publish(onEvents, onPublicationError) {
     const pending = this.#pending;
     this.#pending = [];
-    this.#updated.clear();
+    this.#updatedPassages.clear();
     if (!pending.length) return;
     publishState(() => onEvents(pending), onPublicationError, {
       origin: 'watch-session-events',

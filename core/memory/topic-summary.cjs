@@ -3,7 +3,7 @@ const MAX_TOPIC_SUMMARY = 1600;
 function validSummary(value) {
   return typeof value === 'string' && value.trim().length > 0 && value.length <= MAX_TOPIC_SUMMARY;
 }
-function completeTopicSummary(segment, result, context) {
+function completeTopicSummary(passage, result, context) {
   const observation = result.observation || {};
   const continues = observation.topicContinuity === 'continue' && context.previousTopic &&
     observation.topic === context.previousTopic;
@@ -11,13 +11,13 @@ function completeTopicSummary(segment, result, context) {
     const previous = context.previousTopicSummary;
     if (!previous || !validSummary(result.topicSummary)) return null;
     return { text: result.topicSummary.trim(), firstId: previous.firstId, startMs: previous.startMs,
-      lastId: segment.id, endMs: segment.endMs };
+      lastId: passage.id, endMs: passage.endMs };
   }
   // At a boundary, the current passage is the entire new topic. Do not import a
   // provider's attempted cumulative answer from an unrelated historical subject.
   if (!observation.topic || !validSummary(observation.summary)) return null;
-  return { text: observation.summary.trim(), firstId: segment.id, lastId: segment.id,
-    startMs: segment.startMs, endMs: segment.endMs };
+  return { text: observation.summary.trim(), firstId: passage.id, lastId: passage.id,
+    startMs: passage.startMs, endMs: passage.endMs };
 }
 function summaryForPassages(passages) {
   const first = passages[0], last = passages.at(-1), aggregate = last?.topicSummary;

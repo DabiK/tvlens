@@ -224,7 +224,7 @@ async function runScenario(root, name, seed, variant = {}) {
     watch = new ViewingMemory({ id: 'sim-session', now: () => clock.t, perception, media, archive, onInvalidate: () => observe(projection.read().session), ...(variant.visionDuringAsk ? { visionDuringAsk: true } : {}) });
 
     const records = [];
-    const livePrefix = (anchorMs, startMs, endMs) => [...watch.history, ...watch.segments].filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);
+    const livePrefix = (anchorMs, startMs, endMs) => watch.memoryView().passages.filter(s => s.endMs <= anchorMs && s.endMs > startMs && s.startMs < endMs);
     const chatAgent = { async prepare() {}, async close() {},
       async answer({ question, tools, context, signal, onProgress }) {
         // A first job starts inside deep.start(), before its id is known here: match the text.
@@ -286,7 +286,7 @@ async function runScenario(root, name, seed, variant = {}) {
 
     // Capture feed.
     const lg = scenario.source === 'lg';
-    let index = 0;
+    let index = 0, arrivals = 0;
     for (let startMs = 0; startMs < scenario.durationMs;) {
       const endMs = startMs + (!lg && index === 0 ? 2000 : 8000);
       const id = `moment-${++index}`, count = lg ? 4 : 6;
@@ -295,7 +295,7 @@ async function runScenario(root, name, seed, variant = {}) {
       transcripts.set(id, transcriptFor(index, topicAt(startMs)));
       const input = { startMs, endMs, clip: Buffer.from(id), frames, audio: Buffer.from(id) };
       setTimeout(() => {
-        const expected = `moment-${watch.sequence + 1}`;
+        const expected = `moment-${++arrivals}`;
         passages.set(expected, { id: expected, startMs, endMs, arrivedAtMs: clock.t });
         watch.ingest(input).catch(error => { passages.get(expected).ingestError = error.message; });
       }, arrivalMs);

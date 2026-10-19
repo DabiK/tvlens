@@ -23,7 +23,7 @@ const unfinished = status => status === 'queued' || status === 'analyzing';
 // container without a single image (mediaReason 'unreadable'), next to the images and the sound kept at capture.
 // `available` only says that the video can be replayed.
 const UNREADABLE = 'unreadable', IMAGES_ABSENT = 'images-absent';
-const stored = segment => Boolean(segment.available) || [UNREADABLE, IMAGES_ABSENT].includes(segment.mediaReason);
+const stored = passage => Boolean(passage.available) || [UNREADABLE, IMAGES_ABSENT].includes(passage.mediaReason);
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
 // place on the session clock, unanalysed, with its declared media; nothing is analysed again.
 const recoveredPassage = ({ id, startMs, endMs, hasAudio = false, media }) => ({
@@ -93,6 +93,9 @@ class ViewingMemory {
   #events;
   #lanes;
   #modalities = new Map();
+  #passages = [];
+  #historicalPassages = [];
+  #passageSequence = 0;
 
   constructor({ id, now, perception, media, archive, thumbnails, storage,
     onInvalidate = () => {}, onEvents = () => {}, onPublicationError = () => {},
@@ -100,21 +103,22 @@ class ViewingMemory {
     Object.assign(this, { id, now, perception, media, archive, thumbnails, storage,
       onInvalidate, onEvents, onPublicationError, maxPending, visionDuringAsk });
     this.#events = new PassageEvents(id);
-    this.segments = [];
-    this.history = [];
     this.questions = [];
     // Counted where the event happens, never recomputed from the passages. Two more only exist once they
     // happened: visionRetried, the second descriptions started, and visionRecovered, those that succeeded.
     // visionError stays what was lost for good.
     this.losses = { audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 0, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0 };
-    this.sequence = 0;
     this.storageError = null;
     // Set by a save the archive refused and cleared only by a save that lands: no analysis, however
     // successful, says that the state is on disk.
     this.saveError = null;
     // Ingests under way, and media found on disk at reopening that no passage could be made of.
-    this.landing = new Set(); this.unplacedMedia = 0;
-    this.apiCalls = 0; this.apiCost = 0; this.lastError = null; this.ingestChain = Promise.resolve();
+    this.landing = new Set();
+    this.unplacedMedia = 0;
+    this.apiCalls = 0;
+    this.apiCost = 0;
+    this.lastError = null;
+    this.ingestChain = Promise.resolve();
     this.#lanes = new PerceptionLanes({
       maxPending,
       now: () => this.now(),
@@ -122,18 +126,19 @@ class ViewingMemory {
       transcribe: input => this.perception.transcribe(input),
       observeVisual: input => this.perception.observeVisual(input),
       hasMedia: stored,
-      hasImages: segment => segment.hasImages !== false,
+      hasImages: passage => passage.hasImages !== false,
       isEnding: () => this.ending,
       isReadOnly: () => this.readOnly,
-      contextFor: segment => perceptionContext(this, segment),
-      update: (segment, lane, cause) => this.#updateLane(segment, lane, cause),
+      // Le contexte historique reçoit seulement les données de passages, jamais la racine.
+      contextFor: passage => perceptionContext({ history: this.#historicalPassages, segments: this.#passages }, passage),
+      update: (passage, lane, cause) => this.#updateLane(passage, lane, cause),
       addUsage: ({ calls = 0, cost = 0 }) => {
         this.apiCalls += calls;
         this.apiCost += cost;
       },
       count: name => { this.losses[name] = (this.losses[name] || 0) + 1; },
       setError: message => { this.lastError = message; },
-      clearErrorThrough: segment => this.#clearErrorThrough(segment),
+      clearErrorThrough: passage => this.#clearErrorThrough(passage),
       publish: () => this.emit(),
       persist: () => this.persist(),
     });
@@ -151,19 +156,19 @@ class ViewingMemory {
     return { ...state, visionBlockedMs: heldMs };
   }
 
-  #updateLane(segment, lane, cause) {
+  #updateLane(passage, lane, cause) {
     const code = cause === 'held' ? 'asking' : cause;
     if (cause) {
       this.losses[LANE_LOSSES[lane][cause]]++;
-      if (lane === 'vision' && ['held', 'backlog'].includes(cause)) segment.visionSkipReason = code;
+      if (lane === 'vision' && ['held', 'backlog'].includes(cause)) passage.visionSkipReason = code;
     }
-    this.#events.update(segment, lane, code);
+    this.#events.update(passage, lane, code);
   }
 
-  #clearErrorThrough(segment) {
+  #clearErrorThrough(passage) {
     // Un succès ancien ne masque pas l'échec audio d'un passage arrivé pendant son appel vision.
-    const outstanding = this.segments.slice().reverse().find(s =>
-      s.endMs >= segment.endMs && (s.audioError || s.visionError));
+    const outstanding = this.#passages.slice().reverse().find(s =>
+      s.endMs >= passage.endMs && (s.audioError || s.visionError));
     this.lastError = outstanding?.visionError || outstanding?.audioError || null;
   }
 
@@ -200,16 +205,21 @@ class ViewingMemory {
     // Tracked until it has landed whole (media, passage, thumbnail): a host ending the session waits on landed().
     const landing = this.land(input, this.now());
     this.landing.add(landing);
-    try { return await landing; } finally { this.landing.delete(landing); }
+    try {
+      return await landing;
+    } finally {
+      this.landing.delete(landing);
+    }
   }
   // Settles once every ingest already admitted has landed or failed. Never rejects.
   landed() { return Promise.allSettled([...this.landing]); }
   async land(input, receivedMs) {
     // Overlapping calls are admitted in call order; a rejected one must not block the next.
     const admitted = this.ingestChain = this.ingestChain.catch(() => {}).then(async () => {
-      const segment = this.#preparePassage(input, receivedMs);
-      try { await this.media.put(segment.id, input); }
-      catch (error) {
+      const passage = this.#preparePassage(input, receivedMs);
+      try {
+        await this.media.put(passage.id, input);
+      } catch (error) {
         // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
         if (error?.code === STORAGE_FULL) {
           const admissionWasOpen = this.accepting;
@@ -221,57 +231,58 @@ class ViewingMemory {
         }
         throw error;
       }
-      this.#modalities.set(segment.id, capturedModalities(input, segment.hasAudio));
-      this.segments.push(segment);
-      this.#events.received(segment);
+      this.#modalities.set(passage.id, capturedModalities(input, passage.hasAudio));
+      this.#passages.push(passage);
+      this.#events.received(passage);
       // Counted once the passage exists: a refused write leaves no passage and no count.
-      const captureLoss = segment.hasImages === false ? 'imagesAbsent' : null;
-      const loss = captureLoss || (segment.mediaReason === UNREADABLE ? 'videoUnreadable' : null);
+      const captureLoss = passage.hasImages === false ? 'imagesAbsent' : null;
+      const loss = captureLoss || (passage.mediaReason === UNREADABLE ? 'videoUnreadable' : null);
       if (loss) {
         this.losses[loss] = (this.losses[loss] || 0) + 1;
-        this.#events.update(segment);
+        this.#events.update(passage);
       }
       // A write that was under way when the session closed still lands, but nothing is queued for analysis.
       // Nor while its host is ending it: the passage is kept, replayable, and reopens as unanalysed.
-      this.#lanes.enqueue(segment);
+      this.#lanes.enqueue(passage);
       // The very first passage, and one landing after close(), are saved before their identifier is handed
       // back: a session cut during its first analysis reopens, and closing never leaves media the saved
       // state does not know. Queued ahead of the publication, without delaying the analysis.
-      const saving = this.closed || this.segments.length + this.history.length === 1 ? this.persist() : null;
-      this.emit(); this.drain();
+      const saving = this.closed || this.#passages.length + this.#historicalPassages.length === 1 ? this.persist() : null;
+      this.emit();
+      this.drain();
       if (saving) await saving;
-      return segment;
+      return passage;
     });
-    const segment = await admitted;
+    const passage = await admitted;
     // La miniature ne retarde pas le départ des analyses ; son écriture reste attendue par l’ingestion.
-    if (this.thumbnails && segment.hasImages !== false) {
+    if (this.thumbnails && passage.hasImages !== false) {
       let available;
       try {
-        await this.thumbnails.put(segment.id, input.frames?.[0]?.dataUrl);
+        await this.thumbnails.put(passage.id, input.frames?.[0]?.dataUrl);
         available = true;
       }
       catch { available = false; }
-      if (Boolean(segment.thumbnailAvailable) !== available) this.#events.update(segment);
-      segment.thumbnailAvailable = available;
+      if (Boolean(passage.thumbnailAvailable) !== available) this.#events.update(passage);
+      passage.thumbnailAvailable = available;
       this.emit();
     }
-    return segment.id;
+    return passage.id;
   }
 
   #preparePassage(input, receivedMs) {
     if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
     // Les passages historiques comptent aussi : reprendre une archive ne permet pas de rejouer son dernier bloc.
-    const previous = this.segments.at(-1) ?? this.history.at(-1);
+    const previous = this.#passages.at(-1) ?? this.#historicalPassages.at(-1);
     if (previous && input.startMs < previous.endMs - 100)
       throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
-    const segment = {
-      id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs,
+    const passage = {
+      id: `moment-${++this.#passageSequence}`, startMs: input.startMs, endMs: input.endMs,
       status: 'queued', hasAudio: Boolean(input.audio?.byteLength), ...capturedMedia(input),
       observation: null, receivedMs, revision: 0,
     };
     const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
-    if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
-    return segment;
+    if (Number.isFinite(assembleMs) && assembleMs >= 0) passage.ingest = { assembleMs };
+    return passage;
   }
 
   #syncVisionPolicy() {
@@ -310,21 +321,28 @@ class ViewingMemory {
   // analysed or sent anywhere, and capture only comes back through an explicit resume().
   restore(archived, { hasMedia = () => false, hasThumbnail, orphans = [] } = {}) {
     const restoredLifecycle = this.#lifecycle.restore();
-    if (this.sequence || this.segments.length || this.history.length || this.questions.length) throw restorationRefusal();
+    if (this.#passageSequence || this.#passages.length || this.#historicalPassages.length || this.questions.length) throw restorationRefusal();
     if (!archived || archived.id !== this.id) throw new Error('Archive incompatible avec cette session.');
     // Decoded before anything is restored: a historical document comes back as saved, a versioned one without its markers.
     const saved = fromArchive(archived);
+    // Les clés du disque gardent leur nom ; les règles internes ne manipulent que des passages.
+    const { segments: passages } = saved;
+    const historicalPassages = saved.history || [];
     // Saved before durable retention existed: its raw media were never meant to be kept.
     const formerFormat = saved.retention === undefined;
     const reopen = (source, kept) => reopenedPassage(source, { kept, hasMedia, hasThumbnail, formerFormat }, this.losses);
-    this.#restoreLosses(saved);
+    this.#restoreLosses(saved, passages.length + historicalPassages.length);
     // A summary whose media is gone stays a summary: only passages still listed with their media can be replayed.
-    this.history = (saved.history || []).map(passage => { const { available, ...summary } = reopen(passage, false); return summary; });
-    this.segments = saved.segments.map(passage => reopen(passage, true));
+    this.#historicalPassages = historicalPassages.map(passage => {
+      const { available, ...summary } = reopen(passage, false);
+      return summary;
+    });
+    this.#passages = passages.map(passage => reopen(passage, true));
     this.questions = (saved.questions || []).map(question => ({ ...question }));
-    this.apiCalls = Number.isFinite(saved.apiCalls) ? saved.apiCalls : 0; this.apiCost = Number.isFinite(saved.apiCost) ? saved.apiCost : 0;
+    this.apiCalls = Number.isFinite(saved.apiCalls) ? saved.apiCalls : 0;
+    this.apiCost = Number.isFinite(saved.apiCost) ? saved.apiCost : 0;
     // Past every number already used, including media left on disk by an interrupted ingest: never overwritten.
-    this.sequence = Math.max(0, ...[...this.history, ...this.segments].map(passage => passage.id)
+    this.#passageSequence = Math.max(0, ...[...this.#historicalPassages, ...this.#passages].map(passage => passage.id)
       .concat(orphans).map(id => Number(/^moment-(\d+)$/.exec(id)?.[1]) || 0));
     // Counted and reported, never shown as a passage: nothing says where they belong on the session clock.
     this.unplacedMedia = orphans.length || 0;
@@ -332,7 +350,7 @@ class ViewingMemory {
     this.lastError = null;
   }
 
-  #restoreLosses(saved) {
+  #restoreLosses(saved, passageCount) {
     for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
     // Counted only where it happened: a session without such a passage keeps the counters it always had.
     if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
@@ -340,15 +358,27 @@ class ViewingMemory {
     // Likewise, and only as counts this session can have written: one second description per passage at most, and
     // no more recoveries than second descriptions.
     const counted = (value, most) => Number.isInteger(value) && value > 0 && value <= most ? value : 0;
-    const passageCount = saved.segments.length + (saved.history || []).length;
     const retried = counted(saved.coverage?.visionRetried, passageCount);
     const recovered = counted(saved.coverage?.visionRecovered, retried);
     if (retried) this.losses.visionRetried = retried;
     if (recovered) this.losses.visionRecovered = recovered;
     if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.#lanes.restoreHeldMs(saved.coverage.visionBlockedMs);
   }
+  #passageSource() {
+    return { id: this.id, now: () => this.now(), passages: this.#passages, historicalPassages: this.#historicalPassages };
+  }
+
+  #viewSource() {
+    return {
+      ...this.#passageSource(),
+      accepting: this.accepting, readOnly: this.readOnly, unplacedMedia: this.unplacedMedia,
+      perceptionState: now => this.perceptionState(now),
+      losses: this.losses, storageError: this.storageError, saveError: this.saveError, lastError: this.lastError,
+    };
+  }
+
   memoryView() {
-    return memoryView.createMemoryView(this, this.#modalities);
+    return memoryView.createMemoryView(this.#viewSource(), this.#modalities);
   }
 
   readPublicationStatus() {
@@ -372,19 +402,20 @@ class ViewingMemory {
   }
 
   memoryPassage(id) {
-    return memoryView.readMemoryPassage(this, id, this.#modalities);
+    return memoryView.readMemoryPassage(this.#passageSource(), id, this.#modalities);
   }
 
   memoryPassages(ids) {
-    return memoryView.readMemoryPassages(this, ids, this.#modalities);
+    return memoryView.readMemoryPassages(this.#passageSource(), ids, this.#modalities);
   }
 
   recentMemoryPassages(limit) {
-    return memoryView.recentMemoryPassages(this, limit, this.#modalities);
+    return memoryView.recentMemoryPassages(this.#passageSource(), limit, this.#modalities);
   }
 
   snapshot() {
-    const all = [...this.history, ...this.segments], now = this.now();
+    const all = [...this.#historicalPassages, ...this.#passages];
+    const now = this.now();
     const capturedThroughMs = all.at(-1)?.endMs || 0;
     const analyzedThroughMs = all.filter(s => s.status === 'ready').at(-1)?.endMs || 0;
     const lanes = this.perceptionState(now);
@@ -405,13 +436,13 @@ class ViewingMemory {
       // analysis must not clear the reason.
       lastError: this.storageError || this.saveError || this.lastError,
       // Les ajouts ultérieurs ne doivent pas modifier les listes d'un état en attente d'écriture.
-      history: [...this.history], questions: [...this.questions],
+      history: [...this.#historicalPassages], questions: [...this.questions],
       latency: latencySummary(all), coverage, audioGaps,
       // Le snapshot historique omet une cause vide ; la consultation conserve ses causes nulles explicites.
       visionGaps: visionGaps.map(({ reason, ...gap }) => ({ ...gap, ...(reason ? { reason } : {}) })),
       // Cached figures supplied by the host (free space, volume of this session): never measured here.
       storage: this.storage ? this.storage() : null,
-      segments: this.segments.map(s => ({ ...s })),
+      segments: this.#passages.map(passage => ({ ...passage })),
     };
   }
   emit() {

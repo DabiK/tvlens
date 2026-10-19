@@ -57,7 +57,7 @@ test('a passage still landing when the host ends the session is kept but never a
   const passage = (startMs, endMs) => ({ sessionId: id, startMs, endMs, clip: Buffer.from('fixture'), frames: [{ atMs: startMs, dataUrl: 'data:image/jpeg;base64,YQ==' }], audio: null });
   clock = 8000; await runtime.ingest(passage(0, 8000));
   await until(
-    () => !runtime.session.watch.running && runtime.session.watch.segments[0].status === 'ready',
+    () => !runtime.session.watch.running && runtime.session.watch.snapshot().segments[0].status === 'ready',
     'first passage analysed',
     { timeoutMs: CHAT_TIMEOUT_MS },
   );

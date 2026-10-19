@@ -27,9 +27,10 @@ async function serveMedia(runtime, { req, res, send }, sessionId, momentId) {
   const session = runtime.session;
   if (sessionId && session?.id !== sessionId)
     return send(410, { error: "Session terminée.", code: "session-ended" });
-  const passage = session?.watch.segments.find((segment) => segment.id === momentId);
-  if (!passage?.available)
-    return send(410, unavailableMedia(passage?.mediaReason));
+  const consulted = session?.memory.passage(momentId);
+  const passage = consulted?.origin === "retained" ? consulted : null;
+  if (!passage?.availability.replayable)
+    return send(410, unavailableMedia(passage?.availability.reason));
   const response = await session.store.response(momentId, req.headers.range);
   if (response.status === 416) res.setHeader("X-TVLens-Error-Code", "invalid-range");
   if (response.status === 404) res.setHeader("X-TVLens-Error-Code", "media-missing");

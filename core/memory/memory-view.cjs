@@ -66,8 +66,8 @@ function createMemoryView(memory, modalities = new Map()) {
   const elapsedMs = memory.now();
   const lanes = memory.perceptionState(elapsedMs);
   const passages = [
-    ...memory.history.map(p => passageView(p, 'history', modalities.get(p.id))),
-    ...memory.segments.map(p => passageView(p, 'retained', modalities.get(p.id))),
+    ...memory.historicalPassages.map(p => passageView(p, 'history', modalities.get(p.id))),
+    ...memory.passages.map(p => passageView(p, 'retained', modalities.get(p.id))),
   ];
   const capturedThroughMs = passages.at(-1)?.endMs || 0;
   const analyzedThroughMs = passages.filter(p => p.status === 'ready').at(-1)?.endMs || 0;
@@ -89,8 +89,8 @@ function createMemoryView(memory, modalities = new Map()) {
     passages,
     coverage: {
       passages: passageCount,
-      retainedPassages: memory.segments.length,
-      historyPassages: memory.history.length,
+      retainedPassages: memory.passages.length,
+      historyPassages: memory.historicalPassages.length,
       replayablePassages: passages.filter(p => p.availability.replayable).length,
       startMs: passages[0]?.startMs ?? null,
       throughMs: capturedThroughMs,
@@ -108,15 +108,15 @@ function createMemoryView(memory, modalities = new Map()) {
 
 /** @returns {import('./ports.cjs').MemoryPassage|null} */
 function readMemoryPassage(memory, id, modalities = new Map()) {
-  const retained = memory.segments.find(p => p.id === id);
+  const retained = memory.passages.find(p => p.id === id);
   if (retained) return passageView(retained, 'retained', modalities.get(id));
-  const historical = memory.history.find(p => p.id === id);
+  const historical = memory.historicalPassages.find(p => p.id === id);
   return historical ? passageView(historical, 'history', modalities.get(id)) : null;
 }
 
 function* newestFirst(memory) {
-  for (let index = memory.segments.length - 1; index >= 0; index--) yield [memory.segments[index], 'retained'];
-  for (let index = memory.history.length - 1; index >= 0; index--) yield [memory.history[index], 'history'];
+  for (let index = memory.passages.length - 1; index >= 0; index--) yield [memory.passages[index], 'retained'];
+  for (let index = memory.historicalPassages.length - 1; index >= 0; index--) yield [memory.historicalPassages[index], 'history'];
 }
 
 // Each bound is set by the newest passage that meets it, as the complete view takes the last one in observation order.
@@ -160,7 +160,7 @@ function recentMemoryPassages(memory, limit, modalities = new Map()) {
     throw domainError(TVLENS_MEMORY_LIMIT_INVALID, 'Nombre de passages invalide.');
   }
   if (limit === 0) return [];
-  return memory.segments.slice(-limit).map(p => passageView(p, 'retained', modalities.get(p.id)));
+  return memory.passages.slice(-limit).map(p => passageView(p, 'retained', modalities.get(p.id)));
 }
 
 module.exports = {

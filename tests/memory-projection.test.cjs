@@ -107,11 +107,11 @@ test('a complete read observes unreadable media from its fact before the host pu
 test('historical null flags, empty optional codes and extension names survive consultation normalization', async t => {
   const { runtime } = await fixture(t);
   const { watch, memoryProjection } = runtime;
-  watch.segments.push({
+  watch.restore({ id: runtime.id, retention: 'until-deleted', segments: [{
     id: 'moment-1', startMs: 0, endMs: 1000, status: 'partial', observation: null,
     available: null, thumbnailAvailable: null, audioFailed: null, audioFailureCode: '',
     origin: 'extension', metadata: { custom: true }, fieldOrder: ['extension'],
-  });
+  }] });
   const expected = watch.snapshot();
   const snapshot = t.mock.method(watch, 'snapshot', () => assert.fail('snapshot is forbidden'));
   try {
@@ -119,6 +119,22 @@ test('historical null flags, empty optional codes and extension names survive co
   } finally {
     snapshot.mock.restore();
   }
+});
+
+test('a held passage with null flags, an empty optional code and extension names is published as held, field for field', async t => {
+  const { createMemoryView } = require('../core/memory/index.cjs');
+  const { memoryState } = require('../scripts/memory-fixture.cjs');
+  const { runtime } = await fixture(t);
+  const held = {
+    id: 'moment-1', startMs: 0, endMs: 1000, status: 'partial', observation: null,
+    available: null, thumbnailAvailable: null, audioFailed: null, audioFailureCode: '',
+    origin: 'extension', metadata: { custom: true }, fieldOrder: ['extension'],
+  };
+  // Restoring normalizes `available`; the consultation of a memory that holds a null is what the projection must keep.
+  t.mock.method(runtime.memory, 'view', () => createMemoryView(memoryState({ id: runtime.id, segments: [structuredClone(held)] })));
+  const [published] = runtime.memoryProjection.read().session.segments;
+  assert.deepStrictEqual(published, held);
+  assert.equal(JSON.stringify(published), JSON.stringify(held), 'the held field order is preserved');
 });
 
 test('three memory invalidations share each delivery regardless of zero, one or three host listeners', async t => {

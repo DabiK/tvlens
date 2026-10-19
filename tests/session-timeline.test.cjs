@@ -135,9 +135,9 @@ test("thumbnail exists before analysis, survives explicit media removal, pause a
         },
       ],
     });
-    assert.equal(watch.segments[0].status, "analyzing");
-    assert.equal(watch.segments[0].observation, null);
-    assert.equal(watch.segments[0].thumbnailAvailable, true);
+    assert.equal(watch.snapshot().segments[0].status, "analyzing");
+    assert.equal(watch.snapshot().segments[0].observation, null);
+    assert.equal(watch.snapshot().segments[0].thumbnailAvailable, true);
     assert.equal(
       (await sharp(await thumbnails.read("moment-1")).metadata()).width,
       320,

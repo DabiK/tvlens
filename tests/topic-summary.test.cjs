@@ -96,14 +96,43 @@ test('aggregate survives archival and pause/resume while original transcript and
   watch.restore({...historical,history:historical.segments,segments:[],retention:'rolling',retentionMs:10000});
   await watch.stop(); await watch.resume();
   now=30000; watch.emit();
-  assert.equal(watch.history[0].topicSummary.text,'Argument initial');
-  assert.equal(watch.history[0].observation.transcript,'Paroles 0');
-  const next=passage(1); const context=perceptionContext(watch,next);
+  const state=watch.snapshot();
+  assert.equal(state.history[0].topicSummary.text,'Argument initial');
+  assert.equal(state.history[0].observation.transcript,'Paroles 0');
+  const next=passage(1);
+  const context=perceptionContext(state,next);
   assert.equal(context.previousTopicSummary.text,'Argument initial');
   assert.equal(context.previousTopicSummary.startMs,0);
-  assert.equal(watch.history[0].available,undefined);
+  assert.equal(state.history[0].available,undefined);
   context.previousTopicSummary.text='mutation';
-  assert.equal(watch.history[0].topicSummary.text,'Argument initial');
+  assert.equal(state.history[0].topicSummary.text,'Argument initial');
+  assert.equal(watch.snapshot().history[0].topicSummary.text,'Argument initial');
+});
+test('the passage that follows a reopened history is described with the topic summary that history carries', async () => {
+  const { deferred } = require('./helpers/wait.cjs');
+  let now=8000;
+  const files=new Map();
+  const described=deferred();
+  const watch=new ViewingMemory({id:'s',now:()=>now,
+    perception:{
+      transcribe:async s=>({observation:{transcript:`Paroles ${s.id}`},elapsedMs:1}),
+      observeVisual:async s=>{
+        described.resolve(s.context);
+        return {observation:{summary:'Suite',topic:'Économie'},elapsedMs:1};
+      },
+    },
+    media:{put:async(id,input)=>files.set(id,input),read:async id=>files.get(id),remove:async id=>files.delete(id)},
+    archive:{save:async()=>{}}});
+  const historical={id:'s',history:[],segments:[]};
+  append(historical,passage(0,'Argument initial'));
+  watch.restore({...historical,history:historical.segments,segments:[],retention:'rolling',retentionMs:10000});
+  await watch.resume();
+  now=16000;
+  await watch.ingest({startMs:8000,endMs:16000,audio:new Uint8Array([1]),frames:[{atMs:8000,dataUrl:'data:image/jpeg;base64,YQ=='}]});
+  const context=await described.promise;
+  const previous=context.previousTopicSummary;
+  assert.deepEqual([previous?.text,previous?.firstId],['Argument initial','moment-0'],'the history reaches the vision context');
+  await watch.close();
 });
 test('one rejected cumulative output recovers through bounded intact observations without another call', () => {
   const snapshot={id:'s',history:[],segments:[]};

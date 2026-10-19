@@ -36,7 +36,7 @@ async function fixture(t) {
     const session = createSessionRuntime({ sessionsRoot, userData: root, config: {}, selectedModels: {}, smoke: true, readClock: () => f.clock, overrides: { embeddings }, ...extra });
     f.opened.push(session);
     for (const [startMs, endMs] of [[0, 8000], [8000, 16000]]) { f.clock = endMs; await session.watch.ingest(f.block(startMs, endMs)); await settle(session.watch); }
-    await session.search.index.ensure(session.watch.segments);
+    await session.search.index.ensure(session.watch.snapshot().segments);
     await session.store.saveResearch({ jobs: [{ id: 'deep-1', status: 'done', result: { answer: 'Réponse de ' + session.id } }] });
     await session.store.saveSurveillance({ instruction: 'Chiffres', lots: [] });
     return session;

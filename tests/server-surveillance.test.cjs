@@ -112,7 +112,7 @@ test('chat and surveillance overlap on the server host: neither holds the other 
   );
   for (const n of [1, 2, 3]) assert.equal((await block(n)).status, 200, 'block ' + n + ' accepted during the question');
   await until(
-    () => runtime.session.watch.segments.every(s => s.audioStatus === 'ready'),
+    () => runtime.session.watch.snapshot().segments.every(s => s.audioStatus === 'ready'),
     'speech published',
     { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
   );
@@ -136,7 +136,7 @@ test('chat and surveillance overlap on the server host: neither holds the other 
   // The question ends: only then is the flag lowered. Descriptions arrive, each passage is read once more at most.
   chatGate.open(); await job(long).done;
   await until(
-    () => runtime.session.watch.segments.every(s => !['queued', 'analyzing'].includes(s.visionStatus))
+    () => runtime.session.watch.snapshot().segments.every(s => !['queued', 'analyzing'].includes(s.visionStatus))
       && !runtime.surveillance.snapshot().activity.detecting,
     'descriptions published',
     { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
@@ -273,7 +273,9 @@ test('a published surveillance card invalidates the entity tags of the polled vi
   assert.equal((await post('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 8000, frames: [{ atMs: 0, data: 'YQ==' }] })).id, 'moment-1');
   // Passage analysed and saved, claim found, its verification stuck at the gate.
   await until(
-    () => runtime.session.watch.segments[0].status === 'ready' && !runtime.session.watch.running && runtime.surveillance.snapshot().activity.running === 1,
+    () => runtime.session.watch.snapshot().segments[0].status === 'ready'
+      && !runtime.session.watch.running
+      && runtime.surveillance.snapshot().activity.running === 1,
     'verification under way',
     { timeoutMs: SURVEILLANCE_TIMEOUT_MS },
   );

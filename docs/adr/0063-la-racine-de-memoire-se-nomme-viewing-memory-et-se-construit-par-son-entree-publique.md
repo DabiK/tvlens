@@ -42,8 +42,9 @@ de la racine, sauf depuis la racine elle-même et son index exporteur. Un domain
 ne peut importer ni cette racine ni son entrée publique, même avec une exception.
 
 Les champs, identifiants, fichiers d'archive, outils, canaux, URL et origines de diagnostic
-conservent leur contrat. Le vocabulaire interne des listes, la politique des questions,
-les cycles de vie, les ports et les projections restent ceux déjà livrés.
+conservent leur contrat. La politique des questions, les cycles de vie, les ports et les
+projections restent ceux déjà livrés. Le vocabulaire interne des passages et ses traductions aux
+frontières sont fixés par l'ADR 0064.
 
 ## Alternatives écartées
 

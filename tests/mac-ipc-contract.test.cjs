@@ -516,6 +516,32 @@ for (const resume of [false, true]) {
   });
 }
 
+test('an archive reopened with a passage in its history serves that passage’s thumbnail and never replays it, even with its clip on disk', async t => {
+  const { folder, launch } = await stage(t);
+  const host = await launch();
+  assert.equal(host.started, true, host.failures.join(' '));
+  const a = await host.start();
+  await capture(host, a.id);
+  const a2 = await capture(host, a.id);
+  await until(t, analysed(host, 2), 'two analysed passages');
+  await host.stop();
+  await host.newSession();
+  // The first passage moves to the history of the saved state, as a rolling window once archived it; its files stay.
+  const file = path.join(folder(a.id), 'session.json');
+  const saved = JSON.parse(await fsp.readFile(file, 'utf8'));
+  saved.history = [...(saved.history || []), saved.segments[0]];
+  saved.segments = saved.segments.slice(1);
+  await fsp.writeFile(file, JSON.stringify(saved));
+  assert.ok((await fsp.stat(path.join(folder(a.id), 'media', 'moment-1.webm'))).size > 0);
+  await host.openSession(a.id);
+  const state = await host.state();
+  assert.deepEqual([state.history.map(p => [p.id, p.thumbnailAvailable]), state.segments.map(s => s.id)], [[['moment-1', true]], ['moment-2']]);
+  const thumb = await host.fetch(`tvlens-media://${a.id}/thumb/moment-1`);
+  assert.deepEqual([thumb.status, thumb.headers.get('content-type'), (await thumb.arrayBuffer()).byteLength > 0], [200, 'image/jpeg', true]);
+  assert.equal((await host.fetch(`tvlens-media://${a.id}/moment-1`)).status, 404, 'a history passage is not replayed');
+  assert.equal(await text(await host.fetch(`tvlens-media://${a.id}/moment-2`)), a2.clip);
+});
+
 test('Mac state IPC ignores renderer arguments and reads its own current projection', async t => {
   const { launch } = await stage(t);
   const host = await launch({ readClock: () => 0 });
@@ -528,7 +554,12 @@ test('Mac state IPC ignores renderer arguments and reads its own current project
 });
 
 test('a Mac session is archived instead of purged, listed, reopened read-only without a write, resumed only explicitly, and deleted alone', async t => {
-  const { folder, launch } = await stage(t), host = await launch();
+  let runtime;
+  const { folder, launch } = await stage(t);
+  const host = await launch({ wrap: { session: built => {
+    runtime = built;
+    return built;
+  } } });
   assert.equal(host.started, true, host.failures.join(' '));
   // An IPC call from anywhere but the main frame of the window is refused before any handler runs.
   assert.throws(() => host.handlers.get('watch:state')({ sender: {}, senderFrame: {} }), /Unauthorized/);
@@ -618,6 +649,7 @@ test('a Mac session is archived instead of purged, listed, reopened read-only wi
   assert.deepEqual([(await host.recapState()).updatedAt, (await host.recapState()).pendingCount], [recap.updatedAt, 1], 'no synthesis while an archive is only read, even with a passage waiting');
   assert.ok(!host.events.some(e => e.channel === 'recap:state' && e.value.status === 'updating'));
   // The private protocol serves every passage of the loaded session and its thumbnail, and nothing else.
+  const mediaRead = t.mock.method(runtime.memory, 'passage');
   assert.equal(await text(await host.fetch(`tvlens-media://${a.id}/moment-1`)), a1.clip);
   const ranged = await host.fetch(`tvlens-media://${a.id}/moment-2`, { range: 'bytes=0-3' });
   assert.deepEqual([ranged.status, await text(ranged)], [206, 'clip']);
@@ -625,6 +657,8 @@ test('a Mac session is archived instead of purged, listed, reopened read-only wi
   assert.deepEqual([thumb.status, thumb.headers.get('content-type'), (await thumb.arrayBuffer()).byteLength > 0], [200, 'image/jpeg', true]);
   for (const url of [`tvlens-media://${b.id}/moment-1`, `tvlens-media://${a.id}/moment-9`, `tvlens-media://${a.id}/thumb/moment-9`, `tvlens-media://${a.id}/thumb/moment-1/x`, `tvlens-media://${a.id}/manifest.json`])
     assert.equal((await host.fetch(url)).status, 404, url);
+  assert.equal(mediaRead.mock.callCount(), 5, 'media and thumbnails use bounded public reads');
+  mediaRead.mock.restore();
   // Capture never restarts inside an archive without the explicit gesture; the refusal arrives in French.
   await assert.rejects(host.start(), error => error.message === 'Session ouverte en lecture seule. Choisis Reprendre la capture ou Nouvelle session.');
   await assert.rejects(host.startSurveillance({ instruction: 'Vérifie les chiffres.' }), /lecture seule/);
@@ -1546,8 +1580,11 @@ test('Mac projection retains textless queues, acquired usage, save failures, his
     return state;
   };
   const pushed = () => host.events.filter(event => event.channel === 'watch:state').at(-1).value;
-  runtime.watch.history.push({ id: 'moment-0', startMs: 0, endMs: 1000, status: 'expired', summary: 'Début conservé' });
-  runtime.watch.questions.push({ question: 'Question historique', answer: { text: 'Réponse conservée' } });
+  runtime.watch.restore({ id: session.id, retention: 'until-deleted', segments: [],
+    history: [{ id: 'moment-0', startMs: 0, endMs: 1000, status: 'expired', summary: 'Début conservé' }],
+    questions: [{ question: 'Question historique', answer: { text: 'Réponse conservée' } }],
+  });
+  await runtime.watch.resume();
   publishQuestion({ jobs: [{ id: 'own', sessionId: session.id, status: 'running' }] });
   clock = 2000;
   await host.ingest({ sessionId: session.id, startMs: 1000, endMs: 2000,

@@ -455,7 +455,8 @@ test('deleting a session over HTTP is refused during capture and for anything bu
   await asked.promise; await turns(20);
   const job = f.runtime.deep.jobs.find(item => item.id === question.id), loaded = f.runtime.session;
   assert.equal(job.status, 'running');
-  await loaded.search.index.ensure(loaded.watch.segments); await loaded.store.serial;
+  await loaded.search.index.ensure(loaded.watch.snapshot().segments);
+  await loaded.store.serial;
   for (const name of ['session.json', 'manifest.json', 'deep-answers.json', 'surveillance.json', 'embeddings.json', 'media/moment-2.webm', 'thumbs/moment-2.jpg'])
     assert.equal(await exists(path.join(dirL, name)), true, name);
 

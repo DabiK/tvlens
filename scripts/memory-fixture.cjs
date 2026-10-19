@@ -8,7 +8,7 @@ function memoryState(state) {
   const history = state.history || [], segments = state.segments || [];
   const elapsedMs = state.elapsedMs ?? segments.at(-1)?.endMs ?? history.at(-1)?.endMs ?? 0;
   return {
-    id: state.id, now: () => elapsedMs, history, segments,
+    id: state.id, now: () => elapsedMs, historicalPassages: history, passages: segments,
     perceptionState: () => ({ pending: 0, audioPending: 0, visionPending: 0, analyzing: false, visionBlockedMs: 0 }),
     losses: {}, accepting: true, asking: false,
     readOnly: false, unplacedMedia: 0, lastError: null,

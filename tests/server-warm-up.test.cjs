@@ -52,7 +52,7 @@ async function recordingHost(t, { failing = false } = {}) {
       audio: null,
     });
     await until(
-      () => !runtime.session.watch.running && runtime.session.watch.segments[0].status === 'ready',
+      () => !runtime.session.watch.running && runtime.session.watch.snapshot().segments[0].status === 'ready',
       'passage analysed',
       { timeoutMs: 10000 },
     );

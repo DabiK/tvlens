@@ -4,7 +4,15 @@ const {CodexSessionAgent,streamedAnswer}=require('../adapters/codex-session-agen
 test('pause freezes observation time; resume keeps media IDs, memory, counters and chronology',async()=>{
  let wall=0;const clock=new SessionClock(()=>wall);const watch=new ViewingMemory({id:'s',now:()=>clock.now(),perception:{transcribe:async()=>({observation:{}}),observeVisual:async()=>({observation:{summary:'Remember me'},cost:0})},media:{put:async()=>{},read:async()=>({})},archive:{save:async()=>{}}});
  wall=1000;await watch.ingest({startMs:0,endMs:1000,frames:[]});await new Promise(r=>setImmediate(r));clock.pause();await watch.stop();wall=90000;
- assert.equal(watch.snapshot().elapsedMs,1000);assert.equal(watch.segments[0].observation.summary,'Remember me');clock.resume();await watch.resume();wall+=1000;await watch.ingest({startMs:1000,endMs:2000,frames:[]});assert.equal(watch.id,'s');assert.deepEqual(watch.segments.map(s=>s.id),['moment-1','moment-2']);assert.equal(watch.now(),2000);
+ assert.equal(watch.snapshot().elapsedMs,1000);
+ assert.equal(watch.snapshot().segments[0].observation.summary,'Remember me');
+ clock.resume();
+ await watch.resume();
+ wall+=1000;
+ await watch.ingest({startMs:1000,endMs:2000,frames:[]});
+ assert.equal(watch.id,'s');
+ assert.deepEqual(watch.snapshot().segments.map(s=>s.id),['moment-1','moment-2']);
+ assert.equal(watch.now(),2000);
 });
 test('one warm Codex thread handles successive turns, streams answer only and carries context deltas',async()=>{
  const requests=[],progress=[];let connects=0;const agent=new CodexSessionAgent({rpcFactory:options=>({start(){connects++;return this;},send(){},close(){},async request(method,params){requests.push({method,params});if(method==='thread/start')return {thread:{id:'thread-one'}};if(method==='turn/start'){const id='t'+requests.length;setImmediate(()=>{options.onEvent('turn/started',{threadId:'thread-one',turn:{id}});options.onEvent('item/started',{threadId:'thread-one',turnId:id,item:{type:'reasoning',text:'PRIVATE_REASONING'}});const answer=JSON.stringify({answer:'Jaune',kind:'observation',citations:[],limits:[],sources:[]});options.onEvent('item/agentMessage/delta',{threadId:'thread-one',turnId:id,delta:answer});options.onEvent('item/completed',{threadId:'thread-one',turnId:id,item:{type:'agentMessage',text:answer}});options.onEvent('turn/completed',{threadId:'thread-one',turn:{id,status:'completed'}});});return {turn:{id}};}return {};}})});

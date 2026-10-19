@@ -316,7 +316,7 @@ test('speech is published and next audio processed during blocked vision; contex
   const f = fixture({ transcribe, observeVisual: async s => { seen.push(s.id); await gate.promise; return visual(s); } });
   await f.add(0); await f.add(1);
   assert.deepEqual(seen, ['moment-1']);
-  assert.deepEqual(f.watch.segments.map(s => s.audioStatus), ['ready', 'ready']);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => s.audioStatus), ['ready', 'ready']);
   const tools = new VideoTools({ consultation: consultationOf(f.watch.memoryView()) });
   assert.equal(tools.context().passages.length, 2);
   assert.equal(tools.context().passages[0].precision, 'partial-observation');
@@ -325,19 +325,20 @@ test('speech is published and next audio processed during blocked vision; contex
   const speech = await tools.call('get_transcript', { startMs: 0, endMs: 2000 });
   assert.equal(speech.passages[1].transcript, 'Paroles moment-2');
   gate.resolve(); await tick();
-  assert.deepEqual(f.watch.segments.map(s => [s.id,s.startMs,s.endMs,s.status]), [['moment-1',0,1000,'ready'],['moment-2',1000,2000,'ready']]);
-  assert.equal(f.watch.segments[0].observation.transcript, 'Paroles moment-1');
-  assert.equal(f.watch.segments[0].audioMs, 10); assert.equal(f.watch.segments[0].visionMs, 20);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.id,s.startMs,s.endMs,s.status]), [['moment-1',0,1000,'ready'],['moment-2',1000,2000,'ready']]);
+  assert.equal(f.watch.snapshot().segments[0].observation.transcript, 'Paroles moment-1');
+  assert.equal(f.watch.snapshot().segments[0].audioMs, 10);
+  assert.equal(f.watch.snapshot().segments[0].visionMs, 20);
   assert.equal(tools.context().passages[0].visionStatus, 'analyzing');
 });
 test('audio and vision fail independently, keeping usable evidence and terminal partial timeline', async () => {
   const f = fixture({ transcribe: async s => { if (s.id === 'moment-1') throw Error('speech failed'); return transcribe(s); },
     observeVisual: async s => { if (s.id === 'moment-2') throw Error('vision failed'); return visual(s); } });
   await f.add(0); await f.add(1);
-  assert.equal(f.watch.segments[0].visionStatus, 'ready');
-  assert.equal(f.watch.segments[0].audioError, 'speech failed');
-  assert.equal(f.watch.segments[1].observation.transcript, 'Paroles moment-2');
-  assert.equal(f.watch.segments[1].visionError, 'vision failed');
+  assert.equal(f.watch.snapshot().segments[0].visionStatus, 'ready');
+  assert.equal(f.watch.snapshot().segments[0].audioError, 'speech failed');
+  assert.equal(f.watch.snapshot().segments[1].observation.transcript, 'Paroles moment-2');
+  assert.equal(f.watch.snapshot().segments[1].visionError, 'vision failed');
   assert.deepEqual(sessionTimeline(f.watch.memoryView()).cards.map(c => [c.status,c.pending]), [['partial',0],['partial',0]]);
 });
 test('both lane backlogs are bounded and skipped vision keeps speech', async () => {
@@ -347,12 +348,12 @@ test('both lane backlogs are bounded and skipped vision keeps speech', async () 
   for (let i = 0; i < 5; i++) await f.add(i);
   // Overload sheds transcriptions only: two wait for Whisper, the two older ones wait to hand their images over.
   assert.equal(f.watch.snapshot().segments.filter(s => s.status === 'queued' && s.audioStatus !== 'skipped').length, 2);
-  assert.deepEqual(f.watch.segments.filter(s => s.audioStatus === 'skipped').map(s => s.id), ['moment-2', 'moment-3']);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.audioStatus === 'skipped').map(s => s.id), ['moment-2', 'moment-3']);
   assert.equal(f.watch.losses.audioSkipped, 2);
   audioGate.resolve(); await tick();
   for (let i = 5; i < 9; i++) await f.add(i);
   assert.equal(f.watch.snapshot().visionPending, 2);
-  const skipped = f.watch.segments.filter(s => s.visionStatus === 'skipped');
+  const skipped = f.watch.snapshot().segments.filter(s => s.visionStatus === 'skipped');
   assert.ok(skipped.length > 0);
   assert.ok(skipped.filter(s => s.audioStatus === 'ready').every(s => s.status === 'partial' && s.observation.transcript));
   assert.ok(skipped.filter(s => s.audioStatus === 'skipped').every(s => s.status === 'skipped' && !s.observation));
@@ -363,13 +364,15 @@ test('manual question blocks new vision but lets audio progress; close prevents 
   const gate = deferred(); let visions = 0, signal;
   const f = fixture({ transcribe, observeVisual: async s => { visions++; signal = s.signal; await gate.promise; return visual(s); } });
   f.watch.setQuestionPending(true); await f.add(0);
-  assert.equal(visions, 0); assert.equal(f.watch.segments[0].audioStatus, 'ready');
+  assert.equal(visions, 0);
+  assert.equal(f.watch.snapshot().segments[0].audioStatus, 'ready');
   f.watch.setQuestionPending(false); await tick();
   await f.watch.stop(); await f.watch.resume();
-  assert.equal(f.watch.segments[0].observation.transcript, 'Paroles moment-1');
+  assert.equal(f.watch.snapshot().segments[0].observation.transcript, 'Paroles moment-1');
   await f.watch.close(); const count = f.snapshots.length;
   gate.resolve(); await tick(); assert.equal(signal.aborted, true);
-  assert.equal(f.snapshots.length, count); assert.equal(f.watch.segments[0].observation.summary, undefined);
+  assert.equal(f.snapshots.length, count);
+  assert.equal(f.watch.snapshot().segments[0].observation.summary, undefined);
 });
 test('completed speech and active enrichment survive a long pause and later ingestion with queued vision', async t => {
   const gate = deferred();
@@ -412,7 +415,7 @@ test('successful later passage clears the old session error without deleting pas
   const f = fixture({ transcribe, observeVisual: async s => { if (s.id === 'moment-1') throw Error('old vision failure'); return visual(s); } });
   await f.add(0); assert.equal(f.watch.lastError, 'old vision failure');
   await f.add(1); assert.equal(f.watch.lastError, null);
-  assert.equal(f.watch.segments[0].visionError, 'old vision failure');
+  assert.equal(f.watch.snapshot().segments[0].visionError, 'old vision failure');
 });
 test('vision success cannot clear concurrent newer audio failure or its own partial audio error', async () => {
   const gate = deferred();
@@ -420,11 +423,13 @@ test('vision success cannot clear concurrent newer audio failure or its own part
     observeVisual: async s => { await gate.promise; return visual(s); } });
   await f.add(0); await f.add(1); f.watch.setQuestionPending(true);
   gate.resolve(); await tick();
-  assert.equal(f.watch.segments[0].status, 'ready'); assert.equal(f.watch.lastError, 'new audio failure');
+  assert.equal(f.watch.snapshot().segments[0].status, 'ready');
+  assert.equal(f.watch.lastError, 'new audio failure');
   f.watch.setQuestionPending(false); await tick();
-  assert.equal(f.watch.segments[1].status, 'partial'); assert.equal(f.watch.lastError, 'new audio failure');
+  assert.equal(f.watch.snapshot().segments[1].status, 'partial');
+  assert.equal(f.watch.lastError, 'new audio failure');
   await f.add(2); assert.equal(f.watch.lastError, null);
-  assert.equal(f.watch.segments[1].audioError, 'new audio failure');
+  assert.equal(f.watch.snapshot().segments[1].audioError, 'new audio failure');
 });
 test('a historical expired placeholder never becomes evidence or a citation', async () => {
   const f = fixture({ transcribe, observeVisual: visual });

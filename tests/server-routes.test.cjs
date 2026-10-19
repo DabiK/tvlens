@@ -816,7 +816,7 @@ test("HTTP preserves JPEG and both media routes including Range headers and stat
   const reads = [];
   f.runtime.session = {
     id: "session-a",
-    watch: { segments: [{ id: "moment-1", available: true }] },
+    memory: { passage: id => id === "moment-1" ? { origin: "retained", availability: { replayable: true } } : null },
     thumbnails: {
       read: async (id) => {
         reads.push(["thumbnail", id]);
@@ -908,10 +908,14 @@ test("HTTP media refusal headers preserve the real store bodies, Range metadata 
   const bytes = Buffer.from([0, 255, 12, 128, 42, 13, 10]);
   await store.put("moment-1", { clip: bytes, frames: [], startMs: 0, endMs: 100 });
   const dependencies = ingestionFixture();
-  dependencies.runtime.session = {
-    id: "session-a", store,
-    watch: { segments: [1, 2].map((number) => ({ id: "moment-" + number, available: true })) },
-  };
+  const { ViewingMemory } = require("../core/memory/index.cjs");
+  const watch = new ViewingMemory({ id: "session-a", now: () => 200, perception: {}, media: store, archive: store });
+  watch.restore({ id: "session-a", retention: "until-deleted", segments: [1, 2].map(number => ({
+    id: "moment-" + number, startMs: (number - 1) * 100, endMs: number * 100, available: true,
+  })) }, { hasMedia: () => true });
+  const memory = { passage: id => watch.memoryPassage(id) };
+  const bounded = t.mock.method(memory, "passage");
+  dependencies.runtime.session = { id: "session-a", store, watch, memory };
   const f = await httpFixture(t, dependencies);
   for (const base of ["/v1/media/session-a/", "/v1/media/"]) {
     for (const [range, status, contentRange, code, body] of [
@@ -941,14 +945,42 @@ test("HTTP media refusal headers preserve the real store bodies, Range metadata 
     assert.equal(missing.headers.get("access-control-allow-origin"), "null");
     assert.equal(missing.headers.get("access-control-expose-headers"), "ETag, X-TVLens-Error-Code");
   }
+  assert.equal(bounded.mock.callCount(), 14, "each media request uses the bounded public consultation");
+});
+
+test("HTTP refuses the history passage of a former-format archive as expired on both media routes, before the store", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "tvlens-media-history-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = LocalSessionStore.forSession(root);
+  await store.put("moment-1", { clip: Buffer.from([1, 2, 3]), frames: [], startMs: 0, endMs: 100 });
+  const { ViewingMemory } = require("../core/memory/index.cjs");
+  const watch = new ViewingMemory({ id: "session-a", now: () => 200, perception: {}, media: store, archive: store });
+  // Saved before durable retention existed: no retention key, and the passage already moved to history.
+  watch.restore({
+    id: "session-a", segments: [],
+    history: [{ id: "moment-1", startMs: 0, endMs: 100, status: "ready", summary: "Ancien" }],
+  }, { hasMedia: () => true });
+  const consulted = watch.memoryPassage("moment-1");
+  assert.deepEqual([consulted.origin, consulted.availability.reason], ["history", "not-kept"]);
+  const dependencies = ingestionFixture();
+  dependencies.runtime.session = { id: "session-a", store, watch, memory: { passage: id => watch.memoryPassage(id) } };
+  const reads = t.mock.method(store, "response");
+  const f = await httpFixture(t, dependencies);
+  for (const route of ["/v1/media/session-a/moment-1", "/v1/media/moment-1"]) {
+    assert.deepEqual(await f.request(route), {
+      status: 410, value: { error: "Média expiré.", code: "media-expired" },
+    }, route);
+  }
+  assert.equal(reads.mock.callCount(), 0, "the clip still on disk is never read");
 });
 
 test("HTTP codes unavailable thumbnails and media by their structured reason", async (t) => {
   const f = await httpFixture(t);
   const reads = [];
+  let passage = null;
   const session = {
     id: "session-a",
-    watch: { segments: [] },
+    memory: { passage: id => id === "moment-1" ? passage : null },
     thumbnails: { read: async () => { throw Error("Diagnostic arbitraire."); } },
     store: { response: async (...args) => { reads.push(args); } },
   };
@@ -966,14 +998,14 @@ test("HTTP codes unavailable thumbnails and media by their structured reason", a
     [undefined, "Média expiré.", "media-expired"],
     ["raison inconnue", "Média expiré.", "media-expired"],
   ]) {
-    session.watch.segments = [{ id: "moment-1", available: false, mediaReason: reason }];
+    passage = { id: "moment-1", origin: "retained", availability: { replayable: false, reason } };
     for (const route of ["/v1/media/session-a/moment-1", "/v1/media/moment-1"]) {
       assert.deepEqual(await f.request(route), {
         status: 410, value: { error: message, code },
       }, String(reason));
     }
   }
-  session.watch.segments = [];
+  passage = null;
   assert.deepEqual(await f.request("/v1/media/moment-1"), {
     status: 410, value: { error: "Média expiré.", code: "media-expired" },
   });

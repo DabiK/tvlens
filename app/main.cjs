@@ -580,11 +580,11 @@ app.whenReady().then(async () => {
       if (!loaded || url.hostname !== loaded.runtime.watch.id || extra !== undefined) return gone();
       if (first === 'thumb') {
         if (!/^moment-\d+$/.test(second) ||
-          ![...loaded.runtime.watch.history, ...loaded.runtime.watch.segments].some(s => s.id === second && s.thumbnailAvailable)) return gone();
+          !loaded.runtime.memory.passage(second)?.thumbnailAvailable) return gone();
         return new Response(await loaded.runtime.thumbnails.read(second), { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'no-store' } });
       }
       if (second !== undefined || !/^moment-\d+$/.test(first) ||
-        !loaded.runtime.watch.segments.some(s => s.id === first && s.available)) return gone();
+        !loaded.runtime.memory.passage(first)?.availability.replayable) return gone();
       return loaded.runtime.store.response(first, request.headers.get('range'));
     } catch { return gone(); }
   });

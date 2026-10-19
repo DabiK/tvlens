@@ -69,7 +69,7 @@ Cinq contextes. Chacun a un nom de dossier anglais, utilisé dans `core/<nom>/` 
 
 - **Responsabilité.** La mémoire de visionnage d'une session : les passages dans l'ordre, leurs deux voies
   (transcription, observation), leurs pertes, leurs sujets, le résumé vivant et la recherche.
-- **Agrégat racine.** `ViewingMemory`, une par session (aujourd'hui `WatchSession`, `core/session.cjs:47`).
+- **Agrégat racine.** `ViewingMemory`, une par session (`core/memory/viewing-memory.cjs`).
 - **Invariants.** Les passages sont dans l'ordre d'observation. Un identifiant n'est jamais réutilisé. Un passage dure
   60 s au plus. Rien n'est admis dans une session arrêtée. Les voies sont bornées et ne perdent rien en silence.
   Une observation est redemandée une seule fois après un échec passager (ADR 0008). Le disque plein suspend
@@ -89,14 +89,14 @@ Cinq contextes. Chacun a un nom de dossier anglais, utilisé dans `core/<nom>/` 
   générique, par exemple « retenir la voie vision ». La coordination la traduit depuis l'activité des autres
   contextes, selon le réglage `visionDuringAsk`, activé par défaut sur le Mac (`app/main.cjs:65`).
 - **Événements.** Un passage change plusieurs fois : la transcription arrive, puis l'observation, et sa révision monte
-  (`core/session.cjs:293`, `:351`). La Mémoire publie donc `PassageReceived`, `PassageUpdated {revision}` (y compris
+  (`core/passage-events.cjs`, `core/memory/lanes.cjs`). La Mémoire publie donc `PassageReceived`, `PassageUpdated {revision}` (y compris
   après un enrichissement visuel ou un changement de disponibilité), `PassageLost {lane, cause}`,
   `AdmissionSuspended {storage-full}` et `MemoryReopened`. Chaque événement nomme la session, le passage et la
   révision. Chaque consommateur dit quelles révisions et quels états le rendent éligible : le résumé vivant attend les
   passages prêts (`core/living-recap.cjs:50-54`), la surveillance relit un passage après son visuel
   (`core/surveillance.cjs:451-458`). À la restauration ou à l'activation, un consommateur s'initialise sur la vue
   courante : les événements ne sont pas un historique.
-- **Aujourd'hui.** `core/session.cjs`, `core/perception-context.cjs`, `core/topic-summary.cjs`,
+- **Aujourd'hui.** `core/memory/viewing-memory.cjs`, `core/perception-context.cjs`, `core/topic-summary.cjs`,
   `core/living-recap.cjs`, `core/moment-search.cjs`, `core/moment-index.cjs`, `core/session-timeline.cjs`.
 
 ### Questions — `inquiry`

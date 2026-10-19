@@ -71,17 +71,17 @@ class PerceptionLanes {
     this.#heldSince = null;
   }
 
-  enqueue(segment) {
+  enqueue(passage) {
     if (this.#stopped()) return;
-    this.#audioQueue.push(segment);
+    this.#audioQueue.push(passage);
     this.#shed();
   }
 
   // Le retrait explicite des références ne touche pas aux appels en vol.
-  remove(segment) {
-    const awaitingAudio = this.#audioQueue.includes(segment);
-    this.#audioQueue = this.#audioQueue.filter(item => item !== segment);
-    this.#visionQueue = this.#visionQueue.filter(item => item !== segment);
+  remove(passage) {
+    const awaitingAudio = this.#audioQueue.includes(passage);
+    this.#audioQueue = this.#audioQueue.filter(item => item !== passage);
+    this.#visionQueue = this.#visionQueue.filter(item => item !== passage);
     if (!this.#visionQueue.length) this.#endHold();
     return awaitingAudio;
   }
@@ -100,10 +100,10 @@ class PerceptionLanes {
 
   // Un audio écarté conserve sa référence et sa place pour transmettre encore ses images.
   #shed() {
-    const waiting = this.#audioQueue.filter(segment => segment.audioStatus !== 'skipped');
-    for (const segment of waiting.slice(0, Math.max(0, waiting.length - this.#maxPending))) {
-      segment.audioStatus = 'skipped';
-      this.#ports.update(segment, 'audio', 'backlog');
+    const waiting = this.#audioQueue.filter(passage => passage.audioStatus !== 'skipped');
+    for (const passage of waiting.slice(0, Math.max(0, waiting.length - this.#maxPending))) {
+      passage.audioStatus = 'skipped';
+      this.#ports.update(passage, 'audio', 'backlog');
     }
     while (this.#audioQueue.length > this.#maxPending * AUDIO_REFERENCE_MULTIPLIER) {
       const dropped = this.#audioQueue.shift();
@@ -116,38 +116,38 @@ class PerceptionLanes {
     }
   }
 
-  #skipVision(segment) {
+  #skipVision(passage) {
     // Une retenue n'est la cause d'une perte que si elle seule empêche le départ.
     const reason = this.#visionHeld && !this.#visionRunning ? 'held' : 'backlog';
-    segment.visionStatus = 'skipped';
-    segment.status = hasUsableObservation(segment) ? 'partial' : 'skipped';
-    this.#ports.update(segment, 'vision', reason);
+    passage.visionStatus = 'skipped';
+    passage.status = hasUsableObservation(passage) ? 'partial' : 'skipped';
+    this.#ports.update(passage, 'vision', reason);
   }
 
-  #toVision(segment) {
-    if (!this.#ports.hasImages(segment)) {
-      const previousStatus = segment.status;
-      segment.visionStatus = 'absent';
-      segment.status = segment.audioFailed ? 'error' : segment.audioStatus;
-      if (segment.status === 'ready') this.#ports.clearErrorThrough(segment);
-      if (segment.status !== previousStatus) this.#ports.update(segment);
+  #toVision(passage) {
+    if (!this.#ports.hasImages(passage)) {
+      const previousStatus = passage.status;
+      passage.visionStatus = 'absent';
+      passage.status = passage.audioFailed ? 'error' : passage.audioStatus;
+      if (passage.status === 'ready') this.#ports.clearErrorThrough(passage);
+      if (passage.status !== previousStatus) this.#ports.update(passage);
       return;
     }
-    segment.status = hasUsableObservation(segment) ? 'partial' : 'analyzing';
-    if (!this.#ports.hasMedia(segment)) {
-      segment.visionStatus = 'expired';
-      segment.status = hasUsableObservation(segment) ? 'partial' : 'expired';
-      this.#ports.update(segment, 'vision', 'expired');
+    passage.status = hasUsableObservation(passage) ? 'partial' : 'analyzing';
+    if (!this.#ports.hasMedia(passage)) {
+      passage.visionStatus = 'expired';
+      passage.status = hasUsableObservation(passage) ? 'partial' : 'expired';
+      this.#ports.update(passage, 'vision', 'expired');
       return;
     }
     // Un passage sans paroles ne chasse jamais un passage parlé d'une file pleine.
-    if (segment.audioStatus === 'skipped' && this.#visionQueue.length >= this.#maxPending) {
-      this.#skipVision(segment);
+    if (passage.audioStatus === 'skipped' && this.#visionQueue.length >= this.#maxPending) {
+      this.#skipVision(passage);
       return;
     }
-    segment.visionStatus = 'queued';
-    segment.visionQueuedMs = this.#ports.now();
-    this.#visionQueue.push(segment);
+    passage.visionStatus = 'queued';
+    passage.visionQueuedMs = this.#ports.now();
+    this.#visionQueue.push(passage);
     while (this.#visionQueue.length > this.#maxPending) this.#skipVision(this.#visionQueue.shift());
   }
 
@@ -169,27 +169,27 @@ class PerceptionLanes {
     }
     if (!this.#audioQueue.length) return;
     this.#audioRunning = true;
-    const segment = this.#audioQueue.shift();
-    segment.status = 'analyzing';
-    segment.audioStatus = 'analyzing';
-    segment.audioStartedMs = this.#ports.now();
+    const passage = this.#audioQueue.shift();
+    passage.status = 'analyzing';
+    passage.audioStatus = 'analyzing';
+    passage.audioStartedMs = this.#ports.now();
     this.#ports.publish();
     try {
-      const evidence = await this.#ports.readMedia(segment.id);
+      const evidence = await this.#ports.readMedia(passage.id);
       if (this.#stopped()) return;
-      const result = await this.#ports.transcribe({ ...segment, ...evidence, signal: this.#controller.signal });
+      const result = await this.#ports.transcribe({ ...passage, ...evidence, signal: this.#controller.signal });
       if (this.#closed) return;
-      this.#acceptAudio(segment, result);
+      this.#acceptAudio(passage, result);
     } catch (error) {
       if (this.#closed) return;
-      segment.audioStatus = 'error';
-      segment.audioError = error.message;
+      passage.audioStatus = 'error';
+      passage.audioError = error.message;
       this.#ports.setError(error.message);
-      this.#ports.update(segment, 'audio', 'error');
+      this.#ports.update(passage, 'audio', 'error');
     } finally {
       this.#audioRunning = false;
       if (!this.#closed) {
-        this.#toVision(segment);
+        this.#toVision(passage);
         // Les paroles et leur place devant les références écartées précèdent disque et drainage audio suivant.
         this.#ports.publish();
         this.#drainVision();
@@ -199,35 +199,35 @@ class PerceptionLanes {
     }
   }
 
-  #acceptAudio(segment, result) {
-    segment.analysisMs = result.elapsedMs;
-    segment.audioMs = result.elapsedMs;
-    segment.metrics = result.metrics;
+  #acceptAudio(passage, result) {
+    passage.analysisMs = result.elapsedMs;
+    passage.audioMs = result.elapsedMs;
+    passage.metrics = result.metrics;
     this.#ports.addUsage({ cost: result.cost || 0 });
     // Un échec signalé par le transcripteur n'est pas un silence ; les statuts historiques restent prêts.
     if (result.failed === true) {
-      segment.audioFailed = true;
-      segment.audioFailureCode = result.code;
-      this.#ports.update(segment, 'audio', 'error');
+      passage.audioFailed = true;
+      passage.audioFailureCode = result.code;
+      this.#ports.update(passage, 'audio', 'error');
     }
-    segment.observation = result.observation;
-    this.#ports.update(segment);
-    segment.audioStatus = 'ready';
-    segment.transcriptPublishedMs = this.#ports.now();
+    passage.observation = result.observation;
+    this.#ports.update(passage);
+    passage.audioStatus = 'ready';
+    passage.transcriptPublishedMs = this.#ports.now();
   }
 
-  #retriesVision(segment, error) {
+  #retriesVision(passage, error) {
     return error?.code === VISION_TRANSIENT && !this.#stopped() && !this.#ports.isReadOnly()
-      && this.#ports.hasMedia(segment) && !this.#visionQueue.length && !this.#visionHeld;
+      && this.#ports.hasMedia(passage) && !this.#visionQueue.length && !this.#visionHeld;
   }
 
-  #describe(segment, evidence, context) {
+  #describe(passage, evidence, context) {
     this.#ports.addUsage({ calls: 1 });
-    return this.#ports.observeVisual({ ...segment, ...evidence,
+    return this.#ports.observeVisual({ ...passage, ...evidence,
       context, signal: this.#controller.signal, lightweight: this.#visionQueue.length > 0,
       onProgress: message => {
         if (this.#closed) return;
-        segment.stage = message;
+        passage.stage = message;
         this.#ports.publish();
       },
     });
@@ -245,45 +245,45 @@ class PerceptionLanes {
     }
     this.#endHold();
     this.#visionRunning = true;
-    const segment = this.#visionQueue.shift();
-    segment.visionStatus = 'analyzing';
-    segment.visionStartedMs = this.#ports.now();
+    const passage = this.#visionQueue.shift();
+    passage.visionStatus = 'analyzing';
+    passage.visionStartedMs = this.#ports.now();
     this.#ports.publish();
     try {
-      let evidence = await this.#ports.readMedia(segment.id);
+      let evidence = await this.#ports.readMedia(passage.id);
       if (this.#stopped()) return;
       let context, result, retried = false;
       const describe = () => {
-        context = this.#ports.contextFor(segment);
-        return this.#describe(segment, evidence, context);
+        context = this.#ports.contextFor(passage);
+        return this.#describe(passage, evidence, context);
       };
       try {
         result = await describe();
       } catch (error) {
-        if (!this.#retriesVision(segment, error)) throw error;
+        if (!this.#retriesVision(passage, error)) throw error;
         // La relecture refusée garde la première cause, sans perte ni publication entre les deux appels.
         try {
-          evidence = await this.#ports.readMedia(segment.id);
+          evidence = await this.#ports.readMedia(passage.id);
         } catch {
           throw error;
         }
-        if (!this.#retriesVision(segment, error)) throw error;
+        if (!this.#retriesVision(passage, error)) throw error;
         this.#ports.count('visionRetried');
         retried = true;
         result = await describe();
       }
       if (this.#closed) return;
-      this.#acceptVision(segment, { result, context, retried });
+      this.#acceptVision(passage, { result, context, retried });
     } catch (error) {
       if (this.#closed) return;
-      segment.visionStatus = 'error';
-      segment.visionError = error.message;
-      segment.status = hasUsableObservation(segment) ? 'partial' : 'error';
+      passage.visionStatus = 'error';
+      passage.visionError = error.message;
+      passage.status = hasUsableObservation(passage) ? 'partial' : 'error';
       this.#ports.setError(error.message);
-      this.#ports.update(segment, 'vision', 'error');
+      this.#ports.update(passage, 'vision', 'error');
     } finally {
       this.#visionRunning = false;
-      segment.stage = null;
+      passage.stage = null;
       if (!this.#closed) {
         this.#ports.publish();
         this.drain();
@@ -292,19 +292,19 @@ class PerceptionLanes {
     }
   }
 
-  #acceptVision(segment, { result, context, retried }) {
-    segment.observation = { ...segment.observation, ...result.observation };
-    segment.topicSummary = completeTopicSummary(segment, result, context);
-    segment.visionStatus = 'ready';
-    segment.visionMs = result.elapsedMs;
-    segment.visionPublishedMs = this.#ports.now();
-    this.#ports.update(segment);
-    segment.status = segment.audioStatus === 'ready' ? 'ready' : 'partial';
-    segment.analysisMs = (segment.analysisMs || 0) + (result.elapsedMs || 0);
-    segment.metrics = { ...segment.metrics, ...result.metrics };
+  #acceptVision(passage, { result, context, retried }) {
+    passage.observation = { ...passage.observation, ...result.observation };
+    passage.topicSummary = completeTopicSummary(passage, result, context);
+    passage.visionStatus = 'ready';
+    passage.visionMs = result.elapsedMs;
+    passage.visionPublishedMs = this.#ports.now();
+    this.#ports.update(passage);
+    passage.status = passage.audioStatus === 'ready' ? 'ready' : 'partial';
+    passage.analysisMs = (passage.analysisMs || 0) + (result.elapsedMs || 0);
+    passage.metrics = { ...passage.metrics, ...result.metrics };
     this.#ports.addUsage({ cost: result.cost || 0 });
     if (retried) this.#ports.count('visionRecovered');
-    this.#ports.clearErrorThrough(segment);
+    this.#ports.clearErrorThrough(passage);
   }
 }
 

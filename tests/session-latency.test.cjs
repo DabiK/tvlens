@@ -23,13 +23,14 @@ test('timeline stamps are ordered on the session clock and survive historical re
   const f = fixture({ transcribe: async s => { await audio(s.id).promise; return { observation: { transcript: `Paroles ${s.id}` }, elapsedMs: 300, metrics: { whisper: { threads: 4 } } }; },
     observeVisual: async s => { await vision(s.id).promise; return { observation: { summary: `Images ${s.id}`, visual: 'Image' }, elapsedMs: 700, metrics: { frames: 3 } }; } });
   await f.add(0); await f.add(1, { ingest: { assembleMs: 150, transport: 'ignored' } });
-  const [first, second] = f.watch.segments;
+  let [first, second] = f.watch.snapshot().segments;
   assert.deepEqual(second.ingest, { assembleMs: 150 });
   assert.equal(second.receivedMs, 2000); assert.equal(second.audioStartedMs, undefined);
   f.setTime(2400); audio('moment-1').resolve(); await tick();
   f.setTime(2600); audio('moment-2').resolve(); await tick();
   f.setTime(3100); vision('moment-1').resolve(); await tick();
   f.setTime(3500); vision('moment-2').resolve(); await tick();
+  [first, second] = f.watch.snapshot().segments;
   assert.deepEqual(stamps.map(k => first[k]), [1000, 1000, 2400, 2400, 2400, 3100]);
   assert.deepEqual(stamps.map(k => second[k]), [2000, 2400, 2600, 2600, 3100, 3500]);
   for (const p of [first, second]) assert.deepEqual(stamps.map(k => p[k]), stamps.map(k => p[k]).sort((a, b) => a - b));
@@ -52,18 +53,27 @@ test('ingest metadata keeps only a finite, non-negative assembleMs from a plain 
   const f = fixture({ transcribe, observeVisual: visual });
   const cases = [[{ assembleMs: 0 }, { assembleMs: 0 }], [{ assembleMs: -5 }], [{ assembleMs: '12' }], [{ assembleMs: Infinity }], ['12'], [Object.assign([1], { assembleMs: 4 })], [null], [undefined]];
   for (const [i, [ingest]] of cases.entries()) await f.add(i, { ingest });
-  assert.deepEqual(f.watch.segments.map(s => s.ingest), cases.map(([, kept]) => kept));
+  assert.deepEqual(f.watch.snapshot().segments.map(s => s.ingest), cases.map(([, kept]) => kept));
 });
 test('revision counts consultable versions: transcript, then visual evidence or terminal loss', async () => {
   const audio = gates(), vision = gates();
   const f = fixture({ transcribe: async s => { await audio(s.id).promise; return transcribe(s); },
     observeVisual: async s => { await vision(s.id).promise; if (s.id === 'moment-2') throw Error('vision failed'); return visual(s); } });
-  await f.add(0); const [first] = f.watch.segments;
+  await f.add(0);
+  let [first] = f.watch.snapshot().segments;
   assert.equal(first.revision, 0);
-  audio('moment-1').resolve(); await tick(); assert.equal(first.revision, 1); assert.equal(first.status, 'partial');
-  vision('moment-1').resolve(); await tick(); assert.equal(first.revision, 2); assert.equal(first.status, 'ready');
+  audio('moment-1').resolve();
+  await tick();
+  [first] = f.watch.snapshot().segments;
+  assert.equal(first.revision, 1);
+  assert.equal(first.status, 'partial');
+  vision('moment-1').resolve();
+  await tick();
+  [first] = f.watch.snapshot().segments;
+  assert.equal(first.revision, 2);
+  assert.equal(first.status, 'ready');
   audio('moment-2').resolve(); vision('moment-2').resolve(); await f.add(1);
-  const second = f.watch.segments[1];
+  const second = f.watch.snapshot().segments[1];
   assert.equal(second.visionStatus, 'error'); assert.equal(second.revision, 2); assert.equal(second.visionPublishedMs, undefined);
   assert.equal(f.watch.losses.visionError, 1);
   assert.deepEqual(f.snapshots.at(-1).segments.map(s => s.revision), [2, 2]);
@@ -73,7 +83,8 @@ test('a transcription reporting its own failure is counted and flagged, and a ho
   const gate = deferred();
   const f = fixture({ transcribe: async () => ({ failed: true, observation: { transcript: '', audio: 'Paroles indisponibles.' }, elapsedMs: 40, metrics: { whisper: { failed: true } } }),
     observeVisual: async s => { await gate.promise; return visual(s); } });
-  await f.add(0); const [p] = f.watch.segments;
+  await f.add(0);
+  let [p] = f.watch.snapshot().segments;
   assert.equal(p.audioFailed, true); assert.equal(f.watch.losses.audioError, 1);
   assert.equal(p.observation.transcript, '', 'no words are invented');
   assert.equal(p.audioMs, 40); assert.deepEqual(p.metrics, { whisper: { failed: true } });
@@ -81,6 +92,7 @@ test('a transcription reporting its own failure is counted and flagged, and a ho
   // analysed-through counters only accept `ready` passages, and must keep working on images alone.
   assert.equal(p.audioStatus, 'ready'); assert.equal(p.visionStatus, 'analyzing');
   gate.resolve(); await tick();
+  [p] = f.watch.snapshot().segments;
   assert.deepEqual([p.status, p.visionStatus, p.observation.summary], ['ready', 'ready', 'Images moment-1']);
   const state = f.watch.snapshot();
   assert.equal(state.analyzedThroughMs, 1000);
@@ -98,16 +110,16 @@ test('a skip while a vision call is in flight is a backlog even during a questio
   const f = fixture({ transcribe, observeVisual: async s => { await gate.promise; return visual(s); } });
   for (let i = 0; i < 4; i++) await f.add(i);
   f.watch.setQuestionPending(true); await f.add(4);
-  assert.deepEqual(f.watch.segments.map(s => [s.status, s.visionStatus, s.visionSkipReason]),
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.status, s.visionStatus, s.visionSkipReason]),
     [['partial', 'analyzing', undefined], ['partial', 'skipped', 'backlog'], ['partial', 'skipped', 'backlog'], ['partial', 'queued', undefined], ['partial', 'queued', undefined]]);
   const state = f.watch.snapshot();
   assert.deepEqual(state.visionGaps, [{ id: 'moment-2', startMs: 1000, endMs: 2000, visionStatus: 'skipped', reason: 'backlog' }, { id: 'moment-3', startMs: 2000, endMs: 3000, visionStatus: 'skipped', reason: 'backlog' }]);
   assert.deepEqual(state.gaps, []);
   // The question holds nothing here: the lane is busy, so it is not charged with the loss.
   assert.deepEqual(state.coverage, { passages: 5, audioSkipped: 0, audioExpired: 0, visionSkippedBacklog: 2, visionSkippedAsking: 0, visionExpired: 0, audioError: 0, visionError: 0, visionBlockedMs: 0 });
-  assert.equal(f.watch.segments[1].observation.transcript, 'Paroles moment-2');
+  assert.equal(f.watch.snapshot().segments[1].observation.transcript, 'Paroles moment-2');
   gate.resolve(); f.watch.setQuestionPending(false); await tick();
-  assert.deepEqual(f.watch.segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
   assert.equal(f.watch.snapshot().visionGaps.length, 2);
 });
 test('audio drops and errors stay counted while historical expiry counters survive restoration', async () => {
@@ -115,7 +127,8 @@ test('audio drops and errors stay counted while historical expiry counters survi
   const f = fixture({ transcribe: async s => { await gate.promise; if (s.id === 'moment-1') throw Error('speech failed'); return transcribe(s); }, observeVisual: visual });
   f.watch.setQuestionPending(true);
   for (let i = 0; i < 4; i++) await f.add(i);
-  assert.equal(f.watch.losses.audioSkipped, 1); assert.equal(f.watch.segments[1].audioStatus, 'skipped');
+  assert.equal(f.watch.losses.audioSkipped, 1);
+  assert.equal(f.watch.snapshot().segments[1].audioStatus, 'skipped');
   gate.resolve(); await tick();
   f.setTime(6500);
   assert.deepEqual(f.watch.snapshot().segments.map(s => [s.id, s.status, s.visionStatus, s.visionSkipReason]), [
@@ -144,12 +157,12 @@ test('a passage whose transcription is shed is still described, in observation o
   const f = fixture({ transcribe: async s => { if (s.id === 'moment-1') await gate.promise; return transcribe(s); },
     observeVisual: async s => { described.push([s.id, s.observation?.transcript || null]); return visual(s); } });
   for (let i = 0; i < 4; i++) await f.add(i);
-  assert.equal(f.watch.segments[1].audioStatus, 'skipped');
-  assert.equal(f.watch.segments[1].status, 'queued', 'it keeps its place behind the passage being transcribed');
+  assert.equal(f.watch.snapshot().segments[1].audioStatus, 'skipped');
+  assert.equal(f.watch.snapshot().segments[1].status, 'queued', 'it keeps its place behind the passage being transcribed');
   assert.deepEqual(described, [], 'its images do not jump ahead of an older passage');
   gate.resolve(); await tick(); await tick();
   assert.deepEqual(described, [['moment-1', 'Paroles moment-1'], ['moment-2', null], ['moment-3', 'Paroles moment-3'], ['moment-4', 'Paroles moment-4']]);
-  const shed = f.watch.segments[1];
+  const shed = f.watch.snapshot().segments[1];
   assert.deepEqual([shed.status, shed.audioStatus, shed.visionStatus, shed.observation.summary], ['partial', 'skipped', 'ready', 'Images moment-2']);
   assert.equal(shed.observation.transcript, undefined);
   const state = f.watch.snapshot();
@@ -163,7 +176,7 @@ test('the audio lane stays bounded when Whisper stalls: beyond it the oldest pas
   const f = fixture({ transcribe: async s => { await gate.promise; return transcribe(s); }, observeVisual: visual });
   for (let i = 0; i < 9; i++) await f.add(i);
   assert.equal(f.watch.snapshot().audioPending, 6);
-  assert.deepEqual(f.watch.segments.filter(s => s.status === 'skipped').map(s => [s.id, s.visionStatus, s.visionSkipReason]), [['moment-2', 'skipped', 'backlog'], ['moment-3', 'skipped', 'backlog']]);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.status === 'skipped').map(s => [s.id, s.visionStatus, s.visionSkipReason]), [['moment-2', 'skipped', 'backlog'], ['moment-3', 'skipped', 'backlog']]);
   assert.deepEqual([f.watch.losses.audioSkipped, f.watch.losses.visionSkippedBacklog], [6, 2]);
   gate.resolve(); await tick();
 });
@@ -177,7 +190,7 @@ test('visionBlockedMs only accumulates while a question alone holds queued visio
   f.watch.setQuestionPending(false); f.setTime(5000);
   assert.equal(blocked(), 2000); assert.equal(f.snapshots.at(-1).coverage.visionBlockedMs, 2000);
   await tick();
-  assert.equal(f.watch.segments[0].visionStartedMs, 5000);
+  assert.equal(f.watch.snapshot().segments[0].visionStartedMs, 5000);
   // Queued behind the call in flight, not behind the question.
   f.watch.setQuestionPending(true); await f.add(5); f.setTime(7000);
   assert.equal(f.watch.snapshot().visionPending, 1); assert.equal(blocked(), 2000);
@@ -185,9 +198,11 @@ test('visionBlockedMs only accumulates while a question alone holds queued visio
   f.setTime(7500); assert.equal(blocked(), 2500);
   f.watch.setQuestionPending(false); await tick();
   f.setTime(9000); assert.equal(blocked(), 2500);
-  assert.equal(f.watch.segments[1].visionStartedMs, 7500); assert.equal(passageLatency(f.watch.segments[1]).visionWaitMs, 1500);
+  assert.equal(f.watch.snapshot().segments[1].visionStartedMs, 7500);
+  assert.equal(passageLatency(f.watch.snapshot().segments[1]).visionWaitMs, 1500);
   vision('moment-2').resolve(); await tick();
-  assert.equal(f.watch.segments[1].status, 'ready'); assert.equal(blocked(), 2500);
+  assert.equal(f.watch.snapshot().segments[1].status, 'ready');
+  assert.equal(blocked(), 2500);
 });
 
 test('a question released during ending stops charging held vision without publishing or scheduling work', async t => {
@@ -229,7 +244,8 @@ test('the hold ends when the session closes or queued vision is released', async
   h.watch.setQuestionPending(true); await h.add(0);
   h.setTime(1600); h.watch.visionDuringAsk = true; h.watch.drain(); await tick();
   h.setTime(4000);
-  assert.equal(h.watch.segments[0].visionStartedMs, 1600); assert.equal(h.watch.snapshot().coverage.visionBlockedMs, 600);
+  assert.equal(h.watch.snapshot().segments[0].visionStartedMs, 1600);
+  assert.equal(h.watch.snapshot().coverage.visionBlockedMs, 600);
   gate.resolve(); await tick();
 });
 test('visionDuringAsk lets vision run during a question, still one call at a time on a bounded queue', async () => {
@@ -237,14 +253,15 @@ test('visionDuringAsk lets vision run during a question, still one call at a tim
   const f = fixture({ transcribe, observeVisual: async s => { started++; max = Math.max(max, ++active); await gate.promise; active--; return visual(s); } }, { visionDuringAsk: true });
   f.watch.setQuestionPending(true);
   for (let i = 0; i < 5; i++) await f.add(i);
-  assert.equal(started, 1); assert.equal(f.watch.segments[0].visionStatus, 'analyzing');
+  assert.equal(started, 1);
+  assert.equal(f.watch.snapshot().segments[0].visionStatus, 'analyzing');
   assert.equal(f.watch.snapshot().visionPending, 2);
-  assert.deepEqual(f.watch.segments.filter(s => s.visionStatus === 'skipped').map(s => [s.id, s.visionSkipReason]), [['moment-2', 'backlog'], ['moment-3', 'backlog']]);
+  assert.deepEqual(f.watch.snapshot().segments.filter(s => s.visionStatus === 'skipped').map(s => [s.id, s.visionSkipReason]), [['moment-2', 'backlog'], ['moment-3', 'backlog']]);
   const { coverage } = f.watch.snapshot();
   assert.equal(coverage.visionSkippedBacklog, 2); assert.equal(coverage.visionSkippedAsking, 0); assert.equal(coverage.visionBlockedMs, 0);
   gate.resolve(); await tick();
   assert.equal(max, 1); assert.equal(started, 3); assert.equal(f.watch.asking, true);
-  assert.deepEqual(f.watch.segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => s.status), ['ready', 'partial', 'partial', 'ready', 'ready']);
 
 });
 test('overlapping ingests are admitted in call order; a rejected one does not block the next', async () => {
@@ -259,14 +276,14 @@ test('overlapping ingests are admitted in call order; a rejected one does not bl
   await assert.rejects(f.watch.ingest({ startMs: 5, endMs: 5 }), /Horodatage invalide/);
   put('moment-2').resolve(); put('moment-1').resolve();
   assert.deepEqual(await Promise.all([a, b]), ['moment-1', 'moment-2']);
-  assert.deepEqual(f.watch.segments.map(s => [s.id, s.startMs, s.receivedMs]), [['moment-1', 0, 2000], ['moment-2', 1000, 2000]]);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.id, s.startMs, s.receivedMs]), [['moment-1', 0, 2000], ['moment-2', 1000, 2000]]);
   f.setTime(4000); put('moment-3').resolve();
   const c = f.watch.ingest(f.block(3)), late = f.watch.ingest(f.block(2));
   await assert.rejects(late, /ordre d’observation/); assert.equal(await c, 'moment-3');
   f.setTime(6000); put('moment-4').resolve(); put('moment-5').resolve();
   const broken = f.watch.ingest(f.block(4, { fail: true })), next = f.watch.ingest(f.block(5));
   await assert.rejects(broken, /disk full/); assert.equal(await next, 'moment-5');
-  assert.deepEqual(f.watch.segments.map(s => [s.id, s.startMs]), [['moment-1', 0], ['moment-2', 1000], ['moment-3', 3000], ['moment-5', 5000]]);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.id, s.startMs]), [['moment-1', 0], ['moment-2', 1000], ['moment-3', 3000], ['moment-5', 5000]]);
   await f.watch.stop(); await assert.rejects(f.watch.ingest(f.block(6)), /arrêtée/);
 });
 test('an ingest still waiting for admission when the session closes writes no raw media', async () => {
@@ -360,7 +377,10 @@ test('latency arithmetic tolerates missing stamps, honours the limit and rounds'
   assert.equal(latencySummary(rows, 0).passages, 0); assert.equal(latencySummary(undefined).passages, 0);
   // The session summary only looks at the last 40 passages of history + segments.
   const f = fixture({ transcribe, observeVisual: visual });
-  for (let i = 0; i < 60; i++) f.watch.history.push({ id: `old-${i}`, startMs: i * 1000, endMs: (i + 1) * 1000, receivedMs: (i + 1) * 1000 + (i < 20 ? 50000 : 100) });
+  f.watch.restore({ id: 's', segments: [], history: Array.from({ length: 60 }, (_, i) => ({
+    id: `moment-${i + 1}`, startMs: i * 1000, endMs: (i + 1) * 1000,
+    receivedMs: (i + 1) * 1000 + (i < 20 ? 50000 : 100),
+  })) });
   const state = f.watch.snapshot();
   assert.equal(state.latency.passages, 40); assert.deepEqual(state.latency.arrivalMs, { n: 40, mean: 100, max: 100 });
   assert.equal(state.coverage.passages, 60);
@@ -372,10 +392,10 @@ test('a passage that just got its transcript keeps its place when passages shed 
     observeVisual: async s => { described.push(s.id); return visual(s); } });
   // Four blocks arrive during one transcription: two are shed behind it, two wait for Whisper.
   for (let i = 0; i < 5; i++) await f.add(i);
-  assert.deepEqual(f.watch.segments.map(s => s.audioStatus), ['analyzing', 'skipped', 'skipped', undefined, undefined]);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => s.audioStatus), ['analyzing', 'skipped', 'skipped', undefined, undefined]);
   gate.resolve(); await tick(); await tick();
   assert.equal(described[0], 'moment-1', 'the idle vision lane takes the transcribed passage first');
-  assert.deepEqual(f.watch.segments.map(s => [s.status, s.visionStatus]), [['ready', 'ready'], ['partial', 'ready'], ['partial', 'ready'], ['ready', 'ready'], ['ready', 'ready']]);
+  assert.deepEqual(f.watch.snapshot().segments.map(s => [s.status, s.visionStatus]), [['ready', 'ready'], ['partial', 'ready'], ['partial', 'ready'], ['ready', 'ready'], ['ready', 'ready']]);
   assert.deepEqual(described, ['moment-1', 'moment-2', 'moment-3', 'moment-4', 'moment-5'], 'descriptions stay in observation order');
   assert.deepEqual([f.watch.losses.audioSkipped, f.watch.losses.visionSkippedBacklog], [2, 0]);
 });
@@ -388,11 +408,11 @@ test('a passage without speech only takes a free place in the vision lane and ne
   assert.deepEqual(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').map(s => s.id), ['moment-2', 'moment-3']);
   // moment-4 stalls in Whisper; three more arrive, so moment-5 is shed behind it.
   for (let i = 3; i < 7; i++) await f.add(i);
-  assert.equal(f.watch.segments[4].audioStatus, 'skipped');
+  assert.equal(f.watch.snapshot().segments[4].audioStatus, 'skipped');
   audio.resolve(); await tick();
-  const shed = f.watch.segments[4];
+  const shed = f.watch.snapshot().segments[4];
   assert.deepEqual([shed.status, shed.visionStatus, shed.visionSkipReason], ['skipped', 'skipped', 'backlog'], 'no free place: it is dropped whole and counted');
-  assert.ok(f.watch.segments.slice(1, 4).filter(s => s.visionStatus === 'skipped').every(s => s.observation.transcript), 'spoken passages are only evicted by spoken ones');
+  assert.ok(f.watch.snapshot().segments.slice(1, 4).filter(s => s.visionStatus === 'skipped').every(s => s.observation.transcript), 'spoken passages are only evicted by spoken ones');
   assert.equal(f.watch.snapshot().segments.filter(s => s.visionStatus === 'queued').every(s => s.observation?.transcript), true);
   vision.resolve(); await tick();
 });
