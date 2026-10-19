@@ -3,6 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
 const { HeadlessRuntime } = require('../runtime/headless-runtime.cjs');
 const { RemoteServer } = require('../server/http.cjs');
 const { deferred } = require('./helpers/wait.cjs');
@@ -75,6 +77,135 @@ test('the server publishes both default smoke lanes and their observations throu
     ['moment-1', 0, 8000, 'ready', 'ready', 'ready']);
   assert.ok(published.some(p => p.audioStatus === 'ready' && p.visionStatus === 'queued' && !p.observation.summary));
   assert.equal(state.apiCost, 0);
+});
+
+function soundWav(sampleCount = 16000) {
+  const rate = 16000, bytesPerSample = 2;
+  const wav = Buffer.alloc(44 + sampleCount * bytesPerSample);
+  wav.write('RIFF');
+  wav.writeUInt32LE(wav.length - 8, 4);
+  wav.write('WAVEfmt ', 8);
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(rate, 24);
+  wav.writeUInt32LE(rate * bytesPerSample, 28);
+  wav.writeUInt16LE(bytesPerSample, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write('data', 36);
+  wav.writeUInt32LE(wav.length - 44, 40);
+  for (let i = 0; i < sampleCount; i++) wav.writeInt16LE(Math.round(Math.sin(i * 2 * Math.PI * 440 / rate) * 8000), 44 + i * 2);
+  return wav;
+}
+
+test('HTTP ingestion keeps a declared sound-only passage and a decodable Opus replay without vision or thumbnails', { timeout: 10000 }, async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  const f = await fixture(t, { media: new RemoteMedia() });
+  const session = (await f.req('/v1/session/start', {})).value;
+  const vision = t.mock.method(f.runtime.session.perception, 'observeVisual');
+  const thumbnails = t.mock.method(f.runtime.session.thumbnails, 'put');
+  const finished = deferred();
+  f.runtime.listeners.add(state => {
+    if (state.session?.segments[0]?.status === 'ready') finished.resolve();
+  });
+  f.setClock(1000);
+  const body = { sessionId: session.id, sequence: 1, startMs: 0, endMs: 1000,
+    frames: [], audio: soundWav().toString('base64'), media: { video: false, audio: true } };
+  const sent = await f.req('/v1/segments', body);
+  assert.deepEqual(sent.value, { id: 'moment-1', duplicate: false });
+  assert.equal(sent.status, 200);
+  await finished.promise;
+  const view = f.runtime.session.memory.view(), passage = view.passages[0];
+  assert.deepEqual([passage.id, passage.status, passage.audioStatus, passage.visionStatus], ['moment-1', 'ready', 'ready', 'absent']);
+  assert.deepEqual(passage.modalities, { audio: 'present', images: 'absent', video: 'absent' });
+  assert.equal(passage.observation.transcript, 'Un cercle se déplace sur un fond bleu.');
+  assert.equal(passage.thumbnailAvailable, false);
+  assert.equal(view.losses.imagesAbsent, 1);
+  assert.deepEqual([vision.mock.callCount(), thumbnails.mock.callCount()], [0, 0]);
+  const stored = await f.runtime.session.store.read(sent.value.id);
+  assert.deepEqual(stored.frames, []);
+  assert.equal(stored.audio.toString('ascii', 0, 4), 'RIFF');
+  assert.equal(stored.audio.readUInt16LE(22), 1);
+  assert.equal(stored.audio.readUInt32LE(24), 16000);
+  const release = await f.runtime.session.store.lease([sent.value.id]);
+  try {
+    const replay = await f.runtime.session.store.response(sent.value.id);
+    assert.equal(replay.status, 200);
+    const file = path.join(f.runtime.session.store.root, 'audio-replay.webm');
+    await fs.writeFile(file, Buffer.from(await replay.arrayBuffer()));
+    const decoded = await promisify(execFile)('ffmpeg', ['-nostdin', '-i', file, '-map', '0:a:0',
+      '-ar', '16000', '-ac', '1', '-c:a', 'pcm_s16le', '-f', 's16le', '-'], { encoding: 'buffer', timeout: 5000 });
+    assert.match(decoded.stderr.toString(), /Audio: opus/);
+    assert.doesNotMatch(decoded.stderr.toString(), /Video:/);
+    assert.equal(decoded.stdout.length, 32000);
+    assert.ok(decoded.stdout.some(byte => byte !== 0));
+  } finally {
+    await release();
+  }
+  assert.deepEqual((await f.req('/v1/segments', body)).value, { id: sent.value.id, duplicate: true });
+  assert.equal(f.runtime.session.memory.view().passages.length, 1);
+  assert.equal(f.runtime.session.memory.view().losses.imagesAbsent, 1);
+});
+
+test('HTTP ingestion refuses missing or denied sound in a declared sound-only block before preparation', async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  const media = new RemoteMedia(), assemble = t.mock.method(media, 'assemble');
+  const f = await fixture(t, { media });
+  const { id } = (await f.req('/v1/session/start', {})).value;
+  const body = { sessionId: id, sequence: 1, startMs: 0, endMs: 1000, frames: [], media: { video: false, audio: true } };
+  for (const change of [
+    ...[undefined, null, '', false, 0, [], {}, true].map(audio => ({ audio })),
+    { audio: soundWav().toString('base64'), media: { video: false, audio: false } },
+  ]) {
+    const response = await f.req('/v1/segments', { ...body, ...change });
+    assert.equal(response.status, 400);
+    assert.equal(response.value.code, 'invalid-media-block');
+    assert.equal(assemble.mock.callCount(), 0);
+  }
+  assert.deepEqual(f.runtime.session.memory.view().passages, []);
+  assert.equal(f.runtime.admitted.size, 0);
+  assert.equal(f.server.accepted.size, 0);
+});
+
+test('HTTP ingestion refuses images contradicting a sound-only declaration before preparation', async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  const media = new RemoteMedia(), assemble = t.mock.method(media, 'assemble');
+  const f = await fixture(t, { media });
+  const { id } = (await f.req('/v1/session/start', {})).value;
+  const data = (await require('sharp')({ create: { width: 32, height: 32, channels: 3, background: '#fff' } }).jpeg().toBuffer())
+    .toString('base64');
+  const response = await f.req('/v1/segments', { sessionId: id, sequence: 1, startMs: 0, endMs: 1000,
+    frames: [{ atMs: 0, data }], audio: soundWav().toString('base64'), media: { video: false, audio: true } });
+  assert.equal(response.status, 400);
+  assert.equal(response.value.code, 'invalid-media-block');
+  assert.equal(response.value.error, 'Le bloc déclaré son seul ne doit pas contenir d’images.');
+  assert.equal(assemble.mock.callCount(), 0);
+  assert.deepEqual(f.runtime.session.memory.view().passages, []);
+});
+
+test('HTTP ingestion requires decodable samples in sound-only audio and releases refused blocks', async t => {
+  const { RemoteMedia } = require('../adapters/remote-media.cjs');
+  for (const [kind, audio, code] of [
+    ['invalid base64', 'invalid!', 'invalid-media-block'],
+    ['oversized audio', Buffer.alloc(2100001).toString('base64'), 'invalid-media-block'],
+    ['non-WAV audio', 'YQ==', 'invalid-media-block'],
+    ['undecodable WAV', soundWav().subarray(0, 12).toString('base64'), 'media-tool-refused'],
+    ['WAV without samples', soundWav(0).toString('base64'), 'media-tool-refused'],
+  ]) await t.test(kind, async t => {
+    const f = await fixture(t, { media: new RemoteMedia() });
+    const { id } = (await f.req('/v1/session/start', {})).value;
+    const body = { sessionId: id, sequence: 1, startMs: 0, endMs: 1000, frames: [], media: { video: false, audio: true }, audio };
+    const response = await f.req('/v1/segments', body);
+    assert.equal(response.status, 400);
+    assert.equal(response.value.code, code);
+    assert.deepEqual(f.runtime.session.memory.view().passages, []);
+    assert.equal(f.runtime.admitted.size, 0);
+    assert.equal(f.server.ingesting, false);
+    assert.equal(f.server.accepted.size, 0);
+    const next = await f.req('/v1/segments', { ...body, audio: soundWav().toString('base64') });
+    assert.equal(next.status, 200);
+    assert.deepEqual(next.value, { id: 'moment-1', duplicate: false });
+  });
 });
 
 test('a media tool killed by its time limit fails the block instead of passing a truncated file', async t => {

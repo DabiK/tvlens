@@ -60,6 +60,32 @@ test("captured audio remains optional and retains its inclusive byte limit", () 
   }
 });
 
+test("a declared sound-only segment requires nonempty sound within the audio limit", () => {
+  const input = { ...segment(), frames: [], media: { video: false, audio: true } };
+  for (const change of [
+    ...[undefined, null, new Uint8Array(), "audio", new Uint8Array(2100001)].map(audio => ({ audio })),
+    { audio: new Uint8Array([1]), media: { video: false, audio: false } },
+  ]) {
+    assert.throws(() => validateCapturedSegment({ ...input, ...change }, { now: 100 }), {
+      status: 400,
+      code: "invalid-captured-segment",
+    });
+  }
+  for (const audio of [new Uint8Array([1]), Buffer.alloc(2100000)]) {
+    assert.doesNotThrow(() => validateCapturedSegment({ ...input, audio }, { now: 100 }));
+  }
+});
+
+test("a declared sound-only segment requires an empty array of frames", () => {
+  for (const frames of [segment().frames, undefined, null, {}]) {
+    assert.throws(() => validateCapturedSegment({ ...segment(), frames, audio: new Uint8Array([1]),
+      media: { video: false, audio: true } }, { now: 100 }), {
+      status: 400,
+      code: "invalid-captured-segment",
+    });
+  }
+});
+
 test("captured clips retain their type and inclusive size requirements", () => {
   for (const clip of [undefined, "clip", new Uint8Array(), new Uint8Array(20000001)]) {
     assert.throws(() => validateCapturedSegment({ ...segment(), clip }, { now: 100 }), {

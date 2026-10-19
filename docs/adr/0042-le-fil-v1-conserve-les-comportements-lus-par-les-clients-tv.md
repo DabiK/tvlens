@@ -102,6 +102,24 @@ et 10 s pour les en-têtes côté serveur ; l'envoi JS se borne à 8 s. Python b
 à 5 s, dans les 30 s de vie du bloc. La préparation média (15 s par commande), sa possession,
 son annulation et sa borne d'attente restent décrites par les ADR 0006 et 0023. Aucun délai n'est changé.
 
+### Ajout compatible du 19 octobre 2026 : bloc déclaré son seul
+
+POST `/v1/segments` accepte le champ facultatif `media: { video: false, audio: true }`, avec `frames: []`
+et `audio` obligatoire : base64 d'un WAV décodable contenant des échantillons, dans les bornes existantes.
+Seul `media.video === false` déclare le son seul, selon l'ADR 0062. Une déclaration `media.audio === false`
+ou la présence d'images contredit ce bloc et rend 400 `invalid-media-block`. L'absence de son, un encodage
+invalide et un son non WAV portent aussi ce code ; un WAV sans échantillon ou refusé par FFmpeg rend
+400 `media-tool-refused`. Les pannes de l'hôte gardent leurs refus propres.
+
+Le serveur conserve un clip WebM Opus audio seul et le WAV mono 16 kHz, avec les mêmes fichiers et baux.
+Le cœur reçoit la déclaration, ne lance ni vision ni miniature et compte l'absence d'images. Le clip peut
+être décodé en audio depuis le stockage ; la route de rejeu vidéo garde sa règle de disponibilité vidéo.
+Un bloc sans déclaration exige toujours des images et conserve son refus 400 `invalid-media-block`,
+« Nombre d’images invalide. ». Les identités, séquences, empreintes et doublons sont inchangés.
+
+Un ancien serveur refuse ce nouveau bloc en 400 `invalid-media-block`, compté par la TV comme livraison
+rejetée. Cet ajout côté serveur ne modifie pas encore la capture TV et n'établit aucune capacité déployée.
+
 ## Alternatives écartées
 
 - Figer uniquement les schémas JSON : ne détecte ni un changement d'admission ni un ordre de commandes cassé.
@@ -128,6 +146,9 @@ reste à couvrir dans le banc prévu par T204 avant le changement de son contrô
 - `server-state-views`, `server-ingest-path`, `tv-panel` et `tv-poll-controller` gardent leurs preuves,
   dont le repli 404 historique. Les bancs d'ingestion des ADR 0006/0023 restent responsables des
   courses d'annulation et de possession.
+- `server-ingest-path` vérifie aussi le bloc déclaré son seul avec le vrai assembleur : corps HTTP,
+  passage prêt sans vision ni miniature, clip Opus décodé sans vidéo, doublon et refus structurés.
+  `segment-contract` protège les exigences de son et de liste d'images vide après assemblage.
 - Les bancs de page (`tv-paired-page`, `tv-remote-navigation`) vérifient scripts, polling, commandes
   de surveillance, navigation et diagnostics locaux sur doublures ; les tests Python
   (`test_tv_capture.py`, `test_tv_control.py`) conduisent capture et livraison sur doublures.

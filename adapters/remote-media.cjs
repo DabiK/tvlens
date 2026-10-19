@@ -28,9 +28,12 @@ function validateRemote(input) {
   if (!Number.isFinite(input.startMs) || !Number.isFinite(input.endMs)
     || input.startMs < 0 || input.endMs <= input.startMs || input.endMs - input.startMs > 10000)
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Intervalle invalide.');
+  const minFrames = input.media?.video === false ? 0 : REMOTE_MEDIA_LIMITS.minFrames;
   if (!Array.isArray(input.frames)
-    || input.frames.length < REMOTE_MEDIA_LIMITS.minFrames || input.frames.length > REMOTE_MEDIA_LIMITS.maxFrames)
+    || input.frames.length < minFrames || input.frames.length > REMOTE_MEDIA_LIMITS.maxFrames)
     throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Nombre d’images invalide.');
+  if (input.media?.video === false && input.frames.length)
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Le bloc déclaré son seul ne doit pas contenir d’images.');
   let previous = -Infinity;
   for (const f of input.frames) {
     if (!f || typeof f !== 'object'
@@ -45,6 +48,8 @@ function validateRemote(input) {
         throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Cadrage invalide.');
     }
   }
+  if (input.media?.video === false && (!input.audio || input.media.audio === false))
+    throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Le bloc déclaré son seul doit contenir du son.');
   if (input.audio) base64(input.audio, REMOTE_MEDIA_LIMITS.maxAudioBytes);
   validated.add(input);
 }
@@ -92,6 +97,21 @@ async function command(binary,args,timeoutMs,signal){
     child.stderr?.on('data',v=>{err=(err+v).slice(-2000);});
   });
 }
+async function prepareClipCommand(dir, input, seconds, hasAudio) {
+  if (input.media?.video === false)
+    return ['-nostdin', '-v', 'error', '-i', path.join(dir, 'audio.wav'), '-c:a', 'libopus', '-t', seconds, path.join(dir, 'clip.webm')];
+  const list = ['ffconcat version 1.0'];
+  input.frames.forEach((frame, i) => {
+    const start = i ? frame.atMs : input.startMs, end = input.frames[i + 1]?.atMs ?? input.endMs;
+    list.push(`file '${i}.jpg'`, `duration ${Math.max(.001, (end - start) / 1000)}`);
+  });
+  list.push(`file '${input.frames.length - 1}.jpg'`);
+  await scratch(fs.writeFile(path.join(dir, 'frames.txt'), list.join('\n')));
+  const args = ['-nostdin', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', path.join(dir, 'frames.txt')];
+  if (hasAudio) args.push('-i', path.join(dir, 'audio.wav'), '-c:a', 'libopus');
+  args.push('-t', seconds, '-vf', 'fps=2', '-c:v', 'libvpx', '-deadline', 'realtime', '-cpu-used', '8', '-b:v', '500k', path.join(dir, 'clip.webm'));
+  return args;
+}
 class RemoteMedia {
   constructor({ffmpeg='ffmpeg',timeoutMs=15000}={}){this.ffmpeg=ffmpeg;this.timeoutMs=timeoutMs;}
   // `signal` gives the block up: nothing new is made for it from then on (directory, file, media tool), the tool that
@@ -115,7 +135,11 @@ class RemoteMedia {
         if (raw.toString('ascii', 0, 4) !== 'RIFF' || raw.toString('ascii', 8, 12) !== 'WAVE')
           throw domainError(TVLENS_MEDIA_BLOCK_INVALID, 'Audio WAV requis.');
         await scratch(fs.writeFile(path.join(dir,'source.wav'),raw,{mode:0o600}));
-        await command(this.ffmpeg,['-nostdin','-v','error','-i',path.join(dir,'source.wav'),'-t',seconds,'-ar','16000','-ac','1',path.join(dir,'audio.wav')],this.timeoutMs,signal);
+        const args = ['-nostdin', '-v', 'error'];
+        // FFmpeg peut réussir avec un WAV sans échantillon ; ce bloc ne doit pas devenir un passage son seul.
+        if (input.media?.video === false) args.push('-abort_on', 'empty_output');
+        args.push('-i', path.join(dir, 'source.wav'), '-t', seconds, '-ar', '16000', '-ac', '1', path.join(dir, 'audio.wav'));
+        await command(this.ffmpeg, args, this.timeoutMs, signal);
         return scratch(fs.readFile(path.join(dir,'audio.wav')));
       };
       // Frames and audio run together. Everything started settles before the directory is removed, and the
@@ -125,15 +149,7 @@ class RemoteMedia {
       signal?.throwIfAborted();
       const failed=settled.find(s=>s.status==='rejected');if(failed)throw failed.reason;
       const audio=settled.pop().value,frames=settled.map(s=>s.value);
-      const list=['ffconcat version 1.0'];
-      input.frames.forEach((frame,i)=>{
-        const start=i?frame.atMs:input.startMs,end=input.frames[i+1]?.atMs??input.endMs;
-        list.push(`file '${i}.jpg'`,`duration ${Math.max(.001,(end-start)/1000)}`);
-      });
-      list.push(`file '${frames.length-1}.jpg'`);await scratch(fs.writeFile(path.join(dir,'frames.txt'),list.join('\n')));
-      const args=['-nostdin','-v','error','-f','concat','-safe','0','-i',path.join(dir,'frames.txt')];
-      if(audio)args.push('-i',path.join(dir,'audio.wav'),'-c:a','libopus');
-      args.push('-t',seconds,'-vf','fps=2','-c:v','libvpx','-deadline','realtime','-cpu-used','8','-b:v','500k',path.join(dir,'clip.webm'));
+      const args = await prepareClipCommand(dir, input, seconds, Boolean(audio));
       await command(this.ffmpeg,args,this.timeoutMs,signal);
       result={...input,frames,audio,clip:await scratch(fs.readFile(path.join(dir,'clip.webm')))};
     }catch(error){failed=true;primary=error;}

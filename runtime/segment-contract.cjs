@@ -27,19 +27,27 @@ function validateCapturedSegment(input, { now }) {
     input.clip.byteLength > SEGMENT_LIMITS.maxClipBytes
   )
     throw refusal(400, "Segment vidéo trop volumineux ou vide.", "invalid-captured-segment");
+  validateCapturedAudio(input);
+  validateCapturedFrames(input);
+}
+
+function validateCapturedAudio(input) {
+  if (input.media?.video === false && (!input.audio?.byteLength || input.media.audio === false))
+    throw refusal(400, "Audio invalide.", "invalid-captured-segment");
   if (
     input.audio &&
     (!(input.audio instanceof Uint8Array) || input.audio.byteLength > SEGMENT_LIMITS.maxAudioBytes)
   )
     throw refusal(400, "Audio invalide.", "invalid-captured-segment");
-  validateCapturedFrames(input);
 }
 
 function validateCapturedFrames(input) {
+  const minFrames = input.media?.video === false ? 0 : SEGMENT_LIMITS.minFrames;
+  const maxFrames = input.media?.video === false ? 0 : SEGMENT_LIMITS.maxFrames;
   if (
     !Array.isArray(input.frames) ||
-    input.frames.length < SEGMENT_LIMITS.minFrames ||
-    input.frames.length > SEGMENT_LIMITS.maxFrames ||
+    input.frames.length < minFrames ||
+    input.frames.length > maxFrames ||
     input.frames.some(
       (f) =>
         typeof f.dataUrl !== "string" ||

@@ -1,7 +1,7 @@
 ---
 id: T299
 titre: Accept a declared sound-only block on the server
-statut: a-faire
+statut: termine
 bloque_par: T298
 adr: non
 installe: non
@@ -64,3 +64,47 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : le chantier « son seul » (T297 à T302) passe en tête de file, après T225.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T299/exploration.md`, aucun écart prévu.
+  T298 fournit déjà la déclaration `media.video: false` ; les deux validations et l'assemblage distant restent à adapter.
+  Le clip sera relu comme audio depuis le store existant ; aucune route vidéo, capture TV ou capture Mac n'est modifiée.
+- 19/10, Codex : `node --test --test-name-pattern='HTTP ingestion keeps a declared sound-only passage' tests/server-ingest-path.test.cjs`
+  rouge observé sur l'assertion d'acceptation (`400 invalid-media-block`, `acceptance-red.log`), puis vert : 1 test réussi
+  (`acceptance-green.log`). Le vrai FFmpeg décode une seconde de son Opus, sans piste vidéo ; le cœur publie le passage
+  prêt avec vision absente, sans vision ni miniature. Le rejeu du même bloc reste un doublon.
+- 19/10, Codex : son obligatoire, rouge observé dans `sound-required-red.log` (contrat assemblé trop permissif,
+  absence de son arrivée jusqu'à FFmpeg), puis 3 tests verts dans `sound-required-green.log` avec
+  `node --test --test-concurrency=1 --test-name-pattern='missing or denied sound|requires nonempty sound|HTTP ingestion keeps a declared sound-only passage' tests/server-ingest-path.test.cjs tests/segment-contract.test.cjs`.
+  Le contrôle rapide a signalé une complexité de 16 dans `validateCapturedSegment` ; validation audio extraite
+  avant le vert, sans ajout de suppression ni changement du harnais.
+- 19/10, Codex : images incohérentes, 2 rouges sur les assertions de refus (acceptation 200 et absence d'exception),
+  puis 2 verts avec `node --test --test-concurrency=1 --test-name-pattern='images contradicting|requires an empty array of frames' tests/server-ingest-path.test.cjs tests/segment-contract.test.cjs`
+  (`incoherent-images-red.log`, `incoherent-images-green.log`).
+- 19/10, Codex : `node --test --test-name-pattern='requires decodable samples' tests/server-ingest-path.test.cjs`
+  rouge observé : WAV sans échantillon accepté en 200 (`decodable-sound-red.log`). Normalisation FFmpeg du son seul
+  avec refus de sortie vide ; puis 7 tests verts avec
+  `node --test --test-name-pattern='requires decodable samples|HTTP ingestion keeps a declared sound-only passage' tests/server-ingest-path.test.cjs`
+  (`decodable-sound-green.log`). Les refus rendent leur admission ; un nouvel envoi valide est accepté.
+- 19/10, Codex : `node scripts/check.mjs --changed` vert, code 0 : règles, format, lint, gel et cliquet verts,
+  29 tests réussis dans les 2 fichiers de tests modifiés (`check-changed.log`). Les tests existants de refus
+  sans image non déclaré sont conservés sans modification. Documentation du champ facultatif ajoutée à l'ADR 0042.
+- 19/10, Codex : `node scripts/check.mjs` vert, code 0 : règles, format, lint, gel et cliquet verts,
+  3 008 tests JavaScript réussis dans 154 fichiers, 54 tests Python réussis (`check-full.log`).
+  `git diff --check` vert, code 0. Verdict `TERMINÉ` déposé dans `.harness-state/tickets/T299/verdict.json`,
+  sans réserve ; relecture et intégration laissées à la boucle, aucun commit ni push.
+- 19/10, Codex, reprise après relecture 1 : rapport, ticket, journal, écarts, statut et diff relus.
+  Le constat mineur de nommage est accepté : renommage prévu de `clipArguments` en `prepareClipCommand`, sans
+  changement des arguments FFmpeg. Tests publics existants exécutés avant et après ce nettoyage ; aucun test du
+  nom privé ni du texte source n'est ajouté. Aucun écart ni contestation ; les constats hors périmètre restent à la boucle.
+- 19/10, Codex, correction 1 : `node --test --test-concurrency=1 tests/remote-media.test.cjs tests/server-ingest-path.test.cjs`
+  vert avant puis après renommage : 48 tests réussis à chaque exécution (`correction-1-tests-before.log`,
+  `correction-1-tests-after.log`). Seuls la déclaration de l'aide et son appel sont renommés ; les arguments FFmpeg
+  et la préparation de `frames.txt` sont conservés. `node scripts/check.mjs --changed` vert, code 0 : 29 tests
+  réussis dans 2 fichiers et toutes les gardes vertes (`correction-1-check-changed.log`). `git diff --check` vert.
+- 19/10, Codex, correction 1 : `node scripts/check.mjs` vert, code 0 : toutes les gardes vertes,
+  3 008 tests JavaScript réussis dans 154 fichiers et 54 tests Python réussis (`correction-1-check-full.log`).
+  `git diff --check` vert, code 0. Nouveau verdict `TERMINÉ`, sans réserve propre ni contestation ;
+  constat mineur corrigé, relecture et intégration laissées à la boucle, aucun commit ni push.
+
+### Réserves à la clôture
+
+- .harness-state/tickets/T299/relecture-2.md : Nombre de constats discordant : CONSTATS annonce 2 hors périmètre ; 0 constat(s) extrait(s). Consulter le rapport pour l'ensemble des constats hors périmètre.
