@@ -46,6 +46,42 @@ function capturedMedia(input) {
   return { available: true };
 }
 
+function fallbackMediaReason(source, formerFormat) {
+  if (formerFormat) return 'not-kept';
+  return source.available ? 'missing' : 'expired';
+}
+
+function reopenedPassage(source, { kept, hasMedia, hasThumbnail, formerFormat }, losses) {
+  const passage = { ...source };
+  // Availability is what the disk says now, not what the session believed when it stopped.
+  const present = kept && Boolean(hasMedia(passage.id));
+  // Une absence déclarée survit au disque ; la disparition des fichiers ne retire que leur disponibilité.
+  const reason = source.hasImages === false ? IMAGES_ABSENT : source.mediaReason;
+  const withoutVideo = [UNREADABLE, IMAGES_ABSENT].includes(reason);
+  passage.available = present && !withoutVideo;
+  if (passage.available) delete passage.mediaReason;
+  else if (withoutVideo) passage.mediaReason = present ? reason : 'missing';
+  else passage.mediaReason = source.mediaReason || fallbackMediaReason(source, formerFormat);
+  if (hasThumbnail) passage.thumbnailAvailable = Boolean(hasThumbnail(passage.id));
+  // No analysis is resumed: what was in flight is closed as partial evidence or as an explicit failure.
+  if (unfinished(passage.audioStatus)) {
+    passage.audioStatus = 'error';
+    passage.audioError = INTERRUPTED;
+    losses.audioError++;
+  }
+  if (unfinished(passage.visionStatus)) {
+    passage.visionStatus = 'error';
+    passage.visionError = INTERRUPTED;
+    losses.visionError++;
+  }
+  if (unfinished(passage.status)) {
+    passage.status = hasUsableObservation({ ...passage, status: 'partial' }) ? 'partial' : 'error';
+    if (passage.status === 'error') passage.error = INTERRUPTED;
+  }
+  if (passage.stage) passage.stage = null;
+  return passage;
+}
+
 // Portable application core: no Electron, filesystem or provider dependency.
 class WatchSession {
   #lifecycle = new memory.MemoryLifecycleState();
@@ -168,18 +204,7 @@ class WatchSession {
   async land(input, receivedMs) {
     // Overlapping calls are admitted in call order; a rejected one must not block the next.
     const admitted = this.ingestChain = this.ingestChain.catch(() => {}).then(async () => {
-      if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
-      // Les passages historiques comptent aussi : reprendre une archive ne permet pas de rejouer son dernier bloc.
-      const previous = this.segments.at(-1) ?? this.history.at(-1);
-      if (previous && input.startMs < previous.endMs - 100)
-        throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
-      const segment = {
-        id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs,
-        status: 'queued', hasAudio: Boolean(input.audio?.byteLength), ...capturedMedia(input),
-        observation: null, receivedMs, revision: 0,
-      };
-      const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
-      if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
+      const segment = this.#preparePassage(input, receivedMs);
       try { await this.media.put(segment.id, input); }
       catch (error) {
         // Out of room: nothing was stored, so no passage exists. Capture stops; nothing is deleted to make space.
@@ -230,6 +255,22 @@ class WatchSession {
     return segment.id;
   }
 
+  #preparePassage(input, receivedMs) {
+    if (this.closed) throw domainError(TVLENS_SESSION_STOPPED, 'La session est arrêtée.');
+    // Les passages historiques comptent aussi : reprendre une archive ne permet pas de rejouer son dernier bloc.
+    const previous = this.segments.at(-1) ?? this.history.at(-1);
+    if (previous && input.startMs < previous.endMs - 100)
+      throw domainError(TVLENS_CAPTURE_ORDER_INVALID, 'Les segments doivent suivre l’ordre d’observation.');
+    const segment = {
+      id: `moment-${++this.sequence}`, startMs: input.startMs, endMs: input.endMs,
+      status: 'queued', hasAudio: Boolean(input.audio?.byteLength), ...capturedMedia(input),
+      observation: null, receivedMs, revision: 0,
+    };
+    const assembleMs = input.ingest && typeof input.ingest === 'object' && !Array.isArray(input.ingest) ? input.ingest.assembleMs : null;
+    if (Number.isFinite(assembleMs) && assembleMs >= 0) segment.ingest = { assembleMs };
+    return segment;
+  }
+
   #syncVisionPolicy() {
     this.#lanes.setVisionHeld(this.asking && !this.visionDuringAsk);
   }
@@ -272,39 +313,8 @@ class WatchSession {
     const saved = memory.fromArchive(archived);
     // Saved before durable retention existed: its raw media were never meant to be kept.
     const formerFormat = saved.retention === undefined;
-    const reopen = (source, kept) => {
-      const passage = { ...source };
-      // Availability is what the disk says now, not what the session believed when it stopped.
-      const present = kept && Boolean(hasMedia(passage.id));
-      // Une absence déclarée survit au disque ; la disparition des fichiers ne retire que leur disponibilité.
-      const reason = source.hasImages === false ? IMAGES_ABSENT : source.mediaReason;
-      const withoutVideo = [UNREADABLE, IMAGES_ABSENT].includes(reason);
-      passage.available = present && !withoutVideo;
-      if (passage.available) delete passage.mediaReason;
-      else if (withoutVideo) passage.mediaReason = present ? reason : 'missing';
-      else passage.mediaReason = source.mediaReason || (formerFormat ? 'not-kept' : source.available ? 'missing' : 'expired');
-      if (hasThumbnail) passage.thumbnailAvailable = Boolean(hasThumbnail(passage.id));
-      // No analysis is resumed: what was in flight is closed as partial evidence or as an explicit failure.
-      if (unfinished(passage.audioStatus)) { passage.audioStatus = 'error'; passage.audioError = INTERRUPTED; this.losses.audioError++; }
-      if (unfinished(passage.visionStatus)) { passage.visionStatus = 'error'; passage.visionError = INTERRUPTED; this.losses.visionError++; }
-      if (unfinished(passage.status)) {
-        passage.status = hasUsableObservation({ ...passage, status: 'partial' }) ? 'partial' : 'error';
-        if (passage.status === 'error') passage.error = INTERRUPTED;
-      }
-      if (passage.stage) passage.stage = null;
-      return passage;
-    };
-    for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
-    // Counted only where it happened: a session without such a passage keeps the counters it always had.
-    if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
-    if (saved.coverage?.imagesAbsent > 0) this.losses.imagesAbsent = saved.coverage.imagesAbsent;
-    // Likewise, and only as counts this session can have written: one second description per passage at most, and
-    // no more recoveries than second descriptions.
-    const counted = (value, most) => Number.isInteger(value) && value > 0 && value <= most ? value : 0;
-    const retried = counted(saved.coverage?.visionRetried, saved.segments.length + (saved.history?.length || 0)), recovered = counted(saved.coverage?.visionRecovered, retried);
-    if (retried) this.losses.visionRetried = retried;
-    if (recovered) this.losses.visionRecovered = recovered;
-    if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.#lanes.restoreHeldMs(saved.coverage.visionBlockedMs);
+    const reopen = (source, kept) => reopenedPassage(source, { kept, hasMedia, hasThumbnail, formerFormat }, this.losses);
+    this.#restoreLosses(saved);
     // A summary whose media is gone stays a summary: only passages still listed with their media can be replayed.
     this.history = (saved.history || []).map(passage => { const { available, ...summary } = reopen(passage, false); return summary; });
     this.segments = saved.segments.map(passage => reopen(passage, true));
@@ -316,6 +326,22 @@ class WatchSession {
     this.unplacedMedia = orphans.length || 0;
     this.#lifecycle = restoredLifecycle;
     this.lastError = null;
+  }
+
+  #restoreLosses(saved) {
+    for (const key of Object.keys(this.losses)) if (Number.isFinite(saved.coverage?.[key])) this.losses[key] = saved.coverage[key];
+    // Counted only where it happened: a session without such a passage keeps the counters it always had.
+    if (saved.coverage?.videoUnreadable > 0) this.losses.videoUnreadable = saved.coverage.videoUnreadable;
+    if (saved.coverage?.imagesAbsent > 0) this.losses.imagesAbsent = saved.coverage.imagesAbsent;
+    // Likewise, and only as counts this session can have written: one second description per passage at most, and
+    // no more recoveries than second descriptions.
+    const counted = (value, most) => Number.isInteger(value) && value > 0 && value <= most ? value : 0;
+    const passageCount = saved.segments.length + (saved.history || []).length;
+    const retried = counted(saved.coverage?.visionRetried, passageCount);
+    const recovered = counted(saved.coverage?.visionRecovered, retried);
+    if (retried) this.losses.visionRetried = retried;
+    if (recovered) this.losses.visionRecovered = recovered;
+    if (Number.isFinite(saved.coverage?.visionBlockedMs)) this.#lanes.restoreHeldMs(saved.coverage.visionBlockedMs);
   }
   memoryView() {
     return memory.createMemoryView(this, this.#modalities);

@@ -230,14 +230,6 @@
       "count": 3
     }
   },
-  "core/session.cjs": {
-    "complexity": {
-      "count": 3
-    },
-    "no-nested-ternary": {
-      "count": 1
-    }
-  },
   "core/surveillance.cjs": {
     "complexity": {
       "count": 9

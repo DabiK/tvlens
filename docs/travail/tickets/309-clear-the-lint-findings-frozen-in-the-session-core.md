@@ -1,7 +1,7 @@
 ---
 id: T309
 titre: Clear the lint findings frozen in the session core
-statut: a-faire
+statut: termine
 bloque_par: T305
 adr: non
 installe: non
@@ -59,3 +59,7 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, orchestrateur : ticket ouvert après l'arrêt de T220 sur sa condition préalable.
+- 19/10, Codex : exploration consignée dans `.harness-state/tickets/T309/exploration.md` ; découpage limité au module, sans écart prévu, sans modification des tests existants.
+- 19/10, Codex : avant modification, `node_modules/.bin/eslint --suppressions-location .harness-state/tickets/T309/lint-empty.json core/session.cjs` rouge observé : complexités 23, 30 et 17, un ternaire imbriqué. `node --test --test-concurrency=1 tests/session-durable.test.cjs tests/archive-compat.test.cjs tests/split-perception.test.cjs tests/session-events.test.cjs tests/memory-view.test.cjs` : 126 tests réussis, aucun échec ni saut ; sorties conservées dans le dossier d'état.
+- 19/10, Codex : préparation du passage, réouverture et compteurs extraits dans des fonctions nommées du même module. Après un lint intermédiaire encore rouge à 16 sur les compteurs, simplification de la longueur de l'historique déjà validé. `node_modules/.bin/eslint --prune-suppressions core/session.cjs` : sortie 0, seule l'entrée du module disparaît. `node_modules/.bin/eslint --suppressions-location .harness-state/tickets/T309/lint-empty.json core/session.cjs` : sortie 0, aucun diagnostic. Les mêmes 126 tests passent ; `git diff --exit-code -- tests` confirme les tests inchangés. `node scripts/check.mjs --changed` : vert, sortie 0. Commandes et sorties dans `.harness-state/tickets/T309/preuves.md` et les journaux associés.
+- 19/10, Codex : `node scripts/check.mjs` complet vert, sortie 0 : 154 fichiers JS, 3 031 tests réussis, aucun échec ; 73 tests Python réussis. Comparaison JSON du gel contre HEAD : toutes les autres entrées strictement identiques. `git diff --check` : sortie 0. Verdict `TERMINÉ` dans `.harness-state/tickets/T309/verdict.json`, sans réserve ; rendu à la boucle pour relecture, sans commit ni push.
