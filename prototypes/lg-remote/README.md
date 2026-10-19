@@ -25,6 +25,13 @@ acceptés. La réduction conserve l’image source complète et son rapport ; la
 sauvegardé, avec son indicateur `fullScreen`. Les coordonnées logiques sont les coordonnées physiques divisées par deux,
 y compris les demi-pixels éventuels. Les sources rognées ou dont le rapport diffère de l’image décodée restent refusées.
 
+La zone de réduction est l’intersection du rectangle sauvegardé et de la zone du mode : `(0, 0, 1440, 1080)`
+en `chat`, `(0, 0, 1920, 720)` en `timeline`, en coordonnées logiques. L’image y est aussi grande que possible,
+centrée avec les arrondis existants et au rapport de la source, pour rester à l’intérieur du rectangle d’origine
+et éviter les bandes noires dessinées par l’application. Si l’intersection est vide, la zone du mode seule s’applique.
+Le plein écran 16:9 garde ses cibles précédentes. Pour une source 320×240 dans `(240, 0, 1440, 1080)`,
+les cibles sont `(240, 90, 1200, 900)` en `chat` et `(480, 0, 960, 720)` en `timeline`.
+
 Accueil, absence d’application au premier plan ou de vidéo `MAIN` connectée de cette application : un refus
 `TVLENS_PANEL_PLAYBACK_REQUIRED` affiche « TVLens : lance une vidéo pour ouvrir le panneau. ».
 Source invalide ou rectangle de sortie invalide : une seule notification système nomme aussi la cause en français. Le refus laisse la

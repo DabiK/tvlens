@@ -12,16 +12,58 @@ class Rectangles(unittest.TestCase):
   self.assertEqual(target['sourceInput'],v['sourceInput'])
   self.assertEqual(target['displayOutput']['width']/target['displayOutput']['height'],16/9)
   self.assertEqual(restore['displayOutput']['width'],1920)
+ def test_four_three_video_fits_inside_saved_output_in_both_layouts(self):
+  v=self.source()
+  v.update(width=320,height=240,sourceInput=dict(x=0,y=0,width=320,height=240),
+   displayOutput=dict(x=480,y=0,width=2880,height=2160))
+  saved,_=rectangles(v)
+  for mode,expected in [('chat',dict(x=240,y=90,width=1200,height=900)),
+                        ('timeline',dict(x=480,y=0,width=960,height=720))]:
+   with self.subTest(mode=mode):
+    target=layout_target(saved,mode)
+    self.assertEqual(target['displayOutput'],expected)
+    self.assertEqual(target['appOutput'],expected)
+    self.assertEqual(target['sourceInput'],v['sourceInput'])
+ def test_pillarboxed_video_stays_inside_saved_output_and_chat_area(self):
+  v=self.source()
+  v.update(width=1668,height=1080,sourceInput=dict(x=0,y=0,width=1668,height=1080),
+   displayOutput=dict(x=252,y=0,width=3336,height=2160))
+  saved,target=rectangles(v)
+  output=target['displayOutput']
+  self.assertEqual(output,dict(x=126,y=115,width=1314,height=850))
+  for bounds in (saved['displayOutput'],dict(x=0,y=0,width=1440,height=1080)):
+   self.assertGreaterEqual(output['x'],bounds['x'])
+   self.assertGreaterEqual(output['y'],bounds['y'])
+   self.assertLessEqual(output['x']+output['width'],bounds['x']+bounds['width'])
+   self.assertLessEqual(output['y']+output['height'],bounds['y']+bounds['height'])
+  self.assertLess(abs(output['width']*1080-output['height']*1668),1668)
+ def test_letterboxed_video_uses_only_the_overlap_above_the_timeline(self):
+  v=self.source()
+  v.update(width=1920,height=800,sourceInput=dict(x=0,y=0,width=1920,height=800),
+   displayOutput=dict(x=0,y=280,width=3840,height=1600))
+  saved,_=rectangles(v)
+  self.assertEqual(layout_target(saved,'timeline')['displayOutput'],dict(x=264,y=140,width=1392,height=580))
+ def test_empty_intersection_falls_back_to_the_mode_area(self):
+  for mode,output,expected in [
+   ('chat',dict(x=3000,y=0,width=800,height=600),dict(x=0,y=135,width=1440,height=810)),
+   ('chat',dict(x=2880,y=0,width=800,height=600),dict(x=0,y=135,width=1440,height=810)),
+   ('timeline',dict(x=0,y=1600,width=800,height=400),dict(x=320,y=0,width=1280,height=720)),
+   ('timeline',dict(x=0,y=1440,width=800,height=400),dict(x=320,y=0,width=1280,height=720))]:
+   with self.subTest(mode=mode,output=output):
+    v=self.source()
+    v['displayOutput']=output
+    saved,_=rectangles(v)
+    self.assertEqual(layout_target(saved,mode)['displayOutput'],expected)
  def test_valid_output_layouts_restore_the_current_rectangle(self):
   cases=[
    ((1668,1080),{'x':252,'y':0,'width':3336,'height':2160},False,
-    {'x':126,'y':0,'width':1668,'height':1080},{'x':0,'y':74,'width':1440,'height':932}),
+    {'x':126,'y':0,'width':1668,'height':1080},{'x':126,'y':115,'width':1314,'height':850}),
    ((1920,800),{'x':0,'y':280,'width':3840,'height':1600},False,
     {'x':0,'y':140,'width':1920,'height':800},{'x':0,'y':240,'width':1440,'height':600}),
    ((1920,1080),{'x':960,'y':540,'width':1920,'height':1080},False,
-    {'x':480,'y':270,'width':960,'height':540},{'x':0,'y':135,'width':1440,'height':810}),
+    {'x':480,'y':270,'width':960,'height':540},{'x':480,'y':270,'width':960,'height':540}),
    ((1920,1080),{'x':1,'y':3,'width':3839,'height':2157},False,
-    {'x':.5,'y':1.5,'width':1919.5,'height':1078.5},{'x':0,'y':135,'width':1440,'height':810}),
+    {'x':.5,'y':1.5,'width':1919.5,'height':1078.5},{'x':.5,'y':135.5,'width':1439.5,'height':809}),
    ((1920,1080),{'x':0,'y':0,'width':3840,'height':2160},True,
     {'x':0,'y':0,'width':1920,'height':1080},{'x':0,'y':135,'width':1440,'height':810})]
   for dimensions,output,full_screen,logical,target_output in cases:
@@ -482,7 +524,7 @@ class PanelLifecycle(unittest.TestCase):
    panel.main()
   except ValueError as error:
    self.fail(f'Valid output refused: {error}')
-  target={'x':0,'y':74,'width':1440,'height':932}
+  target={'x':126,'y':115,'width':1314,'height':850}
   saved={'x':126,'y':0,'width':1668,'height':1080}
   self.assertEqual([call[1]['id'] for call in screen.named('launch')],[panel.APP])
   self.assertEqual(screen.layouts[0],{'active':True,'mode':'chat','requestId':None,'video':target})

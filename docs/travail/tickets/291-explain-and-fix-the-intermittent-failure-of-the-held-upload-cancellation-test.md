@@ -1,7 +1,7 @@
 ---
 id: T291
 titre: Explain and fix the intermittent failure of the held upload cancellation test
-statut: a-faire
+statut: termine
 bloque_par: T284
 adr: non
 installe: non
@@ -66,3 +66,11 @@ Aucune décision n'est attendue.
 
 - 19/10, orchestrateur : rangé après le contrôle T284 ; ce rejeu sert la mesure du GX10, déjà figée dans
   `gx10-copie-b`.
+- 19/10, orchestrateur : traité dans le commit de T288, sur décision de l'orchestrateur, propriétaire absent.
+  Reproduction provoquée par Codex : les écritures des corps d'envoi retenues 1 000 tours de boucle
+  (`.harness-state/tickets/T288/slow-upload-diagnostic.cjs`) ; l'horloge virtuelle atteint la fin à 4 000 ms avant
+  l'écriture du premier corps, et l'assertion de la perte vision de `moment-1` échoue (`actual: false`). Rouge sans la
+  correction, vert avec ; fichier : 43 tests ; contrôle complet vert. Cause : course du test, pas défaut du rejeu.
+  Correction : attente de l'envoi retenu et de la perte publiée entre deux avances de l'horloge ; aucune assertion
+  retirée ni élargie. Le détail de l'échec initial n'ayant pas été gardé, son identité avec cette cause reste une
+  inférence.

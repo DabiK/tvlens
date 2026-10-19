@@ -606,7 +606,11 @@ test('cancellation while upload transport is held cannot turn a late question an
     if (route === '/v1/segments' && !held) { held = true; await heldUpload.promise; }
     return response;
   } } });
-  await stage.clock.advance(1500);
+  await stage.clock.advance(1000);
+  await until(() => held, 'first upload response held after product acceptance');
+  await until(() => stage.host.report.journal.losses.some(row => row.lane === 'vision' && row.passageId === 'moment-1'),
+    'first vision loss published before advancing the scenario');
+  await stage.clock.advance(500);
   const request = await entered.promise;
   await stage.clock.advance(300);
   await until(() => stage.host.report.questions[0].cancellation.status === 'acknowledged', 'cancellation acknowledged over HTTP');

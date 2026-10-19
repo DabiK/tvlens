@@ -1,7 +1,7 @@
 ---
 id: T288
 titre: Keep the reduced TV video inside its original rectangle
-statut: a-faire
+statut: termine
 bloque_par: T286
 adr: non
 installe: non
@@ -62,3 +62,52 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 19/10, propriétaire : les tickets TV T285 à T288 passent avant T283, « de façon prioritaire ».
+- 19/10, Codex : exploration terminée ; cause confirmée dans la zone fixe de `layout_target`.
+  Périmètre conservé, aucun écart prévu ; détails dans `.harness-state/tickets/T288/exploration.md` et `ecarts.md`.
+- 19/10, Codex : rouge observé avec
+  `python3 prototypes/lg-remote/test_panel.py Rectangles.test_four_three_video_fits_inside_saved_output_in_both_layouts`
+  (cible chat en x=0 au lieu de x=240), puis `python3 prototypes/lg-remote/test_panel.py` : 38 tests, 7 échecs
+  d’assertion sur les géométries attendues. Sorties : `red-four-three.log`, `red-panel.log` dans le dossier d’état.
+- 19/10, Codex : intersection appliquée uniquement dans `layout_target`, repli conservé si elle est vide.
+  `python3 prototypes/lg-remote/test_panel.py` : 38 tests réussis (`green-panel.log`). Plein écran, restauration,
+  gardes et attente inchangés ; un `ResourceWarning` de verrou non fermé dans le cas de double lancement reste
+  hors périmètre. Documentation de « TV-local action » mise à jour ; aucun essai réel.
+- 19/10, Codex : `node scripts/check.mjs --changed` : vert (`check-changed.log`).
+  `node scripts/check.mjs` : vert, 153 fichiers JS, 2 903 tests JS réussis, 54 tests Python réussis
+  (`check-full.log`). Verdict `TERMINÉ` déposé dans `.harness-state/tickets/T288/verdict.json` ;
+  relecture et intégration laissées à la boucle, aucun commit ni push. Validation TV réservée à T289.
+- 19/10, Codex, reprise : lecture de `echec-1.txt`, du journal et de la relecture acceptée.
+  Le contrôle de boucle a échoué dans le test JS d’annulation sous transport retenu, hors des fichiers du ticket.
+  Un diagnostic ciblé inchangé passe (1 test) ; il ne résout pas cet échec intermittent.
+  La reproduction à écritures de corps différées échoue sur l’absence de perte vision : le temps simulé
+  atteint 4 000 ms avant le premier envoi. L’assertion exacte de l’échec de boucle n’a pas été conservée.
+  Sorties : `reprise-cancellation-diagnostic.log`, `reprise-cancellation-slow-io.log` dans le dossier d’état.
+- 19/10, Codex, reprise : proposition de synchronisation préparée dans `proposition-synchronisation.patch`,
+  sans modifier le test du dépôt. Elle passe le même diagnostic (1 test, `reprise-proposition-slow-io.log`).
+  Écart déclaré dans `ecarts.md` et autorisation d’élargissement demandée au propriétaire.
+  `python3 prototypes/lg-remote/test_panel.py` : 38 tests réussis (`reprise-panel.log`) ;
+  `node scripts/check.mjs --changed` : vert (`reprise-check-changed.log`). Aucun essai réel.
+- 19/10, Codex, reprise : `node scripts/check.mjs` : vert, 153 fichiers JS, 2 903 tests JS et
+  54 tests Python réussis (`reprise-check-full.log`). Ce résultat n’efface pas la course reproduite.
+  Le test JS du dépôt reste inchangé ; application de la proposition hors périmètre en attente
+  d’une décision du propriétaire, sans réponse reçue dans la session. Verdict `BLOQUÉ` déposé ;
+  aucune modification du harnais, aucun essai réel, commit ou push.
+- 19/10, orchestrateur, propriétaire absent : décision sur le blocage. La synchronisation proposée de
+  `tests/local-stream-replay.test.cjs` entre dans ce ticket et ferme T291 : avancer de 1 000 ms, attendre l'envoi retenu
+  et la perte vision de `moment-1`, puis avancer de 500 ms ; aucune assertion retirée ni élargie. Cause : `advance`
+  n'accorde que quelques tours entre deux minuteries, et l'horloge virtuelle peut dépasser l'écriture réelle du premier
+  envoi ; en usage réel, l'horloge est le vrai temps.
+- 19/10, orchestrateur : `node --require ./.harness-state/tickets/T288/slow-upload-diagnostic.cjs --test
+  --test-name-pattern='cancellation while upload transport is held' tests/local-stream-replay.test.cjs` : rouge sans la
+  synchronisation, vert avec ; `node --test tests/local-stream-replay.test.cjs` : 43 tests réussis ;
+  `node scripts/check.mjs` : vert, 2 903 tests JS sur 2 903 et 54 tests Python. Relecture du correctif (agent
+  relecteur) : acceptée. Le code du ticket avait été accepté à la relecture de la tentative 1. Intégré hors boucle.
+
+### Réserves à la clôture
+
+- Une sortie sauvegardée à coordonnées physiques impaires donne une cible à demi-pixel ; si Luna l'arrondit, la
+  surveillance, qui compare à l'égalité stricte, refermerait le panneau. À observer en T289.
+- Une intersection d'un pixel logique de large donne une vidéo de taille nulle ; un refus de Luna restaure alors la
+  vidéo sans message. Géométrie très improbable ; la règle de repli revient au propriétaire.
+- Le verrou n'est pas fermé quand le panneau est lancé en double (`ResourceWarning`, défaut antérieur, déjà relevé
+  en T268).

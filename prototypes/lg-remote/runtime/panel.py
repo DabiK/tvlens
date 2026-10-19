@@ -36,6 +36,13 @@ class PanelRefusal(ValueError):
 def layout_target(saved, mode):
     if mode not in ('chat','timeline'):raise ValueError('Unknown panel layout')
     area=(0,0,1440,1080) if mode=='chat' else (0,0,1920,720)
+    output=saved['displayOutput']
+    left=max(area[0],output['x'])
+    top=max(area[1],output['y'])
+    right=min(area[0]+area[2],output['x']+output['width'])
+    bottom=min(area[1]+area[3],output['y']+output['height'])
+    if right>left and bottom>top:
+        area=(left,top,right-left,bottom-top)
     source=saved['sourceInput']; ratio=source['width']/source['height']
     width=min(area[2],int(area[3]*ratio));height=int(width/ratio)
     rect={'x':area[0]+(area[2]-width)//2,'y':area[1]+(area[3]-height)//2,'width':width,'height':height}
