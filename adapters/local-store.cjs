@@ -51,8 +51,12 @@ class LocalSessionStore {
     this.file(id, 'webm');
     const files = ['webm', 'json'].map(ext => path.join(this.mediaRoot, `${id}.${ext}`));
     const clip = Buffer.from(input.clip);
-    // The interval travels with the media: an orphan file can still be placed on the session clock.
-    const data = JSON.stringify({ frames: input.frames, audio: input.audio ? Buffer.from(input.audio).toString('base64') : null, startMs: input.startMs, endMs: input.endMs });
+    // The interval and the media declaration travel with the media: an orphan file can still be placed on the
+    // session clock, and a recovered sound-only passage keeps its missing images.
+    const data = JSON.stringify({
+      frames: input.frames, audio: input.audio ? Buffer.from(input.audio).toString('base64') : null,
+      startMs: input.startMs, endMs: input.endMs, media: input.media,
+    });
     const bytes = clip.length + Buffer.byteLength(data);
     if (this.sealed) throw new Error('Session supprimée.');
     // Admission comes before any write: a refused passage leaves nothing on disk.
@@ -87,9 +91,10 @@ class LocalSessionStore {
   // so: a file of a former version (no interval), or one that cannot be read. Never throws.
   async interval(id) {
     try {
-      const { startMs, endMs, audio } = JSON.parse(await this.content(id, 'json', 'utf8'));
+      const { startMs, endMs, audio, media } = JSON.parse(await this.content(id, 'json', 'utf8'));
       // Same bounds as an ingest accepts: anything else is not an interval to build a passage on.
-      return Number.isFinite(startMs) && Number.isFinite(endMs) && startMs >= 0 && endMs > startMs && endMs - startMs <= 60000 ? { startMs, endMs, hasAudio: Boolean(audio) } : null;
+      if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs < 0 || endMs <= startMs || endMs - startMs > 60000) return null;
+      return { startMs, endMs, hasAudio: Boolean(audio), ...(media ? { media } : {}) };
     } catch { return null; }
   }
   async remove(id) {

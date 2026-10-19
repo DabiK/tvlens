@@ -22,8 +22,11 @@ const unfinished = status => status === 'queued' || status === 'analyzing';
 const UNREADABLE = 'unreadable', IMAGES_ABSENT = 'images-absent';
 const stored = segment => Boolean(segment.available) || [UNREADABLE, IMAGES_ABSENT].includes(segment.mediaReason);
 // A passage known only by its media on disk: its analysis never reached the saved state. It takes its
-// place on the session clock, replayable and unanalysed; nothing is analysed again.
-const recoveredPassage = ({ id, startMs, endMs, hasAudio = false }) => ({ id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio), available: true, observation: null, revision: 0 });
+// place on the session clock, unanalysed, with its declared media; nothing is analysed again.
+const recoveredPassage = ({ id, startMs, endMs, hasAudio = false, media }) => ({
+  id, startMs, endMs, status: 'error', error: INTERRUPTED, hasAudio: Boolean(hasAudio),
+  ...capturedMedia({ media }), observation: null, revision: 0,
+});
 function capturedModalities(input, hasAudio) {
   return {
     audio: hasAudio ? 'present' : 'absent',

@@ -119,6 +119,66 @@ test('a declared sound-only passage reopens with its saved absence and loss with
   assert.deepEqual(await tree(live.store.root), before);
 });
 
+test('unsaved sound-only passages recover their declared absence and add their capture losses exactly once', async t => {
+  const analysis = deferred(), calls = [];
+  t.after(() => analysis.resolve());
+  const f = await fixture(t);
+  const perception = {
+    transcribe: async input => {
+      calls.push(['audio', input.id]);
+      await analysis.promise;
+      return { observation: { transcript: 'Paroles conservées' } };
+    },
+    observeVisual: async input => { calls.push(['vision', input.id]); return { observation: {} }; },
+  };
+  const live = f.open({ overrides: { perception } });
+  const soundOnly = startMs => ({ startMs, endMs: startMs + 1000, clip: new Uint8Array([7]), frames: [],
+    audio: new Uint8Array([7]), media: { video: false, audio: true } });
+  f.clock = 1000;
+  await live.watch.ingest(soundOnly(0));
+  await live.store.flush();
+  f.clock = 2000;
+  await live.watch.ingest(soundOnly(1000));
+  f.clock = 3000;
+  await live.watch.ingest({ ...f.block(2000, 3000), frames: [] });
+  await live.store.flush();
+  assert.deepEqual((await live.store.load()).segments.map(p => p.id), ['moment-1']);
+  const callsBefore = [...calls];
+
+  for (const savedState of [true, false]) {
+    const root = path.join(f.root, savedState ? 'cut-saved' : 'cut-unsaved');
+    const dir = path.join(root, live.id);
+    await fs.cp(live.store.root, dir, { recursive: true });
+    if (!savedState) await fs.rm(path.join(dir, 'session.json'));
+    const before = await tree(dir), library = new SessionLibrary({ root });
+    const { session, archive } = await f.reopen(library, live.id, { overrides: { perception } });
+    const state = session.watch.snapshot();
+    assert.deepEqual(state.segments.slice(0, 2).map(p => [p.available, p.mediaReason, p.hasImages, p.visionStatus]), [
+      [false, 'images-absent', false, 'absent'], [false, 'images-absent', false, 'absent'],
+    ]);
+    assert.equal(state.coverage.imagesAbsent, 2);
+    assert.equal(session.memory.view().losses.imagesAbsent, 2);
+    assert.equal(state.segments[2].available, true, 'empty frames without a declaration do not mean sound-only');
+    assert.deepEqual(session.memory.passage('moment-2').availability,
+      { replayable: false, reason: 'images-absent', images: false, audio: true });
+    assert.deepEqual(session.memory.passage('moment-2').modalities,
+      { audio: 'present', images: 'absent', video: 'absent' });
+    assert.deepEqual(archive.inventory.recovered, savedState ? ['moment-2', 'moment-3'] : ['moment-1', 'moment-2', 'moment-3']);
+    assert.deepEqual([state.readOnly, state.accepting], [true, false]);
+    await library.list();
+    await session.pause();
+    await session.close();
+    assert.deepEqual(await tree(dir), before);
+    assert.deepEqual(calls, callsBefore, 'recovery starts no analysis');
+
+    const resumed = (await f.reopen(library, live.id, { overrides: { perception } })).session;
+    await resumed.resume();
+    await resumed.archive();
+    const reopened = (await f.reopen(library, live.id, { overrides: { perception } })).session;
+    assert.equal(reopened.memory.view().losses.imagesAbsent, 2, 'saved recovered losses are not counted again');
+  }
+});
+
 test('a legacy retention option cannot remove captured bytes across long advances, pause, resume and reopening', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-conservation-'));
   const store = LocalSessionStore.forSession(root);

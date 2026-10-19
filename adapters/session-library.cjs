@@ -95,7 +95,8 @@ class SessionLibrary {
   // The state to reopen, read without writing anything: what was saved, completed by what the disk holds.
   // A session cut short keeps media its saved state does not know, or was not saved at all yet (its
   // very first passage): none of it may become unreachable. Each such passage whose media carries its
-  // interval is put back in observation order, unanalysed and replayable; the others are only reported.
+  // interval is put back in observation order, unanalysed, with its declared media: replayable unless it was declared
+  // sound-only, whose missing images join the saved capture losses. The others are only reported.
   async state(store, id, manifest, inventory) {
     let snapshot = await store.load('session').catch(cause => {
       // Le store distingue pour l’instant l’analyse JSON des fautes système par l’absence de code.
@@ -124,6 +125,12 @@ class SessionLibrary {
       elapsedMs: Math.max(Number.isFinite(snapshot.elapsedMs) ? snapshot.elapsedMs : 0, ...recovered.map(passage => passage.endMs)),
       segments: [...snapshot.segments, ...recovered].sort((a, b) => a.startMs - b.startMs || number(a.id) - number(b.id)) };
     inventory.recovered = recovered.map(passage => passage.id);
+    // Seules les pertes remises en place s’ajoutent aux pertes déjà sauvegardées.
+    const imagesAbsent = recovered.filter(passage => passage.hasImages === false).length;
+    if (imagesAbsent) snapshot = {
+      ...snapshot,
+      coverage: { ...snapshot.coverage, imagesAbsent: (snapshot.coverage?.imagesAbsent || 0) + imagesAbsent },
+    };
     // Still unknown to the reopened state (no interval, or half a pair): counted, reported, never erased here.
     inventory.orphans = [...inventory.ids, ...inventory.partial].filter(passage => !known.has(passage));
     return { snapshot, savedAt };
