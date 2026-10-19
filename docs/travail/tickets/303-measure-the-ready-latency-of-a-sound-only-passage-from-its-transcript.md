@@ -2,7 +2,7 @@
 id: T303
 titre: Measure the ready latency of a sound-only passage from its transcript
 statut: a-faire
-bloque_par: T298
+bloque_par: T298, T306
 adr: non
 installe: non
 harnais: non

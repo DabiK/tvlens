@@ -2,7 +2,7 @@
 id: T304
 titre: Keep a sound-only passage sound-only when it is recovered from disk
 statut: a-faire
-bloque_par: T299
+bloque_par: T299, T306
 adr: non
 installe: non
 harnais: non

@@ -2,7 +2,7 @@
 id: T305
 titre: Refuse a block declared without sound with a named error
 statut: a-faire
-bloque_par: T299
+bloque_par: T299, T306
 adr: non
 installe: non
 harnais: non
