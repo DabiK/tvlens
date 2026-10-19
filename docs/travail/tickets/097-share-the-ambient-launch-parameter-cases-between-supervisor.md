@@ -1,7 +1,7 @@
 ---
 id: T097
 titre: Share the ambient launch parameter cases between supervisor and page tests
-statut: a-faire
+statut: termine
 bloque_par: T096, T145
 adr: non
 installe: non
@@ -95,3 +95,4 @@ qu'il s'agit d'un écart connu, et le journal le signale pour le propriétaire. 
 corrigé par ce ticket.
 
 ## Journal
+- 19/10, propriétaire : retiré sans travail, sur l'avis d'Astra. L'overlay ambient visé a été supprimé (`docs/adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md`) : ce ticket n'a plus d'objet.

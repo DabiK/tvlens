@@ -1,7 +1,7 @@
 ---
 id: T105
 titre: Build both TV packages from a file manifest with one npm command
-statut: a-faire
+statut: termine
 bloque_par: T104, T145
 adr: non
 installe: non
@@ -113,3 +113,4 @@ dit comme non vérifié sur l'appareil. Si le panneau lit à l'exécution un fic
 la ligne.
 
 ## Journal
+- 19/10, propriétaire : retiré sans travail, sur l'avis d'Astra. L'overlay ambient visé a été supprimé (`docs/adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md`) : ce ticket n'a plus d'objet.

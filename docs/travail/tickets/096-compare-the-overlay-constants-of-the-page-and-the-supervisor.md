@@ -1,7 +1,7 @@
 ---
 id: T096
 titre: Compare the overlay constants of the page and the supervisor to one shared file
-statut: a-faire
+statut: termine
 bloque_par: T028, T145
 adr: non
 installe: non
@@ -93,3 +93,4 @@ le test n'est pas ajusté pour passer ; verdict BLOQUÉ avec les deux valeurs, c
 décision du propriétaire.
 
 ## Journal
+- 19/10, propriétaire : retiré sans travail, sur l'avis d'Astra. L'overlay ambient visé a été supprimé (`docs/adr/0017-retrait-de-l-affichage-ambient-panneau-ferme.md`) : ce ticket n'a plus d'objet.
