@@ -8,6 +8,9 @@ Chemins exacts et ID d’exécution dans `deployment.json` ; preuve brute dans `
 Autorisation utilisateur : préparation en parallèle, poursuite des expériences pendant la nuit, vLLM inclus,
 conservation de toutes les traces. Dabi a ensuite autorisé des commits locaux réguliers ;
 les points de sauvegarde conservent sources, protocoles et preuves textuelles, sans modifier le lot distant.
+Il a ensuite autorisé le téléchargement des poids visuels publics, le rapatriement progressif des rapports
+et le push des commits sur `main`. L'[essai visuel complémentaire](../2026-10-20-vision-vllm-gx10/README.md)
+reste séparé et doit attendre la clôture de cette séquence.
 
 ## Séquence et arrêt
 
@@ -76,6 +79,14 @@ Les fixtures locales vérifient clôture avec abstention, refus d'une ressource 
 timeout, intégrité et propriété des conteneurs lors de leur fermeture. Les neuf scénarios HTTP factices de la
 sonde sont conservés dans le kit client. Le contrôle `node scripts/check.mjs --changed` est vert ; bruts dans `preuves/`.
 Ces contrôles ne prouvent pas la compatibilité effective du modèle avec le GX10 : le pré-vol nocturne la vérifiera.
+
+Premier rapatriement : l'ablation perception est terminée et vérifiée techniquement. Ses 46 fichiers clos
+(3 835 858 octets), hors médias et archive de code, sont dans
+[`preuves/rapatriement-20261020/perception/`](preuves/rapatriement-20261020/perception/).
+Une comparaison `rsync --checksum` n'a signalé aucun écart ;
+[`l'inventaire SHA-256`](preuves/rapatriement-20261020/perception-inventaire.json) donne les empreintes.
+La variation vision/questions est encore en cours au moment de cette copie ; aucun fichier actif de ce bras
+n'a été rapatrié. Les résultats de l'ablation perception ne sont pas encore interprétés ni notés.
 
 Sources primaires consultées le 20 octobre :
 

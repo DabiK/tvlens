@@ -1,0 +1,24 @@
+{
+  "preparedAtUtc": "2026-10-20T21:42:31Z",
+  "dispatchedAtUtc": "2026-10-20T21:43:51Z",
+  "observedAtUtc": "2026-10-20T21:43:51Z",
+  "remoteRoot": "/home/nvidia/tvlens-setup/vision-vllm-20261020T214231Z",
+  "package": "/home/nvidia/tvlens-setup/vision-vllm-20261020T214231Z/package",
+  "results": "/home/nvidia/tvlens-setup/vision-vllm-20261020T214231Z/results",
+  "archiveSha256": "12262a8a0168af6a6a8100f0cd1dbc1435f40fefddc37c0827bc464fc34fb4a6",
+  "sourceRepoCommit": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+  "nightRoot": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results",
+  "manifest": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/entrees-perception/perception-five-images.json",
+  "tmuxSession": "tvlens-vision",
+  "deadlineUtc": "2026-10-21T05:00:00Z",
+  "observedStatus": "waiting-night",
+  "inputValidation": {
+    "mode": "validate",
+    "complete": true,
+    "selectedCases": 12,
+    "repeats": 2,
+    "framesPerCase": 5
+  },
+  "modelsDownloadedAtObservation": false,
+  "realInferenceAtObservation": false
+}

@@ -13,7 +13,9 @@ Les questions existantes sont conservées ; readyForScoring reste false.
 Les services existants sont conservés ; pas de second serveur Ollama, pas de capture TV ni de VPS.
 Firefox et le bureau distants sont présents : charge de fond à conserver dans les relevés.
 
-État : préparation lancée ; aucune nouvelle mesure terminée. Pas de contrôle global produit exécuté.
+État au 20 octobre, 21:29 UTC : préparation et neuf campagnes terminées. Le lot est exploitable pour
+les mesures techniques ; la pertinence n'est pas notée tant que les fiches de référence ne sont pas
+validées pour notation (`readyForScoring=false`). Pas de contrôle global produit exécuté.
 Dossier distant : /home/nvidia/tvlens-setup/reference-2026-10-20.
 
 Lot : neuf campagnes, Whisper base/small/large-v3-turbo × CNRS/Kennedy/Spring.
@@ -29,6 +31,15 @@ Les neuf campagnes tournent séquentiellement et survivent à la fermeture SSH.
 Preuve de démarrage : lancement.txt. Syntaxe Bash et Node vérifiée, contrôle global non lancé.
 Rapports bruts : dossier distant indiqué plus haut, sous <modèle>-<vidéo>/run/campaign.json.
 Pour arrêter proprement le runner, envoyer SIGTERM à son PID, puis arrêter l’orchestrateur pour éviter la campagne suivante.
+
+## Rapatriement progressif
+
+Les 129 fichiers de résultats et journaux clos (32 759 181 octets) sont copiés dans
+[`preuves/rapatriement-20261020/`](preuves/rapatriement-20261020/). Une comparaison `rsync --checksum`
+après copie n'a signalé aucun écart. [`l'inventaire SHA-256`](preuves/rapatriement-20261020-inventaire.json)
+donne l'empreinte et la taille de chaque fichier. Médias, copies de blocs, envois, `.env`, archives
+et premier essai Spring interrompu restent sur le GX10 ; ce rapatriement intermédiaire ne prétend
+donc pas être l'archive complète de la référence. L'archive complète sera vérifiée en fin de nuit.
 
 ## Incident de préparation Spring
 

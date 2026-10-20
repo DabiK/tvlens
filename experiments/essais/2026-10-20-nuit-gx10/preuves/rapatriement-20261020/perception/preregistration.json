@@ -1,0 +1,10 @@
+{
+  "registeredAtUtc": "2026-10-20T20:43:36.785281+00:00",
+  "inferencePerformed": false,
+  "files": {
+    "plan.json": "070e4971aa05903604054962016032203910e2bd9a31b6f4eaadfdffd881b015",
+    "orchestrer.py": "377b7f8277b4ec4bc7c8cc559918bab0091173afc611c4eb96f0923a895b51ab",
+    "README.md": "4987ff200cc46d808c4723fa7a2723512728c6b7e249848b316cb7b021c1c2ef",
+    "commandes.md": "524d93f884bcdd966f166b72f02427a7b5fdcf39082f26d46e37b9e1fc60133d"
+  }
+}

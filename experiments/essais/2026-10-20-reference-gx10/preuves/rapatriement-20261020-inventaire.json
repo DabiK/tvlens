@@ -1,0 +1,524 @@
+{
+  "copiedAtUtc": "2026-10-20T21:40:59.268286+00:00",
+  "source": "gx10-tvlens:/home/nvidia/tvlens-setup/reference-2026-10-20/",
+  "sha256ComparedByRsync": true,
+  "files": {
+    "base-cnrs-apprentissage/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "base-cnrs-apprentissage/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "base-cnrs-apprentissage/debut.txt": {
+      "bytes": 26,
+      "sha256": "11b2d2345287b541b51ecd8042b63b36ece9c174504fdadf895554afd14c9199"
+    },
+    "base-cnrs-apprentissage/empreintes.txt": {
+      "bytes": 378,
+      "sha256": "478cfc098d584adb7f7bd3e9b6a34303109e31339f0f6551d1b875161e5c171a"
+    },
+    "base-cnrs-apprentissage/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "base-cnrs-apprentissage/fin.txt": {
+      "bytes": 26,
+      "sha256": "29b8f1362af386b37f8271766f231f3f5db75400dee5f642b731e8356fad44c9"
+    },
+    "base-cnrs-apprentissage/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "base-cnrs-apprentissage/run/campaign.json": {
+      "bytes": 4370128,
+      "sha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea"
+    },
+    "base-cnrs-apprentissage/scenario-snapshot.json": {
+      "bytes": 15592,
+      "sha256": "2317c46de89655b7da20fb4f78c7a271844aa03e44d5047a70a77193ccd58c18"
+    },
+    "base-cnrs-apprentissage/sortie.log": {
+      "bytes": 81,
+      "sha256": "4e907d6a66b95ed854dd0900f9a22f1a506d3348b96045e6f6f938afe885b135"
+    },
+    "base-cnrs-apprentissage/systeme.log": {
+      "bytes": 622789,
+      "sha256": "e76128667e876bdf4c2438eaa853a7e01f8b37b64f26942db8c69cf517f37615"
+    },
+    "base-kennedy/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "base-kennedy/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "base-kennedy/debut.txt": {
+      "bytes": 26,
+      "sha256": "29b8f1362af386b37f8271766f231f3f5db75400dee5f642b731e8356fad44c9"
+    },
+    "base-kennedy/empreintes.txt": {
+      "bytes": 378,
+      "sha256": "478cfc098d584adb7f7bd3e9b6a34303109e31339f0f6551d1b875161e5c171a"
+    },
+    "base-kennedy/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "base-kennedy/fin.txt": {
+      "bytes": 26,
+      "sha256": "799d3ad7c2d068ee16de9a4ce851bf0885ad8add39ac58565897ce03813489b5"
+    },
+    "base-kennedy/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "base-kennedy/run/campaign.json": {
+      "bytes": 2144637,
+      "sha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de"
+    },
+    "base-kennedy/scenario-snapshot.json": {
+      "bytes": 8558,
+      "sha256": "8046399d943bde5f2e94306bb3c12eaf9a4350a3e2021e48863b8de076c68db1"
+    },
+    "base-kennedy/sortie.log": {
+      "bytes": 80,
+      "sha256": "d4bc99be73ee31581b24e3a284254230fa0c354ffc5859c86f6135507cfed12e"
+    },
+    "base-kennedy/systeme.log": {
+      "bytes": 315492,
+      "sha256": "f7850e2d392380812493ab1aa082d651020f63f3d4410e01540d02f1fbdf1828"
+    },
+    "base-spring/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "base-spring/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "base-spring/debut.txt": {
+      "bytes": 26,
+      "sha256": "799d3ad7c2d068ee16de9a4ce851bf0885ad8add39ac58565897ce03813489b5"
+    },
+    "base-spring/empreintes.txt": {
+      "bytes": 378,
+      "sha256": "478cfc098d584adb7f7bd3e9b6a34303109e31339f0f6551d1b875161e5c171a"
+    },
+    "base-spring/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "base-spring/fin.txt": {
+      "bytes": 26,
+      "sha256": "bc6817f1915bb9f11fdd96e97140325237e6ce4a0fd84ce17e3c53c8dc23d769"
+    },
+    "base-spring/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "base-spring/run/campaign.json": {
+      "bytes": 2332164,
+      "sha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3"
+    },
+    "base-spring/scenario-snapshot.json": {
+      "bytes": 9240,
+      "sha256": "61c4ee15a8ce58d7f1d13e8e89a5b5437a734f2b25664cce85ebfad424c3387f"
+    },
+    "base-spring/sortie.log": {
+      "bytes": 80,
+      "sha256": "207043280f3a0180425c63f4e7c6168bfe4c53517557227a17c88dc724baf062"
+    },
+    "base-spring/systeme.log": {
+      "bytes": 340928,
+      "sha256": "74c1f4be3d65bf29c862b1bbe3c4dbf22b505d2a54a70c2361a16bab51b62bd9"
+    },
+    "execution-premiere-tentative.log": {
+      "bytes": 43,
+      "sha256": "3cfd9f309ea3b343e3f1507e7ff20f0a1076e96eaae2f9b7f011f2243e982427"
+    },
+    "execution.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "index.log": {
+      "bytes": 432,
+      "sha256": "fac1e5ab7634802d09b0d352c00f0a63ce86875e3407ac4e3e09f53be87dc733"
+    },
+    "large-v3-turbo-cnrs-apprentissage/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "large-v3-turbo-cnrs-apprentissage/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "large-v3-turbo-cnrs-apprentissage/debut.txt": {
+      "bytes": 26,
+      "sha256": "12eb5d52c459e07e878d0fb124ec7c778331fef31896122ac86fff6d7618b2e9"
+    },
+    "large-v3-turbo-cnrs-apprentissage/empreintes.txt": {
+      "bytes": 388,
+      "sha256": "4e41e62735171128d2001ac25f8335f163571442c8da56c12f2f8a482ea1bbbf"
+    },
+    "large-v3-turbo-cnrs-apprentissage/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "large-v3-turbo-cnrs-apprentissage/fin.txt": {
+      "bytes": 26,
+      "sha256": "754c51261f7f6a62bbd8bf098f067a4596dda9d59f735d21a05fc6e76422feae"
+    },
+    "large-v3-turbo-cnrs-apprentissage/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "large-v3-turbo-cnrs-apprentissage/run/campaign.json": {
+      "bytes": 4405678,
+      "sha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576"
+    },
+    "large-v3-turbo-cnrs-apprentissage/scenario-snapshot.json": {
+      "bytes": 15592,
+      "sha256": "2317c46de89655b7da20fb4f78c7a271844aa03e44d5047a70a77193ccd58c18"
+    },
+    "large-v3-turbo-cnrs-apprentissage/sortie.log": {
+      "bytes": 81,
+      "sha256": "4b1ec47dbcaffcdfb8e5e74065e3592cd1329ceb1d49452bc45f5638ef85e625"
+    },
+    "large-v3-turbo-cnrs-apprentissage/systeme.log": {
+      "bytes": 645200,
+      "sha256": "af425128b37e29f60d801b28ab496b8a5068a846f16f2bc198ed8214ec958983"
+    },
+    "large-v3-turbo-kennedy/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "large-v3-turbo-kennedy/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "large-v3-turbo-kennedy/debut.txt": {
+      "bytes": 26,
+      "sha256": "754c51261f7f6a62bbd8bf098f067a4596dda9d59f735d21a05fc6e76422feae"
+    },
+    "large-v3-turbo-kennedy/empreintes.txt": {
+      "bytes": 388,
+      "sha256": "4e41e62735171128d2001ac25f8335f163571442c8da56c12f2f8a482ea1bbbf"
+    },
+    "large-v3-turbo-kennedy/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "large-v3-turbo-kennedy/fin.txt": {
+      "bytes": 26,
+      "sha256": "63c89bc673ef4209956eefb6ef2f6c51e7e6f35cd88348957646b207eb7f741d"
+    },
+    "large-v3-turbo-kennedy/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "large-v3-turbo-kennedy/run/campaign.json": {
+      "bytes": 2194156,
+      "sha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092"
+    },
+    "large-v3-turbo-kennedy/scenario-snapshot.json": {
+      "bytes": 8558,
+      "sha256": "8046399d943bde5f2e94306bb3c12eaf9a4350a3e2021e48863b8de076c68db1"
+    },
+    "large-v3-turbo-kennedy/sortie.log": {
+      "bytes": 80,
+      "sha256": "3ee5a9f408b99843234b2c72f111392b29c62585bcbed0ffefd6c64b667f6cdf"
+    },
+    "large-v3-turbo-kennedy/systeme.log": {
+      "bytes": 317124,
+      "sha256": "015592e15a99bee74009ce68b025e07ee36cf01f5be0b20e7a7a64463ec22d8d"
+    },
+    "large-v3-turbo-spring/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "large-v3-turbo-spring/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "large-v3-turbo-spring/debut.txt": {
+      "bytes": 26,
+      "sha256": "63c89bc673ef4209956eefb6ef2f6c51e7e6f35cd88348957646b207eb7f741d"
+    },
+    "large-v3-turbo-spring/empreintes.txt": {
+      "bytes": 388,
+      "sha256": "4e41e62735171128d2001ac25f8335f163571442c8da56c12f2f8a482ea1bbbf"
+    },
+    "large-v3-turbo-spring/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "large-v3-turbo-spring/fin.txt": {
+      "bytes": 26,
+      "sha256": "efefc56266c7a7f940321ae30fb2e4ab98230016e3498feafda48e9e9bb7a4e7"
+    },
+    "large-v3-turbo-spring/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "large-v3-turbo-spring/run/campaign.json": {
+      "bytes": 2351036,
+      "sha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386"
+    },
+    "large-v3-turbo-spring/scenario-snapshot.json": {
+      "bytes": 9240,
+      "sha256": "61c4ee15a8ce58d7f1d13e8e89a5b5437a734f2b25664cce85ebfad424c3387f"
+    },
+    "large-v3-turbo-spring/sortie.log": {
+      "bytes": 80,
+      "sha256": "fafac062042cf6458608b977c9e2ed23776f4a492cd9715e7680577352c46abd"
+    },
+    "large-v3-turbo-spring/systeme.log": {
+      "bytes": 342383,
+      "sha256": "191ee5ec5845b7b296361a399b800da56c35330c9fd99d698c9105ecb111293e"
+    },
+    "preparation-cnrs-apprentissage/blocks.json": {
+      "bytes": 177022,
+      "sha256": "8852d667da1eab0c5b926160c16dc5632051ff8d67064459bbd92cd43553f73c"
+    },
+    "preparation-cnrs-apprentissage/manifest.json": {
+      "bytes": 539275,
+      "sha256": "9fba2265643b8511cbc1adc278685a1eb4da7d94ddf7d623a9687a3d6d27a360"
+    },
+    "preparation-cnrs-apprentissage/preparation.json": {
+      "bytes": 1421,
+      "sha256": "7363ce935b1f80a5d8194d7f943596b2414c9964d81c0919bfa1e5d50939d8f1"
+    },
+    "preparation-cnrs-apprentissage/scenario.json": {
+      "bytes": 15592,
+      "sha256": "2317c46de89655b7da20fb4f78c7a271844aa03e44d5047a70a77193ccd58c18"
+    },
+    "preparation-cnrs-apprentissage.log": {
+      "bytes": 90,
+      "sha256": "e1193aad38401130723f81bd1d4cea46518f3bbaa626fc6d7295f48b0bd7b7ce"
+    },
+    "preparation-kennedy/blocks.json": {
+      "bytes": 85299,
+      "sha256": "02b3b52888739db2a504614c66b0631f7babcc43836c516ef900afa888b87c97"
+    },
+    "preparation-kennedy/manifest.json": {
+      "bytes": 254377,
+      "sha256": "cfae37f563ae231d69f87739e07b1c4cd33911bb0534d0d32af46aa7f715a896"
+    },
+    "preparation-kennedy/preparation.json": {
+      "bytes": 1415,
+      "sha256": "a51c704ffc3fb67c7e21a401521aebf2c8bd8ea0c4988e603442d02613357418"
+    },
+    "preparation-kennedy/scenario.json": {
+      "bytes": 8558,
+      "sha256": "8046399d943bde5f2e94306bb3c12eaf9a4350a3e2021e48863b8de076c68db1"
+    },
+    "preparation-kennedy.log": {
+      "bytes": 90,
+      "sha256": "9dd96002c285af3075afec492cf422aca669b16852c6e9c693f403588c2e0b91"
+    },
+    "preparation-spring/blocks.json": {
+      "bytes": 93344,
+      "sha256": "8ad47c3d2ea0961f911f91d33f06e9cc15bc73182b2dc42b30f2de4dfac15f66"
+    },
+    "preparation-spring/manifest.json": {
+      "bytes": 276178,
+      "sha256": "584296cfc414382f6d445b4c852edb9389c7d347c97becd67ac7fad1e072cd75"
+    },
+    "preparation-spring/preparation.json": {
+      "bytes": 1430,
+      "sha256": "ba49655f33e533297efbb6cc0d47dba61379a25dcc9d07cead4ca59e99ebf026"
+    },
+    "preparation-spring/scenario.json": {
+      "bytes": 9240,
+      "sha256": "61c4ee15a8ce58d7f1d13e8e89a5b5437a734f2b25664cce85ebfad424c3387f"
+    },
+    "preparation-spring.log": {
+      "bytes": 90,
+      "sha256": "4c4dfc24bf3c6804e97487e8a68a6ea8c79e6672c5947c8f7d16f80d777afa5d"
+    },
+    "preparation-terminee.txt": {
+      "bytes": 26,
+      "sha256": "4206441bb661bcd68b495592f74cb5b65918f9540f5af651c9028ca6c761648b"
+    },
+    "preparation.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "questions/cnrs-apprentissage.json": {
+      "bytes": 741,
+      "sha256": "afc8bbdbaf281dc0804d07cc0ac90e4f52e51a15eb22ae7e6805ac282bdee0f1"
+    },
+    "questions/kennedy.json": {
+      "bytes": 738,
+      "sha256": "15996a2c589cd4f42c0f1916365d1959c995d86a5572f3883a78d433c7928d81"
+    },
+    "questions/spring.json": {
+      "bytes": 689,
+      "sha256": "eef6e7ca02024ba2643481ded4da9e880494adf96e0ec066a2b99f17f8dede1a"
+    },
+    "small-cnrs-apprentissage/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "small-cnrs-apprentissage/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "small-cnrs-apprentissage/debut.txt": {
+      "bytes": 26,
+      "sha256": "bc6817f1915bb9f11fdd96e97140325237e6ce4a0fd84ce17e3c53c8dc23d769"
+    },
+    "small-cnrs-apprentissage/empreintes.txt": {
+      "bytes": 379,
+      "sha256": "d6e57a392a319cf3c3d9f72ed448a9a50c79b7cee0ba18a7e8079aad7d3df73d"
+    },
+    "small-cnrs-apprentissage/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "small-cnrs-apprentissage/fin.txt": {
+      "bytes": 26,
+      "sha256": "2c3460d465b51d0fdc6fb77dd86f624e367d14ac3707b7118237ed52250810f2"
+    },
+    "small-cnrs-apprentissage/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "small-cnrs-apprentissage/run/campaign.json": {
+      "bytes": 4431825,
+      "sha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663"
+    },
+    "small-cnrs-apprentissage/scenario-snapshot.json": {
+      "bytes": 15592,
+      "sha256": "2317c46de89655b7da20fb4f78c7a271844aa03e44d5047a70a77193ccd58c18"
+    },
+    "small-cnrs-apprentissage/sortie.log": {
+      "bytes": 81,
+      "sha256": "59b95fdfaa73dcb4c03e94fafc23dcaea8957944ca96d043c53a08f89f4c414f"
+    },
+    "small-cnrs-apprentissage/systeme.log": {
+      "bytes": 640781,
+      "sha256": "81034ad17575e24ec49cf3328f5e96e2961162a3cde80781e25354795fe35149"
+    },
+    "small-kennedy/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "small-kennedy/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "small-kennedy/debut.txt": {
+      "bytes": 26,
+      "sha256": "2c3460d465b51d0fdc6fb77dd86f624e367d14ac3707b7118237ed52250810f2"
+    },
+    "small-kennedy/empreintes.txt": {
+      "bytes": 379,
+      "sha256": "d6e57a392a319cf3c3d9f72ed448a9a50c79b7cee0ba18a7e8079aad7d3df73d"
+    },
+    "small-kennedy/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "small-kennedy/fin.txt": {
+      "bytes": 26,
+      "sha256": "f41280374989eecc59d35e98fad42416c6478432ae525e5f64d3a818c201393c"
+    },
+    "small-kennedy/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "small-kennedy/run/campaign.json": {
+      "bytes": 2203275,
+      "sha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977"
+    },
+    "small-kennedy/scenario-snapshot.json": {
+      "bytes": 8558,
+      "sha256": "8046399d943bde5f2e94306bb3c12eaf9a4350a3e2021e48863b8de076c68db1"
+    },
+    "small-kennedy/sortie.log": {
+      "bytes": 80,
+      "sha256": "ca39c8550711325e157cbe7888fbbf0802835cdd1e243539e25bfcb5d53b9b40"
+    },
+    "small-kennedy/systeme.log": {
+      "bytes": 319785,
+      "sha256": "6b5ee0f8a6cf2598e17990b16cfe0dbdcca64d02144ba5ac81038806e61b129a"
+    },
+    "small-spring/code-sha.txt": {
+      "bytes": 41,
+      "sha256": "594b2c9309446bf784dd45637c922e17e4a3a33fc07c0457bde926e499006a63"
+    },
+    "small-spring/code-sortie.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "small-spring/debut.txt": {
+      "bytes": 26,
+      "sha256": "f41280374989eecc59d35e98fad42416c6478432ae525e5f64d3a818c201393c"
+    },
+    "small-spring/empreintes.txt": {
+      "bytes": 379,
+      "sha256": "d6e57a392a319cf3c3d9f72ed448a9a50c79b7cee0ba18a7e8079aad7d3df73d"
+    },
+    "small-spring/erreurs.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "small-spring/fin.txt": {
+      "bytes": 26,
+      "sha256": "12eb5d52c459e07e878d0fb124ec7c778331fef31896122ac86fff6d7618b2e9"
+    },
+    "small-spring/modeles.json": {
+      "bytes": 1516,
+      "sha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab"
+    },
+    "small-spring/run/campaign.json": {
+      "bytes": 2392820,
+      "sha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac"
+    },
+    "small-spring/scenario-snapshot.json": {
+      "bytes": 9240,
+      "sha256": "61c4ee15a8ce58d7f1d13e8e89a5b5437a734f2b25664cce85ebfad424c3387f"
+    },
+    "small-spring/sortie.log": {
+      "bytes": 80,
+      "sha256": "ade3c40bc18e158b1315e23d2b5529a559fcd1c7a1a4050670f0ba5234952a6e"
+    },
+    "small-spring/systeme.log": {
+      "bytes": 357054,
+      "sha256": "ad9ccd4396fbcc2d9888d063bb5e5344e2b8b535e3415f8710c594b37fe3b2e7"
+    },
+    "termine.txt": {
+      "bytes": 26,
+      "sha256": "efefc56266c7a7f940321ae30fb2e4ab98230016e3498feafda48e9e9bb7a4e7"
+    },
+    "validation-cnrs-apprentissage/campaign.json": {
+      "bytes": 216599,
+      "sha256": "3a04db207ac25548c98bfc8419c055d89c5580e2a4a562e7a7e7055489464500"
+    },
+    "validation-cnrs-apprentissage.log": {
+      "bytes": 82,
+      "sha256": "0f2e6ed8dc405d9a9e3778d784bd4429e4742ee35e5153bbb61bf5d87c48d7a1"
+    },
+    "validation-kennedy/campaign.json": {
+      "bytes": 110336,
+      "sha256": "8e6048a6659f77f30d69a97b90504ea067a3d01ab8aec0e4d86fe9e08fe5c634"
+    },
+    "validation-kennedy.log": {
+      "bytes": 81,
+      "sha256": "7ade056fb36dabe5b2058d3c2b28d81e7dde8a55ec6fae8cb63f188985ea22b1"
+    },
+    "validation-spring/campaign.json": {
+      "bytes": 119804,
+      "sha256": "649c4470108f3b2cd5c76281ed182481bcb7968c1756702275dd23a983eab34e"
+    },
+    "validation-spring.log": {
+      "bytes": 81,
+      "sha256": "88a8b345c127cca28534ab478b12b344d708f2a4ac586a596b1ba6392607fecf"
+    }
+  },
+  "totalBytes": 32759181
+}

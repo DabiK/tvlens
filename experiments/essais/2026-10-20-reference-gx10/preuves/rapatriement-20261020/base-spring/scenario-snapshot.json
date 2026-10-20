@@ -1,0 +1,485 @@
+{
+  "version": 1,
+  "kind": "nominal",
+  "index": {
+    "path": "blocks.json",
+    "sha256": "8ad47c3d2ea0961f911f91d33f06e9cc15bc73182b2dc42b30f2de4dfac15f66"
+  },
+  "provenance": {
+    "kind": "converted-video",
+    "reference": "Vidéo complète ; comparaison exploratoire Whisper ; transport TV exclu.",
+    "preparation": {
+      "path": "preparation.json",
+      "sha256": "ba49655f33e533297efbb6cc0d47dba61379a25dcc9d07cead4ca59e99ebf026"
+    }
+  },
+  "plannedDurationMs": 464000,
+  "finalWaitMs": 180000,
+  "closeWaitMs": 30000,
+  "config": {
+    "perceptionBackend": "local",
+    "questionsBackend": "local",
+    "inspectionBackend": "local",
+    "embeddingsBackend": "local",
+    "localVlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "numCtx": 8192,
+      "keepAlive": "10m"
+    },
+    "localQuestions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m",
+      "think": "off"
+    },
+    "localEmbeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b",
+      "timeoutMs": 120000
+    },
+    "visionDuringAsk": true,
+    "backgroundIndex": true
+  },
+  "selectedModels": {
+    "observationModel": "gemma3:4b",
+    "inspectionModel": "gemma3:4b",
+    "codexModel": "qwen3.8:27b"
+  },
+  "clips": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "auto"
+    },
+    {
+      "id": "clip-1",
+      "block": 1,
+      "occurrence": 0,
+      "atMs": 8000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-2",
+      "block": 2,
+      "occurrence": 0,
+      "atMs": 16000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-3",
+      "block": 3,
+      "occurrence": 0,
+      "atMs": 24000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-4",
+      "block": 4,
+      "occurrence": 0,
+      "atMs": 32000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-5",
+      "block": 5,
+      "occurrence": 0,
+      "atMs": 40000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-6",
+      "block": 6,
+      "occurrence": 0,
+      "atMs": 48000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-7",
+      "block": 7,
+      "occurrence": 0,
+      "atMs": 56000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-8",
+      "block": 8,
+      "occurrence": 0,
+      "atMs": 64000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-9",
+      "block": 9,
+      "occurrence": 0,
+      "atMs": 72000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-10",
+      "block": 10,
+      "occurrence": 0,
+      "atMs": 80000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-11",
+      "block": 11,
+      "occurrence": 0,
+      "atMs": 88000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-12",
+      "block": 12,
+      "occurrence": 0,
+      "atMs": 96000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-13",
+      "block": 13,
+      "occurrence": 0,
+      "atMs": 104000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-14",
+      "block": 14,
+      "occurrence": 0,
+      "atMs": 112000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-15",
+      "block": 15,
+      "occurrence": 0,
+      "atMs": 120000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-16",
+      "block": 16,
+      "occurrence": 0,
+      "atMs": 128000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-17",
+      "block": 17,
+      "occurrence": 0,
+      "atMs": 136000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-18",
+      "block": 18,
+      "occurrence": 0,
+      "atMs": 144000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-19",
+      "block": 19,
+      "occurrence": 0,
+      "atMs": 152000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-20",
+      "block": 20,
+      "occurrence": 0,
+      "atMs": 160000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-21",
+      "block": 21,
+      "occurrence": 0,
+      "atMs": 168000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-22",
+      "block": 22,
+      "occurrence": 0,
+      "atMs": 176000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-23",
+      "block": 23,
+      "occurrence": 0,
+      "atMs": 184000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-24",
+      "block": 24,
+      "occurrence": 0,
+      "atMs": 192000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-25",
+      "block": 25,
+      "occurrence": 0,
+      "atMs": 200000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-26",
+      "block": 26,
+      "occurrence": 0,
+      "atMs": 208000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-27",
+      "block": 27,
+      "occurrence": 0,
+      "atMs": 216000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-28",
+      "block": 28,
+      "occurrence": 0,
+      "atMs": 224000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-29",
+      "block": 29,
+      "occurrence": 0,
+      "atMs": 232000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-30",
+      "block": 30,
+      "occurrence": 0,
+      "atMs": 240000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-31",
+      "block": 31,
+      "occurrence": 0,
+      "atMs": 248000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-32",
+      "block": 32,
+      "occurrence": 0,
+      "atMs": 256000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-33",
+      "block": 33,
+      "occurrence": 0,
+      "atMs": 264000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-34",
+      "block": 34,
+      "occurrence": 0,
+      "atMs": 272000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-35",
+      "block": 35,
+      "occurrence": 0,
+      "atMs": 280000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-36",
+      "block": 36,
+      "occurrence": 0,
+      "atMs": 288000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-37",
+      "block": 37,
+      "occurrence": 0,
+      "atMs": 296000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-38",
+      "block": 38,
+      "occurrence": 0,
+      "atMs": 304000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-39",
+      "block": 39,
+      "occurrence": 0,
+      "atMs": 312000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-40",
+      "block": 40,
+      "occurrence": 0,
+      "atMs": 320000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-41",
+      "block": 41,
+      "occurrence": 0,
+      "atMs": 328000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-42",
+      "block": 42,
+      "occurrence": 0,
+      "atMs": 336000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-43",
+      "block": 43,
+      "occurrence": 0,
+      "atMs": 344000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-44",
+      "block": 44,
+      "occurrence": 0,
+      "atMs": 352000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-45",
+      "block": 45,
+      "occurrence": 0,
+      "atMs": 360000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-46",
+      "block": 46,
+      "occurrence": 0,
+      "atMs": 368000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-47",
+      "block": 47,
+      "occurrence": 0,
+      "atMs": 376000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-48",
+      "block": 48,
+      "occurrence": 0,
+      "atMs": 384000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-49",
+      "block": 49,
+      "occurrence": 0,
+      "atMs": 392000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-50",
+      "block": 50,
+      "occurrence": 0,
+      "atMs": 400000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-51",
+      "block": 51,
+      "occurrence": 0,
+      "atMs": 408000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-52",
+      "block": 52,
+      "occurrence": 0,
+      "atMs": 416000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-53",
+      "block": 53,
+      "occurrence": 0,
+      "atMs": 424000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-54",
+      "block": 54,
+      "occurrence": 0,
+      "atMs": 432000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-55",
+      "block": 55,
+      "occurrence": 0,
+      "atMs": 440000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-56",
+      "block": 56,
+      "occurrence": 0,
+      "atMs": 448000,
+      "language": "auto"
+    },
+    {
+      "id": "clip-57",
+      "block": 57,
+      "occurrence": 0,
+      "atMs": 456000,
+      "language": "auto"
+    }
+  ],
+  "questions": [
+    {
+      "id": "spring-01",
+      "atMs": 72000,
+      "question": "Qui accompagne la jeune fille au début ?"
+    },
+    {
+      "id": "spring-02",
+      "atMs": 192000,
+      "question": "Quel objet tient-elle dans la forêt ?"
+    },
+    {
+      "id": "spring-03",
+      "atMs": 222000,
+      "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?"
+    },
+    {
+      "id": "spring-04",
+      "atMs": 268000,
+      "question": "Comment apparaît maintenant le haut du bâton ?"
+    },
+    {
+      "id": "spring-06",
+      "atMs": 372000,
+      "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?"
+    }
+  ]
+}

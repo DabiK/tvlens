@@ -1,0 +1,35 @@
+{
+  "id": "916fbc15-276f-4310-86ac-bdaf51ab367c",
+  "argv": [
+    "node",
+    "scripts/replay-local-perception.cjs",
+    "--manifest",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-five-images.json",
+    "--out",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/01-A/run",
+    "--backend",
+    "local",
+    "--model",
+    "gemma3:4b",
+    "--url",
+    "http://127.0.0.1:11434",
+    "--num-ctx",
+    "8192",
+    "--keep-alive",
+    "10m",
+    "--execute"
+  ],
+  "started": {
+    "utc": "2026-10-20T21:29:31.682497+00:00",
+    "monotonicNs": 32508447068877
+  },
+  "status": "exited",
+  "exitCode": 0,
+  "pid": 929455,
+  "monitorStopped": true,
+  "finished": {
+    "utc": "2026-10-20T21:30:53.639881+00:00",
+    "monotonicNs": 32590404467776
+  },
+  "durationMs": 81957.398899
+}

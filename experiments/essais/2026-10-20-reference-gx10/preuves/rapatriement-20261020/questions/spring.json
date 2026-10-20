@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "spring-01",
+      "atMs": 72000,
+      "question": "Qui accompagne la jeune fille au début ?"
+    },
+    {
+      "id": "spring-02",
+      "atMs": 192000,
+      "question": "Quel objet tient-elle dans la forêt ?"
+    },
+    {
+      "id": "spring-03",
+      "atMs": 222000,
+      "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?"
+    },
+    {
+      "id": "spring-04",
+      "atMs": 268000,
+      "question": "Comment apparaît maintenant le haut du bâton ?"
+    },
+    {
+      "id": "spring-06",
+      "atMs": 372000,
+      "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?"
+    }
+  ]
+}

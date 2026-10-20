@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "cnrs-01",
+      "atMs": 96000,
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?"
+    },
+    {
+      "id": "cnrs-02",
+      "atMs": 232000,
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?"
+    },
+    {
+      "id": "cnrs-04",
+      "atMs": 472000,
+      "question": "Comment le cours explique-t-il le surapprentissage ?"
+    },
+    {
+      "id": "cnrs-05",
+      "atMs": 648000,
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?"
+    },
+    {
+      "id": "cnrs-06",
+      "atMs": 792000,
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?"
+    }
+  ]
+}

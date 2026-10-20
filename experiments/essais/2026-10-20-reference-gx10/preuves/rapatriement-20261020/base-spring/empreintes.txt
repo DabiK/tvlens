@@ -1,0 +1,3 @@
+ee8917b2c1dbc3d6a505ee064b95b1e77a3b4d19840e08f5a8a7c6711f0afff1  /home/nvidia/tvlens-setup/reference-2026-10-20/scenario.cjs
+700305bdfcc6f9d3bbe8799d88c7c475b4edaa8197eb0aba486c516dc2e08203  /home/nvidia/tvlens-setup/reference-2026-10-20/lancer.sh
+1c0072714e8501bc4a295c571cae664996feaabcbf146fff1c0c224a9e32fcc7  /home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "complete": true,
+  "convertedDurationMs": 879960,
+  "parameters": {
+    "startMs": 0,
+    "blockMs": 8000,
+    "framesPerBlock": 5,
+    "jpegQuality": 3,
+    "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+    "audio": {
+      "codec": "pcm_s16le",
+      "sampleRate": 16000,
+      "channels": 1,
+      "bitDepth": 16
+    },
+    "sampling": "equidistant-block-start"
+  },
+  "timeOrigin": {
+    "kind": "relative-to-source-interval",
+    "sourceStartMs": 0
+  },
+  "templateSessionId": "video-template-validation-only",
+  "sessionBinding": "required-per-occurrence",
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "9fba2265643b8511cbc1adc278685a1eb4da7d94ddf7d623a9687a3d6d27a360"
+  },
+  "index": {
+    "path": "blocks.json",
+    "sha256": "8852d667da1eab0c5b926160c16dc5632051ff8d67064459bbd92cd43553f73c"
+  },
+  "source": {
+    "sha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+    "bytes": 39943181,
+    "durationMs": 879960
+  },
+  "conversion": {
+    "tool": "ffmpeg",
+    "version": "6.1.1-3ubuntu5",
+    "inspectionArguments": [
+      "-nostdin",
+      "-i",
+      "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+      "-map",
+      "0:v:0",
+      "-t",
+      "0",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "sourceInterval": {
+    "startMs": 0,
+    "endMs": 879960
+  },
+  "plannedDurationMs": 879960
+}
