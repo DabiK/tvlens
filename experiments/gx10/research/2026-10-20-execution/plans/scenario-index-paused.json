@@ -1,0 +1,849 @@
+{
+  "version": 1,
+  "kind": "nominal",
+  "index": {
+    "path": "blocks.json",
+    "sha256": "8852d667da1eab0c5b926160c16dc5632051ff8d67064459bbd92cd43553f73c"
+  },
+  "provenance": {
+    "kind": "converted-video",
+    "reference": "Vidéo complète ; comparaison exploratoire Whisper ; transport TV exclu.",
+    "preparation": {
+      "path": "preparation.json",
+      "sha256": "7363ce935b1f80a5d8194d7f943596b2414c9964d81c0919bfa1e5d50939d8f1"
+    }
+  },
+  "plannedDurationMs": 879960,
+  "finalWaitMs": 180000,
+  "closeWaitMs": 30000,
+  "config": {
+    "perceptionBackend": "local",
+    "questionsBackend": "local",
+    "inspectionBackend": "local",
+    "embeddingsBackend": "local",
+    "localVlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "numCtx": 8192,
+      "keepAlive": "10m"
+    },
+    "localQuestions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m",
+      "think": "off"
+    },
+    "localEmbeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b",
+      "timeoutMs": 120000
+    },
+    "visionDuringAsk": true,
+    "backgroundIndex": false
+  },
+  "selectedModels": {
+    "observationModel": "gemma3:4b",
+    "inspectionModel": "gemma3:4b",
+    "codexModel": "qwen3.8:27b"
+  },
+  "clips": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "fr"
+    },
+    {
+      "id": "clip-1",
+      "block": 1,
+      "occurrence": 0,
+      "atMs": 8000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-2",
+      "block": 2,
+      "occurrence": 0,
+      "atMs": 16000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-3",
+      "block": 3,
+      "occurrence": 0,
+      "atMs": 24000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-4",
+      "block": 4,
+      "occurrence": 0,
+      "atMs": 32000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-5",
+      "block": 5,
+      "occurrence": 0,
+      "atMs": 40000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-6",
+      "block": 6,
+      "occurrence": 0,
+      "atMs": 48000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-7",
+      "block": 7,
+      "occurrence": 0,
+      "atMs": 56000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-8",
+      "block": 8,
+      "occurrence": 0,
+      "atMs": 64000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-9",
+      "block": 9,
+      "occurrence": 0,
+      "atMs": 72000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-10",
+      "block": 10,
+      "occurrence": 0,
+      "atMs": 80000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-11",
+      "block": 11,
+      "occurrence": 0,
+      "atMs": 88000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-12",
+      "block": 12,
+      "occurrence": 0,
+      "atMs": 96000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-13",
+      "block": 13,
+      "occurrence": 0,
+      "atMs": 104000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-14",
+      "block": 14,
+      "occurrence": 0,
+      "atMs": 112000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-15",
+      "block": 15,
+      "occurrence": 0,
+      "atMs": 120000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-16",
+      "block": 16,
+      "occurrence": 0,
+      "atMs": 128000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-17",
+      "block": 17,
+      "occurrence": 0,
+      "atMs": 136000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-18",
+      "block": 18,
+      "occurrence": 0,
+      "atMs": 144000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-19",
+      "block": 19,
+      "occurrence": 0,
+      "atMs": 152000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-20",
+      "block": 20,
+      "occurrence": 0,
+      "atMs": 160000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-21",
+      "block": 21,
+      "occurrence": 0,
+      "atMs": 168000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-22",
+      "block": 22,
+      "occurrence": 0,
+      "atMs": 176000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-23",
+      "block": 23,
+      "occurrence": 0,
+      "atMs": 184000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-24",
+      "block": 24,
+      "occurrence": 0,
+      "atMs": 192000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-25",
+      "block": 25,
+      "occurrence": 0,
+      "atMs": 200000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-26",
+      "block": 26,
+      "occurrence": 0,
+      "atMs": 208000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-27",
+      "block": 27,
+      "occurrence": 0,
+      "atMs": 216000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-28",
+      "block": 28,
+      "occurrence": 0,
+      "atMs": 224000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-29",
+      "block": 29,
+      "occurrence": 0,
+      "atMs": 232000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-30",
+      "block": 30,
+      "occurrence": 0,
+      "atMs": 240000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-31",
+      "block": 31,
+      "occurrence": 0,
+      "atMs": 248000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-32",
+      "block": 32,
+      "occurrence": 0,
+      "atMs": 256000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-33",
+      "block": 33,
+      "occurrence": 0,
+      "atMs": 264000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-34",
+      "block": 34,
+      "occurrence": 0,
+      "atMs": 272000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-35",
+      "block": 35,
+      "occurrence": 0,
+      "atMs": 280000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-36",
+      "block": 36,
+      "occurrence": 0,
+      "atMs": 288000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-37",
+      "block": 37,
+      "occurrence": 0,
+      "atMs": 296000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-38",
+      "block": 38,
+      "occurrence": 0,
+      "atMs": 304000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-39",
+      "block": 39,
+      "occurrence": 0,
+      "atMs": 312000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-40",
+      "block": 40,
+      "occurrence": 0,
+      "atMs": 320000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-41",
+      "block": 41,
+      "occurrence": 0,
+      "atMs": 328000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-42",
+      "block": 42,
+      "occurrence": 0,
+      "atMs": 336000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-43",
+      "block": 43,
+      "occurrence": 0,
+      "atMs": 344000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-44",
+      "block": 44,
+      "occurrence": 0,
+      "atMs": 352000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-45",
+      "block": 45,
+      "occurrence": 0,
+      "atMs": 360000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-46",
+      "block": 46,
+      "occurrence": 0,
+      "atMs": 368000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-47",
+      "block": 47,
+      "occurrence": 0,
+      "atMs": 376000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-48",
+      "block": 48,
+      "occurrence": 0,
+      "atMs": 384000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-49",
+      "block": 49,
+      "occurrence": 0,
+      "atMs": 392000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-50",
+      "block": 50,
+      "occurrence": 0,
+      "atMs": 400000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-51",
+      "block": 51,
+      "occurrence": 0,
+      "atMs": 408000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-52",
+      "block": 52,
+      "occurrence": 0,
+      "atMs": 416000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-53",
+      "block": 53,
+      "occurrence": 0,
+      "atMs": 424000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-54",
+      "block": 54,
+      "occurrence": 0,
+      "atMs": 432000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-55",
+      "block": 55,
+      "occurrence": 0,
+      "atMs": 440000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-56",
+      "block": 56,
+      "occurrence": 0,
+      "atMs": 448000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-57",
+      "block": 57,
+      "occurrence": 0,
+      "atMs": 456000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-58",
+      "block": 58,
+      "occurrence": 0,
+      "atMs": 464000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-59",
+      "block": 59,
+      "occurrence": 0,
+      "atMs": 472000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-60",
+      "block": 60,
+      "occurrence": 0,
+      "atMs": 480000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-61",
+      "block": 61,
+      "occurrence": 0,
+      "atMs": 488000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-62",
+      "block": 62,
+      "occurrence": 0,
+      "atMs": 496000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-63",
+      "block": 63,
+      "occurrence": 0,
+      "atMs": 504000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-64",
+      "block": 64,
+      "occurrence": 0,
+      "atMs": 512000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-65",
+      "block": 65,
+      "occurrence": 0,
+      "atMs": 520000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-66",
+      "block": 66,
+      "occurrence": 0,
+      "atMs": 528000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-67",
+      "block": 67,
+      "occurrence": 0,
+      "atMs": 536000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-68",
+      "block": 68,
+      "occurrence": 0,
+      "atMs": 544000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-69",
+      "block": 69,
+      "occurrence": 0,
+      "atMs": 552000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-70",
+      "block": 70,
+      "occurrence": 0,
+      "atMs": 560000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-71",
+      "block": 71,
+      "occurrence": 0,
+      "atMs": 568000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-72",
+      "block": 72,
+      "occurrence": 0,
+      "atMs": 576000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-73",
+      "block": 73,
+      "occurrence": 0,
+      "atMs": 584000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-74",
+      "block": 74,
+      "occurrence": 0,
+      "atMs": 592000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-75",
+      "block": 75,
+      "occurrence": 0,
+      "atMs": 600000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-76",
+      "block": 76,
+      "occurrence": 0,
+      "atMs": 608000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-77",
+      "block": 77,
+      "occurrence": 0,
+      "atMs": 616000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-78",
+      "block": 78,
+      "occurrence": 0,
+      "atMs": 624000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-79",
+      "block": 79,
+      "occurrence": 0,
+      "atMs": 632000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-80",
+      "block": 80,
+      "occurrence": 0,
+      "atMs": 640000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-81",
+      "block": 81,
+      "occurrence": 0,
+      "atMs": 648000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-82",
+      "block": 82,
+      "occurrence": 0,
+      "atMs": 656000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-83",
+      "block": 83,
+      "occurrence": 0,
+      "atMs": 664000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-84",
+      "block": 84,
+      "occurrence": 0,
+      "atMs": 672000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-85",
+      "block": 85,
+      "occurrence": 0,
+      "atMs": 680000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-86",
+      "block": 86,
+      "occurrence": 0,
+      "atMs": 688000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-87",
+      "block": 87,
+      "occurrence": 0,
+      "atMs": 696000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-88",
+      "block": 88,
+      "occurrence": 0,
+      "atMs": 704000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-89",
+      "block": 89,
+      "occurrence": 0,
+      "atMs": 712000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-90",
+      "block": 90,
+      "occurrence": 0,
+      "atMs": 720000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-91",
+      "block": 91,
+      "occurrence": 0,
+      "atMs": 728000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-92",
+      "block": 92,
+      "occurrence": 0,
+      "atMs": 736000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-93",
+      "block": 93,
+      "occurrence": 0,
+      "atMs": 744000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-94",
+      "block": 94,
+      "occurrence": 0,
+      "atMs": 752000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-95",
+      "block": 95,
+      "occurrence": 0,
+      "atMs": 760000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-96",
+      "block": 96,
+      "occurrence": 0,
+      "atMs": 768000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-97",
+      "block": 97,
+      "occurrence": 0,
+      "atMs": 776000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-98",
+      "block": 98,
+      "occurrence": 0,
+      "atMs": 784000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-99",
+      "block": 99,
+      "occurrence": 0,
+      "atMs": 792000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-100",
+      "block": 100,
+      "occurrence": 0,
+      "atMs": 800000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-101",
+      "block": 101,
+      "occurrence": 0,
+      "atMs": 808000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-102",
+      "block": 102,
+      "occurrence": 0,
+      "atMs": 816000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-103",
+      "block": 103,
+      "occurrence": 0,
+      "atMs": 824000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-104",
+      "block": 104,
+      "occurrence": 0,
+      "atMs": 832000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-105",
+      "block": 105,
+      "occurrence": 0,
+      "atMs": 840000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-106",
+      "block": 106,
+      "occurrence": 0,
+      "atMs": 848000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-107",
+      "block": 107,
+      "occurrence": 0,
+      "atMs": 856000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-108",
+      "block": 108,
+      "occurrence": 0,
+      "atMs": 864000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-109",
+      "block": 109,
+      "occurrence": 0,
+      "atMs": 872000,
+      "language": "fr"
+    }
+  ],
+  "questions": [
+    {
+      "id": "cnrs-01",
+      "atMs": 96000,
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?"
+    },
+    {
+      "id": "cnrs-02",
+      "atMs": 232000,
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?"
+    },
+    {
+      "id": "cnrs-04",
+      "atMs": 472000,
+      "question": "Comment le cours explique-t-il le surapprentissage ?"
+    },
+    {
+      "id": "cnrs-05",
+      "atMs": 648000,
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?"
+    },
+    {
+      "id": "cnrs-06",
+      "atMs": 792000,
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "readyForScoring": false,
+  "status": "R\u00e9f\u00e9rences exploratoires non valid\u00e9es pour notation ; lancement demand\u00e9 sans correction pr\u00e9alable",
+  "sha256": {
+    "experiments/gx10/evaluation/fiches/spring.md": "43cd6050922a7b9bad69e3afd43fb15ed325ddb48fabe8d205c0e085ce841a07",
+    "experiments/gx10/evaluation/fiches/artemis.md": "183a50777a945210688621510b9e06e0bb9cdc34f5abca919608dc9b7abdf167",
+    "experiments/gx10/evaluation/fiches/cnrs-apprentissage.md": "6075db476e5657ce2723e999c11da31b78ba3d50a59494cba69f6b11f3b3f80f",
+    "experiments/gx10/evaluation/fiches/tears-of-steel.md": "adb269747a79db35786034910925198fb1a2c387b2e67e86ce4e2ed368da60ad",
+    "experiments/gx10/evaluation/fiches/boeuf-bourguignon.md": "7f53925676d7f6289a88d37ba77160577b9c3712f54ee9cc11f67720881320cb",
+    "experiments/gx10/evaluation/fiches/kennedy.md": "7f0bbd19383d5ae0fc9771f361a6b70f2ac6c516e49787e8994e2f10f7246f85",
+    "experiments/essais/2026-10-20-reference-gx10/questions/kennedy.json": "15996a2c589cd4f42c0f1916365d1959c995d86a5572f3883a78d433c7928d81",
+    "experiments/essais/2026-10-20-reference-gx10/questions/spring.json": "eef6e7ca02024ba2643481ded4da9e880494adf96e0ec066a2b99f17f8dede1a",
+    "experiments/essais/2026-10-20-reference-gx10/questions/cnrs-apprentissage.json": "afc8bbdbaf281dc0804d07cc0ac90e4f52e51a15eb22ae7e6805ac282bdee0f1"
+  }
+}

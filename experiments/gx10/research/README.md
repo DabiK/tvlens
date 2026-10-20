@@ -24,3 +24,5 @@ Validation : quatre SKILL.md validés par quick_validate.py ; TOML chargé avec 
 ressources amont comparées octet par octet au commit source ; node scripts/check.mjs --changed vert.
 Le chargement effectif du nouveau rôle à la prochaine découverte Codex reste à observer ;
 aucune exécution de recherche ni installation moteur déclenchée pour cette validation.
+
+- [Préparation traçable des deux premiers essais GX10](2026-10-20-execution/README.md) : corpus 5/3 images validés, orchestration bornée et traces ; flux complet et inférence encore conditionnels.

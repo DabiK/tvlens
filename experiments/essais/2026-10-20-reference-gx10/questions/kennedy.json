@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "kennedy-01",
+      "atMs": 32000,
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?"
+    },
+    {
+      "id": "kennedy-03",
+      "atMs": 128000,
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?"
+    },
+    {
+      "id": "kennedy-05",
+      "atMs": 216000,
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?"
+    },
+    {
+      "id": "kennedy-06",
+      "atMs": 272000,
+      "question": "What does Kennedy want space to represent, and what does he reject?"
+    },
+    {
+      "id": "kennedy-08",
+      "atMs": 360000,
+      "question": "Who determines whether technology serves good or war?"
+    }
+  ]
+}

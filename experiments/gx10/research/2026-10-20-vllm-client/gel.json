@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-20T20:55:13.775377+00:00",
+  "realInferencePerformed": false,
+  "files": {
+    "sonder.cjs": "d206584170b84beb0f5c587ebb5a1a439df87acc8e8915963674c979020810a2",
+    "corpus.json": "30634c8b75d1898d2c975b695b70cdd25c1621b65c7c14f43e101727e476db93",
+    "preparer.cjs": "11e5ea30bba4eec9d510471fd49deb79b0d7525d7314c8eaeb7f7e35a56febfe",
+    "README.md": "8bbf41c39e0fcb0f2b91c88d7ed66f42cf00107f858436b113cb2785f1b831fa",
+    "verifier.cjs": "696468972dc3d0e62d9c26a9105c56a19978cb6f10bf292c31b637e5c69ef27e"
+  }
+}
