@@ -1,0 +1,38 @@
+{
+  "tmuxSocket": "tvlens-recovery-20261020T224805Z",
+  "launcherRoot": "/home/nvidia/tvlens-setup/reprise-launchers-20261020T224923Z",
+  "launchersSha256": {
+    "common.sh": "9781309b3a75639a1e21eda0309c41a8c4db333f23cab705cb0924a17e3ef2a2",
+    "launch-qwen.sh": "cf0ee4f167bf04acf602e015687f147679b5e620786e642d4f8290bcf40b4172",
+    "launch-streaming.sh": "aaed60bfa0e7dcdc8c701286d55bbb5f233d4b4c054aae5b2320b2537eef4552",
+    "launch-corpus.sh": "fd4e2e165abd7cad5d45f984000d945e604a031666218a8e666eb94cf6daa55f"
+  },
+  "night": "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results",
+  "queues": [
+    {
+      "name": "qwen-vision",
+      "remoteRoot": "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z",
+      "tmuxSession": "tvlens-reprise-qwen",
+      "startedAtUtc": "2026-10-20T22:49:55.667899+00:00",
+      "observedStatus": "waiting-night",
+      "deadlineUtc": "2026-10-21T05:00:00Z"
+    },
+    {
+      "name": "streaming-vlm",
+      "remoteRoot": "/home/nvidia/tvlens-setup/reprise-streaming-20261020T224923Z",
+      "tmuxSession": "tvlens-reprise-streaming",
+      "startedAtUtc": "2026-10-20T22:50:01.983773+00:00",
+      "observedStatus": "waiting-predecessors",
+      "deadlineUtc": "2026-10-21T12:00:00Z"
+    },
+    {
+      "name": "corpus-etendu",
+      "remoteRoot": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z",
+      "tmuxSession": "tvlens-reprise-corpus",
+      "startedAtUtc": "2026-10-20T22:50:09.063465+00:00",
+      "observedStatus": "waiting-streamingvlm",
+      "deadlineUtc": "2026-10-23T05:00:00Z"
+    }
+  ],
+  "readyForScoring": false
+}

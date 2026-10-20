@@ -1,0 +1,21 @@
+{
+  "remoteRoot": "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z",
+  "originalRoot": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z",
+  "tmuxSocket": "tvlens-recovery-20261020T224805Z",
+  "tmuxSession": "tvlens-reprise-night",
+  "startedAtUtc": "2026-10-20T22:49:00.034235+00:00",
+  "observedStatus": "docker-pull",
+  "deadlineUtc": "2026-10-21T05:00:00Z",
+  "resumeScriptSha256": "9d0dc80204f474e8a051ef899eac109372f8c2b2beb17b0bb17af8d180c7cb55",
+  "launchScriptSha256": "a507087803d825ab64d285d91982331fc6d0a8c164189b91f8b63ff810536b48",
+  "sourcePackage": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package",
+  "completedOriginalStagesReused": [
+    "perception",
+    "perception-verify",
+    "vision",
+    "vision-verify",
+    "probe-ollama"
+  ],
+  "firstResumedStage": "docker-pull",
+  "readyForScoring": false
+}

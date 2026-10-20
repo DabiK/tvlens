@@ -10,10 +10,10 @@ les réponses brutes peuvent être annotées plus tard, mais aucun classement de
 | 1 | Référence Whisper `base`, `small`, `large-v3-turbo` × CNRS, Kennedy, Spring | 9 campagnes terminées, traces rapatriées | Résultats conservés |
 | 2 | Ablation contrôlée 5 contre 3 images sur CNRS | Terminée et vérifiée techniquement | Interprétation vitesse et réponses à faire |
 | 3 | Vision maintenue ou suspendue pendant les questions, sur CNRS | En cours | Fin, vérification et scellé |
-| 4 | Sonde questions Ollama puis vLLM | Prévue dans le même lanceur nocturne | Rang 3 terminé ; même jeu de questions ; ne pas conclure sur le flux TV complet |
-| 5 | Sonde visuelle Qwen BF16 sur vLLM, puis Ollama si le créneau le permet | File déployée, en attente | Nuit scellée, conteneurs nettoyés, verrous et GPU libres |
-| 6 | Pré-vol puis pilote StreamingVLM sur Spring | File déployée, en attente sans charge GPU | Rangs précédents clos et scellés ; image ARM, dépendances, GPU et budget validés |
-| 7 | Trois variantes Whisper sur Bœuf, Tears et Artemis | File déployée, en attente sans charge GPU | StreamingVLM terminal scellé, conteneurs arrêtés, verrous et GPU libres |
+| 4 | Sonde questions Ollama puis vLLM | Ollama 20/20 terminé ; reprise vLLM lancée après incident Docker | Même jeu de questions ; ne pas conclure sur le flux TV complet |
+| 5 | Sonde visuelle Qwen BF16 sur vLLM, puis Ollama si le créneau le permet | File recréée en attente du nouveau sceau de nuit | Nuit reprise scellée, conteneurs nettoyés, verrous et GPU libres |
+| 6 | Pré-vol puis pilote StreamingVLM sur Spring | File recréée en attente sans charge GPU | Nouvelle nuit et nouveau Qwen clos et scellés ; image ARM, dépendances, GPU et budget validés |
+| 7 | Trois variantes Whisper sur Bœuf, Tears et Artemis | File recréée en attente sans charge GPU | Nouveau StreamingVLM terminal scellé, conteneurs arrêtés, verrous et GPU libres |
 
 Les rangs 3 à 5 restent soumis à l'arrêt du 21 octobre à 07 h, heure de Paris. Le rang 6 est
 autorisé dès que le rang 5 se clôt, même dans la nuit, avec une borne propre au pilote et sans

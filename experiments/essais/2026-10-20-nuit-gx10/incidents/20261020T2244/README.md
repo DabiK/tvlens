@@ -35,3 +35,13 @@ dossier neuf horodaté, à protocole identique. Les files suivantes seront
 recréées en dossiers neufs avec des références vers les nouveaux prédécesseurs,
 une seule charge GPU à la fois et les mêmes échéances. Toute intervention,
 commande de lancement et résultat sera ajoutée ici après vérification.
+
+À 22:49 UTC, le [suffixe vLLM](../../../2026-10-21-reprise-docker-gx10/deployment.json)
+a validé les originaux scellés et commencé `docker-pull` dans un nouveau
+dossier, lancé depuis une connexion SSH neuve via un socket `tmux` indépendant.
+À 22:50 UTC, [Qwen visuel, StreamingVLM et corpus étendu](../../../2026-10-21-reprise-file-gx10/deployment.json)
+ont été recréés en attente de leurs nouveaux prédécesseurs. Leurs anciens
+dossiers restent scellés `blocked`. Les paquets, paramètres et échéances sont
+inchangés ; seul le câblage des prédécesseurs et l'accès effectif à Docker ont
+changé. Les quatre nouvelles sessions et leurs états initiaux sont décrits
+dans ces manifestes de déploiement. Le résultat des inférences reste à venir.

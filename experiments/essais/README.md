@@ -10,3 +10,5 @@
 | [2026-10-20-vision-vllm-gx10](2026-10-20-vision-vllm-gx10/) | Sonde visuelle Qwen BF16 Ollama/vLLM déployée en attente de la clôture nocturne ; mêmes blocs et consignes, traces brutes et arrêt à 07 h Paris. |
 | [2026-10-21-streamingvlm-gx10](2026-10-21-streamingvlm-gx10/) | Pré-vol StreamingVLM déployé en attente après la nuit et Qwen visuel ; Spring, durée bornée et compatibilité ARM64 tracées. |
 | [2026-10-21-corpus-etendu-gx10](2026-10-21-corpus-etendu-gx10/) | Trois autres vidéos du corpus, trois variantes Whisper chacune ; file séquentielle déployée en attente de StreamingVLM. |
+| [2026-10-21-reprise-docker-gx10](2026-10-21-reprise-docker-gx10/) | Reprise bornée de la seule sonde vLLM textuelle après incident d'accès Docker ; cinq étapes antérieures conservées. |
+| [2026-10-21-reprise-file-gx10](2026-10-21-reprise-file-gx10/) | Nouvelles files Qwen visuel, StreamingVLM et corpus étendu, enchaînées après la reprise dans un socket `tmux` indépendant. |
