@@ -2,6 +2,8 @@
 
 Recherche documentaire préparatoire, **sans essai réel ni promesse de gain**. Décision à prendre après lecture des campagnes nocturnes. Critères communs : faits correctement couverts, inventions et abstentions, pertinence des réponses sous 20 s, âge des preuves, événements courts manqués, retard et blocs perdus, appels/images/tokens par minute, charge CPU/GPU et mémoire. Les références humaines doivent être validées avant toute notation de pertinence.
 
+Une [revue critique locale par Opus 5.5](revue-opus.md) distingue mesures disponibles, biais et essais suivants ; elle reste un avis à vérifier contre les traces et les annotations humaines.
+
 Le point de départ mesuré sur Kennedy : blocs de 8 s, 35 appels visuels terminés sur 38, médiane 7,272 s, moyenne 8,280 s, maximum 17,005 s, un bloc perdu pour retard. Voir [diagnostic nocturne](../../../essais/2026-10-20-nuit-gx10/diagnostic-vision.md). Ces durées ne décomposent pas encodage image, préremplissage, génération et attente fournisseur.
 
 ## Essais courts prioritaires demain

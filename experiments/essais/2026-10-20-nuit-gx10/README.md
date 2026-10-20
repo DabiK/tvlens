@@ -88,6 +88,9 @@ Une comparaison `rsync --checksum` n'a signalé aucun écart ;
 La variation vision/questions est encore en cours au moment de cette copie ; aucun fichier actif de ce bras
 n'a été rapatrié. Les résultats de l'ablation perception ne sont pas encore interprétés ni notés.
 
+L'[ordre opérationnel et l'extension aux six vidéos](ordre-et-suite.md) distinguent les étapes lancées,
+la file StreamingVLM en préparation et les variations de langue/audio encore à préparer.
+
 Sources primaires consultées le 20 octobre :
 
 - [NVIDIA Spark, instructions vLLM](https://build.nvidia.com/spark/vllm/instructions).
