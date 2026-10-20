@@ -12,11 +12,14 @@ les réponses brutes peuvent être annotées plus tard, mais aucun classement de
 | 3 | Vision maintenue ou suspendue pendant les questions, sur CNRS | En cours | Fin, vérification et scellé |
 | 4 | Sonde questions Ollama puis vLLM | Prévue dans le même lanceur nocturne | Rang 3 terminé ; même jeu de questions ; ne pas conclure sur le flux TV complet |
 | 5 | Sonde visuelle Qwen BF16 sur vLLM, puis Ollama si le créneau le permet | File déployée, en attente | Nuit scellée, conteneurs nettoyés, verrous et GPU libres |
-| 6 | Pré-vol puis pilote StreamingVLM sur Spring | Préparation de la file | Rangs précédents clos et scellés ; image ARM, dépendances, GPU et budget validés |
+| 6 | Pré-vol puis pilote StreamingVLM sur Spring | File déployée, en attente sans charge GPU | Rangs précédents clos et scellés ; image ARM, dépendances, GPU et budget validés |
+| 7 | Trois variantes Whisper sur Bœuf, Tears et Artemis | File déployée, en attente sans charge GPU | StreamingVLM terminal scellé, conteneurs arrêtés, verrous et GPU libres |
 
 Les rangs 3 à 5 restent soumis à l'arrêt du 21 octobre à 07 h, heure de Paris. Le rang 6 est
 autorisé dès que le rang 5 se clôt, même dans la nuit, avec une borne propre au pilote et sans
-inférence concurrente. Un échec de compatibilité est un résultat à conserver, pas un feu vert pour
+inférence concurrente. Le rang 7 est autorisé après le rang 6, avec sa propre borne jusqu'au
+23 octobre à 05 h UTC ; il ne donne aucune note de pertinence avant relecture humaine des fiches.
+Un échec de compatibilité est un résultat à conserver, pas un feu vert pour
 modifier le modèle ou multiplier les essais de façon implicite.
 
 ## Extension du corpus après ce premier tri

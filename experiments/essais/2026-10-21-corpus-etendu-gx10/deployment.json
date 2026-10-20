@@ -1,0 +1,14 @@
+{
+  "remoteRoot": "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z",
+  "tmuxSession": "tvlens-corpus-etendu",
+  "startedAtUtc": "2026-10-20T22:11:28.347795+00:00",
+  "observedStatus": "waiting-streamingvlm",
+  "gpuWorkStarted": false,
+  "stageCount": 0,
+  "packageSha256": "4945225695ad42489465ba91c89262e97c9477d70fc0659b87fab52d94e941d3",
+  "launchSha256": "bcc01449cf253d64a8b9845a9d96583ba70911d62b86d0b3007d2fd644ee4bf4",
+  "remoteTests": "6 Python fixture tests passed; py_compile and bash -n passed",
+  "deadlineUtc": "2026-10-23T05:00:00Z",
+  "predecessor": "/home/nvidia/tvlens-setup/streamingvlm-20261020T220235Z/results",
+  "readyForScoring": false
+}

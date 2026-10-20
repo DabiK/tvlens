@@ -1,0 +1,16 @@
+{
+  "remoteRoot": "/home/nvidia/tvlens-setup/streamingvlm-20261020T220235Z",
+  "tmuxSession": "tvlens-streamingvlm",
+  "startedAtUtc": "2026-10-20T22:08:50.063215+00:00",
+  "observedAtUtc": "2026-10-20T22:09:00Z",
+  "observedStatus": "waiting-predecessors",
+  "gpuWorkStarted": false,
+  "packageSha256": "c1fa9b1eb71b0051caf80338d74c5007034ec7f9ca075c095c4c6410b2d29115",
+  "upstreamSha256": "b06647955747616ff91c8be46413bb20971f65a834ed76bdf481e266f4c39d1a",
+  "launchSha256": "120a71a95514eb6b8768c5707b76e40623696d00d5aad5a597c369376b7429fc",
+  "deadlineUtc": "2026-10-21T12:00:00Z",
+  "predecessors": [
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results",
+    "/home/nvidia/tvlens-setup/vision-vllm-20261020T214231Z/results"
+  ]
+}

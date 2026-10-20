@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "cuisine-02",
+      "atMs": 200000,
+      "question": "Comment prépare-t-il la marinade et combien de temps la laisse-t-il reposer ?"
+    },
+    {
+      "id": "cuisine-03",
+      "atMs": 248000,
+      "question": "Quelles sont les trois parties séparées après la marinade ?"
+    },
+    {
+      "id": "cuisine-05",
+      "atMs": 456000,
+      "question": "Que fait-il pour épaissir puis mouiller la préparation ?"
+    },
+    {
+      "id": "cuisine-06",
+      "atMs": 548000,
+      "question": "Quel mode de cuisson vient-il de recommander ?"
+    },
+    {
+      "id": "cuisine-07",
+      "atMs": 656000,
+      "question": "Dans quel ordre finit-il le plat avec les garnitures ?"
+    }
+  ]
+}

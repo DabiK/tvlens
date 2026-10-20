@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "artemis-01",
+      "atMs": 968000,
+      "question": "What decision has the launch team just announced?"
+    },
+    {
+      "id": "artemis-02",
+      "atMs": 1248000,
+      "question": "Why will water flood the mobile launcher?"
+    },
+    {
+      "id": "artemis-04",
+      "atMs": 1664000,
+      "question": "Has liftoff happened, and which engines are propelling the vehicle?"
+    },
+    {
+      "id": "artemis-05",
+      "atMs": 1792000,
+      "question": "Which propulsion elements have just separated, and what continues to power the flight?"
+    },
+    {
+      "id": "artemis-07",
+      "atMs": 2096000,
+      "question": "What major engine event are the commentators preparing for now?"
+    }
+  ]
+}

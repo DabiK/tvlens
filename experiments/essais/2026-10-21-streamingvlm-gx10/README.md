@@ -10,6 +10,10 @@ rédaction. La campagne nocturne GX10 puis la sonde Qwen visuelle gardent l'excl
 clôture scellée et leur nettoyage confirmé. La file StreamingVLM doit alors démarrer sans attendre Dabi,
 dans une fenêtre d'exécution bornée ; un échec des préconditions ou de compatibilité est consigné.
 
+Mise à jour du 20 octobre à 22:09 UTC : la file est [déployée](deployment.json) sur GX10 et sa session
+`tmux` est active, en état `waiting-predecessors` sans étape GPU commencée. Ce relevé ne constitue
+encore aucun résultat d'inférence StreamingVLM.
+
 Ce pré-vol ne mesure ni l'application TVLens complète ni un effet causal du seul cache : le checkpoint
 StreamingVLM diffère de Gemma3 et Qwen3-VL. Une comparaison avec le même checkpoint en mode recomputation
 pourra isoler une partie de l'effet du cache après un premier fonctionnement réussi.

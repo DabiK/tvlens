@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": "tears-01",
+      "atMs": 48000,
+      "question": "What passions do Thom and Celia have, according to their conversation?"
+    },
+    {
+      "id": "tears-03",
+      "atMs": 216000,
+      "question": "How much time does Barley say they should have?"
+    },
+    {
+      "id": "tears-04",
+      "atMs": 264000,
+      "question": "What advice is Thom given about how to speak to her?"
+    },
+    {
+      "id": "tears-06",
+      "atMs": 408000,
+      "question": "What does Celia reproach Thom for?"
+    },
+    {
+      "id": "tears-07",
+      "atMs": 552000,
+      "question": "What is the latest announced state of the memory overwrite?"
+    }
+  ]
+}
