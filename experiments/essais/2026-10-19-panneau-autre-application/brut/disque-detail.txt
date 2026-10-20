@@ -1,0 +1,17 @@
+11.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery']
+11.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery']
+11.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery']
+12.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery']
+12.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery']
+12.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery']
+13.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery']
+13.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery']
+14.%N com.webos.app.mediadiscovery {'width': 2880, 'y': 300, 'x': 0, 'height': 1560} | ['com.webos.app.mediadiscovery', 'org.tvlens.sidebarprobe']
+14.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery', 'org.tvlens.sidebarprobe']
+15.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery', 'org.tvlens.sidebarprobe']
+15.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery', 'org.tvlens.sidebarprobe']
+15.%N com.webos.app.mediadiscovery {'width': 3840, 'y': 40, 'x': 0, 'height': 2080} | ['com.webos.app.mediadiscovery', 'org.tvlens.sidebarprobe']
+LOG
+restore {"returnValue": true}
+
+['com.webos.app.home', 'com.webos.app.lgchannels', 'com.webos.app.mediadiscovery', 'netflix', 'org.tvlens.sidebarprobe']

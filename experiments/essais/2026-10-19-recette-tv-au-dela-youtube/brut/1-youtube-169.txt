@@ -1,0 +1,18 @@
+-- t289-169-avant 09:30:27
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "sourceInput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "width": 3840, "height": 2160, "context": "_3arLfTD6UKrsmN"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+-- t289-169-ouvert 09:30:33
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 270, "x": 0, "height": 1620}, "sourceInput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "width": 3840, "height": 2160, "context": "_3arLfTD6UKrsmN"}]
+fenetres ['youtube.leanback.v4', 'org.tvlens.sidebarprobe']
+panel.py: 0 controleur, 1 recuperation
+layout: {"active": true, "mode": "chat", "requestId": null, "video": {"x": 0, "y": 135, "width": 1440, "height": 810}}
+{"appId":"org.tvlens.sidebarprobe","returnValue":true}
+-- t289-169-ferme 09:30:38
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "sourceInput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "width": 3840, "height": 2160, "context": "_3arLfTD6UKrsmN"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+LOG
+restore {"returnValue": true}

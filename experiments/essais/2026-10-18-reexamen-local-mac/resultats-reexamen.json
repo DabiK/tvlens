@@ -1,0 +1,504 @@
+{
+  "startedAt": "2026-10-18T12:24:42.794Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "codex",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "gemma3:12b",
+    "TVLENS_LOCAL_VLM_KEEP_ALIVE": "2m"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Qu’est-ce qui est écrit à l’écran au début du live ? Réexamine les images.",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 28610,
+      "final": "done",
+      "message": "Rédaction de la réponse…",
+      "kind": "observation",
+      "answer": "Après réexamen des premières images, je distingue « RD SECQURS ». La lecture est incertaine : je ne peux pas garantir toutes les lettres.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 65,
+          "endMs": 315
+        }
+      ],
+      "limits": [
+        "Inscription imparfaitement lisible.",
+        "Les textes sont en français.",
+        "Paroles issues de la transcription du passage entier (10,1–18,1 s), plus large que les images réexaminées : elles n’y sont pas situées et ne valent pas citation exacte."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "model": "default",
+      "elapsedMs": 27110,
+      "sourcesRejected": [],
+      "metrics": {
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 26180,
+        "firstAgentMs": 602,
+        "firstTextMs": 26180,
+        "totalMs": 27112,
+        "endToEndMs": 27114,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "inspect_clip",
+            "durationMs": 19151,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "gemma3:12b",
+              "host": "127.0.0.1:11434",
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.06183400000008987,
+                  "requestMs": 18549.691333
+                },
+                "providerTimings": {
+                  "totalMs": 18533,
+                  "loadMs": 4381,
+                  "promptEvalMs": 4728,
+                  "evalMs": 9339,
+                  "promptTokens": 2018,
+                  "evalTokens": 413,
+                  "rawNs": {
+                    "total_duration": 18532554333,
+                    "load_duration": 4380915167,
+                    "prompt_eval_duration": 4728128000,
+                    "eval_duration": 9338727000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 3,
+              "reused": 3,
+              "cached": 0,
+              "failed": 0
+            }
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434",
+          "exercised": true,
+          "modelCalled": true,
+          "cacheHit": false,
+          "metrics": {
+            "clientTimings": {
+              "queueMs": 0.06183400000008987,
+              "requestMs": 18549.691333
+            },
+            "providerTimings": {
+              "totalMs": 18533,
+              "loadMs": 4381,
+              "promptEvalMs": 4728,
+              "evalMs": 9339,
+              "promptTokens": 2018,
+              "evalTokens": 413,
+              "rawNs": {
+                "total_duration": 18532554333,
+                "load_duration": 4380915167,
+                "prompt_eval_duration": 4728128000,
+                "eval_duration": 9338727000
+              }
+            },
+            "modelState": "unknown"
+          }
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 2,
+          "journalEntries": 9,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": [
+        {
+          "id": "moment-1",
+          "startMs": 65,
+          "endMs": 315,
+          "text": "« RD SECQURS »",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        }
+      ]
+    },
+    {
+      "step": "question",
+      "question": "Décris précisément ce qu’on voit à l’image dans les vingt dernières secondes.",
+      "status": 200,
+      "id": "deep-6",
+      "accepted": {
+        "id": "deep-6"
+      },
+      "wallMs": 52715,
+      "final": "done",
+      "message": "Rédaction de la réponse…",
+      "kind": "observation",
+      "answer": "Le réexamen des vingt dernières secondes montre un plan presque fixe : un homme en chemise, assis devant un écran d’ordinateur, avec un arrière-plan flou où se distinguent des meubles et divers objets. L’inscription « elan.media__ — ABONNÉ » est relevée lors de la seconde vérification ; aucun changement notable de cadrage ou de position n’est discerné. Ces réexamens contredisent toutefois les anciens résumés qui décrivaient deux personnes dans un salon : je ne peux donc pas garantir une description plus fine.",
+      "citations": [
+        {
+          "id": "moment-17",
+          "startMs": 123508.72191600595,
+          "endMs": 127456.42191602384
+        },
+        {
+          "id": "moment-18",
+          "startMs": 127457.52191601788,
+          "endMs": 135479.42191602383
+        },
+        {
+          "id": "moment-19",
+          "startMs": 135480.52191601787,
+          "endMs": 143508.72191600595
+        },
+        {
+          "id": "moment-19",
+          "startMs": 135543,
+          "endMs": 137043
+        }
+      ],
+      "limits": [
+        "Décor flou et contradiction entre les résumés antérieurs et les réexamens visuels.",
+        "Les observations sont basées uniquement sur les images fournies et ne peuvent pas inclure d'informations externes.",
+        "Paroles issues de la transcription du passage entier (119,4–127,5 s), plus large que les images réexaminées : elles n’y sont pas situées et ne valent pas citation exacte.",
+        "Transcription automatique locale ; elle peut contenir des erreurs."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        },
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "model": "default",
+      "elapsedMs": 51608,
+      "sourcesRejected": [],
+      "metrics": {
+        "waitMs": 1,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 46713,
+        "firstAgentMs": 1,
+        "firstTextMs": 46713,
+        "totalMs": 51609,
+        "endToEndMs": 51610,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "inspect_clip",
+            "durationMs": 19081,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "gemma3:12b",
+              "host": "127.0.0.1:11434",
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.009666999998444226,
+                  "requestMs": 18360.488208000002
+                },
+                "providerTimings": {
+                  "totalMs": 18349,
+                  "loadMs": 17,
+                  "promptEvalMs": 4685,
+                  "evalMs": 13208,
+                  "promptTokens": 1979,
+                  "evalTokens": 586,
+                  "rawNs": {
+                    "total_duration": 18348758083,
+                    "load_duration": 16737041,
+                    "prompt_eval_duration": 4685118000,
+                    "eval_duration": 13208407000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 3,
+              "reused": 3,
+              "cached": 0,
+              "failed": 0
+            }
+          },
+          {
+            "tool": "inspect_clip",
+            "durationMs": 17378,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "gemma3:12b",
+              "host": "127.0.0.1:11434",
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.008500000003550667,
+                  "requestMs": 16899.359249999994
+                },
+                "providerTimings": {
+                  "totalMs": 16894,
+                  "loadMs": 16,
+                  "promptEvalMs": 4591,
+                  "evalMs": 11789,
+                  "promptTokens": 1792,
+                  "evalTokens": 518,
+                  "rawNs": {
+                    "total_duration": 16893989375,
+                    "load_duration": 16399041,
+                    "prompt_eval_duration": 4591205000,
+                    "eval_duration": 11789366000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 1,
+              "reused": 1,
+              "cached": 0,
+              "failed": 0
+            }
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434",
+          "exercised": true,
+          "modelCalled": true,
+          "cacheHit": false,
+          "metrics": {
+            "clientTimings": {
+              "queueMs": 0.008500000003550667,
+              "requestMs": 16899.359249999994
+            },
+            "providerTimings": {
+              "totalMs": 16894,
+              "loadMs": 16,
+              "promptEvalMs": 4591,
+              "evalMs": 11789,
+              "promptTokens": 1792,
+              "evalTokens": 518,
+              "rawNs": {
+                "total_duration": 16893989375,
+                "load_duration": 16399041,
+                "prompt_eval_duration": 4591205000,
+                "eval_duration": 11789366000
+              }
+            },
+            "modelState": "unknown"
+          }
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 3,
+          "journalEntries": 10,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": [
+        {
+          "id": "moment-17",
+          "startMs": 123508.72191600595,
+          "endMs": 127456.42191602384,
+          "text": "Dans chaque image, on observe un homme assis devant un écran d'ordinateur, probablement en train de regarder une vidéo ou une présentation. Il porte une chemise et semble être dans un environnement professionnel ou de bureau. L'écran affiche une interface avec des éléments graphiques et des informations textuelles. Le cadrage est moyen, centré sur l'homme et l'écran. Les détails du décor sont flous, mais on distingue des meubles et des objets divers dans l'arrière-plan. Les positions relatives de l'homme et de l'écran restent constantes dans toutes les images.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-17",
+          "startMs": 123508.72191600595,
+          "endMs": 127456.42191602384,
+          "text": "Sur l'écran, on distingue une interface avec des éléments graphiques, des logos et des informations textuelles. Le texte semble être en langue étrangère. L'interface semble être liée à une plateforme de diffusion de contenu ou de présentation.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-18",
+          "startMs": 127457.52191601788,
+          "endMs": 135479.42191602383,
+          "text": "L'homme continue de regarder l'écran, sa position et son expression restent similaires dans toutes les images. L'arrière-plan reste flou et les détails du décor sont difficiles à distinguer. L'interface sur l'écran semble statique.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 135480.52191601787,
+          "endMs": 143508.72191600595,
+          "text": "L'homme est toujours assis devant l'écran, sa position et son expression restent constantes. L'arrière-plan reste flou et les détails du décor sont difficiles à distinguer. L'interface sur l'écran semble statique.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 135543,
+          "endMs": 136043,
+          "text": "Dans les images, l'homme est assis devant un ordinateur, et une affiche ou un écran affiche 'elan.media__ — ABONNÉ'.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 136043,
+          "endMs": 136293,
+          "text": "L'homme est toujours assis devant l'ordinateur, et l'écran affiche 'elan.media__ — ABONNÉ'.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 136293,
+          "endMs": 136543,
+          "text": "L'homme est toujours assis devant l'ordinateur, et l'écran affiche 'elan.media__ — ABONNÉ'.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 136543,
+          "endMs": 136793,
+          "text": "L'homme est toujours assis devant l'ordinateur, et l'écran affiche 'elan.media__ — ABONNÉ'.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        },
+        {
+          "id": "moment-19",
+          "startMs": 136793,
+          "endMs": 137043,
+          "text": "L'homme est toujours assis devant l'ordinateur, et l'écran affiche 'elan.media__ — ABONNÉ'.",
+          "basis": "images",
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:12b",
+            "host": "127.0.0.1:11434"
+          }
+        }
+      ]
+    }
+  ],
+  "serverLogTail": []
+}

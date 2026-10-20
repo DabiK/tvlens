@@ -1,0 +1,47 @@
+== 0-froid (default) 08:49:55
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 35 s
+De quoi parle cette session, en trois points ?… → done observation | outils [] | citations 2 | 30 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/0-froid/rapport.json
+== 1-a-off (off) 08:51:02
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils [] | citations 0 | 14 s
+De quoi parle cette session, en trois points ?… → done insufficient | outils [] | citations 0 | 12 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/1-a-off/rapport.json
+== 1-b-default (default) 08:51:29
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 27 s
+De quoi parle cette session, en trois points ?… → done observation | outils [] | citations 1 | 23 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/1-b-default/rapport.json
+== 2-a-default (default) 08:52:21
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 27 s
+De quoi parle cette session, en trois points ?… → done observation | outils ["search_moments"] | citations 4 | 39 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/2-a-default/rapport.json
+== 2-b-off (off) 08:53:30
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils [] | citations 0 | 14 s
+De quoi parle cette session, en trois points ?… → done insufficient | outils [] | citations 0 | 17 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/2-b-off/rapport.json
+== 3-a-off (off) 08:54:02
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils [] | citations 0 | 14 s
+De quoi parle cette session, en trois points ?… → done insufficient | outils [] | citations 0 | 14 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/3-a-off/rapport.json
+== 3-b-default (default) 08:54:31
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 30 s
+De quoi parle cette session, en trois points ?… → done observation | outils [] | citations 2 | 36 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/3-b-default/rapport.json
+== 4-a-default (default) 08:55:39
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 30 s
+De quoi parle cette session, en trois points ?… → done observation | outils [] | citations 2 | 44 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/4-a-default/rapport.json
+== 4-b-off (off) 08:56:55
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils [] | citations 0 | 14 s
+De quoi parle cette session, en trois points ?… → done insufficient | outils [] | citations 0 | 18 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/4-b-off/rapport.json
+== 5-a-off (off) 08:57:29
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils [] | citations 0 | 14 s
+De quoi parle cette session, en trois points ?… → done insufficient | outils [] | citations 0 | 14 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/5-a-off/rapport.json
+== 5-b-default (default) 08:57:58
+Que dit exactement l'intervenant sur la mobilisati… → done insufficient | outils ["search_moments","search_moments"] | citations 0 | 35 s
+De quoi parle cette session, en trois points ?… → done observation | outils [] | citations 2 | 48 s
+rapport /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t284/runs/5-b-default/rapport.json
+fin 08:59:23
+
+[exited with code 0]

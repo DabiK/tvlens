@@ -1,0 +1,27 @@
+t=1 0 unknown
+t=2 320 youtube.leanback.v4
+{"errorCode":0,"returnValue":false,"errorText":"No Error","mediaId":"_DrTlVfDBdRdjA4"}
+{"subscribed":false,"returnValue":true,"foregroundAppInfo":[{"appId":"youtube.leanback.v4","playState":"playing","type":"media","mediaId":"_DrTlVfDBdRdjA4","windowId":"_Window_Id_420"}]}
+-- t289-43-avant 09:40:32
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 0, "x": 480, "height": 2160}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_DrTlVfDBdRdjA4"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+-- t289-43-ouvert 09:40:38
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2400, "y": 180, "x": 480, "height": 1800}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_DrTlVfDBdRdjA4"}]
+fenetres ['youtube.leanback.v4', 'org.tvlens.sidebarprobe']
+panel.py: 0 controleur, 1 recuperation
+layout: {"active": true, "mode": "chat", "requestId": null, "video": {"x": 240, "y": 90, "width": 1200, "height": 900}}
+{"appId":"org.tvlens.sidebarprobe","returnValue":true}
+-- t289-43-ferme 09:40:43
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 0, "x": 480, "height": 2160}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_DrTlVfDBdRdjA4"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+LOG
+restore {"returnValue": true}
+-- t289-43-apres 09:40:46
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 0, "x": 480, "height": 2160}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_DrTlVfDBdRdjA4"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}

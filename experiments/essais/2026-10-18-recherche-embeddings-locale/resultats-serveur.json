@@ -1,0 +1,117 @@
+{
+  "startedAt": "2026-10-18T12:26:52.192Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "codex",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_EMBEDDINGS_BACKEND": "local",
+    "TVLENS_LOCAL_EMBEDDINGS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_EMBEDDINGS_MODEL": "qwen3-embedding:0.6b"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Retrouve le moment où il est question d’une arnaque au logement et dis ce qu’on y apprend.",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 13551,
+      "final": "done",
+      "message": "Rédaction de la réponse…",
+      "kind": "observation",
+      "answer": "Le passage se situe vers 1 min 03 à 1 min 11 : la vidéo met en garde contre les « arnaques d’appartements ». Un texte incrusté affirme qu’une propriétaire aurait proposé un loyer réduit en échange de contenu qui lui serait favorable : c’est une allégation de la vidéo, pas un fait vérifié. Le commentaire oral est trop incertain pour préciser davantage.",
+      "citations": [
+        {
+          "id": "moment-10",
+          "startMs": 63260.821916,
+          "endMs": 71280.72191600596
+        }
+      ],
+      "limits": [
+        "Transcription orale incertaine sur ce passage."
+      ],
+      "audit": [
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        }
+      ],
+      "model": "default",
+      "elapsedMs": 12315,
+      "sourcesRejected": [],
+      "metrics": {
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 10218,
+        "firstAgentMs": 614,
+        "firstTextMs": 10218,
+        "totalMs": 12317,
+        "endToEndMs": 12319,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "search_moments",
+            "durationMs": 4008,
+            "status": "completed"
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "codex",
+          "model": "gpt-6-luna",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 2,
+          "journalEntries": 10,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": [
+    "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"model-mismatch\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Modèle du cache d’embeddings différent : reconstruction nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+  ]
+}

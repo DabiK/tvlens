@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "root": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-validation-3",
+  "code": "/Users/Dabi/Documents/ISN/tvlens",
+  "tools": { "node": "node", "ffmpeg": "/opt/homebrew/bin/ffmpeg", "whisper": "/opt/homebrew/bin/whisper-cli", "ollama": "ollama", "nvidiaSmi": "nvidia-smi" },
+  "ollama": { "mode": "service", "url": "http://127.0.0.1:11434" },
+  "whisperModels": { "base": "/Users/Dabi/Library/Application Support/com.localwhisper.localWhisper/models/whisper/ggml-base.bin" },
+  "sampleSeconds": 2,
+  "videos": {
+    "kennedy": { "file": "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4", "language": "en",
+      "description": "Discours de Kennedy à Rice University (1962, domaine public)",
+      "questions": [[10, "De quoi parle l'orateur en ce moment ?"], [40, "Résume ce qui vient d'être dit."]] },
+    "spring": { "file": "/Users/Dabi/Documents/ISN/tvlens/media/samples/spring.mp4", "language": "es",
+      "description": "Spring, Blender Open Movie (CC BY 4.0), sans dialogue", "questions": [[20, "Que voit-on à l'écran ?"]] }
+  },
+  "preparations": {
+    "kennedy-court": { "video": "kennedy", "startMs": 0, "durationMs": 24000, "blockMs": 8000, "frames": 4 },
+    "spring-court": { "video": "spring", "startMs": 60000, "durationMs": 24000, "blockMs": 8000, "frames": 4 }
+  },
+  "defaults": {
+    "roles": { "vlm": { "model": "gemma3:4b", "numCtx": 8192, "keepAlive": "10m" },
+      "questions": { "model": "qwen3.8:27b", "numCtx": 16384, "keepAlive": "10m" },
+      "embeddings": { "model": "qwen3-embedding:0.6b" } },
+    "whisper": { "model": "base", "threads": 4, "audioCtx": 0 },
+    "cold": true
+  },
+  "campaigns": [
+    { "id": "g1-kennedy-gemma3-4b", "kind": "g1", "preparation": "kennedy-court" },
+    { "id": "g3-kennedy-reference", "kind": "g3", "preparation": "kennedy-court", "durationMin": 1 },
+    { "id": "g3-spring-think-off", "kind": "g3", "preparation": "spring-court", "durationMin": 1,
+      "roles": { "questions": { "think": "off" }, "inspection": { "model": "qwen3.8:27b", "think": "off" } } },
+    { "id": "g3-kennedy-surcharge", "kind": "g3", "preparation": "kennedy-court", "durationMin": 1, "scenario": "overload", "burstAtS": 30 },
+    { "id": "whisper-kennedy", "kind": "whisper", "preparation": "kennedy-court", "models": ["base"], "files": 3 },
+    { "id": "commande-echo", "kind": "command", "command": "echo bonjour > sortie.txt" }
+  ]
+}

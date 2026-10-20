@@ -1,0 +1,20 @@
+t=1 0 0 unknown
+t=2 320 240 youtube.leanback.v4
+-- 43-avant 00:03:08
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 0, "x": 480, "height": 2160}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_6WG7gpBRnATraC"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+-- 43-ouvert 00:03:14
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 0, "x": 0, "height": 2160}, "sourceInput": {"width": 320, "y": 0, "x": 0, "height": 240}, "width": 320, "height": 240, "context": "_6WG7gpBRnATraC"}]
+fenetres ['youtube.leanback.v4', 'org.tvlens.sidebarprobe']
+panel.py: 0 controleur, 1 recuperation
+layout: {"active": true, "mode": "chat", "requestId": null, "video": {"x": 0, "y": 0, "width": 1440, "height": 1080}}
+{"appId":"org.tvlens.sidebarprobe","returnValue":true}
+-- 43-ferme 00:03:19
+[{"appId": "unknown", "connected": false, "fullScreen": false, "displayOutput": {"width": 0, "y": 0, "x": 0, "height": 0}, "sourceInput": {"width": 0, "y": 0, "x": 0, "height": 0}, "width": 0, "height": 0, "context": "unknown"}]
+fenetres ['youtube.leanback.v4']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+LOG
+restore {"returnValue": true}

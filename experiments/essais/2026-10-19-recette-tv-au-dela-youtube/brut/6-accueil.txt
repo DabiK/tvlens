@@ -1,0 +1,13 @@
+-- accueil-avant 09:58:23
+[{"appId": "unknown", "connected": false, "fullScreen": false, "displayOutput": {"width": 0, "y": 0, "x": 0, "height": 0}, "sourceInput": {"width": 0, "y": 0, "x": 0, "height": 0}, "width": 0, "height": 0, "context": "unknown"}]
+fenetres ['com.webos.app.home']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+code=0
+-- accueil-apres 09:58:25
+[{"appId": "unknown", "connected": false, "fullScreen": false, "displayOutput": {"width": 0, "y": 0, "x": 0, "height": 0}, "sourceInput": {"width": 0, "y": 0, "x": 0, "height": 0}, "width": 0, "height": 0, "context": "unknown"}]
+fenetres ['com.webos.app.home', 'com.webos.app.toast']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+LOG
+TVLENS_PANEL_PLAYBACK_REQUIRED No foreground playback application

@@ -1,0 +1,262 @@
+{
+  "startedAt": "2026-10-18T18:15:28.671Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_EMBEDDINGS_BACKEND": "local",
+    "TVLENS_LOCAL_EMBEDDINGS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_EMBEDDINGS_MODEL": "qwen3-embedding:0.6b",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "gemma3:4b"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "0685db3f-4cf8-49bf-b9ef-f53689fd3f0a",
+      "anchorMs": 32500,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Que voit-on à l’écran pendant ce discours ?",
+      "status": 200,
+      "id": "deep-1",
+      "accepted": {
+        "id": "deep-1"
+      },
+      "wallMs": 34637,
+      "final": "done",
+      "message": "La recherche continue · arrêt au plus tard à 5 minutes.",
+      "kind": "observation",
+      "answer": "Pendant ce discours, on voit John F. Kennedy debout derrière un pupitre, en costume sombre avec un badge de l'administration, s'adressant à une foule dense et diverse ; un drapeau américain est visible en arrière-plan et l'ambiance paraît solennelle (passages moment-1 à moment-3, 0:05 à 0:24). Pour le dernier segment (moment-4, 0:24 à 0:32), l'analyse visuelle a été interrompue, donc je ne peux pas confirmer ce qui y est montré à l'écran.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 500,
+          "endMs": 8500
+        },
+        {
+          "id": "moment-2",
+          "startMs": 8500,
+          "endMs": 16500
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16500,
+          "endMs": 24500
+        },
+        {
+          "id": "moment-4",
+          "startMs": 24500,
+          "endMs": 32500
+        }
+      ],
+      "limits": [
+        "moment-4 : visionStatus=error, analyse interrompue ; aucune description visuelle fiable pour ce segment."
+      ],
+      "audit": [],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m"
+      },
+      "elapsedMs": 34597,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 1,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 34600,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 34600,
+        "endToEndMs": 34601,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 32500,
+          "frozenAtMs": 51028.987209,
+          "evidenceAsOfMs": 51028.987209,
+          "refreshes": 1,
+          "journalEntries": 4,
+          "journalDropped": 0,
+          "contextThroughMs": 32500,
+          "analyzedThroughMs": 24500,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8000,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    },
+    {
+      "step": "question",
+      "question": "Que dit l’orateur sur l’histoire de l’humanité ?",
+      "status": 200,
+      "id": "deep-2",
+      "accepted": {
+        "id": "deep-2"
+      },
+      "wallMs": 39120,
+      "final": "done",
+      "message": "La recherche continue · arrêt au plus tard à 5 minutes.",
+      "kind": "observation",
+      "answer": "L'orateur (John F. Kennedy) évoque l'histoire de l'humanité en soulignant la rapidité avec laquelle des avancées majeures sont devenues accessibles : il cite les lumières électriques, les téléphones, les automobiles et les avions qui « sont devenus disponibles » le mois dernier, puis la pénicilline, la télévision et l'énergie nucléaire « la semaine dernière », et enfin la possibilité d'atteindre Vénus et les étoiles avant minuit ce soir (passages moment-1 à moment-3, 0:05 à 0:24). Le propos est donc une accumulation rhétorique montrant que des conquêtes autrefois inimaginables se sont succédé en un temps très court.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 500,
+          "endMs": 8500
+        },
+        {
+          "id": "moment-2",
+          "startMs": 8500,
+          "endMs": 16500
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16500,
+          "endMs": 24500
+        }
+      ],
+      "limits": [
+        "Les transcriptions sont des résumés automatiques potentiellement imprécis, pas des citations exactes.",
+        "Le dernier segment (moment-4, 0:24 à 0:32) a une analyse visuelle interrompue, mais son texte est disponible."
+      ],
+      "audit": [
+        {
+          "tool": "get_transcript",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m"
+      },
+      "elapsedMs": 37750,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 2
+        },
+        "waitMs": 0,
+        "contextMs": 2,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 37753,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 37753,
+        "endToEndMs": 37753,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "get_transcript",
+            "durationMs": 1,
+            "status": "completed"
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 32500,
+          "frozenAtMs": 51028.987209,
+          "evidenceAsOfMs": 51028.987209,
+          "refreshes": 2,
+          "journalEntries": 7,
+          "journalDropped": 0,
+          "contextThroughMs": 32500,
+          "analyzedThroughMs": 24500,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8000,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": [
+    "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"model-mismatch\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Modèle du cache d’embeddings différent : reconstruction nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+  ]
+}

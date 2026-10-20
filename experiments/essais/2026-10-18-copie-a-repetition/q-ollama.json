@@ -1,0 +1,152 @@
+{
+  "startedAt": "2026-10-18T18:06:41.185Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "De quel sondage parle l’intervenant ?",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 43817,
+      "final": "done",
+      "message": "La recherche continue · arrêt au plus tard à 5 minutes.",
+      "kind": "observation",
+      "answer": "L'intervenant parle d'un sondage d'intentions de vote pour la présidentielle, publié selon lui lundi dernier pour M6/RTL, réalisé par Harris Interactive et un autre institut dont le nom est transcrit de façon incertaine (« Touluna »). Il annonce en montrer les résultats, tout en refusant de rouvrir le débat sur la fiabilité de ce type de sondage.",
+      "citations": [
+        {
+          "id": "moment-2",
+          "startMs": 2031.5219160178813,
+          "endMs": 10049.7
+        },
+        {
+          "id": "moment-4",
+          "startMs": 18069.22191600596,
+          "endMs": 26088.8
+        }
+      ],
+      "limits": [
+        "Le nom du premier institut est incertain dans la transcription ; seul Harris Interactive est clairement identifiable.",
+        "Le sujet exact du sondage (candidats, chiffres) n'est pas lisible dans les passages disponibles."
+      ],
+      "audit": [
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        },
+        {
+          "tool": "get_transcript",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m"
+      },
+      "elapsedMs": 43151,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 2
+        },
+        "waitMs": 1,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 43154,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 43154,
+        "endToEndMs": 43155,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "search_moments",
+            "durationMs": 1487,
+            "status": "completed"
+          },
+          {
+            "tool": "get_transcript",
+            "durationMs": 1,
+            "status": "completed"
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "codex",
+          "model": "gpt-6-luna",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 3,
+          "journalEntries": 15,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": []
+}

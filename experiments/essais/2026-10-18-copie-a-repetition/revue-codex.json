@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "manifestSha256": "885631e378829730bb1cbddb47d0cb469651aa4bd3a9ac37bba1da6445cf4230",
+  "annotationsSha256": "12d63e2bfd81dbfd7c36c6dc759cfe13abb932e92ee3067947781abea0c4daae",
+  "reportSha256": "f592fbe198c2f581260f055a2b5e97c8c2f7080ec268074e2dccccfeee1335f7",
+  "runId": "7767fb4a-a7fe-40e8-bd67-5af90077e867",
+  "reviewer": "orchestrateur Claude, répétition T274 du 18/10, pas une revue humaine G2",
+  "cases": [
+    {
+      "id": "video-0",
+      "status": "reviewed",
+      "reason": "Conforme à l'attendu.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "correct",
+          "reason": "Orateur au pupitre, sceau présidentiel, drapeau à gauche, foule et personnalités."
+        },
+        "invention": {
+          "value": "absent",
+          "reason": "Aucune identité affirmée : l'incertitude dit qu'elle n'est pas établie."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Description conforme aux images envoyées."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "L'absence de paroles est déclarée ; rien n'est attribué au son."
+        }
+      }
+    },
+    {
+      "id": "video-1",
+      "status": "reviewed",
+      "reason": "Conforme ; le regard tourné n'est pas relevé.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "correct",
+          "reason": "Pupitre présidentiel, stade, drapeau et foule."
+        },
+        "invention": {
+          "value": "absent",
+          "reason": "Identité non affirmée ; rien d'ajouté."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Conforme aux images."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Absence de paroles déclarée."
+        }
+      }
+    },
+    {
+      "id": "video-2",
+      "status": "reviewed",
+      "reason": "Conforme, avec un détail juste en plus.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "correct",
+          "reason": "Drapeau déployé derrière l'orateur, foule ; détail vérifiable de l'homme au tissu blanc."
+        },
+        "invention": {
+          "value": "absent",
+          "reason": "Le tissu blanc est visible à droite des images ; aucune identité affirmée."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Conforme aux images."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Absence de paroles déclarée."
+        }
+      }
+    },
+    {
+      "id": "video-3",
+      "status": "reviewed",
+      "reason": "Conforme à l'attendu, geste compris.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "correct",
+          "reason": "Il baisse la tête puis se redresse : le geste attendu vers les notes est relevé."
+        },
+        "invention": {
+          "value": "absent",
+          "reason": "Aucune identité ni action ajoutée."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Conforme aux images."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Absence de paroles déclarée."
+        }
+      }
+    }
+  ]
+}

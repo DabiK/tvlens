@@ -1,0 +1,204 @@
+{
+  "model": "gemma3:12b",
+  "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+  "rows": [
+    {
+      "id": "moment-1",
+      "ms": 14333,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": false,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 14317,
+          "loadMs": 4709,
+          "promptEvalMs": 5751,
+          "evalMs": 3808,
+          "promptTokens": 2314,
+          "evalTokens": 161
+        }
+      },
+      "local": "Un homme, portant un casque audio et tenant un micro, s'adresse à une caméra. Il semble être en train de streamer ou d'enregistrer une vidéo, avec un écran d'ordinateur affichant YouTube et plusieurs fenêtres de navigation.",
+      "visuel": "Un homme est debout devant un micro et un écran d'ordinateur affichant YouTube. Il porte un casque et regarde vers le micro.",
+      "codex": "L’intervenant dit qu’ils n’avaient pas de sondage et qu’ils en ont désormais un, sans que la suite soit précisée.",
+      "ok": true
+    },
+    {
+      "id": "moment-2",
+      "ms": 10491,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": true,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 10484,
+          "loadMs": 5,
+          "promptEvalMs": 6274,
+          "evalMs": 3832,
+          "promptTokens": 2320,
+          "evalTokens": 160
+        }
+      },
+      "local": "Un homme parle dans un micro, probablement lors d'un live sur YouTube. On aperçoit une fenêtre YouTube ouverte avec plusieurs vidéos et une fenêtre de chat.",
+      "visuel": "Un homme portant des écouteurs et parlant dans un micro face à une caméra. L'arrière-plan montre un écran d'ordinateur affichant une vidéo YouTube et une fenêtre de chat.",
+      "codex": "L’intervenant précise que le sondage a été publié lundi dernier par « Touluna » et Harris Interactive, pour M6/RTL, puis annonce qu’il le montrera. Le nom du premier institut, tel que transcrit, est incertain.",
+      "ok": true
+    },
+    {
+      "id": "moment-3",
+      "ms": 12646,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": true,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 12638,
+          "loadMs": 6,
+          "promptEvalMs": 6884,
+          "evalMs": 5103,
+          "promptTokens": 2313,
+          "evalTokens": 198
+        }
+      },
+      "local": "Un homme est assis devant un microphone dans ce qui semble être un studio d'enregistrement ou une pièce aménagée pour des enregistrements vidéo. Il est en train de faire un live sur YouTube, intitulé \"Mobilisation lycéenne : toujours plus vive, toujours plus réprimée - Stream du 14/10/2026\".",
+      "visuel": "Un homme barbu est assis devant un microphone, enregistré en direct sur YouTube. L'écran affiche des miniatures de vidéos et des informations sur le stream.",
+      "codex": "L’intervenant mentionne les résultats, puis dit qu’il ne va pas « se relancer » et demande qu’on le lui pardonne, avant que sa phrase ne soit interrompue. Le sens exact de cette formule reste incertain.",
+      "ok": true
+    },
+    {
+      "id": "moment-4",
+      "ms": 13426,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": true,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 13410,
+          "loadMs": 11,
+          "promptEvalMs": 6913,
+          "evalMs": 5608,
+          "promptTokens": 2333,
+          "evalTokens": 185
+        }
+      },
+      "local": "Un homme, portant un casque et des lunettes, est assis devant un micro dans ce qui semble être un studio d'enregistrement ou une pièce sombre éclairée par des lumières. Une fenêtre de navigateur YouTube est visible, affichant une vidéo en direct et plusieurs suggestions de vidéos.",
+      "visuel": "Un homme est en train de streamer sur YouTube, assis devant un micro et un écran d'ordinateur affichant une vidéo en direct.",
+      "codex": "L’intervenant évoque la question de savoir si les sondages d’intentions de vote sont fiables et qualifie les discussions à ce sujet d’interminables ; il dit ne pas parvenir à… avant que l’extrait ne s’interrompe. La transcription du début est confuse.",
+      "ok": true
+    },
+    {
+      "id": "moment-5",
+      "ms": 12857,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": true,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 12848,
+          "loadMs": 7,
+          "promptEvalMs": 6807,
+          "evalMs": 5407,
+          "promptTokens": 2303,
+          "evalTokens": 173
+        }
+      },
+      "local": "Un homme est assis devant un micro et un ordinateur, apparemment en train d'enregistrer ou de diffuser une vidéo. L'écran de l'ordinateur affiche une vidéo YouTube et plusieurs autres fenêtres avec des titres en français.",
+      "visuel": "Un homme portant un casque est assis devant un micro et un ordinateur portable. L'écran de l'ordinateur affiche une vidéo YouTube et plusieurs autres fenêtres avec des titres en français.",
+      "codex": "L’intervenant dit qu’il ne parvient pas à convaincre son interlocuteur que les sondages d’intentions de vote ne sont pas fiables, selon la transcription. La phrase est légèrement incertaine et les images ne montrent pas de sondage exploitable.",
+      "ok": true
+    },
+    {
+      "id": "moment-6",
+      "ms": 11533,
+      "frames": 6,
+      "metrics": {
+        "framesSent": 6,
+        "recentContextCount": 0,
+        "contextChars": 148,
+        "lightweight": false,
+        "providerUsd": null,
+        "coldStart": false,
+        "connectMs": 0,
+        "threadReset": true,
+        "threadTurn": 1,
+        "backend": {
+          "kind": "ollama",
+          "model": "gemma3:12b",
+          "host": "127.0.0.1:11434"
+        },
+        "providerTimings": {
+          "totalMs": 11526,
+          "loadMs": 6,
+          "promptEvalMs": 6927,
+          "evalMs": 3933,
+          "promptTokens": 2330,
+          "evalTokens": 132
+        }
+      },
+      "local": "Un homme est assis devant un micro et un écran d'ordinateur affichant une vidéo YouTube. Il porte un casque et semble s'adresser à un public en direct.",
+      "visuel": "Un homme enregistre une vidéo en direct sur YouTube, assis devant un micro et un écran affichant des vidéos.",
+      "codex": "L’intervenant précise que les sondages ne prétendent pas prédire ce qui se passera dans huit mois et affirme que personne ne le sait encore. La transcription de la première proposition est incertaine.",
+      "ok": true
+    }
+  ]
+}

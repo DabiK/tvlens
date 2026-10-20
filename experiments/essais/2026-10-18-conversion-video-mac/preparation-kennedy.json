@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "complete": true,
+  "convertedDurationMs": 65000,
+  "parameters": {
+    "startMs": 0,
+    "durationMs": 65000,
+    "blockMs": 8000,
+    "framesPerBlock": 5,
+    "jpegQuality": 3,
+    "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+    "audio": {
+      "codec": "pcm_s16le",
+      "sampleRate": 16000,
+      "channels": 1,
+      "bitDepth": 16
+    },
+    "sampling": "equidistant-block-start"
+  },
+  "timeOrigin": {
+    "kind": "relative-to-source-interval",
+    "sourceStartMs": 0
+  },
+  "templateSessionId": "video-template-validation-only",
+  "sessionBinding": "required-per-occurrence",
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "cd179d91c4f4fb9714670a522376e1bc3f32a4f59614bba22b4a3b0fa22f4049"
+  },
+  "index": {
+    "path": "blocks.json",
+    "sha256": "60f1c1adcd7b061fe164b129b69dd3c6e240977adde52c00644ded06c0a2c27a"
+  },
+  "source": {
+    "sha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+    "bytes": 92433328,
+    "durationMs": 420000
+  },
+  "conversion": {
+    "tool": "ffmpeg",
+    "version": "9.0.2",
+    "inspectionArguments": [
+      "-nostdin",
+      "-i",
+      "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+      "-map",
+      "0:v:0",
+      "-t",
+      "0",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "sourceInterval": {
+    "startMs": 0,
+    "endMs": 65000
+  },
+  "plannedDurationMs": 65000
+}

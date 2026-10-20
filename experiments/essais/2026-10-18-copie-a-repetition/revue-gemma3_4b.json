@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "manifestSha256": "885631e378829730bb1cbddb47d0cb469651aa4bd3a9ac37bba1da6445cf4230",
+  "annotationsSha256": "12d63e2bfd81dbfd7c36c6dc759cfe13abb932e92ee3067947781abea0c4daae",
+  "reportSha256": "9c4b65423aeaa226d52233fa04c26491c2ece3ca463f3c98295de8edda0a06a0",
+  "runId": "606cad49-4ab5-459a-a4a7-1eb5460c1969",
+  "reviewer": "orchestrateur Claude, répétition T274 du 18/10, pas une revue humaine G2",
+  "cases": [
+    {
+      "id": "video-0",
+      "status": "reviewed",
+      "reason": "Scène juste, sceau mal identifié, identité affirmée.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "partial",
+          "reason": "Pupitre, foule et drapeaux justes ; le sceau est décrit comme « l'insigne de l'Élysée »."
+        },
+        "invention": {
+          "value": "present",
+          "reason": "Insigne de l'Élysée inventé ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "misdescribed",
+          "reason": "Le sceau lisible « President of the United States » devient un insigne français."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Seules les images sont décrites."
+        }
+      }
+    },
+    {
+      "id": "video-1",
+      "status": "reviewed",
+      "reason": "Trois détails inventés sur une scène juste.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "partial",
+          "reason": "Pupitre et stade justes ; il ne tient pas le drapeau et le sceau n'est pas un badge."
+        },
+        "invention": {
+          "value": "present",
+          "reason": "Drapeau tenu, badge porté et banderoles de la foule inventés ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "misdescribed",
+          "reason": "Le sceau du pupitre devient un badge sur sa veste."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Seules les images sont décrites."
+        }
+      }
+    },
+    {
+      "id": "video-2",
+      "status": "reviewed",
+      "reason": "Geste inventé et sceau mal placé.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "partial",
+          "reason": "Foule et drapeau justes ; il ne tient pas le drapeau, le sceau est devant lui."
+        },
+        "invention": {
+          "value": "present",
+          "reason": "Drapeau tenu inventé ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "misdescribed",
+          "reason": "Le sceau, sur le pupitre au premier plan, est placé en arrière-plan."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Seules les images sont décrites."
+        }
+      }
+    },
+    {
+      "id": "video-3",
+      "status": "reviewed",
+      "reason": "Juste, mais identité affirmée et geste attendu absent.",
+      "citations": [],
+      "dimensions": {
+        "accuracy": {
+          "value": "partial",
+          "reason": "Pupitre, sceau, drapeau et foule justes ; le regard baissé vers les notes manque."
+        },
+        "invention": {
+          "value": "present",
+          "reason": "Nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+        },
+        "order": {
+          "value": "na",
+          "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+        },
+        "imageEvidence": {
+          "value": "sufficient",
+          "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+        },
+        "speechEvidence": {
+          "value": "na",
+          "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+        },
+        "description": {
+          "value": "faithful",
+          "reason": "Les éléments décrits sont présents dans les images."
+        },
+        "abstention": {
+          "value": "none",
+          "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+        },
+        "references": {
+          "value": "na",
+          "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+        },
+        "causality": {
+          "value": "valid",
+          "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+        },
+        "provenance": {
+          "value": "valid",
+          "reason": "Seules les images sont décrites."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "manifestSha256": "885631e378829730bb1cbddb47d0cb469651aa4bd3a9ac37bba1da6445cf4230",
+  "cases": [
+    {
+      "id": "video-0",
+      "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il regarde devant lui et parle.",
+      "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+      "citations": []
+    },
+    {
+      "id": "video-1",
+      "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il tourne la tête vers sa droite en parlant.",
+      "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+      "citations": []
+    },
+    {
+      "id": "video-2",
+      "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Le drapeau est plus déployé derrière lui ; il regarde vers la gauche.",
+      "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+      "citations": []
+    },
+    {
+      "id": "video-3",
+      "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il baisse les yeux vers le pupitre, comme pour lire ses notes.",
+      "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+      "citations": []
+    }
+  ]
+}

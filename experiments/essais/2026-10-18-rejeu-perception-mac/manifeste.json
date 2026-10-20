@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "ec55a89c-moment-1",
+      "startMs": 2.521916017881267,
+      "endMs": 2027.8219159999999,
+      "media": {
+        "path": "media/moment-1.json",
+        "sha256": "4d571361c6776386e7dec3415725e91e36d3a39a16e96559e805ac5ee0786acd"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+        "passageId": "moment-1"
+      },
+      "transcript": {
+        "text": "Et bien, nous n'avions pas de sondage, nous en avons...",
+        "availability": "unknown",
+        "limits": "Texte final de l'archive : sa disponibilité au départ de la vision n'est pas conservée.",
+        "provenance": {
+          "kind": "archive-observation",
+          "reference": "session.json de ec55a89c-ca7f-4ca0-af77-eb2b6b313495, moment-1, observation.transcript"
+        }
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "saved-metrics"
+      }
+    },
+    {
+      "id": "ec55a89c-moment-2",
+      "startMs": 2031.5219160178813,
+      "endMs": 10049.721916005961,
+      "media": {
+        "path": "media/moment-2.json",
+        "sha256": "99705a6ec8addf0ca3373a5139ec2c0e7e8d7ac931f01447094e2e865ac3f93a"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+        "passageId": "moment-2"
+      },
+      "transcript": {
+        "text": "un désormais. Il a été publié lundi dernier par Touluna et Harris Interactive pour M6RTL. je vous montrerai",
+        "availability": "unknown",
+        "limits": "Texte final de l'archive : sa disponibilité au départ de la vision n'est pas conservée.",
+        "provenance": {
+          "kind": "archive-observation",
+          "reference": "session.json de ec55a89c-ca7f-4ca0-af77-eb2b6b313495, moment-2, observation.transcript"
+        }
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "saved-metrics"
+      }
+    },
+    {
+      "id": "ec55a89c-moment-3",
+      "startMs": 10050.221916005961,
+      "endMs": 18068.921916023843,
+      "media": {
+        "path": "media/moment-3.json",
+        "sha256": "2a05d0669f6b3eec8bf88cc24ed8bf71cdc5e86810294da9371cc73435304dc5"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+        "passageId": "moment-3"
+      },
+      "transcript": {
+        "text": "les résultats. Alors, je ne me relance pas. Vous me le pardonnerai. Je ne me relance pas dans une",
+        "availability": "unknown",
+        "limits": "Texte final de l'archive : sa disponibilité au départ de la vision n'est pas conservée.",
+        "provenance": {
+          "kind": "archive-observation",
+          "reference": "session.json de ec55a89c-ca7f-4ca0-af77-eb2b6b313495, moment-3, observation.transcript"
+        }
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "saved-metrics"
+      }
+    },
+    {
+      "id": "ec55a89c-moment-4",
+      "startMs": 18069.22191600596,
+      "endMs": 26088.821916,
+      "media": {
+        "path": "media/moment-4.json",
+        "sha256": "66aa1a087220003acc928ce23e419f3eb642dbbc11abfbddacce65c9c6a3cf8e"
+      },
+      "provenance": {
+        "kind": "tvlens-capture",
+        "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+        "passageId": "moment-4"
+      },
+      "transcript": {
+        "text": "qu'on s'est consistant à savoir est-ce que les sondages d'intention de votes sont fiables ou pas? C'est des discussions absolument interminables et je n'arrive pas.",
+        "availability": "unknown",
+        "limits": "Texte final de l'archive : sa disponibilité au départ de la vision n'est pas conservée.",
+        "provenance": {
+          "kind": "archive-observation",
+          "reference": "session.json de ec55a89c-ca7f-4ca0-af77-eb2b6b313495, moment-4, observation.transcript"
+        }
+      },
+      "context": {
+        "value": null,
+        "limits": "Contexte de départ non conservé ; aucun recalcul depuis l'archive."
+      },
+      "lightweight": {
+        "value": false,
+        "source": "saved-metrics"
+      }
+    }
+  ]
+}

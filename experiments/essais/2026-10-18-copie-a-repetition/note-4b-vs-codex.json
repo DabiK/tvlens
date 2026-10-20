@@ -1,0 +1,2784 @@
+{
+  "version": 1,
+  "reference": {
+    "version": 1,
+    "execution": {
+      "complete": true,
+      "backend": "codex",
+      "code": {
+        "sha": "318c711609db5fd5f116bd63e9d9287f670d089c",
+        "dirty": true,
+        "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sources": {
+          "scripts/replay-local-perception.cjs": "c6ce9fda37336d5abf73af2347e91624daf7f3958dfe9e63469e8cad02e617eb",
+          "scripts/perception-replay-input.cjs": "7834fe75a85c25f1aa34831000094006f12d2fa7c9511cbc871aa3fc27ac2c43",
+          "scripts/perception-replay-context.cjs": "76902792b4f7be2a9316f75ff82b4d9ef359423b06f044791341c8e774470489",
+          "scripts/perception-replay-execution.cjs": "0ee8841e671e23cc4acacd252dcf4c36c3c5921a514588001af74581adba5f61",
+          "scripts/perception-replay-cli.cjs": "32e9854bbc4acbbd5b0244e9f08cadf994262828655fe66139be13cc9ca91eff",
+          "scripts/perception-replay-identity.cjs": "f399624e07b111d7d54909649b04c2f11cb0b26ff957667e481bfd5ffcd5659f",
+          "runtime/session-providers.cjs": "900c1911d4a569c9564ad785891118efdce62d8eb0f01df40ced88bc07923594",
+          "adapters/codex-perception.cjs": "4e8e993d01fb2f810361c0abd4788e7aee4a91cc501942e1a3d25cf4900cce4c",
+          "adapters/local-vlm-agent.cjs": "da80d49ea5a817f1c1516a9ec47714f8fef48891e81890262f195d306b469287"
+        }
+      },
+      "config": {
+        "model": "gpt-6-luna",
+        "isolation": "new-agent-per-case",
+        "transcription": "frozen-no-whisper"
+      }
+    },
+    "identity": {
+      "manifestSha256": "885631e378829730bb1cbddb47d0cb469651aa4bd3a9ac37bba1da6445cf4230",
+      "annotationsSha256": "12d63e2bfd81dbfd7c36c6dc759cfe13abb932e92ee3067947781abea0c4daae",
+      "reportSha256": "f592fbe198c2f581260f055a2b5e97c8c2f7080ec268074e2dccccfeee1335f7",
+      "reviewSha256": "e1a1483f91b6b15a9b1659550e7c53211789cc73b1254582084862234b7eeb04",
+      "runId": "7767fb4a-a7fe-40e8-bd67-5af90077e867"
+    },
+    "cases": [
+      {
+        "id": "video-0",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-0",
+          "status": "reviewed",
+          "reason": "Conforme à l'attendu.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "correct",
+              "reason": "Orateur au pupitre, sceau présidentiel, drapeau à gauche, foule et personnalités."
+            },
+            "invention": {
+              "value": "absent",
+              "reason": "Aucune identité affirmée : l'incertitude dit qu'elle n'est pas établie."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "faithful",
+              "reason": "Description conforme aux images envoyées."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "L'absence de paroles est déclarée ; rien n'est attribué au son."
+            }
+          }
+        },
+        "input": {
+          "startMs": 0,
+          "endMs": 8000,
+          "media": {
+            "path": "blocks/000000/media.json",
+            "sha256": "a0780ce691382cece887dd25029c5eeb450d65762641d09a1a55762199835aa9"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 65000,
+              "endMs": 73000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "65",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "66.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "68.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "69.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "71.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "65",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 0,
+              "sha256": "88feb8e2bf03c07cd5a1d0708fdfb64c4fe33d28bf9d867e6817af34d63307a0"
+            },
+            {
+              "index": 1,
+              "atMs": 1600,
+              "sha256": "e2f79f9273b2bbbae1a177540bdcd4a73f86ad14503a559bfea58c14bca76ae0"
+            },
+            {
+              "index": 2,
+              "atMs": 3200,
+              "sha256": "b15ef94cb5314dbde1c69d2c3b074fa8ee78b8b33cf637d64d8f6621d2796f26"
+            },
+            {
+              "index": 3,
+              "atMs": 4800,
+              "sha256": "c637fc043031f8e4668c0f1cad309fddd8d2cfdd1cd68396b38e594085ec848c"
+            },
+            {
+              "index": 4,
+              "atMs": 6400,
+              "sha256": "2a48938d89c3eade963f8b479c510630147c00ab4fd1cfe8569bbc1be9218649"
+            }
+          ],
+          "audioSha256": "777e8d121df0526d92f0f81e1c3e4ea1f28e034241e644e95ccee606540a22d7"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-0",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il regarde devant lui et parle.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 0,
+              "sha256": "88feb8e2bf03c07cd5a1d0708fdfb64c4fe33d28bf9d867e6817af34d63307a0"
+            },
+            {
+              "index": 1,
+              "atMs": 1600,
+              "sha256": "e2f79f9273b2bbbae1a177540bdcd4a73f86ad14503a559bfea58c14bca76ae0"
+            },
+            {
+              "index": 2,
+              "atMs": 3200,
+              "sha256": "b15ef94cb5314dbde1c69d2c3b074fa8ee78b8b33cf637d64d8f6621d2796f26"
+            },
+            {
+              "index": 3,
+              "atMs": 4800,
+              "sha256": "c637fc043031f8e4668c0f1cad309fddd8d2cfdd1cd68396b38e594085ec848c"
+            },
+            {
+              "index": 4,
+              "atMs": 6400,
+              "sha256": "2a48938d89c3eade963f8b479c510630147c00ab4fd1cfe8569bbc1be9218649"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": true
+      },
+      {
+        "id": "video-1",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-1",
+          "status": "reviewed",
+          "reason": "Conforme ; le regard tourné n'est pas relevé.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "correct",
+              "reason": "Pupitre présidentiel, stade, drapeau et foule."
+            },
+            "invention": {
+              "value": "absent",
+              "reason": "Identité non affirmée ; rien d'ajouté."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "faithful",
+              "reason": "Conforme aux images."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Absence de paroles déclarée."
+            }
+          }
+        },
+        "input": {
+          "startMs": 8000,
+          "endMs": 16000,
+          "media": {
+            "path": "blocks/000001/media.json",
+            "sha256": "4ff43c076e0272c7cad15062a097ce85b1e5e7c223119e7448d8efe62259c0d8"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 73000,
+              "endMs": 81000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "73",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "74.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "76.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "77.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "79.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "73",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 8000,
+              "sha256": "4dd4bbc031e1469e986c1f22cb12db08b9e26d788c9b473013a0439709a70a47"
+            },
+            {
+              "index": 1,
+              "atMs": 9600,
+              "sha256": "420854b25245de6e9d2c408afd573f2b252fb86472c7f28c471e9db1ddde1499"
+            },
+            {
+              "index": 2,
+              "atMs": 11200,
+              "sha256": "d8c17aba4756d78aeda87d5573601766f3ba4d38927dd54781b437ac1b3cb104"
+            },
+            {
+              "index": 3,
+              "atMs": 12800,
+              "sha256": "36759269484f9ec8b304eac09533b450b186b5a639083e905212f164d0f1b2d5"
+            },
+            {
+              "index": 4,
+              "atMs": 14400,
+              "sha256": "16b42fd21ab4b70a5c95c24f7dce4ef9d73a83aa1a3c9199b3cd9b9f6d746714"
+            }
+          ],
+          "audioSha256": "6e46c273edc5de35e19d93a9fb346d95088b3b5f62217145bf3cb4b4822f9485"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-1",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il tourne la tête vers sa droite en parlant.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 8000,
+              "sha256": "4dd4bbc031e1469e986c1f22cb12db08b9e26d788c9b473013a0439709a70a47"
+            },
+            {
+              "index": 1,
+              "atMs": 9600,
+              "sha256": "420854b25245de6e9d2c408afd573f2b252fb86472c7f28c471e9db1ddde1499"
+            },
+            {
+              "index": 2,
+              "atMs": 11200,
+              "sha256": "d8c17aba4756d78aeda87d5573601766f3ba4d38927dd54781b437ac1b3cb104"
+            },
+            {
+              "index": 3,
+              "atMs": 12800,
+              "sha256": "36759269484f9ec8b304eac09533b450b186b5a639083e905212f164d0f1b2d5"
+            },
+            {
+              "index": 4,
+              "atMs": 14400,
+              "sha256": "16b42fd21ab4b70a5c95c24f7dce4ef9d73a83aa1a3c9199b3cd9b9f6d746714"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": true
+      },
+      {
+        "id": "video-2",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-2",
+          "status": "reviewed",
+          "reason": "Conforme, avec un détail juste en plus.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "correct",
+              "reason": "Drapeau déployé derrière l'orateur, foule ; détail vérifiable de l'homme au tissu blanc."
+            },
+            "invention": {
+              "value": "absent",
+              "reason": "Le tissu blanc est visible à droite des images ; aucune identité affirmée."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "faithful",
+              "reason": "Conforme aux images."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Absence de paroles déclarée."
+            }
+          }
+        },
+        "input": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "media": {
+            "path": "blocks/000002/media.json",
+            "sha256": "ac4c60de467182cb997187a37bf09b0cb3b4d39312b7e2091c4e1b2a99c6bad0"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 81000,
+              "endMs": 89000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "81",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "82.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "84.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "85.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "87.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "81",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 16000,
+              "sha256": "99fc329bd9846d785b824e1b2cbf5a7db48d9f3015f8264c8fff3a13fea01d50"
+            },
+            {
+              "index": 1,
+              "atMs": 17600,
+              "sha256": "abf0293422dd13e6ef1be668906c2381e8b73ee906a49304163ae3d41c77d97b"
+            },
+            {
+              "index": 2,
+              "atMs": 19200,
+              "sha256": "999ad81e474d1b72e13ad3bab78f29fd0ef7b8394f8b9af2a42f931c648758f2"
+            },
+            {
+              "index": 3,
+              "atMs": 20800,
+              "sha256": "88713e71bf289dbab0fd578910b58242ba1550f0494f7ab5778936af9c02cc85"
+            },
+            {
+              "index": 4,
+              "atMs": 22400,
+              "sha256": "a8c4c2cadf832c754c4f8279838fc942895fc62e4b25de5e4c6df9916a112fc0"
+            }
+          ],
+          "audioSha256": "f295e9163aa5c0a179d03f56c05b1daeabb3bf798099b27ad087fc5a6a077b0f"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-2",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Le drapeau est plus déployé derrière lui ; il regarde vers la gauche.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 16000,
+              "sha256": "99fc329bd9846d785b824e1b2cbf5a7db48d9f3015f8264c8fff3a13fea01d50"
+            },
+            {
+              "index": 1,
+              "atMs": 17600,
+              "sha256": "abf0293422dd13e6ef1be668906c2381e8b73ee906a49304163ae3d41c77d97b"
+            },
+            {
+              "index": 2,
+              "atMs": 19200,
+              "sha256": "999ad81e474d1b72e13ad3bab78f29fd0ef7b8394f8b9af2a42f931c648758f2"
+            },
+            {
+              "index": 3,
+              "atMs": 20800,
+              "sha256": "88713e71bf289dbab0fd578910b58242ba1550f0494f7ab5778936af9c02cc85"
+            },
+            {
+              "index": 4,
+              "atMs": 22400,
+              "sha256": "a8c4c2cadf832c754c4f8279838fc942895fc62e4b25de5e4c6df9916a112fc0"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": true
+      },
+      {
+        "id": "video-3",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-3",
+          "status": "reviewed",
+          "reason": "Conforme à l'attendu, geste compris.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "correct",
+              "reason": "Il baisse la tête puis se redresse : le geste attendu vers les notes est relevé."
+            },
+            "invention": {
+              "value": "absent",
+              "reason": "Aucune identité ni action ajoutée."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "faithful",
+              "reason": "Conforme aux images."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Absence de paroles déclarée."
+            }
+          }
+        },
+        "input": {
+          "startMs": 24000,
+          "endMs": 32000,
+          "media": {
+            "path": "blocks/000003/media.json",
+            "sha256": "d5f8ac562f17f95edb78ae5f1ce667d39aff45a50b8f994ab88cd56e33675c57"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 89000,
+              "endMs": 97000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "89",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "90.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "92.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "93.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "95.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "89",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 24000,
+              "sha256": "8c85579705bb7546507ca3a5c6cbf25d7a9e612ada3b818e2f318a5fee565397"
+            },
+            {
+              "index": 1,
+              "atMs": 25600,
+              "sha256": "193b5d7fb9284c314ff7c956d766539e8b1b35ae028085e3f948a1902a69e8d4"
+            },
+            {
+              "index": 2,
+              "atMs": 27200,
+              "sha256": "8858df971cf3db0c347b2e5863593800fd86cbd61514b7c0281acced846913b4"
+            },
+            {
+              "index": 3,
+              "atMs": 28800,
+              "sha256": "cdca25356e900a8888b3bab9bcae7d9e431fb2c42795a43b561d96588040ad06"
+            },
+            {
+              "index": 4,
+              "atMs": 30400,
+              "sha256": "9c4810330098309410b2a0ea794d5bd53b751d06dcd39ed81e926de285a2709d"
+            }
+          ],
+          "audioSha256": "e7610d08da5726e8f87938256232074b645f57e0f3a95d73d96fc30d926b0e8e"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-3",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il baisse les yeux vers le pupitre, comme pour lire ses notes.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 24000,
+              "sha256": "8c85579705bb7546507ca3a5c6cbf25d7a9e612ada3b818e2f318a5fee565397"
+            },
+            {
+              "index": 1,
+              "atMs": 25600,
+              "sha256": "193b5d7fb9284c314ff7c956d766539e8b1b35ae028085e3f948a1902a69e8d4"
+            },
+            {
+              "index": 2,
+              "atMs": 27200,
+              "sha256": "8858df971cf3db0c347b2e5863593800fd86cbd61514b7c0281acced846913b4"
+            },
+            {
+              "index": 3,
+              "atMs": 28800,
+              "sha256": "cdca25356e900a8888b3bab9bcae7d9e431fb2c42795a43b561d96588040ad06"
+            },
+            {
+              "index": 4,
+              "atMs": 30400,
+              "sha256": "9c4810330098309410b2a0ea794d5bd53b751d06dcd39ed81e926de285a2709d"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": true
+      }
+    ],
+    "totals": {
+      "cases": 4,
+      "reviewed": 4,
+      "notEvaluated": 0,
+      "successes": 4,
+      "successDenominator": 4,
+      "justifiedAbstentions": 0
+    },
+    "dimensions": {
+      "accuracy": {
+        "counts": {
+          "correct": 4,
+          "partial": 0,
+          "incorrect": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "invention": {
+        "counts": {
+          "absent": 4,
+          "present": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "order": {
+        "counts": {
+          "correct": 0,
+          "incorrect": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "imageEvidence": {
+        "counts": {
+          "sufficient": 4,
+          "insufficient": 0,
+          "unknown": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "speechEvidence": {
+        "counts": {
+          "sufficient": 0,
+          "insufficient": 0,
+          "unknown": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "description": {
+        "counts": {
+          "faithful": 4,
+          "misdescribed": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "abstention": {
+        "counts": {
+          "none": 4,
+          "justified": 0,
+          "unjustified": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "references": {
+        "counts": {
+          "correct": 0,
+          "incorrect": 0,
+          "missing": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "causality": {
+        "counts": {
+          "valid": 4,
+          "violation": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "provenance": {
+        "counts": {
+          "valid": 4,
+          "violation": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      }
+    }
+  },
+  "candidate": {
+    "version": 1,
+    "execution": {
+      "complete": true,
+      "backend": "local",
+      "code": {
+        "sha": "318c711609db5fd5f116bd63e9d9287f670d089c",
+        "dirty": true,
+        "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sources": {
+          "scripts/replay-local-perception.cjs": "c6ce9fda37336d5abf73af2347e91624daf7f3958dfe9e63469e8cad02e617eb",
+          "scripts/perception-replay-input.cjs": "7834fe75a85c25f1aa34831000094006f12d2fa7c9511cbc871aa3fc27ac2c43",
+          "scripts/perception-replay-context.cjs": "76902792b4f7be2a9316f75ff82b4d9ef359423b06f044791341c8e774470489",
+          "scripts/perception-replay-execution.cjs": "0ee8841e671e23cc4acacd252dcf4c36c3c5921a514588001af74581adba5f61",
+          "scripts/perception-replay-cli.cjs": "32e9854bbc4acbbd5b0244e9f08cadf994262828655fe66139be13cc9ca91eff",
+          "scripts/perception-replay-identity.cjs": "f399624e07b111d7d54909649b04c2f11cb0b26ff957667e481bfd5ffcd5659f",
+          "runtime/session-providers.cjs": "900c1911d4a569c9564ad785891118efdce62d8eb0f01df40ced88bc07923594",
+          "adapters/codex-perception.cjs": "4e8e993d01fb2f810361c0abd4788e7aee4a91cc501942e1a3d25cf4900cce4c",
+          "adapters/local-vlm-agent.cjs": "da80d49ea5a817f1c1516a9ec47714f8fef48891e81890262f195d306b469287"
+        }
+      },
+      "config": {
+        "model": "gemma3:4b",
+        "isolation": "new-agent-per-case",
+        "transcription": "frozen-no-whisper",
+        "host": "127.0.0.1:11434",
+        "numCtx": 8192,
+        "keepAlive": "1m"
+      }
+    },
+    "identity": {
+      "manifestSha256": "885631e378829730bb1cbddb47d0cb469651aa4bd3a9ac37bba1da6445cf4230",
+      "annotationsSha256": "12d63e2bfd81dbfd7c36c6dc759cfe13abb932e92ee3067947781abea0c4daae",
+      "reportSha256": "9c4b65423aeaa226d52233fa04c26491c2ece3ca463f3c98295de8edda0a06a0",
+      "reviewSha256": "9ff7bf3f377784e714ad19cf556fcdeaa5da4b433ac0abade36f2a3609404aec",
+      "runId": "606cad49-4ab5-459a-a4a7-1eb5460c1969"
+    },
+    "cases": [
+      {
+        "id": "video-0",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-0",
+          "status": "reviewed",
+          "reason": "Scène juste, sceau mal identifié, identité affirmée.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "partial",
+              "reason": "Pupitre, foule et drapeaux justes ; le sceau est décrit comme « l'insigne de l'Élysée »."
+            },
+            "invention": {
+              "value": "present",
+              "reason": "Insigne de l'Élysée inventé ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "misdescribed",
+              "reason": "Le sceau lisible « President of the United States » devient un insigne français."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Seules les images sont décrites."
+            }
+          }
+        },
+        "input": {
+          "startMs": 0,
+          "endMs": 8000,
+          "media": {
+            "path": "blocks/000000/media.json",
+            "sha256": "a0780ce691382cece887dd25029c5eeb450d65762641d09a1a55762199835aa9"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 65000,
+              "endMs": 73000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "65",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "66.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "68.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "69.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "71.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "65",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-s2VSOh/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 0,
+              "sha256": "88feb8e2bf03c07cd5a1d0708fdfb64c4fe33d28bf9d867e6817af34d63307a0"
+            },
+            {
+              "index": 1,
+              "atMs": 1600,
+              "sha256": "e2f79f9273b2bbbae1a177540bdcd4a73f86ad14503a559bfea58c14bca76ae0"
+            },
+            {
+              "index": 2,
+              "atMs": 3200,
+              "sha256": "b15ef94cb5314dbde1c69d2c3b074fa8ee78b8b33cf637d64d8f6621d2796f26"
+            },
+            {
+              "index": 3,
+              "atMs": 4800,
+              "sha256": "c637fc043031f8e4668c0f1cad309fddd8d2cfdd1cd68396b38e594085ec848c"
+            },
+            {
+              "index": 4,
+              "atMs": 6400,
+              "sha256": "2a48938d89c3eade963f8b479c510630147c00ab4fd1cfe8569bbc1be9218649"
+            }
+          ],
+          "audioSha256": "777e8d121df0526d92f0f81e1c3e4ea1f28e034241e644e95ccee606540a22d7"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-0",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il regarde devant lui et parle.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 0,
+              "sha256": "88feb8e2bf03c07cd5a1d0708fdfb64c4fe33d28bf9d867e6817af34d63307a0"
+            },
+            {
+              "index": 1,
+              "atMs": 1600,
+              "sha256": "e2f79f9273b2bbbae1a177540bdcd4a73f86ad14503a559bfea58c14bca76ae0"
+            },
+            {
+              "index": 2,
+              "atMs": 3200,
+              "sha256": "b15ef94cb5314dbde1c69d2c3b074fa8ee78b8b33cf637d64d8f6621d2796f26"
+            },
+            {
+              "index": 3,
+              "atMs": 4800,
+              "sha256": "c637fc043031f8e4668c0f1cad309fddd8d2cfdd1cd68396b38e594085ec848c"
+            },
+            {
+              "index": 4,
+              "atMs": 6400,
+              "sha256": "2a48938d89c3eade963f8b479c510630147c00ab4fd1cfe8569bbc1be9218649"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": false
+      },
+      {
+        "id": "video-1",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-1",
+          "status": "reviewed",
+          "reason": "Trois détails inventés sur une scène juste.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "partial",
+              "reason": "Pupitre et stade justes ; il ne tient pas le drapeau et le sceau n'est pas un badge."
+            },
+            "invention": {
+              "value": "present",
+              "reason": "Drapeau tenu, badge porté et banderoles de la foule inventés ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "misdescribed",
+              "reason": "Le sceau du pupitre devient un badge sur sa veste."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Seules les images sont décrites."
+            }
+          }
+        },
+        "input": {
+          "startMs": 8000,
+          "endMs": 16000,
+          "media": {
+            "path": "blocks/000001/media.json",
+            "sha256": "4ff43c076e0272c7cad15062a097ce85b1e5e7c223119e7448d8efe62259c0d8"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 73000,
+              "endMs": 81000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "73",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "74.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "76.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "77.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "79.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "73",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-AitwnI/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 8000,
+              "sha256": "4dd4bbc031e1469e986c1f22cb12db08b9e26d788c9b473013a0439709a70a47"
+            },
+            {
+              "index": 1,
+              "atMs": 9600,
+              "sha256": "420854b25245de6e9d2c408afd573f2b252fb86472c7f28c471e9db1ddde1499"
+            },
+            {
+              "index": 2,
+              "atMs": 11200,
+              "sha256": "d8c17aba4756d78aeda87d5573601766f3ba4d38927dd54781b437ac1b3cb104"
+            },
+            {
+              "index": 3,
+              "atMs": 12800,
+              "sha256": "36759269484f9ec8b304eac09533b450b186b5a639083e905212f164d0f1b2d5"
+            },
+            {
+              "index": 4,
+              "atMs": 14400,
+              "sha256": "16b42fd21ab4b70a5c95c24f7dce4ef9d73a83aa1a3c9199b3cd9b9f6d746714"
+            }
+          ],
+          "audioSha256": "6e46c273edc5de35e19d93a9fb346d95088b3b5f62217145bf3cb4b4822f9485"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-1",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il tourne la tête vers sa droite en parlant.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 8000,
+              "sha256": "4dd4bbc031e1469e986c1f22cb12db08b9e26d788c9b473013a0439709a70a47"
+            },
+            {
+              "index": 1,
+              "atMs": 9600,
+              "sha256": "420854b25245de6e9d2c408afd573f2b252fb86472c7f28c471e9db1ddde1499"
+            },
+            {
+              "index": 2,
+              "atMs": 11200,
+              "sha256": "d8c17aba4756d78aeda87d5573601766f3ba4d38927dd54781b437ac1b3cb104"
+            },
+            {
+              "index": 3,
+              "atMs": 12800,
+              "sha256": "36759269484f9ec8b304eac09533b450b186b5a639083e905212f164d0f1b2d5"
+            },
+            {
+              "index": 4,
+              "atMs": 14400,
+              "sha256": "16b42fd21ab4b70a5c95c24f7dce4ef9d73a83aa1a3c9199b3cd9b9f6d746714"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": false
+      },
+      {
+        "id": "video-2",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-2",
+          "status": "reviewed",
+          "reason": "Geste inventé et sceau mal placé.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "partial",
+              "reason": "Foule et drapeau justes ; il ne tient pas le drapeau, le sceau est devant lui."
+            },
+            "invention": {
+              "value": "present",
+              "reason": "Drapeau tenu inventé ; nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "misdescribed",
+              "reason": "Le sceau, sur le pupitre au premier plan, est placé en arrière-plan."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Seules les images sont décrites."
+            }
+          }
+        },
+        "input": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "media": {
+            "path": "blocks/000002/media.json",
+            "sha256": "ac4c60de467182cb997187a37bf09b0cb3b4d39312b7e2091c4e1b2a99c6bad0"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 81000,
+              "endMs": 89000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "81",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "82.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "84.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "85.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "87.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "81",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-2xqxMA/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 16000,
+              "sha256": "99fc329bd9846d785b824e1b2cbf5a7db48d9f3015f8264c8fff3a13fea01d50"
+            },
+            {
+              "index": 1,
+              "atMs": 17600,
+              "sha256": "abf0293422dd13e6ef1be668906c2381e8b73ee906a49304163ae3d41c77d97b"
+            },
+            {
+              "index": 2,
+              "atMs": 19200,
+              "sha256": "999ad81e474d1b72e13ad3bab78f29fd0ef7b8394f8b9af2a42f931c648758f2"
+            },
+            {
+              "index": 3,
+              "atMs": 20800,
+              "sha256": "88713e71bf289dbab0fd578910b58242ba1550f0494f7ab5778936af9c02cc85"
+            },
+            {
+              "index": 4,
+              "atMs": 22400,
+              "sha256": "a8c4c2cadf832c754c4f8279838fc942895fc62e4b25de5e4c6df9916a112fc0"
+            }
+          ],
+          "audioSha256": "f295e9163aa5c0a179d03f56c05b1daeabb3bf798099b27ad087fc5a6a077b0f"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-2",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Le drapeau est plus déployé derrière lui ; il regarde vers la gauche.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 16000,
+              "sha256": "99fc329bd9846d785b824e1b2cbf5a7db48d9f3015f8264c8fff3a13fea01d50"
+            },
+            {
+              "index": 1,
+              "atMs": 17600,
+              "sha256": "abf0293422dd13e6ef1be668906c2381e8b73ee906a49304163ae3d41c77d97b"
+            },
+            {
+              "index": 2,
+              "atMs": 19200,
+              "sha256": "999ad81e474d1b72e13ad3bab78f29fd0ef7b8394f8b9af2a42f931c648758f2"
+            },
+            {
+              "index": 3,
+              "atMs": 20800,
+              "sha256": "88713e71bf289dbab0fd578910b58242ba1550f0494f7ab5778936af9c02cc85"
+            },
+            {
+              "index": 4,
+              "atMs": 22400,
+              "sha256": "a8c4c2cadf832c754c4f8279838fc942895fc62e4b25de5e4c6df9916a112fc0"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": false
+      },
+      {
+        "id": "video-3",
+        "status": "succeeded",
+        "error": null,
+        "review": {
+          "id": "video-3",
+          "status": "reviewed",
+          "reason": "Juste, mais identité affirmée et geste attendu absent.",
+          "citations": [],
+          "dimensions": {
+            "accuracy": {
+              "value": "partial",
+              "reason": "Pupitre, sceau, drapeau et foule justes ; le regard baissé vers les notes manque."
+            },
+            "invention": {
+              "value": "present",
+              "reason": "Nomme Kennedy sans preuve dans les images (le sceau prouve la fonction, pas l'identité), incertitude « Aucune »."
+            },
+            "order": {
+              "value": "na",
+              "reason": "Bloc d'une seule scène continue, sans événements successifs à ordonner."
+            },
+            "imageEvidence": {
+              "value": "sufficient",
+              "reason": "Cinq images nettes du pupitre, du sceau, du drapeau et de la foule."
+            },
+            "speechEvidence": {
+              "value": "na",
+              "reason": "Aucune parole transmise : le rejeu d'une vidéo convertie envoie un transcript vide."
+            },
+            "description": {
+              "value": "faithful",
+              "reason": "Les éléments décrits sont présents dans les images."
+            },
+            "abstention": {
+              "value": "none",
+              "reason": "La réponse décrit la scène sans s'abstenir, ce que les images permettent."
+            },
+            "references": {
+              "value": "na",
+              "reason": "Le rejeu de routine ne produit pas de référence explicite ; aucune n'est attendue."
+            },
+            "causality": {
+              "value": "valid",
+              "reason": "Aucun contenu postérieur au bloc ; contexte vide déclaré."
+            },
+            "provenance": {
+              "value": "valid",
+              "reason": "Seules les images sont décrites."
+            }
+          }
+        },
+        "input": {
+          "startMs": 24000,
+          "endMs": 32000,
+          "media": {
+            "path": "blocks/000003/media.json",
+            "sha256": "d5f8ac562f17f95edb78ae5f1ce667d39aff45a50b8f994ab88cd56e33675c57"
+          },
+          "provenance": {
+            "kind": "converted-video",
+            "sourceSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+            "sourceInterval": {
+              "startMs": 89000,
+              "endMs": 97000
+            },
+            "conversion": {
+              "tool": "ffmpeg",
+              "version": "9.0.2",
+              "arguments": [
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "89",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-0.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "90.6",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-1.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "92.2",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-2.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "93.8",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-3.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "95.4",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "-q:v",
+                "3",
+                "-an",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/frame-4.jpg",
+                "-nostdin",
+                "-v",
+                "error",
+                "-xerror",
+                "-ss",
+                "89",
+                "-i",
+                "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+                "-map",
+                "0:a:0",
+                "-t",
+                "8",
+                "-vn",
+                "-c:a",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t274/kennedy-b/.work-JkhaPD/audio.wav"
+              ],
+              "parameters": {
+                "startMs": 65000,
+                "durationMs": 32000,
+                "blockMs": 8000,
+                "framesPerBlock": 5,
+                "jpegQuality": 3,
+                "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+                "audio": {
+                  "codec": "pcm_s16le",
+                  "sampleRate": 16000,
+                  "channels": 1,
+                  "bitDepth": 16
+                },
+                "sampling": "equidistant-block-start"
+              }
+            }
+          },
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          },
+          "context": {
+            "value": null,
+            "limits": "Aucun contexte historique fourni ni reconstruit."
+          },
+          "lightweight": {
+            "value": false,
+            "source": "explicit-default"
+          },
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 24000,
+              "sha256": "8c85579705bb7546507ca3a5c6cbf25d7a9e612ada3b818e2f318a5fee565397"
+            },
+            {
+              "index": 1,
+              "atMs": 25600,
+              "sha256": "193b5d7fb9284c314ff7c956d766539e8b1b35ae028085e3f948a1902a69e8d4"
+            },
+            {
+              "index": 2,
+              "atMs": 27200,
+              "sha256": "8858df971cf3db0c347b2e5863593800fd86cbd61514b7c0281acced846913b4"
+            },
+            {
+              "index": 3,
+              "atMs": 28800,
+              "sha256": "cdca25356e900a8888b3bab9bcae7d9e431fb2c42795a43b561d96588040ad06"
+            },
+            {
+              "index": 4,
+              "atMs": 30400,
+              "sha256": "9c4810330098309410b2a0ea794d5bd53b751d06dcd39ed81e926de285a2709d"
+            }
+          ],
+          "audioSha256": "e7610d08da5726e8f87938256232074b645f57e0f3a95d73d96fc30d926b0e8e"
+        },
+        "citationChecks": [],
+        "expected": {
+          "id": "video-3",
+          "expected": "Images seules (aucune parole transmise par le rejeu d'une vidéo convertie) : un homme en costume sombre parle derrière un pupitre portant le sceau lisible « President of the United States », micros devant lui, drapeau américain à gauche, personnalités assises derrière lui (un officier en casquette, un homme à lunettes noires à droite), foule d'un stade en fond. Il baisse les yeux vers le pupitre, comme pour lire ses notes.",
+          "reason": "Attendu rédigé par l'orchestrateur (Claude) le 18/10 depuis les images du bloc, avant toute inférence sur ce manifeste ; répétition de la chaîne, ne vaut pas annotation humaine G2. Nommer Kennedy relève de la reconnaissance : le sceau prouve la fonction, pas l'identité. Aucune parole ne peut être affirmée, le transcript est vide.",
+          "citations": []
+        },
+        "received": {
+          "frames": [
+            {
+              "index": 0,
+              "atMs": 24000,
+              "sha256": "8c85579705bb7546507ca3a5c6cbf25d7a9e612ada3b818e2f318a5fee565397"
+            },
+            {
+              "index": 1,
+              "atMs": 25600,
+              "sha256": "193b5d7fb9284c314ff7c956d766539e8b1b35ae028085e3f948a1902a69e8d4"
+            },
+            {
+              "index": 2,
+              "atMs": 27200,
+              "sha256": "8858df971cf3db0c347b2e5863593800fd86cbd61514b7c0281acced846913b4"
+            },
+            {
+              "index": 3,
+              "atMs": 28800,
+              "sha256": "cdca25356e900a8888b3bab9bcae7d9e431fb2c42795a43b561d96588040ad06"
+            },
+            {
+              "index": 4,
+              "atMs": 30400,
+              "sha256": "9c4810330098309410b2a0ea794d5bd53b751d06dcd39ed81e926de285a2709d"
+            }
+          ],
+          "transcript": {
+            "text": "",
+            "availability": "unknown",
+            "limits": "Aucune transcription effectuée ; paroles inconnues."
+          }
+        },
+        "evaluation": "evaluated",
+        "success": false
+      }
+    ],
+    "totals": {
+      "cases": 4,
+      "reviewed": 4,
+      "notEvaluated": 0,
+      "successes": 0,
+      "successDenominator": 4,
+      "justifiedAbstentions": 0
+    },
+    "dimensions": {
+      "accuracy": {
+        "counts": {
+          "correct": 0,
+          "partial": 4,
+          "incorrect": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "invention": {
+        "counts": {
+          "absent": 0,
+          "present": 4,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "order": {
+        "counts": {
+          "correct": 0,
+          "incorrect": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "imageEvidence": {
+        "counts": {
+          "sufficient": 4,
+          "insufficient": 0,
+          "unknown": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "speechEvidence": {
+        "counts": {
+          "sufficient": 0,
+          "insufficient": 0,
+          "unknown": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "description": {
+        "counts": {
+          "faithful": 1,
+          "misdescribed": 3,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "abstention": {
+        "counts": {
+          "none": 4,
+          "justified": 0,
+          "unjustified": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "references": {
+        "counts": {
+          "correct": 0,
+          "incorrect": 0,
+          "missing": 0,
+          "na": 4
+        },
+        "denominator": 0,
+        "notApplicable": 4
+      },
+      "causality": {
+        "counts": {
+          "valid": 4,
+          "violation": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      },
+      "provenance": {
+        "counts": {
+          "valid": 4,
+          "violation": 0,
+          "na": 0
+        },
+        "denominator": 4,
+        "notApplicable": 0
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "id": "video-0",
+      "pairing": "paired",
+      "coverage": "both-reviewed",
+      "changes": [
+        {
+          "dimension": "accuracy",
+          "reference": "correct",
+          "candidate": "partial",
+          "regression": true
+        },
+        {
+          "dimension": "invention",
+          "reference": "absent",
+          "candidate": "present",
+          "regression": true
+        },
+        {
+          "dimension": "description",
+          "reference": "faithful",
+          "candidate": "misdescribed",
+          "regression": true
+        }
+      ],
+      "regressions": [
+        "accuracy",
+        "invention",
+        "description"
+      ],
+      "newViolations": []
+    },
+    {
+      "id": "video-1",
+      "pairing": "paired",
+      "coverage": "both-reviewed",
+      "changes": [
+        {
+          "dimension": "accuracy",
+          "reference": "correct",
+          "candidate": "partial",
+          "regression": true
+        },
+        {
+          "dimension": "invention",
+          "reference": "absent",
+          "candidate": "present",
+          "regression": true
+        },
+        {
+          "dimension": "description",
+          "reference": "faithful",
+          "candidate": "misdescribed",
+          "regression": true
+        }
+      ],
+      "regressions": [
+        "accuracy",
+        "invention",
+        "description"
+      ],
+      "newViolations": []
+    },
+    {
+      "id": "video-2",
+      "pairing": "paired",
+      "coverage": "both-reviewed",
+      "changes": [
+        {
+          "dimension": "accuracy",
+          "reference": "correct",
+          "candidate": "partial",
+          "regression": true
+        },
+        {
+          "dimension": "invention",
+          "reference": "absent",
+          "candidate": "present",
+          "regression": true
+        },
+        {
+          "dimension": "description",
+          "reference": "faithful",
+          "candidate": "misdescribed",
+          "regression": true
+        }
+      ],
+      "regressions": [
+        "accuracy",
+        "invention",
+        "description"
+      ],
+      "newViolations": []
+    },
+    {
+      "id": "video-3",
+      "pairing": "paired",
+      "coverage": "both-reviewed",
+      "changes": [
+        {
+          "dimension": "accuracy",
+          "reference": "correct",
+          "candidate": "partial",
+          "regression": true
+        },
+        {
+          "dimension": "invention",
+          "reference": "absent",
+          "candidate": "present",
+          "regression": true
+        }
+      ],
+      "regressions": [
+        "accuracy",
+        "invention"
+      ],
+      "newViolations": []
+    }
+  ],
+  "paired": {
+    "cases": 4,
+    "bothReviewed": 4,
+    "dimensions": {
+      "accuracy": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 4,
+        "improvements": 0
+      },
+      "invention": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 4,
+        "improvements": 0
+      },
+      "order": {
+        "denominator": 0,
+        "notComparable": 4,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "imageEvidence": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "speechEvidence": {
+        "denominator": 0,
+        "notComparable": 4,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "description": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 3,
+        "improvements": 0
+      },
+      "abstention": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "references": {
+        "denominator": 0,
+        "notComparable": 4,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "causality": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 0,
+        "improvements": 0
+      },
+      "provenance": {
+        "denominator": 4,
+        "notComparable": 0,
+        "regressions": 0,
+        "improvements": 0
+      }
+    }
+  },
+  "regressions": [
+    {
+      "id": "video-0",
+      "dimensions": [
+        "accuracy",
+        "invention",
+        "description"
+      ]
+    },
+    {
+      "id": "video-1",
+      "dimensions": [
+        "accuracy",
+        "invention",
+        "description"
+      ]
+    },
+    {
+      "id": "video-2",
+      "dimensions": [
+        "accuracy",
+        "invention",
+        "description"
+      ]
+    },
+    {
+      "id": "video-3",
+      "dimensions": [
+        "accuracy",
+        "invention"
+      ]
+    }
+  ],
+  "violations": {
+    "reference": [],
+    "candidate": []
+  }
+}

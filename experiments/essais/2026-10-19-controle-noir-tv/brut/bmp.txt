@@ -1,0 +1,3 @@
+prise 239 ms contrôle 8.8 ms composante max 255 app youtube.leanback.v4
+prise 253 ms contrôle 8.1 ms composante max 255 app youtube.leanback.v4
+prise 253 ms contrôle 9.5 ms composante max 255 app youtube.leanback.v4

@@ -1,0 +1,203 @@
+{
+  "startedAt": "2026-10-19T06:54:02.375Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "gemma3:4b",
+    "TVLENS_LOCAL_QUESTIONS_THINK": "off"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Que dit exactement l'intervenant sur la mobilisation des lycéens ?",
+      "status": 200,
+      "id": "deep-7",
+      "accepted": {
+        "id": "deep-7"
+      },
+      "wallMs": 13579,
+      "final": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "kind": "insufficient",
+      "answer": "Je ne trouve aucune mention de la mobilisation des lycéens dans les passages observés : les résumés et transcriptions portent sur un sondage M6/RTL, l'imprévisibilité d'une campagne présidentielle, puis une vidéo sur des « arnaques d'appartements » et un entretien flouté. Je ne peux donc pas citer ce que l'intervenant dit sur ce sujet, faute de passage le traitant.",
+      "citations": [],
+      "limits": [
+        "Aucun passage observé ne traite de la mobilisation des lycéens ; je ne peux ni citer ni inférer une prise de position de l'intervenant sur ce point."
+      ],
+      "audit": [],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m",
+        "think": "off"
+      },
+      "elapsedMs": 12262,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 12264,
+        "endToEndMs": 12266,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    },
+    {
+      "step": "question",
+      "question": "De quoi parle cette session, en trois points ?",
+      "status": 200,
+      "id": "deep-8",
+      "accepted": {
+        "id": "deep-8"
+      },
+      "wallMs": 13561,
+      "final": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "kind": "insufficient",
+      "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+      "citations": [],
+      "limits": [
+        "La réponse proposée n’a pas passé la validation des preuves."
+      ],
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 9,
+        "firstProgressMs": 9,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 12401,
+        "endToEndMs": 12405,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": []
+}

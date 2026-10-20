@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "usage": "/v1/segments templates",
+  "blocks": [
+    {
+      "sequence": 0,
+      "startMs": 0,
+      "endMs": 8000,
+      "sourceInterval": {
+        "startMs": 60000,
+        "endMs": 68000
+      },
+      "audio": "present",
+      "body": {
+        "path": "blocks/000000/body.json",
+        "sha256": "f4f4313b49d6cd14e1141247dd73d44a447edd2cd1358b92900859b91027723a"
+      },
+      "outputs": [
+        {
+          "path": "blocks/000000/frame-0.jpg",
+          "sha256": "6ac2f721fa3abe0d81c747f520d86b3872af1284e9f25f55595f74cf94d73715"
+        },
+        {
+          "path": "blocks/000000/frame-1.jpg",
+          "sha256": "e2778dd6a8f533aaa4a99355fb9311fa52956165e8da0a39db60d986245d929b"
+        },
+        {
+          "path": "blocks/000000/frame-2.jpg",
+          "sha256": "3321a8ea5c957ae62b2b73b2c5508bb1200579e53c4d7de149fbc8fa1913fc90"
+        },
+        {
+          "path": "blocks/000000/frame-3.jpg",
+          "sha256": "db9911a975db7be4164e932f036a727bca56ab542f3f0ba39091baaedea21065"
+        },
+        {
+          "path": "blocks/000000/frame-4.jpg",
+          "sha256": "828fb4d3a80c205d8ab7dbf2928ac5a2d1b8af30c4092fa3bd3e7ea765a316f6"
+        },
+        {
+          "path": "blocks/000000/audio.wav",
+          "sha256": "aafb1763b969d64e3f14cc9a5cfea8376491427a8add67180077a3811f5040b0"
+        },
+        {
+          "path": "blocks/000000/body.json",
+          "sha256": "f4f4313b49d6cd14e1141247dd73d44a447edd2cd1358b92900859b91027723a"
+        },
+        {
+          "path": "blocks/000000/media.json",
+          "sha256": "871d369d38cd316d230acd436e5484848c671b4b6461494ad86a5475d258129c"
+        }
+      ]
+    },
+    {
+      "sequence": 1,
+      "startMs": 8000,
+      "endMs": 16000,
+      "sourceInterval": {
+        "startMs": 68000,
+        "endMs": 76000
+      },
+      "audio": "present",
+      "body": {
+        "path": "blocks/000001/body.json",
+        "sha256": "ed1ca5a227d763890d6b5f9a33b0df9533620369a4d39103c4f9479a64686c3c"
+      },
+      "outputs": [
+        {
+          "path": "blocks/000001/frame-0.jpg",
+          "sha256": "7348a0d71df5facfb460fbe772a3fd7a7e8afd422319203f7136204ae14c75bf"
+        },
+        {
+          "path": "blocks/000001/frame-1.jpg",
+          "sha256": "4b177395e08b01507c63ef64fbc271f813d5ebbaf3bc7b391d8f71ad48d05b44"
+        },
+        {
+          "path": "blocks/000001/frame-2.jpg",
+          "sha256": "40190a3b9ea29bae01467db2cdb847b838f60af6b87f38dfbe605bc37958e51b"
+        },
+        {
+          "path": "blocks/000001/frame-3.jpg",
+          "sha256": "85ccfc16b592edbe5d15480d7002ec4f0aa83537a249ad9f5d583c5c93489cbb"
+        },
+        {
+          "path": "blocks/000001/frame-4.jpg",
+          "sha256": "f6aa26c23f3a0a1dd6702d12a978965a29a36a1bad8f131fc476944e15f9ad53"
+        },
+        {
+          "path": "blocks/000001/audio.wav",
+          "sha256": "b165e782d8c027452cc085c2aef74b556b6ee4c24d0fcd60330f4637194e1716"
+        },
+        {
+          "path": "blocks/000001/body.json",
+          "sha256": "ed1ca5a227d763890d6b5f9a33b0df9533620369a4d39103c4f9479a64686c3c"
+        },
+        {
+          "path": "blocks/000001/media.json",
+          "sha256": "0c87524e115943ad1f9e023b0d6f86160e20cb7960f0c2b4c026568d02891472"
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "startMs": 16000,
+      "endMs": 24000,
+      "sourceInterval": {
+        "startMs": 76000,
+        "endMs": 84000
+      },
+      "audio": "present",
+      "body": {
+        "path": "blocks/000002/body.json",
+        "sha256": "8de6795880d731a84fece64a68baa905e9b7028d6fa741cfeb4ce01e47f57c96"
+      },
+      "outputs": [
+        {
+          "path": "blocks/000002/frame-0.jpg",
+          "sha256": "ac3815f638fbc5173999d0a7717a65fbbc6c6f2dfad3704e839eaf20bd71ec3a"
+        },
+        {
+          "path": "blocks/000002/frame-1.jpg",
+          "sha256": "786f273d4aa18dcb7a64cf84b041cc72d05e77727448b655a807550cbe2b487a"
+        },
+        {
+          "path": "blocks/000002/frame-2.jpg",
+          "sha256": "6377872019f6992a3a092cd36d147ea5ab28c154d037a5c84481a6c04f5ae677"
+        },
+        {
+          "path": "blocks/000002/frame-3.jpg",
+          "sha256": "425d5483d676a47e6bf70e14caed3710b211a8c70fff81b1249dc999b6897734"
+        },
+        {
+          "path": "blocks/000002/frame-4.jpg",
+          "sha256": "a5e279ec6a04c26615c0cc31dc01a8ac28caae5bb67326057c5f8b3fb5109a0d"
+        },
+        {
+          "path": "blocks/000002/audio.wav",
+          "sha256": "71a987235d95d6815acc95304c35a58df926dc5fbacc3607384b4f5793a15d6c"
+        },
+        {
+          "path": "blocks/000002/body.json",
+          "sha256": "8de6795880d731a84fece64a68baa905e9b7028d6fa741cfeb4ce01e47f57c96"
+        },
+        {
+          "path": "blocks/000002/media.json",
+          "sha256": "5ace7de89506eea144c171ac60bc5cf78d934c5609c5513d8ba74743ddadd19e"
+        }
+      ]
+    },
+    {
+      "sequence": 3,
+      "startMs": 24000,
+      "endMs": 30000,
+      "sourceInterval": {
+        "startMs": 84000,
+        "endMs": 90000
+      },
+      "audio": "present",
+      "body": {
+        "path": "blocks/000003/body.json",
+        "sha256": "d525d9f41187190f09c8409f02672592ab7cc5cbe4d2e2d5fac27b57fce90f8a"
+      },
+      "outputs": [
+        {
+          "path": "blocks/000003/frame-0.jpg",
+          "sha256": "e36d6cdf4ec3055f95695c008a7883e5558b49c20ec0aa42308bad40d5a63cea"
+        },
+        {
+          "path": "blocks/000003/frame-1.jpg",
+          "sha256": "df580b821d6a9c05472b0c3f7f27a8685b34d9257b0b78879a9ef1dc75b3ab85"
+        },
+        {
+          "path": "blocks/000003/frame-2.jpg",
+          "sha256": "f16c15024accb3ad51abf7f74d9f150ff34c76a9e099bbc57dd8278e42b18ca3"
+        },
+        {
+          "path": "blocks/000003/frame-3.jpg",
+          "sha256": "874719a3d7450e82b79ac7873e1c32901386e6fa035d9eacb0b872dcd14f97ba"
+        },
+        {
+          "path": "blocks/000003/frame-4.jpg",
+          "sha256": "e99c3439399b6bc9509b16aa99ccb3de212c93b1e66145be6328acdfadcbf14c"
+        },
+        {
+          "path": "blocks/000003/audio.wav",
+          "sha256": "5721034d4a8336bfb1d10b8104caea258d288b27f6dd9191726c678ea7a8c50c"
+        },
+        {
+          "path": "blocks/000003/body.json",
+          "sha256": "d525d9f41187190f09c8409f02672592ab7cc5cbe4d2e2d5fac27b57fce90f8a"
+        },
+        {
+          "path": "blocks/000003/media.json",
+          "sha256": "695c8ed32cf4f4ac51782e4728194a2a0a261091169ccbac5967e95538d38630"
+        }
+      ]
+    }
+  ],
+  "complete": true
+}

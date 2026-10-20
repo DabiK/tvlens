@@ -1,0 +1,254 @@
+{
+  "startedAt": "2026-10-19T07:00:06.831Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "gemma3:4b"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Qu'est-ce qui est écrit à l'écran au début du live ?",
+      "status": 200,
+      "id": "deep-7",
+      "accepted": {
+        "id": "deep-7"
+      },
+      "wallMs": 117415,
+      "final": "done",
+      "message": "Comparaison des images horodatées…",
+      "kind": "insufficient",
+      "answer": "Je n'arrive pas à lire le texte affiché au début du live : la résolution des images est trop faible pour transcrire avec certitude les incrustations, la vignette ou la bande d'information. Je préfère m'abstenir plutôt que d'inventer un contenu.",
+      "citations": [],
+      "limits": [
+        "Résolution insuffisante pour lire les textes des vignettes, boutons et bandes d'information.",
+        "Aucune observation horodatée fiable issue du réexamen.",
+        "La résolution des images est insuffisante pour lire le texte des vignettes, des commentaires ou des boutons d'interface avec précision.",
+        "Les textes des vignettes et des commentaires sont trop petits pour être transcrits de manière fiable.",
+        "Aucune observation horodatée valide issue du réexamen.",
+        "Paroles issues de la transcription du passage entier (18,1–26,1 s), plus large que les images réexaminées : elles n’y sont pas situées et ne valent pas citation exacte.",
+        "Transcription automatique locale ; elle peut contenir des erreurs.",
+        "Aucune observation horodatée valide issue du réexamen.",
+        "Paroles issues de la transcription du passage entier (2,0–10,0 s), plus large que les images réexaminées : elles n’y sont pas situées et ne valent pas citation exacte."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        },
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m",
+        "think": "default"
+      },
+      "elapsedMs": 116226,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 3
+        },
+        "thinkingChars": 1602,
+        "waitMs": 1,
+        "contextMs": 1,
+        "firstProgressMs": 2,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 116229,
+        "endToEndMs": 116230,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "inspect_clip",
+            "durationMs": 44719,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.055625000000873115,
+                  "requestMs": 43868.534833
+                },
+                "providerTimings": {
+                  "totalMs": 43859,
+                  "loadMs": 26,
+                  "promptEvalMs": 15532,
+                  "evalMs": 25843,
+                  "promptTokens": 5988,
+                  "evalTokens": 733,
+                  "rawNs": {
+                    "total_duration": 43859195000,
+                    "load_duration": 26184042,
+                    "prompt_eval_duration": 15532233000,
+                    "eval_duration": 25843093000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 4,
+              "reused": 4,
+              "cached": 0,
+              "failed": 0
+            }
+          },
+          {
+            "tool": "inspect_clip",
+            "durationMs": 32094,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.0032500000088475645,
+                  "requestMs": 31385.05608400001
+                },
+                "providerTimings": {
+                  "totalMs": 31376,
+                  "loadMs": 25,
+                  "promptEvalMs": 15417,
+                  "evalMs": 13034,
+                  "promptTokens": 5695,
+                  "evalTokens": 401,
+                  "rawNs": {
+                    "total_duration": 31376430375,
+                    "load_duration": 24991125,
+                    "prompt_eval_duration": 15416844000,
+                    "eval_duration": 13034121000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 2,
+              "reused": 2,
+              "cached": 0,
+              "failed": 0
+            }
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "think": "off",
+          "numCtx": 16384,
+          "exercised": true,
+          "modelCalled": true,
+          "cacheHit": false,
+          "metrics": {
+            "clientTimings": {
+              "queueMs": 0.0032500000088475645,
+              "requestMs": 31385.05608400001
+            },
+            "providerTimings": {
+              "totalMs": 31376,
+              "loadMs": 25,
+              "promptEvalMs": 15417,
+              "evalMs": 13034,
+              "promptTokens": 5695,
+              "evalTokens": 401,
+              "rawNs": {
+                "total_duration": 31376430375,
+                "load_duration": 24991125,
+                "prompt_eval_duration": 15416844000,
+                "eval_duration": 13034121000
+              }
+            },
+            "modelState": "unknown"
+          }
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 3,
+          "journalEntries": 12,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": []
+}

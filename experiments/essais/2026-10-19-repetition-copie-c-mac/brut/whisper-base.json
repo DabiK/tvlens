@@ -1,0 +1,155 @@
+{
+ "date": "2026-10-19T16:24:33.348Z",
+ "node": "v24.12.0",
+ "host": {
+  "platform": "darwin arm64",
+  "cpu": "Apple M5 Max",
+  "parallelism": 18,
+  "loadAverage": [
+   10.7,
+   10.5,
+   7.9
+  ]
+ },
+ "binary": "/opt/homebrew/bin/whisper-cli",
+ "model": "/Users/Dabi/Library/Application Support/com.localwhisper.localWhisper/models/whisper/ggml-base.bin",
+ "language": "en",
+ "noGpu": false,
+ "noText": false,
+ "repeats": 1,
+ "files": [
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000000/audio.wav",
+   "bytes": 256078,
+   "autoAudioCtx": 512
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000001/audio.wav",
+   "bytes": 256078,
+   "autoAudioCtx": 512
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000002/audio.wav",
+   "bytes": 256078,
+   "autoAudioCtx": 512
+  }
+ ],
+ "summary": [
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000000/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "runs": 1,
+   "failed": 0,
+   "wallMs": {
+    "median": 407,
+    "min": 407,
+    "max": 407
+   },
+   "encodeMs": 13.4,
+   "text": "grasp how far and how fast we have come, but condense if you will the",
+   "stable": true
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000001/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "runs": 1,
+   "failed": 0,
+   "wallMs": {
+    "median": 316.1,
+    "min": 316.1,
+    "max": 316.1
+   },
+   "encodeMs": 13,
+   "text": "50,000 years of man's recorded history, in a time span of about a half a century.",
+   "stable": true
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000002/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "runs": 1,
+   "failed": 0,
+   "wallMs": {
+    "median": 307.8,
+    "min": 307.8,
+    "max": 307.8
+   },
+   "encodeMs": 23.7,
+   "text": "stated in these terms, we know very little about the first 40 years except at the end of them.",
+   "stable": true
+  }
+ ],
+ "rows": [
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000000/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "repeat": 0,
+   "wallMs": 407,
+   "code": 0,
+   "timings": {
+    "loadMs": 117.5,
+    "melMs": 4.21,
+    "sampleMs": 30.89,
+    "encodeMs": 13.37,
+    "decodeMs": 0,
+    "batchdMs": 46,
+    "promptMs": 0,
+    "totalMs": 228.96,
+    "logprobFallbacks": 0,
+    "entropyFallbacks": 0
+   },
+   "text": "grasp how far and how fast we have come, but condense if you will the"
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000001/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "repeat": 0,
+   "wallMs": 316.1,
+   "code": 0,
+   "timings": {
+    "loadMs": 84.91,
+    "melMs": 3.12,
+    "sampleMs": 32.25,
+    "encodeMs": 13.03,
+    "decodeMs": 1.56,
+    "batchdMs": 47.82,
+    "promptMs": 0,
+    "totalMs": 195.1,
+    "logprobFallbacks": 0,
+    "entropyFallbacks": 0
+   },
+   "text": "50,000 years of man's recorded history, in a time span of about a half a century."
+  },
+  {
+   "file": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2/corpus/kennedy-g1/blocks/000002/audio.wav",
+   "threads": 4,
+   "requested": 0,
+   "audioCtx": 0,
+   "repeat": 0,
+   "wallMs": 307.8,
+   "code": 0,
+   "timings": {
+    "loadMs": 78.56,
+    "melMs": 3.25,
+    "sampleMs": 30.34,
+    "encodeMs": 23.66,
+    "decodeMs": 2.76,
+    "batchdMs": 49.04,
+    "promptMs": 0,
+    "totalMs": 199.14,
+    "logprobFallbacks": 0,
+    "entropyFallbacks": 0
+   },
+   "text": "stated in these terms, we know very little about the first 40 years except at the end of them."
+  }
+ ]
+}

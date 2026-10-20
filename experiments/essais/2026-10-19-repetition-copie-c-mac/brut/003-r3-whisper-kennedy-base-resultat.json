@@ -1,0 +1,30 @@
+{
+  "id": "r3-whisper-kennedy-base",
+  "kind": "whisper",
+  "status": "complete",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "durationMs": 1103,
+  "finishedAt": "2026-10-19T16:24:33.352Z",
+  "validation": false,
+  "ollama": null,
+  "unloadedBefore": null,
+  "result": {
+    "reports": [
+      "base.json"
+    ],
+    "complete": true
+  },
+  "system": {
+    "samples": 1,
+    "gpuUtilMean": null,
+    "gpuUtilMax": null,
+    "gpuMemMaxMb": null,
+    "powerMaxW": null,
+    "memAvailableMinMb": null,
+    "swapMaxMb": null,
+    "loadMax": 10.73,
+    "ollamaMaxMb": 8477
+  }
+}

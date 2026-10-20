@@ -1,0 +1,199 @@
+{
+  "model": "gemma3:4b",
+  "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+  "modelsLoadedBefore": [],
+  "rows": [
+    {
+      "label": "froid",
+      "id": "moment-1",
+      "ok": true,
+      "wallMs": 6676,
+      "coldStart": false,
+      "modelState": "unknown",
+      "clientTimings": {
+        "queueMs": 0.05075000000000074,
+        "requestMs": 6674.153875
+      },
+      "providerTimings": {
+        "totalMs": 6672,
+        "loadMs": 1591,
+        "promptEvalMs": 3501,
+        "evalMs": 1542,
+        "promptTokens": 2314,
+        "evalTokens": 169,
+        "rawNs": {
+          "total_duration": 6671957542,
+          "load_duration": 1591122125,
+          "prompt_eval_duration": 3501141000,
+          "eval_duration": 1542036000
+        }
+      },
+      "backend": {
+        "kind": "ollama",
+        "model": "gemma3:4b",
+        "host": "127.0.0.1:11434"
+      },
+      "connectMs": 0,
+      "threadStarted": null,
+      "metricKeys": [
+        "framesSent",
+        "recentContextCount",
+        "contextChars",
+        "lightweight",
+        "providerUsd",
+        "coldStart",
+        "connectMs",
+        "threadReset",
+        "threadTurn",
+        "backend",
+        "providerTimings",
+        "clientTimings",
+        "modelState"
+      ]
+    },
+    {
+      "label": "chaud",
+      "id": "moment-2",
+      "ok": true,
+      "wallMs": 5228,
+      "coldStart": false,
+      "modelState": "unknown",
+      "clientTimings": {
+        "queueMs": 0.003582999999707681,
+        "requestMs": 5225.9254169999995
+      },
+      "providerTimings": {
+        "totalMs": 5223,
+        "loadMs": 3,
+        "promptEvalMs": 3491,
+        "evalMs": 1676,
+        "promptTokens": 2320,
+        "evalTokens": 185,
+        "rawNs": {
+          "total_duration": 5222932834,
+          "load_duration": 3239459,
+          "prompt_eval_duration": 3490956000,
+          "eval_duration": 1675730000
+        }
+      },
+      "backend": {
+        "kind": "ollama",
+        "model": "gemma3:4b",
+        "host": "127.0.0.1:11434"
+      },
+      "connectMs": 0,
+      "threadStarted": null,
+      "metricKeys": [
+        "framesSent",
+        "recentContextCount",
+        "contextChars",
+        "lightweight",
+        "providerUsd",
+        "coldStart",
+        "connectMs",
+        "threadReset",
+        "threadTurn",
+        "backend",
+        "providerTimings",
+        "clientTimings",
+        "modelState"
+      ]
+    },
+    {
+      "label": "ensemble-1",
+      "id": "moment-3",
+      "ok": true,
+      "wallMs": 4610,
+      "coldStart": false,
+      "modelState": "unknown",
+      "clientTimings": {
+        "queueMs": 0.01633399999991525,
+        "requestMs": 4599.455417000001
+      },
+      "providerTimings": {
+        "totalMs": 4596,
+        "loadMs": 4,
+        "promptEvalMs": 3596,
+        "evalMs": 946,
+        "promptTokens": 2313,
+        "evalTokens": 100,
+        "rawNs": {
+          "total_duration": 4596265125,
+          "load_duration": 3793500,
+          "prompt_eval_duration": 3595651000,
+          "eval_duration": 946436000
+        }
+      },
+      "backend": {
+        "kind": "ollama",
+        "model": "gemma3:4b",
+        "host": "127.0.0.1:11434"
+      },
+      "connectMs": 0,
+      "threadStarted": null,
+      "metricKeys": [
+        "framesSent",
+        "recentContextCount",
+        "contextChars",
+        "lightweight",
+        "providerUsd",
+        "coldStart",
+        "connectMs",
+        "threadReset",
+        "threadTurn",
+        "backend",
+        "providerTimings",
+        "clientTimings",
+        "modelState"
+      ]
+    },
+    {
+      "label": "ensemble-2",
+      "id": "moment-4",
+      "ok": true,
+      "wallMs": 9955,
+      "coldStart": false,
+      "modelState": "unknown",
+      "clientTimings": {
+        "queueMs": 4601.646167000001,
+        "requestMs": 5350.649333000001
+      },
+      "providerTimings": {
+        "totalMs": 5346,
+        "loadMs": 4,
+        "promptEvalMs": 3638,
+        "evalMs": 1653,
+        "promptTokens": 2333,
+        "evalTokens": 180,
+        "rawNs": {
+          "total_duration": 5346113167,
+          "load_duration": 3656209,
+          "prompt_eval_duration": 3637592000,
+          "eval_duration": 1653208000
+        }
+      },
+      "backend": {
+        "kind": "ollama",
+        "model": "gemma3:4b",
+        "host": "127.0.0.1:11434"
+      },
+      "connectMs": 0,
+      "threadStarted": null,
+      "metricKeys": [
+        "framesSent",
+        "recentContextCount",
+        "contextChars",
+        "lightweight",
+        "providerUsd",
+        "coldStart",
+        "connectMs",
+        "threadReset",
+        "threadTurn",
+        "backend",
+        "providerTimings",
+        "clientTimings",
+        "modelState"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+netflix-1.png : luminance moyenne 0.0, pixels noirs 100%
+netflix-2.png : luminance moyenne 0.7, pixels noirs 100%
+netflix.wav : 3.0 s, RMS -44.4 dBFS, crête 2831

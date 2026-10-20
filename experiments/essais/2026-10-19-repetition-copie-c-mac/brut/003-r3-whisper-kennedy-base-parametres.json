@@ -1,0 +1,44 @@
+{
+  "id": "r3-whisper-kennedy-base",
+  "kind": "whisper",
+  "campaign": {
+    "id": "r3-whisper-kennedy-base",
+    "kind": "whisper",
+    "preparation": "kennedy-g1",
+    "models": [
+      "base"
+    ],
+    "threads": "4",
+    "audioCtx": "0",
+    "repeats": 1,
+    "files": 3
+  },
+  "roles": {
+    "vlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "keepAlive": "10m"
+    },
+    "questions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m"
+    },
+    "embeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b"
+    },
+    "inspection": null
+  },
+  "whisper": {
+    "threads": null,
+    "audioCtx": null,
+    "model": "base"
+  },
+  "cold": true,
+  "ollama": {},
+  "validation": false,
+  "code": "/Users/Dabi/Documents/TVLens-GX10/copies/gx10-copie-c",
+  "startedAt": "2026-10-19T16:24:32.241Z"
+}

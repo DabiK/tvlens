@@ -1,0 +1,6 @@
+{"returnValue":false,"errorCode":-1,"errorText":"Unknown method \"setMuted\" for category \"/master\""}
+{"returnValue":true}
+"muteStatus":false
+{"subscribed":false,"returnValue":true,"foregroundAppInfo":[{"appId":"youtube.leanback.v4","playState":"playing","type":"media","mediaId":"_J4NvgjBcF3Cj58","windowId":"_Window_Id_387"}]}
+[{"appId": "youtube.leanback.v4", "connected": true, "fullScreen": false, "displayOutput": {"width": 2880, "y": 270, "x": 0, "height": 1620}, "sourceInput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "width": 3840, "height": 2160, "context": "_J4NvgjBcF3Cj58"}]
+{"capturedHeight":720,"writtenBytes":994868,"returnValue":true,"capturedWidth":1280}

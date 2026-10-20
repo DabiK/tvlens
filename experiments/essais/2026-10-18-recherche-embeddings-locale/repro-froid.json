@@ -1,0 +1,34 @@
+{
+  "model": "qwen3-embedding:0.6b",
+  "texts": 19,
+  "bytes": 8953,
+  "rows": [
+    {
+      "label": "froid, seul",
+      "ms": 1127,
+      "http": 200,
+      "vectors": 19,
+      "loadMs": 801,
+      "totalMs": 1121,
+      "overAdapterTimeout": false
+    },
+    {
+      "label": "chaud",
+      "ms": 305,
+      "http": 200,
+      "vectors": 19,
+      "loadMs": 1,
+      "totalMs": 299,
+      "overAdapterTimeout": false
+    },
+    {
+      "label": "froid, gemma3:12b résident",
+      "ms": 13184,
+      "http": 200,
+      "vectors": 19,
+      "loadMs": 12651,
+      "totalMs": 13180,
+      "overAdapterTimeout": true
+    }
+  ]
+}

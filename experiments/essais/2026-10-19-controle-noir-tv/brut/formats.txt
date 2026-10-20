@@ -1,0 +1,7 @@
+BMP 267 ms True None 110646 octets b'BM' (256, -144, 24, 54)
+JPEG 260 ms True None 4818 octets b'\xff\xd8' 
+JPG 251 ms True None 4755 octets b'\xff\xd8' 
+RGB 256 ms True None 110592 octets b'\xc9\xc7' 
+RAW 272 ms True None 5975 octets b'\xff\xd8' 
+YUV 253 ms True None 5898 octets b'\xff\xd8' 
+NV12 265 ms True None 5824 octets b'\xff\xd8' 

@@ -1,0 +1,109 @@
+{
+  "startedAt": "2026-10-18T18:07:39.773Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11999",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "De quel sondage parle l’intervenant ?",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 1513,
+      "final": "error",
+      "message": "Backend local injoignable.",
+      "kind": "insufficient",
+      "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+      "citations": [],
+      "limits": [
+        "Résultat limité aux observations déjà obtenues."
+      ],
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11999",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 8,
+        "endToEndMs": 10,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "codex",
+          "model": "gpt-6-luna",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": []
+}

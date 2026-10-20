@@ -1,0 +1,65 @@
+{
+  "id": "r2-g3-kennedy-reference-6min",
+  "kind": "g3",
+  "status": "complete",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "durationMs": 375741,
+  "finishedAt": "2026-10-19T16:24:32.236Z",
+  "validation": false,
+  "ollama": {
+    "mode": "service",
+    "env": null
+  },
+  "unloadedBefore": [
+    "gemma3:4b"
+  ],
+  "result": {
+    "complete": true,
+    "status": "complete",
+    "stopReason": "drained",
+    "passages": 45,
+    "publications": {
+      "audio": 45,
+      "vision": 27
+    },
+    "lossCounts": {
+      "audio": 0,
+      "vision": 18
+    },
+    "coveragePercent": {
+      "capture": 100,
+      "audio": 100,
+      "vision": 60
+    },
+    "uploads": {
+      "planned": 45,
+      "accepted": 45
+    },
+    "questions": {
+      "asked": 2,
+      "successful": 2,
+      "latencyMeanS": 72.1,
+      "latencyMaxS": 80.9
+    },
+    "shutdown": {
+      "archiveConfirmed": true,
+      "releaseConfirmed": true,
+      "errors": []
+    },
+    "diagnostics": 2,
+    "guardFailures": 0
+  },
+  "system": {
+    "samples": 80,
+    "gpuUtilMean": null,
+    "gpuUtilMax": null,
+    "gpuMemMaxMb": null,
+    "powerMaxW": null,
+    "memAvailableMinMb": null,
+    "swapMaxMb": null,
+    "loadMax": 17.82,
+    "ollamaMaxMb": 17259
+  }
+}

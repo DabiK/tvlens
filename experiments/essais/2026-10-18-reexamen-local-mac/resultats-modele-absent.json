@@ -1,0 +1,142 @@
+{
+  "startedAt": "2026-10-18T12:26:27.540Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "codex",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "modele-absent:1b"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Qu’est-ce qui est écrit à l’écran au début du live ? Réexamine les images.",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 10555,
+      "final": "done",
+      "message": "Rédaction de la réponse…",
+      "kind": "insufficient",
+      "answer": "Le réexamen des images du début a échoué : l’outil vidéo est indisponible. Je ne peux donc pas transcrire fidèlement ce qui était écrit à l’écran à ce moment-là.",
+      "citations": [],
+      "limits": [
+        "Échec du réexamen vidéo : backend indisponible (HTTP 404).",
+        "Les passages fournis ne couvrent pas le début du live."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "failed"
+        }
+      ],
+      "model": "default",
+      "elapsedMs": 10353,
+      "sourcesRejected": [],
+      "metrics": {
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 8602,
+        "firstAgentMs": 508,
+        "firstTextMs": 8602,
+        "totalMs": 10357,
+        "endToEndMs": 10359,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "inspect_clip",
+            "durationMs": 706,
+            "status": "failed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "modele-absent:1b",
+              "host": "127.0.0.1:11434",
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.07374999999956344,
+                  "requestMs": 23.57945800000016
+                },
+                "modelState": "unknown"
+              },
+              "failure": {
+                "code": "TVLENS_LOCAL_VLM_UNAVAILABLE"
+              }
+            }
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "modele-absent:1b",
+          "host": "127.0.0.1:11434",
+          "exercised": true,
+          "modelCalled": true,
+          "cacheHit": false,
+          "metrics": {
+            "clientTimings": {
+              "queueMs": 0.07374999999956344,
+              "requestMs": 23.57945800000016
+            },
+            "modelState": "unknown"
+          },
+          "failure": {
+            "code": "TVLENS_LOCAL_VLM_UNAVAILABLE"
+          }
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 2,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": [
+    "TVLens server http://127.0.0.1:8802 — device token stored in /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/4adac547-eeec-4cad-9bcb-faf0fa91f853/scratchpad/t271/refus/device-token"
+  ]
+}

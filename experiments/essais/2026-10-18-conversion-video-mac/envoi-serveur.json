@@ -1,0 +1,98 @@
+{
+  "startedAt": "2026-10-18T14:18:53.605Z",
+  "blocks": [
+    {
+      "sequence": 0,
+      "source": "blocks/000000/body.json",
+      "startMs": 0,
+      "endMs": 8000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-1",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 1,
+      "source": "blocks/000001/body.json",
+      "startMs": 8000,
+      "endMs": 16000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-2",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 2,
+      "source": "blocks/000002/body.json",
+      "startMs": 16000,
+      "endMs": 24000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-3",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 3,
+      "source": "blocks/000003/body.json",
+      "startMs": 24000,
+      "endMs": 32000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-4",
+        "duplicate": false
+      }
+    }
+  ],
+  "passages": [
+    {
+      "id": "moment-1",
+      "status": "ready",
+      "summary": "Un orateur au pupitre évoque « jusqu’où et à quelle vitesse nous sommes allés », puis semble commencer une nouvelle proposition ; la transcription est fragmenta",
+      "transcript": "grass, how far and how fast we have come but condense if you will, the"
+    },
+    {
+      "id": "moment-2",
+      "status": "ready",
+      "summary": "L’orateur poursuit son discours et semble évoquer « 50 000 ans », mais la transcription est trop déformée pour en établir le sens.",
+      "transcript": "50 000 years de mannes récordées de l'histoire en un temps de banane de 50 000 ans."
+    },
+    {
+      "id": "moment-3",
+      "status": "ready",
+      "summary": "L’orateur semble dire que l’on sait peu de choses sur les quarante premières années, sauf à leur terme ; la transcription est incertaine.",
+      "transcript": "Estated in these terms, we know very little about the first 40 years, except at the end of them."
+    },
+    {
+      "id": "moment-4",
+      "status": "partial",
+      "transcript": "\"Advancements\" had learned to use the skins of animals to cover them. Then about 10 years ago, under this standard,"
+    }
+  ],
+  "session": {
+    "id": "5d3a57a6-5242-404d-ab7f-f9505feb2f8f",
+    "start": 200,
+    "keys": [
+      "id",
+      "elapsedMs",
+      "retentionMs",
+      "retention",
+      "readOnly",
+      "accepting"
+    ]
+  },
+  "ended": 200,
+  "serverLog": [
+    "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"missing\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+  ]
+}

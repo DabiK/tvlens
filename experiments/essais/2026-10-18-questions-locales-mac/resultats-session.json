@@ -1,0 +1,126 @@
+{
+  "startedAt": "2026-10-18T11:01:39.344Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Que dit exactement l'intervenant sur la mobilisation des lycéens ?",
+      "status": 200,
+      "id": "deep-5",
+      "accepted": {
+        "id": "deep-5"
+      },
+      "wallMs": 39118,
+      "final": "done",
+      "message": "La recherche continue · arrêt au plus tard à 5 minutes.",
+      "kind": "insufficient",
+      "answer": "Je ne trouve aucune mention de la mobilisation des lycéens dans les passages observés : les résumés et transcriptions portent sur un sondage M6/RTL, l'imprévisibilité d'une campagne présidentielle, puis une vidéo sur des « arnaques d'appartements » et un entretien flouté. Je ne peux donc pas citer ce que l'intervenant dit sur ce sujet, faute de passage le traitant.",
+      "citations": [],
+      "limits": [
+        "Aucun passage consulté (moments 2, 7, 8, 12, 19) ne mentionne les lycéens ou leur mobilisation ; la recherche sémantique n'en a pas retourné non plus."
+      ],
+      "audit": [
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        },
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        },
+        {
+          "tool": "get_transcript",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m"
+      },
+      "elapsedMs": 38487
+    },
+    {
+      "step": "question",
+      "question": "Qu'est-ce qui est écrit à l'écran au début du live ?",
+      "status": 200,
+      "id": "deep-6",
+      "accepted": {
+        "id": "deep-6"
+      },
+      "wallMs": 30092,
+      "final": "done",
+      "message": "Recherche des passages…",
+      "kind": "observation",
+      "answer": "Au tout début du live, l'écran affiche en haut à droite le mot « SECOURS », et une vignette porte le texte « SANS RÉPONSE ». En bas, une ligne d'information indique « Émission spéciale : … », mais la date qui l'accompagne est trop petite pour être lue avec certitude.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 65,
+          "endMs": 1940
+        }
+      ],
+      "limits": [
+        "La date de la ligne « Émission spéciale » est illisible dans les images réexaminées ; je ne peux pas la confirmer.",
+        "Paroles issues de la transcription du passage entier (18,1–26,1 s), plus large que les images réexaminées : elles n’y sont pas situées et ne valent pas citation exacte."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        },
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m"
+      },
+      "elapsedMs": 29906
+    }
+  ],
+  "serverLogTail": [
+    "{\"code\":\"TVLENS_CODEX_CLEANUP_REMOVED\",\"candidate\":\"/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-codex-session-BpeRwX\"}"
+  ]
+}

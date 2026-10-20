@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "root": "/Users/Dabi/Documents/TVLens-GX10/essais/mac-copie-c-2",
+  "code": "/Users/Dabi/Documents/TVLens-GX10/copies/gx10-copie-c",
+  "tools": {
+    "node": "node",
+    "ffmpeg": "/opt/homebrew/bin/ffmpeg",
+    "whisper": "/opt/homebrew/bin/whisper-cli",
+    "ollama": "ollama",
+    "nvidiaSmi": "nvidia-smi"
+  },
+  "ollama": {
+    "mode": "service",
+    "url": "http://127.0.0.1:11434"
+  },
+  "whisperModels": {
+    "base": "/Users/Dabi/Library/Application Support/com.localwhisper.localWhisper/models/whisper/ggml-base.bin"
+  },
+  "sampleSeconds": 5,
+  "minFreeGb": 20,
+  "videos": {
+    "kennedy": {
+      "file": "/Users/Dabi/Documents/ISN/tvlens/media/samples/kennedy-rice-7min.mp4",
+      "language": "en",
+      "kind": "discours",
+      "description": "Discours de Kennedy à Rice University (1962, domaine public)",
+      "questions": [
+        [
+          90,
+          "De quoi parle l'orateur en ce moment ?"
+        ],
+        [
+          270,
+          "Quelles inventions cite-t-il pour résumer l'histoire de l'humanité ?"
+        ],
+        [
+          480,
+          "Que voit-on à l'écran derrière l'orateur ?"
+        ],
+        [
+          690,
+          "Pourquoi dit-il qu'il faut aller sur la Lune ?"
+        ],
+        [
+          900,
+          "Que vient-il de dire sur le coût du programme spatial ?"
+        ],
+        [
+          1110,
+          "Qui est assis derrière lui ?"
+        ],
+        [
+          1350,
+          "Résume les deux dernières minutes."
+        ],
+        [
+          1620,
+          "A-t-il déjà parlé de Mars ou de Vénus ? Cite le moment."
+        ]
+      ]
+    }
+  },
+  "preparations": {
+    "kennedy-g1": {
+      "video": "kennedy",
+      "startMs": 0,
+      "durationMs": 120000,
+      "blockMs": 8000,
+      "frames": 5
+    },
+    "kennedy-g3": {
+      "video": "kennedy",
+      "startMs": 0,
+      "durationMs": 1800000,
+      "blockMs": 8000,
+      "frames": 5
+    }
+  },
+  "defaults": {
+    "roles": {
+      "vlm": {
+        "model": "gemma3:4b",
+        "keepAlive": "10m"
+      },
+      "questions": {
+        "model": "qwen3.8:27b",
+        "numCtx": 16384,
+        "keepAlive": "10m"
+      },
+      "embeddings": {
+        "model": "qwen3-embedding:0.6b"
+      }
+    },
+    "whisper": {
+      "model": "base",
+      "threads": null,
+      "audioCtx": null
+    },
+    "cold": true
+  },
+  "campaigns": [
+    {
+      "id": "r1-g1-kennedy-gemma3-4b",
+      "kind": "g1",
+      "preparation": "kennedy-g1",
+      "roles": {
+        "vlm": {
+          "model": "gemma3:4b",
+          "numCtx": 8192
+        }
+      }
+    },
+    {
+      "id": "r2-g3-kennedy-reference-6min",
+      "kind": "g3",
+      "preparation": "kennedy-g3",
+      "durationMin": 6,
+      "finalWaitMs": 240000
+    },
+    {
+      "id": "r3-whisper-kennedy-base",
+      "kind": "whisper",
+      "preparation": "kennedy-g1",
+      "models": [
+        "base"
+      ],
+      "threads": "4",
+      "audioCtx": "0",
+      "repeats": 1,
+      "files": 3
+    }
+  ]
+}

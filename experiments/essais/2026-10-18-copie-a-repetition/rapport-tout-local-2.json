@@ -1,0 +1,402 @@
+{
+  "startedAt": "2026-10-18T18:17:16.187Z",
+  "blocks": [
+    {
+      "sequence": 0,
+      "source": "blocks/000000/body.json",
+      "startMs": 0,
+      "endMs": 8000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-1",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 1,
+      "source": "blocks/000001/body.json",
+      "startMs": 8000,
+      "endMs": 16000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-2",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 2,
+      "source": "blocks/000002/body.json",
+      "startMs": 16000,
+      "endMs": 24000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-3",
+        "duplicate": false
+      }
+    },
+    {
+      "sequence": 3,
+      "source": "blocks/000003/body.json",
+      "startMs": 24000,
+      "endMs": 32000,
+      "frames": 5,
+      "audio": true,
+      "status": 200,
+      "answer": {
+        "id": "moment-4",
+        "duplicate": false
+      }
+    }
+  ],
+  "passages": [
+    {
+      "id": "moment-1",
+      "status": "ready",
+      "summary": "John F. Kennedy est debout à un pupitre, devant une foule immense, et tient un discours. Il porte un costume sombre et un badge de l'administration. L'ambiance ",
+      "transcript": "last month, electric lights, and telephones, and automobiles, and airplanes became a"
+    },
+    {
+      "id": "moment-2",
+      "status": "ready",
+      "summary": "Le président Kennedy est debout à un pupitre, devant une foule importante, et prononce un discours. Il est soutenu par des assistants et un drapeau américain es",
+      "transcript": "available. Only last week did we develop penicillin and television and nuclear power."
+    },
+    {
+      "id": "moment-3",
+      "status": "ready",
+      "summary": "Le président Kennedy est debout à un pupitre, devant une foule importante, et prononce un discours. Il est soutenu par des assistants et un drapeau américain es",
+      "transcript": "And now, if America's new spacecraft succeeds in reaching Venus, we will have literally reached"
+    },
+    {
+      "id": "moment-4",
+      "status": "partial",
+      "transcript": "stars before midnight tonight. This is a breathtaking piece and such a piece cannot help."
+    }
+  ],
+  "language": 200,
+  "session": {
+    "id": "8f31fe52-d77f-44d2-8b22-ad522582d835",
+    "start": 200,
+    "keys": [
+      "id",
+      "elapsedMs",
+      "retentionMs",
+      "retention",
+      "readOnly",
+      "accepting"
+    ]
+  },
+  "questions": [
+    {
+      "question": "Que voit-on à l’écran pendant ce discours ?",
+      "status": 200,
+      "final": "done",
+      "wallMs": 84471,
+      "kind": "observation",
+      "answer": "Pendant ce discours, on voit John F. Kennedy debout derrière un pupitre, en costume sombre avec un badge de l'administration, s'adressant à une foule dense et diverse. En arrière-plan, un drapeau américain est visible à sa droite, et des assistants l'entourent. L'ambiance est solennelle, typique d'un grand rassemblement officiel.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 500,
+          "endMs": 8500
+        },
+        {
+          "id": "moment-2",
+          "startMs": 8500,
+          "endMs": 16500
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16500,
+          "endMs": 24500
+        },
+        {
+          "id": "moment-4",
+          "startMs": 24500,
+          "endMs": 32500
+        }
+      ],
+      "limits": [
+        "Les descriptions proviennent de résumés automatiques (precision: automatic-summary) et non d'une observation détaillée image par image.",
+        "Le passage moment-4 (24500-32500 ms) est marqué partial-observation avec visionStatus analyzing au moment de la capture ; le réexamen n'a pas produit d'observations supplémentaires.",
+        "Une demande visait un intervalle hors de la mémoire disponible au moment de la question (0:00–0:32).",
+        "Transcription automatique locale ; elle peut contenir des erreurs.",
+        "Aucune observation horodatée valide issue du réexamen."
+      ],
+      "audit": [
+        {
+          "tool": "inspect_clip",
+          "status": "failed"
+        },
+        {
+          "tool": "get_transcript",
+          "status": "completed"
+        },
+        {
+          "tool": "inspect_clip",
+          "status": "completed"
+        }
+      ],
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "5m"
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "numCtx": 16384,
+            "keepAlive": "5m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 3
+        },
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 83533,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 83533,
+        "endToEndMs": 83535,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "inspect_clip",
+            "durationMs": 2,
+            "status": "failed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "gemma3:4b",
+              "host": "127.0.0.1:11434",
+              "exercised": false,
+              "modelCalled": false,
+              "cacheHit": false
+            }
+          },
+          {
+            "tool": "get_transcript",
+            "durationMs": 0,
+            "status": "completed"
+          },
+          {
+            "tool": "inspect_clip",
+            "durationMs": 14559,
+            "status": "completed",
+            "inspection": {
+              "role": "inspection",
+              "backend": "ollama",
+              "model": "gemma3:4b",
+              "host": "127.0.0.1:11434",
+              "exercised": true,
+              "modelCalled": true,
+              "cacheHit": false,
+              "metrics": {
+                "clientTimings": {
+                  "queueMs": 0.0036249999975552782,
+                  "requestMs": 13711.747375000006
+                },
+                "providerTimings": {
+                  "totalMs": 13702,
+                  "loadMs": 2114,
+                  "promptEvalMs": 3108,
+                  "evalMs": 8409,
+                  "promptTokens": 1726,
+                  "evalTokens": 921,
+                  "rawNs": {
+                    "total_duration": 13701994916,
+                    "load_duration": 2114394208,
+                    "prompt_eval_duration": 3108097000,
+                    "eval_duration": 8409450000
+                  }
+                },
+                "modelState": "unknown"
+              }
+            },
+            "speech": {
+              "passages": 1,
+              "reused": 1,
+              "cached": 0,
+              "failed": 0
+            }
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "exercised": true,
+          "modelCalled": true,
+          "cacheHit": false,
+          "metrics": {
+            "clientTimings": {
+              "queueMs": 0.0036249999975552782,
+              "requestMs": 13711.747375000006
+            },
+            "providerTimings": {
+              "totalMs": 13702,
+              "loadMs": 2114,
+              "promptEvalMs": 3108,
+              "evalMs": 8409,
+              "promptTokens": 1726,
+              "evalTokens": 921,
+              "rawNs": {
+                "total_duration": 13701994916,
+                "load_duration": 2114394208,
+                "prompt_eval_duration": 3108097000,
+                "eval_duration": 8409450000
+              }
+            },
+            "modelState": "unknown"
+          }
+        },
+        "evidence": {
+          "anchorMs": 35471,
+          "frozenAtMs": 35975.653833000004,
+          "evidenceAsOfMs": 81322.200042,
+          "refreshes": 4,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 32500,
+          "analyzedThroughMs": 24500,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 10971,
+          "lagAtStartMs": 2971
+        }
+      }
+    },
+    {
+      "question": "Que dit l’orateur sur l’histoire de l’humanité ?",
+      "status": 200,
+      "final": "done",
+      "wallMs": 51141,
+      "kind": "observation",
+      "answer": "L'orateur (John F. Kennedy) énumère les conquêtes techniques récentes de l'humanité : l'électricité, le téléphone, l'automobile, l'avion, puis la pénicilline, la télévision et l'énergie nucléaire, présentés comme devenus disponibles « le mois dernier » ou « la semaine dernière ». Il met ainsi en avant l'accélération des progrès humains.",
+      "citations": [
+        {
+          "id": "moment-1",
+          "startMs": 500,
+          "endMs": 8500
+        },
+        {
+          "id": "moment-2",
+          "startMs": 8500,
+          "endMs": 16500
+        }
+      ],
+      "limits": [
+        "Les transcriptions sont des résumés automatiques partiels ; la formulation exacte et le début de la phrase ne sont pas entièrement capturés."
+      ],
+      "audit": [
+        {
+          "tool": "get_transcript",
+          "status": "completed"
+        },
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        }
+      ],
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "5m"
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "numCtx": 16384,
+            "keepAlive": "5m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 2
+        },
+        "waitMs": 1,
+        "contextMs": 0,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 50704,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 50704,
+        "endToEndMs": 50705,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "get_transcript",
+            "durationMs": 0,
+            "status": "completed"
+          },
+          {
+            "tool": "search_moments",
+            "durationMs": 1135,
+            "status": "completed"
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 35471,
+          "frozenAtMs": 120447.525917,
+          "evidenceAsOfMs": 139235.599708,
+          "refreshes": 3,
+          "journalEntries": 10,
+          "journalDropped": 0,
+          "contextThroughMs": 32500,
+          "analyzedThroughMs": 32500,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 2971,
+          "lagAtStartMs": 2971
+        }
+      }
+    }
+  ],
+  "ended": 200,
+  "serverLog": [
+    "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"missing\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+  ]
+}

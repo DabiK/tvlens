@@ -1,0 +1,22 @@
+-- disque-avant 00:15:23
+[{"appId": "com.webos.app.mediadiscovery", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 40, "x": 0, "height": 2080}, "sourceInput": {"width": 1920, "y": 0, "x": 0, "height": 1040}, "width": 1920, "height": 1040, "context": "_jmrPn1CjkzS2yj"}]
+fenetres ['com.webos.app.mediadiscovery']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+lecture [('com.webos.app.mediadiscovery', 'playing'), ('com.webos.app.mediadiscovery', 'starting')]
+Recording WAVE '/tmp/t-sonde-disque.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+-- disque-ouvert 00:15:32
+[{"appId": "com.webos.app.mediadiscovery", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 40, "x": 0, "height": 2080}, "sourceInput": {"width": 1920, "y": 0, "x": 0, "height": 1040}, "width": 1920, "height": 1040, "context": "_jmrPn1CjkzS2yj"}]
+fenetres ['com.webos.app.mediadiscovery']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+lecture [('com.webos.app.mediadiscovery', 'playing'), ('com.webos.app.mediadiscovery', 'starting')]
+{"errorCode":1,"returnValue":false,"errorText":"app is not running"}
+-- disque-ferme 00:15:38
+[{"appId": "com.webos.app.mediadiscovery", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 40, "x": 0, "height": 2080}, "sourceInput": {"width": 1920, "y": 0, "x": 0, "height": 1040}, "width": 1920, "height": 1040, "context": "_jmrPn1CjkzS2yj"}]
+fenetres ['com.webos.app.mediadiscovery']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+lecture [('com.webos.app.mediadiscovery', 'playing'), ('com.webos.app.mediadiscovery', 'starting')]
+LOG
+restore {"returnValue": true}

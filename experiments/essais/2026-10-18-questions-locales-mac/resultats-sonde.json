@@ -1,0 +1,399 @@
+{
+  "model": "qwen3.8:27b",
+  "numCtx": 8192,
+  "before": {
+    "swap": "total = 16384.00M  used = 15006.94M  free = 1377.06M  (encrypted)",
+    "free": "System-wide memory free percentage: 48%"
+  },
+  "after": {
+    "swap": "total = 29696.00M  used = 28691.81M  free = 1004.19M  (encrypted)",
+    "free": "System-wide memory free percentage: 14%"
+  },
+  "runs": [
+    {
+      "condition": "A",
+      "question": "Quel chiffre exact du chômage la présentatrice a-t-elle donné ?",
+      "ms": 22424,
+      "toolCalls": [
+        "get_transcript",
+        "inspect_clip"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 14548,
+          "toolCalls": [
+            "get_transcript"
+          ],
+          "thinkingChars": 212,
+          "contentChars": 0,
+          "promptTokens": 1556,
+          "evalTokens": 101,
+          "loadMs": 8491,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 2771,
+          "toolCalls": [
+            "inspect_clip"
+          ],
+          "thinkingChars": 68,
+          "contentChars": 0,
+          "promptTokens": 1698,
+          "evalTokens": 93,
+          "loadMs": 6,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 5100,
+          "toolCalls": [],
+          "thinkingChars": 131,
+          "contentChars": 255,
+          "promptTokens": 1889,
+          "evalTokens": 90,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "La présentatrice annonce un taux de chômage de 7,4 % au deuxième trimestre, en hausse de 0,3 point sur un an (moment-2, 8000–16000 ms).",
+      "citations": [
+        "moment-2"
+      ],
+      "error": null
+    },
+    {
+      "condition": "B",
+      "question": "Quel chiffre exact du chômage la présentatrice a-t-elle donné ?",
+      "ms": 22711,
+      "toolCalls": [
+        "get_transcript",
+        "inspect_clip"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 4448,
+          "toolCalls": [
+            "get_transcript"
+          ],
+          "thinkingChars": 253,
+          "contentChars": 0,
+          "promptTokens": 1552,
+          "evalTokens": 108,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 3325,
+          "toolCalls": [
+            "inspect_clip"
+          ],
+          "thinkingChars": 60,
+          "contentChars": 0,
+          "promptTokens": 1694,
+          "evalTokens": 88,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 4341,
+          "toolCalls": [],
+          "thinkingChars": 130,
+          "contentChars": 260,
+          "promptTokens": 1856,
+          "evalTokens": 106,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 0,
+          "format": true,
+          "http": 200,
+          "ms": 10597,
+          "toolCalls": [],
+          "thinkingChars": 395,
+          "contentChars": 315,
+          "promptTokens": 1378,
+          "evalTokens": 131,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "La présentatrice annonce un taux de chômage de 7,4 % au deuxième trimestre, en hausse de 0,3 point sur un an (moment-2, 8 000–16 000 ms).",
+      "citations": [
+        "moment-2"
+      ],
+      "error": null
+    },
+    {
+      "condition": "A",
+      "question": "Qu’est-ce qu’on voit derrière l’invité quand il parle de l’inflation ?",
+      "ms": 14394,
+      "toolCalls": [
+        "inspect_clip"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 7020,
+          "toolCalls": [
+            "inspect_clip"
+          ],
+          "thinkingChars": 362,
+          "contentChars": 0,
+          "promptTokens": 1560,
+          "evalTokens": 190,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 7372,
+          "toolCalls": [],
+          "thinkingChars": 160,
+          "contentChars": 400,
+          "promptTokens": 1782,
+          "evalTokens": 143,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "Derrière l'invité, on voit un graphique en courbe descendante intitulé « Inflation sur un an », dont le dernier point indique 1,9 %. L'invité le désigne d'ailleurs en disant « c'est ce que montre la courbe derrière moi ».",
+      "citations": [
+        "moment-4"
+      ],
+      "error": null
+    },
+    {
+      "condition": "B",
+      "question": "Qu’est-ce qu’on voit derrière l’invité quand il parle de l’inflation ?",
+      "ms": 30507,
+      "toolCalls": [
+        "inspect_clip",
+        "search_moments"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 6904,
+          "toolCalls": [
+            "inspect_clip"
+          ],
+          "thinkingChars": 362,
+          "contentChars": 0,
+          "promptTokens": 1556,
+          "evalTokens": 190,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 5839,
+          "toolCalls": [
+            "search_moments"
+          ],
+          "thinkingChars": 161,
+          "contentChars": 249,
+          "promptTokens": 1744,
+          "evalTokens": 154,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 3175,
+          "toolCalls": [],
+          "thinkingChars": 79,
+          "contentChars": 238,
+          "promptTokens": 1954,
+          "evalTokens": 92,
+          "loadMs": 4,
+          "error": null
+        },
+        {
+          "tools": 0,
+          "format": true,
+          "http": 200,
+          "ms": 14577,
+          "toolCalls": [],
+          "thinkingChars": 578,
+          "contentChars": 417,
+          "promptTokens": 1516,
+          "evalTokens": 155,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "Derrière l'invité, on voit un graphique en courbe descendante intitulé « Inflation sur un an », dont le dernier point indique 1,9 %. L'économiste le désigne en disant : « c'est ce que montre la courbe derrière moi » (moment-4, 24 s–32 s).",
+      "citations": [
+        "moment-4"
+      ],
+      "error": null
+    },
+    {
+      "condition": "A",
+      "question": "Que dit-on mot pour mot juste avant la pause ?",
+      "ms": 11071,
+      "toolCalls": [
+        "get_transcript"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 5754,
+          "toolCalls": [
+            "get_transcript"
+          ],
+          "thinkingChars": 328,
+          "contentChars": 0,
+          "promptTokens": 1550,
+          "evalTokens": 138,
+          "loadMs": 2,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": true,
+          "http": 200,
+          "ms": 5315,
+          "toolCalls": [],
+          "thinkingChars": 89,
+          "contentChars": 334,
+          "promptTokens": 1689,
+          "evalTokens": 97,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "Juste avant la pause, la présentatrice dit mot pour mot : « On se retrouve juste après la pause, restez avec nous. »",
+      "citations": [
+        "moment-5"
+      ],
+      "error": null
+    },
+    {
+      "condition": "B",
+      "question": "Que dit-on mot pour mot juste avant la pause ?",
+      "ms": 62116,
+      "toolCalls": [
+        "get_transcript",
+        "get_transcript",
+        "inspect_clip",
+        "search_moments"
+      ],
+      "requests": [
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 15026,
+          "toolCalls": [
+            "get_transcript",
+            "get_transcript"
+          ],
+          "thinkingChars": 1093,
+          "contentChars": 0,
+          "promptTokens": 1552,
+          "evalTokens": 431,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 16234,
+          "toolCalls": [
+            "inspect_clip"
+          ],
+          "thinkingChars": 1518,
+          "contentChars": 0,
+          "promptTokens": 1797,
+          "evalTokens": 454,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 9553,
+          "toolCalls": [
+            "search_moments"
+          ],
+          "thinkingChars": 546,
+          "contentChars": 245,
+          "promptTokens": 1959,
+          "evalTokens": 235,
+          "loadMs": 2,
+          "error": null
+        },
+        {
+          "tools": 3,
+          "format": false,
+          "http": 200,
+          "ms": 3483,
+          "toolCalls": [],
+          "thinkingChars": 53,
+          "contentChars": 282,
+          "promptTokens": 2195,
+          "evalTokens": 97,
+          "loadMs": 1,
+          "error": null
+        },
+        {
+          "tools": 0,
+          "format": true,
+          "http": 200,
+          "ms": 17814,
+          "toolCalls": [],
+          "thinkingChars": 1011,
+          "contentChars": 271,
+          "promptTokens": 1865,
+          "evalTokens": 107,
+          "loadMs": 1,
+          "error": null
+        }
+      ],
+      "kind": "observation",
+      "answer": "Juste avant la pause, on entend : « On se retrouve juste après la pause, restez avec nous. »",
+      "citations": [
+        "moment-5"
+      ],
+      "error": null
+    }
+  ]
+}

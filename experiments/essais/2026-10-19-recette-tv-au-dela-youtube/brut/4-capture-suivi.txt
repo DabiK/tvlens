@@ -1,0 +1,48 @@
+09:50:54 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:00 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:05 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:11 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:17 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:23 connected envoyés 33 perdus 0 {} images 134 app None fin stopped True 
+09:51:29 capturing envoyés 0 perdus 0 {} images 0 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:51:34 capturing envoyés 0 perdus 0 {} images 4 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:51:40 connected envoyés 1 perdus 0 {} images 5 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:51:46 connected envoyés 2 perdus 0 {} images 8 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:51:52 connected envoyés 2 perdus 0 {} images 11 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:51:57 connected envoyés 3 perdus 0 {} images 12 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:04 connected envoyés 4 perdus 0 {} images 16 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:09 connected envoyés 5 perdus 0 {} images 20 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:16 connected envoyés 5 perdus 0 {} images 23 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:23 connected envoyés 6 perdus 0 {} images 27 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:30 connected envoyés 7 perdus 0 {} images 28 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:36 connected envoyés 8 perdus 0 {} images 32 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:41 connected envoyés 8 perdus 0 {} images 35 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:47 connected envoyés 9 perdus 0 {} images 36 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:53 connected envoyés 10 perdus 0 {} images 40 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:52:58 connected envoyés 11 perdus 0 {} images 44 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:04 connected envoyés 11 perdus 0 {} images 47 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:10 connected envoyés 12 perdus 0 {} images 48 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:16 connected envoyés 13 perdus 0 {} images 53 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:22 connected envoyés 13 perdus 0 {} images 55 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:27 connected envoyés 14 perdus 0 {} images 59 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:34 connected envoyés 15 perdus 0 {} images 60 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:39 connected envoyés 16 perdus 0 {} images 64 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:45 connected envoyés 16 perdus 0 {} images 67 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:51 connected envoyés 17 perdus 0 {} images 68 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:53:57 connected envoyés 18 perdus 0 {} images 72 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:02 connected envoyés 18 perdus 0 {} images 75 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:08 connected envoyés 19 perdus 0 {} images 76 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:14 connected envoyés 20 perdus 0 {} images 80 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:19 connected envoyés 21 perdus 0 {} images 84 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:25 connected envoyés 21 perdus 0 {} images 87 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:30 connected envoyés 22 perdus 0 {} images 88 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:36 connected envoyés 23 perdus 0 {} images 92 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:42 connected envoyés 23 perdus 0 {} images 95 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:47 connected envoyés 24 perdus 0 {} images 96 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:53 connected envoyés 25 perdus 0 {} images 100 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:54:59 connected envoyés 26 perdus 0 {} images 104 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:55:05 connected envoyés 26 perdus 0 {} images 107 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:55:11 connected envoyés 27 perdus 0 {} images 108 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:55:17 connected envoyés 28 perdus 0 {} images 112 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:55:23 connected envoyés 29 perdus 0 {} images 116 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 
+09:55:29 connected envoyés 29 perdus 0 {} images 119 app {'appId': 'com.webos.app.mediadiscovery', 'name': 'lecteur de la TV'} fin None False 

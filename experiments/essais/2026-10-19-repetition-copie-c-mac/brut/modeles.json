@@ -1,0 +1,55 @@
+{
+  "gemma3:4b": {
+    "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+    "sizeMb": 3195,
+    "details": {
+      "parent_model": "dhiltgen/gemma3:4b-it-q4_K_M-llamacpp",
+      "format": "gguf",
+      "family": "gemma3",
+      "families": [
+        "gemma3",
+        "clip"
+      ],
+      "parameter_size": "3.9B",
+      "quantization_level": "Q4_K_M"
+    },
+    "localAlready": true,
+    "at": "2026-10-19T16:16:28.520Z"
+  },
+  "qwen3.8:27b": {
+    "digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+    "sizeMb": 16920,
+    "details": {
+      "parent_model": "qwen3.8:27b-q4_K_M",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "27.3B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 5120
+    },
+    "localAlready": true,
+    "at": "2026-10-19T16:17:54.988Z"
+  },
+  "qwen3-embedding:0.6b": {
+    "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+    "sizeMb": 610,
+    "details": {
+      "parent_model": "/Users/ollama/.ollama/models/blobs/sha256-06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+      "format": "gguf",
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size": "595.78M",
+      "quantization_level": "Q8_0",
+      "context_length": 32768,
+      "embedding_length": 1024
+    },
+    "localAlready": true,
+    "at": "2026-10-19T16:17:54.989Z"
+  }
+}

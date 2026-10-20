@@ -1,0 +1,13 @@
+AVANT
+{"returnValue":true,"appId":"com.webos.app.home","appCategory":["home"],"processId":"","windowId":""}
+[{"appId": "com.webos.app.home", "connected": true, "fullScreen": false, "displayOutput": {"width": 1600, "y": 46, "x": 300, "height": 900}, "context": "_MXNFFjBoS2CZOL"}, {"appId": "com.webos.app.livetv", "connected": true, "fullScreen": false, "displayOutput": {"width": 0, "y": 0, "x": 0, "height": 0}, "context": "7F37eE58B1B1F0cb650cb9EdAFE58bc"}]
+1792360608.%N
+code=0
+1792360609.%N
+{"capturedHeight":720,"writtenBytes":633587,"returnValue":true,"capturedWidth":1280}
+APRES
+{"returnValue":true,"appId":"com.webos.app.home","appCategory":["home"],"processId":"","windowId":""}
+[{"appId": "com.webos.app.home", "connected": true, "fullScreen": false, "displayOutput": {"width": 1600, "y": 46, "x": 300, "height": 900}, "context": "_MXNFFjBoS2CZOL"}, {"appId": "com.webos.app.livetv", "connected": true, "fullScreen": false, "displayOutput": {"width": 0, "y": 0, "x": 0, "height": 0}, "context": "7F37eE58B1B1F0cb650cb9EdAFE58bc"}]
+LOG
+TVLENS_PANEL_PLAYBACK_REQUIRED YouTube playback required
+0

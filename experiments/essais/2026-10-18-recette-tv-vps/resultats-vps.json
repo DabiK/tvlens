@@ -1,0 +1,302 @@
+{
+  "5c07dc06-8d31-48cf-b7b5-8d08e2b29d13": {
+    "manifest": {
+      "state": "archived",
+      "createdAt": 1792310738106,
+      "closedAt": 1792311071072,
+      "elapsedMs": 332794.434175,
+      "capturedThroughMs": 314682.0615670003,
+      "passages": 35,
+      "host": "server"
+    },
+    "passages": 35,
+    "ready": 35,
+    "topics": 9,
+    "latency": {
+      "passages": 35,
+      "blockMs": {
+        "n": 35,
+        "mean": 8046,
+        "max": 8094
+      },
+      "arrivalMs": {
+        "n": 35,
+        "mean": 1944,
+        "max": 3780
+      },
+      "audioWaitMs": {
+        "n": 35,
+        "mean": 2859,
+        "max": 11176
+      },
+      "audioMs": {
+        "n": 35,
+        "mean": 7270,
+        "max": 18077
+      },
+      "visionWaitMs": {
+        "n": 35,
+        "mean": 2,
+        "max": 5
+      },
+      "visionMs": {
+        "n": 35,
+        "mean": 4056,
+        "max": 6365
+      },
+      "transcriptAfterCloseMs": {
+        "n": 35,
+        "mean": 12084,
+        "max": 21456
+      },
+      "readyAfterCloseMs": {
+        "n": 35,
+        "mean": 16149,
+        "max": 26103
+      }
+    },
+    "coverage": {
+      "passages": 35,
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0,
+      "visionBlockedMs": 0
+    },
+    "gaps": [],
+    "audioGaps": [],
+    "visionGaps": [],
+    "analysisLagMs": 0,
+    "lastError": null,
+    "apiCalls": 35,
+    "questions": [
+      {
+        "question": "De quoi ça parle",
+        "status": "done",
+        "kind": "observation",
+        "citations": 5,
+        "elapsedMs": 12161,
+        "firstUsefulMs": 10914,
+        "model": "gpt-6-luna"
+      }
+    ]
+  },
+  "78b2173e-3992-4261-b7a2-29c26733a96e": {
+    "manifest": {
+      "state": "archived",
+      "createdAt": 1792312377393,
+      "closedAt": 1792312650710,
+      "elapsedMs": 272770.7974660001,
+      "capturedThroughMs": 266252.62455399986,
+      "passages": 33,
+      "host": "server"
+    },
+    "passages": 33,
+    "ready": 32,
+    "topics": 1,
+    "latency": {
+      "passages": 33,
+      "blockMs": {
+        "n": 33,
+        "mean": 8046,
+        "max": 8066
+      },
+      "arrivalMs": {
+        "n": 33,
+        "mean": 2219,
+        "max": 6636
+      },
+      "audioWaitMs": {
+        "n": 33,
+        "mean": 1915,
+        "max": 7353
+      },
+      "audioMs": {
+        "n": 32,
+        "mean": 7044,
+        "max": 17070
+      },
+      "visionWaitMs": {
+        "n": 32,
+        "mean": 250,
+        "max": 5703
+      },
+      "visionMs": {
+        "n": 32,
+        "mean": 4428,
+        "max": 13787
+      },
+      "transcriptAfterCloseMs": {
+        "n": 32,
+        "mean": 11270,
+        "max": 18587
+      },
+      "readyAfterCloseMs": {
+        "n": 32,
+        "mean": 15962,
+        "max": 22833
+      }
+    },
+    "coverage": {
+      "passages": 33,
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0,
+      "visionBlockedMs": 0
+    },
+    "gaps": [],
+    "audioGaps": [],
+    "visionGaps": [],
+    "analysisLagMs": 8071.094031999528,
+    "lastError": null,
+    "apiCalls": 32,
+    "questions": [],
+    "surveillance": {
+      "instruction": "Vérifie les chiffres annoncés.",
+      "counts": {
+        "detected": 0,
+        "queued": 0,
+        "running": 0,
+        "sourced": 1,
+        "undetermined": 1,
+        "error": 0,
+        "cancelled": 0,
+        "noted": 0
+      },
+      "coverage": {
+        "total": 30,
+        "waiting": 1,
+        "pending": 1,
+        "scanning": 0,
+        "scanned": 28,
+        "rescan": 0,
+        "empty": 0,
+        "unscannable": 0,
+        "failed": 0,
+        "textOnly": 0,
+        "scannedThroughMs": 250105.30682299996,
+        "lagMs": 8053.481810000463,
+        "stoppedWithPending": 2
+      },
+      "claims": [
+        {
+          "id": "claim-1",
+          "status": "sourced",
+          "reason": null,
+          "sources": 3
+        },
+        {
+          "id": "claim-2",
+          "status": "undetermined",
+          "reason": "preuves insuffisantes",
+          "sources": 0
+        }
+      ],
+      "cards": [
+        {
+          "label": "Sources consultées",
+          "text": "En 1995, des mobilisations étudiantes ont précédé leur convergence avec la grève générale de novembre-décembre, qui a fortement paralysé les transports franciliens. Les sources ne décrivent toutefois pas simplement la grève comme ayant commencé avec les étudiants : des appels à la grève dans la fonction publique précédaient aussi le mouvement étudiant.",
+          "sources": [
+            "INA",
+            "Persée / Les Cahiers du Genre",
+            "INA"
+          ]
+        }
+      ],
+      "metrics": {
+        "detect": {
+          "calls": 26,
+          "failures": 1,
+          "timeouts": 1,
+          "passagesScanned": 28,
+          "rescans": 1,
+          "emptySkipped": 0,
+          "claimsRaw": 2,
+          "claimsAccepted": 2,
+          "signals": 0,
+          "duplicates": 0,
+          "sameAsRejected": 0,
+          "readingsAtBound": 0,
+          "passagesReread": 0,
+          "passagesRevived": 0,
+          "rejected": {
+            "unknownPassage": 0,
+            "quoteNotFound": 0,
+            "invalid": 0,
+            "overflow": 0
+          },
+          "runMs": {
+            "n": 25,
+            "mean": 3436,
+            "max": 45435,
+            "last": 1633,
+            "total": 85911
+          },
+          "passageWaitMs": {
+            "n": 31,
+            "mean": 5771,
+            "max": 48051,
+            "last": 0,
+            "total": 178907
+          }
+        },
+        "verify": {
+          "lots": 2,
+          "lotsFailed": 0,
+          "timeouts": 0,
+          "retries": 0,
+          "claims": 2,
+          "sourced": 1,
+          "undetermined": 1,
+          "errors": 0,
+          "cancelled": 0,
+          "missingVerdicts": 0,
+          "unknownVerdicts": 0,
+          "sourcesProposed": 3,
+          "sourcesAccepted": 3,
+          "webSearches": 6,
+          "textFallbacks": 0,
+          "waitMs": {
+            "n": 2,
+            "mean": 3531,
+            "max": 7048,
+            "last": 7048,
+            "total": 7062
+          },
+          "runMs": {
+            "n": 2,
+            "mean": 14863,
+            "max": 17831,
+            "last": 17831,
+            "total": 29725
+          },
+          "claimToResultMs": {
+            "n": 2,
+            "mean": 18394,
+            "max": 24879,
+            "last": 24879,
+            "total": 36787
+          },
+          "videoLagMs": {
+            "n": 2,
+            "mean": 54407,
+            "max": 65952,
+            "last": 42862,
+            "total": 108814
+          }
+        },
+        "overlap": {
+          "lotsStartedDuringChat": 0,
+          "detectsDuringChat": 0
+        }
+      }
+    }
+  }
+}

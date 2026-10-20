@@ -1,0 +1,6 @@
+disque-avant.png : luminance moyenne 40.8, pixels noirs 35%
+disque-ferme.png : luminance moyenne 0.0, pixels noirs 100%
+disque-ouvert.png : luminance moyenne 37.8, pixels noirs 52%
+disque.wav : 3.0 s, RMS -22.7 dBFS, crête 10685
+youtube-base-avant.png : luminance moyenne 85.3, pixels noirs 15%
+youtube-base.wav : 3.0 s, RMS -18.2 dBFS, crête 27761

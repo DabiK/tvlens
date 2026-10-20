@@ -1,0 +1,247 @@
+{
+  "startedAt": "2026-10-19T06:54:31.654Z",
+  "env": {
+    "TVLENS_QUESTIONS_BACKEND": "local",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_QUESTIONS_MODEL": "qwen3.8:27b",
+    "TVLENS_LOCAL_QUESTIONS_NUM_CTX": "16384",
+    "TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE": "2m",
+    "TVLENS_INSPECTION_BACKEND": "local",
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11434",
+    "TVLENS_LOCAL_VLM_MODEL": "gemma3:4b"
+  },
+  "steps": [
+    {
+      "step": "sessions",
+      "status": 200,
+      "found": true
+    },
+    {
+      "step": "open",
+      "status": 200,
+      "keys": [
+        "id",
+        "elapsedMs",
+        "retentionMs",
+        "retention",
+        "readOnly",
+        "accepting"
+      ]
+    },
+    {
+      "step": "state",
+      "status": 200,
+      "sessionId": "ec55a89c-ca7f-4ca0-af77-eb2b6b313495",
+      "anchorMs": 143508.72191600595,
+      "readOnly": true
+    },
+    {
+      "step": "question",
+      "question": "Que dit exactement l'intervenant sur la mobilisation des lycéens ?",
+      "status": 200,
+      "id": "deep-7",
+      "accepted": {
+        "id": "deep-7"
+      },
+      "wallMs": 30103,
+      "final": "done",
+      "message": "Recherche des passages…",
+      "kind": "insufficient",
+      "answer": "Je ne trouve aucune mention de la mobilisation des lycéens dans les passages observés : les résumés et transcriptions portent sur un sondage M6/RTL, l'imprévisibilité d'une campagne présidentielle, puis une vidéo sur des « arnaques d'appartements » et un entretien flouté. Je ne peux donc pas citer ce que l'intervenant dit sur ce sujet, faute de passage le traitant.",
+      "citations": [],
+      "limits": [
+        "Aucun passage observé ne traite de la mobilisation des lycéens ; je ne peux ni confirmer ni citer un propos sur ce sujet."
+      ],
+      "audit": [
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        },
+        {
+          "tool": "search_moments",
+          "status": "completed"
+        }
+      ],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m",
+        "think": "default"
+      },
+      "elapsedMs": 29277,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 2
+        },
+        "thinkingChars": 1103,
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 29281,
+        "endToEndMs": 29283,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [
+          {
+            "tool": "search_moments",
+            "durationMs": 4,
+            "status": "completed"
+          },
+          {
+            "tool": "search_moments",
+            "durationMs": 3,
+            "status": "completed"
+          }
+        ],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 3,
+          "journalEntries": 14,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    },
+    {
+      "step": "question",
+      "question": "De quoi parle cette session, en trois points ?",
+      "status": 200,
+      "id": "deep-8",
+      "accepted": {
+        "id": "deep-8"
+      },
+      "wallMs": 36121,
+      "final": "done",
+      "message": "La recherche continue · arrêt au plus tard à 5 minutes.",
+      "kind": "observation",
+      "answer": "En trois points : 1) Le live s'ouvre sur un intervenant qui présente un sondage M6/RTL et évoque l'imprévisibilité d'une campagne présidentielle. 2) L'écran bascule ensuite sur une vidéo d'alerte contre des « arnaques d'appartements », montrant un logement dégradé et une allégation sur un loyer réduit contre du contenu favorable. 3) La dernière partie (d'environ 95 s à la fin) reste sur un plan fixe et flouté de deux femmes en entretien dans un salon, sous l'incrustation « elan.media__ — ABONNÉ », sans évolution visible.",
+      "citations": [
+        {
+          "id": "moment-14",
+          "startMs": 95349.12191601192,
+          "endMs": 103377
+        },
+        {
+          "id": "moment-19",
+          "startMs": 135480.52191601787,
+          "endMs": 143508
+        }
+      ],
+      "limits": [
+        "Les 13 passages omis (début de session) ne sont pas détaillés ici ; le résumé s'appuie sur les échanges antérieurs du fil et les passages 14 à 19."
+      ],
+      "audit": [],
+      "model": "qwen3.8:27b",
+      "backend": {
+        "role": "questions",
+        "kind": "ollama",
+        "model": "qwen3.8:27b",
+        "host": "127.0.0.1:11434",
+        "numCtx": 16384,
+        "keepAlive": "2m",
+        "think": "default"
+      },
+      "elapsedMs": 35247,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 16384,
+            "keepAlive": "2m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "thinkingChars": 1542,
+        "waitMs": 1,
+        "contextMs": 2,
+        "firstProgressMs": 2,
+        "firstUsefulMs": 35250,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 35250,
+        "endToEndMs": 35251,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 143508.72191600595,
+          "frozenAtMs": 150457.91483300002,
+          "evidenceAsOfMs": 150457.91483300002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 143508.72191600595,
+          "analyzedThroughMs": 143508.72191600595,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 0,
+          "lagAtStartMs": 0
+        }
+      },
+      "observations": []
+    }
+  ],
+  "serverLogTail": []
+}

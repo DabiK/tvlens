@@ -1,0 +1,44 @@
+{
+  "id": "r1-g1-kennedy-gemma3-4b",
+  "kind": "g1",
+  "campaign": {
+    "id": "r1-g1-kennedy-gemma3-4b",
+    "kind": "g1",
+    "preparation": "kennedy-g1",
+    "roles": {
+      "vlm": {
+        "model": "gemma3:4b",
+        "numCtx": 8192
+      }
+    }
+  },
+  "roles": {
+    "vlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "keepAlive": "10m",
+      "numCtx": 8192
+    },
+    "questions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m"
+    },
+    "embeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b"
+    },
+    "inspection": null
+  },
+  "whisper": {
+    "threads": null,
+    "audioCtx": null,
+    "model": "base"
+  },
+  "cold": true,
+  "ollama": {},
+  "validation": false,
+  "code": "/Users/Dabi/Documents/TVLens-GX10/copies/gx10-copie-c",
+  "startedAt": "2026-10-19T16:16:28.505Z"
+}

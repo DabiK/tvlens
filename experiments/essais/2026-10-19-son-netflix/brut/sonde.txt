@@ -1,0 +1,8 @@
+-- netflix 12:25:33
+[{"appId": "netflix", "connected": true, "fullScreen": false, "displayOutput": {"width": 3840, "y": 0, "x": 0, "height": 2160}, "sourceInput": {"width": 1920, "y": 0, "x": 0, "height": 1080}, "width": 1920, "height": 1080, "context": "_ZypC3QGtJIxXjb"}]
+fenetres ['netflix']
+panel.py: 0 controleur, 0 recuperation
+layout: {"active": false, "mode": "chat"}
+{"subscribed":false,"returnValue":true,"foregroundAppInfo":[{"appId":"netflix","playState":"playing","type":"media","mediaId":"_ZypC3QGtJIxXjb","windowId":"_Window_Id_475"}]}
+{"returnValue":true,"appId":"netflix","appCategory":[],"processId":"","windowId":""}
+Recording WAVE '/tmp/t-sonde-netflix.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo

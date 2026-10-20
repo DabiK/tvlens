@@ -1,0 +1,124 @@
+{
+  "model": "qwen3-embedding:0.6b",
+  "passages": 19,
+  "anchorMs": 143508.72191600595,
+  "runs": [
+    {
+      "query": "un sondage sur l’élection présidentielle",
+      "ms": 2276,
+      "mode": "hybrid",
+      "top": [
+        {
+          "id": "moment-7",
+          "score": 0.5357864657499412,
+          "summary": "L’intervenant souligne que des surprises peuvent survenir à tout moment pendant une campagne présidentielle et qu’on ne sait pas ce que cell"
+        },
+        {
+          "id": "moment-4",
+          "score": 0.401519484173081,
+          "summary": "L’intervenant évoque la question de savoir si les sondages d’intentions de vote sont fiables et qualifie les discussions à ce sujet d’interm"
+        },
+        {
+          "id": "moment-8",
+          "score": 0.39996547107925057,
+          "summary": "L’intervenant dit que personne ne sait ce que les Français et les Françaises voteront en avril et mai prochains, car nul ne sait ce qui se p"
+        }
+      ]
+    },
+    {
+      "query": "une escroquerie à la location de logements",
+      "ms": 23,
+      "mode": "hybrid",
+      "top": [
+        {
+          "id": "moment-10",
+          "score": 0.3019956743925035,
+          "summary": "La vidéo intégrée montre successivement des images d’un mur très abîmé, puis une femme et une pièce avec parquet. Des textes incrustés évoqu"
+        },
+        {
+          "id": "moment-12",
+          "score": 0.2504432481789749,
+          "summary": "Le portrait de Sarah est accompagné de la mention « Avocate en droit immobilier », puis la vidéo revient sur la feuille illustrée posée entr"
+        },
+        {
+          "id": "moment-11",
+          "score": 0.2348153877118892,
+          "summary": "La vidéo passe à un entretien en studio entre deux femmes, puis montre une feuille illustrée posée sur une table et un carton présentant une"
+        }
+      ]
+    },
+    {
+      "query": "une personne interviewée dont le visage est caché",
+      "ms": 20,
+      "mode": "hybrid",
+      "top": [
+        {
+          "id": "moment-16",
+          "score": 0.36767975496449157,
+          "summary": "L’image reste fixe sur deux personnes assises face à face dans un salon, avec le compte « elan.media__ » et la mention « ABONNÉ » en surimpr"
+        },
+        {
+          "id": "moment-19",
+          "score": 0.35995224564793127,
+          "summary": "L’entretien flouté reste à l’écran sans changement perceptible, avec deux personnes assises face à face et une incrustation d’abonnement au "
+        },
+        {
+          "id": "moment-18",
+          "score": 0.3517117658511494,
+          "summary": "Le plan reste fixe sur l’entretien flouté de deux personnes dans un salon, avec l’incrustation « elan.media__ — ABONNÉ » ; aucun élément nou"
+        }
+      ]
+    },
+    {
+      "query": "il y a une minute",
+      "ms": 0,
+      "mode": "time",
+      "top": [
+        {
+          "id": "moment-12",
+          "score": 1,
+          "summary": "Le portrait de Sarah est accompagné de la mention « Avocate en droit immobilier », puis la vidéo revient sur la feuille illustrée posée entr"
+        }
+      ]
+    }
+  ],
+  "identityA": {
+    "enabled": true,
+    "backend": "ollama",
+    "model": "qwen3-embedding:0.6b",
+    "identity": "d47f96d97792b21978cf260483a32735fd1a34aa839d8bd7eb3ba97ebe3e4a16"
+  },
+  "identityB": {
+    "enabled": true,
+    "backend": "ollama",
+    "model": "qwen3-embedding:0.6b",
+    "identity": "bd6a75e8118c03105c34e1a08bb3a1b5e267eb99b9f4bc0d66e48aa483525ad3"
+  },
+  "cache": {
+    "filesAfterA": [
+      "embeddings-d47f96d97792b21978cf260483a32735fd1a34aa839d8bd7eb3ba97ebe3e4a16.json"
+    ],
+    "filesAfterB": [
+      "embeddings-bd6a75e8118c03105c34e1a08bb3a1b5e267eb99b9f4bc0d66e48aa483525ad3.json",
+      "embeddings-d47f96d97792b21978cf260483a32735fd1a34aa839d8bd7eb3ba97ebe3e4a16.json"
+    ],
+    "sameTopWithNewInstance": true,
+    "linesA": 22,
+    "diagnostics": [
+      {
+        "code": "TVLENS_EMBEDDING_CACHE_LOAD",
+        "cause": "missing",
+        "rebuild": "total",
+        "providerCallsPossible": true,
+        "message": "Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés."
+      },
+      {
+        "code": "TVLENS_EMBEDDING_CACHE_LOAD",
+        "cause": "model-mismatch",
+        "rebuild": "total",
+        "providerCallsPossible": true,
+        "message": "Modèle du cache d’embeddings différent : reconstruction nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés."
+      }
+    ]
+  }
+}
