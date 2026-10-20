@@ -1,0 +1,3 @@
+{"atUtc": "2026-10-20T22:08:50.063531+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:08:50.065835+00:00", "status": "waiting-predecessors"}
+{"atUtc": "2026-10-20T22:36:05.146330+00:00", "status": "blocked", "error": {"type": "RuntimeError", "message": "PREDECESSOR_FAILED:/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results"}, "readyForScoring": false}

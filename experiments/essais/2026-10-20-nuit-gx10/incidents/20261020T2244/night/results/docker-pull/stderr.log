@@ -1,0 +1,1 @@
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/create?fromImage=docker.io%2Fvllm%2Fvllm-openai&platform=linux%2Farm64&tag=sha256%3A2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce": dial unix /var/run/docker.sock: connect: permission denied

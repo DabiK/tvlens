@@ -1,0 +1,110 @@
+{
+  "capturedAtUtc": "2026-10-20T22:44:04.248607+00:00",
+  "transferArchiveSha256": "6fd7aecbb6d56f2c2cf5edbfef5b5a9847a8872e307f7b14cb590caa55019f7b",
+  "files": {
+    "corpus/launcher.stderr.log": {
+      "bytes": 841,
+      "sha256": "0345648ab58471663fc38b326fa1d5317d5433a63a996ed895f46e27ba06e70d"
+    },
+    "corpus/launcher.stdout.log": {
+      "bytes": 37,
+      "sha256": "bd542cf595a436ee76857af67a128d147c1471446e6403e3d0180a740511a2bd"
+    },
+    "corpus/results/events.jsonl": {
+      "bytes": 292,
+      "sha256": "a7fca6cf168b6755d97da64ae09d0b75e87dcb2816554daab2970f4526dc0d26"
+    },
+    "corpus/results/integrite.json": {
+      "bytes": 248,
+      "sha256": "e4be47b0eea85f2b61a2bb3aec1b3a980d23521ed784bcb3a74cf64b0feb88fe"
+    },
+    "corpus/results/status.json": {
+      "bytes": 322,
+      "sha256": "2bca490e56523f69eb4ce07457294fac54816112689e40f7787e25dcc2956888"
+    },
+    "docker-access-check/check.sh": {
+      "bytes": 389,
+      "sha256": "9c386582d9a4e129e4850e2fe31d4203f0999043e6c5fecc579b1071f92a8aae"
+    },
+    "docker-access-check/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docker-access-check/stdout.log": {
+      "bytes": 191,
+      "sha256": "a0e47719ef2b58a04769cb42c910a1913b2100ab89aaa0e77d0f76764ff7b792"
+    },
+    "night/launcher.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "night/launcher.stdout.log": {
+      "bytes": 129,
+      "sha256": "bf981a1d7938083f83105ce8c2509db8bbece796f352a1909140fb58c50e219e"
+    },
+    "night/results/docker-pull/command.json": {
+      "bytes": 370,
+      "sha256": "ac7aa6353539d89991ba3dd385993369c1ac734fe37426b39699507d5bfb507c"
+    },
+    "night/results/docker-pull/stderr.log": {
+      "bytes": 365,
+      "sha256": "a63d7a35ef79ba90af404eeaa7ac60c37d609de277663aaffea1e24a8de7b3be"
+    },
+    "night/results/docker-pull/stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "night/results/events.jsonl": {
+      "bytes": 840,
+      "sha256": "fd04479f3f9d28f0a1df9b8e83fe54a7ad5abb138bd1f3df40c49eb784c6fa98"
+    },
+    "night/results/integrite.json": {
+      "bytes": 411232,
+      "sha256": "862c45eac73f216791af18e6fb46a832b412a6cd07c7ee99b0cd592f817f5aa9"
+    },
+    "night/results/status.json": {
+      "bytes": 4096,
+      "sha256": "ddb81e6d19c53489573bb5bcdb4518b4bc6efd78f7fae7992776ba2da67a47f0"
+    },
+    "qwen/launcher.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qwen/launcher.stdout.log": {
+      "bytes": 30,
+      "sha256": "2539dffa5bc38f3797c363d5d5711a91150dac1209373d48d15ed3782657bf3a"
+    },
+    "qwen/results/events.jsonl": {
+      "bytes": 295,
+      "sha256": "7bcb2c4c3d8f05dd1bbc99c6ac60ceb73628737ad8410bba297a1bab6e39b483"
+    },
+    "qwen/results/integrite.json": {
+      "bytes": 912,
+      "sha256": "69926523b60a336dfc5947366d310cf2ad1ea70d578d02555e6fe2bd57bd4975"
+    },
+    "qwen/results/status.json": {
+      "bytes": 344,
+      "sha256": "66ad822f3f141a2c092a9facdb54d90331a1e053bca3caf5241094f24d94aab0"
+    },
+    "streaming/launcher.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "streaming/launcher.stdout.log": {
+      "bytes": 37,
+      "sha256": "25d5e927dc030e78cca5a63fc88b4340c6139c88b051c6d53a293649b50e7cd6"
+    },
+    "streaming/results/events.jsonl": {
+      "bytes": 364,
+      "sha256": "f08f1df1695dd48a34a06fad4e1d9a1766c0fd3b2b4509f2cdb2feefbbf09db1"
+    },
+    "streaming/results/integrite.json": {
+      "bytes": 337,
+      "sha256": "5dae5cbb5887369faec1f419f223c3175748e3107ea67697856f52f855795d82"
+    },
+    "streaming/results/status.json": {
+      "bytes": 406,
+      "sha256": "57c78dc934b91ce8e8949e18d9ce97c2c80dbf25b5ce26ddb25f18be455ffb1f"
+    }
+  }
+}

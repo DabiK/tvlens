@@ -1,0 +1,126 @@
+{
+  "id": "a0593caec82144519b8d8a5c4fbb3456",
+  "startedAtUtc": "2026-10-20T21:02:00.563751+00:00",
+  "deadlineUtc": "2026-10-21T05:00:00+00:00",
+  "status": "blocked",
+  "stages": [
+    {
+      "name": "perception",
+      "argv": [
+        "python3",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/orchestrer.py",
+        "run",
+        "--experiment",
+        "perception",
+        "--mode",
+        "execute",
+        "--repo",
+        "/home/nvidia/tvlens",
+        "--reservation",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/reservation-perception.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception"
+      ],
+      "startedAtUtc": "2026-10-20T21:29:30.799606+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-20T21:33:25.066212+00:00",
+      "durationSeconds": 234.2655536909988
+    },
+    {
+      "name": "perception-verify",
+      "argv": [
+        "python3",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/orchestrer.py",
+        "verify",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception"
+      ],
+      "startedAtUtc": "2026-10-20T21:33:25.067002+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-20T21:33:25.569825+00:00",
+      "durationSeconds": 0.5010944189998554
+    },
+    {
+      "name": "vision",
+      "argv": [
+        "python3",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/orchestrer.py",
+        "run",
+        "--experiment",
+        "vision",
+        "--mode",
+        "execute",
+        "--repo",
+        "/home/nvidia/tvlens",
+        "--reservation",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/reservation-vision.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision",
+        "--inputs",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env"
+      ],
+      "startedAtUtc": "2026-10-20T21:33:25.570931+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-20T22:32:56.586604+00:00",
+      "durationSeconds": 3571.014383963997
+    },
+    {
+      "name": "vision-verify",
+      "argv": [
+        "python3",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/orchestrer.py",
+        "verify",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision"
+      ],
+      "startedAtUtc": "2026-10-20T22:32:56.587453+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-20T22:32:57.591139+00:00",
+      "durationSeconds": 1.001549401000375
+    },
+    {
+      "name": "probe-ollama",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/client/sonder.cjs",
+        "--repo",
+        "/home/nvidia/tvlens",
+        "--corpus",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/client/corpus.json",
+        "--backend",
+        "ollama",
+        "--repeats",
+        "2",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/answers-ollama",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-20T22:32:57.618309+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-20T22:35:58.860907+00:00",
+      "durationSeconds": 181.24140186099976
+    },
+    {
+      "name": "docker-pull",
+      "argv": [
+        "docker",
+        "pull",
+        "--platform",
+        "linux/arm64",
+        "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce"
+      ],
+      "startedAtUtc": "2026-10-20T22:35:58.862659+00:00",
+      "exitCode": 1,
+      "finishedAtUtc": "2026-10-20T22:35:59.364251+00:00",
+      "durationSeconds": 0.5009221069994965
+    }
+  ],
+  "updatedAtUtc": "2026-10-20T22:35:59.364708+00:00",
+  "finishedAtUtc": "2026-10-20T22:35:59.364703+00:00",
+  "error": {
+    "type": "RuntimeError",
+    "message": "docker-pull:EXIT_1"
+  }
+}

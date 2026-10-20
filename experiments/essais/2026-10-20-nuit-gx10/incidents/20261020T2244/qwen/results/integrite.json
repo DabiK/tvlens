@@ -1,0 +1,14 @@
+{
+  "sealedAtUtc": "2026-10-20T22:36:06.326717+00:00",
+  "files": {
+    "events.jsonl": "7bcb2c4c3d8f05dd1bbc99c6ac60ceb73628737ad8410bba297a1bab6e39b483",
+    "protocol.json": "3c78ec0bc455bf6410f40167d7e359558f65d7b57aa7d73d5d2b31bc23c4dbab",
+    "repo-code.json": "1b31f81760fceeefc7b4a18b50fc028aa3622fd28a03d011b9be9c29bd5c9fae",
+    "source/queue.py": "485931ad6f4107c2f3a66f582edd7b31b74b4a59f2f0ee7f399a26f9a370d6cf",
+    "source/vision-input.cjs": "a78529fd5af908e3527d92022977ea34a84a4cafee3241ea2611db6b6d70b8c6",
+    "source/vision-probe.cjs": "7be02be3bc728658be3e7c7a1685e6ef73d8b2fc26df072415cf0ba144a04de8",
+    "source/vision-transport.cjs": "a2f66cab3eda18a59a23de778e46ca8f7cf764c755fc145240d17a8f3a8eee91",
+    "source-files.json": "72bd380f93e782e24520aec0b7b05f5e71ce5df07e9a1b9b01ff0c9b95e90995",
+    "status.json": "66ad822f3f141a2c092a9facdb54d90331a1e053bca3caf5241094f24d94aab0"
+  }
+}

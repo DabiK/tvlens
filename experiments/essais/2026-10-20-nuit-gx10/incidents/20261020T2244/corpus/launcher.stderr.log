@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/queue.py", line 322, in <module>
+    main()
+  File "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/queue.py", line 300, in main
+    handles = gate(night, args, ops)
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/queue.py", line 145, in gate
+    containers = check_owned_containers(args.streaming_root, state.get('id'), ops)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/queue.py", line 88, in check_owned_containers
+    raise RuntimeError('PREDECESSOR_DOCKER_UNKNOWN')
+RuntimeError: PREDECESSOR_DOCKER_UNKNOWN

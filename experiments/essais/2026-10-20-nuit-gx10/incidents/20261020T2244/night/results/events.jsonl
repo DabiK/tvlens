@@ -1,0 +1,10 @@
+{"atUtc": "2026-10-20T21:02:00.563961+00:00", "status": "created"}
+{"atUtc": "2026-10-20T21:02:00.580286+00:00", "status": "waiting-reference"}
+{"atUtc": "2026-10-20T21:29:30.796916+00:00", "status": "reference-validated"}
+{"atUtc": "2026-10-20T21:29:30.799720+00:00", "status": "perception"}
+{"atUtc": "2026-10-20T21:33:25.067737+00:00", "status": "perception-verify"}
+{"atUtc": "2026-10-20T21:33:25.571342+00:00", "status": "vision"}
+{"atUtc": "2026-10-20T22:32:56.588197+00:00", "status": "vision-verify"}
+{"atUtc": "2026-10-20T22:32:57.618621+00:00", "status": "probe-ollama"}
+{"atUtc": "2026-10-20T22:35:58.862778+00:00", "status": "docker-pull"}
+{"atUtc": "2026-10-20T22:35:59.365678+00:00", "status": "blocked", "finishedAtUtc": "2026-10-20T22:35:59.364703+00:00", "error": {"type": "RuntimeError", "message": "docker-pull:EXIT_1"}}

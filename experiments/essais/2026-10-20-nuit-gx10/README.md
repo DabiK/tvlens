@@ -35,6 +35,10 @@ bornée de fermeture. Attente du lot initial : deux heures maximum. Aucun réess
 Un échec arrête la chaîne et conserve sa cause. Les verrous de la référence et des expériences sont vérifiés.
 Le processus tourne sur le GX10 dans tmux et survit à la déconnexion du Mac. Le suivi Codex dépend du Mac actif.
 
+Le 20 octobre à 22:35 UTC, le téléchargement Docker s'est arrêté sur un refus d'accès au socket ;
+les étapes précédentes sont scellées. [L'incident, ses journaux et ses empreintes](incidents/20261020T2244/)
+sont conservés à part pour la reprise des seules étapes incomplètes.
+
 ## Configuration vLLM figée
 
 - Image officielle `vllm/vllm-openai:v0.28.0`, sélection ARM64 :

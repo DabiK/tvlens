@@ -1,0 +1,3 @@
+{"atUtc": "2026-10-20T22:11:28.347915+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:11:28.350169+00:00", "status": "waiting-streamingvlm"}
+{"atUtc": "2026-10-20T22:36:13.441518+00:00", "status": "blocked", "error": "RuntimeError:PREDECESSOR_DOCKER_UNKNOWN", "readyForScoring": false}

@@ -1,0 +1,13 @@
+{
+  "id": "0ca604ba496a46db88a91b76fa278b89",
+  "startedAtUtc": "2026-10-20T22:08:50.063215+00:00",
+  "deadlineUtc": "2026-10-21T12:00:00+00:00",
+  "status": "blocked",
+  "stages": [],
+  "updatedAtUtc": "2026-10-20T22:36:05.146001+00:00",
+  "error": {
+    "type": "RuntimeError",
+    "message": "PREDECESSOR_FAILED:/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results"
+  },
+  "readyForScoring": false
+}

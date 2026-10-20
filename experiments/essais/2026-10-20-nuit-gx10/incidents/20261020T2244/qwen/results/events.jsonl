@@ -1,0 +1,3 @@
+{"atUtc": "2026-10-20T21:43:51.171936+00:00", "status": "created"}
+{"atUtc": "2026-10-20T21:43:51.174727+00:00", "status": "waiting-night"}
+{"atUtc": "2026-10-20T22:36:06.324170+00:00", "status": "blocked", "error": {"type": "RuntimeError", "message": "NIGHT_FAILED"}, "readyForScoring": false}
