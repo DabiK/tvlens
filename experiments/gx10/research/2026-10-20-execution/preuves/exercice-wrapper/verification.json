@@ -1,0 +1,100 @@
+{
+  "fixtureOnly": true,
+  "passed": true,
+  "results": [
+    {
+      "name": "normal",
+      "id": "12f7a885-1027-493a-952b-26580557818d",
+      "argv": [
+        "/Users/Dabi/.pyenv/versions/3.14.2/bin/python3",
+        "-c",
+        "import time,sys; print(\"fixture sans modèle\",flush=True); time.sleep(float(sys.argv[1])); sys.exit(int(sys.argv[2]))",
+        "0",
+        "0"
+      ],
+      "started": {
+        "utc": "2026-10-20T20:37:18.568961+00:00",
+        "monotonicNs": 29357889618666
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 82568,
+      "finished": {
+        "utc": "2026-10-20T20:37:18.656284+00:00",
+        "monotonicNs": 29357976833250
+      },
+      "durationMs": 87.214584
+    },
+    {
+      "name": "failure",
+      "id": "66db4223-0bf5-4fa0-b957-b06ec3efcd18",
+      "argv": [
+        "/Users/Dabi/.pyenv/versions/3.14.2/bin/python3",
+        "-c",
+        "import time,sys; print(\"fixture sans modèle\",flush=True); time.sleep(float(sys.argv[1])); sys.exit(int(sys.argv[2]))",
+        "0",
+        "7"
+      ],
+      "started": {
+        "utc": "2026-10-20T20:37:18.656881+00:00",
+        "monotonicNs": 29357977405125
+      },
+      "status": "exited",
+      "exitCode": 7,
+      "pid": 82570,
+      "finished": {
+        "utc": "2026-10-20T20:37:18.743820+00:00",
+        "monotonicNs": 29358064348500
+      },
+      "durationMs": 86.943375
+    },
+    {
+      "name": "budget",
+      "id": "fdc7271e-1e9b-4513-805a-6c5f2bce228f",
+      "argv": [
+        "/Users/Dabi/.pyenv/versions/3.14.2/bin/python3",
+        "-c",
+        "import time,sys; print(\"fixture sans modèle\",flush=True); time.sleep(float(sys.argv[1])); sys.exit(int(sys.argv[2]))",
+        "10",
+        "0"
+      ],
+      "started": {
+        "utc": "2026-10-20T20:37:18.744277+00:00",
+        "monotonicNs": 29358064800083
+      },
+      "status": "interrupted",
+      "exitCode": -15,
+      "pid": 82572,
+      "stopReason": "budget",
+      "finished": {
+        "utc": "2026-10-20T20:37:19.054686+00:00",
+        "monotonicNs": 29358375219541
+      },
+      "durationMs": 310.419458
+    },
+    {
+      "name": "interrupt",
+      "id": "65630f78-dd9d-4428-932f-706e393cc0c8",
+      "argv": [
+        "/Users/Dabi/.pyenv/versions/3.14.2/bin/python3",
+        "-c",
+        "import time,sys; print(\"fixture sans modèle\",flush=True); time.sleep(float(sys.argv[1])); sys.exit(int(sys.argv[2]))",
+        "10",
+        "0"
+      ],
+      "started": {
+        "utc": "2026-10-20T20:37:19.055962+00:00",
+        "monotonicNs": 29358376489208
+      },
+      "status": "interrupted",
+      "exitCode": -15,
+      "pid": 82574,
+      "stopReason": "SIGTERM",
+      "finished": {
+        "utc": "2026-10-20T20:37:19.385186+00:00",
+        "monotonicNs": 29358705713958
+      },
+      "durationMs": 329.22475
+    }
+  ]
+}

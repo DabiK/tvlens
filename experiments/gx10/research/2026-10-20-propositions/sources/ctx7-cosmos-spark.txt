@@ -1,0 +1,69 @@
+### Set TRITON_PTXAS_PATH to system ptXAS
+
+Source: https://github.com/nvidia-cosmos/cosmos-reason2/blob/main/docs/troubleshooting.md
+
+For the PTXAS error, set TRITON_PTXAS_PATH to your system's ptxas when using a virtual environment. Ensure your system CUDA version matches the torch CUDA version.
+
+```shell
+export TRITON_PTXAS_PATH="/usr/local/cuda/bin/ptxas"
+```
+
+--------------------------------
+
+### Start vLLM online serving server
+
+Source: https://github.com/nvidia-cosmos/cosmos-reason2/blob/main/README.md
+
+Starts a vLLM server for Cosmos-Reason2-2B on port 8000. First startup takes a couple minutes for model loading and CUDA graph compilation. Stop the server when done using Ctrl+C or killing the process.
+
+```shell
+vllm serve nvidia/Cosmos-Reason2-2B \
+  --allowed-local-media-path "$(pwd)" \
+  --max-model-len 16384 \
+  --media-io-kwargs '{"video": {"num_frames": -1}}' \
+  --reasoning-parser qwen3 \
+  --port 8000
+```
+
+### Inference > Tested Platforms
+
+Source: https://github.com/nvidia-cosmos/cosmos-reason2/blob/main/README.md
+
+Cosmos-Reason2 works on Hopper and Blackwell. Additional hardware configurations may work but are not officially validated at the time of this release.
+
+Examples have been tested on the following devices:
+
+| GPU | CUDA Version | Functionality |
+| --- | --- | --- |
+| NVIDIA H100 | 12.8 | inference/post-training/quantization |
+| NVIDIA GB200 | 13.0 | inference |
+| NVIDIA DGX Spark | 13.0 | inference |
+| NVIDIA Jetson AGX Thor (Edge) | 13.0 | Transformers inference. vLLM inference is coming soon! |
+
+--------------------------------
+
+### Troubleshooting > Errors > PTXAS Error
+
+Source: https://github.com/nvidia-cosmos/cosmos-reason2/blob/main/docs/troubleshooting.md
+
+### PTXAS Error
+
+Error message: `(EngineCore_DP0 pid=1477831) ptxas fatal   : Value 'sm_121a' is not defined for option 'gpu-name'`
+
+Fix: Use CUDA 13.0 [Docker container](../README.md#setup)
+
+Alternatively, to use the virtual environment, set `TRITON_PTXAS_PATH` to your system `PTXAS`:
+
+```shell
+export TRITON_PTXAS_PATH="/usr/local/cuda/bin/ptxas"
+```
+
+Your system CUDA version must match the torch CUDA version.
+
+--------------------------------
+
+### Inference > Deployment
+
+Source: https://github.com/nvidia-cosmos/cosmos-reason2/blob/main/README.md
+
+For deployment and batch inference, we recommend using [`vllm>=0.11.0`](https://docs.vllm.ai/en/stable/).

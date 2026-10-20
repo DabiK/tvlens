@@ -1,0 +1,224 @@
+{
+  "runId": "6748c7ad-973b-4e37-9ba3-5a7db795d4ef",
+  "complete": true,
+  "sourceDurationMs": 180000,
+  "plannedDurationMs": 190000,
+  "uploads": 23,
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Quel est le sujet de cette vidéo et qu'a expliqué l'intervenant jusqu'ici ?",
+      "kind": "observation",
+      "answer": "La vidéo est une formation sur les bases de l'intelligence artificielle, animée par Jean-Luc Parouty, ingénieur de recherche au CNRS. Jusqu'ici, il a introduit le sujet de l'entraînement des IA en distinguant les systèmes « petits » et « grands », et en évoquant l'apprentissage à partir de données biologiques.",
+      "citations": [
+        {
+          "id": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16000,
+          "endMs": 24000
+        },
+        {
+          "id": "moment-4",
+          "startMs": 24000,
+          "endMs": 32000
+        },
+        {
+          "id": "moment-5",
+          "startMs": 32000,
+          "endMs": 40000
+        },
+        {
+          "id": "moment-6",
+          "startMs": 40000,
+          "endMs": 48000
+        }
+      ],
+      "endToEndMs": 20604,
+      "evidence": {
+        "anchorMs": 64999.48291200001,
+        "frozenAtMs": 65005.889974000005,
+        "evidenceAsOfMs": 65011.360185000005,
+        "refreshes": 1,
+        "journalEntries": 6,
+        "journalDropped": 0,
+        "contextThroughMs": 56000,
+        "analyzedThroughMs": 48000,
+        "pendingCount": 2,
+        "partialCount": 1,
+        "unanalyzedTailMs": 16999.482912000007,
+        "lagAtStartMs": 8999.482912000007
+      }
+    },
+    {
+      "id": "q2",
+      "question": "Résume les explications de l'intervenant dans la dernière minute.",
+      "kind": "insufficient",
+      "answer": "Je n'ai pas encore de mémoire lisible de la dernière minute : la capture s'arrête à 120 s et il reste une analyse en attente sur 104-112 s, donc je ne peux pas résumer les explications de l'intervenant sur cette minute sans inventer.",
+      "citations": [],
+      "endToEndMs": 16749,
+      "evidence": {
+        "anchorMs": 124999.86933,
+        "frozenAtMs": 125006.86124299999,
+        "evidenceAsOfMs": 125010.783944,
+        "refreshes": 1,
+        "journalEntries": 6,
+        "journalDropped": 0,
+        "contextThroughMs": 120000,
+        "analyzedThroughMs": 104000,
+        "pendingCount": 2,
+        "partialCount": 2,
+        "unanalyzedTailMs": 20999.86933,
+        "lagAtStartMs": 4999.869330000001
+      }
+    },
+    {
+      "id": "q3",
+      "question": "Quels points clés faut-il retenir des trois minutes que nous venons de regarder ?",
+      "kind": "observation",
+      "answer": "Sur ces trois minutes, l'intervenant explique l'apprentissage supervisé d'une IA : on part d'un grand corpus d'images étiquetées (chats, lapins), puis on le partage en deux parties, environ 80 % pour l'apprentissage et 20 % pour l'évaluation du modèle. Il illustre ensuite le rôle de ces données d'évaluation avec l'analogie d'un professeur qui réserve des exercices pour tester ses élèves.",
+      "citations": [
+        {
+          "id": "moment-19",
+          "startMs": 144000,
+          "endMs": 152000
+        },
+        {
+          "id": "moment-21",
+          "startMs": 160000,
+          "endMs": 168000
+        },
+        {
+          "id": "moment-22",
+          "startMs": 168000,
+          "endMs": 176000
+        },
+        {
+          "id": "moment-23",
+          "startMs": 176000,
+          "endMs": 180000
+        }
+      ],
+      "endToEndMs": 23672,
+      "evidence": {
+        "anchorMs": 184999.330043,
+        "frozenAtMs": 185007.667529,
+        "evidenceAsOfMs": 185012.476426,
+        "refreshes": 1,
+        "journalEntries": 6,
+        "journalDropped": 0,
+        "contextThroughMs": 180000,
+        "analyzedThroughMs": 168000,
+        "pendingCount": 2,
+        "partialCount": 2,
+        "unanalyzedTailMs": 16999.330042999994,
+        "lagAtStartMs": 4999.3300429999945
+      }
+    }
+  ],
+  "lossCounters": {
+    "audioSkipped": 0,
+    "audioExpired": 0,
+    "visionSkippedBacklog": 0,
+    "visionSkippedAsking": 0,
+    "visionExpired": 0,
+    "audioError": 0,
+    "visionError": 0
+  },
+  "guardFailures": [],
+  "roles": [
+    {
+      "role": "perception",
+      "configured": "local",
+      "exercised": true,
+      "successful": true,
+      "calls": 23,
+      "localMeasurement": true,
+      "indexEvidence": null
+    },
+    {
+      "role": "questions",
+      "configured": "local",
+      "exercised": true,
+      "successful": true,
+      "calls": 3,
+      "localMeasurement": true,
+      "indexEvidence": null
+    },
+    {
+      "role": "embeddings",
+      "configured": "local",
+      "exercised": true,
+      "successful": true,
+      "calls": null,
+      "localMeasurement": true,
+      "indexEvidence": {
+        "indexed": 25,
+        "coalesced": 18,
+        "dropped": 0,
+        "failed": 0,
+        "stale": 0,
+        "pending": 3,
+        "inFlight": 0,
+        "lastIndexedAtMs": 1792525320181,
+        "pausedUntilMs": 0,
+        "closed": false
+      }
+    },
+    {
+      "role": "inspection",
+      "configured": "local",
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "indexEvidence": null
+    },
+    {
+      "role": "transcription",
+      "configured": "whisper",
+      "exercised": true,
+      "successful": true,
+      "calls": 23,
+      "localMeasurement": false,
+      "indexEvidence": null
+    },
+    {
+      "role": "surveillance",
+      "configured": "codex",
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "indexEvidence": null
+    },
+    {
+      "role": "surveillanceDetection",
+      "configured": "codex",
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "indexEvidence": null
+    },
+    {
+      "role": "surveillanceWeb",
+      "configured": "codex",
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "indexEvidence": null
+    }
+  ],
+  "limits": [
+    "Capture TV et transport TV non testés",
+    "Téléchargement et encodage Artemis actifs pendant le rejeu",
+    "Aucune notation de qualité ; une abstention sur trois questions",
+    "Trois indexations encore en attente à la fermeture",
+    "Les dix secondes finales sans capture sont prévues par le scénario"
+  ]
+}

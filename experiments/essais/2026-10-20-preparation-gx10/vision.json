@@ -1,0 +1,47 @@
+{
+  "usage": "sonde de fonctionnement pendant les téléchargements, pas un benchmark",
+  "imageSha256": "173993154ef4f5317519ea17c0df45d362b689dfdc21c87d6070a8f2b94bbe35",
+  "wallS": 41.94223397699898,
+  "result": {
+    "model": "gemma3:4b",
+    "created_at": "2026-10-20T19:13:46.667601781Z",
+    "message": {
+      "role": "assistant",
+      "content": "Voici une description de ce qui est visible dans l'image :\n\nL'image montre un événement officiel, probablement un discours, avec John F. Kennedy à l'avant. Il se tient devant un podium orné du sceau présidentiel américain. Un drapeau américain est également visible à côté du podium. \n\nL'image est prise dans un stade rempli de personnes en costume, dont beaucoup portent des chapeaux. On peut distinguer plusieurs hommes d'affaires et"
+    },
+    "done": true,
+    "done_reason": "length",
+    "total_duration": 41927422207,
+    "load_duration": 13479928446,
+    "prompt_eval_count": 292,
+    "prompt_eval_cached_count": 0,
+    "prompt_eval_duration": 26309249000,
+    "eval_count": 96,
+    "eval_duration": 2117751000
+  },
+  "loadedModels": {
+    "models": [
+      {
+        "name": "gemma3:4b",
+        "model": "gemma3:4b",
+        "size": 2928945397,
+        "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "gemma3",
+          "families": [
+            "gemma3",
+            "clip"
+          ],
+          "parameter_size": "3.9B",
+          "quantization_level": "Q4_K_M"
+        },
+        "expires_at": "2026-10-20T19:23:46.667774774Z",
+        "size_vram": 2928945397,
+        "context_length": 8192,
+        "runner": "llamacpp"
+      }
+    ]
+  }
+}

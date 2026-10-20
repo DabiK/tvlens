@@ -1,0 +1,76 @@
+[
+  {
+    "file": "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+    "id": "04",
+    "slug": "cnrs-entrainement-ia",
+    "source": "yt:W_8OhdeQs4Y",
+    "language": "fr",
+    "kind": "cours, texte à l'écran",
+    "license": "CC BY (YouTube, CNRS FIDLE)",
+    "section": null,
+    "sha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+    "bytes": 39943181,
+    "durationS": 879.961,
+    "ytDlp": "2026.08.19"
+  },
+  {
+    "file": "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "id": "05",
+    "slug": "boeuf-bourguignon",
+    "source": "yt:koEDMDuAw0k",
+    "language": "fr",
+    "kind": "tutoriel de cuisine",
+    "license": "CC BY (YouTube, Learn With A Champion)",
+    "section": null,
+    "sha256": "ec9d70f64ea55dc13a6e5c162a22ce88a383b65d97c442326e6a5045d7c478fd",
+    "bytes": 72542226,
+    "durationS": 737.501,
+    "ytDlp": "2026.08.19"
+  },
+  {
+    "file": "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "id": "08",
+    "slug": "tears-of-steel",
+    "source": "url:https://download.blender.org/demo/movies/ToS/tears_of_steel_720p.mov",
+    "language": "en",
+    "kind": "fiction dialoguée",
+    "license": "CC BY 3.0 (Blender Foundation)",
+    "section": null,
+    "sha256": "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f",
+    "bytes": 372178639,
+    "durationS": 734.166667,
+    "ytDlp": "2026.08.19"
+  },
+  {
+    "file": "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "id": "09",
+    "slug": "artemis-lancement",
+    "source": "yt:CMLD0Lp0JBg",
+    "language": "en",
+    "kind": "direct, son bruité",
+    "license": "domaine public (NASA)",
+    "section": "2:50:00-3:25:00",
+    "sha256": "6ac25c124375fdac03a2a3e2bd599ea3516a75e9fd03bb193de18d6575297710",
+    "bytes": 244981763,
+    "durationS": 2100.0,
+    "ytDlp": "2026.08.19"
+  },
+  {
+    "id": "kennedy-rice-7min",
+    "file": "/srv/tvlens-gx10/videos/kennedy-rice-7min.mp4",
+    "language": "en",
+    "source": "media/samples/kennedy-rice-7min.mp4",
+    "sha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+    "durationS": 420.0,
+    "bytes": 92433328
+  },
+  {
+    "id": "spring",
+    "file": "/srv/tvlens-gx10/videos/spring.mp4",
+    "language": "none",
+    "source": "media/samples/spring.mp4",
+    "sha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+    "durationS": 464.166893,
+    "bytes": 62548137
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "capturedAtUtc": "2026-10-20T20:20:26.680390+00:00",
+  "method": "SSH lecture seule ; copies exactes des campaign.json ; aucun média",
+  "files": [
+    {
+      "path": "base-cnrs-apprentissage.json",
+      "source": "base-cnrs-apprentissage/run/campaign.json",
+      "sha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+      "bytes": 4370128,
+      "complete": true,
+      "status": "complete"
+    },
+    {
+      "path": "base-kennedy.json",
+      "source": "base-kennedy/run/campaign.json",
+      "sha256": "5991bd9d794acdb07321d919e2731a9808f6c0bc3927033c6c0c098a2b4f1766",
+      "bytes": 1798076,
+      "complete": false,
+      "status": "incomplete"
+    },
+    {
+      "path": "cnrs-input-manifest.json",
+      "source": "preparation-cnrs-apprentissage/manifest.json",
+      "sha256": "9fba2265643b8511cbc1adc278685a1eb4da7d94ddf7d623a9687a3d6d27a360",
+      "bytes": 539275,
+      "capturedAtUtc": "2026-10-20T20:22:33.954779+00:00"
+    }
+  ]
+}

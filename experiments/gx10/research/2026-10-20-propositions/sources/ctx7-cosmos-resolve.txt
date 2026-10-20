@@ -1,0 +1,15 @@
+
+1. Title: NVIDIA Cosmos Reason
+   Context7-compatible library ID: /nvidia-cosmos/cosmos-reason2
+   Description: NVIDIA Cosmos Reason is an open, customizable reasoning vision language model for physical AI and robotics that enables embodied agents to understand space, time, and physics for real-world interaction.
+   Code Snippets: 282
+   Source Reputation: High
+   Benchmark Score: 76.71
+
+2. Title: Cosmos Cookbook
+   Context7-compatible library ID: /websites/nvidia-cosmos_github_io_cosmos-cookbook
+   Description: NVIDIA Cosmos Cookbook is a practical guide for building, adapting, and deploying generative world foundation models (WFMs) with step-by-step workflows, recipes, and examples for Physical AI development.
+   Code Snippets: 3778
+   Source Reputation: High
+   Benchmark Score: 69.92
+

@@ -1,0 +1,71 @@
+{
+  "atUtc": "2026-10-20T20:26:59.979795+00:00",
+  "checks": [
+    {
+      "file": "captures/base-cnrs-apprentissage.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "captures/base-kennedy.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "captures/cnrs-input-manifest.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "captures/manifest.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "plans/perception-nominal.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "plans/scenario-index-paused.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "plans/scenario-reference.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "plans/scenario-vision-paused.json",
+      "check": "JSON valide",
+      "ok": true
+    },
+    {
+      "file": "prepare-visual-ablation.py",
+      "check": "syntaxe Python via ast.parse ; script non exécuté",
+      "ok": true
+    },
+    {
+      "file": "plans/scenario-vision-paused.json",
+      "check": "Une seule variation booléenne ; reste identique à la référence",
+      "ok": true
+    },
+    {
+      "file": "plans/scenario-index-paused.json",
+      "check": "Une seule variation booléenne ; reste identique à la référence",
+      "ok": true
+    },
+    {
+      "file": "plans/perception-nominal.json",
+      "check": "12 identités uniques ; ASR figée ; contexte inconnu ; lightweight explicite faux",
+      "ok": true
+    }
+  ],
+  "notRun": [
+    "Validation complète des runners avec médias distants",
+    "Script de préparation médias",
+    "Inférence et benchmark",
+    "Contrôle global produit"
+  ]
+}

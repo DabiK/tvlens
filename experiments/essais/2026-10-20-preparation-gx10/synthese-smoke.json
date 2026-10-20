@@ -1,0 +1,62 @@
+[
+  {
+    "file": "smoke-premier-passage.json",
+    "runId": "963c32f2-79cf-4066-9def-588361e0a0b8",
+    "questionStatus": "done",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore assez de matière : seul un fragment partiel est disponible (« grasp how far and how fast we have come, but condense if you will the »), sans contexte ni image analysée. Pourrais-tu préciser le moment exact ou me laisser relire le passage ?",
+    "endToEndMs": 33206,
+    "embeddings": {
+      "indexed": 2,
+      "coalesced": 2,
+      "dropped": 0,
+      "failed": 0,
+      "stale": 0,
+      "pending": 0,
+      "inFlight": 0,
+      "lastIndexedAtMs": 1792524548316,
+      "pausedUntilMs": 0,
+      "closed": false
+    },
+    "guardFailures": [],
+    "lossCounters": {
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0
+    }
+  },
+  {
+    "file": "smoke-chaud.json",
+    "runId": "37cada8c-66bb-4408-b593-f9c272d8b6cf",
+    "questionStatus": "done",
+    "kind": "observation",
+    "answer": "L'orateur, John F. Kennedy, évoque l'histoire de l'humanité : il invite à mesurer le chemin parcouru en condensant cinquante mille ans d'histoire en à peine un demi-siècle.",
+    "endToEndMs": 13785,
+    "embeddings": {
+      "indexed": 0,
+      "coalesced": 2,
+      "dropped": 0,
+      "failed": 0,
+      "stale": 0,
+      "pending": 2,
+      "inFlight": 0,
+      "lastIndexedAtMs": 0,
+      "pausedUntilMs": 0,
+      "closed": false
+    },
+    "guardFailures": [],
+    "lossCounters": {
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 0,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 0
+    }
+  }
+]

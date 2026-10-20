@@ -1,0 +1,217 @@
+{
+  "utc": "2026-10-20T20:33:40.685567+00:00",
+  "referenceComplete": false,
+  "files": [
+    {
+      "path": "blocks/000002/media.json",
+      "bytes": 879691
+    },
+    {
+      "path": "blocks/000010/media.json",
+      "bytes": 738963
+    },
+    {
+      "path": "blocks/000025/media.json",
+      "bytes": 822722
+    },
+    {
+      "path": "blocks/000045/media.json",
+      "bytes": 824178
+    },
+    {
+      "path": "blocks/000046/media.json",
+      "bytes": 813978
+    },
+    {
+      "path": "blocks/000047/media.json",
+      "bytes": 813078
+    },
+    {
+      "path": "blocks/000057/media.json",
+      "bytes": 810430
+    },
+    {
+      "path": "blocks/000078/media.json",
+      "bytes": 1002538
+    },
+    {
+      "path": "blocks/000079/media.json",
+      "bytes": 1006282
+    },
+    {
+      "path": "blocks/000080/media.json",
+      "bytes": 1012114
+    },
+    {
+      "path": "blocks/000096/media.json",
+      "bytes": 1004670
+    },
+    {
+      "path": "blocks/000108/media.json",
+      "bytes": 872566
+    }
+  ],
+  "git": {
+    "exit": 0,
+    "stdout": "2035a2faad499659bcdf940c6104e50e311a9cd6\n",
+    "stderr": ""
+  },
+  "tmux": {
+    "exit": 0,
+    "stdout": "tvlens-ollama\ntvlens-server\ntvlens-variations\n",
+    "stderr": ""
+  },
+  "gpu": {
+    "exit": 0,
+    "stdout": "Tue Oct 20 20:33:40 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |\n| N/A   73C    P0             71W /  N/A  | Not Supported          |     92%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A           13960      G   /usr/lib/xorg/Xorg                       95MiB |\n|    0   N/A  N/A           14154      G   /usr/bin/gnome-shell                    146MiB |\n|    0   N/A  N/A          209597      G   /usr/lib/firefox/firefox                243MiB |\n|    0   N/A  N/A          523311      C   ...local/lib/ollama/llama-server       3989MiB |\n|    0   N/A  N/A          525996      C   ...local/lib/ollama/llama-server       3025MiB |\n|    0   N/A  N/A          529803      C   ...local/lib/ollama/llama-server      18612MiB |\n|    0   N/A  N/A          666990      C   ...per.cpp/build/bin/whisper-cli        634MiB |\n+-----------------------------------------------------------------------------------------+\n",
+    "stderr": ""
+  },
+  "tags": {
+    "models": [
+      {
+        "name": "qwen3-embedding:0.6b",
+        "model": "qwen3-embedding:0.6b",
+        "modified_at": "2026-10-20T19:27:57.959452395Z",
+        "size": 639150858,
+        "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+        "details": {
+          "parent_model": "/Users/ollama/.ollama/models/blobs/sha256-06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "595.78M",
+          "quantization_level": "Q8_0",
+          "context_length": 32768,
+          "embedding_length": 1024,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "tools",
+          "thinking",
+          "embedding"
+        ]
+      },
+      {
+        "name": "qwen3.8:27b",
+        "model": "qwen3.8:27b",
+        "modified_at": "2026-10-20T19:27:27.779399185Z",
+        "size": 17741872154,
+        "digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+        "details": {
+          "parent_model": "qwen3.8:27b-q4_K_M",
+          "format": "gguf",
+          "family": "qwen35",
+          "families": [
+            "qwen35"
+          ],
+          "parameter_size": "27.3B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 262144,
+          "embedding_length": 5120,
+          "runner": "llamacpp"
+        },
+        "capabilities": [
+          "completion",
+          "vision",
+          "tools",
+          "thinking"
+        ]
+      },
+      {
+        "name": "gemma3:4b",
+        "model": "gemma3:4b",
+        "modified_at": "2026-10-20T19:11:42.223887316Z",
+        "size": 3350272403,
+        "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+        "details": {
+          "parent_model": "dhiltgen/gemma3:4b-it-q4_K_M-llamacpp",
+          "format": "gguf",
+          "family": "gemma3",
+          "families": [
+            "gemma3",
+            "clip"
+          ],
+          "parameter_size": "3.9B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 131072,
+          "embedding_length": 2560,
+          "runner": "llamacpp"
+        },
+        "capabilities": [
+          "completion",
+          "vision"
+        ]
+      }
+    ]
+  },
+  "ps": {
+    "models": [
+      {
+        "name": "gemma3:4b",
+        "model": "gemma3:4b",
+        "size": 2928945397,
+        "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "gemma3",
+          "families": [
+            "gemma3",
+            "clip"
+          ],
+          "parameter_size": "3.9B",
+          "quantization_level": "Q4_K_M"
+        },
+        "expires_at": "2026-10-20T20:43:39.390619388Z",
+        "size_vram": 2928945397,
+        "context_length": 8192,
+        "runner": "llamacpp"
+      },
+      {
+        "name": "qwen3.8:27b",
+        "model": "qwen3.8:27b",
+        "size": 17527954471,
+        "digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen35",
+          "families": [
+            "qwen35"
+          ],
+          "parameter_size": "27.3B",
+          "quantization_level": "Q4_K_M"
+        },
+        "expires_at": "2026-10-20T20:42:57.151540361Z",
+        "size_vram": 17527954471,
+        "context_length": 16384,
+        "runner": "llamacpp"
+      },
+      {
+        "name": "qwen3-embedding:0.6b",
+        "model": "qwen3-embedding:0.6b",
+        "size": 2965383413,
+        "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "595.78M",
+          "quantization_level": "Q8_0"
+        },
+        "expires_at": "2026-10-20T20:38:30.141711214Z",
+        "size_vram": 2965383413,
+        "context_length": 32768,
+        "runner": "llamacpp"
+      }
+    ]
+  },
+  "version": {
+    "version": "0.40.6"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "complete": false,
+  "convertedDurationMs": 464000,
+  "parameters": {
+    "startMs": 0,
+    "blockMs": 8000,
+    "framesPerBlock": 5,
+    "jpegQuality": 3,
+    "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+    "audio": {
+      "codec": "pcm_s16le",
+      "sampleRate": 16000,
+      "channels": 1,
+      "bitDepth": 16
+    },
+    "sampling": "equidistant-block-start"
+  },
+  "timeOrigin": {
+    "kind": "relative-to-source-interval",
+    "sourceStartMs": 0
+  },
+  "templateSessionId": "video-template-validation-only",
+  "sessionBinding": "required-per-occurrence",
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "076f232a2af5b9aa341cff65b1cbe0bfbfc46c3890f6df684a72a5123af93cf2"
+  },
+  "index": {
+    "path": "blocks.json",
+    "sha256": "fb2f395db165a6460d74f2a3e02e0dab6b151c0c59269707b1d65d91187d81f2"
+  },
+  "source": {
+    "sha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+    "bytes": 62548137,
+    "durationMs": 464170
+  },
+  "conversion": {
+    "tool": "ffmpeg",
+    "version": "6.1.1-3ubuntu5",
+    "inspectionArguments": [
+      "-nostdin",
+      "-i",
+      "/srv/tvlens-gx10/videos/spring.mp4",
+      "-map",
+      "0:v:0",
+      "-t",
+      "0",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "sourceInterval": {
+    "startMs": 0,
+    "endMs": 464170
+  },
+  "plannedDurationMs": 464170,
+  "error": {
+    "code": "TVLENS_VIDEO_IMAGE_MISSING"
+  }
+}

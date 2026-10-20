@@ -1,0 +1,53 @@
+### Build vLLM Docker image for (G)B300 with CUDA 13
+
+Source: https://docs.vllm.ai/en/stable/deployment/docker/
+
+Recommended command for (G)B300 using CUDA 13. Sets CUDA_VERSION=13.0.2 and uses max_jobs=256 with nvcc_threads=2.
+
+```bash
+DOCKER_BUILDKIT=1 docker build \
+--build-arg CUDA_VERSION=13.0.2 \
+--build-arg BUILD_BASE_IMAGE=pytorch/manylinuxaarch64-builder:cuda13.0-78e737ad29420ffc4800e677c51e2a852caf8359 \
+--build-arg max_jobs=256 \
+--build-arg nvcc_threads=2 \
+--build-arg torch_cuda_arch_list='9.0 10.0+PTX' \
+--platform "linux/arm64" \
+--tag vllm/vllm-gb300-openai:latest \
+--target vllm-openai \
+-f docker/Dockerfile \
+.
+```
+
+### Initialized engine snapshots > Requirements
+
+Source: https://docs.vllm.ai/en/stable/features/initialized_snapshots/
+
+The official CUDA 13 `vllm/vllm-openai` Linux x86-64 images include the snapshot runtime. CUDA 12.x and Arm64 images omit it. A compatible host driver, kernel, and privileges are still required. Source installs must set `CRIU_CUDA_PLUGIN_DIR` to the directory containing `cuda_plugin.so`.
+
+--------------------------------
+
+### Running on Systems with Older CUDA Drivers
+
+Source: https://docs.vllm.ai/en/stable/deployment/docker/
+
+For CUDA 13 images, the minimum host kernel is Linux 4.15 when running normally because CUDA 13 requires an R580 or newer driver. Compatibility mode supports R535 and R570 host drivers; R535 lowers the minimum host kernel to Linux 3.10, while R570 still requires Linux 4.15. Upgrading the container userland to Ubuntu 24.04 does not raise these driver-defined kernel requirements. See NVIDIA's [forward compatibility matrix](https://docs.nvidia.com/deploy/cuda-compatibility/forward-compatibility.html#use-the-right-cuda-forward-compatibility-package), [R535 requirements](https://download.nvidia.com/XFree86/Linux-x86_64/535.104.05/README/minimumrequirements.html), and [R580 requirements](https://download.nvidia.com/XFree86/Linux-x86_64/580.76.05/README/minimumrequirements.html).
+
+--------------------------------
+
+### Platform
+
+Source: https://docs.vllm.ai/en/stable/api/vllm/platforms/
+
+Returns whether the GPU is an integrated (UMA) device that shares system memory with the CPU.
+
+On UMA systems (e.g. NVIDIA GH200, DGX Spark, Jetson Orin), cudaMemGetInfo may underreport free memory because it does not account for reclaimable OS memory (page cache, buffers).
+
+--------------------------------
+
+### Pre-built wheels
+
+Source: https://docs.vllm.ai/en/stable/getting_started/installation/gpu/
+
+Note
+
+NVIDIA Blackwell GPUs (B200, GB200) require a minimum of CUDA 12.8, so make sure you are installing PyTorch wheels with at least that version. PyTorch itself offers a [dedicated interface](https://pytorch.org/get-started/locally/) to determine the appropriate pip command to run for a given target configuration.

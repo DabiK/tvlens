@@ -1,0 +1,87 @@
+{
+  "sansJeton": 401,
+  "avecJeton": 200,
+  "champsEtat": [
+    "session",
+    "transcription",
+    "timeline",
+    "chat",
+    "captureGaps",
+    "index",
+    "quota",
+    "surveillance",
+    "storage",
+    "serverNowMs",
+    "revision"
+  ],
+  "surveillance": {
+    "version": 1,
+    "enabled": false,
+    "sessionId": null,
+    "restored": false,
+    "activation": null,
+    "activity": {
+      "state": "idle",
+      "label": "Surveillance inactive.",
+      "detecting": false,
+      "running": 0,
+      "waiting": 0,
+      "late": false
+    },
+    "coverage": {
+      "total": 0,
+      "waiting": 0,
+      "pending": 0,
+      "scanning": 0,
+      "scanned": 0,
+      "rescan": 0,
+      "empty": 0,
+      "unscannable": 0,
+      "failed": 0,
+      "textOnly": 0,
+      "scannedThroughMs": 0,
+      "lagMs": 0,
+      "stoppedWithPending": 0
+    },
+    "backlog": {
+      "late": false,
+      "reason": null,
+      "passagesPending": 0,
+      "passagesFailed": 0,
+      "failure": null,
+      "claimsWaiting": 0,
+      "oldestClaimWaitMs": 0
+    },
+    "counts": {
+      "detected": 0,
+      "queued": 0,
+      "running": 0,
+      "sourced": 0,
+      "undetermined": 0,
+      "error": 0,
+      "cancelled": 0,
+      "noted": 0
+    },
+    "totals": {
+      "claims": 0,
+      "lots": 0,
+      "gaps": 0,
+      "rejected": 0
+    },
+    "overlay": {
+      "seq": 0,
+      "cards": []
+    },
+    "signals": {
+      "seq": 0,
+      "cards": []
+    },
+    "error": null,
+    "registry": {
+      "ready": true,
+      "persisted": true,
+      "status": "ready",
+      "message": null
+    }
+  }
+}

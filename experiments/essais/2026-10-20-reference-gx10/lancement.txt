@@ -1,0 +1,8 @@
+tvlens-ollama: 1 windows (created Tue Oct 20 19:08:34 2026)
+tvlens-reference-preparation: 1 windows (created Tue Oct 20 19:52:31 2026)
+tvlens-server: 1 windows (created Tue Oct 20 19:10:27 2026)
+tvlens-variations: 1 windows (created Tue Oct 20 19:53:52 2026)
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  916G   63G  807G   8% /
+LISTEN 0      4096                                127.0.0.1:11434      0.0.0.0:*          
+2035a2faad499659bcdf940c6104e50e311a9cd6

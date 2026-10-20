@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-20",
+  "source": "transcription des sorties affichées dans le terminal distant et commandes locales, sans adresses réseau",
+  "sshSocket": "active (listening), port 22",
+  "tcp22DepuisMac": [
+    "premiere interface privee: expiration",
+    "seconde interface privee: expiration"
+  ],
+  "executablesPresents": [
+    "git",
+    "nvcc"
+  ],
+  "executablesNonTrouvesDansPATH": [
+    "node",
+    "tailscale"
+  ],
+  "memoireTotaleKio": 127541140,
+  "swapUtiliseKio": 0,
+  "disqueRacineDisponibleKio": 873697748,
+  "bundleVerification": "success",
+  "bundleTailleOctets": 20993540,
+  "connexionTailscaleGX10": "en attente de connexion manuelle",
+  "connexionSSH": "non effectuee",
+  "installationProjet": "non effectuee",
+  "inferenceGPU": "non effectuee",
+  "tele": "hors ligne dans le releve Tailscale du Mac"
+}

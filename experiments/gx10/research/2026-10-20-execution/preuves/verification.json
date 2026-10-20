@@ -1,0 +1,74 @@
+{
+  "utc": "2026-10-20T20:43:37.107246+00:00",
+  "checks": [
+    {
+      "check": "integrity",
+      "path": "validation-perception",
+      "passed": true
+    },
+    {
+      "check": "integrity",
+      "path": "exercice-final",
+      "passed": true
+    },
+    {
+      "check": "integrity",
+      "path": "validation-scellee",
+      "passed": true
+    },
+    {
+      "check": "archive-roundtrip",
+      "passed": true
+    },
+    {
+      "check": "corruption-rejected",
+      "passed": true
+    },
+    {
+      "check": "existing-output-rejected-unmodified",
+      "exitCode": 1,
+      "passed": true
+    },
+    {
+      "check": "real-runner-validation",
+      "arm": "A",
+      "caseCount": 12,
+      "providerInvoked": false,
+      "passed": true
+    },
+    {
+      "check": "real-runner-validation",
+      "arm": "B",
+      "caseCount": 12,
+      "providerInvoked": false,
+      "passed": true
+    },
+    {
+      "check": "python-syntax",
+      "passed": true
+    },
+    {
+      "check": "documented-minimal-transfer-package",
+      "passed": true,
+      "argv": [
+        "python3",
+        "/Users/Dabi/Documents/ISN/tvlens/experiments/gx10/research/2026-10-20-execution/preuves/paquet-transferable/orchestrer.py",
+        "run",
+        "--experiment",
+        "perception",
+        "--mode",
+        "validate",
+        "--repo",
+        "/Users/Dabi/Documents/ISN/tvlens",
+        "--out",
+        "/Users/Dabi/Documents/ISN/tvlens/experiments/gx10/research/2026-10-20-execution/preuves/validation-paquet-transferable"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "fixtureEvidence": "exercice-final/verification.json",
+  "globalCheck": "check --changed exécuté par le parent : vert déclaré, voir ses preuves.",
+  "inferencePerformed": false,
+  "streamWithFullMediaValidated": false,
+  "readyForScoring": false
+}

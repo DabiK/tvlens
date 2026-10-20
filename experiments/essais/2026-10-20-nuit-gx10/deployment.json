@@ -1,0 +1,15 @@
+{
+  "preparedAtUtc": "2026-10-20T21:01:07.457826+00:00",
+  "remoteRoot": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z",
+  "package": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package",
+  "results": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results",
+  "deadlineUtc": "2026-10-21T05:00:00+00:00",
+  "tmuxSession": "tvlens-nuit",
+  "archiveSha256": "4d6b610987f57cc47e4d2131a2e15f95f8df332fb6b853ee01182b2a883693fb",
+  "status": "waiting-reference",
+  "dispatchedAtUtc": "2026-10-20T21:02:00.554877+00:00",
+  "observedAtUtc": "2026-10-20T21:02:26.165048+00:00",
+  "runId": "a0593caec82144519b8d8a5c4fbb3456",
+  "automationId": "gx10-exp-riences-de-la-nuit",
+  "automationIntervalMinutes": 15
+}

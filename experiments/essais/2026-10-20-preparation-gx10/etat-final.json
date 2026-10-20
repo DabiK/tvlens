@@ -1,0 +1,6 @@
+{
+  "httpSansJeton": 401,
+  "httpAvecJeton": 200,
+  "corpusVideosValides": 6,
+  "controleFonctionnel": "rejeu CNRS 180 s complet, 23 blocs, trois questions dont une abstention ; optimisation encore nécessaire"
+}

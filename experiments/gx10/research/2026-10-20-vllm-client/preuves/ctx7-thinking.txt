@@ -1,0 +1,165 @@
+### Streaming chat completions with reasoning using OpenAI Python client
+
+Source: https://docs.vllm.ai/en/stable/features/reasoning_outputs/
+
+Uses getattr to safely extract reasoning and content from streaming deltas. For granite, add extra_body={"chat_template_kwargs": {"thinking": True}}; for Qwen3, to disable thinking, add extra_body={"chat_template_kwargs": {"enable_thinking": False}}.
+
+```python
+from openai import OpenAI
+
+# Modify OpenAI's API key and API base to use vLLM's API server.
+openai_api_key = "EMPTY"
+openai_api_base = "http://localhost:8000/v1"
+
+client = OpenAI(
+    api_key=openai_api_key,
+    base_url=openai_api_base,
+)
+
+models = client.models.list()
+model = models.data[0].id
+
+messages = [{"role": "user", "content": "9.11 and 9.8, which is greater?"}]
+# For granite, add: `extra_body={"chat_template_kwargs": {"thinking": True}}`
+# For Qwen3 series, if you want to disable thinking in reasoning mode, add:
+# extra_body={"chat_template_kwargs": {"enable_thinking": False}}
+stream = client.chat.completions.create(
+    model=model,
+    messages=messages,
+    stream=True,
+)
+
+print("client: Start streaming chat completions...")
+printed_reasoning = False
+printed_content = False
+
+for chunk in stream:
+    # Safely extract reasoning and content from delta,
+    # defaulting to None if attributes don't exist or are empty strings
+    reasoning = (
+        getattr(chunk.choices[0].delta, "reasoning", None) or None
+    )
+    content = getattr(chunk.choices[0].delta, "content", None) or None
+
+    if reasoning is not None:
+        if not printed_reasoning:
+            printed_reasoning = True
+            print("reasoning:", end="", flush=True)
+        print(reasoning, end="", flush=True)
+    elif content is not None:
+        if not printed_content:
+            printed_content = True
+            print("\ncontent:", end="", flush=True)
+        # Extract and print the content
+        print(content, end="", flush=True)
+```
+
+--------------------------------
+
+### Disable Thinking Mode by Default with vllm serve
+
+Source: https://docs.vllm.ai/en/stable/features/reasoning_outputs/
+
+Use this command to start a vLLM server with thinking mode disabled by default for models like Qwen3 that enable it by default. The --default-chat-template-kwargs flag sets enable_thinking to false server-wide.
+
+```bash
+vllm serve Qwen/Qwen3-8B \
+    --reasoning-parser qwen3 \
+    --default-chat-template-kwargs '{"enable_thinking": false}'
+```
+
+--------------------------------
+
+### Send a chat completion request to Nebius AI endpoint
+
+Source: https://docs.vllm.ai/en/stable/deployment/frameworks/nebius/
+
+Expect a chat completion containing an assistant message. The chat_template_kwargs option disables thinking for Qwen models; it is not universal.
+
+```bash
+curl --fail-with-body --silent --show-error --max-time 120 \
+    "$ENDPOINT_URL/v1/chat/completions" \
+    -H "Authorization: Bearer $AUTH_TOKEN" \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "model": "Qwen/Qwen3-0.6B",
+        "messages": [{"role": "user", "content": "Say hello in one short sentence."}],
+        "max_tokens": 128,
+        "temperature": 0,
+        "chat_template_kwargs": {"enable_thinking": false}
+    }' | jq
+```
+
+--------------------------------
+
+### Call token-in/token-out server with httpx and AutoTokenizer
+
+Source: https://docs.vllm.ai/en/stable/examples/scale_out/token_generation_client/
+
+Requires a server started with `vllm serve Qwen/Qwen3-0.6B --enable-scale-out`. Sends token IDs from the chat template to the generate endpoint with `detokenize: False` and decodes the returned `token_ids`.
+
+```python
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+"""Call a token-in/token-out server started with:
+
+vllm serve Qwen/Qwen3-0.6B --enable-scale-out
+"""
+
+import httpx
+from transformers import AutoTokenizer
+
+GEN_ENDPOINT = "http://localhost:8000/inference/v1/generate"
+DUMMY_API_KEY = "empty"
+MODEL_NAME = "Qwen/Qwen3-0.6B"
+
+transport = httpx.HTTPTransport()
+headers = {"Authorization": f"Bearer {DUMMY_API_KEY}"}
+client = httpx.Client(
+    transport=transport,
+    base_url=GEN_ENDPOINT,
+    timeout=600,
+    headers=headers,
+)
+messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "How many countries are in the EU?"},
+]
+
+
+def main(client):
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    token_ids = tokenizer.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        enable_thinking=False,
+        return_dict=True,
+    ).input_ids
+    payload = {
+        "model": MODEL_NAME,
+        "token_ids": token_ids,
+        "sampling_params": {"max_tokens": 24, "temperature": 0.2, "detokenize": False},
+        "stream": False,
+    }
+    resp = client.post(GEN_ENDPOINT, json=payload)
+    resp.raise_for_status()
+    data = resp.json()
+    print(data)
+    print("-" * 50)
+    print("Token generation results:")
+    res = tokenizer.decode(data["choices"][0]["token_ids"])
+    print(res)
+    print("-" * 50)
+
+
+if __name__ == "__main__":
+    main(client)
+```
+
+### --default-chat-template-kwargs
+
+Source: https://docs.vllm.ai/en/stable/cli/launch/render/
+
+Default keyword arguments to pass to the chat template renderer. These will be merged with request-level chat\_template\_kwargs, with request values taking precedence. Useful for setting default behavior for reasoning models. Example: '{"enable\_thinking": false}' to disable thinking mode by default for Qwen3/DeepSeek models.
+
+Should either be a valid JSON string or JSON keys passed individually.

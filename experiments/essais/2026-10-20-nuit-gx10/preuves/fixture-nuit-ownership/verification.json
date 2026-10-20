@@ -1,0 +1,14 @@
+{
+  "fixtureOnly": true,
+  "passed": true,
+  "checks": [
+    "complete-with-abstention",
+    "release-guard",
+    "exit-success",
+    "exit-failure",
+    "timeout",
+    "integrity",
+    "foreign-container-untouched",
+    "owned-container-stop-escalation"
+  ]
+}

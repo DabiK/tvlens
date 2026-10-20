@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-20T20:57:34.476709+00:00",
+  "dockerGroupAdded": true,
+  "dockerVersion": "28.3.3",
+  "cdi": {
+    "exitCode": 0,
+    "stdout": "nvidia.com/gpu=0\nnvidia.com/gpu=GPU-9c5d7750-86ba-6d95-a923-2a4fee239412\nnvidia.com/gpu=all\n",
+    "stderr": "time=\"2026-10-20T20:57:34Z\" level=info msg=\"Found 3 CDI devices\"\n"
+  },
+  "daemonRestarted": false,
+  "credentialStored": false
+}

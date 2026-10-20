@@ -1,0 +1,45 @@
+{
+  "models": [
+    {
+      "name": "gemma3:4b",
+      "model": "gemma3:4b",
+      "size": 2928945397,
+      "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma3",
+        "families": [
+          "gemma3",
+          "clip"
+        ],
+        "parameter_size": "3.9B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2026-10-20T19:40:47.446526706Z",
+      "size_vram": 2928945397,
+      "context_length": 8192,
+      "runner": "llamacpp"
+    },
+    {
+      "name": "qwen3.8:27b",
+      "model": "qwen3.8:27b",
+      "size": 17527954471,
+      "digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "27.3B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2026-10-20T19:40:47.400118321Z",
+      "size_vram": 17527954471,
+      "context_length": 16384,
+      "runner": "llamacpp"
+    }
+  ]
+}

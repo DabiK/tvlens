@@ -1,0 +1,104 @@
+[
+  {
+    "file": "04-cnrs-entrainement-ia.mp4",
+    "sha256Valid": true,
+    "durationS": 879.961,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  {
+    "file": "05-boeuf-bourguignon.mp4",
+    "sha256Valid": true,
+    "durationS": 737.501,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "opus",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  {
+    "file": "08-tears-of-steel.mov",
+    "sha256Valid": true,
+    "durationS": 734.166667,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 534
+      },
+      {
+        "codec_name": "mp3",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  {
+    "file": "09-artemis-lancement.mp4",
+    "sha256Valid": true,
+    "durationS": 2100.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  {
+    "file": "kennedy-rice-7min.mp4",
+    "sha256Valid": true,
+    "durationS": 420.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  {
+    "file": "spring.mp4",
+    "sha256Valid": true,
+    "durationS": 464.166893,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 536
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ]
+  }
+]

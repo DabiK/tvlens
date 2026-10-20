@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "kind": "nominal",
+  "index": {
+    "path": "blocks.json",
+    "sha256": "09073296f42819b6e861936b285b481403c29782738e046f422e3ae5b9bd5eb3"
+  },
+  "provenance": {
+    "kind": "converted-video",
+    "reference": "CNRS, trois premières minutes ; transport réel TV non mesuré.",
+    "preparation": {
+      "path": "preparation.json",
+      "sha256": "025ff114838b108c8d95d6775cb0fc4c8da8ae16c30f9291d56f3241870c7604"
+    }
+  },
+  "plannedDurationMs": 190000,
+  "finalWaitMs": 180000,
+  "closeWaitMs": 30000,
+  "config": {
+    "perceptionBackend": "local",
+    "questionsBackend": "local",
+    "inspectionBackend": "local",
+    "embeddingsBackend": "local",
+    "localVlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "numCtx": 8192,
+      "keepAlive": "10m"
+    },
+    "localQuestions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m",
+      "think": "off"
+    },
+    "localEmbeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b",
+      "timeoutMs": 120000
+    },
+    "visionDuringAsk": true,
+    "backgroundIndex": true
+  },
+  "selectedModels": {
+    "observationModel": "gemma3:4b",
+    "inspectionModel": "gemma3:4b",
+    "codexModel": "qwen3.8:27b"
+  },
+  "clips": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "fr"
+    },
+    {
+      "id": "clip-1",
+      "block": 1,
+      "occurrence": 0,
+      "atMs": 8000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-2",
+      "block": 2,
+      "occurrence": 0,
+      "atMs": 16000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-3",
+      "block": 3,
+      "occurrence": 0,
+      "atMs": 24000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-4",
+      "block": 4,
+      "occurrence": 0,
+      "atMs": 32000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-5",
+      "block": 5,
+      "occurrence": 0,
+      "atMs": 40000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-6",
+      "block": 6,
+      "occurrence": 0,
+      "atMs": 48000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-7",
+      "block": 7,
+      "occurrence": 0,
+      "atMs": 56000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-8",
+      "block": 8,
+      "occurrence": 0,
+      "atMs": 64000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-9",
+      "block": 9,
+      "occurrence": 0,
+      "atMs": 72000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-10",
+      "block": 10,
+      "occurrence": 0,
+      "atMs": 80000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-11",
+      "block": 11,
+      "occurrence": 0,
+      "atMs": 88000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-12",
+      "block": 12,
+      "occurrence": 0,
+      "atMs": 96000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-13",
+      "block": 13,
+      "occurrence": 0,
+      "atMs": 104000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-14",
+      "block": 14,
+      "occurrence": 0,
+      "atMs": 112000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-15",
+      "block": 15,
+      "occurrence": 0,
+      "atMs": 120000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-16",
+      "block": 16,
+      "occurrence": 0,
+      "atMs": 128000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-17",
+      "block": 17,
+      "occurrence": 0,
+      "atMs": 136000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-18",
+      "block": 18,
+      "occurrence": 0,
+      "atMs": 144000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-19",
+      "block": 19,
+      "occurrence": 0,
+      "atMs": 152000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-20",
+      "block": 20,
+      "occurrence": 0,
+      "atMs": 160000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-21",
+      "block": 21,
+      "occurrence": 0,
+      "atMs": 168000,
+      "language": "fr"
+    },
+    {
+      "id": "clip-22",
+      "block": 22,
+      "occurrence": 0,
+      "atMs": 176000,
+      "language": "fr"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "atMs": 65000,
+      "question": "Quel est le sujet de cette vidéo et qu'a expliqué l'intervenant jusqu'ici ?"
+    },
+    {
+      "id": "q2",
+      "atMs": 125000,
+      "question": "Résume les explications de l'intervenant dans la dernière minute."
+    },
+    {
+      "id": "q3",
+      "atMs": 185000,
+      "question": "Quels points clés faut-il retenir des trois minutes que nous venons de regarder ?"
+    }
+  ]
+}

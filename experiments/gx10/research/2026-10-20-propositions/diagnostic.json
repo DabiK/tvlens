@@ -1,0 +1,330 @@
+[
+  {
+    "file": "base-cnrs-apprentissage.json",
+    "complete": true,
+    "status": "complete",
+    "questions": [
+      {
+        "id": "cnrs-01",
+        "status": "done",
+        "endToEndMs": 27950,
+        "waitMs": 2,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 96004.025109,
+          "frozenAtMs": 96010.702959,
+          "evidenceAsOfMs": 96014.96128,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 88000,
+          "analyzedThroughMs": 80000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16004.025108999995,
+          "lagAtStartMs": 8004.025108999995
+        }
+      },
+      {
+        "id": "cnrs-02",
+        "status": "done",
+        "endToEndMs": 19901,
+        "waitMs": 2,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 232002.55554899998,
+          "frozenAtMs": 232009.655465,
+          "evidenceAsOfMs": 232013.989802,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 224000,
+          "analyzedThroughMs": 216000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16002.555548999982,
+          "lagAtStartMs": 8002.555548999982
+        }
+      },
+      {
+        "id": "cnrs-04",
+        "status": "done",
+        "endToEndMs": 21007,
+        "waitMs": 8,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 471999.622395,
+          "frozenAtMs": 472023.632554,
+          "evidenceAsOfMs": 472036.419804,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 464000,
+          "analyzedThroughMs": 448000,
+          "pendingCount": 2,
+          "partialCount": 6,
+          "unanalyzedTailMs": 23999.622395000013,
+          "lagAtStartMs": 7999.622395000013
+        }
+      },
+      {
+        "id": "cnrs-05",
+        "status": "done",
+        "endToEndMs": 25999,
+        "waitMs": 7,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 647999.799268,
+          "frozenAtMs": 648028.7534469999,
+          "evidenceAsOfMs": 648040.7014779999,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 640000,
+          "analyzedThroughMs": 632000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 15999.799267999944,
+          "lagAtStartMs": 7999.799267999944
+        }
+      },
+      {
+        "id": "cnrs-06",
+        "status": "done",
+        "endToEndMs": 22821,
+        "waitMs": 8,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 791999.505219,
+          "frozenAtMs": 792034.5661099999,
+          "evidenceAsOfMs": 792049.272808,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 784000,
+          "analyzedThroughMs": 776000,
+          "pendingCount": 1,
+          "partialCount": 10,
+          "unanalyzedTailMs": 15999.505219000042,
+          "lagAtStartMs": 7999.505219000042
+        }
+      }
+    ],
+    "lastSample": {
+      "sessionId": "0c101142-29ea-460b-acbe-767227851df1",
+      "atMs": 890231.532103,
+      "beforeClose": true,
+      "clock": {
+        "elapsedMs": 890230.384034,
+        "capturedThroughMs": 879960,
+        "analyzedThroughMs": 879960,
+        "contextThroughMs": 879960,
+        "analysisLagMs": 0
+      },
+      "evidence": {
+        "audio": {
+          "passageId": "moment-110",
+          "revision": 3,
+          "publishedAtMs": 882089.1752859999,
+          "startMs": 872000,
+          "endMs": 879960,
+          "ageMs": 8141.208748000092,
+          "contentAgeMs": 10270.384033999988
+        },
+        "vision": {
+          "passageId": "moment-110",
+          "revision": 3,
+          "publishedAtMs": 890224.677116,
+          "startMs": 872000,
+          "endMs": 879960,
+          "ageMs": 5.7069180000107735,
+          "contentAgeMs": 10270.384033999988
+        }
+      },
+      "losses": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 7,
+        "visionSkippedAsking": 0,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 2
+      }
+    },
+    "losses": {
+      "audioSkipped": 0,
+      "audioExpired": 0,
+      "visionSkippedBacklog": 7,
+      "visionSkippedAsking": 0,
+      "visionExpired": 0,
+      "audioError": 0,
+      "visionError": 2
+    },
+    "maxSampledAnalysisLagMs": 56000
+  },
+  {
+    "file": "base-kennedy.json",
+    "complete": false,
+    "status": "incomplete",
+    "questions": [
+      {
+        "id": "kennedy-01",
+        "status": "done",
+        "endToEndMs": 15188,
+        "waitMs": 2,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 32002.870193,
+          "frozenAtMs": 32005.921005,
+          "evidenceAsOfMs": 32009.055497999998,
+          "refreshes": 1,
+          "journalEntries": 3,
+          "journalDropped": 0,
+          "contextThroughMs": 24000,
+          "analyzedThroughMs": 24000,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 8002.870192999999,
+          "lagAtStartMs": 8002.870192999999
+        }
+      },
+      {
+        "id": "kennedy-03",
+        "status": "done",
+        "endToEndMs": 18234,
+        "waitMs": 2,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 128003.222418,
+          "frozenAtMs": 128008.306022,
+          "evidenceAsOfMs": 128010.653791,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 120000,
+          "analyzedThroughMs": 112000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16003.222418000005,
+          "lagAtStartMs": 8003.222418000005
+        }
+      },
+      {
+        "id": "kennedy-05",
+        "status": "done",
+        "endToEndMs": 19707,
+        "waitMs": 4,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 216002.806419,
+          "frozenAtMs": 216010.682275,
+          "evidenceAsOfMs": 216017.044284,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 208000,
+          "analyzedThroughMs": 208000,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8002.8064190000005,
+          "lagAtStartMs": 8002.8064190000005
+        }
+      },
+      {
+        "id": "kennedy-06",
+        "status": "done",
+        "endToEndMs": 15366,
+        "waitMs": 2,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 272002.37896199996,
+          "frozenAtMs": 272010.154177,
+          "evidenceAsOfMs": 272014.583474,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 264000,
+          "analyzedThroughMs": 264000,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8002.378961999959,
+          "lagAtStartMs": 8002.378961999959
+        }
+      },
+      {
+        "id": "kennedy-08",
+        "status": "done",
+        "endToEndMs": 12798,
+        "waitMs": 7,
+        "providerRequests": 1,
+        "tools": [],
+        "evidence": {
+          "anchorMs": 360001.840016,
+          "frozenAtMs": 360015.14509299997,
+          "evidenceAsOfMs": 360026.511298,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 352000,
+          "analyzedThroughMs": 352000,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8001.840015999973,
+          "lagAtStartMs": 8001.840015999973
+        }
+      }
+    ],
+    "lastSample": {
+      "sessionId": "97423738-33e6-4653-b3b7-29240ac412fa",
+      "atMs": 415344.18961199996,
+      "beforeClose": false,
+      "clock": {
+        "elapsedMs": 415342.197044,
+        "capturedThroughMs": 408000,
+        "analyzedThroughMs": 360000,
+        "contextThroughMs": 408000,
+        "analysisLagMs": 48000
+      },
+      "evidence": {
+        "audio": {
+          "passageId": "moment-51",
+          "revision": 2,
+          "publishedAtMs": 410281.834895,
+          "startMs": 400000,
+          "endMs": 408000,
+          "ageMs": 5060.362148999993,
+          "contentAgeMs": 7342.197043999971
+        },
+        "vision": {
+          "passageId": "moment-45",
+          "revision": 3,
+          "publishedAtMs": 374812.41286,
+          "startMs": 352000,
+          "endMs": 360000,
+          "ageMs": 40529.78418399999,
+          "contentAgeMs": 55342.19704399997
+        }
+      },
+      "losses": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 4,
+        "visionSkippedAsking": 0,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 0
+      }
+    },
+    "losses": null,
+    "maxSampledAnalysisLagMs": 48000
+  }
+]

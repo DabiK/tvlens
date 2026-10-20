@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "runId": "6f87654e-e35c-4b8a-a22f-8a4242dcbe5e",
+  "mode": "validation",
+  "complete": true,
+  "status": "validated",
+  "inputs": {
+    "scenarioSha256": "fb5e0e6ae08c3288758c66beff62572dff3cd58e563d7634eb9fccff50a3057f",
+    "indexSha256": "407ef1db3ce48f54e81f2d189fea61fa45b06857f200885fb9501ae270062b7a"
+  },
+  "code": {
+    "sha": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+    "dirty": false,
+    "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sources": {
+      "scripts/replay-local-perception.cjs": "c6ce9fda37336d5abf73af2347e91624daf7f3958dfe9e63469e8cad02e617eb",
+      "scripts/perception-replay-input.cjs": "7834fe75a85c25f1aa34831000094006f12d2fa7c9511cbc871aa3fc27ac2c43",
+      "scripts/perception-replay-context.cjs": "76902792b4f7be2a9316f75ff82b4d9ef359423b06f044791341c8e774470489",
+      "scripts/perception-replay-execution.cjs": "0ee8841e671e23cc4acacd252dcf4c36c3c5921a514588001af74581adba5f61",
+      "scripts/perception-replay-cli.cjs": "32e9854bbc4acbbd5b0244e9f08cadf994262828655fe66139be13cc9ca91eff",
+      "scripts/perception-replay-identity.cjs": "f399624e07b111d7d54909649b04c2f11cb0b26ff957667e481bfd5ffcd5659f",
+      "runtime/session-providers.cjs": "8613f2c6017d34db354aaee898316d71b385b9a468bfa6ddd669a96c517d99ee",
+      "adapters/codex-perception.cjs": "fd6242b8764fb60232ee52d364cbe06eed12fbe2d8f411c308d7764d9e96d98f",
+      "adapters/local-vlm-agent.cjs": "b9a53b1d1c71d00408aacf910d1d3ec3a023935c9d75a1e01ae9d614a3115cee",
+      "scripts/local-stream-actions.cjs": "d5eb91638caa710b281af567fa2ef2142dff81d52ec1214abc778c130661e581",
+      "scripts/local-stream-cli.cjs": "ca760d90633e53e877e54ba012257e5c66a41bbdeba8200b414d823a436b0e20",
+      "scripts/local-stream-host.cjs": "cc16b29c00a2fe950a26ea66faee81642fe0ee8a057cf4208cbbe0d266777045",
+      "scripts/local-stream-input.cjs": "c29fae67f60afaed6f953317d6152f490a7271906cbb8f5b696cca11ab804b25",
+      "scripts/local-stream-journal.cjs": "b3fd3655ed7b8c9788734f0ab8e34088124d702df720e04bc9e5d39fa24972cb",
+      "scripts/local-stream-observe.cjs": "ec0005482a3c518a8a842def5abcc477f454a4afcbfabcc324375dfc17108a26",
+      "scripts/local-stream-provider-observation.cjs": "e259687a4e834ecca151091ae1c8a686039b4b67a4e5860b3c44575b0baf8a0d",
+      "scripts/local-stream-replay.md": "b7bd588d3b9d381c71a4d0a7b928d0583907b84a71485c76b3a5f51f8410c375",
+      "scripts/local-stream-report.cjs": "a1ee87ba6da4c35ec9939f03517a2c7b1695a949e783aea0a5487cec49ef431f",
+      "scripts/local-stream-sampling.cjs": "7925332c1e48d6fca99a192e336efd71afa6b40928f855c5d61e504c67e085d8",
+      "scripts/local-stream-schedule.cjs": "fafe1ad5540a22b5e382f4c834de117218e9b69c621050f8162cf413fbc1506f",
+      "scripts/local-stream-summary.cjs": "f9c19e3df9185f01c80d7c47796ae8e363593b763c108339069f082b83f5b31a",
+      "scripts/local-stream-transport.cjs": "c78aedcf19e8f2a8c232badd3e88413df587c215325ecd51e862b4215999a770",
+      "scripts/replay-local-stream.cjs": "532329d2f84707d0380c52fce59d7e025965ea0106c53c93eac1bd244ce9ef77",
+      "runtime/headless-runtime.cjs": "d6fe42fe0fc13fdb510cdc3547c56f5c6d0bed7f79c9d67c74b08541881967ef",
+      "runtime/conversation-runtime.cjs": "d3f0b3234494a9764fec9e234e271d6e79a6fade9fdd4e62aac997f97380c741",
+      "server/http.cjs": "09b7a08ec0fdddd710c1990a1a55a0ae0ce095c3f08108a057edd341c8880c0a",
+      "adapters/remote-media.cjs": "3f39a6c7e4b9b3a804cc3baa6f87242725b670e2ca1cb661093b89f4695f5e81",
+      "adapters/ollama/question-agent.cjs": "b1a16cf07b1e1ff435c31de66fd115f81aa24aea257f3f11edd3e0e49b4cd4d7",
+      "adapters/embeddings/ollama-embeddings.cjs": "2ed0ff93271500912fb0aadd78214219cc03701642291a88f188cd7895b4b8bc",
+      "tv/transport.py": "88a0a61c872c41a3af6223aaa1aec024b139da629d0fff59a55bb255225ea5c4"
+    }
+  },
+  "provenance": {
+    "kind": "converted-video",
+    "reference": "Kennedy, extrait de seize secondes ; transport réel TV non mesuré.",
+    "preparation": {
+      "version": 1,
+      "complete": true,
+      "convertedDurationMs": 16000,
+      "parameters": {
+        "startMs": 0,
+        "durationMs": 16000,
+        "blockMs": 8000,
+        "framesPerBlock": 5,
+        "jpegQuality": 3,
+        "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+        "audio": {
+          "codec": "pcm_s16le",
+          "sampleRate": 16000,
+          "channels": 1,
+          "bitDepth": 16
+        },
+        "sampling": "equidistant-block-start"
+      },
+      "timeOrigin": {
+        "kind": "relative-to-source-interval",
+        "sourceStartMs": 0
+      },
+      "templateSessionId": "video-template-validation-only",
+      "sessionBinding": "required-per-occurrence",
+      "manifest": {
+        "path": "manifest.json",
+        "sha256": "b82dd87d2cca738900cd307ff423c6f72d73a1bdd207c30f4655c05e0604c68c"
+      },
+      "index": {
+        "path": "blocks.json",
+        "sha256": "407ef1db3ce48f54e81f2d189fea61fa45b06857f200885fb9501ae270062b7a"
+      },
+      "source": {
+        "sha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+        "bytes": 92433328,
+        "durationMs": 420000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "inspectionArguments": [
+          "-nostdin",
+          "-i",
+          "/srv/tvlens-gx10/videos/kennedy-rice-7min.mp4",
+          "-map",
+          "0:v:0",
+          "-t",
+          "0",
+          "-f",
+          "null",
+          "-"
+        ]
+      },
+      "sourceInterval": {
+        "startMs": 0,
+        "endMs": 16000
+      },
+      "plannedDurationMs": 16000
+    }
+  },
+  "plannedInterval": {
+    "startMs": 0,
+    "endMs": 20000
+  },
+  "parameters": {
+    "version": 1,
+    "kind": "nominal",
+    "index": {
+      "path": "blocks.json",
+      "sha256": "407ef1db3ce48f54e81f2d189fea61fa45b06857f200885fb9501ae270062b7a"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "reference": "Kennedy, extrait de seize secondes ; transport réel TV non mesuré.",
+      "preparation": {
+        "path": "preparation.json",
+        "sha256": "6951d88e73f0268888b1334ac5a5d18ed552ae624c0d3da25e356b7f1d77e9e8"
+      }
+    },
+    "plannedDurationMs": 20000,
+    "finalWaitMs": 120000,
+    "closeWaitMs": 30000,
+    "config": {
+      "perceptionBackend": "local",
+      "questionsBackend": "local",
+      "inspectionBackend": "local",
+      "embeddingsBackend": "local",
+      "localVlm": {
+        "url": "http://127.0.0.1:11434",
+        "model": "gemma3:4b",
+        "numCtx": 8192,
+        "keepAlive": "10m"
+      },
+      "localQuestions": {
+        "url": "http://127.0.0.1:11434",
+        "model": "qwen3.8:27b",
+        "numCtx": 16384,
+        "keepAlive": "10m",
+        "think": "off"
+      },
+      "localEmbeddings": {
+        "url": "http://127.0.0.1:11434",
+        "model": "qwen3-embedding:0.6b",
+        "timeoutMs": 120000
+      },
+      "visionDuringAsk": true,
+      "backgroundIndex": true
+    },
+    "selectedModels": {
+      "observationModel": "gemma3:4b",
+      "inspectionModel": "gemma3:4b",
+      "codexModel": "qwen3.8:27b"
+    },
+    "clips": [
+      {
+        "id": "clip-0",
+        "block": 0,
+        "occurrence": 0,
+        "atMs": 0,
+        "language": "en"
+      },
+      {
+        "id": "clip-1",
+        "block": 1,
+        "occurrence": 0,
+        "atMs": 8000,
+        "language": "en"
+      }
+    ],
+    "questions": [
+      {
+        "id": "q1",
+        "atMs": 18000,
+        "question": "De quoi parle l'orateur dans cet extrait ?"
+      }
+    ]
+  },
+  "roles": {
+    "perception": {
+      "configured": "local",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {
+        "model": "gemma3:4b",
+        "numCtx": 8192,
+        "keepAlive": "10m"
+      }
+    },
+    "questions": {
+      "configured": "local",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {
+        "model": "qwen3.8:27b",
+        "numCtx": 16384,
+        "keepAlive": "10m"
+      }
+    },
+    "embeddings": {
+      "configured": "local",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {
+        "model": "qwen3-embedding:0.6b",
+        "timeoutMs": 120000
+      }
+    },
+    "inspection": {
+      "configured": "local",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {
+        "model": "gemma3:4b",
+        "numCtx": 8192,
+        "keepAlive": "10m"
+      }
+    },
+    "transcription": {
+      "configured": "whisper",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {}
+    },
+    "surveillance": {
+      "configured": "codex",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {}
+    },
+    "surveillanceDetection": {
+      "configured": "codex",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {}
+    },
+    "surveillanceWeb": {
+      "configured": "codex",
+      "identity": null,
+      "origin": null,
+      "exercised": false,
+      "successful": false,
+      "calls": 0,
+      "localMeasurement": false,
+      "evidence": [],
+      "parameters": {}
+    }
+  },
+  "uploads": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "en",
+      "caseId": "video-0",
+      "sequence": 0,
+      "startMs": 0,
+      "endMs": 8000,
+      "plannedAtMs": 8000,
+      "input": {
+        "body": {
+          "path": "blocks/000000/body.json",
+          "sha256": "9a05095a280e6585b2893bfd41ed999a58a1b1ee9c62bf6235c129426b49f670"
+        },
+        "templateInterval": {
+          "startMs": 0,
+          "endMs": 8000
+        },
+        "sourceInterval": {
+          "startMs": 0,
+          "endMs": 8000
+        },
+        "provenance": null,
+        "perception": null,
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 0,
+            "bytesSha256": "173993154ef4f5317519ea17c0df45d362b689dfdc21c87d6070a8f2b94bbe35"
+          },
+          {
+            "index": 1,
+            "atMs": 1600,
+            "bytesSha256": "4e77d013f922cbeb7bef295f3906cfcf73677c441e65e3d0f919d13153dfaa3e"
+          },
+          {
+            "index": 2,
+            "atMs": 3200,
+            "bytesSha256": "388af04fd8140ddfb21501e2d0346c930be8f8c5b2669490579d7b58c7754f70"
+          },
+          {
+            "index": 3,
+            "atMs": 4800,
+            "bytesSha256": "28783cec51bfce34b85afd2f528d0a5ab6c9b120280af2fe3dd2684c255197d1"
+          },
+          {
+            "index": 4,
+            "atMs": 6400,
+            "bytesSha256": "2cd0c88b4b690d0e09c425a1ecf81fd2d6b29121a20f178e4173c59e2de6f370"
+          }
+        ],
+        "audioSha256": "b6e20a78333a4d0e01e3e2a082ea47bc2efe9999e103b6b1379722011ea8e9e7"
+      },
+      "status": "planned",
+      "attempts": [],
+      "roles": {}
+    },
+    {
+      "id": "clip-1",
+      "block": 1,
+      "occurrence": 0,
+      "atMs": 8000,
+      "language": "en",
+      "caseId": "video-1",
+      "sequence": 1,
+      "startMs": 8000,
+      "endMs": 16000,
+      "plannedAtMs": 16000,
+      "input": {
+        "body": {
+          "path": "blocks/000001/body.json",
+          "sha256": "d1e5b5351c57b5b4ffbe990e1785760e6bc79e36d22c79935197c8dd09b21bdc"
+        },
+        "templateInterval": {
+          "startMs": 8000,
+          "endMs": 16000
+        },
+        "sourceInterval": {
+          "startMs": 8000,
+          "endMs": 16000
+        },
+        "provenance": null,
+        "perception": null,
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 8000,
+            "bytesSha256": "d2ec744aefec9a69fd97c4cba4ee8f832a1cc2599f315dcd0cf5f45276b3a15d"
+          },
+          {
+            "index": 1,
+            "atMs": 9600,
+            "bytesSha256": "460388f76f1ca34ca9cfb44d4690f0d7990953738a44c7367275c7e5da2e85b3"
+          },
+          {
+            "index": 2,
+            "atMs": 11200,
+            "bytesSha256": "b5113e4ca5dfd8435b58f6412d04d8f6328adb98a9ad42699d70989c142b260e"
+          },
+          {
+            "index": 3,
+            "atMs": 12800,
+            "bytesSha256": "b1e055d04b3ec3c317d73b74f0f2b6a6d329d2f6e68b3a19fa952771e258f7fd"
+          },
+          {
+            "index": 4,
+            "atMs": 14400,
+            "bytesSha256": "fb2ab014dc8456a8a117fe9c156c8e97fa7bae85f9b2dc0268690d707026b3a7"
+          }
+        ],
+        "audioSha256": "00e5a2a0e8d5d5d7dca59ab4812eb17f8acf0f4698df7e3c11cb37287deb2bc7"
+      },
+      "status": "planned",
+      "attempts": [],
+      "roles": {}
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "atMs": 18000,
+      "question": "De quoi parle l'orateur dans cet extrait ?",
+      "plannedAtMs": 18000,
+      "status": "planned",
+      "backend": "local",
+      "attempts": [],
+      "cancellation": null
+    }
+  ],
+  "clocks": null,
+  "shutdown": null,
+  "remaining": [],
+  "guardFailures": [],
+  "diagnostics": [],
+  "languages": []
+}

@@ -1,0 +1,1 @@
+{"status": "finished", "out": "/Users/Dabi/Documents/ISN/tvlens/experiments/gx10/research/2026-10-20-execution/preuves/validation-paquet-transferable"}

@@ -1,0 +1,167 @@
+{
+  "utc": "2026-10-20T20:53:46.919Z",
+  "fixtureOnly": true,
+  "passed": true,
+  "sourceSha256": "d206584170b84beb0f5c587ebb5a1a439df87acc8e8915963674c979020810a2",
+  "results": [
+    {
+      "name": "vllm",
+      "backend": "vllm",
+      "exitCode": 0,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "returned"
+      ],
+      "errors": [
+        null
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "ollama",
+      "backend": "ollama",
+      "exitCode": 0,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "returned"
+      ],
+      "errors": [
+        null
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "http",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": false,
+      "stopReason": "CONSECUTIVE_ERRORS",
+      "statuses": [
+        "error",
+        "error",
+        "error"
+      ],
+      "errors": [
+        "HTTP_503",
+        "HTTP_503",
+        "HTTP_503"
+      ],
+      "firstTokenMs": [
+        null,
+        null,
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "malformed",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "error"
+      ],
+      "errors": [
+        "TVLENS_OLLAMA_ANSWER_INVALID"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "truncated",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "error"
+      ],
+      "errors": [
+        "OUTPUT_TRUNCATED"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "tools",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "error"
+      ],
+      "errors": [
+        "TOOL_CALL_REFUSED"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": false
+    },
+    {
+      "name": "timeout",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": true,
+      "stopReason": null,
+      "statuses": [
+        "cancelled"
+      ],
+      "errors": [
+        "REQUEST_TIMEOUT"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": true
+    },
+    {
+      "name": "budget",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": false,
+      "stopReason": "GLOBAL_BUDGET",
+      "statuses": [
+        "cancelled"
+      ],
+      "errors": [
+        "GLOBAL_BUDGET"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": true
+    },
+    {
+      "name": "interrupt",
+      "backend": "vllm",
+      "exitCode": 1,
+      "complete": false,
+      "stopReason": "INTERRUPTED",
+      "statuses": [
+        "cancelled"
+      ],
+      "errors": [
+        "INTERRUPTED"
+      ],
+      "firstTokenMs": [
+        null
+      ],
+      "connectionClosed": true
+    }
+  ]
+}

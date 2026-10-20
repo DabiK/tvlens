@@ -1,0 +1,7 @@
+✔ règles par fichier
+✔ format
+✔ lint
+✔ gel du lint
+✔ cliquet
+✔ tests JS
+check : vert

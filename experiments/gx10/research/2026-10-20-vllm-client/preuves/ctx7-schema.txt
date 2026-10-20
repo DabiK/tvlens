@@ -1,0 +1,334 @@
+### Request JSON schema structured output from a reasoning model
+
+Source: https://docs.vllm.ai/en/stable/features/structured_outputs/
+
+Uses a Pydantic model to build a JSON schema response_format and prints both the reasoning and content fields from the completion. Works with any structured outputs feature alongside reasoning.
+
+```python
+from pydantic import BaseModel
+
+
+class People(BaseModel):
+    name: str
+    age: int
+
+
+completion = client.chat.completions.create(
+    model=model,
+    messages=[
+        {
+            "role": "user",
+            "content": "Generate a JSON with the name and age of one random person.",
+        }
+    ],
+    response_format={
+        "type": "json_schema",
+        "json_schema": {
+            "name": "people",
+            "schema": People.model_json_schema()
+        }
+    },
+)
+print("reasoning: ", completion.choices[0].message.reasoning)
+print("content: ", completion.choices[0].message.content)
+```
+
+--------------------------------
+
+### Batched Chat Completions via vLLM OpenAI-compatible API
+
+Source: https://docs.vllm.ai/en/stable/examples/generate/batched_chat_completions_online/
+
+This Python script sends batched chat completions to the /v1/chat/completions/batch endpoint. It includes examples for plain text, regex constraints, and JSON schema outputs. Start a vLLM server first, e.g., `vllm serve Qwen/Qwen2.5-1.5B-Instruct --port 8000`.
+
+```python
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+"""Examples of batched chat completions via the vLLM OpenAI-compatible API.
+
+The /v1/chat/completions/batch endpoint accepts ``messages`` as a list of
+conversations.  Each conversation is processed independently and the response
+contains one choice per conversation, indexed 0, 1, ..., N-1.
+
+Start a server first, e.g.:
+    vllm serve Qwen/Qwen2.5-1.5B-Instruct --port 8000
+
+Current limitations compared to /v1/chat/completions:
+    - Streaming is not supported.
+    - Tool use is not supported.
+    - Beam search is not supported.
+"""
+
+import json
+import os
+
+import httpx
+
+BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000")
+MODEL = os.environ.get("VLLM_MODEL", "Qwen/Qwen2.5-1.5B-Instruct")
+BATCH_URL = f"{BASE_URL}/v1/chat/completions/batch"
+
+
+def post_batch(payload: dict) -> dict:
+    response = httpx.post(BATCH_URL, json=payload, timeout=60)
+    response.raise_for_status()
+    return response.json()
+
+
+def main() -> None:
+    print("=== Example 1a: single conversation (standard endpoint) ===")
+    response = httpx.post(
+        f"{BASE_URL}/v1/chat/completions",
+        json={
+            "model": MODEL,
+            "messages": [{"role": "user", "content": "What is the capital of Japan?"}],
+        },
+        timeout=60,
+    )
+    response.raise_for_status()
+    data = response.json()
+    for choice in data["choices"]:
+        print(f"  [{choice['index']}] {choice['message']['content']}")
+
+    print("\n=== Example 1b: batched plain text (2 conversations) ===")
+    data = post_batch(
+        {
+            "model": MODEL,
+            "messages": [
+                [{"role": "user", "content": "What is the capital of France?"}],
+                [{"role": "user", "content": "What is the capital of Japan?"}],
+            ],
+        }
+    )
+    for choice in data["choices"]:
+        print(f"  [{choice['index']}] {choice['message']['content']}")
+
+    print("\n=== Example 2: batch with regex constraint (yes|no) ===")
+    data = post_batch(
+        {
+            "model": MODEL,
+            "messages": [
+                [{"role": "user", "content": "Is the sky blue? Answer yes or no."}],
+                [{"role": "user", "content": "Is fire cold? Answer yes or no."}],
+            ],
+            "structured_outputs": {"regex": "(yes|no)"},
+        }
+    )
+    for choice in data["choices"]:
+        print(f"  [{choice['index']}] {choice['message']['content']}")
+
+    print("\n=== Example 3: batch with json_schema ===")
+    person_schema = {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "description": "Full name of the person"},
+            "age": {"type": "integer", "description": "Age in years"},
+        },
+        "required": ["name", "age"],
+    }
+    data = post_batch(
+        {
+            "model": MODEL,
+            "messages": [
+                [
+                    {
+                        "role": "user",
+                        "content": "Describe the person: name Alice, age 30.",
+                    }
+                ],
+                [{"role": "user", "content": "Describe the person: name Bob, age 25."}],
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "person",
+                    "strict": True,
+                    "schema": person_schema,
+                },
+            },
+        }
+    )
+    for choice in data["choices"]:
+        person = json.loads(choice["message"]["content"])
+        print(f"  [{choice['index']}] {person}")
+
+```
+
+--------------------------------
+
+### Batch book summaries with JSON schema response format
+
+Source: https://docs.vllm.ai/en/stable/examples/generate/batched_chat_completions_online/
+
+Posts a batch of chat messages with a strict json_schema response_format to extract author, page count, and summaries for two books. Iterates over data["choices"] and parses each message content with json.loads. Requires the post_batch helper and MODEL constant defined elsewhere in the script.
+
+```python
+    print("\n=== Example 4: batch book summaries ===")
+    book_schema = {
+        "type": "object",
+        "properties": {
+            "author": {
+                "type": "string",
+                "description": "Full name of the author",
+            },
+            "num_pages": {
+                "type": "integer",
+                "description": "Number of pages in the book",
+            },
+            "short_summary": {
+                "type": "string",
+                "description": "A one-sentence summary of the book",
+            },
+            "long_summary": {
+                "type": "string",
+                "description": (
+                    "A detailed two to three sentence summary covering "
+                    "the main themes and plot"
+                ),
+            },
+        },
+        "required": ["author", "num_pages", "short_summary", "long_summary"],
+    }
+    system_msg = {
+        "role": "system",
+        "content": (
+            "You are a literary analyst. Extract structured information "
+            "from book descriptions."
+        ),
+    }
+    data = post_batch(
+        {
+            "model": MODEL,
+            "messages": [
+                [
+                    system_msg,
+                    {
+                        "role": "user",
+                        "content": (
+                            "Extract information from this book: '1984' by George"
+                            " Orwell, published in 1949, 328 pages. A dystopian"
+                            " novel set in a totalitarian society ruled by Big"
+                            " Brother, following Winston Smith as he secretly"
+                            " rebels against the oppressive Party that surveils"
+                            " and controls every aspect of life."
+                        ),
+                    },
+                ],
+                [
+                    system_msg,
+                    {
+                        "role": "user",
+                        "content": (
+                            "Extract information from this book: 'The Hitchhiker's"
+                            " Guide to the Galaxy' by Douglas Adams, published in"
+                            " 1979, 193 pages. A comedic science fiction novel"
+                            " following Arthur Dent, an ordinary Englishman who is"
+                            " whisked off Earth moments before it is demolished to"
+                            " make way for a hyperspace bypass, and his subsequent"
+                            " absurd adventures across the universe."
+                        ),
+                    },
+                ],
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "book_summary",
+                    "strict": True,
+                    "schema": book_schema,
+                },
+            },
+        }
+    )
+    for choice in data["choices"]:
+        book = json.loads(choice["message"]["content"])
+        print(f"  [{choice['index']}] {book}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+--------------------------------
+
+### structured_outputs_from_response_format(structured_outputs, response_format)
+
+Source: https://docs.vllm.ai/en/stable/api/vllm/entrypoints/generate/base/protocol/
+
+Applies response_format overrides to structured_outputs. Returns the original structured_outputs when response_format is None or type 'text'; otherwise builds overrides based on the response_format type ('json_object', 'json_schema', or structural tag formats) and returns either a new StructuredOutputsParams or a replaced copy of the provided structured_outputs.
+
+```APIDOC
+## structured_outputs_from_response_format(structured_outputs, response_format)
+
+### Description
+Apply `response_format` overrides to `structured_outputs`. If `response_format` is `None` or its type is `"text"`, the original `structured_outputs` is returned unchanged. Otherwise, overrides are derived from the `response_format` type and applied to produce the returned `StructuredOutputsParams`.
+
+### Method
+Function
+
+### Endpoint
+vllm.entrypoints.generate.base.protocol.structured_outputs_from_response_format
+
+### Parameters
+- **structured_outputs** (StructuredOutputsParams | None) - Optional existing structured outputs parameters to which overrides are applied.
+- **response_format** (AnyResponseFormat | None) - Optional response format whose type determines the overrides applied.
+
+### Returns
+- **StructuredOutputsParams | None** - The resulting structured outputs parameters after applying overrides, or the original `structured_outputs` when no overrides apply.
+
+### Behavior
+- If `response_format` is `None` or `response_format.type == "text"`, returns `structured_outputs` unchanged.
+- If `response_format.type == "json_object"`, applies override `{"json_object": True}`.
+- If `response_format.type == "json_schema"`, applies override `{"json": json_schema.json_schema}` using `response_format.json_schema`.
+- Otherwise (legacy or structural tag response formats), applies override `{"structural_tag": json.dumps(response_format.model_dump(by_alias=True))}`.
+- If `structured_outputs` is `None`, returns `StructuredOutputsParams(**overrides)`.
+- Otherwise, returns `replace(structured_outputs, **overrides)`.
+```
+
+--------------------------------
+
+### Extract JSON Schema from json_schema field
+
+Source: https://docs.vllm.ai/en/stable/api/vllm/parser/cohere_command/
+
+Accepts JsonSchemaResponseFormat, OpenAI-shaped dicts, dicts with json_schema key, raw JSON Schema documents, or JSON strings. Returns the extracted schema dict or None.
+
+```python
+def _schema_from_json_schema_field(js_wr: Any) -> dict | None:
+    """Extract the JSON Schema object from Chat Completions ``json_schema`` payload.
+
+    Accepts:
+    - ``JsonSchemaResponseFormat`` (Pydantic) with ``schema`` / ``json_schema`` field
+    - dict in OpenAI shape ``{"name": ..., "schema": {...}}``
+    - dict with ``json_schema`` key holding either the schema or a nested wrapper
+    - dict that is already a JSON Schema document (some clients omit the wrapper)
+    - JSON strings for any of the above
+    """
+    if js_wr is None:
+        return None
+
+    parsed_wr = _maybe_parse_json_dict(js_wr)
+    if parsed_wr is not None:
+        js_wr = parsed_wr
+
+    if hasattr(js_wr, "model_dump"):
+        for by_alias in (True, False):
+            try:
+                data = js_wr.model_dump(by_alias=by_alias, exclude_none=False)
+            except TypeError:
+                data = js_wr.model_dump(by_alias=by_alias)
+            out = _unwrap_nested_schema(data.get("schema") or data.get("json_schema"))
+            if out is not None:
+                return out
+        inner_attr = getattr(js_wr, "json_schema", None)
+        return inner_attr if isinstance(inner_attr, dict) else None
+
+    if isinstance(js_wr, dict):
+        for key in ("schema", "json_schema"):
+            out = _unwrap_nested_schema(js_wr.get(key))
+            if out is not None:
+                return out
+        return js_wr
+
+    return None
+```

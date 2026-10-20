@@ -1,0 +1,1 @@
+{"argv": ["tmux", "new-session", "-d", "-s", "tvlens-nuit", "-c", "/home/nvidia/tvlens", "sh /home/nvidia/tvlens-setup/nuit-20261020T210107Z/launch.sh"], "exitCode": 0, "stdout": "", "stderr": ""}

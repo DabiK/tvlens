@@ -1,0 +1,9 @@
+{
+  "controle": "depuis la GX10 apres apparition de la tele en ligne",
+  "tailscalePing": "pong recu",
+  "cheminObserve": "relais DERP, liaison directe non obtenue sur ce premier essai",
+  "tcp22": "connexion etablie",
+  "configurationTeleModifiee": false,
+  "captureTeleLancee": false,
+  "fluxTeleVersGX10": "non teste"
+}

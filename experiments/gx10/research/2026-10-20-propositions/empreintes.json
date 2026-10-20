@@ -1,0 +1,90 @@
+{
+  "frozenAtUtc": "2026-10-20T20:27:00.004340+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "849b01b445d82962dca2781e19281f04193f69267fb3179412eb9a82e356c198",
+      "bytes": 16970
+    },
+    {
+      "path": "captures/base-cnrs-apprentissage.json",
+      "sha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+      "bytes": 4370128
+    },
+    {
+      "path": "captures/base-kennedy.json",
+      "sha256": "5991bd9d794acdb07321d919e2731a9808f6c0bc3927033c6c0c098a2b4f1766",
+      "bytes": 1798076
+    },
+    {
+      "path": "captures/cnrs-input-manifest.json",
+      "sha256": "9fba2265643b8511cbc1adc278685a1eb4da7d94ddf7d623a9687a3d6d27a360",
+      "bytes": 539275
+    },
+    {
+      "path": "captures/manifest.json",
+      "sha256": "9eedf077bfc0ca486169b9ebda113f96d3067d13feecb3c47d6f72bdc812b614",
+      "bytes": 981
+    },
+    {
+      "path": "commandes.md",
+      "sha256": "d92c492723913cdabdaf1b04692aa8364a371d14bbbd1ebd83499e941ac554af",
+      "bytes": 5735
+    },
+    {
+      "path": "diagnostic.json",
+      "sha256": "e3d2b91243b5bbdc912dbb8ddcf5abe485f3668cbf04a39df32e3c34faa2a61e",
+      "bytes": 9263
+    },
+    {
+      "path": "plans/perception-nominal.json",
+      "sha256": "1933013aa04577b629c42d554fd5c708912b692eee87c1cd168888324d780cfd",
+      "bytes": 64476
+    },
+    {
+      "path": "plans/scenario-index-paused.json",
+      "sha256": "1888b6af8db5cf43ae8c13a4e57c20233674422c1aec41c4a306c6e11a7ee5a4",
+      "bytes": 15594
+    },
+    {
+      "path": "plans/scenario-reference.json",
+      "sha256": "fef92b4c9c20cc04aaaac12066bb6fd36cf82909386680bb70924789cf10442e",
+      "bytes": 15593
+    },
+    {
+      "path": "plans/scenario-vision-paused.json",
+      "sha256": "e5ba55d7e7ed1b0f216f8263fee2be54de330cca1599e150f268e47073abeab4",
+      "bytes": 15594
+    },
+    {
+      "path": "prepare-visual-ablation.py",
+      "sha256": "7782272ed2f7b2b8762218f3b5c1108ba770dca172ce8328bdf0aae432d14c44",
+      "bytes": 2314
+    },
+    {
+      "path": "sources/ctx7-cosmos-resolve.txt",
+      "sha256": "5012776f7f5ff10282d20b573fbb51105f85510206c080e40a746000e41114c1",
+      "bytes": 800
+    },
+    {
+      "path": "sources/ctx7-cosmos-spark.txt",
+      "sha256": "1229628de70e2c11cc18f40f50a5fdd26f89f3ee8468768fafa9ff68f140b2ee",
+      "bytes": 2377
+    },
+    {
+      "path": "sources/ctx7-vllm-gb10.txt",
+      "sha256": "c789f368aaa9a235b9a89de9308eeb11e18ec86e332b287eee0fbc313b187686",
+      "bytes": 2812
+    },
+    {
+      "path": "sources.md",
+      "sha256": "90619e1d9625be742ee45f303c1442b2cc107cd0b851704e74e0880fba6a5f87",
+      "bytes": 4967
+    },
+    {
+      "path": "verification.json",
+      "sha256": "f5efec303621270ab5341713f9243a50b0242b46fb10e7fd2bbc8e98a4f12ba7",
+      "bytes": 1767
+    }
+  ]
+}

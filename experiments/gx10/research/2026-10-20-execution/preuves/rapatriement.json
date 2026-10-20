@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-20T20:33:54.649170+00:00",
+  "source": "gx10-tvlens:/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage",
+  "method": "SSH tar lecture seule, 12 fichiers exclusivement",
+  "files": [
+    {
+      "path": "entrees-source/blocks/000002/media.json",
+      "sha256": "4ceddf1f40459aa88b55c431c14e70d817685640e8da72422926aff617f6e2ae",
+      "bytes": 879691
+    },
+    {
+      "path": "entrees-source/blocks/000010/media.json",
+      "sha256": "433a12f7613f41505b08253f9c0479cda400a8a9f8cbf25fb596527aaed010a5",
+      "bytes": 738963
+    },
+    {
+      "path": "entrees-source/blocks/000025/media.json",
+      "sha256": "6c9ac74c2cf6c1ba29fff4b5a801a82c2f05c7e6a3967271db0ec5a825848951",
+      "bytes": 822722
+    },
+    {
+      "path": "entrees-source/blocks/000045/media.json",
+      "sha256": "58dac2c587f9e145684d49881e89b203f4b1c037960240e6a23a3f9908d74901",
+      "bytes": 824178
+    },
+    {
+      "path": "entrees-source/blocks/000046/media.json",
+      "sha256": "fe23a240fc73f24be79f3a8d9d04861342cb1599f5ec3b1444cfeb8a3bc0b9d8",
+      "bytes": 813978
+    },
+    {
+      "path": "entrees-source/blocks/000047/media.json",
+      "sha256": "30d20251ddae2caf52197aee41cd1c1cbabf600041fcc6f55d710ecb74d23388",
+      "bytes": 813078
+    },
+    {
+      "path": "entrees-source/blocks/000057/media.json",
+      "sha256": "59f0816e67a3e21d8bee8d3912fe4542664365f9fa367b05d2c375418a34572c",
+      "bytes": 810430
+    },
+    {
+      "path": "entrees-source/blocks/000078/media.json",
+      "sha256": "28358a22014aa83aa35844402d236b4deb46d9e8654cfbfb95b9c8e7126593c3",
+      "bytes": 1002538
+    },
+    {
+      "path": "entrees-source/blocks/000079/media.json",
+      "sha256": "bfc14cb0c00b06bf8c8eb62cbfab4b3e058fafc24b1ee9e4061a3c12b5f9a695",
+      "bytes": 1006282
+    },
+    {
+      "path": "entrees-source/blocks/000080/media.json",
+      "sha256": "25925d0e2fbc8646d8e518305d4575bc6827bb1bb58ed48bd45bcb5aa96dafd0",
+      "bytes": 1012114
+    },
+    {
+      "path": "entrees-source/blocks/000096/media.json",
+      "sha256": "2d1bc86a481d07d52a7f902564b877e03d64a4447f635f1050d1a3c188ff9393",
+      "bytes": 1004670
+    },
+    {
+      "path": "entrees-source/blocks/000108/media.json",
+      "sha256": "8e2b104fa6c7f6c95ddc72b0f58b143ce0f6b823ed6a853723f0b82d4b7adb7b",
+      "bytes": 872566
+    }
+  ],
+  "archiveSha256": "4474af0b22411c3a0cc90b1225b59b3fae56b9b9d30601291bb455560830c80c"
+}
