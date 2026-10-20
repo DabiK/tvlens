@@ -1,0 +1,69 @@
+{
+  "id": "81598a7b-8ec7-47a0-a9c1-06a925d2f971",
+  "caseId": "kennedy-06",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:35:45.826Z",
+    "monotonicMs": 178437.513179
+  },
+  "status": "returned",
+  "messagesSha256": "f533704505ba9aa31cf7f618184c6caeb114989c4f529c0e3053ec1d48eafeae",
+  "question": "What does Kennedy want space to represent, and what does he reject?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 14850.289628999977,
+  "fixtureServer": false,
+  "responseBytes": 1182,
+  "responseSha256": "b2d064a81dcf82e913b72c0f60390f50075848d694f7ab0ba664891b1b47dce5",
+  "answer": {
+    "answer": "Kennedy wants space to represent freedom and peace, rejecting the idea of it being governed by a hostile flag of conquest or filled with weapons.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-32",
+        "startMs": 248000,
+        "endMs": 256000
+      },
+      {
+        "id": "moment-33",
+        "startMs": 256000,
+        "endMs": 264000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2087,
+    "total_tokens": 2247,
+    "completion_tokens": 160,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:36:00.681Z",
+    "monotonicMs": 193292.437845
+  },
+  "clientTotalMs": 14854.924666000006
+}

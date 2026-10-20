@@ -1,0 +1,80 @@
+{
+  "id": "13fa0868-12b6-4009-83cd-9ad987fb6f19",
+  "caseId": "cnrs-02",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:33:09.142Z",
+    "monotonicMs": 21753.464964
+  },
+  "status": "returned",
+  "messagesSha256": "5090dde1b058a96288f5e350ead587b983736fc2d01c14f04c091641527ec8d0",
+  "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 22319.536484,
+  "fixtureServer": false,
+  "responseBytes": 1482,
+  "responseSha256": "0fd2882b78341c12b3d17e6bb4731148d4db8e94b9a98cb13f2619a92bf57104",
+  "answer": {
+    "answer": "On sépare les données pour évaluer honnêtement la capacité du modèle à généraliser à de nouvelles situations, sans qu'il ait déjà vu les exemples de test. C'est comparable à garder des exercices de côté pour vérifier si les élèves ont vraiment compris la leçon, plutôt que de leur demander de refaire ce qu'ils ont déjà fait.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-23",
+        "startMs": 176000,
+        "endMs": 184000
+      },
+      {
+        "id": "moment-24",
+        "startMs": 184000,
+        "endMs": 192000
+      },
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2207,
+    "total_tokens": 2453,
+    "completion_tokens": 246,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:33:31.466Z",
+    "monotonicMs": 44076.975537
+  },
+  "clientTotalMs": 22323.510573
+}

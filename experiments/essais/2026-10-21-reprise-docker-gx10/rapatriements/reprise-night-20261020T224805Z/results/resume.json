@@ -1,0 +1,20 @@
+{
+  "originalRoot": "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results",
+  "originalRunId": "a0593caec82144519b8d8a5c4fbb3456",
+  "originalStatusSha256": "ddb81e6d19c53489573bb5bcdb4518b4bc6efd78f7fae7992776ba2da67a47f0",
+  "originalSealSha256": "862c45eac73f216791af18e6fb46a832b412a6cd07c7ee99b0cd592f817f5aa9",
+  "originalOllamaCampaignSha256": "eb6b3384e56d935e17c87e8f954bf4af6d29e073dbe900ad48d94ede0d680387",
+  "completedStages": [
+    "perception",
+    "perception-verify",
+    "vision",
+    "vision-verify",
+    "probe-ollama"
+  ],
+  "failedStage": "docker-pull",
+  "ollamaReturnedCases": 20,
+  "readyForScoring": false,
+  "packageManifestSha256": "450390a0a1026a62993627df67dcc5d9c72600805e4800fe7fa67808233dc96b",
+  "recoveryScriptSha256": "9d0dc80204f474e8a051ef899eac109372f8c2b2beb17b0bb17af8d180c7cb55",
+  "atUtc": "2026-10-20T22:49:00.095254+00:00"
+}

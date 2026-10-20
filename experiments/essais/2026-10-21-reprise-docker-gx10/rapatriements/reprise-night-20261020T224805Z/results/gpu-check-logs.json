@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "{\"torch\": \"2.13.0+cu130\", \"cuda\": \"13.0\", \"vllm\": \"0.28.0\", \"device\": \"NVIDIA GB10\", \"capability\": [12, 1]}\n",
+  "stderr": ""
+}

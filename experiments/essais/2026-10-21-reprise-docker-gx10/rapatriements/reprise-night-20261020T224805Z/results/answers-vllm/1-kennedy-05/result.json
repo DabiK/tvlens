@@ -1,0 +1,82 @@
+{
+  "id": "4bd63672-cc15-46b9-8798-fde2d16ffff7",
+  "caseId": "kennedy-05",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:35:22.031Z",
+    "monotonicMs": 154642.605744
+  },
+  "status": "returned",
+  "messagesSha256": "e598f9258ee188df2b89121ae41d29449f6d649e65a1aef87f351c06a08c828b",
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 23789.508776000002,
+  "fixtureServer": false,
+  "responseBytes": 1535,
+  "responseSha256": "df84c7ed48cb647d066c86ada03a41d6b2b3d98adc775e59353410b8887311b6",
+  "answer": {
+    "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure qui se poursuivra, et qu'aucune nation ne peut prétendre au leadership en restant en retrait. Il souligne que les États-Unis ont posé les bases de cette course, et que leur participation est essentielle pour maintenir leur position de leader.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-24",
+        "startMs": 184000,
+        "endMs": 192000
+      },
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      },
+      {
+        "id": "moment-26",
+        "startMs": 200000,
+        "endMs": 208000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les passages sont des résumés automatiques et non des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2042,
+    "total_tokens": 2306,
+    "completion_tokens": 264,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:35:45.824Z",
+    "monotonicMs": 178435.444893
+  },
+  "clientTotalMs": 23792.839149000007
+}

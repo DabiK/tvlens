@@ -1,0 +1,24 @@
+{
+  "name": "probe-vllm",
+  "argv": [
+    "node",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/client/sonder.cjs",
+    "--repo",
+    "/home/nvidia/tvlens",
+    "--corpus",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/client/corpus.json",
+    "--backend",
+    "vllm",
+    "--repeats",
+    "2",
+    "--out",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results/answers-vllm",
+    "--execute",
+    "--identity-file",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results/vllm-identity.json"
+  ],
+  "startedAtUtc": "2026-10-20T23:32:47.385629+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:39:35.582399+00:00",
+  "durationSeconds": 408.1957131989984
+}

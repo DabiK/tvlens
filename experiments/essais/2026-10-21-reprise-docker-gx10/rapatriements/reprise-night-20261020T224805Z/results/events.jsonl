@@ -1,0 +1,11 @@
+{"atUtc": "2026-10-20T22:49:00.034337+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:49:00.095477+00:00", "status": "predecessor-validated", "resumedFrom": "a0593caec82144519b8d8a5c4fbb3456"}
+{"atUtc": "2026-10-20T22:49:00.155941+00:00", "status": "docker-pull"}
+{"atUtc": "2026-10-20T23:07:08.930953+00:00", "status": "model-download"}
+{"atUtc": "2026-10-20T23:26:38.268062+00:00", "status": "model-hashes"}
+{"atUtc": "2026-10-20T23:26:48.780939+00:00", "status": "gpu-check"}
+{"atUtc": "2026-10-20T23:26:55.789111+00:00", "status": "vllm-start"}
+{"atUtc": "2026-10-20T23:26:56.291287+00:00", "status": "vllm-loading"}
+{"atUtc": "2026-10-20T23:32:47.385854+00:00", "status": "probe-vllm"}
+{"atUtc": "2026-10-20T23:39:35.589061+00:00", "status": "workload-finished", "finishedAtUtc": "2026-10-20T23:39:35.588899+00:00", "readyForScoring": false}
+{"atUtc": "2026-10-20T23:39:37.217964+00:00", "status": "finished", "cleanupConfirmed": true}

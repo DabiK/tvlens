@@ -1,0 +1,13 @@
+{
+  "name": "model-hashes",
+  "argv": [
+    "python3",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/scripts/hash_model.py",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/huggingface-9f4f934edee7434880ed57becb6e88ad",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results/model-files.json"
+  ],
+  "startedAtUtc": "2026-10-20T23:26:38.267859+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:26:48.779406+00:00",
+  "durationSeconds": 10.510496754002816
+}

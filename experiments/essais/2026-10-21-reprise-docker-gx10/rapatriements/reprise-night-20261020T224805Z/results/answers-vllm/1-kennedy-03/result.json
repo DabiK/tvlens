@@ -1,0 +1,82 @@
+{
+  "id": "9ef69faf-c8ba-4871-8bff-62bbcb407c6c",
+  "caseId": "kennedy-03",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:35:00.184Z",
+    "monotonicMs": 132795.658904
+  },
+  "status": "returned",
+  "messagesSha256": "4029c98349e5b5333fec890068e288f5f1ddda4dd2f19828cb978b0e2ff66167",
+  "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 21839.966459999996,
+  "fixtureServer": false,
+  "responseBytes": 1417,
+  "responseSha256": "9c86ae8abe92e86f5009c6a61406217f2dd72288e2d3544691769395bb693fbd",
+  "answer": {
+    "answer": "L'accélération des découvertes produit de nouvelles ignorances et de nouveaux dangers. L'ouverture de l'espace promet de hauts coûts, de hauts risques, mais aussi de hautes récompenses.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-13",
+        "startMs": 96000,
+        "endMs": 104000
+      },
+      {
+        "id": "moment-14",
+        "startMs": 104000,
+        "endMs": 112000
+      },
+      {
+        "id": "moment-15",
+        "startMs": 112000,
+        "endMs": 120000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les passages sont des résumés automatiques et non des transcriptions exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2082,
+    "total_tokens": 2323,
+    "completion_tokens": 241,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:35:22.028Z",
+    "monotonicMs": 154639.900239
+  },
+  "clientTotalMs": 21844.241335
+}

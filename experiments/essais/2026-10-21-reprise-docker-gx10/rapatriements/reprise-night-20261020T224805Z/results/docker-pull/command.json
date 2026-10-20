@@ -1,0 +1,14 @@
+{
+  "name": "docker-pull",
+  "argv": [
+    "docker",
+    "pull",
+    "--platform",
+    "linux/arm64",
+    "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce"
+  ],
+  "startedAtUtc": "2026-10-20T22:49:00.155705+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:07:08.918379+00:00",
+  "durationSeconds": 1088.7620694840007
+}

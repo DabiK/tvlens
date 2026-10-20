@@ -1,0 +1,28 @@
+{
+  "name": "model-download",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-model-download-9f4f934edee7434880ed57becb6e88ad",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results/model-download.cid",
+    "--label",
+    "tvlens.owner=9f4f934edee7434880ed57becb6e88ad",
+    "--entrypoint",
+    "python3",
+    "-e",
+    "HF_HUB_DISABLE_IMPLICIT_TOKEN=1",
+    "-e",
+    "HF_HUB_DISABLE_TELEMETRY=1",
+    "-v",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/huggingface-9f4f934edee7434880ed57becb6e88ad:/cache",
+    "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce",
+    "-c",
+    "\"\"\"Exécuté dans l'image figée, sans GPU ni jeton, hors des mesures.\"\"\"\nfrom huggingface_hub import snapshot_download\n\nprint(snapshot_download('nvidia/Qwen3.8-27B-NVFP4', revision='482ca0f3832238542f8f5295dde86b5f22711d80',\n                        cache_dir='/cache', token=False, max_workers=4), flush=True)\n"
+  ],
+  "startedAtUtc": "2026-10-20T23:07:08.930720+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:26:38.267068+00:00",
+  "durationSeconds": 1169.3351304370008
+}

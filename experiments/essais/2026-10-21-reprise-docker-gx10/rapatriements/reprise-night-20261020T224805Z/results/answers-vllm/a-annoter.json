@@ -1,0 +1,1018 @@
+{
+  "readyForScoring": false,
+  "corpusSha256": "30634c8b75d1898d2c975b695b70cdd25c1621b65c7c14f43e101727e476db93",
+  "rows": [
+    {
+      "caseId": "cnrs-01",
+      "repeat": 1,
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Selon la vidéo, la distinction principale réside dans l'ordre de grandeur des paramètres : les petites IA en comptent des milliers à quelques millions, tandis que les grandes IA atteignent des milliers de milliards. Cette différence de taille implique également des méthodes d'apprentissage et des attentes fonctionnelles distinctes.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-9",
+          "startMs": 64000,
+          "endMs": 72000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-10",
+          "startMs": 72000,
+          "endMs": 80000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-11",
+          "startMs": 80000,
+          "endMs": 88000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 21708.567134,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-02",
+      "repeat": 1,
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "returned",
+      "answer": {
+        "answer": "On sépare les données pour évaluer honnêtement la capacité du modèle à généraliser à de nouvelles situations, sans qu'il ait déjà vu les exemples de test. C'est comparable à garder des exercices de côté pour vérifier si les élèves ont vraiment compris la leçon, plutôt que de leur demander de refaire ce qu'ils ont déjà fait.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-23",
+            "startMs": 176000,
+            "endMs": 184000
+          },
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-23",
+          "startMs": 176000,
+          "endMs": 184000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 22323.510573,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-04",
+      "repeat": 1,
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Le cours explique le surapprentissage comme une phase où la performance se dégrade après avoir atteint un maximum, si l'on continue à entraîner le modèle sans évaluation. L'objectif est de s'arrêter au bon moment, avant d'entrer dans cette zone, en utilisant des outils pour piloter l'apprentissage.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-54",
+          "startMs": 424000,
+          "endMs": 432000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-55",
+          "startMs": 432000,
+          "endMs": 440000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-56",
+          "startMs": 440000,
+          "endMs": 448000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-57",
+          "startMs": 448000,
+          "endMs": 456000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 25756.633210999993,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-05",
+      "repeat": 1,
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Le pré-entraînement correspond à l'apprentissage de la langue et de la construction de phrases, un processus comparé à l'acquisition linguistique chez un enfant. Il s'agit d'une phase extrêmement coûteuse en calcul qui permet au modèle de devenir un modèle de fondation.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-75",
+            "startMs": 592000,
+            "endMs": 600000
+          },
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-78",
+            "startMs": 616000,
+            "endMs": 624000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages sont des résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-75",
+          "startMs": 592000,
+          "endMs": 600000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-76",
+          "startMs": 600000,
+          "endMs": 608000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-77",
+          "startMs": 608000,
+          "endMs": 616000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-78",
+          "startMs": 616000,
+          "endMs": 624000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 27788.388215999992,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-06",
+      "repeat": 1,
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Le cours décrit l'alignement comme l'ensemble de règles éthiques et de conduite (comme la bienveillance) que le modèle doit respecter avant d'être opérationnel. Il ne fournit pas de définition distincte du fine-tuning dans les passages consultés, rendant impossible de trancher sur la différence précise entre les deux concepts.",
+        "kind": "insufficient",
+        "citations": [
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Aucun outil vidéo disponible pour ce tour",
+          "Les passages fournis ne mentionnent pas le fine-tuning"
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-95",
+          "startMs": 752000,
+          "endMs": 760000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 17259.342462,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-01",
+      "repeat": 1,
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy utilise un ordre de grandeur de 50 000 ans pour l'histoire enregistrée de l'humanité, qu'il compare à une période d'environ un demi-siècle. Il précise ensuite que nous savons très peu de choses sur les 40 premières années de cette période, à l'exception de leur fin.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-2",
+            "startMs": 8000,
+            "endMs": 16000
+          },
+          {
+            "id": "moment-3",
+            "startMs": 16000,
+            "endMs": 24000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16000,
+          "endMs": 24000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 17895.908305999998,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-03",
+      "repeat": 1,
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+      "status": "returned",
+      "answer": {
+        "answer": "L'accélération des découvertes produit de nouvelles ignorances et de nouveaux dangers. L'ouverture de l'espace promet de hauts coûts, de hauts risques, mais aussi de hautes récompenses.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-13",
+            "startMs": 96000,
+            "endMs": 104000
+          },
+          {
+            "id": "moment-14",
+            "startMs": 104000,
+            "endMs": 112000
+          },
+          {
+            "id": "moment-15",
+            "startMs": 112000,
+            "endMs": 120000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages sont des résumés automatiques et non des transcriptions exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-13",
+          "startMs": 96000,
+          "endMs": 104000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-14",
+          "startMs": 104000,
+          "endMs": 112000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-15",
+          "startMs": 112000,
+          "endMs": 120000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 21844.241335,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-05",
+      "repeat": 1,
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure qui se poursuivra, et qu'aucune nation ne peut prétendre au leadership en restant en retrait. Il souligne que les États-Unis ont posé les bases de cette course, et que leur participation est essentielle pour maintenir leur position de leader.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          },
+          {
+            "id": "moment-26",
+            "startMs": 200000,
+            "endMs": 208000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages sont des résumés automatiques et non des citations exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-26",
+          "startMs": 200000,
+          "endMs": 208000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 23792.839149000007,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-06",
+      "repeat": 1,
+      "question": "What does Kennedy want space to represent, and what does he reject?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy wants space to represent freedom and peace, rejecting the idea of it being governed by a hostile flag of conquest or filled with weapons.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-32",
+            "startMs": 248000,
+            "endMs": 256000
+          },
+          {
+            "id": "moment-33",
+            "startMs": 256000,
+            "endMs": 264000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-32",
+          "startMs": 248000,
+          "endMs": 256000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-33",
+          "startMs": 256000,
+          "endMs": 264000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 14854.924666000006,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-08",
+      "repeat": 1,
+      "question": "Who determines whether technology serves good or war?",
+      "status": "returned",
+      "answer": {
+        "answer": "Selon le discours de Kennedy, c'est l'homme qui détermine si la technologie sert le bien ou la guerre, car la science n'a pas de conscience propre. Il affirme que seule la position de prééminence des États-Unis permet d'aider à décider de l'usage de cette nouvelle mer.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-42",
+            "startMs": 328000,
+            "endMs": 336000
+          },
+          {
+            "id": "moment-43",
+            "startMs": 336000,
+            "endMs": 344000
+          },
+          {
+            "id": "moment-44",
+            "startMs": 344000,
+            "endMs": 352000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-42",
+          "startMs": 328000,
+          "endMs": 336000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-43",
+          "startMs": 336000,
+          "endMs": 344000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-44",
+          "startMs": 344000,
+          "endMs": 352000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 21473.26058600002,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-01",
+      "repeat": 2,
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Selon la vidéo, la distinction principale réside dans l'ordre de grandeur des paramètres : les petites IA en comptent des milliers à quelques millions, tandis que les grandes IA atteignent des milliers de milliards. Cette différence de taille implique également des méthodes d'apprentissage et des attentes fonctionnelles distinctes.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-9",
+          "startMs": 64000,
+          "endMs": 72000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-10",
+          "startMs": 72000,
+          "endMs": 80000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-11",
+          "startMs": 80000,
+          "endMs": 88000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 20451.02177000002,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-02",
+      "repeat": 2,
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "returned",
+      "answer": {
+        "answer": "On sépare les données pour évaluer la capacité du modèle à généraliser à de nouvelles situations, plutôt que de simplement mémoriser les exemples d'entraînement. C'est comparable à un examen final qui teste les acquis sans avoir été vu en cours.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 12319.907555999991,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-04",
+      "repeat": 2,
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Le cours explique le surapprentissage comme une phase où la performance se dégrade après avoir atteint un maximum, si l'on continue à entraîner le modèle sans évaluation. L'objectif est de s'arrêter au bon moment, avant d'entrer dans cette zone, en utilisant des outils pour piloter l'apprentissage.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-54",
+          "startMs": 424000,
+          "endMs": 432000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-55",
+          "startMs": 432000,
+          "endMs": 440000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-56",
+          "startMs": 440000,
+          "endMs": 448000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-57",
+          "startMs": 448000,
+          "endMs": 456000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 24979.060469999968,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-05",
+      "repeat": 2,
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Selon les passages observés, le pré-entraînement correspond à l'apprentissage de la langue et à la construction de phrases, un processus comparé à l'acquisition du langage chez un enfant. Cette phase est décrite comme extrêmement coûteuse en calcul et essentielle avant les étapes ultérieures de fine-tuning et d'alignement.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-75",
+            "startMs": 592000,
+            "endMs": 600000
+          },
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques peuvent être imprécis et ne constituent pas des citations exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-75",
+          "startMs": 592000,
+          "endMs": 600000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-76",
+          "startMs": 600000,
+          "endMs": 608000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-77",
+          "startMs": 608000,
+          "endMs": 616000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 23690.65539900004,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "cnrs-06",
+      "repeat": 2,
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Le cours décrit l'alignement comme l'ensemble de règles éthiques et de conduite (comme la bienveillance) que le modèle doit respecter avant d'être opérationnel. Il ne fournit pas de définition distincte du fine-tuning dans les passages consultés, rendant impossible de trancher sur la différence précise entre les deux concepts.",
+        "kind": "insufficient",
+        "citations": [
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Aucun outil vidéo disponible pour ce tour",
+          "Les passages fournis ne mentionnent pas le fine-tuning"
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-95",
+          "startMs": 752000,
+          "endMs": 760000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 16593.78640099999,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-01",
+      "repeat": 2,
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy utilise un ordre de grandeur de 50 000 ans pour l'histoire enregistrée de l'humanité, qu'il compare à une période d'environ un demi-siècle. Il précise ensuite que nous savons très peu de choses sur les 40 premières années de cette période, à l'exception de leur fin.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-2",
+            "startMs": 8000,
+            "endMs": 16000
+          },
+          {
+            "id": "moment-3",
+            "startMs": 16000,
+            "endMs": 24000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16000,
+          "endMs": 24000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 17848.59812899999,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-03",
+      "repeat": 2,
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+      "status": "returned",
+      "answer": {
+        "answer": "L'accélération des découvertes produit de nouvelles ignorances et de nouveaux dangers. L'ouverture de l'espace promet de hauts coûts, de hauts risques, mais aussi de hautes récompenses.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-13",
+            "startMs": 96000,
+            "endMs": 104000
+          },
+          {
+            "id": "moment-14",
+            "startMs": 104000,
+            "endMs": 112000
+          },
+          {
+            "id": "moment-15",
+            "startMs": 112000,
+            "endMs": 120000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages sont des résumés automatiques et non des transcriptions exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-13",
+          "startMs": 96000,
+          "endMs": 104000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-14",
+          "startMs": 104000,
+          "endMs": 112000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-15",
+          "startMs": 112000,
+          "endMs": 120000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 21174.759598999983,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-05",
+      "repeat": 2,
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure qui se poursuivra, et qu'aucune nation ne peut prétendre au leadership en restant en retrait. Il souligne que les États-Unis ont posé les bases de cette course, et que leur participation est essentielle pour maintenir leur position de leader.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          },
+          {
+            "id": "moment-26",
+            "startMs": 200000,
+            "endMs": 208000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages sont des résumés automatiques et non des citations exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-26",
+          "startMs": 200000,
+          "endMs": 208000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 23051.40697099996,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-06",
+      "repeat": 2,
+      "question": "What does Kennedy want space to represent, and what does he reject?",
+      "status": "returned",
+      "answer": {
+        "answer": "Kennedy wants space to represent freedom and peace, rejecting the idea of it being governed by a hostile flag of conquest or filled with weapons.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-32",
+            "startMs": 248000,
+            "endMs": 256000
+          },
+          {
+            "id": "moment-33",
+            "startMs": 256000,
+            "endMs": 264000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-32",
+          "startMs": 248000,
+          "endMs": 256000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-33",
+          "startMs": 256000,
+          "endMs": 264000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 14170.517155999958,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "caseId": "kennedy-08",
+      "repeat": 2,
+      "question": "Who determines whether technology serves good or war?",
+      "status": "returned",
+      "answer": {
+        "answer": "Selon le discours de Kennedy observé dans la vidéo, c'est l'homme qui détermine si la technologie devient une force pour le bien ou pour la guerre. Le président affirme que la science n'a pas de conscience propre et que son usage dépend entièrement des choix humains.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-42",
+            "startMs": 328000,
+            "endMs": 336000
+          },
+          {
+            "id": "moment-43",
+            "startMs": 336000,
+            "endMs": 344000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les transcriptions sont des résumés automatiques potentiellement imprécis et non des citations exactes."
+        ]
+      },
+      "error": null,
+      "citationChecks": [
+        {
+          "id": "moment-42",
+          "startMs": 328000,
+          "endMs": 336000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-43",
+          "startMs": 336000,
+          "endMs": 344000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "clientTotalMs": 18895.919530000014,
+      "firstTokenMs": null,
+      "quality": null,
+      "reviewer": null
+    }
+  ]
+}

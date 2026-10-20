@@ -1,0 +1,91 @@
+{
+  "id": "d612236f-4c62-4cc7-9049-dd996b20a83d",
+  "caseId": "cnrs-04",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T23:36:54.938Z",
+    "monotonicMs": 247549.560529
+  },
+  "status": "returned",
+  "messagesSha256": "0b293e5553c681286f983e374b36c316d6f00c68b326cd4e6221d818a9cd332d",
+  "question": "Comment le cours explique-t-il le surapprentissage ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 24972.91534300003,
+  "fixtureServer": false,
+  "responseBytes": 1540,
+  "responseSha256": "542c041cd4a0c3eac0af66cf24a60e19808b9bf222e845d7af512da3c7313047",
+  "answer": {
+    "answer": "Le cours explique le surapprentissage comme une phase où la performance se dégrade après avoir atteint un maximum, si l'on continue à entraîner le modèle sans évaluation. L'objectif est de s'arrêter au bon moment, avant d'entrer dans cette zone, en utilisant des outils pour piloter l'apprentissage.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-54",
+        "startMs": 424000,
+        "endMs": 432000
+      },
+      {
+        "id": "moment-55",
+        "startMs": 432000,
+        "endMs": 440000
+      },
+      {
+        "id": "moment-56",
+        "startMs": 440000,
+        "endMs": 448000
+      },
+      {
+        "id": "moment-57",
+        "startMs": 448000,
+        "endMs": 456000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2067,
+    "total_tokens": 2353,
+    "completion_tokens": 286,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-56",
+      "startMs": 440000,
+      "endMs": 448000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-57",
+      "startMs": 448000,
+      "endMs": 456000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:37:19.917Z",
+    "monotonicMs": 272528.620999
+  },
+  "clientTotalMs": 24979.060469999968
+}

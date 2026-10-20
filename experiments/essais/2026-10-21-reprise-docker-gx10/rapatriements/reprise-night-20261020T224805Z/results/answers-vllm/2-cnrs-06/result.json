@@ -1,0 +1,61 @@
+{
+  "id": "7ab7c5c5-242a-4123-80e7-58c63ecccf96",
+  "caseId": "cnrs-06",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T23:37:43.614Z",
+    "monotonicMs": 296225.944122
+  },
+  "status": "returned",
+  "messagesSha256": "19a2e344669d8167c70c329128d968cbc9f7b71b782bffe6606f81ccd44df5bc",
+  "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 16590.366634000035,
+  "fixtureServer": false,
+  "responseBytes": 1399,
+  "responseSha256": "cd6197d4dc6af9307b887414af582a0113307aa8cc030d347e251b383d6cce1e",
+  "answer": {
+    "answer": "Le cours décrit l'alignement comme l'ensemble de règles éthiques et de conduite (comme la bienveillance) que le modèle doit respecter avant d'être opérationnel. Il ne fournit pas de définition distincte du fine-tuning dans les passages consultés, rendant impossible de trancher sur la différence précise entre les deux concepts.",
+    "kind": "insufficient",
+    "citations": [
+      {
+        "id": "moment-95",
+        "startMs": 752000,
+        "endMs": 760000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Aucun outil vidéo disponible pour ce tour",
+      "Les passages fournis ne mentionnent pas le fine-tuning"
+    ]
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2057,
+    "total_tokens": 2246,
+    "completion_tokens": 189,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:38:00.208Z",
+    "monotonicMs": 312819.730523
+  },
+  "clientTotalMs": 16593.78640099999
+}

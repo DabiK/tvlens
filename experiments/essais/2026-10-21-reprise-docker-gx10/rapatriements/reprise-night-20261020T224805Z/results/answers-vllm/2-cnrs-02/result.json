@@ -1,0 +1,58 @@
+{
+  "id": "ee454418-d856-48bc-9d5b-8718bfbf1157",
+  "caseId": "cnrs-02",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T23:36:42.615Z",
+    "monotonicMs": 235225.959077
+  },
+  "status": "returned",
+  "messagesSha256": "5090dde1b058a96288f5e350ead587b983736fc2d01c14f04c091641527ec8d0",
+  "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 12316.493069999997,
+  "fixtureServer": false,
+  "responseBytes": 1199,
+  "responseSha256": "7517843f80602c583c4d3b36fcfd146067748c87a17c2a7c9218a085804ad32d",
+  "answer": {
+    "answer": "On sépare les données pour évaluer la capacité du modèle à généraliser à de nouvelles situations, plutôt que de simplement mémoriser les exemples d'entraînement. C'est comparable à un examen final qui teste les acquis sans avoir été vu en cours.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2207,
+    "total_tokens": 2346,
+    "completion_tokens": 139,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:36:54.934Z",
+    "monotonicMs": 247545.866633
+  },
+  "clientTotalMs": 12319.907555999991
+}

@@ -1,0 +1,82 @@
+{
+  "id": "33e3eb1c-e2a3-4714-b6ca-af937257b410",
+  "caseId": "cnrs-05",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T23:37:19.919Z",
+    "monotonicMs": 272530.834406
+  },
+  "status": "returned",
+  "messagesSha256": "9a7bc3dd59188c290d44a8d7d07670bfb34b6034f2ca6e0394f8e2091462fee6",
+  "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 23685.89807200001,
+  "fixtureServer": false,
+  "responseBytes": 1580,
+  "responseSha256": "c4c95727cd335b3c121d0380aa0a90d81f12eae0fe0aec8dbc5182b4fdd4207c",
+  "answer": {
+    "answer": "Selon les passages observés, le pré-entraînement correspond à l'apprentissage de la langue et à la construction de phrases, un processus comparé à l'acquisition du langage chez un enfant. Cette phase est décrite comme extrêmement coûteuse en calcul et essentielle avant les étapes ultérieures de fine-tuning et d'alignement.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-75",
+        "startMs": 592000,
+        "endMs": 600000
+      },
+      {
+        "id": "moment-76",
+        "startMs": 600000,
+        "endMs": 608000
+      },
+      {
+        "id": "moment-77",
+        "startMs": 608000,
+        "endMs": 616000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les résumés automatiques peuvent être imprécis et ne constituent pas des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2156,
+    "total_tokens": 2427,
+    "completion_tokens": 271,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:37:43.610Z",
+    "monotonicMs": 296221.489805
+  },
+  "clientTotalMs": 23690.65539900004
+}

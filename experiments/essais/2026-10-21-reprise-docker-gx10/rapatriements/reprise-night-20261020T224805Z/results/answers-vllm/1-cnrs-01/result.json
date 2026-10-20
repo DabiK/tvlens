@@ -1,0 +1,80 @@
+{
+  "id": "65a9f776-d5b0-4693-ba8e-f73378b474ae",
+  "caseId": "cnrs-01",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:32:47.430Z",
+    "monotonicMs": 41.031934
+  },
+  "status": "returned",
+  "messagesSha256": "37ae3d00cb1e7c4c9f5977b0e4e6065d1c98af21b598179fd9e4c27767b8787b",
+  "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 21705.511035,
+  "fixtureServer": false,
+  "responseBytes": 1468,
+  "responseSha256": "2d1d5b8431f5bd959125fe2311cdd10b9e89b4334f62a89a46ee67f2c9b47ebf",
+  "answer": {
+    "answer": "Selon la vidéo, la distinction principale réside dans l'ordre de grandeur des paramètres : les petites IA en comptent des milliers à quelques millions, tandis que les grandes IA atteignent des milliers de milliards. Cette différence de taille implique également des méthodes d'apprentissage et des attentes fonctionnelles distinctes.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-9",
+        "startMs": 64000,
+        "endMs": 72000
+      },
+      {
+        "id": "moment-10",
+        "startMs": 72000,
+        "endMs": 80000
+      },
+      {
+        "id": "moment-11",
+        "startMs": 80000,
+        "endMs": 88000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2027,
+    "total_tokens": 2260,
+    "completion_tokens": 233,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:33:09.138Z",
+    "monotonicMs": 21749.599068
+  },
+  "clientTotalMs": 21708.567134
+}

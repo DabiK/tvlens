@@ -1,0 +1,80 @@
+{
+  "id": "ab08b66c-a51a-4e42-8c8d-15ba60e83db6",
+  "caseId": "kennedy-08",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T23:36:00.684Z",
+    "monotonicMs": 193295.471673
+  },
+  "status": "returned",
+  "messagesSha256": "418c1c0319b8a9dbfcd0ef4a7a20214a6542c423b68301fc84100a8f3607280e",
+  "question": "Who determines whether technology serves good or war?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 21468.726923999988,
+  "fixtureServer": false,
+  "responseBytes": 1405,
+  "responseSha256": "49d2c1fbb8ab9f5d3a899dec454533531846f602c7ca7a9fe59605c8ed334765",
+  "answer": {
+    "answer": "Selon le discours de Kennedy, c'est l'homme qui détermine si la technologie sert le bien ou la guerre, car la science n'a pas de conscience propre. Il affirme que seule la position de prééminence des États-Unis permet d'aider à décider de l'usage de cette nouvelle mer.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-42",
+        "startMs": 328000,
+        "endMs": 336000
+      },
+      {
+        "id": "moment-43",
+        "startMs": 336000,
+        "endMs": 344000
+      },
+      {
+        "id": "moment-44",
+        "startMs": 344000,
+        "endMs": 352000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "usage": {
+    "prompt_tokens": 2015,
+    "total_tokens": 2253,
+    "completion_tokens": 238,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "ollamaTimings": null,
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T23:36:22.157Z",
+    "monotonicMs": 214768.732259
+  },
+  "clientTotalMs": 21473.26058600002
+}

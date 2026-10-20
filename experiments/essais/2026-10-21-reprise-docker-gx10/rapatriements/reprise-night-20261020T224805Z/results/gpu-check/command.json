@@ -1,0 +1,26 @@
+{
+  "name": "gpu-check",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-gpu-check-9f4f934edee7434880ed57becb6e88ad",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results/gpu-check.cid",
+    "--label",
+    "tvlens.owner=9f4f934edee7434880ed57becb6e88ad",
+    "--device",
+    "nvidia.com/gpu=all",
+    "-e",
+    "NVIDIA_VISIBLE_DEVICES=void",
+    "--entrypoint",
+    "python3",
+    "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce",
+    "-c",
+    "import json,torch,vllm; print(json.dumps({\"torch\":torch.__version__,\"cuda\":torch.version.cuda,\"vllm\":vllm.__version__,\"device\":torch.cuda.get_device_name(0),\"capability\":torch.cuda.get_device_capability(0)}));assert torch.cuda.is_available(); assert torch.cuda.get_device_capability(0)==(12,1)"
+  ],
+  "startedAtUtc": "2026-10-20T23:26:48.780219+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:26:55.787585+00:00",
+  "durationSeconds": 7.005580286000622
+}
