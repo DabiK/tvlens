@@ -45,6 +45,11 @@ d'identifiants/texte/temps ; elles seront appliquées à un nouvel oracle versio
 réécrire ce gel ni les résultats bruts. Tant que ce contrôle manque, aucune pertinence
 chiffrée ni configuration gagnante n'est publiée.
 
+Un [audit indépendant des trente questions](audit-independant.md) distingue les accords
+textuels, les attributions de locuteur à vérifier et cinq corrections candidates de temps
+ou de formulation. Ces candidats ne modifient pas les attendus figés avant écoute et
+visionnage humains.
+
 ## Reproduction
 
 ```sh
