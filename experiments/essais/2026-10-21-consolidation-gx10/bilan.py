@@ -133,6 +133,7 @@ def pause_run(path):
         'complete': report.get('complete') is True and report.get('status') == 'complete',
         'questions': rows, 'mesures': question_summary(rows, len(expected)),
         'couverture': (summary.get('coverage') or {}),
+        'publications': (summary.get('publications') or {}),
         'pertesParCause': {name: (item or {}).get('byCause', {})
                            for name, item in (summary.get('losses') or {}).items()},
         'compteursPertes': summary.get('lossCounters') or {},

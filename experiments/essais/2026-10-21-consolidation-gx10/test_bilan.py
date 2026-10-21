@@ -36,6 +36,7 @@ class BilanTest(unittest.TestCase):
                     campaign = {'mode': 'execution', 'complete': True, 'status': 'complete',
                                 'questions': questions, 'summary': {
                                     'coverage': {'vision': {'percent': 75}},
+                                    'publications': {'vision': 12},
                                     'losses': {'vision': {'byCause': {'asking': 1}}}}}
                     path = folder / 'campaign.json'
                     path.write_text(json.dumps(campaign))
@@ -49,6 +50,7 @@ class BilanTest(unittest.TestCase):
             self.assertEqual(kennedy_b1['mesures']['sous15'], {'nombre': 4, 'denominateur': 5})
             self.assertEqual(kennedy_b1['mesures']['agePreuveAnalyseMs']['p50'], 2000)
             self.assertEqual(kennedy_b1['pertesParCause']['vision']['asking'], 1)
+            self.assertEqual(kennedy_b1['publications']['vision'], 12)
             pair = next(row for row in result['appariements'] if row['video'] == 'kennedy' and row['passage'] == 1)
             self.assertIsNone(pair['differenceBmoinsAMs'])
             self.assertEqual(len(result['appariements']), 20)
