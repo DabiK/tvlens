@@ -1,0 +1,81 @@
+{
+  "id": "be4430e7-fe56-44ed-aaba-39c2c8f7d794",
+  "caseId": "cnrs-04",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T22:33:18.576Z",
+    "monotonicMs": 20954.740591
+  },
+  "status": "returned",
+  "messagesSha256": "0b293e5553c681286f983e374b36c316d6f00c68b326cd4e6221d818a9cd332d",
+  "question": "Comment le cours explique-t-il le surapprentissage ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 11904.386685000001,
+  "fixtureServer": false,
+  "responseBytes": 1126,
+  "responseSha256": "40e60aee31b187a8adf8e80d342b5ee0318e9e79452b92cdd8c7c10b3004e3ea",
+  "answer": {
+    "answer": "Le cours explique le surapprentissage comme une phase de régression de la performance après un pic d'apprentissage, nécessitant un arrêt au bon moment. Il compare ce phénomène à l'apprentissage humain et mentionne l'existence d'outils logiciels pour le piloter.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-54",
+        "startMs": 424000,
+        "endMs": 432000
+      },
+      {
+        "id": "moment-56",
+        "startMs": 440000,
+        "endMs": 448000
+      },
+      {
+        "id": "moment-57",
+        "startMs": 448000,
+        "endMs": 456000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 11902744898,
+    "load_duration": 825958,
+    "prompt_eval_duration": 2793344000,
+    "eval_duration": 8903979000,
+    "prompt_eval_count": 2067,
+    "eval_count": 259
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-56",
+      "startMs": 440000,
+      "endMs": 448000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-57",
+      "startMs": 448000,
+      "endMs": 456000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:33:30.482Z",
+    "monotonicMs": 32861.645951
+  },
+  "clientTotalMs": 11906.905359999997
+}

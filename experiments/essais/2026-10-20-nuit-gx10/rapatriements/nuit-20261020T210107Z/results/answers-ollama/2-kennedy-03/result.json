@@ -1,0 +1,81 @@
+{
+  "id": "0f5f1093-7466-4695-baf0-eb01ffb5a3c5",
+  "caseId": "kennedy-03",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:29.473Z",
+    "monotonicMs": 151852.61724
+  },
+  "status": "returned",
+  "messagesSha256": "4029c98349e5b5333fec890068e288f5f1ddda4dd2f19828cb978b0e2ff66167",
+  "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 8128.903013000003,
+  "fixtureServer": false,
+  "responseBytes": 1084,
+  "responseSha256": "58d72ff0eacbcc103fca88eee5bd34030ae577e978d787ea44d838aa984609e2",
+  "answer": {
+    "answer": "Selon le discours rapporté, cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers. L'ouverture de l'espace promet des coûts élevés ainsi qu'une récompense tout aussi importante.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-13",
+        "startMs": 96000,
+        "endMs": 104000
+      },
+      {
+        "id": "moment-14",
+        "startMs": 104000,
+        "endMs": 112000
+      },
+      {
+        "id": "moment-15",
+        "startMs": 112000,
+        "endMs": 120000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 8127716573,
+    "load_duration": 941831,
+    "prompt_eval_duration": 161933000,
+    "eval_duration": 7779791000,
+    "prompt_eval_count": 2082,
+    "eval_count": 246
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:37.605Z",
+    "monotonicMs": 159983.786703
+  },
+  "clientTotalMs": 8131.169462999998
+}

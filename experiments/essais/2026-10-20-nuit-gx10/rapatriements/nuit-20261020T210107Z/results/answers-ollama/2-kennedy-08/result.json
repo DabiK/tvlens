@@ -1,0 +1,68 @@
+{
+  "id": "13329e2e-9d27-4251-b026-723ba62a3d7e",
+  "caseId": "kennedy-08",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:52.029Z",
+    "monotonicMs": 174407.900364
+  },
+  "status": "returned",
+  "messagesSha256": "418c1c0319b8a9dbfcd0ef4a7a20214a6542c423b68301fc84100a8f3607280e",
+  "question": "Who determines whether technology serves good or war?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 6420.1219820000115,
+  "fixtureServer": false,
+  "responseBytes": 885,
+  "responseSha256": "b04b52d587bc12e40c95dc628c80bd7d18556509effd868d76283edc02ce6c18",
+  "answer": {
+    "answer": "Selon le discours de Kennedy observé dans la vidéo, c'est l'homme qui détermine si la technologie sert le bien ou la guerre. Il affirme explicitement que la science n'a pas de conscience propre et que son usage dépend des choix humains.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-42",
+        "startMs": 328000,
+        "endMs": 336000
+      },
+      {
+        "id": "moment-43",
+        "startMs": 336000,
+        "endMs": 344000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 6419000485,
+    "load_duration": 710822,
+    "prompt_eval_duration": 155970000,
+    "eval_duration": 5994122000,
+    "prompt_eval_count": 2015,
+    "eval_count": 181
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:58.452Z",
+    "monotonicMs": 180831.300082
+  },
+  "clientTotalMs": 6423.399718000001
+}

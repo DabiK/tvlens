@@ -1,0 +1,192 @@
+{
+  "id": "cb28dc8b-d4d4-47bb-b4b0-bb9e3b37b817",
+  "started": {
+    "utc": "2026-10-20T21:33:25.613849+00:00",
+    "monotonicNs": 32742378425330
+  },
+  "mode": "execute",
+  "experiment": "vision",
+  "status": "finished",
+  "readyForScoring": false,
+  "runs": [
+    {
+      "name": "validation-A",
+      "arm": "A",
+      "id": "3d8e7b50-d05d-4a80-bfe1-5c552577359f",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-reference.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/validation-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--validate"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:33:26.335956+00:00",
+        "monotonicNs": 32743100535362
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 932550,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:33:27.087965+00:00",
+        "monotonicNs": 32743852545929
+      },
+      "durationMs": 752.010567
+    },
+    {
+      "name": "validation-B",
+      "arm": "B",
+      "id": "9f824e59-b26e-4233-b9f9-27e59f8fe56d",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-vision-paused.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/validation-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--validate"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:33:27.089580+00:00",
+        "monotonicNs": 32743854151519
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 932592,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:33:27.841677+00:00",
+        "monotonicNs": 32744606260727
+      },
+      "durationMs": 752.109208
+    },
+    {
+      "name": "01-A",
+      "arm": "A",
+      "id": "0c9190f5-2cf1-4526-ae8b-f3540baef6b8",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-reference.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/01-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:33:27.842884+00:00",
+        "monotonicNs": 32744607456279
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 932618,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:48:25.604869+00:00",
+        "monotonicNs": 33642369454356
+      },
+      "durationMs": 897761.998077
+    },
+    {
+      "name": "02-B",
+      "arm": "B",
+      "id": "4d61d836-9e81-4cd3-be9d-55a96d8e8e09",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-vision-paused.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/02-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:48:25.607278+00:00",
+        "monotonicNs": 33642371855171
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 1031805,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T22:03:15.111686+00:00",
+        "monotonicNs": 34531876272076
+      },
+      "durationMs": 889504.416905
+    },
+    {
+      "name": "03-B",
+      "arm": "B",
+      "id": "61b2465a-3012-4523-9fe4-1e4d41de9fc4",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-vision-paused.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/03-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T22:03:15.113905+00:00",
+        "monotonicNs": 34531878482680
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 1116795,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T22:18:05.278525+00:00",
+        "monotonicNs": 35422043111291
+      },
+      "durationMs": 890164.628611
+    },
+    {
+      "name": "04-A",
+      "arm": "A",
+      "id": "25ba830c-7fab-4d2f-8f97-b504cbcf6279",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-reference.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/04-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T22:18:05.280798+00:00",
+        "monotonicNs": 35422045375181
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 1205424,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T22:32:55.513954+00:00",
+        "monotonicNs": 36312278536700
+      },
+      "durationMs": 890233.161519
+    }
+  ],
+  "budgetSeconds": 4800,
+  "finished": {
+    "utc": "2026-10-20T22:32:55.590284+00:00",
+    "monotonicNs": 36312354855989
+  }
+}

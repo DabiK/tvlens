@@ -1,0 +1,70 @@
+{
+  "id": "deb6069f-1fde-4c27-8a84-1413e7aad808",
+  "caseId": "cnrs-06",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:13.695Z",
+    "monotonicMs": 136074.726104
+  },
+  "status": "returned",
+  "messagesSha256": "19a2e344669d8167c70c329128d968cbc9f7b71b782bffe6606f81ccd44df5bc",
+  "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 8710.564207999996,
+  "fixtureServer": false,
+  "responseBytes": 1123,
+  "responseSha256": "66c7c985b697adbad1395dd1646189880f8a017e6e39a411017563402042d293",
+  "answer": {
+    "answer": "Le cours définit l'alignement comme l'ensemble des règles éthiques et de conduite imposées au modèle, distinctes de l'acquisition des compétences professionnelles. Il s'agit d'une étape de mise en conformité qui précède l'utilisation opérationnelle du modèle.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-95",
+        "startMs": 752000,
+        "endMs": 760000
+      },
+      {
+        "id": "moment-96",
+        "startMs": 760000,
+        "endMs": 768000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les passages fournis ne mentionnent pas explicitement le terme 'fine-tuning' ni ne le distinguent formellement de l'alignement, limitant la réponse à la définition de l'alignement observée."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 8709633400,
+    "load_duration": 549684,
+    "prompt_eval_duration": 146109000,
+    "eval_duration": 8388200999,
+    "prompt_eval_count": 2057,
+    "eval_count": 235
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:22.408Z",
+    "monotonicMs": 144787.329912
+  },
+  "clientTotalMs": 8712.603807999985
+}

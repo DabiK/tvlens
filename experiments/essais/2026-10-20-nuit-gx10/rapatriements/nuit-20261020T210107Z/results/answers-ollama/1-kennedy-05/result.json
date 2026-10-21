@@ -1,0 +1,70 @@
+{
+  "id": "24cb7e41-578e-45c7-b8ba-d38c95ee0b52",
+  "caseId": "kennedy-05",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T22:34:12.873Z",
+    "monotonicMs": 75251.846139
+  },
+  "status": "returned",
+  "messagesSha256": "e598f9258ee188df2b89121ae41d29449f6d649e65a1aef87f351c06a08c828b",
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 9135.30971799999,
+  "fixtureServer": false,
+  "responseBytes": 1040,
+  "responseSha256": "6e192166e447c799493b51dce57bcc65c07ed11adea1673b6702e46340e5005c",
+  "answer": {
+    "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure inévitable et que les États-Unis ne peuvent pas rester en arrière s'ils veulent diriger les autres nations. Il souligne que la quête de connaissance de l'homme est déterminée et ne peut être arrêtée.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-24",
+        "startMs": 184000,
+        "endMs": 192000
+      },
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les transcriptions sont des résumés automatiques potentiellement imprécis et non des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 9133873996,
+    "load_duration": 740950,
+    "prompt_eval_duration": 2088344000,
+    "eval_duration": 6888304000,
+    "prompt_eval_count": 2042,
+    "eval_count": 216
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:34:22.010Z",
+    "monotonicMs": 84389.604915
+  },
+  "clientTotalMs": 9137.758776000002
+}

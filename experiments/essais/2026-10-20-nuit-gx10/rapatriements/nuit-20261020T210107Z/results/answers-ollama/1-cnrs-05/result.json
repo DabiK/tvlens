@@ -1,0 +1,81 @@
+{
+  "id": "6c062aa5-2976-4f1e-9db8-4508ddd17cc9",
+  "caseId": "cnrs-05",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T22:33:30.484Z",
+    "monotonicMs": 32863.585133
+  },
+  "status": "returned",
+  "messagesSha256": "9a7bc3dd59188c290d44a8d7d07670bfb34b6034f2ca6e0394f8e2091462fee6",
+  "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 11825.629405,
+  "fixtureServer": false,
+  "responseBytes": 1143,
+  "responseSha256": "5d15c08e898b395b0b9b8d57e2e0f2ee24b9ec62cf40654fed58ed05276bd2df",
+  "answer": {
+    "answer": "Selon les passages fournis, le modèle apprend l'apprentissage d'une langue, la construction de phrases et le langage de manière générale. Cette phase de pré-entraînement est décrite comme extrêmement coûteuse en calculs et comparable à l'acquisition du langage chez un enfant.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-75",
+        "startMs": 592000,
+        "endMs": 600000
+      },
+      {
+        "id": "moment-77",
+        "startMs": 608000,
+        "endMs": 616000
+      },
+      {
+        "id": "moment-79",
+        "startMs": 624000,
+        "endMs": 632000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des faits vérifiés."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 11823853040,
+    "load_duration": 982376,
+    "prompt_eval_duration": 2863424000,
+    "eval_duration": 8796464000,
+    "prompt_eval_count": 2156,
+    "eval_count": 256
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-79",
+      "startMs": 624000,
+      "endMs": 632000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:33:42.313Z",
+    "monotonicMs": 44692.120271
+  },
+  "clientTotalMs": 11828.535138
+}

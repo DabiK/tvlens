@@ -1,0 +1,240 @@
+{
+  "id": "f03add1a-d64b-4918-9a55-b95404f69107",
+  "started": {
+    "utc": "2026-10-20T21:29:30.829375+00:00",
+    "monotonicNs": 32507593951443
+  },
+  "mode": "execute",
+  "experiment": "perception",
+  "status": "finished",
+  "readyForScoring": false,
+  "runs": [
+    {
+      "name": "validation-A",
+      "arm": "A",
+      "id": "beeb2add-4c20-40a7-b381-37c8fe8b1e4e",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-five-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/validation-A/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--validate"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:29:31.175637+00:00",
+        "monotonicNs": 32507940210185
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 929404,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:29:31.427337+00:00",
+        "monotonicNs": 32508191928898
+      },
+      "durationMs": 251.718713
+    },
+    {
+      "name": "validation-B",
+      "arm": "B",
+      "id": "e727035c-53ba-4fb0-bea8-07a2bd856993",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-three-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/validation-B/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--validate"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:29:31.429388+00:00",
+        "monotonicNs": 32508193962080
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 929430,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:29:31.680629+00:00",
+        "monotonicNs": 32508445211090
+      },
+      "durationMs": 251.24901
+    },
+    {
+      "name": "01-A",
+      "arm": "A",
+      "id": "916fbc15-276f-4310-86ac-bdaf51ab367c",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-five-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/01-A/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:29:31.682497+00:00",
+        "monotonicNs": 32508447068877
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 929455,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:30:53.639881+00:00",
+        "monotonicNs": 32590404467776
+      },
+      "durationMs": 81957.398899
+    },
+    {
+      "name": "02-B",
+      "arm": "B",
+      "id": "5b66b36b-6c63-4b22-b898-7573e525096e",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-three-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/02-B/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:30:53.642153+00:00",
+        "monotonicNs": 32590406730112
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 931203,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:31:56.997446+00:00",
+        "monotonicNs": 32653762032856
+      },
+      "durationMs": 63355.302744
+    },
+    {
+      "name": "03-B",
+      "arm": "B",
+      "id": "b1a1271f-33dd-447a-a1f0-f821fadda417",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-three-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/03-B/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:31:56.999447+00:00",
+        "monotonicNs": 32653764024723
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 931743,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:32:38.972286+00:00",
+        "monotonicNs": 32695736868503
+      },
+      "durationMs": 41972.84378
+    },
+    {
+      "name": "04-A",
+      "arm": "A",
+      "id": "b0f2eae5-b74f-4a6b-a7d9-fa7949ef7281",
+      "argv": [
+        "node",
+        "scripts/replay-local-perception.cjs",
+        "--manifest",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/inputs/perception-five-images.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-perception/04-A/run",
+        "--backend",
+        "local",
+        "--model",
+        "gemma3:4b",
+        "--url",
+        "http://127.0.0.1:11434",
+        "--num-ctx",
+        "8192",
+        "--keep-alive",
+        "10m",
+        "--execute"
+      ],
+      "started": {
+        "utc": "2026-10-20T21:32:38.973694+00:00",
+        "monotonicNs": 32695738267642
+      },
+      "status": "exited",
+      "exitCode": 0,
+      "pid": 932117,
+      "monitorStopped": true,
+      "finished": {
+        "utc": "2026-10-20T21:33:24.477941+00:00",
+        "monotonicNs": 32741242521750
+      },
+      "durationMs": 45504.254108
+    }
+  ],
+  "budgetSeconds": 2700,
+  "finished": {
+    "utc": "2026-10-20T21:33:24.555960+00:00",
+    "monotonicNs": 32741320537025
+  }
+}

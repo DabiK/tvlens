@@ -1,0 +1,3806 @@
+{
+  "readyForScoring": false,
+  "expectedAnswersIncluded": false,
+  "rows": [
+    {
+      "trial": "01-A",
+      "runId": "5fa81c9a-8663-453b-bb3a-9bde7db03e09",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres. Une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins 100 000 fois.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques peuvent être imprécis ; les chiffres exacts ne sont pas vérifiés."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 17120,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 2,
+        "firstProgressMs": 2,
+        "firstUsefulMs": 17124,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 17124,
+        "endToEndMs": 17126,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 96001.74040800001,
+          "frozenAtMs": 96008.795303,
+          "evidenceAsOfMs": 96012.841005,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 88000,
+          "analyzedThroughMs": 80000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16001.740408000012,
+          "lagAtStartMs": 8001.740408000012
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 18056.33286299999,
+        "httpObservedAtMs": 114058.073271,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 14.965640999987954,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 2,
+          "contextMs": 2,
+          "firstProgressMs": 2,
+          "firstUsefulMs": 17124,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 17124,
+          "endToEndMs": 17126,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 96001.74040800001,
+            "frozenAtMs": 96008.795303,
+            "evidenceAsOfMs": 96012.841005,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 88000,
+            "analyzedThroughMs": 80000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16001.740408000012,
+            "lagAtStartMs": 8001.740408000012
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "01-A",
+      "runId": "5fa81c9a-8663-453b-bb3a-9bde7db03e09",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier à la fin si l'apprentissage s'est bien passé, comme un enseignant qui réserve des exercices pour un contrôle. C'est cette séparation qui permet de mesurer la performance du modèle sur des exemples qu'il n'a pas vus pendant l'apprentissage.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          },
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques, pas des faits vérifiés."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 17573,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 17578,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 17578,
+        "endToEndMs": 17582,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 232002.78572400002,
+          "frozenAtMs": 232033.37294600002,
+          "evidenceAsOfMs": 232039.56512400002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 224000,
+          "analyzedThroughMs": 216000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16002.785724000016,
+          "lagAtStartMs": 8002.785724000016
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 18178.472855,
+        "httpObservedAtMs": 250181.25857900002,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 42.304160999978194,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 4,
+          "contextMs": 3,
+          "firstProgressMs": 3,
+          "firstUsefulMs": 17578,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 17578,
+          "endToEndMs": 17582,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 232002.78572400002,
+            "frozenAtMs": 232033.37294600002,
+            "evidenceAsOfMs": 232039.56512400002,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 224000,
+            "analyzedThroughMs": 216000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16002.785724000016,
+            "lagAtStartMs": 8002.785724000016
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "01-A",
+      "runId": "5fa81c9a-8663-453b-bb3a-9bde7db03e09",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression initiale, la performance se dégrade et le modèle finit par ne plus être capable de faire les choses correctement. Pour l'éviter, il recommande de réserver environ 20 % des données à l'évaluation afin de suivre la courbe d'apprentissage et de s'arrêter au bon moment, avant d'entrer dans cette zone de régression.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-53",
+            "startMs": 416000,
+            "endMs": 424000
+          },
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 21797,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 6,
+        "contextMs": 4,
+        "firstProgressMs": 5,
+        "firstUsefulMs": 21805,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 21805,
+        "endToEndMs": 21811,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 472001.605718,
+          "frozenAtMs": 472017.351379,
+          "evidenceAsOfMs": 472026.551866,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 464000,
+          "analyzedThroughMs": 464000,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 8001.605717999977,
+          "lagAtStartMs": 8001.605717999977
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 22446.118590999977,
+        "httpObservedAtMs": 494447.72430899995,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 31.722171999979764,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 6,
+          "contextMs": 4,
+          "firstProgressMs": 5,
+          "firstUsefulMs": 21805,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 21805,
+          "endToEndMs": 21811,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 472001.605718,
+            "frozenAtMs": 472017.351379,
+            "evidenceAsOfMs": 472026.551866,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 464000,
+            "analyzedThroughMs": 464000,
+            "pendingCount": 0,
+            "partialCount": 0,
+            "unanalyzedTailMs": 8001.605717999977,
+            "lagAtStartMs": 8001.605717999977
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "01-A",
+      "runId": "5fa81c9a-8663-453b-bb3a-9bde7db03e09",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Pendant le pré-entraînement, le modèle apprend à maîtriser le langage, notamment à construire et compléter des phrases, dans un processus long et très coûteux en calcul, comparé à l'apprentissage d'une langue par un enfant.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-75",
+            "startMs": 592000,
+            "endMs": 600000
+          },
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-78",
+            "startMs": 616000,
+            "endMs": 624000
+          },
+          {
+            "id": "moment-79",
+            "startMs": 624000,
+            "endMs": 632000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des faits vérifiés."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 20920,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 20926,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 20926,
+        "endToEndMs": 20929,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 648003.299848,
+          "frozenAtMs": 648020.747016,
+          "evidenceAsOfMs": 648027.555039,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 640000,
+          "analyzedThroughMs": 632000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16003.299848000053,
+          "lagAtStartMs": 8003.299848000053
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 20967.11467599997,
+        "httpObservedAtMs": 668970.414524,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 29.660492999944836,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 3,
+          "contextMs": 4,
+          "firstProgressMs": 4,
+          "firstUsefulMs": 20926,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 20926,
+          "endToEndMs": 20929,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 648003.299848,
+            "frozenAtMs": 648020.747016,
+            "evidenceAsOfMs": 648027.555039,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 640000,
+            "analyzedThroughMs": 632000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16003.299848000053,
+            "lagAtStartMs": 8003.299848000053
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "01-A",
+      "runId": "5fa81c9a-8663-453b-bb3a-9bde7db03e09",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences (par exemple devenir « médecin »), à l'alignement, qui consiste à apprendre un ensemble de règles éthiques et comportementales (bienveillance, ne pas se comporter de telle ou telle façon) avant de « recevoir des patients ». L'alignement est présenté comme la phase stratégique qui garantit une utilisation correcte et éthique de l'IA.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-93",
+            "startMs": 736000,
+            "endMs": 744000
+          },
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 21185,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 21192,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 21192,
+        "endToEndMs": 21196,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 792017.5020900001,
+          "frozenAtMs": 792018.419862,
+          "evidenceAsOfMs": 792025.456047,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 784000,
+          "analyzedThroughMs": 776000,
+          "pendingCount": 1,
+          "partialCount": 7,
+          "unanalyzedTailMs": 16017.502090000082,
+          "lagAtStartMs": 8017.502090000082
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 21436.58539199992,
+        "httpObservedAtMs": 813454.087482,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 14.019730999949388,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 4,
+          "contextMs": 4,
+          "firstProgressMs": 4,
+          "firstUsefulMs": 21192,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 21192,
+          "endToEndMs": 21196,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 792017.5020900001,
+            "frozenAtMs": 792018.419862,
+            "evidenceAsOfMs": 792025.456047,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 784000,
+            "analyzedThroughMs": 776000,
+            "pendingCount": 1,
+            "partialCount": 7,
+            "unanalyzedTailMs": 16017.502090000082,
+            "lagAtStartMs": 8017.502090000082
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "02-B",
+      "runId": "a5cd5395-9ef9-4be8-9c27-d2324b6e1981",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 11400,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 2,
+        "firstProgressMs": 2,
+        "firstUsefulMs": 11403,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 11403,
+        "endToEndMs": 11405,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 96004.147778,
+          "frozenAtMs": 96009.93301899999,
+          "evidenceAsOfMs": 96013.598713,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 88000,
+          "analyzedThroughMs": 80000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16004.147777999999,
+          "lagAtStartMs": 8004.147777999999
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 12060.476342000009,
+        "httpObservedAtMs": 108064.62412000001,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 13.648909000010462,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 2,
+          "contextMs": 2,
+          "firstProgressMs": 2,
+          "firstUsefulMs": 11403,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 11403,
+          "endToEndMs": 11405,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 96004.147778,
+            "frozenAtMs": 96009.93301899999,
+            "evidenceAsOfMs": 96013.598713,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 88000,
+            "analyzedThroughMs": 80000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16004.147777999999,
+            "lagAtStartMs": 8004.147777999999
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "02-B",
+      "runId": "a5cd5395-9ef9-4be8-9c27-d2324b6e1981",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, comme un enseignant qui réserve quelques exercices pour un examen. Les passages moment-23 à moment-25 (176000-200000 ms) montrent cette logique : 80 % des données servent à l'apprentissage, 20 % sont conservées précieusement pour évaluer la performance du système.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques, pas des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 10578,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 10584,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 10584,
+        "endToEndMs": 10588,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 232004.21026899997,
+          "frozenAtMs": 232017.361203,
+          "evidenceAsOfMs": 232024.571406,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 224000,
+          "analyzedThroughMs": 216000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16004.210268999974,
+          "lagAtStartMs": 8004.210268999974
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 11190.838811000023,
+        "httpObservedAtMs": 243195.04908,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 26.347437000018544,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 4,
+          "contextMs": 4,
+          "firstProgressMs": 4,
+          "firstUsefulMs": 10584,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 10584,
+          "endToEndMs": 10588,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 232004.21026899997,
+            "frozenAtMs": 232017.361203,
+            "evidenceAsOfMs": 232024.571406,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 224000,
+            "analyzedThroughMs": 216000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16004.210268999974,
+            "lagAtStartMs": 8004.210268999974
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "02-B",
+      "runId": "a5cd5395-9ef9-4be8-9c27-d2324b6e1981",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours décrit le surapprentissage comme la phase où, après une progression initiale, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. Il insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, en comparant la situation à l'apprentissage humain. Les passages moment-54 à moment-57 (424000-456000 ms) portent cette explication.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 14783,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 5,
+        "contextMs": 6,
+        "firstProgressMs": 6,
+        "firstUsefulMs": 14792,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 14792,
+        "endToEndMs": 14797,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 472003.73114399996,
+          "frozenAtMs": 472028.85107599996,
+          "evidenceAsOfMs": 472038.38290799997,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 464000,
+          "analyzedThroughMs": 448000,
+          "pendingCount": 2,
+          "partialCount": 2,
+          "unanalyzedTailMs": 24003.73114399996,
+          "lagAtStartMs": 8003.731143999961
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 15544.953142000013,
+        "httpObservedAtMs": 487548.684286,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 42.63109700003406,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 5,
+          "contextMs": 6,
+          "firstProgressMs": 6,
+          "firstUsefulMs": 14792,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 14792,
+          "endToEndMs": 14797,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 472003.73114399996,
+            "frozenAtMs": 472028.85107599996,
+            "evidenceAsOfMs": 472038.38290799997,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 464000,
+            "analyzedThroughMs": 448000,
+            "pendingCount": 2,
+            "partialCount": 2,
+            "unanalyzedTailMs": 24003.73114399996,
+            "lagAtStartMs": 8003.731143999961
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "02-B",
+      "runId": "a5cd5395-9ef9-4be8-9c27-d2324b6e1981",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le pré-entraînement décrit ici consiste à apprendre la langue : le modèle apprend à compléter des phrases avec des trous, comme un enfant qui apprend à parler et à construire des phrases. C'est une étape extrêmement coûteuse en calcul, comparée à l'acquisition du langage chez l'enfant, et elle précède la phase d'alignement. Les passages moment-76 à moment-79 (600000-632000 ms) portent cette explication.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-78",
+            "startMs": 616000,
+            "endMs": 624000
+          },
+          {
+            "id": "moment-79",
+            "startMs": 624000,
+            "endMs": 632000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 14010,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 7,
+        "contextMs": 6,
+        "firstProgressMs": 6,
+        "firstUsefulMs": 14020,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 14020,
+        "endToEndMs": 14027,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 648022.2264950001,
+          "frozenAtMs": 648023.938533,
+          "evidenceAsOfMs": 648036.40333,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 640000,
+          "analyzedThroughMs": 632000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 16022.226495000068,
+          "lagAtStartMs": 8022.226495000068
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 15020.392499999958,
+        "httpObservedAtMs": 663042.618995,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 23.028033999959007,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 7,
+          "contextMs": 6,
+          "firstProgressMs": 6,
+          "firstUsefulMs": 14020,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 14020,
+          "endToEndMs": 14027,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 648022.2264950001,
+            "frozenAtMs": 648023.938533,
+            "evidenceAsOfMs": 648036.40333,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 640000,
+            "analyzedThroughMs": 632000,
+            "pendingCount": 1,
+            "partialCount": 2,
+            "unanalyzedTailMs": 16022.226495000068,
+            "lagAtStartMs": 8022.226495000068
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "02-B",
+      "runId": "a5cd5395-9ef9-4be8-9c27-d2324b6e1981",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours oppose le pré-entraînement, qui apprend la langue et des compétences (comme un enfant qui apprend à parler), à l'alignement, qui consiste à imposer un ensemble de règles éthiques et de bonne conduite avant que le modèle ne soit mis en pratique. Les passages moment-93 à moment-97 (736000-776000 ms) portent cette distinction.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 11190,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 8,
+        "contextMs": 8,
+        "firstProgressMs": 8,
+        "firstUsefulMs": 11202,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 11202,
+        "endToEndMs": 11210,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 792004.071337,
+          "frozenAtMs": 792058.860618,
+          "evidenceAsOfMs": 792072.610119,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 784000,
+          "analyzedThroughMs": 776000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 16004.071337000001,
+          "lagAtStartMs": 8004.071337000001
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 11487.450203999993,
+        "httpObservedAtMs": 803491.521541,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 78.58767600008287,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 8,
+          "contextMs": 8,
+          "firstProgressMs": 8,
+          "firstUsefulMs": 11202,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 11202,
+          "endToEndMs": 11210,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 792004.071337,
+            "frozenAtMs": 792058.860618,
+            "evidenceAsOfMs": 792072.610119,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 784000,
+            "analyzedThroughMs": 776000,
+            "pendingCount": 1,
+            "partialCount": 2,
+            "unanalyzedTailMs": 16004.071337000001,
+            "lagAtStartMs": 8004.071337000001
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "03-B",
+      "runId": "51ba5f91-eaed-4349-9a13-1a77a08fd3ee",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le système est petit ou grand.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 11622,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 2,
+        "firstProgressMs": 2,
+        "firstUsefulMs": 11626,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 11626,
+        "endToEndMs": 11628,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 96002.300172,
+          "frozenAtMs": 96011.065978,
+          "evidenceAsOfMs": 96015.128893,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 88000,
+          "analyzedThroughMs": 80000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16002.300172000003,
+          "lagAtStartMs": 8002.300172000003
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 12067.045039000004,
+        "httpObservedAtMs": 108069.345211,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 17.31826600000204,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 2,
+          "contextMs": 2,
+          "firstProgressMs": 2,
+          "firstUsefulMs": 11626,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 11626,
+          "endToEndMs": 11628,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 96002.300172,
+            "frozenAtMs": 96011.065978,
+            "evidenceAsOfMs": 96015.128893,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 88000,
+            "analyzedThroughMs": 80000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16002.300172000003,
+            "lagAtStartMs": 8002.300172000003
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "03-B",
+      "runId": "51ba5f91-eaed-4349-9a13-1a77a08fd3ee",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, sans les avoir utilisées pour entraîner le modèle. C'est l'analogie du professeur qui garde 5 exercices sur 20 pour l'évaluation finale, plutôt que d'en faire tous des exercices de cours.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          },
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques, pas des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 10560,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 5,
+        "contextMs": 4,
+        "firstProgressMs": 5,
+        "firstUsefulMs": 10567,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 10567,
+        "endToEndMs": 10572,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 232002.248878,
+          "frozenAtMs": 232012.201867,
+          "evidenceAsOfMs": 232020.867191,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 224000,
+          "analyzedThroughMs": 224000,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 8002.248878000013,
+          "lagAtStartMs": 8002.248878000013
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 11194.00759199998,
+        "httpObservedAtMs": 243196.25647,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 30.89590699999826,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 5,
+          "contextMs": 4,
+          "firstProgressMs": 5,
+          "firstUsefulMs": 10567,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 10567,
+          "endToEndMs": 10572,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 232002.248878,
+            "frozenAtMs": 232012.201867,
+            "evidenceAsOfMs": 232020.867191,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 224000,
+            "analyzedThroughMs": 224000,
+            "pendingCount": 0,
+            "partialCount": 0,
+            "unanalyzedTailMs": 8002.248878000013,
+            "lagAtStartMs": 8002.248878000013
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "03-B",
+      "runId": "51ba5f91-eaed-4349-9a13-1a77a08fd3ee",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours décrit le surapprentissage comme la phase qui suit le pic de progression : après une amélioration initiale, la courbe régresse et le modèle finit par ne plus être capable de faire les choses correctement. L'enseignant insiste sur l'idée qu'il faut s'arrêter au bon moment, c'est-à-dire au point où l'apprentissage cesse de progresser, avant d'entrer dans cette zone de surapprentissage, et il évoque des outils logiciels pour piloter cet arrêt.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 14365,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 6,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 14372,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 14372,
+        "endToEndMs": 14378,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 472002.492171,
+          "frozenAtMs": 472022.482389,
+          "evidenceAsOfMs": 472032.28393200005,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 464000,
+          "analyzedThroughMs": 448000,
+          "pendingCount": 2,
+          "partialCount": 6,
+          "unanalyzedTailMs": 24002.49217099999,
+          "lagAtStartMs": 8002.492170999991
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 14492.396960999991,
+        "httpObservedAtMs": 486494.889132,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 38.3297630000161,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 6,
+          "contextMs": 4,
+          "firstProgressMs": 4,
+          "firstUsefulMs": 14372,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 14372,
+          "endToEndMs": 14378,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 472002.492171,
+            "frozenAtMs": 472022.482389,
+            "evidenceAsOfMs": 472032.28393200005,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 464000,
+            "analyzedThroughMs": 448000,
+            "pendingCount": 2,
+            "partialCount": 6,
+            "unanalyzedTailMs": 24002.49217099999,
+            "lagAtStartMs": 8002.492170999991
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "03-B",
+      "runId": "51ba5f91-eaed-4349-9a13-1a77a08fd3ee",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation, un processus extrêmement coûteux en calcul, qui apprend la langue de la même façon qu'un enfant apprend à parler : construire des phrases et compléter des trous, bien plus efficacement qu'un adulte. C'est la première phase d'apprentissage, jugée extrêmement importante, avant la phase suivante.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-79",
+            "startMs": 624000,
+            "endMs": 632000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 13519,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 9,
+        "contextMs": 8,
+        "firstProgressMs": 8,
+        "firstUsefulMs": 13532,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 13532,
+        "endToEndMs": 13541,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 648001.742536,
+          "frozenAtMs": 648039.191188,
+          "evidenceAsOfMs": 648054.678711,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 640000,
+          "analyzedThroughMs": 632000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 16001.742535999976,
+          "lagAtStartMs": 8001.742535999976
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 13959.64439400006,
+        "httpObservedAtMs": 661961.38693,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 64.55574500001967,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 9,
+          "contextMs": 8,
+          "firstProgressMs": 8,
+          "firstUsefulMs": 13532,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 13532,
+          "endToEndMs": 13541,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 648001.742536,
+            "frozenAtMs": 648039.191188,
+            "evidenceAsOfMs": 648054.678711,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 640000,
+            "analyzedThroughMs": 632000,
+            "pendingCount": 1,
+            "partialCount": 6,
+            "unanalyzedTailMs": 16001.742535999976,
+            "lagAtStartMs": 8001.742535999976
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "03-B",
+      "runId": "51ba5f91-eaed-4349-9a13-1a77a08fd3ee",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours oppose le fine-tuning, qui spécialise le modèle sur une tâche ou un domaine (comme un médecin qui apprend ses compétences), à l'alignement, qui lui impose un ensemble de règles éthiques et de bonne conduite (bienveillance, interdits) avant de le mettre en pratique. L'alignement est présenté comme la phase qui garantit que le modèle se comporte correctement face à des utilisateurs qui peuvent essayer de le pousser à l'erreur.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-93",
+            "startMs": 736000,
+            "endMs": 744000
+          },
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 12803,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 9,
+        "contextMs": 7,
+        "firstProgressMs": 8,
+        "firstUsefulMs": 12816,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 12816,
+        "endToEndMs": 12825,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 792002.037504,
+          "frozenAtMs": 792033.5440209999,
+          "evidenceAsOfMs": 792047.824713,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 784000,
+          "analyzedThroughMs": 776000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 16002.037504000007,
+          "lagAtStartMs": 8002.037504000007
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 13525.781545000034,
+        "httpObservedAtMs": 805527.819049,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 56.328816000022925,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 9,
+          "contextMs": 7,
+          "firstProgressMs": 8,
+          "firstUsefulMs": 12816,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 12816,
+          "endToEndMs": 12825,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 792002.037504,
+            "frozenAtMs": 792033.5440209999,
+            "evidenceAsOfMs": 792047.824713,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 784000,
+            "analyzedThroughMs": 776000,
+            "pendingCount": 1,
+            "partialCount": 6,
+            "unanalyzedTailMs": 16002.037504000007,
+            "lagAtStartMs": 8002.037504000007
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "04-A",
+      "runId": "472e70c9-3bcc-4738-ab36-a2ba6f47c8d2",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins un facteur 100 000. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-9",
+            "startMs": 64000,
+            "endMs": 72000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés sont automatiques et potentiellement imprécis ; les chiffres exacts (facteur 100 000, milliers de milliards) proviennent de ces résumés et non d'une relecture directe des paroles."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 23817,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 2,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 23822,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 23822,
+        "endToEndMs": 23825,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 96004.13637899999,
+          "frozenAtMs": 96011.09127399999,
+          "evidenceAsOfMs": 96016.191477,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 88000,
+          "analyzedThroughMs": 80000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 16004.136378999989,
+          "lagAtStartMs": 8004.136378999989
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 24070.90868800001,
+        "httpObservedAtMs": 120075.045067,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 16.85288400000718,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 3,
+          "contextMs": 2,
+          "firstProgressMs": 3,
+          "firstUsefulMs": 23822,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 23822,
+          "endToEndMs": 23825,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 96004.13637899999,
+            "frozenAtMs": 96011.09127399999,
+            "evidenceAsOfMs": 96016.191477,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 88000,
+            "analyzedThroughMs": 80000,
+            "pendingCount": 1,
+            "partialCount": 1,
+            "unanalyzedTailMs": 16004.136378999989,
+            "lagAtStartMs": 8004.136378999989
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "04-A",
+      "runId": "472e70c9-3bcc-4738-ab36-a2ba6f47c8d2",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "La vidéo explique la séparation des données d'apprentissage et d'évaluation par une analogie avec un enseignant : on garde une partie des exercices (par exemple 15 sur 20) pour travailler en cours, et on met de côté le reste (5) pour vérifier à la fin si l'apprentissage a bien fonctionné. Cette logique correspond à la répartition classique de 80 % pour l'apprentissage et 20 % pour l'évaluation, afin de mesurer la performance du modèle sur des données qu'il n'a pas vues pendant l'entraînement.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-23",
+            "startMs": 176000,
+            "endMs": 184000
+          },
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 21992,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 6,
+        "contextMs": 5,
+        "firstProgressMs": 5,
+        "firstUsefulMs": 22000,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 22000,
+        "endToEndMs": 22006,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 232003.37462699998,
+          "frozenAtMs": 232017.70984700002,
+          "evidenceAsOfMs": 232027.500907,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 224000,
+          "analyzedThroughMs": 216000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 16003.374626999983,
+          "lagAtStartMs": 8003.374626999983
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 22205.855829000007,
+        "httpObservedAtMs": 254209.230456,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 32.380102000024635,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 6,
+          "contextMs": 5,
+          "firstProgressMs": 5,
+          "firstUsefulMs": 22000,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 22000,
+          "endToEndMs": 22006,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 232003.37462699998,
+            "frozenAtMs": 232017.70984700002,
+            "evidenceAsOfMs": 232027.500907,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 224000,
+            "analyzedThroughMs": 216000,
+            "pendingCount": 1,
+            "partialCount": 6,
+            "unanalyzedTailMs": 16003.374626999983,
+            "lagAtStartMs": 8003.374626999983
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "04-A",
+      "runId": "472e70c9-3bcc-4738-ab36-a2ba6f47c8d2",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. L'expert insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, et compare le phénomène à un humain qui, en apprenant trop, finit par se dégrader.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques, pas des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 21243,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 21249,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 21249,
+        "endToEndMs": 21252,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 472002.361263,
+          "frozenAtMs": 472021.971339,
+          "evidenceAsOfMs": 472027.613642,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 464000,
+          "analyzedThroughMs": 456000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 16002.361262999999,
+          "lagAtStartMs": 8002.361262999999
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 21500.40675100003,
+        "httpObservedAtMs": 493502.76801400003,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 30.267350000038277,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 3,
+          "contextMs": 3,
+          "firstProgressMs": 3,
+          "firstUsefulMs": 21249,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 21249,
+          "endToEndMs": 21252,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 472002.361263,
+            "frozenAtMs": 472021.971339,
+            "evidenceAsOfMs": 472027.613642,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 464000,
+            "analyzedThroughMs": 456000,
+            "pendingCount": 1,
+            "partialCount": 6,
+            "unanalyzedTailMs": 16002.361262999999,
+            "lagAtStartMs": 8002.361262999999
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "04-A",
+      "runId": "472e70c9-3bcc-4738-ab36-a2ba6f47c8d2",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation sur la complétion de phrases avec des trous, afin de lui apprendre la langue et des bases de connaissances, comme un enfant apprend à parler et à associer des mots. La vidéo souligne que cette phase est extrêmement coûteuse en calcul et constitue la première étape d'apprentissage, avant une phase suivante d'affinage.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-76",
+            "startMs": 600000,
+            "endMs": 608000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-80",
+            "startMs": 632000,
+            "endMs": 640000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 18730,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 9,
+        "contextMs": 6,
+        "firstProgressMs": 6,
+        "firstUsefulMs": 18740,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 18740,
+        "endToEndMs": 18749,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 648011.53165,
+          "frozenAtMs": 648013.577919,
+          "evidenceAsOfMs": 648027.4125199999,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 640000,
+          "analyzedThroughMs": 632000,
+          "pendingCount": 1,
+          "partialCount": 6,
+          "unanalyzedTailMs": 16011.531650000019,
+          "lagAtStartMs": 8011.531650000019
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 19047.942345999996,
+        "httpObservedAtMs": 667059.473996,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 24.504348999937065,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 9,
+          "contextMs": 6,
+          "firstProgressMs": 6,
+          "firstUsefulMs": 18740,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 18740,
+          "endToEndMs": 18749,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 648011.53165,
+            "frozenAtMs": 648013.577919,
+            "evidenceAsOfMs": 648027.4125199999,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 640000,
+            "analyzedThroughMs": 632000,
+            "pendingCount": 1,
+            "partialCount": 6,
+            "unanalyzedTailMs": 16011.531650000019,
+            "lagAtStartMs": 8011.531650000019
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "04-A",
+      "runId": "472e70c9-3bcc-4738-ab36-a2ba6f47c8d2",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "done",
+      "acquired": true,
+      "request": null,
+      "diagnostics": null,
+      "result": {
+        "answer": "Le cours distingue les deux phases : l'alignement consiste à donner au modèle un ensemble de règles éthiques et de bonne conduite (ne pas se comporter ainsi, répondre avec bienveillance), tandis que le fine-tuning vise à développer ses capacités linguistiques et à lui apprendre à répondre à des questions spécifiques en complétant des phrases, via un modèle instructeur et des instructions claires.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-94",
+            "startMs": 744000,
+            "endMs": 752000
+          },
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 18443,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 12,
+        "contextMs": 10,
+        "firstProgressMs": 10,
+        "firstUsefulMs": 18458,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 18458,
+        "endToEndMs": 18470,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 792002.657491,
+          "frozenAtMs": 792039.9225819999,
+          "evidenceAsOfMs": 792059.282941,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 784000,
+          "analyzedThroughMs": 768000,
+          "pendingCount": 2,
+          "partialCount": 7,
+          "unanalyzedTailMs": 24002.65749100002,
+          "lagAtStartMs": 8002.65749100002
+        }
+      },
+      "latency": {
+        "submissionToHttpResponseMs": 18578.205814999994,
+        "httpObservedAtMs": 810580.863306,
+        "observation": "sondage HTTP échantillonné",
+        "acknowledgementMs": 68.19234599999618,
+        "internal": {
+          "backend": {
+            "configured": "local",
+            "origin": "composed",
+            "identity": {
+              "role": "questions",
+              "kind": "ollama",
+              "model": "qwen3.8:27b",
+              "host": "127.0.0.1:11434",
+              "think": "off",
+              "numCtx": 16384,
+              "keepAlive": "10m",
+              "temperature": 0,
+              "transport": "http"
+            }
+          },
+          "calls": {
+            "agentInvoked": true,
+            "providerRequests": 1
+          },
+          "waitMs": 12,
+          "contextMs": 10,
+          "firstProgressMs": 10,
+          "firstUsefulMs": 18458,
+          "firstAgentMs": null,
+          "firstTextMs": null,
+          "totalMs": 18458,
+          "endToEndMs": 18470,
+          "sourcesReused": 0,
+          "inspectionCacheHits": 0,
+          "tools": [],
+          "inspection": {
+            "role": "inspection",
+            "backend": "ollama",
+            "model": "gemma3:4b",
+            "host": "127.0.0.1:11434",
+            "think": "default",
+            "numCtx": 8192,
+            "exercised": false,
+            "modelCalled": false,
+            "cacheHit": false
+          },
+          "evidence": {
+            "anchorMs": 792002.657491,
+            "frozenAtMs": 792039.9225819999,
+            "evidenceAsOfMs": 792059.282941,
+            "refreshes": 1,
+            "journalEntries": 6,
+            "journalDropped": 0,
+            "contextThroughMs": 784000,
+            "analyzedThroughMs": 768000,
+            "pendingCount": 2,
+            "partialCount": 7,
+            "unanalyzedTailMs": 24002.65749100002,
+            "lagAtStartMs": 8002.65749100002
+          }
+        },
+        "agentWaitMs": null,
+        "firstTokenMs": null,
+        "pureNetworkMs": null
+      },
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-A",
+      "runId": "bebe7265-fd43-45cc-b597-baedaa89e081",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-A",
+      "runId": "bebe7265-fd43-45cc-b597-baedaa89e081",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-A",
+      "runId": "bebe7265-fd43-45cc-b597-baedaa89e081",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-A",
+      "runId": "bebe7265-fd43-45cc-b597-baedaa89e081",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-A",
+      "runId": "bebe7265-fd43-45cc-b597-baedaa89e081",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-B",
+      "runId": "e7b26ea6-2efd-47e3-bf4a-e4c9fe320685",
+      "id": "cnrs-01",
+      "index": null,
+      "caseId": "cnrs-01",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-B",
+      "runId": "e7b26ea6-2efd-47e3-bf4a-e4c9fe320685",
+      "id": "cnrs-02",
+      "index": null,
+      "caseId": "cnrs-02",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-B",
+      "runId": "e7b26ea6-2efd-47e3-bf4a-e4c9fe320685",
+      "id": "cnrs-04",
+      "index": null,
+      "caseId": "cnrs-04",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-B",
+      "runId": "e7b26ea6-2efd-47e3-bf4a-e4c9fe320685",
+      "id": "cnrs-05",
+      "index": null,
+      "caseId": "cnrs-05",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    },
+    {
+      "trial": "validation-B",
+      "runId": "e7b26ea6-2efd-47e3-bf4a-e4c9fe320685",
+      "id": "cnrs-06",
+      "index": null,
+      "caseId": "cnrs-06",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "status": "planned",
+      "acquired": null,
+      "request": null,
+      "diagnostics": null,
+      "result": null,
+      "metrics": null,
+      "latency": null,
+      "input": null,
+      "error": null,
+      "quality": null,
+      "reviewer": null
+    }
+  ]
+}

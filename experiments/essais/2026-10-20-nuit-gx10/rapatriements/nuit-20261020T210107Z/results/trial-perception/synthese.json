@@ -1,0 +1,53 @@
+{
+  "readyForScoring": false,
+  "runs": [
+    {
+      "trial": "01-A",
+      "mode": "execution",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    },
+    {
+      "trial": "02-B",
+      "mode": "execution",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    },
+    {
+      "trial": "03-B",
+      "mode": "execution",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    },
+    {
+      "trial": "04-A",
+      "mode": "execution",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    },
+    {
+      "trial": "validation-A",
+      "mode": "validation",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    },
+    {
+      "trial": "validation-B",
+      "mode": "validation",
+      "complete": true,
+      "summary": null,
+      "shutdown": null,
+      "quality": null
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "e9d3cd46-e46b-43f0-a940-8cefeebf5617",
+  "caseId": "kennedy-06",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:44.861Z",
+    "monotonicMs": 167240.086132
+  },
+  "status": "returned",
+  "messagesSha256": "f533704505ba9aa31cf7f618184c6caeb114989c4f529c0e3053ec1d48eafeae",
+  "question": "What does Kennedy want space to represent, and what does he reject?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 7163.474726000015,
+  "fixtureServer": false,
+  "responseBytes": 879,
+  "responseSha256": "b954dd55b96b6eca8b7ebef139c0500e7f5507a97c8107c3f309abc1741804e1",
+  "answer": {
+    "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et qu'il soit un domaine de leadership américain. Il rejette explicitement la conquête hostile et le remplissage de l'espace par des forces adverses.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-32",
+        "startMs": 248000,
+        "endMs": 256000
+      },
+      {
+        "id": "moment-33",
+        "startMs": 256000,
+        "endMs": 264000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 7162362669,
+    "load_duration": 877654,
+    "prompt_eval_duration": 162224000,
+    "eval_duration": 6747014000,
+    "prompt_eval_count": 2087,
+    "eval_count": 183
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:52.027Z",
+    "monotonicMs": 174406.367728
+  },
+  "clientTotalMs": 7166.281596000015
+}

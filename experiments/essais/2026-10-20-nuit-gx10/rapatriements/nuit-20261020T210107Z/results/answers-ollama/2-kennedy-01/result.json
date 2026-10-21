@@ -1,0 +1,68 @@
+{
+  "id": "25037916-f580-4665-a20b-eb94c363ed08",
+  "caseId": "kennedy-01",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:22.410Z",
+    "monotonicMs": 144789.129125
+  },
+  "status": "returned",
+  "messagesSha256": "4aa146a99caa715d2e5f4bd08d44ccaefc5e5d9026fc8a0719e524e68ffbf5f4",
+  "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 7059.119602999999,
+  "fixtureServer": false,
+  "responseBytes": 898,
+  "responseSha256": "ec51781e043fd230084df8ff1b16c54890eabbb9965a2ee1d78df346ad3f452e",
+  "answer": {
+    "answer": "Kennedy utilise un ordre de grandeur de 50 000 ans pour l'histoire enregistrée de l'humanité, qu'il compare à une période d'environ un demi-siècle. Il précise ensuite que nous ne savons très peu de choses sur les 40 premières années de cette période.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-2",
+        "startMs": 8000,
+        "endMs": 16000
+      },
+      {
+        "id": "moment-3",
+        "startMs": 16000,
+        "endMs": 24000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 7057709927,
+    "load_duration": 716837,
+    "prompt_eval_duration": 156659000,
+    "eval_duration": 6701287000,
+    "prompt_eval_count": 1552,
+    "eval_count": 189
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:29.472Z",
+    "monotonicMs": 151850.749674
+  },
+  "clientTotalMs": 7061.620548999985
+}

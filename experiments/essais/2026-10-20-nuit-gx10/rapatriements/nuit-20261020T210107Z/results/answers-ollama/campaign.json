@@ -1,0 +1,1582 @@
+{
+  "id": "63ab0438-edd6-4ef4-ba16-ea8a68119baf",
+  "started": {
+    "utc": "2026-10-20T22:32:57.641Z",
+    "monotonicMs": 20.308675
+  },
+  "mode": "execution",
+  "backend": "ollama",
+  "model": "qwen3.8:27b",
+  "corpusSha256": "30634c8b75d1898d2c975b695b70cdd25c1621b65c7c14f43e101727e476db93",
+  "readyForScoring": false,
+  "nodeVersion": "v24.22.0",
+  "platform": "linux",
+  "architecture": "arm64",
+  "complete": true,
+  "successfulResponses": 20,
+  "quality": null,
+  "cases": [
+    {
+      "id": "c80b8588-4c49-45d8-8a5e-b6622d42bd22",
+      "caseId": "cnrs-01",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:32:57.664Z",
+        "monotonicMs": 42.79383
+      },
+      "status": "returned",
+      "messagesSha256": "37ae3d00cb1e7c4c9f5977b0e4e6065d1c98af21b598179fd9e4c27767b8787b",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 10918.458849999999,
+      "fixtureServer": false,
+      "responseBytes": 1065,
+      "responseSha256": "0a7f652a685df8aee9bf05411afdb55b2b5c3a5d61dc4f67ef96638ed9379488",
+      "answer": {
+        "answer": "Selon la vidéo, la distinction principale réside dans l'ordre de grandeur des paramètres : les petites IA en comptent quelques millions, tandis que les grandes en atteignent des milliers de milliards. Cette différence de taille implique également que l'apprentissage ne se fera pas de la même manière pour l'une ou l'autre.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-8",
+            "startMs": 56000,
+            "endMs": 64000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 10916548932,
+        "load_duration": 727461,
+        "prompt_eval_duration": 2689600000,
+        "eval_duration": 7999625000,
+        "prompt_eval_count": 2027,
+        "eval_count": 234
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-8",
+          "startMs": 56000,
+          "endMs": 64000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-10",
+          "startMs": 72000,
+          "endMs": 80000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-11",
+          "startMs": 80000,
+          "endMs": 88000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:33:08.586Z",
+        "monotonicMs": 10965.547255
+      },
+      "clientTotalMs": 10922.753424999999
+    },
+    {
+      "id": "87a84243-ccc5-4fd9-8141-b0ba58867ea4",
+      "caseId": "cnrs-02",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:33:08.589Z",
+        "monotonicMs": 10968.372604
+      },
+      "status": "returned",
+      "messagesSha256": "5090dde1b058a96288f5e350ead587b983736fc2d01c14f04c091641527ec8d0",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9982.530262999999,
+      "fixtureServer": false,
+      "responseBytes": 926,
+      "responseSha256": "5bdae9dfd2ad75731b374e5560299667d79ae205bdc1ead5d2c383856830fe7a",
+      "answer": {
+        "answer": "La séparation permet d'évaluer la capacité du modèle à généraliser sur des données qu'il n'a jamais vues, évitant ainsi le surapprentissage. C'est comparable à un enseignant qui réserve certains exercices pour vérifier que les élèves ont réellement compris la leçon.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-23",
+            "startMs": 176000,
+            "endMs": 184000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9980499112,
+        "load_duration": 1012023,
+        "prompt_eval_duration": 2915010000,
+        "eval_duration": 6833161000,
+        "prompt_eval_count": 2207,
+        "eval_count": 183
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-23",
+          "startMs": 176000,
+          "endMs": 184000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:33:18.575Z",
+        "monotonicMs": 20953.747895
+      },
+      "clientTotalMs": 9985.375291
+    },
+    {
+      "id": "be4430e7-fe56-44ed-aaba-39c2c8f7d794",
+      "caseId": "cnrs-04",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:33:18.576Z",
+        "monotonicMs": 20954.740591
+      },
+      "status": "returned",
+      "messagesSha256": "0b293e5553c681286f983e374b36c316d6f00c68b326cd4e6221d818a9cd332d",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 11904.386685000001,
+      "fixtureServer": false,
+      "responseBytes": 1126,
+      "responseSha256": "40e60aee31b187a8adf8e80d342b5ee0318e9e79452b92cdd8c7c10b3004e3ea",
+      "answer": {
+        "answer": "Le cours explique le surapprentissage comme une phase de régression de la performance après un pic d'apprentissage, nécessitant un arrêt au bon moment. Il compare ce phénomène à l'apprentissage humain et mentionne l'existence d'outils logiciels pour le piloter.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 11902744898,
+        "load_duration": 825958,
+        "prompt_eval_duration": 2793344000,
+        "eval_duration": 8903979000,
+        "prompt_eval_count": 2067,
+        "eval_count": 259
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-54",
+          "startMs": 424000,
+          "endMs": 432000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-56",
+          "startMs": 440000,
+          "endMs": 448000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-57",
+          "startMs": 448000,
+          "endMs": 456000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:33:30.482Z",
+        "monotonicMs": 32861.645951
+      },
+      "clientTotalMs": 11906.905359999997
+    },
+    {
+      "id": "6c062aa5-2976-4f1e-9db8-4508ddd17cc9",
+      "caseId": "cnrs-05",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:33:30.484Z",
+        "monotonicMs": 32863.585133
+      },
+      "status": "returned",
+      "messagesSha256": "9a7bc3dd59188c290d44a8d7d07670bfb34b6034f2ca6e0394f8e2091462fee6",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 11825.629405,
+      "fixtureServer": false,
+      "responseBytes": 1143,
+      "responseSha256": "5d15c08e898b395b0b9b8d57e2e0f2ee24b9ec62cf40654fed58ed05276bd2df",
+      "answer": {
+        "answer": "Selon les passages fournis, le modèle apprend l'apprentissage d'une langue, la construction de phrases et le langage de manière générale. Cette phase de pré-entraînement est décrite comme extrêmement coûteuse en calculs et comparable à l'acquisition du langage chez un enfant.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-75",
+            "startMs": 592000,
+            "endMs": 600000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-79",
+            "startMs": 624000,
+            "endMs": 632000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des faits vérifiés."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 11823853040,
+        "load_duration": 982376,
+        "prompt_eval_duration": 2863424000,
+        "eval_duration": 8796464000,
+        "prompt_eval_count": 2156,
+        "eval_count": 256
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-75",
+          "startMs": 592000,
+          "endMs": 600000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-77",
+          "startMs": 608000,
+          "endMs": 616000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-79",
+          "startMs": 624000,
+          "endMs": 632000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:33:42.313Z",
+        "monotonicMs": 44692.120271
+      },
+      "clientTotalMs": 11828.535138
+    },
+    {
+      "id": "1cf00497-2eaa-488d-9c6d-e6e5bce55745",
+      "caseId": "cnrs-06",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:33:42.314Z",
+        "monotonicMs": 44693.485865
+      },
+      "status": "returned",
+      "messagesSha256": "19a2e344669d8167c70c329128d968cbc9f7b71b782bffe6606f81ccd44df5bc",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 11424.622815999996,
+      "fixtureServer": false,
+      "responseBytes": 1122,
+      "responseSha256": "c96b4a47fe4c8c12589e0bbeb7f7ad93b202dd5fade03dee23623b9a458e4661",
+      "answer": {
+        "answer": "Le cours définit l'alignement comme l'ensemble des règles éthiques et de conduite imposées au modèle, distinctes de l'acquisition des compétences professionnelles. Il s'agit d'une étape de mise en conformité qui précède l'utilisation opérationnelle du modèle.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages fournis ne mentionnent pas explicitement le terme 'fine-tuning' ni ne le distinguent formellement de l'alignement, limitant la réponse à la définition de l'alignement observée."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 11423027525,
+        "load_duration": 903767,
+        "prompt_eval_duration": 2807199000,
+        "eval_duration": 8384116000,
+        "prompt_eval_count": 2057,
+        "eval_count": 235
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-95",
+          "startMs": 752000,
+          "endMs": 760000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-96",
+          "startMs": 760000,
+          "endMs": 768000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:33:53.741Z",
+        "monotonicMs": 56120.389435
+      },
+      "clientTotalMs": 11426.903569999995
+    },
+    {
+      "id": "daab12a7-9d9c-4fb3-bda0-80e9bf1abadf",
+      "caseId": "kennedy-01",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:33:53.743Z",
+        "monotonicMs": 56122.334729
+      },
+      "status": "returned",
+      "messagesSha256": "4aa146a99caa715d2e5f4bd08d44ccaefc5e5d9026fc8a0719e524e68ffbf5f4",
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9036.422306,
+      "fixtureServer": false,
+      "responseBytes": 896,
+      "responseSha256": "c198392af1dd90ff99467df863a132de02144de5da6a227d142c3dc808d4011f",
+      "answer": {
+        "answer": "Kennedy utilise un ordre de grandeur de 50 000 ans pour l'histoire enregistrée de l'humanité, qu'il compare à une période d'environ un demi-siècle. Il précise ensuite que nous ne savons très peu de choses sur les 40 premières années de cette période.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-2",
+            "startMs": 8000,
+            "endMs": 16000
+          },
+          {
+            "id": "moment-3",
+            "startMs": 16000,
+            "endMs": 24000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9034950102,
+        "load_duration": 802213,
+        "prompt_eval_duration": 2110750000,
+        "eval_duration": 6696562000,
+        "prompt_eval_count": 1552,
+        "eval_count": 189
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16000,
+          "endMs": 24000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:02.781Z",
+        "monotonicMs": 65160.23991
+      },
+      "clientTotalMs": 9037.905180999995
+    },
+    {
+      "id": "66e8231f-fe46-42ca-8990-345524a49fa2",
+      "caseId": "kennedy-03",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:34:02.782Z",
+        "monotonicMs": 65160.840699
+      },
+      "status": "returned",
+      "messagesSha256": "4029c98349e5b5333fec890068e288f5f1ddda4dd2f19828cb978b0e2ff66167",
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 10087.431941999996,
+      "fixtureServer": false,
+      "responseBytes": 1084,
+      "responseSha256": "1bf8da9ca1df7e074444937db4289f868ea5f034ef141b57159922b7db3b7d5c",
+      "answer": {
+        "answer": "Selon le discours rapporté, cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers. L'ouverture de l'espace promet des coûts élevés ainsi qu'une récompense tout aussi importante.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-13",
+            "startMs": 96000,
+            "endMs": 104000
+          },
+          {
+            "id": "moment-14",
+            "startMs": 104000,
+            "endMs": 112000
+          },
+          {
+            "id": "moment-15",
+            "startMs": 112000,
+            "endMs": 120000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 10086147404,
+        "load_duration": 958951,
+        "prompt_eval_duration": 2123009000,
+        "eval_duration": 7764710000,
+        "prompt_eval_count": 2082,
+        "eval_count": 246
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-13",
+          "startMs": 96000,
+          "endMs": 104000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-14",
+          "startMs": 104000,
+          "endMs": 112000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-15",
+          "startMs": 112000,
+          "endMs": 120000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:12.871Z",
+        "monotonicMs": 75250.056094
+      },
+      "clientTotalMs": 10089.215395
+    },
+    {
+      "id": "24cb7e41-578e-45c7-b8ba-d38c95ee0b52",
+      "caseId": "kennedy-05",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:34:12.873Z",
+        "monotonicMs": 75251.846139
+      },
+      "status": "returned",
+      "messagesSha256": "e598f9258ee188df2b89121ae41d29449f6d649e65a1aef87f351c06a08c828b",
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9135.30971799999,
+      "fixtureServer": false,
+      "responseBytes": 1040,
+      "responseSha256": "6e192166e447c799493b51dce57bcc65c07ed11adea1673b6702e46340e5005c",
+      "answer": {
+        "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure inévitable et que les États-Unis ne peuvent pas rester en arrière s'ils veulent diriger les autres nations. Il souligne que la quête de connaissance de l'homme est déterminée et ne peut être arrêtée.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les transcriptions sont des résumés automatiques potentiellement imprécis et non des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9133873996,
+        "load_duration": 740950,
+        "prompt_eval_duration": 2088344000,
+        "eval_duration": 6888304000,
+        "prompt_eval_count": 2042,
+        "eval_count": 216
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:22.010Z",
+        "monotonicMs": 84389.604915
+      },
+      "clientTotalMs": 9137.758776000002
+    },
+    {
+      "id": "4bedd56f-944b-46a3-9b49-fe48d85c9d93",
+      "caseId": "kennedy-06",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:34:22.012Z",
+        "monotonicMs": 84391.681939
+      },
+      "status": "returned",
+      "messagesSha256": "f533704505ba9aa31cf7f618184c6caeb114989c4f529c0e3053ec1d48eafeae",
+      "question": "What does Kennedy want space to represent, and what does he reject?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9134.334188000008,
+      "fixtureServer": false,
+      "responseBytes": 879,
+      "responseSha256": "a4c62c21238fb09395a0f117df45a184b2a8f3a6e73a7dea157ed4f4472af004",
+      "answer": {
+        "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et qu'il soit un domaine de leadership américain. Il rejette explicitement la conquête hostile et le remplissage de l'espace par des forces adverses.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-32",
+            "startMs": 248000,
+            "endMs": 256000
+          },
+          {
+            "id": "moment-33",
+            "startMs": 256000,
+            "endMs": 264000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9132820961,
+        "load_duration": 757670,
+        "prompt_eval_duration": 2158544000,
+        "eval_duration": 6743139000,
+        "prompt_eval_count": 2087,
+        "eval_count": 183
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-32",
+          "startMs": 248000,
+          "endMs": 256000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-33",
+          "startMs": 256000,
+          "endMs": 264000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:31.148Z",
+        "monotonicMs": 93527.652507
+      },
+      "clientTotalMs": 9135.970568000004
+    },
+    {
+      "id": "d354c143-93ff-4f7c-a4bc-eb08e7210578",
+      "caseId": "kennedy-08",
+      "repeat": 1,
+      "started": {
+        "utc": "2026-10-20T22:34:31.150Z",
+        "monotonicMs": 93528.749747
+      },
+      "status": "returned",
+      "messagesSha256": "418c1c0319b8a9dbfcd0ef4a7a20214a6542c423b68301fc84100a8f3607280e",
+      "question": "Who determines whether technology serves good or war?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 8284.874935999993,
+      "fixtureServer": false,
+      "responseBytes": 885,
+      "responseSha256": "8c283551453db0adc2b9bf4bed2a0862e59fb2d42dce591165e40413a26c7c2b",
+      "answer": {
+        "answer": "Selon le discours de Kennedy observé dans la vidéo, c'est l'homme qui détermine si la technologie sert le bien ou la guerre. Il affirme explicitement que la science n'a pas de conscience propre et que son usage dépend des choix humains.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-42",
+            "startMs": 328000,
+            "endMs": 336000
+          },
+          {
+            "id": "moment-43",
+            "startMs": 336000,
+            "endMs": 344000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 8283560270,
+        "load_duration": 620388,
+        "prompt_eval_duration": 2071864999,
+        "eval_duration": 5989257000,
+        "prompt_eval_count": 2015,
+        "eval_count": 181
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-42",
+          "startMs": 328000,
+          "endMs": 336000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-43",
+          "startMs": 336000,
+          "endMs": 344000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:39.438Z",
+        "monotonicMs": 101817.059701
+      },
+      "clientTotalMs": 8288.309954000011
+    },
+    {
+      "id": "72e78d9d-7268-4fe8-9425-e85436ae8c97",
+      "caseId": "cnrs-01",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:34:39.439Z",
+        "monotonicMs": 101818.433439
+      },
+      "status": "returned",
+      "messagesSha256": "37ae3d00cb1e7c4c9f5977b0e4e6065d1c98af21b598179fd9e4c27767b8787b",
+      "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 8422.035525,
+      "fixtureServer": false,
+      "responseBytes": 1066,
+      "responseSha256": "1c34dbe5efaba7231ac92fdf57d7143d302834d0f77a91ca529695638204a6d2",
+      "answer": {
+        "answer": "Selon la vidéo, la distinction principale réside dans l'ordre de grandeur des paramètres : les petites IA en comptent quelques millions, tandis que les grandes en atteignent des milliers de milliards. Cette différence de taille implique également que l'apprentissage ne se fera pas de la même manière pour l'une ou l'autre.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-8",
+            "startMs": 56000,
+            "endMs": 64000
+          },
+          {
+            "id": "moment-10",
+            "startMs": 72000,
+            "endMs": 80000
+          },
+          {
+            "id": "moment-11",
+            "startMs": 80000,
+            "endMs": 88000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 8421003981,
+        "load_duration": 813702,
+        "prompt_eval_duration": 149068000,
+        "eval_duration": 8000673000,
+        "prompt_eval_count": 2027,
+        "eval_count": 234
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-8",
+          "startMs": 56000,
+          "endMs": 64000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-10",
+          "startMs": 72000,
+          "endMs": 80000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-11",
+          "startMs": 80000,
+          "endMs": 88000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:47.863Z",
+        "monotonicMs": 110242.422499
+      },
+      "clientTotalMs": 8423.989059999993
+    },
+    {
+      "id": "1ed4f81c-d40d-4c81-a399-d58d096ac7c7",
+      "caseId": "cnrs-02",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:34:47.865Z",
+        "monotonicMs": 110243.776157
+      },
+      "status": "returned",
+      "messagesSha256": "5090dde1b058a96288f5e350ead587b983736fc2d01c14f04c091641527ec8d0",
+      "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 7342.172204000002,
+      "fixtureServer": false,
+      "responseBytes": 927,
+      "responseSha256": "5335d73d29d93fa3236fb318cf4e979cfd61046942f0c2665753428ed9685677",
+      "answer": {
+        "answer": "La séparation permet d'évaluer la capacité du modèle à généraliser sur des données qu'il n'a jamais vues, évitant ainsi le surapprentissage. C'est comparable à un enseignant qui réserve certains exercices pour vérifier que les élèves ont réellement compris la leçon.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-23",
+            "startMs": 176000,
+            "endMs": 184000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 7341082979,
+        "load_duration": 966471,
+        "prompt_eval_duration": 145650000,
+        "eval_duration": 6985517000,
+        "prompt_eval_count": 2207,
+        "eval_count": 183
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-23",
+          "startMs": 176000,
+          "endMs": 184000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:34:55.209Z",
+        "monotonicMs": 117588.493724
+      },
+      "clientTotalMs": 7344.717567
+    },
+    {
+      "id": "e921424d-c01f-49ef-b185-93370834b525",
+      "caseId": "cnrs-04",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:34:55.210Z",
+        "monotonicMs": 117589.405411
+      },
+      "status": "returned",
+      "messagesSha256": "0b293e5553c681286f983e374b36c316d6f00c68b326cd4e6221d818a9cd332d",
+      "question": "Comment le cours explique-t-il le surapprentissage ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9293.188943000001,
+      "fixtureServer": false,
+      "responseBytes": 1127,
+      "responseSha256": "638549b4a9c7c6f8708a2188f4a98ddb121cfa8a4f0d36a47f77282623f68602",
+      "answer": {
+        "answer": "Le cours explique le surapprentissage comme une phase de régression de la performance après un pic d'apprentissage, nécessitant un arrêt au bon moment. Il compare ce phénomène à l'apprentissage humain et mentionne l'existence d'outils logiciels pour le piloter.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-54",
+            "startMs": 424000,
+            "endMs": 432000
+          },
+          {
+            "id": "moment-56",
+            "startMs": 440000,
+            "endMs": 448000
+          },
+          {
+            "id": "moment-57",
+            "startMs": 448000,
+            "endMs": 456000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9292205160,
+        "load_duration": 821015,
+        "prompt_eval_duration": 163829000,
+        "eval_duration": 8909056000,
+        "prompt_eval_count": 2067,
+        "eval_count": 259
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-54",
+          "startMs": 424000,
+          "endMs": 432000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-56",
+          "startMs": 440000,
+          "endMs": 448000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-57",
+          "startMs": 448000,
+          "endMs": 456000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:04.505Z",
+        "monotonicMs": 126884.625377
+      },
+      "clientTotalMs": 9295.219966000004
+    },
+    {
+      "id": "3d36500d-894d-4440-ac3f-c6e35e90f6d9",
+      "caseId": "cnrs-05",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:04.507Z",
+        "monotonicMs": 126886.692929
+      },
+      "status": "returned",
+      "messagesSha256": "9a7bc3dd59188c290d44a8d7d07670bfb34b6034f2ca6e0394f8e2091462fee6",
+      "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 9185.195777999994,
+      "fixtureServer": false,
+      "responseBytes": 1144,
+      "responseSha256": "181e167719810d806ec170ef919ae03e870d5b2b3dcff76b461e6c0769e7d294",
+      "answer": {
+        "answer": "Selon les passages fournis, le modèle apprend l'apprentissage d'une langue, la construction de phrases et le langage de manière générale. Cette phase de pré-entraînement est décrite comme extrêmement coûteuse en calculs et comparable à l'acquisition du langage chez un enfant.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-75",
+            "startMs": 592000,
+            "endMs": 600000
+          },
+          {
+            "id": "moment-77",
+            "startMs": 608000,
+            "endMs": 616000
+          },
+          {
+            "id": "moment-79",
+            "startMs": 624000,
+            "endMs": 632000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis et ne constituent pas des faits vérifiés."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 9184370492,
+        "load_duration": 822422,
+        "prompt_eval_duration": 159525000,
+        "eval_duration": 8812550000,
+        "prompt_eval_count": 2156,
+        "eval_count": 256
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-75",
+          "startMs": 592000,
+          "endMs": 600000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-77",
+          "startMs": 608000,
+          "endMs": 616000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-79",
+          "startMs": 624000,
+          "endMs": 632000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:13.694Z",
+        "monotonicMs": 136073.571872
+      },
+      "clientTotalMs": 9186.878943000003
+    },
+    {
+      "id": "deb6069f-1fde-4c27-8a84-1413e7aad808",
+      "caseId": "cnrs-06",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:13.695Z",
+        "monotonicMs": 136074.726104
+      },
+      "status": "returned",
+      "messagesSha256": "19a2e344669d8167c70c329128d968cbc9f7b71b782bffe6606f81ccd44df5bc",
+      "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 8710.564207999996,
+      "fixtureServer": false,
+      "responseBytes": 1123,
+      "responseSha256": "66c7c985b697adbad1395dd1646189880f8a017e6e39a411017563402042d293",
+      "answer": {
+        "answer": "Le cours définit l'alignement comme l'ensemble des règles éthiques et de conduite imposées au modèle, distinctes de l'acquisition des compétences professionnelles. Il s'agit d'une étape de mise en conformité qui précède l'utilisation opérationnelle du modèle.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-95",
+            "startMs": 752000,
+            "endMs": 760000
+          },
+          {
+            "id": "moment-96",
+            "startMs": 760000,
+            "endMs": 768000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les passages fournis ne mentionnent pas explicitement le terme 'fine-tuning' ni ne le distinguent formellement de l'alignement, limitant la réponse à la définition de l'alignement observée."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 8709633400,
+        "load_duration": 549684,
+        "prompt_eval_duration": 146109000,
+        "eval_duration": 8388200999,
+        "prompt_eval_count": 2057,
+        "eval_count": 235
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-95",
+          "startMs": 752000,
+          "endMs": 760000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-96",
+          "startMs": 760000,
+          "endMs": 768000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:22.408Z",
+        "monotonicMs": 144787.329912
+      },
+      "clientTotalMs": 8712.603807999985
+    },
+    {
+      "id": "25037916-f580-4665-a20b-eb94c363ed08",
+      "caseId": "kennedy-01",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:22.410Z",
+        "monotonicMs": 144789.129125
+      },
+      "status": "returned",
+      "messagesSha256": "4aa146a99caa715d2e5f4bd08d44ccaefc5e5d9026fc8a0719e524e68ffbf5f4",
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 7059.119602999999,
+      "fixtureServer": false,
+      "responseBytes": 898,
+      "responseSha256": "ec51781e043fd230084df8ff1b16c54890eabbb9965a2ee1d78df346ad3f452e",
+      "answer": {
+        "answer": "Kennedy utilise un ordre de grandeur de 50 000 ans pour l'histoire enregistrée de l'humanité, qu'il compare à une période d'environ un demi-siècle. Il précise ensuite que nous ne savons très peu de choses sur les 40 premières années de cette période.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-2",
+            "startMs": 8000,
+            "endMs": 16000
+          },
+          {
+            "id": "moment-3",
+            "startMs": 16000,
+            "endMs": 24000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 7057709927,
+        "load_duration": 716837,
+        "prompt_eval_duration": 156659000,
+        "eval_duration": 6701287000,
+        "prompt_eval_count": 1552,
+        "eval_count": 189
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-2",
+          "startMs": 8000,
+          "endMs": 16000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-3",
+          "startMs": 16000,
+          "endMs": 24000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:29.472Z",
+        "monotonicMs": 151850.749674
+      },
+      "clientTotalMs": 7061.620548999985
+    },
+    {
+      "id": "0f5f1093-7466-4695-baf0-eb01ffb5a3c5",
+      "caseId": "kennedy-03",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:29.473Z",
+        "monotonicMs": 151852.61724
+      },
+      "status": "returned",
+      "messagesSha256": "4029c98349e5b5333fec890068e288f5f1ddda4dd2f19828cb978b0e2ff66167",
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 8128.903013000003,
+      "fixtureServer": false,
+      "responseBytes": 1084,
+      "responseSha256": "58d72ff0eacbcc103fca88eee5bd34030ae577e978d787ea44d838aa984609e2",
+      "answer": {
+        "answer": "Selon le discours rapporté, cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers. L'ouverture de l'espace promet des coûts élevés ainsi qu'une récompense tout aussi importante.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-13",
+            "startMs": 96000,
+            "endMs": 104000
+          },
+          {
+            "id": "moment-14",
+            "startMs": 104000,
+            "endMs": 112000
+          },
+          {
+            "id": "moment-15",
+            "startMs": 112000,
+            "endMs": 120000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 8127716573,
+        "load_duration": 941831,
+        "prompt_eval_duration": 161933000,
+        "eval_duration": 7779791000,
+        "prompt_eval_count": 2082,
+        "eval_count": 246
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-13",
+          "startMs": 96000,
+          "endMs": 104000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-14",
+          "startMs": 104000,
+          "endMs": 112000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-15",
+          "startMs": 112000,
+          "endMs": 120000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:37.605Z",
+        "monotonicMs": 159983.786703
+      },
+      "clientTotalMs": 8131.169462999998
+    },
+    {
+      "id": "b0697706-05a6-46af-b6db-bad564695e8f",
+      "caseId": "kennedy-05",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:37.606Z",
+        "monotonicMs": 159985.351867
+      },
+      "status": "returned",
+      "messagesSha256": "e598f9258ee188df2b89121ae41d29449f6d649e65a1aef87f351c06a08c828b",
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 7249.864836999972,
+      "fixtureServer": false,
+      "responseBytes": 1040,
+      "responseSha256": "fa67008271c0cd3051da67bd4822cbf0663035440af32b0d39f02fa0b46d2656",
+      "answer": {
+        "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure inévitable et que les États-Unis ne peuvent pas rester en arrière s'ils veulent diriger les autres nations. Il souligne que la quête de connaissance de l'homme est déterminée et ne peut être arrêtée.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          },
+          {
+            "id": "moment-25",
+            "startMs": 192000,
+            "endMs": 200000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les transcriptions sont des résumés automatiques potentiellement imprécis et non des citations exactes."
+        ]
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 7248658939,
+        "load_duration": 819606,
+        "prompt_eval_duration": 144004000,
+        "eval_duration": 6898051000,
+        "prompt_eval_count": 2042,
+        "eval_count": 216
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-25",
+          "startMs": 192000,
+          "endMs": 200000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:44.858Z",
+        "monotonicMs": 167237.546337
+      },
+      "clientTotalMs": 7252.194470000017
+    },
+    {
+      "id": "e9d3cd46-e46b-43f0-a940-8cefeebf5617",
+      "caseId": "kennedy-06",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:44.861Z",
+        "monotonicMs": 167240.086132
+      },
+      "status": "returned",
+      "messagesSha256": "f533704505ba9aa31cf7f618184c6caeb114989c4f529c0e3053ec1d48eafeae",
+      "question": "What does Kennedy want space to represent, and what does he reject?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 7163.474726000015,
+      "fixtureServer": false,
+      "responseBytes": 879,
+      "responseSha256": "b954dd55b96b6eca8b7ebef139c0500e7f5507a97c8107c3f309abc1741804e1",
+      "answer": {
+        "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et qu'il soit un domaine de leadership américain. Il rejette explicitement la conquête hostile et le remplissage de l'espace par des forces adverses.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-32",
+            "startMs": 248000,
+            "endMs": 256000
+          },
+          {
+            "id": "moment-33",
+            "startMs": 256000,
+            "endMs": 264000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 7162362669,
+        "load_duration": 877654,
+        "prompt_eval_duration": 162224000,
+        "eval_duration": 6747014000,
+        "prompt_eval_count": 2087,
+        "eval_count": 183
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-32",
+          "startMs": 248000,
+          "endMs": 256000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-33",
+          "startMs": 256000,
+          "endMs": 264000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:52.027Z",
+        "monotonicMs": 174406.367728
+      },
+      "clientTotalMs": 7166.281596000015
+    },
+    {
+      "id": "13329e2e-9d27-4251-b026-723ba62a3d7e",
+      "caseId": "kennedy-08",
+      "repeat": 2,
+      "started": {
+        "utc": "2026-10-20T22:35:52.029Z",
+        "monotonicMs": 174407.900364
+      },
+      "status": "returned",
+      "messagesSha256": "418c1c0319b8a9dbfcd0ef4a7a20214a6542c423b68301fc84100a8f3607280e",
+      "question": "Who determines whether technology serves good or war?",
+      "firstTokenMs": null,
+      "quality": null,
+      "httpStatus": 200,
+      "headersReceivedMs": 6420.1219820000115,
+      "fixtureServer": false,
+      "responseBytes": 885,
+      "responseSha256": "b04b52d587bc12e40c95dc628c80bd7d18556509effd868d76283edc02ce6c18",
+      "answer": {
+        "answer": "Selon le discours de Kennedy observé dans la vidéo, c'est l'homme qui détermine si la technologie sert le bien ou la guerre. Il affirme explicitement que la science n'a pas de conscience propre et que son usage dépend des choix humains.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-42",
+            "startMs": 328000,
+            "endMs": 336000
+          },
+          {
+            "id": "moment-43",
+            "startMs": 336000,
+            "endMs": 344000
+          }
+        ],
+        "sources": [],
+        "limits": []
+      },
+      "finishReason": "stop",
+      "model": "qwen3.8:27b",
+      "usage": null,
+      "ollamaTimings": {
+        "total_duration": 6419000485,
+        "load_duration": 710822,
+        "prompt_eval_duration": 155970000,
+        "eval_duration": 5994122000,
+        "prompt_eval_count": 2015,
+        "eval_count": 181
+      },
+      "thinkingChars": 0,
+      "citationChecks": [
+        {
+          "id": "moment-42",
+          "startMs": 328000,
+          "endMs": 336000,
+          "withinProvidedEvidence": true
+        },
+        {
+          "id": "moment-43",
+          "startMs": 336000,
+          "endMs": 344000,
+          "withinProvidedEvidence": true
+        }
+      ],
+      "finished": {
+        "utc": "2026-10-20T22:35:58.452Z",
+        "monotonicMs": 180831.300082
+      },
+      "clientTotalMs": 6423.399718000001
+    }
+  ],
+  "failures": [],
+  "identity": null,
+  "before": {
+    "httpStatus": 200,
+    "headersReceivedMs": 19.005290000000002,
+    "fixtureServer": false,
+    "responseBytes": 1516,
+    "responseSha256": "14f2d4b2f30a330491e8c291eba3646a370e48b41b23c2cfc424513b93f97cab",
+    "data": {
+      "models": [
+        {
+          "name": "qwen3-embedding:0.6b",
+          "model": "qwen3-embedding:0.6b",
+          "modified_at": "2026-10-20T19:27:57.959452395Z",
+          "size": 639150858,
+          "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+          "details": {
+            "parent_model": "/Users/ollama/.ollama/models/blobs/sha256-06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+            "format": "gguf",
+            "family": "qwen3",
+            "families": [
+              "qwen3"
+            ],
+            "parameter_size": "595.78M",
+            "quantization_level": "Q8_0",
+            "context_length": 32768,
+            "embedding_length": 1024,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "tools",
+            "thinking",
+            "embedding"
+          ]
+        },
+        {
+          "name": "qwen3.8:27b",
+          "model": "qwen3.8:27b",
+          "modified_at": "2026-10-20T19:27:27.779399185Z",
+          "size": 17741872154,
+          "digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+          "details": {
+            "parent_model": "qwen3.8:27b-q4_K_M",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "27.3B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 262144,
+            "embedding_length": 5120,
+            "runner": "llamacpp"
+          },
+          "capabilities": [
+            "completion",
+            "vision",
+            "tools",
+            "thinking"
+          ]
+        },
+        {
+          "name": "gemma3:4b",
+          "model": "gemma3:4b",
+          "modified_at": "2026-10-20T19:11:42.223887316Z",
+          "size": 3350272403,
+          "digest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+          "details": {
+            "parent_model": "dhiltgen/gemma3:4b-it-q4_K_M-llamacpp",
+            "format": "gguf",
+            "family": "gemma3",
+            "families": [
+              "gemma3",
+              "clip"
+            ],
+            "parameter_size": "3.9B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 131072,
+            "embedding_length": 2560,
+            "runner": "llamacpp"
+          },
+          "capabilities": [
+            "completion",
+            "vision"
+          ]
+        }
+      ]
+    }
+  },
+  "stopReason": null,
+  "finished": {
+    "utc": "2026-10-20T22:35:58.455Z",
+    "monotonicMs": 180833.892438
+  }
+}

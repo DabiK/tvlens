@@ -1,0 +1,70 @@
+{
+  "id": "b0697706-05a6-46af-b6db-bad564695e8f",
+  "caseId": "kennedy-05",
+  "repeat": 2,
+  "started": {
+    "utc": "2026-10-20T22:35:37.606Z",
+    "monotonicMs": 159985.351867
+  },
+  "status": "returned",
+  "messagesSha256": "e598f9258ee188df2b89121ae41d29449f6d649e65a1aef87f351c06a08c828b",
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 7249.864836999972,
+  "fixtureServer": false,
+  "responseBytes": 1040,
+  "responseSha256": "fa67008271c0cd3051da67bd4822cbf0663035440af32b0d39f02fa0b46d2656",
+  "answer": {
+    "answer": "Kennedy affirme que l'exploration spatiale est une grande aventure inévitable et que les États-Unis ne peuvent pas rester en arrière s'ils veulent diriger les autres nations. Il souligne que la quête de connaissance de l'homme est déterminée et ne peut être arrêtée.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-24",
+        "startMs": 184000,
+        "endMs": 192000
+      },
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      }
+    ],
+    "sources": [],
+    "limits": [
+      "Les transcriptions sont des résumés automatiques potentiellement imprécis et non des citations exactes."
+    ]
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 7248658939,
+    "load_duration": 819606,
+    "prompt_eval_duration": 144004000,
+    "eval_duration": 6898051000,
+    "prompt_eval_count": 2042,
+    "eval_count": 216
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:35:44.858Z",
+    "monotonicMs": 167237.546337
+  },
+  "clientTotalMs": 7252.194470000017
+}

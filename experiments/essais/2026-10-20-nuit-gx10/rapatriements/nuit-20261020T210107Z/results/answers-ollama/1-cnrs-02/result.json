@@ -1,0 +1,68 @@
+{
+  "id": "87a84243-ccc5-4fd9-8141-b0ba58867ea4",
+  "caseId": "cnrs-02",
+  "repeat": 1,
+  "started": {
+    "utc": "2026-10-20T22:33:08.589Z",
+    "monotonicMs": 10968.372604
+  },
+  "status": "returned",
+  "messagesSha256": "5090dde1b058a96288f5e350ead587b983736fc2d01c14f04c091641527ec8d0",
+  "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+  "firstTokenMs": null,
+  "quality": null,
+  "httpStatus": 200,
+  "headersReceivedMs": 9982.530262999999,
+  "fixtureServer": false,
+  "responseBytes": 926,
+  "responseSha256": "5bdae9dfd2ad75731b374e5560299667d79ae205bdc1ead5d2c383856830fe7a",
+  "answer": {
+    "answer": "La séparation permet d'évaluer la capacité du modèle à généraliser sur des données qu'il n'a jamais vues, évitant ainsi le surapprentissage. C'est comparable à un enseignant qui réserve certains exercices pour vérifier que les élèves ont réellement compris la leçon.",
+    "kind": "observation",
+    "citations": [
+      {
+        "id": "moment-23",
+        "startMs": 176000,
+        "endMs": 184000
+      },
+      {
+        "id": "moment-25",
+        "startMs": 192000,
+        "endMs": 200000
+      }
+    ],
+    "sources": [],
+    "limits": []
+  },
+  "finishReason": "stop",
+  "model": "qwen3.8:27b",
+  "usage": null,
+  "ollamaTimings": {
+    "total_duration": 9980499112,
+    "load_duration": 1012023,
+    "prompt_eval_duration": 2915010000,
+    "eval_duration": 6833161000,
+    "prompt_eval_count": 2207,
+    "eval_count": 183
+  },
+  "thinkingChars": 0,
+  "citationChecks": [
+    {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000,
+      "withinProvidedEvidence": true
+    },
+    {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000,
+      "withinProvidedEvidence": true
+    }
+  ],
+  "finished": {
+    "utc": "2026-10-20T22:33:18.575Z",
+    "monotonicMs": 20953.747895
+  },
+  "clientTotalMs": 9985.375291
+}

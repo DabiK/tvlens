@@ -1,0 +1,10 @@
+{
+  "TVLENS_WHISPER_BINARY": {
+    "path": "/srv/tvlens-gx10/outils/whisper.cpp/build/bin/whisper-cli",
+    "sha256": "53cff4273af0bd48553145a2cb5ba4f8cf245278d3733884ed2635ecc9a97c43"
+  },
+  "TVLENS_WHISPER_MODEL": {
+    "path": "/srv/tvlens-gx10/poids/ggml-base.bin",
+    "sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
+  }
+}

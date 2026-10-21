@@ -1,0 +1,27 @@
+{
+  "id": "4d61d836-9e81-4cd3-be9d-55a96d8e8e09",
+  "argv": [
+    "node",
+    "scripts/replay-local-stream.cjs",
+    "--scenario",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/inputs/scenario-vision-paused.json",
+    "--out",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/02-B/run",
+    "--config",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/results/trial-vision/config.env",
+    "--execute"
+  ],
+  "started": {
+    "utc": "2026-10-20T21:48:25.607278+00:00",
+    "monotonicNs": 33642371855171
+  },
+  "status": "exited",
+  "exitCode": 0,
+  "pid": 1031805,
+  "monitorStopped": true,
+  "finished": {
+    "utc": "2026-10-20T22:03:15.111686+00:00",
+    "monotonicNs": 34531876272076
+  },
+  "durationMs": 889504.416905
+}
