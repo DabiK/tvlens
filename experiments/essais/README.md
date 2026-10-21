@@ -13,4 +13,5 @@
 | [2026-10-21-reprise-docker-gx10](2026-10-21-reprise-docker-gx10/) | Reprise bornée de la seule sonde vLLM textuelle après incident d'accès Docker ; cinq étapes antérieures conservées. |
 | [2026-10-21-reprise-file-gx10](2026-10-21-reprise-file-gx10/) | Nouvelles files Qwen visuel, StreamingVLM et corpus étendu, enchaînées après la reprise dans un socket `tmux` indépendant. |
 | [2026-10-21-incident-digest-qwen](2026-10-21-incident-digest-qwen/) | Faux rejet de l'empreinte Ollama Qwen à cause du préfixe `sha256:` ; preuves scellées et effet sur la file StreamingVLM. |
-| [2026-10-21-reprise-bras-qwen](2026-10-21-reprise-bras-qwen/) | Suffixe Ollama Qwen terminé avec 25 réponses et traces vérifiées ; StreamingVLM attend la libération du GPU. |
+| [2026-10-21-reprise-bras-qwen](2026-10-21-reprise-bras-qwen/) | Suffixe Ollama Qwen terminé avec 25 réponses et traces vérifiées. |
+| [2026-10-21-incident-streaming-buildkit](2026-10-21-incident-streaming-buildkit/) | Refus du réseau `bridge` par BuildKit ; reprise bornée de StreamingVLM dans un dossier neuf, avec image et inventaire déjà scellés. |

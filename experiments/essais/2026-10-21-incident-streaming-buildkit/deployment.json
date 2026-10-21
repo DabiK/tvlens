@@ -1,0 +1,21 @@
+{
+  "deployedAtUtc": "2026-10-21T04:06:11Z",
+  "host": "gx10-tvlens",
+  "sshOptions": ["BatchMode=yes", "ConnectTimeout=15", "ControlMaster=no", "ControlPath=none"],
+  "tmuxSocket": "tvlens-recovery-20261020T224805Z",
+  "session": "tvlens-reprise-streaming-buildkit",
+  "sourceAndRunRoot": "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z",
+  "previousRunRoot": "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z",
+  "previousRunSealSha256": "29c2285651790458c73ec217dd782c810ba533ec488877f486ae28770710c8b1",
+  "sourceSha256": {
+    "continuation.py": "8841b402e40cb8aba364228a10bc3195d44585cd0fd24d79078d03dbf8b6680f",
+    "launch.sh": "f4e7f6c8840be2fc93dd72515c16e1e5193813c42c9e76277cf452efafb7dc98"
+  },
+  "initialStatus": "dependency-build",
+  "initialStatusObservedAtUtc": "2026-10-21T04:06:17Z",
+  "originalGateAtUtc": "2026-10-21T03:37:16.052779Z",
+  "shortPhaseDeadlineUtc": "2026-10-21T05:07:16.052779Z",
+  "totalBudgetDeadlineUtc": "2026-10-21T07:07:16.052779Z",
+  "globalDeadlineUtc": "2026-10-21T12:00:00Z",
+  "initialGpuInferenceStarted": false
+}
