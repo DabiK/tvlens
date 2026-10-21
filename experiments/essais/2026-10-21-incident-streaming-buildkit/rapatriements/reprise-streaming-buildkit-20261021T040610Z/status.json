@@ -1,0 +1,91 @@
+{
+  "id": "38c3c15dd2924a16bed873bd8dc8de45",
+  "startedAtUtc": "2026-10-21T04:06:11.304029+00:00",
+  "deadlineUtc": "2026-10-21T12:00:00+00:00",
+  "status": "blocked",
+  "stages": [
+    {
+      "name": "dependency-build",
+      "argv": [
+        "docker",
+        "build",
+        "--pull=false",
+        "--network=default",
+        "--progress=plain",
+        "-t",
+        "tvlens-streaming-38c3c15dd2924a16bed873bd8dc8de45:dependencies",
+        "-f",
+        "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results/dependency-layer/Dockerfile",
+        "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results/dependency-layer"
+      ],
+      "startedAtUtc": "2026-10-21T04:06:11.831684+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T04:09:28.981651+00:00",
+      "durationSeconds": 197.14952656900277
+    },
+    {
+      "name": "derived-packages",
+      "argv": [
+        "docker",
+        "run",
+        "--name",
+        "tvlens-derived-packages-38c3c15dd2924a16bed873bd8dc8de45",
+        "--cidfile",
+        "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results/derived-packages.cid",
+        "--label",
+        "tvlens.owner=38c3c15dd2924a16bed873bd8dc8de45",
+        "--network",
+        "none",
+        "--entrypoint",
+        "python3",
+        "tvlens-streaming-38c3c15dd2924a16bed873bd8dc8de45:dependencies",
+        "-c",
+        "import json,importlib.metadata as m,torch\nnames=['transformers','qwen-vl-utils','decord','accelerate','ffmpeg-python','tokenizers','huggingface-hub','torch','flash-attn']\nversions={}\nfor name in names:\n  try: versions[name]=m.version(name)\n  except m.PackageNotFoundError: versions[name]=None\nprint(json.dumps({'packages':versions,'cuda':torch.version.cuda}))\n"
+      ],
+      "startedAtUtc": "2026-10-21T04:09:28.997914+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T04:09:30.500666+00:00",
+      "durationSeconds": 1.5020457600039663
+    },
+    {
+      "name": "dependency-probe",
+      "argv": [
+        "docker",
+        "run",
+        "--name",
+        "tvlens-dependency-probe-38c3c15dd2924a16bed873bd8dc8de45",
+        "--cidfile",
+        "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results/dependency-probe.cid",
+        "--label",
+        "tvlens.owner=38c3c15dd2924a16bed873bd8dc8de45",
+        "--device",
+        "nvidia.com/gpu=all",
+        "-e",
+        "NVIDIA_VISIBLE_DEVICES=void",
+        "--network",
+        "none",
+        "--workdir",
+        "/tmp",
+        "-v",
+        "/home/nvidia/tvlens-setup/streamingvlm-20261020T220235Z/upstream:/source:ro",
+        "-v",
+        "/srv/tvlens-gx10/videos/spring.mp4:/video.mp4:ro",
+        "--entrypoint",
+        "python3",
+        "tvlens-streaming-38c3c15dd2924a16bed873bd8dc8de45:dependencies",
+        "-c",
+        "import json,platform,sys,torch,transformers,flash_attn,qwen_vl_utils,decord,huggingface_hub; reader=decord.VideoReader('/video.mp4',ctx=decord.cpu(0)); reader[0]; print(json.dumps({'arch':platform.machine(),'videoFrames':len(reader),'decord':decord.__version__,'torch':torch.__version__,'cuda':torch.version.cuda,'available':torch.cuda.is_available(),'capability':torch.cuda.get_device_capability(0),'transformers':transformers.__version__,'flash_attn':flash_attn.__version__})); sys.path[:0]=['/source/streaming_vlm/livecc_utils/src','/source']; import streaming_vlm.inference.inference"
+      ],
+      "startedAtUtc": "2026-10-21T04:09:30.540176+00:00",
+      "exitCode": 1,
+      "finishedAtUtc": "2026-10-21T04:09:34.545019+00:00",
+      "durationSeconds": 4.004077743004018
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T04:09:34.545646+00:00",
+  "error": {
+    "type": "RuntimeError",
+    "message": "dependency-probe:EXIT_1"
+  },
+  "readyForScoring": false
+}

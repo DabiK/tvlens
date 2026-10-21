@@ -1,0 +1,1 @@
+{"packages": {"transformers": "4.52.4", "qwen-vl-utils": "0.0.11", "decord": "0.6.0", "accelerate": "1.8.1", "ffmpeg-python": "0.2.0", "tokenizers": "0.21.2", "huggingface-hub": "0.34.4", "torch": "2.14.0a0+b2c75dd062.nv26.9.68203377", "flash-attn": "2.8.3.post1+git91ffc2ac7c.63064690"}, "cuda": "13.4"}

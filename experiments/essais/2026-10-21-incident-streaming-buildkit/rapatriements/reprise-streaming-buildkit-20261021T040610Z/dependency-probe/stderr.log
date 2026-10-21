@@ -1,0 +1,14 @@
+/opt/pytorch/ao/torchao/quantization/quant_api.py:1542: SyntaxWarning: invalid escape sequence '\.'
+  """Configuration class for applying different quantization configs to modules or parameters based on their fully qualified names (FQNs).
+W1021 04:09:33.235000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/source/streaming_vlm/inference/inference.py", line 22, in <module>
+    from streaming_vlm.inference.qwen2.patch_model import convert_qwen2_to_streaming
+  File "/source/streaming_vlm/inference/qwen2/patch_model.py", line 11, in <module>
+    import ffmpeg
+  File "/usr/local/lib/python3.12/dist-packages/ffmpeg/__init__.py", line 2, in <module>
+    from . import nodes
+  File "/usr/local/lib/python3.12/dist-packages/ffmpeg/nodes.py", line 3, in <module>
+    from past.builtins import basestring
+ModuleNotFoundError: No module named 'past'

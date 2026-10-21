@@ -1,0 +1,17 @@
+{
+  "root": "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results",
+  "sealSha256": "29c2285651790458c73ec217dd782c810ba533ec488877f486ae28770710c8b1",
+  "originalWorkloadStartUtc": "2026-10-21T03:37:16.052779+00:00",
+  "shortDeadlineUtc": "2026-10-21T05:07:16.052779+00:00",
+  "effectiveDeadlineUtc": "2026-10-21T07:07:16.052779+00:00",
+  "sourceSha256": "8841b402e40cb8aba364228a10bc3195d44585cd0fd24d79078d03dbf8b6680f",
+  "networkCorrection": "--network=bridge -> --network=default for dependency-build only",
+  "reusedStages": [
+    "image-pull",
+    "base-packages"
+  ],
+  "workloadProtocolChanged": false,
+  "budgetReset": false,
+  "automaticRetry": false,
+  "readyForScoring": false
+}

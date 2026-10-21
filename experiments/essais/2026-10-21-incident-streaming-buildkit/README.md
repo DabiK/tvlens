@@ -1,7 +1,7 @@
 # Refus du mode réseau BuildKit — reprise préparée
 
-État au 21 octobre 2026 à 04:06 UTC : correction déployée dans un dossier neuf et **build des dépendances en cours**.
-L'image et l'inventaire déjà réussis sont réutilisés ; aucun poids, modèle ou appel GPU n'avait encore été lancé au premier contrôle du nouveau run.
+État au 21 octobre 2026 à 04:09 UTC : le build a réussi, puis le run s'est scellé **blocked** sur l'import Python des dépendances.
+L'image et l'inventaire déjà réussis ont été réutilisés ; aucun poids de modèle ni réponse StreamingVLM n'a été produit.
 
 ## Question et diagnostic
 
@@ -86,4 +86,4 @@ La vérification GPU sous les verrous reste la décision d'admission définitive
 Si la phase courte originale n'a plus 30 secondes, le programme refuse la reprise.
 Un refus est conservé comme incident ; il ne faut ni effacer `launch-once` ni relancer automatiquement.
 Après clôture, vérifier le nouveau manifeste et rapatrier les résultats suivant la sélection habituelle.
-La réussite du build et la compatibilité du modèle ne sont pas encore observées. Voir `deployment.json` pour les empreintes et chemins exacts.
+Le build des dépendances a réussi en 197,15 s. La sonde a confirmé ARM64, CUDA visible et décodage de Spring par Decord, puis a échoué avec `ModuleNotFoundError: No module named 'past'` dans l'import de `ffmpeg`. Il s'agit d'une fermeture incomplète des dépendances Python du paquet figé ; la compatibilité du modèle reste inconnue. Voir `deployment.json` pour les empreintes et chemins exacts, et [le rapatriement](rapatriements/reprise-streaming-buildkit-20261021T040610Z/RAPATRIEMENT.md) pour les preuves brutes vérifiées. Une éventuelle correction de ce second incident exige un nouveau dossier et des limites conservées.
