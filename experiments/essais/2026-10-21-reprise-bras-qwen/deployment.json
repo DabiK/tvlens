@@ -1,0 +1,40 @@
+{
+  "deployedAtUtc": "2026-10-21T00:25:01Z",
+  "host": "gx10-tvlens",
+  "sshOptions": ["BatchMode=yes", "ConnectTimeout=15", "ControlMaster=no", "ControlPath=none"],
+  "tmuxSocket": "tvlens-recovery-20261020T224805Z",
+  "sourceRoot": "/home/nvidia/tvlens-setup/reprise-continuation-20261021T002414Z",
+  "sourceSha256": {
+    "continuation.py": "9bfe1ebe8e40d338bfa180f3f52c1486de75b23bc09cd9560869971b91aa7a7b",
+    "guards.py": "ab9be23fac11438b699951a35f7229b2abb9a632bc70e8ae50745e124aaa15e7",
+    "launch.sh": "727bd72fc789bdad95f3d379cab00e5739cbcdd5b49b3ed1f85b41ebd4ea39f7"
+  },
+  "preflight": {
+    "dockerAccess": true,
+    "originalQwenSealVerified": true,
+    "returnedVllmCases": 25,
+    "frozenModuleAndStreamingPackageHashesVerified": true,
+    "initialGpuInferenceStarted": false
+  },
+  "originalQwenRoot": "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results",
+  "originalStreamingRoot": "/home/nvidia/tvlens-setup/reprise-streaming-20261020T224923Z/results",
+  "corpusPredecessorRoot": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results",
+  "runs": [
+    {
+      "name": "qwen-ollama-suffix",
+      "root": "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z",
+      "session": "tvlens-reprise-qwen-arm",
+      "id": "50f952dc5cd5429daf2fe3dc4c4ccbc2",
+      "initialStatus": "waiting-corpus-and-predecessors",
+      "deadlineUtc": "2026-10-21T05:00:00Z"
+    },
+    {
+      "name": "streamingvlm-continuation",
+      "root": "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z",
+      "session": "tvlens-reprise-streaming-arm",
+      "id": "665d85f7fb7e45ca88d03617bb286257",
+      "initialStatus": "waiting-corpus-and-predecessors",
+      "deadlineUtc": "2026-10-21T12:00:00Z"
+    }
+  ]
+}
