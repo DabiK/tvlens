@@ -52,6 +52,7 @@ Après fermeture, annoter à l'aveugle contre les médias source les textes lisi
 Le superviseur écrit `status.json`, `identity.json`, entrées dérivées, sorties du runner, `mesures.json`, `a-annoter.json`, puis `integrite.json` avec SHA de chaque fichier. Il conserve les sorties partielles en cas d'échec. Son statut `finished` signifie que le protocole technique a été mené à terme, sans prétendre que la qualité est validée. Aucun fichier de ce dossier ne contient de résultat GPU nouveau à ce jour.
 
 Le paquet a été copié sous `/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z/` sur GX10 ; les SHA de `inputs.json` et du script sont identiques à la copie locale. Le pré-vol distant a contrôlé les 24 `media.json` et 120 JPEG en lecture seule (`status=validated`, `gpuUsed=false`). Il attend toujours la fermeture scellée du point 3. Cette mise en place est consignée dans [deployment.json](deployment.json).
+Le [lanceur](launch.sh) est aussi copié et vérifié par SHA-256, mais reste inactif tant que cette fermeture n'est pas prouvée.
 
 ## Vérifications hors GPU
 

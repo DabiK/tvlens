@@ -10,6 +10,7 @@
   },
   "inputsSha256": "a84258d284981d1293606fcd5d300f738972e68b24a587093381e2439c0d89ca",
   "runnerScriptSha256": "7eace7969e861a41bd6117fdde2b601c21a3a8268936af21e08ff52560ff612a",
+  "launchScriptSha256": "232fb2d56e16e372370321b7d5918140a447fae5421549d85cd6272939622f30",
   "sourceRepoSha256": "2035a2faad499659bcdf940c6104e50e311a9cd6",
   "predecessor": "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results",
   "readyForScoring": false
