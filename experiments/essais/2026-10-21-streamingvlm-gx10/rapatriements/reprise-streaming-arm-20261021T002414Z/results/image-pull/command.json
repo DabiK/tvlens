@@ -1,0 +1,14 @@
+{
+  "name": "image-pull",
+  "argv": [
+    "docker",
+    "pull",
+    "--platform",
+    "linux/arm64",
+    "nvcr.io/nvidia/pytorch:26.09-py3@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e"
+  ],
+  "startedAtUtc": "2026-10-21T03:37:16.176414+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T03:56:48.453377+00:00",
+  "durationSeconds": 1172.2758050319972
+}

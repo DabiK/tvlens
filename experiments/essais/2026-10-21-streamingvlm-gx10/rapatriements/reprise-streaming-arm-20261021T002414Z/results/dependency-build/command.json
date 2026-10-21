@@ -1,0 +1,19 @@
+{
+  "name": "dependency-build",
+  "argv": [
+    "docker",
+    "build",
+    "--pull=false",
+    "--network=bridge",
+    "--progress=plain",
+    "-t",
+    "tvlens-streaming-665d85f7fb7e45ca88d03617bb286257:dependencies",
+    "-f",
+    "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results/dependency-layer/Dockerfile",
+    "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results/dependency-layer"
+  ],
+  "startedAtUtc": "2026-10-21T03:56:50.971589+00:00",
+  "exitCode": 1,
+  "finishedAtUtc": "2026-10-21T03:56:51.473498+00:00",
+  "durationSeconds": 0.500711852000677
+}

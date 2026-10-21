@@ -1,0 +1,24 @@
+{
+  "name": "base-packages",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-base-packages-665d85f7fb7e45ca88d03617bb286257",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results/base-packages.cid",
+    "--label",
+    "tvlens.owner=665d85f7fb7e45ca88d03617bb286257",
+    "--network",
+    "none",
+    "--entrypoint",
+    "python3",
+    "nvcr.io/nvidia/pytorch:26.09-py3@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e",
+    "-c",
+    "import json,importlib.metadata as m,torch\nnames=['transformers','qwen-vl-utils','decord','accelerate','ffmpeg-python','tokenizers','huggingface-hub','torch','flash-attn']\nversions={}\nfor name in names:\n  try: versions[name]=m.version(name)\n  except m.PackageNotFoundError: versions[name]=None\nprint(json.dumps({'packages':versions,'cuda':torch.version.cuda}))\n"
+  ],
+  "startedAtUtc": "2026-10-21T03:56:48.467894+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T03:56:50.970404+00:00",
+  "durationSeconds": 2.502021735999733
+}

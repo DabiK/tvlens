@@ -1,0 +1,38 @@
+{
+  "atUtc": "2026-10-21T03:37:16.052396+00:00",
+  "containersStopped": {
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results": [
+      "1b0d8ab93af0",
+      "1b0d8ab93af0208c808116ec1a30843f4c7d18233e5d4fd28b75144411bf938c",
+      "390d343f088a",
+      "390d343f088a075568e02db3010a5be8f3417f9be9c4b9baa3f4484133522bb3",
+      "c1213a04ab6f",
+      "c1213a04ab6fc6fc5f92fabcfa1f7a12dbab1e4dd47a3c03f57eecc244bc4bef"
+    ],
+    "/home/nvidia/tvlens-setup/reprise-streaming-20261020T224923Z/results": [],
+    "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results": [],
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results": [
+      "4cb7619d605d",
+      "4cb7619d605d06c709228aedfd048c11b7b7a13f9b1b38446608eaa51e8709e7",
+      "e074c5feccdd",
+      "e074c5feccdd9156cfa8ef9b583d8e4e81ea1cee6ed9de02af348255a15b422a",
+      "e931612e72df",
+      "e931612e72dfcda7fa804292661f2c728f7142caad39341913a859aeb7717aac"
+    ]
+  },
+  "idle": {
+    "replay": {
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "gpu": {
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "ollama": {
+      "models": []
+    }
+  }
+}

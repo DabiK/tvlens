@@ -1,0 +1,265 @@
+nvcr.io/nvidia/pytorch@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e: Pulling from nvidia/pytorch
+9332cde1e070: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+5a73f129664e: Pulling fs layer
+a650094b89e7: Pulling fs layer
+2322cd1ebff2: Pulling fs layer
+cb3f32b3bb7b: Pulling fs layer
+6b603173ceba: Pulling fs layer
+72909c957eba: Pulling fs layer
+4ae55b7b8fa2: Pulling fs layer
+024728d40c67: Pulling fs layer
+a1baff566848: Pulling fs layer
+2413e15e4a3b: Pulling fs layer
+8840a6a65c9d: Pulling fs layer
+fc4edbbdf546: Pulling fs layer
+4c02db942f65: Pulling fs layer
+f5d0bed78be2: Pulling fs layer
+a6ef3a0cbd33: Pulling fs layer
+d2777a03cfe8: Pulling fs layer
+529e0016223b: Pulling fs layer
+55ba4312b651: Pulling fs layer
+29930e03ca01: Pulling fs layer
+c63ba58e9f7b: Pulling fs layer
+5a0ed6ac115d: Pulling fs layer
+8732008881d0: Pulling fs layer
+534b12b0fc89: Pulling fs layer
+30ec248369e4: Pulling fs layer
+01ac5eaf81bf: Pulling fs layer
+f1dd5aa86496: Pulling fs layer
+e105743953cb: Pulling fs layer
+c02a333d6e3c: Pulling fs layer
+7f9ff1c9bd88: Pulling fs layer
+772425610785: Pulling fs layer
+f51e2f456a1d: Pulling fs layer
+1a53af5608d8: Pulling fs layer
+84c7cdf59133: Pulling fs layer
+132e468a7eb1: Pulling fs layer
+209ab60b28ac: Pulling fs layer
+c08d39509b9b: Pulling fs layer
+38c979d37e53: Pulling fs layer
+58302a59f178: Pulling fs layer
+65df34a874c7: Pulling fs layer
+2f073d7cc40b: Pulling fs layer
+8425c1f76d0f: Pulling fs layer
+a0a4e218c2f0: Pulling fs layer
+a650094b89e7: Waiting
+f15fc7c02926: Pulling fs layer
+29d88020ef9e: Pulling fs layer
+6b603173ceba: Waiting
+c148e1539d7c: Pulling fs layer
+5a0ed6ac115d: Waiting
+31de349111c0: Pulling fs layer
+8732008881d0: Waiting
+148b54c34800: Pulling fs layer
+534b12b0fc89: Waiting
+72909c957eba: Waiting
+36b18f5b4df1: Pulling fs layer
+30ec248369e4: Waiting
+4ae55b7b8fa2: Waiting
+42af511fe7a4: Pulling fs layer
+01ac5eaf81bf: Waiting
+024728d40c67: Waiting
+f1dd5aa86496: Waiting
+1daffb90fcb3: Pulling fs layer
+a1baff566848: Waiting
+e105743953cb: Waiting
+d19ef530ff6c: Pulling fs layer
+c02a333d6e3c: Waiting
+2413e15e4a3b: Waiting
+84c7cdf59133: Waiting
+132e468a7eb1: Waiting
+209ab60b28ac: Waiting
+8840a6a65c9d: Waiting
+c08d39509b9b: Waiting
+7f9ff1c9bd88: Waiting
+38c979d37e53: Waiting
+772425610785: Waiting
+fc4edbbdf546: Waiting
+58302a59f178: Waiting
+f51e2f456a1d: Waiting
+65df34a874c7: Waiting
+1a53af5608d8: Waiting
+2f073d7cc40b: Waiting
+8425c1f76d0f: Waiting
+a0a4e218c2f0: Waiting
+2322cd1ebff2: Waiting
+cb3f32b3bb7b: Waiting
+f15fc7c02926: Waiting
+4c02db942f65: Waiting
+f5d0bed78be2: Waiting
+29d88020ef9e: Waiting
+a6ef3a0cbd33: Waiting
+c148e1539d7c: Waiting
+55ba4312b651: Waiting
+31de349111c0: Waiting
+29930e03ca01: Waiting
+148b54c34800: Waiting
+36b18f5b4df1: Waiting
+d2777a03cfe8: Waiting
+c63ba58e9f7b: Waiting
+529e0016223b: Waiting
+42af511fe7a4: Waiting
+1daffb90fcb3: Waiting
+d19ef530ff6c: Waiting
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+5a73f129664e: Verifying Checksum
+5a73f129664e: Download complete
+9332cde1e070: Verifying Checksum
+9332cde1e070: Download complete
+9332cde1e070: Pull complete
+4f4fb700ef54: Pull complete
+5a73f129664e: Pull complete
+a650094b89e7: Verifying Checksum
+a650094b89e7: Download complete
+a650094b89e7: Pull complete
+6b603173ceba: Verifying Checksum
+6b603173ceba: Download complete
+72909c957eba: Verifying Checksum
+72909c957eba: Download complete
+4ae55b7b8fa2: Verifying Checksum
+4ae55b7b8fa2: Download complete
+024728d40c67: Verifying Checksum
+024728d40c67: Download complete
+a1baff566848: Verifying Checksum
+a1baff566848: Download complete
+2413e15e4a3b: Verifying Checksum
+2413e15e4a3b: Download complete
+8840a6a65c9d: Verifying Checksum
+8840a6a65c9d: Download complete
+fc4edbbdf546: Verifying Checksum
+fc4edbbdf546: Download complete
+2322cd1ebff2: Verifying Checksum
+2322cd1ebff2: Download complete
+4c02db942f65: Verifying Checksum
+4c02db942f65: Download complete
+2322cd1ebff2: Pull complete
+cb3f32b3bb7b: Verifying Checksum
+cb3f32b3bb7b: Download complete
+cb3f32b3bb7b: Pull complete
+6b603173ceba: Pull complete
+72909c957eba: Pull complete
+4ae55b7b8fa2: Pull complete
+024728d40c67: Pull complete
+a1baff566848: Pull complete
+2413e15e4a3b: Pull complete
+8840a6a65c9d: Pull complete
+fc4edbbdf546: Pull complete
+4c02db942f65: Pull complete
+f5d0bed78be2: Verifying Checksum
+f5d0bed78be2: Download complete
+f5d0bed78be2: Pull complete
+d2777a03cfe8: Verifying Checksum
+d2777a03cfe8: Download complete
+55ba4312b651: Verifying Checksum
+55ba4312b651: Download complete
+29930e03ca01: Verifying Checksum
+29930e03ca01: Download complete
+c63ba58e9f7b: Verifying Checksum
+c63ba58e9f7b: Download complete
+5a0ed6ac115d: Verifying Checksum
+5a0ed6ac115d: Download complete
+8732008881d0: Verifying Checksum
+8732008881d0: Download complete
+534b12b0fc89: Verifying Checksum
+534b12b0fc89: Download complete
+30ec248369e4: Verifying Checksum
+30ec248369e4: Download complete
+01ac5eaf81bf: Verifying Checksum
+01ac5eaf81bf: Download complete
+f1dd5aa86496: Verifying Checksum
+f1dd5aa86496: Download complete
+a6ef3a0cbd33: Verifying Checksum
+a6ef3a0cbd33: Download complete
+c02a333d6e3c: Download complete
+7f9ff1c9bd88: Verifying Checksum
+7f9ff1c9bd88: Download complete
+a6ef3a0cbd33: Pull complete
+d2777a03cfe8: Pull complete
+e105743953cb: Verifying Checksum
+e105743953cb: Download complete
+f51e2f456a1d: Verifying Checksum
+f51e2f456a1d: Download complete
+772425610785: Verifying Checksum
+772425610785: Download complete
+1a53af5608d8: Verifying Checksum
+1a53af5608d8: Download complete
+132e468a7eb1: Verifying Checksum
+132e468a7eb1: Download complete
+209ab60b28ac: Verifying Checksum
+209ab60b28ac: Download complete
+84c7cdf59133: Verifying Checksum
+84c7cdf59133: Download complete
+38c979d37e53: Verifying Checksum
+38c979d37e53: Download complete
+58302a59f178: Verifying Checksum
+58302a59f178: Download complete
+65df34a874c7: Verifying Checksum
+65df34a874c7: Download complete
+529e0016223b: Verifying Checksum
+529e0016223b: Download complete
+c08d39509b9b: Verifying Checksum
+c08d39509b9b: Download complete
+2f073d7cc40b: Verifying Checksum
+2f073d7cc40b: Download complete
+a0a4e218c2f0: Verifying Checksum
+a0a4e218c2f0: Download complete
+8425c1f76d0f: Verifying Checksum
+8425c1f76d0f: Download complete
+f15fc7c02926: Verifying Checksum
+f15fc7c02926: Download complete
+31de349111c0: Verifying Checksum
+31de349111c0: Download complete
+529e0016223b: Pull complete
+55ba4312b651: Pull complete
+29930e03ca01: Pull complete
+c63ba58e9f7b: Pull complete
+5a0ed6ac115d: Pull complete
+8732008881d0: Pull complete
+534b12b0fc89: Pull complete
+30ec248369e4: Pull complete
+01ac5eaf81bf: Pull complete
+f1dd5aa86496: Pull complete
+148b54c34800: Verifying Checksum
+148b54c34800: Download complete
+36b18f5b4df1: Verifying Checksum
+36b18f5b4df1: Download complete
+42af511fe7a4: Verifying Checksum
+42af511fe7a4: Download complete
+1daffb90fcb3: Verifying Checksum
+1daffb90fcb3: Download complete
+d19ef530ff6c: Verifying Checksum
+d19ef530ff6c: Download complete
+29d88020ef9e: Verifying Checksum
+29d88020ef9e: Download complete
+e105743953cb: Pull complete
+c02a333d6e3c: Pull complete
+7f9ff1c9bd88: Pull complete
+c148e1539d7c: Verifying Checksum
+c148e1539d7c: Download complete
+772425610785: Pull complete
+f51e2f456a1d: Pull complete
+1a53af5608d8: Pull complete
+84c7cdf59133: Pull complete
+132e468a7eb1: Pull complete
+209ab60b28ac: Pull complete
+c08d39509b9b: Pull complete
+38c979d37e53: Pull complete
+58302a59f178: Pull complete
+65df34a874c7: Pull complete
+2f073d7cc40b: Pull complete
+8425c1f76d0f: Pull complete
+a0a4e218c2f0: Pull complete
+f15fc7c02926: Pull complete
+29d88020ef9e: Pull complete
+c148e1539d7c: Pull complete
+31de349111c0: Pull complete
+148b54c34800: Pull complete
+36b18f5b4df1: Pull complete
+42af511fe7a4: Pull complete
+1daffb90fcb3: Pull complete
+d19ef530ff6c: Pull complete
+Digest: sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e
+Status: Downloaded newer image for nvcr.io/nvidia/pytorch@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e
+nvcr.io/nvidia/pytorch:26.09-py3@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e

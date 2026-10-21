@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-21T03:37:16.052779+00:00",
+  "corpusRoot": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results",
+  "corpusStatusSha256": "09ae0f705d30456e2ccfe3792d9285b3cf9ce7f68fef54d14971e6861fd3754c",
+  "corpusSealSha256": "3124f87dd9d0181edeaa4d4ba58732a9f5640d0024c15d9fad55c6e5554b8ab5",
+  "suffixRoot": "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z/results",
+  "suffixSealSha256": "94398917d6d77e8c65e7a17ae045485279b955b643970653178501c5717be093",
+  "ownedContainersStopped": true,
+  "replayAbsent": true,
+  "gpuIdle": true,
+  "ollamaIdle": true
+}

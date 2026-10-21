@@ -1,0 +1,1 @@
+ERROR: failed to build: network mode "bridge" not supported by buildkit - you can define a custom network for your builder using the network driver-opt in buildx create

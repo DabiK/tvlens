@@ -1,0 +1,17 @@
+{
+  "original": {
+    "root": "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results",
+    "sealSha256": "17660b79ce96c940ca1c5412ceb2fdcd23851824a3566d07871f8df12b63b026",
+    "statusSha256": "fb63b5f075aa3fa0212416e250439905fbed2d209a0926021ee45ff74250ce28",
+    "vllmReturnedCases": 25,
+    "expectedDigest": "sha256:1d2c81ea69a06341d1aaa9e4fbd655402681057c291754008f44fa6e74acc298",
+    "actualDigest": "1d2c81ea69a06341d1aaa9e4fbd655402681057c291754008f44fa6e74acc298",
+    "ollamaQuantizationMetadata": "F16"
+  },
+  "corpusRoot": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results",
+  "suffixRoot": "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z/results",
+  "originalStreamingRoot": "/home/nvidia/tvlens-setup/reprise-streaming-20261020T224923Z/results",
+  "gateAmendment": "corpus terminal, original Qwen digest-prefix incident, suffix complete or missing for time",
+  "deadlineUtc": "2026-10-21T12:00:00+00:00",
+  "workloadProtocolChanged": false
+}

@@ -1,0 +1,7 @@
+{"atUtc": "2026-10-21T00:25:01.295290+00:00", "status": "created"}
+{"atUtc": "2026-10-21T00:25:01.333648+00:00", "status": "waiting-corpus-and-predecessors"}
+{"atUtc": "2026-10-21T03:37:16.054358+00:00", "status": "recovery-predecessors-locked"}
+{"atUtc": "2026-10-21T03:37:16.176708+00:00", "status": "image-pull"}
+{"atUtc": "2026-10-21T03:56:48.468006+00:00", "status": "base-packages"}
+{"atUtc": "2026-10-21T03:56:50.971959+00:00", "status": "dependency-build"}
+{"atUtc": "2026-10-21T03:56:51.475028+00:00", "status": "blocked", "error": {"type": "RuntimeError", "message": "dependency-build:EXIT_1"}, "readyForScoring": false}
