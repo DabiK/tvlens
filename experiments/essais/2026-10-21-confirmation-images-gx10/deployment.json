@@ -2,7 +2,12 @@
   "version": 1,
   "host": "gx10-tvlens",
   "remoteRoot": "/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z",
-  "state": "deployed-preflight-passed-waiting-pause",
+  "state": "finished",
+  "startedAtUtc": "2026-10-21T09:18:46.142077+00:00",
+  "elapsedSeconds": 459.52639088399883,
+  "completedCases": 96,
+  "cleanupConfirmed": true,
+  "integritySha256": "934d12b8ea2b3a60d5b29bba1dd22ee048a8f53959a6c3cc65fda08b9141c924",
   "preflight": {
     "status": "validated",
     "cases": 24,

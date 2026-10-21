@@ -1,0 +1,16 @@
+{
+  "status": "finished",
+  "startedAtUtc": "2026-10-21T09:18:46.142077+00:00",
+  "budgetSeconds": 7200,
+  "readyForScoring": false,
+  "runs": [
+    "run-01-A",
+    "run-02-B",
+    "run-03-B",
+    "run-04-A"
+  ],
+  "promptConstant": true,
+  "finishedAtUtc": "2026-10-21T09:26:25.668366+00:00",
+  "elapsedSeconds": 459.52639088399883,
+  "cleanupConfirmed": true
+}

@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "node",
+    "scripts/replay-local-perception.cjs",
+    "--manifest",
+    "/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z/results/inputs/A/manifest.json",
+    "--out",
+    "/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z/results/run-04-A/run",
+    "--backend",
+    "local",
+    "--model",
+    "gemma3:4b",
+    "--url",
+    "http://127.0.0.1:11434",
+    "--num-ctx",
+    "8192",
+    "--keep-alive",
+    "10m",
+    "--execute"
+  ],
+  "startedAtUtc": "2026-10-21T09:24:02.938781+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T09:26:25.636499+00:00",
+  "durationSeconds": 142.69688460500038
+}

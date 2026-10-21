@@ -1,0 +1,387 @@
+{
+  "version": 1,
+  "readyForScoring": false,
+  "expectedAnswersIncluded": false,
+  "questions": [
+    {
+      "id": "Q01",
+      "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+      "reponses": [
+        {
+          "id": "Q01-R1",
+          "texte": "Kennedy situe l’histoire humaine enregistrée à 50 000 ans, puis la ramène à un demi-siècle, soit un ordre de grandeur de l’ordre de 10^5 ans.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q01-R2",
+          "texte": "Kennedy raisonne en dizaines de milliers d’années : il évoque « 50,000 years of man's recorded history » puis « the first 40 years » de cette période, soit un ordre de grandeur de l’ordre de 50 000 ans (moment-2, 8000–16000 ms ; moment-3, 16000–24000 ms).",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q01-R3",
+          "texte": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q01-R4",
+          "texte": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+      "reponses": [
+        {
+          "id": "Q02-R1",
+          "texte": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q02-R2",
+          "texte": "L'accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q02-R3",
+          "texte": "L'accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q02-R4",
+          "texte": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+      "reponses": [
+        {
+          "id": "Q03-R1",
+          "texte": "Il dit que l'exploration de l'espace avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme une grande aventure et un défi que les Américains doivent relever.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q03-R2",
+          "texte": "Il affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme l'une des grandes aventures de tous les temps, et la quête de connaissance comme une détermination que rien ne peut arrêter.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q03-R3",
+          "texte": "Il présente l'exploration spatiale comme une grande aventure inévitable : « the exploration of science, space will go ahead, whether we join in it or not » (moment-23, 176000–184000 ms ; moment-24, 184000–192000 ms). Sur le rôle des États-Unis, il affirme qu'aucune nation qui prétend mener les autres ne peut rester en retrait : « no nation, which expects to be the leader of other nations, can expect to stay behind in this race for space » (moment-25, 192000–200000 ms ; moment-26, 200000–208000 ms).",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q03-R4",
+          "texte": "Il présente l'exploration spatiale comme une grande aventure inévitable, qui avancera « que nous y participions ou non », et affirme qu'aucune nation voulant mener les autres ne peut rester en retrait dans cette course.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "question": "What does Kennedy want space to represent, and what does he reject?",
+      "reponses": [
+        {
+          "id": "Q04-R1",
+          "texte": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une grande aventure partagée, tandis qu'il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q04-R2",
+          "texte": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il ne soit pas rempli d'armes ou de menaces ; il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il devienne un champ de rivalité armée.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q04-R3",
+          "texte": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une part de l'effort humain que les États-Unis entendent mener (« We mean to be a part of it. We mean to lead it. »). Il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il soit rempli d'armes ou de menaces.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q04-R4",
+          "texte": "Kennedy veut que l'espace soit gouverné par « une bannière de liberté et de paix » et qu'il soit partagé, non qu'il soit rempli d'armes ou dominé par une « bannière de conquête hostile ». Il rejette donc la conquête et la militarisation de l'espace.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "question": "Who determines whether technology serves good or war?",
+      "reponses": [
+        {
+          "id": "Q05-R1",
+          "texte": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, where they it will become a force for good or real depends on man » (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms).",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q05-R2",
+          "texte": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. »",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q05-R3",
+          "texte": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. »",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q05-R4",
+          "texte": "Kennedy répond que c'est l'homme qui décide : la science et la technologie n'ont « pas de conscience propre », et leur usage comme force pour le bien ou pour le mal dépend de l'humanité. Il ajoute que c'est à la position de prééminence des États-Unis de permettre de décider si cet « océan nouveau » sera un espace de liberté ou de guerre.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "question": "Qui accompagne la jeune fille au début ?",
+      "reponses": [
+        {
+          "id": "Q06-R1",
+          "texte": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q06-R2",
+          "texte": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q06-R3",
+          "texte": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q06-R4",
+          "texte": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "question": "Quel objet tient-elle dans la forêt ?",
+      "reponses": [
+        {
+          "id": "Q07-R1",
+          "texte": "Elle tient un bâton dans la forêt.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q07-R2",
+          "texte": "Elle tient un bâton dans la forêt.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q07-R3",
+          "texte": "Elle tient un bâton dans la forêt.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q07-R4",
+          "texte": "Elle tient un bâton dans la forêt.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?",
+      "reponses": [
+        {
+          "id": "Q08-R1",
+          "texte": "La grande forme flottante près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide aux reflets lumineux dans l'obscurité.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q08-R2",
+          "texte": "La grande forme près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide flottant dans l'obscurité.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q08-R3",
+          "texte": "La grande forme près d'elle est enveloppée d'une lumière bleu-vert, visible au centre de l'image avec des reflets et des particules qui s'en échappent.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q08-R4",
+          "texte": "La grande forme près d'elle est baignée d'une lumière bleue, décrite comme bleue et sombre dans les passages consultés.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "question": "Comment apparaît maintenant le haut du bâton ?",
+      "reponses": [
+        {
+          "id": "Q09-R1",
+          "texte": "Je ne peux pas encore décrire le haut du bâton : le passage le plus récent analysé (moment-30, 232000-240000) ne mentionne qu'une lumière dorée émanant du bâton, sans détail sur son extrémité, et le segment suivant (moment-32, 248000-256000) est encore en cours d'analyse.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q09-R2",
+          "texte": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q09-R3",
+          "texte": "Je ne peux pas encore décrire le haut du bâton : les résumés consultés ne le précisent pas et le passage le plus récent (moment-32, 248000-256000) n’a pas encore d’analyse visuelle exploitable. Je peux réexaminer ce passage pour voir si le haut du bâton y est visible.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q09-R4",
+          "texte": "Je ne peux pas encore décrire le haut du bâton : les passages observés le montrent seulement tenu pour se stabiliser, sans détail de son extrémité, et le dernier segment analysé (moment-32) est encore en attente d'analyse visuelle.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?",
+      "reponses": [
+        {
+          "id": "Q10-R1",
+          "texte": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q10-R2",
+          "texte": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent pas le début de la vidéo, et les résumés automatiques ne suffisent pas à décrire précisément les changements visuels. Je peux réexaminer un passage récent pour voir l'état actuel du paysage, mais il me faudrait aussi un passage du début pour faire la comparaison.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q10-R3",
+          "texte": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages reçus ne couvrent que la fin de la séquence (320000-368000), et les segments du début sont en attente d'analyse ou absents du contexte. Je peux décrire ce qui est visible actuellement — brume, montagnes enneigées, forêts, étendue d'eau et vaisseau flottant — mais pas ce qui a changé depuis le départ.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        },
+        {
+          "id": "Q10-R4",
+          "texte": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages observés ne montrent que des scènes récentes (forêt, créatures marines, lac brumeux, prairie montagneuse), sans image du début pour établir un avant/après. Je peux décrire l'évolution visible dans les passages récents si tu veux.",
+          "note0a3": null,
+          "invention": null,
+          "preuve": null,
+          "justification": null
+        }
+      ]
+    }
+  ]
+}

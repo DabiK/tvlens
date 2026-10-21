@@ -1,0 +1,366 @@
+{
+  "version": 1,
+  "readyForScoring": false,
+  "rows": [
+    {
+      "id": "Q01-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+      "sourceSha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+      "sourceRecordId": "kennedy-01",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 8018.621918999997
+    },
+    {
+      "id": "Q01-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+      "sourceSha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+      "sourceRecordId": "kennedy-01",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 26030.964719000003
+    },
+    {
+      "id": "Q01-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+      "sourceSha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+      "sourceRecordId": "kennedy-01",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 7016.635064999995
+    },
+    {
+      "id": "Q01-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+      "sourceSha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+      "sourceRecordId": "kennedy-01",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 13025.907053000003
+    },
+    {
+      "id": "Q02-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+      "sourceSha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+      "sourceRecordId": "kennedy-03",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 17096.962881
+    },
+    {
+      "id": "Q02-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+      "sourceSha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+      "sourceRecordId": "kennedy-03",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 16101.653545999987
+    },
+    {
+      "id": "Q02-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+      "sourceSha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+      "sourceRecordId": "kennedy-03",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 16087.368401999993
+    },
+    {
+      "id": "Q02-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+      "sourceSha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+      "sourceRecordId": "kennedy-03",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 15100.55296499998
+    },
+    {
+      "id": "Q03-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+      "sourceSha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+      "sourceRecordId": "kennedy-05",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 12173.245066000003
+    },
+    {
+      "id": "Q03-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+      "sourceSha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+      "sourceRecordId": "kennedy-05",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 20197.187635999988
+    },
+    {
+      "id": "Q03-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+      "sourceSha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+      "sourceRecordId": "kennedy-05",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 26188.450118000008
+    },
+    {
+      "id": "Q03-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+      "sourceSha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+      "sourceRecordId": "kennedy-05",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 9150.96310600001
+    },
+    {
+      "id": "Q04-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+      "sourceSha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+      "sourceRecordId": "kennedy-06",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 11226.826474000001
+    },
+    {
+      "id": "Q04-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+      "sourceSha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+      "sourceRecordId": "kennedy-06",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 20269.415342000022
+    },
+    {
+      "id": "Q04-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+      "sourceSha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+      "sourceRecordId": "kennedy-06",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 23256.548387999996
+    },
+    {
+      "id": "Q04-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+      "sourceSha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+      "sourceRecordId": "kennedy-06",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 11196.267339000013
+    },
+    {
+      "id": "Q05-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+      "sourceSha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+      "sourceRecordId": "kennedy-08",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 17360.69508799998
+    },
+    {
+      "id": "Q05-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+      "sourceSha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+      "sourceRecordId": "kennedy-08",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 8321.786594000005
+    },
+    {
+      "id": "Q05-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+      "sourceSha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+      "sourceRecordId": "kennedy-08",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 15376.935846999986
+    },
+    {
+      "id": "Q05-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+      "sourceSha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+      "sourceRecordId": "kennedy-08",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 11297.572432000015
+    },
+    {
+      "id": "Q06-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+      "sourceSha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+      "sourceRecordId": "spring-01",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 13029.376942999996
+    },
+    {
+      "id": "Q06-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+      "sourceSha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+      "sourceRecordId": "spring-01",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 8048.566923999999
+    },
+    {
+      "id": "Q06-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+      "sourceSha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+      "sourceRecordId": "spring-01",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 8045.394824000003
+    },
+    {
+      "id": "Q06-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+      "sourceSha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+      "sourceRecordId": "spring-01",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 14035.839668
+    },
+    {
+      "id": "Q07-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+      "sourceSha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+      "sourceRecordId": "spring-02",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 8167.531564000004
+    },
+    {
+      "id": "Q07-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+      "sourceSha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+      "sourceRecordId": "spring-02",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 10121.325021999975
+    },
+    {
+      "id": "Q07-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+      "sourceSha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+      "sourceRecordId": "spring-02",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 10159.896349999995
+    },
+    {
+      "id": "Q07-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+      "sourceSha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+      "sourceRecordId": "spring-02",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 9146.628515999997
+    },
+    {
+      "id": "Q08-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+      "sourceSha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+      "sourceRecordId": "spring-03",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 8189.320566000009
+    },
+    {
+      "id": "Q08-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+      "sourceSha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+      "sourceRecordId": "spring-03",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 11187.433804
+    },
+    {
+      "id": "Q08-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+      "sourceSha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+      "sourceRecordId": "spring-03",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 12171.660226000007
+    },
+    {
+      "id": "Q08-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+      "sourceSha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+      "sourceRecordId": "spring-03",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 11200.265304999979
+    },
+    {
+      "id": "Q09-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+      "sourceSha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+      "sourceRecordId": "spring-04",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 9224.682149
+    },
+    {
+      "id": "Q09-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+      "sourceSha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+      "sourceRecordId": "spring-04",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 12199.796998000005
+    },
+    {
+      "id": "Q09-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+      "sourceSha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+      "sourceRecordId": "spring-04",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 13249.36180699995
+    },
+    {
+      "id": "Q09-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+      "sourceSha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+      "sourceRecordId": "spring-04",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 18230.35541300004
+    },
+    {
+      "id": "Q10-R1",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+      "sourceSha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+      "sourceRecordId": "spring-06",
+      "arm": "A",
+      "passage": 1,
+      "delayMs": 10315.54243999999
+    },
+    {
+      "id": "Q10-R2",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+      "sourceSha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+      "sourceRecordId": "spring-06",
+      "arm": "A",
+      "passage": 2,
+      "delayMs": 18352.987548000005
+    },
+    {
+      "id": "Q10-R3",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+      "sourceSha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+      "sourceRecordId": "spring-06",
+      "arm": "B",
+      "passage": 2,
+      "delayMs": 14362.406281000003
+    },
+    {
+      "id": "Q10-R4",
+      "source": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+      "sourceSha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+      "sourceRecordId": "spring-06",
+      "arm": "B",
+      "passage": 1,
+      "delayMs": 13319.009248999995
+    }
+  ]
+}

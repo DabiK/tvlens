@@ -1872,6 +1872,3012 @@
     ]
   },
   "images": {
-    "etat": "en_attente"
+    "etat": "complet",
+    "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-images-gx10/rapatriements/confirmation-images-20261021T082000Z/results/mesures.json",
+    "sha256": "e5fbc73508c3f52a5dba2a5443d7773e3e9f5f0ab208ab89ebbe223d2965efdb",
+    "passages": [
+      {
+        "video": "kennedy",
+        "bras": "A",
+        "passage": 1,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 5655.5,
+            "p95": 6294.0
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 7.0,
+            "p95": 8.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 2929.0,
+            "p95": 2942.2
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2573.5,
+            "p95": 3206.1
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1980.0,
+            "p95": 1980.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 156.0,
+            "p95": 196.8
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 5660.246934999999,
+            "p95": 6299.052412449999
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.002815999997437757,
+            "p95": 0.03785165000030585
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 5660.249262999996,
+            "p95": 6299.054670849999
+          }
+        },
+        "blocs": [
+          {
+            "id": "kennedy-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5306,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2951,
+              "fournisseurGenerationMs": 2149,
+              "jetonsEntree": 1960,
+              "jetonsSortie": 129,
+              "clientRequeteMs": 5318.3497370000005,
+              "clientFileMs": 0.06060899999999947,
+              "clientFilePlusRequeteMs": 5318.410346000001
+            }
+          },
+          {
+            "id": "kennedy-video-15",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6267,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2917,
+              "fournisseurGenerationMs": 3171,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 195,
+              "clientRequeteMs": 6271.598515,
+              "clientFileMs": 0.001344000000244705,
+              "clientFilePlusRequeteMs": 6271.599859
+            }
+          },
+          {
+            "id": "kennedy-video-16",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6327,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2917,
+              "fournisseurGenerationMs": 3249,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 199,
+              "clientRequeteMs": 6332.607175999998,
+              "clientFileMs": 0.0033760000005713664,
+              "clientFilePlusRequeteMs": 6332.610551999998
+            }
+          },
+          {
+            "id": "kennedy-video-26",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5601,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2929,
+              "fournisseurGenerationMs": 2540,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 154,
+              "clientRequeteMs": 5605.0255130000005,
+              "clientFileMs": 0.0013599999983853195,
+              "clientFilePlusRequeteMs": 5605.026872999999
+            }
+          },
+          {
+            "id": "kennedy-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5710,
+              "fournisseurChargementMs": 7,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2607,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 158,
+              "clientRequeteMs": 5715.468356999998,
+              "clientFileMs": 0.0032959999953163788,
+              "clientFilePlusRequeteMs": 5715.471652999993
+            }
+          },
+          {
+            "id": "kennedy-video-3",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5543,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2933,
+              "fournisseurGenerationMs": 2490,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 152,
+              "clientRequeteMs": 5547.187717999999,
+              "clientFileMs": 0.002335999999559135,
+              "clientFilePlusRequeteMs": 5547.190053999999
+            }
+          },
+          {
+            "id": "kennedy-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6180,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2919,
+              "fournisseurGenerationMs": 3112,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 190,
+              "clientRequeteMs": 6184.4750769999955,
+              "clientFileMs": 0.0015039999998407438,
+              "clientFilePlusRequeteMs": 6184.476580999995
+            }
+          },
+          {
+            "id": "kennedy-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6099,
+              "fournisseurChargementMs": 7,
+              "fournisseurPrefillMs": 2929,
+              "fournisseurGenerationMs": 3006,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 182,
+              "clientRequeteMs": 6104.425628999998,
+              "clientFileMs": 0.004287999996449798,
+              "clientFilePlusRequeteMs": 6104.429916999994
+            }
+          },
+          {
+            "id": "kennedy-video-4",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5127,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2935,
+              "fournisseurGenerationMs": 2029,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 122,
+              "clientRequeteMs": 5133.3392250000015,
+              "clientFileMs": 0.01923200000055658,
+              "clientFilePlusRequeteMs": 5133.358457000002
+            }
+          },
+          {
+            "id": "kennedy-video-44",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5340,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2930,
+              "fournisseurGenerationMs": 2237,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 135,
+              "clientRequeteMs": 5345.136419000002,
+              "clientFileMs": 0.005984000003081746,
+              "clientFilePlusRequeteMs": 5345.142403000005
+            }
+          },
+          {
+            "id": "kennedy-video-45",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5559,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2513,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 153,
+              "clientRequeteMs": 5563.170849000002,
+              "clientFileMs": 0.001856000002590008,
+              "clientFilePlusRequeteMs": 5563.1727050000045
+            }
+          },
+          {
+            "id": "kennedy-video-51",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6173,
+              "fournisseurChargementMs": 7,
+              "fournisseurPrefillMs": 2932,
+              "fournisseurGenerationMs": 3067,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 186,
+              "clientRequeteMs": 6176.9937969999955,
+              "clientFileMs": 0.0021600000036414713,
+              "clientFilePlusRequeteMs": 6176.995956999999
+            }
+          }
+        ]
+      },
+      {
+        "video": "kennedy",
+        "bras": "A",
+        "passage": 2,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 5645.0,
+            "p95": 6282.4
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 5.5,
+            "p95": 7.449999999999999
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 2920.0,
+            "p95": 2927.9
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2565.5,
+            "p95": 3197.25
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1980.0,
+            "p95": 1980.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 156.0,
+            "p95": 196.8
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 5650.035759999999,
+            "p95": 6289.9827467
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.002816500000335509,
+            "p95": 0.034020800000094165
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 5650.038479999999,
+            "p95": 6289.984654699999
+          }
+        },
+        "blocs": [
+          {
+            "id": "kennedy-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5215,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2923,
+              "fournisseurGenerationMs": 2148,
+              "jetonsEntree": 1960,
+              "jetonsSortie": 129,
+              "clientRequeteMs": 5227.19948,
+              "clientFileMs": 0.0589599999999848,
+              "clientFilePlusRequeteMs": 5227.2584400000005
+            }
+          },
+          {
+            "id": "kennedy-video-15",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6250,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2924,
+              "fournisseurGenerationMs": 3150,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 195,
+              "clientRequeteMs": 6259.332136999999,
+              "clientFileMs": 0.001295999998546904,
+              "clientFilePlusRequeteMs": 6259.333432999998
+            }
+          },
+          {
+            "id": "kennedy-video-16",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6322,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 3255,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 199,
+              "clientRequeteMs": 6327.444603,
+              "clientFileMs": 0.0026560000005702022,
+              "clientFilePlusRequeteMs": 6327.4472590000005
+            }
+          },
+          {
+            "id": "kennedy-video-26",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5600,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2532,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 154,
+              "clientRequeteMs": 5604.308243000003,
+              "clientFileMs": 0.001631999999517575,
+              "clientFilePlusRequeteMs": 5604.309875000003
+            }
+          },
+          {
+            "id": "kennedy-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5689,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2599,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 158,
+              "clientRequeteMs": 5694.640454,
+              "clientFileMs": 0.0033279999988735653,
+              "clientFilePlusRequeteMs": 5694.643781999999
+            }
+          },
+          {
+            "id": "kennedy-video-3",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5522,
+              "fournisseurChargementMs": 7,
+              "fournisseurPrefillMs": 2911,
+              "fournisseurGenerationMs": 2501,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 152,
+              "clientRequeteMs": 5527.970721000001,
+              "clientFileMs": 0.002943999999843072,
+              "clientFilePlusRequeteMs": 5527.973665
+            }
+          },
+          {
+            "id": "kennedy-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6210,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2925,
+              "fournisseurGenerationMs": 3113,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 190,
+              "clientRequeteMs": 6215.342194999997,
+              "clientFileMs": 0.0026890000008279458,
+              "clientFilePlusRequeteMs": 6215.344883999998
+            }
+          },
+          {
+            "id": "kennedy-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6053,
+              "fournisseurChargementMs": 7,
+              "fournisseurPrefillMs": 2917,
+              "fournisseurGenerationMs": 2994,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 182,
+              "clientRequeteMs": 6058.336338000001,
+              "clientFileMs": 0.008095999997749459,
+              "clientFilePlusRequeteMs": 6058.344433999999
+            }
+          },
+          {
+            "id": "kennedy-video-4",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5124,
+              "fournisseurChargementMs": 8,
+              "fournisseurPrefillMs": 2917,
+              "fournisseurGenerationMs": 2034,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 122,
+              "clientRequeteMs": 5130.701795999999,
+              "clientFileMs": 0.013616000000183703,
+              "clientFilePlusRequeteMs": 5130.715412
+            }
+          },
+          {
+            "id": "kennedy-video-44",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5297,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2223,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 135,
+              "clientRequeteMs": 5301.180268000004,
+              "clientFileMs": 0.0035839999982272275,
+              "clientFilePlusRequeteMs": 5301.183852000002
+            }
+          },
+          {
+            "id": "kennedy-video-45",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5601,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2929,
+              "fournisseurGenerationMs": 2500,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 153,
+              "clientRequeteMs": 5605.431065999997,
+              "clientFileMs": 0.00211200000194367,
+              "clientFilePlusRequeteMs": 5605.433177999999
+            }
+          },
+          {
+            "id": "kennedy-video-51",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6135,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2927,
+              "fournisseurGenerationMs": 3043,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 186,
+              "clientRequeteMs": 6138.195936000004,
+              "clientFileMs": 0.0015999999959603883,
+              "clientFilePlusRequeteMs": 6138.197536
+            }
+          }
+        ]
+      },
+      {
+        "video": "kennedy",
+        "bras": "B",
+        "passage": 1,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 4262.5,
+            "p95": 4834.2
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 4.0,
+            "p95": 5.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 1813.0,
+            "p95": 1818.35
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2314.0,
+            "p95": 2911.7999999999997
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1426.0,
+            "p95": 1426.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 141.5,
+            "p95": 179.74999999999997
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 4265.850799499998,
+            "p95": 4837.6393175
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.0026639999996405095,
+            "p95": 0.04018239999992939
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 4265.853047500001,
+            "p95": 4837.6422255
+          }
+        },
+        "blocs": [
+          {
+            "id": "kennedy-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4349,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1812,
+              "fournisseurGenerationMs": 2394,
+              "jetonsEntree": 1410,
+              "jetonsSortie": 147,
+              "clientRequeteMs": 4360.1282009999995,
+              "clientFileMs": 0.07073600000001079,
+              "clientFilePlusRequeteMs": 4360.198936999999
+            }
+          },
+          {
+            "id": "kennedy-video-15",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4557,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1820,
+              "fournisseurGenerationMs": 2649,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 164,
+              "clientRequeteMs": 4560.819239,
+              "clientFileMs": 0.002943999999843072,
+              "clientFilePlusRequeteMs": 4560.822183
+            }
+          },
+          {
+            "id": "kennedy-video-16",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4513,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1815,
+              "fournisseurGenerationMs": 2542,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 155,
+              "clientRequeteMs": 4516.912203,
+              "clientFileMs": 0.002560000000812579,
+              "clientFilePlusRequeteMs": 4516.914763000001
+            }
+          },
+          {
+            "id": "kennedy-video-26",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 3960,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 1805,
+              "fournisseurGenerationMs": 2047,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 125,
+              "clientRequeteMs": 3964.3249810000016,
+              "clientFileMs": 0.0025439999990339857,
+              "clientFilePlusRequeteMs": 3964.3275250000006
+            }
+          },
+          {
+            "id": "kennedy-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4261,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 1814,
+              "fournisseurGenerationMs": 2290,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 140,
+              "clientRequeteMs": 4265.384209,
+              "clientFileMs": 0.0025439999990339857,
+              "clientFilePlusRequeteMs": 4265.386752999999
+            }
+          },
+          {
+            "id": "kennedy-video-3",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5173,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1814,
+              "fournisseurGenerationMs": 3233,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 199,
+              "clientRequeteMs": 5175.974969000001,
+              "clientFileMs": 0.0028640000000450527,
+              "clientFilePlusRequeteMs": 5175.977833000001
+            }
+          },
+          {
+            "id": "kennedy-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4080,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1814,
+              "fournisseurGenerationMs": 2111,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 130,
+              "clientRequeteMs": 4083.631582999995,
+              "clientFileMs": 0.00276799999846844,
+              "clientFilePlusRequeteMs": 4083.6343509999933
+            }
+          },
+          {
+            "id": "kennedy-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4264,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1811,
+              "fournisseurGenerationMs": 2338,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 143,
+              "clientRequeteMs": 4266.3173899999965,
+              "clientFileMs": 0.0019520000059856102,
+              "clientFilePlusRequeteMs": 4266.3193420000025
+            }
+          },
+          {
+            "id": "kennedy-video-4",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4206,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1811,
+              "fournisseurGenerationMs": 2283,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 138,
+              "clientRequeteMs": 4210.505762000001,
+              "clientFileMs": 0.015183999999862863,
+              "clientFilePlusRequeteMs": 4210.520946000001
+            }
+          },
+          {
+            "id": "kennedy-video-44",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4521,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1807,
+              "fournisseurGenerationMs": 2578,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 158,
+              "clientRequeteMs": 4524.730067000004,
+              "clientFileMs": 0.007696000000578351,
+              "clientFilePlusRequeteMs": 4524.737763000005
+            }
+          },
+          {
+            "id": "kennedy-video-45",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4089,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1817,
+              "fournisseurGenerationMs": 2163,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 133,
+              "clientRequeteMs": 4092.4123360000012,
+              "clientFileMs": 0.0020160000058240257,
+              "clientFilePlusRequeteMs": 4092.414352000007
+            }
+          },
+          {
+            "id": "kennedy-video-51",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4076,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1809,
+              "fournisseurGenerationMs": 2153,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 133,
+              "clientRequeteMs": 4078.3506290000005,
+              "clientFileMs": 0.0017440000010537915,
+              "clientFilePlusRequeteMs": 4078.3523730000015
+            }
+          }
+        ]
+      },
+      {
+        "video": "kennedy",
+        "bras": "B",
+        "passage": 2,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 2672.0,
+            "p95": 3181.8499999999995
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 4.0,
+            "p95": 5.449999999999999
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 59.0,
+            "p95": 91.25
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2458.5,
+            "p95": 2931.5499999999997
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1426.0,
+            "p95": 1426.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 150.5,
+            "p95": 181.39999999999998
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 2675.180033499999,
+            "p95": 3189.7487392499997
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.002680000000509608,
+            "p95": 0.045535649999672446
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 2675.1838499999985,
+            "p95": 3189.7993053999994
+          }
+        },
+        "blocs": [
+          {
+            "id": "kennedy-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2942,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 89,
+              "fournisseurGenerationMs": 2698,
+              "jetonsEntree": 1410,
+              "jetonsSortie": 165,
+              "clientRequeteMs": 2953.9342380000003,
+              "clientFileMs": 0.08769699999999148,
+              "clientFilePlusRequeteMs": 2954.021935
+            }
+          },
+          {
+            "id": "kennedy-video-15",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2755,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 60,
+              "fournisseurGenerationMs": 2549,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 160,
+              "clientRequeteMs": 2759.392608,
+              "clientFileMs": 0.0032320000009349314,
+              "clientFilePlusRequeteMs": 2759.395840000001
+            }
+          },
+          {
+            "id": "kennedy-video-16",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2724,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2516,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 154,
+              "clientRequeteMs": 2727.318718999999,
+              "clientFileMs": 0.0016799999993963866,
+              "clientFilePlusRequeteMs": 2727.3203989999984
+            }
+          },
+          {
+            "id": "kennedy-video-26",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2383,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2191,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 135,
+              "clientRequeteMs": 2385.8990630000008,
+              "clientFileMs": 0.0014080000000831205,
+              "clientFilePlusRequeteMs": 2385.900471000001
+            }
+          },
+          {
+            "id": "kennedy-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2511,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2304,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 140,
+              "clientRequeteMs": 2516.318535000002,
+              "clientFileMs": 0.0015679999996791594,
+              "clientFilePlusRequeteMs": 2516.320103000002
+            }
+          },
+          {
+            "id": "kennedy-video-3",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 3475,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 94,
+              "fournisseurGenerationMs": 3217,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 199,
+              "clientRequeteMs": 3477.9664629999997,
+              "clientFileMs": 0.005183999999644584,
+              "clientFilePlusRequeteMs": 3477.9716469999994
+            }
+          },
+          {
+            "id": "kennedy-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2274,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2117,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 130,
+              "clientRequeteMs": 2277.0450299999975,
+              "clientFileMs": 0.001968000000488246,
+              "clientFilePlusRequeteMs": 2277.046997999998
+            }
+          },
+          {
+            "id": "kennedy-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2764,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 60,
+              "fournisseurGenerationMs": 2561,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 159,
+              "clientRequeteMs": 2767.3850490000004,
+              "clientFileMs": 0.0021280000000842847,
+              "clientFilePlusRequeteMs": 2767.3871770000005
+            }
+          },
+          {
+            "id": "kennedy-video-4",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2571,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 54,
+              "fournisseurGenerationMs": 2385,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 146,
+              "clientRequeteMs": 2573.9570540000004,
+              "clientFileMs": 0.01103999999941152,
+              "clientFilePlusRequeteMs": 2573.968094
+            }
+          },
+          {
+            "id": "kennedy-video-44",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2620,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 61,
+              "fournisseurGenerationMs": 2401,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 147,
+              "clientRequeteMs": 2623.041347999999,
+              "clientFileMs": 0.005952999999863096,
+              "clientFilePlusRequeteMs": 2623.0473009999987
+            }
+          },
+          {
+            "id": "kennedy-video-45",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2859,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2663,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 167,
+              "clientRequeteMs": 2861.4352690000014,
+              "clientFileMs": 0.0039680000008956995,
+              "clientFilePlusRequeteMs": 2861.4392370000023
+            }
+          },
+          {
+            "id": "kennedy-video-51",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2312,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2148,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 134,
+              "clientRequeteMs": 2314.1201720000026,
+              "clientFileMs": 0.0018559999989520293,
+              "clientFilePlusRequeteMs": 2314.1220280000016
+            }
+          }
+        ]
+      },
+      {
+        "video": "spring",
+        "bras": "A",
+        "passage": 1,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 6008.5,
+            "p95": 6738.299999999999
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 3.0,
+            "p95": 6.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 2923.0,
+            "p95": 2937.45
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2949.5,
+            "p95": 3672.5499999999997
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1980.0,
+            "p95": 1980.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 179.0,
+            "p95": 224.09999999999997
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 6011.043706999997,
+            "p95": 6749.6415653999975
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.002520000001823064,
+            "p95": 0.0029999999998835845
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 6011.045891000002,
+            "p95": 6749.644127799999
+          }
+        },
+        "blocs": [
+          {
+            "id": "spring-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5470,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2921,
+              "fournisseurGenerationMs": 2412,
+              "jetonsEntree": 1960,
+              "jetonsSortie": 145,
+              "clientRequeteMs": 5471.672952000008,
+              "clientFileMs": 0.0014879999944241717,
+              "clientFilePlusRequeteMs": 5471.6744400000025
+            }
+          },
+          {
+            "id": "spring-video-1",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5999,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2916,
+              "fournisseurGenerationMs": 2960,
+              "jetonsEntree": 1970,
+              "jetonsSortie": 179,
+              "clientRequeteMs": 6001.12900999999,
+              "clientFileMs": 0.0014559999981429428,
+              "clientFilePlusRequeteMs": 6001.130465999988
+            }
+          },
+          {
+            "id": "spring-video-23",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6018,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 2938,
+              "fournisseurGenerationMs": 2939,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 179,
+              "clientRequeteMs": 6020.9584040000045,
+              "clientFileMs": 0.002912000010837801,
+              "clientFilePlusRequeteMs": 6020.961316000015
+            }
+          },
+          {
+            "id": "spring-video-24",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6322,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2935,
+              "fournisseurGenerationMs": 3250,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 198,
+              "clientRequeteMs": 6324.80634000001,
+              "clientFileMs": 0.001951999991433695,
+              "clientFilePlusRequeteMs": 6324.8082920000015
+            }
+          },
+          {
+            "id": "spring-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6471,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2924,
+              "fournisseurGenerationMs": 3394,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 207,
+              "clientRequeteMs": 6473.7449849999975,
+              "clientFileMs": 0.0023680000012973323,
+              "clientFilePlusRequeteMs": 6473.747352999999
+            }
+          },
+          {
+            "id": "spring-video-28",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6358,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2914,
+              "fournisseurGenerationMs": 3277,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 200,
+              "clientRequeteMs": 6360.842464000001,
+              "clientFileMs": 0.0022560000070370734,
+              "clientFilePlusRequeteMs": 6360.844720000008
+            }
+          },
+          {
+            "id": "spring-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 7065,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2926,
+              "fournisseurGenerationMs": 4013,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 245,
+              "clientRequeteMs": 7086.848496999999,
+              "clientFileMs": 0.0028000000020256266,
+              "clientFilePlusRequeteMs": 7086.851297000001
+            }
+          },
+          {
+            "id": "spring-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5809,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2919,
+              "fournisseurGenerationMs": 2764,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 166,
+              "clientRequeteMs": 5812.603654000006,
+              "clientFileMs": 0.0022880000033183023,
+              "clientFilePlusRequeteMs": 5812.605942000009
+            }
+          },
+          {
+            "id": "spring-video-46",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6206,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2923,
+              "fournisseurGenerationMs": 3111,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 190,
+              "clientRequeteMs": 6209.791689000005,
+              "clientFileMs": 0.0029280000017024577,
+              "clientFilePlusRequeteMs": 6209.794617000007
+            }
+          },
+          {
+            "id": "spring-video-56",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5317,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 2288,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 138,
+              "clientRequeteMs": 5320.652369000018,
+              "clientFileMs": 0.0027359999949112535,
+              "clientFilePlusRequeteMs": 5320.655105000013
+            }
+          },
+          {
+            "id": "spring-video-8",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5985,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2923,
+              "fournisseurGenerationMs": 2934,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 178,
+              "clientRequeteMs": 5988.996562,
+              "clientFileMs": 0.0030879999976605177,
+              "clientFilePlusRequeteMs": 5988.999649999998
+            }
+          },
+          {
+            "id": "spring-video-9",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5996,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2937,
+              "fournisseurGenerationMs": 2900,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 176,
+              "clientRequeteMs": 5999.110260000001,
+              "clientFileMs": 0.0026720000023487955,
+              "clientFilePlusRequeteMs": 5999.112932000004
+            }
+          }
+        ]
+      },
+      {
+        "video": "spring",
+        "bras": "A",
+        "passage": 2,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 6006.0,
+            "p95": 6704.299999999999
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 4.0,
+            "p95": 5.449999999999999
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 2916.0,
+            "p95": 2926.95
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2948.0,
+            "p95": 3663.0999999999995
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1980.0,
+            "p95": 1980.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 179.0,
+            "p95": 224.09999999999997
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 6009.4430475000045,
+            "p95": 6706.909334250002
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.002392000002146233,
+            "p95": 0.0037248000000545283
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 6009.445983500009,
+            "p95": 6706.911514250004
+          }
+        },
+        "blocs": [
+          {
+            "id": "spring-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5470,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2913,
+              "fournisseurGenerationMs": 2406,
+              "jetonsEntree": 1960,
+              "jetonsSortie": 145,
+              "clientRequeteMs": 5472.993614999999,
+              "clientFileMs": 0.0019680000114021823,
+              "clientFilePlusRequeteMs": 5472.995583000011
+            }
+          },
+          {
+            "id": "spring-video-1",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5994,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2913,
+              "fournisseurGenerationMs": 2938,
+              "jetonsEntree": 1970,
+              "jetonsSortie": 179,
+              "clientRequeteMs": 5998.048951000004,
+              "clientFileMs": 0.003408000004128553,
+              "clientFilePlusRequeteMs": 5998.052359000008
+            }
+          },
+          {
+            "id": "spring-video-23",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5989,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2921,
+              "fournisseurGenerationMs": 2919,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 179,
+              "clientRequeteMs": 5991.183502,
+              "clientFileMs": 0.0025120000063907355,
+              "clientFilePlusRequeteMs": 5991.186014000006
+            }
+          },
+          {
+            "id": "spring-video-24",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6270,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2918,
+              "fournisseurGenerationMs": 3241,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 198,
+              "clientRequeteMs": 6272.258415000004,
+              "clientFileMs": 0.002175999994506128,
+              "clientFilePlusRequeteMs": 6272.260590999998
+            }
+          },
+          {
+            "id": "spring-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6419,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2914,
+              "fournisseurGenerationMs": 3394,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 207,
+              "clientRequeteMs": 6421.763772000006,
+              "clientFileMs": 0.0025759999989531934,
+              "clientFilePlusRequeteMs": 6421.766348000005
+            }
+          },
+          {
+            "id": "spring-video-28",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6314,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2912,
+              "fournisseurGenerationMs": 3265,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 200,
+              "clientRequeteMs": 6316.301027000009,
+              "clientFileMs": 0.0022080000053392723,
+              "clientFilePlusRequeteMs": 6316.303235000014
+            }
+          },
+          {
+            "id": "spring-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 7053,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2920,
+              "fournisseurGenerationMs": 3992,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 245,
+              "clientRequeteMs": 7055.420576999997,
+              "clientFileMs": 0.001696000006631948,
+              "clientFilePlusRequeteMs": 7055.422273000004
+            }
+          },
+          {
+            "id": "spring-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5806,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 2921,
+              "fournisseurGenerationMs": 2763,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 166,
+              "clientRequeteMs": 5810.248359999998,
+              "clientFileMs": 0.004111999995075166,
+              "clientFilePlusRequeteMs": 5810.252471999993
+            }
+          },
+          {
+            "id": "spring-video-46",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6208,
+              "fournisseurChargementMs": 6,
+              "fournisseurPrefillMs": 2933,
+              "fournisseurGenerationMs": 3115,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 190,
+              "clientRequeteMs": 6212.535414000013,
+              "clientFileMs": 0.0026559999969322234,
+              "clientFilePlusRequeteMs": 6212.53807000001
+            }
+          },
+          {
+            "id": "spring-video-56",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5343,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2922,
+              "fournisseurGenerationMs": 2270,
+              "jetonsEntree": 1980,
+              "jetonsSortie": 138,
+              "clientRequeteMs": 5345.517671999987,
+              "clientFileMs": 0.0023199999995995313,
+              "clientFilePlusRequeteMs": 5345.519991999987
+            }
+          },
+          {
+            "id": "spring-video-8",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 6018,
+              "fournisseurChargementMs": 5,
+              "fournisseurPrefillMs": 2914,
+              "fournisseurGenerationMs": 2958,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 178,
+              "clientRequeteMs": 6020.837144000005,
+              "clientFileMs": 0.0024640000046929345,
+              "clientFilePlusRequeteMs": 6020.839608000009
+            }
+          },
+          {
+            "id": "spring-video-9",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 5966,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 2911,
+              "fournisseurGenerationMs": 2899,
+              "jetonsEntree": 1973,
+              "jetonsSortie": 176,
+              "clientRequeteMs": 5968.883168999993,
+              "clientFileMs": 0.001759999999194406,
+              "clientFilePlusRequeteMs": 5968.884928999993
+            }
+          }
+        ]
+      },
+      {
+        "video": "spring",
+        "bras": "B",
+        "passage": 1,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 4451.0,
+            "p95": 4866.8
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 2.5,
+            "p95": 4.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 1811.0,
+            "p95": 1820.35
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2538.5,
+            "p95": 2942.0
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1426.0,
+            "p95": 1426.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 155.5,
+            "p95": 180.15
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 4453.110443500002,
+            "p95": 4869.194119249997
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.0023199999995995313,
+            "p95": 0.00301519999775337
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 4453.112139500001,
+            "p95": 4869.196436049997
+          }
+        },
+        "blocs": [
+          {
+            "id": "spring-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4171,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 1809,
+              "fournisseurGenerationMs": 2270,
+              "jetonsEntree": 1410,
+              "jetonsSortie": 139,
+              "clientRequeteMs": 4172.351922000002,
+              "clientFileMs": 0.001631999999517575,
+              "clientFilePlusRequeteMs": 4172.353554000001
+            }
+          },
+          {
+            "id": "spring-video-1",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4480,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1812,
+              "fournisseurGenerationMs": 2553,
+              "jetonsEntree": 1419,
+              "jetonsSortie": 156,
+              "clientRequeteMs": 4482.358573999998,
+              "clientFileMs": 0.001631999999517575,
+              "clientFilePlusRequeteMs": 4482.360205999998
+            }
+          },
+          {
+            "id": "spring-video-23",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4391,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 1812,
+              "fournisseurGenerationMs": 2490,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 152,
+              "clientRequeteMs": 4393.222657999999,
+              "clientFileMs": 0.0025440000026719645,
+              "clientFilePlusRequeteMs": 4393.225202000001
+            }
+          },
+          {
+            "id": "spring-video-24",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4791,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 1817,
+              "fournisseurGenerationMs": 2874,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 175,
+              "clientRequeteMs": 4792.891118999993,
+              "clientFileMs": 0.0019040000042878091,
+              "clientFilePlusRequeteMs": 4792.893022999997
+            }
+          },
+          {
+            "id": "spring-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4422,
+              "fournisseurChargementMs": 1,
+              "fournisseurPrefillMs": 1822,
+              "fournisseurGenerationMs": 2524,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 155,
+              "clientRequeteMs": 4423.862313000005,
+              "clientFileMs": 0.001759999999194406,
+              "clientFilePlusRequeteMs": 4423.864073000004
+            }
+          },
+          {
+            "id": "spring-video-28",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4820,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 1811,
+              "fournisseurGenerationMs": 2897,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 177,
+              "clientRequeteMs": 4822.277080999993,
+              "clientFileMs": 0.0022880000033183023,
+              "clientFilePlusRequeteMs": 4822.279368999996
+            }
+          },
+          {
+            "id": "spring-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4693,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1805,
+              "fournisseurGenerationMs": 2750,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 171,
+              "clientRequeteMs": 4695.514240999997,
+              "clientFileMs": 0.0024479999992763624,
+              "clientFilePlusRequeteMs": 4695.516688999996
+            }
+          },
+          {
+            "id": "spring-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4156,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1809,
+              "fournisseurGenerationMs": 2259,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 139,
+              "clientRequeteMs": 4159.194758999991,
+              "clientFileMs": 0.003376000007847324,
+              "clientFilePlusRequeteMs": 4159.198134999999
+            }
+          },
+          {
+            "id": "spring-video-46",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4053,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 1809,
+              "fournisseurGenerationMs": 2146,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 131,
+              "clientRequeteMs": 4055.7814989999897,
+              "clientFileMs": 0.0027199999894946814,
+              "clientFilePlusRequeteMs": 4055.784218999979
+            }
+          },
+          {
+            "id": "spring-video-56",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4377,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 1810,
+              "fournisseurGenerationMs": 2480,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 152,
+              "clientRequeteMs": 4379.5271959999955,
+              "clientFileMs": 0.001696000006631948,
+              "clientFilePlusRequeteMs": 4379.528892000002
+            }
+          },
+          {
+            "id": "spring-video-8",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4924,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1819,
+              "fournisseurGenerationMs": 2997,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 184,
+              "clientRequeteMs": 4926.537166000002,
+              "clientFileMs": 0.0023519999958807603,
+              "clientFilePlusRequeteMs": 4926.539517999998
+            }
+          },
+          {
+            "id": "spring-video-9",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 4571,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 1811,
+              "fournisseurGenerationMs": 2656,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 162,
+              "clientRequeteMs": 4573.942758000005,
+              "clientFileMs": 0.0024799999955575913,
+              "clientFilePlusRequeteMs": 4573.945238
+            }
+          }
+        ]
+      },
+      {
+        "video": "spring",
+        "bras": "B",
+        "passage": 2,
+        "planifie": 12,
+        "observe": 12,
+        "reussi": 12,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": 2625.5,
+            "p95": 2890.8
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": 2.0,
+            "p95": 4.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": 58.0,
+            "p95": 59.9
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": 2449.5,
+            "p95": 2681.95
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": 1426.0,
+            "p95": 1426.0
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": 150.5,
+            "p95": 165.35
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": 2627.8812744999977,
+            "p95": 2892.6310280500024
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.0026319999997213017,
+            "p95": 0.004493600000932929
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": 2627.8848504999987,
+            "p95": 2892.633088850006
+          }
+        },
+        "blocs": [
+          {
+            "id": "spring-video-0",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2645,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 55,
+              "fournisseurGenerationMs": 2459,
+              "jetonsEntree": 1410,
+              "jetonsSortie": 153,
+              "clientRequeteMs": 2647.5629210000006,
+              "clientFileMs": 0.0027519999966898467,
+              "clientFilePlusRequeteMs": 2647.5656729999973
+            }
+          },
+          {
+            "id": "spring-video-1",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2723,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2552,
+              "jetonsEntree": 1419,
+              "jetonsSortie": 156,
+              "clientRequeteMs": 2725.893821999998,
+              "clientFileMs": 0.0016479999976581894,
+              "clientFilePlusRequeteMs": 2725.895469999996
+            }
+          },
+          {
+            "id": "spring-video-23",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2583,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 56,
+              "fournisseurGenerationMs": 2420,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 149,
+              "clientRequeteMs": 2585.5143529999987,
+              "clientFileMs": 0.002736000002187211,
+              "clientFilePlusRequeteMs": 2585.517089000001
+            }
+          },
+          {
+            "id": "spring-video-24",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2594,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 56,
+              "fournisseurGenerationMs": 2440,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 148,
+              "clientRequeteMs": 2596.434226000005,
+              "clientFileMs": 0.002223999996203929,
+              "clientFilePlusRequeteMs": 2596.436450000001
+            }
+          },
+          {
+            "id": "spring-video-27",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2606,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 61,
+              "fournisseurGenerationMs": 2408,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 149,
+              "clientRequeteMs": 2608.199627999995,
+              "clientFileMs": 0.0044000000052619725,
+              "clientFilePlusRequeteMs": 2608.204028
+            }
+          },
+          {
+            "id": "spring-video-28",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2871,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2659,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 164,
+              "clientRequeteMs": 2873.2620430000024,
+              "clientFileMs": 0.00203200000396464,
+              "clientFilePlusRequeteMs": 2873.2640750000064
+            }
+          },
+          {
+            "id": "spring-video-33",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2915,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2710,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 167,
+              "clientRequeteMs": 2916.3042320000022,
+              "clientFileMs": 0.0020960000038030557,
+              "clientFilePlusRequeteMs": 2916.306328000006
+            }
+          },
+          {
+            "id": "spring-video-34",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2535,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2361,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 146,
+              "clientRequeteMs": 2536.9835509999975,
+              "clientFileMs": 0.0028319999983068556,
+              "clientFilePlusRequeteMs": 2536.986382999996
+            }
+          },
+          {
+            "id": "spring-video-46",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2272,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2069,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 126,
+              "clientRequeteMs": 2274.080538000002,
+              "clientFileMs": 0.002304000001458917,
+              "clientFilePlusRequeteMs": 2274.0828420000034
+            }
+          },
+          {
+            "id": "spring-video-56",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2656,
+              "fournisseurChargementMs": 3,
+              "fournisseurPrefillMs": 58,
+              "fournisseurGenerationMs": 2482,
+              "jetonsEntree": 1426,
+              "jetonsSortie": 152,
+              "clientRequeteMs": 2659.352890000002,
+              "clientFileMs": 0.004015999998955522,
+              "clientFilePlusRequeteMs": 2659.356906000001
+            }
+          },
+          {
+            "id": "spring-video-8",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2529,
+              "fournisseurChargementMs": 2,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2343,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 142,
+              "clientRequeteMs": 2532.2388049999936,
+              "clientFileMs": 0.004607999995641876,
+              "clientFilePlusRequeteMs": 2532.2434129999892
+            }
+          },
+          {
+            "id": "spring-video-9",
+            "status": "succeeded",
+            "appelsFournisseur": 1,
+            "mesures": {
+              "fournisseurTotalMs": 2769,
+              "fournisseurChargementMs": 4,
+              "fournisseurPrefillMs": 59,
+              "fournisseurGenerationMs": 2557,
+              "jetonsEntree": 1421,
+              "jetonsSortie": 157,
+              "clientRequeteMs": 2771.954415,
+              "clientFileMs": 0.0025279999972553924,
+              "clientFilePlusRequeteMs": 2771.9569429999974
+            }
+          }
+        ]
+      }
+    ],
+    "cadenceParPassage": [
+      {
+        "passage": 1,
+        "bras": "A",
+        "ordre": "01",
+        "cas": 24,
+        "dureeSecondes": 143.07731073201285,
+        "casParSeconde": 0.1677414810022014
+      },
+      {
+        "passage": 1,
+        "bras": "B",
+        "ordre": "02",
+        "cas": 24,
+        "dureeSecondes": 106.9761139839975,
+        "casParSeconde": 0.22434914773208298
+      },
+      {
+        "passage": 2,
+        "bras": "B",
+        "ordre": "03",
+        "cas": 24,
+        "dureeSecondes": 64.9141637670109,
+        "casParSeconde": 0.36971900440927646
+      },
+      {
+        "passage": 2,
+        "bras": "A",
+        "ordre": "04",
+        "cas": 24,
+        "dureeSecondes": 142.69688460500038,
+        "casParSeconde": 0.1681886753620057
+      }
+    ],
+    "appariementsParBloc": [
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-0",
+        "difference3moins5": {
+          "fournisseurTotalMs": -957,
+          "fournisseurChargementMs": -4,
+          "fournisseurPrefillMs": -1139,
+          "fournisseurGenerationMs": 245,
+          "jetonsEntree": -550,
+          "jetonsSortie": 18,
+          "clientRequeteMs": -958.2215360000009,
+          "clientFileMs": 0.010127000000011321,
+          "clientFilePlusRequeteMs": -958.2114090000014
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-15",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1710,
+          "fournisseurChargementMs": -5,
+          "fournisseurPrefillMs": -1097,
+          "fournisseurGenerationMs": -522,
+          "jetonsEntree": -554,
+          "jetonsSortie": -31,
+          "clientRequeteMs": -1710.7792759999993,
+          "clientFileMs": 0.0015999999995983671,
+          "clientFilePlusRequeteMs": -1710.7776759999997
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-16",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1814,
+          "fournisseurChargementMs": -5,
+          "fournisseurPrefillMs": -1102,
+          "fournisseurGenerationMs": -707,
+          "jetonsEntree": -554,
+          "jetonsSortie": -44,
+          "clientRequeteMs": -1815.6949729999978,
+          "clientFileMs": -0.0008159999997587875,
+          "clientFilePlusRequeteMs": -1815.6957889999976
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-26",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1641,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -1124,
+          "fournisseurGenerationMs": -493,
+          "jetonsEntree": -554,
+          "jetonsSortie": -29,
+          "clientRequeteMs": -1640.700531999999,
+          "clientFileMs": 0.0011840000006486662,
+          "clientFilePlusRequeteMs": -1640.6993479999983
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-27",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1449,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1106,
+          "fournisseurGenerationMs": -317,
+          "jetonsEntree": -554,
+          "jetonsSortie": -18,
+          "clientRequeteMs": -1450.084147999998,
+          "clientFileMs": -0.0007519999962823931,
+          "clientFilePlusRequeteMs": -1450.0848999999944
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-3",
+        "difference3moins5": {
+          "fournisseurTotalMs": -370,
+          "fournisseurChargementMs": -5,
+          "fournisseurPrefillMs": -1119,
+          "fournisseurGenerationMs": 743,
+          "jetonsEntree": -552,
+          "jetonsSortie": 47,
+          "clientRequeteMs": -371.21274899999844,
+          "clientFileMs": 0.0005280000004859176,
+          "clientFilePlusRequeteMs": -371.21222099999795
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-33",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2100,
+          "fournisseurChargementMs": -3,
+          "fournisseurPrefillMs": -1105,
+          "fournisseurGenerationMs": -1001,
+          "jetonsEntree": -554,
+          "jetonsSortie": -60,
+          "clientRequeteMs": -2100.8434940000006,
+          "clientFileMs": 0.0012639999986276962,
+          "clientFilePlusRequeteMs": -2100.842230000002
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-34",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1835,
+          "fournisseurChargementMs": -4,
+          "fournisseurPrefillMs": -1118,
+          "fournisseurGenerationMs": -668,
+          "jetonsEntree": -554,
+          "jetonsSortie": -39,
+          "clientRequeteMs": -1838.108239000001,
+          "clientFileMs": -0.002335999990464188,
+          "clientFilePlusRequeteMs": -1838.1105749999915
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-4",
+        "difference3moins5": {
+          "fournisseurTotalMs": -921,
+          "fournisseurChargementMs": -4,
+          "fournisseurPrefillMs": -1124,
+          "fournisseurGenerationMs": 254,
+          "jetonsEntree": -552,
+          "jetonsSortie": 16,
+          "clientRequeteMs": -922.8334630000008,
+          "clientFileMs": -0.004048000000693719,
+          "clientFilePlusRequeteMs": -922.8375110000015
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-44",
+        "difference3moins5": {
+          "fournisseurTotalMs": -819,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1123,
+          "fournisseurGenerationMs": 341,
+          "jetonsEntree": -554,
+          "jetonsSortie": 23,
+          "clientRequeteMs": -820.4063519999982,
+          "clientFileMs": 0.001711999997496605,
+          "clientFilePlusRequeteMs": -820.4046400000007
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-45",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1470,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -1103,
+          "fournisseurGenerationMs": -350,
+          "jetonsEntree": -554,
+          "jetonsSortie": -20,
+          "clientRequeteMs": -1470.7585130000007,
+          "clientFileMs": 0.00016000000323401764,
+          "clientFilePlusRequeteMs": -1470.7583529999974
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-video-51",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2097,
+          "fournisseurChargementMs": -3,
+          "fournisseurPrefillMs": -1123,
+          "fournisseurGenerationMs": -914,
+          "jetonsEntree": -554,
+          "jetonsSortie": -53,
+          "clientRequeteMs": -2098.643167999995,
+          "clientFileMs": -0.0004160000025876798,
+          "clientFilePlusRequeteMs": -2098.6435839999976
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-0",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2273,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -2834,
+          "fournisseurGenerationMs": 550,
+          "jetonsEntree": -550,
+          "jetonsSortie": 36,
+          "clientRequeteMs": -2273.265242,
+          "clientFileMs": 0.028737000000006674,
+          "clientFilePlusRequeteMs": -2273.2365050000003
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-15",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3495,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2864,
+          "fournisseurGenerationMs": -601,
+          "jetonsEntree": -554,
+          "jetonsSortie": -35,
+          "clientRequeteMs": -3499.9395289999993,
+          "clientFileMs": 0.0019360000023880275,
+          "clientFilePlusRequeteMs": -3499.937592999997
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-16",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3598,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2861,
+          "fournisseurGenerationMs": -739,
+          "jetonsEntree": -554,
+          "jetonsSortie": -45,
+          "clientRequeteMs": -3600.125884000001,
+          "clientFileMs": -0.0009760000011738157,
+          "clientFilePlusRequeteMs": -3600.126860000002
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-26",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3217,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -2862,
+          "fournisseurGenerationMs": -341,
+          "jetonsEntree": -554,
+          "jetonsSortie": -19,
+          "clientRequeteMs": -3218.4091800000024,
+          "clientFileMs": -0.00022399999943445437,
+          "clientFilePlusRequeteMs": -3218.409404000002
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-27",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3178,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2861,
+          "fournisseurGenerationMs": -295,
+          "jetonsEntree": -554,
+          "jetonsSortie": -18,
+          "clientRequeteMs": -3178.321918999998,
+          "clientFileMs": -0.001759999999194406,
+          "clientFilePlusRequeteMs": -3178.3236789999974
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-3",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2047,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2817,
+          "fournisseurGenerationMs": 716,
+          "jetonsEntree": -552,
+          "jetonsSortie": 47,
+          "clientRequeteMs": -2050.004258000001,
+          "clientFileMs": 0.002239999999801512,
+          "clientFilePlusRequeteMs": -2050.002018000001
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-33",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3936,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2867,
+          "fournisseurGenerationMs": -996,
+          "jetonsEntree": -554,
+          "jetonsSortie": -60,
+          "clientRequeteMs": -3938.297165,
+          "clientFileMs": -0.0007210000003396999,
+          "clientFilePlusRequeteMs": -3938.2978860000003
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-34",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3289,
+          "fournisseurChargementMs": -3,
+          "fournisseurPrefillMs": -2857,
+          "fournisseurGenerationMs": -433,
+          "jetonsEntree": -554,
+          "jetonsSortie": -23,
+          "clientRequeteMs": -3290.9512890000005,
+          "clientFileMs": -0.005967999997665174,
+          "clientFilePlusRequeteMs": -3290.957256999998
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-4",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2553,
+          "fournisseurChargementMs": -4,
+          "fournisseurPrefillMs": -2863,
+          "fournisseurGenerationMs": 351,
+          "jetonsEntree": -552,
+          "jetonsSortie": 24,
+          "clientRequeteMs": -2556.744741999999,
+          "clientFileMs": -0.002576000000772183,
+          "clientFilePlusRequeteMs": -2556.7473179999997
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-44",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2677,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2859,
+          "fournisseurGenerationMs": 178,
+          "jetonsEntree": -554,
+          "jetonsSortie": 12,
+          "clientRequeteMs": -2678.138920000005,
+          "clientFileMs": 0.002369000001635868,
+          "clientFilePlusRequeteMs": -2678.1365510000032
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-45",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2742,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2870,
+          "fournisseurGenerationMs": 163,
+          "jetonsEntree": -554,
+          "jetonsSortie": 14,
+          "clientRequeteMs": -2743.995796999996,
+          "clientFileMs": 0.0018559999989520293,
+          "clientFilePlusRequeteMs": -2743.993940999997
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-video-51",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3823,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2868,
+          "fournisseurGenerationMs": -895,
+          "jetonsEntree": -554,
+          "jetonsSortie": -52,
+          "clientRequeteMs": -3824.075764000001,
+          "clientFileMs": 0.00025600000299164094,
+          "clientFilePlusRequeteMs": -3824.075507999998
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-0",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1299,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -1112,
+          "fournisseurGenerationMs": -142,
+          "jetonsEntree": -550,
+          "jetonsSortie": -6,
+          "clientRequeteMs": -1299.3210300000064,
+          "clientFileMs": 0.00014400000509340316,
+          "clientFilePlusRequeteMs": -1299.3208860000013
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-1",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1519,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -1104,
+          "fournisseurGenerationMs": -407,
+          "jetonsEntree": -551,
+          "jetonsSortie": -23,
+          "clientRequeteMs": -1518.7704359999916,
+          "clientFileMs": 0.00017600000137463212,
+          "clientFilePlusRequeteMs": -1518.7702599999902
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-23",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1627,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -1126,
+          "fournisseurGenerationMs": -449,
+          "jetonsEntree": -554,
+          "jetonsSortie": -27,
+          "clientRequeteMs": -1627.7357460000057,
+          "clientFileMs": -0.00036800000816583633,
+          "clientFilePlusRequeteMs": -1627.736114000014
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-24",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1531,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1118,
+          "fournisseurGenerationMs": -376,
+          "jetonsEntree": -554,
+          "jetonsSortie": -23,
+          "clientRequeteMs": -1531.9152210000175,
+          "clientFileMs": -4.7999987145885825e-05,
+          "clientFilePlusRequeteMs": -1531.9152690000046
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-27",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2049,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1102,
+          "fournisseurGenerationMs": -870,
+          "jetonsEntree": -554,
+          "jetonsSortie": -52,
+          "clientRequeteMs": -2049.8826719999925,
+          "clientFileMs": -0.0006080000021029264,
+          "clientFilePlusRequeteMs": -2049.8832799999946
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-28",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1538,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -1103,
+          "fournisseurGenerationMs": -380,
+          "jetonsEntree": -554,
+          "jetonsSortie": -23,
+          "clientRequeteMs": -1538.5653830000083,
+          "clientFileMs": 3.199999628122896e-05,
+          "clientFilePlusRequeteMs": -1538.565351000012
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-33",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2372,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -1121,
+          "fournisseurGenerationMs": -1263,
+          "jetonsEntree": -554,
+          "jetonsSortie": -74,
+          "clientRequeteMs": -2391.334256000002,
+          "clientFileMs": -0.00035200000274926424,
+          "clientFilePlusRequeteMs": -2391.3346080000047
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-34",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1653,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1110,
+          "fournisseurGenerationMs": -505,
+          "jetonsEntree": -554,
+          "jetonsSortie": -27,
+          "clientRequeteMs": -1653.408895000015,
+          "clientFileMs": 0.0010880000045290217,
+          "clientFilePlusRequeteMs": -1653.4078070000105
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-46",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2153,
+          "fournisseurChargementMs": -3,
+          "fournisseurPrefillMs": -1114,
+          "fournisseurGenerationMs": -965,
+          "jetonsEntree": -554,
+          "jetonsSortie": -59,
+          "clientRequeteMs": -2154.0101900000154,
+          "clientFileMs": -0.0002080000122077763,
+          "clientFilePlusRequeteMs": -2154.0103980000276
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-56",
+        "difference3moins5": {
+          "fournisseurTotalMs": -940,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -1110,
+          "fournisseurGenerationMs": 192,
+          "jetonsEntree": -554,
+          "jetonsSortie": 14,
+          "clientRequeteMs": -941.1251730000222,
+          "clientFileMs": -0.0010399999882793054,
+          "clientFilePlusRequeteMs": -941.1262130000105
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-8",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1061,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -1104,
+          "fournisseurGenerationMs": 63,
+          "jetonsEntree": -552,
+          "jetonsSortie": 6,
+          "clientRequeteMs": -1062.4593959999984,
+          "clientFileMs": -0.0007360000017797574,
+          "clientFilePlusRequeteMs": -1062.4601320000002
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-video-9",
+        "difference3moins5": {
+          "fournisseurTotalMs": -1425,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -1126,
+          "fournisseurGenerationMs": -244,
+          "jetonsEntree": -552,
+          "jetonsSortie": -14,
+          "clientRequeteMs": -1425.1675019999966,
+          "clientFileMs": -0.00019200000679120421,
+          "clientFilePlusRequeteMs": -1425.1676940000034
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-0",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2825,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -2858,
+          "fournisseurGenerationMs": 53,
+          "jetonsEntree": -550,
+          "jetonsSortie": 8,
+          "clientRequeteMs": -2825.4306939999988,
+          "clientFileMs": 0.0007839999852876645,
+          "clientFilePlusRequeteMs": -2825.4299100000135
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-1",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3271,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2854,
+          "fournisseurGenerationMs": -386,
+          "jetonsEntree": -551,
+          "jetonsSortie": -23,
+          "clientRequeteMs": -3272.155129000006,
+          "clientFileMs": -0.0017600000064703636,
+          "clientFilePlusRequeteMs": -3272.1568890000126
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-23",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3406,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2865,
+          "fournisseurGenerationMs": -499,
+          "jetonsEntree": -554,
+          "jetonsSortie": -30,
+          "clientRequeteMs": -3405.669149000001,
+          "clientFileMs": 0.00022399999579647556,
+          "clientFilePlusRequeteMs": -3405.6689250000054
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-24",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3676,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2862,
+          "fournisseurGenerationMs": -801,
+          "jetonsEntree": -554,
+          "jetonsSortie": -50,
+          "clientRequeteMs": -3675.824188999999,
+          "clientFileMs": 4.8000001697801054e-05,
+          "clientFilePlusRequeteMs": -3675.8241409999973
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-27",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3813,
+          "fournisseurChargementMs": -1,
+          "fournisseurPrefillMs": -2853,
+          "fournisseurGenerationMs": -986,
+          "jetonsEntree": -554,
+          "jetonsSortie": -58,
+          "clientRequeteMs": -3813.564144000011,
+          "clientFileMs": 0.0018240000063087791,
+          "clientFilePlusRequeteMs": -3813.5623200000045
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-28",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3443,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2854,
+          "fournisseurGenerationMs": -606,
+          "jetonsEntree": -554,
+          "jetonsSortie": -36,
+          "clientRequeteMs": -3443.038984000006,
+          "clientFileMs": -0.00017600000137463212,
+          "clientFilePlusRequeteMs": -3443.0391600000075
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-33",
+        "difference3moins5": {
+          "fournisseurTotalMs": -4138,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2862,
+          "fournisseurGenerationMs": -1282,
+          "jetonsEntree": -554,
+          "jetonsSortie": -78,
+          "clientRequeteMs": -4139.116344999995,
+          "clientFileMs": 0.0003999999971711077,
+          "clientFilePlusRequeteMs": -4139.115944999998
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-34",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3271,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2862,
+          "fournisseurGenerationMs": -402,
+          "jetonsEntree": -554,
+          "jetonsSortie": -20,
+          "clientRequeteMs": -3273.2648090000002,
+          "clientFileMs": -0.0012799999967683107,
+          "clientFilePlusRequeteMs": -3273.266088999997
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-46",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3936,
+          "fournisseurChargementMs": -2,
+          "fournisseurPrefillMs": -2875,
+          "fournisseurGenerationMs": -1046,
+          "jetonsEntree": -554,
+          "jetonsSortie": -64,
+          "clientRequeteMs": -3938.4548760000107,
+          "clientFileMs": -0.0003519999954733066,
+          "clientFilePlusRequeteMs": -3938.455228000006
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-56",
+        "difference3moins5": {
+          "fournisseurTotalMs": -2687,
+          "fournisseurChargementMs": 0,
+          "fournisseurPrefillMs": -2864,
+          "fournisseurGenerationMs": 212,
+          "jetonsEntree": -554,
+          "jetonsSortie": 14,
+          "clientRequeteMs": -2686.1647819999853,
+          "clientFileMs": 0.0016959999993559904,
+          "clientFilePlusRequeteMs": -2686.163085999986
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-8",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3489,
+          "fournisseurChargementMs": -3,
+          "fournisseurPrefillMs": -2855,
+          "fournisseurGenerationMs": -615,
+          "jetonsEntree": -552,
+          "jetonsSortie": -36,
+          "clientRequeteMs": -3488.598339000011,
+          "clientFileMs": 0.0021439999909489416,
+          "clientFilePlusRequeteMs": -3488.59619500002
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-video-9",
+        "difference3moins5": {
+          "fournisseurTotalMs": -3197,
+          "fournisseurChargementMs": 1,
+          "fournisseurPrefillMs": -2852,
+          "fournisseurGenerationMs": -342,
+          "jetonsEntree": -552,
+          "jetonsSortie": -19,
+          "clientRequeteMs": -3196.928753999993,
+          "clientFileMs": 0.0007679999980609864,
+          "clientFilePlusRequeteMs": -3196.927985999995
+        }
+      }
+    ],
+    "resumeApparie": [
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": -1555.5,
+            "p95": -616.9500000000003
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": -3.5,
+            "p95": -0.5500000000000007
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": -1118.5,
+            "p95": -1099.75
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": -421.5,
+            "p95": 521.8999999999997
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": -554.0,
+            "p95": -551.1
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": -24.5,
+            "p95": 33.79999999999998
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": -1555.7295224999998,
+            "p95": -618.2692306499986
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.0003440000018599676,
+            "p95": 0.005498749998628221
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": -1555.7288504999979,
+            "p95": -618.2680514499998
+          }
+        }
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": -3197.5,
+            "p95": -2171.3
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": -1.5,
+            "p95": 0.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": -2861.5,
+            "p95": -2826.35
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": -318.0,
+            "p95": 624.6999999999998
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": -554.0,
+            "p95": -551.1
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": -18.5,
+            "p95": 40.94999999999999
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": -3198.3655495000003,
+            "p95": -2172.7977992000006
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 1.6000001778593287e-05,
+            "p95": 0.014234600000902712
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": -3198.3665414999996,
+            "p95": -2172.780985850001
+          }
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": -1534.5,
+            "p95": -1006.5500000000001
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": -1.0,
+            "p95": 0.0
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": -1111.0,
+            "p95": -1102.55
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": -393.5,
+            "p95": 121.04999999999991
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": -554.0,
+            "p95": -550.55
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": -23.0,
+            "p95": 9.599999999999994
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": -1535.240302000013,
+            "p95": -1007.8589956500092
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": -0.00020000000949949026,
+            "p95": 0.0005864000027941068
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": -1535.2403100000083,
+            "p95": -1007.8598684500049
+          }
+        }
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "parMesure": {
+          "fournisseurTotalMs": {
+            "n": 12,
+            "p50": -3424.5,
+            "p95": -2762.9
+          },
+          "fournisseurChargementMs": {
+            "n": 12,
+            "p50": -2.0,
+            "p95": 0.4499999999999993
+          },
+          "fournisseurPrefillMs": {
+            "n": 12,
+            "p50": -2860.0,
+            "p95": -2852.55
+          },
+          "fournisseurGenerationMs": {
+            "n": 12,
+            "p50": -552.5,
+            "p95": 124.54999999999988
+          },
+          "jetonsEntree": {
+            "n": 12,
+            "p50": -554.0,
+            "p95": -550.55
+          },
+          "jetonsSortie": {
+            "n": 12,
+            "p50": -33.0,
+            "p95": 10.699999999999996
+          },
+          "clientRequeteMs": {
+            "n": 12,
+            "p50": -3424.3540665000037,
+            "p95": -2762.761033599993
+          },
+          "clientFileMs": {
+            "n": 12,
+            "p50": 0.0003119999964837916,
+            "p95": 0.001967999999396852
+          },
+          "clientFilePlusRequeteMs": {
+            "n": 12,
+            "p50": -3424.3540425000065,
+            "p95": -2762.7598392000014
+          }
+        }
+      }
+    ]
   }
 }

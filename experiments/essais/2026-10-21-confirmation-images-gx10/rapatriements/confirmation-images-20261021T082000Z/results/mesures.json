@@ -1,0 +1,5219 @@
+{
+  "readyForScoring": false,
+  "cadence": [
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "cases": 24,
+      "durationSeconds": 143.07731073201285,
+      "casesPerSecond": 0.1677414810022014
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "cases": 24,
+      "durationSeconds": 106.9761139839975,
+      "casesPerSecond": 0.22434914773208298
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "cases": 24,
+      "durationSeconds": 64.9141637670109,
+      "casesPerSecond": 0.36971900440927646
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "cases": 24,
+      "durationSeconds": 142.69688460500038,
+      "casesPerSecond": 0.1681886753620057
+    }
+  ],
+  "rows": [
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5306,
+          "loadMs": 8,
+          "promptEvalMs": 2951,
+          "evalMs": 2149,
+          "promptTokens": 1960,
+          "evalTokens": 129,
+          "rawNs": {
+            "total_duration": 5306456265,
+            "load_duration": 8174514,
+            "prompt_eval_duration": 2950571000,
+            "eval_duration": 2149018000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.06060899999999947,
+          "requestMs": 5318.3497370000005
+        }
+      ],
+      "promptSha256": "c18bfe9f86413fa203b9e3e7fa6c87ba962bb84c9560d6aaac0816583cc0e382",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "c6baada37383d63142ba902420ee9e3c287e7d774cd96f7dac8dcd9d837cceb1"
+        },
+        {
+          "index": 1,
+          "atMs": 1600,
+          "sha256": "a2f72cee8be3af7e586785facf871ad8bfc54b28e4a349ee79e1a2d023e5d27c"
+        },
+        {
+          "index": 2,
+          "atMs": 3200,
+          "sha256": "703721ad3d1fcb516d9f106ebaf3bc791d1e8d150ce6e5b538ccd13512142936"
+        },
+        {
+          "index": 3,
+          "atMs": 4800,
+          "sha256": "5029d8c938f2982193235482a2360779af5189c0902718547e92e261343b8e6a"
+        },
+        {
+          "index": 4,
+          "atMs": 6400,
+          "sha256": "2ade9cb835208e6653e6e5b1a59b2bd4995973c1309c19c8d0f031ebe4b6c621"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-3",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5543,
+          "loadMs": 8,
+          "promptEvalMs": 2933,
+          "evalMs": 2490,
+          "promptTokens": 1973,
+          "evalTokens": 152,
+          "rawNs": {
+            "total_duration": 5542503600,
+            "load_duration": 8294755,
+            "prompt_eval_duration": 2933212000,
+            "eval_duration": 2490171000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002335999999559135,
+          "requestMs": 5547.187717999999
+        }
+      ],
+      "promptSha256": "b0b5b8912e21b119f2750329ffecb03e4113e249544edcbf119578c7318cb6e6",
+      "normalizedPromptSha256": "ed3fefe99ce6f63f0c23386518045ae0ef3d352dc89328c1d4f90e7481206155",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 24000,
+          "sha256": "eb427a48793b81b74ff2dc261be0a9c3a2d2e5143a5cfd09e3fe7ed34636d69b"
+        },
+        {
+          "index": 1,
+          "atMs": 25600,
+          "sha256": "de0f0ba788fee7dce3dc9c694f6e89b5d961a5c221667ff5310dedcfadc0921c"
+        },
+        {
+          "index": 2,
+          "atMs": 27200,
+          "sha256": "97fce571561a634d66bd7132e3f5a5e168f162d220d776e578d1a83083b0b80f"
+        },
+        {
+          "index": 3,
+          "atMs": 28800,
+          "sha256": "981cf6f51d0963bb1835c1a6207e6ae7b421a072f88adb11b4cfc5569b5af195"
+        },
+        {
+          "index": 4,
+          "atMs": 30400,
+          "sha256": "9f951b6449ce5b3b640154db2318d9d2d4c9eb4ddd708b7d8bf36da44691c4fc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-4",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5127,
+          "loadMs": 8,
+          "promptEvalMs": 2935,
+          "evalMs": 2029,
+          "promptTokens": 1973,
+          "evalTokens": 122,
+          "rawNs": {
+            "total_duration": 5126629362,
+            "load_duration": 8235699,
+            "prompt_eval_duration": 2935081000,
+            "eval_duration": 2028986000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.01923200000055658,
+          "requestMs": 5133.3392250000015
+        }
+      ],
+      "promptSha256": "19aa89cabd22bba84b47184a39985ea6602f815a43bf3cec0f0db2cd6c2786de",
+      "normalizedPromptSha256": "ce03f247772b1fffdb7693b2166300350817b7c239d7ca230c50a05989a3551c",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 32000,
+          "sha256": "f8d351e2d7e9b0a508629debb7c3ea8a09a1c2d7c0f4179add77b18482136adf"
+        },
+        {
+          "index": 1,
+          "atMs": 33600,
+          "sha256": "bc3a8a97816f8d7cda8156f3519296c961eadbc391d426795b919636d1329c65"
+        },
+        {
+          "index": 2,
+          "atMs": 35200,
+          "sha256": "58881d2eb60ec78fb5b47de821b536f06b124ca298aa60614fb3534e74f03aee"
+        },
+        {
+          "index": 3,
+          "atMs": 36800,
+          "sha256": "298fa20c723299b27d568e30673c73bd5af01db66025cdee62318e6938da3a86"
+        },
+        {
+          "index": 4,
+          "atMs": 38400,
+          "sha256": "aa892e7ae9c0b1436d57d5f0eb6298c0cd64a5b26f95a4b846ba7200c3da0e40"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-15",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6267,
+          "loadMs": 8,
+          "promptEvalMs": 2917,
+          "evalMs": 3171,
+          "promptTokens": 1980,
+          "evalTokens": 195,
+          "rawNs": {
+            "total_duration": 6266715083,
+            "load_duration": 8120417,
+            "prompt_eval_duration": 2917336000,
+            "eval_duration": 3171376000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001344000000244705,
+          "requestMs": 6271.598515
+        }
+      ],
+      "promptSha256": "d85b0b01f8f2046ad135977ef92e6d1875486c0c45521944ede710821ebc4b24",
+      "normalizedPromptSha256": "061867aa6a17e8aa3814efe0dfcb6f5317774fb60a5ae77574966bf89c7e50b1",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 120000,
+          "sha256": "3c3b4002459cdd51d3497c4c48ef59e0eea11c0e1ef50c6b38442ca35c20971b"
+        },
+        {
+          "index": 1,
+          "atMs": 121600,
+          "sha256": "a2ecd22b953b7433fae2a160ec06424f69ab587c3cb1dce5c6e247184bfd41b1"
+        },
+        {
+          "index": 2,
+          "atMs": 123200,
+          "sha256": "0922ba57bca36fc1ae764ba47a17a9c95e8a153c947400a96049de81873db9eb"
+        },
+        {
+          "index": 3,
+          "atMs": 124800,
+          "sha256": "fc992677a77015bd4daff9ffab769f60d50c7ee3498eca85795e3516c3105bef"
+        },
+        {
+          "index": 4,
+          "atMs": 126400,
+          "sha256": "c2d534ea2d19fdd13ac966262bdb6c373e5b751e54c7991a591591d2a0263078"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-16",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6327,
+          "loadMs": 8,
+          "promptEvalMs": 2917,
+          "evalMs": 3249,
+          "promptTokens": 1980,
+          "evalTokens": 199,
+          "rawNs": {
+            "total_duration": 6327296061,
+            "load_duration": 7853055,
+            "prompt_eval_duration": 2917416000,
+            "eval_duration": 3249407000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0033760000005713664,
+          "requestMs": 6332.607175999998
+        }
+      ],
+      "promptSha256": "4b01a6bb356585e0296b35143ae9bee0c00f5d23ef550b93c7a01be55254986e",
+      "normalizedPromptSha256": "db14c149d65ab7f292874f77575d5cc6c9eb263cc313546014d250b0169cada9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 128000,
+          "sha256": "1ac0dd14c7b5dbf2b9e883b06584a1eab9851dc788e95539f868b2786a894a35"
+        },
+        {
+          "index": 1,
+          "atMs": 129600,
+          "sha256": "3c2d555f689f61d5b28fa53456d75d4e6ee6670818315215f35fc48b9c7dad75"
+        },
+        {
+          "index": 2,
+          "atMs": 131200,
+          "sha256": "0526d4ed1550390588e7c886f5dd5e2373574524216455b992a6be9ab7987828"
+        },
+        {
+          "index": 3,
+          "atMs": 132800,
+          "sha256": "093a1ffdc75daa114e720ee3f982f758216cc521a2f7fd76ff022d68727d77e6"
+        },
+        {
+          "index": 4,
+          "atMs": 134400,
+          "sha256": "8d9a0b25b24c03c462ad9c81754b131e3a52e358340b641b5ffd2c1ddcb9e250"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-26",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5601,
+          "loadMs": 5,
+          "promptEvalMs": 2929,
+          "evalMs": 2540,
+          "promptTokens": 1980,
+          "evalTokens": 154,
+          "rawNs": {
+            "total_duration": 5601149658,
+            "load_duration": 5085705,
+            "prompt_eval_duration": 2929077000,
+            "eval_duration": 2539812000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0013599999983853195,
+          "requestMs": 5605.0255130000005
+        }
+      ],
+      "promptSha256": "01153bb81f4aa83e8b941d03808c71973ea0df0d7d63430989f3c2ceebff59ef",
+      "normalizedPromptSha256": "05c67bfa94812f3615defd5619d9bfeca6c61967a79fbea13a07e8e0a0793d5a",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 208000,
+          "sha256": "805a128ff25053922112ba0f5c98884b34da9b60ae5bc61b5bbafece2334a7de"
+        },
+        {
+          "index": 1,
+          "atMs": 209600,
+          "sha256": "d71581b89f32073098da2cddaeb033a8e5d9f477cbcdc7334a912b0e9821da37"
+        },
+        {
+          "index": 2,
+          "atMs": 211200,
+          "sha256": "17e8a1a664ba0b560a972cdb7f2433651e8095e670d9e45a061be38b74390cd8"
+        },
+        {
+          "index": 3,
+          "atMs": 212800,
+          "sha256": "2b0d7db8d3533d9c274006b23a054f9eaf4352f2d4a499a0c0ad104df46fcc68"
+        },
+        {
+          "index": 4,
+          "atMs": 214400,
+          "sha256": "77008485ab290b44b1ec84c71258db4b3f947a1e98d7f6606c4bf3f32c297701"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5710,
+          "loadMs": 7,
+          "promptEvalMs": 2920,
+          "evalMs": 2607,
+          "promptTokens": 1980,
+          "evalTokens": 158,
+          "rawNs": {
+            "total_duration": 5710466700,
+            "load_duration": 7187546,
+            "prompt_eval_duration": 2920479000,
+            "eval_duration": 2607099000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0032959999953163788,
+          "requestMs": 5715.468356999998
+        }
+      ],
+      "promptSha256": "03948d1a0676e5bb882a84ada95f4e5a6616e4aeae9a0551e8e018de76bf1e28",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "6f8845c7675472c574e261159ee58a3d3d3f1787cb40ede37e167e6e15bf7d00"
+        },
+        {
+          "index": 1,
+          "atMs": 217600,
+          "sha256": "8afe357222443357bf01401aa2554da1960563bde309d6154227546dd2c42201"
+        },
+        {
+          "index": 2,
+          "atMs": 219200,
+          "sha256": "39d9087908e6f07c2bb6e1287c59549fe17696329b9af647e2e2a472ecc866e3"
+        },
+        {
+          "index": 3,
+          "atMs": 220800,
+          "sha256": "4c95e31f0e877294dba6733b4315fab1f9c1bafd0c9e9bca6e19bc9389ed7466"
+        },
+        {
+          "index": 4,
+          "atMs": 222400,
+          "sha256": "571e4e2a2535c535bf18336f64d78b2ac61362458c1c21f9d6847e6a6de46f49"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6180,
+          "loadMs": 6,
+          "promptEvalMs": 2919,
+          "evalMs": 3112,
+          "promptTokens": 1980,
+          "evalTokens": 190,
+          "rawNs": {
+            "total_duration": 6180181938,
+            "load_duration": 5513340,
+            "prompt_eval_duration": 2918758000,
+            "eval_duration": 3111807000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0015039999998407438,
+          "requestMs": 6184.4750769999955
+        }
+      ],
+      "promptSha256": "7b71683bb1c3c255a7df70f43f6076febedeaf6e680dfbec73b21a31d47fbe84",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "dda6546e66eb396145fac07b824df80ecf570ef06484968fbf2f4c526e346bdc"
+        },
+        {
+          "index": 1,
+          "atMs": 265600,
+          "sha256": "f501236c449abba890b6b3ac7e37c1990e3806644e7abbf6bf4c9542e526b196"
+        },
+        {
+          "index": 2,
+          "atMs": 267200,
+          "sha256": "c009ee81264edfb5c2f2fbea57d3afbefde2945cdebb089d4c6f971c290ebd2f"
+        },
+        {
+          "index": 3,
+          "atMs": 268800,
+          "sha256": "9854dcd0810d85faa977beb858beee14f6dca671193b60f0476ade7bba66f2ab"
+        },
+        {
+          "index": 4,
+          "atMs": 270400,
+          "sha256": "3337f7b7cf115ddb83edb686ade2297fd5b63b8808b17529f82a530f87e8d0b4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6099,
+          "loadMs": 7,
+          "promptEvalMs": 2929,
+          "evalMs": 3006,
+          "promptTokens": 1980,
+          "evalTokens": 182,
+          "rawNs": {
+            "total_duration": 6099157042,
+            "load_duration": 7116233,
+            "prompt_eval_duration": 2929162000,
+            "eval_duration": 3005658000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.004287999996449798,
+          "requestMs": 6104.425628999998
+        }
+      ],
+      "promptSha256": "2cf394af840bfa98ddd5322125af6e6df014ac3e325e655591c1a7126709980d",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "21f0cc0fe0cf02196289d12c9eae2dcda7e43b43e20c027065e684f3a2b8bbea"
+        },
+        {
+          "index": 1,
+          "atMs": 273600,
+          "sha256": "57e9a8f8f122e9acd865106c30071ca12897300e15e024ed62d8bbcb41601bb9"
+        },
+        {
+          "index": 2,
+          "atMs": 275200,
+          "sha256": "99c91a5f44df81836916336eeb549844e38d58dc84a472b6f9249c363fbd28d1"
+        },
+        {
+          "index": 3,
+          "atMs": 276800,
+          "sha256": "8e1574bab45ed2be1c4608fdebb910039c05eebf3cbf28bb1ac739b689689f31"
+        },
+        {
+          "index": 4,
+          "atMs": 278400,
+          "sha256": "d98fbf26cb253a87549a2c66df82eb4a49bf191d2abecee733dd5c3e23a37b33"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-44",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5340,
+          "loadMs": 6,
+          "promptEvalMs": 2930,
+          "evalMs": 2237,
+          "promptTokens": 1980,
+          "evalTokens": 135,
+          "rawNs": {
+            "total_duration": 5340132444,
+            "load_duration": 6455428,
+            "prompt_eval_duration": 2930063000,
+            "eval_duration": 2237017000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.005984000003081746,
+          "requestMs": 5345.136419000002
+        }
+      ],
+      "promptSha256": "3344fdc2b5dc8bcc5b69bca22564230dc0018c37bea713e1b5790b44408e0029",
+      "normalizedPromptSha256": "8e44de0c3b2249a25716fa0b64cbfea05f74456d366bdf43210a7f398df010d7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 352000,
+          "sha256": "7168823fed3d507c2f8bb0c914189c94658ade11d620084ea63845ab46896a44"
+        },
+        {
+          "index": 1,
+          "atMs": 353600,
+          "sha256": "d096cee0b76be823e689563a97bfc30cdedf706be7c2692c04fb9d6f635b75f5"
+        },
+        {
+          "index": 2,
+          "atMs": 355200,
+          "sha256": "79cbcf28d5a34108533c189b01a7c184a6b2980b4e21246465a7019061df7e75"
+        },
+        {
+          "index": 3,
+          "atMs": 356800,
+          "sha256": "7b74379a42949f63118ddd8802557cf1ca6fde31e7ea3c6b7a4ecdcce868857a"
+        },
+        {
+          "index": 4,
+          "atMs": 358400,
+          "sha256": "0c29b86a9427ebb6d0beebba19ed454ceb1035547aae593544fa2cad622dc3f4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-45",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5559,
+          "loadMs": 5,
+          "promptEvalMs": 2920,
+          "evalMs": 2513,
+          "promptTokens": 1980,
+          "evalTokens": 153,
+          "rawNs": {
+            "total_duration": 5558718189,
+            "load_duration": 5060969,
+            "prompt_eval_duration": 2920429000,
+            "eval_duration": 2513493000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001856000002590008,
+          "requestMs": 5563.170849000002
+        }
+      ],
+      "promptSha256": "29c52832eae94e54f23b69757d5c19643d18f3c344545ca535cce9f5d12f0a79",
+      "normalizedPromptSha256": "2041de466b552ea7ce5644633998c32e172d02177a33df404ed90f9ac9a72906",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 360000,
+          "sha256": "1de315f42a379ae68f2a0ede675de2bcec228d681682353ff1963dfb8bd7bdca"
+        },
+        {
+          "index": 1,
+          "atMs": 361600,
+          "sha256": "a39e56e13ecc08d7063878fa54fb616ae3c3561807b300fda550dbe7943beed7"
+        },
+        {
+          "index": 2,
+          "atMs": 363200,
+          "sha256": "5652e98b78b16ad95ea049639369fd97ea0e2de9546272a325e7f4d065104b53"
+        },
+        {
+          "index": 3,
+          "atMs": 364800,
+          "sha256": "f652950e2694126020b1e8dc2e2f25d803bd73a8c0feed787d03cc811f40387c"
+        },
+        {
+          "index": 4,
+          "atMs": 366400,
+          "sha256": "701ce8962faef841ae0dd9c9e0147f5f06f6586f321d7b2e730f4612243a41bc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "kennedy-video-51",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6173,
+          "loadMs": 7,
+          "promptEvalMs": 2932,
+          "evalMs": 3067,
+          "promptTokens": 1980,
+          "evalTokens": 186,
+          "rawNs": {
+            "total_duration": 6172595969,
+            "load_duration": 6816326,
+            "prompt_eval_duration": 2931997000,
+            "eval_duration": 3066743000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0021600000036414713,
+          "requestMs": 6176.9937969999955
+        }
+      ],
+      "promptSha256": "5ce90b6d6b9561c99fba27b0ba7e0264078d8e147a779ae66b760070696852e1",
+      "normalizedPromptSha256": "11e262db1045c5cc1c96107c32f459fda51c52b331c6b8bd3159de947fb1bb8f",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 408000,
+          "sha256": "8b2cd162a045970a4b04d1ef123f9539ee30803354c77f5325ac3073ba318a1d"
+        },
+        {
+          "index": 1,
+          "atMs": 409600,
+          "sha256": "27ca3653fe23b6cbe1a46573c3d7d0b37934668dad2f45b05ff9c8768a6a377e"
+        },
+        {
+          "index": 2,
+          "atMs": 411200,
+          "sha256": "feb79e45fb26046089600801627800392a33fbd66bc9d09ae83c7db0154163ae"
+        },
+        {
+          "index": 3,
+          "atMs": 412800,
+          "sha256": "72d90c43ff45b9ecd8c65f289b63dde7305019b3424893c8f0e61e4da5dcaa41"
+        },
+        {
+          "index": 4,
+          "atMs": 414400,
+          "sha256": "d44b1bf0bb4df9faa042720f65a6a1fad70851a2daa3325ee95ef8734612295b"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5470,
+          "loadMs": 3,
+          "promptEvalMs": 2921,
+          "evalMs": 2412,
+          "promptTokens": 1960,
+          "evalTokens": 145,
+          "rawNs": {
+            "total_duration": 5469950875,
+            "load_duration": 3022697,
+            "prompt_eval_duration": 2920849000,
+            "eval_duration": 2412231000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0014879999944241717,
+          "requestMs": 5471.672952000008
+        }
+      ],
+      "promptSha256": "c18bfe9f86413fa203b9e3e7fa6c87ba962bb84c9560d6aaac0816583cc0e382",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "27ea2fb72da5118179eb39f2ccdb01014d62a9f1d7051b755a8f34752d216e6c"
+        },
+        {
+          "index": 1,
+          "atMs": 1600,
+          "sha256": "d8486fad011c8497b8d08ea69a9550015d2950c60d08fc579faad768f1c379f9"
+        },
+        {
+          "index": 2,
+          "atMs": 3200,
+          "sha256": "32ec627f2bc8ab9b95f4d60ad9d376aa6326b13765c909d2c1599b97dcd9e86e"
+        },
+        {
+          "index": 3,
+          "atMs": 4800,
+          "sha256": "2ca07bb52d2890d2a88c81d5675d770fbf19839d306b44ee92ba5e95641f2b4f"
+        },
+        {
+          "index": 4,
+          "atMs": 6400,
+          "sha256": "4faee3f21c9ca625341def694193d6221251add43dac1c17c0be7504f3ed5c88"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-1",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5999,
+          "loadMs": 3,
+          "promptEvalMs": 2916,
+          "evalMs": 2960,
+          "promptTokens": 1970,
+          "evalTokens": 179,
+          "rawNs": {
+            "total_duration": 5998813136,
+            "load_duration": 3311291,
+            "prompt_eval_duration": 2916344000,
+            "eval_duration": 2959676000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0014559999981429428,
+          "requestMs": 6001.12900999999
+        }
+      ],
+      "promptSha256": "e3cd1759cd9405b9cde660bd89aa2c72c27434325878bbdba7e80c0eef353bb6",
+      "normalizedPromptSha256": "9b8139248004bbe61dfaeb2378113c41ed7af0c584a4843903d2d69d80da2722",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 8000,
+          "sha256": "288430596165ba4f429a25303d2307b26cd6d4c2c22477c95607bbb70523a8f0"
+        },
+        {
+          "index": 1,
+          "atMs": 9600,
+          "sha256": "5846e5c3d709517b1fb69261aa4668835b085c4f2d3663f007307ed15b5b2b80"
+        },
+        {
+          "index": 2,
+          "atMs": 11200,
+          "sha256": "7ee2a4cacc8a14cb58cc617c6ce904c7bc646fbbce8907e77076bd1addb6cbb9"
+        },
+        {
+          "index": 3,
+          "atMs": 12800,
+          "sha256": "78129edc28f2af5ac6669d2c703b0436fef3beca1b0a24812c716edd6679befc"
+        },
+        {
+          "index": 4,
+          "atMs": 14400,
+          "sha256": "75f418137db1022ca70e5781ae4c7c116c986ab799ca9e748d0fe9e006914c9f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-8",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5985,
+          "loadMs": 5,
+          "promptEvalMs": 2923,
+          "evalMs": 2934,
+          "promptTokens": 1973,
+          "evalTokens": 178,
+          "rawNs": {
+            "total_duration": 5985368981,
+            "load_duration": 5063080,
+            "prompt_eval_duration": 2922884000,
+            "eval_duration": 2933865000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0030879999976605177,
+          "requestMs": 5988.996562
+        }
+      ],
+      "promptSha256": "ade39c75ce67c2f34e41d3e96eff93e1fe43c487384b09048d26e2f4b054deba",
+      "normalizedPromptSha256": "1e0d85237b1912fccdcb12a32b0cd426f6031a6458c9c00f8829a376159f8212",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 64000,
+          "sha256": "7989439076eb6a6fcc52fe29615b2e38e858fc5606d16e740c4d3e4ad61e6584"
+        },
+        {
+          "index": 1,
+          "atMs": 65600,
+          "sha256": "5a36baee785fc9b69a83af5c828c662952ad5349d5d3e88b562a3c186cbf7018"
+        },
+        {
+          "index": 2,
+          "atMs": 67200,
+          "sha256": "c315a3fc80fc0fc1386aff5bc1c8b7d169be6d12441646fdd62dbf53ba77cb9c"
+        },
+        {
+          "index": 3,
+          "atMs": 68800,
+          "sha256": "da877cd6f8bf9f917db42b4441cd64628a6e7c88f0342e74c8ab83b7e527c37b"
+        },
+        {
+          "index": 4,
+          "atMs": 70400,
+          "sha256": "e63526d657090ec0ed04b6f2d0b23efe525ecc1dfa4569f943d3865102a16300"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-9",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5996,
+          "loadMs": 6,
+          "promptEvalMs": 2937,
+          "evalMs": 2900,
+          "promptTokens": 1973,
+          "evalTokens": 176,
+          "rawNs": {
+            "total_duration": 5995690025,
+            "load_duration": 5520173,
+            "prompt_eval_duration": 2937453000,
+            "eval_duration": 2900172000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0026720000023487955,
+          "requestMs": 5999.110260000001
+        }
+      ],
+      "promptSha256": "3f062b99b4426467c18504c3f4e72d4003023612c5efab2c2a800f6e919852f5",
+      "normalizedPromptSha256": "c758f28535434922b5ace218b587d00907ff355465a613aebc0e50248af4ba73",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 72000,
+          "sha256": "3f6c6f83e83eeaf1dceb033033fb71d1da93d9171c8eec7af53422578da3653a"
+        },
+        {
+          "index": 1,
+          "atMs": 73600,
+          "sha256": "d7426141128b871f3f583d02b2c0f1fb643565dc5390681be72ed43e9f80180d"
+        },
+        {
+          "index": 2,
+          "atMs": 75200,
+          "sha256": "d8c620df83d8e9ac6bc0b1b32d99f45de1da8d79c416f4c6dd9e52d3e2ce0427"
+        },
+        {
+          "index": 3,
+          "atMs": 76800,
+          "sha256": "22bc0264ae98ab0bd7db2110bab75a42c2dd745d2da4c8010c057a02ff2e3941"
+        },
+        {
+          "index": 4,
+          "atMs": 78400,
+          "sha256": "d0cc59a098613aeefe9651dc6a5c1abd555214d081afb32d27efb7e474cb653a"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-23",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6018,
+          "loadMs": 2,
+          "promptEvalMs": 2938,
+          "evalMs": 2939,
+          "promptTokens": 1980,
+          "evalTokens": 179,
+          "rawNs": {
+            "total_duration": 6018268366,
+            "load_duration": 2430563,
+            "prompt_eval_duration": 2937944000,
+            "eval_duration": 2938958000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002912000010837801,
+          "requestMs": 6020.9584040000045
+        }
+      ],
+      "promptSha256": "f30fe8a74faac268a713bd15d72864f630ae2d80155856ee0289961141a889b1",
+      "normalizedPromptSha256": "c48adaf86ba573c3d4ab7b9af33f7456efd89d881ea79f14dccfcc71c2d83d09",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 184000,
+          "sha256": "43474dea4b471afc4ef47ebb75fc8d732ae3181bf4b044fb67827a9354929637"
+        },
+        {
+          "index": 1,
+          "atMs": 185600,
+          "sha256": "f367dfc4849fc8eef1285652302cee7d192699e839c83a902c00157de4002a76"
+        },
+        {
+          "index": 2,
+          "atMs": 187200,
+          "sha256": "13616a035b5cc7dc62271857805b3d864c1bcdfbea7c073a6eb1b9cd605294c0"
+        },
+        {
+          "index": 3,
+          "atMs": 188800,
+          "sha256": "0fd3f023e605c31e628fa42738048b4de6902c1e17898bafa835f6fe665f17a0"
+        },
+        {
+          "index": 4,
+          "atMs": 190400,
+          "sha256": "8b635293dc5f18ef5f0192175eed5c146992f9355f008b7d345a885f4f3bdf5e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-24",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6322,
+          "loadMs": 4,
+          "promptEvalMs": 2935,
+          "evalMs": 3250,
+          "promptTokens": 1980,
+          "evalTokens": 198,
+          "rawNs": {
+            "total_duration": 6322421424,
+            "load_duration": 3668429,
+            "prompt_eval_duration": 2935106000,
+            "eval_duration": 3250117000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001951999991433695,
+          "requestMs": 6324.80634000001
+        }
+      ],
+      "promptSha256": "ff7d408132fee36b47bf2e07b9f78315a2b72b41e6fe55d398804dbf49995845",
+      "normalizedPromptSha256": "d1607bf900e59ee41c22685e9c0ac0463c1e7df6a646700aede6486d9bc57831",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 192000,
+          "sha256": "f6ea8056f42d99a6308d5ef4e3fb943abb75952696c1f2e3c3ddee4a6eb287a5"
+        },
+        {
+          "index": 1,
+          "atMs": 193600,
+          "sha256": "7bd79573d108b4cf248df7750fec82f9ad5947aee33e68c81aec052e830cdbf8"
+        },
+        {
+          "index": 2,
+          "atMs": 195200,
+          "sha256": "39e9ffa30ccb4202f3c8a126b9aa0220ec8b2ea15801cc7b8a51ec4f264434c3"
+        },
+        {
+          "index": 3,
+          "atMs": 196800,
+          "sha256": "bbe17ddf0c6a3d81e0c387029511c561ccb5a442a9b65fd6a1f8cb6fc0ea8cc6"
+        },
+        {
+          "index": 4,
+          "atMs": 198400,
+          "sha256": "8982883844b53013c1cae8b255acde307a315864473af9d36e534e9e824ac705"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6471,
+          "loadMs": 3,
+          "promptEvalMs": 2924,
+          "evalMs": 3394,
+          "promptTokens": 1980,
+          "evalTokens": 207,
+          "rawNs": {
+            "total_duration": 6471394982,
+            "load_duration": 3129977,
+            "prompt_eval_duration": 2924266000,
+            "eval_duration": 3393818000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0023680000012973323,
+          "requestMs": 6473.7449849999975
+        }
+      ],
+      "promptSha256": "03948d1a0676e5bb882a84ada95f4e5a6616e4aeae9a0551e8e018de76bf1e28",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "c738a7140ade2a289feb9f48b2231a31479d945506f61c062061fab596a549f9"
+        },
+        {
+          "index": 1,
+          "atMs": 217600,
+          "sha256": "ffd170e3c2e30fda276e7d00b5d6039c40bf60031cbef33bc9344e82212d130e"
+        },
+        {
+          "index": 2,
+          "atMs": 219200,
+          "sha256": "4df6232c5120be54a68dc30f557b9e1934173ef9b0a926a7f1f920f0a9cc8701"
+        },
+        {
+          "index": 3,
+          "atMs": 220800,
+          "sha256": "5929718587b62937bb428ca804e1bac7c11c57ca8377f6a3ab9278eadfae35f0"
+        },
+        {
+          "index": 4,
+          "atMs": 222400,
+          "sha256": "ecf8e3e6b836a1c04f410105f17c0912f2f15b36e2c735af2015e690e7390cc8"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-28",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6358,
+          "loadMs": 3,
+          "promptEvalMs": 2914,
+          "evalMs": 3277,
+          "promptTokens": 1980,
+          "evalTokens": 200,
+          "rawNs": {
+            "total_duration": 6357962873,
+            "load_duration": 2660677,
+            "prompt_eval_duration": 2914010000,
+            "eval_duration": 3276785000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0022560000070370734,
+          "requestMs": 6360.842464000001
+        }
+      ],
+      "promptSha256": "799de4d8066c0cc757316ee649aaef995a56c9d1df3840e5c05891d402d2641d",
+      "normalizedPromptSha256": "aed73ec8d6f8eb70b088687c0d1761f129194105dd05d5f8cf718f050f0e90a7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 224000,
+          "sha256": "231b08d589c5963dd8e7686b719910cd1db580750b9d1e8083b2430802c52f7f"
+        },
+        {
+          "index": 1,
+          "atMs": 225600,
+          "sha256": "6a47ff365f9f4f651fa07c817d8ce9c5535552e32170fbb6bc2360eb24de9f1e"
+        },
+        {
+          "index": 2,
+          "atMs": 227200,
+          "sha256": "2d7691fe9a63d44411c8200683171d5f4194bb6781621125841142a2fe36337d"
+        },
+        {
+          "index": 3,
+          "atMs": 228800,
+          "sha256": "a009291d070117543f5bf6701cba1b780fa095cb7924bdac790d561b4df381a8"
+        },
+        {
+          "index": 4,
+          "atMs": 230400,
+          "sha256": "e73765f76093f6671fb31727a156da53b08d562465f7ca163489df88d5ea338e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 7065,
+          "loadMs": 3,
+          "promptEvalMs": 2926,
+          "evalMs": 4013,
+          "promptTokens": 1980,
+          "evalTokens": 245,
+          "rawNs": {
+            "total_duration": 7065180629,
+            "load_duration": 3346907,
+            "prompt_eval_duration": 2925503000,
+            "eval_duration": 4013499000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0028000000020256266,
+          "requestMs": 7086.848496999999
+        }
+      ],
+      "promptSha256": "7b71683bb1c3c255a7df70f43f6076febedeaf6e680dfbec73b21a31d47fbe84",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "0c5259fbc33c1358ea6d10217d6eefa49b825e8ee9a1052537603929dc7d3d24"
+        },
+        {
+          "index": 1,
+          "atMs": 265600,
+          "sha256": "891e39b27feab8d971f49d9cf198310275660886ca8b2043314466c32fbe9ecf"
+        },
+        {
+          "index": 2,
+          "atMs": 267200,
+          "sha256": "90d3898ec60f143ba485dae968ae201cdbb4ded26a4bcbee83345c092d4ed867"
+        },
+        {
+          "index": 3,
+          "atMs": 268800,
+          "sha256": "0ec40efe1d99f0ff832a11a4e99556a6aae7a47b4d6f4d51304a149b3102cd0a"
+        },
+        {
+          "index": 4,
+          "atMs": 270400,
+          "sha256": "ab9c0a5deb9391e07dfaf00b06b2ac74b4f70710b4230a5715e2a53e46f65f53"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5809,
+          "loadMs": 5,
+          "promptEvalMs": 2919,
+          "evalMs": 2764,
+          "promptTokens": 1980,
+          "evalTokens": 166,
+          "rawNs": {
+            "total_duration": 5809342989,
+            "load_duration": 4514548,
+            "prompt_eval_duration": 2919280000,
+            "eval_duration": 2764110000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0022880000033183023,
+          "requestMs": 5812.603654000006
+        }
+      ],
+      "promptSha256": "2cf394af840bfa98ddd5322125af6e6df014ac3e325e655591c1a7126709980d",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "a7c429109365f84b5660d9cec8eb45252f249f8a7cc0a21ac1f1f898bfd7872f"
+        },
+        {
+          "index": 1,
+          "atMs": 273600,
+          "sha256": "9b76f9c89d9a7d9db3fc917f62e59644cd10c6e5e76128f88f77554630bcf17b"
+        },
+        {
+          "index": 2,
+          "atMs": 275200,
+          "sha256": "6ff95fcdc26e0d1e218a730edc83fec5df0a6b2498750b6749d3e2b174f7e199"
+        },
+        {
+          "index": 3,
+          "atMs": 276800,
+          "sha256": "b92722d339bb14ac4b83c1151d57e2b2a5b2099f779dedaecbaa40081b6ce0ab"
+        },
+        {
+          "index": 4,
+          "atMs": 278400,
+          "sha256": "1fe55edf78dd5c0e500886b263367fe390a23998148214ad71af663ae8127772"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-46",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6206,
+          "loadMs": 6,
+          "promptEvalMs": 2923,
+          "evalMs": 3111,
+          "promptTokens": 1980,
+          "evalTokens": 190,
+          "rawNs": {
+            "total_duration": 6205744729,
+            "load_duration": 5540620,
+            "prompt_eval_duration": 2923344000,
+            "eval_duration": 3110694000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0029280000017024577,
+          "requestMs": 6209.791689000005
+        }
+      ],
+      "promptSha256": "1db20669be7255d6b4dd6ca3f46e45a053cd47ffca485bac02c156fb03548307",
+      "normalizedPromptSha256": "fa9f9574d9f9390851ea93495a953f5d5b43fae2041a8f84c5243027a2a8bd31",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 368000,
+          "sha256": "da4b4b83a2a698a864713e0936733be6f975f9827010c91ae133e3a70c050d2b"
+        },
+        {
+          "index": 1,
+          "atMs": 369600,
+          "sha256": "e0834882e2a7366163d2c51caec19c7ef0f7dc8a107ff407b6a03f66e938fe98"
+        },
+        {
+          "index": 2,
+          "atMs": 371200,
+          "sha256": "64a31e48cc314d86192c69b4e02688bd6a8e21a06cba8afab2e3159e17301fe0"
+        },
+        {
+          "index": 3,
+          "atMs": 372800,
+          "sha256": "ddf0f78b54cb750ed67fc49e4fec0f8d719003bf093925255b7be7697cd12f5a"
+        },
+        {
+          "index": 4,
+          "atMs": 374400,
+          "sha256": "78e0a5cadef05accaadba2adfb18d78f1a48963e47ea36ee22bb314ee4fd3e03"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-01-A",
+      "arm": "A",
+      "id": "spring-video-56",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5317,
+          "loadMs": 3,
+          "promptEvalMs": 2920,
+          "evalMs": 2288,
+          "promptTokens": 1980,
+          "evalTokens": 138,
+          "rawNs": {
+            "total_duration": 5317308870,
+            "load_duration": 3101817,
+            "prompt_eval_duration": 2920051000,
+            "eval_duration": 2288423000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0027359999949112535,
+          "requestMs": 5320.652369000018
+        }
+      ],
+      "promptSha256": "ef4cbcb6c859a4e77a183de65160d38bb845f7fd0cd42aed72aef6069ff80ebc",
+      "normalizedPromptSha256": "b5753792bc490d69a75610c7db82d467431f4075dececd0cf80dbc9d3d254cd9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 448000,
+          "sha256": "5d49bfa881050441246d514625d4c299bdb8382e06bf4384bcdb749214f365d9"
+        },
+        {
+          "index": 1,
+          "atMs": 449600,
+          "sha256": "5bd9ea21372d33fa16d51e2d4ebf214ed4d5e805e7b1993e57ce6133651d1cd6"
+        },
+        {
+          "index": 2,
+          "atMs": 451200,
+          "sha256": "734db0f17d6c623aa2c728604ec08477659e6f8360f36ac2107ac4d879dc3b32"
+        },
+        {
+          "index": 3,
+          "atMs": 452800,
+          "sha256": "56e3a7a9d046846f5b57be862f37abcce8f7229107b5ccaa4a25b0591031efbf"
+        },
+        {
+          "index": 4,
+          "atMs": 454400,
+          "sha256": "de6f476b83b47115f39a7b20d330d7197b4e9f6d0bdd3f884be9b8890ead00e1"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4349,
+          "loadMs": 4,
+          "promptEvalMs": 1812,
+          "evalMs": 2394,
+          "promptTokens": 1410,
+          "evalTokens": 147,
+          "rawNs": {
+            "total_duration": 4349308147,
+            "load_duration": 3577805,
+            "prompt_eval_duration": 1811830000,
+            "eval_duration": 2393599000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.07073600000001079,
+          "requestMs": 4360.1282009999995
+        }
+      ],
+      "promptSha256": "3aa02606cb2a423f53739d6044e0620b181d59dc03215f702472d3df89f3f6d9",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "c6baada37383d63142ba902420ee9e3c287e7d774cd96f7dac8dcd9d837cceb1"
+        },
+        {
+          "index": 1,
+          "atMs": 3200,
+          "sha256": "703721ad3d1fcb516d9f106ebaf3bc791d1e8d150ce6e5b538ccd13512142936"
+        },
+        {
+          "index": 2,
+          "atMs": 6400,
+          "sha256": "2ade9cb835208e6653e6e5b1a59b2bd4995973c1309c19c8d0f031ebe4b6c621"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-3",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5173,
+          "loadMs": 3,
+          "promptEvalMs": 1814,
+          "evalMs": 3233,
+          "promptTokens": 1421,
+          "evalTokens": 199,
+          "rawNs": {
+            "total_duration": 5172607309,
+            "load_duration": 3121193,
+            "prompt_eval_duration": 1813995000,
+            "eval_duration": 3232889000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0028640000000450527,
+          "requestMs": 5175.974969000001
+        }
+      ],
+      "promptSha256": "906c43fc107c6b49a583865ab9daffdbe410d90635a37447193bc94c3343114b",
+      "normalizedPromptSha256": "ed3fefe99ce6f63f0c23386518045ae0ef3d352dc89328c1d4f90e7481206155",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 24000,
+          "sha256": "eb427a48793b81b74ff2dc261be0a9c3a2d2e5143a5cfd09e3fe7ed34636d69b"
+        },
+        {
+          "index": 1,
+          "atMs": 27200,
+          "sha256": "97fce571561a634d66bd7132e3f5a5e168f162d220d776e578d1a83083b0b80f"
+        },
+        {
+          "index": 2,
+          "atMs": 30400,
+          "sha256": "9f951b6449ce5b3b640154db2318d9d2d4c9eb4ddd708b7d8bf36da44691c4fc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-4",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4206,
+          "loadMs": 4,
+          "promptEvalMs": 1811,
+          "evalMs": 2283,
+          "promptTokens": 1421,
+          "evalTokens": 138,
+          "rawNs": {
+            "total_duration": 4206173936,
+            "load_duration": 4215378,
+            "prompt_eval_duration": 1810942000,
+            "eval_duration": 2282618000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.015183999999862863,
+          "requestMs": 4210.505762000001
+        }
+      ],
+      "promptSha256": "a31858b8b3446f9ee658599e8f8d464e3968c6c6403870d87349884a461b7f03",
+      "normalizedPromptSha256": "ce03f247772b1fffdb7693b2166300350817b7c239d7ca230c50a05989a3551c",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 32000,
+          "sha256": "f8d351e2d7e9b0a508629debb7c3ea8a09a1c2d7c0f4179add77b18482136adf"
+        },
+        {
+          "index": 1,
+          "atMs": 35200,
+          "sha256": "58881d2eb60ec78fb5b47de821b536f06b124ca298aa60614fb3534e74f03aee"
+        },
+        {
+          "index": 2,
+          "atMs": 38400,
+          "sha256": "aa892e7ae9c0b1436d57d5f0eb6298c0cd64a5b26f95a4b846ba7200c3da0e40"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-15",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4557,
+          "loadMs": 3,
+          "promptEvalMs": 1820,
+          "evalMs": 2649,
+          "promptTokens": 1426,
+          "evalTokens": 164,
+          "rawNs": {
+            "total_duration": 4556681606,
+            "load_duration": 3391483,
+            "prompt_eval_duration": 1820469000,
+            "eval_duration": 2648835000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002943999999843072,
+          "requestMs": 4560.819239
+        }
+      ],
+      "promptSha256": "a068dfadf6cc33f2091b230b286d085483ca5797af091d7748ad91b2ceae77f3",
+      "normalizedPromptSha256": "061867aa6a17e8aa3814efe0dfcb6f5317774fb60a5ae77574966bf89c7e50b1",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 120000,
+          "sha256": "3c3b4002459cdd51d3497c4c48ef59e0eea11c0e1ef50c6b38442ca35c20971b"
+        },
+        {
+          "index": 1,
+          "atMs": 123200,
+          "sha256": "0922ba57bca36fc1ae764ba47a17a9c95e8a153c947400a96049de81873db9eb"
+        },
+        {
+          "index": 2,
+          "atMs": 126400,
+          "sha256": "c2d534ea2d19fdd13ac966262bdb6c373e5b751e54c7991a591591d2a0263078"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-16",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4513,
+          "loadMs": 3,
+          "promptEvalMs": 1815,
+          "evalMs": 2542,
+          "promptTokens": 1426,
+          "evalTokens": 155,
+          "rawNs": {
+            "total_duration": 4512924827,
+            "load_duration": 3440843,
+            "prompt_eval_duration": 1814561000,
+            "eval_duration": 2542009000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002560000000812579,
+          "requestMs": 4516.912203
+        }
+      ],
+      "promptSha256": "496181efecaf0505e0a78f55b3906c989bb0c5c3839e0b05613b26c644a28bdc",
+      "normalizedPromptSha256": "db14c149d65ab7f292874f77575d5cc6c9eb263cc313546014d250b0169cada9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 128000,
+          "sha256": "1ac0dd14c7b5dbf2b9e883b06584a1eab9851dc788e95539f868b2786a894a35"
+        },
+        {
+          "index": 1,
+          "atMs": 131200,
+          "sha256": "0526d4ed1550390588e7c886f5dd5e2373574524216455b992a6be9ab7987828"
+        },
+        {
+          "index": 2,
+          "atMs": 134400,
+          "sha256": "8d9a0b25b24c03c462ad9c81754b131e3a52e358340b641b5ffd2c1ddcb9e250"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-26",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 3960,
+          "loadMs": 5,
+          "promptEvalMs": 1805,
+          "evalMs": 2047,
+          "promptTokens": 1426,
+          "evalTokens": 125,
+          "rawNs": {
+            "total_duration": 3960180195,
+            "load_duration": 4806278,
+            "prompt_eval_duration": 1805325000,
+            "eval_duration": 2046891000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025439999990339857,
+          "requestMs": 3964.3249810000016
+        }
+      ],
+      "promptSha256": "88e3176ff302bdbff4c87101e4873444563fbee96593438602e00507689bf040",
+      "normalizedPromptSha256": "05c67bfa94812f3615defd5619d9bfeca6c61967a79fbea13a07e8e0a0793d5a",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 208000,
+          "sha256": "805a128ff25053922112ba0f5c98884b34da9b60ae5bc61b5bbafece2334a7de"
+        },
+        {
+          "index": 1,
+          "atMs": 211200,
+          "sha256": "17e8a1a664ba0b560a972cdb7f2433651e8095e670d9e45a061be38b74390cd8"
+        },
+        {
+          "index": 2,
+          "atMs": 214400,
+          "sha256": "77008485ab290b44b1ec84c71258db4b3f947a1e98d7f6606c4bf3f32c297701"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4261,
+          "loadMs": 5,
+          "promptEvalMs": 1814,
+          "evalMs": 2290,
+          "promptTokens": 1426,
+          "evalTokens": 140,
+          "rawNs": {
+            "total_duration": 4261187711,
+            "load_duration": 4703957,
+            "prompt_eval_duration": 1813905000,
+            "eval_duration": 2289922000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025439999990339857,
+          "requestMs": 4265.384209
+        }
+      ],
+      "promptSha256": "83d7bfb8cb4bc9742084e537a19b43d933918969ebd6439ccc39b084e1069ca8",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "6f8845c7675472c574e261159ee58a3d3d3f1787cb40ede37e167e6e15bf7d00"
+        },
+        {
+          "index": 1,
+          "atMs": 219200,
+          "sha256": "39d9087908e6f07c2bb6e1287c59549fe17696329b9af647e2e2a472ecc866e3"
+        },
+        {
+          "index": 2,
+          "atMs": 222400,
+          "sha256": "571e4e2a2535c535bf18336f64d78b2ac61362458c1c21f9d6847e6a6de46f49"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4080,
+          "loadMs": 3,
+          "promptEvalMs": 1814,
+          "evalMs": 2111,
+          "promptTokens": 1426,
+          "evalTokens": 130,
+          "rawNs": {
+            "total_duration": 4079685072,
+            "load_duration": 3275162,
+            "prompt_eval_duration": 1813811000,
+            "eval_duration": 2110521000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.00276799999846844,
+          "requestMs": 4083.631582999995
+        }
+      ],
+      "promptSha256": "943b5093aa180288e79d88f383803c93f950c252c2523f61188ec4aa4c7b239a",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "dda6546e66eb396145fac07b824df80ecf570ef06484968fbf2f4c526e346bdc"
+        },
+        {
+          "index": 1,
+          "atMs": 267200,
+          "sha256": "c009ee81264edfb5c2f2fbea57d3afbefde2945cdebb089d4c6f971c290ebd2f"
+        },
+        {
+          "index": 2,
+          "atMs": 270400,
+          "sha256": "3337f7b7cf115ddb83edb686ade2297fd5b63b8808b17529f82a530f87e8d0b4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4264,
+          "loadMs": 3,
+          "promptEvalMs": 1811,
+          "evalMs": 2338,
+          "promptTokens": 1426,
+          "evalTokens": 143,
+          "rawNs": {
+            "total_duration": 4263699337,
+            "load_duration": 3073321,
+            "prompt_eval_duration": 1810958000,
+            "eval_duration": 2337518000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0019520000059856102,
+          "requestMs": 4266.3173899999965
+        }
+      ],
+      "promptSha256": "af79e64e643c2124ead5bc182d3d014b9edf062560e28cdf8698e9d0a32f8473",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "21f0cc0fe0cf02196289d12c9eae2dcda7e43b43e20c027065e684f3a2b8bbea"
+        },
+        {
+          "index": 1,
+          "atMs": 275200,
+          "sha256": "99c91a5f44df81836916336eeb549844e38d58dc84a472b6f9249c363fbd28d1"
+        },
+        {
+          "index": 2,
+          "atMs": 278400,
+          "sha256": "d98fbf26cb253a87549a2c66df82eb4a49bf191d2abecee733dd5c3e23a37b33"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-44",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4521,
+          "loadMs": 4,
+          "promptEvalMs": 1807,
+          "evalMs": 2578,
+          "promptTokens": 1426,
+          "evalTokens": 158,
+          "rawNs": {
+            "total_duration": 4521194935,
+            "load_duration": 3967983,
+            "prompt_eval_duration": 1806943000,
+            "eval_duration": 2578298000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.007696000000578351,
+          "requestMs": 4524.730067000004
+        }
+      ],
+      "promptSha256": "e196abee7d90c54f4be32b4432e9dc087b0b3d464ae2dd8ba62728f1d48fc158",
+      "normalizedPromptSha256": "8e44de0c3b2249a25716fa0b64cbfea05f74456d366bdf43210a7f398df010d7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 352000,
+          "sha256": "7168823fed3d507c2f8bb0c914189c94658ade11d620084ea63845ab46896a44"
+        },
+        {
+          "index": 1,
+          "atMs": 355200,
+          "sha256": "79cbcf28d5a34108533c189b01a7c184a6b2980b4e21246465a7019061df7e75"
+        },
+        {
+          "index": 2,
+          "atMs": 358400,
+          "sha256": "0c29b86a9427ebb6d0beebba19ed454ceb1035547aae593544fa2cad622dc3f4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-45",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4089,
+          "loadMs": 4,
+          "promptEvalMs": 1817,
+          "evalMs": 2163,
+          "promptTokens": 1426,
+          "evalTokens": 133,
+          "rawNs": {
+            "total_duration": 4089249015,
+            "load_duration": 4209058,
+            "prompt_eval_duration": 1816929000,
+            "eval_duration": 2162502000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0020160000058240257,
+          "requestMs": 4092.4123360000012
+        }
+      ],
+      "promptSha256": "ee3968960928ebe4603c1401f313ec9f5ed9dea18c3f485cc46cc3f71bc9ab68",
+      "normalizedPromptSha256": "2041de466b552ea7ce5644633998c32e172d02177a33df404ed90f9ac9a72906",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 360000,
+          "sha256": "1de315f42a379ae68f2a0ede675de2bcec228d681682353ff1963dfb8bd7bdca"
+        },
+        {
+          "index": 1,
+          "atMs": 363200,
+          "sha256": "5652e98b78b16ad95ea049639369fd97ea0e2de9546272a325e7f4d065104b53"
+        },
+        {
+          "index": 2,
+          "atMs": 366400,
+          "sha256": "701ce8962faef841ae0dd9c9e0147f5f06f6586f321d7b2e730f4612243a41bc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "kennedy-video-51",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4076,
+          "loadMs": 4,
+          "promptEvalMs": 1809,
+          "evalMs": 2153,
+          "promptTokens": 1426,
+          "evalTokens": 133,
+          "rawNs": {
+            "total_duration": 4076001298,
+            "load_duration": 4146673,
+            "prompt_eval_duration": 1809087000,
+            "eval_duration": 2153281000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0017440000010537915,
+          "requestMs": 4078.3506290000005
+        }
+      ],
+      "promptSha256": "18792c09ddcead163d7ae1c5a45afbb137102a37e11fc885b903e176eed65738",
+      "normalizedPromptSha256": "11e262db1045c5cc1c96107c32f459fda51c52b331c6b8bd3159de947fb1bb8f",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 408000,
+          "sha256": "8b2cd162a045970a4b04d1ef123f9539ee30803354c77f5325ac3073ba318a1d"
+        },
+        {
+          "index": 1,
+          "atMs": 411200,
+          "sha256": "feb79e45fb26046089600801627800392a33fbd66bc9d09ae83c7db0154163ae"
+        },
+        {
+          "index": 2,
+          "atMs": 414400,
+          "sha256": "d44b1bf0bb4df9faa042720f65a6a1fad70851a2daa3325ee95ef8734612295b"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4171,
+          "loadMs": 2,
+          "promptEvalMs": 1809,
+          "evalMs": 2270,
+          "promptTokens": 1410,
+          "evalTokens": 139,
+          "rawNs": {
+            "total_duration": 4170750677,
+            "load_duration": 2202449,
+            "prompt_eval_duration": 1809063000,
+            "eval_duration": 2270496000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001631999999517575,
+          "requestMs": 4172.351922000002
+        }
+      ],
+      "promptSha256": "3aa02606cb2a423f53739d6044e0620b181d59dc03215f702472d3df89f3f6d9",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "27ea2fb72da5118179eb39f2ccdb01014d62a9f1d7051b755a8f34752d216e6c"
+        },
+        {
+          "index": 1,
+          "atMs": 3200,
+          "sha256": "32ec627f2bc8ab9b95f4d60ad9d376aa6326b13765c909d2c1599b97dcd9e86e"
+        },
+        {
+          "index": 2,
+          "atMs": 6400,
+          "sha256": "4faee3f21c9ca625341def694193d6221251add43dac1c17c0be7504f3ed5c88"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-1",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4480,
+          "loadMs": 3,
+          "promptEvalMs": 1812,
+          "evalMs": 2553,
+          "promptTokens": 1419,
+          "evalTokens": 156,
+          "rawNs": {
+            "total_duration": 4479979867,
+            "load_duration": 3223865,
+            "prompt_eval_duration": 1811624000,
+            "eval_duration": 2552975000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001631999999517575,
+          "requestMs": 4482.358573999998
+        }
+      ],
+      "promptSha256": "3d785cfe641216ebf15d9e78c6fce2b0762f29d69cfb4c16287e79ff0f773522",
+      "normalizedPromptSha256": "9b8139248004bbe61dfaeb2378113c41ed7af0c584a4843903d2d69d80da2722",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 8000,
+          "sha256": "288430596165ba4f429a25303d2307b26cd6d4c2c22477c95607bbb70523a8f0"
+        },
+        {
+          "index": 1,
+          "atMs": 11200,
+          "sha256": "7ee2a4cacc8a14cb58cc617c6ce904c7bc646fbbce8907e77076bd1addb6cbb9"
+        },
+        {
+          "index": 2,
+          "atMs": 14400,
+          "sha256": "75f418137db1022ca70e5781ae4c7c116c986ab799ca9e748d0fe9e006914c9f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-8",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4924,
+          "loadMs": 4,
+          "promptEvalMs": 1819,
+          "evalMs": 2997,
+          "promptTokens": 1421,
+          "evalTokens": 184,
+          "rawNs": {
+            "total_duration": 4924043882,
+            "load_duration": 3842095,
+            "prompt_eval_duration": 1819334000,
+            "eval_duration": 2996848000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0023519999958807603,
+          "requestMs": 4926.537166000002
+        }
+      ],
+      "promptSha256": "02b813ebb038f3379cbfffdd3a2c975ef1ef1ca4929efb09437d3fccfd2aefd4",
+      "normalizedPromptSha256": "1e0d85237b1912fccdcb12a32b0cd426f6031a6458c9c00f8829a376159f8212",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 64000,
+          "sha256": "7989439076eb6a6fcc52fe29615b2e38e858fc5606d16e740c4d3e4ad61e6584"
+        },
+        {
+          "index": 1,
+          "atMs": 67200,
+          "sha256": "c315a3fc80fc0fc1386aff5bc1c8b7d169be6d12441646fdd62dbf53ba77cb9c"
+        },
+        {
+          "index": 2,
+          "atMs": 70400,
+          "sha256": "e63526d657090ec0ed04b6f2d0b23efe525ecc1dfa4569f943d3865102a16300"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-9",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4571,
+          "loadMs": 4,
+          "promptEvalMs": 1811,
+          "evalMs": 2656,
+          "promptTokens": 1421,
+          "evalTokens": 162,
+          "rawNs": {
+            "total_duration": 4571147808,
+            "load_duration": 3618013,
+            "prompt_eval_duration": 1810610000,
+            "eval_duration": 2656127000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0024799999955575913,
+          "requestMs": 4573.942758000005
+        }
+      ],
+      "promptSha256": "da8272b7799a6d411c516be099a817455c8ffdda4171ca6b6172979480b5f482",
+      "normalizedPromptSha256": "c758f28535434922b5ace218b587d00907ff355465a613aebc0e50248af4ba73",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 72000,
+          "sha256": "3f6c6f83e83eeaf1dceb033033fb71d1da93d9171c8eec7af53422578da3653a"
+        },
+        {
+          "index": 1,
+          "atMs": 75200,
+          "sha256": "d8c620df83d8e9ac6bc0b1b32d99f45de1da8d79c416f4c6dd9e52d3e2ce0427"
+        },
+        {
+          "index": 2,
+          "atMs": 78400,
+          "sha256": "d0cc59a098613aeefe9651dc6a5c1abd555214d081afb32d27efb7e474cb653a"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-23",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4391,
+          "loadMs": 2,
+          "promptEvalMs": 1812,
+          "evalMs": 2490,
+          "promptTokens": 1426,
+          "evalTokens": 152,
+          "rawNs": {
+            "total_duration": 4391398147,
+            "load_duration": 2441523,
+            "prompt_eval_duration": 1811623000,
+            "eval_duration": 2489798000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025440000026719645,
+          "requestMs": 4393.222657999999
+        }
+      ],
+      "promptSha256": "5863a41e7a949e5b11e3c0cce4af1370c6ebbaf03cab59e0c4507b014c34b692",
+      "normalizedPromptSha256": "c48adaf86ba573c3d4ab7b9af33f7456efd89d881ea79f14dccfcc71c2d83d09",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 184000,
+          "sha256": "43474dea4b471afc4ef47ebb75fc8d732ae3181bf4b044fb67827a9354929637"
+        },
+        {
+          "index": 1,
+          "atMs": 187200,
+          "sha256": "13616a035b5cc7dc62271857805b3d864c1bcdfbea7c073a6eb1b9cd605294c0"
+        },
+        {
+          "index": 2,
+          "atMs": 190400,
+          "sha256": "8b635293dc5f18ef5f0192175eed5c146992f9355f008b7d345a885f4f3bdf5e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-24",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4791,
+          "loadMs": 2,
+          "promptEvalMs": 1817,
+          "evalMs": 2874,
+          "promptTokens": 1426,
+          "evalTokens": 175,
+          "rawNs": {
+            "total_duration": 4791258097,
+            "load_duration": 1709853,
+            "prompt_eval_duration": 1816652000,
+            "eval_duration": 2873875000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0019040000042878091,
+          "requestMs": 4792.891118999993
+        }
+      ],
+      "promptSha256": "76316de8af4841a186fe638e6fe136c17056ff42276785bb98d3cd054aa5d0c5",
+      "normalizedPromptSha256": "d1607bf900e59ee41c22685e9c0ac0463c1e7df6a646700aede6486d9bc57831",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 192000,
+          "sha256": "f6ea8056f42d99a6308d5ef4e3fb943abb75952696c1f2e3c3ddee4a6eb287a5"
+        },
+        {
+          "index": 1,
+          "atMs": 195200,
+          "sha256": "39e9ffa30ccb4202f3c8a126b9aa0220ec8b2ea15801cc7b8a51ec4f264434c3"
+        },
+        {
+          "index": 2,
+          "atMs": 198400,
+          "sha256": "8982883844b53013c1cae8b255acde307a315864473af9d36e534e9e824ac705"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4422,
+          "loadMs": 1,
+          "promptEvalMs": 1822,
+          "evalMs": 2524,
+          "promptTokens": 1426,
+          "evalTokens": 155,
+          "rawNs": {
+            "total_duration": 4422351550,
+            "load_duration": 1450124,
+            "prompt_eval_duration": 1822421000,
+            "eval_duration": 2523854000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001759999999194406,
+          "requestMs": 4423.862313000005
+        }
+      ],
+      "promptSha256": "83d7bfb8cb4bc9742084e537a19b43d933918969ebd6439ccc39b084e1069ca8",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "c738a7140ade2a289feb9f48b2231a31479d945506f61c062061fab596a549f9"
+        },
+        {
+          "index": 1,
+          "atMs": 219200,
+          "sha256": "4df6232c5120be54a68dc30f557b9e1934173ef9b0a926a7f1f920f0a9cc8701"
+        },
+        {
+          "index": 2,
+          "atMs": 222400,
+          "sha256": "ecf8e3e6b836a1c04f410105f17c0912f2f15b36e2c735af2015e690e7390cc8"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-28",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4820,
+          "loadMs": 2,
+          "promptEvalMs": 1811,
+          "evalMs": 2897,
+          "promptTokens": 1426,
+          "evalTokens": 177,
+          "rawNs": {
+            "total_duration": 4820004775,
+            "load_duration": 2098769,
+            "prompt_eval_duration": 1811147000,
+            "eval_duration": 2897467000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0022880000033183023,
+          "requestMs": 4822.277080999993
+        }
+      ],
+      "promptSha256": "444c801e621286285be64886f2592ab49e80dc42ac5eaf84d923c74f34978364",
+      "normalizedPromptSha256": "aed73ec8d6f8eb70b088687c0d1761f129194105dd05d5f8cf718f050f0e90a7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 224000,
+          "sha256": "231b08d589c5963dd8e7686b719910cd1db580750b9d1e8083b2430802c52f7f"
+        },
+        {
+          "index": 1,
+          "atMs": 227200,
+          "sha256": "2d7691fe9a63d44411c8200683171d5f4194bb6781621125841142a2fe36337d"
+        },
+        {
+          "index": 2,
+          "atMs": 230400,
+          "sha256": "e73765f76093f6671fb31727a156da53b08d562465f7ca163489df88d5ea338e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4693,
+          "loadMs": 3,
+          "promptEvalMs": 1805,
+          "evalMs": 2750,
+          "promptTokens": 1426,
+          "evalTokens": 171,
+          "rawNs": {
+            "total_duration": 4693083790,
+            "load_duration": 2658501,
+            "prompt_eval_duration": 1805376000,
+            "eval_duration": 2750341000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0024479999992763624,
+          "requestMs": 4695.514240999997
+        }
+      ],
+      "promptSha256": "943b5093aa180288e79d88f383803c93f950c252c2523f61188ec4aa4c7b239a",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "0c5259fbc33c1358ea6d10217d6eefa49b825e8ee9a1052537603929dc7d3d24"
+        },
+        {
+          "index": 1,
+          "atMs": 267200,
+          "sha256": "90d3898ec60f143ba485dae968ae201cdbb4ded26a4bcbee83345c092d4ed867"
+        },
+        {
+          "index": 2,
+          "atMs": 270400,
+          "sha256": "ab9c0a5deb9391e07dfaf00b06b2ac74b4f70710b4230a5715e2a53e46f65f53"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4156,
+          "loadMs": 3,
+          "promptEvalMs": 1809,
+          "evalMs": 2259,
+          "promptTokens": 1426,
+          "evalTokens": 139,
+          "rawNs": {
+            "total_duration": 4155987069,
+            "load_duration": 2795206,
+            "prompt_eval_duration": 1809165000,
+            "eval_duration": 2259210000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.003376000007847324,
+          "requestMs": 4159.194758999991
+        }
+      ],
+      "promptSha256": "af79e64e643c2124ead5bc182d3d014b9edf062560e28cdf8698e9d0a32f8473",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "a7c429109365f84b5660d9cec8eb45252f249f8a7cc0a21ac1f1f898bfd7872f"
+        },
+        {
+          "index": 1,
+          "atMs": 275200,
+          "sha256": "6ff95fcdc26e0d1e218a730edc83fec5df0a6b2498750b6749d3e2b174f7e199"
+        },
+        {
+          "index": 2,
+          "atMs": 278400,
+          "sha256": "1fe55edf78dd5c0e500886b263367fe390a23998148214ad71af663ae8127772"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-46",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4053,
+          "loadMs": 3,
+          "promptEvalMs": 1809,
+          "evalMs": 2146,
+          "promptTokens": 1426,
+          "evalTokens": 131,
+          "rawNs": {
+            "total_duration": 4053273288,
+            "load_duration": 2618293,
+            "prompt_eval_duration": 1808621000,
+            "eval_duration": 2146103000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0027199999894946814,
+          "requestMs": 4055.7814989999897
+        }
+      ],
+      "promptSha256": "6fe617ac2ffd13c4078ed4cdc268432d282d97409f9fc73b4f402f92e79b8c00",
+      "normalizedPromptSha256": "fa9f9574d9f9390851ea93495a953f5d5b43fae2041a8f84c5243027a2a8bd31",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 368000,
+          "sha256": "da4b4b83a2a698a864713e0936733be6f975f9827010c91ae133e3a70c050d2b"
+        },
+        {
+          "index": 1,
+          "atMs": 371200,
+          "sha256": "64a31e48cc314d86192c69b4e02688bd6a8e21a06cba8afab2e3159e17301fe0"
+        },
+        {
+          "index": 2,
+          "atMs": 374400,
+          "sha256": "78e0a5cadef05accaadba2adfb18d78f1a48963e47ea36ee22bb314ee4fd3e03"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-02-B",
+      "arm": "B",
+      "id": "spring-video-56",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 4377,
+          "loadMs": 2,
+          "promptEvalMs": 1810,
+          "evalMs": 2480,
+          "promptTokens": 1426,
+          "evalTokens": 152,
+          "rawNs": {
+            "total_duration": 4377246314,
+            "load_duration": 2377475,
+            "prompt_eval_duration": 1810263000,
+            "eval_duration": 2479548000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001696000006631948,
+          "requestMs": 4379.5271959999955
+        }
+      ],
+      "promptSha256": "b15a1e07a66941db0d274d4cf1e0bf2469e654a36a77ff0c868a60aaebcc7bb8",
+      "normalizedPromptSha256": "b5753792bc490d69a75610c7db82d467431f4075dececd0cf80dbc9d3d254cd9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 448000,
+          "sha256": "5d49bfa881050441246d514625d4c299bdb8382e06bf4384bcdb749214f365d9"
+        },
+        {
+          "index": 1,
+          "atMs": 451200,
+          "sha256": "734db0f17d6c623aa2c728604ec08477659e6f8360f36ac2107ac4d879dc3b32"
+        },
+        {
+          "index": 2,
+          "atMs": 454400,
+          "sha256": "de6f476b83b47115f39a7b20d330d7197b4e9f6d0bdd3f884be9b8890ead00e1"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2942,
+          "loadMs": 5,
+          "promptEvalMs": 89,
+          "evalMs": 2698,
+          "promptTokens": 1410,
+          "evalTokens": 165,
+          "rawNs": {
+            "total_duration": 2942087905,
+            "load_duration": 5326314,
+            "prompt_eval_duration": 88820000,
+            "eval_duration": 2697550000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.08769699999999148,
+          "requestMs": 2953.9342380000003
+        }
+      ],
+      "promptSha256": "3aa02606cb2a423f53739d6044e0620b181d59dc03215f702472d3df89f3f6d9",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "c6baada37383d63142ba902420ee9e3c287e7d774cd96f7dac8dcd9d837cceb1"
+        },
+        {
+          "index": 1,
+          "atMs": 3200,
+          "sha256": "703721ad3d1fcb516d9f106ebaf3bc791d1e8d150ce6e5b538ccd13512142936"
+        },
+        {
+          "index": 2,
+          "atMs": 6400,
+          "sha256": "2ade9cb835208e6653e6e5b1a59b2bd4995973c1309c19c8d0f031ebe4b6c621"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-3",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 3475,
+          "loadMs": 5,
+          "promptEvalMs": 94,
+          "evalMs": 3217,
+          "promptTokens": 1421,
+          "evalTokens": 199,
+          "rawNs": {
+            "total_duration": 3474783734,
+            "load_duration": 4794950,
+            "prompt_eval_duration": 94420000,
+            "eval_duration": 3216772000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.005183999999644584,
+          "requestMs": 3477.9664629999997
+        }
+      ],
+      "promptSha256": "906c43fc107c6b49a583865ab9daffdbe410d90635a37447193bc94c3343114b",
+      "normalizedPromptSha256": "ed3fefe99ce6f63f0c23386518045ae0ef3d352dc89328c1d4f90e7481206155",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 24000,
+          "sha256": "eb427a48793b81b74ff2dc261be0a9c3a2d2e5143a5cfd09e3fe7ed34636d69b"
+        },
+        {
+          "index": 1,
+          "atMs": 27200,
+          "sha256": "97fce571561a634d66bd7132e3f5a5e168f162d220d776e578d1a83083b0b80f"
+        },
+        {
+          "index": 2,
+          "atMs": 30400,
+          "sha256": "9f951b6449ce5b3b640154db2318d9d2d4c9eb4ddd708b7d8bf36da44691c4fc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-4",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2571,
+          "loadMs": 4,
+          "promptEvalMs": 54,
+          "evalMs": 2385,
+          "promptTokens": 1421,
+          "evalTokens": 146,
+          "rawNs": {
+            "total_duration": 2570738117,
+            "load_duration": 3594541,
+            "prompt_eval_duration": 53609000,
+            "eval_duration": 2385153000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.01103999999941152,
+          "requestMs": 2573.9570540000004
+        }
+      ],
+      "promptSha256": "a31858b8b3446f9ee658599e8f8d464e3968c6c6403870d87349884a461b7f03",
+      "normalizedPromptSha256": "ce03f247772b1fffdb7693b2166300350817b7c239d7ca230c50a05989a3551c",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 32000,
+          "sha256": "f8d351e2d7e9b0a508629debb7c3ea8a09a1c2d7c0f4179add77b18482136adf"
+        },
+        {
+          "index": 1,
+          "atMs": 35200,
+          "sha256": "58881d2eb60ec78fb5b47de821b536f06b124ca298aa60614fb3534e74f03aee"
+        },
+        {
+          "index": 2,
+          "atMs": 38400,
+          "sha256": "aa892e7ae9c0b1436d57d5f0eb6298c0cd64a5b26f95a4b846ba7200c3da0e40"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-15",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2755,
+          "loadMs": 5,
+          "promptEvalMs": 60,
+          "evalMs": 2549,
+          "promptTokens": 1426,
+          "evalTokens": 160,
+          "rawNs": {
+            "total_duration": 2755381617,
+            "load_duration": 4999976,
+            "prompt_eval_duration": 60415000,
+            "eval_duration": 2549074000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0032320000009349314,
+          "requestMs": 2759.392608
+        }
+      ],
+      "promptSha256": "a068dfadf6cc33f2091b230b286d085483ca5797af091d7748ad91b2ceae77f3",
+      "normalizedPromptSha256": "061867aa6a17e8aa3814efe0dfcb6f5317774fb60a5ae77574966bf89c7e50b1",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 120000,
+          "sha256": "3c3b4002459cdd51d3497c4c48ef59e0eea11c0e1ef50c6b38442ca35c20971b"
+        },
+        {
+          "index": 1,
+          "atMs": 123200,
+          "sha256": "0922ba57bca36fc1ae764ba47a17a9c95e8a153c947400a96049de81873db9eb"
+        },
+        {
+          "index": 2,
+          "atMs": 126400,
+          "sha256": "c2d534ea2d19fdd13ac966262bdb6c373e5b751e54c7991a591591d2a0263078"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-16",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2724,
+          "loadMs": 4,
+          "promptEvalMs": 59,
+          "evalMs": 2516,
+          "promptTokens": 1426,
+          "evalTokens": 154,
+          "rawNs": {
+            "total_duration": 2724349687,
+            "load_duration": 4232017,
+            "prompt_eval_duration": 58541000,
+            "eval_duration": 2516216000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0016799999993963866,
+          "requestMs": 2727.318718999999
+        }
+      ],
+      "promptSha256": "496181efecaf0505e0a78f55b3906c989bb0c5c3839e0b05613b26c644a28bdc",
+      "normalizedPromptSha256": "db14c149d65ab7f292874f77575d5cc6c9eb263cc313546014d250b0169cada9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 128000,
+          "sha256": "1ac0dd14c7b5dbf2b9e883b06584a1eab9851dc788e95539f868b2786a894a35"
+        },
+        {
+          "index": 1,
+          "atMs": 131200,
+          "sha256": "0526d4ed1550390588e7c886f5dd5e2373574524216455b992a6be9ab7987828"
+        },
+        {
+          "index": 2,
+          "atMs": 134400,
+          "sha256": "8d9a0b25b24c03c462ad9c81754b131e3a52e358340b641b5ffd2c1ddcb9e250"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-26",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2383,
+          "loadMs": 4,
+          "promptEvalMs": 58,
+          "evalMs": 2191,
+          "promptTokens": 1426,
+          "evalTokens": 135,
+          "rawNs": {
+            "total_duration": 2382862591,
+            "load_duration": 4084944,
+            "prompt_eval_duration": 57881000,
+            "eval_duration": 2191354000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0014080000000831205,
+          "requestMs": 2385.8990630000008
+        }
+      ],
+      "promptSha256": "88e3176ff302bdbff4c87101e4873444563fbee96593438602e00507689bf040",
+      "normalizedPromptSha256": "05c67bfa94812f3615defd5619d9bfeca6c61967a79fbea13a07e8e0a0793d5a",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 208000,
+          "sha256": "805a128ff25053922112ba0f5c98884b34da9b60ae5bc61b5bbafece2334a7de"
+        },
+        {
+          "index": 1,
+          "atMs": 211200,
+          "sha256": "17e8a1a664ba0b560a972cdb7f2433651e8095e670d9e45a061be38b74390cd8"
+        },
+        {
+          "index": 2,
+          "atMs": 214400,
+          "sha256": "77008485ab290b44b1ec84c71258db4b3f947a1e98d7f6606c4bf3f32c297701"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2511,
+          "loadMs": 6,
+          "promptEvalMs": 59,
+          "evalMs": 2304,
+          "promptTokens": 1426,
+          "evalTokens": 140,
+          "rawNs": {
+            "total_duration": 2510650490,
+            "load_duration": 5930206,
+            "prompt_eval_duration": 58734000,
+            "eval_duration": 2303619000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0015679999996791594,
+          "requestMs": 2516.318535000002
+        }
+      ],
+      "promptSha256": "83d7bfb8cb4bc9742084e537a19b43d933918969ebd6439ccc39b084e1069ca8",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "6f8845c7675472c574e261159ee58a3d3d3f1787cb40ede37e167e6e15bf7d00"
+        },
+        {
+          "index": 1,
+          "atMs": 219200,
+          "sha256": "39d9087908e6f07c2bb6e1287c59549fe17696329b9af647e2e2a472ecc866e3"
+        },
+        {
+          "index": 2,
+          "atMs": 222400,
+          "sha256": "571e4e2a2535c535bf18336f64d78b2ac61362458c1c21f9d6847e6a6de46f49"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2274,
+          "loadMs": 3,
+          "promptEvalMs": 58,
+          "evalMs": 2117,
+          "promptTokens": 1426,
+          "evalTokens": 130,
+          "rawNs": {
+            "total_duration": 2274188239,
+            "load_duration": 3135512,
+            "prompt_eval_duration": 58058000,
+            "eval_duration": 2117172000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001968000000488246,
+          "requestMs": 2277.0450299999975
+        }
+      ],
+      "promptSha256": "943b5093aa180288e79d88f383803c93f950c252c2523f61188ec4aa4c7b239a",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "dda6546e66eb396145fac07b824df80ecf570ef06484968fbf2f4c526e346bdc"
+        },
+        {
+          "index": 1,
+          "atMs": 267200,
+          "sha256": "c009ee81264edfb5c2f2fbea57d3afbefde2945cdebb089d4c6f971c290ebd2f"
+        },
+        {
+          "index": 2,
+          "atMs": 270400,
+          "sha256": "3337f7b7cf115ddb83edb686ade2297fd5b63b8808b17529f82a530f87e8d0b4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2764,
+          "loadMs": 4,
+          "promptEvalMs": 60,
+          "evalMs": 2561,
+          "promptTokens": 1426,
+          "evalTokens": 159,
+          "rawNs": {
+            "total_duration": 2764212657,
+            "load_duration": 4428275,
+            "prompt_eval_duration": 60133000,
+            "eval_duration": 2560694000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0021280000000842847,
+          "requestMs": 2767.3850490000004
+        }
+      ],
+      "promptSha256": "af79e64e643c2124ead5bc182d3d014b9edf062560e28cdf8698e9d0a32f8473",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "21f0cc0fe0cf02196289d12c9eae2dcda7e43b43e20c027065e684f3a2b8bbea"
+        },
+        {
+          "index": 1,
+          "atMs": 275200,
+          "sha256": "99c91a5f44df81836916336eeb549844e38d58dc84a472b6f9249c363fbd28d1"
+        },
+        {
+          "index": 2,
+          "atMs": 278400,
+          "sha256": "d98fbf26cb253a87549a2c66df82eb4a49bf191d2abecee733dd5c3e23a37b33"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-44",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2620,
+          "loadMs": 4,
+          "promptEvalMs": 61,
+          "evalMs": 2401,
+          "promptTokens": 1426,
+          "evalTokens": 147,
+          "rawNs": {
+            "total_duration": 2619615833,
+            "load_duration": 4024015,
+            "prompt_eval_duration": 60953000,
+            "eval_duration": 2401119000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.005952999999863096,
+          "requestMs": 2623.041347999999
+        }
+      ],
+      "promptSha256": "e196abee7d90c54f4be32b4432e9dc087b0b3d464ae2dd8ba62728f1d48fc158",
+      "normalizedPromptSha256": "8e44de0c3b2249a25716fa0b64cbfea05f74456d366bdf43210a7f398df010d7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 352000,
+          "sha256": "7168823fed3d507c2f8bb0c914189c94658ade11d620084ea63845ab46896a44"
+        },
+        {
+          "index": 1,
+          "atMs": 355200,
+          "sha256": "79cbcf28d5a34108533c189b01a7c184a6b2980b4e21246465a7019061df7e75"
+        },
+        {
+          "index": 2,
+          "atMs": 358400,
+          "sha256": "0c29b86a9427ebb6d0beebba19ed454ceb1035547aae593544fa2cad622dc3f4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-45",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2859,
+          "loadMs": 3,
+          "promptEvalMs": 59,
+          "evalMs": 2663,
+          "promptTokens": 1426,
+          "evalTokens": 167,
+          "rawNs": {
+            "total_duration": 2858785520,
+            "load_duration": 3044808,
+            "prompt_eval_duration": 59486000,
+            "eval_duration": 2663310000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0039680000008956995,
+          "requestMs": 2861.4352690000014
+        }
+      ],
+      "promptSha256": "ee3968960928ebe4603c1401f313ec9f5ed9dea18c3f485cc46cc3f71bc9ab68",
+      "normalizedPromptSha256": "2041de466b552ea7ce5644633998c32e172d02177a33df404ed90f9ac9a72906",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 360000,
+          "sha256": "1de315f42a379ae68f2a0ede675de2bcec228d681682353ff1963dfb8bd7bdca"
+        },
+        {
+          "index": 1,
+          "atMs": 363200,
+          "sha256": "5652e98b78b16ad95ea049639369fd97ea0e2de9546272a325e7f4d065104b53"
+        },
+        {
+          "index": 2,
+          "atMs": 366400,
+          "sha256": "701ce8962faef841ae0dd9c9e0147f5f06f6586f321d7b2e730f4612243a41bc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "kennedy-video-51",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2312,
+          "loadMs": 4,
+          "promptEvalMs": 59,
+          "evalMs": 2148,
+          "promptTokens": 1426,
+          "evalTokens": 134,
+          "rawNs": {
+            "total_duration": 2311744217,
+            "load_duration": 4306162,
+            "prompt_eval_duration": 59326000,
+            "eval_duration": 2147977000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0018559999989520293,
+          "requestMs": 2314.1201720000026
+        }
+      ],
+      "promptSha256": "18792c09ddcead163d7ae1c5a45afbb137102a37e11fc885b903e176eed65738",
+      "normalizedPromptSha256": "11e262db1045c5cc1c96107c32f459fda51c52b331c6b8bd3159de947fb1bb8f",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 408000,
+          "sha256": "8b2cd162a045970a4b04d1ef123f9539ee30803354c77f5325ac3073ba318a1d"
+        },
+        {
+          "index": 1,
+          "atMs": 411200,
+          "sha256": "feb79e45fb26046089600801627800392a33fbd66bc9d09ae83c7db0154163ae"
+        },
+        {
+          "index": 2,
+          "atMs": 414400,
+          "sha256": "d44b1bf0bb4df9faa042720f65a6a1fad70851a2daa3325ee95ef8734612295b"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2645,
+          "loadMs": 2,
+          "promptEvalMs": 55,
+          "evalMs": 2459,
+          "promptTokens": 1410,
+          "evalTokens": 153,
+          "rawNs": {
+            "total_duration": 2645465320,
+            "load_duration": 2223457,
+            "prompt_eval_duration": 55333000,
+            "eval_duration": 2459080000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0027519999966898467,
+          "requestMs": 2647.5629210000006
+        }
+      ],
+      "promptSha256": "3aa02606cb2a423f53739d6044e0620b181d59dc03215f702472d3df89f3f6d9",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "27ea2fb72da5118179eb39f2ccdb01014d62a9f1d7051b755a8f34752d216e6c"
+        },
+        {
+          "index": 1,
+          "atMs": 3200,
+          "sha256": "32ec627f2bc8ab9b95f4d60ad9d376aa6326b13765c909d2c1599b97dcd9e86e"
+        },
+        {
+          "index": 2,
+          "atMs": 6400,
+          "sha256": "4faee3f21c9ca625341def694193d6221251add43dac1c17c0be7504f3ed5c88"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-1",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2723,
+          "loadMs": 3,
+          "promptEvalMs": 59,
+          "evalMs": 2552,
+          "promptTokens": 1419,
+          "evalTokens": 156,
+          "rawNs": {
+            "total_duration": 2723450651,
+            "load_duration": 3216218,
+            "prompt_eval_duration": 58999000,
+            "eval_duration": 2552257000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0016479999976581894,
+          "requestMs": 2725.893821999998
+        }
+      ],
+      "promptSha256": "3d785cfe641216ebf15d9e78c6fce2b0762f29d69cfb4c16287e79ff0f773522",
+      "normalizedPromptSha256": "9b8139248004bbe61dfaeb2378113c41ed7af0c584a4843903d2d69d80da2722",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 8000,
+          "sha256": "288430596165ba4f429a25303d2307b26cd6d4c2c22477c95607bbb70523a8f0"
+        },
+        {
+          "index": 1,
+          "atMs": 11200,
+          "sha256": "7ee2a4cacc8a14cb58cc617c6ce904c7bc646fbbce8907e77076bd1addb6cbb9"
+        },
+        {
+          "index": 2,
+          "atMs": 14400,
+          "sha256": "75f418137db1022ca70e5781ae4c7c116c986ab799ca9e748d0fe9e006914c9f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-8",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2529,
+          "loadMs": 2,
+          "promptEvalMs": 59,
+          "evalMs": 2343,
+          "promptTokens": 1421,
+          "evalTokens": 142,
+          "rawNs": {
+            "total_duration": 2529151837,
+            "load_duration": 2338002,
+            "prompt_eval_duration": 58672000,
+            "eval_duration": 2343196000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.004607999995641876,
+          "requestMs": 2532.2388049999936
+        }
+      ],
+      "promptSha256": "02b813ebb038f3379cbfffdd3a2c975ef1ef1ca4929efb09437d3fccfd2aefd4",
+      "normalizedPromptSha256": "1e0d85237b1912fccdcb12a32b0cd426f6031a6458c9c00f8829a376159f8212",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 64000,
+          "sha256": "7989439076eb6a6fcc52fe29615b2e38e858fc5606d16e740c4d3e4ad61e6584"
+        },
+        {
+          "index": 1,
+          "atMs": 67200,
+          "sha256": "c315a3fc80fc0fc1386aff5bc1c8b7d169be6d12441646fdd62dbf53ba77cb9c"
+        },
+        {
+          "index": 2,
+          "atMs": 70400,
+          "sha256": "e63526d657090ec0ed04b6f2d0b23efe525ecc1dfa4569f943d3865102a16300"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-9",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2769,
+          "loadMs": 4,
+          "promptEvalMs": 59,
+          "evalMs": 2557,
+          "promptTokens": 1421,
+          "evalTokens": 157,
+          "rawNs": {
+            "total_duration": 2768661925,
+            "load_duration": 3742077,
+            "prompt_eval_duration": 59088000,
+            "eval_duration": 2557231000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025279999972553924,
+          "requestMs": 2771.954415
+        }
+      ],
+      "promptSha256": "da8272b7799a6d411c516be099a817455c8ffdda4171ca6b6172979480b5f482",
+      "normalizedPromptSha256": "c758f28535434922b5ace218b587d00907ff355465a613aebc0e50248af4ba73",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 72000,
+          "sha256": "3f6c6f83e83eeaf1dceb033033fb71d1da93d9171c8eec7af53422578da3653a"
+        },
+        {
+          "index": 1,
+          "atMs": 75200,
+          "sha256": "d8c620df83d8e9ac6bc0b1b32d99f45de1da8d79c416f4c6dd9e52d3e2ce0427"
+        },
+        {
+          "index": 2,
+          "atMs": 78400,
+          "sha256": "d0cc59a098613aeefe9651dc6a5c1abd555214d081afb32d27efb7e474cb653a"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-23",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2583,
+          "loadMs": 2,
+          "promptEvalMs": 56,
+          "evalMs": 2420,
+          "promptTokens": 1426,
+          "evalTokens": 149,
+          "rawNs": {
+            "total_duration": 2582801419,
+            "load_duration": 2441987,
+            "prompt_eval_duration": 55684000,
+            "eval_duration": 2420063000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002736000002187211,
+          "requestMs": 2585.5143529999987
+        }
+      ],
+      "promptSha256": "5863a41e7a949e5b11e3c0cce4af1370c6ebbaf03cab59e0c4507b014c34b692",
+      "normalizedPromptSha256": "c48adaf86ba573c3d4ab7b9af33f7456efd89d881ea79f14dccfcc71c2d83d09",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 184000,
+          "sha256": "43474dea4b471afc4ef47ebb75fc8d732ae3181bf4b044fb67827a9354929637"
+        },
+        {
+          "index": 1,
+          "atMs": 187200,
+          "sha256": "13616a035b5cc7dc62271857805b3d864c1bcdfbea7c073a6eb1b9cd605294c0"
+        },
+        {
+          "index": 2,
+          "atMs": 190400,
+          "sha256": "8b635293dc5f18ef5f0192175eed5c146992f9355f008b7d345a885f4f3bdf5e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-24",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2594,
+          "loadMs": 2,
+          "promptEvalMs": 56,
+          "evalMs": 2440,
+          "promptTokens": 1426,
+          "evalTokens": 148,
+          "rawNs": {
+            "total_duration": 2594387698,
+            "load_duration": 2451539,
+            "prompt_eval_duration": 56024000,
+            "eval_duration": 2440314000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002223999996203929,
+          "requestMs": 2596.434226000005
+        }
+      ],
+      "promptSha256": "76316de8af4841a186fe638e6fe136c17056ff42276785bb98d3cd054aa5d0c5",
+      "normalizedPromptSha256": "d1607bf900e59ee41c22685e9c0ac0463c1e7df6a646700aede6486d9bc57831",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 192000,
+          "sha256": "f6ea8056f42d99a6308d5ef4e3fb943abb75952696c1f2e3c3ddee4a6eb287a5"
+        },
+        {
+          "index": 1,
+          "atMs": 195200,
+          "sha256": "39e9ffa30ccb4202f3c8a126b9aa0220ec8b2ea15801cc7b8a51ec4f264434c3"
+        },
+        {
+          "index": 2,
+          "atMs": 198400,
+          "sha256": "8982883844b53013c1cae8b255acde307a315864473af9d36e534e9e824ac705"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2606,
+          "loadMs": 2,
+          "promptEvalMs": 61,
+          "evalMs": 2408,
+          "promptTokens": 1426,
+          "evalTokens": 149,
+          "rawNs": {
+            "total_duration": 2606305501,
+            "load_duration": 2352835,
+            "prompt_eval_duration": 60911000,
+            "eval_duration": 2407979000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0044000000052619725,
+          "requestMs": 2608.199627999995
+        }
+      ],
+      "promptSha256": "83d7bfb8cb4bc9742084e537a19b43d933918969ebd6439ccc39b084e1069ca8",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "c738a7140ade2a289feb9f48b2231a31479d945506f61c062061fab596a549f9"
+        },
+        {
+          "index": 1,
+          "atMs": 219200,
+          "sha256": "4df6232c5120be54a68dc30f557b9e1934173ef9b0a926a7f1f920f0a9cc8701"
+        },
+        {
+          "index": 2,
+          "atMs": 222400,
+          "sha256": "ecf8e3e6b836a1c04f410105f17c0912f2f15b36e2c735af2015e690e7390cc8"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-28",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2871,
+          "loadMs": 3,
+          "promptEvalMs": 58,
+          "evalMs": 2659,
+          "promptTokens": 1426,
+          "evalTokens": 164,
+          "rawNs": {
+            "total_duration": 2871491485,
+            "load_duration": 3332186,
+            "prompt_eval_duration": 58343000,
+            "eval_duration": 2659489000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.00203200000396464,
+          "requestMs": 2873.2620430000024
+        }
+      ],
+      "promptSha256": "444c801e621286285be64886f2592ab49e80dc42ac5eaf84d923c74f34978364",
+      "normalizedPromptSha256": "aed73ec8d6f8eb70b088687c0d1761f129194105dd05d5f8cf718f050f0e90a7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 224000,
+          "sha256": "231b08d589c5963dd8e7686b719910cd1db580750b9d1e8083b2430802c52f7f"
+        },
+        {
+          "index": 1,
+          "atMs": 227200,
+          "sha256": "2d7691fe9a63d44411c8200683171d5f4194bb6781621125841142a2fe36337d"
+        },
+        {
+          "index": 2,
+          "atMs": 230400,
+          "sha256": "e73765f76093f6671fb31727a156da53b08d562465f7ca163489df88d5ea338e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2915,
+          "loadMs": 2,
+          "promptEvalMs": 58,
+          "evalMs": 2710,
+          "promptTokens": 1426,
+          "evalTokens": 167,
+          "rawNs": {
+            "total_duration": 2914656924,
+            "load_duration": 1860751,
+            "prompt_eval_duration": 57636000,
+            "eval_duration": 2710034000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0020960000038030557,
+          "requestMs": 2916.3042320000022
+        }
+      ],
+      "promptSha256": "943b5093aa180288e79d88f383803c93f950c252c2523f61188ec4aa4c7b239a",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "0c5259fbc33c1358ea6d10217d6eefa49b825e8ee9a1052537603929dc7d3d24"
+        },
+        {
+          "index": 1,
+          "atMs": 267200,
+          "sha256": "90d3898ec60f143ba485dae968ae201cdbb4ded26a4bcbee83345c092d4ed867"
+        },
+        {
+          "index": 2,
+          "atMs": 270400,
+          "sha256": "ab9c0a5deb9391e07dfaf00b06b2ac74b4f70710b4230a5715e2a53e46f65f53"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2535,
+          "loadMs": 2,
+          "promptEvalMs": 59,
+          "evalMs": 2361,
+          "promptTokens": 1426,
+          "evalTokens": 146,
+          "rawNs": {
+            "total_duration": 2535041488,
+            "load_duration": 1853343,
+            "prompt_eval_duration": 59234000,
+            "eval_duration": 2361428000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0028319999983068556,
+          "requestMs": 2536.9835509999975
+        }
+      ],
+      "promptSha256": "af79e64e643c2124ead5bc182d3d014b9edf062560e28cdf8698e9d0a32f8473",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "a7c429109365f84b5660d9cec8eb45252f249f8a7cc0a21ac1f1f898bfd7872f"
+        },
+        {
+          "index": 1,
+          "atMs": 275200,
+          "sha256": "6ff95fcdc26e0d1e218a730edc83fec5df0a6b2498750b6749d3e2b174f7e199"
+        },
+        {
+          "index": 2,
+          "atMs": 278400,
+          "sha256": "1fe55edf78dd5c0e500886b263367fe390a23998148214ad71af663ae8127772"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-46",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2272,
+          "loadMs": 4,
+          "promptEvalMs": 58,
+          "evalMs": 2069,
+          "promptTokens": 1426,
+          "evalTokens": 126,
+          "rawNs": {
+            "total_duration": 2271849753,
+            "load_duration": 3691197,
+            "prompt_eval_duration": 57846000,
+            "eval_duration": 2069235000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002304000001458917,
+          "requestMs": 2274.080538000002
+        }
+      ],
+      "promptSha256": "6fe617ac2ffd13c4078ed4cdc268432d282d97409f9fc73b4f402f92e79b8c00",
+      "normalizedPromptSha256": "fa9f9574d9f9390851ea93495a953f5d5b43fae2041a8f84c5243027a2a8bd31",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 368000,
+          "sha256": "da4b4b83a2a698a864713e0936733be6f975f9827010c91ae133e3a70c050d2b"
+        },
+        {
+          "index": 1,
+          "atMs": 371200,
+          "sha256": "64a31e48cc314d86192c69b4e02688bd6a8e21a06cba8afab2e3159e17301fe0"
+        },
+        {
+          "index": 2,
+          "atMs": 374400,
+          "sha256": "78e0a5cadef05accaadba2adfb18d78f1a48963e47ea36ee22bb314ee4fd3e03"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-03-B",
+      "arm": "B",
+      "id": "spring-video-56",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 2656,
+          "loadMs": 3,
+          "promptEvalMs": 58,
+          "evalMs": 2482,
+          "promptTokens": 1426,
+          "evalTokens": 152,
+          "rawNs": {
+            "total_duration": 2656261105,
+            "load_duration": 3083736,
+            "prompt_eval_duration": 58473000,
+            "eval_duration": 2482201000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.004015999998955522,
+          "requestMs": 2659.352890000002
+        }
+      ],
+      "promptSha256": "b15a1e07a66941db0d274d4cf1e0bf2469e654a36a77ff0c868a60aaebcc7bb8",
+      "normalizedPromptSha256": "b5753792bc490d69a75610c7db82d467431f4075dececd0cf80dbc9d3d254cd9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 448000,
+          "sha256": "5d49bfa881050441246d514625d4c299bdb8382e06bf4384bcdb749214f365d9"
+        },
+        {
+          "index": 1,
+          "atMs": 451200,
+          "sha256": "734db0f17d6c623aa2c728604ec08477659e6f8360f36ac2107ac4d879dc3b32"
+        },
+        {
+          "index": 2,
+          "atMs": 454400,
+          "sha256": "de6f476b83b47115f39a7b20d330d7197b4e9f6d0bdd3f884be9b8890ead00e1"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5215,
+          "loadMs": 6,
+          "promptEvalMs": 2923,
+          "evalMs": 2148,
+          "promptTokens": 1960,
+          "evalTokens": 129,
+          "rawNs": {
+            "total_duration": 5214790438,
+            "load_duration": 5878559,
+            "prompt_eval_duration": 2922858000,
+            "eval_duration": 2147600000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0589599999999848,
+          "requestMs": 5227.19948
+        }
+      ],
+      "promptSha256": "c18bfe9f86413fa203b9e3e7fa6c87ba962bb84c9560d6aaac0816583cc0e382",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "c6baada37383d63142ba902420ee9e3c287e7d774cd96f7dac8dcd9d837cceb1"
+        },
+        {
+          "index": 1,
+          "atMs": 1600,
+          "sha256": "a2f72cee8be3af7e586785facf871ad8bfc54b28e4a349ee79e1a2d023e5d27c"
+        },
+        {
+          "index": 2,
+          "atMs": 3200,
+          "sha256": "703721ad3d1fcb516d9f106ebaf3bc791d1e8d150ce6e5b538ccd13512142936"
+        },
+        {
+          "index": 3,
+          "atMs": 4800,
+          "sha256": "5029d8c938f2982193235482a2360779af5189c0902718547e92e261343b8e6a"
+        },
+        {
+          "index": 4,
+          "atMs": 6400,
+          "sha256": "2ade9cb835208e6653e6e5b1a59b2bd4995973c1309c19c8d0f031ebe4b6c621"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-3",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5522,
+          "loadMs": 7,
+          "promptEvalMs": 2911,
+          "evalMs": 2501,
+          "promptTokens": 1973,
+          "evalTokens": 152,
+          "rawNs": {
+            "total_duration": 5522236164,
+            "load_duration": 6518355,
+            "prompt_eval_duration": 2910898000,
+            "eval_duration": 2500678000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002943999999843072,
+          "requestMs": 5527.970721000001
+        }
+      ],
+      "promptSha256": "b0b5b8912e21b119f2750329ffecb03e4113e249544edcbf119578c7318cb6e6",
+      "normalizedPromptSha256": "ed3fefe99ce6f63f0c23386518045ae0ef3d352dc89328c1d4f90e7481206155",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 24000,
+          "sha256": "eb427a48793b81b74ff2dc261be0a9c3a2d2e5143a5cfd09e3fe7ed34636d69b"
+        },
+        {
+          "index": 1,
+          "atMs": 25600,
+          "sha256": "de0f0ba788fee7dce3dc9c694f6e89b5d961a5c221667ff5310dedcfadc0921c"
+        },
+        {
+          "index": 2,
+          "atMs": 27200,
+          "sha256": "97fce571561a634d66bd7132e3f5a5e168f162d220d776e578d1a83083b0b80f"
+        },
+        {
+          "index": 3,
+          "atMs": 28800,
+          "sha256": "981cf6f51d0963bb1835c1a6207e6ae7b421a072f88adb11b4cfc5569b5af195"
+        },
+        {
+          "index": 4,
+          "atMs": 30400,
+          "sha256": "9f951b6449ce5b3b640154db2318d9d2d4c9eb4ddd708b7d8bf36da44691c4fc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-4",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5124,
+          "loadMs": 8,
+          "promptEvalMs": 2917,
+          "evalMs": 2034,
+          "promptTokens": 1973,
+          "evalTokens": 122,
+          "rawNs": {
+            "total_duration": 5123961455,
+            "load_duration": 8010063,
+            "prompt_eval_duration": 2917039000,
+            "eval_duration": 2034177000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.013616000000183703,
+          "requestMs": 5130.701795999999
+        }
+      ],
+      "promptSha256": "19aa89cabd22bba84b47184a39985ea6602f815a43bf3cec0f0db2cd6c2786de",
+      "normalizedPromptSha256": "ce03f247772b1fffdb7693b2166300350817b7c239d7ca230c50a05989a3551c",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 32000,
+          "sha256": "f8d351e2d7e9b0a508629debb7c3ea8a09a1c2d7c0f4179add77b18482136adf"
+        },
+        {
+          "index": 1,
+          "atMs": 33600,
+          "sha256": "bc3a8a97816f8d7cda8156f3519296c961eadbc391d426795b919636d1329c65"
+        },
+        {
+          "index": 2,
+          "atMs": 35200,
+          "sha256": "58881d2eb60ec78fb5b47de821b536f06b124ca298aa60614fb3534e74f03aee"
+        },
+        {
+          "index": 3,
+          "atMs": 36800,
+          "sha256": "298fa20c723299b27d568e30673c73bd5af01db66025cdee62318e6938da3a86"
+        },
+        {
+          "index": 4,
+          "atMs": 38400,
+          "sha256": "aa892e7ae9c0b1436d57d5f0eb6298c0cd64a5b26f95a4b846ba7200c3da0e40"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-15",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6250,
+          "loadMs": 5,
+          "promptEvalMs": 2924,
+          "evalMs": 3150,
+          "promptTokens": 1980,
+          "evalTokens": 195,
+          "rawNs": {
+            "total_duration": 6250006192,
+            "load_duration": 5085112,
+            "prompt_eval_duration": 2924443000,
+            "eval_duration": 3149919000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001295999998546904,
+          "requestMs": 6259.332136999999
+        }
+      ],
+      "promptSha256": "d85b0b01f8f2046ad135977ef92e6d1875486c0c45521944ede710821ebc4b24",
+      "normalizedPromptSha256": "061867aa6a17e8aa3814efe0dfcb6f5317774fb60a5ae77574966bf89c7e50b1",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 120000,
+          "sha256": "3c3b4002459cdd51d3497c4c48ef59e0eea11c0e1ef50c6b38442ca35c20971b"
+        },
+        {
+          "index": 1,
+          "atMs": 121600,
+          "sha256": "a2ecd22b953b7433fae2a160ec06424f69ab587c3cb1dce5c6e247184bfd41b1"
+        },
+        {
+          "index": 2,
+          "atMs": 123200,
+          "sha256": "0922ba57bca36fc1ae764ba47a17a9c95e8a153c947400a96049de81873db9eb"
+        },
+        {
+          "index": 3,
+          "atMs": 124800,
+          "sha256": "fc992677a77015bd4daff9ffab769f60d50c7ee3498eca85795e3516c3105bef"
+        },
+        {
+          "index": 4,
+          "atMs": 126400,
+          "sha256": "c2d534ea2d19fdd13ac966262bdb6c373e5b751e54c7991a591591d2a0263078"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-16",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6322,
+          "loadMs": 6,
+          "promptEvalMs": 2920,
+          "evalMs": 3255,
+          "promptTokens": 1980,
+          "evalTokens": 199,
+          "rawNs": {
+            "total_duration": 6321895759,
+            "load_duration": 5665613,
+            "prompt_eval_duration": 2919553000,
+            "eval_duration": 3255119000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0026560000005702022,
+          "requestMs": 6327.444603
+        }
+      ],
+      "promptSha256": "4b01a6bb356585e0296b35143ae9bee0c00f5d23ef550b93c7a01be55254986e",
+      "normalizedPromptSha256": "db14c149d65ab7f292874f77575d5cc6c9eb263cc313546014d250b0169cada9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 128000,
+          "sha256": "1ac0dd14c7b5dbf2b9e883b06584a1eab9851dc788e95539f868b2786a894a35"
+        },
+        {
+          "index": 1,
+          "atMs": 129600,
+          "sha256": "3c2d555f689f61d5b28fa53456d75d4e6ee6670818315215f35fc48b9c7dad75"
+        },
+        {
+          "index": 2,
+          "atMs": 131200,
+          "sha256": "0526d4ed1550390588e7c886f5dd5e2373574524216455b992a6be9ab7987828"
+        },
+        {
+          "index": 3,
+          "atMs": 132800,
+          "sha256": "093a1ffdc75daa114e720ee3f982f758216cc521a2f7fd76ff022d68727d77e6"
+        },
+        {
+          "index": 4,
+          "atMs": 134400,
+          "sha256": "8d9a0b25b24c03c462ad9c81754b131e3a52e358340b641b5ffd2c1ddcb9e250"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-26",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5600,
+          "loadMs": 5,
+          "promptEvalMs": 2920,
+          "evalMs": 2532,
+          "promptTokens": 1980,
+          "evalTokens": 154,
+          "rawNs": {
+            "total_duration": 5600301955,
+            "load_duration": 5457610,
+            "prompt_eval_duration": 2920372000,
+            "eval_duration": 2532342000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001631999999517575,
+          "requestMs": 5604.308243000003
+        }
+      ],
+      "promptSha256": "01153bb81f4aa83e8b941d03808c71973ea0df0d7d63430989f3c2ceebff59ef",
+      "normalizedPromptSha256": "05c67bfa94812f3615defd5619d9bfeca6c61967a79fbea13a07e8e0a0793d5a",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 208000,
+          "sha256": "805a128ff25053922112ba0f5c98884b34da9b60ae5bc61b5bbafece2334a7de"
+        },
+        {
+          "index": 1,
+          "atMs": 209600,
+          "sha256": "d71581b89f32073098da2cddaeb033a8e5d9f477cbcdc7334a912b0e9821da37"
+        },
+        {
+          "index": 2,
+          "atMs": 211200,
+          "sha256": "17e8a1a664ba0b560a972cdb7f2433651e8095e670d9e45a061be38b74390cd8"
+        },
+        {
+          "index": 3,
+          "atMs": 212800,
+          "sha256": "2b0d7db8d3533d9c274006b23a054f9eaf4352f2d4a499a0c0ad104df46fcc68"
+        },
+        {
+          "index": 4,
+          "atMs": 214400,
+          "sha256": "77008485ab290b44b1ec84c71258db4b3f947a1e98d7f6606c4bf3f32c297701"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5689,
+          "loadMs": 6,
+          "promptEvalMs": 2920,
+          "evalMs": 2599,
+          "promptTokens": 1980,
+          "evalTokens": 158,
+          "rawNs": {
+            "total_duration": 5689007035,
+            "load_duration": 6417107,
+            "prompt_eval_duration": 2920439000,
+            "eval_duration": 2598622000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0033279999988735653,
+          "requestMs": 5694.640454
+        }
+      ],
+      "promptSha256": "03948d1a0676e5bb882a84ada95f4e5a6616e4aeae9a0551e8e018de76bf1e28",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "6f8845c7675472c574e261159ee58a3d3d3f1787cb40ede37e167e6e15bf7d00"
+        },
+        {
+          "index": 1,
+          "atMs": 217600,
+          "sha256": "8afe357222443357bf01401aa2554da1960563bde309d6154227546dd2c42201"
+        },
+        {
+          "index": 2,
+          "atMs": 219200,
+          "sha256": "39d9087908e6f07c2bb6e1287c59549fe17696329b9af647e2e2a472ecc866e3"
+        },
+        {
+          "index": 3,
+          "atMs": 220800,
+          "sha256": "4c95e31f0e877294dba6733b4315fab1f9c1bafd0c9e9bca6e19bc9389ed7466"
+        },
+        {
+          "index": 4,
+          "atMs": 222400,
+          "sha256": "571e4e2a2535c535bf18336f64d78b2ac61362458c1c21f9d6847e6a6de46f49"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6210,
+          "loadMs": 5,
+          "promptEvalMs": 2925,
+          "evalMs": 3113,
+          "promptTokens": 1980,
+          "evalTokens": 190,
+          "rawNs": {
+            "total_duration": 6209944761,
+            "load_duration": 5395402,
+            "prompt_eval_duration": 2925128000,
+            "eval_duration": 3113053000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0026890000008279458,
+          "requestMs": 6215.342194999997
+        }
+      ],
+      "promptSha256": "7b71683bb1c3c255a7df70f43f6076febedeaf6e680dfbec73b21a31d47fbe84",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "dda6546e66eb396145fac07b824df80ecf570ef06484968fbf2f4c526e346bdc"
+        },
+        {
+          "index": 1,
+          "atMs": 265600,
+          "sha256": "f501236c449abba890b6b3ac7e37c1990e3806644e7abbf6bf4c9542e526b196"
+        },
+        {
+          "index": 2,
+          "atMs": 267200,
+          "sha256": "c009ee81264edfb5c2f2fbea57d3afbefde2945cdebb089d4c6f971c290ebd2f"
+        },
+        {
+          "index": 3,
+          "atMs": 268800,
+          "sha256": "9854dcd0810d85faa977beb858beee14f6dca671193b60f0476ade7bba66f2ab"
+        },
+        {
+          "index": 4,
+          "atMs": 270400,
+          "sha256": "3337f7b7cf115ddb83edb686ade2297fd5b63b8808b17529f82a530f87e8d0b4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6053,
+          "loadMs": 7,
+          "promptEvalMs": 2917,
+          "evalMs": 2994,
+          "promptTokens": 1980,
+          "evalTokens": 182,
+          "rawNs": {
+            "total_duration": 6053211210,
+            "load_duration": 7041863,
+            "prompt_eval_duration": 2916998000,
+            "eval_duration": 2994416000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.008095999997749459,
+          "requestMs": 6058.336338000001
+        }
+      ],
+      "promptSha256": "2cf394af840bfa98ddd5322125af6e6df014ac3e325e655591c1a7126709980d",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "21f0cc0fe0cf02196289d12c9eae2dcda7e43b43e20c027065e684f3a2b8bbea"
+        },
+        {
+          "index": 1,
+          "atMs": 273600,
+          "sha256": "57e9a8f8f122e9acd865106c30071ca12897300e15e024ed62d8bbcb41601bb9"
+        },
+        {
+          "index": 2,
+          "atMs": 275200,
+          "sha256": "99c91a5f44df81836916336eeb549844e38d58dc84a472b6f9249c363fbd28d1"
+        },
+        {
+          "index": 3,
+          "atMs": 276800,
+          "sha256": "8e1574bab45ed2be1c4608fdebb910039c05eebf3cbf28bb1ac739b689689f31"
+        },
+        {
+          "index": 4,
+          "atMs": 278400,
+          "sha256": "d98fbf26cb253a87549a2c66df82eb4a49bf191d2abecee733dd5c3e23a37b33"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-44",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5297,
+          "loadMs": 4,
+          "promptEvalMs": 2920,
+          "evalMs": 2223,
+          "promptTokens": 1980,
+          "evalTokens": 135,
+          "rawNs": {
+            "total_duration": 5297414063,
+            "load_duration": 4074176,
+            "prompt_eval_duration": 2920088000,
+            "eval_duration": 2223472000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0035839999982272275,
+          "requestMs": 5301.180268000004
+        }
+      ],
+      "promptSha256": "3344fdc2b5dc8bcc5b69bca22564230dc0018c37bea713e1b5790b44408e0029",
+      "normalizedPromptSha256": "8e44de0c3b2249a25716fa0b64cbfea05f74456d366bdf43210a7f398df010d7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 352000,
+          "sha256": "7168823fed3d507c2f8bb0c914189c94658ade11d620084ea63845ab46896a44"
+        },
+        {
+          "index": 1,
+          "atMs": 353600,
+          "sha256": "d096cee0b76be823e689563a97bfc30cdedf706be7c2692c04fb9d6f635b75f5"
+        },
+        {
+          "index": 2,
+          "atMs": 355200,
+          "sha256": "79cbcf28d5a34108533c189b01a7c184a6b2980b4e21246465a7019061df7e75"
+        },
+        {
+          "index": 3,
+          "atMs": 356800,
+          "sha256": "7b74379a42949f63118ddd8802557cf1ca6fde31e7ea3c6b7a4ecdcce868857a"
+        },
+        {
+          "index": 4,
+          "atMs": 358400,
+          "sha256": "0c29b86a9427ebb6d0beebba19ed454ceb1035547aae593544fa2cad622dc3f4"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-45",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5601,
+          "loadMs": 5,
+          "promptEvalMs": 2929,
+          "evalMs": 2500,
+          "promptTokens": 1980,
+          "evalTokens": 153,
+          "rawNs": {
+            "total_duration": 5601134601,
+            "load_duration": 4740581,
+            "prompt_eval_duration": 2929107000,
+            "eval_duration": 2500172000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.00211200000194367,
+          "requestMs": 5605.431065999997
+        }
+      ],
+      "promptSha256": "29c52832eae94e54f23b69757d5c19643d18f3c344545ca535cce9f5d12f0a79",
+      "normalizedPromptSha256": "2041de466b552ea7ce5644633998c32e172d02177a33df404ed90f9ac9a72906",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 360000,
+          "sha256": "1de315f42a379ae68f2a0ede675de2bcec228d681682353ff1963dfb8bd7bdca"
+        },
+        {
+          "index": 1,
+          "atMs": 361600,
+          "sha256": "a39e56e13ecc08d7063878fa54fb616ae3c3561807b300fda550dbe7943beed7"
+        },
+        {
+          "index": 2,
+          "atMs": 363200,
+          "sha256": "5652e98b78b16ad95ea049639369fd97ea0e2de9546272a325e7f4d065104b53"
+        },
+        {
+          "index": 3,
+          "atMs": 364800,
+          "sha256": "f652950e2694126020b1e8dc2e2f25d803bd73a8c0feed787d03cc811f40387c"
+        },
+        {
+          "index": 4,
+          "atMs": 366400,
+          "sha256": "701ce8962faef841ae0dd9c9e0147f5f06f6586f321d7b2e730f4612243a41bc"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "kennedy-video-51",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6135,
+          "loadMs": 4,
+          "promptEvalMs": 2927,
+          "evalMs": 3043,
+          "promptTokens": 1980,
+          "evalTokens": 186,
+          "rawNs": {
+            "total_duration": 6134916870,
+            "load_duration": 4142672,
+            "prompt_eval_duration": 2927035000,
+            "eval_duration": 3043475000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0015999999959603883,
+          "requestMs": 6138.195936000004
+        }
+      ],
+      "promptSha256": "5ce90b6d6b9561c99fba27b0ba7e0264078d8e147a779ae66b760070696852e1",
+      "normalizedPromptSha256": "11e262db1045c5cc1c96107c32f459fda51c52b331c6b8bd3159de947fb1bb8f",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 408000,
+          "sha256": "8b2cd162a045970a4b04d1ef123f9539ee30803354c77f5325ac3073ba318a1d"
+        },
+        {
+          "index": 1,
+          "atMs": 409600,
+          "sha256": "27ca3653fe23b6cbe1a46573c3d7d0b37934668dad2f45b05ff9c8768a6a377e"
+        },
+        {
+          "index": 2,
+          "atMs": 411200,
+          "sha256": "feb79e45fb26046089600801627800392a33fbd66bc9d09ae83c7db0154163ae"
+        },
+        {
+          "index": 3,
+          "atMs": 412800,
+          "sha256": "72d90c43ff45b9ecd8c65f289b63dde7305019b3424893c8f0e61e4da5dcaa41"
+        },
+        {
+          "index": 4,
+          "atMs": 414400,
+          "sha256": "d44b1bf0bb4df9faa042720f65a6a1fad70851a2daa3325ee95ef8734612295b"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-0",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5470,
+          "loadMs": 3,
+          "promptEvalMs": 2913,
+          "evalMs": 2406,
+          "promptTokens": 1960,
+          "evalTokens": 145,
+          "rawNs": {
+            "total_duration": 5470494283,
+            "load_duration": 2971559,
+            "prompt_eval_duration": 2913202000,
+            "eval_duration": 2406006000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0019680000114021823,
+          "requestMs": 5472.993614999999
+        }
+      ],
+      "promptSha256": "c18bfe9f86413fa203b9e3e7fa6c87ba962bb84c9560d6aaac0816583cc0e382",
+      "normalizedPromptSha256": "d11f35a9a473287a0f29b69bfbf0255e75969542efb6e8664793a878fe8fd266",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 0,
+          "sha256": "27ea2fb72da5118179eb39f2ccdb01014d62a9f1d7051b755a8f34752d216e6c"
+        },
+        {
+          "index": 1,
+          "atMs": 1600,
+          "sha256": "d8486fad011c8497b8d08ea69a9550015d2950c60d08fc579faad768f1c379f9"
+        },
+        {
+          "index": 2,
+          "atMs": 3200,
+          "sha256": "32ec627f2bc8ab9b95f4d60ad9d376aa6326b13765c909d2c1599b97dcd9e86e"
+        },
+        {
+          "index": 3,
+          "atMs": 4800,
+          "sha256": "2ca07bb52d2890d2a88c81d5675d770fbf19839d306b44ee92ba5e95641f2b4f"
+        },
+        {
+          "index": 4,
+          "atMs": 6400,
+          "sha256": "4faee3f21c9ca625341def694193d6221251add43dac1c17c0be7504f3ed5c88"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-1",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5994,
+          "loadMs": 5,
+          "promptEvalMs": 2913,
+          "evalMs": 2938,
+          "promptTokens": 1970,
+          "evalTokens": 179,
+          "rawNs": {
+            "total_duration": 5994383034,
+            "load_duration": 4787829,
+            "prompt_eval_duration": 2913331000,
+            "eval_duration": 2938193000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.003408000004128553,
+          "requestMs": 5998.048951000004
+        }
+      ],
+      "promptSha256": "e3cd1759cd9405b9cde660bd89aa2c72c27434325878bbdba7e80c0eef353bb6",
+      "normalizedPromptSha256": "9b8139248004bbe61dfaeb2378113c41ed7af0c584a4843903d2d69d80da2722",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 8000,
+          "sha256": "288430596165ba4f429a25303d2307b26cd6d4c2c22477c95607bbb70523a8f0"
+        },
+        {
+          "index": 1,
+          "atMs": 9600,
+          "sha256": "5846e5c3d709517b1fb69261aa4668835b085c4f2d3663f007307ed15b5b2b80"
+        },
+        {
+          "index": 2,
+          "atMs": 11200,
+          "sha256": "7ee2a4cacc8a14cb58cc617c6ce904c7bc646fbbce8907e77076bd1addb6cbb9"
+        },
+        {
+          "index": 3,
+          "atMs": 12800,
+          "sha256": "78129edc28f2af5ac6669d2c703b0436fef3beca1b0a24812c716edd6679befc"
+        },
+        {
+          "index": 4,
+          "atMs": 14400,
+          "sha256": "75f418137db1022ca70e5781ae4c7c116c986ab799ca9e748d0fe9e006914c9f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-8",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6018,
+          "loadMs": 5,
+          "promptEvalMs": 2914,
+          "evalMs": 2958,
+          "promptTokens": 1973,
+          "evalTokens": 178,
+          "rawNs": {
+            "total_duration": 6017577934,
+            "load_duration": 4663524,
+            "prompt_eval_duration": 2914362000,
+            "eval_duration": 2957869000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0024640000046929345,
+          "requestMs": 6020.837144000005
+        }
+      ],
+      "promptSha256": "ade39c75ce67c2f34e41d3e96eff93e1fe43c487384b09048d26e2f4b054deba",
+      "normalizedPromptSha256": "1e0d85237b1912fccdcb12a32b0cd426f6031a6458c9c00f8829a376159f8212",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 64000,
+          "sha256": "7989439076eb6a6fcc52fe29615b2e38e858fc5606d16e740c4d3e4ad61e6584"
+        },
+        {
+          "index": 1,
+          "atMs": 65600,
+          "sha256": "5a36baee785fc9b69a83af5c828c662952ad5349d5d3e88b562a3c186cbf7018"
+        },
+        {
+          "index": 2,
+          "atMs": 67200,
+          "sha256": "c315a3fc80fc0fc1386aff5bc1c8b7d169be6d12441646fdd62dbf53ba77cb9c"
+        },
+        {
+          "index": 3,
+          "atMs": 68800,
+          "sha256": "da877cd6f8bf9f917db42b4441cd64628a6e7c88f0342e74c8ab83b7e527c37b"
+        },
+        {
+          "index": 4,
+          "atMs": 70400,
+          "sha256": "e63526d657090ec0ed04b6f2d0b23efe525ecc1dfa4569f943d3865102a16300"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-9",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5966,
+          "loadMs": 3,
+          "promptEvalMs": 2911,
+          "evalMs": 2899,
+          "promptTokens": 1973,
+          "evalTokens": 176,
+          "rawNs": {
+            "total_duration": 5965828057,
+            "load_duration": 3374730,
+            "prompt_eval_duration": 2911146000,
+            "eval_duration": 2898738000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001759999999194406,
+          "requestMs": 5968.883168999993
+        }
+      ],
+      "promptSha256": "3f062b99b4426467c18504c3f4e72d4003023612c5efab2c2a800f6e919852f5",
+      "normalizedPromptSha256": "c758f28535434922b5ace218b587d00907ff355465a613aebc0e50248af4ba73",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 72000,
+          "sha256": "3f6c6f83e83eeaf1dceb033033fb71d1da93d9171c8eec7af53422578da3653a"
+        },
+        {
+          "index": 1,
+          "atMs": 73600,
+          "sha256": "d7426141128b871f3f583d02b2c0f1fb643565dc5390681be72ed43e9f80180d"
+        },
+        {
+          "index": 2,
+          "atMs": 75200,
+          "sha256": "d8c620df83d8e9ac6bc0b1b32d99f45de1da8d79c416f4c6dd9e52d3e2ce0427"
+        },
+        {
+          "index": 3,
+          "atMs": 76800,
+          "sha256": "22bc0264ae98ab0bd7db2110bab75a42c2dd745d2da4c8010c057a02ff2e3941"
+        },
+        {
+          "index": 4,
+          "atMs": 78400,
+          "sha256": "d0cc59a098613aeefe9651dc6a5c1abd555214d081afb32d27efb7e474cb653a"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-23",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5989,
+          "loadMs": 4,
+          "promptEvalMs": 2921,
+          "evalMs": 2919,
+          "promptTokens": 1980,
+          "evalTokens": 179,
+          "rawNs": {
+            "total_duration": 5988624443,
+            "load_duration": 4434819,
+            "prompt_eval_duration": 2921103000,
+            "eval_duration": 2918688000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025120000063907355,
+          "requestMs": 5991.183502
+        }
+      ],
+      "promptSha256": "f30fe8a74faac268a713bd15d72864f630ae2d80155856ee0289961141a889b1",
+      "normalizedPromptSha256": "c48adaf86ba573c3d4ab7b9af33f7456efd89d881ea79f14dccfcc71c2d83d09",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 184000,
+          "sha256": "43474dea4b471afc4ef47ebb75fc8d732ae3181bf4b044fb67827a9354929637"
+        },
+        {
+          "index": 1,
+          "atMs": 185600,
+          "sha256": "f367dfc4849fc8eef1285652302cee7d192699e839c83a902c00157de4002a76"
+        },
+        {
+          "index": 2,
+          "atMs": 187200,
+          "sha256": "13616a035b5cc7dc62271857805b3d864c1bcdfbea7c073a6eb1b9cd605294c0"
+        },
+        {
+          "index": 3,
+          "atMs": 188800,
+          "sha256": "0fd3f023e605c31e628fa42738048b4de6902c1e17898bafa835f6fe665f17a0"
+        },
+        {
+          "index": 4,
+          "atMs": 190400,
+          "sha256": "8b635293dc5f18ef5f0192175eed5c146992f9355f008b7d345a885f4f3bdf5e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-24",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6270,
+          "loadMs": 4,
+          "promptEvalMs": 2918,
+          "evalMs": 3241,
+          "promptTokens": 1980,
+          "evalTokens": 198,
+          "rawNs": {
+            "total_duration": 6269846252,
+            "load_duration": 3798365,
+            "prompt_eval_duration": 2917543000,
+            "eval_duration": 3241379000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.002175999994506128,
+          "requestMs": 6272.258415000004
+        }
+      ],
+      "promptSha256": "ff7d408132fee36b47bf2e07b9f78315a2b72b41e6fe55d398804dbf49995845",
+      "normalizedPromptSha256": "d1607bf900e59ee41c22685e9c0ac0463c1e7df6a646700aede6486d9bc57831",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 192000,
+          "sha256": "f6ea8056f42d99a6308d5ef4e3fb943abb75952696c1f2e3c3ddee4a6eb287a5"
+        },
+        {
+          "index": 1,
+          "atMs": 193600,
+          "sha256": "7bd79573d108b4cf248df7750fec82f9ad5947aee33e68c81aec052e830cdbf8"
+        },
+        {
+          "index": 2,
+          "atMs": 195200,
+          "sha256": "39e9ffa30ccb4202f3c8a126b9aa0220ec8b2ea15801cc7b8a51ec4f264434c3"
+        },
+        {
+          "index": 3,
+          "atMs": 196800,
+          "sha256": "bbe17ddf0c6a3d81e0c387029511c561ccb5a442a9b65fd6a1f8cb6fc0ea8cc6"
+        },
+        {
+          "index": 4,
+          "atMs": 198400,
+          "sha256": "8982883844b53013c1cae8b255acde307a315864473af9d36e534e9e824ac705"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-27",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6419,
+          "loadMs": 3,
+          "promptEvalMs": 2914,
+          "evalMs": 3394,
+          "promptTokens": 1980,
+          "evalTokens": 207,
+          "rawNs": {
+            "total_duration": 6419332681,
+            "load_duration": 3229098,
+            "prompt_eval_duration": 2914258000,
+            "eval_duration": 3393695000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0025759999989531934,
+          "requestMs": 6421.763772000006
+        }
+      ],
+      "promptSha256": "03948d1a0676e5bb882a84ada95f4e5a6616e4aeae9a0551e8e018de76bf1e28",
+      "normalizedPromptSha256": "03b0fa3ede459bfca9d93bf4aa16b65a9c96085e1d463d79675ad20e13d2de13",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 216000,
+          "sha256": "c738a7140ade2a289feb9f48b2231a31479d945506f61c062061fab596a549f9"
+        },
+        {
+          "index": 1,
+          "atMs": 217600,
+          "sha256": "ffd170e3c2e30fda276e7d00b5d6039c40bf60031cbef33bc9344e82212d130e"
+        },
+        {
+          "index": 2,
+          "atMs": 219200,
+          "sha256": "4df6232c5120be54a68dc30f557b9e1934173ef9b0a926a7f1f920f0a9cc8701"
+        },
+        {
+          "index": 3,
+          "atMs": 220800,
+          "sha256": "5929718587b62937bb428ca804e1bac7c11c57ca8377f6a3ab9278eadfae35f0"
+        },
+        {
+          "index": 4,
+          "atMs": 222400,
+          "sha256": "ecf8e3e6b836a1c04f410105f17c0912f2f15b36e2c735af2015e690e7390cc8"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-28",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6314,
+          "loadMs": 3,
+          "promptEvalMs": 2912,
+          "evalMs": 3265,
+          "promptTokens": 1980,
+          "evalTokens": 200,
+          "rawNs": {
+            "total_duration": 6313923009,
+            "load_duration": 2651077,
+            "prompt_eval_duration": 2911522000,
+            "eval_duration": 3265287000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0022080000053392723,
+          "requestMs": 6316.301027000009
+        }
+      ],
+      "promptSha256": "799de4d8066c0cc757316ee649aaef995a56c9d1df3840e5c05891d402d2641d",
+      "normalizedPromptSha256": "aed73ec8d6f8eb70b088687c0d1761f129194105dd05d5f8cf718f050f0e90a7",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 224000,
+          "sha256": "231b08d589c5963dd8e7686b719910cd1db580750b9d1e8083b2430802c52f7f"
+        },
+        {
+          "index": 1,
+          "atMs": 225600,
+          "sha256": "6a47ff365f9f4f651fa07c817d8ce9c5535552e32170fbb6bc2360eb24de9f1e"
+        },
+        {
+          "index": 2,
+          "atMs": 227200,
+          "sha256": "2d7691fe9a63d44411c8200683171d5f4194bb6781621125841142a2fe36337d"
+        },
+        {
+          "index": 3,
+          "atMs": 228800,
+          "sha256": "a009291d070117543f5bf6701cba1b780fa095cb7924bdac790d561b4df381a8"
+        },
+        {
+          "index": 4,
+          "atMs": 230400,
+          "sha256": "e73765f76093f6671fb31727a156da53b08d562465f7ca163489df88d5ea338e"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-33",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 7053,
+          "loadMs": 4,
+          "promptEvalMs": 2920,
+          "evalMs": 3992,
+          "promptTokens": 1980,
+          "evalTokens": 245,
+          "rawNs": {
+            "total_duration": 7053043072,
+            "load_duration": 3553692,
+            "prompt_eval_duration": 2920055000,
+            "eval_duration": 3992006000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.001696000006631948,
+          "requestMs": 7055.420576999997
+        }
+      ],
+      "promptSha256": "7b71683bb1c3c255a7df70f43f6076febedeaf6e680dfbec73b21a31d47fbe84",
+      "normalizedPromptSha256": "b2e0a5c11210b8f4ee9c8da4cc5af9eca3542d5173acfb6fed85cf2deaec6385",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 264000,
+          "sha256": "0c5259fbc33c1358ea6d10217d6eefa49b825e8ee9a1052537603929dc7d3d24"
+        },
+        {
+          "index": 1,
+          "atMs": 265600,
+          "sha256": "891e39b27feab8d971f49d9cf198310275660886ca8b2043314466c32fbe9ecf"
+        },
+        {
+          "index": 2,
+          "atMs": 267200,
+          "sha256": "90d3898ec60f143ba485dae968ae201cdbb4ded26a4bcbee83345c092d4ed867"
+        },
+        {
+          "index": 3,
+          "atMs": 268800,
+          "sha256": "0ec40efe1d99f0ff832a11a4e99556a6aae7a47b4d6f4d51304a149b3102cd0a"
+        },
+        {
+          "index": 4,
+          "atMs": 270400,
+          "sha256": "ab9c0a5deb9391e07dfaf00b06b2ac74b4f70710b4230a5715e2a53e46f65f53"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-34",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5806,
+          "loadMs": 4,
+          "promptEvalMs": 2921,
+          "evalMs": 2763,
+          "promptTokens": 1980,
+          "evalTokens": 166,
+          "rawNs": {
+            "total_duration": 5806366185,
+            "load_duration": 4031903,
+            "prompt_eval_duration": 2920857000,
+            "eval_duration": 2762713000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.004111999995075166,
+          "requestMs": 5810.248359999998
+        }
+      ],
+      "promptSha256": "2cf394af840bfa98ddd5322125af6e6df014ac3e325e655591c1a7126709980d",
+      "normalizedPromptSha256": "d876c0207f13bc5ea0e2f86af6ba53a3dece82ab9469ac21ebe507582eaf68e0",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 272000,
+          "sha256": "a7c429109365f84b5660d9cec8eb45252f249f8a7cc0a21ac1f1f898bfd7872f"
+        },
+        {
+          "index": 1,
+          "atMs": 273600,
+          "sha256": "9b76f9c89d9a7d9db3fc917f62e59644cd10c6e5e76128f88f77554630bcf17b"
+        },
+        {
+          "index": 2,
+          "atMs": 275200,
+          "sha256": "6ff95fcdc26e0d1e218a730edc83fec5df0a6b2498750b6749d3e2b174f7e199"
+        },
+        {
+          "index": 3,
+          "atMs": 276800,
+          "sha256": "b92722d339bb14ac4b83c1151d57e2b2a5b2099f779dedaecbaa40081b6ce0ab"
+        },
+        {
+          "index": 4,
+          "atMs": 278400,
+          "sha256": "1fe55edf78dd5c0e500886b263367fe390a23998148214ad71af663ae8127772"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-46",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 6208,
+          "loadMs": 6,
+          "promptEvalMs": 2933,
+          "evalMs": 3115,
+          "promptTokens": 1980,
+          "evalTokens": 190,
+          "rawNs": {
+            "total_duration": 6208403542,
+            "load_duration": 6067455,
+            "prompt_eval_duration": 2932740000,
+            "eval_duration": 3114931000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0026559999969322234,
+          "requestMs": 6212.535414000013
+        }
+      ],
+      "promptSha256": "1db20669be7255d6b4dd6ca3f46e45a053cd47ffca485bac02c156fb03548307",
+      "normalizedPromptSha256": "fa9f9574d9f9390851ea93495a953f5d5b43fae2041a8f84c5243027a2a8bd31",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 368000,
+          "sha256": "da4b4b83a2a698a864713e0936733be6f975f9827010c91ae133e3a70c050d2b"
+        },
+        {
+          "index": 1,
+          "atMs": 369600,
+          "sha256": "e0834882e2a7366163d2c51caec19c7ef0f7dc8a107ff407b6a03f66e938fe98"
+        },
+        {
+          "index": 2,
+          "atMs": 371200,
+          "sha256": "64a31e48cc314d86192c69b4e02688bd6a8e21a06cba8afab2e3159e17301fe0"
+        },
+        {
+          "index": 3,
+          "atMs": 372800,
+          "sha256": "ddf0f78b54cb750ed67fc49e4fec0f8d719003bf093925255b7be7697cd12f5a"
+        },
+        {
+          "index": 4,
+          "atMs": 374400,
+          "sha256": "78e0a5cadef05accaadba2adfb18d78f1a48963e47ea36ee22bb314ee4fd3e03"
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": "run-04-A",
+      "arm": "A",
+      "id": "spring-video-56",
+      "status": "succeeded",
+      "providerCalls": 1,
+      "providerTimings": [
+        {
+          "totalMs": 5343,
+          "loadMs": 3,
+          "promptEvalMs": 2922,
+          "evalMs": 2270,
+          "promptTokens": 1980,
+          "evalTokens": 138,
+          "rawNs": {
+            "total_duration": 5342516961,
+            "load_duration": 3228201,
+            "prompt_eval_duration": 2921656000,
+            "eval_duration": 2269993000
+          }
+        }
+      ],
+      "clientTimings": [
+        {
+          "queueMs": 0.0023199999995995313,
+          "requestMs": 5345.517671999987
+        }
+      ],
+      "promptSha256": "ef4cbcb6c859a4e77a183de65160d38bb845f7fd0cd42aed72aef6069ff80ebc",
+      "normalizedPromptSha256": "b5753792bc490d69a75610c7db82d467431f4075dececd0cf80dbc9d3d254cd9",
+      "sentFrames": [
+        {
+          "index": 0,
+          "atMs": 448000,
+          "sha256": "5d49bfa881050441246d514625d4c299bdb8382e06bf4384bcdb749214f365d9"
+        },
+        {
+          "index": 1,
+          "atMs": 449600,
+          "sha256": "5bd9ea21372d33fa16d51e2d4ebf214ed4d5e805e7b1993e57ce6133651d1cd6"
+        },
+        {
+          "index": 2,
+          "atMs": 451200,
+          "sha256": "734db0f17d6c623aa2c728604ec08477659e6f8360f36ac2107ac4d879dc3b32"
+        },
+        {
+          "index": 3,
+          "atMs": 452800,
+          "sha256": "56e3a7a9d046846f5b57be862f37abcce8f7229107b5ccaa4a25b0591031efbf"
+        },
+        {
+          "index": 4,
+          "atMs": 454400,
+          "sha256": "de6f476b83b47115f39a7b20d330d7197b4e9f6d0bdd3f884be9b8890ead00e1"
+        }
+      ],
+      "error": null
+    }
+  ]
+}

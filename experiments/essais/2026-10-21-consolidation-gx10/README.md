@@ -1,5 +1,7 @@
 # GX10 — consolidation des essais et plan du 21 octobre 2026
 
+Les cinq chantiers ont été exécutés ou préparés jusqu'à la frontière de validation humaine ; voir le [bilan de journée](BILAN.md). Les paquets de [notation aveugle](annotation/README.md) restent non notés tant que les fiches ne sont pas corrigées et validées.
+
 Cette note confronte les résultats clos de la nuit aux pistes de recherche. Elle prépare la journée ;
 elle ne lance aucun nouvel essai. Objectif : augmenter la part de réponses pertinentes rendues en moins
 de 20 s, avec une cible souhaitée sous 15 s, sans inventer de gain de qualité avant annotation.

@@ -1,0 +1,1759 @@
+{
+  "version": 1,
+  "readyForScoring": false,
+  "expectedAnswersIncluded": false,
+  "blocs": [
+    {
+      "id": "B01",
+      "sorties": [
+        {
+          "id": "B01-R1",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, ambiance solennelle et officielle.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante. Il prononce un discours, visiblement engagé, avec l'épingle à cheveux en place.",
+            "visual": "Le président Kennedy s'adresse à un large public, l'ambiance semble solennelle et officielle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B01-R2",
+          "sujet": "Inauguration de John F. Kennedy, présence d'une foule importante et d'hommes en costume.",
+          "observation": {
+            "topic": "Inauguration",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante. Il s'adresse à l'audience depuis une tribune ornée du sceau présidentiel et d'un drapeau américain.",
+            "visual": "John F. Kennedy parle devant une foule dense, dans un cadre extérieur. Il est positionné devant un pupitre avec le sceau présidentiel et un drapeau américain. Des hommes en costume sont assis en rangs sur les côtés.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B01-R3",
+          "sujet": "Inauguration de John F. Kennedy, présence d'une foule importante et d'un drapeau américain.",
+          "observation": {
+            "topic": "Inauguration",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante. Il s'adresse à l'audience depuis une tribune ornée du sceau présidentiel et d'un drapeau américain.",
+            "visual": "John F. Kennedy parle devant une foule dense, avec un drapeau américain et un pupitre sur lequel est posé le sceau présidentiel.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B01-R4",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, ambiance solennelle et officielle.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante. Il prononce un discours, visiblement engagé, avec l'épingle à cheveux en place.",
+            "visual": "Le président Kennedy s'adresse à un large public, l'ambiance semble solennelle et officielle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B02",
+      "sorties": [
+        {
+          "id": "B02-R1",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, avec un drapeau américain en arrière-plan.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient à un pupitre, devant une foule importante et un drapeau américain. Il s'adresse à l'audience, probablement en train de prononcer un discours.",
+            "visual": "Le président Kennedy est au centre de l'image, à un pupitre avec l'insigne présidentiel. Il est entouré de personnes en costume et d'un grand public, avec des drapeaux américains en arrière-plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B02-R2",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, probablement lors d'un événement officiel ou politique. La présence d'un grand nombre de personnes et de drapeaux américains suggère un moment solennel et symbolique.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, portant un costume sombre et des lunettes de soleil. Il s'adresse à une foule immense et diverse, visiblement présente dans un stade. Des drapeaux américains sont visibles à côté du pupitre.",
+            "visual": "Président Kennedy est au centre de l'image, en train de parler à une foule importante. L'ambiance semble solennelle et officielle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "L'identité précise des personnes présentes dans la foule n'est pas claire."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B02-R3",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, avec un drapeau américain en arrière-plan.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient à un pupitre, devant une foule importante et un drapeau américain. Il s'adresse à l'audience, probablement en train de prononcer un discours.",
+            "visual": "Un homme, probablement John F. Kennedy, est debout à un pupitre. Il porte un costume sombre et s'adresse à une foule dense, composée de personnes en chapeaux et vestes. Un drapeau américain est visible à côté du pupitre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B02-R4",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, probablement lors d'un événement officiel ou politique. La présence d'un grand nombre de personnes et de drapeaux américains suggère un moment solennel et symbolique.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, portant un costume sombre et des lunettes de soleil. Il s'adresse à une foule immense et diverse, visiblement présente dans un stade. Des drapeaux américains sont visibles à côté du pupitre.",
+            "visual": "Président Kennedy est au centre de l'image, en train de parler à une foule importante. L'ambiance semble solennelle et officielle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "L'identité précise des personnes présentes dans la foule n'est pas claire."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "sorties": [
+        {
+          "id": "B03-R1",
+          "sujet": "Événement public : Président Kennedy s'adresse à une foule importante devant un drapeau américain depuis une tribune.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient à un pupitre, devant une foule importante et un drapeau américain. Il s'adresse à l'audience depuis une tribune.",
+            "visual": "On voit le président Kennedy, en costume sombre, à un pupitre avec le sceau des États-Unis. Il parle devant une foule dense et un drapeau américain. Plusieurs hommes en costumes se tiennent autour de lui.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B03-R2",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, entouré de son équipe et tenant un drapeau américain. Le contexte est un événement public, probablement un rassemblement politique ou officiel.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante, et prononce un discours. Il est entouré de conseillers et de membres de l'équipe, et tient un drapeau américain.",
+            "visual": "Président Kennedy est au centre de l'image, à l'avant du pupitre. Il porte un costume sombre et tient un micro. La foule est dense et diverse, composée de personnes en tenue formelle. Un drapeau américain est visible à côté du pupitre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contenu du discours n'est pas visible."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B03-R3",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, entouré de son équipe et tenant un drapeau américain. Le contexte est un événement public, probablement un rassemblement politique ou officiel.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante, et prononce un discours. Il est entouré de conseillers et de membres de l'équipe, et tient un drapeau américain.",
+            "visual": "Président Kennedy est au centre de l'image, à l'avant du pupitre. Il porte un costume sombre et tient un micro. La foule est dense et diverse, composée de personnes en tenue formelle. Un drapeau américain est visible à côté du pupitre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contenu du discours n'est pas visible."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B03-R4",
+          "sujet": "Événement public : Président Kennedy s'adresse à une foule importante devant un drapeau américain, depuis une tribune.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient à un pupitre, devant une foule importante et un drapeau américain. Il s'adresse à l'audience depuis une tribune.",
+            "visual": "On voit le président Kennedy, en costume sombre, à un pupitre avec le sceau des États-Unis. Il parle devant une foule dense et un drapeau américain. Plusieurs hommes en costumes se tiennent autour de lui.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B04",
+      "sorties": [
+        {
+          "id": "B04-R1",
+          "sujet": "John F. Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, prononçant un discours devant une foule dense. Il porte un costume sombre et un nœud papillon, et tient un micro.",
+            "visual": "Le président Kennedy s'adresse à un large public rassemblé sur un terrain, avec des drapeaux américains et des personnes assises en rangs. Le pupitre est orné du sceau des États-Unis.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B04-R2",
+          "sujet": "Discours du président Kennedy devant une foule importante, avec un drapeau américain et le sceau des États-Unis.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "À l'orée d'une tribune, le président Kennedy s'adresse à une foule dense et variée, devant un drapeau américain et le sceau des États-Unis.",
+            "visual": "Le président Kennedy est debout derrière un pupitre, prononçant probablement un discours devant une grande foule. Le décor est un stade ou une arène avec un grand nombre de personnes présentes.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B04-R3",
+          "sujet": "John F. Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, prononçant un discours devant une foule dense. Il porte un costume sombre et un nœud papillon, et tient un micro.",
+            "visual": "Le président Kennedy s'adresse à un large public rassemblé sur un terrain, avec des drapeaux américains et des personnes assises en rangs. Le pupitre est orné du sceau des États-Unis.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B04-R4",
+          "sujet": "Discours du président Kennedy devant une foule importante.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "À l'orée d'une tribune, le président John F. Kennedy s'adresse à une foule dense et variée, devant un drapeau américain et le sceau des États-Unis.",
+            "visual": "Le président Kennedy est debout derrière un pupitre, prononçant probablement un discours devant une grande foule. Plusieurs personnes sont visibles en arrière-plan, incluant des militaires et des civils.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B05",
+      "sorties": [
+        {
+          "id": "B05-R1",
+          "sujet": "John F. Kennedy, président des États-Unis, se tient devant un public lors d'un événement.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, s'adresse à une foule dense et diversifiée, et gesticule pendant qu'il parle.",
+            "visual": "Le président Kennedy est en position debout, au centre de l'image, devant un podium. Il est entouré de personnes et s'exprime avec enthousiasme.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B05-R2",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, s'adressant à une foule dense et variée. Il est vêtu d'un costume sombre et tient un micro, avec un drapeau américain à ses côtés.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine prise de parole. L'arrière-plan est occupé par une foule importante, composée de personnes de différentes ethnies et âges.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B05-R3",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, s'adressant à une foule dense et variée. Il est vêtu d'un costume sombre et tient un micro, avec un drapeau américain à ses côtés.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine prise de parole. L'arrière-plan est occupé par une foule importante, composée de personnes de différentes ethnies et âges.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B05-R4",
+          "sujet": "John F. Kennedy, président des États-Unis, se tient devant un public lors d'un événement.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, s'adresse à une foule dense et diversifiée, et gesticule pendant qu'il parle.",
+            "visual": "Le président Kennedy est en position debout, au centre de l'image, devant un podium. Il est entouré de personnes et s'exprime avec enthousiasme.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B06",
+      "sorties": [
+        {
+          "id": "B06-R1",
+          "sujet": "John F. Kennedy prononce un discours devant une foule importante, probablement lors d'un événement officiel ou politique.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, tenant un discours devant une foule dense et assise dans un stade. Il est accompagné du drapeau américain et de plusieurs hommes en costume.",
+            "visual": "Président Kennedy est au centre de l'image, parlant avec assurance. L'arrière-plan est rempli de spectateurs, créant une impression de grandeur et d'importance.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B06-R2",
+          "sujet": "John F. Kennedy prononce un discours devant une foule importante, probablement lors d'un événement officiel ou politique.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, tenant un discours devant une foule dense et assise dans un stade. Il est accompagné du drapeau américain et de plusieurs hommes en costume.",
+            "visual": "Président Kennedy est au centre de l'image, parlant avec assurance. L'arrière-plan est rempli de spectateurs, créant une impression de grandeur et d'importance.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B06-R3",
+          "sujet": "Événement officiel avec John F. Kennedy sur une tribune, devant un public nombreux et un drapeau américain. Des conseillers et dignitaires sont également présents.",
+          "observation": {
+            "topic": "Événement officiel",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient sur une tribune, devant un public nombreux et un drapeau américain. Il est entouré de conseillers et de dignitaires, dans un contexte d'événement officiel.",
+            "visual": "Un homme, probablement John F. Kennedy, est debout sur une tribune avec un micro. Il porte un costume et un nœud papillon. Derrière lui, un drapeau américain flotte. Un grand public est visible en arrière-plan, assis sur des sièges et portant des étoiles sur leurs vêtements. Des hommes en costumes et chapeaux sont également présents.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B06-R4",
+          "sujet": "Événement officiel avec John F. Kennedy sur une tribune, devant un public nombreux et un drapeau américain. Présence de conseillers et de dignitaires.",
+          "observation": {
+            "topic": "Événement officiel",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient sur une tribune, devant un public nombreux et un drapeau américain. Il est entouré de conseillers et de dignitaires, dans un contexte d'événement officiel.",
+            "visual": "Un homme, probablement John F. Kennedy, est debout sur une tribune avec un micro. Il porte un costume et un nœud papillon. Derrière lui, un drapeau américain flotte. Un grand public est visible en arrière-plan, assis sur des sièges et portant des étoiles sur leurs vêtements. Des hommes en costumes et chapeaux sont également présents.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B07",
+      "sorties": [
+        {
+          "id": "B07-R1",
+          "sujet": "Discours de John F. Kennedy devant une foule importante.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un pupitre, prononçant un discours devant une foule dense et attentive. Des drapeaux américains et des hommes en costume sont visibles en arrière-plan.",
+            "visual": "Président Kennedy, en costume, parle depuis un pupitre sur lequel est posé le sceau des États-Unis. Une foule importante est présente devant lui, avec des drapeaux américains et des hommes en costume.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B07-R2",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, soulignant l'importance de l'événement et de la présence de nombreux spectateurs.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, prononçant un discours devant une foule importante. Il tient un micro et porte l'insigne de la présidence des États-Unis. Des drapeaux américains flottent à côté du pupitre.",
+            "visual": "Président Kennedy est au centre de l'image, devant un pupitre avec l'insigne de la présidence. Une foule dense se trouve derrière lui, incluant des hommes en costumes et des personnes avec des chapeaux. Des drapeaux américains sont visibles à gauche.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B07-R3",
+          "sujet": "Discours de John F. Kennedy devant une foule importante.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un pupitre, prononçant un discours devant une foule dense et attentive. Des drapeaux américains et des hommes en costume sont visibles en arrière-plan.",
+            "visual": "Président Kennedy, en costume, parle depuis un pupitre sur lequel est posé le sceau des États-Unis. Une foule importante est présente devant lui, avec des drapeaux américains et des hommes en costume.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B07-R4",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, soulignant l'importance de l'événement et de la présence de nombreux spectateurs.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, prononçant un discours devant une foule importante. Il tient un micro et porte l'insigne de la présidence des États-Unis. Des drapeaux américains flottent à côté du pupitre.",
+            "visual": "Président Kennedy est au centre de l'image, devant un pupitre avec l'insigne de la présidence. Une foule dense se trouve derrière lui, incluant des hommes en costumes et des personnes avec des chapeaux. Des drapeaux américains sont visibles à gauche.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B08",
+      "sorties": [
+        {
+          "id": "B08-R1",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient à un pupitre, devant une foule importante, et prononce un discours. Il est entouré de conseillers et de militaires, et un drapeau américain est visible en arrière-plan.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine parole. Un pupitre orné du sceau des États-Unis est devant lui. Une foule dense se trouve en arrière-plan, composée d'hommes et de femmes de différentes ethnies. Un drapeau américain est positionné à gauche.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B08-R2",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante, dans un contexte de rassemblement public.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient à un pupitre, devant une foule importante, et prononce un discours. Il est entouré de conseillers et de militaires, et un drapeau américain est visible en arrière-plan.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine parole. Un pupitre orné du sceau des États-Unis est devant lui. Une foule dense se trouve en arrière-plan, composée d'hommes et de femmes de différentes ethnies. Un drapeau américain est positionné à gauche.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B08-R3",
+          "sujet": "Président des États-Unis, John F. Kennedy, se tient devant un public lors d'un événement officiel.",
+          "observation": {
+            "topic": "Président des États-Unis",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient devant un podium, entouré de personnes, et prononce probablement un discours devant une foule importante.",
+            "visual": "John F. Kennedy est au centre de l'image, devant un podium orné du sceau des États-Unis. Il porte un gilet et une chaîne, et est entouré d'autres hommes, dont un homme à sa droite en costume noir. Derrière lui, une foule dense est visible, incluant des personnes en uniforme.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B08-R4",
+          "sujet": "John F. Kennedy, président des États-Unis, se tient à un pupitre devant un public lors d'un événement officiel. Il est entouré de personnalités et un drapeau américain est visible en arrière-plan.",
+          "observation": {
+            "topic": "Président américain",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy se tient à un pupitre, entouré de personnes, devant un drapeau américain et un public nombreux.",
+            "visual": "Le président Kennedy est en position de prise de parole devant une foule dense. Il porte un pendentif et un médaillon représentant les armoiries des États-Unis.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B09",
+      "sorties": [
+        {
+          "id": "B09-R1",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante dans un stade.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, tenant le drapeau américain, et s'adresse à une foule dense assise dans un stade.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine prise de parole devant un public nombreux et attentif.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B09-R2",
+          "sujet": "Discours devant une foule dans un stade, avec un drapeau américain.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "Un homme, probablement John F. Kennedy, se tient derrière un pupitre et prononce un discours devant une foule dense assise dans un stade. Un drapeau américain flotte à côté du pupitre.",
+            "visual": "Un homme en costume, probablement le président Kennedy, est en train de parler depuis un pupitre. Une foule importante est présente dans le stade en arrière-plan. Un drapeau américain est visible.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "uncertain"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B09-R3",
+          "sujet": "Président Kennedy prononce un discours devant une foule importante dans un stade.",
+          "observation": {
+            "topic": "Président Kennedy",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, tenant le drapeau américain, et s'adresse à une foule dense assise dans un stade.",
+            "visual": "Le président Kennedy est au centre de l'image, en pleine prise de parole devant un public nombreux et attentif.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B09-R4",
+          "sujet": "Discours devant un public dans un stade, avec un drapeau américain.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "Un homme, probablement John F. Kennedy, se tient derrière un pupitre et prononce un discours devant une foule dense assise dans un stade. Un drapeau américain est positionné à côté du pupitre.",
+            "visual": "Un homme en costume, probablement John F. Kennedy, parle devant un public nombreux. Un drapeau américain est visible à côté du pupitre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B10",
+      "sorties": [
+        {
+          "id": "B10-R1",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, avec des drapeaux américains en arrière-plan.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, utilisant un microphone et se tournant vers le public. Il porte un costume noir et un badge portant le sceau des États-Unis.",
+            "visual": "Le président Kennedy est en plein discours devant une foule importante. Des drapeaux américains sont visibles en arrière-plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B10-R2",
+          "sujet": "Discours de John F. Kennedy devant une foule importante, avec des drapeaux américains en arrière-plan.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, utilisant un microphone et se tournant vers le public. Il porte un costume noir et un badge portant le sceau des États-Unis.",
+            "visual": "Le président Kennedy est en plein discours devant une foule importante. Des drapeaux américains sont visibles en arrière-plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B10-R3",
+          "sujet": "Événement public : Présentation du président Kennedy devant une foule importante, avec un drapeau américain et un pupitre orné de l'insigne des États-Unis.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy est debout derrière un pupitre, portant l'insigne des États-Unis, et s'adresse à une foule importante. Il tient un micro et semble parler devant un drapeau américain.",
+            "visual": "Le président Kennedy est au centre de l'image, devant un pupitre orné de l'insigne des États-Unis. Il est entouré d'une foule dense et de plusieurs hommes en costume.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B10-R4",
+          "sujet": "Événement public : Présentation du président Kennedy devant une foule importante, avec un drapeau américain en arrière-plan.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy est debout derrière un pupitre, portant l'insigne des États-Unis, et s'adresse à une foule importante. Il tient un micro et semble parler devant un drapeau américain.",
+            "visual": "Le président Kennedy est au centre de l'image, devant un pupitre orné de l'insigne des États-Unis. Il est entouré d'une foule dense et de plusieurs hommes en costume.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B11",
+      "sorties": [
+        {
+          "id": "B11-R1",
+          "sujet": "Événement public : Président Kennedy devant un public important et des drapeaux américains.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient derrière un pupitre, devant une foule importante et des drapeaux américains. Il est en train de parler à travers un micro.",
+            "visual": "On voit le président Kennedy, en costume sombre, à l'orée d'une prise de parole devant un public nombreux et des représentants officiels.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B11-R2",
+          "sujet": "Événement public : Président Kennedy se tient à un pupitre devant une foule importante et arborant le drapeau américain. Il est en train de parler à travers un micro.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient à un pupitre, devant une foule importante et arborant le drapeau américain. Il est en train de parler à travers un micro.",
+            "visual": "Président Kennedy, en costume sombre, est au centre de l'image, à un pupitre avec le sceau des États-Unis. Il parle à un micro devant une foule dense et des figures en costumes.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B11-R3",
+          "sujet": "Événement public impliquant le président Kennedy devant un large public.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient devant un micro, entouré de personnes et d'un public nombreux. Il est en train de parler, probablement dans le cadre d'un événement public.",
+            "visual": "Président Kennedy est au centre de l'image, à l'avant d'une tribune. Il porte un costume sombre et un col blanc. Il est en train de s'adresser à un public nombreux, visiblement attentif.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B11-R4",
+          "sujet": "Événement public impliquant le président Kennedy devant un large public.",
+          "observation": {
+            "topic": "Événement public",
+            "topicContinuity": "continue",
+            "summary": "Le président Kennedy se tient devant un micro, entouré de personnes et d'un public nombreux. Il est en train de parler, probablement dans le cadre d'un événement public.",
+            "visual": "Président Kennedy est au centre de l'image, à l'avant d'une tribune. Il porte un costume sombre et un col blanc. Il est en train de s'adresser à un public nombreux, visiblement attentif.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B12",
+      "sorties": [
+        {
+          "id": "B12-R1",
+          "sujet": "Discours public de John F. Kennedy devant une foule importante, avec un pupitre et un drapeau américain en arrière-plan.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, portant un costume noir et un nœud papillon, et s'adresse à une foule importante. Il tient un micro et semble parler avec conviction.",
+            "visual": "Le président Kennedy est au centre de l'image, devant un pupitre orné du sceau des États-Unis. Il est entouré d'une foule dense et de plusieurs hommes en costume, dont certains tiennent des microphones. Un drapeau américain est visible à l'arrière-plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contenu de son discours est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B12-R2",
+          "sujet": "Discours de John F. Kennedy devant une foule importante.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante, et s'adresse à ses auditeurs avec un micro.",
+            "visual": "On voit le président Kennedy, en costume sombre, à un pupitre orné du sceau des États-Unis. Il parle avec assurance à une foule dense, composée de personnes en tenue officielle et du public.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B12-R3",
+          "sujet": "Discours public de John F. Kennedy devant une foule importante, avec un pupitre et un drapeau américain en arrière-plan.",
+          "observation": {
+            "topic": "Discours public",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout derrière un pupitre, portant un costume noir et un nœud papillon, et s'adresse à une foule importante. Il tient un micro et semble parler avec conviction.",
+            "visual": "Le président Kennedy est au centre de l'image, devant un pupitre orné du sceau des États-Unis. Il est entouré d'une foule dense et de plusieurs hommes en costume, dont certains tiennent des microphones. Un drapeau américain est visible à l'arrière-plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contenu de son discours est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B12-R4",
+          "sujet": "Discours de John F. Kennedy devant une foule importante.",
+          "observation": {
+            "topic": "Discours",
+            "topicContinuity": "continue",
+            "summary": "John F. Kennedy est debout à un pupitre, devant une foule importante, et s'adresse à elle en utilisant un micro.",
+            "visual": "On voit le président Kennedy, en costume noir, à un pupitre orné du sceau des États-Unis. Il parle avec assurance à une foule dense, composée de personnes en tenue officielle et du public.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B13",
+      "sorties": [
+        {
+          "id": "B13-R1",
+          "sujet": "Squelette complexe, rouge-brun, gouttes de liquide, obscurité.",
+          "observation": {
+            "topic": "Squelette",
+            "topicContinuity": "continue",
+            "summary": "La scène montre une structure squelettique complexe, faite de branches et de membres, suspendue dans l'obscurité. Les éléments sont d'une couleur rouge-brunée et semblent organiques, avec des gouttes de liquide qui s'écoulent.",
+            "visual": "Une structure squelettique complexe, rouge-brun, avec des gouttes de liquide, dans l'obscurité.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B13-R2",
+          "sujet": "Squelette complexe, rouge-brun, gouttes de liquide, obscurité.",
+          "observation": {
+            "topic": "Squelette",
+            "topicContinuity": "continue",
+            "summary": "La scène montre une structure squelettique complexe, faite de branches et de membres, suspendue dans l'obscurité. Les éléments sont d'une couleur rouge-brunée et semblent organiques, avec des gouttes de liquide qui s'écoulent.",
+            "visual": "Une structure squelettique complexe, rouge-brun, avec des gouttes de liquide, dans l'obscurité.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B13-R3",
+          "sujet": "Squelette humain, décomposition, environnement sombre et humide.",
+          "observation": {
+            "topic": "Squelette",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un squelette humain, partiellement décomposé et recouvert de mousse, flottant dans un environnement sombre et humide. La scène est visuellement troublante et suggère un contexte morbide.",
+            "visual": "Un squelette humain, partiellement décomposé et recouvert de mousse, flottant dans l'obscurité. L'environnement est sombre et humide.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B13-R4",
+          "sujet": "Squelette humain, décomposition, environnement sombre et humide.",
+          "observation": {
+            "topic": "Squelette",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un squelette humain, partiellement décomposé et recouvert de mousse, flottant dans un environnement sombre et humide. La scène est visuellement troublante et suggère un lieu abandonné et potentiellement sinistre.",
+            "visual": "Un squelette humain, partiellement décomposé et recouvert de mousse, est visible dans un environnement sombre et humide. Des gouttes d'eau semblent s'écouler de certaines parties du squelette.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B14",
+      "sorties": [
+        {
+          "id": "B14-R1",
+          "sujet": "Grotte : Formation de stalactites et stalagmites dans un environnement sombre et humide, avec des reflets de lumière.",
+          "observation": {
+            "topic": "Grotte",
+            "topicContinuity": "continue",
+            "summary": "L'image montre une formation de stalactites et de stalagmites dans un environnement sombre et humide, probablement une grotte. La lumière crée des reflets sur les formations, accentuant leur texture et leur forme.",
+            "visual": "Des stalactites et stalagmites translucides pendent du plafond, éclairées par une lumière bleue et dorée. L'ensemble est sombre et atmosphérique.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "None"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B14-R2",
+          "sujet": "Des formations de glace suspendues à une paroi rocheuse sombre, probablement dans un environnement glacial et caverneux. La lumière est faible et met en valeur les détails des formations de glace.",
+          "observation": {
+            "topic": "Glace",
+            "topicContinuity": "continue",
+            "summary": "L'image montre une paroi rocheuse recouverte de formations de glace, ressemblant à des stalactites, dans un environnement sombre et froid.",
+            "visual": "On observe une paroi rocheuse sombre avec de nombreuses formations de glace suspendues, créant un effet de stalactites. La lumière est faible et accentue les détails des formations de glace.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le niveau de détail des formations de glace est élevé, mais il est difficile de déterminer leur taille exacte ou leur composition."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B14-R3",
+          "sujet": "Grotte : Formation de stalactites et stalagmites dans un environnement sombre et humide, avec des reflets de lumière.",
+          "observation": {
+            "topic": "Grotte",
+            "topicContinuity": "continue",
+            "summary": "L'image montre une formation de stalactites et de stalagmites dans un environnement sombre et humide, probablement une grotte. La lumière crée des reflets sur les formations, accentuant leur texture et leur forme.",
+            "visual": "Des stalactites et stalagmites translucides pendent du plafond, éclairées par une lumière bleue et dorée. L'ensemble est sombre et atmosphérique.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "None"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B14-R4",
+          "sujet": "Des formations de glace suspendues à une paroi rocheuse sombre, probablement dans un environnement glacial et caverneux. La lumière est faible et met en valeur les détails des formations de glace.",
+          "observation": {
+            "topic": "Glace",
+            "topicContinuity": "continue",
+            "summary": "L'image montre une paroi rocheuse recouverte de formations de glace, ressemblant à des stalactites, dans un environnement sombre et froid.",
+            "visual": "On observe une paroi rocheuse sombre avec de nombreuses formations de glace suspendues, créant un effet de stalactites. La lumière est faible et accentue les détails des formations de glace.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le niveau de détail des formations de glace est élevé, mais il est difficile de déterminer leur taille exacte ou leur composition."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B15",
+      "sorties": [
+        {
+          "id": "B15-R1",
+          "sujet": "Une créature aquatique aux ramifications osseuses est présentée, probablement dans un contexte fantastique ou mythologique. La jeune fille semble interagir avec elle, peut-être pour la protéger ou la combattre.",
+          "observation": {
+            "topic": "Créature aquatique",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, tenant un bâton, se tient devant une immense créature aquatique aux ramifications osseuses, dans un environnement sombre et sous-marin.",
+            "visual": "La jeune fille est en position de protection, les yeux fermés, avec le bâton levé. La créature est détaillée avec des ramifications osseuses complexes, immergée dans l'eau bleue.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte exact de la scène est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B15-R2",
+          "sujet": "Une créature aquatique aux ramifications osseuses est présentée, probablement dans un contexte fantastique ou mythologique. La jeune fille semble interagir avec elle, peut-être pour la protéger ou la combattre.",
+          "observation": {
+            "topic": "Créature aquatique",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, tenant un bâton, se tient devant une immense créature aquatique aux ramifications osseuses, dans un environnement sombre et sous-marin.",
+            "visual": "La jeune fille est en position de protection, les yeux fermés, avec le bâton levé. La créature est détaillée avec des ramifications osseuses complexes, immergée dans l'eau bleue.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte exact de la scène est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B15-R3",
+          "sujet": "Une jeune fille et une créature marine aux formes osseuses dans un environnement sous-marin sombre. La créature est partiellement immergée et la jeune fille semble interagir avec elle.",
+          "observation": {
+            "topic": "Sous-marin",
+            "topicContinuity": "continue",
+            "summary": "Sur les images, on observe une créature marine aux formes osseuses et sinueuses, partiellement immergée dans l'eau. Une jeune fille tient un bâton et semble se concentrer sur la créature, dans un environnement sombre et aquatique.",
+            "visual": "Une créature marine aux os, une jeune fille avec un bâton, un environnement sous-marin sombre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B15-R4",
+          "sujet": "Créatures marines, environnement aquatique, jeune fille méditante.",
+          "observation": {
+            "topic": "eau",
+            "topicContinuity": "continue",
+            "summary": "Sur les images, on observe une créature marine aux formes osseuses et sinueuses, partiellement immergée dans l'eau. Une jeune fille, tenant un bâton, se tient devant cette créature, les yeux fermés, dans un environnement sombre et aquatique.",
+            "visual": "Une créature marine squelettique et translucide est visible dans l'eau. Une jeune fille est en position de méditation devant cette créature.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B16",
+      "sorties": [
+        {
+          "id": "B16-R1",
+          "sujet": "Un personnage solitaire dans un environnement sous-marin, contemplant un squelette de baleine. Atmosphère mystérieuse et contemplative.",
+          "observation": {
+            "topic": "Sous-marin",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, un personnage, vêtu d'une robe rouge, est assis sur une roche dans l'eau, tenant un bâton. Il semble contempler un squelette de baleine flottant au-dessus de lui, dans un environnement sous-marin sombre et mystérieux.",
+            "visual": "Le personnage est assis, concentré, avec un bâton dans la main. Un squelette de baleine est visible au-dessus de lui, créant une atmosphère inquiétante et solennelle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le personnage est-il en train de méditer ou d'observer quelque chose de spécifique ?"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B16-R2",
+          "sujet": "La jeune fille explore un environnement sous-marin et découvre un squelette de dinosaure géant, suggérant un monde préhistorique submergé.",
+          "observation": {
+            "topic": "Squelette de dinosaure",
+            "topicContinuity": "continue",
+            "summary": "Sur une plateforme rocheuse immergée, une jeune fille tient un bâton et observe avec attention une immense structure squelettique sous-marine, probablement un squelette de dinosaure.",
+            "visual": "La scène est sombre et sous-aquatique. Une jeune fille est assise sur une roche, tenant un bâton. Devant elle, on aperçoit un squelette de dinosaure colossal, partiellement enfoui dans le fond marin.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B16-R3",
+          "sujet": "Un personnage solitaire dans un environnement sous-marin, contemplant un squelette de baleine. Atmosphère mystérieuse et contemplative.",
+          "observation": {
+            "topic": "Sous-marin",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, un personnage, vêtu d'une robe rouge, est assis sur une roche dans l'eau, tenant un bâton. Il semble contempler un squelette de baleine flottant au-dessus de lui, dans un environnement sous-marin sombre et mystérieux.",
+            "visual": "Le personnage est assis, concentré, avec un bâton dans la main. Un squelette de baleine est visible au-dessus de lui, créant une atmosphère inquiétante et solennelle.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le personnage est-il en train de méditer ou d'observer quelque chose de spécifique ?"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B16-R4",
+          "sujet": "La jeune fille explore un environnement sous-marin et observe un squelette de dinosaure de grande taille.",
+          "observation": {
+            "topic": "Dinosaure",
+            "topicContinuity": "continue",
+            "summary": "Sur une plateforme rocheuse immergée, une jeune fille tient un bâton et observe avec attention une immense structure squelettique sous-marine, probablement un dinosaure.",
+            "visual": "La scène montre une jeune fille dans un environnement sous-marin sombre et mystérieux. Elle est en position de contemplation, observant un squelette de dinosaure colossal qui domine le cadre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "uncertain"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B17",
+      "sorties": [
+        {
+          "id": "B17-R1",
+          "sujet": "Immersion progressive dans une masse aqueuse. Le personnage est entouré par une substance translucide et semble être submergé.",
+          "observation": {
+            "topic": "Immersion",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un personnage submergé par une masse aqueuse translucide, probablement dans un environnement sous-marin. La substance semble s'approcher du personnage, suggérant une menace ou une immersion progressive.",
+            "visual": "Un personnage est partiellement enfoui dans une masse bleue translucide et fluide. La masse est dense et semble s'étendre autour du personnage.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte exact de la scène est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B17-R2",
+          "sujet": "L'eau, son environnement et ses créatures. Présence d'un personnage submergé.",
+          "observation": {
+            "topic": "Eau",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un personnage plongé dans l'eau, entouré d'une masse translucide et lumineuse, probablement une créature marine. La lumière bleue illumine la scène, créant une atmosphère mystérieuse et immersive.",
+            "visual": "Un personnage est submergé dans l'eau, entouré d'une forme lumineuse et translucide. La couleur dominante est le bleu.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B17-R3",
+          "sujet": "Un personnage explore un environnement sous-marin hostile, dominé par des créatures translucides et serpentines. L'atmosphère est sombre et angoissante, suggérant un danger potentiel.",
+          "observation": {
+            "topic": "Environnement sous-marin",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un personnage plongé dans les profondeurs de l'eau, entouré d'une masse de créatures translucides et serpentines. La scène est sombre et angoissante, mettant en valeur la puissance et l'étrangeté de cet environnement sous-marin.",
+            "visual": "Un personnage est partiellement visible dans l'eau, entouré d'une multitude de formes organiques luminescentes et ondulantes. L'éclairage est faible et bleuâtre, créant une atmosphère mystérieuse et inquiétante.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte exact de la scène est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B17-R4",
+          "sujet": "Un personnage explore un environnement sous-marin hostile, dominé par des créatures translucides et serpentines. L'atmosphère est sombre et angoissante, suggérant un danger potentiel.",
+          "observation": {
+            "topic": "Environnement sous-marin",
+            "topicContinuity": "continue",
+            "summary": "L'image montre un personnage plongé dans les profondeurs de l'eau, entouré d'une masse de créatures translucides et serpentines. La scène est sombre et angoissante, mettant en valeur la puissance et l'étrangeté de cet environnement sous-marin.",
+            "visual": "Un personnage est partiellement visible dans l'eau, entouré d'une multitude de formes organiques luminescentes et ondulantes. L'éclairage est faible et bleuâtre, créant une atmosphère mystérieuse et inquiétante.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte exact de la scène est inconnu."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B18",
+      "sorties": [
+        {
+          "id": "B18-R1",
+          "sujet": "La jeune fille utilise des pouvoirs magiques, probablement liés à la lumière et à l'eau, pour interagir avec des créatures ou des objets mystérieux dans un environnement sous-marin ou souterrain.",
+          "observation": {
+            "topic": "Magie",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, vêtue d'une redingote rouge, utilise un bâton pour manipuler une source de lumière bleue, probablement dans un environnement souterrain ou aquatique.",
+            "visual": "La jeune fille est en position assise, tenant un bâton et une flamme. Elle interagit avec une lumière bleue émanant d'un objet ou d'une créature sous-marine.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "uncertain"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B18-R2",
+          "sujet": "La jeune fille utilise une source de lumière bleue, probablement magique, dans un environnement souterrain. Elle semble explorer ou activer cette lumière, suggérant une quête ou une découverte.",
+          "observation": {
+            "topic": "Magie",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, vêtue d'une redingote rouge, manipule une source de lumière bleue avec une baguette. Elle semble explorer ou activer cette lumière dans un environnement sombre et rocheux.",
+            "visual": "La jeune fille est au centre de l'image, tenant une lumière bleue brillante dans sa main. Elle porte une baguette et se trouve dans un espace caverneux avec des formations rocheuses. L'ambiance est sombre et mystérieuse.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le but de la jeune fille et de l'utilisation de la lumière bleue ne sont pas clairs."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B18-R3",
+          "sujet": "La jeune fille utilise un bâton pour manipuler une source de lumière bleue, suggérant une pratique magique ou une interaction avec des forces surnaturelles.",
+          "observation": {
+            "topic": "Magie",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, vêtue d'une redingote rouge, utilise un bâton pour manipuler une source de lumière bleue, probablement dans un environnement souterrain ou aquatique.",
+            "visual": "La jeune fille est en position assise, tenant un bâton. Elle dirige une lumière bleue vers le bas, créant un effet lumineux. L'arrière-plan est sombre et rocheux.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "uncertain"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B18-R4",
+          "sujet": "La jeune fille utilise une source de lumière bleue, probablement magique, dans un environnement souterrain. Elle semble explorer ou activer cette lumière, suggérant une quête ou une découverte.",
+          "observation": {
+            "topic": "Magie",
+            "topicContinuity": "continue",
+            "summary": "Dans cette scène, une jeune fille, vêtue d'une redingote rouge, manipule une source de lumière bleue avec une baguette. Elle semble explorer ou activer cette lumière dans un environnement sombre et rocheux.",
+            "visual": "La jeune fille est au centre de l'image, tenant une lumière bleue brillante dans sa main. Elle porte une baguette et se trouve dans un espace caverneux avec des formations rocheuses. L'ambiance est sombre et mystérieuse.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le but de la jeune fille et de l'utilisation de la lumière bleue ne sont pas clairs."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B19",
+      "sorties": [
+        {
+          "id": "B19-R1",
+          "sujet": "Environnement : exploration d'un monde sous-marin et d'une forêt sombre, avec une présence de créatures marines et d'un personnage principal.",
+          "observation": {
+            "topic": "Environnement",
+            "topicContinuity": "continue",
+            "summary": "Dans la première image, on observe une créature marine massive et sombre émerger de l'eau, dominant le fond marin. La scène se déplace ensuite vers un environnement forestier sombre et humide, où une jeune personne est visible, accroupie sur une pierre.",
+            "visual": "Une créature marine sombre et imposante est visible dans l'eau. Une jeune personne est assise sur une pierre dans une forêt sombre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B19-R2",
+          "sujet": "L'environnement est exploré à travers des scènes sous-marines et forestières, mettant en scène des créatures et des personnages humains dans des contextes sombres et mystérieux.",
+          "observation": {
+            "topic": "Environnement",
+            "topicContinuity": "continue",
+            "summary": "Dans la première image, on observe une créature marine massive et sombre émerger de l'eau, dominant le fond bleu foncé. La deuxième image montre une silhouette humaine, probablement un enfant, se tenant dans un environnement sous-marin rocheux et sombre, tandis que la troisième image présente un enfant dans un décor forestier sombre et humide.",
+            "visual": "On voit une créature sous-marine, un enfant dans un environnement sous-marin et un enfant dans un environnement forestier sombre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B19-R3",
+          "sujet": "Une jeune fille explore un environnement forestier sombre et mystérieux, probablement dans un contexte fantastique ou de conte de fées, avec des éléments suggérant la présence de créatures ou de magie. Un chien est visible, probablement un compagnon du personnage principal.",
+          "observation": {
+            "topic": "Fantastique",
+            "topicContinuity": "continue",
+            "summary": "Sur les images, on observe un personnage principal, probablement une jeune fille, dans un environnement forestier sombre et humide. Elle semble être en quête, peut-être dans un contexte fantastique ou de conte de fées, avec des éléments suggérant la présence de créatures ou de magie.",
+            "visual": "La scène est dominée par des tons bleutés et sombres, avec des détails de végétation dense et des éléments lumineux, comme des petites lumières, qui créent une atmosphère mystérieuse et inquiétante. Un chien est visible, probablement un compagnon du personnage principal.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte précis de la scène est incertain, mais l'ambiance suggère une aventure ou une exploration."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B19-R4",
+          "sujet": "Une jeune fille explore un environnement forestier sombre et mystérieux, probablement dans un contexte fantastique ou de conte de fées, avec des éléments suggérant la présence de créatures ou de magie. Un chien est visible, probablement un compagnon du personnage principal.",
+          "observation": {
+            "topic": "Fantastique",
+            "topicContinuity": "continue",
+            "summary": "Sur les images, on observe un personnage principal, probablement une jeune fille, dans un environnement forestier sombre et humide. Elle semble être en quête, peut-être dans un contexte fantastique ou de conte de fées, avec des éléments suggérant la présence de créatures ou de magie.",
+            "visual": "La scène est dominée par des tons bleutés et sombres, avec des détails de végétation dense et des éléments lumineux, comme des petites lumières, qui créent une atmosphère mystérieuse et inquiétante. Un chien est visible, probablement un compagnon du personnage principal.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Le contexte précis de la scène est incertain, mais l'ambiance suggère une aventure ou une exploration."
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B20",
+      "sorties": [
+        {
+          "id": "B20-R1",
+          "sujet": "Un jeune garçon entreprend un voyage dans un monde sous-marin mystérieux, confronté à des dangers et des épreuves.",
+          "observation": {
+            "topic": "aventure",
+            "topicContinuity": "continue",
+            "summary": "Dans la première image, un poisson se trouve dans un aquarium sombre. Dans la deuxième image, un jeune garçon court vers une cascade lumineuse. Dans la troisième image, une jeune fille est effrayée et se tient dans un environnement sombre et rocheux.",
+            "visual": "On observe un poisson dans un aquarium, un garçon courant vers une cascade et une fille effrayée dans un environnement rocheux sombre.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B20-R2",
+          "sujet": "Un jeune garçon explore une grotte sous-marine, accompagnée d'un poisson. Il observe une cascade d'eau lumineuse et s'approche avec prudence.",
+          "observation": {
+            "topic": "Grotte sous-marine",
+            "topicContinuity": "continue",
+            "summary": "Un jeune garçon explore une grotte sous-marine, accompagné d'un poisson. Il observe une cascade d'eau lumineuse et s'approche avec prudence.",
+            "visual": "Le garçon se tient au premier plan, observant une cascade d'eau bleue et lumineuse dans une grotte sous-marine. Un poisson se trouve à sa droite. L'ambiance est sombre et mystérieuse.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B20-R3",
+          "sujet": "Un jeune garçon entreprend une aventure dans un monde sous-marin et une grotte mystérieuse, confronté à des dangers et à des épreuves.",
+          "observation": {
+            "topic": "aventure",
+            "topicContinuity": "continue",
+            "summary": "Dans la première image, un poisson nage dans un aquarium sombre et rocheux. Dans la deuxième image, un jeune garçon court vers une cascade d'eau bleue dans une grotte. Dans la troisième image, une jeune fille est effrayée et se tient dans une forêt sombre.",
+            "visual": "On observe un poisson dans un aquarium, un garçon courant vers une cascade et une fille effrayée dans une forêt.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B20-R4",
+          "sujet": "Un jeune garçon explore une grotte sous-marine, accompagnée d'un poisson. Il observe une cascade d'eau lumineuse et s'approche avec prudence.",
+          "observation": {
+            "topic": "Grotte sous-marine",
+            "topicContinuity": "continue",
+            "summary": "Un jeune garçon explore une grotte sous-marine, accompagné d'un poisson. Il observe une cascade d'eau lumineuse et s'approche avec prudence.",
+            "visual": "Le garçon se tient au premier plan, observant une cascade d'eau bleue et lumineuse dans une grotte sous-marine. Un poisson se trouve à sa droite. L'ambiance est sombre et mystérieuse.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B21",
+      "sorties": [
+        {
+          "id": "B21-R1",
+          "sujet": "Paysages variés : formations de glace, terrain rocheux et verdoyant, baigné de lumière dorée.",
+          "observation": {
+            "topic": "paysage",
+            "topicContinuity": "continue",
+            "summary": "Les images montrent des stalactites scintillantes dans un environnement sombre et humide, puis un paysage rocheux et verdoyant baigné de lumière dorée au lever du soleil.",
+            "visual": "On observe des formations de glace suspendues, puis un terrain accidenté avec des rochers et de l'herbe, suggérant un environnement naturel et potentiellement froid.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B21-R2",
+          "sujet": "Paysage de montagne avec des stalactites de glace et un chemin de galets. Lumière dorée et chaude.",
+          "observation": {
+            "topic": "Paysage de montagne",
+            "topicContinuity": "continue",
+            "summary": "L'image montre des stalactites de glace suspendues à une surface rocheuse, baignée d'une lumière dorée et chaude. Au premier plan, on observe un chemin de galets et des rochers recouverts de végétation, suggérant un paysage de montagne.",
+            "visual": "Des stalactites de glace translucides pendent de la surface rocheuse. La lumière dorée illumine la scène, créant des reflets et des ombres. Un chemin de galets et des rochers recouverts de verdure se trouvent au premier plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B21-R3",
+          "sujet": "Paysage de montagne avec des stalactites de glace et un chemin de galets. Lumière dorée et chaude.",
+          "observation": {
+            "topic": "Paysage de montagne",
+            "topicContinuity": "continue",
+            "summary": "L'image montre des stalactites de glace suspendues à une surface rocheuse, baignée d'une lumière dorée et chaude. Au premier plan, on observe un chemin de galets et des rochers recouverts de végétation, suggérant un paysage de montagne.",
+            "visual": "Des stalactites de glace translucides pendent de la surface rocheuse. La lumière dorée illumine la scène, créant des reflets et des ombres. Un chemin de galets et des rochers recouverts de verdure se trouvent au premier plan.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B21-R4",
+          "sujet": "Paysages variés : formations de glace, terrain rocheux et verdoyant, suggérant des environnements potentiellement froids et naturels.",
+          "observation": {
+            "topic": "paysage",
+            "topicContinuity": "continue",
+            "summary": "Les images montrent des stalactites scintillantes dans un environnement sombre et humide, puis un paysage rocheux et verdoyant baigné de lumière dorée au lever du soleil.",
+            "visual": "On observe des formations de glace suspendues, puis un terrain accidenté avec des rochers et de l'herbe, suggérant un environnement naturel et potentiellement froid.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B22",
+      "sorties": [
+        {
+          "id": "B22-R1",
+          "sujet": "Blender, un logiciel open-source de création 3D, est utilisé pour créer des visuels. Le logiciel est utilisé par une communauté de développeurs et de studios.",
+          "observation": {
+            "topic": "Blender",
+            "topicContinuity": "continue",
+            "summary": "L'image présente un paysage montagneux sombre avec un texte superposé indiquant \"made with Blender\".",
+            "visual": "Un paysage montagneux sombre et brumeux avec un texte blanc indiquant \"made with Blender\" et \"www.blender.org\".",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B22-R2",
+          "sujet": "Remerciements et crédits liés au logiciel Blender, à ses utilisateurs, développeurs et partenaires, notamment Dell EMC et Blender Cloud Subscribers.",
+          "observation": {
+            "topic": "Blender",
+            "topicContinuity": "continue",
+            "summary": "L'image présente un texte avec des noms et des remerciements liés au logiciel Blender et à sa communauté.",
+            "visual": "Un arrière-plan sombre avec des montagnes est visible. Des noms de personnes et d'organisations sont énumérés, ainsi que des mentions de 'Blender Cloud Subscribers' et 'Blender Developers Community'. Le texte final indique que le contenu a été créé avec Blender et fournit un lien vers le site web de Blender.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B22-R3",
+          "sujet": "Remerciements et crédits liés au logiciel Blender, à ses utilisateurs, développeurs et partenaires, notamment Dell EMC et Blender Cloud Subscribers.",
+          "observation": {
+            "topic": "Blender",
+            "topicContinuity": "continue",
+            "summary": "L'image présente un texte avec des noms et des remerciements liés au logiciel Blender et à sa communauté.",
+            "visual": "Un arrière-plan sombre avec des montagnes est visible. Des noms de personnes et d'organisations sont énumérés, ainsi que des mentions de 'Blender Cloud Subscribers' et 'Blender Developers Community'. Le texte final indique que le contenu a été créé avec Blender et fournit un lien vers le site web de Blender.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B22-R4",
+          "sujet": "Blender, un logiciel open-source de création 3D, est utilisé pour créer des visuels. Le logiciel est utilisé par une communauté de développeurs et de studios.",
+          "observation": {
+            "topic": "Blender",
+            "topicContinuity": "continue",
+            "summary": "L'image présente un paysage montagneux sombre avec un texte superposé indiquant \"made with Blender\".",
+            "visual": "Un paysage montagneux sombre et brumeux avec un texte blanc indiquant \"made with Blender\" et \"www.blender.org\".",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B23",
+      "sorties": [
+        {
+          "id": "B23-R1",
+          "sujet": "Une jeune fille, vêtue d'une redingote rouge et d'un gilet brun, tient un bâton dans sa main et semble réfléchir avec une expression sérieuse. Elle est debout dans un paysage montagneux, probablement au début d'une aventure.",
+          "observation": {
+            "topic": "Aventure",
+            "topicContinuity": "continue",
+            "summary": "La jeune fille, vêtue d'une redingote rouge et d'un gilet brun, tient un bâton dans sa main et semble réfléchir avec une expression sérieuse. Elle est debout dans un paysage montagneux, probablement au début d'une aventure.",
+            "visual": "Une jeune femme est représentée dans un environnement naturel, tenant un bâton. Son expression est concentrée.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "certain"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B23-R2",
+          "sujet": "La jeune fille, personnage principal de l'histoire, est représentée dans un environnement enneigé. Elle est vêtue d'une tenue spécifique et tient un bâton, suggérant un rôle ou une fonction particulière.",
+          "observation": {
+            "topic": "Personnage principal",
+            "topicContinuity": "continue",
+            "summary": "La jeune fille, vêtue d'une robe rouge et d'un gilet marron, tient un bâton dans sa main droite. Elle a l'air un peu surprise et semble s'appuyer sur le bâton pour se stabiliser.",
+            "visual": "La jeune fille est debout dans un paysage enneigé, tenant un bâton. Elle a l'air légèrement inquiète.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B23-R3",
+          "sujet": "La jeune fille, personnage principal de l'histoire, est représentée dans un environnement enneigé. Elle est vêtue d'une tenue spécifique et tient un bâton, suggérant un rôle ou une fonction particulière.",
+          "observation": {
+            "topic": "Personnage principal",
+            "topicContinuity": "continue",
+            "summary": "La jeune fille, vêtue d'une robe rouge et d'un gilet marron, tient un bâton dans sa main droite. Elle a l'air un peu surprise et semble s'appuyer sur le bâton pour se stabiliser.",
+            "visual": "La jeune fille est debout dans un paysage enneigé, tenant un bâton. Elle a l'air légèrement inquiète.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B23-R4",
+          "sujet": "Une jeune femme en tenue de voyage tient un bâton dans un paysage enneigé.",
+          "observation": {
+            "topic": "Personnage",
+            "topicContinuity": "continue",
+            "summary": "La jeune fille, vêtue d'une redingote rouge et d'un gilet brun, tient un bâton dans sa main. Elle semble réfléchir, peut-être avec une expression de surprise ou d'inquiétude.",
+            "visual": "Une jeune femme est représentée dans un paysage enneigé. Elle est en tenue de voyage et tient un bâton.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "None"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    },
+    {
+      "id": "B24",
+      "sorties": [
+        {
+          "id": "B24-R1",
+          "sujet": "Une jeune fille et son chien contemplent un paysage montagneux brumeux, sous un ciel nocturne bleu foncé. L'atmosphère est calme et contemplative.",
+          "observation": {
+            "topic": "Paysage montagneux",
+            "topicContinuity": "continue",
+            "summary": "Une jeune fille, vêtue d'une combinaison orange, se tient sur un promontoire avec son chien. Elle regarde avec attention un paysage montagneux enveloppé de brume, sous un ciel nocturne bleu foncé.",
+            "visual": "La scène montre une jeune fille et son chien sur un rebord rocheux. L'enfant est en position debout, regardant vers un vaste paysage de montagnes et de brume. L'ambiance est calme et contemplative.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B24-R2",
+          "sujet": "Une jeune fille et son chien contemplent un paysage montagneux et nuageux depuis le sommet d'une crête.",
+          "observation": {
+            "topic": "Montagne",
+            "topicContinuity": "continue",
+            "summary": "Sur une crête brumeuse, une jeune fille porte un manteau orange et tient un bâton, observant un paysage montagneux et nuageux. Un petit chien est à ses pieds, partageant son regard contemplatif.",
+            "visual": "Une scène de montagne sereine avec des nuages bas et des montagnes lointaines. Une jeune fille est au premier plan, en position debout, et un petit chien est à ses pieds.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B24-R3",
+          "sujet": "Une jeune fille et son chien contemplent un paysage montagneux brumeux, sous un ciel nocturne bleu foncé. L'atmosphère est calme et contemplative.",
+          "observation": {
+            "topic": "Paysage montagneux",
+            "topicContinuity": "continue",
+            "summary": "Une jeune fille, vêtue d'une combinaison orange, se tient sur un promontoire avec son chien. Elle regarde avec attention un paysage montagneux enveloppé de brume, sous un ciel nocturne bleu foncé.",
+            "visual": "La scène montre une jeune fille et son chien sur un rebord rocheux. L'enfant est en position debout, regardant vers un vaste paysage de montagnes et de brume. L'ambiance est calme et contemplative.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        },
+        {
+          "id": "B24-R4",
+          "sujet": "Une jeune fille et son chien contemplent un paysage montagneux brumeux, soulignant la beauté et la solitude de la nature.",
+          "observation": {
+            "topic": "Montagne",
+            "topicContinuity": "continue",
+            "summary": "Sur une crête brumeuse, une jeune fille porte un manteau orange et tient un bâton, observant un paysage montagneux enveloppé de nuages. Un petit chien est à ses pieds, partageant son regard contemplatif.",
+            "visual": "Une scène de montagne sereine avec une jeune fille et un chien au premier plan, face à une étendue de nuages et de montagnes lointaines.",
+            "transcript": "",
+            "audio": "Paroles indisponibles.",
+            "uncertainty": "Aucune"
+          },
+          "ocr": null,
+          "actionBreve": null,
+          "faitsUtiles": null,
+          "invention": null
+        }
+      ]
+    }
+  ]
+}

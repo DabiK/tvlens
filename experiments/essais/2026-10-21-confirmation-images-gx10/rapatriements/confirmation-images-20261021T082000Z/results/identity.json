@@ -1,0 +1,18 @@
+{
+  "predecessor": {
+    "path": "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results",
+    "sealedAtUtc": "2026-10-21T09:18:17.412056+00:00",
+    "statusSha256": "d35e8e3db2e906c8ee5d697e106ccce32fe1b343a5c9a045e50b29cd435dbfcb",
+    "integritySha256": "ad4f47c4fe1d8475958dfbd53c1d0f155f71a6a00455389ff7ee713bc2ba68c1"
+  },
+  "codeSha": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+  "runnerSha256": "c6ce9fda37336d5abf73af2347e91624daf7f3958dfe9e63469e8cad02e617eb",
+  "model": "gemma3:4b",
+  "modelDigest": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+  "gpuBefore": {
+    "nvidiaSmi": "Wed Oct 21 09:18:46 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |\n| N/A   60C    P0             15W /  N/A  | Not Supported          |      3%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A           13960      G   /usr/lib/xorg/Xorg                       95MiB |\n|    0   N/A  N/A           14154      G   /usr/bin/gnome-shell                    145MiB |\n|    0   N/A  N/A          209597      G   /usr/lib/firefox/firefox                239MiB |\n|    0   N/A  N/A         2506582      C   ...local/lib/ollama/llama-server       3989MiB |\n|    0   N/A  N/A         2507504      C   ...local/lib/ollama/llama-server      18614MiB |\n|    0   N/A  N/A         2507987      C   ...local/lib/ollama/llama-server       3025MiB |\n+-----------------------------------------------------------------------------------------+\n",
+    "computeApps": "2506582, /usr/local/lib/ollama/llama-server, 3989 MiB\n2507504, /usr/local/lib/ollama/llama-server, 18614 MiB\n2507987, /usr/local/lib/ollama/llama-server, 3025 MiB\n"
+  },
+  "selectionSha256": "a84258d284981d1293606fcd5d300f738972e68b24a587093381e2439c0d89ca",
+  "scriptSha256": "7eace7969e861a41bd6117fdde2b601c21a3a8268936af21e08ff52560ff612a"
+}

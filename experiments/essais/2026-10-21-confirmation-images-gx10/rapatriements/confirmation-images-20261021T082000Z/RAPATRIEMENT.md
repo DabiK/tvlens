@@ -1,0 +1,5 @@
+# Rapatriement vérifié des blocs 5/3 images
+
+Source : `/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z` sur `gx10-tvlens`. Après `status=finished`, `cleanupConfirmed=true`, `promptConstant=true`, 96/96 cas réussis et fermeture des processus, le sceau distant a été recalculé sur **70/70 fichiers** ; aucun SHA ni chemin ne divergeait. Son SHA-256 est `934d12b8ea2b3a60d5b29bba1dd22ee048a8f53959a6c3cc65fda08b9141c924`.
+
+La copie locale sélectionne `status.json`, `identity.json`, `mesures.json`, `a-annoter.json`, les deux manifestes dérivés, les quatre rapports de parcours et leurs exécutions, plus `integrite.json`. Les **14/14 fichiers sélectionnés** concordent avec les SHA du sceau. Les journaux `launcher.stdout.log` et `launcher.stderr.log` ont les mêmes empreintes locales et distantes, respectivement `729d397aa29073f6c7ce614fdb0146ec464102b3a0a311d39b7544d453f91859` et `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`. Les JPEG source et dérivés, poids et médias restent sur GX10, sans copie dans Git. Les originaux distants sont conservés.

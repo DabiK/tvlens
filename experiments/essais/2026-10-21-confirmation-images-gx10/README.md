@@ -1,6 +1,6 @@
 # GX10 — confirmation de l'ablation cinq contre trois images
 
-Préparation du 21 octobre 2026 du point 4 du [plan de consolidation](../2026-10-21-consolidation-gx10/README.md). **Aucun appel modèle n'a encore été lancé pour ce point.** L'hypothèse est que trois images d'un bloc de 8 s réduisent le temps de perception sans perdre des faits visuels utiles. Le résultat de la nuit sur CNRS est descriptif ; cette confirmation étend l'observation à Kennedy (anglais) et Spring (sans dialogue), avec comparaison appariée par bloc.
+Confirmation du 21 octobre 2026 du point 4 du [plan de consolidation](../2026-10-21-consolidation-gx10/README.md). L'hypothèse est que trois images d'un bloc de 8 s réduisent le temps de perception sans perdre des faits visuels utiles. Le résultat de la nuit sur CNRS est descriptif ; cette confirmation étend l'observation à Kennedy (anglais) et Spring (sans dialogue), avec comparaison appariée par bloc. Le [bilan technique](BILAN.md) et les [sorties vérifiées](rapatriements/confirmation-images-20261021T082000Z/RAPATRIEMENT.md) sont disponibles ; la qualité reste à noter.
 
 ## Entrées figées et variation
 
@@ -49,10 +49,9 @@ Le runner produit `run-XX-A|B/run/campaign.json` et les journaux bruts de chaque
 
 Après fermeture, annoter à l'aveugle contre les médias source les textes lisibles (OCR), actions brèves, descriptions utiles, faits manquants ou inventés et erreurs, puis comparer chaque bloc entre A et B. Publier les 96 délais individuels, séparés par vidéo et passage froid/chaud observé, les p50/p95 avec leurs effectifs, pertes et appels fournisseur. Le p95 de seulement 12 blocs par vidéo est fragile. Un gain de délai accompagné d'une perte de fait utile n'est pas une amélioration du produit. Le premier token n'est pas mesuré : ne pas l'inférer du temps total Ollama. Un jugement de pertinence attend toujours la validation humaine des fiches de référence.
 
-Le superviseur écrit `status.json`, `identity.json`, entrées dérivées, sorties du runner, `mesures.json`, `a-annoter.json`, puis `integrite.json` avec SHA de chaque fichier. Il conserve les sorties partielles en cas d'échec. Son statut `finished` signifie que le protocole technique a été mené à terme, sans prétendre que la qualité est validée. Aucun fichier de ce dossier ne contient de résultat GPU nouveau à ce jour.
+Le superviseur écrit `status.json`, `identity.json`, entrées dérivées, sorties du runner, `mesures.json`, `a-annoter.json`, puis `integrite.json` avec SHA de chaque fichier. Il conserve les sorties partielles en cas d'échec. Son statut `finished` signifie que le protocole technique a été mené à terme, sans prétendre que la qualité est validée.
 
-Le paquet a été copié sous `/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z/` sur GX10 ; les SHA de `inputs.json` et du script sont identiques à la copie locale. Le pré-vol distant a contrôlé les 24 `media.json` et 120 JPEG en lecture seule (`status=validated`, `gpuUsed=false`). Il attend toujours la fermeture scellée du point 3. Cette mise en place est consignée dans [deployment.json](deployment.json).
-Le [lanceur](launch.sh) est aussi copié et vérifié par SHA-256, mais reste inactif tant que cette fermeture n'est pas prouvée.
+Le paquet a été copié sous `/home/nvidia/tvlens-setup/confirmation-images-20261021T082000Z/` sur GX10 ; les SHA de `inputs.json` et du script sont identiques à la copie locale. Le pré-vol distant a contrôlé les 24 `media.json` et 120 JPEG en lecture seule (`status=validated`, `gpuUsed=false`). Après la fermeture scellée du point 3, le [lanceur](launch.sh) a démarré à 09:18:46 UTC et terminé les 96 cas en 459,5 s. Les trois verrous ont été relus libres et l'intégrité des 70 fichiers a été vérifiée à la clôture. Cette exécution est consignée dans [deployment.json](deployment.json).
 
 ## Vérifications hors GPU
 
