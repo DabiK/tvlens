@@ -1,0 +1,1877 @@
+{
+  "version": 1,
+  "readyForScoring": false,
+  "methode": {
+    "percentile": "interpolation linéaire, rang (n-1)*p",
+    "seuils": "strictement inférieurs, dénominateur planifié",
+    "differences": "B-A pour la pause ; 3 images - 5 images pour les blocs",
+    "images": "clientRequeteMs est distinct de fournisseurTotalMs ; clientFilePlusRequeteMs additionne file et requête"
+  },
+  "pauseVision": {
+    "etat": "complet",
+    "passages": [
+      {
+        "video": "kennedy",
+        "bras": "A",
+        "passage": 1,
+        "ordre": "01",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+        "sha256": "3844d5d96bebedb37967efb7ce217a94d7e493fb29c8fd9650c875c3c3658651",
+        "runId": "7375060f-ec4d-4074-95f4-33bbaab36880",
+        "complete": true,
+        "questions": [
+          {
+            "id": "kennedy-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 26030.964719000003,
+            "preuve": {
+              "ageAnalyseMs": 16002.750535,
+              "ageContexteMs": 8002.750534999999,
+              "retardInitialMs": 8002.750534999999,
+              "queueNonAnalyseeMs": 16002.750535,
+              "enAttente": 1,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 17096.962881,
+            "preuve": {
+              "ageAnalyseMs": 24002.039946999997,
+              "ageContexteMs": 8002.0399469999975,
+              "retardInitialMs": 8002.0399469999975,
+              "queueNonAnalyseeMs": 24002.039946999997,
+              "enAttente": 2,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-05",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 26188.450118000008,
+            "preuve": {
+              "ageAnalyseMs": 8001.4690829999745,
+              "ageContexteMs": 8001.4690829999745,
+              "retardInitialMs": 8001.4690829999745,
+              "queueNonAnalyseeMs": 8001.4690829999745,
+              "enAttente": 0,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 23256.548387999996,
+            "preuve": {
+              "ageAnalyseMs": 16001.902766000014,
+              "ageContexteMs": 8001.902766000014,
+              "retardInitialMs": 8001.902766000014,
+              "queueNonAnalyseeMs": 16001.902766000014,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-08",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 17360.69508799998,
+            "preuve": {
+              "ageAnalyseMs": 16000.776798000035,
+              "ageContexteMs": 8000.776798000035,
+              "retardInitialMs": 8000.776798000035,
+              "queueNonAnalyseeMs": 16000.776798000035,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 23256.548387999996,
+            "p95": 26156.95303820001
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 16001.902766000014,
+            "p95": 22402.182064599998
+          },
+          "sous15": {
+            "nombre": 0,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 2,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 120000
+              },
+              {
+                "startMs": 128000,
+                "endMs": 420000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 120000,
+                "endMs": 128000
+              }
+            ],
+            "plannedMs": 420000,
+            "coveredMs": 412000,
+            "percent": 98.09523809523809
+          }
+        },
+        "publications": {
+          "audio": 53,
+          "vision": 52
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 1,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 0
+        }
+      },
+      {
+        "video": "kennedy",
+        "bras": "B",
+        "passage": 1,
+        "ordre": "02",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+        "sha256": "af724e77f0ad3eb58fc708ffc2a9044d84fdc473edfcd0f0755a5bb4e49eed43",
+        "runId": "77c85c4b-1915-43f1-b9f1-29d131434d35",
+        "complete": true,
+        "questions": [
+          {
+            "id": "kennedy-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8018.621918999997,
+            "preuve": {
+              "ageAnalyseMs": 8002.428232999999,
+              "ageContexteMs": 8002.428232999999,
+              "retardInitialMs": 8002.428232999999,
+              "queueNonAnalyseeMs": 8002.428232999999,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 16087.368401999993,
+            "preuve": {
+              "ageAnalyseMs": 16001.990006000007,
+              "ageContexteMs": 8001.990006000007,
+              "retardInitialMs": 8001.990006000007,
+              "queueNonAnalyseeMs": 16001.990006000007,
+              "enAttente": 1,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-05",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 9150.96310600001,
+            "preuve": {
+              "ageAnalyseMs": 8002.749306999991,
+              "ageContexteMs": 8002.749306999991,
+              "retardInitialMs": 8002.749306999991,
+              "queueNonAnalyseeMs": 8002.749306999991,
+              "enAttente": 0,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 11196.267339000013,
+            "preuve": {
+              "ageAnalyseMs": 16003.33378300001,
+              "ageContexteMs": 8003.333783000009,
+              "retardInitialMs": 8003.333783000009,
+              "queueNonAnalyseeMs": 16003.33378300001,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-08",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 11297.572432000015,
+            "preuve": {
+              "ageAnalyseMs": 8002.777184000006,
+              "ageContexteMs": 8002.777184000006,
+              "retardInitialMs": 8002.777184000006,
+              "queueNonAnalyseeMs": 8002.777184000006,
+              "enAttente": 0,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 11196.267339000013,
+            "p95": 15129.409207999997
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 8002.777184000006,
+            "p95": 16003.065027600009
+          },
+          "sous15": {
+            "nombre": 4,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 120000
+              },
+              {
+                "startMs": 128000,
+                "endMs": 420000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 120000,
+                "endMs": 128000
+              }
+            ],
+            "plannedMs": 420000,
+            "coveredMs": 412000,
+            "percent": 98.09523809523809
+          }
+        },
+        "publications": {
+          "audio": 53,
+          "vision": 52
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 1,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 0
+        }
+      },
+      {
+        "video": "kennedy",
+        "bras": "B",
+        "passage": 2,
+        "ordre": "03",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+        "sha256": "32e73d7a0476a7d788fc760ebe2e4f7319672a8755db4c1d1114fae19a5cace7",
+        "runId": "c92325ea-97f1-4d6b-81ec-334ef4d09af8",
+        "complete": true,
+        "questions": [
+          {
+            "id": "kennedy-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 7016.635064999995,
+            "preuve": {
+              "ageAnalyseMs": 8000.877512999999,
+              "ageContexteMs": 8000.877512999999,
+              "retardInitialMs": 8000.877512999999,
+              "queueNonAnalyseeMs": 8000.877512999999,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 16101.653545999987,
+            "preuve": {
+              "ageAnalyseMs": 16002.828701999999,
+              "ageContexteMs": 8002.828701999999,
+              "retardInitialMs": 8002.828701999999,
+              "queueNonAnalyseeMs": 16002.828701999999,
+              "enAttente": 1,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-05",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 12173.245066000003,
+            "preuve": {
+              "ageAnalyseMs": 16002.264353000006,
+              "ageContexteMs": 8002.264353000006,
+              "retardInitialMs": 8002.264353000006,
+              "queueNonAnalyseeMs": 16002.264353000006,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 11226.826474000001,
+            "preuve": {
+              "ageAnalyseMs": 16001.835285999987,
+              "ageContexteMs": 8001.835285999987,
+              "retardInitialMs": 8001.835285999987,
+              "queueNonAnalyseeMs": 16001.835285999987,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-08",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8321.786594000005,
+            "preuve": {
+              "ageAnalyseMs": 8000.15421399998,
+              "ageContexteMs": 8000.15421399998,
+              "retardInitialMs": 8000.15421399998,
+              "queueNonAnalyseeMs": 8000.15421399998,
+              "enAttente": 0,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 11226.826474000001,
+            "p95": 15315.971849999989
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 16001.835285999987,
+            "p95": 16002.7158322
+          },
+          "sous15": {
+            "nombre": 4,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 168000
+              },
+              {
+                "startMs": 176000,
+                "endMs": 420000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 168000,
+                "endMs": 176000
+              }
+            ],
+            "plannedMs": 420000,
+            "coveredMs": 412000,
+            "percent": 98.09523809523809
+          }
+        },
+        "publications": {
+          "audio": 53,
+          "vision": 52
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 1,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 0
+        }
+      },
+      {
+        "video": "kennedy",
+        "bras": "A",
+        "passage": 2,
+        "ordre": "04",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+        "sha256": "bc0a88e7b36631ae60f40c0b43e0210d2bb8e555f9da2aef5be9a67836e8cf67",
+        "runId": "e719cd39-9174-4b77-9f9e-606a96ec9867",
+        "complete": true,
+        "questions": [
+          {
+            "id": "kennedy-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 13025.907053000003,
+            "preuve": {
+              "ageAnalyseMs": 8002.115248000002,
+              "ageContexteMs": 8002.115248000002,
+              "retardInitialMs": 8002.115248000002,
+              "queueNonAnalyseeMs": 8002.115248000002,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 15100.55296499998,
+            "preuve": {
+              "ageAnalyseMs": 16000.889886999998,
+              "ageContexteMs": 8000.8898869999975,
+              "retardInitialMs": 8000.8898869999975,
+              "queueNonAnalyseeMs": 16000.889886999998,
+              "enAttente": 1,
+              "partiels": 1,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-05",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 20197.187635999988,
+            "preuve": {
+              "ageAnalyseMs": 16002.11271799999,
+              "ageContexteMs": 8002.112717999989,
+              "retardInitialMs": 8002.112717999989,
+              "queueNonAnalyseeMs": 16002.11271799999,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 20269.415342000022,
+            "preuve": {
+              "ageAnalyseMs": 16001.46547200001,
+              "ageContexteMs": 8001.465472000011,
+              "retardInitialMs": 8001.465472000011,
+              "queueNonAnalyseeMs": 16001.46547200001,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "kennedy-08",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 15376.935846999986,
+            "preuve": {
+              "ageAnalyseMs": 16002.024047000043,
+              "ageContexteMs": 8002.024047000043,
+              "retardInitialMs": 8002.024047000043,
+              "queueNonAnalyseeMs": 16002.024047000043,
+              "enAttente": 1,
+              "partiels": 2,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 15376.935846999986,
+            "p95": 20254.969800800016
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 16001.46547200001,
+            "p95": 16002.0949838
+          },
+          "sous15": {
+            "nombre": 1,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 3,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 420000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 420000,
+            "coveredMs": 420000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 168000
+              },
+              {
+                "startMs": 176000,
+                "endMs": 420000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 168000,
+                "endMs": 176000
+              }
+            ],
+            "plannedMs": 420000,
+            "coveredMs": 412000,
+            "percent": 98.09523809523809
+          }
+        },
+        "publications": {
+          "audio": 53,
+          "vision": 52
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 1,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 0
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "A",
+        "passage": 1,
+        "ordre": "01",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+        "sha256": "20eb1d7f484616ab2d092f205eb97ce3cfa7f082281f7a8677deec4a2ae20f28",
+        "runId": "c297585e-0f97-4ddd-b9d2-11643da5c80f",
+        "complete": true,
+        "questions": [
+          {
+            "id": "spring-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 14035.839668,
+            "preuve": {
+              "ageAnalyseMs": 8001.936378999992,
+              "ageContexteMs": 8001.936378999992,
+              "retardInitialMs": 8001.936378999992,
+              "queueNonAnalyseeMs": 8001.936378999992,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-02",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 10121.325021999975,
+            "preuve": {
+              "ageAnalyseMs": 24002.92700200001,
+              "ageContexteMs": 8002.927002000011,
+              "retardInitialMs": 8002.927002000011,
+              "queueNonAnalyseeMs": 24002.92700200001,
+              "enAttente": 2,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 12171.660226000007,
+            "preuve": {
+              "ageAnalyseMs": 22001.241339,
+              "ageContexteMs": 6001.241339,
+              "retardInitialMs": 6001.241339,
+              "queueNonAnalyseeMs": 22001.241339,
+              "enAttente": 2,
+              "partiels": 6,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-04",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 12199.796998000005,
+            "preuve": {
+              "ageAnalyseMs": 12000.534608000016,
+              "ageContexteMs": 12000.534608000016,
+              "retardInitialMs": 12000.534608000016,
+              "queueNonAnalyseeMs": 12000.534608000016,
+              "enAttente": 1,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 10315.54243999999,
+            "preuve": {
+              "ageAnalyseMs": 12000.132370000007,
+              "ageContexteMs": 4000.1323700000066,
+              "retardInitialMs": 4000.1323700000066,
+              "queueNonAnalyseeMs": 12000.132370000007,
+              "enAttente": 1,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 2,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 12171.660226000007,
+            "p95": 13668.631134000001
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 12000.534608000016,
+            "p95": 23602.58986940001
+          },
+          "sous15": {
+            "nombre": 5,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 64000
+              },
+              {
+                "startMs": 96000,
+                "endMs": 176000
+              },
+              {
+                "startMs": 184000,
+                "endMs": 464000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 64000,
+                "endMs": 96000
+              },
+              {
+                "startMs": 176000,
+                "endMs": 184000
+              }
+            ],
+            "plannedMs": 464000,
+            "coveredMs": 424000,
+            "percent": 91.37931034482759
+          }
+        },
+        "publications": {
+          "audio": 58,
+          "vision": 53
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 4,
+            "error": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 4,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 1
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "B",
+        "passage": 1,
+        "ordre": "02",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+        "sha256": "9c457501e4011f2163854d4ca2bbe2a0511e09274856b7f7156eb44fe47ff6d9",
+        "runId": "85e6304a-a846-429b-8263-7da45d933a12",
+        "complete": true,
+        "questions": [
+          {
+            "id": "spring-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8048.566923999999,
+            "preuve": {
+              "ageAnalyseMs": 8000.822271000012,
+              "ageContexteMs": 8000.822271000012,
+              "retardInitialMs": 8000.822271000012,
+              "queueNonAnalyseeMs": 8000.822271000012,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-02",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 9146.628515999997,
+            "preuve": {
+              "ageAnalyseMs": 16004.087822000001,
+              "ageContexteMs": 8004.087822000001,
+              "retardInitialMs": 8004.087822000001,
+              "queueNonAnalyseeMs": 16004.087822000001,
+              "enAttente": 1,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 11187.433804,
+            "preuve": {
+              "ageAnalyseMs": 21999.474461000005,
+              "ageContexteMs": 5999.474461000005,
+              "retardInitialMs": 5999.474461000005,
+              "queueNonAnalyseeMs": 21999.474461000005,
+              "enAttente": 2,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-04",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 18230.35541300004,
+            "preuve": {
+              "ageAnalyseMs": 27999.035482999985,
+              "ageContexteMs": 11999.035482999985,
+              "retardInitialMs": 11999.035482999985,
+              "queueNonAnalyseeMs": 27999.035482999985,
+              "enAttente": 3,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 13319.009248999995,
+            "preuve": {
+              "ageAnalyseMs": 11998.936384,
+              "ageContexteMs": 3998.9363840000005,
+              "retardInitialMs": 3998.9363840000005,
+              "queueNonAnalyseeMs": 11998.936384,
+              "enAttente": 1,
+              "partiels": 7,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 2,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 11187.433804,
+            "p95": 17248.08618020003
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 16004.087822000001,
+            "p95": 26799.12327859999
+          },
+          "sous15": {
+            "nombre": 4,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 64000
+              },
+              {
+                "startMs": 104000,
+                "endMs": 208000
+              },
+              {
+                "startMs": 216000,
+                "endMs": 240000
+              },
+              {
+                "startMs": 272000,
+                "endMs": 464000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 64000,
+                "endMs": 104000
+              },
+              {
+                "startMs": 208000,
+                "endMs": 216000
+              },
+              {
+                "startMs": 240000,
+                "endMs": 272000
+              }
+            ],
+            "plannedMs": 464000,
+            "coveredMs": 384000,
+            "percent": 82.75862068965517
+          }
+        },
+        "publications": {
+          "audio": 58,
+          "vision": 48
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 8,
+            "error": 2
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 8,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 2
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "B",
+        "passage": 2,
+        "ordre": "03",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+        "sha256": "09e81a456f470c1c9031565caace3ab5e415415297d2d34e249a1ce32983aa97",
+        "runId": "67abbbab-4a06-4585-83c6-17058920d520",
+        "complete": true,
+        "questions": [
+          {
+            "id": "spring-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8045.394824000003,
+            "preuve": {
+              "ageAnalyseMs": 8002.340528999994,
+              "ageContexteMs": 8002.340528999994,
+              "retardInitialMs": 8002.340528999994,
+              "queueNonAnalyseeMs": 8002.340528999994,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-02",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8167.531564000004,
+            "preuve": {
+              "ageAnalyseMs": 16002.43643100001,
+              "ageContexteMs": 8002.436431000009,
+              "retardInitialMs": 8002.436431000009,
+              "queueNonAnalyseeMs": 16002.43643100001,
+              "enAttente": 1,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 8189.320566000009,
+            "preuve": {
+              "ageAnalyseMs": 22000.57503800001,
+              "ageContexteMs": 6000.57503800001,
+              "retardInitialMs": 6000.57503800001,
+              "queueNonAnalyseeMs": 22000.57503800001,
+              "enAttente": 2,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-04",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 9224.682149,
+            "preuve": {
+              "ageAnalyseMs": 19999.68605399999,
+              "ageContexteMs": 11999.68605399999,
+              "retardInitialMs": 11999.68605399999,
+              "queueNonAnalyseeMs": 19999.68605399999,
+              "enAttente": 2,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 14362.406281000003,
+            "preuve": {
+              "ageAnalyseMs": 12000.647813000018,
+              "ageContexteMs": 4000.647813000018,
+              "retardInitialMs": 4000.647813000018,
+              "queueNonAnalyseeMs": 12000.647813000018,
+              "enAttente": 1,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 2,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 8189.320566000009,
+            "p95": 13334.861454600003
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 16002.43643100001,
+            "p95": 21600.397241200008
+          },
+          "sous15": {
+            "nombre": 5,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 64000
+              },
+              {
+                "startMs": 104000,
+                "endMs": 456000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 64000,
+                "endMs": 104000
+              },
+              {
+                "startMs": 456000,
+                "endMs": 464000
+              }
+            ],
+            "plannedMs": 464000,
+            "coveredMs": 416000,
+            "percent": 89.65517241379311
+          }
+        },
+        "publications": {
+          "audio": 58,
+          "vision": 52
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 4,
+            "error": 2
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 4,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 2,
+          "visionRetried": 1
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "A",
+        "passage": 2,
+        "ordre": "04",
+        "source": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+        "sha256": "26b13f08f442bb5decc8934d9b3f4cd1175a848afc2a3491a971d8ac9fffa500",
+        "runId": "ba8d6b7d-a031-4773-968a-7da8983ba52b",
+        "complete": true,
+        "questions": [
+          {
+            "id": "spring-01",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 13029.376942999996,
+            "preuve": {
+              "ageAnalyseMs": 8001.289676999993,
+              "ageContexteMs": 8001.289676999993,
+              "retardInitialMs": 8001.289676999993,
+              "queueNonAnalyseeMs": 8001.289676999993,
+              "enAttente": 0,
+              "partiels": 0,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-02",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 10159.896349999995,
+            "preuve": {
+              "ageAnalyseMs": 24001.470906000002,
+              "ageContexteMs": 8001.470906000002,
+              "retardInitialMs": 8001.470906000002,
+              "queueNonAnalyseeMs": 24001.470906000002,
+              "enAttente": 2,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-03",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "observation",
+            "delaiHttpMs": 11200.265304999979,
+            "preuve": {
+              "ageAnalyseMs": 13999.443240000022,
+              "ageContexteMs": 5999.443240000022,
+              "retardInitialMs": 5999.443240000022,
+              "queueNonAnalyseeMs": 13999.443240000022,
+              "enAttente": 1,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-04",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 13249.36180699995,
+            "preuve": {
+              "ageAnalyseMs": 12000.048083000001,
+              "ageContexteMs": 12000.048083000001,
+              "retardInitialMs": 12000.048083000001,
+              "queueNonAnalyseeMs": 12000.048083000001,
+              "enAttente": 1,
+              "partiels": 4,
+              "entreesPerdues": 0
+            }
+          },
+          {
+            "id": "spring-06",
+            "status": "done",
+            "acquis": true,
+            "typeReponse": "insufficient",
+            "delaiHttpMs": 18352.987548000005,
+            "preuve": {
+              "ageAnalyseMs": 12000.464136999974,
+              "ageContexteMs": 4000.4641369999736,
+              "retardInitialMs": 4000.4641369999736,
+              "queueNonAnalyseeMs": 12000.464136999974,
+              "enAttente": 1,
+              "partiels": 5,
+              "entreesPerdues": 0
+            }
+          }
+        ],
+        "mesures": {
+          "planifie": 5,
+          "observe": 5,
+          "acquis": 5,
+          "nonAcquis": 0,
+          "insufficient": 2,
+          "delaiHttpMs": {
+            "n": 5,
+            "p50": 13029.376942999996,
+            "p95": 17332.26239979999
+          },
+          "agePreuveAnalyseMs": {
+            "n": 5,
+            "p50": 12000.464136999974,
+            "p95": 22001.065372800003
+          },
+          "sous15": {
+            "nombre": 4,
+            "denominateur": 5
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 5
+          }
+        },
+        "couverture": {
+          "capture": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "audio": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 464000
+              }
+            ],
+            "missing": [],
+            "plannedMs": 464000,
+            "coveredMs": 464000,
+            "percent": 100
+          },
+          "vision": {
+            "intervals": [
+              {
+                "startMs": 0,
+                "endMs": 64000
+              },
+              {
+                "startMs": 96000,
+                "endMs": 176000
+              },
+              {
+                "startMs": 184000,
+                "endMs": 464000
+              }
+            ],
+            "missing": [
+              {
+                "startMs": 64000,
+                "endMs": 96000
+              },
+              {
+                "startMs": 176000,
+                "endMs": 184000
+              }
+            ],
+            "plannedMs": 464000,
+            "coveredMs": 424000,
+            "percent": 91.37931034482759
+          }
+        },
+        "publications": {
+          "audio": 58,
+          "vision": 53
+        },
+        "pertesParCause": {
+          "audio": {},
+          "vision": {
+            "backlog": 4,
+            "error": 1
+          }
+        },
+        "compteursPertes": {
+          "audioSkipped": 0,
+          "audioExpired": 0,
+          "visionSkippedBacklog": 4,
+          "visionSkippedAsking": 0,
+          "visionExpired": 0,
+          "audioError": 0,
+          "visionError": 1
+        }
+      }
+    ],
+    "parVideoEtBras": [
+      {
+        "video": "kennedy",
+        "bras": "A",
+        "passages": 2,
+        "mesures": {
+          "planifie": 10,
+          "observe": 10,
+          "acquis": 10,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 10,
+            "p50": 18778.941361999983,
+            "p95": 26117.581688450005
+          },
+          "agePreuveAnalyseMs": {
+            "n": 10,
+            "p50": 16001.684119000012,
+            "p95": 20402.35971159999
+          },
+          "sous15": {
+            "nombre": 1,
+            "denominateur": 10
+          },
+          "sous20": {
+            "nombre": 5,
+            "denominateur": 10
+          }
+        }
+      },
+      {
+        "video": "kennedy",
+        "bras": "B",
+        "passages": 2,
+        "mesures": {
+          "planifie": 10,
+          "observe": 10,
+          "acquis": 10,
+          "nonAcquis": 0,
+          "insufficient": 0,
+          "delaiHttpMs": {
+            "n": 10,
+            "p50": 11211.546906500007,
+            "p95": 16095.22523119999
+          },
+          "agePreuveAnalyseMs": {
+            "n": 10,
+            "p50": 12002.306234999996,
+            "p95": 16003.106496550005
+          },
+          "sous15": {
+            "nombre": 8,
+            "denominateur": 10
+          },
+          "sous20": {
+            "nombre": 10,
+            "denominateur": 10
+          }
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "A",
+        "passages": 2,
+        "mesures": {
+          "planifie": 10,
+          "observe": 10,
+          "acquis": 10,
+          "nonAcquis": 0,
+          "insufficient": 4,
+          "delaiHttpMs": {
+            "n": 10,
+            "p50": 12185.728612000006,
+            "p95": 16410.271001999998
+          },
+          "agePreuveAnalyseMs": {
+            "n": 10,
+            "p50": 12000.499372499995,
+            "p95": 24002.27175880001
+          },
+          "sous15": {
+            "nombre": 9,
+            "denominateur": 10
+          },
+          "sous20": {
+            "nombre": 10,
+            "denominateur": 10
+          }
+        }
+      },
+      {
+        "video": "spring",
+        "bras": "B",
+        "passages": 2,
+        "mesures": {
+          "planifie": 10,
+          "observe": 10,
+          "acquis": 10,
+          "nonAcquis": 0,
+          "insufficient": 4,
+          "delaiHttpMs": {
+            "n": 10,
+            "p50": 9185.655332499999,
+            "p95": 16489.77830360002
+          },
+          "agePreuveAnalyseMs": {
+            "n": 10,
+            "p50": 16003.262126500005,
+            "p95": 25299.72828274999
+          },
+          "sous15": {
+            "nombre": 9,
+            "denominateur": 10
+          },
+          "sous20": {
+            "nombre": 10,
+            "denominateur": 10
+          }
+        }
+      }
+    ],
+    "appariements": [
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-01",
+        "Ams": 26030.964719000003,
+        "Bms": 8018.621918999997,
+        "differenceBmoinsAMs": -18012.342800000006,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-03",
+        "Ams": 17096.962881,
+        "Bms": 16087.368401999993,
+        "differenceBmoinsAMs": -1009.5944790000067,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-05",
+        "Ams": 26188.450118000008,
+        "Bms": 9150.96310600001,
+        "differenceBmoinsAMs": -17037.487011999998,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-06",
+        "Ams": 23256.548387999996,
+        "Bms": 11196.267339000013,
+        "differenceBmoinsAMs": -12060.281048999983,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "id": "kennedy-08",
+        "Ams": 17360.69508799998,
+        "Bms": 11297.572432000015,
+        "differenceBmoinsAMs": -6063.122655999963,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-01",
+        "Ams": 13025.907053000003,
+        "Bms": 7016.635064999995,
+        "differenceBmoinsAMs": -6009.271988000008,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-03",
+        "Ams": 15100.55296499998,
+        "Bms": 16101.653545999987,
+        "differenceBmoinsAMs": 1001.1005810000061,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-05",
+        "Ams": 20197.187635999988,
+        "Bms": 12173.245066000003,
+        "differenceBmoinsAMs": -8023.942569999985,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-06",
+        "Ams": 20269.415342000022,
+        "Bms": 11226.826474000001,
+        "differenceBmoinsAMs": -9042.58886800002,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "id": "kennedy-08",
+        "Ams": 15376.935846999986,
+        "Bms": 8321.786594000005,
+        "differenceBmoinsAMs": -7055.149252999981,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-01",
+        "Ams": 14035.839668,
+        "Bms": 8048.566923999999,
+        "differenceBmoinsAMs": -5987.272744000002,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-02",
+        "Ams": 10121.325021999975,
+        "Bms": 9146.628515999997,
+        "differenceBmoinsAMs": -974.6965059999784,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-03",
+        "Ams": 12171.660226000007,
+        "Bms": 11187.433804,
+        "differenceBmoinsAMs": -984.226422000007,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-04",
+        "Ams": 12199.796998000005,
+        "Bms": 18230.35541300004,
+        "differenceBmoinsAMs": 6030.558415000036,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "id": "spring-06",
+        "Ams": 10315.54243999999,
+        "Bms": 13319.009248999995,
+        "differenceBmoinsAMs": 3003.466809000005,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-01",
+        "Ams": 13029.376942999996,
+        "Bms": 8045.394824000003,
+        "differenceBmoinsAMs": -4983.982118999993,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-02",
+        "Ams": 10159.896349999995,
+        "Bms": 8167.531564000004,
+        "differenceBmoinsAMs": -1992.364785999991,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-03",
+        "Ams": 11200.265304999979,
+        "Bms": 8189.320566000009,
+        "differenceBmoinsAMs": -3010.9447389999696,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-04",
+        "Ams": 13249.36180699995,
+        "Bms": 9224.682149,
+        "differenceBmoinsAMs": -4024.67965799995,
+        "acquisA": true,
+        "acquisB": true
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "id": "spring-06",
+        "Ams": 18352.987548000005,
+        "Bms": 14362.406281000003,
+        "differenceBmoinsAMs": -3990.5812670000014,
+        "acquisA": true,
+        "acquisB": true
+      }
+    ],
+    "differencesApparieesMs": [
+      {
+        "video": "kennedy",
+        "passage": 1,
+        "n": 5,
+        "p50": -12060.281048999983,
+        "p95": -2020.300114399999
+      },
+      {
+        "video": "kennedy",
+        "passage": 2,
+        "n": 5,
+        "p50": -7055.149252999981,
+        "p95": -400.9739327999978
+      },
+      {
+        "video": "spring",
+        "passage": 1,
+        "n": 5,
+        "p50": -974.6965059999784,
+        "p95": 5425.14009380003
+      },
+      {
+        "video": "spring",
+        "passage": 2,
+        "n": 5,
+        "p50": -3990.5812670000014,
+        "p95": -2196.080776599987
+      }
+    ]
+  },
+  "images": {
+    "etat": "en_attente"
+  }
+}

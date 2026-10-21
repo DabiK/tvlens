@@ -44,12 +44,12 @@ Pour l'analyse, conserver les **40 délais individuels** et calculer par vidéo 
 ## État réel
 
 La session `tmux -L tvlens-day-20261021`, `tvlens-confirm-pause`, a démarré le 21 octobre
-à 08:16:23 UTC avec [launch.sh](launch.sh). Les deux validations Kennedy sont sorties
-avec code 0 ; le premier passage Kennedy A est actif au premier relevé. La réservation
-expire à 11:15 UTC, moins de trois heures après le départ. Les chemins et empreintes
-du déploiement figurent dans [deployment.json](deployment.json). Ce démarrage ne
-constitue pas un résultat de vitesse ou de pertinence : les rapports seront rapatriés
-et vérifiés une fois chaque passage clos.
+à 08:16:23 UTC avec [launch.sh](launch.sh). Les huit passages se sont terminés à
+09:18:16 UTC. Le vérificateur distant a confirmé `closed=true`, huit passages, les
+processus possédés arrêtés, les verrous libérés et l'intégrité SHA-256. Les
+[rapports rapatriés](rapatriements/confirmation-pause-20261021T081500Z/RAPATRIEMENT.md),
+le [bilan technique](BILAN.md) et les chemins/empreintes du [déploiement](deployment.json)
+sont conservés. La qualité reste non notée tant que les fiches ne sont pas validées.
 
 ## Vérification locale sans GPU
 

@@ -1,0 +1,15 @@
+{"atUtc": "2026-10-21T08:16:23.245480+00:00", "status": "created"}
+{"atUtc": "2026-10-21T08:16:23.896562+00:00", "status": "kennedy-validation-A"}
+{"atUtc": "2026-10-21T08:16:24.400394+00:00", "status": "kennedy-validation-B"}
+{"atUtc": "2026-10-21T08:16:24.903477+00:00", "status": "kennedy-01-A"}
+{"atUtc": "2026-10-21T08:23:42.474801+00:00", "status": "kennedy-02-B"}
+{"atUtc": "2026-10-21T08:30:58.668113+00:00", "status": "kennedy-03-B"}
+{"atUtc": "2026-10-21T08:38:09.416006+00:00", "status": "kennedy-04-A"}
+{"atUtc": "2026-10-21T08:45:21.336097+00:00", "status": "spring-validation-A"}
+{"atUtc": "2026-10-21T08:45:21.839238+00:00", "status": "spring-validation-B"}
+{"atUtc": "2026-10-21T08:45:22.342128+00:00", "status": "spring-01-A"}
+{"atUtc": "2026-10-21T08:53:14.993272+00:00", "status": "spring-02-B"}
+{"atUtc": "2026-10-21T09:01:07.514562+00:00", "status": "spring-03-B"}
+{"atUtc": "2026-10-21T09:10:23.198889+00:00", "status": "spring-04-A"}
+{"atUtc": "2026-10-21T09:18:16.659331+00:00", "status": "workload-finished", "readyForScoring": false}
+{"atUtc": "2026-10-21T09:18:16.661068+00:00", "status": "finished", "cleanupConfirmed": true}

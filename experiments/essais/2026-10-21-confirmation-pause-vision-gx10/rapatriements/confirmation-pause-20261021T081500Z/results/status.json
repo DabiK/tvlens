@@ -1,0 +1,227 @@
+{
+  "id": "ed1a6668a3d04767b5fdc5f9835a3bbb",
+  "startedAtUtc": "2026-10-21T08:16:23.245366+00:00",
+  "deadlineUtc": "2026-10-21T11:15:00+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-validation-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-validation-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T08:16:23.896414+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:16:24.399005+00:00",
+      "durationSeconds": 0.500531885001692
+    },
+    {
+      "name": "kennedy-validation-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-validation-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T08:16:24.399484+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:16:24.902059+00:00",
+      "durationSeconds": 0.5010748000058811
+    },
+    {
+      "name": "kennedy-01-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:16:24.902590+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:23:42.448330+00:00",
+      "durationSeconds": 437.54426459700335
+    },
+    {
+      "name": "kennedy-02-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:23:42.474460+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:30:58.647315+00:00",
+      "durationSeconds": 436.1712948560016
+    },
+    {
+      "name": "kennedy-03-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:30:58.667955+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:38:09.390158+00:00",
+      "durationSeconds": 430.7212034139957
+    },
+    {
+      "name": "kennedy-04-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/kennedy/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:38:09.415838+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:45:21.305989+00:00",
+      "durationSeconds": 431.8888986660022
+    },
+    {
+      "name": "spring-validation-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-validation-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T08:45:21.335934+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:45:21.837861+00:00",
+      "durationSeconds": 0.5007664320000913
+    },
+    {
+      "name": "spring-validation-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-validation-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T08:45:21.838411+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:45:22.340779+00:00",
+      "durationSeconds": 0.500791216007201
+    },
+    {
+      "name": "spring-01-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-01-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:45:22.341321+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T08:53:14.960235+00:00",
+      "durationSeconds": 472.6170431999926
+    },
+    {
+      "name": "spring-02-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-02-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T08:53:14.993079+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T09:01:07.452658+00:00",
+      "durationSeconds": 472.45851063300506
+    },
+    {
+      "name": "spring-03-B",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-B.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-03-B/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T09:01:07.514316+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T09:10:23.128766+00:00",
+      "durationSeconds": 555.6132089390012
+    },
+    {
+      "name": "spring-04-A",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/inputs/spring/scenario-A.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/spring-04-A/run",
+        "--config",
+        "/home/nvidia/tvlens-setup/confirmation-pause-20261021T081500Z/results/config.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T09:10:23.198656+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T09:18:16.613143+00:00",
+      "durationSeconds": 473.4133714740019
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T09:18:16.660926+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

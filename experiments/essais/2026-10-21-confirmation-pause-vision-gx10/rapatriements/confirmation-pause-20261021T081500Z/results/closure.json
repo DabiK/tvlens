@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "locksReleased": true,
+  "ownedProcessesStopped": true,
+  "containersCreated": false,
+  "completedPassages": 8,
+  "expectedPassages": 8,
+  "readyForScoring": false
+}
