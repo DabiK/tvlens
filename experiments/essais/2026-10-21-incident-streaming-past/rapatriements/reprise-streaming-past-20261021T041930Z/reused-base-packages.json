@@ -1,0 +1,14 @@
+{
+  "packages": {
+    "transformers": null,
+    "qwen-vl-utils": null,
+    "decord": null,
+    "accelerate": null,
+    "ffmpeg-python": null,
+    "tokenizers": "0.23.2",
+    "huggingface-hub": "1.31.0",
+    "torch": "2.14.0a0+b2c75dd062.nv26.9.68203377",
+    "flash-attn": "2.8.3.post1+git91ffc2ac7c.63064690"
+  },
+  "cuda": "13.4"
+}

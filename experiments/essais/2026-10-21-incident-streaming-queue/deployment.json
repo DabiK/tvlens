@@ -1,0 +1,23 @@
+{
+  "deployedAtUtc": "2026-10-21T04:49:31Z",
+  "host": "gx10-tvlens",
+  "sshOptions": ["BatchMode=yes", "ConnectTimeout=15", "ControlMaster=no", "ControlPath=none"],
+  "tmuxSocket": "tvlens-recovery-20261020T224805Z",
+  "session": "tvlens-reprise-streaming-queue",
+  "sourceAndRunRoot": "/home/nvidia/tvlens-setup/reprise-streaming-queue-20261021T044930Z",
+  "previousRunRoot": "/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z",
+  "previousRunSealSha256": "a1e4cd6aaf822fb0d4644d24c3888c8ee762216a0e36e8e01d818cb4088b5bcc",
+  "previousPilotStatusSha256": "01e0125e5488d42a0d086ee87b4a10e170da4f7b0614ab6ce026b2c3eaa7901d",
+  "sourceSha256": {
+    "continuation.py": "7966bab6e2081c5462958424c01113610ef7af0eff457a5d159e45f4243e33b3",
+    "launch.sh": "9d4de5111166ff6cee693ca847acf82c0c5d2e1729447b1f26d80ec2c8069d7d"
+  },
+  "correction": "python3 -P, pilot user 1000:1000, HOME=/tmp",
+  "initialStatusObservedAtUtc": "2026-10-21T04:49:41Z",
+  "initialStage": "pilot-16",
+  "originalGateAtUtc": "2026-10-21T03:37:16.052779Z",
+  "shortPhaseDeadlineUtc": "2026-10-21T05:07:16.052779Z",
+  "totalBudgetDeadlineUtc": "2026-10-21T07:07:16.052779Z",
+  "globalDeadlineUtc": "2026-10-21T12:00:00Z",
+  "initialModelInferenceCompleted": false
+}

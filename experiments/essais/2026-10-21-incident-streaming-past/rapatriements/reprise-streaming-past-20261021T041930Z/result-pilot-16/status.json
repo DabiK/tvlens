@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "startedAtUtc": "2026-10-21T04:31:00.907366+00:00",
+  "error": {
+    "type": "ImportError",
+    "message": "cannot import name 'Queue' from 'queue' (/runner/queue.py)",
+    "traceback": "Traceback (most recent call last):\n  File \"/runner/run_streamingvlm.py\", line 93, in run\n    upstream = importlib.import_module('streaming_vlm.inference.inference')\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/source/streaming_vlm/inference/inference.py\", line 11, in <module>\n    import torch, functools, os, argparse\n  File \"/usr/local/lib/python3.12/dist-packages/torch/__init__.py\", line 3312, in <module>\n    from torch import (\n  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 11, in <module>\n    from torch.fx.passes.infra.pass_base import PassResult\n  File \"/usr/local/lib/python3.12/dist-packages/torch/fx/passes/infra/__init__.py\", line 1, in <module>\n    from . import pass_manager\n  File \"/usr/local/lib/python3.12/dist-packages/torch/fx/passes/infra/pass_manager.py\", line 5, in <module>\n    from queue import Queue\nImportError: cannot import name 'Queue' from 'queue' (/runner/queue.py)\n"
+  },
+  "finishedAtUtc": "2026-10-21T04:31:01.779032+00:00",
+  "wallSeconds": 0.8716765210047015
+}

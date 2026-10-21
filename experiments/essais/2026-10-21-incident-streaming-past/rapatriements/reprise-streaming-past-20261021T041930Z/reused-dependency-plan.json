@@ -1,0 +1,42 @@
+{
+  "baseImage": "nvcr.io/nvidia/pytorch:26.09-py3@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e",
+  "baseVersions": {
+    "packages": {
+      "transformers": null,
+      "qwen-vl-utils": null,
+      "decord": null,
+      "accelerate": null,
+      "ffmpeg-python": null,
+      "tokenizers": "0.23.2",
+      "huggingface-hub": "1.31.0",
+      "torch": "2.14.0a0+b2c75dd062.nv26.9.68203377",
+      "flash-attn": "2.8.3.post1+git91ffc2ac7c.63064690"
+    },
+    "cuda": "13.4"
+  },
+  "pins": {
+    "transformers": "4.52.4",
+    "qwen-vl-utils": "0.0.11",
+    "decord": "0.6.0",
+    "accelerate": "1.8.1",
+    "ffmpeg-python": "0.2.0",
+    "tokenizers": "0.21.2",
+    "huggingface-hub": "0.34.4"
+  },
+  "install": [
+    "transformers==4.52.4",
+    "qwen-vl-utils==0.0.11",
+    "accelerate==1.8.1",
+    "ffmpeg-python==0.2.0",
+    "tokenizers==0.21.2",
+    "huggingface-hub==0.34.4"
+  ],
+  "binaryWheelsOnly": true,
+  "noDependencies": true,
+  "decordSourceBuild": true,
+  "decordCommit": "6a3617cef035535193f390f86399dde139fa2a53",
+  "decordCuda": false,
+  "ffmpegVersion": "4.4.8",
+  "ffmpegSourceSha256": "c73848c4ae283d9eaee7be3b276affbc3543380483555500d0dd2c9b7e1c39c3",
+  "pyAvInstalled": false
+}

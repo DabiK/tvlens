@@ -1,0 +1,30 @@
+{
+  "name": "checkpoint-download",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-checkpoint-download-acb4fff8e97240408da9db3acdc6cb20",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z/results/checkpoint-download.cid",
+    "--label",
+    "tvlens.owner=acb4fff8e97240408da9db3acdc6cb20",
+    "--network",
+    "bridge",
+    "-e",
+    "HF_HUB_DISABLE_IMPLICIT_TOKEN=1",
+    "-e",
+    "HF_HUB_DISABLE_TELEMETRY=1",
+    "-v",
+    "/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z/streaming-hf-acb4fff8e97240408da9db3acdc6cb20:/cache",
+    "--entrypoint",
+    "python3",
+    "sha256:0ae5d7785eadb9a9983f149a6a3921cffb7e3c325e0cd183b06f2eed5d2d919d",
+    "-c",
+    "from huggingface_hub import snapshot_download; print(snapshot_download('mit-han-lab/StreamingVLM',revision='7ac1cef46d20432053a9814838760318cb26b348',cache_dir='/cache',token=False,max_workers=4),flush=True)"
+  ],
+  "startedAtUtc": "2026-10-21T04:19:52.796749+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T04:30:52.800329+00:00",
+  "durationSeconds": 660.002549058001
+}

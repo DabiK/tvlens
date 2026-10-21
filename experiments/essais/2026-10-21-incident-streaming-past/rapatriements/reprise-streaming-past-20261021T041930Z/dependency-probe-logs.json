@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "{\"arch\": \"aarch64\", \"videoFrames\": 11138, \"decord\": \"0.6.0\", \"torch\": \"2.14.0a0+b2c75dd062.nv26.09\", \"cuda\": \"13.4\", \"available\": true, \"capability\": [12, 1], \"transformers\": \"4.52.4\", \"flash_attn\": \"2.8.3.post1\"}\n",
+  "stderr": "/opt/pytorch/ao/torchao/quantization/quant_api.py:1542: SyntaxWarning: invalid escape sequence '\\.'\n  \"\"\"Configuration class for applying different quantization configs to modules or parameters based on their fully qualified names (FQNs).\nW1021 04:19:51.399000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.\nlivecc_utils.video_process_patch: FORCE_QWENVL_VIDEO_READER=None, FPS_MAX_FRAMES=480, VIDEO_MIN_PIXELS=78400, VIDEO_TOTAL_PIXELS=90316800\n"
+}

@@ -1,0 +1,36 @@
+{
+  "root": "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results",
+  "sealSha256": "29c2285651790458c73ec217dd782c810ba533ec488877f486ae28770710c8b1",
+  "originalWorkloadStartUtc": "2026-10-21T03:37:16.052779+00:00",
+  "shortDeadlineUtc": "2026-10-21T05:07:16.052779+00:00",
+  "effectiveDeadlineUtc": "2026-10-21T07:07:16.052779+00:00",
+  "sourceSha256": "e6163b40a9b71b11ea28606e4e84dd1f10b4964628b1209cbec93acbe76b7d05",
+  "networkCorrection": "--network=bridge -> --network=default for dependency-build only",
+  "reusedStages": [
+    "image-pull",
+    "base-packages",
+    "dependency-build",
+    "derived-packages"
+  ],
+  "workloadProtocolChanged": false,
+  "budgetReset": false,
+  "automaticRetry": false,
+  "readyForScoring": false,
+  "immediatePredecessor": "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results",
+  "immediatePredecessorSealSha256": "8364eb61e32712ce44bc9eff66511da506c58a35f6f1c53643c4ed8836e540b3",
+  "immediatePredecessorContainersStopped": [
+    "6df3243843bb",
+    "6df3243843bb5ea85722f52cdcef9d747a860045df7ce44431854118272f65e1",
+    "af11382331dc",
+    "af11382331dc740040b89c9a4ed5b9656aa81b906a78f6ef8a485a6e3d78aa4f"
+  ],
+  "frozenRecoverySha256": "8841b402e40cb8aba364228a10bc3195d44585cd0fd24d79078d03dbf8b6680f",
+  "dependencyAddition": {
+    "distribution": "future",
+    "version": "1.0.0",
+    "wheelSha256": "929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216"
+  },
+  "runtimeEnvironmentChanged": true,
+  "modelAndInputsChanged": false,
+  "correctionStage": "future-layer-build"
+}

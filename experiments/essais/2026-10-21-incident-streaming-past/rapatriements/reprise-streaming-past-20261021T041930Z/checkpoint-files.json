@@ -1,0 +1,71 @@
+{
+  "repo": "mit-han-lab/StreamingVLM",
+  "revision": "7ac1cef46d20432053a9814838760318cb26b348",
+  "files": {
+    ".gitattributes": {
+      "bytes": 1570,
+      "sha256": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930"
+    },
+    "added_tokens.json": {
+      "bytes": 605,
+      "sha256": "58b54bbe36fc752f79a24a271ef66a0a0830054b4dfad94bde757d851968060b"
+    },
+    "chat_template.json": {
+      "bytes": 1049,
+      "sha256": "94174d7176c52a7192f96fc34eb2cf23c7c2059d63cdbfadca1586ba89731fb7"
+    },
+    "config.json": {
+      "bytes": 1459,
+      "sha256": "98cf138fa43cad20eb7dc5f3a879c1f853e15e4a1f43cc803326b4e13e355557"
+    },
+    "generation_config.json": {
+      "bytes": 260,
+      "sha256": "0522d7bac7af96902d72ad488892a828759345b08abfdde11d23093ad0839049"
+    },
+    "merges.txt": {
+      "bytes": 1671853,
+      "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+    },
+    "model-00001-of-00004.safetensors": {
+      "bytes": 4968243304,
+      "sha256": "ffaab74c488b492f21f90f2a195aac2fa87456fc98109169780871a9634a9253"
+    },
+    "model-00002-of-00004.safetensors": {
+      "bytes": 4991495816,
+      "sha256": "7b2e161d13db99027d93700ac0dd58e41030e70fca6884a194f65fd23952e816"
+    },
+    "model-00003-of-00004.safetensors": {
+      "bytes": 4932751040,
+      "sha256": "7ae8a1f532c5b095df816fb037afc7eefeec8728fc090fea1f3376dd87314d98"
+    },
+    "model-00004-of-00004.safetensors": {
+      "bytes": 1691924384,
+      "sha256": "ba606719fe1e8ce4ca81f723b4f186a92f19feaa53d010bd1ac076e25bd7d020"
+    },
+    "model.safetensors.index.json": {
+      "bytes": 57619,
+      "sha256": "3067e9b0f35596ff3426a0d0ec8c982a51fa1e110c4fc30dcf3be9ea37409df6"
+    },
+    "preprocessor_config.json": {
+      "bytes": 575,
+      "sha256": "549c158011407dfb750d9ec578047cf76f5bfe365cd0aa069a50137d3f98d9dd"
+    },
+    "special_tokens_map.json": {
+      "bytes": 613,
+      "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd"
+    },
+    "tokenizer.json": {
+      "bytes": 11421896,
+      "sha256": "9c5ae00e602b8860cbd784ba82a8aa14e8feecec692e7076590d014d7b7fdafa"
+    },
+    "tokenizer_config.json": {
+      "bytes": 5803,
+      "sha256": "1c0e2bd505ba5f4617c8ba29c191a4cd41b49ddf5507485ea33c843dd3934ac5"
+    },
+    "vocab.json": {
+      "bytes": 2776833,
+      "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    }
+  },
+  "totalBytes": 16600354679
+}

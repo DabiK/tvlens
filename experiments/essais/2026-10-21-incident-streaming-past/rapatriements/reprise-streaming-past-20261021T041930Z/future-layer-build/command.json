@@ -1,0 +1,19 @@
+{
+  "name": "future-layer-build",
+  "argv": [
+    "docker",
+    "build",
+    "--pull=false",
+    "--network=default",
+    "--progress=plain",
+    "-t",
+    "tvlens-streaming-acb4fff8e97240408da9db3acdc6cb20:future",
+    "-f",
+    "/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z/results/future-layer/Dockerfile",
+    "/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z/results/future-layer"
+  ],
+  "startedAtUtc": "2026-10-21T04:19:45.185487+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T04:19:47.187583+00:00",
+  "durationSeconds": 2.0016258459945675
+}

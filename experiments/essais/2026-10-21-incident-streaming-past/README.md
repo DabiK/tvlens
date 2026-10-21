@@ -1,7 +1,7 @@
 # Dépendance Python `past` absente — reprise préparée
 
-État au 21 octobre 2026 à 04:19 UTC : **reprise déployée et active**. La couche corrective,
-l'inventaire et la sonde de dépendances ont réussi ; le téléchargement du checkpoint a commencé.
+État au 21 octobre 2026 à 04:31 UTC : **reprise scellée `blocked` au premier pilote**. La couche corrective,
+l'inventaire, la sonde de dépendances et le téléchargement du checkpoint ont réussi.
 Le diagnostic préalable s'est limité à des lectures et à l'acquisition/libération immédiate des trois
 verrous existants. Les détails de lancement sont dans `deployment.json`.
 
@@ -72,7 +72,11 @@ plafonnées par le budget restant. Le script a été placé dans le **dossier di
 `/home/nvidia/tvlens-setup/reprise-streaming-past-20261021T041930Z` avec `launch.sh`, puis appelé une seule fois à 04:19:44 UTC.
 Le lanceur refuse une session `tvlens-reprise-*`, des résultats/logs existants, ou un second passage
 par son admission atomique `launch-once`. Au contrôle de 04:19:52 UTC, `future-layer-build`,
-`corrected-packages` et `dependency-probe` avaient réussi ; `checkpoint-download` débutait.
+`corrected-packages` et `dependency-probe` avaient réussi ; `checkpoint-download` débutait. Il a fini
+16/16 fichiers, puis `pilot-16` s'est arrêté avant chargement du modèle : `/runner/queue.py` masque le
+module standard `queue` requis par PyTorch. Aucune réponse StreamingVLM n'a été produite. Voir [les
+preuves vérifiées](rapatriements/reprise-streaming-past-20261021T041930Z/RAPATRIEMENT.md) ; une autre
+reprise, si validée, devra rester dans un dossier neuf et conserver les mêmes limites horaires.
 
 ## Vérifications observées et limites
 

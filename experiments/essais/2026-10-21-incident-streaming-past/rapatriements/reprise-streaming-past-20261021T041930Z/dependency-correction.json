@@ -1,0 +1,18 @@
+{
+  "baseImageId": "sha256:8d92f144e0a96c5bfb95104ef04748208b22726006cb0a9b4329eabeda74f26c",
+  "addition": "future==1.0.0",
+  "wheelUrl": "https://files.pythonhosted.org/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl",
+  "wheelSha256": "929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216",
+  "reusedPythonPins": {
+    "transformers": "4.52.4",
+    "qwen-vl-utils": "0.0.11",
+    "decord": "0.6.0",
+    "accelerate": "1.8.1",
+    "ffmpeg-python": "0.2.0",
+    "tokenizers": "0.21.2",
+    "huggingface-hub": "0.34.4"
+  },
+  "noDependencies": true,
+  "modelAndInputsChanged": false,
+  "automaticRetry": false
+}
