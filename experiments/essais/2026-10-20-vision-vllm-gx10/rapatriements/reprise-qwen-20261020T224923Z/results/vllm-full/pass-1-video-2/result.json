@@ -1,0 +1,240 @@
+{
+  "id": "pass-1-video-2",
+  "caseId": "video-2",
+  "repeat": 1,
+  "startMs": 16000,
+  "endMs": 24000,
+  "atUtc": "2026-10-20T23:50:48.548Z",
+  "status": "returned",
+  "input": {
+    "startMs": 16000,
+    "endMs": 24000,
+    "media": {
+      "path": "media/five-images-000.json",
+      "sha256": "4ceddf1f40459aa88b55c431c14e70d817685640e8da72422926aff617f6e2ae"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 16000,
+        "endMs": 24000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "16",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "17.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "19.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "20.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "22.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "16",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "Maintenant, dans cette courte vidéo, on va découvrir comment s'entraînent une ira, comment on entraînent une ira, comment se fait l'apprentissage de nos ira.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-3, publication audio à 25435.964027 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 16000,
+        "sha256": "3f323c8167b98653d087be9912e7d88f49eb3b67bee8e3105dbe0d89719ed5ec"
+      },
+      {
+        "index": 1,
+        "atMs": 17600,
+        "sha256": "1c8f8a05d126872f4ab540dc238a9178ebcd72421758d4e6b4e2a130dc32c726"
+      },
+      {
+        "index": 2,
+        "atMs": 19200,
+        "sha256": "458e35edc6c6b9e87662f3cfaed9489a9c9411e86cb5abf5e452d62455621c41"
+      },
+      {
+        "index": 3,
+        "atMs": 20800,
+        "sha256": "850df30c06e70809d55d03dcf9bcedf5fa37b3fbd8ae12f97b4762a66cc7d0d5"
+      },
+      {
+        "index": 4,
+        "atMs": 22400,
+        "sha256": "45ce5411d60e8c603dc6eb096b5225db6e558ab0a23996f7c94cb2a510047750"
+      }
+    ],
+    "audioSha256": "a1d85817561b53edcb2a1a86e80a75b71deeb00fc5687d870701de6cbc299657"
+  },
+  "promptSha256": "83925f2a18c20244bf9b1f23ae03a5f90882eb20450b588da8b05fb19ae03b6f",
+  "frameSha256": [
+    "3f323c8167b98653d087be9912e7d88f49eb3b67bee8e3105dbe0d89719ed5ec",
+    "1c8f8a05d126872f4ab540dc238a9178ebcd72421758d4e6b4e2a130dc32c726",
+    "458e35edc6c6b9e87662f3cfaed9489a9c9411e86cb5abf5e452d62455621c41",
+    "850df30c06e70809d55d03dcf9bcedf5fa37b3fbd8ae12f97b4762a66cc7d0d5",
+    "45ce5411d60e8c603dc6eb096b5225db6e558ab0a23996f7c94cb2a510047750"
+  ],
+  "requestSha256": "c95684db165fc80e1cfa96bcfc3b541baaa28144ec38237800fec9e78e40e45e",
+  "requestBytes": 541838,
+  "requestFile": "pass-1-video-2/request.json",
+  "responseFile": "pass-1-video-2/response.raw.txt",
+  "responseSha256": "79b2535307a537d9117849d22b3219758551c5b9a33c72ef42c96b772edc3efe",
+  "responseBytes": 1858,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 16278.005129999998,
+    "totalMs": 16278.278731999999,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Un homme, identifié comme Jean-Luc Parouty, ingénieur de recherche en IA au CNRS, est présenté devant un écran affichant le titre 'Comment s'entraîne une IA ?' dans le cadre d'une formation sur la découverte de l'IA. Le contenu visuel et la transcription indiquent qu'il s'agit d'une introduction à un sujet sur l'apprentissage des intelligences artificielles.",
+    "visual": "Un homme en t-shirt sombre, identifié par une légende comme Jean-Luc Parouty, ingénieur de recherche en IA au CNRS, se tient devant un écran blanc avec des textes en surimpression : 'FORMATION DÉCOUVERTE DE L'IA', 'HISTOIRE, BASES & CONCEPTS', et la question centrale 'Comment s'entraîne une IA ?'.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Formation découverte de l'IA",
+    "topicSummary": "Introduction à une formation sur la découverte de l'intelligence artificielle, avec un focus sur les bases et concepts, et une question centrale sur l'apprentissage des IA, présentée par un ingénieur de recherche en IA au CNRS.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5157,
+      "total_tokens": 5471,
+      "completion_tokens": 314,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:51:04.828Z"
+}

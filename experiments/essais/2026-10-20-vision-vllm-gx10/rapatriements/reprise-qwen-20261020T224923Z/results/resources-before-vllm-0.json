@@ -1,0 +1,18 @@
+{
+  "atUtc": "2026-10-20T23:39:40.859501+00:00",
+  "freeDiskBytes": 819304574976,
+  "availableMemoryBytes": 123337666560,
+  "gpuProcesses": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "replays": {
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "ollamaResident": {
+    "models": []
+  }
+}

@@ -1,0 +1,257 @@
+{
+  "id": "pass-1-video-47",
+  "caseId": "video-47",
+  "repeat": 1,
+  "startMs": 376000,
+  "endMs": 384000,
+  "atUtc": "2026-10-21T03:23:21.270Z",
+  "status": "returned",
+  "input": {
+    "startMs": 376000,
+    "endMs": 384000,
+    "media": {
+      "path": "media/five-images-005.json",
+      "sha256": "30d20251ddae2caf52197aee41cd1c1cbabf600041fcc6f55d710ecb74d23388"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 376000,
+        "endMs": 384000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "376",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "377.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "379.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "380.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "382.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "376",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EoqJnq/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "C'est pour ça qu'on a donné des valuations qui sont ici et on va prendre régulièrement.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-48, publication audio à 386332.530897 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 376000,
+        "sha256": "a8b8436594f54fef062044d3f46a3a10d2c1f3dcfda43a513838d9f753adbe34"
+      },
+      {
+        "index": 1,
+        "atMs": 377600,
+        "sha256": "344804ab9f93f4c67ee49134e4078bf70d3684e1aba433a6ac1878ed62f129a8"
+      },
+      {
+        "index": 2,
+        "atMs": 379200,
+        "sha256": "576baf845c011114eb9e6ee52cddcb9236d59fb16c26978f61c746e56fd794fd"
+      },
+      {
+        "index": 3,
+        "atMs": 380800,
+        "sha256": "e1d1e3dc3d01c0c00812cc835acea8349a740cabfe2f672b7ea706281c5a1012"
+      },
+      {
+        "index": 4,
+        "atMs": 382400,
+        "sha256": "6d342fd6dbe90f0ac8aa5b5f3c473f7ef577a53e949ad111b25879d9cf901ba6"
+      }
+    ],
+    "audioSha256": "c85c8a238cb83ef183470698566bc667292d00cf50870dcee21f8f2c00afb814"
+  },
+  "promptSha256": "3814ee374a875978ec35870a89d5c76cad1e1367b922efb9ab47d3f23ea5030f",
+  "frameSha256": [
+    "a8b8436594f54fef062044d3f46a3a10d2c1f3dcfda43a513838d9f753adbe34",
+    "344804ab9f93f4c67ee49134e4078bf70d3684e1aba433a6ac1878ed62f129a8",
+    "576baf845c011114eb9e6ee52cddcb9236d59fb16c26978f61c746e56fd794fd",
+    "e1d1e3dc3d01c0c00812cc835acea8349a740cabfe2f672b7ea706281c5a1012",
+    "6d342fd6dbe90f0ac8aa5b5f3c473f7ef577a53e949ad111b25879d9cf901ba6"
+  ],
+  "requestSha256": "980eea5b69e91f12a25c65d989cb88d97c6ece0fdf19c58916da764ffd58005e",
+  "requestBytes": 474740,
+  "requestFile": "pass-1-video-47/request.json",
+  "responseFile": "pass-1-video-47/response.raw.txt",
+  "responseSha256": "f0fbb9bd57c2b9e114ad8bdce4312a2b90d1e579c8a8f6ccac420a80d508c196",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:23:21.270Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "a228c0062f3f4fffb45e0923d97f811d3d79bdde589aefcd4347784714f9ef1b",
+    "file": "provider-pass-1-video-47-before.raw.txt",
+    "totalMs": 0.7879780000002938,
+    "modelResident": true
+  },
+  "responseBytes": 1106,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 11401.757381000003,
+    "totalMs": 11401.839798,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Le présentateur explique que les évaluations sont régulièrement effectuées, en se référant à des données spécifiques pour surveiller le processus d'apprentissage.",
+    "visual": "Le présentateur, en train de parler, est visible à droite de l'écran, tandis que le diagramme de l'apprentissage et de l'évaluation reste affiché.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Surveillance de l'apprentissage par évaluation",
+    "topicSummary": "Le présentateur explique que les évaluations sont régulièrement effectuées, en se référant à des données spécifiques pour surveiller le processus d'apprentissage.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 11400702136,
+    "loadDurationNs": 7214981,
+    "promptEvalDurationNs": 3098268000,
+    "evalDurationNs": 8008232000,
+    "promptTokens": 6115,
+    "outputTokens": 192,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:23:32.674Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "f14db59a374c2b4f3e60e45d2431c8573e123dee00d636572b92f42c051357d7",
+    "file": "provider-pass-1-video-47-after.raw.txt",
+    "totalMs": 0.6560880000033649,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:23:32.675Z"
+}

@@ -87,3 +87,9 @@ node scripts/check.mjs --changed
 Le contrôle `node scripts/check.mjs --changed` est vert : règles, format, lint, gel, cliquet et tests JS.
 Ces tests ne prouvent ni la compatibilité Ollama Qwen ni celle de StreamingVLM sur GB10. Les résultats
 restent `readyForScoring=false` jusqu’à l’annotation humaine.
+
+## Résultat du suffixe Ollama
+
+Après la clôture du corpus étendu, le suffixe `reprise-qwen-arm-20261021T002414Z` a terminé ses deux étapes avec code 0 le **21 octobre à 03:27:12 UTC**, fermeture confirmée. Il a produit un pré-vol et 24 réponses complètes, tous HTTP 200, sans nouveau téléchargement et sans rejouer vLLM. Les [traces rapatriées](rapatriements/reprise-qwen-arm-20261021T002414Z/RAPATRIEMENT.md) sont vérifiées par SHA-256.
+
+Sur les 24 cas figés, la durée médiane complète HTTP Ollama est **12,35 s** (minimum 7,86 s ; maximum 17,72 s). Les 24 identifiants de cas et les empreintes de prompt et d'images correspondent au bras vLLM original. [La comparaison détaillée](../2026-10-20-vision-vllm-gx10/README.md) distingue le premier et le second passage ; elle ne mesure ni le premier token ni la qualité des observations. La métadonnée Ollama annonce F16 malgré le nom du tag. StreamingVLM attend le déchargement naturel de ce modèle avant de prendre les verrous GPU.

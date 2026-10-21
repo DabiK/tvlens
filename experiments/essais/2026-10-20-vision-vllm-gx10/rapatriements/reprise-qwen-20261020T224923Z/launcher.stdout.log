@@ -1,0 +1,12 @@
+created
+waiting-night
+night-locked
+image-pull
+cuda-check
+model-download
+vision-server
+vllm-preflight-command
+vllm-full-command
+vllm-finished
+ollama-pull
+blocked

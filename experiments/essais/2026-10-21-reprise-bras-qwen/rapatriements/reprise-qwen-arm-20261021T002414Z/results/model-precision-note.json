@@ -1,0 +1,6 @@
+{
+  "tag": "qwen3-vl:4b-instruct-bf16",
+  "digest": "1d2c81ea69a06341d1aaa9e4fbd655402681057c291754008f44fa6e74acc298",
+  "observedQuantizationMetadata": "F16",
+  "interpretation": "Tag bf16, métadonnée F16 observée ; parité BF16 des moteurs non démontrée."
+}

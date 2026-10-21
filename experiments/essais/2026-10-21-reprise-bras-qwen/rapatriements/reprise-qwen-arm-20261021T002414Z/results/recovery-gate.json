@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-21T03:21:43.453930+00:00",
+  "corpusRoot": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results",
+  "corpusStatusSha256": "09ae0f705d30456e2ccfe3792d9285b3cf9ce7f68fef54d14971e6861fd3754c",
+  "corpusSealSha256": "3124f87dd9d0181edeaa4d4ba58732a9f5640d0024c15d9fad55c6e5554b8ab5",
+  "suffixRoot": null,
+  "suffixSealSha256": null,
+  "ownedContainersStopped": true,
+  "replayAbsent": true,
+  "gpuIdle": true,
+  "ollamaIdle": true
+}

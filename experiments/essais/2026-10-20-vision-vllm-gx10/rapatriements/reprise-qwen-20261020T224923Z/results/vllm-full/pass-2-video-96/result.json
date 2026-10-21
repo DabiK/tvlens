@@ -1,0 +1,240 @@
+{
+  "id": "pass-2-video-96",
+  "caseId": "video-96",
+  "repeat": 2,
+  "startMs": 768000,
+  "endMs": 776000,
+  "atUtc": "2026-10-20T23:57:09.519Z",
+  "status": "returned",
+  "input": {
+    "startMs": 768000,
+    "endMs": 776000,
+    "media": {
+      "path": "media/five-images-010.json",
+      "sha256": "2d1bc86a481d07d52a7f902564b877e03d64a4447f635f1050d1a3c188ff9393"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 768000,
+        "endMs": 776000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "768",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "769.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "771.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "772.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "774.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "768",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-EP9DoQ/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "de réussir à faire un alignement qui tienne la route et qui ne soit pas battu en brèche. C'est-à-dire que l'IA va se retrouver.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-97, publication audio à 778001.493361 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 768000,
+        "sha256": "5ccc1f08ccee24589dd0779cd8544042cf0f7ae281c1a896899ef8b061a93c73"
+      },
+      {
+        "index": 1,
+        "atMs": 769600,
+        "sha256": "0298d6dc82d09863f73d75048659d09eafcc5fc1f6e9aa8d79af1d8f3d612377"
+      },
+      {
+        "index": 2,
+        "atMs": 771200,
+        "sha256": "378a5f0857898bc4459018bc3f1c56288fed84bd0af2ace72379a3ab05e82d9c"
+      },
+      {
+        "index": 3,
+        "atMs": 772800,
+        "sha256": "4d05cf4f73ad872a6aa87dd4b4c3f4a2156700dd161a66c082c4c88c2f7842f8"
+      },
+      {
+        "index": 4,
+        "atMs": 774400,
+        "sha256": "facaf33ad27e81e348c1c618b49152d5277bf6bb2a2991d78def89590777a435"
+      }
+    ],
+    "audioSha256": "f9335d6ef45110e7ca82742c7f8deb0eebd89c7e0fb6a28ce729ef122d0c5efa"
+  },
+  "promptSha256": "5ccfc607111c3fa70e3fa33ccc794a451115a90d0dd269f378e54bf22db10ca1",
+  "frameSha256": [
+    "5ccc1f08ccee24589dd0779cd8544042cf0f7ae281c1a896899ef8b061a93c73",
+    "0298d6dc82d09863f73d75048659d09eafcc5fc1f6e9aa8d79af1d8f3d612377",
+    "378a5f0857898bc4459018bc3f1c56288fed84bd0af2ace72379a3ab05e82d9c",
+    "4d05cf4f73ad872a6aa87dd4b4c3f4a2156700dd161a66c082c4c88c2f7842f8",
+    "facaf33ad27e81e348c1c618b49152d5277bf6bb2a2991d78def89590777a435"
+  ],
+  "requestSha256": "e87ab547ae906d399ddc87c1c353398780afac549ee268569b9144b2af6f7b55",
+  "requestBytes": 666787,
+  "requestFile": "pass-2-video-96/request.json",
+  "responseFile": "pass-2-video-96/response.raw.txt",
+  "responseSha256": "c346980e941ed7b4ca5b6754d64edeac55224e04b55827513d979c5b11c263aa",
+  "responseBytes": 1951,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 16863.244135999994,
+    "totalMs": 16863.478138000006,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Le passage actuel présente un diagramme schématique intitulé 'L'éducation d'une « grande IA »', illustrant les étapes successives de la formation d'un modèle : depuis l'observation des données jusqu'à la création d'un modèle aligné, avec des étapes clés comme le pré-entraînement, le fine-tuning, et l'alignement, suivies d'une phase de briefings éthiques avant l'inférence.",
+    "visual": "Un diagramme en cinq étapes, avec des icônes et des illustrations de personnes, décrivant le processus d'éducation d'une IA : observation, pré-entraînement, fine-tuning, alignement, et inférence.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "L'éducation d'une « grande IA »",
+    "topicSummary": "Le passage actuel présente un diagramme schématique intitulé 'L'éducation d'une « grande IA »', illustrant les étapes successives de la formation d'un modèle : depuis l'observation des données jusqu'à la création d'un modèle aligné, avec des étapes clés comme le pré-entraînement, le fine-tuning, et l'alignement, suivies d'une phase de briefings éthiques avant l'inférence.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5158,
+      "total_tokens": 5483,
+      "completion_tokens": 325,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:57:26.384Z"
+}

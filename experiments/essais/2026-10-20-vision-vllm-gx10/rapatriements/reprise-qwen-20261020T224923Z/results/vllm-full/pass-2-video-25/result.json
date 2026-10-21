@@ -1,0 +1,240 @@
+{
+  "id": "pass-2-video-25",
+  "caseId": "video-25",
+  "repeat": 2,
+  "startMs": 200000,
+  "endMs": 208000,
+  "atUtc": "2026-10-20T23:55:00.669Z",
+  "status": "returned",
+  "input": {
+    "startMs": 200000,
+    "endMs": 208000,
+    "media": {
+      "path": "media/five-images-002.json",
+      "sha256": "6c9ac74c2cf6c1ba29fff4b5a801a82c2f05c7e6a3967271db0ec5a825848951"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 200000,
+        "endMs": 208000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "200",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "201.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "203.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "204.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "206.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "200",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "On peut faire du 7030, ça dépend un petit peu qu'on t'explique. Alors, et ensuite on va rentrer dans une boucle d'apprentissage et ça va être",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-26, publication audio à 210346.578408 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 200000,
+        "sha256": "2e1c51a47789784d6a8c43b3f2bad36647612efff12e2678379080b5788bf9e1"
+      },
+      {
+        "index": 1,
+        "atMs": 201600,
+        "sha256": "363db19e4129da67362ade26b4ef4fbfcf5d191d0e170654eb95050691d14a76"
+      },
+      {
+        "index": 2,
+        "atMs": 203200,
+        "sha256": "8f42f5426844dd9817c18af0a2c8e175ad6607796ff39b1b5b315dffb3cfbea4"
+      },
+      {
+        "index": 3,
+        "atMs": 204800,
+        "sha256": "79acfddef9f3086d8cf34c871cdc42c15878f9dba507bbd5879cf6c9e8b38ab0"
+      },
+      {
+        "index": 4,
+        "atMs": 206400,
+        "sha256": "0f28b5b6ddcf73e29b4c58dd2ca638daa03468914f80bc4cafbf66ec8f0e69eb"
+      }
+    ],
+    "audioSha256": "c798a27135b23f2e42dbf49e2b1205b8e726dc03aacc8f6178c56f37fa0deac0"
+  },
+  "promptSha256": "4503d8ac40a8a355a78a71539efb2ddde57b5cfc1aa8a49052da112c054994c7",
+  "frameSha256": [
+    "2e1c51a47789784d6a8c43b3f2bad36647612efff12e2678379080b5788bf9e1",
+    "363db19e4129da67362ade26b4ef4fbfcf5d191d0e170654eb95050691d14a76",
+    "8f42f5426844dd9817c18af0a2c8e175ad6607796ff39b1b5b315dffb3cfbea4",
+    "79acfddef9f3086d8cf34c871cdc42c15878f9dba507bbd5879cf6c9e8b38ab0",
+    "0f28b5b6ddcf73e29b4c58dd2ca638daa03468914f80bc4cafbf66ec8f0e69eb"
+  ],
+  "requestSha256": "7fe3c3246394dbcd232706ed62875d5b69848ba3c54dc2c75560e1f1ffe940e2",
+  "requestBytes": 484853,
+  "requestFile": "pass-2-video-25/request.json",
+  "responseFile": "pass-2-video-25/response.raw.txt",
+  "responseSha256": "67f47e03760ef24cbf7f8fa8434beb50f4c68589a55c63e69841163cff4d901e",
+  "responseBytes": 1857,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 15717.06799499999,
+    "totalMs": 15717.28849300003,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Le passage actuel présente un schéma d'apprentissage automatique en deux étapes : d'abord, l'utilisation de données supervisées (comme des images de chats et de lapins avec leurs étiquettes) pour l'apprentissage (80%) et l'évaluation (20%), puis l'entraînement du modèle par itérations comprenant des prédictions, des erreurs, des corrections et une répétition du cycle.",
+    "visual": "Une diapositive illustrant le processus d'apprentissage automatique avec des icônes de données, un robot, des étapes numérotées (Prédictions, Erreurs, Corrections, Itérations) et un présentateur en train de parler.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Apprentissage automatique",
+    "topicSummary": "Le passage actuel décrit le processus d'apprentissage automatique en deux étapes : l'utilisation de données supervisées pour l'apprentissage et l'évaluation, puis l'entraînement du modèle par itérations comprenant des prédictions, des erreurs, des corrections et une répétition du cycle.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5164,
+      "total_tokens": 5465,
+      "completion_tokens": 301,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:55:16.388Z"
+}

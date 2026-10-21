@@ -1,0 +1,26 @@
+{
+  "name": "cuda-check",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-cuda-check-5900e19fcbd645d5b4f4fa6f980bdda9",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results/cuda-check.cid",
+    "--label",
+    "tvlens.owner=5900e19fcbd645d5b4f4fa6f980bdda9",
+    "--device",
+    "nvidia.com/gpu=all",
+    "-e",
+    "NVIDIA_VISIBLE_DEVICES=void",
+    "--entrypoint",
+    "python3",
+    "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce",
+    "-c",
+    "import json,torch,vllm; print(json.dumps({\"vllm\":vllm.__version__,\"cuda\":torch.version.cuda,\"available\":torch.cuda.is_available(),\"capability\":torch.cuda.get_device_capability(0)}))"
+  ],
+  "startedAtUtc": "2026-10-20T23:39:42.878798+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:39:49.886754+00:00",
+  "durationSeconds": 7.0038201909992495
+}

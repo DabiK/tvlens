@@ -1,0 +1,257 @@
+{
+  "id": "pass-2-video-78",
+  "caseId": "video-78",
+  "repeat": 2,
+  "startMs": 624000,
+  "endMs": 632000,
+  "atUtc": "2026-10-21T03:26:13.601Z",
+  "status": "returned",
+  "input": {
+    "startMs": 624000,
+    "endMs": 632000,
+    "media": {
+      "path": "media/five-images-007.json",
+      "sha256": "28358a22014aa83aa35844402d236b4deb46d9e8654cfbfb95b9c8e7126593c3"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 624000,
+        "endMs": 632000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "624",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "625.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "627.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "628.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "630.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "624",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-vkkFwI/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "ils sont capables d'apprendre de manière extrêmement efficace. Bien plus efficace que ce qu'on est capable nous de faire quand on essaye d'apprendre une langue, quand on est adulte.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-79, publication audio à 633250.1272849999 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 624000,
+        "sha256": "157b137b2f146be723be95843462c83be6fc54233b7e41556d8ed198e386863a"
+      },
+      {
+        "index": 1,
+        "atMs": 625600,
+        "sha256": "3c8abb4cbf278ada0163a44fc7181e4f8d321bcac217503aa0eab1557b30b691"
+      },
+      {
+        "index": 2,
+        "atMs": 627200,
+        "sha256": "322b3decce8afd934a0f0fe4f8a45807e75331f7fb691708a44a520d3ef9b9b2"
+      },
+      {
+        "index": 3,
+        "atMs": 628800,
+        "sha256": "fd16678e700e99fe4e3fe93c1e9f1a5cc482338aa15744d783dc5fdcd2118ef8"
+      },
+      {
+        "index": 4,
+        "atMs": 630400,
+        "sha256": "c0f3f74f42f67354bfeb955941e978232e56188938207f2a3c12462c4cf6011d"
+      }
+    ],
+    "audioSha256": "e40c6d5ef7dbceaf593ce8d53f506db78213e59f846d6fd6aa9bfdc0a3a98880"
+  },
+  "promptSha256": "1541fb5104c002c776c31733a3427199275032fb7044d27f5c1a1e8da7ead32d",
+  "frameSha256": [
+    "157b137b2f146be723be95843462c83be6fc54233b7e41556d8ed198e386863a",
+    "3c8abb4cbf278ada0163a44fc7181e4f8d321bcac217503aa0eab1557b30b691",
+    "322b3decce8afd934a0f0fe4f8a45807e75331f7fb691708a44a520d3ef9b9b2",
+    "fd16678e700e99fe4e3fe93c1e9f1a5cc482338aa15744d783dc5fdcd2118ef8",
+    "c0f3f74f42f67354bfeb955941e978232e56188938207f2a3c12462c4cf6011d"
+  ],
+  "requestSha256": "5221121c23e9feb37a3fe7bb4009bc8954365ef238c7a87273fb017e40104c65",
+  "requestBytes": 664292,
+  "requestFile": "pass-2-video-78/request.json",
+  "responseFile": "pass-2-video-78/response.raw.txt",
+  "responseSha256": "1ba0be6ccbe7ba6c9d3089ea5035883770b8cc3ed5450bcb538b83db7e2de3d0",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:26:13.601Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "2a19ba1afdfd80bcc087ce3a884eb752da77e6f8db1c72da1604a9d4b5ac19fe",
+    "file": "provider-pass-2-video-78-before.raw.txt",
+    "totalMs": 0.6967920000024606,
+    "modelResident": true
+  },
+  "responseBytes": 1571,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 13192.879235,
+    "totalMs": 13192.987188,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Les grands modèles d'intelligence artificielle sont décrits comme capables d'apprendre de manière extrêmement efficace, surpassant les capacités d'apprentissage d'une langue chez un adulte. Leur processus d'éducation, illustré par un schéma, commence par l'observation des données, puis passe par la pré-formation, la spécialisation et l'alignement pour devenir un modèle prêt à l'emploi.",
+    "visual": "Un schéma en cinq étapes montre la formation d'une grande IA : depuis les données d'observation, jusqu'à la création d'un modèle aligné, avec des étapes de pré-formation, de fine-tuning, d'alignement et de briefings éthiques, avant de passer à l'inférence.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "L'éducation d'une grande IA",
+    "topicSummary": "L'éducation d'une grande IA est décrite comme un processus efficace, surpassant l'apprentissage d'une langue chez un adulte. Le schéma illustre les étapes : observation des données, pré-formation, fine-tuning, spécialisation, alignement et briefings éthiques, menant à un modèle prêt à l'emploi.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 13191873800,
+    "loadDurationNs": 5580861,
+    "promptEvalDurationNs": 43919000,
+    "evalDurationNs": 12855964000,
+    "promptTokens": 6138,
+    "outputTokens": 308,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:26:26.796Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "25828e5d6f453b9ade03d1c1eb806e1c882922bea0d6a52841c0c2f9e444236a",
+    "file": "provider-pass-2-video-78-after.raw.txt",
+    "totalMs": 0.8454009999986738,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:26:26.798Z"
+}

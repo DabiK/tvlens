@@ -44,3 +44,11 @@ localement et comparée au GX10. Le suivi de nuit inclut désormais les deux lan
 - [Qwen, checkpoint Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct).
 - [vLLM v0.28.0, modèles pris en charge](https://docs.vllm.ai/en/v0.28.0/models/supported_models/).
 - [vLLM v0.28.0, entrées multimodales](https://docs.vllm.ai/en/v0.28.0/features/multimodal_inputs/).
+
+## Résultats réels et limite de la comparaison
+
+Le bras vLLM de la reprise `reprise-qwen-20261020T224923Z` a obtenu **25 réponses HTTP 200 sur 25** : un pré-vol, puis les 24 cas complets (douze blocs, deux passages). Il s'est ensuite scellé `blocked` avant toute inférence Ollama à cause du [faux rejet du préfixe de digest](../2026-10-21-incident-digest-qwen/README.md). Le bras Ollama manquant a été exécuté dans un [dossier de continuation séparé](../2026-10-21-reprise-bras-qwen/README.md), après le corpus étendu, et a obtenu lui aussi **25 réponses HTTP 200 sur 25**. Les [traces vLLM rapatriées](rapatriements/reprise-qwen-20261020T224923Z/RAPATRIEMENT.md) et celles d'Ollama sont scellées et leurs copies vérifiées par SHA-256 ; les requêtes contenant les images restent sur GX10.
+
+Pour les 24 cas communs, les empreintes de prompt et d'images correspondent exactement. Sur la durée complète de la réponse HTTP, les médianes vLLM/Ollama sont **17,62/13,81 s** au premier passage et **16,58/10,58 s** au second. Ollama est plus rapide sur les 24 paires ; l'écart médian par paire est de 4,37 s puis 6,29 s. Il s'agit d'une mesure du **composant vision sur des blocs figés**, pas d'une cadence réelle du flux TVLens ni de l'effet isolé du moteur. Le premier token n'est pas mesuré.
+
+Le tag Ollama est nommé `qwen3-vl:4b-instruct-bf16`, mais sa métadonnée effective annonce **F16** ; la parité BF16 avec les poids vLLM n'est donc pas démontrée. Les formats, processeurs d'images, templates, serveurs, résidences mémoire et instrumentation diffèrent également. Aucune qualité ou pertinence des observations n'a été notée : `readyForScoring=false`. Avant de retenir la pile plus rapide, il faut relire les deux jeux de sorties à l'aveugle sur les mêmes images et mesurer ensuite leur effet dans le replay complet.

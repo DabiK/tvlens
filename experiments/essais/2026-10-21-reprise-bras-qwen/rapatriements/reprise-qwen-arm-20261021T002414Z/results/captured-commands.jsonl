@@ -1,0 +1,4 @@
+{"atUtc": "2026-10-21T03:21:43.457162+00:00", "argv": ["git", "-C", "/home/nvidia/tvlens", "rev-parse", "HEAD"], "result": {"exitCode": 0, "stdout": "2035a2faad499659bcdf940c6104e50e311a9cd6\n", "stderr": ""}}
+{"atUtc": "2026-10-21T03:21:43.460020+00:00", "argv": ["git", "-C", "/home/nvidia/tvlens", "status", "--porcelain", "--", "adapters/codex-perception.cjs", "adapters/local-vlm-agent.cjs", "scripts/perception-replay-input.cjs", "scripts/perception-replay-context.cjs", "core/visual-observation.cjs"], "result": {"exitCode": 0, "stdout": "", "stderr": ""}}
+{"atUtc": "2026-10-21T03:21:43.481638+00:00", "argv": ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"], "result": {"exitCode": 0, "stdout": "", "stderr": ""}}
+{"atUtc": "2026-10-21T03:21:43.507804+00:00", "argv": ["pgrep", "-f", "replay-local-(stream|perception)|replay-reinspection"], "result": {"exitCode": 1, "stdout": "", "stderr": ""}}

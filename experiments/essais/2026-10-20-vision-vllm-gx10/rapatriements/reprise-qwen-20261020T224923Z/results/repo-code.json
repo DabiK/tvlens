@@ -1,0 +1,7 @@
+{
+  "adapters/codex-perception.cjs": "fd6242b8764fb60232ee52d364cbe06eed12fbe2d8f411c308d7764d9e96d98f",
+  "adapters/local-vlm-agent.cjs": "b9a53b1d1c71d00408aacf910d1d3ec3a023935c9d75a1e01ae9d614a3115cee",
+  "scripts/perception-replay-input.cjs": "7834fe75a85c25f1aa34831000094006f12d2fa7c9511cbc871aa3fc27ac2c43",
+  "scripts/perception-replay-context.cjs": "76902792b4f7be2a9316f75ff82b4d9ef359423b06f044791341c8e774470489",
+  "core/visual-observation.cjs": "a167e2b93881cd1e0b9a58d910d12d49f258e43f5237d7ca8401424e2b45ecd8"
+}

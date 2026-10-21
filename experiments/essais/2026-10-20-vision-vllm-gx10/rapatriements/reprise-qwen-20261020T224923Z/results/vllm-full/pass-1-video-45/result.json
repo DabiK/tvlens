@@ -1,0 +1,240 @@
+{
+  "id": "pass-1-video-45",
+  "caseId": "video-45",
+  "repeat": 1,
+  "startMs": 360000,
+  "endMs": 368000,
+  "atUtc": "2026-10-20T23:51:44.100Z",
+  "status": "returned",
+  "input": {
+    "startMs": 360000,
+    "endMs": 368000,
+    "media": {
+      "path": "media/five-images-003.json",
+      "sha256": "58dac2c587f9e145684d49881e89b203f4b1c037960240e6a23a3f9908d74901"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 360000,
+        "endMs": 368000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "360",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "361.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "363.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "364.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "366.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "360",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-jxkObx/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "une courbe qui va progresser, qui va progresser tout le temps puisque, beh si, au pire, on va prendre les égards six par cœur.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-46, publication audio à 370025.10229 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 360000,
+        "sha256": "0747a72fec3b89b284102039d1754cfc900b28566caf97376bd5b69b5c1d22e3"
+      },
+      {
+        "index": 1,
+        "atMs": 361600,
+        "sha256": "4612b3d3538e8a645adf6cbf7108cd16694b119c8c785d8451de81066c1e44ad"
+      },
+      {
+        "index": 2,
+        "atMs": 363200,
+        "sha256": "570e0d203a5be059ba5733f47fbf162ac58e662025c18ebea1e35b91df3ba9a8"
+      },
+      {
+        "index": 3,
+        "atMs": 364800,
+        "sha256": "810c432f651064dccf642d5a100bd012cc797275494cd887f49d8b738e9c93ab"
+      },
+      {
+        "index": 4,
+        "atMs": 366400,
+        "sha256": "02a62bacd7458d1fae92e83b0a3e6fb375dd4b9827f2156945617101d16a86a6"
+      }
+    ],
+    "audioSha256": "744c9b0763298f1359cee09ab9509c1f1b8e77dc652d4408aff56eff51861062"
+  },
+  "promptSha256": "28a4367a12caaf53affce099b727136ce8bf159d79081d6030139acfd18c8731",
+  "frameSha256": [
+    "0747a72fec3b89b284102039d1754cfc900b28566caf97376bd5b69b5c1d22e3",
+    "4612b3d3538e8a645adf6cbf7108cd16694b119c8c785d8451de81066c1e44ad",
+    "570e0d203a5be059ba5733f47fbf162ac58e662025c18ebea1e35b91df3ba9a8",
+    "810c432f651064dccf642d5a100bd012cc797275494cd887f49d8b738e9c93ab",
+    "02a62bacd7458d1fae92e83b0a3e6fb375dd4b9827f2156945617101d16a86a6"
+  ],
+  "requestSha256": "2c6ac3cb4183f1860441a5dc4d110cede0d6b42c20bae108e0cda1e85543d0dd",
+  "requestBytes": 486292,
+  "requestFile": "pass-1-video-45/request.json",
+  "responseFile": "pass-1-video-45/response.raw.txt",
+  "responseSha256": "281f9628d6bd8e99611a5d903ee1c948b5bef9ce0f45fe8c8cb8fc5596dcf0b3",
+  "responseBytes": 1833,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 16345.682765000005,
+    "totalMs": 16346.039648999998,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Un présentateur explique un schéma de l'apprentissage automatique, illustré par deux graphiques : une courbe d'apprentissage en croissance continue et une courbe de validation en forme de dôme, indiquant un surapprentissage. Il utilise des icônes pour représenter l'entrée de données, l'apprentissage (80%) et l'évaluation (20%).",
+    "visual": "Un diaporama avec un présentateur en train de parler, accompagné de deux graphiques et de deux icônes représentant l'apprentissage et l'évaluation, sur un fond blanc avec le titre '...tout en suivant son apprentissage'.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Apprentissage automatique",
+    "topicSummary": "Un présentateur explique le processus d'apprentissage automatique, mettant en évidence la progression continue de la courbe d'apprentissage et le phénomène de surapprentissage observé sur la courbe de validation, en utilisant des graphiques et des icônes pour illustrer les étapes d'apprentissage et d'évaluation.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5154,
+      "total_tokens": 5446,
+      "completion_tokens": 292,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:52:00.449Z"
+}

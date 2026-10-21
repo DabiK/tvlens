@@ -1,0 +1,257 @@
+{
+  "id": "pass-2-video-108",
+  "caseId": "video-108",
+  "repeat": 2,
+  "startMs": 864000,
+  "endMs": 872000,
+  "atUtc": "2026-10-21T03:27:03.236Z",
+  "status": "returned",
+  "input": {
+    "startMs": 864000,
+    "endMs": 872000,
+    "media": {
+      "path": "media/five-images-011.json",
+      "sha256": "8e2b104fa6c7f6c95ddc72b0f58b143ce0f6b823ed6a853723f0b82d4b7adb7b"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 864000,
+        "endMs": 872000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "864",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "865.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "867.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "868.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "870.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "864",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-gzKmfV/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "Voilà, merci beaucoup d'avoir suivi cette vidéo et puis rendez-vous pour la suite de notre aventure autour de l'histoire des basées des concepts.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-109, publication audio à 874483.277551 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 864000,
+        "sha256": "51f3a5a6264c136f1f2f299f9ec2635a4f92309e2645812b5d4a801183e429e8"
+      },
+      {
+        "index": 1,
+        "atMs": 865600,
+        "sha256": "9cc88bbc9482d9dddfd8793481f6a78d8c97d26cd6013484fb1bf2027ccf45ba"
+      },
+      {
+        "index": 2,
+        "atMs": 867200,
+        "sha256": "819f55782e0e15152debfdc9fb446d9a7905507f99bb31c765e5a78b1e9637e1"
+      },
+      {
+        "index": 3,
+        "atMs": 868800,
+        "sha256": "7993395a3f4f682d78055e6229f97c6dd5889942fe09ad4172917857f917e1e4"
+      },
+      {
+        "index": 4,
+        "atMs": 870400,
+        "sha256": "59e3e661f71cfcb25a5cd7409e172d527516a60e0c2e3b8f75925c27fd787338"
+      }
+    ],
+    "audioSha256": "d2c9cd5f8beae2fc385794f92607aebc2e1a1f6e887bb296575513fccded5d42"
+  },
+  "promptSha256": "ec0bd7d5e8232d1bc0e79072cd4d1784b37639272e1f4577409ef08a271de428",
+  "frameSha256": [
+    "51f3a5a6264c136f1f2f299f9ec2635a4f92309e2645812b5d4a801183e429e8",
+    "9cc88bbc9482d9dddfd8793481f6a78d8c97d26cd6013484fb1bf2027ccf45ba",
+    "819f55782e0e15152debfdc9fb446d9a7905507f99bb31c765e5a78b1e9637e1",
+    "7993395a3f4f682d78055e6229f97c6dd5889942fe09ad4172917857f917e1e4",
+    "59e3e661f71cfcb25a5cd7409e172d527516a60e0c2e3b8f75925c27fd787338"
+  ],
+  "requestSha256": "7bf882636585ec01bfad2efcc4427fa47ce0292da8e81fc2e6c52e0815e64794",
+  "requestBytes": 534285,
+  "requestFile": "pass-2-video-108/request.json",
+  "responseFile": "pass-2-video-108/response.raw.txt",
+  "responseSha256": "a8907e1e7b9f3adaf95e3f20d4d24f4de6c13a44d931ffe754e76f39c6339052",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:27:03.236Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "eab280a4df4c96303bbb2ecb237dfcdb537354b77aa66d3c8bee73768dc6b1ed",
+    "file": "provider-pass-2-video-108-before.raw.txt",
+    "totalMs": 0.891241000033915,
+    "modelResident": true
+  },
+  "responseBytes": 1150,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 8912.769535999978,
+    "totalMs": 8912.855504999985,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Le présentateur remercie les spectateurs pour leur participation à la vidéo et annonce la suite de l'exploration des concepts.",
+    "visual": "Un homme en t-shirt bleu foncé, debout, tient un petit objet dans sa main droite et semble s'adresser à l'auditoire. Il est positionné sur un fond blanc, avec un QR code et une adresse web (https://fidle.cnrs.fr) à droite, ainsi que les logos de FIDLE, CNRS, UGA et MIAI Cluster IA à gauche.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Conclusion et annonce de la suite",
+    "topicSummary": "Le présentateur remercie les spectateurs pour leur participation à la vidéo et annonce la suite de l'exploration des concepts.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 8911852471,
+    "loadDurationNs": 4545569,
+    "promptEvalDurationNs": 42869000,
+    "evalDurationNs": 8571606000,
+    "promptTokens": 6129,
+    "outputTokens": 205,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:27:12.151Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "711949649952f5d55978d60f06cc0cafe05e8022103752414fbf91cd97f239c0",
+    "file": "provider-pass-2-video-108-after.raw.txt",
+    "totalMs": 0.8378649999503978,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:27:12.152Z"
+}

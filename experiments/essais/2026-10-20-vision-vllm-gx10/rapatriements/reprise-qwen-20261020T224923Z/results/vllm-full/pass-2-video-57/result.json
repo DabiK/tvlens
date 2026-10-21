@@ -1,0 +1,240 @@
+{
+  "id": "pass-2-video-57",
+  "caseId": "video-57",
+  "repeat": 2,
+  "startMs": 456000,
+  "endMs": 464000,
+  "atUtc": "2026-10-20T23:56:03.582Z",
+  "status": "returned",
+  "input": {
+    "startMs": 456000,
+    "endMs": 464000,
+    "media": {
+      "path": "media/five-images-006.json",
+      "sha256": "59f0816e67a3e21d8bee8d3912fe4542664365f9fa367b05d2c375418a34572c"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 456000,
+        "endMs": 464000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "456",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "457.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "459.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "460.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "462.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "456",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "on a des solutions logicielles, on a de l'informatique, on a des outils pour piloter toutes ces choses-là de manière très très très efficace.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-58, publication audio à 466199.186048 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 456000,
+        "sha256": "8b175c7236963e7f34210d93fabe50a54d796a5285339b318b494eba0ba09eae"
+      },
+      {
+        "index": 1,
+        "atMs": 457600,
+        "sha256": "8f3e5b7fe2593ca1c2ba631ad54f4fa6d1e228b61d928d4a7c590404f1bace8c"
+      },
+      {
+        "index": 2,
+        "atMs": 459200,
+        "sha256": "3fbcde5194924cd605fe175df244a3cf92a5bb7db01c09d8d82f4996c203117d"
+      },
+      {
+        "index": 3,
+        "atMs": 460800,
+        "sha256": "dd0d5464ce9c2b9451507bdc68f2fc72c52df2dcfb0497b01dff5e924bf1f8c6"
+      },
+      {
+        "index": 4,
+        "atMs": 462400,
+        "sha256": "cc3f52b7ab1f6cfe0e24a7020c39febef86b5a6b06c9638cf299f8231c85093c"
+      }
+    ],
+    "audioSha256": "454a8c93af17e5b0dcb71870623ede045f053eec25c4fb390290f5693a843867"
+  },
+  "promptSha256": "c2aef670c57df27be63a3fb63d5f528e26bc0d35e4218b8f4b3b84e92a9bb0e9",
+  "frameSha256": [
+    "8b175c7236963e7f34210d93fabe50a54d796a5285339b318b494eba0ba09eae",
+    "8f3e5b7fe2593ca1c2ba631ad54f4fa6d1e228b61d928d4a7c590404f1bace8c",
+    "3fbcde5194924cd605fe175df244a3cf92a5bb7db01c09d8d82f4996c203117d",
+    "dd0d5464ce9c2b9451507bdc68f2fc72c52df2dcfb0497b01dff5e924bf1f8c6",
+    "cc3f52b7ab1f6cfe0e24a7020c39febef86b5a6b06c9638cf299f8231c85093c"
+  ],
+  "requestSha256": "3d94dd7bac645614783832b99ba2d94f81f98fe107d0cb8313b572f60d3e06f0",
+  "requestBytes": 472562,
+  "requestFile": "pass-2-video-57/request.json",
+  "responseFile": "pass-2-video-57/response.raw.txt",
+  "responseSha256": "bd4b0b3c54a2abfb9e84a0201d676151c3af7696b1fdf56b88b1f8857f38c56b",
+  "responseBytes": 1937,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 17185.837811000005,
+    "totalMs": 17186.031940000015,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Une diapositive présente un schéma de l'apprentissage automatique, divisant les données en 80 % pour l'apprentissage et 20 % pour l'évaluation, accompagné de deux courbes : une bleue représentant l'amélioration progressive de l'apprentissage (Courbe d'apprentissage) et une orange montrant la surapprentissage (Courbe de validation).",
+    "visual": "Une diapositive de présentation avec un schéma en deux parties : à gauche, un flux de données vers l'apprentissage et l'évaluation, avec des icônes et des pourcentages ; à droite, deux graphiques, l'un montant en courbe bleue, l'autre en courbe orange avec une annotation 'Surapprentissage'.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Apprentissage automatique",
+    "topicSummary": "Une diapositive de présentation explique le processus d'apprentissage automatique en divisant les données en deux parties : 80 % pour l'apprentissage et 20 % pour l'évaluation, avec deux graphiques illustrant respectivement l'amélioration progressive de l'apprentissage (Courbe d'apprentissage) et la surapprentissage (Courbe de validation).",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5155,
+      "total_tokens": 5486,
+      "completion_tokens": 331,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:56:20.769Z"
+}

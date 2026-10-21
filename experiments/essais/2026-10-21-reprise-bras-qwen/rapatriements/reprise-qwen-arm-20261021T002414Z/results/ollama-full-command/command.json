@@ -1,0 +1,28 @@
+{
+  "name": "ollama-full-command",
+  "argv": [
+    "node",
+    "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z/results/source/vision-probe.cjs",
+    "--repo",
+    "/home/nvidia/tvlens",
+    "--manifest",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/entrees-perception/perception-five-images.json",
+    "--backend",
+    "ollama",
+    "--out",
+    "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z/results/ollama-full",
+    "--model",
+    "qwen3-vl:4b-instruct-bf16",
+    "--url",
+    "http://127.0.0.1:11434",
+    "--limit",
+    "12",
+    "--repeats",
+    "2",
+    "--execute"
+  ],
+  "startedAtUtc": "2026-10-21T03:22:17.542909+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T03:27:12.444643+00:00",
+  "durationSeconds": 294.8999435089936
+}

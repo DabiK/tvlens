@@ -1,0 +1,35 @@
+{
+  "atUtc": "2026-10-20T23:50:29.883621+00:00",
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "Qwen/Qwen3-VL-4B-Instruct",
+        "object": "model",
+        "created": 1792540229,
+        "owned_by": "vllm",
+        "root": "/cache/models--Qwen--Qwen3-VL-4B-Instruct/snapshots/ebb281ec70b05090aa6165b016eac8ec08e71b17",
+        "parent": null,
+        "max_model_len": 16384,
+        "permission": [
+          {
+            "id": "modelperm-b75d8bf04264e6c3",
+            "object": "model_permission",
+            "created": 1792540229,
+            "allow_create_engine": false,
+            "allow_sampling": true,
+            "allow_logprobs": true,
+            "allow_search_indices": false,
+            "allow_view": true,
+            "allow_fine_tuning": false,
+            "organization": "*",
+            "group": null,
+            "is_blocking": false
+          }
+        ]
+      }
+    ]
+  },
+  "loadSeconds": 190.86264394399768,
+  "containerId": "1b0d8ab93af0208c808116ec1a30843f4c7d18233e5d4fd28b75144411bf938c"
+}

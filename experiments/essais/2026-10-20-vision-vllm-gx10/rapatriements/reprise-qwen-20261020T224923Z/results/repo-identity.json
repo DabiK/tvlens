@@ -1,0 +1,13 @@
+{
+  "expectedCommit": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+  "commit": {
+    "exitCode": 0,
+    "stdout": "2035a2faad499659bcdf940c6104e50e311a9cd6\n",
+    "stderr": ""
+  },
+  "modifiedSources": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

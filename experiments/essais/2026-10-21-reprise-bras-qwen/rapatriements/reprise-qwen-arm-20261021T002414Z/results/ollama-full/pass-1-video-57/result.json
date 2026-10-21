@@ -1,0 +1,257 @@
+{
+  "id": "pass-1-video-57",
+  "caseId": "video-57",
+  "repeat": 1,
+  "startMs": 456000,
+  "endMs": 464000,
+  "atUtc": "2026-10-21T03:23:32.678Z",
+  "status": "returned",
+  "input": {
+    "startMs": 456000,
+    "endMs": 464000,
+    "media": {
+      "path": "media/five-images-006.json",
+      "sha256": "59f0816e67a3e21d8bee8d3912fe4542664365f9fa367b05d2c375418a34572c"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 456000,
+        "endMs": 464000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "456",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "457.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "459.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "460.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "462.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "456",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-tBCJxt/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "on a des solutions logicielles, on a de l'informatique, on a des outils pour piloter toutes ces choses-là de manière très très très efficace.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-58, publication audio à 466199.186048 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 456000,
+        "sha256": "8b175c7236963e7f34210d93fabe50a54d796a5285339b318b494eba0ba09eae"
+      },
+      {
+        "index": 1,
+        "atMs": 457600,
+        "sha256": "8f3e5b7fe2593ca1c2ba631ad54f4fa6d1e228b61d928d4a7c590404f1bace8c"
+      },
+      {
+        "index": 2,
+        "atMs": 459200,
+        "sha256": "3fbcde5194924cd605fe175df244a3cf92a5bb7db01c09d8d82f4996c203117d"
+      },
+      {
+        "index": 3,
+        "atMs": 460800,
+        "sha256": "dd0d5464ce9c2b9451507bdc68f2fc72c52df2dcfb0497b01dff5e924bf1f8c6"
+      },
+      {
+        "index": 4,
+        "atMs": 462400,
+        "sha256": "cc3f52b7ab1f6cfe0e24a7020c39febef86b5a6b06c9638cf299f8231c85093c"
+      }
+    ],
+    "audioSha256": "454a8c93af17e5b0dcb71870623ede045f053eec25c4fb390290f5693a843867"
+  },
+  "promptSha256": "c2aef670c57df27be63a3fb63d5f528e26bc0d35e4218b8f4b3b84e92a9bb0e9",
+  "frameSha256": [
+    "8b175c7236963e7f34210d93fabe50a54d796a5285339b318b494eba0ba09eae",
+    "8f3e5b7fe2593ca1c2ba631ad54f4fa6d1e228b61d928d4a7c590404f1bace8c",
+    "3fbcde5194924cd605fe175df244a3cf92a5bb7db01c09d8d82f4996c203117d",
+    "dd0d5464ce9c2b9451507bdc68f2fc72c52df2dcfb0497b01dff5e924bf1f8c6",
+    "cc3f52b7ab1f6cfe0e24a7020c39febef86b5a6b06c9638cf299f8231c85093c"
+  ],
+  "requestSha256": "5024351e528259e6df88c75ca7c7d39abcefe9d45436d64dd86cc046c992e2d5",
+  "requestBytes": 472147,
+  "requestFile": "pass-1-video-57/request.json",
+  "responseFile": "pass-1-video-57/response.raw.txt",
+  "responseSha256": "f9667c5eeb9f89cd6eef2c58526152b76fe956f1c04e45300ec3c50b8fbdd981",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:23:32.678Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "f14db59a374c2b4f3e60e45d2431c8573e123dee00d636572b92f42c051357d7",
+    "file": "provider-pass-1-video-57-before.raw.txt",
+    "totalMs": 0.5159750000020722,
+    "modelResident": true
+  },
+  "responseBytes": 1395,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 14122.922235999999,
+    "totalMs": 14123.022429000004,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Le présentateur explique que des solutions logicielles et des outils informatiques permettent de piloter efficacement les processus de l'apprentissage.",
+    "visual": "Un homme en tenue décontractée, tenant un petit objet, est visible sur la droite de l'écran, devant un diagramme illustrant le processus d'apprentissage et d'évaluation.",
+    "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+    "topic": "Pilotage efficace de l'apprentissage par des outils informatiques",
+    "topicSummary": "Le présentateur explique que des solutions logicielles et des outils informatiques permettent de piloter efficacement les processus de l'apprentissage, en se référant à un diagramme illustrant les étapes d'apprentissage et d'évaluation. Le sujet est continu, car le contenu de la vidéo se concentre sur la description des outils et leur efficacité dans le cadre du processus d'apprentissage, sans changement de sujet ou de locuteur.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 14122082530,
+    "loadDurationNs": 6849457,
+    "promptEvalDurationNs": 3085263000,
+    "evalDurationNs": 10782369000,
+    "promptTokens": 6130,
+    "outputTokens": 257,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:23:46.802Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "6c571f165b141bdc24fe9f8d84ccc20b2379a4d7f59df51e32d7f60f40b81a1a",
+    "file": "provider-pass-1-video-57-after.raw.txt",
+    "totalMs": 0.42880500000319444,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:23:46.803Z"
+}

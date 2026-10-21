@@ -1,0 +1,257 @@
+{
+  "id": "pass-1-video-25",
+  "caseId": "video-25",
+  "repeat": 1,
+  "startMs": 200000,
+  "endMs": 208000,
+  "atUtc": "2026-10-21T03:22:43.269Z",
+  "status": "returned",
+  "input": {
+    "startMs": 200000,
+    "endMs": 208000,
+    "media": {
+      "path": "media/five-images-002.json",
+      "sha256": "6c9ac74c2cf6c1ba29fff4b5a801a82c2f05c7e6a3967271db0ec5a825848951"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 200000,
+        "endMs": 208000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "200",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "201.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "203.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "204.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "206.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "200",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-YBG4NS/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "On peut faire du 7030, ça dépend un petit peu qu'on t'explique. Alors, et ensuite on va rentrer dans une boucle d'apprentissage et ça va être",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-26, publication audio à 210346.578408 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 200000,
+        "sha256": "2e1c51a47789784d6a8c43b3f2bad36647612efff12e2678379080b5788bf9e1"
+      },
+      {
+        "index": 1,
+        "atMs": 201600,
+        "sha256": "363db19e4129da67362ade26b4ef4fbfcf5d191d0e170654eb95050691d14a76"
+      },
+      {
+        "index": 2,
+        "atMs": 203200,
+        "sha256": "8f42f5426844dd9817c18af0a2c8e175ad6607796ff39b1b5b315dffb3cfbea4"
+      },
+      {
+        "index": 3,
+        "atMs": 204800,
+        "sha256": "79acfddef9f3086d8cf34c871cdc42c15878f9dba507bbd5879cf6c9e8b38ab0"
+      },
+      {
+        "index": 4,
+        "atMs": 206400,
+        "sha256": "0f28b5b6ddcf73e29b4c58dd2ca638daa03468914f80bc4cafbf66ec8f0e69eb"
+      }
+    ],
+    "audioSha256": "c798a27135b23f2e42dbf49e2b1205b8e726dc03aacc8f6178c56f37fa0deac0"
+  },
+  "promptSha256": "4503d8ac40a8a355a78a71539efb2ddde57b5cfc1aa8a49052da112c054994c7",
+  "frameSha256": [
+    "2e1c51a47789784d6a8c43b3f2bad36647612efff12e2678379080b5788bf9e1",
+    "363db19e4129da67362ade26b4ef4fbfcf5d191d0e170654eb95050691d14a76",
+    "8f42f5426844dd9817c18af0a2c8e175ad6607796ff39b1b5b315dffb3cfbea4",
+    "79acfddef9f3086d8cf34c871cdc42c15878f9dba507bbd5879cf6c9e8b38ab0",
+    "0f28b5b6ddcf73e29b4c58dd2ca638daa03468914f80bc4cafbf66ec8f0e69eb"
+  ],
+  "requestSha256": "8a4daca86c043be6a6ced2ed7b3b02386105f0e3877904cb4bc861330d59c7f5",
+  "requestBytes": 484438,
+  "requestFile": "pass-1-video-25/request.json",
+  "responseFile": "pass-1-video-25/response.raw.txt",
+  "responseSha256": "4c3d2c315a899ca9fa6140a886ae06abf35cc92094ed7d43cd8a5f31025d816e",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:22:43.270Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "bcc11af2ff0c48b96c09b8af6c92f8c254dbdac104045645418ca348c1cb47f9",
+    "file": "provider-pass-1-video-25-before.raw.txt",
+    "totalMs": 0.875835000002553,
+    "modelResident": true
+  },
+  "responseBytes": 1340,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 14080.454634000002,
+    "totalMs": 14080.563515000002,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Le présent passage introduit la phase d'entraînement du modèle, qui implique une boucle d'apprentissage itérative. Le locuteur mentionne que le processus dépend d'une explication précise et qu'il va détailler la méthode d'apprentissage.",
+    "visual": "Une diapositive intitulée 'On va ensuite entraîner notre modèle :', illustrant un cycle de prédictions, d'erreurs, de corrections et d'itérations, avec un présentateur en train de parler.",
+    "uncertainty": "Le passage ne précise pas la nature exacte de l'outil ou du modèle mentionné, ni les détails techniques de la boucle d'apprentissage.",
+    "topic": "entraînement du modèle",
+    "topicSummary": "Le présent passage introduit la phase d'entraînement du modèle, qui implique une boucle d'apprentissage itérative. Le locuteur mentionne que le processus dépend d'une explication précise et qu'il va détailler la méthode d'apprentissage.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 14079173530,
+    "loadDurationNs": 6456494,
+    "promptEvalDurationNs": 3126803000,
+    "evalDurationNs": 10684748000,
+    "promptTokens": 6139,
+    "outputTokens": 257,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:22:57.353Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "6dc18855820f92e43f34883da693ed2dcad0ebc375dcd2f76a162b8411c066d0",
+    "file": "provider-pass-1-video-25-after.raw.txt",
+    "totalMs": 0.9594680000009248,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:22:57.354Z"
+}

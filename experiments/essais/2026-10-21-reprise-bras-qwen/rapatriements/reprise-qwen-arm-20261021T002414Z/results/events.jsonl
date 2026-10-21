@@ -1,0 +1,7 @@
+{"atUtc": "2026-10-21T00:25:01.269942+00:00", "status": "created"}
+{"atUtc": "2026-10-21T00:25:01.311765+00:00", "status": "waiting-corpus-and-predecessors"}
+{"atUtc": "2026-10-21T03:21:43.454953+00:00", "status": "recovery-predecessors-locked"}
+{"atUtc": "2026-10-21T03:21:43.511603+00:00", "status": "ollama-preflight-command"}
+{"atUtc": "2026-10-21T03:22:17.543680+00:00", "status": "ollama-full-command"}
+{"atUtc": "2026-10-21T03:27:12.464254+00:00", "status": "workload-finished", "ollamaArm": "complete", "readyForScoring": false}
+{"atUtc": "2026-10-21T03:27:12.465093+00:00", "status": "finished", "cleanupConfirmed": true}

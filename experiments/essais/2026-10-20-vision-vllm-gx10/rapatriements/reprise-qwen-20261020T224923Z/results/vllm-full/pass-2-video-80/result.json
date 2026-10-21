@@ -1,0 +1,240 @@
+{
+  "id": "pass-2-video-80",
+  "caseId": "video-80",
+  "repeat": 2,
+  "startMs": 640000,
+  "endMs": 648000,
+  "atUtc": "2026-10-20T23:56:52.537Z",
+  "status": "returned",
+  "input": {
+    "startMs": 640000,
+    "endMs": 648000,
+    "media": {
+      "path": "media/five-images-009.json",
+      "sha256": "25925d0e2fbc8646d8e518305d4575bc6827bb1bb58ed48bd45bcb5aa96dafd0"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 640000,
+        "endMs": 648000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "640",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "641.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "643.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "644.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "646.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "640",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-PDWeO6/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "le fine tuning. Alors on va prendre un modèle de fondation donc on a un enfant qui a appris parler à faire des phrases, bah il va les colles hein.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-81, publication audio à 651156.157937 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 640000,
+        "sha256": "71794cbe2263d15074acd044e504e1fada690b9af8130a827f3f03d367ecf519"
+      },
+      {
+        "index": 1,
+        "atMs": 641600,
+        "sha256": "5e1f5ae6394dd69c6fcf9a942162493c51b2754754dba4d9c5009f492fc96bfe"
+      },
+      {
+        "index": 2,
+        "atMs": 643200,
+        "sha256": "b722be72d641d27ee4b1b10e750b058e9113683915d9c15dbc49f1a56a3fbfc3"
+      },
+      {
+        "index": 3,
+        "atMs": 644800,
+        "sha256": "2dad1f0050e6b6161eb9a0d63486fce28e6b0a9463180a8b9f9276c044ae52be"
+      },
+      {
+        "index": 4,
+        "atMs": 646400,
+        "sha256": "6daf2d150b6f805a00237283db05ddbe0685b9558b5506bdcb4cd1f6d1165813"
+      }
+    ],
+    "audioSha256": "d4cfe73d138741d80916d2e09d5ccb7731cccbaab598a21145e0cb503ab3600c"
+  },
+  "promptSha256": "e1ae76a86f85ed0f52dc96c672481b0c917d031774e9f3b1440786ab6b7c14df",
+  "frameSha256": [
+    "71794cbe2263d15074acd044e504e1fada690b9af8130a827f3f03d367ecf519",
+    "5e1f5ae6394dd69c6fcf9a942162493c51b2754754dba4d9c5009f492fc96bfe",
+    "b722be72d641d27ee4b1b10e750b058e9113683915d9c15dbc49f1a56a3fbfc3",
+    "2dad1f0050e6b6161eb9a0d63486fce28e6b0a9463180a8b9f9276c044ae52be",
+    "6daf2d150b6f805a00237283db05ddbe0685b9558b5506bdcb4cd1f6d1165813"
+  ],
+  "requestSha256": "c4b7329c7599a224d5d513c316480bd84ed16382d45d997a74fface2b07b6bb7",
+  "requestBytes": 674248,
+  "requestFile": "pass-2-video-80/request.json",
+  "responseFile": "pass-2-video-80/response.raw.txt",
+  "responseSha256": "d29bc364fb371ae1797ded5064e79a197ed31d257d7aa2a8b86eb321871e20ba",
+  "responseBytes": 2024,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 16967.505082999996,
+    "totalMs": 16967.60946800001,
+    "ttftMs": null
+  },
+  "contentType": "application/json",
+  "observation": {
+    "summary": "Un modèle de fondation est présenté comme un modèle initial, comparé à un enfant qui a appris à parler et à faire des phrases, mais dont les phrases sont encore à coller, suggérant qu'il n'est pas encore parfaitement maîtrisé.",
+    "visual": "Une illustration schématique montre un modèle de fondation avec une flèche étiquetée 'Fine-tuning' pointant vers un modèle 'Instruct model', accompagné d'une métaphore d'un enfant qui apprend à parler.",
+    "uncertainty": "L'interprétation de la métaphore 'enfant qui apprend à parler' est une analogie pour expliquer le processus de fine-tuning, mais elle n'est pas une description factuelle du modèle lui-même.",
+    "topic": "L'éducation d'une « grande IA »",
+    "topicSummary": "L'éducation d'une « grande IA » est illustrée par un processus en plusieurs étapes : depuis l'observation des données jusqu'à la formation d'un modèle de fondation, puis à la spécialisation par fine-tuning, et enfin à l'alignement avec des normes éthiques avant d'être mis en production. Une métaphore d'un enfant apprenant à parler est utilisée pour expliquer que le modèle de fondation, bien qu'initial, n'est pas encore parfaitement maîtrisé et doit être ajusté.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "usage": {
+      "prompt_tokens": 5157,
+      "total_tokens": 5484,
+      "completion_tokens": 327,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": null
+    },
+    "finishReason": "stop"
+  },
+  "finishedAtUtc": "2026-10-20T23:57:09.507Z"
+}

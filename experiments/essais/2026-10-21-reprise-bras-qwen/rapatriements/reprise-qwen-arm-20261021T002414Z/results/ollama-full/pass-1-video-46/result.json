@@ -1,0 +1,257 @@
+{
+  "id": "pass-1-video-46",
+  "caseId": "video-46",
+  "repeat": 1,
+  "startMs": 368000,
+  "endMs": 376000,
+  "atUtc": "2026-10-21T03:23:10.300Z",
+  "status": "returned",
+  "input": {
+    "startMs": 368000,
+    "endMs": 376000,
+    "media": {
+      "path": "media/five-images-004.json",
+      "sha256": "fe23a240fc73f24be79f3a8d9d04861342cb1599f5ec3b1444cfeb8a3bc0b9d8"
+    },
+    "provenance": {
+      "kind": "converted-video",
+      "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "sourceInterval": {
+        "startMs": 368000,
+        "endMs": 376000
+      },
+      "conversion": {
+        "tool": "ffmpeg",
+        "version": "6.1.1-3ubuntu5",
+        "arguments": [
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "368",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/frame-0.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "369.6",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/frame-1.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "371.2",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/frame-2.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "372.8",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/frame-3.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "374.4",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:v:0",
+          "-frames:v",
+          "1",
+          "-vf",
+          "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "-q:v",
+          "3",
+          "-an",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/frame-4.jpg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-xerror",
+          "-ss",
+          "368",
+          "-i",
+          "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+          "-map",
+          "0:a:0",
+          "-t",
+          "8",
+          "-vn",
+          "-c:a",
+          "pcm_s16le",
+          "-ar",
+          "16000",
+          "-ac",
+          "1",
+          "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-VTrnKS/audio.wav"
+        ],
+        "parameters": {
+          "startMs": 0,
+          "blockMs": 8000,
+          "framesPerBlock": 5,
+          "jpegQuality": 3,
+          "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+          "audio": {
+            "codec": "pcm_s16le",
+            "sampleRate": 16000,
+            "channels": 1,
+            "bitDepth": 16
+          },
+          "sampling": "equidistant-block-start"
+        }
+      }
+    },
+    "transcript": {
+      "text": "On les connaît, on a les apprends progressivement et on va progresser progresser progresser progresser progresser progresser progresser, mais ce n'est pas très signé.",
+      "availability": "known",
+      "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+      "provenance": {
+        "kind": "operator",
+        "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-47, publication audio à 378396.207847 ms"
+      }
+    },
+    "context": {
+      "value": null,
+      "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+    },
+    "lightweight": {
+      "value": false,
+      "source": "explicit-default"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "atMs": 368000,
+        "sha256": "40419d4c11e575c71dec51372ce17a8655ce863ae2a800d25bc9763742735e67"
+      },
+      {
+        "index": 1,
+        "atMs": 369600,
+        "sha256": "f98cc8a15bf68b96cf66e3546f40410a074f3363def936f792d668a467da6bfd"
+      },
+      {
+        "index": 2,
+        "atMs": 371200,
+        "sha256": "473bec9d38d9695b113538273157176e5c31c13336b3582499ea19b8b8d85e26"
+      },
+      {
+        "index": 3,
+        "atMs": 372800,
+        "sha256": "49ec0bb435247bbf2d261c0e3b22ae7cf38b8ab21617fca763fc21c02dfb79b9"
+      },
+      {
+        "index": 4,
+        "atMs": 374400,
+        "sha256": "5d8c00c3ae3878cb776b6e44044a93cf44b20e73b18ef1c24d661c3a9fc0d72c"
+      }
+    ],
+    "audioSha256": "da0d380a05d7a8a5340a1f41061499813c90037977535935c94331484ea97465"
+  },
+  "promptSha256": "e0854cb75530b4d7e716e8a39db2219640d7501b272a84d1fa906b521ab82a19",
+  "frameSha256": [
+    "40419d4c11e575c71dec51372ce17a8655ce863ae2a800d25bc9763742735e67",
+    "f98cc8a15bf68b96cf66e3546f40410a074f3363def936f792d668a467da6bfd",
+    "473bec9d38d9695b113538273157176e5c31c13336b3582499ea19b8b8d85e26",
+    "49ec0bb435247bbf2d261c0e3b22ae7cf38b8ab21617fca763fc21c02dfb79b9",
+    "5d8c00c3ae3878cb776b6e44044a93cf44b20e73b18ef1c24d661c3a9fc0d72c"
+  ],
+  "requestSha256": "9863a6e1afc791aa5f2852302b268ce7d32dd6c2e7d1df4d2d00495422da162f",
+  "requestBytes": 475718,
+  "requestFile": "pass-1-video-46/request.json",
+  "responseFile": "pass-1-video-46/response.raw.txt",
+  "responseSha256": "010e6babaceef211b1e7e8f3e6a5b8f51002cb910e71b067b5a4a719d1e9003f",
+  "residencyBefore": {
+    "atUtc": "2026-10-21T03:23:10.300Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "72f88e52903df95f1b0ac3da7934ba0130b0ac9aa4e3b7264f4eb4a3a3fdd528",
+    "file": "provider-pass-1-video-46-before.raw.txt",
+    "totalMs": 0.7642330000016955,
+    "modelResident": true
+  },
+  "responseBytes": 1078,
+  "httpStatus": 200,
+  "latency": {
+    "headersMs": 10963.791658000002,
+    "totalMs": 10963.929626999998,
+    "ttftMs": null
+  },
+  "contentType": "application/json; charset=utf-8",
+  "observation": {
+    "summary": "Le présentateur explique que l'apprentissage progresse progressivement, mais que ce progrès n'est pas toujours significatif.",
+    "visual": "Un homme en tenue décontractée, debout à droite de l'écran, fait des gestes avec les mains tout en parlant.",
+    "uncertainty": "Le passage actuel ne contient pas d'éléments visuels ou auditifs nouveaux par rapport aux images précédentes, qui présentent un schéma d'apprentissage et d'évaluation avec des graphiques.",
+    "topic": "Apprentissage progressif",
+    "topicSummary": "Le présentateur explique que l'apprentissage progresse progressivement, mais que ce progrès n'est pas toujours significatif.",
+    "continuity": "continue"
+  },
+  "providerMetrics": {
+    "totalDurationNs": 10962798862,
+    "loadDurationNs": 5364048,
+    "promptEvalDurationNs": 3103476000,
+    "evalDurationNs": 7608383000,
+    "promptTokens": 6131,
+    "outputTokens": 183,
+    "modelState": "unknown"
+  },
+  "residencyAfter": {
+    "atUtc": "2026-10-21T03:23:21.265Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "a228c0062f3f4fffb45e0923d97f811d3d79bdde589aefcd4347784714f9ef1b",
+    "file": "provider-pass-1-video-46-after.raw.txt",
+    "totalMs": 0.6334470000001602,
+    "modelResident": true
+  },
+  "finishedAtUtc": "2026-10-21T03:23:21.266Z"
+}

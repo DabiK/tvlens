@@ -1,0 +1,12 @@
+{"atUtc": "2026-10-20T22:49:55.668235+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:49:55.671932+00:00", "status": "waiting-night"}
+{"atUtc": "2026-10-20T23:39:40.775312+00:00", "status": "night-locked"}
+{"atUtc": "2026-10-20T23:39:40.859828+00:00", "status": "image-pull"}
+{"atUtc": "2026-10-20T23:39:42.879012+00:00", "status": "cuda-check"}
+{"atUtc": "2026-10-20T23:39:49.937116+00:00", "status": "model-download"}
+{"atUtc": "2026-10-20T23:47:18.519269+00:00", "status": "vision-server"}
+{"atUtc": "2026-10-20T23:50:29.884459+00:00", "status": "vllm-preflight-command"}
+{"atUtc": "2026-10-20T23:50:48.412656+00:00", "status": "vllm-full-command"}
+{"atUtc": "2026-10-20T23:57:46.786083+00:00", "status": "vllm-finished", "containerStopped": true}
+{"atUtc": "2026-10-20T23:57:46.825397+00:00", "status": "ollama-pull"}
+{"atUtc": "2026-10-21T00:04:55.154367+00:00", "status": "blocked", "error": {"type": "RuntimeError", "message": "OLLAMA_DIGEST_MISMATCH"}, "readyForScoring": false}

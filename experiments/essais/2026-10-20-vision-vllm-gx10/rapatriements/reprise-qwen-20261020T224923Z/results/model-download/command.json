@@ -1,0 +1,28 @@
+{
+  "name": "model-download",
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "tvlens-model-download-5900e19fcbd645d5b4f4fa6f980bdda9",
+    "--cidfile",
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results/model-download.cid",
+    "--label",
+    "tvlens.owner=5900e19fcbd645d5b4f4fa6f980bdda9",
+    "-e",
+    "HF_HUB_DISABLE_IMPLICIT_TOKEN=1",
+    "-e",
+    "HF_HUB_DISABLE_TELEMETRY=1",
+    "-v",
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/vision-hf-5900e19fcbd645d5b4f4fa6f980bdda9:/cache",
+    "--entrypoint",
+    "python3",
+    "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce",
+    "-c",
+    "from huggingface_hub import snapshot_download; print(snapshot_download('Qwen/Qwen3-VL-4B-Instruct', revision='ebb281ec70b05090aa6165b016eac8ec08e71b17', cache_dir='/cache', token=False, max_workers=4), flush=True)"
+  ],
+  "startedAtUtc": "2026-10-20T23:39:49.936992+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:47:14.225154+00:00",
+  "durationSeconds": 444.2876035079971
+}

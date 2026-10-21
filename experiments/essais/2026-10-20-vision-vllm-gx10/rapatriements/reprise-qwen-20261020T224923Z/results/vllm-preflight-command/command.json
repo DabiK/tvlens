@@ -1,0 +1,28 @@
+{
+  "name": "vllm-preflight-command",
+  "argv": [
+    "node",
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results/source/vision-probe.cjs",
+    "--repo",
+    "/home/nvidia/tvlens",
+    "--manifest",
+    "/home/nvidia/tvlens-setup/nuit-20261020T210107Z/package/execution/entrees-perception/perception-five-images.json",
+    "--backend",
+    "vllm",
+    "--out",
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results/vllm-preflight",
+    "--model",
+    "Qwen/Qwen3-VL-4B-Instruct",
+    "--url",
+    "http://127.0.0.1:8002",
+    "--limit",
+    "1",
+    "--repeats",
+    "1",
+    "--execute"
+  ],
+  "startedAtUtc": "2026-10-20T23:50:29.884096+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-20T23:50:48.411047+00:00",
+  "durationSeconds": 18.525926960006473
+}

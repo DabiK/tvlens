@@ -1,0 +1,10 @@
+{
+  "files": {
+    "campaign.json": "f2f0ccc82451eeb2db8c70966e7da59fb6d950edfa1ba68f14c8fd6de9cc4081",
+    "pass-1-video-2/request.json": "c95684db165fc80e1cfa96bcfc3b541baaa28144ec38237800fec9e78e40e45e",
+    "pass-1-video-2/response.raw.txt": "73d1acd6cc4c0440a7226f8a49621d113b8529ffd828708b6c0ff163c8abe3ff",
+    "pass-1-video-2/result.json": "59cf82e17b9010b09fcfd89d82ad380d5f2d531180dcc184cf636e9f30329561",
+    "provider-after.raw.txt": "0e55e51fd1a6edc5a56f279e47e0bdbd619cb74d2fbf199595ee65acac4c3c4c",
+    "provider-before.raw.txt": "2e016e0d6dbe8806e9127ee1ddda8ba9d2cbdb032cfcf1d094926a3dca6da41d"
+  }
+}

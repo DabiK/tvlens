@@ -1,0 +1,12 @@
+{
+  "name": "ollama-pull",
+  "argv": [
+    "ollama",
+    "pull",
+    "qwen3-vl:4b-instruct-bf16"
+  ],
+  "startedAtUtc": "2026-10-20T23:57:46.825022+00:00",
+  "exitCode": 0,
+  "finishedAtUtc": "2026-10-21T00:04:55.127494+00:00",
+  "durationSeconds": 428.30140884799766
+}

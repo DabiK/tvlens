@@ -1,0 +1,10 @@
+{
+  "atUtc": "2026-10-20T23:39:40.775072+00:00",
+  "nightRoot": "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results",
+  "statusSha256": "4f54f7d7180eae0945e3e6940229929d4a3a7d0b8551e028fa1cba0c2c0634de",
+  "locks": [
+    "/home/nvidia/tvlens-setup/night.lock",
+    "/home/nvidia/tvlens-setup/followup-gpu.lock",
+    "/home/nvidia/tvlens-setup/reference-2026-10-20/execution.lock"
+  ]
+}

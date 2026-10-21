@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "{\"vllm\": \"0.28.0\", \"cuda\": \"13.0\", \"available\": true, \"capability\": [12, 1]}\n",
+  "stderr": ""
+}

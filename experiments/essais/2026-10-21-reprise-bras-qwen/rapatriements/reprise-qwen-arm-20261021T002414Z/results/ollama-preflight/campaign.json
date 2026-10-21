@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "id": "f08800a9-e0b4-4f3f-b3ba-c91878f8901c",
+  "atUtc": "2026-10-21T03:21:43.610Z",
+  "backend": "ollama",
+  "model": "qwen3-vl:4b-instruct-bf16",
+  "host": "127.0.0.1:11434",
+  "mode": "execute",
+  "manifestSha256": "86d4524753f112422a4409c034f1d1e47721920b466c433849d190531d6bd659",
+  "selectedCases": 1,
+  "repeats": 1,
+  "complete": true,
+  "readyForScoring": false,
+  "cadenceInterpretation": "simulation sur les cas sélectionnés ; aucune perte réelle TVLens",
+  "cases": [
+    {
+      "id": "pass-1-video-2",
+      "caseId": "video-2",
+      "repeat": 1,
+      "startMs": 16000,
+      "endMs": 24000,
+      "atUtc": "2026-10-21T03:21:43.633Z",
+      "status": "returned",
+      "input": {
+        "startMs": 16000,
+        "endMs": 24000,
+        "media": {
+          "path": "media/five-images-000.json",
+          "sha256": "4ceddf1f40459aa88b55c431c14e70d817685640e8da72422926aff617f6e2ae"
+        },
+        "provenance": {
+          "kind": "converted-video",
+          "sourceSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+          "sourceInterval": {
+            "startMs": 16000,
+            "endMs": 24000
+          },
+          "conversion": {
+            "tool": "ffmpeg",
+            "version": "6.1.1-3ubuntu5",
+            "arguments": [
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "16",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:v:0",
+              "-frames:v",
+              "1",
+              "-vf",
+              "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "-q:v",
+              "3",
+              "-an",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-0.jpg",
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "17.6",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:v:0",
+              "-frames:v",
+              "1",
+              "-vf",
+              "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "-q:v",
+              "3",
+              "-an",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-1.jpg",
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "19.2",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:v:0",
+              "-frames:v",
+              "1",
+              "-vf",
+              "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "-q:v",
+              "3",
+              "-an",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-2.jpg",
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "20.8",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:v:0",
+              "-frames:v",
+              "1",
+              "-vf",
+              "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "-q:v",
+              "3",
+              "-an",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-3.jpg",
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "22.4",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:v:0",
+              "-frames:v",
+              "1",
+              "-vf",
+              "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "-q:v",
+              "3",
+              "-an",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/frame-4.jpg",
+              "-nostdin",
+              "-v",
+              "error",
+              "-xerror",
+              "-ss",
+              "16",
+              "-i",
+              "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+              "-map",
+              "0:a:0",
+              "-t",
+              "8",
+              "-vn",
+              "-c:a",
+              "pcm_s16le",
+              "-ar",
+              "16000",
+              "-ac",
+              "1",
+              "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage/.work-t8KF9S/audio.wav"
+            ],
+            "parameters": {
+              "startMs": 0,
+              "blockMs": 8000,
+              "framesPerBlock": 5,
+              "jpegQuality": 3,
+              "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+              "audio": {
+                "codec": "pcm_s16le",
+                "sampleRate": 16000,
+                "channels": 1,
+                "bitDepth": 16
+              },
+              "sampling": "equidistant-block-start"
+            }
+          }
+        },
+        "transcript": {
+          "text": "Maintenant, dans cette courte vidéo, on va découvrir comment s'entraînent une ira, comment on entraînent une ira, comment se fait l'apprentissage de nos ira.",
+          "availability": "known",
+          "limits": "ASR base figée depuis première publication audio ; non corrigée et non référence humaine.",
+          "provenance": {
+            "kind": "operator",
+            "reference": "captures/base-cnrs-apprentissage.json journal.revisions : moment-3, publication audio à 25435.964027 ms"
+          }
+        },
+        "context": {
+          "value": null,
+          "limits": "Contexte historique exact non capturé ; absent identiquement des deux bras. Pas de reproduction exacte du timeout en continu."
+        },
+        "lightweight": {
+          "value": false,
+          "source": "explicit-default"
+        },
+        "frames": [
+          {
+            "index": 0,
+            "atMs": 16000,
+            "sha256": "3f323c8167b98653d087be9912e7d88f49eb3b67bee8e3105dbe0d89719ed5ec"
+          },
+          {
+            "index": 1,
+            "atMs": 17600,
+            "sha256": "1c8f8a05d126872f4ab540dc238a9178ebcd72421758d4e6b4e2a130dc32c726"
+          },
+          {
+            "index": 2,
+            "atMs": 19200,
+            "sha256": "458e35edc6c6b9e87662f3cfaed9489a9c9411e86cb5abf5e452d62455621c41"
+          },
+          {
+            "index": 3,
+            "atMs": 20800,
+            "sha256": "850df30c06e70809d55d03dcf9bcedf5fa37b3fbd8ae12f97b4762a66cc7d0d5"
+          },
+          {
+            "index": 4,
+            "atMs": 22400,
+            "sha256": "45ce5411d60e8c603dc6eb096b5225db6e558ab0a23996f7c94cb2a510047750"
+          }
+        ],
+        "audioSha256": "a1d85817561b53edcb2a1a86e80a75b71deeb00fc5687d870701de6cbc299657"
+      },
+      "promptSha256": "83925f2a18c20244bf9b1f23ae03a5f90882eb20450b588da8b05fb19ae03b6f",
+      "frameSha256": [
+        "3f323c8167b98653d087be9912e7d88f49eb3b67bee8e3105dbe0d89719ed5ec",
+        "1c8f8a05d126872f4ab540dc238a9178ebcd72421758d4e6b4e2a130dc32c726",
+        "458e35edc6c6b9e87662f3cfaed9489a9c9411e86cb5abf5e452d62455621c41",
+        "850df30c06e70809d55d03dcf9bcedf5fa37b3fbd8ae12f97b4762a66cc7d0d5",
+        "45ce5411d60e8c603dc6eb096b5225db6e558ab0a23996f7c94cb2a510047750"
+      ],
+      "requestSha256": "67a19ec03200c7487e9d3d2f0076b75e9d0dae7b9dc4fcd8ec411de1eef87fd6",
+      "requestBytes": 541423,
+      "requestFile": "pass-1-video-2/request.json",
+      "responseFile": "pass-1-video-2/response.raw.txt",
+      "responseSha256": "47b3a22675d03a57c828eb6f65d1b323db4f2c5ae7682b8947383f75792ed7da",
+      "residencyBefore": {
+        "atUtc": "2026-10-21T03:21:43.633Z",
+        "endpoint": "/api/ps",
+        "httpStatus": 200,
+        "sha256": "a6fe9ec6e26a38d99fca418b69826e0238b7a2bb319ff05eb153a6fcfd1fa28d",
+        "file": "provider-pass-1-video-2-before.raw.txt",
+        "totalMs": 0.7415770000000066,
+        "modelResident": false
+      },
+      "responseBytes": 1094,
+      "httpStatus": 200,
+      "latency": {
+        "headersMs": 33491.676146000005,
+        "totalMs": 33491.845892000005,
+        "ttftMs": null
+      },
+      "contentType": "application/json; charset=utf-8",
+      "observation": {
+        "summary": "Le présentateur introduit une vidéo de formation sur l'IA, en précisant qu'elle expliquera comment les systèmes d'intelligence artificielle sont entraînés.",
+        "visual": "Un homme en t-shirt bleu foncé, tenant un petit objet dans sa main droite, se tient devant un écran blanc avec des textes en français sur lesquels il semble parler.",
+        "uncertainty": "Aucune incertitude n'est signalée dans les observations actuelles.",
+        "topic": "Introduction à la formation des systèmes d'intelligence artificielle",
+        "topicSummary": "Introduction à la formation des systèmes d'intelligence artificielle, avec un focus sur les mécanismes d'apprentissage des IA.",
+        "continuity": "continue"
+      },
+      "providerMetrics": {
+        "totalDurationNs": 33489687336,
+        "loadDurationNs": 10065548019,
+        "promptEvalDurationNs": 15645173000,
+        "evalDurationNs": 7629770000,
+        "promptTokens": 6132,
+        "outputTokens": 183,
+        "modelState": "unknown"
+      },
+      "residencyAfter": {
+        "atUtc": "2026-10-21T03:22:17.127Z",
+        "endpoint": "/api/ps",
+        "httpStatus": 200,
+        "sha256": "73b924d029143b4a64e76946bdd4b8b73a83e101ca6922088fe0f1b689dc0b7e",
+        "file": "provider-pass-1-video-2-after.raw.txt",
+        "totalMs": 1.3396329999959562,
+        "modelResident": true
+      },
+      "finishedAtUtc": "2026-10-21T03:22:17.129Z"
+    }
+  ],
+  "before": {
+    "atUtc": "2026-10-21T03:21:43.612Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "a6fe9ec6e26a38d99fca418b69826e0238b7a2bb319ff05eb153a6fcfd1fa28d",
+    "file": "provider-before.raw.txt",
+    "totalMs": 16.752625999999992,
+    "modelResident": false
+  },
+  "after": {
+    "atUtc": "2026-10-21T03:22:17.131Z",
+    "endpoint": "/api/ps",
+    "httpStatus": 200,
+    "sha256": "73b924d029143b4a64e76946bdd4b8b73a83e101ca6922088fe0f1b689dc0b7e",
+    "file": "provider-after.raw.txt",
+    "totalMs": 1.3235530000019935,
+    "modelResident": true
+  },
+  "cadence": [
+    {
+      "repeat": 1,
+      "kind": "counterfactual-selected-cases",
+      "intervalMs": 8000,
+      "queueCapacity": 2,
+      "measuredCases": 1,
+      "droppedIds": [],
+      "arrivals": [
+        {
+          "id": "pass-1-video-2",
+          "atMs": 0,
+          "backlog": 0,
+          "running": "pass-1-video-2"
+        }
+      ]
+    }
+  ],
+  "finishedAtUtc": "2026-10-21T03:22:17.133Z"
+}
