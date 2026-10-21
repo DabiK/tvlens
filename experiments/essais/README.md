@@ -17,3 +17,4 @@
 | [2026-10-21-incident-streaming-buildkit](2026-10-21-incident-streaming-buildkit/) | Refus du réseau `bridge` par BuildKit ; reprise bornée de StreamingVLM dans un dossier neuf, avec image et inventaire déjà scellés. |
 | [2026-10-21-incident-streaming-past](2026-10-21-incident-streaming-past/) | Dépendance Python transitive manquante après le build ; couche `future` figée et reprise de la sonde StreamingVLM sous les échéances initiales. |
 | [2026-10-21-incident-streaming-queue](2026-10-21-incident-streaming-queue/) | Masquage du module Python `queue` corrigé ; quatre pilotes StreamingVLM terminés, traces vérifiées et bilan de vitesse sans note de pertinence. |
+| [2026-10-21-consolidation-gx10](2026-10-21-consolidation-gx10/) | Consolidation critique des essais clos et plan de travail du 21 octobre pour le ratio pertinence–vitesse. |
