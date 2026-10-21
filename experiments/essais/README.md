@@ -17,9 +17,9 @@
 | [2026-10-21-incident-streaming-buildkit](2026-10-21-incident-streaming-buildkit/) | Refus du réseau `bridge` par BuildKit ; reprise bornée de StreamingVLM dans un dossier neuf, avec image et inventaire déjà scellés. |
 | [2026-10-21-incident-streaming-past](2026-10-21-incident-streaming-past/) | Dépendance Python transitive manquante après le build ; couche `future` figée et reprise de la sonde StreamingVLM sous les échéances initiales. |
 | [2026-10-21-incident-streaming-queue](2026-10-21-incident-streaming-queue/) | Masquage du module Python `queue` corrigé ; quatre pilotes StreamingVLM terminés, traces vérifiées et bilan de vitesse sans note de pertinence. |
-| [2026-10-21-consolidation-gx10](2026-10-21-consolidation-gx10/) | Consolidation critique des essais clos et plan de travail du 21 octobre pour le ratio pertinence–vitesse. |
+| [2026-10-21-consolidation-gx10](2026-10-21-consolidation-gx10/) | Bilan des cinq points du 21 octobre, matrice vitesse–pertinence par vidéo et paquets d'annotation aveugle encore non notés. |
 | [2026-10-21-analyse-ablation-gx10](2026-10-21-analyse-ablation-gx10/) | Réanalyse appariée hors GPU des ablations CNRS, avec délais, pertes, fraîcheur et limites de notation. |
 | [2026-10-21-relecture-fiches-gx10](2026-10-21-relecture-fiches-gx10/) | Gel provisoire des six fiches et paquet de 90 réponses anonymisées à noter après relecture des médias. |
-| [2026-10-21-confirmation-pause-vision-gx10](2026-10-21-confirmation-pause-vision-gx10/) | Confirmation Kennedy/Spring de la pause des nouveaux départs vision pendant les questions, en cours sur GX10. |
-| [2026-10-21-confirmation-images-gx10](2026-10-21-confirmation-images-gx10/) | Ablation appariée cinq contre trois images, préparée et en attente de la fermeture de l'essai pause. |
+| [2026-10-21-confirmation-pause-vision-gx10](2026-10-21-confirmation-pause-vision-gx10/) | Huit replays Kennedy/Spring clos : délais HTTP, couverture, pertes et réponses à annoter. |
+| [2026-10-21-confirmation-images-gx10](2026-10-21-confirmation-images-gx10/) | Ablation appariée cinq contre trois images close sur 24 blocs Kennedy/Spring, 96 sorties et SHA vérifiés. |
 | [2026-10-21-shadow-selection-gx10](2026-10-21-shadow-selection-gx10/) | Sélection adaptative shadow sur six vidéos, sans suppression d'appel VLM, avec sorties et empreintes GX10. |
