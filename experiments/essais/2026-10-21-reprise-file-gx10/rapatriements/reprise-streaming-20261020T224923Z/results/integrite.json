@@ -1,0 +1,8 @@
+{
+  "sealedAtUtc": "2026-10-21T00:05:02.189729+00:00",
+  "files": {
+    "events.jsonl": "957de4c2488449c94d83ff5c13042b3932bd07fba53570de69125fe10d9f0a85",
+    "protocol.json": "a74eb1257eb6f0a3e50bf64e3588cfbf2dbf05a76618f095bf6eacd39b00aa5c",
+    "status.json": "cf265372e87bfa7482da5d85ae0496146f8b21e8989af6b7fd413d76afbc9a5f"
+  }
+}

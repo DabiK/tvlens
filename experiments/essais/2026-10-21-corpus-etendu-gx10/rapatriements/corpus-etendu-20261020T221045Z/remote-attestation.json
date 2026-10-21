@@ -1,0 +1,32 @@
+{
+  "selected": [
+    {
+      "path": "events.jsonl",
+      "sha256": "a7fca6cf168b6755d97da64ae09d0b75e87dcb2816554daab2970f4526dc0d26",
+      "bytes": 292
+    },
+    {
+      "path": "status.json",
+      "sha256": "2bca490e56523f69eb4ce07457294fac54816112689e40f7787e25dcc2956888",
+      "bytes": 322
+    },
+    {
+      "path": "integrite.json",
+      "sha256": "e4be47b0eea85f2b61a2bb3aec1b3a980d23521ed784bcb3a74cf64b0feb88fe",
+      "bytes": 248
+    }
+  ],
+  "logs": [
+    {
+      "path": "launcher.stdout.log",
+      "sha256": "bd542cf595a436ee76857af67a128d147c1471446e6403e3d0180a740511a2bd",
+      "bytes": 37
+    },
+    {
+      "path": "launcher.stderr.log",
+      "sha256": "0345648ab58471663fc38b326fa1d5317d5433a63a996ed895f46e27ba06e70d",
+      "bytes": 841
+    }
+  ],
+  "manifestFiles": 2
+}

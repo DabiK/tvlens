@@ -1,0 +1,9 @@
+{
+  "deadlineUtc": "2026-10-21T05:00:00+00:00",
+  "image": "vllm/vllm-openai@sha256:2a7cde230b59f3ce6cab33dd245ba6bee41aa87b38c9fe84f966ff24016813ce",
+  "model": "Qwen/Qwen3-VL-4B-Instruct",
+  "revision": "ebb281ec70b05090aa6165b016eac8ec08e71b17",
+  "ollamaModel": "qwen3-vl:4b-instruct-bf16",
+  "ollamaDigest": "sha256:1d2c81ea69a06341d1aaa9e4fbd655402681057c291754008f44fa6e74acc298",
+  "manifestSha256": "86d4524753f112422a4409c034f1d1e47721920b466c433849d190531d6bd659"
+}

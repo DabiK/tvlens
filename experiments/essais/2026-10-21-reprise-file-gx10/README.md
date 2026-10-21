@@ -28,3 +28,5 @@ Les trois commandes se lancent dans des sessions distinctes du même nouveau ser
 Avant de déployer, vérifier les originaux scellés, les fichiers bruts et les empreintes de l'incident, les conteneurs possédés et les processus actifs. Après lancement, consigner pour chaque nouvelle file le chemin, l'heure, l'ID de session, les empreintes des scripts, la session `tmux`, la preuve des groupes Docker et le lien vers les essais interrompus. Les sorties brutes restent sur GX10 ; rapatrier les rapports clos et leurs SHA-256 sans médias, poids ni secret. Aucun résultat de pertinence n'est noté avant annotation humaine (`readyForScoring=false`).
 
 Vérification hors GPU : `bash -n common.sh launch-*.sh`, puis `python3 -m unittest discover -s tests -v` et `node scripts/check.mjs --changed` depuis la racine du dépôt.
+
+Les [quatre dossiers scellés avant travail propre](PREDECESSEURS.md) ont été rapatriés avec leurs empreintes. Ils restent distincts des mesures des reprises.

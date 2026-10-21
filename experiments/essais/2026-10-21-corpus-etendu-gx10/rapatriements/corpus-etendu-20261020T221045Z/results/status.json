@@ -1,0 +1,10 @@
+{
+  "id": "d606ec88b35f4b1696abf0867331d12f",
+  "startedAtUtc": "2026-10-20T22:11:28.347795+00:00",
+  "deadlineUtc": "2026-10-23T05:00:00+00:00",
+  "status": "blocked",
+  "stages": [],
+  "updatedAtUtc": "2026-10-20T22:36:13.441149+00:00",
+  "error": "RuntimeError:PREDECESSOR_DOCKER_UNKNOWN",
+  "readyForScoring": false
+}

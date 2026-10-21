@@ -1,0 +1,3 @@
+{"atUtc": "2026-10-20T22:50:01.983941+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:50:01.986426+00:00", "status": "waiting-predecessors"}
+{"atUtc": "2026-10-21T00:05:02.187549+00:00", "status": "blocked", "error": {"type": "RuntimeError", "message": "PREDECESSOR_FAILED:/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results"}, "readyForScoring": false}

@@ -1,0 +1,13 @@
+{
+  "id": "6136be8e18ae44188a08320fa5f3af9b",
+  "startedAtUtc": "2026-10-20T21:43:51.171733+00:00",
+  "deadlineUtc": "2026-10-21T05:00:00+00:00",
+  "status": "blocked",
+  "stages": [],
+  "updatedAtUtc": "2026-10-20T22:36:06.323843+00:00",
+  "error": {
+    "type": "RuntimeError",
+    "message": "NIGHT_FAILED"
+  },
+  "readyForScoring": false
+}
