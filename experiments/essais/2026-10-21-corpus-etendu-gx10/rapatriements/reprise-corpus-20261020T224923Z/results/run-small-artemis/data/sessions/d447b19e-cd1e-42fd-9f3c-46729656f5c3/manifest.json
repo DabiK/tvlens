@@ -1,0 +1,27 @@
+{
+  "format": "tvlens-session",
+  "version": 1,
+  "id": "d447b19e-cd1e-42fd-9f3c-46729656f5c3",
+  "host": "server",
+  "createdAt": 1792546556738,
+  "updatedAt": 1792548676628,
+  "closedAt": 1792548676628,
+  "state": "archived",
+  "title": "Session du 21 oct. 2026, 01:35",
+  "firstTopic": "Système solaire",
+  "elapsedMs": 2119860.169278,
+  "capturedThroughMs": 2099000,
+  "passages": 263,
+  "media": {
+    "stored": 263,
+    "missing": 0,
+    "bytes": 290972463,
+    "retention": "until-deleted"
+  },
+  "captures": [
+    {
+      "startedAt": 1792546556738,
+      "fromMs": 0
+    }
+  ]
+}

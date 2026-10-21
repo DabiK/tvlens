@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "status": "complete",
+  "runId": "c3a30a02-7b72-43ce-8838-2ebb9ee30e27",
+  "questionCount": 5,
+  "questions": [
+    {
+      "id": "tears-01",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "tears-03",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "tears-04",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "tears-06",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "tears-07",
+      "acquired": true,
+      "status": "done"
+    }
+  ],
+  "guardFailures": [],
+  "diagnostics": [
+    {
+      "atMs": 6.669265999999993,
+      "message": "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"missing\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+    }
+  ],
+  "shutdown": {
+    "archiveConfirmed": true,
+    "releaseConfirmed": true,
+    "errors": []
+  },
+  "readyForScoring": false
+}

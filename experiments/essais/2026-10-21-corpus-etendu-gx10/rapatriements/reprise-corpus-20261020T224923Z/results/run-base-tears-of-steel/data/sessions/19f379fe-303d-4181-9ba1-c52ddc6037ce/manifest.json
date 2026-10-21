@@ -1,0 +1,27 @@
+{
+  "format": "tvlens-session",
+  "version": 1,
+  "id": "19f379fe-303d-4181-9ba1-c52ddc6037ce",
+  "host": "server",
+  "createdAt": 1792542203874,
+  "updatedAt": 1792542940683,
+  "closedAt": 1792542940683,
+  "state": "archived",
+  "title": "Session du 21 oct. 2026, 00:23",
+  "firstTopic": "Présentation de projet",
+  "elapsedMs": 736767.3103199999,
+  "capturedThroughMs": 728000,
+  "passages": 91,
+  "media": {
+    "stored": 91,
+    "missing": 0,
+    "bytes": 123344018,
+    "retention": "until-deleted"
+  },
+  "captures": [
+    {
+      "startedAt": 1792542203874,
+      "fromMs": 0
+    }
+  ]
+}

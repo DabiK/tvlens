@@ -1,0 +1,36 @@
+{"atUtc": "2026-10-20T22:50:09.063578+00:00", "status": "created"}
+{"atUtc": "2026-10-20T22:50:09.065574+00:00", "status": "waiting-streamingvlm"}
+{"atUtc": "2026-10-21T00:05:09.267987+00:00", "status": "predecessor-locked", "predecessorStatus": "blocked"}
+{"atUtc": "2026-10-21T00:05:09.591100+00:00", "status": "cmd-prepare-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:06:14.130044+00:00", "status": "cmd-validate-preparation-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:06:16.133864+00:00", "status": "cmd-scenario-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:06:16.636787+00:00", "status": "cmd-validate-scenario-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:06:17.640141+00:00", "status": "cmd-prepare-tears-of-steel"}
+{"atUtc": "2026-10-21T00:07:09.672721+00:00", "status": "cmd-validate-preparation-tears-of-steel"}
+{"atUtc": "2026-10-21T00:07:11.176146+00:00", "status": "cmd-scenario-tears-of-steel"}
+{"atUtc": "2026-10-21T00:07:11.680449+00:00", "status": "cmd-validate-scenario-tears-of-steel"}
+{"atUtc": "2026-10-21T00:07:12.683383+00:00", "status": "cmd-prepare-artemis"}
+{"atUtc": "2026-10-21T00:10:52.316376+00:00", "status": "cmd-validate-preparation-artemis"}
+{"atUtc": "2026-10-21T00:10:55.825693+00:00", "status": "cmd-scenario-artemis"}
+{"atUtc": "2026-10-21T00:10:56.329054+00:00", "status": "cmd-validate-scenario-artemis"}
+{"atUtc": "2026-10-21T00:10:57.832359+00:00", "status": "preparations-validated"}
+{"atUtc": "2026-10-21T00:10:57.834120+00:00", "status": "cmd-run-base-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:23:23.233044+00:00", "status": "run-complete", "run": "base-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T00:23:23.236014+00:00", "status": "cmd-run-base-tears-of-steel"}
+{"atUtc": "2026-10-21T00:35:41.101205+00:00", "status": "run-complete", "run": "base-tears-of-steel"}
+{"atUtc": "2026-10-21T00:35:41.103241+00:00", "status": "cmd-run-base-artemis"}
+{"atUtc": "2026-10-21T01:11:01.391176+00:00", "status": "run-complete", "run": "base-artemis"}
+{"atUtc": "2026-10-21T01:11:01.396549+00:00", "status": "cmd-run-small-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T01:23:39.389216+00:00", "status": "run-complete", "run": "small-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T01:23:39.392277+00:00", "status": "cmd-run-small-tears-of-steel"}
+{"atUtc": "2026-10-21T01:35:55.261672+00:00", "status": "run-complete", "run": "small-tears-of-steel"}
+{"atUtc": "2026-10-21T01:35:55.263914+00:00", "status": "cmd-run-small-artemis"}
+{"atUtc": "2026-10-21T02:11:17.600037+00:00", "status": "run-complete", "run": "small-artemis"}
+{"atUtc": "2026-10-21T02:11:17.604554+00:00", "status": "cmd-run-large-v3-turbo-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T02:23:44.109392+00:00", "status": "run-complete", "run": "large-v3-turbo-boeuf-bourguignon"}
+{"atUtc": "2026-10-21T02:23:44.112191+00:00", "status": "cmd-run-large-v3-turbo-tears-of-steel"}
+{"atUtc": "2026-10-21T02:36:10.559082+00:00", "status": "run-complete", "run": "large-v3-turbo-tears-of-steel"}
+{"atUtc": "2026-10-21T02:36:10.561932+00:00", "status": "cmd-run-large-v3-turbo-artemis"}
+{"atUtc": "2026-10-21T03:11:36.970113+00:00", "status": "run-complete", "run": "large-v3-turbo-artemis"}
+{"atUtc": "2026-10-21T03:11:36.974728+00:00", "status": "workload-finished", "readyForScoring": false}
+{"atUtc": "2026-10-21T03:11:36.975628+00:00", "status": "finished", "cleanupConfirmed": true}

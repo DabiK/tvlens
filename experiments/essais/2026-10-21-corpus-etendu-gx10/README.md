@@ -34,3 +34,25 @@ python3 /home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts
 ```
 
 Le dossier `--out` était absent au démarrage. Ne pas lancer une seconde instance : le suivi lit la session et le dossier de résultats existants. Vérification locale hors GPU : `python3 -m unittest discover -s experiments/essais/2026-10-21-corpus-etendu-gx10/tests -v`, puis `node scripts/check.mjs --changed`.
+
+## Résultats du replay étendu
+
+La reprise dans `reprise-corpus-20261020T224923Z` est **terminée** le 21 octobre à 03:11:36 UTC : 21 étapes sur 21 avec code 0, dont neuf replays, et fermeture confirmée. Les [rapports rapatriés](rapatriements/reprise-corpus-20261020T224923Z/RAPATRIEMENT.md) ont été vérifiés par SHA-256 ; l'original et les médias restent sur le GX10.
+
+Les neuf replays ont soumis cinq questions chacun. Les **45 réponses sont acquises** (`acquired=true`), sans annulation ni erreur de question ; 40 résultats sont de type `observation` et cinq de type `insufficient`. La qualité n'est pas notée : `readyForScoring=false` et les fiches de référence demandent encore une relecture humaine. Les durées ci-dessous mesurent la réponse HTTP complète à la question, et non le premier token.
+
+| Whisper | Vidéo | Durée du replay | Médiane HTTP des 5 questions | Pertes de vision : retard / erreur |
+| --- | --- | ---: | ---: | ---: |
+| base | Bœuf | 745,4 s | 21,44 s | 1 / 0 |
+| base | Tears | 737,8 s | 12,23 s | 4 / 1 |
+| base | Artemis | 2 120,2 s | 19,11 s | 12 / 3 |
+| small | Bœuf | 758,0 s | 18,66 s | 6 / 1 |
+| small | Tears | 735,9 s | 11,37 s | 5 / 1 |
+| small | Artemis | 2 122,3 s | 18,32 s | 13 / 2 |
+| large-v3-turbo | Bœuf | 746,5 s | 23,21 s | 3 / 0 |
+| large-v3-turbo | Tears | 746,4 s | 11,41 s | 6 / 1 |
+| large-v3-turbo | Artemis | 2 126,4 s | 17,15 s | 13 / 2 |
+
+Au total, la vision a omis **74 publications** : 63 par retard (`backlog`) et 11 par erreur, soit 592 secondes non couvertes sur 10 689 secondes planifiées et environ 94,5 % de couverture temporelle. Aucune perte audio n'est signalée. Ces pertes de vision sont distinctes des réponses aux questions et peuvent réduire la fraîcheur des preuves disponibles au moment de répondre.
+
+Les cinq résultats `insufficient` concernent la dernière question : Bœuf dans les trois variantes, Tears en `base`, Artemis en `base`. Ils sont prioritaires à relire, avec toutes les autres réponses, contre la vidéo et les fiches corrigées. La borne de la dernière question Artemis laisse peu de contexte ultérieur. Ni ces sorties ni les différences de durée ci-dessus ne démontrent une meilleure pertinence d'une variante Whisper ; il faut d'abord une annotation humaine à l'aveugle. Ces mesures concernent un replay local, sans transport ni affichage TV.

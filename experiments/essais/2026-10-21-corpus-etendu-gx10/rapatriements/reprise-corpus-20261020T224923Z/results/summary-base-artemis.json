@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "status": "complete",
+  "runId": "464700bb-ed99-42a2-b1c9-b7dd213a8e9e",
+  "questionCount": 5,
+  "questions": [
+    {
+      "id": "artemis-01",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "artemis-02",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "artemis-04",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "artemis-05",
+      "acquired": true,
+      "status": "done"
+    },
+    {
+      "id": "artemis-07",
+      "acquired": true,
+      "status": "done"
+    }
+  ],
+  "guardFailures": [],
+  "diagnostics": [
+    {
+      "atMs": 7.6820339999999305,
+      "message": "{\"code\":\"TVLENS_EMBEDDING_CACHE_LOAD\",\"cause\":\"missing\",\"rebuild\":\"total\",\"providerCallsPossible\":true,\"message\":\"Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés.\"}"
+    }
+  ],
+  "shutdown": {
+    "archiveConfirmed": true,
+    "releaseConfirmed": true,
+    "errors": []
+  },
+  "readyForScoring": false
+}

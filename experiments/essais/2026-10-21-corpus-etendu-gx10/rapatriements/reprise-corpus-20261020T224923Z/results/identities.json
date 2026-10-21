@@ -1,0 +1,60 @@
+{
+  "codeCommit": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+  "supportSha256": "e6bec0c7415c67ed1e4901e784a6ee33e6dd58b684bca46dc4ce7804dd30d6b5",
+  "queueSha256": "e7f94c03857af00b4d477cb26805702de2fd6158baba7b62f8e86d6836d9414a",
+  "scenarioSha256": "b18946933c37eb66380cfdf60786c7ba99a9b85fe5205d6720bb46465beda692",
+  "videos": [
+    {
+      "id": "boeuf-bourguignon",
+      "source": "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+      "mediaSha256": "ec9d70f64ea55dc13a6e5c162a22ce88a383b65d97c442326e6a5045d7c478fd",
+      "questions": "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/boeuf-bourguignon.json",
+      "questionsSha256": "a1ffd0e1afc30e222e38fcf9e71793946ed2e350a0193d40e2d3182209497639",
+      "language": "fr",
+      "durationMs": 736000
+    },
+    {
+      "id": "tears-of-steel",
+      "source": "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+      "mediaSha256": "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f",
+      "questions": "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/tears-of-steel.json",
+      "questionsSha256": "4f57f2aeb6d042d626a6ed0bcb2d58b6b3a59988a3e1aba4cf760c3838e6b98e",
+      "language": "en",
+      "durationMs": 728000
+    },
+    {
+      "id": "artemis",
+      "source": "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+      "mediaSha256": "6ac25c124375fdac03a2a3e2bd599ea3516a75e9fd03bb193de18d6575297710",
+      "questions": "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/artemis.json",
+      "questionsSha256": "59c962065e54cbcb7d7cdece833b637898ab4f0c31b30e429f354665c8f60655",
+      "language": "en",
+      "durationMs": 2099000
+    }
+  ],
+  "configs": {
+    "base": {
+      "path": "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+      "sha256": "1c0072714e8501bc4a295c571cae664996feaabcbf146fff1c0c224a9e32fcc7"
+    },
+    "small": {
+      "path": "/home/nvidia/tvlens-setup/reference-2026-10-20/config-small.env",
+      "sha256": "da434a157bddc800be70d81f3f9374f73bdb07c70c6036a4681144a30c6d19de"
+    },
+    "large-v3-turbo": {
+      "path": "/home/nvidia/tvlens-setup/reference-2026-10-20/config-large-v3-turbo.env",
+      "sha256": "8b08e556f409411d724f583472fed30a0fb267b9031c7122f34dde6d7c55c01c"
+    }
+  },
+  "models": {
+    "gemma3:4b": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+    "qwen3.8:27b": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+    "qwen3-embedding:0.6b": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d"
+  },
+  "readyForScoring": false,
+  "observedModelDigests": {
+    "gemma3:4b": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7",
+    "qwen3.8:27b": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+    "qwen3-embedding:0.6b": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d"
+  }
+}

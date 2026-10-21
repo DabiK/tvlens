@@ -1,0 +1,12 @@
+{
+  "atUtc": "2026-10-21T00:05:09.267739+00:00",
+  "predecessorStatus": "blocked",
+  "predecessorStatusSha256": "cf265372e87bfa7482da5d85ae0496146f8b21e8989af6b7fd413d76afbc9a5f",
+  "predecessorSealSha256": "1525213d99f3eb2e28d172ad3d3e7a80e2deb30254a82a1921020856719edeaa",
+  "ownedContainersStopped": true,
+  "locks": [
+    "/home/nvidia/tvlens-setup/night.lock",
+    "/home/nvidia/tvlens-setup/followup-gpu.lock",
+    "/home/nvidia/tvlens-setup/reference-2026-10-20/execution.lock"
+  ]
+}

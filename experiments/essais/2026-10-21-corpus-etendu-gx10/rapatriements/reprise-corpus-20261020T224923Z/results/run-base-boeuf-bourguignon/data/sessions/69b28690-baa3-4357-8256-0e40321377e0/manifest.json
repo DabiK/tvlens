@@ -1,0 +1,27 @@
+{
+  "format": "tvlens-session",
+  "version": 1,
+  "id": "69b28690-baa3-4357-8256-0e40321377e0",
+  "host": "server",
+  "createdAt": 1792541458502,
+  "updatedAt": 1792542202765,
+  "closedAt": 1792542202765,
+  "state": "archived",
+  "title": "Session du 21 oct. 2026, 00:10",
+  "firstTopic": "Patrick Dujancourt",
+  "elapsedMs": 744227.6603860001,
+  "capturedThroughMs": 736000,
+  "passages": 92,
+  "media": {
+    "stored": 92,
+    "missing": 0,
+    "bytes": 127210434,
+    "retention": "until-deleted"
+  },
+  "captures": [
+    {
+      "startedAt": 1792541458502,
+      "fromMs": 0
+    }
+  ]
+}

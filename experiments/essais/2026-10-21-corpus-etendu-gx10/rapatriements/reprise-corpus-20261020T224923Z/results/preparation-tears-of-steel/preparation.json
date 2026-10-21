@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "complete": true,
+  "convertedDurationMs": 728000,
+  "parameters": {
+    "startMs": 0,
+    "durationMs": 728000,
+    "blockMs": 8000,
+    "framesPerBlock": 5,
+    "jpegQuality": 3,
+    "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+    "audio": {
+      "codec": "pcm_s16le",
+      "sampleRate": 16000,
+      "channels": 1,
+      "bitDepth": 16
+    },
+    "sampling": "equidistant-block-start"
+  },
+  "timeOrigin": {
+    "kind": "relative-to-source-interval",
+    "sourceStartMs": 0
+  },
+  "templateSessionId": "video-template-validation-only",
+  "sessionBinding": "required-per-occurrence",
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "791484f9888b1533311a5a9d3c9d6785dcb69361e52c18edf70eecac76538b23"
+  },
+  "index": {
+    "path": "blocks.json",
+    "sha256": "622bdde2702ed486bfcc4fe19541fdb6c5194f6ce46469fbe658d3ce603fd895"
+  },
+  "source": {
+    "sha256": "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f",
+    "bytes": 372178639,
+    "durationMs": 734170
+  },
+  "conversion": {
+    "tool": "ffmpeg",
+    "version": "6.1.1-3ubuntu5",
+    "inspectionArguments": [
+      "-nostdin",
+      "-i",
+      "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+      "-map",
+      "0:v:0",
+      "-t",
+      "0",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "sourceInterval": {
+    "startMs": 0,
+    "endMs": 728000
+  },
+  "plannedDurationMs": 728000
+}

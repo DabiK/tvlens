@@ -1,0 +1,704 @@
+{
+  "jobs": [
+    {
+      "id": "deep-1",
+      "question": "What passions do Thom and Celia have, according to their conversation?",
+      "mode": "chat",
+      "createdAt": 1792545868072,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792545868074
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1792545868075
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "According to their conversation, Celia is passionate about robotics, and Thom wants to be awesome in space.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-4",
+            "startMs": 24000,
+            "endMs": 32000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumé automatique potentiellement imprécis, pas une citation exacte."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 12696,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "6c3163fa-3abd-45e8-8de1-638ad9ee756c",
+      "anchorMs": 48002.289268,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 40000,
+        "anchorMs": 48002.289268,
+        "passages": 5,
+        "lastPassage": {
+          "id": "moment-5",
+          "startMs": 32000,
+          "endMs": 40000
+        }
+      },
+      "startedAt": 1792545868074,
+      "contextReadyAt": 1792545868075,
+      "evidenceAtStart": {
+        "contextThroughMs": 40000,
+        "analyzedThroughMs": 40000,
+        "pendingCount": 0,
+        "partialCount": 0,
+        "unanalyzedTailMs": 8002.289268
+      },
+      "firstProgressAt": 1792545868075,
+      "validation": {
+        "evidenceCount": 5,
+        "proposedCitations": 1,
+        "acceptedCitations": 1
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792545880773,
+      "finishedAt": 1792545880773,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 1,
+        "firstProgressMs": 1,
+        "firstUsefulMs": 12699,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 12699,
+        "endToEndMs": 12701,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 48002.289268,
+          "frozenAtMs": 48008.498465,
+          "evidenceAsOfMs": 48010.595908999996,
+          "refreshes": 1,
+          "journalEntries": 5,
+          "journalDropped": 0,
+          "contextThroughMs": 40000,
+          "analyzedThroughMs": 40000,
+          "pendingCount": 0,
+          "partialCount": 0,
+          "unanalyzedTailMs": 8002.289268,
+          "lagAtStartMs": 8002.289268
+        }
+      }
+    },
+    {
+      "id": "deep-2",
+      "question": "How much time does Barley say they should have?",
+      "mode": "chat",
+      "createdAt": 1792546036072,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792546036075
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792546036079
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Barley says they have about two minutes, calling it perfect.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-26",
+            "startMs": 200000,
+            "endMs": 208000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumé automatique partiel, citation non vérifiée mot à mot."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 10776,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "6c3163fa-3abd-45e8-8de1-638ad9ee756c",
+      "anchorMs": 216001.681554,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 208000,
+        "anchorMs": 216001.681554,
+        "passages": 26,
+        "lastPassage": {
+          "id": "moment-26",
+          "startMs": 200000,
+          "endMs": 208000
+        }
+      },
+      "startedAt": 1792546036075,
+      "contextReadyAt": 1792546036079,
+      "evidenceAtStart": {
+        "contextThroughMs": 208000,
+        "analyzedThroughMs": 200000,
+        "pendingCount": 1,
+        "partialCount": 2,
+        "unanalyzedTailMs": 16001.68155400001
+      },
+      "firstProgressAt": 1792546036079,
+      "validation": {
+        "evidenceCount": 11,
+        "proposedCitations": 1,
+        "acceptedCitations": 1
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792546046857,
+      "finishedAt": 1792546046857,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 10782,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 10782,
+        "endToEndMs": 10785,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 216001.681554,
+          "frozenAtMs": 216008.07708699998,
+          "evidenceAsOfMs": 216013.76549299998,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 208000,
+          "analyzedThroughMs": 200000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 16001.68155400001,
+          "lagAtStartMs": 8001.68155400001
+        }
+      }
+    },
+    {
+      "id": "deep-3",
+      "question": "What advice is Thom given about how to speak to her?",
+      "mode": "chat",
+      "createdAt": 1792546084074,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792546084079
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792546084081
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "He is told to be tender to her, be honest to her, and remind her what love is.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-31",
+            "startMs": 240000,
+            "endMs": 248000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumé automatique, citation non vérifiée mot à mot."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 11009,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "6c3163fa-3abd-45e8-8de1-638ad9ee756c",
+      "anchorMs": 264001.78321,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 256000,
+        "anchorMs": 264001.78321,
+        "passages": 32,
+        "lastPassage": {
+          "id": "moment-32",
+          "startMs": 248000,
+          "endMs": 256000
+        }
+      },
+      "startedAt": 1792546084079,
+      "contextReadyAt": 1792546084081,
+      "evidenceAtStart": {
+        "contextThroughMs": 256000,
+        "analyzedThroughMs": 248000,
+        "pendingCount": 1,
+        "partialCount": 2,
+        "unanalyzedTailMs": 16001.783210000023
+      },
+      "firstProgressAt": 1792546084081,
+      "validation": {
+        "evidenceCount": 17,
+        "proposedCitations": 1,
+        "acceptedCitations": 1
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792546095091,
+      "finishedAt": 1792546095091,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 5,
+        "contextMs": 2,
+        "firstProgressMs": 2,
+        "firstUsefulMs": 11012,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 11012,
+        "endToEndMs": 11017,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 264001.78321,
+          "frozenAtMs": 264009.370434,
+          "evidenceAsOfMs": 264016.11246599996,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 256000,
+          "analyzedThroughMs": 248000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 16001.783210000023,
+          "lagAtStartMs": 8001.783210000023
+        }
+      }
+    },
+    {
+      "id": "deep-4",
+      "question": "What does Celia reproach Thom for?",
+      "mode": "chat",
+      "createdAt": 1792546228080,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792546228082
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792546228085
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Celia reproaches Thom for breaking her heart and for forgetting her on Earth.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-49",
+            "startMs": 384000,
+            "endMs": 392000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumé automatique, citation non vérifiée mot à mot."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 11252,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "6c3163fa-3abd-45e8-8de1-638ad9ee756c",
+      "anchorMs": 408002.085301,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 400000,
+        "anchorMs": 408002.085301,
+        "passages": 50,
+        "lastPassage": {
+          "id": "moment-50",
+          "startMs": 392000,
+          "endMs": 400000
+        }
+      },
+      "startedAt": 1792546228082,
+      "contextReadyAt": 1792546228084,
+      "evidenceAtStart": {
+        "contextThroughMs": 400000,
+        "analyzedThroughMs": 392000,
+        "pendingCount": 1,
+        "partialCount": 2,
+        "unanalyzedTailMs": 16002.085300999985
+      },
+      "firstProgressAt": 1792546228085,
+      "validation": {
+        "evidenceCount": 23,
+        "proposedCitations": 1,
+        "acceptedCitations": 1
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792546239339,
+      "finishedAt": 1792546239339,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 2,
+        "contextMs": 2,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 11257,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 11257,
+        "endToEndMs": 11259,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 408002.085301,
+          "frozenAtMs": 408014.157462,
+          "evidenceAsOfMs": 408019.584665,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 400000,
+          "analyzedThroughMs": 392000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 16002.085300999985,
+          "lagAtStartMs": 8002.085300999985
+        }
+      }
+    },
+    {
+      "id": "deep-5",
+      "question": "What is the latest announced state of the memory overwrite?",
+      "mode": "chat",
+      "createdAt": 1792546372079,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792546372082
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1792546372085
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "The latest announced state is that the memory override is complete, as stated in the passage at 536000-544000 ms.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-68",
+            "startMs": 536000,
+            "endMs": 544000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "The phrase is from an automatic summary and may be imprecise."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 10728,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "6c3163fa-3abd-45e8-8de1-638ad9ee756c",
+      "anchorMs": 552001.442289,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 544000,
+        "anchorMs": 552001.442289,
+        "passages": 68,
+        "lastPassage": {
+          "id": "moment-68",
+          "startMs": 536000,
+          "endMs": 544000
+        }
+      },
+      "startedAt": 1792546372082,
+      "contextReadyAt": 1792546372085,
+      "evidenceAtStart": {
+        "contextThroughMs": 544000,
+        "analyzedThroughMs": 544000,
+        "pendingCount": 0,
+        "partialCount": 6,
+        "unanalyzedTailMs": 8001.442289000028
+      },
+      "firstProgressAt": 1792546372085,
+      "validation": {
+        "evidenceCount": 29,
+        "proposedCitations": 1,
+        "acceptedCitations": 1
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792546382816,
+      "finishedAt": 1792546382816,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 10734,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 10734,
+        "endToEndMs": 10737,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 552001.442289,
+          "frozenAtMs": 552014.052566,
+          "evidenceAsOfMs": 552019.419496,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 544000,
+          "analyzedThroughMs": 544000,
+          "pendingCount": 0,
+          "partialCount": 6,
+          "unanalyzedTailMs": 8001.442289000028,
+          "lagAtStartMs": 8001.442289000028
+        }
+      }
+    }
+  ]
+}

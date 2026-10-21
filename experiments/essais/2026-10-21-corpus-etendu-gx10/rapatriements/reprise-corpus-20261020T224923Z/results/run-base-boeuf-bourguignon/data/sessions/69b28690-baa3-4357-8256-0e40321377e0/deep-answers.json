@@ -1,0 +1,728 @@
+{
+  "jobs": [
+    {
+      "id": "deep-1",
+      "question": "Comment prépare-t-il la marinade et combien de temps la laisse-t-il reposer ?",
+      "mode": "chat",
+      "createdAt": 1792541658516,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792541658520
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792541658524
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Il prépare la marinade en versant du vin rouge sur des oignons et des carottes coupés en dés, puis en mélangeant le tout avec une spatule. Il précise qu'il faut laisser reposer au moins pour la nuit, à température froide (pas forcément au frigo, mais frais).",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-20",
+            "startMs": 152000,
+            "endMs": 160000
+          },
+          {
+            "id": "moment-21",
+            "startMs": 160000,
+            "endMs": 168000
+          },
+          {
+            "id": "moment-23",
+            "startMs": 176000,
+            "endMs": 184000
+          },
+          {
+            "id": "moment-24",
+            "startMs": 184000,
+            "endMs": 192000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés sont automatiques et potentiellement imprécis ; les citations exactes des paroles ne sont pas toutes disponibles."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 29750,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "69b28690-baa3-4357-8256-0e40321377e0",
+      "anchorMs": 199999.802202,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 192000,
+        "anchorMs": 199999.802202,
+        "passages": 24,
+        "lastPassage": {
+          "id": "moment-24",
+          "startMs": 184000,
+          "endMs": 192000
+        }
+      },
+      "startedAt": 1792541658520,
+      "contextReadyAt": 1792541658524,
+      "evidenceAtStart": {
+        "contextThroughMs": 192000,
+        "analyzedThroughMs": 184000,
+        "pendingCount": 1,
+        "partialCount": 1,
+        "unanalyzedTailMs": 15999.802201999992
+      },
+      "firstProgressAt": 1792541658524,
+      "validation": {
+        "evidenceCount": 6,
+        "proposedCitations": 4,
+        "acceptedCitations": 4
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792541688277,
+      "finishedAt": 1792541688277,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 4,
+        "firstProgressMs": 4,
+        "firstUsefulMs": 29757,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 29757,
+        "endToEndMs": 29761,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 199999.802202,
+          "frozenAtMs": 200013.008957,
+          "evidenceAsOfMs": 200019.953826,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 192000,
+          "analyzedThroughMs": 184000,
+          "pendingCount": 1,
+          "partialCount": 1,
+          "unanalyzedTailMs": 15999.802201999992,
+          "lagAtStartMs": 7999.802201999992
+        }
+      }
+    },
+    {
+      "id": "deep-2",
+      "question": "Quelles sont les trois parties séparées après la marinade ?",
+      "mode": "chat",
+      "createdAt": 1792541706517,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792541706520
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792541706523
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Les trois parties séparées après la marinade sont : la viande bien égoutée, la garniture (carottes, bouquet garni et petits lardons), et le jus de marinade (le vin).",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-26",
+            "startMs": 200000,
+            "endMs": 208000
+          },
+          {
+            "id": "moment-27",
+            "startMs": 208000,
+            "endMs": 216000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 14950,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "69b28690-baa3-4357-8256-0e40321377e0",
+      "anchorMs": 247999.519186,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 240000,
+        "anchorMs": 247999.519186,
+        "passages": 30,
+        "lastPassage": {
+          "id": "moment-30",
+          "startMs": 232000,
+          "endMs": 240000
+        }
+      },
+      "startedAt": 1792541706520,
+      "contextReadyAt": 1792541706523,
+      "evidenceAtStart": {
+        "contextThroughMs": 240000,
+        "analyzedThroughMs": 224000,
+        "pendingCount": 2,
+        "partialCount": 2,
+        "unanalyzedTailMs": 23999.51918599999
+      },
+      "firstProgressAt": 1792541706523,
+      "validation": {
+        "evidenceCount": 12,
+        "proposedCitations": 2,
+        "acceptedCitations": 2
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792541721475,
+      "finishedAt": 1792541721475,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 14955,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 14955,
+        "endToEndMs": 14958,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 247999.519186,
+          "frozenAtMs": 248013.62479600002,
+          "evidenceAsOfMs": 248019.74581800002,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 240000,
+          "analyzedThroughMs": 224000,
+          "pendingCount": 2,
+          "partialCount": 2,
+          "unanalyzedTailMs": 23999.51918599999,
+          "lagAtStartMs": 7999.51918599999
+        }
+      }
+    },
+    {
+      "id": "deep-3",
+      "question": "Que fait-il pour épaissir puis mouiller la préparation ?",
+      "mode": "chat",
+      "createdAt": 1792541914514,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792541914517
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1792541914520
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Il épaissit la préparation en la faisant réduire et en grattant le fond du pot pour récupérer les sucs, puis il mouille en versant le jus de marinade (le vin) dedans. Il remue bien pour mélanger.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-55",
+            "startMs": 432000,
+            "endMs": 440000
+          },
+          {
+            "id": "moment-53",
+            "startMs": 416000,
+            "endMs": 424000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques sont potentiellement imprécis ; les gestes exacts (cuillère, spatule) ne sont pas tous confirmés visuellement."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 21226,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "69b28690-baa3-4357-8256-0e40321377e0",
+      "anchorMs": 456001.26582900004,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 448000,
+        "anchorMs": 456001.26582900004,
+        "passages": 56,
+        "lastPassage": {
+          "id": "moment-56",
+          "startMs": 440000,
+          "endMs": 448000
+        }
+      },
+      "startedAt": 1792541914517,
+      "contextReadyAt": 1792541914520,
+      "evidenceAtStart": {
+        "contextThroughMs": 448000,
+        "analyzedThroughMs": 448000,
+        "pendingCount": 0,
+        "partialCount": 1,
+        "unanalyzedTailMs": 8001.26582900004
+      },
+      "firstProgressAt": 1792541914520,
+      "validation": {
+        "evidenceCount": 18,
+        "proposedCitations": 2,
+        "acceptedCitations": 2
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792541935748,
+      "finishedAt": 1792541935748,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": 21231,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 21231,
+        "endToEndMs": 21234,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 456001.26582900004,
+          "frozenAtMs": 456011.15036699997,
+          "evidenceAsOfMs": 456015.91653,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 448000,
+          "analyzedThroughMs": 448000,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8001.26582900004,
+          "lagAtStartMs": 8001.26582900004
+        }
+      }
+    },
+    {
+      "id": "deep-4",
+      "question": "Quel mode de cuisson vient-il de recommander ?",
+      "mode": "chat",
+      "createdAt": 1792542006522,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Les derniers passages sont encore en analyse…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792542006526
+        },
+        {
+          "message": "Les derniers passages sont encore en analyse…",
+          "at": 1792542006533
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Il recommande de cuire à feu moyen, en couvrant, pour environ deux à trois heures, en veillant à ce que le liquide frémisse sans bouillir.",
+        "kind": "observation",
+        "citations": [
+          {
+            "id": "moment-67",
+            "startMs": 528000,
+            "endMs": 536000
+          },
+          {
+            "id": "moment-68",
+            "startMs": 536000,
+            "endMs": 544000
+          }
+        ],
+        "sources": [],
+        "limits": [
+          "Les résumés automatiques peuvent être imprécis ; les durées (2 h puis 3 h) et le feu moyen proviennent de passages en cours d'analyse."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 19293,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "69b28690-baa3-4357-8256-0e40321377e0",
+      "anchorMs": 548000.077632,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 544000,
+        "anchorMs": 548000.077632,
+        "passages": 68,
+        "lastPassage": {
+          "id": "moment-68",
+          "startMs": 536000,
+          "endMs": 544000
+        }
+      },
+      "startedAt": 1792542006526,
+      "contextReadyAt": 1792542006533,
+      "evidenceAtStart": {
+        "contextThroughMs": 544000,
+        "analyzedThroughMs": 536000,
+        "pendingCount": 1,
+        "partialCount": 2,
+        "unanalyzedTailMs": 12000.077631999971
+      },
+      "firstProgressAt": 1792542006533,
+      "validation": {
+        "evidenceCount": 24,
+        "proposedCitations": 2,
+        "acceptedCitations": 2
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "firstUsefulAt": 1792542025829,
+      "finishedAt": 1792542025829,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 4,
+        "contextMs": 7,
+        "firstProgressMs": 7,
+        "firstUsefulMs": 19303,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 19303,
+        "endToEndMs": 19307,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 548000.077632,
+          "frozenAtMs": 548018.491161,
+          "evidenceAsOfMs": 548027.0292570001,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 544000,
+          "analyzedThroughMs": 536000,
+          "pendingCount": 1,
+          "partialCount": 2,
+          "unanalyzedTailMs": 12000.077631999971,
+          "lagAtStartMs": 4000.0776319999713
+        }
+      }
+    },
+    {
+      "id": "deep-5",
+      "question": "Dans quel ordre finit-il le plat avec les garnitures ?",
+      "mode": "chat",
+      "createdAt": 1792542114519,
+      "timeoutMs": 300000,
+      "status": "done",
+      "message": "Lecture de la mémoire disponible…",
+      "activity": [
+        {
+          "message": "Question reçue…",
+          "at": 1792542114522
+        },
+        {
+          "message": "Lecture de la mémoire disponible…",
+          "at": 1792542114525
+        }
+      ],
+      "preview": "",
+      "result": {
+        "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent le cuisinier goûter la viande puis mélanger doucement les champignons et petits oignons dans la marmite, mais aucun d'eux ne décrit l'ordre dans lequel il termine le plat avec les garnitures. Le passage suivant (648000 à 656000 ms) n'est pas encore analysé (unanalyzedTailMs≈8000 ms).",
+        "kind": "insufficient",
+        "citations": [],
+        "sources": [],
+        "limits": [
+          "Le passage 648000–656000 ms n'est pas encore analysé (unanalyzedTailMs≈8000 ms).",
+          "Les résumés automatiques (moment-76 à moment-81) ne décrivent pas l'ordre de finition du plat avec les garnitures."
+        ],
+        "audit": [],
+        "model": "qwen3.8:27b",
+        "backend": {
+          "role": "questions",
+          "kind": "ollama",
+          "model": "qwen3.8:27b",
+          "host": "127.0.0.1:11434",
+          "numCtx": 16384,
+          "keepAlive": "10m",
+          "think": "off"
+        },
+        "elapsedMs": 23257,
+        "coldStart": false,
+        "connectMs": 0,
+        "observations": [],
+        "hypotheses": []
+      },
+      "sessionId": "69b28690-baa3-4357-8256-0e40321377e0",
+      "anchorMs": 656000.672617,
+      "availability": {
+        "startMs": 0,
+        "throughMs": 648000,
+        "anchorMs": 656000.672617,
+        "passages": 81,
+        "lastPassage": {
+          "id": "moment-81",
+          "startMs": 640000,
+          "endMs": 648000
+        }
+      },
+      "startedAt": 1792542114522,
+      "contextReadyAt": 1792542114525,
+      "evidenceAtStart": {
+        "contextThroughMs": 648000,
+        "analyzedThroughMs": 648000,
+        "pendingCount": 0,
+        "partialCount": 1,
+        "unanalyzedTailMs": 8000.672616999946
+      },
+      "firstProgressAt": 1792542114525,
+      "validation": {
+        "evidenceCount": 30,
+        "proposedCitations": 0,
+        "acceptedCitations": 0
+      },
+      "audit": [],
+      "sourcesReused": 0,
+      "finishedAt": 1792542137783,
+      "metrics": {
+        "backend": {
+          "configured": "local",
+          "origin": "composed",
+          "identity": {
+            "role": "questions",
+            "kind": "ollama",
+            "model": "qwen3.8:27b",
+            "host": "127.0.0.1:11434",
+            "think": "off",
+            "numCtx": 16384,
+            "keepAlive": "10m",
+            "temperature": 0,
+            "transport": "http"
+          }
+        },
+        "calls": {
+          "agentInvoked": true,
+          "providerRequests": 1
+        },
+        "waitMs": 3,
+        "contextMs": 3,
+        "firstProgressMs": 3,
+        "firstUsefulMs": null,
+        "firstAgentMs": null,
+        "firstTextMs": null,
+        "totalMs": 23261,
+        "endToEndMs": 23264,
+        "sourcesReused": 0,
+        "inspectionCacheHits": 0,
+        "tools": [],
+        "inspection": {
+          "role": "inspection",
+          "backend": "ollama",
+          "model": "gemma3:4b",
+          "host": "127.0.0.1:11434",
+          "think": "default",
+          "numCtx": 8192,
+          "exercised": false,
+          "modelCalled": false,
+          "cacheHit": false
+        },
+        "evidence": {
+          "anchorMs": 656000.672617,
+          "frozenAtMs": 656015.359558,
+          "evidenceAsOfMs": 656021.0095040001,
+          "refreshes": 1,
+          "journalEntries": 6,
+          "journalDropped": 0,
+          "contextThroughMs": 648000,
+          "analyzedThroughMs": 648000,
+          "pendingCount": 0,
+          "partialCount": 1,
+          "unanalyzedTailMs": 8000.672616999946,
+          "lagAtStartMs": 8000.672616999946
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "predecessor": {
+    "id": "9d43e2464e434d009709c41bff63e52f",
+    "startedAtUtc": "2026-10-20T22:50:01.983773+00:00",
+    "deadlineUtc": "2026-10-21T12:00:00+00:00",
+    "status": "blocked",
+    "stages": [],
+    "updatedAtUtc": "2026-10-21T00:05:02.187189+00:00",
+    "error": {
+      "type": "RuntimeError",
+      "message": "PREDECESSOR_FAILED:/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results"
+    },
+    "readyForScoring": false
+  },
+  "containerIds": [],
+  "idle": {
+    "replay": {
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "gpu": {
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "ollama": {
+      "models": []
+    }
+  }
+}

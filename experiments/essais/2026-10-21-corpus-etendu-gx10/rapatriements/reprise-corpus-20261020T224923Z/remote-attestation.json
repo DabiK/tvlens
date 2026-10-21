@@ -1,0 +1,378 @@
+{
+  "selected": [
+    {
+      "path": "status.json",
+      "sha256": "09ae0f705d30456e2ccfe3792d9285b3cf9ce7f68fef54d14971e6861fd3754c",
+      "bytes": 14487
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "566023e51ce9aba0a3ffee84cdbc882323d5d001af83beb2b1dbd4da47ea541f",
+      "bytes": 3367
+    },
+    {
+      "path": "gate.json",
+      "sha256": "4c2d536fe8b1e84db371e0a1f0eb0d74e035f4d9d7b21330314dbd8af7e5bad9",
+      "bytes": 491
+    },
+    {
+      "path": "gate-probe.json",
+      "sha256": "3d991389e55e3e48214e392dedb016b2f3233db4af8d59c6c217298e6660202c",
+      "bytes": 702
+    },
+    {
+      "path": "identities.json",
+      "sha256": "5a787d9d6b7c49cc2f81945c6d3f5ac7e147d5f0609297898ebbc43557919be7",
+      "bytes": 2921
+    },
+    {
+      "path": "integrite.json",
+      "sha256": "3124f87dd9d0181edeaa4d4ba58732a9f5640d0024c15d9fad55c6e5554b8ab5",
+      "bytes": 1309169
+    },
+    {
+      "path": "summary-base-artemis.json",
+      "sha256": "ff1560dc3e32a83805c757b4b858b8f69c6ebc56a8a1ca93b8058f485350dc14",
+      "bytes": 1075
+    },
+    {
+      "path": "summary-base-boeuf-bourguignon.json",
+      "sha256": "fd1e310e55db0d9b3622f775f59eef655267579ae8a2d150336ba1ae1f683052",
+      "bytes": 1074
+    },
+    {
+      "path": "summary-base-tears-of-steel.json",
+      "sha256": "89705b406c9d6ee3a0b2cd97d430c1f6e7b26a0f0392032b0125038489c334ba",
+      "bytes": 1064
+    },
+    {
+      "path": "summary-large-v3-turbo-artemis.json",
+      "sha256": "61afd73ee753fc48aa95153603cce8ca514b5e82ed4742fc687be5a50597c117",
+      "bytes": 1074
+    },
+    {
+      "path": "summary-large-v3-turbo-boeuf-bourguignon.json",
+      "sha256": "e09c3a3480550b866681d35036bb00022f8f9168de807351b5188f948d0ed396",
+      "bytes": 1074
+    },
+    {
+      "path": "summary-large-v3-turbo-tears-of-steel.json",
+      "sha256": "744c9ca698c8c5c808ad81340e6c71edd5446aa04b2dbbd6a23978847ec18061",
+      "bytes": 1064
+    },
+    {
+      "path": "summary-small-artemis.json",
+      "sha256": "c794974f31fbdd75a99285444eae4856a00dd200ea36c5ace75d46acfdb484a0",
+      "bytes": 1074
+    },
+    {
+      "path": "summary-small-boeuf-bourguignon.json",
+      "sha256": "db70d44a00de0d670dee56c2e9dd53e9d483775e3d36cfba66a0953afaf482ed",
+      "bytes": 1074
+    },
+    {
+      "path": "summary-small-tears-of-steel.json",
+      "sha256": "469bf811c51171815422cd70fbecccf6a721075fadb8b2936b74c542a2c9554b",
+      "bytes": 1064
+    },
+    {
+      "path": "preparation-artemis/preparation.json",
+      "sha256": "350c626754472ae4e9c844e358038db5406093a6037658ca395be2404fd17966",
+      "bytes": 1450
+    },
+    {
+      "path": "preparation-artemis/scenario.json",
+      "sha256": "2d653c26073665e3da9457c9fb2d1c2c299f767e02caf7bf1db021fb2bcb9cd2",
+      "bytes": 34857
+    },
+    {
+      "path": "preparation-artemis/blocks.json",
+      "sha256": "6aa5ee1f055e668570e23edff29b52f1c323ef75917a9e26e0f7d204e80132b8",
+      "bytes": 423906
+    },
+    {
+      "path": "preparation-artemis/manifest.json",
+      "sha256": "e0aa7dc4405fd0b0dfcf0acec57dd715968d52ed919f9542d45a27f48324ac63",
+      "bytes": 1308053
+    },
+    {
+      "path": "preparation-boeuf-bourguignon/preparation.json",
+      "sha256": "d61c81d80080764f725d6c0ed4c9ee688606c0c5938222bdf3e96230c843244f",
+      "bytes": 1444
+    },
+    {
+      "path": "preparation-boeuf-bourguignon/scenario.json",
+      "sha256": "14d81b0e9095b394122fabc7fc563d5693d8fd53dc0bf71dfefd8528a095a5fa",
+      "bytes": 13347
+    },
+    {
+      "path": "preparation-boeuf-bourguignon/blocks.json",
+      "sha256": "6a7e92497567c3ee1f3a0add317d92b662fbe4f8a69926811e3ff525f5e5be5a",
+      "bytes": 148050
+    },
+    {
+      "path": "preparation-boeuf-bourguignon/manifest.json",
+      "sha256": "ee5e9e672c23ec4e8798109741a66ea1541ce7b310f7f61a1bc8bc087646d9c1",
+      "bytes": 462408
+    },
+    {
+      "path": "preparation-tears-of-steel/preparation.json",
+      "sha256": "582f3a3d2db667caf4c85081394bc9a094cf08fefed61d8a8448934f588b077a",
+      "bytes": 1442
+    },
+    {
+      "path": "preparation-tears-of-steel/scenario.json",
+      "sha256": "8e89d0a52e0173ae23227b2424754e8455a417b255a4ba1619bdbcef58f9c01b",
+      "bytes": 13177
+    },
+    {
+      "path": "preparation-tears-of-steel/blocks.json",
+      "sha256": "622bdde2702ed486bfcc4fe19541fdb6c5194f6ce46469fbe658d3ce603fd895",
+      "bytes": 146441
+    },
+    {
+      "path": "preparation-tears-of-steel/manifest.json",
+      "sha256": "791484f9888b1533311a5a9d3c9d6785dcb69361e52c18edf70eecac76538b23",
+      "bytes": 454105
+    },
+    {
+      "path": "run-base-artemis/campaign.json",
+      "sha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+      "bytes": 10300824
+    },
+    {
+      "path": "run-base-artemis/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-base-artemis/data/sessions/c8ffc778-7af1-46a0-82c2-dbb49cec710a/manifest.json",
+      "sha256": "8f75d12a6e4da92f178aacd004c0639fb7594c95654e0d5e53c7f7d14d1397e4",
+      "bytes": 592
+    },
+    {
+      "path": "run-base-artemis/data/sessions/c8ffc778-7af1-46a0-82c2-dbb49cec710a/session.json",
+      "sha256": "c019eb0b63918b916751a8a0b7cbb903f5d4b67b879368ec411a898af05e50e9",
+      "bytes": 950965
+    },
+    {
+      "path": "run-base-artemis/data/sessions/c8ffc778-7af1-46a0-82c2-dbb49cec710a/deep-answers.json",
+      "sha256": "9456ece2fcc0723b6b21da817710e95eb0ec229b5b50eb07364a5fb0ebfd07ac",
+      "bytes": 20792
+    },
+    {
+      "path": "run-base-boeuf-bourguignon/campaign.json",
+      "sha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+      "bytes": 3677829
+    },
+    {
+      "path": "run-base-boeuf-bourguignon/data/transcription.json",
+      "sha256": "8727d4e4f171455b9ebf4cccacd1a99295b747d250094c80578504d99861dc8d",
+      "bytes": 17
+    },
+    {
+      "path": "run-base-boeuf-bourguignon/data/sessions/69b28690-baa3-4357-8256-0e40321377e0/manifest.json",
+      "sha256": "5ad1ef33e092b538f4000f1753e74b8425a0b0c8a7b386825edc5116c304af12",
+      "bytes": 590
+    },
+    {
+      "path": "run-base-boeuf-bourguignon/data/sessions/69b28690-baa3-4357-8256-0e40321377e0/session.json",
+      "sha256": "97d7d67e5c55a4a34d47f1636ad3f9a9c5670627d3dda2a28e1e238172927dab",
+      "bytes": 320680
+    },
+    {
+      "path": "run-base-boeuf-bourguignon/data/sessions/69b28690-baa3-4357-8256-0e40321377e0/deep-answers.json",
+      "sha256": "d8ea5f79cac1cb09a1aff8d5af591d74e0aa9c47c0b54d6ca3fb1d57524b5c87",
+      "bytes": 21579
+    },
+    {
+      "path": "run-base-tears-of-steel/campaign.json",
+      "sha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+      "bytes": 3620007
+    },
+    {
+      "path": "run-base-tears-of-steel/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-base-tears-of-steel/data/sessions/19f379fe-303d-4181-9ba1-c52ddc6037ce/manifest.json",
+      "sha256": "331daff03617af11fd18f93a175eae1c5c924c3f145f2507d303af51304ba065",
+      "bytes": 595
+    },
+    {
+      "path": "run-base-tears-of-steel/data/sessions/19f379fe-303d-4181-9ba1-c52ddc6037ce/session.json",
+      "sha256": "4e3fda6fdffb0e161ae7587bc2eaf2312cad19748720150c8c966802f7be9e53",
+      "bytes": 322087
+    },
+    {
+      "path": "run-base-tears-of-steel/data/sessions/19f379fe-303d-4181-9ba1-c52ddc6037ce/deep-answers.json",
+      "sha256": "f199467f1fe5bd4c0dc9dfedb7c405314e0b6264593cd90a07ea2837f85ebe3e",
+      "bytes": 19581
+    },
+    {
+      "path": "run-large-v3-turbo-artemis/campaign.json",
+      "sha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+      "bytes": 10349812
+    },
+    {
+      "path": "run-large-v3-turbo-artemis/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-large-v3-turbo-artemis/data/sessions/34b490d7-b482-479d-ab14-cc6df11a0bc1/manifest.json",
+      "sha256": "f55353580332c9622842fff0e3b812b34085d04b1d5e77809c2a2301b3c60ae7",
+      "bytes": 588
+    },
+    {
+      "path": "run-large-v3-turbo-artemis/data/sessions/34b490d7-b482-479d-ab14-cc6df11a0bc1/session.json",
+      "sha256": "a0b7a28db5400908e6b0b037b70222a476f6df072e8afd2de4615a205fb3816b",
+      "bytes": 979761
+    },
+    {
+      "path": "run-large-v3-turbo-artemis/data/sessions/34b490d7-b482-479d-ab14-cc6df11a0bc1/deep-answers.json",
+      "sha256": "3b3d71384ef797e33f207822f500197adbc501528bd1e86fcf465b01ce20c684",
+      "bytes": 20964
+    },
+    {
+      "path": "run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+      "sha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+      "bytes": 3692923
+    },
+    {
+      "path": "run-large-v3-turbo-boeuf-bourguignon/data/transcription.json",
+      "sha256": "8727d4e4f171455b9ebf4cccacd1a99295b747d250094c80578504d99861dc8d",
+      "bytes": 17
+    },
+    {
+      "path": "run-large-v3-turbo-boeuf-bourguignon/data/sessions/17334864-00c9-4491-bc7d-1360217e92a7/manifest.json",
+      "sha256": "d0aafe65c1066fc8b2deef2514245813e9497c215606176f85fb8b3df6974e7c",
+      "bytes": 585
+    },
+    {
+      "path": "run-large-v3-turbo-boeuf-bourguignon/data/sessions/17334864-00c9-4491-bc7d-1360217e92a7/session.json",
+      "sha256": "28d13bf39635fefc94774538093a32d046761cc1e9e0f9467f0db6dbbdfee991",
+      "bytes": 336302
+    },
+    {
+      "path": "run-large-v3-turbo-boeuf-bourguignon/data/sessions/17334864-00c9-4491-bc7d-1360217e92a7/deep-answers.json",
+      "sha256": "701bbb126f130f657cc74497cb41b7557265b3f8b9b600bf944c7ca5913c126a",
+      "bytes": 22290
+    },
+    {
+      "path": "run-large-v3-turbo-tears-of-steel/campaign.json",
+      "sha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+      "bytes": 3648491
+    },
+    {
+      "path": "run-large-v3-turbo-tears-of-steel/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-large-v3-turbo-tears-of-steel/data/sessions/7719b633-7b6b-49c8-b92c-5a51a3fa64a1/manifest.json",
+      "sha256": "33725e01580fd3f0268741487939af5b441e9f8dd94bbb835257cadc04480599",
+      "bytes": 586
+    },
+    {
+      "path": "run-large-v3-turbo-tears-of-steel/data/sessions/7719b633-7b6b-49c8-b92c-5a51a3fa64a1/session.json",
+      "sha256": "c7f58f84a29d94e00f1b3ffe37dd340a7fa6f3c0d7862c3700b1a198bb43aae9",
+      "bytes": 342605
+    },
+    {
+      "path": "run-large-v3-turbo-tears-of-steel/data/sessions/7719b633-7b6b-49c8-b92c-5a51a3fa64a1/deep-answers.json",
+      "sha256": "862b1d4f0215e1be5558df885860eb063dcafc441856bb9c8d0001dc243e719a",
+      "bytes": 20175
+    },
+    {
+      "path": "run-small-artemis/campaign.json",
+      "sha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+      "bytes": 10342538
+    },
+    {
+      "path": "run-small-artemis/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-small-artemis/data/sessions/d447b19e-cd1e-42fd-9f3c-46729656f5c3/manifest.json",
+      "sha256": "024291f1244eb97e97360bcefe2d93234083fed95d1cfe76610a6a4be8e6dec9",
+      "bytes": 588
+    },
+    {
+      "path": "run-small-artemis/data/sessions/d447b19e-cd1e-42fd-9f3c-46729656f5c3/session.json",
+      "sha256": "56915020c9e7ff5e9559ab4563be9b9816a1ec7ed7574f5f1972c7b2de22016d",
+      "bytes": 986342
+    },
+    {
+      "path": "run-small-artemis/data/sessions/d447b19e-cd1e-42fd-9f3c-46729656f5c3/deep-answers.json",
+      "sha256": "edea7b4d73de9f03f6c967515b6119a07f45c0c0a9de8dc0f0fa2d037f9a882e",
+      "bytes": 21147
+    },
+    {
+      "path": "run-small-boeuf-bourguignon/campaign.json",
+      "sha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+      "bytes": 3676126
+    },
+    {
+      "path": "run-small-boeuf-bourguignon/data/transcription.json",
+      "sha256": "8727d4e4f171455b9ebf4cccacd1a99295b747d250094c80578504d99861dc8d",
+      "bytes": 17
+    },
+    {
+      "path": "run-small-boeuf-bourguignon/data/sessions/6fcb55f5-f60e-46d9-9e11-ede9fad1f3e0/manifest.json",
+      "sha256": "724c62d9b7c06bbc40fa60126d7a69bf4f723dbf017dc46fd98f72ecbf213e01",
+      "bytes": 586
+    },
+    {
+      "path": "run-small-boeuf-bourguignon/data/sessions/6fcb55f5-f60e-46d9-9e11-ede9fad1f3e0/session.json",
+      "sha256": "fed5b6e0740ef8b70f3a87ad02c2b914d2e8c532457b9b29f155d69fde997f03",
+      "bytes": 331259
+    },
+    {
+      "path": "run-small-boeuf-bourguignon/data/sessions/6fcb55f5-f60e-46d9-9e11-ede9fad1f3e0/deep-answers.json",
+      "sha256": "be46f3c4fc58257b361c126cca457f893f04a6b79d0583dfbf39b29385c867a7",
+      "bytes": 21889
+    },
+    {
+      "path": "run-small-tears-of-steel/campaign.json",
+      "sha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+      "bytes": 3614595
+    },
+    {
+      "path": "run-small-tears-of-steel/data/transcription.json",
+      "sha256": "114a6e8f5c43bea09a4a73b24b44b030440a6f3be212bbe943becdb363f15e29",
+      "bytes": 17
+    },
+    {
+      "path": "run-small-tears-of-steel/data/sessions/6c3163fa-3abd-45e8-8de1-638ad9ee756c/manifest.json",
+      "sha256": "3553ccf8bae431f116cc3982e875bd2cbae18e55aa578cc7bda0c0353abd3ef3",
+      "bytes": 586
+    },
+    {
+      "path": "run-small-tears-of-steel/data/sessions/6c3163fa-3abd-45e8-8de1-638ad9ee756c/session.json",
+      "sha256": "d77f51a5cef785bc5d1538a3d64939970d9699e22924ea66cb3f4be441285471",
+      "bytes": 324786
+    },
+    {
+      "path": "run-small-tears-of-steel/data/sessions/6c3163fa-3abd-45e8-8de1-638ad9ee756c/deep-answers.json",
+      "sha256": "748694aa8ecf0ed79d8be5acf4ac15c7f8857c1bb76cf1058e5f1cfe5555294c",
+      "bytes": 19803
+    }
+  ],
+  "logs": [
+    {
+      "path": "launcher.stdout.log",
+      "sha256": "495473b03f7096bf47ab1d5a8268668f9c13dd3eb8bd4a1243908a40d945ed27",
+      "bytes": 868
+    },
+    {
+      "path": "launcher.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "manifestFiles": 9067,
+  "telemetrySha256": "1d7b6b5b366c2258a0f4d98d8dd8426bbd2e6366a6b78c500110e7129fe9cd45"
+}

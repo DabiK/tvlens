@@ -1,0 +1,388 @@
+{
+  "id": "77bb92137686415a98b082f303df2f5c",
+  "startedAtUtc": "2026-10-20T22:50:09.063465+00:00",
+  "deadlineUtc": "2026-10-23T05:00:00+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "cmd-prepare-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--file",
+        "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon",
+        "--start-ms",
+        "0",
+        "--duration-ms",
+        "736000",
+        "--block-ms",
+        "8000",
+        "--frames",
+        "5",
+        "--jpeg-quality",
+        "3",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env"
+      ],
+      "startedAtUtc": "2026-10-21T00:05:09.590874+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:06:14.128596+00:00",
+      "durationSeconds": 64.53675005799596
+    },
+    {
+      "name": "cmd-validate-preparation-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--validate",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon"
+      ],
+      "startedAtUtc": "2026-10-21T00:06:14.129148+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:06:16.132329+00:00",
+      "durationSeconds": 2.0014647810021415
+    },
+    {
+      "name": "cmd-scenario-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/scenario.cjs",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/boeuf-bourguignon.json",
+        "fr"
+      ],
+      "startedAtUtc": "2026-10-21T00:06:16.132954+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:06:16.635408+00:00",
+      "durationSeconds": 0.5005453039993881
+    },
+    {
+      "name": "cmd-validate-scenario-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/validation-boeuf-bourguignon",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T00:06:16.635899+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:06:17.638449+00:00",
+      "durationSeconds": 1.001040221999574
+    },
+    {
+      "name": "cmd-prepare-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--file",
+        "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel",
+        "--start-ms",
+        "0",
+        "--duration-ms",
+        "728000",
+        "--block-ms",
+        "8000",
+        "--frames",
+        "5",
+        "--jpeg-quality",
+        "3",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env"
+      ],
+      "startedAtUtc": "2026-10-21T00:06:17.639006+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:07:09.671099+00:00",
+      "durationSeconds": 52.030026679
+    },
+    {
+      "name": "cmd-validate-preparation-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--validate",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel"
+      ],
+      "startedAtUtc": "2026-10-21T00:07:09.671592+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:07:11.174519+00:00",
+      "durationSeconds": 1.5012057659987477
+    },
+    {
+      "name": "cmd-scenario-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/scenario.cjs",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/tears-of-steel.json",
+        "en"
+      ],
+      "startedAtUtc": "2026-10-21T00:07:11.175037+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:07:11.678751+00:00",
+      "durationSeconds": 0.5009977930021705
+    },
+    {
+      "name": "cmd-validate-scenario-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/validation-tears-of-steel",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T00:07:11.679319+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:07:12.681977+00:00",
+      "durationSeconds": 1.0009001360012917
+    },
+    {
+      "name": "cmd-prepare-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--file",
+        "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis",
+        "--start-ms",
+        "0",
+        "--duration-ms",
+        "2099000",
+        "--block-ms",
+        "8000",
+        "--frames",
+        "5",
+        "--jpeg-quality",
+        "3",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env"
+      ],
+      "startedAtUtc": "2026-10-21T00:07:12.682540+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:10:52.315166+00:00",
+      "durationSeconds": 219.63120304699987
+    },
+    {
+      "name": "cmd-validate-preparation-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/prepare-video-replay.cjs",
+        "--validate",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis"
+      ],
+      "startedAtUtc": "2026-10-21T00:10:52.316105+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:10:55.819750+00:00",
+      "durationSeconds": 3.5026098800008185
+    },
+    {
+      "name": "cmd-scenario-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/scripts/scenario.cjs",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis",
+        "/home/nvidia/tvlens-setup/corpus-etendu-20261020T221045Z/package/questions/artemis.json",
+        "en"
+      ],
+      "startedAtUtc": "2026-10-21T00:10:55.820662+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:10:56.327543+00:00",
+      "durationSeconds": 0.5007772120006848
+    },
+    {
+      "name": "cmd-validate-scenario-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/validation-artemis",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T00:10:56.328444+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:10:57.831217+00:00",
+      "durationSeconds": 1.501460526997107
+    },
+    {
+      "name": "cmd-run-base-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T00:10:57.833937+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:23:23.203702+00:00",
+      "durationSeconds": 745.3687230310024
+    },
+    {
+      "name": "cmd-run-base-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T00:23:23.235631+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T00:35:41.083421+00:00",
+      "durationSeconds": 737.8466526279954
+    },
+    {
+      "name": "cmd-run-base-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-base-artemis",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T00:35:41.103043+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T01:11:01.316912+00:00",
+      "durationSeconds": 2120.2130133060055
+    },
+    {
+      "name": "cmd-run-small-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-small.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T01:11:01.396274+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T01:23:39.361891+00:00",
+      "durationSeconds": 757.9645263799976
+    },
+    {
+      "name": "cmd-run-small-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-small.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T01:23:39.391861+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T01:35:55.249405+00:00",
+      "durationSeconds": 735.8562090129999
+    },
+    {
+      "name": "cmd-run-small-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-small-artemis",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-small.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T01:35:55.263707+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T02:11:17.553724+00:00",
+      "durationSeconds": 2122.2890685360035
+    },
+    {
+      "name": "cmd-run-large-v3-turbo-boeuf-bourguignon",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-large-v3-turbo.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T02:11:17.604295+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T02:23:44.084648+00:00",
+      "durationSeconds": 746.4792782950026
+    },
+    {
+      "name": "cmd-run-large-v3-turbo-tears-of-steel",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-large-v3-turbo.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T02:23:44.111765+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T02:36:10.534345+00:00",
+      "durationSeconds": 746.421504179998
+    },
+    {
+      "name": "cmd-run-large-v3-turbo-artemis",
+      "argv": [
+        "node",
+        "/home/nvidia/tvlens/scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis/scenario.json",
+        "--out",
+        "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis",
+        "--config",
+        "/home/nvidia/tvlens-setup/reference-2026-10-20/config-large-v3-turbo.env",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T02:36:10.561495+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T03:11:36.923642+00:00",
+      "durationSeconds": 2126.361097408
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T03:11:36.975413+00:00",
+  "predecessorStatus": "blocked",
+  "run": "large-v3-turbo-artemis",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

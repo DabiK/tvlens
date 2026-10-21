@@ -1,0 +1,27 @@
+{
+  "format": "tvlens-session",
+  "version": 1,
+  "id": "7719b633-7b6b-49c8-b92c-5a51a3fa64a1",
+  "host": "server",
+  "createdAt": 1792549424775,
+  "updatedAt": 1792550169830,
+  "closedAt": 1792550169830,
+  "state": "archived",
+  "title": "Session du 21 oct. 2026, 02:23",
+  "firstTopic": "Open Movie Project",
+  "elapsedMs": 745027.847968,
+  "capturedThroughMs": 728000,
+  "passages": 91,
+  "media": {
+    "stored": 91,
+    "missing": 0,
+    "bytes": 123344018,
+    "retention": "until-deleted"
+  },
+  "captures": [
+    {
+      "startedAt": 1792549424775,
+      "fromMs": 0
+    }
+  ]
+}

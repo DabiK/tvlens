@@ -1,0 +1,1920 @@
+{
+  "version": 1,
+  "kind": "nominal",
+  "index": {
+    "path": "blocks.json",
+    "sha256": "6aa5ee1f055e668570e23edff29b52f1c323ef75917a9e26e0f7d204e80132b8"
+  },
+  "provenance": {
+    "kind": "converted-video",
+    "reference": "Corpus étendu ; comparaison exploratoire Whisper ; transport TV exclu.",
+    "preparation": {
+      "path": "preparation.json",
+      "sha256": "350c626754472ae4e9c844e358038db5406093a6037658ca395be2404fd17966"
+    }
+  },
+  "plannedDurationMs": 2099000,
+  "finalWaitMs": 180000,
+  "closeWaitMs": 30000,
+  "config": {
+    "perceptionBackend": "local",
+    "questionsBackend": "local",
+    "inspectionBackend": "local",
+    "embeddingsBackend": "local",
+    "localVlm": {
+      "url": "http://127.0.0.1:11434",
+      "model": "gemma3:4b",
+      "numCtx": 8192,
+      "keepAlive": "10m"
+    },
+    "localQuestions": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3.8:27b",
+      "numCtx": 16384,
+      "keepAlive": "10m",
+      "think": "off"
+    },
+    "localEmbeddings": {
+      "url": "http://127.0.0.1:11434",
+      "model": "qwen3-embedding:0.6b",
+      "timeoutMs": 120000
+    },
+    "visionDuringAsk": true,
+    "backgroundIndex": true
+  },
+  "selectedModels": {
+    "observationModel": "gemma3:4b",
+    "inspectionModel": "gemma3:4b",
+    "codexModel": "qwen3.8:27b"
+  },
+  "clips": [
+    {
+      "id": "clip-0",
+      "block": 0,
+      "occurrence": 0,
+      "atMs": 0,
+      "language": "en"
+    },
+    {
+      "id": "clip-1",
+      "block": 1,
+      "occurrence": 0,
+      "atMs": 8000,
+      "language": "en"
+    },
+    {
+      "id": "clip-2",
+      "block": 2,
+      "occurrence": 0,
+      "atMs": 16000,
+      "language": "en"
+    },
+    {
+      "id": "clip-3",
+      "block": 3,
+      "occurrence": 0,
+      "atMs": 24000,
+      "language": "en"
+    },
+    {
+      "id": "clip-4",
+      "block": 4,
+      "occurrence": 0,
+      "atMs": 32000,
+      "language": "en"
+    },
+    {
+      "id": "clip-5",
+      "block": 5,
+      "occurrence": 0,
+      "atMs": 40000,
+      "language": "en"
+    },
+    {
+      "id": "clip-6",
+      "block": 6,
+      "occurrence": 0,
+      "atMs": 48000,
+      "language": "en"
+    },
+    {
+      "id": "clip-7",
+      "block": 7,
+      "occurrence": 0,
+      "atMs": 56000,
+      "language": "en"
+    },
+    {
+      "id": "clip-8",
+      "block": 8,
+      "occurrence": 0,
+      "atMs": 64000,
+      "language": "en"
+    },
+    {
+      "id": "clip-9",
+      "block": 9,
+      "occurrence": 0,
+      "atMs": 72000,
+      "language": "en"
+    },
+    {
+      "id": "clip-10",
+      "block": 10,
+      "occurrence": 0,
+      "atMs": 80000,
+      "language": "en"
+    },
+    {
+      "id": "clip-11",
+      "block": 11,
+      "occurrence": 0,
+      "atMs": 88000,
+      "language": "en"
+    },
+    {
+      "id": "clip-12",
+      "block": 12,
+      "occurrence": 0,
+      "atMs": 96000,
+      "language": "en"
+    },
+    {
+      "id": "clip-13",
+      "block": 13,
+      "occurrence": 0,
+      "atMs": 104000,
+      "language": "en"
+    },
+    {
+      "id": "clip-14",
+      "block": 14,
+      "occurrence": 0,
+      "atMs": 112000,
+      "language": "en"
+    },
+    {
+      "id": "clip-15",
+      "block": 15,
+      "occurrence": 0,
+      "atMs": 120000,
+      "language": "en"
+    },
+    {
+      "id": "clip-16",
+      "block": 16,
+      "occurrence": 0,
+      "atMs": 128000,
+      "language": "en"
+    },
+    {
+      "id": "clip-17",
+      "block": 17,
+      "occurrence": 0,
+      "atMs": 136000,
+      "language": "en"
+    },
+    {
+      "id": "clip-18",
+      "block": 18,
+      "occurrence": 0,
+      "atMs": 144000,
+      "language": "en"
+    },
+    {
+      "id": "clip-19",
+      "block": 19,
+      "occurrence": 0,
+      "atMs": 152000,
+      "language": "en"
+    },
+    {
+      "id": "clip-20",
+      "block": 20,
+      "occurrence": 0,
+      "atMs": 160000,
+      "language": "en"
+    },
+    {
+      "id": "clip-21",
+      "block": 21,
+      "occurrence": 0,
+      "atMs": 168000,
+      "language": "en"
+    },
+    {
+      "id": "clip-22",
+      "block": 22,
+      "occurrence": 0,
+      "atMs": 176000,
+      "language": "en"
+    },
+    {
+      "id": "clip-23",
+      "block": 23,
+      "occurrence": 0,
+      "atMs": 184000,
+      "language": "en"
+    },
+    {
+      "id": "clip-24",
+      "block": 24,
+      "occurrence": 0,
+      "atMs": 192000,
+      "language": "en"
+    },
+    {
+      "id": "clip-25",
+      "block": 25,
+      "occurrence": 0,
+      "atMs": 200000,
+      "language": "en"
+    },
+    {
+      "id": "clip-26",
+      "block": 26,
+      "occurrence": 0,
+      "atMs": 208000,
+      "language": "en"
+    },
+    {
+      "id": "clip-27",
+      "block": 27,
+      "occurrence": 0,
+      "atMs": 216000,
+      "language": "en"
+    },
+    {
+      "id": "clip-28",
+      "block": 28,
+      "occurrence": 0,
+      "atMs": 224000,
+      "language": "en"
+    },
+    {
+      "id": "clip-29",
+      "block": 29,
+      "occurrence": 0,
+      "atMs": 232000,
+      "language": "en"
+    },
+    {
+      "id": "clip-30",
+      "block": 30,
+      "occurrence": 0,
+      "atMs": 240000,
+      "language": "en"
+    },
+    {
+      "id": "clip-31",
+      "block": 31,
+      "occurrence": 0,
+      "atMs": 248000,
+      "language": "en"
+    },
+    {
+      "id": "clip-32",
+      "block": 32,
+      "occurrence": 0,
+      "atMs": 256000,
+      "language": "en"
+    },
+    {
+      "id": "clip-33",
+      "block": 33,
+      "occurrence": 0,
+      "atMs": 264000,
+      "language": "en"
+    },
+    {
+      "id": "clip-34",
+      "block": 34,
+      "occurrence": 0,
+      "atMs": 272000,
+      "language": "en"
+    },
+    {
+      "id": "clip-35",
+      "block": 35,
+      "occurrence": 0,
+      "atMs": 280000,
+      "language": "en"
+    },
+    {
+      "id": "clip-36",
+      "block": 36,
+      "occurrence": 0,
+      "atMs": 288000,
+      "language": "en"
+    },
+    {
+      "id": "clip-37",
+      "block": 37,
+      "occurrence": 0,
+      "atMs": 296000,
+      "language": "en"
+    },
+    {
+      "id": "clip-38",
+      "block": 38,
+      "occurrence": 0,
+      "atMs": 304000,
+      "language": "en"
+    },
+    {
+      "id": "clip-39",
+      "block": 39,
+      "occurrence": 0,
+      "atMs": 312000,
+      "language": "en"
+    },
+    {
+      "id": "clip-40",
+      "block": 40,
+      "occurrence": 0,
+      "atMs": 320000,
+      "language": "en"
+    },
+    {
+      "id": "clip-41",
+      "block": 41,
+      "occurrence": 0,
+      "atMs": 328000,
+      "language": "en"
+    },
+    {
+      "id": "clip-42",
+      "block": 42,
+      "occurrence": 0,
+      "atMs": 336000,
+      "language": "en"
+    },
+    {
+      "id": "clip-43",
+      "block": 43,
+      "occurrence": 0,
+      "atMs": 344000,
+      "language": "en"
+    },
+    {
+      "id": "clip-44",
+      "block": 44,
+      "occurrence": 0,
+      "atMs": 352000,
+      "language": "en"
+    },
+    {
+      "id": "clip-45",
+      "block": 45,
+      "occurrence": 0,
+      "atMs": 360000,
+      "language": "en"
+    },
+    {
+      "id": "clip-46",
+      "block": 46,
+      "occurrence": 0,
+      "atMs": 368000,
+      "language": "en"
+    },
+    {
+      "id": "clip-47",
+      "block": 47,
+      "occurrence": 0,
+      "atMs": 376000,
+      "language": "en"
+    },
+    {
+      "id": "clip-48",
+      "block": 48,
+      "occurrence": 0,
+      "atMs": 384000,
+      "language": "en"
+    },
+    {
+      "id": "clip-49",
+      "block": 49,
+      "occurrence": 0,
+      "atMs": 392000,
+      "language": "en"
+    },
+    {
+      "id": "clip-50",
+      "block": 50,
+      "occurrence": 0,
+      "atMs": 400000,
+      "language": "en"
+    },
+    {
+      "id": "clip-51",
+      "block": 51,
+      "occurrence": 0,
+      "atMs": 408000,
+      "language": "en"
+    },
+    {
+      "id": "clip-52",
+      "block": 52,
+      "occurrence": 0,
+      "atMs": 416000,
+      "language": "en"
+    },
+    {
+      "id": "clip-53",
+      "block": 53,
+      "occurrence": 0,
+      "atMs": 424000,
+      "language": "en"
+    },
+    {
+      "id": "clip-54",
+      "block": 54,
+      "occurrence": 0,
+      "atMs": 432000,
+      "language": "en"
+    },
+    {
+      "id": "clip-55",
+      "block": 55,
+      "occurrence": 0,
+      "atMs": 440000,
+      "language": "en"
+    },
+    {
+      "id": "clip-56",
+      "block": 56,
+      "occurrence": 0,
+      "atMs": 448000,
+      "language": "en"
+    },
+    {
+      "id": "clip-57",
+      "block": 57,
+      "occurrence": 0,
+      "atMs": 456000,
+      "language": "en"
+    },
+    {
+      "id": "clip-58",
+      "block": 58,
+      "occurrence": 0,
+      "atMs": 464000,
+      "language": "en"
+    },
+    {
+      "id": "clip-59",
+      "block": 59,
+      "occurrence": 0,
+      "atMs": 472000,
+      "language": "en"
+    },
+    {
+      "id": "clip-60",
+      "block": 60,
+      "occurrence": 0,
+      "atMs": 480000,
+      "language": "en"
+    },
+    {
+      "id": "clip-61",
+      "block": 61,
+      "occurrence": 0,
+      "atMs": 488000,
+      "language": "en"
+    },
+    {
+      "id": "clip-62",
+      "block": 62,
+      "occurrence": 0,
+      "atMs": 496000,
+      "language": "en"
+    },
+    {
+      "id": "clip-63",
+      "block": 63,
+      "occurrence": 0,
+      "atMs": 504000,
+      "language": "en"
+    },
+    {
+      "id": "clip-64",
+      "block": 64,
+      "occurrence": 0,
+      "atMs": 512000,
+      "language": "en"
+    },
+    {
+      "id": "clip-65",
+      "block": 65,
+      "occurrence": 0,
+      "atMs": 520000,
+      "language": "en"
+    },
+    {
+      "id": "clip-66",
+      "block": 66,
+      "occurrence": 0,
+      "atMs": 528000,
+      "language": "en"
+    },
+    {
+      "id": "clip-67",
+      "block": 67,
+      "occurrence": 0,
+      "atMs": 536000,
+      "language": "en"
+    },
+    {
+      "id": "clip-68",
+      "block": 68,
+      "occurrence": 0,
+      "atMs": 544000,
+      "language": "en"
+    },
+    {
+      "id": "clip-69",
+      "block": 69,
+      "occurrence": 0,
+      "atMs": 552000,
+      "language": "en"
+    },
+    {
+      "id": "clip-70",
+      "block": 70,
+      "occurrence": 0,
+      "atMs": 560000,
+      "language": "en"
+    },
+    {
+      "id": "clip-71",
+      "block": 71,
+      "occurrence": 0,
+      "atMs": 568000,
+      "language": "en"
+    },
+    {
+      "id": "clip-72",
+      "block": 72,
+      "occurrence": 0,
+      "atMs": 576000,
+      "language": "en"
+    },
+    {
+      "id": "clip-73",
+      "block": 73,
+      "occurrence": 0,
+      "atMs": 584000,
+      "language": "en"
+    },
+    {
+      "id": "clip-74",
+      "block": 74,
+      "occurrence": 0,
+      "atMs": 592000,
+      "language": "en"
+    },
+    {
+      "id": "clip-75",
+      "block": 75,
+      "occurrence": 0,
+      "atMs": 600000,
+      "language": "en"
+    },
+    {
+      "id": "clip-76",
+      "block": 76,
+      "occurrence": 0,
+      "atMs": 608000,
+      "language": "en"
+    },
+    {
+      "id": "clip-77",
+      "block": 77,
+      "occurrence": 0,
+      "atMs": 616000,
+      "language": "en"
+    },
+    {
+      "id": "clip-78",
+      "block": 78,
+      "occurrence": 0,
+      "atMs": 624000,
+      "language": "en"
+    },
+    {
+      "id": "clip-79",
+      "block": 79,
+      "occurrence": 0,
+      "atMs": 632000,
+      "language": "en"
+    },
+    {
+      "id": "clip-80",
+      "block": 80,
+      "occurrence": 0,
+      "atMs": 640000,
+      "language": "en"
+    },
+    {
+      "id": "clip-81",
+      "block": 81,
+      "occurrence": 0,
+      "atMs": 648000,
+      "language": "en"
+    },
+    {
+      "id": "clip-82",
+      "block": 82,
+      "occurrence": 0,
+      "atMs": 656000,
+      "language": "en"
+    },
+    {
+      "id": "clip-83",
+      "block": 83,
+      "occurrence": 0,
+      "atMs": 664000,
+      "language": "en"
+    },
+    {
+      "id": "clip-84",
+      "block": 84,
+      "occurrence": 0,
+      "atMs": 672000,
+      "language": "en"
+    },
+    {
+      "id": "clip-85",
+      "block": 85,
+      "occurrence": 0,
+      "atMs": 680000,
+      "language": "en"
+    },
+    {
+      "id": "clip-86",
+      "block": 86,
+      "occurrence": 0,
+      "atMs": 688000,
+      "language": "en"
+    },
+    {
+      "id": "clip-87",
+      "block": 87,
+      "occurrence": 0,
+      "atMs": 696000,
+      "language": "en"
+    },
+    {
+      "id": "clip-88",
+      "block": 88,
+      "occurrence": 0,
+      "atMs": 704000,
+      "language": "en"
+    },
+    {
+      "id": "clip-89",
+      "block": 89,
+      "occurrence": 0,
+      "atMs": 712000,
+      "language": "en"
+    },
+    {
+      "id": "clip-90",
+      "block": 90,
+      "occurrence": 0,
+      "atMs": 720000,
+      "language": "en"
+    },
+    {
+      "id": "clip-91",
+      "block": 91,
+      "occurrence": 0,
+      "atMs": 728000,
+      "language": "en"
+    },
+    {
+      "id": "clip-92",
+      "block": 92,
+      "occurrence": 0,
+      "atMs": 736000,
+      "language": "en"
+    },
+    {
+      "id": "clip-93",
+      "block": 93,
+      "occurrence": 0,
+      "atMs": 744000,
+      "language": "en"
+    },
+    {
+      "id": "clip-94",
+      "block": 94,
+      "occurrence": 0,
+      "atMs": 752000,
+      "language": "en"
+    },
+    {
+      "id": "clip-95",
+      "block": 95,
+      "occurrence": 0,
+      "atMs": 760000,
+      "language": "en"
+    },
+    {
+      "id": "clip-96",
+      "block": 96,
+      "occurrence": 0,
+      "atMs": 768000,
+      "language": "en"
+    },
+    {
+      "id": "clip-97",
+      "block": 97,
+      "occurrence": 0,
+      "atMs": 776000,
+      "language": "en"
+    },
+    {
+      "id": "clip-98",
+      "block": 98,
+      "occurrence": 0,
+      "atMs": 784000,
+      "language": "en"
+    },
+    {
+      "id": "clip-99",
+      "block": 99,
+      "occurrence": 0,
+      "atMs": 792000,
+      "language": "en"
+    },
+    {
+      "id": "clip-100",
+      "block": 100,
+      "occurrence": 0,
+      "atMs": 800000,
+      "language": "en"
+    },
+    {
+      "id": "clip-101",
+      "block": 101,
+      "occurrence": 0,
+      "atMs": 808000,
+      "language": "en"
+    },
+    {
+      "id": "clip-102",
+      "block": 102,
+      "occurrence": 0,
+      "atMs": 816000,
+      "language": "en"
+    },
+    {
+      "id": "clip-103",
+      "block": 103,
+      "occurrence": 0,
+      "atMs": 824000,
+      "language": "en"
+    },
+    {
+      "id": "clip-104",
+      "block": 104,
+      "occurrence": 0,
+      "atMs": 832000,
+      "language": "en"
+    },
+    {
+      "id": "clip-105",
+      "block": 105,
+      "occurrence": 0,
+      "atMs": 840000,
+      "language": "en"
+    },
+    {
+      "id": "clip-106",
+      "block": 106,
+      "occurrence": 0,
+      "atMs": 848000,
+      "language": "en"
+    },
+    {
+      "id": "clip-107",
+      "block": 107,
+      "occurrence": 0,
+      "atMs": 856000,
+      "language": "en"
+    },
+    {
+      "id": "clip-108",
+      "block": 108,
+      "occurrence": 0,
+      "atMs": 864000,
+      "language": "en"
+    },
+    {
+      "id": "clip-109",
+      "block": 109,
+      "occurrence": 0,
+      "atMs": 872000,
+      "language": "en"
+    },
+    {
+      "id": "clip-110",
+      "block": 110,
+      "occurrence": 0,
+      "atMs": 880000,
+      "language": "en"
+    },
+    {
+      "id": "clip-111",
+      "block": 111,
+      "occurrence": 0,
+      "atMs": 888000,
+      "language": "en"
+    },
+    {
+      "id": "clip-112",
+      "block": 112,
+      "occurrence": 0,
+      "atMs": 896000,
+      "language": "en"
+    },
+    {
+      "id": "clip-113",
+      "block": 113,
+      "occurrence": 0,
+      "atMs": 904000,
+      "language": "en"
+    },
+    {
+      "id": "clip-114",
+      "block": 114,
+      "occurrence": 0,
+      "atMs": 912000,
+      "language": "en"
+    },
+    {
+      "id": "clip-115",
+      "block": 115,
+      "occurrence": 0,
+      "atMs": 920000,
+      "language": "en"
+    },
+    {
+      "id": "clip-116",
+      "block": 116,
+      "occurrence": 0,
+      "atMs": 928000,
+      "language": "en"
+    },
+    {
+      "id": "clip-117",
+      "block": 117,
+      "occurrence": 0,
+      "atMs": 936000,
+      "language": "en"
+    },
+    {
+      "id": "clip-118",
+      "block": 118,
+      "occurrence": 0,
+      "atMs": 944000,
+      "language": "en"
+    },
+    {
+      "id": "clip-119",
+      "block": 119,
+      "occurrence": 0,
+      "atMs": 952000,
+      "language": "en"
+    },
+    {
+      "id": "clip-120",
+      "block": 120,
+      "occurrence": 0,
+      "atMs": 960000,
+      "language": "en"
+    },
+    {
+      "id": "clip-121",
+      "block": 121,
+      "occurrence": 0,
+      "atMs": 968000,
+      "language": "en"
+    },
+    {
+      "id": "clip-122",
+      "block": 122,
+      "occurrence": 0,
+      "atMs": 976000,
+      "language": "en"
+    },
+    {
+      "id": "clip-123",
+      "block": 123,
+      "occurrence": 0,
+      "atMs": 984000,
+      "language": "en"
+    },
+    {
+      "id": "clip-124",
+      "block": 124,
+      "occurrence": 0,
+      "atMs": 992000,
+      "language": "en"
+    },
+    {
+      "id": "clip-125",
+      "block": 125,
+      "occurrence": 0,
+      "atMs": 1000000,
+      "language": "en"
+    },
+    {
+      "id": "clip-126",
+      "block": 126,
+      "occurrence": 0,
+      "atMs": 1008000,
+      "language": "en"
+    },
+    {
+      "id": "clip-127",
+      "block": 127,
+      "occurrence": 0,
+      "atMs": 1016000,
+      "language": "en"
+    },
+    {
+      "id": "clip-128",
+      "block": 128,
+      "occurrence": 0,
+      "atMs": 1024000,
+      "language": "en"
+    },
+    {
+      "id": "clip-129",
+      "block": 129,
+      "occurrence": 0,
+      "atMs": 1032000,
+      "language": "en"
+    },
+    {
+      "id": "clip-130",
+      "block": 130,
+      "occurrence": 0,
+      "atMs": 1040000,
+      "language": "en"
+    },
+    {
+      "id": "clip-131",
+      "block": 131,
+      "occurrence": 0,
+      "atMs": 1048000,
+      "language": "en"
+    },
+    {
+      "id": "clip-132",
+      "block": 132,
+      "occurrence": 0,
+      "atMs": 1056000,
+      "language": "en"
+    },
+    {
+      "id": "clip-133",
+      "block": 133,
+      "occurrence": 0,
+      "atMs": 1064000,
+      "language": "en"
+    },
+    {
+      "id": "clip-134",
+      "block": 134,
+      "occurrence": 0,
+      "atMs": 1072000,
+      "language": "en"
+    },
+    {
+      "id": "clip-135",
+      "block": 135,
+      "occurrence": 0,
+      "atMs": 1080000,
+      "language": "en"
+    },
+    {
+      "id": "clip-136",
+      "block": 136,
+      "occurrence": 0,
+      "atMs": 1088000,
+      "language": "en"
+    },
+    {
+      "id": "clip-137",
+      "block": 137,
+      "occurrence": 0,
+      "atMs": 1096000,
+      "language": "en"
+    },
+    {
+      "id": "clip-138",
+      "block": 138,
+      "occurrence": 0,
+      "atMs": 1104000,
+      "language": "en"
+    },
+    {
+      "id": "clip-139",
+      "block": 139,
+      "occurrence": 0,
+      "atMs": 1112000,
+      "language": "en"
+    },
+    {
+      "id": "clip-140",
+      "block": 140,
+      "occurrence": 0,
+      "atMs": 1120000,
+      "language": "en"
+    },
+    {
+      "id": "clip-141",
+      "block": 141,
+      "occurrence": 0,
+      "atMs": 1128000,
+      "language": "en"
+    },
+    {
+      "id": "clip-142",
+      "block": 142,
+      "occurrence": 0,
+      "atMs": 1136000,
+      "language": "en"
+    },
+    {
+      "id": "clip-143",
+      "block": 143,
+      "occurrence": 0,
+      "atMs": 1144000,
+      "language": "en"
+    },
+    {
+      "id": "clip-144",
+      "block": 144,
+      "occurrence": 0,
+      "atMs": 1152000,
+      "language": "en"
+    },
+    {
+      "id": "clip-145",
+      "block": 145,
+      "occurrence": 0,
+      "atMs": 1160000,
+      "language": "en"
+    },
+    {
+      "id": "clip-146",
+      "block": 146,
+      "occurrence": 0,
+      "atMs": 1168000,
+      "language": "en"
+    },
+    {
+      "id": "clip-147",
+      "block": 147,
+      "occurrence": 0,
+      "atMs": 1176000,
+      "language": "en"
+    },
+    {
+      "id": "clip-148",
+      "block": 148,
+      "occurrence": 0,
+      "atMs": 1184000,
+      "language": "en"
+    },
+    {
+      "id": "clip-149",
+      "block": 149,
+      "occurrence": 0,
+      "atMs": 1192000,
+      "language": "en"
+    },
+    {
+      "id": "clip-150",
+      "block": 150,
+      "occurrence": 0,
+      "atMs": 1200000,
+      "language": "en"
+    },
+    {
+      "id": "clip-151",
+      "block": 151,
+      "occurrence": 0,
+      "atMs": 1208000,
+      "language": "en"
+    },
+    {
+      "id": "clip-152",
+      "block": 152,
+      "occurrence": 0,
+      "atMs": 1216000,
+      "language": "en"
+    },
+    {
+      "id": "clip-153",
+      "block": 153,
+      "occurrence": 0,
+      "atMs": 1224000,
+      "language": "en"
+    },
+    {
+      "id": "clip-154",
+      "block": 154,
+      "occurrence": 0,
+      "atMs": 1232000,
+      "language": "en"
+    },
+    {
+      "id": "clip-155",
+      "block": 155,
+      "occurrence": 0,
+      "atMs": 1240000,
+      "language": "en"
+    },
+    {
+      "id": "clip-156",
+      "block": 156,
+      "occurrence": 0,
+      "atMs": 1248000,
+      "language": "en"
+    },
+    {
+      "id": "clip-157",
+      "block": 157,
+      "occurrence": 0,
+      "atMs": 1256000,
+      "language": "en"
+    },
+    {
+      "id": "clip-158",
+      "block": 158,
+      "occurrence": 0,
+      "atMs": 1264000,
+      "language": "en"
+    },
+    {
+      "id": "clip-159",
+      "block": 159,
+      "occurrence": 0,
+      "atMs": 1272000,
+      "language": "en"
+    },
+    {
+      "id": "clip-160",
+      "block": 160,
+      "occurrence": 0,
+      "atMs": 1280000,
+      "language": "en"
+    },
+    {
+      "id": "clip-161",
+      "block": 161,
+      "occurrence": 0,
+      "atMs": 1288000,
+      "language": "en"
+    },
+    {
+      "id": "clip-162",
+      "block": 162,
+      "occurrence": 0,
+      "atMs": 1296000,
+      "language": "en"
+    },
+    {
+      "id": "clip-163",
+      "block": 163,
+      "occurrence": 0,
+      "atMs": 1304000,
+      "language": "en"
+    },
+    {
+      "id": "clip-164",
+      "block": 164,
+      "occurrence": 0,
+      "atMs": 1312000,
+      "language": "en"
+    },
+    {
+      "id": "clip-165",
+      "block": 165,
+      "occurrence": 0,
+      "atMs": 1320000,
+      "language": "en"
+    },
+    {
+      "id": "clip-166",
+      "block": 166,
+      "occurrence": 0,
+      "atMs": 1328000,
+      "language": "en"
+    },
+    {
+      "id": "clip-167",
+      "block": 167,
+      "occurrence": 0,
+      "atMs": 1336000,
+      "language": "en"
+    },
+    {
+      "id": "clip-168",
+      "block": 168,
+      "occurrence": 0,
+      "atMs": 1344000,
+      "language": "en"
+    },
+    {
+      "id": "clip-169",
+      "block": 169,
+      "occurrence": 0,
+      "atMs": 1352000,
+      "language": "en"
+    },
+    {
+      "id": "clip-170",
+      "block": 170,
+      "occurrence": 0,
+      "atMs": 1360000,
+      "language": "en"
+    },
+    {
+      "id": "clip-171",
+      "block": 171,
+      "occurrence": 0,
+      "atMs": 1368000,
+      "language": "en"
+    },
+    {
+      "id": "clip-172",
+      "block": 172,
+      "occurrence": 0,
+      "atMs": 1376000,
+      "language": "en"
+    },
+    {
+      "id": "clip-173",
+      "block": 173,
+      "occurrence": 0,
+      "atMs": 1384000,
+      "language": "en"
+    },
+    {
+      "id": "clip-174",
+      "block": 174,
+      "occurrence": 0,
+      "atMs": 1392000,
+      "language": "en"
+    },
+    {
+      "id": "clip-175",
+      "block": 175,
+      "occurrence": 0,
+      "atMs": 1400000,
+      "language": "en"
+    },
+    {
+      "id": "clip-176",
+      "block": 176,
+      "occurrence": 0,
+      "atMs": 1408000,
+      "language": "en"
+    },
+    {
+      "id": "clip-177",
+      "block": 177,
+      "occurrence": 0,
+      "atMs": 1416000,
+      "language": "en"
+    },
+    {
+      "id": "clip-178",
+      "block": 178,
+      "occurrence": 0,
+      "atMs": 1424000,
+      "language": "en"
+    },
+    {
+      "id": "clip-179",
+      "block": 179,
+      "occurrence": 0,
+      "atMs": 1432000,
+      "language": "en"
+    },
+    {
+      "id": "clip-180",
+      "block": 180,
+      "occurrence": 0,
+      "atMs": 1440000,
+      "language": "en"
+    },
+    {
+      "id": "clip-181",
+      "block": 181,
+      "occurrence": 0,
+      "atMs": 1448000,
+      "language": "en"
+    },
+    {
+      "id": "clip-182",
+      "block": 182,
+      "occurrence": 0,
+      "atMs": 1456000,
+      "language": "en"
+    },
+    {
+      "id": "clip-183",
+      "block": 183,
+      "occurrence": 0,
+      "atMs": 1464000,
+      "language": "en"
+    },
+    {
+      "id": "clip-184",
+      "block": 184,
+      "occurrence": 0,
+      "atMs": 1472000,
+      "language": "en"
+    },
+    {
+      "id": "clip-185",
+      "block": 185,
+      "occurrence": 0,
+      "atMs": 1480000,
+      "language": "en"
+    },
+    {
+      "id": "clip-186",
+      "block": 186,
+      "occurrence": 0,
+      "atMs": 1488000,
+      "language": "en"
+    },
+    {
+      "id": "clip-187",
+      "block": 187,
+      "occurrence": 0,
+      "atMs": 1496000,
+      "language": "en"
+    },
+    {
+      "id": "clip-188",
+      "block": 188,
+      "occurrence": 0,
+      "atMs": 1504000,
+      "language": "en"
+    },
+    {
+      "id": "clip-189",
+      "block": 189,
+      "occurrence": 0,
+      "atMs": 1512000,
+      "language": "en"
+    },
+    {
+      "id": "clip-190",
+      "block": 190,
+      "occurrence": 0,
+      "atMs": 1520000,
+      "language": "en"
+    },
+    {
+      "id": "clip-191",
+      "block": 191,
+      "occurrence": 0,
+      "atMs": 1528000,
+      "language": "en"
+    },
+    {
+      "id": "clip-192",
+      "block": 192,
+      "occurrence": 0,
+      "atMs": 1536000,
+      "language": "en"
+    },
+    {
+      "id": "clip-193",
+      "block": 193,
+      "occurrence": 0,
+      "atMs": 1544000,
+      "language": "en"
+    },
+    {
+      "id": "clip-194",
+      "block": 194,
+      "occurrence": 0,
+      "atMs": 1552000,
+      "language": "en"
+    },
+    {
+      "id": "clip-195",
+      "block": 195,
+      "occurrence": 0,
+      "atMs": 1560000,
+      "language": "en"
+    },
+    {
+      "id": "clip-196",
+      "block": 196,
+      "occurrence": 0,
+      "atMs": 1568000,
+      "language": "en"
+    },
+    {
+      "id": "clip-197",
+      "block": 197,
+      "occurrence": 0,
+      "atMs": 1576000,
+      "language": "en"
+    },
+    {
+      "id": "clip-198",
+      "block": 198,
+      "occurrence": 0,
+      "atMs": 1584000,
+      "language": "en"
+    },
+    {
+      "id": "clip-199",
+      "block": 199,
+      "occurrence": 0,
+      "atMs": 1592000,
+      "language": "en"
+    },
+    {
+      "id": "clip-200",
+      "block": 200,
+      "occurrence": 0,
+      "atMs": 1600000,
+      "language": "en"
+    },
+    {
+      "id": "clip-201",
+      "block": 201,
+      "occurrence": 0,
+      "atMs": 1608000,
+      "language": "en"
+    },
+    {
+      "id": "clip-202",
+      "block": 202,
+      "occurrence": 0,
+      "atMs": 1616000,
+      "language": "en"
+    },
+    {
+      "id": "clip-203",
+      "block": 203,
+      "occurrence": 0,
+      "atMs": 1624000,
+      "language": "en"
+    },
+    {
+      "id": "clip-204",
+      "block": 204,
+      "occurrence": 0,
+      "atMs": 1632000,
+      "language": "en"
+    },
+    {
+      "id": "clip-205",
+      "block": 205,
+      "occurrence": 0,
+      "atMs": 1640000,
+      "language": "en"
+    },
+    {
+      "id": "clip-206",
+      "block": 206,
+      "occurrence": 0,
+      "atMs": 1648000,
+      "language": "en"
+    },
+    {
+      "id": "clip-207",
+      "block": 207,
+      "occurrence": 0,
+      "atMs": 1656000,
+      "language": "en"
+    },
+    {
+      "id": "clip-208",
+      "block": 208,
+      "occurrence": 0,
+      "atMs": 1664000,
+      "language": "en"
+    },
+    {
+      "id": "clip-209",
+      "block": 209,
+      "occurrence": 0,
+      "atMs": 1672000,
+      "language": "en"
+    },
+    {
+      "id": "clip-210",
+      "block": 210,
+      "occurrence": 0,
+      "atMs": 1680000,
+      "language": "en"
+    },
+    {
+      "id": "clip-211",
+      "block": 211,
+      "occurrence": 0,
+      "atMs": 1688000,
+      "language": "en"
+    },
+    {
+      "id": "clip-212",
+      "block": 212,
+      "occurrence": 0,
+      "atMs": 1696000,
+      "language": "en"
+    },
+    {
+      "id": "clip-213",
+      "block": 213,
+      "occurrence": 0,
+      "atMs": 1704000,
+      "language": "en"
+    },
+    {
+      "id": "clip-214",
+      "block": 214,
+      "occurrence": 0,
+      "atMs": 1712000,
+      "language": "en"
+    },
+    {
+      "id": "clip-215",
+      "block": 215,
+      "occurrence": 0,
+      "atMs": 1720000,
+      "language": "en"
+    },
+    {
+      "id": "clip-216",
+      "block": 216,
+      "occurrence": 0,
+      "atMs": 1728000,
+      "language": "en"
+    },
+    {
+      "id": "clip-217",
+      "block": 217,
+      "occurrence": 0,
+      "atMs": 1736000,
+      "language": "en"
+    },
+    {
+      "id": "clip-218",
+      "block": 218,
+      "occurrence": 0,
+      "atMs": 1744000,
+      "language": "en"
+    },
+    {
+      "id": "clip-219",
+      "block": 219,
+      "occurrence": 0,
+      "atMs": 1752000,
+      "language": "en"
+    },
+    {
+      "id": "clip-220",
+      "block": 220,
+      "occurrence": 0,
+      "atMs": 1760000,
+      "language": "en"
+    },
+    {
+      "id": "clip-221",
+      "block": 221,
+      "occurrence": 0,
+      "atMs": 1768000,
+      "language": "en"
+    },
+    {
+      "id": "clip-222",
+      "block": 222,
+      "occurrence": 0,
+      "atMs": 1776000,
+      "language": "en"
+    },
+    {
+      "id": "clip-223",
+      "block": 223,
+      "occurrence": 0,
+      "atMs": 1784000,
+      "language": "en"
+    },
+    {
+      "id": "clip-224",
+      "block": 224,
+      "occurrence": 0,
+      "atMs": 1792000,
+      "language": "en"
+    },
+    {
+      "id": "clip-225",
+      "block": 225,
+      "occurrence": 0,
+      "atMs": 1800000,
+      "language": "en"
+    },
+    {
+      "id": "clip-226",
+      "block": 226,
+      "occurrence": 0,
+      "atMs": 1808000,
+      "language": "en"
+    },
+    {
+      "id": "clip-227",
+      "block": 227,
+      "occurrence": 0,
+      "atMs": 1816000,
+      "language": "en"
+    },
+    {
+      "id": "clip-228",
+      "block": 228,
+      "occurrence": 0,
+      "atMs": 1824000,
+      "language": "en"
+    },
+    {
+      "id": "clip-229",
+      "block": 229,
+      "occurrence": 0,
+      "atMs": 1832000,
+      "language": "en"
+    },
+    {
+      "id": "clip-230",
+      "block": 230,
+      "occurrence": 0,
+      "atMs": 1840000,
+      "language": "en"
+    },
+    {
+      "id": "clip-231",
+      "block": 231,
+      "occurrence": 0,
+      "atMs": 1848000,
+      "language": "en"
+    },
+    {
+      "id": "clip-232",
+      "block": 232,
+      "occurrence": 0,
+      "atMs": 1856000,
+      "language": "en"
+    },
+    {
+      "id": "clip-233",
+      "block": 233,
+      "occurrence": 0,
+      "atMs": 1864000,
+      "language": "en"
+    },
+    {
+      "id": "clip-234",
+      "block": 234,
+      "occurrence": 0,
+      "atMs": 1872000,
+      "language": "en"
+    },
+    {
+      "id": "clip-235",
+      "block": 235,
+      "occurrence": 0,
+      "atMs": 1880000,
+      "language": "en"
+    },
+    {
+      "id": "clip-236",
+      "block": 236,
+      "occurrence": 0,
+      "atMs": 1888000,
+      "language": "en"
+    },
+    {
+      "id": "clip-237",
+      "block": 237,
+      "occurrence": 0,
+      "atMs": 1896000,
+      "language": "en"
+    },
+    {
+      "id": "clip-238",
+      "block": 238,
+      "occurrence": 0,
+      "atMs": 1904000,
+      "language": "en"
+    },
+    {
+      "id": "clip-239",
+      "block": 239,
+      "occurrence": 0,
+      "atMs": 1912000,
+      "language": "en"
+    },
+    {
+      "id": "clip-240",
+      "block": 240,
+      "occurrence": 0,
+      "atMs": 1920000,
+      "language": "en"
+    },
+    {
+      "id": "clip-241",
+      "block": 241,
+      "occurrence": 0,
+      "atMs": 1928000,
+      "language": "en"
+    },
+    {
+      "id": "clip-242",
+      "block": 242,
+      "occurrence": 0,
+      "atMs": 1936000,
+      "language": "en"
+    },
+    {
+      "id": "clip-243",
+      "block": 243,
+      "occurrence": 0,
+      "atMs": 1944000,
+      "language": "en"
+    },
+    {
+      "id": "clip-244",
+      "block": 244,
+      "occurrence": 0,
+      "atMs": 1952000,
+      "language": "en"
+    },
+    {
+      "id": "clip-245",
+      "block": 245,
+      "occurrence": 0,
+      "atMs": 1960000,
+      "language": "en"
+    },
+    {
+      "id": "clip-246",
+      "block": 246,
+      "occurrence": 0,
+      "atMs": 1968000,
+      "language": "en"
+    },
+    {
+      "id": "clip-247",
+      "block": 247,
+      "occurrence": 0,
+      "atMs": 1976000,
+      "language": "en"
+    },
+    {
+      "id": "clip-248",
+      "block": 248,
+      "occurrence": 0,
+      "atMs": 1984000,
+      "language": "en"
+    },
+    {
+      "id": "clip-249",
+      "block": 249,
+      "occurrence": 0,
+      "atMs": 1992000,
+      "language": "en"
+    },
+    {
+      "id": "clip-250",
+      "block": 250,
+      "occurrence": 0,
+      "atMs": 2000000,
+      "language": "en"
+    },
+    {
+      "id": "clip-251",
+      "block": 251,
+      "occurrence": 0,
+      "atMs": 2008000,
+      "language": "en"
+    },
+    {
+      "id": "clip-252",
+      "block": 252,
+      "occurrence": 0,
+      "atMs": 2016000,
+      "language": "en"
+    },
+    {
+      "id": "clip-253",
+      "block": 253,
+      "occurrence": 0,
+      "atMs": 2024000,
+      "language": "en"
+    },
+    {
+      "id": "clip-254",
+      "block": 254,
+      "occurrence": 0,
+      "atMs": 2032000,
+      "language": "en"
+    },
+    {
+      "id": "clip-255",
+      "block": 255,
+      "occurrence": 0,
+      "atMs": 2040000,
+      "language": "en"
+    },
+    {
+      "id": "clip-256",
+      "block": 256,
+      "occurrence": 0,
+      "atMs": 2048000,
+      "language": "en"
+    },
+    {
+      "id": "clip-257",
+      "block": 257,
+      "occurrence": 0,
+      "atMs": 2056000,
+      "language": "en"
+    },
+    {
+      "id": "clip-258",
+      "block": 258,
+      "occurrence": 0,
+      "atMs": 2064000,
+      "language": "en"
+    },
+    {
+      "id": "clip-259",
+      "block": 259,
+      "occurrence": 0,
+      "atMs": 2072000,
+      "language": "en"
+    },
+    {
+      "id": "clip-260",
+      "block": 260,
+      "occurrence": 0,
+      "atMs": 2080000,
+      "language": "en"
+    },
+    {
+      "id": "clip-261",
+      "block": 261,
+      "occurrence": 0,
+      "atMs": 2088000,
+      "language": "en"
+    },
+    {
+      "id": "clip-262",
+      "block": 262,
+      "occurrence": 0,
+      "atMs": 2096000,
+      "language": "en"
+    }
+  ],
+  "questions": [
+    {
+      "id": "artemis-01",
+      "atMs": 968000,
+      "question": "What decision has the launch team just announced?"
+    },
+    {
+      "id": "artemis-02",
+      "atMs": 1248000,
+      "question": "Why will water flood the mobile launcher?"
+    },
+    {
+      "id": "artemis-04",
+      "atMs": 1664000,
+      "question": "Has liftoff happened, and which engines are propelling the vehicle?"
+    },
+    {
+      "id": "artemis-05",
+      "atMs": 1792000,
+      "question": "Which propulsion elements have just separated, and what continues to power the flight?"
+    },
+    {
+      "id": "artemis-07",
+      "atMs": 2096000,
+      "question": "What major engine event are the commentators preparing for now?"
+    }
+  ]
+}

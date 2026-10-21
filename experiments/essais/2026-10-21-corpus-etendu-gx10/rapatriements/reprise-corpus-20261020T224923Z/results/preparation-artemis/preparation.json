@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "complete": true,
+  "convertedDurationMs": 2099000,
+  "parameters": {
+    "startMs": 0,
+    "durationMs": 2099000,
+    "blockMs": 8000,
+    "framesPerBlock": 5,
+    "jpegQuality": 3,
+    "scale": "scale=w='min(1280,iw)':h='min(720,ih)':force_original_aspect_ratio=decrease",
+    "audio": {
+      "codec": "pcm_s16le",
+      "sampleRate": 16000,
+      "channels": 1,
+      "bitDepth": 16
+    },
+    "sampling": "equidistant-block-start"
+  },
+  "timeOrigin": {
+    "kind": "relative-to-source-interval",
+    "sourceStartMs": 0
+  },
+  "templateSessionId": "video-template-validation-only",
+  "sessionBinding": "required-per-occurrence",
+  "manifest": {
+    "path": "manifest.json",
+    "sha256": "e0aa7dc4405fd0b0dfcf0acec57dd715968d52ed919f9542d45a27f48324ac63"
+  },
+  "index": {
+    "path": "blocks.json",
+    "sha256": "6aa5ee1f055e668570e23edff29b52f1c323ef75917a9e26e0f7d204e80132b8"
+  },
+  "source": {
+    "sha256": "6ac25c124375fdac03a2a3e2bd599ea3516a75e9fd03bb193de18d6575297710",
+    "bytes": 244981763,
+    "durationMs": 2100000
+  },
+  "conversion": {
+    "tool": "ffmpeg",
+    "version": "6.1.1-3ubuntu5",
+    "inspectionArguments": [
+      "-nostdin",
+      "-i",
+      "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+      "-map",
+      "0:v:0",
+      "-t",
+      "0",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "sourceInterval": {
+    "startMs": 0,
+    "endMs": 2099000
+  },
+  "plannedDurationMs": 2099000
+}
