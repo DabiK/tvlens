@@ -1,0 +1,14 @@
+{
+  "status": "prepared-not-deployed",
+  "host": "gx10-tvlens",
+  "sourceSha256": {
+    "continuation.py": "e6163b40a9b71b11ea28606e4e84dd1f10b4964628b1209cbec93acbe76b7d05",
+    "launch.sh": "da9dac40507741e189f2f323c7c5c9db9a52275ef91351b0c2673c25e6ae4b4d"
+  },
+  "testsPassed": 10,
+  "remoteWorkloadExecuted": false,
+  "wheelDownloaded": false,
+  "originalStartUtc": "2026-10-21T03:37:16.052779Z",
+  "shortDeadlineUtc": "2026-10-21T05:07:16.052779Z",
+  "effectiveDeadlineUtc": "2026-10-21T07:07:16.052779Z"
+}

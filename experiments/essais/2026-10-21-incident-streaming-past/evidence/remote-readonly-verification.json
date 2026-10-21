@@ -1,0 +1,65 @@
+{
+  "atUtc": "2026-10-21T04:17:12.699052+00:00",
+  "priorSealVerified": true,
+  "currentSealVerified": true,
+  "provenance": {
+    "root": "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results",
+    "sealSha256": "29c2285651790458c73ec217dd782c810ba533ec488877f486ae28770710c8b1",
+    "originalWorkloadStartUtc": "2026-10-21T03:37:16.052779+00:00",
+    "shortDeadlineUtc": "2026-10-21T05:07:16.052779+00:00",
+    "effectiveDeadlineUtc": "2026-10-21T07:07:16.052779+00:00"
+  },
+  "closures": {
+    "/home/nvidia/tvlens-setup/reprise-night-20261020T224805Z/results": [
+      "4cb7619d605d",
+      "4cb7619d605d06c709228aedfd048c11b7b7a13f9b1b38446608eaa51e8709e7",
+      "e074c5feccdd",
+      "e074c5feccdd9156cfa8ef9b583d8e4e81ea1cee6ed9de02af348255a15b422a",
+      "e931612e72df",
+      "e931612e72dfcda7fa804292661f2c728f7142caad39341913a859aeb7717aac"
+    ],
+    "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results": [],
+    "/home/nvidia/tvlens-setup/reprise-qwen-20261020T224923Z/results": [
+      "1b0d8ab93af0",
+      "1b0d8ab93af0208c808116ec1a30843f4c7d18233e5d4fd28b75144411bf938c",
+      "390d343f088a",
+      "390d343f088a075568e02db3010a5be8f3417f9be9c4b9baa3f4484133522bb3",
+      "c1213a04ab6f",
+      "c1213a04ab6fc6fc5f92fabcfa1f7a12dbab1e4dd47a3c03f57eecc244bc4bef"
+    ],
+    "/home/nvidia/tvlens-setup/reprise-streaming-20261020T224923Z/results": [],
+    "/home/nvidia/tvlens-setup/reprise-qwen-arm-20261021T002414Z/results": [],
+    "/home/nvidia/tvlens-setup/reprise-streaming-arm-20261021T002414Z/results": [
+      "0c98d59bb43c",
+      "0c98d59bb43c71818f3785c270e5abe92cc77fdc48daf491f98c2ad9108cd039"
+    ],
+    "/home/nvidia/tvlens-setup/reprise-streaming-buildkit-20261021T040610Z/results": [
+      "6df3243843bb",
+      "6df3243843bb5ea85722f52cdcef9d747a860045df7ce44431854118272f65e1",
+      "af11382331dc",
+      "af11382331dc740040b89c9a4ed5b9656aa81b906a78f6ef8a485a6e3d78aa4f"
+    ]
+  },
+  "threeLocksAcquiredReadOnly": true,
+  "idle": true,
+  "idleEvidence": {
+    "replay": {
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "gpu": {
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "ollama": {
+      "models": []
+    }
+  },
+  "image": {
+    "exitCode": 0,
+    "stdout": "sha256:8d92f144e0a96c5bfb95104ef04748208b22726006cb0a9b4329eabeda74f26c arm64 linux\n",
+    "stderr": ""
+  }
+}

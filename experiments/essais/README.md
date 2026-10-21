@@ -15,3 +15,4 @@
 | [2026-10-21-incident-digest-qwen](2026-10-21-incident-digest-qwen/) | Faux rejet de l'empreinte Ollama Qwen à cause du préfixe `sha256:` ; preuves scellées et effet sur la file StreamingVLM. |
 | [2026-10-21-reprise-bras-qwen](2026-10-21-reprise-bras-qwen/) | Suffixe Ollama Qwen terminé avec 25 réponses et traces vérifiées. |
 | [2026-10-21-incident-streaming-buildkit](2026-10-21-incident-streaming-buildkit/) | Refus du réseau `bridge` par BuildKit ; reprise bornée de StreamingVLM dans un dossier neuf, avec image et inventaire déjà scellés. |
+| [2026-10-21-incident-streaming-past](2026-10-21-incident-streaming-past/) | Dépendance Python transitive manquante après le build ; couche `future` figée et reprise de la sonde StreamingVLM sous les échéances initiales. |
