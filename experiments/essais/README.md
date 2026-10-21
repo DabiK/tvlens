@@ -23,3 +23,13 @@
 | [2026-10-21-confirmation-pause-vision-gx10](2026-10-21-confirmation-pause-vision-gx10/) | Huit replays Kennedy/Spring clos : délais HTTP, couverture, pertes et réponses à annoter. |
 | [2026-10-21-confirmation-images-gx10](2026-10-21-confirmation-images-gx10/) | Ablation appariée cinq contre trois images close sur 24 blocs Kennedy/Spring, 96 sorties et SHA vérifiés. |
 | [2026-10-21-shadow-selection-gx10](2026-10-21-shadow-selection-gx10/) | Sélection adaptative shadow sur six vidéos, sans suppression d'appel VLM, avec sorties et empreintes GX10. |
+| [2026-10-21-preuves-medias-fiches-gx10](2026-10-21-preuves-medias-fiches-gx10/) | Preuves médias (ASR large-v3-turbo CPU, images) de huit questions : cinq attendus confirmés, `spring-04`, `kennedy-06` et `kennedy-03` à corriger. |
+| [2026-10-21-oracle-medias-gx10](2026-10-21-oracle-medias-gx10/) | Transcriptions large-v3-turbo complètes sur CPU et images toutes les 2 s des six vidéos, matériau de l'oracle v2. |
+| [2026-10-21-reference-instrumentee-gx10](2026-10-21-reference-instrumentee-gx10/) | E1 : six vidéos en configuration produit derrière un proxy de mesure ; 30/30 réponses, la génération domine, aucun outil appelé. |
+| [2026-10-21-questions-hors-ligne-gx10](2026-10-21-questions-hors-ligne-gx10/) | E2 : cinq modèles de questions rejoués sur les 30 requêtes d'E1 ; `gemma4:26b-a4b` 2× plus rapide avec plus de réponses gardées. |
+| [2026-10-21-vision-hors-ligne-gx10](2026-10-21-vision-hors-ligne-gx10/) | E3 : cinq modèles de vision rejoués sur 36 blocs ; aucun ne bat `gemma3:4b` (6,7 s par bloc). |
+| [2026-10-21-flux-gemma4-gx10](2026-10-21-flux-gemma4-gx10/) | E4 : flux réel avec Gemma 4, puis pause vision, puis Whisper small ; 10/15 pertinentes toutes sous 15 s, contre 0 sous 15 s aujourd'hui. |
+| [2026-10-21-serie-g-gx10](2026-10-21-serie-g-gx10/) | Série G : le schéma JSON bloque les outils (0/40 contre 20/20 sans), le MTP double déjà la vitesse, sans `topicSummary` la vision passe de 6,7 à 5,2 s ; mémoire injectée en notation. |
+| [2026-10-21-oracle-notation-recherche-gx10](2026-10-21-oracle-notation-recherche-gx10/) | Méthode commune : oracle v2 automatique, notation à l'aveugle des 150 réponses antérieures, recherche bibliographique et consignes des agents. |
+| [2026-10-21-variantes-gx10](2026-10-21-variantes-gx10/) | Registre de toutes les variantes testées sur GX10 : ce qui change, statut, vitesse, pertinence, verdict. |
+| [2026-10-21-audit-nuit-gx10](2026-10-21-audit-nuit-gx10/) | Audit indépendant de la nuit : 221 chiffres confirmés, 30/30 sceaux distants intacts ; gain de la pause surestimé (démarrage à froid), aveugle cassable, oracle hors Git. |

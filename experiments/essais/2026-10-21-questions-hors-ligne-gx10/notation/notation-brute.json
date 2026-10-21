@@ -1,0 +1,3527 @@
+{
+  "summary": "Blind scoring of the E1 and E2 answers against oracle v2 (two judges per video, a third on disagreements)",
+  "agentCount": 15,
+  "logs": [
+    "spring: 3 désaccord(s) tranché(s) par un troisième juge",
+    "cuisine: 5 désaccord(s) tranché(s) par un troisième juge",
+    "cnrs: 1 désaccord(s) tranché(s) par un troisième juge"
+  ],
+  "result": [
+    {
+      "video": "kennedy",
+      "judges": [
+        {
+          "video": "kennedy",
+          "scores": [
+            {
+              "textId": "2d33950a14",
+              "questionId": "kennedy-01",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les 50 000 ans sont justes, mais la compression est mal comprise : le demi-siècle est présenté comme la durée réelle des « temps modernes », opposée aux 50 000 ans. Chiffres exacts mais mal compris, donc s1. « 50 millennia » n'est pas une citation du discours."
+            },
+            {
+              "textId": "8084927c98",
+              "questionId": "kennedy-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "En français : 50 000 ans d'histoire enregistrée condensés en un demi-siècle ; les 40 premières années sont un détail admis (fait optionnel A). « demi-époque » est maladroit mais sans erreur. Citations des blocs 1-2 correctes."
+            },
+            {
+              "textId": "984278bc5c",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les 50 000 ans d'histoire enregistrée sont exacts, avec la citation. La compression est rendue de façon approximative : « oppose à une période d'un demi-siècle » au lieu de « condensés en ». Terme approximatif, donc s2."
+            },
+            {
+              "textId": "3fbd93a3b4",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux termes sont présents (demi-siècle, 50 000 ans), mais la relation de condensation reste vague (« place ce laps de temps dans le contexte de »). Compression approximative, donc s2. Pas d'erreur factuelle."
+            },
+            {
+              "textId": "43b128b623",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "50 000 ans d'histoire enregistrée, exact, mais sans la compression en un demi-siècle. Un des deux termes manque, donc s2."
+            },
+            {
+              "textId": "cba7d00650",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Volet 1 : ignorance, problèmes et dangers nouveaux (3 éléments). Volet 2 : coûts élevés, risques (tolérés) et forte récompense. Réponse en français, complète. Le champ citations est vide, mais les moments 13-15 cités dans le texte sont justes."
+            },
+            {
+              "textId": "523ba39132",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Volet 1 : nouveaux dangers et nouvelle ignorance (2 éléments) ; « face aux problèmes anciens » est une paraphrase imprécise de « new problems / dispels old », sans erreur grave. Volet 2 : coûts élevés, défis (≈ épreuves) et récompenses. Les exemples (écriture, nucléaire) ont été dits avant. Citations partielles mais pertinentes."
+            },
+            {
+              "textId": "f1c6a59bc1",
+              "questionId": "kennedy-03",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : aucune réponse à noter."
+            },
+            {
+              "textId": "67077ce291",
+              "questionId": "kennedy-03",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Volet 2 correct (coûts élevés et récompenses). Volet 1 générique et non soutenu : « transformation rapide de la société », « nouvelles opportunités et nouveaux défis » au lieu de l'ignorance, des problèmes et des dangers nouveaux. Un seul volet correct, avec du remplissage inventé : s1."
+            },
+            {
+              "textId": "8adb272e16",
+              "questionId": "kennedy-03",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les faits requis sont disponibles dans les blocs 11-14 : s0 selon la politique d'abstention."
+            },
+            {
+              "textId": "dfab676a99",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Volet 1 : dangers, ignorance et problèmes nouveaux. Volet 2 : coûts et risques élevés (tolérés), grandes récompenses. En français, complet, citations des moments 13-15 justes."
+            },
+            {
+              "textId": "265c0e6b75",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux idées : l'exploration se fera « que nous y participions ou non » ; une nation qui veut diriger les autres ne peut rester en arrière dans cette course. La conclusion sur les États-Unis est une déduction admise. « innovation et courage » est présenté comme une suggestion (le courage vient de Bradford, A). En français."
+            },
+            {
+              "textId": "3ee7468bfb",
+              "questionId": "kennedy-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Message intermédiaire (« Je vais vérifier… ») sans aucun contenu de réponse : non-réponse, s0."
+            },
+            {
+              "textId": "4a0929b637",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux faits requis exacts : « whether we join in it or not », et aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Réponse en français avec citation. Le champ citations est vide, mais les moments 24-25 cités dans le texte sont justes."
+            },
+            {
+              "textId": "c013ff5f6d",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux idées exactes (avec ou sans nous ; une nation qui aspire à mener ne peut rester à la traîne dans la course à l'espace), et la grande aventure, un détail admis. En français, citations justes."
+            },
+            {
+              "textId": "95409472f2",
+              "questionId": "kennedy-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les deux faits requis sont disponibles dans les blocs 22-25 : s0."
+            },
+            {
+              "textId": "b7f3778069",
+              "questionId": "kennedy-05",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La seconde idée est exacte (une nation qui veut diriger ne peut rester en arrière). La première est rendue de façon approximative et déformée (« l'espace s'étendra de toute façon » au lieu de « l'exploration se poursuivra avec ou sans nous »). Détails admis : la quête de savoir, la grande aventure. Une idée exacte et l'autre approximative : s2."
+            },
+            {
+              "textId": "3ae0d2f86b",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux volets justes (liberté et paix, contre un drapeau hostile de conquête), mais la réponse est en français à une question anglaise : plafond s2. S'y ajoutent une reformulation externe (« armes, sous-entendu nucléaires ») et une glose non dite (« ouvert à tous plutôt que contrôlé par une seule puissance »)."
+            },
+            {
+              "textId": "54bc071f6d",
+              "questionId": "kennedy-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les deux volets sont disponibles dans les blocs 30-32 : s0."
+            },
+            {
+              "textId": "d374d9b786",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux volets justes (liberté et paix ; refus d'un drapeau hostile de conquête). La direction de l'exploration par les États-Unis (« We mean to lead it », moment-29) a été dite avant la pose, ce n'est pas une anticipation. Réponse en français à une question anglaise : s2."
+            },
+            {
+              "textId": "27b0880fea",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Mêmes défauts que la réponse jumelle : deux volets justes, mais en français (plafond s2), avec la reformulation externe « sous-entendu nucléaires » et la glose non dite « ouvert à tous plutôt que contrôlé par une seule puissance »."
+            },
+            {
+              "textId": "e3a6c973b6",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux volets justes et propres (emblème de liberté et de paix ; refus d'un drapeau hostile de conquête), citations exactes. Réponse en français à une question anglaise : s2."
+            },
+            {
+              "textId": "0f4e3417a6",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Deux volets justes avec les citations anglaises (« banner of freedom and peace », « hostile flag of conquest ») ; « participer et mener » a été dit avant la pose (moment-29) ; « rempli d'armes » est une mention neutre de la partie C. La phrase de réponse est en français : s2. Le champ citations est vide, mais les moments cités dans le texte sont justes."
+            },
+            {
+              "textId": "3d9bc87f19",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme, avec la raison (la science et la technologie n'ont pas de conscience propre). L'écho de « guerre » vient de la question. Réponse correcte, mais en français à une question anglaise : s2."
+            },
+            {
+              "textId": "d7c2c904af",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme décide ; la science, comme le nucléaire et toute technologie, n'a pas de conscience propre. Bien pour le bien ou le mal selon l'homme. Réponse complète, mais en français : s2. Le champ citations est vide, mais les moments 42-43 cités dans le texte sont justes."
+            },
+            {
+              "textId": "ba3d0204af",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'humanité (« man ») avec la raison (pas de conscience propre). La mention secondaire des États-Unis qui guideraient vers la paix est admise : elle paraphrase la prééminence qui aide à décider. Réponse en français à une question anglaise : s2."
+            },
+            {
+              "textId": "7e80c94197",
+              "questionId": "kennedy-08",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : aucune réponse à noter."
+            },
+            {
+              "textId": "b56aab2ad0",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'humanité (« man ») avec la raison (pas de conscience propre), l'impact dépendant du choix moral des hommes. Réponse correcte, mais en français : s2."
+            },
+            {
+              "textId": "1c67ca9ea3",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme décide, avec la raison (pas de conscience propre, comme le nucléaire et toute technologie). Réponse complète, mais en français à une question anglaise : s2."
+            }
+          ]
+        },
+        {
+          "video": "kennedy",
+          "scores": [
+            {
+              "textId": "2d33950a14",
+              "questionId": "kennedy-01",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "50 000 ans exact, mais la compression est mal comprise : le demi-siècle devient la durée réelle des « temps modernes ». C'est le cas s1 « chiffres exacts mais mal compris ». La citation « 50 millennia » n'est pas dans le discours."
+            },
+            {
+              "textId": "8084927c98",
+              "questionId": "kennedy-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "50 000 ans d'histoire enregistrée condensés en un demi-siècle, plus les 40 premières années (détail admis). Les moments 2 et 3 sont les bons. Aucune anticipation."
+            },
+            {
+              "textId": "984278bc5c",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "50 000 ans exact, avec la citation juste. Le demi-siècle est seulement « opposé » à cette durée : la compression manque, le second terme est approximatif."
+            },
+            {
+              "textId": "3fbd93a3b4",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux chiffres sont là, mais le demi-siècle est « placé dans le contexte » des 50 000 ans au lieu d'en être la compression. Relation approximative."
+            },
+            {
+              "textId": "43b128b623",
+              "questionId": "kennedy-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "50 000 ans d'histoire enregistrée sans la compression en un demi-siècle : un terme manque."
+            },
+            {
+              "textId": "cba7d00650",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Ignorance, problèmes et dangers nouveaux ; coûts élevés, risques (tolérés) et récompense. Les deux volets sont complets, en français. Moments 13-15 cités dans le texte."
+            },
+            {
+              "textId": "523ba39132",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Dangers et ignorance nouveaux (deux éléments), coûts élevés, défis et récompenses. L'écriture, les transports et le nucléaire sont dits avant la pose. « Face aux problèmes anciens » déforme un peu « dispels old », sans contresens."
+            },
+            {
+              "textId": "f1c6a59bc1",
+              "questionId": "kennedy-03",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée, sans contenu (answer null) : rien à créditer."
+            },
+            {
+              "textId": "67077ce291",
+              "questionId": "kennedy-03",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Volet espace juste (coûts élevés et récompenses). Volet accélération générique : « opportunités et défis », exemple s1 de la grille, sans ignorance, problèmes ni dangers. La transformation de la société et l'ambition humaine ne sont pas soutenues."
+            },
+            {
+              "textId": "8adb272e16",
+              "questionId": "kennedy-03",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que tout est dans la parole des blocs 11-14, disponible à la pose : s0."
+            },
+            {
+              "textId": "dfab676a99",
+              "questionId": "kennedy-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Dangers, ignorance et problèmes nouveaux ; coûts et risques élevés (tolérés), grandes récompenses. Bonnes citations des moments 13 à 15."
+            },
+            {
+              "textId": "265c0e6b75",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux idées : l'exploration se fera « que nous y participions ou non », et une nation qui veut diriger ne peut pas rester en arrière dans la course. L'innovation et le courage sont une interprétation présentée comme suggérée, et reposent sur des éléments dits."
+            },
+            {
+              "textId": "3ee7468bfb",
+              "questionId": "kennedy-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Méta-message sans contenu (« je vais vérifier… ») : pas de réponse alors que les faits sont disponibles. Vaut une abstention."
+            },
+            {
+              "textId": "4a0929b637",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux idées exactes : « whether we join in it or not », et aucune nation qui veut mener les autres ne peut rester en retrait dans la course. Moments 24-25 cités dans le texte."
+            },
+            {
+              "textId": "c013ff5f6d",
+              "questionId": "kennedy-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux idées, plus la grande aventure (détail admis), avec des citations correctes."
+            },
+            {
+              "textId": "95409472f2",
+              "questionId": "kennedy-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les deux faits requis sont disponibles (blocs 22-25) : s0."
+            },
+            {
+              "textId": "b7f3778069",
+              "questionId": "kennedy-05",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seconde idée exacte (nation qui veut diriger, course). La première est déformée : « l'espace s'étendra de toute façon » au lieu de « l'exploration se poursuivra avec ou sans nous ». Détails admis : quête de savoir, aventure."
+            },
+            {
+              "textId": "3ae0d2f86b",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux volets (liberté et paix contre drapeau hostile de conquête), mais en français pour une question en anglais. Ajouts externes : « armes (sous-entendu nucléaires) » est un piège listé, et « ouvert à tous plutôt que contrôlé par une seule puissance » n'est pas dit."
+            },
+            {
+              "textId": "54bc071f6d",
+              "questionId": "kennedy-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les deux volets sont disponibles (blocs 30-32) : s0."
+            },
+            {
+              "textId": "d374d9b786",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Les deux volets sont justes, mais en français : plafond s2. « Les États-Unis mènent » vient de « We mean to lead it » (~227 s), disponible, donc pas une anticipation. En revanche, liberté et paix sont rattachées au moment 29 au lieu des moments 32-33."
+            },
+            {
+              "textId": "27b0880fea",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Mêmes défauts que la réponse jumelle : deux volets justes en français, et ajouts externes (armes « sous-entendu nucléaires », « ouvert à tous… une seule puissance ») présentés comme le propos de Kennedy."
+            },
+            {
+              "textId": "e3a6c973b6",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Emblème de liberté et de paix contre drapeau hostile de conquête : complet et bien cité (moments 32-33), mais en français pour une question en anglais. Plafond s2."
+            },
+            {
+              "textId": "0f4e3417a6",
+              "questionId": "kennedy-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Banner of freedom and peace » contre « hostile flag of conquest », cités exactement. « Mener la course » est dit avant la pose et « rempli d'armes » relève d'un fait C. Rédigé en français : plafond s2."
+            },
+            {
+              "textId": "3d9bc87f19",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme décide, avec la raison (pas de conscience propre) : contenu de niveau s3, mais en français pour une question en anglais. « Pour la guerre » reprend la question au lieu de « ill », sans gravité."
+            },
+            {
+              "textId": "d7c2c904af",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme décide, et la technologie n'a pas de conscience propre : contenu exact et complet, mais en français. Plafond s2."
+            },
+            {
+              "textId": "ba3d0204af",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Man » avec la raison (pas de conscience propre). Les États-Unis sont mentionnés en second, ce qui est admis ; la paraphrase « guider vers la paix » est approximative. Rédigé en français : plafond s2."
+            },
+            {
+              "textId": "7e80c94197",
+              "questionId": "kennedy-08",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée, sans contenu (answer null) : rien à créditer."
+            },
+            {
+              "textId": "b56aab2ad0",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'humanité (« man ») et l'absence de conscience propre : contenu complet, mais en français. Plafond s2."
+            },
+            {
+              "textId": "1c67ca9ea3",
+              "questionId": "kennedy-08",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'homme décide, la technologie n'a pas de conscience propre, bien ou mal selon l'homme : exact, mais en français. Plafond s2."
+            }
+          ]
+        },
+        null
+      ]
+    },
+    {
+      "video": "spring",
+      "judges": [
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "761d902b1c",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Mentionne le chien et le biscuit (exacts, 00:50-00:56), mais répond « c'est un enfant » et inverse la relation : la fille n'est pas reconnue, et le chien n'est pas désigné comme son compagnon. Ça se lit comme un compagnon humain."
+            },
+            {
+              "textId": "d830d2c362",
+              "questionId": "spring-01",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Petit chien compagnon et morceau de bois dans la gueule : exacts (blocs A). Mais « probablement un Jack Russell » ne correspond pas à l'apparence (terrier hirsute gris-brun) : race supposée et non soutenue, imprécision secondaire."
+            },
+            {
+              "textId": "a718e28d3f",
+              "questionId": "spring-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que le chien est visible avec la fille dans des blocs A (00:44-00:56). La politique de l'oracle donne 0, même si le chien et l'enfant sont cités."
+            },
+            {
+              "textId": "f0c3ea81d7",
+              "questionId": "spring-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Simple promesse de vérifier, sans aucune réponse : abstention de fait, alors que la réponse était disponible."
+            },
+            {
+              "textId": "dee0773e51",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même confusion que la réponse sœur : « c'est un enfant qui accompagne le chien ». Le chien est cité, mais il n'est pas désigné comme le compagnon de la fille. Le terrain rocheux enneigé est plausible."
+            },
+            {
+              "textId": "204f25071c",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Un enfant s'approche d'un petit chien, ce qui est exact. Mais la conclusion « personne d'autre accompagnant l'enfant » frôle le piège « elle est seule » : le chien n'est pas désigné comme compagnon."
+            },
+            {
+              "textId": "9dd0640d0a",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention alors que le bâton est tenu dans de nombreux plans A (01:39-02:34). Elle décrit aussi une fille « en fuite, bras tendus » à 144-152 s, ce que les images ne montrent pas : elle marche et regarde vers le haut, bâton en main."
+            },
+            {
+              "textId": "728be734ed",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : elle prétend que les images de la forêt sont indisponibles, alors que le bâton est visible en blocs A. 0 selon la politique."
+            },
+            {
+              "textId": "8f02f61069",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Promesse de chercher, sans réponse : abstention de fait sur une question répondable."
+            },
+            {
+              "textId": "4e356383e7",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention contradictoire : elle dit n'avoir vu aucune forêt tout en la décrivant. Le bâton est visible en blocs A, donc 0."
+            },
+            {
+              "textId": "b9f489ab13",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention injustifiée. Comme sa réponse sœur, elle décrit une fuite bras tendus non soutenue par les images et nie un objet que la fille tient pourtant visiblement (le bâton)."
+            },
+            {
+              "textId": "6752f34012",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : forêt dite non inspectée, alors que les plans du bâton (01:39-02:34) sont disponibles."
+            },
+            {
+              "textId": "49b28ab774",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Lumière bleutée rapportée à la grande forme : couleur dominante correcte, cyan-turquoise sur des blocs A (176-200 s). « Sombre » qualifie l'ambiance, qui est réellement peu éclairée. Aucune couleur d'anticipation."
+            },
+            {
+              "textId": "b6068a8ffb",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Texte identique à la réponse sœur : lumière bleutée de la grande forme, correcte, appuyée sur des blocs A."
+            },
+            {
+              "textId": "c8a4c9ed71",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Bleu, rapporté à la structure squelettique (côtes, 03:02-03:24). Couleur correcte, bloc A, sans espèce ni anticipation."
+            },
+            {
+              "textId": "2c4390c8a3",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Lumière bleue émise par la forme squelettique : correct, bloc A [184,192)."
+            },
+            {
+              "textId": "b3b95580aa",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Bleu, rapporté à la grande forme squelettique près de la fille : correct, blocs A."
+            },
+            {
+              "textId": "d164195ab2",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention pure, alors que la lueur orange du sommet (03:49,5-04:15) est disponible en blocs A. 0 selon la politique."
+            },
+            {
+              "textId": "469e2f06b0",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention fondée sur une couverture prétendument absente. La lueur orange était observable en blocs A."
+            },
+            {
+              "textId": "9fc979bfbb",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention (« je ne vois pas de bâton »). Elle affirme que la fille tient une torche : c'est une erreur d'identification du bâton au sommet orange. La politique donne 0."
+            },
+            {
+              "textId": "26159f89ca",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : elle dit ne voir aucun bâton, alors que le sommet lumineux orange est visible en blocs A."
+            },
+            {
+              "textId": "2a5f860f3a",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention de fait (mémoire arrêtée à 264 s). Elle ne donne pas le dernier état observé, la lueur orange, que l'oracle attend. Abstention pure : 0."
+            },
+            {
+              "textId": "bda0778ac1",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Même cas que la réponse sœur : abstention, et bâton lumineux pris pour une torche. 0 selon la politique."
+            },
+            {
+              "textId": "a135794b31",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Elle ne voit pas le début et promet de chercher, sans aucune description : abstention de fait, alors que le début et l'état actuel sont en blocs A."
+            },
+            {
+              "textId": "47900d83cf",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention injustifiée. Elle mentionne en plus une « scène sous-marine » inexistante : c'est une mauvaise lecture de la scène brumeuse bleue avec la créature."
+            },
+            {
+              "textId": "3ef6e6ec6a",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Elle énumère des scènes depuis 320 s, pas depuis le début du film. L'« environnement sous-marin » est inventé. Seul élément exact : montagnes enneigées et brumeuses. Ni la lumière dorée ni la verdure : changement vague."
+            },
+            {
+              "textId": "0b6913c7a6",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Elle finit sur une colline sous un ciel clair, ce qui est exact (lumière). Mais il n'y a ni verdure ni comparaison avec le début du film, et l'environnement sous-marin est inventé. L'élément juste est noyé : s1."
+            },
+            {
+              "textId": "4781c0e69f",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention injustifiée, avec la même « scène sous-marine » inventée que les autres réponses."
+            },
+            {
+              "textId": "30f819e4da",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Quasi identique à la première réponse qui énumère les scènes : forêt sombre, environnement sous-marin inventé, puis montagnes enneigées et brumeuses. Ni lumière dorée, ni verdure, ni début du film."
+            }
+          ]
+        },
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "761d902b1c",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Inverse la relation : répond « un enfant » (qui accompagne le chien) au lieu d'identifier le chien comme compagnon de la fille. Le chien et la friandise sont bien vus (blocs A, 56–64 B sans anticipation), mais la réponse désigne un humain comme réponse à « qui »."
+            },
+            {
+              "textId": "d830d2c362",
+              "questionId": "spring-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Identifie un petit chien comme compagnon, avec le bout de bois dans la gueule (00:44–00:52, A). La race est donnée avec réserve (« probablement un Jack Russell ») : apparence approximative mais non affirmée, acceptée par la grille s3. Pas de nom ni d'autre compagnon."
+            },
+            {
+              "textId": "a718e28d3f",
+              "questionId": "spring-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que le chien est visible avec la fille dans des blocs A ; elle voit pourtant le chien et l'enfant mais ne relie pas l'enfant à la jeune fille."
+            },
+            {
+              "textId": "f0c3ea81d7",
+              "questionId": "spring-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Simple annonce de vérification sans contenu : non-réponse équivalente à une abstention, alors qu'aucune abstention n'est attendue."
+            },
+            {
+              "textId": "dee0773e51",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même défaut que la réponse jumelle : « c'est un enfant qui accompagne le chien » désigne un humain comme réponse et n'identifie pas clairement le chien comme compagnon de la fille. Les éléments visuels (enfant face au chien, terrain rocheux enneigé) sont exacts."
+            },
+            {
+              "textId": "204f25071c",
+              "questionId": "spring-01",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Mentionne l'enfant et le petit chien, mais conclut que « personne d'autre » n'accompagne l'enfant, sans affirmer que le chien est son compagnon : réponse ambiguë, proche du piège « personne »."
+            },
+            {
+              "textId": "9dd0640d0a",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention alors que le bâton est tenu dans de nombreux plans A (01:39–02:34). La description « en fuite, bras tendus » à 144–152 s n'est pas soutenue par les images (elle marche, bâton en main)."
+            },
+            {
+              "textId": "728be734ed",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention en invoquant des images indisponibles, alors que la preuve est disponible (A) ; aucune abstention n'est attendue."
+            },
+            {
+              "textId": "8f02f61069",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Annonce de recherche sans réponse : non-réponse équivalente à une abstention injustifiée."
+            },
+            {
+              "textId": "4e356383e7",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention, en se contredisant (aucune forêt vue, puis une scène sombre et brumeuse). Le bâton était visible en blocs A ; vaut 0."
+            },
+            {
+              "textId": "b9f489ab13",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Abstention alors que le bâton est disponible (A). Reprend la description non soutenue « en fuite, bras tendus » pour 144–152 s."
+            },
+            {
+              "textId": "6752f34012",
+              "questionId": "spring-02",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : prétend qu'aucune scène de forêt n'a été inspectée, alors que la forêt et le bâton sont dans des blocs disponibles."
+            },
+            {
+              "textId": "49b28ab774",
+              "questionId": "spring-03",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Teinte juste mais imprécise : « bleutée et sombre », proche de l'exemple s2 « bleu-gris froid », alors que la créature émet un cyan saturé. Présentée comme une forme « baignée » dans la lumière plutôt que comme sa propre lumière, avec la réserve « décrite comme ». Preuve 176–200 s, en blocs A."
+            },
+            {
+              "textId": "b6068a8ffb",
+              "questionId": "spring-03",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même formulation que la réponse jumelle : « bleutée et sombre » donne la bonne famille de couleur, mais de façon imprécise et comme un éclairage ambiant ; blocs A, pas d'anticipation."
+            },
+            {
+              "textId": "c8a4c9ed71",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Bleu, rapporté à la grande structure squelettique ; conforme aux côtes cyan de 03:02–03:24 (A). Pas de couleur d'anticipation ni d'espèce inventée."
+            },
+            {
+              "textId": "2c4390c8a3",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Bleue », attribuée à la grande forme squelettique ; bloc 184–192 s disponible (A). Réponse exacte et concise."
+            },
+            {
+              "textId": "b3b95580aa",
+              "questionId": "spring-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Bleu comme couleur dominante de la forme squelettique près de la fille ; preuve 184–200 s, en blocs A. Rien d'inventé."
+            },
+            {
+              "textId": "d164195ab2",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention pure (images prétendument indisponibles) alors que la lueur orange du sommet est disponible (A, 03:49–04:15). Une abstention pure vaut 0."
+            },
+            {
+              "textId": "469e2f06b0",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention au raisonnement confus (début de la vidéo non capturé) ; le sommet orange était observable dans des blocs A."
+            },
+            {
+              "textId": "9fc979bfbb",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : voit une « torche » tenue par la fille (moments 29–31, c'est en fait le bâton au sommet flamboyant) mais refuse de répondre faute de « bâton ». Une abstention pure vaut 0."
+            },
+            {
+              "textId": "26159f89ca",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : affirme que les passages ne montrent pas de bâton, alors que le bâton allumé est visible en blocs A."
+            },
+            {
+              "textId": "2a5f860f3a",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Présentée comme une observation, mais c'est une non-réponse (mémoire arrêtée à 264 s). L'oracle attend le dernier état observé (lueur orange) ; abstention pure, donc 0."
+            },
+            {
+              "textId": "bda0778ac1",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Même abstention que la réponse jumelle : voit une « torche » (le bâton allumé) sans la relier au bâton ni décrire sa lueur orange."
+            },
+            {
+              "textId": "a135794b31",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Non-réponse (début introuvable, recherche annoncée), alors que le début et l'état actuel sont tous deux disponibles (A)."
+            },
+            {
+              "textId": "47900d83cf",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention injustifiée (le début est en blocs A). Reprend aussi une « scène sous-marine » qui n'existe pas : ce sont des créatures dans la brume ou la mer de nuages."
+            },
+            {
+              "textId": "3ef6e6ec6a",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Compare 320 s à 352 s au lieu du début du film. Ne cite ni la lumière dorée ni l'herbe verte, et termine sur des « montagnes enneigées et brumeuses ». L'« environnement sous-marin » est une lecture fausse de la scène de brume. Seul un élément partiel de l'état actuel est juste."
+            },
+            {
+              "textId": "0b6913c7a6",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Suite de scènes depuis 320 s, pas depuis le début du film ; gain partiel avec la « colline sous un ciel clair » finale, mais sans verdure ni lumière chaude opposées au froid initial. Inclut l'invention « sous-marin »."
+            },
+            {
+              "textId": "4781c0e69f",
+              "questionId": "spring-06",
+              "score": 0,
+              "invention": true,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention injustifiée : le début du film (0–96 s) est disponible (A). Mentionne aussi une « scène sous-marine » non soutenue."
+            },
+            {
+              "textId": "30f819e4da",
+              "questionId": "spring-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même contenu que 3ef6e6ec6a : compare à 320 s et non au début du film, sans lumière dorée ni végétation verte. Comporte l'invention « environnement sous-marin » et décrit l'état actuel comme des montagnes enneigées et brumeuses."
+            }
+          ]
+        },
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "d830d2c362",
+              "questionId": "spring-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La réponse identifie correctement un petit chien qui court sur le sentier avec un bout de bois dans la gueule, ce qu'on voit de 00:44 à 00:48. Les citations [40-56 s] tombent dans les blocs A de la preuve requise. En revanche, « probablement un Jack Russell » ne correspond pas à l'image : le chien est gris-brun et hirsute, de type yorkshire ou cairn, alors qu'un Jack Russell est surtout blanc. Cette race est donnée comme une hypothèse et non comme une simple apparence : c'est une imprécision secondaire (s2). Je ne la compte pas comme une invention, puisqu'elle reste prudente. « Enneigé » pour un sentier givré, avec des plaques de neige, est tolérable."
+            },
+            {
+              "textId": "9fc979bfbb",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Le système s'abstient (« je ne vois pas de bâton »), alors que l'oracle n'attend aucune abstention : le sommet orange lumineux est disponible en bloc A, de 229,5 à 255 s. La « torche » des moments 29 à 31 (224 à 248 s) est en fait ce bâton au sommet allumé, mais la réponse ne fait pas le lien et ne donne aucune couleur. L'abstention est donc injustifiée et la note est 0. Je ne compte pas d'invention : « torche » est une approximation visuelle de la lueur, et le refus porte sur les passages reçus. La réponse ne cite aucun passage."
+            },
+            {
+              "textId": "bda0778ac1",
+              "questionId": "spring-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Cette réponse est presque la même que la précédente, et je la note de la même façon. Elle s'abstient en disant ne pas voir de bâton, et prend le bâton allumé des moments 29 à 31 pour une « torche ». Elle ne donne ni l'état lumineux orange ni le lien avec le haut du bâton. L'oracle juge toute abstention injustifiée, d'où la note 0. « Une jeune femme » au lieu de « jeune fille » ne pose pas de problème, et je ne relève aucune invention. La réponse ne cite aucun passage."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "cnrs",
+      "judges": [
+        {
+          "video": "cnrs",
+          "scores": [
+            {
+              "textId": "01223d1e38",
+              "questionId": "cnrs-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Aucune réponse : simple annonce d'une vérification à venir. La réponse était disponible dès 00:44 et à l'écran dès 00:40. Abstention de fait, non justifiée."
+            },
+            {
+              "textId": "3b826feca5",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Distinction par le nombre de paramètres, avec deux ancrages propres à la vidéo : quelques millions de paramètres et le portable. « Des milliers de milliards » reste dans l'ordre de grandeur de ±1000 B. Bonus : l'apprentissage diffère."
+            },
+            {
+              "textId": "5b4422df7c",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même contenu que la réponse sœur : paramètres, quelques millions, portable, et l'ordre de grandeur des milliers de milliards. Le bonus « l'apprentissage ne se fait pas de la même manière » est juste (bloc [80,88) clos)."
+            },
+            {
+              "textId": "a6cb170c48",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Paramètres, quelques millions, portable, milliers de milliards, apprentissage différent : tout est juste. « Capacité de calcul nécessaire » est une déduction générique tirée du portable, tolérée sans être créditée."
+            },
+            {
+              "textId": "cfed7b84b5",
+              "questionId": "cnrs-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Taille en paramètres et facteur d'au moins 100 000 : juste, avec le bonus de l'apprentissage. Mais « quelques milliers à quelques millions » pour la petite IA reprend la zone confuse de l'ASR, alors que l'écran indique 10s M. Imprécision numérique mineure, plafond 2. Pas de portable."
+            },
+            {
+              "textId": "60784aedbc",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La raison du cours est présente et attribuée : données gardées précieusement de côté, pour voir à la fin si l'apprentissage s'est bien passé. S'y ajoutent les 20 % et l'analogie du prof. Le surapprentissage arrive en ouverture comme cadrage général, non attribué au cours : toléré."
+            },
+            {
+              "textId": "ba36e277b9",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Données gardées de côté (20 %) pour tester le modèle sur des cas non vus pendant l'entraînement : paraphrase acceptée. La mémorisation reste un cadrage général, placé avant « Comme l'explique la vidéo » : toléré."
+            },
+            {
+              "textId": "f86b1df650",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Une partie des données est gardée de côté pour vérifier si l'apprentissage a bien fonctionné, avec l'analogie juste du prof et de l'interro finale. Rien n'est ajouté à tort."
+            },
+            {
+              "textId": "b46d224283",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Réponse complète et fidèle : données de côté, non utilisées pour l'entraînement, pour vérifier à la fin si l'apprentissage s'est bien passé. S'y ajoutent l'analogie de l'enseignant et la mesure sur des données non vues."
+            },
+            {
+              "textId": "0d4fbca44a",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "80/20, les 20 % gardés précieusement hors de la boucle d'apprentissage, l'évaluation sur des données non vues : tout est juste. La mémorisation est un cadrage général non attribué au cours : toléré."
+            },
+            {
+              "textId": "3c1a24196a",
+              "questionId": "cnrs-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Raison du cours complète, et analogie exacte de 5 exercices sur 20. Mais dans le fil de « La vidéo explique… », la réponse présente « éviter de retenir par cœur » comme l'idée du cours. Or le « par cœur » n'arrive qu'à 06:00 : c'est une anticipation attribuée au cours, plafond 2."
+            },
+            {
+              "textId": "0171013125",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) La progression puis la dégradation de la qualité, appelée surapprentissage, est présente, sans préciser que la mesure se fait sur les données d'évaluation. (c) L'arrêt au bon moment est présent. (b) Le mécanisme du « par cœur » ou du bachotage manque. Deux éléments sur trois."
+            },
+            {
+              "textId": "f8e24eee71",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Progression jusqu'à un maximum puis régression, appelée surapprentissage (a), et savoir s'arrêter au bon moment (c). Il manque le mécanisme du « par cœur » ou du bachotage (b). Deux éléments, sans erreur."
+            },
+            {
+              "textId": "df00e5fc2b",
+              "questionId": "cnrs-04",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) et (c) sont présents, mais (b) manque. La réponse cite en plus une « phase de violence » absente du cours, qui dit « phase de surapprentissage » : deux éléments mêlés d'une citation fausse."
+            },
+            {
+              "textId": "a123d9451a",
+              "questionId": "cnrs-04",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seule la régression après une progression initiale (a) est présente. L'arrêt au bon moment n'est pas dit, et le mécanisme manque. L'analogie humaine est déformée (« dépasserait sa capacité d'apprentissage ») : le cours parle de bachotage et de « par cœur »."
+            },
+            {
+              "textId": "c112f0c0bd",
+              "questionId": "cnrs-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Aucune réponse : simple annonce d'une recherche. L'explication était disponible entre 05:59 et 07:33. Abstention de fait, non justifiée."
+            },
+            {
+              "textId": "679fde2455",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) Progression puis dégradation, (c) arrêt au bon moment, et le bonus juste des outils logiciels (bloc [456,464) clos). Le mécanisme du « par cœur » ou du bachotage (b) manque. Deux éléments."
+            },
+            {
+              "textId": "363ee5c85d",
+              "questionId": "cnrs-05",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Langage, complétion avec des trous et modèle de fondation : complet, avec en bonus le coût et l'enfant. Mais la réponse affirme que la vidéo distingue le pré-entraînement de « la phase suivante d'alignement et d'inférence ». Or la phase suivante est le fine-tuning : confusion mineure, plafond 2."
+            },
+            {
+              "textId": "992f830e23",
+              "questionId": "cnrs-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois éléments y sont : complétion de phrases à trous ou du mot suivant, « bases du langage », et d'énormes quantités de données (élément propre au cours). Bonus : coût et calcul massif. Aucune confusion avec le fine-tuning."
+            },
+            {
+              "textId": "717fea3163",
+              "questionId": "cnrs-05",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Complétion et langage justes, avec l'analogie de l'enfant et les calculs « monstrueuses » en bonus. Mais aucun élément propre exigé : ni « sans le sens », ni quasi tout Internet, ni modèle de fondation. La grille ne retient pas le coût pour le score 3."
+            },
+            {
+              "textId": "a1de900d77",
+              "questionId": "cnrs-05",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Parle surtout du coût et du modèle de fondation, et confond la phase avec son produit (« appelé modèle de fondation »). Ce qui est appris n'est dit qu'implicitement, par l'analogie du langage de l'enfant. Aucune complétion."
+            },
+            {
+              "textId": "878360e33f",
+              "questionId": "cnrs-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La complétion est juste, mais la réponse affirme que le modèle acquiert la « compréhension … du sens du langage ». Or le cours dit qu'il apprend sans savoir ce que veulent dire les phrases : élément juste mêlé d'un contresens (piège)."
+            },
+            {
+              "textId": "d6a2851b32",
+              "questionId": "cnrs-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Aucune réponse : simple annonce d'une recherche. Le propos était disponible de 08:48 à 10:13. Abstention de fait, non justifiée."
+            },
+            {
+              "textId": "e42ecfcbe3",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Contraste explicite : le fine-tuning donne des compétences (le médecin), l'alignement des règles éthiques et de bonne conduite. L'ordre (avant l'inférence, avant les patients) est en bonus. « Code de déontologie » paraphrase correctement les règles professionnelles."
+            },
+            {
+              "textId": "3e40e2b46c",
+              "questionId": "cnrs-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Aucune réponse : simple annonce d'une recherche. Les deux notions étaient exposées de 10:38 à 12:43. Abstention de fait, non justifiée."
+            },
+            {
+              "textId": "39f3af44e3",
+              "questionId": "cnrs-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'alignement est juste : règles éthiques, savoir-être, bienveillance. Mais la réponse affirme à tort que la vidéo ne mentionne pas le fine-tuning, pourtant dit à 10:40 et 11:15 et affiché sur la diapositive. Un seul côté correct."
+            },
+            {
+              "textId": "adef8c64fb",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Compétences techniques et professionnelles contre règles éthiques et de conduite (bienveillance), avant d'exercer. Bonus juste : la robustesse face aux tentatives de pousser à l'erreur. « Résister » est en C, non sanctionné."
+            },
+            {
+              "textId": "6aa8ca140a",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Compétences spécialisées (le médecin et son métier) contre règles éthiques et bonne conduite (briefing avant les patients). Bonus : bienveillance, résistance à l'erreur, étape après les compétences. Contraste explicite."
+            },
+            {
+              "textId": "197ca7fe0c",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même contenu que la réponse sœur : le fine-tuning donne les compétences et le savoir-faire, l'alignement les règles éthiques et la bonne conduite. Avec la bienveillance et la résistance à l'erreur, le contraste est explicite et sans inversion."
+            }
+          ]
+        },
+        {
+          "video": "cnrs",
+          "scores": [
+            {
+              "textId": "01223d1e38",
+              "questionId": "cnrs-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Annonce d'une vérification sans aucun contenu : non-réponse alors que la réponse est dite (00:44-01:26) et affichée (00:40) avant la pose."
+            },
+            {
+              "textId": "3b826feca5",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Taille en paramètres, petite IA à quelques millions et sur un portable (ancrage), grande IA à « des milliers de milliards » (arrondi du ±1000 B affiché, même ordre de grandeur). Bonus : apprentissage différent. Citations 56-80 s."
+            },
+            {
+              "textId": "5b4422df7c",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même contenu que la réponse précédente : paramètres, quelques millions et portable, ~mille milliards pour les grandes, apprentissage différent (bonus). Chiffres conformes à l'écran à l'arrondi près."
+            },
+            {
+              "textId": "a6cb170c48",
+              "questionId": "cnrs-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Paramètres, quelques millions et portable, milliers de milliards (arrondi correct de l'ordre de grandeur), apprentissage différent. « Capacité de calcul nécessaire » : déduction générique tolérée, non créditée."
+            },
+            {
+              "textId": "cfed7b84b5",
+              "questionId": "cnrs-01",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Taille en paramètres et facteur 100 000 justes, apprentissage différent. Mais petite IA à « quelques milliers à quelques millions » : la borne basse vient de l'ASR confuse, l'écran dit 10s M. Imprécision numérique, s2(3). Pas de portable."
+            },
+            {
+              "textId": "60784aedbc",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Raison du cours attribuée à la vidéo : 20 % gardés précieusement de côté pour vérifier à la fin si l'apprentissage s'est bien passé, plus l'analogie du professeur. La phrase d'ouverture sur la mémorisation (surapprentissage) est un complément général non attribué au cours, toléré."
+            },
+            {
+              "textId": "ba36e277b9",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Données gardées de côté (~20 %), test sur des cas jamais vus pendant l'entraînement (paraphrase acceptée). La mention « plutôt que mémoriser » reste un cadrage général hors de l'attribution « comme l'explique la vidéo », toléré."
+            },
+            {
+              "textId": "f86b1df650",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Partie des données gardée de côté pour vérifier si l'apprentissage a bien fonctionné, analogie du professeur et de l'interro finale. Fidèle au cours, sans ajout."
+            },
+            {
+              "textId": "b46d224283",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Réponse complète : données d'évaluation jamais utilisées pour entraîner, vérification à la fin, analogie de l'enseignant, mesure sur des données non vues. Aucun ajout fautif."
+            },
+            {
+              "textId": "0d4fbca44a",
+              "questionId": "cnrs-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "80/20 juste, 20 % gardés précieusement de côté hors de la boucle d'apprentissage, évaluation sur des données jamais vues. Le cadrage « réellement appris plutôt que mémorisé » est général et non attribué au cours, toléré."
+            },
+            {
+              "textId": "3c1a24196a",
+              "questionId": "cnrs-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Raison du cours juste, analogie 5 exercices sur 20 exacte. Mais « pour éviter de retenir par cœur » est présenté comme l'idée de la vidéo, alors que le « par cœur » n'arrive qu'à 06:00. Logique aussi un peu fausse : l'évaluation mesure, elle n'évite pas. s2(2)."
+            },
+            {
+              "textId": "0171013125",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) progression puis dégradation, mais sans dire que c'est sur les données d'évaluation jamais vues. (c) s'arrêter au bon moment : juste. Le mécanisme (b), par cœur ou bachotage, manque : la comparaison humaine reste vague. Deux éléments."
+            },
+            {
+              "textId": "f8e24eee71",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) progression jusqu'à un maximum puis régression, sans les données d'évaluation, et (c) s'arrêter au bon moment. Pas de mécanisme (par cœur ou bachotage). Deux éléments, sans erreur."
+            },
+            {
+              "textId": "df00e5fc2b",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) partiel (régression après progression) et (c) s'arrêter au meilleur moment. Pas de mécanisme (b). Citation inventée : le cours ne parle pas de « phase de violence » mais de « phase de surapprentissage » (07:10). L'erreur reste de forme, le concept n'est pas faussé."
+            },
+            {
+              "textId": "a123d9451a",
+              "questionId": "cnrs-04",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seul (a) est esquissé (dégradation après le point optimal), sans arrêt au bon moment explicite. L'analogie humaine est déformée : un humain qui « dépasserait sa capacité d'apprentissage », au lieu de l'élève qui apprend par cœur à force de bachoter et échoue devant du nouveau."
+            },
+            {
+              "textId": "c112f0c0bd",
+              "questionId": "cnrs-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Annonce de recherche sans contenu : non-réponse alors que l'explication est donnée entre 05:59 et 07:33, avant la pose."
+            },
+            {
+              "textId": "679fde2455",
+              "questionId": "cnrs-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "(a) progression puis dégradation, sans les données d'évaluation, et (c) l'art de s'arrêter au bon moment. Outils logiciels : fait optionnel exact (456-464 s). Mécanisme (b) absent. Deux éléments."
+            },
+            {
+              "textId": "363ee5c85d",
+              "questionId": "cnrs-05",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Langage, complétion avec trous, modèle de fondation (élément du cours), coût et enfant en bonus. Mais l'étape suivante serait « l'alignement et l'inférence » : faux, la diapositive met le fine-tuning juste après le modèle de fondation. Confusion mineure, s2(3)."
+            },
+            {
+              "textId": "992f830e23",
+              "questionId": "cnrs-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Complétion (mot suivant toléré, phrases à trous), bases du langage, masse énorme de données (élément du cours). Phase coûteuse et complexe en bonus. Pas de confusion avec le fine-tuning."
+            },
+            {
+              "textId": "717fea3163",
+              "questionId": "cnrs-05",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Langage et complétion (trous, mot manquant) justes, analogie de l'enfant et calculs « monstrueux » en bonus. Aucun des éléments propres au cours exigés : pas de « sans le sens », pas de quasi tout Internet, pas de modèle de fondation. s2(2)."
+            },
+            {
+              "textId": "a1de900d77",
+              "questionId": "cnrs-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Parle surtout du coût et de l'analogie de l'enfant ; ne dit pas ce qui est appris : ni langage appris, ni complétion. Confusion : « le pré-entraînement, appelé modèle de fondation », alors que le modèle de fondation est le produit de cette phase."
+            },
+            {
+              "textId": "878360e33f",
+              "questionId": "cnrs-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Complétion à trous juste, mais affirme que le modèle acquiert une « compréhension du sens du langage ». Le cours dit l'inverse : il apprend à parler sans savoir ce que veulent dire les phrases (piège explicite)."
+            },
+            {
+              "textId": "d6a2851b32",
+              "questionId": "cnrs-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Annonce de recherche sans contenu : non-réponse alors que le propos (08:48-10:13) et la diapositive (dès 08:16) sont disponibles."
+            },
+            {
+              "textId": "e42ecfcbe3",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Contraste explicite par l'analogie du médecin : compétences acquises (fine-tuning), puis règles éthiques, bonne conduite et déontologie (alignement) avant les patients. Ordre et passage à l'inférence conformes à la diapositive."
+            },
+            {
+              "textId": "3e40e2b46c",
+              "questionId": "cnrs-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Annonce de recherche sans contenu : non-réponse alors que le fine-tuning (10:38-11:44), l'alignement (12:01-12:43) et la diapositive sont disponibles."
+            },
+            {
+              "textId": "39f3af44e3",
+              "questionId": "cnrs-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Alignement juste : règles éthiques, conduite, savoir-être, bienveillance. Mais affirme à tort que la vidéo ne mentionne pas le fine-tuning : il est dit à 11:15 et affiché depuis 08:16. Un seul côté."
+            },
+            {
+              "textId": "adef8c64fb",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Fine-tuning = compétences et métier ; alignement = règles éthiques et de conduite (bienveillance) avant d'exercer. Contraste explicite. La robustesse face aux tentatives de pousser à l'erreur est exacte ; « résister » (bloc clos à la pose) n'est pas sanctionné."
+            },
+            {
+              "textId": "6aa8ca140a",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Compétences spécialisées et métier, opposés aux règles éthiques et à la bonne conduite (briefing de la diapositive). Bienveillance, résistance aux poussées à l'erreur, étape distincte après les compétences : tout est juste."
+            },
+            {
+              "textId": "197ca7fe0c",
+              "questionId": "cnrs-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Contraste explicite : savoir-faire et métier (fine-tuning) contre règles éthiques, bonne conduite et bienveillance (alignement). Robustesse face aux poussées à l'erreur exacte. Aucune technique inventée."
+            }
+          ]
+        },
+        {
+          "video": "cnrs",
+          "scores": [
+            {
+              "textId": "a1de900d77",
+              "questionId": "cnrs-05",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La réponse ne dit pas ce que le modèle apprend. Elle ne parle ni d'apprendre à parler et à aligner des mots, ni des exercices de complétion (mot manquant, trous), ni du fait qu'il apprend sans le sens. Elle donne le modèle de fondation, avec une formulation approximative (« le pré-entraînement, appelé modèle de fondation » ; le cours dit qu'on entraîne un modèle de fondation, ce qu'on appelle pré-training), et deux bonus exacts : le coût et les « quantités de calculs monstrueuses » (10:02–10:13), puis l'analogie avec l'enfant (10:13–10:18). Le langage n'apparaît qu'en creux, à travers cette comparaison, ce qui ne suffit pas au cas s2 « langage sans complétion ». On est au niveau s1 : le modèle de fondation sans dire ce qui est appris. Aucun fait inventé. Les citations 600–624 s couvrent bien les passages et précèdent la pose (648 s)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "cuisine",
+      "judges": [
+        {
+          "video": "cuisine",
+          "scores": [
+            {
+              "textId": "13e1c5ad5c",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Oignons, carottes, vin à hauteur, spatule et « au moins la nuit » justes, « fraîche ou frigo » sans frigo imposé. Mais la viande n'est pas citée, et les « herbes de Provence » ne figurent ni dans la parole ni à l'image (c'est un bouquet garni, avec poivre et lardons) : ingrédient faux, s2."
+            },
+            {
+              "textId": "0a2054d8c6",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Préparation sommaire : viande absente, vin versé sans « à hauteur » ni « recouvert ». Ingrédient faux (« herbes de Provence » au lieu du bouquet garni). La nuit au frais est juste. s2."
+            },
+            {
+              "textId": "0eb211ae74",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Oignons, carottes et vin rouge justes, nuit au frais juste. Il manque la viande, les lardons, le poivre et le vin à hauteur, et les « herbes de Provence » sont inventées. s2."
+            },
+            {
+              "textId": "3a6a53124f",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Vin rouge sur oignons et carottes, mélangé pour tout couvrir, au moins la nuit, « pas forcément frigo mais frais » : tout est exact. Préparation sommaire en revanche : ni la viande ni un autre élément (bouquet garni, lardons, poivre). s2 sans invention."
+            },
+            {
+              "textId": "9c8b556937",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Vin jusqu'à recouvrir et nuit au frais justes. La viande manque et les « herbes de Provence » sont inventées (bouquet garni dans la vidéo). s2."
+            },
+            {
+              "textId": "4478b3ddc3",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes : viande égouttée, garniture (carottes, oignons, bouquet garni, lardons) et jus de marinade = vin. Les citations [200,216) contiennent l'énoncé."
+            },
+            {
+              "textId": "820718b860",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes : viande égouttée, garniture réduite aux légumes (accepté par la grille), jus = vin. Citations au bon endroit."
+            },
+            {
+              "textId": "658aa58824",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes, avec la composition complète de la garniture. Citations au bon endroit."
+            },
+            {
+              "textId": "3ab08fbc33",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Viande égouttée, garniture (carottes et oignons) et jus de marinade (vin) : les trois parties sont justes. Citations au bon endroit."
+            },
+            {
+              "textId": "ce6e4d01c3",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes, garniture réduite aux légumes (accepté). Citations au bon endroit."
+            },
+            {
+              "textId": "93480b7300",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Le geste d'épaississement est faux : il dit qu'il épaissit en grattant le fond, alors qu'il singe avec environ 75 g de farine à 05:41–06:16. L'ordre est aussi inversé (le grattage vient après le mouillage). Seul le mouillage au jus de marinade est juste. Aucune citation ne couvre le singeage."
+            },
+            {
+              "textId": "f3bd00d39f",
+              "questionId": "cuisine-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : rien à créditer."
+            },
+            {
+              "textId": "0fb6a658b7",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Même erreur : le grattage du fond est présenté comme le geste d'épaississement, la farine (singer, 75 g) est absente. Seul le mouillage au jus de marinade est juste. Les citations ne couvrent pas 341–376 s."
+            },
+            {
+              "textId": "5d91e21e46",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Il affirme qu'aucune action d'épaississement n'est précisée, ce qui est faux : il singe à la farine, texte « Singer » à l'écran. Le mouillage au jus est juste. « La casserole contenant la viande » est faux : à 07:00–07:20, la viande attend dans le plat bleu. s1."
+            },
+            {
+              "textId": "17658abc2e",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Le grattage des sucs est présenté comme le moyen d'épaissir, ce qui est faux (c'est la farine). Le mouillage au jus de marinade est juste. Un seul geste correct. Aucune citation sur le singeage."
+            },
+            {
+              "textId": "dfad5711b5",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "L'épaississement est attribué au grattage, ce qui est faux. Le mouillage est juste mais hésitant (« jus de marinade ou du vin »). La casserole est dite contenant la viande, ce qui est faux, la viande étant réservée à côté. Un seul geste juste."
+            },
+            {
+              "textId": "36f0c898fb",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Frémir sans bouillir est juste, « feu moyen » est valorisé. Le couvercle manque. La fourchette « deux à trois heures » est donnée comme durée recommandée : piège de l'oracle, puisque 3 h est le temps écoulé après l'ellipse et qu'il annonce 2 h. Un seul élément propre, donc s1."
+            },
+            {
+              "textId": "b570b32d23",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Feu moyen et frémissement (paraphrase confuse « sans bouger trop fort ») justes, sans couvercle. La durée donnée, 3 heures, est celle dite après l'ellipse, pas les deux heures annoncées : c'est le piège de l'oracle. s1."
+            },
+            {
+              "textId": "873cf1d765",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seul « feu moyen » est juste. Pas de couvercle, pas de frémissement, et la durée « deux à trois heures » fusionne 2 h annoncées et 3 h écoulées. s1."
+            },
+            {
+              "textId": "f8e4da9210",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémir et feu moyen sont justes, mais la durée recommandée est donnée comme « deux à trois heures » au lieu des deux heures annoncées. La grille prévoit s2 pour ce cas."
+            },
+            {
+              "textId": "c764da07fd",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémir et feu moyen justes. La fourchette « deux à trois heures » est présentée comme la recommandation (confusion avec les 3 h écoulées) : s2 selon la grille."
+            },
+            {
+              "textId": "5e5c0ce1a6",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémir sans bouillir et feu moyen justes. La durée « environ deux à trois heures » confond 2 h annoncées et 3 h écoulées : s2 selon la grille."
+            },
+            {
+              "textId": "afd9bb9504",
+              "questionId": "cuisine-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que toute la séquence (bouquet retiré, champignons, puis petits oignons, mélange doux) est dite et montrée entre 09:13 et 10:38. La politique de l'oracle donne s0."
+            },
+            {
+              "textId": "c9cd71467e",
+              "questionId": "cuisine-07",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "L'ordre champignons, réchauffage, puis petits oignons est juste. Il manque le retrait du bouquet garni et le mélange très doux. La seule citation (640–648 s) vient après les deux ajouts et ne les montre pas."
+            },
+            {
+              "textId": "f79e693e7f",
+              "questionId": "cuisine-07",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Seuls les champignons sont cités, présentés comme l'étape finale. Les petits oignons, le bouquet garni et l'ordre manquent. « Pour une coloration uniforme » n'est pas dit. La citation 640–648 s ne montre aucun ajout."
+            },
+            {
+              "textId": "8c81caba1c",
+              "questionId": "cuisine-07",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Champignons réchauffés, puis petits oignons, puis mélange très doux pour ne pas les abîmer : tout est juste et bien cité. Il manque seulement le retrait du bouquet garni. s2."
+            },
+            {
+              "textId": "70ed85b006",
+              "questionId": "cuisine-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Message intermédiaire (« Je vais vérifier… ») sans aucun contenu de réponse : non-réponse, s0."
+            }
+          ]
+        },
+        {
+          "video": "cuisine",
+          "scores": [
+            {
+              "textId": "13e1c5ad5c",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Durée juste (au moins une nuit, au frais, frigo donné comme simple option, pas comme consigne). Oignons, carottes et vin rouge à hauteur mélangé à la spatule : justes. La viande, base de la marinade, manque. « Herbes de Provence » n'est ni dit ni montré : l'image montre un bouquet garni ficelé. Préparation incomplète avec un ingrédient faux : s2."
+            },
+            {
+              "textId": "0a2054d8c6",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Au moins une nuit au frais : juste. Préparation sommaire : oignons, carottes, vin rouge mélangé à la spatule, sans la viande ni le vin à hauteur. « Herbes de Provence » est inventé, c'est un bouquet garni. s2."
+            },
+            {
+              "textId": "0eb211ae74",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Au frais au moins une nuit : juste. Préparation réduite à oignons, carottes et vin rouge, sans la viande ni le vin à hauteur, avec des « herbes de Provence » inventées à la place du bouquet garni. s2."
+            },
+            {
+              "textId": "3a6a53124f",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Durée et conditions exactes (au moins pour la nuit, « pas forcément au frigo mais au frais »). Vin rouge versé sur oignons et carottes, mélangé pour tout couvrir : juste. Mais ni la viande ni aucun autre élément (lardons, bouquet garni, poivre) : préparation sommaire. s2, aucune invention."
+            },
+            {
+              "textId": "9c8b556937",
+              "questionId": "cuisine-02",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Au moins une nuit au frais : juste. Oignons, carottes et vin rouge jusqu'à recouvrir : juste. La viande manque, et les « herbes de Provence » sont inventées, c'est un bouquet garni à l'image. s2."
+            },
+            {
+              "textId": "4478b3ddc3",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes : viande égouttée, garniture (carottes, oignons, bouquet garni et lardons), jus de marinade, c'est-à-dire le vin. Les citations des moments 26 et 27 (200–216 s) sont justes. s3."
+            },
+            {
+              "textId": "820718b860",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Viande égouttée, garniture (oignons et carottes ; les légumes sont acceptés), jus de marinade (le vin). Les trois parties sont justes. s3."
+            },
+            {
+              "textId": "658aa58824",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont exactes, avec la composition complète de la garniture (carottes, oignons, bouquet garni, lardons). s3."
+            },
+            {
+              "textId": "3ab08fbc33",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois parties sont justes et dans l'ordre : viande égouttée, garniture de carottes et d'oignons, jus de marinade (le vin). s3."
+            },
+            {
+              "textId": "ce6e4d01c3",
+              "questionId": "cuisine-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Viande égouttée, garniture de carottes et d'oignons, jus de marinade (le vin) : les trois parties sont justes. s3."
+            },
+            {
+              "textId": "93480b7300",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Mouillage au jus de marinade (le vin) : juste. Épaississement faux : il l'attribue au grattage du fond, alors qu'il a singé avec environ 75 g de farine (05:41–06:16). L'ordre est aussi inversé : le grattage vient après le vin (07:15). Un seul geste juste : s1. Les citations (416–440 s) situent bien ce qu'elles affirment."
+            },
+            {
+              "textId": "f3bd00d39f",
+              "questionId": "cuisine-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans contenu (answer null) : rien à créditer. s0. Ce n'est pas une abstention déclarée."
+            },
+            {
+              "textId": "0fb6a658b7",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Même erreur : l'épaississement est attribué au grattage des sucs au lieu de la farine (singer), et l'ordre est inversé. Seul le mouillage au jus de marinade est juste. s1."
+            },
+            {
+              "textId": "5d91e21e46",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Il affirme que l'homme ne dit rien pour épaissir, ce qui est faux : il nomme et définit « singer » avec la farine. Le mouillage (prendre le jus et le verser) est juste. Mais « la casserole contenant la viande » est faux : la viande attend dans le plat bleu et ne revient qu'à 07:32, dans le bloc clos à la pose. s1."
+            },
+            {
+              "textId": "17658abc2e",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Épaississement attribué au grattage des sucs au lieu de la farine, et ordre inversé. Le mouillage au jus de marinade (le vin) est juste. Un seul geste juste : s1."
+            },
+            {
+              "textId": "dfad5711b5",
+              "questionId": "cuisine-05",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Épaississement attribué au grattage, alors que c'est la farine. Le mouillage au jus de marinade ou au vin est à peu près juste, mais versé dans une « casserole contenant la viande », ce qui est faux : la viande est réservée à côté. Un seul geste juste : s1."
+            },
+            {
+              "textId": "36f0c898fb",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Frémir sans bouillir : juste. Feu moyen : valorisé. Mais aucun couvercle, et la durée est donnée en fourchette « deux à trois heures » au lieu des deux heures annoncées : c'est la confusion avec les trois heures dites après l'ellipse. Un seul des trois éléments est juste : s1."
+            },
+            {
+              "textId": "b570b32d23",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Feu moyen et frémir (« sans bouger trop fort ») sont à peu près justes. Il ne parle pas de couvrir, et il donne trois heures comme la durée indiquée, ce qui est le piège : les deux heures annoncées sont omises, et les trois heures, dites après l'ellipse, désignent le temps écoulé. s1."
+            },
+            {
+              "textId": "873cf1d765",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seul le feu moyen est juste. Ni couvercle ni frémissement, et la fourchette « deux à trois heures » confond les deux heures et les trois heures. s1."
+            },
+            {
+              "textId": "f8e4da9210",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert et frémir : justes. Feu moyen : valorisé. La durée est donnée en fourchette « deux à trois heures », non distinguée des deux heures annoncées : la grille la classe en s2."
+            },
+            {
+              "textId": "c764da07fd",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémir et feu moyen : justes. La durée « deux à trois heures » confond les deux heures annoncées et les trois heures écoulées. s2."
+            },
+            {
+              "textId": "5e5c0ce1a6",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémir sans bouillir et feu moyen : justes. Mais la durée « environ deux à trois heures » est donnée comme la recommandation, sans être distinguée des deux heures annoncées. s2."
+            },
+            {
+              "textId": "afd9bb9504",
+              "questionId": "cuisine-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention injustifiée : le retrait du bouquet, les champignons, puis les oignons et le mélange doux sont dits et montrés entre 09:13 et 10:38, chacun avec Δ ≥ 16 s. s0."
+            },
+            {
+              "textId": "c9cd71467e",
+              "questionId": "cuisine-07",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "L'ordre est juste : champignons, réchauffage de quelques minutes, puis petits oignons. Le retrait du bouquet garni et le mélange très doux manquent : s2. La seule citation, le moment 81 (640–648 s), ne couvre pas les ajouts, qui ont lieu entre 568 et 622 s."
+            },
+            {
+              "textId": "f79e693e7f",
+              "questionId": "cuisine-07",
+              "score": 1,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "no",
+              "rationale": "Seuls les champignons sont cités : ni ordre, ni oignons, ni retrait du bouquet. Le but prêté au mélange (« coloration uniforme ») est inventé ; il mélange doucement pour ne pas casser les oignons. La citation (640–648 s) ne couvre pas l'ajout des champignons (572–596 s). s1."
+            },
+            {
+              "textId": "8c81caba1c",
+              "questionId": "cuisine-07",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Champignons d'abord, mis à température, puis petits oignons, avec un mélange très doux pour ne pas les abîmer : juste. Le retrait du bouquet garni manque : s2. Les citations des moments 76 à 80 situent correctement la mise à température, les oignons et le mélange."
+            },
+            {
+              "textId": "70ed85b006",
+              "questionId": "cuisine-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Non-réponse : le texte annonce une vérification à faire et ne donne aucun contenu sur l'ordre des garnitures. Ce n'est pas une abstention déclarée. s0."
+            }
+          ]
+        },
+        {
+          "video": "cuisine",
+          "scores": [
+            {
+              "textId": "36f0c898fb",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Frémissement sans ébullition et feu moyen justes (08:54-08:57). La cuisson à couvert manque. La durée est donnée en fourchette « deux à trois heures » : la grille la traite comme une confusion entre 2 h et 3 h, pas comme une invention. La réponse ajoute un élément central à 873c (s1), d'où s2. « Temps de préparation » est un libellé imprécis. Les citations [528,544) sont closes avant la pose."
+            },
+            {
+              "textId": "873cf1d765",
+              "questionId": "cuisine-06",
+              "score": 1,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Seul « feu moyen » est juste. Il manque le couvert et le frémissement sans ébullition. La durée « deux à trois heures » confond les 2 h annoncées avec les 3 h dites après l'ellipse, ce que la grille compte comme une confusion. La grille donne s1 pour un seul élément juste. Les citations [528,544) sont pertinentes et disponibles."
+            },
+            {
+              "textId": "f8e4da9210",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Couvert, frémissement et feu moyen sont présents (« pour que la préparation puisse frémir » est un lien causal un peu forcé, mais mineur). La durée est donnée en fourchette « deux à trois heures » plutôt que les deux heures annoncées : la grille plafonne alors à s2. Les citations [528,544) sont correctes."
+            },
+            {
+              "textId": "c764da07fd",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Feu moyen, casserole couverte et frémissement sont justes. La durée « deux à trois heures » présente la fourchette comme durée recommandée au lieu des 2 h annoncées (3 h = temps écoulé après l'ellipse) : la grille le classe en s2. Les citations [528,544) sont correctes."
+            },
+            {
+              "textId": "5e5c0ce1a6",
+              "questionId": "cuisine-06",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "C'est la plus complète : feu moyen, couvert, frémissement sans ébullition. Elle donne toutefois « environ deux à trois heures » comme durée recommandée, sans distinguer les 2 h annoncées des 3 h dites après l'ellipse : la grille plafonne alors à s2. Les citations [528,544) sont closes avant la pose de 548 s."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "tears",
+      "judges": [
+        {
+          "video": "tears",
+          "scores": [
+            {
+              "textId": "ad7f453810",
+              "questionId": "tears-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans aucun contenu : aucune passion citée, donc s0. Ce n'est pas une abstention codée par le système."
+            },
+            {
+              "textId": "b3cd8e3e0a",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux passions sont correctement attribuées : Thom veut être « awesome in space », Celia a la robotique. Le pont est visible en A. La citation 24–32 couvre 24,3–30,5."
+            },
+            {
+              "textId": "abd984d205",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux passions sont bien attribuées. « Ce qui suggère l'astronautique ou l'exploration spatiale » est une glose prudente : la réponse n'affirme aucun métier, donc ce n'est pas une invention. Rien n'est anticipé."
+            },
+            {
+              "textId": "5d267827c8",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Celia, la robotique ; Thom, « être génial dans l'espace ». C'est la réponse attendue, sans ajout."
+            },
+            {
+              "textId": "48ca9269c8",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Celia, la robotique ; Thom, être exceptionnel dans l'espace : la paraphrase est fidèle. La citation est juste."
+            },
+            {
+              "textId": "e7affd3b38",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Environ 10 minutes », dit par Barley (SRT 199–201). La citation 192–200 tombe sur la réplique."
+            },
+            {
+              "textId": "fbceb652b3",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Environ 10, avec l'unité entre parenthèses : c'est l'attendu. Pas d'invention."
+            },
+            {
+              "textId": "e1d2639cdd",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Environ 10 », sans unité, est fidèle à la réplique coupée à 200 s. Le nombre, objet de la question selon l'arbitre, est juste. Je note l'unité manquante sans pénaliser, comme pour a4dd22bc2a."
+            },
+            {
+              "textId": "e3aa6c8b82",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Environ 10 minutes », attribué à Barley : la réponse est exacte."
+            },
+            {
+              "textId": "a4dd22bc2a",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Elle cite « We should have about 10 », juste après « How's it looking, Barley? », ce qui est exact. Le nombre est juste et l'unité manque, comme pour e1d2639cdd. Pas d'invention."
+            },
+            {
+              "textId": "892cc892e5",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois conseils y sont : honnête, tendre, lui rappeler ce qu'est l'amour. La citation 240–248 est juste."
+            },
+            {
+              "textId": "3330d81465",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois conseils, en anglais, ce que la grille admet. Rien n'est inventé."
+            },
+            {
+              "textId": "2576861c71",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois conseils, et le conseiller est bien identifié comme l'homme à l'œil mécanique (images A). Exact."
+            },
+            {
+              "textId": "0ae6ad1a82",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Honnête et tendre, « afin de lui rappeler ce qu'est l'amour » : le troisième conseil devient un but, mais son contenu est présent. La paraphrase reste admise et rien n'est inventé."
+            },
+            {
+              "textId": "f7b52cf04b",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention, alors que la question est répondable : « You broke my heart » et « You forgot me on earth » sont en A, Δ 16–24 s. s0."
+            },
+            {
+              "textId": "c08a3af77c",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Codée « insufficient » alors que le texte énonce bien les deux reproches centraux (cœur brisé, oubliée sur Terre). L'abstention n'est pas justifiée : la règle impose s0."
+            },
+            {
+              "textId": "63f79bc42e",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans contenu : aucun reproche cité, donc s0."
+            },
+            {
+              "textId": "8923873b7c",
+              "questionId": "tears-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux reproches centraux sont là : il lui a brisé le cœur, il l'a oubliée sur Terre. Pas d'excuse anticipée. La citation 384–392 est juste."
+            },
+            {
+              "textId": "9d68d1031a",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention, motivée par l'ASR altérée (« over right to bleed »). La question est répondable : « Memory overwrite complete! » est dit à 537,6–539,6 s, en A. s0."
+            },
+            {
+              "textId": "de09053f88",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "La réponse prend l'ASR altérée au pied de la lettre et invente un état : la mémoire « saigne ». Le piège correspond à « overrated » pris à la lettre. La fenêtre citée est la bonne, mais l'état réel est « complete »."
+            },
+            {
+              "textId": "ffbc1706a5",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention sur une question répondable : « complete » est en A, Δ 8 s. s0."
+            },
+            {
+              "textId": "0e97119f75",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Elle relaie la phrase altérée sans donner d'état : elle ne répond pas, donc s0. Le décor (homme près d'un robot à 8:52–8:56) est grossièrement soutenu par les images. Aucun état n'est inventé."
+            },
+            {
+              "textId": "6533006346",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans contenu : aucun état donné, donc s0."
+            },
+            {
+              "textId": "d26a1e4d9d",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Elle cite la phrase ASR altérée et déclare n'avoir aucune autre information. Aucun état n'est donné : c'est une non-réponse de fait, donc s0. Pas d'état inventé."
+            }
+          ]
+        },
+        {
+          "video": "tears",
+          "scores": [
+            {
+              "textId": "ad7f453810",
+              "questionId": "tears-01",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : aucune passion citée, s0. Ce n'est pas une abstention du système."
+            },
+            {
+              "textId": "b3cd8e3e0a",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Thom : « awesome in space » ; Celia : la robotique (« your robotics »). Les deux passions sont correctement attribuées et la citation 24–32 s correspond au bloc des répliques."
+            },
+            {
+              "textId": "abd984d205",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux passions sont bien attribuées, et la réplique est correctement donnée à Thom. « Suggère l'astronautique ou l'exploration spatiale » reste une paraphrase prudente de l'espace, pas un métier affirmé."
+            },
+            {
+              "textId": "5d267827c8",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Celia : la robotique ; Thom : « être génial dans l'espace ». Réponse exacte et complète, sans ajout."
+            },
+            {
+              "textId": "48ca9269c8",
+              "questionId": "tears-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Celia : la robotique ; Thom : être exceptionnel dans l'espace. Paraphrase fidèle, bonne attribution, aucun ajout."
+            },
+            {
+              "textId": "e7affd3b38",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Environ 10 minutes », attribué à Barley : conforme à « We should have about ten minutes » (199–201 s). Le bloc cité, 192–200, contient le début de la réplique."
+            },
+            {
+              "textId": "fbceb652b3",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Environ 10, l'unité « minutes » étant donnée entre parenthèses. L'unité est exacte selon le SRT, donc la réponse donne bien dix minutes."
+            },
+            {
+              "textId": "e1d2639cdd",
+              "questionId": "tears-03",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le nombre est juste (environ 10), mais l'unité manque : la durée demandée reste incomplète et ambiguë. Rien n'est inventé. Au-dessus de s1, qui s'applique à une réponse sans le nombre ; en dessous de s3, qui demande dix minutes."
+            },
+            {
+              "textId": "e3aa6c8b82",
+              "questionId": "tears-03",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "« Environ 10 minutes », attribué à Barley : exact."
+            },
+            {
+              "textId": "a4dd22bc2a",
+              "questionId": "tears-03",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "L'enchaînement est bien reconstitué (« How's it looking, Barley? » puis « We should have about 10 »), mais la conclusion « environ 10 » n'a pas d'unité. Même note que l'autre réponse sans unité ; rien d'inventé."
+            },
+            {
+              "textId": "892cc892e5",
+              "questionId": "tears-04",
+              "score": 2,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Être honnête et tendre avec elle : deux conseils justes. Le troisième est déformé : « se rappeler ce qu'est l'amour » (pour Thom lui-même) au lieu de « lui rappeler ». Ce n'est pas un conseil inventé, mais seuls deux conseils sont fidèles."
+            },
+            {
+              "textId": "3330d81465",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois conseils, exacts : honnête, tendre, « remind her what love is ». Aucun ajout."
+            },
+            {
+              "textId": "2576861c71",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les trois conseils sont fidèles. Le conseiller identifié comme l'homme à l'œil de remplacement est conforme aux images (l'homme à l'œil mécanique), donc neutre."
+            },
+            {
+              "textId": "0ae6ad1a82",
+              "questionId": "tears-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Honnête, tendre, lui rappeler ce qu'est l'amour : les trois contenus sont présents, avec le bon destinataire. Le lien « afin de » restructure légèrement la réponse sans rien ajouter de faux."
+            },
+            {
+              "textId": "f7b52cf04b",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention alors que les deux reproches (« You broke my heart », « You forgot me on earth ») sont dans des blocs clos depuis 16 à 24 s. Selon l'oracle, cette abstention n'est pas justifiée : s0."
+            },
+            {
+              "textId": "c08a3af77c",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Codée « insufficient » alors que le texte énonce lui-même les deux reproches exacts (cœur brisé, oubliée sur Terre). L'abstention n'est pas justifiée selon l'oracle, d'où s0 par règle ; le contenu aurait valu s3."
+            },
+            {
+              "textId": "63f79bc42e",
+              "questionId": "tears-06",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : aucun reproche cité, s0."
+            },
+            {
+              "textId": "8923873b7c",
+              "questionId": "tears-06",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux reproches centraux (cœur brisé, oubliée sur Terre), sans ajout. La citation 384–392 s couvre « forgot me on earth » et la fin de « broke my heart »."
+            },
+            {
+              "textId": "9d68d1031a",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Abstention : l'ASR du système a déformé « Memory overwrite complete! » en « over right to bleed ». La question est répondable (bloc 536–544, Δ 8), donc l'abstention n'est pas justifiée : s0."
+            },
+            {
+              "textId": "de09053f88",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le système donne pour état « la mémoire saigne (bleed) » : un état inventé, tiré à la lettre de l'ASR déformée (piège de l'oracle). Le bon bloc est cité, mais il est mal lu."
+            },
+            {
+              "textId": "ffbc1706a5",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Même abstention que l'autre réponse « insufficient » sur l'ASR « over right to bleed ». « Complete » est disponible à la pose : abstention non justifiée, s0."
+            },
+            {
+              "textId": "0e97119f75",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Aucun état n'est donné : la réponse cite la transcription déformée « Memory over right to bleed! » et décrit le cadre (homme près d'un robot dans un lieu délabré, compatible avec les images de 8:56–9:04). C'est une non-réponse : s0. La citation déformée vient de l'ASR et n'est pas comptée comme une invention."
+            },
+            {
+              "textId": "6533006346",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans contenu (answer null) : aucun état cité, s0."
+            },
+            {
+              "textId": "d26a1e4d9d",
+              "questionId": "tears-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Codée « observation », mais le système cite seulement l'ASR déformée et dit n'avoir aucune information sur l'état : c'est une abstention de fait. « Complete » est disponible à la pose : non justifiée, s0. Aucun état n'est inventé."
+            }
+          ]
+        },
+        null
+      ]
+    },
+    {
+      "video": "artemis",
+      "judges": [
+        {
+          "video": "artemis",
+          "scores": [
+            {
+              "textId": "bb8a8aee99",
+              "questionId": "artemis-01",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le noyau est juste : un go pour reprendre le compte et lancer Artemis I. Mais la réponse dit que ce go vient « après avoir confirmé la configuration des étapes restantes ». C'est l'ordre inverse : l'ASR donne « we do have a couple of steps to configure and then we will be ready to resume the clock » après le go, et la configuration se fait après la pose. Défaut mineur présenté comme acquis : s2."
+            },
+            {
+              "textId": "5b5a48ed17",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décision de reprendre le compte à rebours et de lancer Artemis I : les deux moitiés du go y sont. Aucun fait postérieur à la pose. La citation 944–952 s est juste."
+            },
+            {
+              "textId": "16d4ecce11",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go de la directrice de lancement pour reprendre le compte et lancer, cité mot pour mot. « Copy launch director » est bien dit à 952 s (ASR YouTube). Le masculin « le directeur » est sans incidence. Rien d'anticipé."
+            },
+            {
+              "textId": "0c38a54743",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go pour reprendre le décompte et lancer Artemis I. La réponse ajoute correctement qu'il reste quelques étapes de configuration avant de relancer l'horloge, un fait A en limite : l'horloge n'est donc pas présentée comme relancée."
+            },
+            {
+              "textId": "20e281c763",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go pour reprendre le compte à rebours et lancer Artemis I : réponse complète, concise, sans anticipation."
+            },
+            {
+              "textId": "b06091adbb",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux temps sont donnés : d'abord le go pour le compte terminal et le lancement (920–928 s, MMT, ici attribué à « l'équipe de lancement », ce que la grille accepte), puis l'autorisation de la directrice de reprendre le compte (944–952 s). Pas d'anticipation."
+            },
+            {
+              "textId": "3bb1a62c88",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Système de suppression de la surpression et du son, pour réduire la pression et le bruit de l'allumage et éviter des dommages. « Lanceur » s'entend du véhicule, comme l'admet l'oracle. Le départ à T-17 s est présenté comme futur. Rien n'affirme que l'eau coule déjà."
+            },
+            {
+              "textId": "1f19075867",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Surpression et bruit tonitruant de l'allumage, qui pourraient endommager le véhicule ; séquence à T-17 s. Les deux causes et le but y sont, sans anticipation."
+            },
+            {
+              "textId": "2a3f030a3d",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Système de suppression du son et de la pression : il réduit la pression et le bruit de l'allumage pour éviter d'endommager le lanceur, au sens du véhicule. Réponse complète, citations 1216–1232 s justes."
+            },
+            {
+              "textId": "e49c5471fa",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le système de suppression de la surpression et du son protège la fusée de la pression et du bruit de l'allumage, qui pourraient l'endommager. Les deux causes et le but y sont."
+            },
+            {
+              "textId": "a52c3d7da6",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Protéger la fusée des dommages causés par la surpression et le bruit à l'allumage. « Activé juste avant le décollage » est cohérent avec T-17 s et reste au futur. Pas de piège déclenché."
+            },
+            {
+              "textId": "dd91f42fcb",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le décollage a eu lieu ; quatre RS-25 de l'étage central et deux propulseurs à poudre. « Compte à rebours à zéro » correspond à « 3, 2, 1… liftoff » dit à l'antenne. Citations justes, rien d'anticipé."
+            },
+            {
+              "textId": "f6bf43e9ba",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé ; quatre RS-25 de l'étage central et deux SRB. Réponse complète et exacte."
+            },
+            {
+              "textId": "3d1dfdbc0b",
+              "questionId": "artemis-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans aucun contenu (answer null) : il n'y a pas de réponse à noter. Une réponse était attendue, donc s0. Ce n'est pas une abstention formulée par le système."
+            },
+            {
+              "textId": "326e9ee4f2",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé ; quatre RS-25 de l'étage central et deux SRB. La seule citation (1640–1648 s) contient « now propelling the vehicle », qui suffit à étayer le décollage."
+            },
+            {
+              "textId": "cffa9bc8c8",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé ; quatre RS-25 et deux propulseurs solides. « Étape centrale » est une maladresse de traduction pour « étage central », sans effet sur le fond. Rien d'anticipé."
+            },
+            {
+              "textId": "a5867eaa65",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Annonce du liftoff d'Artemis 1 ; quatre RS-25 de l'étage central et deux boosters à poudre. Réponse complète, citations justes."
+            },
+            {
+              "textId": "4ea79adf7b",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les propulseurs à poudre (le pluriel couvre les deux) viennent de se séparer ; l'étage central continue avec ses RS-25. Aucune autre séparation n'est annoncée."
+            },
+            {
+              "textId": "cb88e51bc5",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux SRB se sont séparés ; l'étage central, avec ses RS-25, continue de propulser Orion. « Étape » est une coquille pour « étage ». Réponse complète."
+            },
+            {
+              "textId": "ab5040f1ff",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "SRB séparés, confirmés vers 1760 s ; le vol continue sur l'étage central et ses RS-25. Le « uniquement » est exact. Aucune séparation postérieure n'est mentionnée."
+            },
+            {
+              "textId": "372edf3836",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "SRB séparés ; l'étage central et ses RS-25 continuent de propulser Orion. C'est la formule du commentaire, rien d'anticipé."
+            },
+            {
+              "textId": "cb707176ea",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux SRB sont séparés, avec la citation exacte de la confirmation ; l'étage central et ses RS-25 continuent. Réponse complète."
+            },
+            {
+              "textId": "5d96010b0a",
+              "questionId": "artemis-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Ce n'est pas une réponse, mais une promesse de vérifier plus tard, sans contenu ni citation. Elle équivaut à une abstention alors que la séparation et le relais sont dits 16 à 28 s avant la pose : s0."
+            },
+            {
+              "textId": "f1a90b4b9d",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Coupure des moteurs principaux de l'étage central, à venir, avec l'appui « environ 30 secondes » annoncé à 2080–2085 s. Elle n'est pas présentée comme déjà survenue."
+            },
+            {
+              "textId": "49ca217232",
+              "questionId": "artemis-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie JSON invalide, sans aucun contenu (answer null) : pas de réponse, donc s0. Ce n'est pas une abstention formulée par le système."
+            },
+            {
+              "textId": "4837e54bb2",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Arrêt des moteurs principaux de l'étage central, à venir. Deux appuis justes : il reste environ 30 s, et les quatre RS-25 réduisent leur poussée. Pas d'anticipation."
+            },
+            {
+              "textId": "349d1db4b8",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "MECO de l'étage central (« étape » est une coquille) ; 30 s restantes et réduction de poussée des quatre RS-25. L'événement reste futur. Réponse complète."
+            },
+            {
+              "textId": "463e530cfd",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "MECO de l'étage central, environ 30 s restantes, puis arrêt des quatre RS-25. Tout est au futur, rien n'est présenté comme fait. Réponse complète."
+            }
+          ]
+        },
+        {
+          "video": "artemis",
+          "scores": [
+            {
+              "textId": "bb8a8aee99",
+              "questionId": "artemis-01",
+              "score": 2,
+              "invention": true,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Le noyau est juste : un go pour reprendre le compte et lancer Artemis I. Mais la réponse dit que ce go vient « après avoir confirmé la configuration des étapes restantes », ce qui inverse la séquence. Les étapes de configuration sont annoncées après le go (955,8–960 s), comme restant à faire. C'est un défaut mineur, mais le fait est faux."
+            },
+            {
+              "textId": "5b5a48ed17",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décision exacte : reprise du compte à rebours et lancement d'Artemis I. Aucune anticipation. La citation 944–952 s couvre le go."
+            },
+            {
+              "textId": "16d4ecce11",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go de la directrice de lancement cité mot pour mot (reprise du compte et lancement). « Copy, launch director » est bien dit vers 952 s. Seul écart : le masculin « le directeur », sans incidence sur la note."
+            },
+            {
+              "textId": "0c38a54743",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go pour reprendre le décompte et lancer Artemis I. Les étapes de configuration avant la reprise de l'horloge sont bien placées après le go et décrites comme encore à faire (fait A, limite). L'horloge n'est pas dite relancée."
+            },
+            {
+              "textId": "20e281c763",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Go pour reprendre le compte à rebours et lancer Artemis I : la réponse attendue, sans anticipation."
+            },
+            {
+              "textId": "b06091adbb",
+              "questionId": "artemis-01",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux temps du go sont donnés : le go de la MMT pour le compte terminal et le lancement, attribué à « l'équipe de lancement » (accepté), puis l'autorisation de la directrice de reprendre le compte. Les citations 920–928 s et 944–952 s sont exactes."
+            },
+            {
+              "textId": "3bb1a62c88",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux causes (pression et son à l'allumage) et le but (éviter les dégâts) sont donnés. Système nommé, départ à T-17 s. « Le lanceur » se lit comme le véhicule, au sens de l'attendu v1. L'eau n'est pas dite déjà lâchée."
+            },
+            {
+              "textId": "1f19075867",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Surpression et bruit de l'allumage, risque d'endommager le véhicule, séquence à T-17 s : réponse complète et conforme au commentaire."
+            },
+            {
+              "textId": "2a3f030a3d",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Système nommé, pression et bruit causés par l'allumage, but d'éviter d'endommager « le lanceur » (le véhicule, comme dans l'attendu v1). Les citations 1216–1232 s couvrent la phrase causale."
+            },
+            {
+              "textId": "e49c5471fa",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Système nommé ; protège la fusée de la pression et du bruit de l'allumage, qui pourraient l'endommager. Réponse complète."
+            },
+            {
+              "textId": "a52c3d7da6",
+              "questionId": "artemis-02",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Protéger la fusée des dégâts causés par la surpression et le bruit à l'allumage : les deux causes et le but y sont. « Activé juste avant le décollage » reste vrai et ne dit pas que l'eau coule déjà."
+            },
+            {
+              "textId": "dd91f42fcb",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé. Propulsion par les quatre RS-25 de l'étage central et les deux propulseurs à poudre. Citations 1624–1632 s et 1640–1648 s exactes."
+            },
+            {
+              "textId": "f6bf43e9ba",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé. Quatre RS-25 de l'étage central et deux SRB. Aucune anticipation."
+            },
+            {
+              "textId": "3d1dfdbc0b",
+              "questionId": "artemis-04",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans aucun contenu (answer null) : rien à noter, donc s0. Ce n'est pas une abstention déclarée."
+            },
+            {
+              "textId": "326e9ee4f2",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé. Quatre RS-25 de l'étage central et deux SRB. La citation 1640–1648 s porte la phrase sur la propulsion, qui suppose le vol."
+            },
+            {
+              "textId": "cffa9bc8c8",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Décollage confirmé. Quatre RS-25 de l'étage central (« étape centrale », simple maladresse de traduction) et deux propulseurs solides."
+            },
+            {
+              "textId": "a5867eaa65",
+              "questionId": "artemis-04",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Annonce du liftoff, quatre RS-25 sur l'étage central et deux boosters à poudre : réponse complète, citations exactes."
+            },
+            {
+              "textId": "4ea79adf7b",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "SRB séparés, l'étage central continue avec ses RS-25. « Étage central » suffit pour s3. Aucune autre séparation annoncée."
+            },
+            {
+              "textId": "cb88e51bc5",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux SRB séparés, l'étage central et ses RS-25 continuent de propulser Orion. Formule du commentaire, sans anticipation."
+            },
+            {
+              "textId": "ab5040f1ff",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "SRB séparés (vers 1764 s), vol propulsé par l'étage central et ses RS-25. Réponse juste."
+            },
+            {
+              "textId": "372edf3836",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "SRB séparés, l'étage central et ses RS-25 continuent de propulser Orion. Réponse complète."
+            },
+            {
+              "textId": "cb707176ea",
+              "questionId": "artemis-05",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Les deux SRB séparés, citation exacte du commentaire. L'étage central et ses RS-25 continuent. Citations 1760–1776 s exactes."
+            },
+            {
+              "textId": "5d96010b0a",
+              "questionId": "artemis-05",
+              "score": 0,
+              "invention": false,
+              "abstention": "unjustified",
+              "temporalEvidenceOk": "na",
+              "rationale": "Aucune réponse, seulement une promesse de vérifier : c'est une abstention de fait. L'oracle n'en attend pas (séparation dite et visible avant la pose), donc s0."
+            },
+            {
+              "textId": "f1a90b4b9d",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Coupure des moteurs principaux de l'étage central, présentée comme à venir, avec l'appui « environ 30 secondes » (la valeur annoncée vers 2081–2085 s). Pas de MECO dite faite."
+            },
+            {
+              "textId": "49ca217232",
+              "questionId": "artemis-07",
+              "score": 0,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "na",
+              "rationale": "Sortie mal formée sans aucun contenu (answer null) : rien à noter, donc s0. Ce n'est pas une abstention déclarée."
+            },
+            {
+              "textId": "4837e54bb2",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "MECO de l'étage central à venir, environ 30 s restantes, réduction de poussée en cours des quatre RS-25 : deux appuis justes."
+            },
+            {
+              "textId": "349d1db4b8",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "Coupure des moteurs principaux de l'étage central, 30 s annoncées, réduction de poussée des quatre RS-25. Citation 2080–2088 s exacte."
+            },
+            {
+              "textId": "463e530cfd",
+              "questionId": "artemis-07",
+              "score": 3,
+              "invention": false,
+              "abstention": "none",
+              "temporalEvidenceOk": "yes",
+              "rationale": "MECO de l'étage central à venir, 30 s restantes ; l'arrêt des quatre RS-25 est au futur. Pas d'anticipation."
+            }
+          ]
+        },
+        null
+      ]
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Notation"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "juge:kennedy:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a18421c72c48d51e8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588765072,
+      "queuedAt": 1792588765058,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "kennedy",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « kennedy ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-kennedy.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792588909873,
+      "tokens": 102213,
+      "toolCalls": 7,
+      "durationMs": 144800,
+      "resultPreview": "{\"video\":\"kennedy\",\"scores\":[{\"textId\":\"2d33950a14\",\"questionId\":\"kennedy-01\",\"score\":1,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Les 50 000 ans sont justes, mais la compression est mal comprise : le demi-siècle est présenté comme la durée réelle des « temps modernes », opposée aux 50 000 ans. Chiffres exacts mais mal compris, donc s1. « 50 millennia » n'est pas …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "juge:kennedy:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "af3f18970de67d4f4",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588765072,
+      "queuedAt": 1792588765058,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "kennedy",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « kennedy ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-kennedy.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792588912475,
+      "tokens": 102163,
+      "toolCalls": 6,
+      "durationMs": 146537,
+      "resultPreview": "{\"video\":\"kennedy\",\"scores\":[{\"textId\":\"2d33950a14\",\"questionId\":\"kennedy-01\",\"score\":1,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"50 000 ans exact, mais la compression est mal comprise : le demi-siècle devient la durée réelle des « temps modernes ». C'est le cas s1 « chiffres exacts mais mal compris ». La citation « 50 millennia » n'est pas dans le discours.\"},{\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "juge:spring:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "aa2ecb4f3c59db8a9",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588765082,
+      "queuedAt": 1792588765080,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « spring ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-spring.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son …",
+      "promptFramed": true,
+      "lastProgressAt": 1792588982851,
+      "tokens": 108475,
+      "toolCalls": 10,
+      "durationMs": 216912,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"761d902b1c\",\"questionId\":\"spring-01\",\"score\":1,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Mentionne le chien et le biscuit (exacts, 00:50-00:56), mais répond « c'est un enfant » et inverse la relation : la fille n'est pas reconnue, et le chien n'est pas désigné comme son compagnon. Ça se lit comme un compagnon humain.\"},{\"te…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "juge:spring:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a5ff40581faf8c535",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588765082,
+      "queuedAt": 1792588765080,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « spring ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-spring.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son …",
+      "promptFramed": true,
+      "lastProgressAt": 1792588934349,
+      "tokens": 102159,
+      "toolCalls": 9,
+      "durationMs": 168409,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"761d902b1c\",\"questionId\":\"spring-01\",\"score\":1,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Inverse la relation : répond « un enfant » (qui accompagne le chien) au lieu d'identifier le chien comme compagnon de la fille. Le chien et la friandise sont bien vus (blocs A, 56–64 B sans anticipation), mais la réponse désigne un huma…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "juge:cnrs:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a27d2787b80a2949c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588909877,
+      "queuedAt": 1792588909875,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « cnrs ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cnrs.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son cont…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589174632,
+      "tokens": 121954,
+      "toolCalls": 8,
+      "durationMs": 264755,
+      "resultPreview": "{\"video\":\"cnrs\",\"scores\":[{\"textId\":\"01223d1e38\",\"questionId\":\"cnrs-01\",\"score\":0,\"invention\":false,\"abstention\":\"unjustified\",\"temporalEvidenceOk\":\"na\",\"rationale\":\"Aucune réponse : simple annonce d'une vérification à venir. La réponse était disponible dès 00:44 et à l'écran dès 00:40. Abstention de fait, non justifiée.\"},{\"textId\":\"3b826feca5\",\"questionId\":\"cnrs-01\",\"score\":3,\"invention\":false,\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "juge:cnrs:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "aa66a599f84466b2c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588912480,
+      "queuedAt": 1792588912477,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « cnrs ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cnrs.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son cont…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589283042,
+      "tokens": 138422,
+      "toolCalls": 13,
+      "durationMs": 370562,
+      "resultPreview": "{\"video\":\"cnrs\",\"scores\":[{\"textId\":\"01223d1e38\",\"questionId\":\"cnrs-01\",\"score\":0,\"invention\":false,\"abstention\":\"unjustified\",\"temporalEvidenceOk\":\"na\",\"rationale\":\"Annonce d'une vérification sans aucun contenu : non-réponse alors que la réponse est dite (00:44-01:26) et affichée (00:40) avant la pose.\"},{\"textId\":\"3b826feca5\",\"questionId\":\"cnrs-01\",\"score\":3,\"invention\":false,\"abstention\":\"none\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "juge:cuisine:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a8294942d535811fd",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588934355,
+      "queuedAt": 1792588934354,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cuisine",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « cuisine ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cuisine.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589109983,
+      "tokens": 112607,
+      "toolCalls": 11,
+      "durationMs": 175628,
+      "resultPreview": "{\"video\":\"cuisine\",\"scores\":[{\"textId\":\"13e1c5ad5c\",\"questionId\":\"cuisine-02\",\"score\":2,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Oignons, carottes, vin à hauteur, spatule et « au moins la nuit » justes, « fraîche ou frigo » sans frigo imposé. Mais la viande n'est pas citée, et les « herbes de Provence » ne figurent ni dans la parole ni à l'image (c'est un bouque…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "juge:cuisine:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "ac00c88a52474f5ac",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792588982857,
+      "queuedAt": 1792588982854,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cuisine",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « cuisine ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cuisine.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589203135,
+      "tokens": 112770,
+      "toolCalls": 10,
+      "durationMs": 220278,
+      "resultPreview": "{\"video\":\"cuisine\",\"scores\":[{\"textId\":\"13e1c5ad5c\",\"questionId\":\"cuisine-02\",\"score\":2,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Durée juste (au moins une nuit, au frais, frigo donné comme simple option, pas comme consigne). Oignons, carottes et vin rouge à hauteur mélangé à la spatule : justes. La viande, base de la marinade, manque. « Herbes de Provence » n'es…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "juge:tears:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a06c305055c893186",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589109989,
+      "queuedAt": 1792589109986,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "tears",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « tears ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-tears.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son co…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589235555,
+      "tokens": 96365,
+      "toolCalls": 8,
+      "durationMs": 125566,
+      "resultPreview": "{\"video\":\"tears\",\"scores\":[{\"textId\":\"ad7f453810\",\"questionId\":\"tears-01\",\"score\":0,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"na\",\"rationale\":\"Sortie JSON invalide, sans aucun contenu : aucune passion citée, donc s0. Ce n'est pas une abstention codée par le système.\"},{\"textId\":\"b3cd8e3e0a\",\"questionId\":\"tears-01\",\"score\":3,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceO…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "juge:tears:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "aab18e5c2d538e017",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589174638,
+      "queuedAt": 1792589174637,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "tears",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « tears ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-tears.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son co…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589299665,
+      "tokens": 95542,
+      "toolCalls": 8,
+      "durationMs": 125026,
+      "resultPreview": "{\"video\":\"tears\",\"scores\":[{\"textId\":\"ad7f453810\",\"questionId\":\"tears-01\",\"score\":0,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"na\",\"rationale\":\"Sortie mal formée sans contenu (answer null) : aucune passion citée, s0. Ce n'est pas une abstention du système.\"},{\"textId\":\"b3cd8e3e0a\",\"questionId\":\"tears-01\",\"score\":3,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"r…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "juge:artemis:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a12f26b3689ada98b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589203138,
+      "queuedAt": 1792589203137,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "artemis",
+      "promptPreview": "Tu es le juge 1, indépendant, de réponses d'un compagnon de visionnage, vidéo « artemis ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-artemis.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589296048,
+      "tokens": 95178,
+      "toolCalls": 6,
+      "durationMs": 92910,
+      "resultPreview": "{\"video\":\"artemis\",\"scores\":[{\"textId\":\"bb8a8aee99\",\"questionId\":\"artemis-01\",\"score\":2,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Le noyau est juste : un go pour reprendre le compte et lancer Artemis I. Mais la réponse dit que ce go vient « après avoir confirmé la configuration des étapes restantes ». C'est l'ordre inverse : l'ASR donne « we do have a couple of s…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "juge:artemis:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a4fce366c352558c8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589235558,
+      "queuedAt": 1792589235556,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "artemis",
+      "promptPreview": "Tu es le juge 2, indépendant, de réponses d'un compagnon de visionnage, vidéo « artemis ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-artemis.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589325417,
+      "tokens": 96283,
+      "toolCalls": 6,
+      "durationMs": 89859,
+      "resultPreview": "{\"video\":\"artemis\",\"scores\":[{\"textId\":\"bb8a8aee99\",\"questionId\":\"artemis-01\",\"score\":2,\"invention\":true,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Le noyau est juste : un go pour reprendre le compte et lancer Artemis I. Mais la réponse dit que ce go vient « après avoir confirmé la configuration des étapes restantes », ce qui inverse la séquence. Les étapes de configuration sont a…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "juge:spring:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "a35424472755f19dc",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589283048,
+      "queuedAt": 1792589283046,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 3, indépendant, de réponses d'un compagnon de visionnage, vidéo « spring ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-spring.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son …",
+      "promptFramed": true,
+      "lastProgressAt": 1792589366986,
+      "tokens": 83143,
+      "toolCalls": 10,
+      "durationMs": 83938,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"d830d2c362\",\"questionId\":\"spring-01\",\"score\":2,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"La réponse identifie correctement un petit chien qui court sur le sentier avec un bout de bois dans la gueule, ce qu'on voit de 00:44 à 00:48. Les citations [40-56 s] tombent dans les blocs A de la preuve requise. En revanche, « probabl…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "juge:cuisine:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "ae2ff00952746ccb2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589296051,
+      "queuedAt": 1792589296049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cuisine",
+      "promptPreview": "Tu es le juge 3, indépendant, de réponses d'un compagnon de visionnage, vidéo « cuisine ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cuisine.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur so…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589390083,
+      "tokens": 82085,
+      "toolCalls": 8,
+      "durationMs": 94032,
+      "resultPreview": "{\"video\":\"cuisine\",\"scores\":[{\"textId\":\"36f0c898fb\",\"questionId\":\"cuisine-06\",\"score\":2,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"Frémissement sans ébullition et feu moyen justes (08:54-08:57). La cuisson à couvert manque. La durée est donnée en fourchette « deux à trois heures » : la grille la traite comme une confusion entre 2 h et 3 h, pas comme une invention…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "juge:cnrs:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation",
+      "agentId": "ac616639da69d4f78",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792589299666,
+      "queuedAt": 1792589299665,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs",
+      "promptPreview": "Tu es le juge 3, indépendant, de réponses d'un compagnon de visionnage, vidéo « cnrs ». Notation à l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-e1e2/a-noter-cnrs.json (questions et réponses anonymisées ; « insufficient » = abstention du système ;\n« json-invalide » = sortie mal formée, à noter sur son cont…",
+      "promptFramed": true,
+      "lastProgressAt": 1792589333483,
+      "tokens": 74193,
+      "toolCalls": 6,
+      "durationMs": 33816,
+      "resultPreview": "{\"video\":\"cnrs\",\"scores\":[{\"textId\":\"a1de900d77\",\"questionId\":\"cnrs-05\",\"score\":1,\"invention\":false,\"abstention\":\"none\",\"temporalEvidenceOk\":\"yes\",\"rationale\":\"La réponse ne dit pas ce que le modèle apprend. Elle ne parle ni d'apprendre à parler et à aligner des mots, ni des exercices de complétion (mot manquant, trous), ni du fait qu'il apprend sans le sens. Elle donne le modèle de fondation, ave…"
+    }
+  ],
+  "totalTokens": 1523552,
+  "totalToolCalls": 126
+}

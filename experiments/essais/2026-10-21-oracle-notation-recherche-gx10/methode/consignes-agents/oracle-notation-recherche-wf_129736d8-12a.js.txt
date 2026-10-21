@@ -1,0 +1,270 @@
+export const meta = {
+  name: 'oracle-notation-recherche',
+  description: 'Automated oracle v2 from media, blind scoring of 150 existing answers, and paper-grounded research on relevance/speed',
+  phases: [
+    { title: 'Oracle', detail: 'two independent media reviewers per video, then an adjudicator' },
+    { title: 'Notation', detail: 'two blind judges per video, a third on disagreements' },
+    { title: 'Recherche', detail: 'three literature axes under the researcher role, then a synthesis' },
+  ],
+}
+
+const A = args
+const MAX = 4
+let active = 0
+const waiting = []
+async function limited(fn) {
+  if (active >= MAX) { await new Promise(r => waiting.push(r)) } else { active++ }
+  try { return await fn() } finally { const next = waiting.shift(); if (next) next(); else active-- }
+}
+
+const VIDEOS = [
+  { key: 'kennedy', fiche: 'kennedy', lang: 'anglais', transcript: true, note: 'Discours de Kennedy à Rice (extrait de 7 min).' },
+  { key: 'spring', fiche: 'spring', lang: 'sans dialogue', transcript: false, note: 'Court métrage d\'animation sans dialogue : seules les images comptent.' },
+  { key: 'cnrs', fiche: 'cnrs-apprentissage', lang: 'français', transcript: true, note: 'Cours CNRS avec texte à l\'écran (diapositives).' },
+  { key: 'cuisine', fiche: 'boeuf-bourguignon', lang: 'français', transcript: true, note: 'Recette du bœuf bourguignon.' },
+  { key: 'tears', fiche: 'tears-of-steel', lang: 'anglais', transcript: true, note: 'Fiction ; SRT officiel disponible : ' + A.repo + '/experiments/gx10/evaluation/preuves/en/TOS-en.srt (à aligner au fichier).' },
+  { key: 'artemis', fiche: 'artemis', lang: 'anglais', transcript: true, note: 'Extrait 2:50:00–3:25:00 du direct NASA : temps local = temps source − 2:50:00. Une frise NASA (T+, étapes LIFTOFF…MECO) est visible à l\'écran.' },
+]
+
+const COMMON = `
+Contexte : TVLens, compagnon de visionnage. Des questions sont posées pendant la lecture d'une vidéo ; un système local
+(blocs de 8 s : ASR Whisper + 5 images par bloc décrites par un VLM, puis un LLM répond) doit répondre. Dépôt :
+${A.repo} (lecture seule : ne modifie aucun fichier du dépôt, aucun git). Écris seulement dans ton dossier de travail.
+Langue de travail et de rendu : français (les citations restent dans leur langue).
+
+Matériaux de référence (indépendants du système évalué) :
+- Transcriptions complètes Whisper large-v3-turbo (CPU), temps absolus du fichier : ${A.lab}/oracle/transcriptions/<video>.transcript.txt
+  (pas de transcription pour spring). C'est une transcription automatique : recoupe avec les images quand c'est douteux.
+- Images de référence toutes les 2 s (640 px) : ${A.media}/frames/<video>/NNNNN.jpg, l'image n ≈ (n−1)×2 s.
+  Pour voir une plage : python3 -I ${A.lab}/planche.py --frames ${A.media}/frames/<video> --from <s> --to <s> [--every 4]
+  --out <ton dossier>/x.jpg puis ouvre l'image avec l'outil Read (24 images max par planche).
+- Fiches v1 provisoires (attendus, fenêtres de preuve, consignes) : ${A.repo}/experiments/essais/2026-10-21-relecture-fiches-gx10/snapshots/
+  et questions dans ${A.repo}/experiments/gx10/evaluation/questions/<fiche>.json ; audit indépendant :
+  ${A.repo}/experiments/essais/2026-10-21-relecture-fiches-gx10/audit-independant.md ; preuves déjà relevées pour 8 questions :
+  ${A.lab}/../preuves-medias-brouillon.md.
+
+Disponibilité au moment de la pose (règle commune) : les blocs sont [8k, 8k+8) s depuis le début du fichier. Un bloc n'est traité
+qu'après sa clôture. Soit E la fin du dernier bloc clos à la pose et Δ = pose − fin du bloc qui contient le fait. La parole d'un
+bloc est disponible si Δ ≥ 3 s ; l'image d'un bloc si Δ ≥ 10 s (le VLM met ~7–8 s). Un fait dont le bloc se clôt à la pose ou
+après (Δ < 3 s) n'est pas disponible. Classe chaque fait : A = disponible (parole Δ≥3 ou image Δ≥10), B = incertain
+(image avec 3 ≤ Δ < 10), C = indisponible.
+`
+
+const ORACLE_SCHEMA = {
+  type: 'object',
+  properties: {
+    video: { type: 'string' },
+    questions: { type: 'array', items: { type: 'object', properties: {
+      questionId: { type: 'string' }, askedQuestion: { type: 'string' }, poseS: { type: 'number' },
+      v1Status: { type: 'string', enum: ['confirmed', 'corrected', 'flawed'] },
+      answerableAtPose: { type: 'string', enum: ['yes', 'partial', 'no'] },
+      requiredFacts: { type: 'array', items: { type: 'object', properties: {
+        fact: { type: 'string' }, startS: { type: 'number' }, endS: { type: 'number' },
+        modality: { type: 'string', enum: ['speech', 'visual', 'onscreen-text'] },
+        availability: { type: 'string', enum: ['A', 'B', 'C'] } }, required: ['fact', 'startS', 'endS', 'modality', 'availability'] } },
+      optionalFacts: { type: 'array', items: { type: 'object', properties: {
+        fact: { type: 'string' }, startS: { type: 'number' }, endS: { type: 'number' },
+        modality: { type: 'string' }, availability: { type: 'string' } }, required: ['fact'] } },
+      inventionTraps: { type: 'array', items: { type: 'string' } },
+      abstentionPolicy: { type: 'string' },
+      rubric: { type: 'object', properties: { s3: { type: 'string' }, s2: { type: 'string' }, s1: { type: 'string' }, s0: { type: 'string' } },
+        required: ['s3', 's2', 's1', 's0'] },
+      v1Difference: { type: 'string' },
+      futureRecommendation: { type: 'string' },
+      confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+    }, required: ['questionId', 'askedQuestion', 'poseS', 'v1Status', 'answerableAtPose', 'requiredFacts', 'inventionTraps',
+      'abstentionPolicy', 'rubric', 'v1Difference', 'confidence'] } },
+    notes: { type: 'string' },
+  },
+  required: ['video', 'questions'],
+}
+
+const JUDGE_SCHEMA = {
+  type: 'object',
+  properties: {
+    video: { type: 'string' },
+    scores: { type: 'array', items: { type: 'object', properties: {
+      textId: { type: 'string' }, questionId: { type: 'string' }, score: { type: 'number', enum: [0, 1, 2, 3] },
+      invention: { type: 'boolean' }, abstention: { type: 'string', enum: ['none', 'justified', 'unjustified'] },
+      temporalEvidenceOk: { type: 'string', enum: ['yes', 'no', 'na'] }, factsCovered: { type: 'array', items: { type: 'string' } },
+      rationale: { type: 'string' } }, required: ['textId', 'questionId', 'score', 'invention', 'abstention', 'rationale'] } },
+  },
+  required: ['video', 'scores'],
+}
+
+function reviewerPrompt(v, which) {
+  return `${COMMON}
+Tu es le relecteur ${which} (indépendant de l'autre relecteur) de l'oracle v2 de la vidéo « ${v.key} » (${v.lang}). ${v.note}
+Dossier de travail : ${A.lab}/oracle/travail/${v.key}-${which}/ (crée-le).
+Fiche v1 : snapshots/${v.fiche}.* ; questions : ${v.fiche}.json. Il y a exactement cinq questions évaluées : celles du fichier
+${A.lab}/notation/a-noter-${v.key}.json (lis UNIQUEMENT les champs questionId, atMs et question de ce fichier ; n'en lis PAS les
+réponses — tu ne dois jamais voir une réponse d'un modèle évalué).
+
+INTERDIT : ouvrir des campaign.json, des dossiers rapatriements/, annotation*, correspondance*, cle-*, membres-*, ou toute sortie de
+TVLens. L'attendu se construit depuis les médias seulement.
+
+Pour chaque question TELLE QU'ELLE A ÉTÉ POSÉE (texte et instant inchangés) :
+1. Retrouve dans la transcription et les images ce qui répond, avec horodatage précis ; regarde les images autour (planches).
+2. Liste les faits requis (ceux qu'une bonne réponse doit contenir, disponibles A) et optionnels (B, ou détails), avec modalité et
+   disponibilité selon la règle commune. Un fait C ne peut pas être requis.
+3. Dis si la question est répondable à la pose (yes/partial/no) ; si non, la politique d'abstention attendue.
+4. Liste les inventions typiques à sanctionner (faits plausibles mais faux, anticipations, connaissances externes).
+5. Écris une grille 0–3 propre à la question (s3, s2, s1, s0), en tenant compte de la langue de la question.
+6. Compare à la fiche v1 : confirmed, corrected (attendu ajusté) ou flawed (question mal posée à cet instant), et explique.
+7. Recommandation pour une future version (pose, formulation), sans l'appliquer à la notation.
+Sois précis et vérifie tes horodatages ; indique ta confiance.`
+}
+
+function adjudicatorPrompt(v, r1, r2) {
+  return `${COMMON}
+Tu es l'arbitre de l'oracle v2 de la vidéo « ${v.key} » (${v.lang}). ${v.note}
+Deux relecteurs indépendants ont produit les propositions ci-dessous. Réconcilie-les en revenant aux médias pour chaque point de
+désaccord (horodatage, fait requis ou non, disponibilité, grille). Ne vois aucune réponse de modèle évalué (mêmes interdits que les
+relecteurs : pas de campaign.json, rapatriements, annotation, correspondance, cle-*, membres-*). Rends l'oracle final des cinq
+questions, au même format. Dans notes, liste les désaccords et comment tu les as tranchés. Dossier : ${A.lab}/oracle/travail/${v.key}-arbitre/
+
+Relecteur 1 :
+${JSON.stringify(r1)}
+
+Relecteur 2 :
+${JSON.stringify(r2)}`
+}
+
+function judgePrompt(v, oracle, which, subset) {
+  const scope = subset ? `Ne note QUE ces textId : ${JSON.stringify(subset)}.` : 'Note tous les textes du paquet.'
+  return `Tu es le juge ${which}, indépendant, de réponses d'un compagnon de visionnage, vidéo « ${v.key} ». Notation à l'aveugle.
+Paquet : ${A.lab}/notation/a-noter-${v.key}.json (questions et réponses anonymisées ; les réponses de type « insufficient » sont
+des abstentions du système). ${scope}
+INTERDIT : ouvrir cle-*, membres-*, correspondance*, campaign.json, rapatriements, ou chercher d'où vient une réponse. Ne lis pas le
+dépôt TVLens. Tu peux vérifier un fait douteux dans la transcription ${A.lab}/oracle/transcriptions/${v.key}.transcript.txt ou les
+images ${A.media}/frames/${v.key}/ (outil planche : python3 -I ${A.lab}/planche.py --frames … --from s --to s --out f.jpg).
+
+Oracle v2 de la vidéo (faits requis/optionnels, disponibilité à la pose, pièges d'invention, politique d'abstention, grille) :
+${JSON.stringify(oracle)}
+
+Pour chaque texte : score 0–3 selon la grille de sa question ; invention=true si la réponse affirme un fait faux ou non soutenu par
+le média (une anticipation de ce qui n'a pas encore eu lieu est une invention) ; abstention : none si le texte répond,
+justified si abstention alors que la question n'est pas répondable à la pose (selon l'oracle), unjustified sinon (score 0) ;
+temporalEvidenceOk : les citations (startMs/endMs) pointent-elles vers des moments qui soutiennent la réponse (na si aucune) ;
+factsCovered ; rationale courte et précise. Une réponse dans une autre langue que la question n'est pas fausse pour autant, mais
+note-le. Sois constant entre les réponses d'une même question.`
+}
+
+const RESEARCHER = A.researcher
+const RESEARCH_SCHEMA = {
+  type: 'object',
+  properties: {
+    axis: { type: 'string' },
+    proposals: { type: 'array', items: { type: 'object', properties: {
+      id: { type: 'string' }, title: { type: 'string' }, mechanism: { type: 'string' },
+      papers: { type: 'array', items: { type: 'object', properties: {
+        ref: { type: 'string' }, title: { type: 'string' }, year: { type: 'number' }, keyClaim: { type: 'string' }, url: { type: 'string' } },
+        required: ['ref', 'title', 'keyClaim'] } },
+      expectedLatencyEffect: { type: 'string' }, expectedRelevanceEffect: { type: 'string' },
+      testableWithoutAppChange: { type: 'boolean' }, experiment: { type: 'string' }, levers: { type: 'string' },
+      gx10Cost: { type: 'string' }, risks: { type: 'string' }, evidenceLevel: { type: 'string' }, priority: { type: 'number' } },
+      required: ['id', 'title', 'mechanism', 'papers', 'expectedLatencyEffect', 'expectedRelevanceEffect',
+        'testableWithoutAppChange', 'experiment', 'risks', 'priority'] } },
+    notes: { type: 'string' },
+  },
+  required: ['axis', 'proposals'],
+}
+
+const AXES = [
+  { key: 'questions', title: 'Latence de la réponse aux questions (LLM local)',
+    focus: `MoE à peu de paramètres actifs, prédiction multi-jetons (MTP) et décodage spéculatif, formats FP4/NVFP4 sur Blackwell,
+réutilisation du cache de préfixe (KV) et ordre stable du contexte, compression/sélection du contexte (RAG ciblé, LLMLingua…),
+nombre d'allers-retours d'outils, streaming du premier jeton, routage petit/grand modèle selon la question. Pour chaque piste :
+gain attendu sur un GB10 limité par la bande passante (~273 Go/s), risque sur la pertinence et l'usage d'outils / sortie JSON.` },
+  { key: 'perception', title: 'Coût de la perception continue par bloc (VLM)',
+    focus: `Sélection adaptative d'images (keyframes, changement de plan, AKS, VidF4…), réduction de jetons visuels (FastV, ToMe,
+VisionZip, PruMerge…), résolution, VLM plus petits ou MoE (Qwen3-VL 2B/4B/8B/30B-A3B, Gemma 4), descriptions plus courtes
+(num_predict), cadence événementielle, VLM de streaming (StreamingVLM, VideoLLM-online, Dispider, Flash-VStream), OCR léger pour
+le texte à l'écran. Objectif : tenir la cadence de 8 s (aujourd'hui médiane 7,3 s, pertes par retard) sans perdre OCR/actions.` },
+  { key: 'memoire-asr', title: 'Mémoire, rappel ancien et transcription',
+    focus: `Mémoire d'événements horodatés et récupération à la question pour les faits anciens (VideoStreaming, ReKV, StreamForest,
+MovieChat, MA-LMM, Flash-VStream), résumés hiérarchiques ; contexte limité vs rappel ; ASR : Whisper turbo/small/base, CPU vs GPU
+pour réduire la contention, Parakeet/Canary, VAD, effet de la qualité ASR sur la réponse. Les échecs observés : spring-06 (fait
+visuel ancien), cuisine-07 (ordre d'actions dont la preuve audio est nette), kennedy-06 (preuve dans le dernier bloc).` },
+]
+
+function researchPrompt(axis) {
+  return `${RESEARCHER}
+
+---
+Tu es exécuté comme sous-agent Claude du rôle researcher (défini pour Codex dans ${A.repo}/.codex/agents/researcher.toml ; ses
+consignes ci-dessus s'appliquent ; les rôles Codex comme luna_worker ne sont pas disponibles : ne délègue pas). Lis la skill
+${A.repo}/.agents/skills/research-autoresearch/SKILL.md et celles utiles à ton axe sous ${A.repo}/.agents/skills/.
+Lis le contexte commun : ${A.lab}/contexte-recherche.md. Lecture seule sur le dépôt ; écris dans ${A.lab}/recherche/${axis.key}/.
+
+Ton axe : ${axis.title}.
+${axis.focus}
+
+Méthode : utilise les outils arXiv (charge-les avec ToolSearch, requête « arxiv » : search_papers, get_abstract, read_paper_section…)
+et la recherche web pour des sources primaires récentes (2023–2026), documentation Ollama/llama.cpp/whisper.cpp via context7 si utile.
+Lis les sections méthode/résultats pertinentes, pas seulement les titres. Distingue ce que dit le papier (matériel, modèle, banc)
+de ce qui est transposable au GB10 et à TVLens. Pour chaque proposition, donne un essai concret faisable cette semaine sur le GX10,
+de préférence sans modifier l'application (leviers listés dans le contexte), avec le coût GPU estimé. Classe par priorité 1 (faire
+tout de suite) à 5. 5 à 9 propositions, solides plutôt que nombreuses.`
+}
+
+function synthesisPrompt(results) {
+  return `${RESEARCHER}
+
+---
+Sous-agent Claude du rôle researcher. Contexte commun : ${A.lab}/contexte-recherche.md ; programme préenregistré :
+${A.lab}/PROGRAMME.md. Trois revues indépendantes ci-dessous. Produis une synthèse en français, écrite dans
+${A.lab}/recherche/SYNTHESE.md, puis rends son texte intégral comme résultat. Contenu :
+1. Programme d'essais classé pour les 48 h de GX10 restantes : pour chaque essai, hypothèse, variation unique, référence,
+   métriques, coût GPU, condition d'arrêt, et ce qu'il permettra de décider. Respecte « un seul essai GPU à la fois ».
+2. Trois à cinq propositions d'architecture (au-delà des réglages) fondées sur les papiers, chacune avec : schéma textuel des
+   composants, mécanisme, gains attendus et pourquoi sur GB10, risques pour la pertinence, papiers (références exactes), et un
+   plan de validation incrémental (prototype par proxy/rejeu → essai de bout en bout).
+3. Ce qu'il ne faut PAS faire maintenant et pourquoi.
+Ne présente aucune piste comme validée. Cite les références (arXiv id ou URL).
+
+Revues :
+${JSON.stringify(results)}`
+}
+
+// Oracle → judging pipeline per video, research in parallel; all agents share the 4-slot limiter.
+const oracleAndScores = pipeline(
+  VIDEOS,
+  v => parallel([1, 2].map(n => () =>
+    limited(() => agent(reviewerPrompt(v, n), { label: `oracle:${v.key}:r${n}`, phase: 'Oracle', schema: ORACLE_SCHEMA })))),
+  (reviews, v) => {
+    const [r1, r2] = reviews
+    if (!r1 || !r2) return null
+    return limited(() => agent(adjudicatorPrompt(v, r1, r2), { label: `oracle:${v.key}:arbitre`, phase: 'Oracle', schema: ORACLE_SCHEMA }))
+  },
+  async (oracle, v) => {
+    if (!oracle) return null
+    const judges = await parallel([1, 2].map(n => () =>
+      limited(() => agent(judgePrompt(v, oracle, n, null), { label: `juge:${v.key}:${n}`, phase: 'Notation', schema: JUDGE_SCHEMA }))))
+    const [j1, j2] = judges
+    let j3 = null
+    if (j1 && j2) {
+      const s2 = new Map(j2.scores.map(s => [s.textId, s]))
+      const disputed = j1.scores.filter(s => {
+        const o = s2.get(s.textId)
+        return !o || Math.abs(o.score - s.score) >= 2 || o.invention !== s.invention
+      }).map(s => s.textId)
+      if (disputed.length) {
+        log(`${v.key}: ${disputed.length} désaccord(s) tranché(s) par un troisième juge`)
+        j3 = await limited(() => agent(judgePrompt(v, oracle, 3, disputed), { label: `juge:${v.key}:3`, phase: 'Notation', schema: JUDGE_SCHEMA }))
+      }
+    }
+    return { video: v.key, oracle, judges: [j1, j2, j3] }
+  },
+)
+
+const research = (async () => {
+  const reviews = await parallel(AXES.map(axis => () =>
+    limited(() => agent(researchPrompt(axis), { label: `recherche:${axis.key}`, phase: 'Recherche', schema: RESEARCH_SCHEMA }))))
+  const ok = reviews.filter(Boolean)
+  const synthesis = ok.length ? await limited(() => agent(synthesisPrompt(ok), { label: 'recherche:synthese', phase: 'Recherche' })) : null
+  return { reviews: ok, synthesis }
+})()
+
+const [scored, researched] = await Promise.all([oracleAndScores, research])
+return { scored: scored.filter(Boolean), research: researched }

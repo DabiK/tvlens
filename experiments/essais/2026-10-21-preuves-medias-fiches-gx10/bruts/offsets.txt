@@ -1,0 +1,2 @@
+kennedy-03 offset=90
+kennedy-08 offset=315

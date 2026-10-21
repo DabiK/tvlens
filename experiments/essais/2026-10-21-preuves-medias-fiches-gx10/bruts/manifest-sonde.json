@@ -1,0 +1,3473 @@
+{
+ "startedAtUtc": "2026-10-21T10:02:40Z",
+ "gpuUsed": false,
+ "loadavgStart": "1.33 1.30 1.78 3/1337 2732477",
+ "inputs": {
+  "kennedy": {
+   "file": "kennedy-rice-7min.mp4",
+   "sha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611"
+  },
+  "cuisine": {
+   "file": "05-boeuf-bourguignon.mp4",
+   "sha256": "ec9d70f64ea55dc13a6e5c162a22ce88a383b65d97c442326e6a5045d7c478fd"
+  },
+  "tears": {
+   "file": "08-tears-of-steel.mov",
+   "sha256": "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f"
+  },
+  "artemis": {
+   "file": "09-artemis-lancement.mp4",
+   "sha256": "6ac25c124375fdac03a2a3e2bd599ea3516a75e9fd03bb193de18d6575297710"
+  },
+  "spring": {
+   "file": "spring.mp4",
+   "sha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a"
+  },
+  "model": {
+   "file": "ggml-large-v3-turbo.bin",
+   "sha256": "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69"
+  }
+ },
+ "audio": [
+  {
+   "questionId": "kennedy-06",
+   "media": "kennedy",
+   "language": "en",
+   "windowS": [
+    225,
+    285
+   ],
+   "poseS": 272,
+   "segments": [
+    {
+     "startS": 225.0,
+     "endS": 226.92,
+     "text": "We mean to be a part of it.",
+     "afterPose": false
+    },
+    {
+     "startS": 226.92,
+     "endS": 227.98,
+     "text": "We mean to lead it.",
+     "afterPose": false
+    },
+    {
+     "startS": 239.56,
+     "endS": 243.96,
+     "text": "For the eyes of the world now look into space,",
+     "afterPose": false
+    },
+    {
+     "startS": 243.96,
+     "endS": 247.62,
+     "text": "to the moon, and to the planets beyond.",
+     "afterPose": false
+    },
+    {
+     "startS": 247.62,
+     "endS": 251.06,
+     "text": "And we have vowed that we shall not",
+     "afterPose": false
+    },
+    {
+     "startS": 251.06,
+     "endS": 255.88,
+     "text": "see it governed by a hostile flag of conquest,",
+     "afterPose": false
+    },
+    {
+     "startS": 255.88,
+     "endS": 259.72,
+     "text": "but by a banner of freedom and peace.",
+     "afterPose": false
+    },
+    {
+     "startS": 259.72,
+     "endS": 263.42,
+     "text": "We have vowed that we shall not see space",
+     "afterPose": false
+    },
+    {
+     "startS": 263.42,
+     "endS": 266.38,
+     "text": "filled with weapons of mass destruction,",
+     "afterPose": false
+    },
+    {
+     "startS": 266.38,
+     "endS": 270.3,
+     "text": "but with instruments of knowledge and understanding.",
+     "afterPose": false
+    },
+    {
+     "startS": 270.3,
+     "endS": 275.84,
+     "text": "Yet the vows of this nation can only be fulfilled",
+     "afterPose": false
+    },
+    {
+     "startS": 275.84,
+     "endS": 279.44,
+     "text": "if we in this nation are first, and therefore",
+     "afterPose": true
+    },
+    {
+     "startS": 279.44,
+     "endS": 285.0,
+     "text": "we intend to be first.",
+     "afterPose": true
+    }
+   ]
+  },
+  {
+   "questionId": "cuisine-07",
+   "media": "cuisine",
+   "language": "fr",
+   "windowS": [
+    525,
+    665
+   ],
+   "poseS": 656,
+   "segments": [
+    {
+     "startS": 525.0,
+     "endS": 528.12,
+     "text": "Aussi continuer à diffuser ses parfums.",
+     "afterPose": false
+    },
+    {
+     "startS": 529.18,
+     "endS": 533.14,
+     "text": "On couvre et c'est parti pour deux heures de cuisson.",
+     "afterPose": false
+    },
+    {
+     "startS": 533.72,
+     "endS": 535.7,
+     "text": "Il ne faut pas que ça boue, il faut que ça frémisse.",
+     "afterPose": false
+    },
+    {
+     "startS": 536.26,
+     "endS": 537.84,
+     "text": "Donc, feu moyen.",
+     "afterPose": false
+    },
+    {
+     "startS": 538.56,
+     "endS": 539.12,
+     "text": "A tout à l'heure.",
+     "afterPose": false
+    },
+    {
+     "startS": 540.9,
+     "endS": 543.0,
+     "text": "Trois heures de cuisson.",
+     "afterPose": false
+    },
+    {
+     "startS": 544.1,
+     "endS": 544.88,
+     "text": "Deux réductions.",
+     "afterPose": false
+    },
+    {
+     "startS": 546.22,
+     "endS": 550.06,
+     "text": "Le moment est venu de terminer ce bourguignon.",
+     "afterPose": false
+    },
+    {
+     "startS": 550.9,
+     "endS": 553.0,
+     "text": "Alors, les petites choses à faire pour terminer le bourguignon.",
+     "afterPose": false
+    },
+    {
+     "startS": 553.0,
+     "endS": 556.0,
+     "text": "La première chose, c'est d'enlever le bouquet garni",
+     "afterPose": false
+    },
+    {
+     "startS": 556.0,
+     "endS": 559.6,
+     "text": "qui pourrait être désagréable au palais de certains.",
+     "afterPose": false
+    },
+    {
+     "startS": 561.62,
+     "endS": 565.46,
+     "text": "Ensuite, on va baisser le feu au maximum.",
+     "afterPose": false
+    },
+    {
+     "startS": 568.56,
+     "endS": 572.16,
+     "text": "Et on va ajouter nos champignons",
+     "afterPose": false
+    },
+    {
+     "startS": 572.16,
+     "endS": 574.92,
+     "text": "qu'on a préalablement cuits à blanc.",
+     "afterPose": false
+    },
+    {
+     "startS": 576.16,
+     "endS": 577.36,
+     "text": "Il y a une vidéo pour ça.",
+     "afterPose": false
+    },
+    {
+     "startS": 581.0,
+     "endS": 583.52,
+     "text": "On mélange.",
+     "afterPose": false
+    },
+    {
+     "startS": 597.7,
+     "endS": 599.3,
+     "text": "On laisse nos quelques minutes",
+     "afterPose": false
+    },
+    {
+     "startS": 599.3,
+     "endS": 602.0,
+     "text": "pour que les champignons se réchauffent",
+     "afterPose": false
+    },
+    {
+     "startS": 602.76,
+     "endS": 605.64,
+     "text": "à la température du plat.",
+     "afterPose": false
+    },
+    {
+     "startS": 609.84,
+     "endS": 612.3,
+     "text": "Une fois que les champignons sont à température,",
+     "afterPose": false
+    },
+    {
+     "startS": 612.3,
+     "endS": 616.56,
+     "text": "on va ajouter délicatement nos petits oignons cuits à brin.",
+     "afterPose": false
+    },
+    {
+     "startS": 617.38,
+     "endS": 619.5,
+     "text": "Là aussi, vous avez une vidéo qui vous explique.",
+     "afterPose": false
+    },
+    {
+     "startS": 622.5,
+     "endS": 626.12,
+     "text": "Et là, très important de mélanger,",
+     "afterPose": false
+    },
+    {
+     "startS": 626.24,
+     "endS": 629.16,
+     "text": "mais alors de façon extrêmement douce",
+     "afterPose": false
+    },
+    {
+     "startS": 629.16,
+     "endS": 632.82,
+     "text": "parce que la viande est cuite,",
+     "afterPose": false
+    },
+    {
+     "startS": 633.62,
+     "endS": 637.08,
+     "text": "mais les petits oignons pourraient se casser et se défaire",
+     "afterPose": false
+    },
+    {
+     "startS": 637.08,
+     "endS": 638.4,
+     "text": "et ça va vraiment saturer le plat.",
+     "afterPose": false
+    },
+    {
+     "startS": 639.4,
+     "endS": 640.46,
+     "text": "Ça ne serait pas très cool.",
+     "afterPose": false
+    },
+    {
+     "startS": 642.4,
+     "endS": 644.44,
+     "text": "On laisse quelques minutes",
+     "afterPose": false
+    },
+    {
+     "startS": 644.44,
+     "endS": 646.08,
+     "text": "pour que ça réchauffe.",
+     "afterPose": false
+    },
+    {
+     "startS": 647.5,
+     "endS": 648.86,
+     "text": "Juste le temps de débarrasser.",
+     "afterPose": false
+    },
+    {
+     "startS": 650.3,
+     "endS": 650.48,
+     "text": "Voilà.",
+     "afterPose": false
+    },
+    {
+     "startS": 650.72,
+     "endS": 654.48,
+     "text": "Normalement, tout est à peu près à la bonne température",
+     "afterPose": false
+    },
+    {
+     "startS": 654.48,
+     "endS": 656.0,
+     "text": "et on va faire quelque chose d'important.",
+     "afterPose": false
+    },
+    {
+     "startS": 656.84,
+     "endS": 657.52,
+     "text": "On va goûter",
+     "afterPose": true
+    },
+    {
+     "startS": 657.52,
+     "endS": 660.66,
+     "text": "pour savoir au niveau de l'assaisonnement",
+     "afterPose": true
+    },
+    {
+     "startS": 660.66,
+     "endS": 661.86,
+     "text": "si on est juste",
+     "afterPose": true
+    },
+    {
+     "startS": 661.86,
+     "endS": 665.0,
+     "text": "ou si on peut remettre un petit peu de sel ou de poire.",
+     "afterPose": true
+    }
+   ]
+  },
+  {
+   "questionId": "tears-07",
+   "media": "tears",
+   "language": "en",
+   "windowS": [
+    490,
+    555
+   ],
+   "poseS": 552,
+   "segments": [
+    {
+     "startS": 490.0,
+     "endS": 505.62,
+     "text": "Memory overrated. 90%!",
+     "afterPose": false
+    },
+    {
+     "startS": 505.62,
+     "endS": 508.24,
+     "text": "Captain, we have to abort!",
+     "afterPose": false
+    },
+    {
+     "startS": 518.66,
+     "endS": 533.66,
+     "text": "The world's changed, Celia.",
+     "afterPose": false
+    },
+    {
+     "startS": 533.66,
+     "endS": 536.66,
+     "text": "Maybe we can, too.",
+     "afterPose": false
+    },
+    {
+     "startS": 536.66,
+     "endS": 540.66,
+     "text": "Memory override complete!",
+     "afterPose": false
+    },
+    {
+     "startS": 547.32,
+     "endS": 552.32,
+     "text": "The world's changed, Celia.",
+     "afterPose": false
+    },
+    {
+     "startS": 552.32,
+     "endS": 555.0,
+     "text": "The world's changed, Celia.",
+     "afterPose": true
+    }
+   ]
+  },
+  {
+   "questionId": "artemis-07",
+   "media": "artemis",
+   "language": "en",
+   "windowS": [
+    2020,
+    2100
+   ],
+   "poseS": 2096,
+   "segments": [
+    {
+     "startS": 2020.0,
+     "endS": 2026.24,
+     "text": "About a minute and a half now until that core stage main",
+     "afterPose": false
+    },
+    {
+     "startS": 2026.24,
+     "endS": 2027.82,
+     "text": "engine cutoff time.",
+     "afterPose": false
+    },
+    {
+     "startS": 2027.82,
+     "endS": 2045.24,
+     "text": "Our four core stage engines continue to fire maximum thrust.",
+     "afterPose": false
+    },
+    {
+     "startS": 2045.24,
+     "endS": 2047.77,
+     "text": "Coming up on 7 minutes since launch today now traveling",
+     "afterPose": false
+    },
+    {
+     "startS": 2047.77,
+     "endS": 2050.86,
+     "text": "over 12,800 miles per hour, 563 miles",
+     "afterPose": false
+    },
+    {
+     "startS": 2050.86,
+     "endS": 2051.86,
+     "text": "downrange.",
+     "afterPose": false
+    },
+    {
+     "startS": 2051.86,
+     "endS": 2063.08,
+     "text": "Again still quiet here in Mission Control Houston.",
+     "afterPose": false
+    },
+    {
+     "startS": 2063.08,
+     "endS": 2066.51,
+     "text": "As we prepare for main engine cutoff the four RS-25 engines",
+     "afterPose": false
+    },
+    {
+     "startS": 2066.51,
+     "endS": 2070.48,
+     "text": "are beginning to throttle down.",
+     "afterPose": false
+    },
+    {
+     "startS": 2070.48,
+     "endS": 2084.58,
+     "text": "30 seconds now until core stage main engine cutoff.",
+     "afterPose": false
+    },
+    {
+     "startS": 2084.58,
+     "endS": 2093.14,
+     "text": "All four engines continue to throttle down.",
+     "afterPose": false
+    },
+    {
+     "startS": 2093.14,
+     "endS": 2098.73,
+     "text": "Now 7 minutes 45 seconds into the flight traveling over 16,000",
+     "afterPose": false
+    },
+    {
+     "startS": 2098.73,
+     "endS": 2100.0,
+     "text": "miles per hour.",
+     "afterPose": true
+    }
+   ]
+  }
+ ],
+ "frames": [
+  {
+   "questionId": "cuisine-07",
+   "timeS": 540,
+   "file": "cuisine-07-0540s.jpg",
+   "sha256": "fba59207c4fd4027a6efe948a177b96cccb8c8c588ce1f9e2610a4037ea789f5"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 545,
+   "file": "cuisine-07-0545s.jpg",
+   "sha256": "67a5d414eac30fdf72f0146954299e32d1d79aa2ea12f08eef0193a992ff0721"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 550,
+   "file": "cuisine-07-0550s.jpg",
+   "sha256": "76a61303d0ae8f3a3334636c10ddfdbab80db7f3ca306dfedaab13d8b8114c03"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 555,
+   "file": "cuisine-07-0555s.jpg",
+   "sha256": "459c77b49ee464037c1c4261dc833e7ac5b73799ca2cb668494d8c6012ecc0e8"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 560,
+   "file": "cuisine-07-0560s.jpg",
+   "sha256": "03b2e93ed4e1670b7484af2c23c962ba9bc4fca6cdfcbd9e57f8d3e009ca3723"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 565,
+   "file": "cuisine-07-0565s.jpg",
+   "sha256": "36a272566643b5b23f2f4fd2e6e9ffbb719f9c3c49164a04da392a861408866f"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 570,
+   "file": "cuisine-07-0570s.jpg",
+   "sha256": "5a41a169c199cc34dd69714f83be8c4aa4094b4ccda19c914dd79412c5fa9ed4"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 575,
+   "file": "cuisine-07-0575s.jpg",
+   "sha256": "829a066b3fb2e06be7cc36a795c56921085d8ec7a7af6b42f8896226256b6266"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 580,
+   "file": "cuisine-07-0580s.jpg",
+   "sha256": "0832c2a61cb424671d2e235d277965433a15b5a9439f110a29d359c61b3c952b"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 585,
+   "file": "cuisine-07-0585s.jpg",
+   "sha256": "2a449466a6b03b367909c9b59d1feea2b4e7f82a9f5f50123d3a1a3debf6d48a"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 590,
+   "file": "cuisine-07-0590s.jpg",
+   "sha256": "a399664daf39ccffbe2806055c2ca68dfa5a44fe68ed735531a7dd0262fb5909"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 595,
+   "file": "cuisine-07-0595s.jpg",
+   "sha256": "1d6e2584e2d944dae176db97b13673aee94dbc132df063b8623228c1631c20c4"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 600,
+   "file": "cuisine-07-0600s.jpg",
+   "sha256": "b0e4ce40ac0be27abb72508c840b3677f2b047058c43b055a2ac6bd68edf428e"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 605,
+   "file": "cuisine-07-0605s.jpg",
+   "sha256": "49cae6e0f9d5aca9147f20707af864ed77de312218343766ba5fdbed668190d6"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 610,
+   "file": "cuisine-07-0610s.jpg",
+   "sha256": "706e958a1af35db369daf2e3cd9d1d627d3a61dc0f081ee6a6de6977c2d5f2dd"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 615,
+   "file": "cuisine-07-0615s.jpg",
+   "sha256": "c70217186a11125666bce0e31235ffa1efd860bf9faa49cb72df669d0454f611"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 620,
+   "file": "cuisine-07-0620s.jpg",
+   "sha256": "099c81334b6b56e58b776c61a6591d83ba28f507d4415a0e36e7afb1a7019537"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 625,
+   "file": "cuisine-07-0625s.jpg",
+   "sha256": "93b0d17d12db3a11eded964dd2e665ce361fb13dd1c993a6d0203531c1840ddc"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 630,
+   "file": "cuisine-07-0630s.jpg",
+   "sha256": "108b2083e66fe04ee7ab3e4ef0b00375cea66f6583918ec7eec3b766c3eb65f1"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 635,
+   "file": "cuisine-07-0635s.jpg",
+   "sha256": "56b63809e12911905002b965d18c53e29aaaac895b138f64b7b8967d6cfb3d76"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 640,
+   "file": "cuisine-07-0640s.jpg",
+   "sha256": "fed8ee03b1492ba0fbbf1b8cea50013ad481754cfca2bd91c973129e99bdebef"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 645,
+   "file": "cuisine-07-0645s.jpg",
+   "sha256": "9ef8efa5ab684c408073906835d967e1f7611b55051cbc238171c6d74bdc152a"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 650,
+   "file": "cuisine-07-0650s.jpg",
+   "sha256": "34282eb172b6ce328284e51f41bbb1c39b8eec3619954e29c497be09cf793c3b"
+  },
+  {
+   "questionId": "cuisine-07",
+   "timeS": 655,
+   "file": "cuisine-07-0655s.jpg",
+   "sha256": "7516de76fe4c0aae3941e3903a9eb87e69cedd50e3e93698844ff63809a0330e"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 500,
+   "file": "tears-07-0500s.jpg",
+   "sha256": "c81c4d5acdb72775b1fb7a7dd27015b6767319b63c4740a4c0b3a32084483de7"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 502,
+   "file": "tears-07-0502s.jpg",
+   "sha256": "6e3f4e7d4782e0d3ffe6611398229dce1cb30b0ad0f8e506e7f6e040d6c5348e"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 504,
+   "file": "tears-07-0504s.jpg",
+   "sha256": "d2e3acb89e33fe00985fd548ba1942c493dc5972c37049273579f9997f52f744"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 506,
+   "file": "tears-07-0506s.jpg",
+   "sha256": "1b5bab7c1849071a6ceebc35165179d89740c21b69a0405c53cc5330cd00b89f"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 508,
+   "file": "tears-07-0508s.jpg",
+   "sha256": "9d521346d485188c76e48e39e5888b0ca0fa8ea6c1b666000870d84beb73cbbc"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 510,
+   "file": "tears-07-0510s.jpg",
+   "sha256": "f7b1d914bb157a5caf3569adf21c8ab996568eb8fb0b10f11a2214ecefd1ccfe"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 512,
+   "file": "tears-07-0512s.jpg",
+   "sha256": "6aad9da50de3c3938f07d9edd839f6a17fd6d9d32c9f8e8a19f8a11ba6106510"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 514,
+   "file": "tears-07-0514s.jpg",
+   "sha256": "acba1b60617c9f340e8829d59f8b4dd9ccc078582e3070b650b1160cfb08d033"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 516,
+   "file": "tears-07-0516s.jpg",
+   "sha256": "27e5d33743017f477d17d99e8c84d62e03e74391c00b3fc3ebbdc50800372984"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 518,
+   "file": "tears-07-0518s.jpg",
+   "sha256": "46334165a70005caf1a53c4158e7b7352c0948fa0a330e75d64829ba1c025b77"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 520,
+   "file": "tears-07-0520s.jpg",
+   "sha256": "1ed66728bb5a3db0dbae5d8eaddc6f3da75c03bab9e6cd10eaf105f1ac5f939c"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 522,
+   "file": "tears-07-0522s.jpg",
+   "sha256": "fac28a3420a7e66e07ef918df04df02d45390a644833a05dd34242b280b27eac"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 524,
+   "file": "tears-07-0524s.jpg",
+   "sha256": "b814263439f8cb3a71c44eb2f9a694862e4ab781f5879b6481460a99e8ba3008"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 526,
+   "file": "tears-07-0526s.jpg",
+   "sha256": "f1c4453bea3fe7e9e0006797cd851e39e538c16b03914f9e42a4d0cd430299bd"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 528,
+   "file": "tears-07-0528s.jpg",
+   "sha256": "529e8f1aee3ebad09cb285e250d6d18e1c71951d8ccb440d643fdd03629ec136"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 530,
+   "file": "tears-07-0530s.jpg",
+   "sha256": "40af8510748208fe9a0775439945ab30b38d3838b56c584c140c77dacc3f4c67"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 532,
+   "file": "tears-07-0532s.jpg",
+   "sha256": "eafb0b011913ade125e95e1c27774aab2dc1bddef55c95487cbb630e8b8e8c11"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 534,
+   "file": "tears-07-0534s.jpg",
+   "sha256": "07f0fe82a92b0edd3e3111164493f927eebfb1abe50ac3c2af4c41eee5a354eb"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 536,
+   "file": "tears-07-0536s.jpg",
+   "sha256": "de8603d52c0c1834ef36accefabf1bce2b928d00f16eb949e2a961c0dc0f108e"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 538,
+   "file": "tears-07-0538s.jpg",
+   "sha256": "a8931d15fa9b5d1dfa1269e4e067a045a40a2d7bbd71eb02cfe881cecdf896aa"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 540,
+   "file": "tears-07-0540s.jpg",
+   "sha256": "88cc4be45edc6865268fb501473824a7fc7c34f6b8ca02d8900a351b7ca9b0b9"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 542,
+   "file": "tears-07-0542s.jpg",
+   "sha256": "173775a81471a0cefe52bf67ea6d2be67f89a470a93d5040eff731c29f3e3622"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 544,
+   "file": "tears-07-0544s.jpg",
+   "sha256": "b6f51ddc6cdfdd1c2b9bfd1d52a4f9f690b13e40f5fd0b296795c17b67c8d400"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 546,
+   "file": "tears-07-0546s.jpg",
+   "sha256": "ac06debb47113b8cc8aadbafec80657fe3342f8abb6539af6d87f1ffc085a2c7"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 548,
+   "file": "tears-07-0548s.jpg",
+   "sha256": "217833ab8be60b4a6ba692a59988fcc16d6e2139a14e0a2c24ef2acf74ebd012"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 550,
+   "file": "tears-07-0550s.jpg",
+   "sha256": "8a3b3755f6cd5d53ce5525b5fc2e5fb2c9cd34f2d5df4e6b0e1954497822d61a"
+  },
+  {
+   "questionId": "tears-07",
+   "timeS": 552,
+   "file": "tears-07-0552s.jpg",
+   "sha256": "67e38c90004c8b0812da61d7ee9ce9a66d8d47688d2676e1c5a2404f662fc5d6"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2040,
+   "file": "artemis-07-2040s.jpg",
+   "sha256": "34330108f88bbd940e0622c7b405a06b47e1bba3a5fe57fe6f64f95e0784c39c"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2048,
+   "file": "artemis-07-2048s.jpg",
+   "sha256": "1ec9c10f51edde84ee8ad1aa040bbb6989d7f09158aa9fa45117c07e534de2df"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2056,
+   "file": "artemis-07-2056s.jpg",
+   "sha256": "45e38785237f3bbe4997b513c2029982baa9553942aefafbfc7209423b7646a4"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2064,
+   "file": "artemis-07-2064s.jpg",
+   "sha256": "966aedb3a09dc1ca2da0e93f29227a65a0a17e057b1865259f34a0f7d01c351c"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2072,
+   "file": "artemis-07-2072s.jpg",
+   "sha256": "13bfba1fad1a42d9b1b4d7f95d99817d79838ce9c0ace4948bcb777d15964739"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2080,
+   "file": "artemis-07-2080s.jpg",
+   "sha256": "dfd477d8cd92256aba5b352b30ce15becd36c2d9a16a5f9498b612fec653cf20"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2088,
+   "file": "artemis-07-2088s.jpg",
+   "sha256": "1562bc707d192ba27619b2979ec3a795676df1a5d2526c6f00aa0b267ab3825b"
+  },
+  {
+   "questionId": "artemis-07",
+   "timeS": 2096,
+   "file": "artemis-07-2096s.jpg",
+   "sha256": "a09b4ce3f283ab76e237efc23da6c5bfd175dad1f779aab1d17040df2f19dbcd"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 240,
+   "file": "spring-04-0240s.jpg",
+   "sha256": "7639ef96a2cf97081f107d2dcfa19e99677dfad73ee4bec060ae41f87e7665b6"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 242,
+   "file": "spring-04-0242s.jpg",
+   "sha256": "3c075163ac6872ad7a8f56881cc890956bd409b6403c8b0c448fb1337cc8acef"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 244,
+   "file": "spring-04-0244s.jpg",
+   "sha256": "dca4a9d470fbf38d4d8cc36eda9ec4cd27a8f432c1f7954e0d2710ec61bace26"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 246,
+   "file": "spring-04-0246s.jpg",
+   "sha256": "a284033eca40f5020fc33ef3603eaf0074a69c089423042045de78839dde1e17"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 248,
+   "file": "spring-04-0248s.jpg",
+   "sha256": "d20a5ff16865a68157fecac5f0d7e016c8d170b170719f9d3a14239b8f0289a2"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 250,
+   "file": "spring-04-0250s.jpg",
+   "sha256": "57429a792c730ef4e858a0aa553c92964c638df6cd14a8215bf2dc5a64c47aba"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 252,
+   "file": "spring-04-0252s.jpg",
+   "sha256": "9e24d7c5ab655eaba3ee151a239dfe6ad10ed8432152091740a65d8c3b2a5843"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 254,
+   "file": "spring-04-0254s.jpg",
+   "sha256": "7a65fb40adf1e2de127fad614b45f6d860ef77f928b80ed6e4c2675270fe5de7"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 256,
+   "file": "spring-04-0256s.jpg",
+   "sha256": "9faa3fdd7c5f697d3b0c4949157b31b3a9c05283c2b11eab941b4fcfefa29eb2"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 258,
+   "file": "spring-04-0258s.jpg",
+   "sha256": "f810a27b484bb1897d3f175a2da85f5e09660f81b36d7c9af7672209aca22354"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 260,
+   "file": "spring-04-0260s.jpg",
+   "sha256": "887074ebbe5eca3bc319ccb62aea8bf1d36588d1b892935d72b9200e3284177d"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 262,
+   "file": "spring-04-0262s.jpg",
+   "sha256": "30b09d1379482c975f99a2d843fa2457a5f42c9a914bc328e1da2d207d4c89fe"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 264,
+   "file": "spring-04-0264s.jpg",
+   "sha256": "7b4f17878a04da65ce6fbe9b1178cdeb4e923b8b9da53cd739c0463e5126f87b"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 266,
+   "file": "spring-04-0266s.jpg",
+   "sha256": "9665e52241ddb11e4635285eed653de5cb2c8877a676029e86b9510ee1dffb4b"
+  },
+  {
+   "questionId": "spring-04",
+   "timeS": 268,
+   "file": "spring-04-0268s.jpg",
+   "sha256": "f658b7a3a569340a2a10243bc0f31e4866843baaf8a04abbb5d72f4200ce74fc"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 0,
+   "file": "spring-06-0000s.jpg",
+   "sha256": "5b1a3ce1e65e7e73e9f456ecffaa302e17f46e2879fd233be3fa23262c465390"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 15,
+   "file": "spring-06-0015s.jpg",
+   "sha256": "76207026703ade2a58a5711d53bf9af8f3cd25ad68460399f741eb1f57677b7a"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 30,
+   "file": "spring-06-0030s.jpg",
+   "sha256": "243d13ccdd543d6348fe0602ec470d66ea390586b608c6824683528856e81f6c"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 45,
+   "file": "spring-06-0045s.jpg",
+   "sha256": "b695e7e0d901cb515795709e5285045411a8ef15f6c099b0588d05ab80c53d89"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 60,
+   "file": "spring-06-0060s.jpg",
+   "sha256": "df7c294dd4b6a53f132fbb13f2ff0022ee6859362514c91ffe9918d9ee0c2720"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 75,
+   "file": "spring-06-0075s.jpg",
+   "sha256": "a219595e0d3e19b0b1b3cb3cfd7f154d2fecd8a4e1726a19d2282d44e650419f"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 90,
+   "file": "spring-06-0090s.jpg",
+   "sha256": "a8c3af8496d99093b0a5eaf72d2ec46fd41dd76c4ff0a7428acc36026787b981"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 105,
+   "file": "spring-06-0105s.jpg",
+   "sha256": "a34ae1c762e550457310c58c9c06989f6b5dd84d6bf93892bbfb744b4363c472"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 120,
+   "file": "spring-06-0120s.jpg",
+   "sha256": "b8a3d8c9e05a153746e99b1a071eaa56614b39f0faf8424b8f065b0c8dbfe70b"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 135,
+   "file": "spring-06-0135s.jpg",
+   "sha256": "49c95a6ba8c9edaf38ecd49aae4b08c5485f11a22584c523a1f378ceec469423"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 150,
+   "file": "spring-06-0150s.jpg",
+   "sha256": "42314f43728f5a24a6811a2ccb76ea08ffd1bd5a01a75692eb75afebc02ff2f4"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 165,
+   "file": "spring-06-0165s.jpg",
+   "sha256": "f3fd1c9d1b07f293d9c7ca04a7bbf7077c821dfcb7d780616e111b86cb4a9bb9"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 180,
+   "file": "spring-06-0180s.jpg",
+   "sha256": "585955ae80371a10ab947fc84ed5787ff2d4802c168890786515020d398a3c65"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 195,
+   "file": "spring-06-0195s.jpg",
+   "sha256": "de2d8b52940c88be1209b404f298239eed18d16944d821e227879efe7a012708"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 210,
+   "file": "spring-06-0210s.jpg",
+   "sha256": "2f2dd65b074ee8b7ad0b0e35865d28a6b3607239edee400aea83a851bc656e58"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 225,
+   "file": "spring-06-0225s.jpg",
+   "sha256": "b8b260a57dc25738dcab66d3afe2c218b1e1629f4f77baf4ed13280ca108722d"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 240,
+   "file": "spring-06-0240s.jpg",
+   "sha256": "7639ef96a2cf97081f107d2dcfa19e99677dfad73ee4bec060ae41f87e7665b6"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 255,
+   "file": "spring-06-0255s.jpg",
+   "sha256": "8657709bdb9146e933ad22ac63d37a875ddeda32b44afc506dbf6e2f2be47bb2"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 270,
+   "file": "spring-06-0270s.jpg",
+   "sha256": "e92cf031f05ddb3e35e441b8039046b4a1e602237657f0dcfff3b27b3e9966ba"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 285,
+   "file": "spring-06-0285s.jpg",
+   "sha256": "e3d7ef1cc4474fb53ebf1bc4fecb08b9b76dc1a396b1c0c012ad2d20c5f62c93"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 300,
+   "file": "spring-06-0300s.jpg",
+   "sha256": "bb3a8729c005a54a2d2d8c844db9bfe495c0650d4a9303fd1c4d6ba4b799a63a"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 315,
+   "file": "spring-06-0315s.jpg",
+   "sha256": "bb111ec8fd8dd6ca57306ddd48fdb33f5ead6b3545794b13e6e516c13f5616f8"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 330,
+   "file": "spring-06-0330s.jpg",
+   "sha256": "ef66e97a07ea5db347db09da615f3381e23353b17f4bede535596bec1f13ec95"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 345,
+   "file": "spring-06-0345s.jpg",
+   "sha256": "1c35f3c925be3be2ed64d6a9a3df6360d54bdc91fbfb727fab12ff7c2999c740"
+  },
+  {
+   "questionId": "spring-06",
+   "timeS": 360,
+   "file": "spring-06-0360s.jpg",
+   "sha256": "7314a9a2c57df1282bc88e5b0287ce414acf605d8362ce2a1461f0ac718e9322"
+  }
+ ],
+ "finishedAtUtc": "2026-10-21T10:05:12Z",
+ "loadavgEnd": "12.96 6.90 3.86 2/1337 2752210",
+ "commands": [
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "225",
+    "-to",
+    "285",
+    "-i",
+    "/srv/tvlens-gx10/videos/kennedy-rice-7min.mp4",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-c:a",
+    "pcm_s16le",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/kennedy-06.wav"
+   ],
+   "code": 0,
+   "seconds": 0.149,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "/srv/tvlens-gx10/outils/whisper.cpp/build/bin/whisper-cli",
+    "-ng",
+    "-t",
+    "16",
+    "-m",
+    "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+    "-l",
+    "en",
+    "-ml",
+    "60",
+    "-sow",
+    "-oj",
+    "-of",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/kennedy-06.asr",
+    "-f",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/kennedy-06.wav"
+   ],
+   "code": 0,
+   "seconds": 27.507,
+   "stderrTail": "545.70 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    13.99 ms\nwhisper_print_timings:   sample time =   173.59 ms /   748 runs (     0.23 ms per run)\nwhisper_print_timings:   encode time = 23417.86 ms /     3 runs (  7805.95 ms per run)\nwhisper_print_timings:   decode time =    54.55 ms /     2 runs (    27.27 ms per run)\nwhisper_print_timings:   batchd time =  2286.24 ms /   734 runs (     3.11 ms per run)\nwhisper_print_timings:   prompt time =   320.98 ms /   200 runs (     1.60 ms per run)\nwhisper_print_timings:    total time = 26884.75 ms\n"
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "525",
+    "-to",
+    "665",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-c:a",
+    "pcm_s16le",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07.wav"
+   ],
+   "code": 0,
+   "seconds": 0.464,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "/srv/tvlens-gx10/outils/whisper.cpp/build/bin/whisper-cli",
+    "-ng",
+    "-t",
+    "16",
+    "-m",
+    "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+    "-l",
+    "fr",
+    "-ml",
+    "60",
+    "-sow",
+    "-oj",
+    "-of",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07.asr",
+    "-f",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07.wav"
+   ],
+   "code": 0,
+   "seconds": 56.787,
+   "stderrTail": "436.15 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    28.90 ms\nwhisper_print_timings:   sample time =   554.60 ms /  2311 runs (     0.24 ms per run)\nwhisper_print_timings:   encode time = 47158.21 ms /     6 runs (  7859.70 ms per run)\nwhisper_print_timings:   decode time =     0.00 ms /     1 runs (     0.00 ms per run)\nwhisper_print_timings:   batchd time =  6550.89 ms /  2284 runs (     2.87 ms per run)\nwhisper_print_timings:   prompt time =  1357.45 ms /   998 runs (     1.36 ms per run)\nwhisper_print_timings:    total time = 56210.73 ms\n"
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "490",
+    "-to",
+    "555",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-c:a",
+    "pcm_s16le",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07.wav"
+   ],
+   "code": 0,
+   "seconds": 0.142,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "/srv/tvlens-gx10/outils/whisper.cpp/build/bin/whisper-cli",
+    "-ng",
+    "-t",
+    "16",
+    "-m",
+    "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+    "-l",
+    "en",
+    "-ml",
+    "60",
+    "-sow",
+    "-oj",
+    "-of",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07.asr",
+    "-f",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07.wav"
+   ],
+   "code": 0,
+   "seconds": 27.961,
+   "stderrTail": "535.63 ms\nwhisper_print_timings:     fallbacks =   0 p /   1 h\nwhisper_print_timings:      mel time =    15.11 ms\nwhisper_print_timings:   sample time =   253.84 ms /   603 runs (     0.42 ms per run)\nwhisper_print_timings:   encode time = 23759.08 ms /     3 runs (  7919.69 ms per run)\nwhisper_print_timings:   decode time =   894.68 ms /   117 runs (     7.65 ms per run)\nwhisper_print_timings:   batchd time =  1781.23 ms /   474 runs (     3.76 ms per run)\nwhisper_print_timings:   prompt time =   135.19 ms /    72 runs (     1.88 ms per run)\nwhisper_print_timings:    total time = 27447.79 ms\n"
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2020",
+    "-to",
+    "2100",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-c:a",
+    "pcm_s16le",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07.wav"
+   ],
+   "code": 0,
+   "seconds": 0.213,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "/srv/tvlens-gx10/outils/whisper.cpp/build/bin/whisper-cli",
+    "-ng",
+    "-t",
+    "16",
+    "-m",
+    "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+    "-l",
+    "en",
+    "-ml",
+    "60",
+    "-sow",
+    "-oj",
+    "-of",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07.asr",
+    "-f",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07.wav"
+   ],
+   "code": 0,
+   "seconds": 27.605,
+   "stderrTail": "489.61 ms\nwhisper_print_timings:     fallbacks =   0 p /   0 h\nwhisper_print_timings:      mel time =    18.03 ms\nwhisper_print_timings:   sample time =   179.14 ms /   678 runs (     0.26 ms per run)\nwhisper_print_timings:   encode time = 23800.00 ms /     3 runs (  7933.33 ms per run)\nwhisper_print_timings:   decode time =   258.46 ms /    20 runs (    12.92 ms per run)\nwhisper_print_timings:   batchd time =  1972.43 ms /   646 runs (     3.05 ms per run)\nwhisper_print_timings:   prompt time =   220.97 ms /   136 runs (     1.62 ms per run)\nwhisper_print_timings:    total time = 27030.75 ms\n"
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "540",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0540s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.127,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "545",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0545s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.115,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "550",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0550s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.121,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "555",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0555s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.135,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "560",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0560s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "565",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0565s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.111,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "570",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0570s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.124,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "575",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0575s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.132,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "580",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0580s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.119,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "585",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0585s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.111,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "590",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0590s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.104,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "595",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0595s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.106,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "600",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0600s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.115,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "605",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0605s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.084,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "610",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0610s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.105,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "615",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0615s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.097,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "620",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0620s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.125,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "625",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0625s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.098,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "630",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0630s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.107,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "635",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0635s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.115,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "640",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0640s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.11,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "645",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0645s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.108,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "650",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0650s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.102,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "655",
+    "-i",
+    "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/cuisine-07-0655s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.134,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "500",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0500s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.081,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "502",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0502s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.097,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "504",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0504s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "506",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0506s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.091,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "508",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0508s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.072,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "510",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0510s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.079,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "512",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0512s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.101,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "514",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0514s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.077,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "516",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0516s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.093,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "518",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0518s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.069,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "520",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0520s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.089,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "522",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0522s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.074,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "524",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0524s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.073,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "526",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0526s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.101,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "528",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0528s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "530",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0530s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "532",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0532s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.071,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "534",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0534s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.077,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "536",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0536s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.073,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "538",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0538s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.074,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "540",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0540s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "542",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0542s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.096,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "544",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0544s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "546",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0546s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.074,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "548",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0548s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.075,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "550",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0550s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.073,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "552",
+    "-i",
+    "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/tears-07-0552s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.073,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2040",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2040s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.108,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2048",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2048s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.106,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2056",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2056s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.105,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2064",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2064s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2072",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2072s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.139,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2080",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2080s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.167,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2088",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2088s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.137,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "2096",
+    "-i",
+    "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/artemis-07-2096s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.144,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "240",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0240s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.097,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "242",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0242s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.102,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "244",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0244s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "246",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0246s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.087,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "248",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0248s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.087,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "250",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0250s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.106,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "252",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0252s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "254",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0254s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.122,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "256",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0256s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.091,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "258",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0258s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.102,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "260",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0260s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.088,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "262",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0262s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "264",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0264s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.103,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "266",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0266s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.078,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "268",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-04-0268s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.085,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "0",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0000s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.092,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "15",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0015s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.112,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "30",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0030s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.093,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "45",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0045s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.097,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "60",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0060s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.112,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "75",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0075s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.107,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "90",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0090s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.107,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "105",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0105s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.109,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "120",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0120s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.153,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "135",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0135s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.108,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "150",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0150s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.105,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "165",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0165s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.1,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "180",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0180s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.104,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "195",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0195s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.101,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "210",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0210s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.111,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "225",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0225s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.09,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "240",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0240s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.104,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "255",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0255s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.111,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "270",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0270s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.124,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "285",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0285s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.084,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "300",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0300s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.109,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "315",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0315s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.101,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "330",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0330s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.094,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "345",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0345s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.099,
+   "stderrTail": ""
+  },
+  {
+   "cmd": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-ss",
+    "360",
+    "-i",
+    "/srv/tvlens-gx10/videos/spring.mp4",
+    "-frames:v",
+    "1",
+    "-vf",
+    "scale=640:-2",
+    "-q:v",
+    "3",
+    "/home/nvidia/tvlens-setup/preuves-fiches-20261021T100239Z/out/spring-06-0360s.jpg"
+   ],
+   "code": 0,
+   "seconds": 0.102,
+   "stderrTail": ""
+  }
+ ]
+}

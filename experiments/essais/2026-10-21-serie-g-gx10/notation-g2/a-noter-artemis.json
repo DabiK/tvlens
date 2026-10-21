@@ -1,0 +1,359 @@
+[
+ {
+  "questionId": "artemis-01",
+  "answers": [
+   {
+    "textId": "8bb05763b5",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé un « go » pour reprendre la compte et lancer Artemis I, après avoir confirmé la configuration des étapes restantes. Cette décision est rapportée dans les passages moment-119 et moment-120.",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     },
+     {
+      "id": "moment-120",
+      "startMs": 952000,
+      "endMs": 960000
+     }
+    ]
+   },
+   {
+    "textId": "ecdf327578",
+    "kind": "observation",
+    "answer": "The launch team has just announced a go to resume the count and launch Artemis 1.",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "20e281c763",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé un « go » pour reprendre le compte à rebours et lancer Artemis I.",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "9eb0e637ca",
+    "kind": "observation",
+    "answer": "The launch team has just announced that they are ready to resume the count and launch Artemis 1.",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     },
+     {
+      "id": "moment-120",
+      "startMs": 952000,
+      "endMs": 960000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "answers": [
+   {
+    "textId": "db14ab2855",
+    "kind": "observation",
+    "answer": "The water is part of the ignition overpressure and sound suppression system: it floods the mobile launcher to reduce the pressure and thunderous sound from the rocket's ignition, which could otherwise damage the rocket.",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "651026bc28",
+    "kind": "observation",
+    "answer": "La vidéo explique que le système de suppression de pression et de son (overpressure and sound suppression) inondera le lanceur mobile d'eau pour réduire la puissance de la pression et du son causés par l'allumage des moteurs, afin d'éviter d'endommager la fusée. Cette séquence commence à T moins 17 secondes. (moment-154, 1224000-1232000 ; moment-155, 1232000-1240000)",
+    "citations": [
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     },
+     {
+      "id": "moment-155",
+      "startMs": 1232000,
+      "endMs": 1240000
+     }
+    ]
+   },
+   {
+    "textId": "1a9525aa2a",
+    "kind": "observation",
+    "answer": "La vidéo explique que le système de suppression de pression et de son (overpressure and sound suppression) inondera le mobile launcher d'eau pour réduire la puissance de la pression et du son causés par l'allumage de la fusée, afin d'éviter tout dommage au lanceur. Cette séquence commence à T-moins 17 secondes.",
+    "citations": [
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     },
+     {
+      "id": "moment-155",
+      "startMs": 1232000,
+      "endMs": 1240000
+     }
+    ]
+   },
+   {
+    "textId": "01e4f5629e",
+    "kind": "observation",
+    "answer": "La vidéo explique que le système de suppression de pression et de son (overpressure and sound suppression) inondera le lanceur mobile d'eau pour réduire la puissance de la pression et du tonnerre causés par l'allumage des moteurs, afin d'éviter d'endommager la fusée. Cette séquence commence à T-moins 17 secondes. (moment-154, 1224000-1232000 ; moment-155, 1232000-1240000)",
+    "citations": [
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     },
+     {
+      "id": "moment-155",
+      "startMs": 1232000,
+      "endMs": 1240000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "answers": [
+   {
+    "textId": "84b596b84a",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the countdown reaches zero and the vehicle rises with a large flame and water flow. The commentary states that all four RS-25 core-stage engines plus two solid rocket boosters are propelling the vehicle.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "0e888a2a2f",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the countdown reaches zero and the vehicle rises with a large flame and water flow. The commentary states that all four RS-25 core-stage engines plus the two solid rocket boosters are propelling the vehicle.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "d506875776",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred. The vehicle is being propelled by all four RS-25 engines on the core stage and two solid rocket boosters.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "57b0908f1a",
+    "kind": "observation",
+    "answer": "Oui, le décollage a eu lieu : le compte à rebours atteint zéro et le lanceur s'élève (moment-204, 1624000-1632000). Les moteurs qui le propulsent sont les quatre RS25 de l'étape centrale et les deux propulseurs solides, selon le commentaire (moment-206, 1640000-1648000).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "cffa9bc8c8",
+    "kind": "observation",
+    "answer": "Oui, le décollage a eu lieu : le compte à rebours atteint zéro et le lanceur s'élève (moment-204, 1624000-1632000). Les moteurs qui propulsent le véhicule sont les quatre RS25 de l'étape centrale et les deux propulseurs solides, selon le commentaire (moment-206, 1640000-1648000).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "answers": [
+   {
+    "textId": "cb88e51bc5",
+    "kind": "observation",
+    "answer": "Les deux propulseurs solides (Solid Rocket Boosters) viennent de se séparer, comme confirmé par le commentaire. L'étape centrale, avec ses moteurs RS-25, continue de propulser le vol d'Orion.",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "c0ce1d183c",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated (moment-221, 1760000-1768000). The core stage continues to power the flight with all four RS-25 engines (moment-222, 1768000-1776000).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "5254a76f19",
+    "kind": "observation",
+    "answer": "Les deux propulseurs solides (Solid Rocket Boosters) viennent de se séparer, comme confirmé par le commentaire. L'étage central (core stage) continue de propulser le vol d'Orion grâce à ses moteurs RS-25.",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "cb707176ea",
+    "kind": "observation",
+    "answer": "Les deux propulseurs solides (Solid Rocket Boosters) viennent de se séparer, comme le confirme le commentaire « Confirmation that the solid rocket boosters have separated » (moment-221, 1760000-1768000). C'est désormais l'étape centrale, avec ses moteurs RS-25, qui continue de propulser Orion (moment-222, 1768000-1776000).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "answers": [
+   {
+    "textId": "1dfdd0610a",
+    "kind": "observation",
+    "answer": "Les commentateurs préparent la coupure des moteurs principaux de l'étape centrale (core stage main engine cut off) : ils annoncent « 30 seconds now until core stage main engine cut off » et les quatre moteurs RS-25 qui réduisent leur poussée (moment-261, 2080000-2088000).",
+    "citations": [
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "8c9a2df95d",
+    "kind": "observation",
+    "answer": "Ils préparent la coupure des moteurs de l'étape centrale (main engine cutoff), suivie de la séparation de l'étape centrale, après quoi Orion et l'étage de propulsion cryogénique intermédiaire voleront libres (moment-249, 1984000-1992000).",
+    "citations": [
+     {
+      "id": "moment-249",
+      "startMs": 1984000,
+      "endMs": 1992000
+     }
+    ]
+   },
+   {
+    "textId": "b1f5ab60f3",
+    "kind": "observation",
+    "answer": "Ils préparent la coupure des moteurs de l'étape centrale (core stage main engine cutoff), suivie de la séparation de l'étape centrale, après quoi Orion et l'étage de propulsion cryogénique intermédiaire voleront libres (moment-249, 1984000-1992000).",
+    "citations": [
+     {
+      "id": "moment-249",
+      "startMs": 1984000,
+      "endMs": 1992000
+     }
+    ]
+   },
+   {
+    "textId": "a71ea2bfa6",
+    "kind": "observation",
+    "answer": "Les commentateurs préparent la coupure des moteurs principaux de l'étape centrale (MECO) : les quatre moteurs RS-25 sont en train de réduire leur poussée, avec environ 30 secondes avant la coupure (moment-261, 2080000-2088000).",
+    "citations": [
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     },
+     {
+      "id": "moment-259",
+      "startMs": 2064000,
+      "endMs": 2072000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,335 @@
+{
+  "id": "3ada80a138fb4dc18fb937d11ad9c346",
+  "startedAtUtc": "2026-10-21T14:19:31.133598+00:00",
+  "deadlineUtc": "2026-10-21T17:19:31.133509+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-G-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-G-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T14:19:33.344812+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:19:33.848413+00:00",
+      "durationSeconds": 0.500920803999179
+    },
+    {
+      "name": "kennedy-G-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-G-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T14:19:33.849188+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:26:45.374650+00:00",
+      "durationSeconds": 431.52391304899356
+    },
+    {
+      "name": "spring-G-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-G-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T14:26:45.919351+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:26:46.421048+00:00",
+      "durationSeconds": 0.5007766360067762
+    },
+    {
+      "name": "spring-G-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-G-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T14:26:46.421812+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:34:40.516671+00:00",
+      "durationSeconds": 474.093249284997
+    },
+    {
+      "name": "cnrs-apprentissage-G-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-G-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T14:34:41.056681+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:34:42.060351+00:00",
+      "durationSeconds": 1.0014564979937859
+    },
+    {
+      "name": "cnrs-apprentissage-G-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-G.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-G.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-G-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T14:34:42.061230+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:49:33.183796+00:00",
+      "durationSeconds": 891.1209495179937
+    },
+    {
+      "name": "kennedy-GP-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-GP-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T14:49:33.745859+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:49:34.248772+00:00",
+      "durationSeconds": 0.500668496999424
+    },
+    {
+      "name": "kennedy-GP-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-GP-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T14:49:34.249298+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:56:45.273288+00:00",
+      "durationSeconds": 431.02217259998724
+    },
+    {
+      "name": "spring-GP-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-GP-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T14:56:45.803097+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T14:56:46.305892+00:00",
+      "durationSeconds": 0.5005915919900872
+    },
+    {
+      "name": "spring-GP-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-GP-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T14:56:46.306467+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:04:39.359910+00:00",
+      "durationSeconds": 473.05178946099477
+    },
+    {
+      "name": "cnrs-apprentissage-GP-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-GP-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T15:04:39.906737+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:04:40.910294+00:00",
+      "durationSeconds": 1.0011200009903405
+    },
+    {
+      "name": "cnrs-apprentissage-GP-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-GP.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GP.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-GP-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T15:04:40.910903+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:19:36.016302+00:00",
+      "durationSeconds": 895.1027047519892
+    },
+    {
+      "name": "kennedy-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T15:19:36.560783+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:19:37.063122+00:00",
+      "durationSeconds": 0.5006832740036771
+    },
+    {
+      "name": "kennedy-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/kennedy/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/kennedy-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T15:19:37.063948+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:26:54.094877+00:00",
+      "durationSeconds": 437.02957756700926
+    },
+    {
+      "name": "spring-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T15:26:54.634940+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:26:55.137727+00:00",
+      "durationSeconds": 0.5006516379944514
+    },
+    {
+      "name": "spring-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/spring/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/spring-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T15:26:55.138346+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:34:51.181484+00:00",
+      "durationSeconds": 476.0416193759884
+    },
+    {
+      "name": "cnrs-apprentissage-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T15:34:51.714757+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:34:52.718206+00:00",
+      "durationSeconds": 1.0011556209938135
+    },
+    {
+      "name": "cnrs-apprentissage-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/inputs/cnrs-apprentissage/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e4-flux-results/cnrs-apprentissage-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T15:34:52.718819+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T15:49:53.833502+00:00",
+      "durationSeconds": 901.1131933620054
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T15:49:53.865557+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

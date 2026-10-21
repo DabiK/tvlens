@@ -1,0 +1,509 @@
+{
+  "version": 1,
+  "updatedAtUtc": "2026-10-21T17:55:00Z",
+  "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
+  "reference": {
+    "configuration": {
+      "whisper": "base",
+      "vision": "gemma3:4b",
+      "questions": "qwen3.8:27b",
+      "blocSecondes": 8,
+      "imagesParBloc": 5
+    },
+    "mtpDejaActif": {
+      "valeur": true,
+      "draftNumPredict": 4,
+      "source": "ollama show qwen3.8:27b, 2026-10-21T12:07Z"
+    },
+    "surcoutProxyMs": {
+      "direct": 7.5,
+      "proxy": 8.5,
+      "source": "2026-10-21-reference-instrumentee-gx10/bruts/proxy-overhead.json"
+    }
+  },
+  "e1FluxReel": {
+    "source": "2026-10-21-reference-instrumentee-gx10/analyse-e1.json",
+    "reponsesAcquises": "30/30",
+    "delaiHttpMedianS": {
+      "kennedy": 19.2,
+      "spring": 15.2,
+      "cnrs": 24.2,
+      "cuisine": 17.6,
+      "tears": 13.2,
+      "artemis": 21.3
+    },
+    "generationMedianeS": {
+      "kennedy": 12.5,
+      "spring": 11.5,
+      "cnrs": 18.3,
+      "cuisine": 13.1,
+      "tears": 9.9,
+      "artemis": 13.0
+    },
+    "jetonsParSecondeEnFlux": [
+      10,
+      14
+    ],
+    "prefillMedianS": {
+      "kennedy": 5.3,
+      "spring": 3.7,
+      "cnrs": 4.7,
+      "cuisine": 3.5,
+      "tears": 2.8,
+      "artemis": 5.7
+    },
+    "chargementAFroidS": 13.4,
+    "visionAppelsAuDelaDe8s": {
+      "au_dela": 129,
+      "total": 612
+    },
+    "partTopicSummaryDansSortieVision": {
+      "kennedy": 0.34,
+      "spring": 0.38,
+      "cnrs": 0.32,
+      "cuisine": 0.42,
+      "tears": 0.44,
+      "artemis": 0.36
+    },
+    "blocsVisionPerdus": {
+      "kennedy": 1,
+      "spring": 14,
+      "cnrs": 14,
+      "cuisine": 1,
+      "tears": 13,
+      "artemis": 12
+    },
+    "appelsOutils": 0,
+    "rejetsValidationKennedy": "3/5"
+  },
+  "contexteQuestions": {
+    "passagesVus": 6,
+    "secondesVues": 48,
+    "questionsPreuveAncienne": "11/30",
+    "source": "core/video-tools.cjs ; oracle v2"
+  },
+  "e2ModeleQuestionsHorsLigne": {
+    "source": "2026-10-21-questions-hors-ligne-gx10/notation/bilan.md",
+    "bras": [
+      {
+        "modele": "qwen3.8:27b",
+        "role": "reference",
+        "delaiMedianS": 9.2,
+        "jetonsParS": 24,
+        "gardees": 17,
+        "pertinentes": 21,
+        "inventions": 5,
+        "abstentionsInjustifiees": 6,
+        "citationsRemplies": 21
+      },
+      {
+        "modele": "qwen3.8:27b-mtp-q4_K_M",
+        "delaiMedianS": 9.3,
+        "jetonsParS": 24,
+        "gardees": 17,
+        "inventions": 5,
+        "citationsRemplies": 21
+      },
+      {
+        "modele": "gemma4:26b-a4b-it-q4_K_M",
+        "delaiMedianS": 4.6,
+        "jetonsParS": 54,
+        "gardees": 20,
+        "pertinentes": 20,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
+        "delaiMedianS": 3.1,
+        "jetonsParS": 80,
+        "gardees": 18,
+        "inventions": 7,
+        "abstentionsInjustifiees": 2,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-q4_K_M",
+        "delaiMedianS": 3.5,
+        "jetonsParS": 64,
+        "gardees": 18,
+        "inventions": 8,
+        "abstentionsInjustifiees": 2,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
+        "raisonnement": true,
+        "delaiMedianS": 17.7,
+        "jetonsParS": 83,
+        "gardees": 8,
+        "inventions": 2,
+        "abstentionsInjustifiees": 9,
+        "jsonInvalide": 8
+      },
+      {
+        "modele": "qwen3.8:27b-nvfp4",
+        "statut": "abandonné : exige MLX, indisponible sous Linux"
+      }
+    ],
+    "e1FluxMemeNotation": {
+      "delaiMedianS": 17.5,
+      "gardees": 18,
+      "inventions": 4,
+      "abstentionsInjustifiees": 10
+    }
+  },
+  "essaisAnterieursNotes": {
+    "source": "2026-10-21-oracle-notation-recherche-gx10/notation-v0",
+    "pauseVision": {
+      "cnrs": {
+        "medianeS": [
+          21.2,
+          12.8
+        ],
+        "pertinentesSous20s": [
+          2,
+          9
+        ],
+        "sur": 10
+      },
+      "kennedy": {
+        "medianeS": [
+          18.8,
+          11.2
+        ],
+        "pertinentesSous20s": [
+          5,
+          7
+        ],
+        "sur": 10,
+        "biais": "démarrage à froid du bras A (audit)"
+      }
+    },
+    "whisperSmallSpring": {
+      "pertinentes": [
+        2,
+        4
+      ],
+      "sur": 5
+    },
+    "abstentionsInjustifiees": "21/150",
+    "inventionsCuisine": "3-4/5",
+    "accordJuges": "138/138"
+  },
+  "composantVision5vs3Images": {
+    "gainMedianFroidS": 1.5,
+    "pairesPlusRapides": "48/48",
+    "source": "2026-10-21-confirmation-images-gx10"
+  },
+  "audit": {
+    "confirmes": 221,
+    "ecarts": 17,
+    "inverifiables": 21,
+    "sceauxDistantsIntacts": "30/30",
+    "source": "2026-10-21-audit-nuit-gx10"
+  },
+  "oracleV2": {
+    "confirmes": 21,
+    "corriges": 8,
+    "malPoses": 1,
+    "questions": 30
+  },
+  "e3ModeleVisionHorsLigne": {
+    "source": "2026-10-21-vision-hors-ligne-gx10",
+    "blocs": 36,
+    "bras": [
+      {
+        "modele": "gemma3:4b",
+        "role": "reference",
+        "delaiMedianS": 6.65,
+        "blocsAuDelaDe8s": 3,
+        "jetonsMedians": 218.5,
+        "jsonInvalide": 0
+      },
+      {
+        "modele": "qwen3-vl:2b-instruct-q4_K_M",
+        "delaiMedianS": 8.19,
+        "blocsAuDelaDe8s": 19,
+        "jetonsMedians": 559.5,
+        "jsonInvalide": 16
+      },
+      {
+        "modele": "qwen3-vl:4b-instruct-bf16",
+        "delaiMedianS": 17.01,
+        "blocsAuDelaDe8s": 35,
+        "jetonsMedians": 315.5,
+        "jsonInvalide": 8
+      },
+      {
+        "modele": "qwen3-vl:8b-instruct-q4_K_M",
+        "delaiMedianS": 15.87,
+        "blocsAuDelaDe8s": 36,
+        "jetonsMedians": 333,
+        "jsonInvalide": 3
+      },
+      {
+        "modele": "gemma4:e4b-it-q4_K_M",
+        "raisonnement": "défaut (actif)",
+        "delaiMedianS": 13.68,
+        "prefillMedianS": 1.7,
+        "blocsAuDelaDe8s": 36,
+        "jetonsMedians": 1223,
+        "jsonInvalide": 0
+      },
+      {
+        "modele": "qwen3-vl:30b-a3b-instruct-q4_K_M",
+        "delaiMedianS": 11.33,
+        "blocsAuDelaDe8s": 33,
+        "jetonsMedians": 326.5,
+        "jsonInvalide": 0
+      }
+    ],
+    "blocsProduitA3Images": "8/36"
+  },
+  "e4FluxReel": {
+    "source": "2026-10-21-flux-gemma4-gx10",
+    "videos": [
+      "kennedy",
+      "spring",
+      "cnrs"
+    ],
+    "questions": 15,
+    "configurations": [
+      {
+        "nom": "E1 actuelle",
+        "delaiMedianS": {
+          "kennedy": 19.2,
+          "spring": 15.2,
+          "cnrs": 24.2
+        },
+        "sous15s": 3,
+        "pertinentes": 8,
+        "pertinentesSous15s": 0,
+        "inventions": 3,
+        "abstentionsInjustifiees": 7
+      },
+      {
+        "nom": "G (gemma4:26b-a4b)",
+        "delaiMedianS": {
+          "kennedy": 12.2,
+          "spring": 9.1,
+          "cnrs": 12.2
+        },
+        "sous15s": 12,
+        "pertinentes": 9,
+        "pertinentesSous15s": 7,
+        "inventions": 2,
+        "abstentionsInjustifiees": 2
+      },
+      {
+        "nom": "GP (+ pause vision)",
+        "delaiMedianS": {
+          "kennedy": 7.2,
+          "spring": 5.2,
+          "cnrs": 7.2
+        },
+        "sous15s": 15,
+        "pertinentes": 8,
+        "pertinentesSous15s": 8,
+        "inventions": 2,
+        "abstentionsInjustifiees": 4
+      },
+      {
+        "nom": "GPS (+ Whisper small)",
+        "delaiMedianS": {
+          "kennedy": 9.4,
+          "spring": 5.2,
+          "cnrs": 7.9
+        },
+        "sous15s": 15,
+        "pertinentes": 10,
+        "pertinentesSous15s": 10,
+        "inventions": 2,
+        "abstentionsInjustifiees": 2,
+        "parVideoPertinentesSous15s": {
+          "kennedy": "5/5",
+          "spring": "1/5",
+          "cnrs": "4/5"
+        }
+      }
+    ],
+    "limites": "un passage par bras, bras cumulatifs, juges automatiques"
+  },
+  "e3bVisionComplement": {
+    "source": "2026-10-21-vision-hors-ligne-gx10/complement",
+    "blocs": 36,
+    "bras": [
+      {
+        "modele": "gemma3:4b",
+        "images": 5,
+        "delaiMedianS": 6.68,
+        "blocsAuDelaDe8s": 3,
+        "justesse": 1.57,
+        "couverture": 1.65,
+        "blocsAvecInvention": 27
+      },
+      {
+        "modele": "gemma3:4b",
+        "images": 3,
+        "delaiMedianS": 5.58,
+        "blocsAuDelaDe8s": 0,
+        "justesse": 1.6,
+        "couverture": 1.67,
+        "blocsAvecInvention": 21
+      },
+      {
+        "modele": "gemma4:e4b-it-q4_K_M",
+        "raisonnement": false,
+        "delaiMedianS": 4.23,
+        "blocsAuDelaDe8s": 0,
+        "jsonInvalide": 0,
+        "justesse": 2.58,
+        "couverture": 2.11,
+        "blocsAvecInvention": 4
+      }
+    ],
+    "accordJugesJustesse": {
+      "ecart0": 78,
+      "ecart1": 22
+    }
+  },
+  "g1FormatOutils": {
+    "modele": "qwen3.8:27b",
+    "questions": 10,
+    "passages": 2,
+    "avecSchema": {
+      "appelsAvecOutil": "0/20",
+      "jsonValide": "20/20",
+      "delaiMedianS": 11.6
+    },
+    "sansSchema": {
+      "appelsAvecOutil": "20/20",
+      "dontPreuveAncienne": "12/12",
+      "outils": {
+        "search_moments": 10,
+        "get_transcript": 12,
+        "inspect_clip": 2
+      },
+      "delaiMedianPremierTourS": 5.1
+    },
+    "sansOutils": {
+      "appelsAvecOutil": "0/20",
+      "jsonValide": "20/20",
+      "delaiMedianS": 11.3
+    }
+  },
+  "g3Mtp": {
+    "modele": "qwen3.8:27b",
+    "requetes": 15,
+    "passages": 2,
+    "avecMtp": {
+      "jetonsParS": 23.6,
+      "totalMedianS": 10.4
+    },
+    "sansMtp": {
+      "jetonsParS": 11.1,
+      "totalMedianS": 18.4
+    },
+    "jetonsMedians": 163
+  },
+  "g4SortieVision": {
+    "modele": "gemma3:4b",
+    "blocs": 48,
+    "passages": 2,
+    "bras": [
+      {
+        "nom": "référence",
+        "jetonsMedians": 213,
+        "totalMedianS": 6.71,
+        "blocsAuDelaDe8s": 11,
+        "topicSummaryMedianCar": 287,
+        "summaryVisualMedianCar": 354
+      },
+      {
+        "nom": "sans topicSummary",
+        "jetonsMedians": 125,
+        "totalMedianS": 5.21,
+        "blocsAuDelaDe8s": 0,
+        "summaryVisualMedianCar": 333
+      },
+      {
+        "nom": "topicSummary plafonné 300",
+        "jetonsMedians": 200,
+        "totalMedianS": 6.49,
+        "blocsAuDelaDe8s": 0,
+        "summaryVisualMedianCar": 354
+      }
+    ]
+  },
+  "g2Memoire": {
+    "modele": "qwen3.8:27b",
+    "questions": 30,
+    "passages": 2,
+    "bras": [
+      {
+        "nom": "A capturé",
+        "pertinentes": 38,
+        "gardees": 34,
+        "inventions": 14,
+        "abstentionsInjustifiees": 14,
+        "faitsAnciensPertinents": "12/22",
+        "delaiMedianS": 10.5,
+        "jetonsContexte": 2662
+      },
+      {
+        "nom": "B journal compact",
+        "pertinentes": 47,
+        "gardees": 42,
+        "inventions": 6,
+        "abstentionsInjustifiees": 9,
+        "faitsAnciensPertinents": "16/22",
+        "delaiMedianS": 13.4,
+        "jetonsContexte": 4906
+      },
+      {
+        "nom": "C 6 passages retrouvés",
+        "pertinentes": 41,
+        "gardees": 36,
+        "inventions": 11,
+        "abstentionsInjustifiees": 10,
+        "faitsAnciensPertinents": "13/22",
+        "delaiMedianS": 11.0,
+        "jetonsContexte": 3557
+      }
+    ],
+    "parVideoPertinentesSur10": {
+      "artemis": [
+        9,
+        10,
+        10
+      ],
+      "cnrs": [
+        8,
+        10,
+        9
+      ],
+      "cuisine": [
+        4,
+        6,
+        4
+      ],
+      "kennedy": [
+        9,
+        10,
+        10
+      ],
+      "spring": [
+        2,
+        3,
+        2
+      ],
+      "tears": [
+        6,
+        8,
+        6
+      ]
+    }
+  }
+}

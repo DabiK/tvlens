@@ -1,0 +1,555 @@
+[
+ {
+  "questionId": "cuisine-02",
+  "answers": [
+   {
+    "textId": "c8e5f6be56",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur la viande, les oignons, les carottes, le bouquet garni, le poivre et les lardons, en mélangeant avec une spatule jusqu'à ce que tout soit recouvert. Il laisse ensuite reposer au moins une nuit à température froide, pas forcément au frigo mais frais.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "4434033de9",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur les oignons et carottes coupés en dés, puis en mélangeant avec une spatule jusqu'à ce que tout soit recouvert. Il laisse ensuite reposer au moins une nuit, à température froide mais pas forcément au frigo.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "e4c361496a",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur des oignons et des carottes coupés en dés, puis en mélangeant le tout avec une spatule. Il indique qu'il faut laisser reposer au moins pour la nuit, à température froide.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "3a6a53124f",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur les oignons et carottes coupés en dés, puis en mélangeant avec une spatule pour bien couvrir les morceaux. Il précise qu'il faut laisser reposer au moins pour la nuit, à température froide, pas forcément au frigo mais au frais.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "0e0f14a083",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur la viande, les oignons, les carottes, le bouquet garni, le poivre et les lardons, en insistant pour utiliser un plat en plastique et non en métal. Il laisse ensuite reposer la préparation au frais, au moins pour la nuit.",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "4af8e3ecd0",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur les oignons et carottes coupés en dés, puis en mélangeant avec une spatule jusqu'à ce que tout soit recouvert. Il précise qu'il faut laisser reposer au moins une nuit, à température froide (pas forcément au frigo, mais frais).",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "answers": [
+   {
+    "textId": "66fe38f786",
+    "kind": "observation",
+    "answer": "Les trois parties séparées après la marinade sont : la viande bien égoutée, la garniture (carottes, oignons, bouquet garni et petits lardons), et le jus de marinade (le vin).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "6f2373de79",
+    "kind": "observation",
+    "answer": "Après la marinade, il sépare en trois parties : la viande bien égoutée, la garniture (carottes, oignons, bouquet garni et lardons), et le jus de marinade, c'est-à-dire le vin.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "acd053377f",
+    "kind": "observation",
+    "answer": "Après la marinade, il la sépare en trois parties : la viande bien égoutée, la garniture (carottes, oignons, bouquet garni et lardons), et le jus de marinade, c'est-à-dire le vin.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "answers": [
+   {
+    "textId": "b830a5ea1c",
+    "kind": "observation",
+    "answer": "Il fait un « singé » en ajoutant environ 75 grammes de farine dans la garniture en cuisson pour épaissir la sauce, puis il mouille en versant le jus de marinade (le vin) dans la casserole. Il remue ensuite vigoureusement avec une spatule et gratte le fond pour décoller les accrochages.",
+    "citations": [
+     {
+      "id": "moment-46",
+      "startMs": 360000,
+      "endMs": 368000
+     },
+     {
+      "id": "moment-47",
+      "startMs": 368000,
+      "endMs": 376000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "86c92ec721",
+    "kind": "observation",
+    "answer": "Il ajoute environ 75 grammes de farine dans la casserole pour épaissir la sauce, puis il mouille en versant le jus de marinade (le vin) sur les morceaux de viande. Il remue ensuite vigoureusement avec une spatule pour bien mélanger et gratte le fond afin de décoller les parties collées.",
+    "citations": [
+     {
+      "id": "moment-47",
+      "startMs": 368000,
+      "endMs": 376000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "bd739aadcb",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en la faisant réduire et en grattant le fond de la casserole pour récupérer les sucs, puis il la mouille en versant le jus de marinade (le vin) dedans.",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "abeb8ac5e0",
+    "kind": "observation",
+    "answer": "Il fait un « singé » en ajoutant environ 75 grammes de farine dans la garniture en cuisson pour épaissir la sauce, puis il mouille en versant le jus de marinade (le vin) dans la casserole. Il remue ensuite bien et gratte le fond pour décoller les sucs.",
+    "citations": [
+     {
+      "id": "moment-46",
+      "startMs": 360000,
+      "endMs": 368000
+     },
+     {
+      "id": "moment-47",
+      "startMs": 368000,
+      "endMs": 376000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "7c24e4874b",
+    "kind": "observation",
+    "answer": "Pour épaissir, il verse environ 75 grammes de farine dans la casserole (moment-47, 368000-376000). Pour mouiller, il prend le jus de cuisson et le verse dedans, en remuant bien et en grattant le fond (moment-53, 416000-424000).",
+    "citations": [
+     {
+      "id": "moment-47",
+      "startMs": 368000,
+      "endMs": 376000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ]
+   },
+   {
+    "textId": "97a8b4c99d",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en grattant le fond de la casserole avec une spatule pour décoller les sucs de cuisson, puis il la mouille en versant le jus de marinade (le vin) dans la casserole. Ces gestes sont visibles entre 432000 et 448000 ms, où il remue vigoureusement et gratte le fond, et entre 424000 et 432000 ms où il verse un liquide brun.",
+    "citations": [
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "answers": [
+   {
+    "textId": "4186836e96",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant, pour que le plat frémisse sans bouillir, pendant environ deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "13b331ebd5",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole pour laisser frémir la viande pendant deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ]
+   },
+   {
+    "textId": "bce78fd405",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole pour laisser frémir la sauce pendant environ deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ]
+   },
+   {
+    "textId": "2a499d1534",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole, pour environ trois heures de cuisson.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "4b2ee84d2e",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole, pour environ deux à trois heures, en veillant à ce que la sauce frémisse sans bouillir.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "answers": [
+   {
+    "textId": "16fdfdf926",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : la fin du plat n’est pas couverte dans les passages reçus (lacune entre 648 s et 656 s), et je n’ai pas d’ordre vérifié des garnitures. Dis-moi si tu veux que je cherche le moment exact où il termine le plat.",
+    "citations": []
+   },
+   {
+    "textId": "3b719d2a06",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : la mémoire observée s'arrête à 648000 ms et le passage final (648000-656001 ms) est en attente d'analyse, donc l'ordre exact de fin du plat avec les garnitures n'est pas encore confirmé.",
+    "citations": []
+   },
+   {
+    "textId": "29bf440a90",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : le passage qui montre la fin du plat (après 648 s) n'est pas encore analysé, et les résumés disponibles ne précisent pas l'ordre exact des garnitures ajoutées en fin de cuisson.",
+    "citations": []
+   },
+   {
+    "textId": "fedbf38e51",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent seulement qu'il ajoute des champignons coupés dans la sauce du bourguignon et qu'il remue doucement avec une spatule ; aucun passage ne décrit l'ordre dans lequel il termine le plat avec les garnitures, et il reste une lacune de 8001 ms non analysée (648000 à 656001 ms).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-78",
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "id": "moment-79",
+      "startMs": 624000,
+      "endMs": 632000
+     },
+     {
+      "id": "moment-80",
+      "startMs": 632000,
+      "endMs": 640000
+     },
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   },
+   {
+    "textId": "25db4aa8b6",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : la fin du plat n'est pas couverte dans les passages reçus (lacune entre 648 s et 656 s, et rien au-delà). Ce qui est observé jusqu'ici, c'est l'ordre de finissage : retirer le bouquet garni, baisser le feu, ajouter les champignons puis les petits oignons (moments 70 à 81, 552000-648000 ms).",
+    "citations": [
+     {
+      "id": "moment-70",
+      "startMs": 552000,
+      "endMs": 560000
+     },
+     {
+      "id": "moment-72",
+      "startMs": 568000,
+      "endMs": 576000
+     },
+     {
+      "id": "moment-80",
+      "startMs": 632000,
+      "endMs": 640000
+     }
+    ]
+   },
+   {
+    "textId": "fdda98b746",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent seulement qu'il ajoute des champignons coupés dans la sauce du bourguignon et qu'il remue doucement avec une spatule ; aucun passage ne décrit l'ordre dans lequel il termine le plat avec les garnitures. Il manque une séquence montrant la finition du plat.",
+    "citations": []
+   }
+  ]
+ }
+]

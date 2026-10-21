@@ -1,0 +1,1154 @@
+[
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@64000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@64000",
+  "acc": 1.5,
+  "cov": 1.5,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@64000",
+  "acc": 1.5,
+  "cov": 1.5,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@64000",
+  "acc": 1.5,
+  "cov": 1.5,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@128000",
+  "acc": 1,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@128000",
+  "acc": 1,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@128000",
+  "acc": 1,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@128000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@184000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@184000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@184000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@184000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@240000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@240000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@240000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@240000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@304000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@304000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@304000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@304000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "kennedy@368000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-3-images",
+  "block": "kennedy@368000",
+  "acc": 2,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-debut",
+  "block": "kennedy@368000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "ref-fin",
+  "block": "kennedy@368000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@56000",
+  "acc": 3,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@56000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@56000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@56000",
+  "acc": 3,
+  "cov": 2.5,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@200000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@200000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@200000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@200000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@264000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@264000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@264000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@264000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@320000",
+  "acc": 2.5,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@320000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@320000",
+  "acc": 2,
+  "cov": 3,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@320000",
+  "acc": 2,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@368000",
+  "acc": 3,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@368000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@368000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@368000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-3-images",
+  "block": "spring@416000",
+  "acc": 2,
+  "cov": 2.5,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "spring@416000",
+  "acc": 3,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "spring",
+  "arm": "ref-debut",
+  "block": "spring@416000",
+  "acc": 2,
+  "cov": 2.5,
+  "inv": true
+ },
+ {
+  "video": "spring",
+  "arm": "ref-fin",
+  "block": "spring@416000",
+  "acc": 2,
+  "cov": 2.5,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@120000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@120000",
+  "acc": 1,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@120000",
+  "acc": 1,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@120000",
+  "acc": 2,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@224000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@224000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@224000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@224000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@336000",
+  "acc": 0,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@336000",
+  "acc": 2,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@336000",
+  "acc": 2,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@336000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@536000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@536000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@536000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@536000",
+  "acc": 0.5,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@656000",
+  "acc": 2,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@656000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@656000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@656000",
+  "acc": 2,
+  "cov": 1.5,
+  "inv": false
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-3-images",
+  "block": "cnrs-apprentissage@760000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-debut",
+  "block": "cnrs-apprentissage@760000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "ref-fin",
+  "block": "cnrs-apprentissage@760000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "cnrs-apprentissage",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "cnrs-apprentissage@760000",
+  "acc": 2,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@112000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@112000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@112000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@112000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@216000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@216000",
+  "acc": 0,
+  "cov": 0.5,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@216000",
+  "acc": 0,
+  "cov": 0.5,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@216000",
+  "acc": 0,
+  "cov": 0.5,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@328000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@328000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@328000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@328000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@424000",
+  "acc": 0,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@424000",
+  "acc": 2.5,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@424000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@424000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@528000",
+  "acc": 2.5,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@528000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@528000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@528000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-3-images",
+  "block": "boeuf-bourguignon@632000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "boeuf-bourguignon@632000",
+  "acc": 2.5,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-debut",
+  "block": "boeuf-bourguignon@632000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "boeuf-bourguignon",
+  "arm": "ref-fin",
+  "block": "boeuf-bourguignon@632000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@184000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@184000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@184000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@184000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@280000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@280000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@280000",
+  "acc": 3,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@280000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@368000",
+  "acc": 1.5,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@368000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@368000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@368000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@464000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@464000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@464000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@464000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@552000",
+  "acc": 3,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@552000",
+  "acc": 2,
+  "cov": 1,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@552000",
+  "acc": 2,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@552000",
+  "acc": 2,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-3-images",
+  "block": "tears-of-steel@640000",
+  "acc": 2,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "tears-of-steel@640000",
+  "acc": 3,
+  "cov": 2.5,
+  "inv": false
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-debut",
+  "block": "tears-of-steel@640000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "tears-of-steel",
+  "arm": "ref-fin",
+  "block": "tears-of-steel@640000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@384000",
+  "acc": 0.5,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@384000",
+  "acc": 0.5,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@384000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@384000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@664000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@664000",
+  "acc": 1.5,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@664000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@664000",
+  "acc": 2,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@952000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@952000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@952000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@952000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@1248000",
+  "acc": 2.5,
+  "cov": 3,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@1248000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@1248000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@1248000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@1536000",
+  "acc": 1,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@1536000",
+  "acc": 0,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@1536000",
+  "acc": 0,
+  "cov": 1,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@1536000",
+  "acc": 3,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "gemma4-e4b-sans-raisonnement",
+  "block": "artemis@1816000",
+  "acc": 2.5,
+  "cov": 2,
+  "inv": false
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-debut",
+  "block": "artemis@1816000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-fin",
+  "block": "artemis@1816000",
+  "acc": 2,
+  "cov": 2,
+  "inv": true
+ },
+ {
+  "video": "artemis",
+  "arm": "ref-3-images",
+  "block": "artemis@1816000",
+  "acc": 1,
+  "cov": 2,
+  "inv": true
+ }
+]

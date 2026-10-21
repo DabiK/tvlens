@@ -1,0 +1,525 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "atMs": 32000,
+  "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+  "answers": [
+   {
+    "textId": "84411b60ca",
+    "kind": "observation",
+    "answer": "Kennedy condense 50 000 ans d'histoire humaine en un demi-siècle, puis note qu'on sait peu des 40 premières années.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "a2e3a13ce7",
+    "kind": "observation",
+    "answer": "Kennedy raisonne en dizaines de milliers d’années : il évoque « 50,000 years of man's recorded history » puis « the first 40 years » de cette période, soit un ordre de grandeur de l’ordre de 50 000 ans (moment-2, 8000–16000 ms ; moment-3, 16000–24000 ms).",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "d6cc41331d",
+    "kind": "observation",
+    "answer": "Kennedy situe l’histoire humaine enregistrée à 50 000 ans, puis la ramène à un demi-siècle, soit un ordre de grandeur de l’ordre de 10^5 ans.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "3b18b8bd98",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "b069e6c0a0",
+    "kind": "observation",
+    "answer": "Kennedy compare 50 000 ans d’histoire humaine enregistrée à une demi-seule centaine d’années, soit un ordre de grandeur de l’ordre de 50 000 ans.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "a4cdeb87ce",
+    "kind": "observation",
+    "answer": "Kennedy situe l'histoire humaine enregistrée à 50 000 ans, puis la ramasse en une demi-année (une « half a century ») pour montrer la brièveté de la période récente.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "atMs": 128000,
+  "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+  "answers": [
+   {
+    "textId": "74ca3e929f",
+    "kind": "observation",
+    "answer": "L'accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "ed516e8251",
+    "kind": "observation",
+    "answer": "Cette accélération produit, selon Kennedy, de nouveaux maux, de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, tout en dissipant les anciens. L'ouverture de l'espace promet à la fois de hauts coûts et des dangers, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "02f31f28bb",
+    "kind": "observation",
+    "answer": "L'accélération produit, selon Kennedy, de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers. L'ouverture de l'espace promet de hauts coûts et de hauts risques, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "17ed5b8f8e",
+    "kind": "observation",
+    "answer": "L'accélération produit de nouveaux maux, une nouvelle ignorance, de nouveaux problèmes et de nouveaux dangers, tout en dissipant les anciens. L'ouverture de l'espace promet de hauts coûts et de hauts risques, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "816347774b",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "atMs": 216000,
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "answers": [
+   {
+    "textId": "ca4922496d",
+    "kind": "observation",
+    "answer": "Il présente l'exploration spatiale comme une grande aventure inévitable, qui avancera « que nous y participions ou non », et affirme qu'aucune nation voulant mener les autres ne peut rester en retrait dans cette course.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "f4a766de35",
+    "kind": "observation",
+    "answer": "Kennedy dit que l'exploration de la science et de l'espace avancera « que nous y participions ou non » et qu'elle est « l'une des grandes aventures de tous les temps ». Il ajoute qu'aucune nation qui prétend mener les autres ne peut se permettre de rester en retrait dans cette course spatiale.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b81553b413",
+    "kind": "observation",
+    "answer": "Il affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme l'une des grandes aventures de tous les temps, et la quête de connaissance comme une détermination que rien ne peut arrêter.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "bbddd504fa",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme l'une des grandes aventures de tous les temps, que l'humanité ne peut ni ne doit refuser.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b3b8b09c4c",
+    "kind": "observation",
+    "answer": "Il présente l'exploration spatiale comme une grande aventure inévitable : « the exploration of science, space will go ahead, whether we join in it or not » (moment-23, 176000–184000 ms ; moment-24, 184000–192000 ms). Sur le rôle des États-Unis, il affirme qu'aucune nation qui prétend mener les autres ne peut rester en retrait : « no nation, which expects to be the leader of other nations, can expect to stay behind in this race for space » (moment-25, 192000–200000 ms ; moment-26, 200000–208000 ms).",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "8f0eb14ae0",
+    "kind": "observation",
+    "answer": "Il dit que l'exploration de l'espace avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme une grande aventure et un défi que les Américains doivent relever.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "73e68c49e7",
+    "kind": "observation",
+    "answer": "Il dit que l'exploration spatiale avancera « que nous y participions ou non » et qu'elle est « l'une des grandes aventures de tous les temps » (moment-24, 184000-192000). Pour les États-Unis, il affirme qu'« aucune nation qui prétend mener les autres ne peut espérer rester en retrait » dans cette course (moment-25, 192000-200000), et que ceux qui les ont précédés ont assuré que le pays « tenait la tête » (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "atMs": 272000,
+  "question": "What does Kennedy want space to represent, and what does he reject?",
+  "answers": [
+   {
+    "textId": "cba720b3b9",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'on y participe et le mène, et il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     },
+     {
+      "startMs": 224000,
+      "endMs": 232000
+     }
+    ]
+   },
+   {
+    "textId": "1169ed176f",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une grande aventure partagée, tandis qu'il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "9bdb2978fa",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « une bannière de liberté et de paix » et qu'il soit partagé, non qu'il soit rempli d'armes ou dominé par une « bannière de conquête hostile ». Il rejette donc la conquête et la militarisation de l'espace.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "308c807098",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "a6acbce40f",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et il rejette qu'il soit dominé par un drapeau hostile de conquête ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "4c328f521b",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il ne soit pas rempli d'armes ou de menaces ; il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il devienne un champ de rivalité armée.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "f2c826f691",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une part de l'effort humain que les États-Unis entendent mener (« We mean to be a part of it. We mean to lead it. »). Il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il soit rempli d'armes ou de menaces.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     },
+     {
+      "startMs": 224000,
+      "endMs": 232000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "atMs": 360000,
+  "question": "Who determines whether technology serves good or war?",
+  "answers": [
+   {
+    "textId": "edafd7c79f",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, where they it will become a force for good or real depends on man » (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms).",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "21f1a2098e",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « Science, like nuclear science and all technology, has no conscience of its own. Whether it will be a force for good or ill depends on man. »",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "1d3de433c3",
+    "kind": "observation",
+    "answer": "Kennedy répond que la technologie n'a pas de conscience propre et que c'est l'homme qui décide si elle sert le bien ou la guerre.",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "7b2cea9acb",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. »",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "b56924a202",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « Science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or ill depends on man » (moment-42, 328000-336000).",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     }
+    ]
+   },
+   {
+    "textId": "bd254d2341",
+    "kind": "observation",
+    "answer": "Kennedy répond que c'est l'homme qui décide : la science et la technologie n'ont « pas de conscience propre », et leur usage comme force pour le bien ou pour le mal dépend de l'humanité. Il ajoute que c'est à la position de prééminence des États-Unis de permettre de décider si cet « océan nouveau » sera un espace de liberté ou de guerre.",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ }
+]

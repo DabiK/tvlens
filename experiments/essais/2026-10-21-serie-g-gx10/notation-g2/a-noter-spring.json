@@ -1,0 +1,444 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "70795285c0",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : on y voit un paysage alpin, un petit chien et un enfant qui s'approche du chien. Pour te répondre précisément, peux-tu me dire à quel moment tu vois cette jeune fille ?",
+    "citations": []
+   },
+   {
+    "textId": "d830d2c362",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "f254456b9c",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : le début montre un squelette organique, des stalactites, puis des paysages alpins, un chien et un enfant. Dis-moi à quel moment tu vois la jeune fille.",
+    "citations": []
+   },
+   {
+    "textId": "390a27ddac",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : on y voit un paysage alpin, un petit chien et un enfant qui s’approche du chien. Dis-moi à quel moment tu vois la jeune fille, ou si tu fais référence à un autre passage.",
+    "citations": []
+   },
+   {
+    "textId": "188e1b8230",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : on y voit un squelette organique, des stalactites, des montagnes enneigées, un petit chien et un enfant. Dis-moi à quel moment tu la vois, ou si tu fais référence à un autre passage.",
+    "citations": []
+   },
+   {
+    "textId": "755c498270",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : le début montre un squelette organique, des stalactites, puis des montagnes enneigées, un petit chien et un enfant. Dis-moi à quel moment tu vois cette jeune fille, ou si tu fais référence à un autre passage.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "28bf5a349a",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d’objet précis dans la main de la jeune fille dans la forêt : le passage 144000-152000 la montre terrifiée, bras tendus, dans un environnement sombre et brumeux, mais sans objet identifiable. Dis-moi à quel moment tu la vois tenir quelque chose, ou je peux vérifier ce passage.",
+    "citations": []
+   },
+   {
+    "textId": "8ca6f0daaa",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d’objet précis : le seul passage de la forêt (moment-19, 144000–152000) décrit une jeune fille terrifiée en fuite, bras tendus, dans un environnement sombre et brumeux, mais sans objet identifiable. Je peux réexaminer ce passage pour voir si elle tient quelque chose.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "02bd74417d",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas d’objet précis dans les passages reçus : la jeune fille apparaît dans une forêt sombre et brumeuse, en fuite, mais aucun objet tenu n’est décrit. Dis-moi à quel moment tu la vois, ou je peux vérifier le passage.",
+    "citations": []
+   },
+   {
+    "textId": "3b50466132",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d'objet précis dans la main de la jeune fille : le passage de la forêt (moment-19, 144000-152000) la décrit en fuite, bras tendus, sans objet identifié. Je peux réexaminer ce passage pour voir si elle tient quelque chose.",
+    "citations": []
+   },
+   {
+    "textId": "ef330c83d3",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d’objet précis dans la main de la jeune fille : le passage de la forêt (moment-19, 144000–152000 ms) la décrit en fuite, bras tendus, dans une brume sombre, sans objet identifié. Je peux réexaminer ce passage pour voir si elle tient quelque chose.",
+    "citations": []
+   },
+   {
+    "textId": "bf34f1ec0a",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d'objet précis : le seul passage de la forêt (moment-19, 144000–152000 ms) décrit une jeune fille terrifiée en fuite, bras tendus, dans un environnement sombre et brumeux, mais sans objet identifiable. Je peux réexaminer ce passage pour voir si elle tient quelque chose.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "4c0e8e7e64",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière bleue, comme le décrivent les passages 184000–200000 ms (structure squelettique lumineuse dans une lumière bleue).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "49b28ab774",
+    "kind": "observation",
+    "answer": "La grande forme lumineuse près d'elle est décrite comme baignée dans une lumière bleutée et sombre, dans plusieurs passages consécutifs (moments 23 à 25).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b6068a8ffb",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est décrite comme baignée dans une lumière bleutée et sombre, dans plusieurs passages consécutifs (moments 23 à 25).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "bef98200e5",
+    "kind": "observation",
+    "answer": "La grande forme qui surplombe la jeune fille est décrite comme baignée dans une lumière bleutée, dans plusieurs passages consécutifs (moments 22 à 25, 168000–200000 ms).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "3798f57b9d",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est décrite comme baignée dans une lumière bleue (moments 23 et 24, 176000–192000 ms).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "c20b145c13",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière bleue, qui domine la scène.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "535e9c6028",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore le haut du bâton dans les passages reçus : les résumés mentionnent qu'elle tient un bâton (moments 25 et 26, 192000–208000 ms) mais ne décrivent pas son extrémité. Je peux réexaminer l'un de ces passages pour voir le détail du haut du bâton.",
+    "citations": []
+   },
+   {
+    "textId": "b3b6fe1e9b",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : la jeune fille y tient une torche (moments 29 à 31), pas un bâton. Dis-moi à quel moment tu vois le bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   },
+   {
+    "textId": "dfc7c98939",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : les scènes récentes montrent une jeune femme tenant une torche (moments 29 à 31), mais aucun bâton n'est décrit. Dis-moi à quel moment tu vois le bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   },
+   {
+    "textId": "ea82849d88",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore le haut du bâton dans les passages reçus : les résumés mentionnent qu'elle tient un bâton (moments 25-26) ou une torche (moments 29-31), mais aucun détail sur son extrémité. Je peux réexaminer l'un de ces passages pour voir plus précisément.",
+    "citations": []
+   },
+   {
+    "textId": "bda0778ac1",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : les scènes récentes montrent une jeune femme tenant une torche (moments 29 à 31), mais aucun bâton n'y est décrit. Dis-moi à quel moment tu vois le bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "5d4808e6ca",
+    "kind": "observation",
+    "answer": "Au début (moments 4–5, 24 000–40 000 ms), le paysage est une chaîne de montagnes enneigées avec un lac bleu turquoise, des nuages bas et un ciel clair où le soleil émerge. Plus tard (moments 43–45, 336 000–360 000 ms), le même type de décor alpin apparaît mais désormais enveloppé d'une brume épaisse, avec des formations rocheuses imposantes et une teinte dorée au loin. L'essentiel du changement : le ciel clair et le lac turquoise du début cèdent la place à une atmosphère brumeuse et plus sombre.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "cfc3914c28",
+    "kind": "observation",
+    "answer": "Au début (moments 4-5, 24000–40000 ms), le paysage est une montagne enneigée avec un lac bleu turquoise, des nuages bas et un ciel clair. Plus tard (moments 43-45, 336000–360000 ms), la même montagne est enveloppée de brume épaisse, avec un ciel plus sombre et une teinte dorée au loin. Le changement principal est l'apparition d'une brume dense qui voile le paysage alpin.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "5930469cf8",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un décor alpin clair et lumineux, avec montagnes enneigées, lac bleu et ciel nuageux (moments 4 à 7, 24000–72000 ms), à un environnement forestier sombre, brumeux et humide, avec arbres nus, racines apparentes et brume épaisse (moments 19, 22, 31, 36, 39, 144000–304000 ms). Plus tard, on retrouve des montagnes enneigées mais cette fois enveloppées de brume et de nuages, avec une teinte dorée au loin (moments 43 à 45, 336000–360000 ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     },
+     {
+      "id": "moment-36",
+      "startMs": 280000,
+      "endMs": 288000
+     },
+     {
+      "id": "moment-39",
+      "startMs": 304000,
+      "endMs": 312000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "e1b9b940c0",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore de passage du tout début de la vidéo (les passages reçus commencent vers 320 000 ms, et 35 passages antérieurs sont omis). Pour comparer l'aspect du paysage au fil du temps, dis-moi à quel moment tu veux que je regarde, ou je peux chercher des passages plus anciens.",
+    "citations": []
+   },
+   {
+    "textId": "c3a80817e4",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un décor alpin clair et enneigé, avec lac bleu et ciel nuageux (moments 4 à 5, 24000–40000 ms), à une forêt sombre et brumeuse, puis à des scènes sous-marines et nocturnes (moments 19 à 42, 144000–336000 ms). Vers la fin, on revient à des montagnes enneigées et brumeuses, mais avec une atmosphère plus mystérieuse et des créatures lumineuses (moments 43 à 45, 336000–360000 ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "e8f4e661c6",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore de passage du tout début de la vidéo (les passages reçus commencent vers 320 000 ms, et 35 passages antérieurs sont omis). Pour comparer l'aspect du paysage au fil du temps, dis-moi à quel moment tu veux que je regarde, ou je peux vérifier un passage précis du début.",
+    "citations": []
+   }
+  ]
+ }
+]

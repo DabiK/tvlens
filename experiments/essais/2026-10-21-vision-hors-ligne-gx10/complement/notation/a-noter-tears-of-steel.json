@@ -1,0 +1,141 @@
+[
+ {
+  "blockId": "tears-of-steel@184000",
+  "startS": 184.0,
+  "endS": 192.0,
+  "transcript": "Are you ready?",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "191f22bbbd",
+    "summary": "Un homme âgé se tient au centre d'un intérieur rustique et envahi par la végétation, entouré de meubles et de lumières tamisées. Une autre personne est visible à l'arrière-plan, près d'un meuble en bois.",
+    "visual": "L'image montre un homme âgé, vêtu d'un long manteau sombre, debout dans ce qui semble être un salon ou une pièce de vie ancienne. L'environnement est richement décoré, avec des plantes grimpantes et une architecture en briques apparentes. Des lampes éclairent la scène, créant une ambiance chaleureuse mais mélancolique."
+   },
+   {
+    "textId": "1f8414d83c",
+    "summary": "L'homme âgé, debout dans un intérieur sombre et humide, observe attentivement la jeune femme qui se tient à proximité.",
+    "visual": "Un homme âgé, vêtu de noir, est debout dans un espace intérieur délabré, éclairé par des lampes. Il regarde une jeune femme qui se trouve à proximité, dans une posture attentive."
+   },
+   {
+    "textId": "c8ec6ac2a8",
+    "summary": "L'homme âgé, debout dans l'entrée sombre et humide, observe attentivement la jeune femme qui se tient à ses côtés.",
+    "visual": "Un homme âgé, vêtu de noir, est debout dans un intérieur sombre et humide, entouré de végétation luxuriante. Il regarde une jeune femme qui se tient à côté de lui."
+   }
+  ]
+ },
+ {
+  "blockId": "tears-of-steel@280000",
+  "startS": 280.0,
+  "endS": 288.0,
+  "transcript": "(soft music)",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "d74c354faf",
+    "summary": "Un jeune homme, vêtu d'une veste à motifs animaliers, se tient sur un pont à Amsterdam et observe attentivement la rue et les bâtiments environnants.",
+    "visual": "L'homme est debout sur un pont, dans une ville européenne, avec des bâtiments anciens et des canaux. Il porte une veste distinctive et regarde dans une direction."
+   },
+   {
+    "textId": "ed30b254f4",
+    "summary": "L'homme, vêtu d'une veste à motifs, se tient sur un pont à Amsterdam et observe attentivement un robot géant et peint à proximité.",
+    "visual": "Un jeune homme est debout sur un pont, face à un robot imposant et peint, dans un décor urbain néerlandais."
+   },
+   {
+    "textId": "565679e22f",
+    "summary": "Un jeune homme, vêtu d'une veste distinctive avec un motif de lion, se tient sur un pont en observant la rue et les bâtiments environnants. Il est positionné devant une balustrade en fer forgé, avec des véhicules et des cyclistes visibles en arrière-plan.",
+    "visual": "Un homme de profil, portant une veste de style décontracté avec un motif de lion jaune et noir, se tient sur un pont. Il regarde vers la droite, au-delà d'une balustrade noire. En arrière-plan, on distingue des bâtiments urbains et une voiture rouge en mouvement."
+   }
+  ]
+ },
+ {
+  "blockId": "tears-of-steel@368000",
+  "startS": 368.0,
+  "endS": 376.0,
+  "transcript": "Good one!",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "154cfcff68",
+    "summary": "Un homme prononce l'expression \"Good one!\" dans un environnement extérieur.",
+    "visual": "Plan moyen d'un homme en extérieur, avec un arrière-plan urbain flou."
+   },
+   {
+    "textId": "ae9a0147e1",
+    "summary": "Un homme, visiblement agité, observe une jeune femme qui semble terrifiée par une main robotique complexe qu'il tient.",
+    "visual": "Un homme est face à une jeune femme, les deux semblent dans un environnement urbain. L'homme tient une main robotique complexe, tandis que la jeune femme exprime une peur intense."
+   }
+  ]
+ },
+ {
+  "blockId": "tears-of-steel@464000",
+  "startS": 464.0,
+  "endS": 472.0,
+  "transcript": "(dramatic music)",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "8da1cd4ee6",
+    "summary": "Un robot massif, apparemment endommagé, est posé sur le sol, entouré de débris. Des techniciens, vêtus de blanc, sont présents autour de lui, examinant attentivement la machine.",
+    "visual": "Un robot de grande taille est visiblement en panne, avec des pièces détachées et des débris autour. Des hommes en combinaison blanche sont concentrés sur l'inspection de la machine."
+   },
+   {
+    "textId": "a6683de498",
+    "summary": "Plusieurs personnes sont assises au sol dans un environnement vaste et délabré, semblant examiner ou travailler sur des équipements. L'ambiance est marquée par une musique dramatique.",
+    "visual": "Un groupe de personnes est rassemblé au sol dans un espace intérieur très grand et en ruine, entouré de structures métalliques et de débris. Elles sont concentrées sur des objets devant elles, sous une lumière filtrée."
+   },
+   {
+    "textId": "fb091bbda3",
+    "summary": "L'homme, toujours en train de manipuler le canon à distance, semble frustré et continue ses efforts de réparation ou de réinitialisation.",
+    "visual": "Un homme est visiblement concentré sur un canon complexe, probablement en essayant de le réparer après un dysfonctionnement. L'appareil est entouré de divers composants et semble être situé dans un environnement industriel et sombre."
+   }
+  ]
+ },
+ {
+  "blockId": "tears-of-steel@552000",
+  "startS": 552.0,
+  "endS": 560.0,
+  "transcript": "(soft music) - You know?",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "5060fc9cca",
+    "summary": "Un homme âgé, vêtu d'un manteau à carreaux, examine attentivement une structure mécanique complexe. L'arrière-plan suggère un environnement intérieur vaste et potentiellement ancien.",
+    "visual": "Un homme âgé aux cheveux gris, portant un manteau à carreaux, est penché en examinant une grande machine ou structure métallique complexe. L'environnement autour est sombre et semble être un lieu intérieur avec des éléments architecturaux visibles en arrière-plan."
+   },
+   {
+    "textId": "cdb9b99d30",
+    "summary": "Dans ce laboratoire dévasté, un homme, vêtu d'un costume en tweed, examine attentivement un robot complexe, probablement pour tenter de le réparer ou de le diagnostiquer.",
+    "visual": "Un homme âgé, portant un costume en tweed, est penché sur un robot complexe, ses mains autour d'une partie du dispositif. L'environnement est sombre et délabré, avec des éléments mécaniques et des câbles apparents."
+   },
+   {
+    "textId": "f860d0c0d5",
+    "summary": "Dans cette scène, un homme, vêtu d'un costume en tweed, examine attentivement un canon à distance complexe et un robot, manifestant une expression de concentration et d'inquiétude.",
+    "visual": "L'homme est en train de manipuler le robot, probablement pour tenter de le réparer ou de le diagnostiquer, avec un regard intense et une posture attentive."
+   }
+  ]
+ },
+ {
+  "blockId": "tears-of-steel@640000",
+  "startS": 640.0,
+  "endS": 648.0,
+  "transcript": "(upbeat music)",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "910c5faa24",
+    "summary": "La présente image affiche une liste détaillée des membres de l'équipe technique impliqués dans la production, incluant des responsables de la conception, du casting, de l'équipement, des décors et du son. Elle mentionne également des outils de rendu, des développeurs Blender et des projets open source associés, ainsi que des remerciements à l'ensemble de l'équipe de développement Blender.org.",
+    "visual": "Une liste de noms et de rôles techniques est affichée, accompagnée d'icônes représentant des outils et des technologies utilisés dans la production."
+   },
+   {
+    "textId": "d015dbb771",
+    "summary": "L'image présente une série de remerciements détaillés, incluant des remerciements aux développeurs de Blender pour diverses contributions techniques comme la simulation de fumée, le suivi de mouvement, les collisions et les outils d'édition de nœuds. Elle mentionne également des remerciements généraux pour le développement et les ressources open source.",
+    "visual": "L'image affiche une série de diapositives de remerciements avec des listes de noms et des mentions de technologies, le tout sur un fond graphique stylisé de circuits électroniques."
+   },
+   {
+    "textId": "775f69240f",
+    "summary": "Cette image présente les crédits d'une production cinématographique impliquant un canon à distance robotique bleu et orange. Elle détaille les membres de l'équipe technique, les outils utilisés (comme Blender) et les prestataires de services (Green screen studio, Amsterdam Studios), ainsi que les remerciements aux développeurs de Blender et à l'équipe de production générale.",
+    "visual": "L'image est un collage de crédits techniques avec des illustrations de projection et des schémas, montrant une équipe de production travaillant sur un projet utilisant un canon à distance robotique. On y voit des noms et des titres de postes associés à différents aspects de la production, notamment la conception, le rendu, le montage et la gestion des ressources."
+   }
+  ]
+ }
+]

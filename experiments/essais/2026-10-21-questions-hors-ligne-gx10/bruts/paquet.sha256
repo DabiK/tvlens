@@ -1,0 +1,6 @@
+62a4b7296da67c8ade476e78e2cfec9d33931e69cffff5cd7048f779066e5f7c  construire_plans.py
+4e8f7340167e6db3068363fdda4fa6ba6e9e747899c949fafbac0ad9f566ea90  rejouer_questions.py
+17da031ec61eee495f614b1ee844f0c7d85c5d547a17875c675ad0b0195992ed  rejouer_vision.py
+9e97847fc188d917cc9408028f9366899f28b210de5e2754478d3290686e64b9  file-e2-e3.sh
+# 11:27 UTC: bras dense-nvfp4 retiré (tag Ollama exige MLX, indisponible sous Linux/CUDA)
+3e7fdeefb1138fb5ac436f0e6af66359d8fa6d1d01f230c788c63d7930e178ef  construire_plans.py

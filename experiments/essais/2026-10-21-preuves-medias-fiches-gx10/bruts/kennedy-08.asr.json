@@ -1,0 +1,175 @@
+{
+	"systeminfo": "WHISPER : VITISAI = 0 | COREML = 0 | OPENVINO = 0 | CUDA : ARCHS = 1210 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16,bf16-bf16 | BLACKWELL_NATIVE_FP4 = 1 | CPU : NEON = 1 | ARM_FMA = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:04,880"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 4880
+			},
+			"text": " sea, because there is new knowledge to be gained and new"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,880",
+				"to": "00:00:07,280"
+			},
+			"offsets": {
+				"from": 4880,
+				"to": 7280
+			},
+			"text": " rights to be won, and they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,280",
+				"to": "00:00:11,780"
+			},
+			"offsets": {
+				"from": 7280,
+				"to": 11780
+			},
+			"text": " must be won and used for the progress of all people. For"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,780",
+				"to": "00:00:15,360"
+			},
+			"offsets": {
+				"from": 11780,
+				"to": 15360
+			},
+			"text": " space science, like nuclear science"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:15,360",
+				"to": "00:00:20,000"
+			},
+			"offsets": {
+				"from": 15360,
+				"to": 20000
+			},
+			"text": " and all technology, has no conscience of its own. Whether"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:20,000",
+				"to": "00:00:22,380"
+			},
+			"offsets": {
+				"from": 20000,
+				"to": 22380
+			},
+			"text": " it will become a force for good"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:22,380",
+				"to": "00:00:28,700"
+			},
+			"offsets": {
+				"from": 22380,
+				"to": 28700
+			},
+			"text": " or ill depends on man. And only if the United States occupies"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:28,700",
+				"to": "00:00:31,820"
+			},
+			"offsets": {
+				"from": 28700,
+				"to": 31820
+			},
+			"text": " a position of preeminence can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:31,820",
+				"to": "00:00:37,040"
+			},
+			"offsets": {
+				"from": 31820,
+				"to": 37040
+			},
+			"text": " we help decide whether this new ocean will be a sea of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:37,040",
+				"to": "00:00:40,480"
+			},
+			"offsets": {
+				"from": 37040,
+				"to": 40480
+			},
+			"text": " peace or a new terrifying theater"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:40,480",
+				"to": "00:00:46,360"
+			},
+			"offsets": {
+				"from": 40480,
+				"to": 46360
+			},
+			"text": " of war. I do not say that we should or will go unprotected"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:46,360",
+				"to": "00:00:48,920"
+			},
+			"offsets": {
+				"from": 46360,
+				"to": 48920
+			},
+			"text": " against the hostile misuse of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:48,920",
+				"to": "00:01:00,000"
+			},
+			"offsets": {
+				"from": 48920,
+				"to": 60000
+			},
+			"text": " land or sea. But I do say that space can be explored and"
+		}
+	]
+}

@@ -1,0 +1,153 @@
+{
+	"systeminfo": "WHISPER : VITISAI = 0 | COREML = 0 | OPENVINO = 0 | CUDA : ARCHS = 1210 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16,bf16-bf16 | BLACKWELL_NATIVE_FP4 = 1 | CPU : NEON = 1 | ARM_FMA = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/srv/tvlens-gx10/poids/ggml-large-v3-turbo.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:04,980"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 4980
+			},
+			"text": " Before midnight tonight, this is a breathtaking pace, and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,980",
+				"to": "00:00:10,510"
+			},
+			"offsets": {
+				"from": 4980,
+				"to": 10510
+			},
+			"text": " such a pace cannot help but create new ills as it dispels"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,510",
+				"to": "00:00:11,240"
+			},
+			"offsets": {
+				"from": 10510,
+				"to": 11240
+			},
+			"text": " old."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,140",
+				"to": "00:00:15,420"
+			},
+			"offsets": {
+				"from": 12140,
+				"to": 15420
+			},
+			"text": " New ignorance, new problems, new dangers."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:16,220",
+				"to": "00:00:21,200"
+			},
+			"offsets": {
+				"from": 16220,
+				"to": 21200
+			},
+			"text": " Surely the opening vistas of space promise high costs and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:21,200",
+				"to": "00:00:24,380"
+			},
+			"offsets": {
+				"from": 21200,
+				"to": 24380
+			},
+			"text": " hardships, as well as high reward."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:25,300",
+				"to": "00:00:29,800"
+			},
+			"offsets": {
+				"from": 25300,
+				"to": 29800
+			},
+			"text": " So it is not surprising that some would have us stay where"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:29,800",
+				"to": "00:00:33,480"
+			},
+			"offsets": {
+				"from": 29800,
+				"to": 33480
+			},
+			"text": " we are a little longer, to rest, to wait."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:33,940",
+				"to": "00:00:37,830"
+			},
+			"offsets": {
+				"from": 33940,
+				"to": 37830
+			},
+			"text": " But this city of Houston, this state of Texas, this country"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:37,830",
+				"to": "00:00:41,850"
+			},
+			"offsets": {
+				"from": 37830,
+				"to": 41850
+			},
+			"text": " of the United States was not built by those who waited and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:41,850",
+				"to": "00:00:44,900"
+			},
+			"offsets": {
+				"from": 41850,
+				"to": 44900
+			},
+			"text": " rested and wished to look behind them."
+		}
+	]
+}

@@ -1,0 +1,609 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "olderBlocks": 0,
+  "recent": [
+   "moment-1",
+   "moment-2",
+   "moment-3"
+  ],
+  "journalChars": 0,
+  "retrieved": []
+ },
+ {
+  "questionId": "kennedy-03",
+  "olderBlocks": 9,
+  "recent": [
+   "moment-10",
+   "moment-11",
+   "moment-12",
+   "moment-13",
+   "moment-14",
+   "moment-15"
+  ],
+  "journalChars": 1206,
+  "retrieved": [
+   "moment-3",
+   "moment-5",
+   "moment-6",
+   "moment-7",
+   "moment-8",
+   "moment-9"
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "olderBlocks": 20,
+  "recent": [
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ],
+  "journalChars": 2124,
+  "retrieved": [
+   "moment-14",
+   "moment-16",
+   "moment-17",
+   "moment-18",
+   "moment-19",
+   "moment-20"
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "olderBlocks": 27,
+  "recent": [
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32",
+   "moment-33"
+  ],
+  "journalChars": 2824,
+  "retrieved": [
+   "moment-14",
+   "moment-16",
+   "moment-17",
+   "moment-19",
+   "moment-21",
+   "moment-26"
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "olderBlocks": 37,
+  "recent": [
+   "moment-39",
+   "moment-40",
+   "moment-41",
+   "moment-42",
+   "moment-43",
+   "moment-44"
+  ],
+  "journalChars": 3751,
+  "retrieved": [
+   "moment-17",
+   "moment-21",
+   "moment-27",
+   "moment-32",
+   "moment-37",
+   "moment-38"
+  ]
+ },
+ {
+  "questionId": "spring-01",
+  "olderBlocks": 2,
+  "recent": [
+   "moment-3",
+   "moment-4",
+   "moment-5",
+   "moment-6",
+   "moment-7",
+   "moment-8"
+  ],
+  "journalChars": 354,
+  "retrieved": [
+   "moment-1",
+   "moment-2"
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "olderBlocks": 8,
+  "recent": [
+   "moment-16",
+   "moment-17",
+   "moment-18",
+   "moment-19",
+   "moment-21",
+   "moment-23"
+  ],
+  "journalChars": 1332,
+  "retrieved": [
+   "moment-1",
+   "moment-4",
+   "moment-5",
+   "moment-6",
+   "moment-7",
+   "moment-8"
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "olderBlocks": 9,
+  "recent": [
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26",
+   "moment-27"
+  ],
+  "journalChars": 1522,
+  "retrieved": [
+   "moment-1",
+   "moment-2",
+   "moment-3",
+   "moment-4",
+   "moment-5",
+   "moment-6"
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "olderBlocks": 14,
+  "recent": [
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32"
+  ],
+  "journalChars": 1786,
+  "retrieved": [
+   "moment-1",
+   "moment-5",
+   "moment-22",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "olderBlocks": 26,
+  "recent": [
+   "moment-41",
+   "moment-42",
+   "moment-43",
+   "moment-44",
+   "moment-45",
+   "moment-46"
+  ],
+  "journalChars": 3922,
+  "retrieved": [
+   "moment-4",
+   "moment-5",
+   "moment-22",
+   "moment-23",
+   "moment-37",
+   "moment-38"
+  ]
+ },
+ {
+  "questionId": "cnrs-01",
+  "olderBlocks": 5,
+  "recent": [
+   "moment-10",
+   "moment-11",
+   "moment-6",
+   "moment-7",
+   "moment-8",
+   "moment-9"
+  ],
+  "journalChars": 1646,
+  "retrieved": [
+   "moment-1",
+   "moment-2",
+   "moment-3",
+   "moment-4",
+   "moment-5"
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "olderBlocks": 22,
+  "recent": [
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26",
+   "moment-27",
+   "moment-28"
+  ],
+  "journalChars": 5104,
+  "retrieved": [
+   "moment-5",
+   "moment-6",
+   "moment-19",
+   "moment-20",
+   "moment-21",
+   "moment-22"
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "olderBlocks": 49,
+  "recent": [
+   "moment-53",
+   "moment-54",
+   "moment-55",
+   "moment-56",
+   "moment-57",
+   "moment-58"
+  ],
+  "journalChars": 9946,
+  "retrieved": [
+   "moment-3",
+   "moment-26",
+   "moment-38",
+   "moment-39",
+   "moment-43",
+   "moment-44"
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "olderBlocks": 62,
+  "recent": [
+   "moment-75",
+   "moment-76",
+   "moment-77",
+   "moment-78",
+   "moment-79",
+   "moment-80"
+  ],
+  "journalChars": 9898,
+  "retrieved": [
+   "moment-26",
+   "moment-38",
+   "moment-64",
+   "moment-65",
+   "moment-68",
+   "moment-74"
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "olderBlocks": 79,
+  "recent": [
+   "moment-93",
+   "moment-94",
+   "moment-95",
+   "moment-96",
+   "moment-97",
+   "moment-98"
+  ],
+  "journalChars": 9952,
+  "retrieved": [
+   "moment-66",
+   "moment-69",
+   "moment-72",
+   "moment-85",
+   "moment-91",
+   "moment-92"
+  ]
+ },
+ {
+  "questionId": "cuisine-02",
+  "olderBlocks": 18,
+  "recent": [
+   "moment-19",
+   "moment-20",
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24"
+  ],
+  "journalChars": 3229,
+  "retrieved": [
+   "moment-8",
+   "moment-10",
+   "moment-11",
+   "moment-13",
+   "moment-14",
+   "moment-17"
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "olderBlocks": 24,
+  "recent": [
+   "moment-25",
+   "moment-26",
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30"
+  ],
+  "journalChars": 4463,
+  "retrieved": [
+   "moment-10",
+   "moment-11",
+   "moment-14",
+   "moment-20",
+   "moment-23",
+   "moment-24"
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "olderBlocks": 49,
+  "recent": [
+   "moment-51",
+   "moment-52",
+   "moment-53",
+   "moment-54",
+   "moment-55",
+   "moment-56"
+  ],
+  "journalChars": 6991,
+  "retrieved": [
+   "moment-33",
+   "moment-34",
+   "moment-37",
+   "moment-46",
+   "moment-47",
+   "moment-48"
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "olderBlocks": 61,
+  "recent": [
+   "moment-63",
+   "moment-64",
+   "moment-65",
+   "moment-66",
+   "moment-67",
+   "moment-68"
+  ],
+  "journalChars": 7807,
+  "retrieved": [
+   "moment-37",
+   "moment-43",
+   "moment-44",
+   "moment-45",
+   "moment-52",
+   "moment-53"
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "olderBlocks": 74,
+  "recent": [
+   "moment-76",
+   "moment-77",
+   "moment-78",
+   "moment-79",
+   "moment-80",
+   "moment-81"
+  ],
+  "journalChars": 8684,
+  "retrieved": [
+   "moment-8",
+   "moment-27",
+   "moment-44",
+   "moment-62",
+   "moment-70",
+   "moment-74"
+  ]
+ },
+ {
+  "questionId": "tears-01",
+  "olderBlocks": 0,
+  "recent": [
+   "moment-1",
+   "moment-2",
+   "moment-3",
+   "moment-4",
+   "moment-5"
+  ],
+  "journalChars": 0,
+  "retrieved": []
+ },
+ {
+  "questionId": "tears-03",
+  "olderBlocks": 9,
+  "recent": [
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ],
+  "journalChars": 1906,
+  "retrieved": [
+   "moment-1",
+   "moment-4",
+   "moment-5",
+   "moment-16",
+   "moment-18",
+   "moment-19"
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "olderBlocks": 15,
+  "recent": [
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32"
+  ],
+  "journalChars": 2122,
+  "retrieved": [
+   "moment-4",
+   "moment-5",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "olderBlocks": 32,
+  "recent": [
+   "moment-45",
+   "moment-46",
+   "moment-47",
+   "moment-48",
+   "moment-49",
+   "moment-50"
+  ],
+  "journalChars": 4936,
+  "retrieved": [
+   "moment-4",
+   "moment-29",
+   "moment-31",
+   "moment-40",
+   "moment-41",
+   "moment-44"
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "olderBlocks": 49,
+  "recent": [
+   "moment-63",
+   "moment-64",
+   "moment-65",
+   "moment-66",
+   "moment-67",
+   "moment-68"
+  ],
+  "journalChars": 5966,
+  "retrieved": [
+   "moment-1",
+   "moment-29",
+   "moment-38",
+   "moment-39",
+   "moment-42",
+   "moment-48"
+  ]
+ },
+ {
+  "questionId": "artemis-01",
+  "olderBlocks": 103,
+  "recent": [
+   "moment-115",
+   "moment-116",
+   "moment-117",
+   "moment-118",
+   "moment-119",
+   "moment-120"
+  ],
+  "journalChars": 9946,
+  "retrieved": [
+   "moment-28",
+   "moment-30",
+   "moment-63",
+   "moment-64",
+   "moment-66",
+   "moment-70"
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "olderBlocks": 138,
+  "recent": [
+   "moment-150",
+   "moment-151",
+   "moment-152",
+   "moment-153",
+   "moment-154",
+   "moment-155"
+  ],
+  "journalChars": 9845,
+  "retrieved": [
+   "moment-30",
+   "moment-79",
+   "moment-80",
+   "moment-83",
+   "moment-131",
+   "moment-148"
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "olderBlocks": 189,
+  "recent": [
+   "moment-202",
+   "moment-203",
+   "moment-204",
+   "moment-205",
+   "moment-206",
+   "moment-207"
+  ],
+  "journalChars": 9953,
+  "retrieved": [
+   "moment-78",
+   "moment-80",
+   "moment-83",
+   "moment-85",
+   "moment-142",
+   "moment-149"
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "olderBlocks": 205,
+  "recent": [
+   "moment-218",
+   "moment-219",
+   "moment-220",
+   "moment-221",
+   "moment-222",
+   "moment-223"
+  ],
+  "journalChars": 9797,
+  "retrieved": [
+   "moment-67",
+   "moment-78",
+   "moment-79",
+   "moment-80",
+   "moment-83",
+   "moment-85"
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "olderBlocks": 243,
+  "recent": [
+   "moment-256",
+   "moment-257",
+   "moment-258",
+   "moment-259",
+   "moment-260",
+   "moment-261"
+  ],
+  "journalChars": 9798,
+  "retrieved": [
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-64",
+   "moment-67",
+   "moment-143"
+  ]
+ }
+]

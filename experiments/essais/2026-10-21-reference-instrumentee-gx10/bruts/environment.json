@@ -1,0 +1,17 @@
+{
+  "codeSha": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+  "ollamaModels": {
+    "qwen3.8:27b-mtp-q4_K_M": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "qwen3.6:35b-a3b-mtp-q4_K_M": "096fdbd02fe620fc10cbeb6537e080f8041aece851e5d696aed024d4f70f2e47",
+    "qwen3-vl:4b-instruct-bf16": "1d2c81ea69a06341d1aaa9e4fbd655402681057c291754008f44fa6e74acc298",
+    "qwen3-embedding:0.6b": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+    "qwen3.8:27b": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+    "gemma3:4b": "68ceab7e468a31c988b44d5a4984a0e21f58c4f7158c6ce29c1804babac38df7"
+  },
+  "gpuProcessesBefore": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+}

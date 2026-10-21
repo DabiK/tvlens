@@ -1,0 +1,925 @@
+{
+ "reviews": [
+  {
+   "axis": "Latence de la réponse aux questions (LLM local) : rôle `questions`, aujourd'hui qwen3.8:27b Q4_K_M dense (hybride Gated DeltaNet + attention d'après une source secondaire), `/api/chat` non streamé, `format` JSON + outils, température 0, sur GB10 (~273 Go/s)",
+   "proposals": [
+    {
+     "id": "Q0",
+     "title": "Budget de latence par jeton depuis E1, sans GPU, avant tout autre essai",
+     "mechanism": "Le délai d'une question vaut à peu près : file + chargement + (jetons de prompt non mis en cache / débit de préremplissage) + (jetons générés / débit de génération) + tours d'outils. Sur GB10, à batch 1, la génération est bornée par les octets de poids actifs lus par jeton : environ 238 Go/s effectifs mesurés par llama.cpp sur GB10, soit environ 12–14 jetons/s pour un 27B Q4_K_M. Faits TVLens : `buildLocalPrompt` envoie un seul message dans l'ordre rôle → DEMANDE → REPÈRES → marqueur aléatoire tiré à chaque tour → contexte (6 passages). Seul le rôle peut donc se réutiliser d'une question à l'autre. Sur les 10 réponses archivées le 20/10 (Kennedy, CNRS), régression grossière du délai sur les jetons de sortie estimés : pente ≈ 65 ms/jeton, ordonnée ≈ 6,5 s, r = 0,84, n = 10. Citations ≈ 36 % et avertissement générique de `limits` ≈ 13 % des jetons estimés ; aucun outil, un seul appel. Hypothèse à confirmer : la génération domine.",
+     "papers": [
+      {
+       "ref": "llama.cpp benches/dgx-spark (GB10, CUDA 13, pilote 580)",
+       "title": "Performance of llama.cpp on NVIDIA DGX Spark",
+       "keyClaim": "Qwen2.5-Coder 7B Q8_0 : 29,4 jetons/s en génération et 2 250 en préremplissage ; Qwen3-Coder 30B-A3B Q8_0 : 61 et 2 987 ; gpt-oss 20B : 83 et 4 506 (llama-bench, pp2048/tg32).",
+       "url": "https://github.com/ggml-org/llama.cpp/blob/master/benches/dgx-spark/dgx-spark.md",
+       "year": 2026
+      },
+      {
+       "ref": "Ollama docs/api/usage.mdx",
+       "title": "Ollama API usage metrics",
+       "keyClaim": "`prompt_eval_cached_count` compte les jetons lus dans le cache ; `prompt_eval_duration` ne couvre que les jetons non mis en cache.",
+       "url": "https://github.com/ollama/ollama/blob/main/docs/api/usage.mdx",
+       "year": 2026
+      }
+     ],
+     "expectedLatencyEffect": "Aucun en soi : cette analyse décide l'ordre de Q1 à Q4. Prédiction falsifiable : la génération représente au moins 60 % du temps fournisseur du 27B, et les jetons en cache entre deux questions successives sont proches de 0.",
+     "expectedRelevanceEffect": "Aucun ; pas de nouvelle inférence.",
+     "testableWithoutAppChange": true,
+     "experiment": "Une fois E1 clos et ses empreintes vérifiées, un script CPU lit le journal du proxy, rôle questions, pour les 30 questions : `prompt_eval_count`, `prompt_eval_cached_count` (champ de `response`, absent de COUNTERS), les durées, `eval_count`, `load_duration`, `upstreamMs` contre `endToEndMs`. Il calcule le débit de génération observé et le compare au débit d'une question sans appel vision concurrent (chevauchement lu dans le même journal) pour obtenir le facteur de contention. Il ventile `eval_count` par champ JSON (answer, citations, limits) en retokenisant les sorties ; à défaut du tokenizer Qwen, il garde l'approximation et la déclare. Contrôles en lecture seule, sans charger de modèle : `ollama --version`, `ollama show <tag> --modelfile/--parameters` pour qwen3.8:27b, qwen3.8:27b-mtp-q4_K_M, qwen3.6:35b-a3b*, gemma4:26b-a4b* et gpt-oss:20b, pour savoir si `draft_num_predict` est déjà réglé et si les digests de base coïncident ; `/api/show` pour les niveaux de raisonnement acceptés. Règles de décision préenregistrées : génération ≥ 60 % → Q1 puis Q3 ; cache ≈ 0 et préremplissage ≥ 25 % → Q4 ; débit sous chevauchement vision < 70 % du débit seul → signaler à E5.",
+     "risks": "E1 incomplet ou interrompu : analyser ce qui existe, sans relance. `prompt_eval_cached_count` peut manquer dans Ollama 0.40.6. La ventilation par champ demande le tokenizer exact, dont le téléchargement est à demander. Les 10 points du 20/10 mélangent préremplissage, génération et contention.",
+     "priority": 1,
+     "evidenceLevel": "Données TVLens indirectes (10 délais archivés, régression grossière) + documentation llama.cpp/Ollama ; aucune ventilation mesurée sur GX10",
+     "gx10Cost": "0 min GPU ; lecture des journaux et `ollama show`, qui ne charge pas de modèle",
+     "levers": "Aucun ; mesure seulement"
+    },
+    {
+     "id": "Q1",
+     "title": "Prédiction multi-jetons (MTP) sur le modèle actuel : activer et mesurer `draft_num_predict`",
+     "mechanism": "La tête MTP propose k jetons, et le modèle cible les vérifie en une seule passe. Pour un modèle dense à batch 1, chaque passe relit de toute façon tous les poids : vérifier k jetons coûte presque autant qu'en produire un (surcoût de 5–10 % selon Saxena et al.). À température 0, la sortie doit rester identique (décodage spéculatif sans perte). Chaque brouillon coûte la couche MTP plus la tête de sortie, grosse avec un vocabulaire étendu. La sortie de TVLens recopie identifiants, chiffres et formules toutes faites : on attend un taux d'acceptation élevé. Fait documentaire : dans Ollama actuel, les tenseurs MTP embarqués ne servent que si `draft_num_predict` est réglé (Modelfile ou `options` par requête). Un simple changement de tag ne prouve donc pas que MTP tourne.",
+     "papers": [
+      {
+       "ref": "Leviathan, Kalman, Matias 2023 (arXiv 2211.17192)",
+       "title": "Fast Inference from Transformers via Speculative Decoding",
+       "keyClaim": "Accélération 2–3× sur T5-XXL, avec des sorties identiques à la distribution du modèle cible.",
+       "url": "https://arxiv.org/abs/2211.17192",
+       "year": 2023
+      },
+      {
+       "ref": "DeepSeek-AI 2024 (arXiv 2412.19437), §5.4.3",
+       "title": "DeepSeek-V3 Technical Report",
+       "keyClaim": "Deuxième jeton MTP accepté dans 85–90 % des cas selon les sujets, soit 1,8× jetons/s.",
+       "url": "https://arxiv.org/abs/2412.19437",
+       "year": 2024
+      },
+      {
+       "ref": "Gloeckle et al. 2024 (arXiv 2404.19737)",
+       "title": "Better & Faster Large Language Models via Multi-token Prediction",
+       "keyClaim": "Avec une prédiction à 4 jetons, l'inférence est jusqu'à 3× plus rapide en auto-spéculation.",
+       "url": "https://arxiv.org/abs/2404.19737",
+       "year": 2024
+      },
+      {
+       "ref": "Saxena et al. 2025 (arXiv 2506.20675), §2.2",
+       "title": "Utility-Driven Speculative Decoding for Mixture-of-Experts",
+       "keyClaim": "Sur un modèle dense, le surcoût de la spéculation est de 5–10 % et la vérification coûte au plus 3 % ; TPOT 1,4–1,8× plus rapide avec K=7 (n-gram, LLaMA-3-8B, RTX 6000 Ada).",
+       "url": "https://arxiv.org/abs/2506.20675",
+       "year": 2025
+      },
+      {
+       "ref": "Ollama issue #18541 (source non académique)",
+       "title": "Ollama 0.34.2 MTP speculative decoding regression with Qwen3.8 27B",
+       "keyClaim": "Signalé : 17,4 jetons/s avec MTP contre 75,1 sans (RTX 5090). Non reproduit par un mainteneur : 107–115 jetons/s et acceptation 0,939 à température 0 sur 0.33.2 à 0.34.2. Issue fermée sans correctif.",
+       "url": "https://github.com/ollama/ollama/issues/18541",
+       "year": 2026
+      },
+      {
+       "ref": "Ollama docs/modelfile.mdx",
+       "title": "Modelfile parameters: draft_num_predict",
+       "keyClaim": "« embedded MTP tensors require setting this parameter » ; 0 désactive les brouillons.",
+       "url": "https://github.com/ollama/ollama/blob/main/docs/modelfile.mdx",
+       "year": 2026
+      }
+     ],
+     "expectedLatencyEffect": "Génération 1,4–2,0× plus rapide. Avec une génération à ~65 % du temps, une réponse de 20 s à vide passerait à 13–16 s ; préremplissage inchangé. Sous contention vision, gain relatif comparable mais délais absolus plus longs.",
+     "expectedRelevanceEffect": "Nul en théorie à température 0 avec le même artefact de poids. Contrôler la correspondance exacte du texte, quelques divergences restant possibles à cause du bruit numérique de la vérification par lot. Si le tag MTP porte d'autres poids quantifiés (digest différent), c'est un autre modèle et il faut noter à l'aveugle.",
+     "testableWithoutAppChange": true,
+     "experiment": "Rejeu hors ligne sur un GPU sans autre charge : aucune campagne, verrou pris, vision et Whisper arrêtés. Entrées : 15 requêtes de premier tour du rôle questions capturées en E1 (Kennedy, CNRS, Spring), ré-envoyées octet pour octet ; seuls `model` et `options.draft_num_predict` changent. Bras A : tag produit tel que capturé. Bras B : tag -mtp avec `draft_num_predict` par défaut, ou 3 si aucun n'est réglé. Bras C : tag -mtp avec `draft_num_predict` 0, témoin même artefact sans spéculation. Ordre A B C C B A, une requête de chauffe exclue et consignée par bras, puis balayage 1/2/4 sur 5 requêtes. Mesures : `eval_count`, `eval_duration`, jetons/s, total, `load_duration` (pour détecter un rechargement), correspondance exacte de `message.content` entre B et C et entre B et A, validité JSON, identifiants cités. Plan JSON figé par SHA-256 avant exécution, tous les délais publiés. Arrêts : trois erreurs consécutives, B plus lent que C (régression, documentée sans relance), plafond de 45 min. Suite seulement si B gagne au moins 25 % avec au moins 90 % de correspondance exacte : confirmation dans le flux (E4) avec un proxy qui injecte `draft_num_predict`, sans changer l'application.",
+     "risks": "MTP peut déjà être actif dans le tag produit (Modelfile par défaut d'après une source secondaire) : alors l'essai règle et vérifie au lieu d'ajouter. Régression signalée dans 0.34.2, non reproduite. La grammaire JSON doit valider chaque jeton du brouillon. Changer `draft_num_predict` peut recharger le runner. Les tags A et B peuvent ne pas partager les mêmes poids.",
+     "priority": 1,
+     "evidenceLevel": "Documentaire et primaire (spéculation sans perte, DeepSeek-V3) + sources secondaires (issue Ollama, blog) ; compatibilité GB10/Ollama 0.40.6 supposée ; rien de mesuré sur GX10",
+     "gx10Cost": "~25–35 min de GPU exclusif ; environ 35 Go chargés (deux tags 27B), un seul à la fois si possible avec keep_alive 0 entre bras",
+     "levers": "Modèle du rôle questions ; `options.draft_num_predict` injecté par le script de rejeu, puis par le proxy ; aucun code produit"
+    },
+    {
+     "id": "Q2",
+     "title": "Modèle MoE à 3–4 B paramètres actifs pour les questions (extension d'E2), avec et sans MTP",
+     "mechanism": "À batch 1 sur GB10, le débit de génération est inversement proportionnel aux octets lus par jeton : environ 16 Go pour le 27B dense Q4, environ 2 Go pour un A3B en Q4, environ 2,5–3 Go pour un A4B. Le coût de préremplissage suit les paramètres actifs. Le banc llama.cpp GB10 mesure 61 jetons/s et 2 987 jetons/s de préremplissage pour un 30B-A3B déjà en Q8. MTP sur un MoE : les brouillons activent l'union des experts de chaque jeton, ce qui augmente les octets lus. L'argument de bande passante prédit un gain d'au plus ~1,1×. Les coûts fixes de lancement de noyaux, importants vers 80 jetons/s, peuvent au contraire rendre la spéculation utile. Seule la mesure tranche.",
+     "papers": [
+      {
+       "ref": "llama.cpp benches/dgx-spark",
+       "title": "Performance of llama.cpp on NVIDIA DGX Spark",
+       "keyClaim": "30B-A3B Q8_0 : 61 jetons/s en génération et 2 987 en préremplissage ; gpt-oss 20B MXFP4 : 83 et 4 506 ; contre ≈ 29 jetons/s pour un 7B dense Q8_0.",
+       "url": "https://github.com/ggml-org/llama.cpp/blob/master/benches/dgx-spark/dgx-spark.md",
+       "year": 2026
+      },
+      {
+       "ref": "Qwen Team 2025 (arXiv 2505.09388), tableaux 5 et 16",
+       "title": "Qwen3 Technical Report",
+       "keyClaim": "Sans raisonnement, Qwen3-30B-A3B est au niveau de Qwen3-14B dense (IFEval 83,7 contre 84,8 ; Arena-Hard 88,0 contre 86,3) ; le dense 32B reste plus fort sur la plupart des tests.",
+       "url": "https://arxiv.org/abs/2505.09388",
+       "year": 2025
+      },
+      {
+       "ref": "Saxena et al. 2025 (arXiv 2506.20675)",
+       "title": "Utility-Driven Speculative Decoding for Mixture-of-Experts",
+       "keyClaim": "Sur MoE à batch 1, les brouillons activent plus d'experts : vérification 2–3× plus chère, jusqu'à 1,5× plus lent ; Cascade limite la perte à 5 %.",
+       "url": "https://arxiv.org/abs/2506.20675",
+       "year": 2025
+      },
+      {
+       "ref": "Xie et al. 2026 (arXiv 2607.12696)",
+       "title": "Less Experts, Faster Decoding: Cost-Aware Speculative Decoding for Mixture-of-Experts",
+       "keyClaim": "Les brouillons très probables peuvent disperser les experts (« expert scattering ») ; une sélection consciente du coût apporte jusqu'à 1,62×.",
+       "url": "https://arxiv.org/abs/2607.12696",
+       "year": 2026
+      }
+     ],
+     "expectedLatencyEffect": "À vide : génération 5–7× plus rapide et préremplissage 4–5× ; réponse totale de l'ordre de 3–6 s contre 13–28 s aujourd'hui. Dans le flux, moins exposé à la contention avec la vision parce qu'il lit beaucoup moins d'octets par jeton. MTP sur MoE : de −15 % à +30 %, incertain.",
+     "expectedRelevanceEffect": "Risque réel de baisse. Les agrégateurs (non vérifiés) placent Qwen3.6-27B devant 35B-A3B dans la plupart des tests, et la génération Qwen3 précédente met l'A3B au niveau d'un 14B dense. Contrôler l'abstention justifiée, les inventions, la justesse des identifiants cités et le français. La validité JSON est garantie par la grammaire, pas le sens.",
+     "testableWithoutAppChange": true,
+     "experiment": "Extension préenregistrée d'E2, sur GPU sans autre charge. Les 30 requêtes de premier tour d'E1, ré-envoyées à l'identique ; seul `model` change, plus `draft_num_predict` pour les bras MTP. Bras : 27B produit (repris du bras A de Q1), qwen3.6:35b-a3b-q4_K_M, qwen3.6:35b-a3b-mtp-q4_K_M avec `draft_num_predict` par défaut puis 0, gemma4:26b-a4b-it-q4_K_M. gpt-oss:20b seulement si le script de rejeu remplace `think:false` par \"low\" (TVLens n'envoie que on/off) ; caractères de raisonnement consignés et comptés dans le délai. Deux passages contrebalancés ; déchargement entre bras pour rester à trois modèles au plus. Mesures : chargement, compteurs prompt/eval et durées, total, outils demandés au premier tour (non servis hors ligne : notés « outil demandé », non réussis), validité JSON, répartition de `kind`. Notation à l'aveugle contre l'oracle v2, par vidéo : 0–3, invention, abstention. Règle préenregistrée : un candidat ne passe en E4 que si sa part pertinente n'est pas inférieure à celle du 27B sur la majorité des vidéos, sans hausse des inventions ; sinon on publie la frontière sans gagnant.",
+     "risks": "Le rejeu ne suit pas les appels d'outils et ne voit pas la validation des preuves de TVLens : E4 obligatoire. Raisonnement résiduel selon le modèle (vérifier `/api/show`). Avec un quatrième modèle chargé dans le flux, OLLAMA_MAX_LOADED_MODELS=3 provoque des évictions et rechargements. Un rejeu à vide ne reproduit pas la contention avec la vision. 30 questions donnent des intervalles larges.",
+     "priority": 1,
+     "evidenceLevel": "Documentaire (banc GB10 llama.cpp, rapports techniques) + raisonnement de bande passante ; pertinence des candidats sur TVLens inconnue ; rien de mesuré sur GX10",
+     "gx10Cost": "~35–50 min de GPU exclusif (bras rapides de 2–3 min par passage plus les chargements de 18–24 Go) ; partage le budget E2 d'environ 1 h",
+     "levers": "Modèle du rôle questions ; options par requête ; raisonnement réécrit par le seul script de rejeu pour gpt-oss"
+    },
+    {
+     "id": "Q3",
+     "title": "Sortie structurée plus courte et coût de la grammaire JSON",
+     "mechanism": "Le temps de génération est proportionnel aux jetons produits. Sur les 10 réponses archivées, les citations ({id,startMs,endMs}) pèseraient ≈ 36 % des jetons estimés : les tokenizers Qwen découpent probablement chaque chiffre, soit environ 25–30 jetons par citation. L'avertissement générique de `limits`, recopié depuis `context.precision`, pèserait ≈ 13 %. Toutes les citations observées couvrent exactement un bloc de 8 s : l'application connaît déjà ces bornes. Variante : `citations` réduit à des identifiants, et `limits` limité aux lacunes propres à la question, l'avertissement générique étant ajouté par l'application. Second mécanisme : l'échantillonnage contraint par grammaire de llama.cpp ajoute un coût CPU par jeton, négligeable à 80 ms/jeton mais pouvant doubler le temps par jeton d'un MoE à ~12 ms/jeton.",
+     "papers": [
+      {
+       "ref": "Geng et al. 2025 (arXiv 2501.10868), tableau 2",
+       "title": "JSONSchemaBench: A Rigorous Benchmark of Structured Outputs for Language Models",
+       "keyClaim": "llama.cpp avec grammaire : TPOT médian 27–30 ms contre 15–16 ms sans contrainte (Llama-3.1-8B, A100, batch 1) ; certaines implémentations sautent des jetons forcés et deviennent plus rapides que sans contrainte.",
+       "url": "https://arxiv.org/abs/2501.10868",
+       "year": 2025
+      },
+      {
+       "ref": "Tam et al. 2024 (arXiv 2408.02442)",
+       "title": "Let Me Speak Freely? A Study on the Impact of Format Restrictions on Performance of Large Language Models",
+       "keyClaim": "Des contraintes de format strictes peuvent dégrader le raisonnement ; plus la contrainte est stricte, plus la baisse est forte.",
+       "url": "https://arxiv.org/abs/2408.02442",
+       "year": 2024
+      }
+     ],
+     "expectedLatencyEffect": "35–50 % de jetons générés en moins, soit environ −4 à −8 s par réponse sur le 27B et −0,5 à −1 s sur un MoE. Grammaire : de 0 à −15 % du temps par jeton sur le 27B, potentiellement −30 à −50 % sur un MoE si le surcoût mesuré en 2024 se confirme. Gains cumulables avec Q1 et Q2.",
+     "expectedRelevanceEffect": "Texte de `answer` inchangé en principe. Risques : identifiant cité sans ancrage temporel, perte d'une limite propre à la question, changement de comportement induit par un schéma différent. Notation à l'aveugle nécessaire. Sans `format`, du JSON invalide peut provoquer TVLENS_OLLAMA_ANSWER_INVALID, donc une réponse perdue.",
+     "testableWithoutAppChange": true,
+     "experiment": "Rejeu hors ligne de 15 requêtes E1 sur le 27B, puis sur le meilleur MoE de Q2. Bras A : requête capturée. Bras B : schéma compact (citations = tableau d'identifiants) plus une ligne de consigne sur `limits`, réécrits par le script de rejeu à titre de prototype, pas de produit. Bras C : `format: \"json\"` générique. Bras D : sans `format`, schéma écrit dans le prompt. C et D mesurent le coût de la grammaire par le débit et la validité JSON. Mesures : `eval_count`, jetons/s, validité JSON, ensemble des identifiants cités contre A, similarité de `answer`, puis notation aveugle de A contre B. Plan figé par SHA, ordre contrebalancé. Si B gagne au moins 25 % sans perte à la notation : prototype de proxy dans le flux (réécriture du schéma et reconstruction de startMs/endMs depuis les passages de la requête), présenté comme prototype, avant tout ticket.",
+     "risks": "Une modification du prompt ou du schéma est un changement produit (ticket, contrôle) ; le prototype de proxy ne vaut pas validation. L'estimation par champ repose sur un tokenizer approché. Un `format` absent ou générique peut coûter des réponses invalides. La reconstruction des bornes suppose des citations de blocs entiers.",
+     "priority": 2,
+     "evidenceLevel": "Données TVLens indirectes (10 sorties archivées, tokenisation approchée) + JSONSchemaBench (autre matériel, llama.cpp de 2024) ; non mesuré sur GX10",
+     "gx10Cost": "~25–30 min de GPU exclusif",
+     "levers": "Schéma `format` et une ligne de consigne réécrits par le script de rejeu ou le proxy prototype ; aucun code produit tant que non validé"
+    },
+    {
+     "id": "Q4",
+     "title": "Préremplissage : cache de préfixe, ordre stable du prompt et contexte compacté",
+     "mechanism": "Le coût du préremplissage vaut les jetons non mis en cache divisés par le débit, estimé à 600–650 jetons/s pour le 27B. Aujourd'hui la question et un marqueur aléatoire précèdent le contexte : d'une question à l'autre, seul le rôle (et les outils rendus par le gabarit) peut être réutilisé. Pour un modèle hybride à couches récurrentes (Gated DeltaNet), l'état ne peut pas revenir à un préfixe arbitraire : llama-server ne réutilise qu'à des points de reprise (fin de prompt, frontières de message utilisateur sur le chemin chat). Avec une requête plate, il recalcule tout. Ce recalcul complet à chaque question est probable ; Q0 le vérifie. Leviers : (a) mettre en tête ce qui est stable (rôle, outils), puis les données avec un marqueur de session, la question à la fin ; (b) préremplir à l'avance : une requête de chauffe pendant la lecture pour que la question n'ajoute que sa queue ; (c) compacter le JSON de façon déterministe (champs répétés, nuls). Pas de compression de type LLMLingua, qui supprime des jetons alors que les identifiants et les nombres doivent survivre.",
+     "papers": [
+      {
+       "ref": "Pan et al. 2024 (arXiv 2411.19379)",
+       "title": "Marconi: Prefix Caching for the Era of Hybrid LLMs",
+       "keyClaim": "Les couches récurrentes mettent leur état à jour sur place : pas de retour arrière sur un recouvrement partiel, seules les correspondances exactes réussissent ; une admission et une éviction adaptées donnent jusqu'à 34,4× plus de jetons réutilisés.",
+       "url": "https://arxiv.org/abs/2411.19379",
+       "year": 2024
+      },
+      {
+       "ref": "llama.cpp tools/server/README.md",
+       "title": "llama-server: --ctx-checkpoints, --checkpoint-min-step",
+       "keyClaim": "Points de reprise par slot (32 par défaut, espacés d'au moins 8 192 jetons) pour les modèles sans retrait partiel de séquence ; sur une requête plate sans frontière de message, retour au recalcul complet.",
+       "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+       "year": 2026
+      },
+      {
+       "ref": "Lumer et al. 2026 (arXiv 2601.06007)",
+       "title": "Don't Break the Cache: An Evaluation of Prompt Caching for Long-Horizon Agentic Tasks",
+       "keyClaim": "Mettre le contenu dynamique à la fin et exclure les résultats d'outils variables : TTFT −13 à −31 % ; un cache naïf du contexte complet peut augmenter la latence.",
+       "url": "https://arxiv.org/abs/2601.06007",
+       "year": 2026
+      },
+      {
+       "ref": "Fan et al. 2026 (arXiv 2610.25551)",
+       "title": "StreamAhead: Real-Time Streaming Video Question Answering via Adaptive Precomputation",
+       "keyClaim": "Précalculer avant la question réduit le calcul au moment de la question mais retarde le traitement du flux ; un précalcul adaptatif donne jusqu'à 10,4× de TTFT en moins.",
+       "url": "https://arxiv.org/abs/2610.25551",
+       "year": 2026
+      },
+      {
+       "ref": "Liu et al. 2023 (arXiv 2307.03172)",
+       "title": "Lost in the Middle: How Language Models Use Long Contexts",
+       "keyClaim": "Placer la requête avant et après les données aide la récupération clé-valeur, mais change peu le QA multi-documents.",
+       "url": "https://arxiv.org/abs/2307.03172",
+       "year": 2023
+      },
+      {
+       "ref": "Pan et al. 2024 (arXiv 2403.12968)",
+       "title": "LLMLingua-2: Data Distillation for Efficient and Faithful Task-Agnostic Prompt Compression",
+       "keyClaim": "Compression 2–5×, latence de bout en bout 1,6–2,9× plus faible, par suppression de jetons classés par un encodeur.",
+       "url": "https://arxiv.org/abs/2403.12968",
+       "year": 2024
+      }
+     ],
+     "expectedLatencyEffect": "Si Q0 confirme que le rôle (~1,5–2 k jetons, à mesurer) est recalculé à chaque fois : −2 à −3 s sur le 27B. Avec une chauffe anticipée : jusqu'à environ −4 à −6 s, ordre de grandeur de l'ordonnée observée. Moins de 1 s sur un MoE : faible valeur si Q2 est retenu.",
+     "expectedRelevanceEffect": "Déplacer la question après les données peut changer les réponses (effet faible et dans un sens incertain pour du QA selon Liu et al.). La chauffe consomme du GPU pendant la lecture, au risque de perdre des publications de vision (déjà 74 perdues sur le corpus étendu).",
+     "testableWithoutAppChange": true,
+     "experiment": "Seulement si Q0 montre un préremplissage d'au moins 25 % et un cache proche de 0. Rejeu hors ligne de 10 paires de requêtes E1 consécutives d'une même vidéo, envoyées en séquence. Bras A : requêtes capturées. Bras B : réordonnées par le script (rôle et outils, données avec un marqueur fixe par session, puis DEMANDE et REPÈRES). Bras B avec chauffe : requête du même préfixe sans la question, `num_predict` 1, envoyée 10 s avant la seconde. Mesures : `prompt_eval_cached_count` et `prompt_eval_duration` de la seconde requête, total, égalité ou notation des réponses de B contre A. Compter aussi les jetons gagnés par une compaction déterministe du bloc de données, sur CPU uniquement. Pas d'essai dans le flux avant que la contention soit mesurée (E5).",
+     "risks": "Le chemin `/completion` d'Ollama peut ne jamais réutiliser l'état d'un modèle hybride : B n'apporterait rien, ce qui est un résultat à publier. La chauffe ajoute de la charge GPU. Réordonner le prompt est un changement produit. Un marqueur par session plutôt que par tour doit être revu côté sécurité, car le marqueur par tour empêche une donnée de fermer le bloc.",
+     "priority": 3,
+     "evidenceLevel": "Documentaire (Marconi, code llama-server) + lecture du code TVLens ; architecture hybride de qwen3.8:27b d'après une source secondaire ; non mesuré sur GX10",
+     "gx10Cost": "~20 min de GPU exclusif, conditionné à Q0",
+     "levers": "Ordre et marqueur du prompt réécrits par le script de rejeu (prototype) ; requête de chauffe ; aucun code produit"
+    },
+    {
+     "id": "Q5",
+     "title": "NVFP4 du même modèle (qwen3.8:27b-nvfp4) sur Blackwell",
+     "mechanism": "NVFP4 code 4 bits (E2M1) avec une échelle FP8 par groupe de 16, soit ~4,5 bits par poids, contre ~4,8–4,9 pour Q4_K_M. Les octets lus par jeton sont presque les mêmes, donc la génération reste à ±10 %. Un gain en préremplissage suppose que le moteur utilise les cœurs FP4 natifs, poids et activations en 4 bits. Dans Ollama, NVFP4 passe par le moteur MLX (sauvegardes safetensors, back-end CUDA 13 optionnel sous Linux) : probablement des poids déquantifiés en bf16, sans gain de préremplissage. C'est une supposition. Les outils, `format`, le cache KV q8_0 et MTP restent à vérifier sur ce chemin.",
+     "papers": [
+      {
+       "ref": "Egiazarian et al. 2025 (arXiv 2509.23202)",
+       "title": "Bridging the Gap Between Promise and Performance for Microscaling FP4 Quantization",
+       "keyClaim": "Le petit groupe de NVFP4 neutralise les techniques classiques contre les valeurs aberrantes ; « FP4 is not an automatic upgrade over INT4 » ; accélérations mesurées contre FP16, pas contre INT4.",
+       "url": "https://arxiv.org/abs/2509.23202",
+       "year": 2025
+      },
+      {
+       "ref": "Xin et al. 2026 (arXiv 2601.20088)",
+       "title": "Quantization-Aware Distillation for NVFP4 Inference Accuracy Recovery",
+       "keyClaim": "La distillation consciente de la quantification ramène des modèles NVFP4 près de la précision BF16 ; une quantification post-entraînement seule peut perdre en précision.",
+       "url": "https://arxiv.org/abs/2601.20088",
+       "year": 2026
+      },
+      {
+       "ref": "Ollama docs/development.md et mlx/quant",
+       "title": "MLX Engine (Optional) — CUDA; quantize types nvfp4",
+       "keyClaim": "Moteur MLX pour les modèles safetensors, back-end CUDA 13 + cuDNN 9 optionnel sous Linux ; NVFP4 en groupes de 16.",
+       "url": "https://github.com/ollama/ollama/blob/main/docs/development.md",
+       "year": 2026
+      }
+     ],
+     "expectedLatencyEffect": "Génération de 0,9 à 1,1× ; préremplissage de 1 à 2×, très incertain ; peut être plus lent si les noyaux MLX CUDA sont moins optimisés ou si MTP manque.",
+     "expectedRelevanceEffect": "Autre artefact quantifié : écart de qualité inconnu, notation à l'aveugle nécessaire.",
+     "testableWithoutAppChange": true,
+     "experiment": "Pré-vol de 10 min, GPU libre : charger le tag, lire dans les journaux quel runner sert (MLX ou llama-server), envoyer une requête avec outils, `format` et raisonnement coupé, tester `draft_num_predict`. Abandonner si les outils ou `format` ne sont pas pris en charge. Sinon, 15 requêtes E1 × 2 passages contre le tag produit, avec mesure séparée du préremplissage et de la génération, taux de correspondance exacte et notation à l'aveugle si les sorties divergent.",
+     "risks": "Moteur MLX absent ou partiel dans le binaire installé. Comparaison de pile (moteur et format changent ensemble) : aucun gain ne peut être attribué au seul NVFP4. 18 Go supplémentaires chargés.",
+     "priority": 4,
+     "evidenceLevel": "Documentaire ; prise en charge GB10 par Ollama MLX supposée ; non mesuré sur GX10",
+     "gx10Cost": "~10 min de pré-vol + ~20 min de rejeu, GPU exclusif",
+     "levers": "Modèle du rôle questions"
+    },
+    {
+     "id": "Q6",
+     "title": "Routage a priori ou cascade MoE → 27B selon la question",
+     "mechanism": "Envoyer au MoE rapide les questions répondables depuis les 6 passages récents, et au 27B les rappels anciens et les détails visuels. Ou cascade : MoE d'abord, puis 27B si `kind=insufficient` ou si la validation refuse. Point propre au GB10 : une cascade séquentielle ajoute le temps du MoE aux cas renvoyés (≈ 5 + 20 s, au-delà du budget de 20 s). Lancer les deux modèles en parallèle partage la bande passante d'un seul GPU. Seul un routage décidé avant tout appel, sans latence ajoutée, ou une cascade vers un 27B déjà accéléré (Q1 + Q3) peut tenir sous 20 s.",
+     "papers": [
+      {
+       "ref": "Ong et al. 2024 (arXiv 2406.18665)",
+       "title": "RouteLLM: Learning to Route LLMs with Preference Data",
+       "keyClaim": "Des routeurs appris sur des préférences réduisent le coût de plus de 2× sans perte de qualité et se transfèrent à d'autres paires de modèles.",
+       "url": "https://arxiv.org/abs/2406.18665",
+       "year": 2024
+      },
+      {
+       "ref": "Gupta et al. 2024 (arXiv 2404.10136)",
+       "title": "Language Model Cascades: Token-level uncertainty and beyond",
+       "keyClaim": "L'incertitude de séquence naïve souffre d'un biais de longueur ; des règles de renvoi apprises sur l'incertitude par jeton font mieux.",
+       "url": "https://arxiv.org/abs/2404.10136",
+       "year": 2024
+      }
+     ],
+     "expectedLatencyEffect": "Baisse de la moyenne si le MoE suffit souvent ; hausse de la queue pour les cas renvoyés, au-delà de 20 s, sauf avec un 27B accéléré ou un routage a priori.",
+     "expectedRelevanceEffect": "Au mieux, la pertinence du meilleur des deux par catégorie ; au pire, celle du MoE sur les questions mal routées.",
+     "testableWithoutAppChange": true,
+     "experiment": "Simulation sans GPU supplémentaire, sur les sorties notées de Q1 et Q2 et leurs délais mesurés. Règles comparées : toujours MoE, toujours 27B, routage a priori par type de question (récent, rappel ancien, visuel), cascade sur `insufficient` avec addition des délais pour les cas renvoyés. Pour chacune : part pertinente sous 15 et 20 s par vidéo, inventions. Avec 30 questions le résultat reste descriptif : aucun routeur appris, aucune règle ajustée puis jugée sur les mêmes questions. Un essai E4 n'aurait lieu que si une règle domine sur la majorité des vidéos.",
+     "risks": "Surapprentissage sur 30 questions. La validation des preuves n'existe pas hors ligne : `kind` sert d'approximation. Deux modèles de questions plus la vision et les embeddings dépassent OLLAMA_MAX_LOADED_MODELS=3 : évictions et rechargements. Une mise en production demanderait un changement de l'application.",
+     "priority": 4,
+     "evidenceLevel": "Documentaire ; simulation à partir de futures mesures GX10",
+     "gx10Cost": "0 min GPU supplémentaire (réutilise Q1 et Q2)",
+     "levers": "Aucun en simulation ; en production : choix de modèle par question, donc code"
+    },
+    {
+     "id": "Q7",
+     "title": "Streaming du champ `answer` : délai jusqu'au premier texte utile",
+     "mechanism": "Le schéma place `answer` en premier, et la grammaire suit l'ordre des propriétés. Avec `stream: true`, le texte lisible serait complet après le préremplissage et les jetons de `answer`, environ 40–55 % de la sortie estimée ; citations et limites suivraient. La métrique TVLens reste la réponse complète : ce levier change la latence perçue, pas l'objectif mesuré. Il se heurte à la validation des preuves, qui peut refuser une réponse déjà affichée.",
+     "papers": [
+      {
+       "ref": "Geng et al. 2025 (arXiv 2501.10868)",
+       "title": "JSONSchemaBench: A Rigorous Benchmark of Structured Outputs for Language Models",
+       "keyClaim": "Pour des sorties contraintes, le délai se décompose en temps de compilation de grammaire, délai du premier jeton (TTFT) et temps par jeton (TPOT) : une grille de mesure applicable au streaming.",
+       "url": "https://arxiv.org/abs/2501.10868",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Premier texte de réponse complet environ 40–60 % plus tôt que la réponse entière (par exemple ~10–14 s au lieu de 20–26 s sur le 27B) ; aucun effet sur le délai complet.",
+     "expectedRelevanceEffect": "Aucun sur le contenu à température 0. Risque produit : afficher un texte que la validation refusera ensuite.",
+     "testableWithoutAppChange": true,
+     "experiment": "Un passage supplémentaire en `stream: true` sur 15 requêtes E1, accolé à Q1 ou Q2. Horodatage côté client du premier jeton, de la fermeture de la chaîne `answer` et de la fin ; vérifier que le contenu est identique au passage non streamé. Résultat à présenter comme une donnée pour une décision produit, pas comme un gain de la métrique principale.",
+     "risks": "Décision produit (honnêteté contre réactivité) ; aucune source primaire sur la perception de l'utilisateur ; l'analyse incrémentale du JSON est à écrire côté client.",
+     "priority": 5,
+     "evidenceLevel": "Raisonnement sur le schéma et le code TVLens ; non mesuré",
+     "gx10Cost": "~10 min de GPU exclusif",
+     "levers": "Paramètre `stream` dans le script de rejeu ; en production : client et application"
+    }
+   ],
+   "notes": "Ordre recommandé : Q0, analyse d'E1 sans GPU, puis un seul lot de rejeu hors ligne à GPU exclusif. Ce lot regroupe Q1 (MTP) et Q2 (MoE, extension d'E2), puis Q3 sur le 27B et sur le meilleur MoE. Q7 s'y accole pour environ 10 min. Total d'environ 1 h 30 à 2 h de GPU, à placer après E1, jamais pendant une autre campagne. Vérifier verrous, campagnes actives et téléchargements avant chaque charge ; aucune boucle, aucun commit. Les gains de composant ne valent qu'après confirmation dans le flux (E4), avec la validation des preuves et la contention réelle.\n\nConstats tirés du code (commit de travail ; le code figé du GX10 est 2035a2f) : `buildLocalPrompt` place la question et un marqueur aléatoire, tiré à chaque tour, avant le contexte. `stream:false`, température 0, aucun `num_predict`, `format` = schéma complet ; un seul message utilisateur ; contexte de 6 passages, 120 pour un récapitulatif.\n\nDonnées existantes : 10 réponses archivées le 20/10, 12,8 à 27,9 s, un seul appel, aucun outil. Régression grossière : 65 ms par jeton estimé, ordonnée 6,5 s, r = 0,84, n = 10. Citations ≈ 36 % et avertissement générique ≈ 13 % des jetons estimés. Toutes les citations couvrent un bloc entier de 8 s. Ce sont des estimations ; E1 donne les vrais `eval_count`.\n\nLe journal du proxy E1 garde `response` en entier : `prompt_eval_cached_count` y est lisible bien qu'absent de COUNTERS. `ollama show` permet de vérifier, sans charger le modèle, si `draft_num_predict` est déjà réglé dans le tag produit. Une source secondaire dit que les tags récents l'activent par défaut ; dans ce cas, Q1 devient un réglage et une vérification.\n\nLes allers-retours d'outils passent au second plan : 0 outil sur les 10 réponses archivées, à confirmer par E1. Les échecs de rappel ancien (`spring-06`, `cuisine-07`) relèvent de l'axe mémoire (pré-récupération), à coordonner avec ce chercheur.\n\nInteraction avec la contention : la pause vision a déjà fait passer la médiane Kennedy de 18,78 à 11,21 s. Un MoE lit environ 8× moins d'octets par jeton : il devrait être moins sensible à la vision concurrente. À mesurer en E4/E5.\n\nLimites : aucune mesure GX10 nouvelle. Débits GB10 tirés d'un banc llama.cpp public (autres modèles), extrapolés. Architecture hybride de qwen3.8:27b, MTP par défaut des tags Ollama et régression #18541 : sources secondaires ou non reproduites. Aucun classement de pertinence possible avant l'oracle v2 et la notation à l'aveugle.\n\nFichier écrit : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/questions/latence-reponse-llm.md\n\nSources web secondaires consultées : https://github.com/ollama/ollama/issues/18541, https://runaihome.com/blog/ollama-034-speculative-decoding-default-home-lab-2026/, https://www.qubrid.com/blog/qwen38-27b-api-benchmarks-pricing-and-the-complete-developer-guide, https://github.com/ggml-org/llama.cpp/blob/master/benches/dgx-spark/dgx-spark.md, https://github.com/ggml-org/llama.cpp/discussions/16578, https://llm-stats.com/models/compare/qwen3.6-27b-vs-qwen3.6-35b-a3b, https://www.benchlm.ai/compare/qwen3-6-27b-vs-qwen3-6-35b-a3b"
+  },
+  {
+   "axis": "Coût de la perception continue par bloc (VLM) : tenir la cadence de 8 s sans perdre l'OCR ni les actions.",
+   "proposals": [
+    {
+     "id": "perc-01-resume-cumulatif-hors-bloc",
+     "title": "Retirer le résumé cumulatif (topicSummary) de l'appel par bloc et borner les champs propres au bloc",
+     "mechanism": "FAIT MESURÉ (réanalyse hors GPU des 414 appels gemma3:4b des 8 replays Kennedy/Spring de la pause vision) : la génération représente 56,4 % du temps fournisseur et le préremplissage 41,2 %. Médiane de 188 à 218 jetons générés selon le replay, p90 de 246 à 362, max 568, à environ 59 tok/s. 91 appels sur 414 dépassent 8 s. Parmi eux, 56 décodent normalement (≥ 45 tok/s) mais produisent beaucoup plus (médiane 352 jetons contre 197 pour les appels ≤ 8 s). Les 35 autres décodent à moins de 45 tok/s (19 tok/s au minimum) parce qu'une question tourne en même temps. Le nombre de jetons générés est corrélé à 0,81 avec la longueur du topicSummary publié, contre 0,29 pour summary+visual. Les appels ≥ 300 jetons portent un topicSummary médian de 927 caractères, contre 217 pour les appels < 200 jetons. La consigne demande au VLM de réécrire à chaque bloc de 8 s un résumé cumulatif pouvant atteindre 1600 caractères : c'est le principal moteur de la traîne qui dépasse le créneau. Le levier consiste à produire ce résumé hors de la voie vision (à la transition de sujet, tous les N blocs, ou par le modèle texte), sur le modèle de la séparation perception légère / réaction lourde de Dispider. Il faut aussi plafonner les champs propres au bloc par la grammaire JSON (maxLength), qui garde un JSON valide, ce que num_predict ne garantit pas.",
+     "papers": [
+      {
+       "ref": "arXiv:2501.03218",
+       "title": "Dispider: Enabling Video LLMs with Active Real-Time Interaction via Disentangled Perception, Decision, and Reaction",
+       "keyClaim": "Une perception continue légère, découplée d'une génération détaillée asynchrone, évite que le décodage autorégressif bloque la perception temps réel. Mesuré sur leurs modèles entraînés, pas sur un VLM Ollama.",
+       "url": "https://arxiv.org/abs/2501.03218",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2411.15100",
+       "title": "XGrammar: Flexible and Efficient Structured Generation Engine for Large Language Models",
+       "keyClaim": "Selon le moteur, la génération sous grammaire peut coûter beaucoup par jeton (vocabulaire complet à vérifier) ; elle peut descendre près de zéro si elle est bien intégrée. Le surcoût du format JSON dans Ollama (vocabulaire Gemma de 262k jetons) est donc à mesurer, pas à supposer.",
+       "url": "https://arxiv.org/abs/2411.15100",
+       "year": 2024
+      },
+      {
+       "ref": "doc llama.cpp common/json-schema-to-grammar.cpp (ctx7)",
+       "title": "llama.cpp, conversion JSON Schema → GBNF",
+       "keyClaim": "Les contraintes minLength/maxLength des chaînes deviennent une répétition bornée de caractères (ignorées si un pattern est présent). Ollama transmet le schéma format à ce convertisseur : la prise en charge sur la version 0.40.6 du GX10 reste SUPPOSÉE et doit être vérifiée par un appel.",
+       "url": "https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Estimation à partir des distributions mesurées, non mesurée. Sans topicSummary dans l'appel : −60 à −150 jetons à la médiane, soit environ −1 à −2,5 s par bloc à 59 tok/s, et jusqu'à −400 jetons (environ −7 s) sur la traîne. Sous contention (20 à 45 tok/s), le gain est 1,5 à 3 fois plus grand. Plafonner seulement summary, visual et uncertainty donnerait environ −0,5 à −1 s. La part d'appels au-delà de 8 s (22 % aujourd'hui) devrait baisser nettement ; c'est à mesurer. Effet indirect attendu : un GPU moins occupé par la vision, donc des questions plus rapides (la pause vision a fait passer la médiane Kennedy de 18,78 à 11,21 s).",
+     "expectedRelevanceEffect": "Variante 1 (plafond des champs du bloc) : risque de phrases coupées, mais l'OCR et les actions restent ciblés. Variante 2 (topicSummary retiré du bloc) : l'observation du bloc ne change pas. En revanche, la mémoire des faits anciens dépend du résumé cumulatif, alors que spring-06 et cuisine-07 relèvent déjà d'échecs de mémoire. L'effet sur le rappel ancien n'est connaissable qu'en E4, avec une implémentation applicative. Il peut être négatif (résumé moins frais) ou positif (résumé fait par un modèle texte plus fort).",
+     "testableWithoutAppChange": true,
+     "experiment": "Prototype hors ligne, présenté comme tel. (0) Pré-contrôle de 2 appels : schéma avec maxLength=50 sur summary. Vérifier que la longueur rendue est ≤ 50 et que le débit tok/s est le même qu'avec le schéma d'origine ; sinon abandonner V1. (1) Choisir et figer par SHA-256 et horodatage, AVANT toute exécution, 48 corps de requêtes vision capturés par le proxy E1 : 8 par vidéo, stratifiés selon la longueur du topicSummary en entrée et sur les fenêtres OCR/actions des fiches. Les attendus restent hors des entrées. (2) Trois bras sur le même gemma3:4b (digest vérifié) : R = requête capturée telle quelle ; V1 = schéma avec maxLength sur summary (≈ 220), visual (≈ 180) et uncertainty (≈ 120) ; V2 = schéma et consigne sans topicSummary. Un seul changement par bras, ordre R/V1/V2/V2/V1/R. Un nonce en tête de message neutralise le cache de préfixe ; froid et chaud sont analysés séparément. (3) Relever par appel prompt_eval, eval_count, eval_duration et la durée totale, et publier tous les délais individuels par vidéo. (4) Annoter à l'aveugle summary et visual contre les images de l'oracle v2 : OCR, actions brèves, inventions. Aucun classement tant que les références ne sont pas validées.",
+     "risks": "Le rejeu à contexte figé ne reproduit pas la rétroaction : en production, un topicSummary absent raccourcit aussi le contexte des blocs suivants. Un maxLength élevé peut produire une grammaire volumineuse et ralentir l'échantillonnage. La troncature dure coupe en milieu de phrase. Le gain de V2 n'existe pour le produit qu'avec un changement applicatif (ticket) et une confirmation E4 sur le rappel ancien. Si E1 n'a pas capturé les corps, les 24 blocs figés de l'essai 5/3 ont un contexte vide et sous-estiment l'effet.",
+     "priority": 1,
+     "evidenceLevel": "Mécanisme mesuré sur GX10 (414 appels réels, réanalyse hors GPU) ; gain chiffré = estimation ; prise en charge maxLength par Ollama 0.40.6 supposée",
+     "gx10Cost": "≈ 5 min de pré-contrôle + ≈ 288 appels × ≈ 4,5 s ≈ 25 min de GPU exclusif, sans nouveau modèle",
+     "levers": "Proxy ou rejeu hors ligne des requêtes vision capturées (schéma format, consigne) ; en production, changement applicatif de la consigne de perception et du calendrier du résumé cumulatif"
+    },
+    {
+     "id": "perc-02-decomposition-cout-appel",
+     "title": "Micro-sonde : décomposer un appel visuel en encodeur d'image, préremplissage, décodage et grammaire, pour chaque VLM candidat",
+     "mechanism": "ESTIMATION à partir de mesures GX10. Dans l'essai 5/3 images (blocs figés, gemma3:4b), les 2 images de plus coûtent +554 jetons de prompt et +1,11 s de préremplissage, soit environ 0,55 s par image. Dans le flux réel, +536 jetons de texte de contexte coûtent seulement +0,14 s (≈ 0,26 ms/jeton). Les 256 jetons image côté LLM pèseraient donc environ 0,07 s par image. Il resterait environ 0,48 s par image pour l'encodeur SigLIP-400M à 896×896 (4096 patchs) et le prétraitement. Cela rejoint FastVLM : avec un petit LLM et une haute résolution, le délai avant le premier jeton est dominé par l'encodeur. Dans la sonde Qwen3-VL-4B (tag bf16, effectivement F16), 5 images font 6132 jetons de prompt et prennent 3,10 s de préremplissage. La lenteur constatée (décodage médian de 10,4 s à 23,9 tok/s) vient du F16, qui lit environ 8,9 Go par jeton. Cette sonde ne dit donc rien de la vitesse d'un Qwen en Q4. Ces chiffres orientent les leviers suivants (mosaïque, nombre d'images, résolution, élagage) : il faut les mesurer directement avant d'y consacrer du temps GPU.",
+     "papers": [
+      {
+       "ref": "arXiv:2412.13303",
+       "title": "FastVLM: Efficient Vision Encoding for Vision Language Models",
+       "keyClaim": "Avec un petit LLM à haute résolution, le TTFT est dominé par la latence de l'encodeur ; contrôler la résolution d'entrée suffit à régler le nombre de jetons, sans élagage. Mesuré sur LLaVA-1.5 et Qwen2, sur leur matériel.",
+       "url": "https://arxiv.org/abs/2412.13303",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2503.19786",
+       "title": "Gemma 3 Technical Report",
+       "keyClaim": "Encodeur SigLIP de 400M à résolution fixe 896×896 et 256 jetons par image (pooling 4×4). Les formats non carrés produisent des artefacts et du texte illisible ; Pan & Scan est optionnel et désactivable pour aller plus vite.",
+       "url": "https://arxiv.org/abs/2503.19786",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2511.21631",
+       "title": "Qwen3-VL Technical Report",
+       "keyClaim": "Encodeur SigLIP2-Large (300M) pour les variantes 2B et 4B, SO-400M au-delà ; fusion MLP de 2×2 caractéristiques en un jeton, donc des jetons proportionnels à la surface de l'image (résolution dynamique).",
+       "url": "https://arxiv.org/abs/2511.21631",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Aucun gain direct : c'est la calibration. Elle dira combien rapporte une image en moins, une mosaïque, une résolution réduite pour les Qwen ou un budget Gemma 4. Elle dira aussi si le format JSON ralentit le décodage. Le gain anticipé par perc-01, perc-03 et perc-04 en dépend.",
+     "expectedRelevanceEffect": "Aucun (sonde de coût). Elle évite d'investir dans un levier qui viserait la mauvaise étape, par exemple élaguer des jetons LLM si l'encodeur domine.",
+     "testableWithoutAppChange": true,
+     "experiment": "Appels directs à /api/chat, sans TVLens, sur 6 corps vision capturés en E1 (1 par vidéo, figés par SHA). Pour chaque modèle déjà présent localement (vérifier /api/tags, sans pull pendant une campagne) : gemma3:4b, qwen3-vl:2b-instruct-q4_K_M, qwen3-vl:8b-instruct-q4_K_M, qwen3-vl:30b-a3b-instruct-q4_K_M, gemma4:e2b, gemma4:e4b-it-q4_K_M. (a) 0, 1, 3 et 5 images avec num_predict=1 : coût de préremplissage, et prompt_eval_count pour obtenir les jetons par image. (b) Pour gemma3 seulement, images 1280×720 contre JPEG redimensionnés à 896×896 (part du prétraitement CPU). (c) num_predict=200 fixe, avec et sans format JSON (surcoût de la grammaire). (d) Pour Qwen, 1280×720 contre 640×360. Trois répétitions, nonce en tête pour éviter le cache de préfixe, chargement du modèle mesuré à part, GPU exclusif sous les verrous coopératifs, toutes les mesures individuelles publiées.",
+     "risks": "Les compteurs Ollama mélangent prétraitement, encodeur et préremplissage ; seules les différences entre variantes isolent les étapes. Les téléchargements de modèles en cours (disque, réseau) peuvent perturber. Le tag gemma4 peut ne pas exposer de budget de jetons : le budget effectif se lit seulement dans prompt_eval_count. Les petits effectifs ne servent qu'à calibrer, pas à conclure.",
+     "priority": 1,
+     "evidenceLevel": "Estimation dérivée de mesures GX10 + faits documentaires (rapports Gemma 3, Qwen3-VL, FastVLM)",
+     "gx10Cost": "≈ 15 à 25 min de GPU exclusif, chargements de 6 modèles compris (≈ 250 appels courts)",
+     "levers": "Appels directs à Ollama (modèle, num_predict, format, nombre et taille des images) ; aucun changement applicatif"
+    },
+    {
+     "id": "perc-03-une-nette-plus-grille",
+     "title": "Une image nette plus une grille 2×2 des autres instants : 2 passages d'encodeur au lieu de 5",
+     "mechanism": "Gemma 3 encode chaque image à 896×896, avec 256 jetons quelle que soit la résolution d'entrée. Le coût dépend donc du nombre d'images, pas de leur taille. D'après l'estimation de perc-02, environ 0,5 s par image part dans l'encodeur. On compose une image nette (le dernier instant, utile pour « maintenant » et pour l'OCR) et une grille 2×2 des 4 autres instants, avec l'horodatage incrusté. L'ordre temporel se lit en lignes, de gauche à droite et de haut en bas. Le modèle garde ainsi 5 instants pour les actions brèves en ne payant que 2 encodages. IG-VLM montre qu'une grille d'images de vidéo, donnée à un VLM d'images, fonctionne sans entraînement. Le rapport Gemma 3 montre en revanche qu'une résolution plus faible dégrade fortement la lecture de texte (sonde 2B : DocVQA 45,4 à 448 px contre 59,8 à 896 px). D'où l'image nette conservée.",
+     "papers": [
+      {
+       "ref": "arXiv:2403.18406",
+       "title": "An Image Grid Can Be Worth a Video: Zero-shot Video Question Answering Using a VLM",
+       "keyClaim": "Une grille d'images envoyée à un seul VLM dépasse les méthodes antérieures sur 9 benchmarks de QA vidéo sur 10, sans entraînement. Grille quasi carrée, ordre en lignes et 6 images donnent les meilleurs résultats. Les auteurs signalent une perte de détail spatial par image. Mesuré avec LLaVA-1.6 7–34B et GPT-4V, en anglais, ni avec Gemma 3 ni sur de l'OCR.",
+       "url": "https://arxiv.org/abs/2403.18406",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2503.19786",
+       "title": "Gemma 3 Technical Report",
+       "keyClaim": "Résolution fixe de 896² et 256 jetons ; une résolution plus faible dégrade DocVQA, InfoVQA et TextVQA. Pan & Scan donne +8,2 DocVQA au 4B en multipliant les passages d'encodeur, ce qui est incompatible avec 8 s.",
+       "url": "https://arxiv.org/abs/2503.19786",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Si perc-02 confirme environ 0,48 s par image : préremplissage d'environ 3,0 s à environ 1,2 s, soit −1,4 à −1,8 s face à 5 images et ≈ −0,5 s face à 3 images (le concurrent actuel). Le décodage ne change pas. Ce n'est pas encore mesuré.",
+     "expectedRelevanceEffect": "Hypothèse : les actions brèves sont mieux préservées qu'avec 3 images (5 instants au lieu de 3) et l'OCR est préservé sur l'image nette. Risques : le texte des vignettes devient illisible (448 px équivalents, écrasés en carré), le modèle peut confondre l'ordre des vignettes, et des inventions peuvent apparaître sur les vignettes floues.",
+     "testableWithoutAppChange": true,
+     "experiment": "Prototype hors ligne sur les 48 corps capturés et figés de perc-01, avec les mêmes contextes. Bras : A5 (5 images capturées), B3 (images 0, 2, 4, comme l'essai 5/3) et M (image 4 nette + grille 2×2 des images 0 à 3, horodatages incrustés). Seule la phrase « images horodatées […] » est réécrite, par une règle figée avant mesure. Disposition, image nette et qualité JPEG sont figées avant exécution. Ordre A5/B3/M/M/B3/A5, nonce contre le cache, gemma3:4b au digest vérifié. Mesures : prompt_eval et total par cas, différences appariées par bloc, froid et chaud séparés. Annotation à l'aveugle contre l'oracle v2 : OCR (CNRS, Artemis), actions brèves (Bœuf, Spring), inventions, ordre temporel. La comparaison décisive est M contre B3, à coût voisin.",
+     "risks": "Le format 16:9 de la grille est écrasé en carré par Gemma. La réécriture du prompt change légèrement les jetons. La transposition depuis IG-VLM (autres modèles, QA à choix multiples, anglais) n'est pas établie. En production, la composition des images est un changement applicatif dans la préparation des blocs.",
+     "priority": 2,
+     "evidenceLevel": "Documentaire (IG-VLM, Gemma 3) + mécanisme de coût estimé sur GX10, à confirmer par perc-02",
+     "gx10Cost": "≈ 288 appels × ≈ 4 s ≈ 20 à 25 min de GPU exclusif, plus ≈ 10 min CPU pour composer les images",
+     "levers": "Préparation des blocs (images par bloc, composition) testée par rejeu hors ligne ; pas de changement de modèle"
+    },
+    {
+     "id": "perc-04-vlm-leger-resolution-choisie",
+     "title": "E3 recadré : VLM plus léger ou MoE, avec la résolution ou le budget de jetons comme facteur déclaré, sans tag F16",
+     "mechanism": "FAITS DOCUMENTAIRES. Gemma 3 4B : SigLIP-400M fixe à 896² (4096 patchs, 256 jetons). Qwen3-VL 2B/4B : SigLIP2-Large 300M et un jeton par bloc d'environ 32×32 px ; 1280×720 donne environ 900 à 1100 jetons par image (6132 mesurés pour 5 images sur le 4B), 640×360 environ 230, soit environ 4 fois moins de patchs que Gemma 3. Gemma 4 E2B/E4B : encodeur d'environ 150M, rapport d'aspect conservé, budgets de 70, 140, 280, 560 ou 1120 jetons ; l'exécuteur MLX d'Ollama utilise 280 par défaut, et le défaut de l'exécuteur CUDA Linux n'est pas connu. Le décodage est limité par la bande passante (≈ 273 Go/s) : gemma3:4b Q4 mesuré à 59–61 tok/s, Qwen3-VL-4B F16 à 23,9 tok/s. COMPATIBILITÉ SUPPOSÉE : un 2B en Q4 devrait décoder environ 1,7 à 2 fois plus vite que gemma3:4b ; un 30B-A3B (≈ 3B actifs) au même rythme environ, avec une meilleure OCR selon son éditeur. La comparaison Qwen du 20 octobre portait sur un tag F16 et sur des images à 720p : elle ne renseigne pas sur ces candidats.",
+     "papers": [
+      {
+       "ref": "arXiv:2511.21631",
+       "title": "Qwen3-VL Technical Report",
+       "keyClaim": "Les petits modèles denses (2B, 4B, 8B) sont présentés comme compétitifs en OCR et en QA documentaire ; le 30B-A3B dépasserait Gemini-2.5-Flash et GPT-5-mini sur la plupart des métriques documentaires. Ce sont des résultats de l'éditeur sur ses bancs, en grande partie anglais et chinois.",
+       "url": "https://arxiv.org/abs/2511.21631",
+       "year": 2025
+      },
+      {
+       "ref": "Gemma 4 model card (Google AI for Developers)",
+       "title": "Gemma 4 model card",
+       "keyClaim": "E2B et E4B ont un encodeur d'environ 150M, avec résolution et rapport d'aspect variables, et des budgets de 70 à 1120 jetons : les plus bas pour la légende et la vidéo, les plus hauts pour l'OCR et le petit texte. OmniDocBench 1.5 (distance d'édition) : 0,290 pour E2B, 0,181 pour E4B.",
+       "url": "https://ai.google.dev/gemma/docs/core/model_card_4",
+       "year": 2026
+      },
+      {
+       "ref": "arXiv:2412.13303",
+       "title": "FastVLM: Efficient Vision Encoding for Vision Language Models",
+       "keyClaim": "Le front de Pareto entre précision et TTFT combine plusieurs tailles de LLM et plusieurs résolutions : régler la résolution est le levier simple pour arbitrer.",
+       "url": "https://arxiv.org/abs/2412.13303",
+       "year": 2024
+      }
+     ],
+     "expectedLatencyEffect": "Estimations à confirmer. qwen3-vl:2b Q4 à 640×360 : environ 0,7 à 1 s de préremplissage pour 5 images et environ 1,6 à 2 s de décodage pour 200 jetons, soit environ 2,5 à 3,5 s par bloc contre 6,6 s médians aujourd'hui. gemma4:e4b : encodeur moins cher, décodage voisin, environ 4 à 5 s. qwen3-vl:30b-a3b à 640×360 : environ 4 à 6 s, avec un gain de qualité attendu plutôt qu'un gain de vitesse.",
+     "expectedRelevanceEffect": "Inconnu, et c'est le cœur du test. Risques : français moins bon et plus d'inventions pour les 2B, OCR dégradée à 640×360 sur le petit texte (diapositives CNRS, chiffres Artemis). Si la sortie n'est pas en français, l'adaptateur relance un second appel (MAX_LANGUAGE_ATTEMPTS), ce qui double le coût sur les vidéos anglaises. Il faut compter ces relances.",
+     "testableWithoutAppChange": true,
+     "experiment": "Dans le budget E3 (≈ 1 h), sur les 48 corps capturés et figés. Bras : gemma3:4b (référence) ; qwen3-vl:2b Q4 en 1280×720 ; qwen3-vl:2b Q4 en 640×360 ; gemma4:e4b ; gemma4:e2b ; qwen3-vl:30b-a3b Q4 en 640×360. Seuls le modèle et la résolution déclarée varient ; tags F16 exclus ; digest et quantification effectifs relevés par /api/show. Ordre contrebalancé par blocs. Mesures : jetons par image, préremplissage, décodage, jetons générés, langue jugée (relances) et validité du schéma. Annotation à l'aveugle (OCR, actions, inventions, français) contre l'oracle v2. Seul un bras qui ne perd ni OCR ni actions passe en E4.",
+     "risks": "Le format GGUF et le processeur d'images d'Ollama diffèrent des checkpoints de référence. Un pull sur un modèle présent peut en changer les poids (incident du 19/10) : pas de pull pendant les campagnes. Le budget de jetons de Gemma 4 n'est peut-être pas réglable sous Ollama Linux. Les gains annoncés par les éditeurs ne sont pas des mesures sur le GX10.",
+     "priority": 2,
+     "evidenceLevel": "Faits documentaires + mesures GX10 partielles (gemma3:4b Q4, Qwen3-VL-4B F16) ; vitesses des candidats Q4 supposées",
+     "gx10Cost": "≈ 60 min de GPU exclusif (budget E3), modèles déjà présents, aucun téléchargement pendant le créneau",
+     "levers": "Modèle du rôle vision, résolution ou scale de préparation des blocs, keep_alive ; aucun changement applicatif"
+    },
+    {
+     "id": "perc-05-cadence-evenementielle",
+     "title": "Cadence événementielle : sauter ou alléger les blocs statiques, valider d'abord le détecteur et simuler la file",
+     "mechanism": "La sélection shadow (miniatures 32×18) a proposé 142 blocs « statiques » candidats : CNRS 50/110, Artemis 83/263, Kennedy 7/53, Bœuf 2/92, Tears 0/91, Spring 0/58. La voie vision est séquentielle, avec une file bornée qui écarte les plus anciens blocs en retard ; en CNRS et Artemis, supprimer ou alléger 30 à 45 % des appels libérerait de la marge et du GPU pour les questions. La littérature va dans ce sens au niveau des jetons et de l'invocation. TimeChat-Online élimine 82,8 % des jetons vidéo redondants entre images consécutives. StreamMind n'invoque le LLM que sur événement. Dispider confie le déclenchement à une perception légère. Dans TVLens, sans accès aux jetons d'Ollama, l'analogue praticable est la décision au niveau du bloc.",
+     "papers": [
+      {
+       "ref": "arXiv:2504.17343",
+       "title": "TimeChat-Online: 80% Visual Tokens are Naturally Redundant in Streaming Videos",
+       "keyClaim": "Supprimer les jetons proches de ceux de l'image précédente (DTD, au niveau des caractéristiques) retire 82,8 % des jetons vidéo et garde 98 % de la performance sur StreamingBench. Mesuré avec Qwen2.5-VL-7B affiné et un critère sur les jetons de l'encodeur, pas avec des miniatures.",
+       "url": "https://arxiv.org/abs/2504.17343",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2503.06220",
+       "title": "StreamMind: Unlocking Full Frame Rate Streaming Video Dialogue through Event-Gated Cognition",
+       "keyClaim": "Une porte cognitive entre l'encodeur vidéo et le LLM n'invoque le LLM que lors d'événements pertinents (100 fps sur un A100). Le modèle est entraîné : seul le principe de l'invocation conditionnelle se transpose.",
+       "url": "https://arxiv.org/abs/2503.06220",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2502.21271 et arXiv:2407.15047",
+       "title": "Adaptive Keyframe Sampling (AKS) ; VidF4 (frame scoring)",
+       "keyClaim": "La sélection d'images y est guidée par la question (pertinence image–question et couverture ; VidF4 est entraîné de bout en bout). Elle ne s'applique pas à la perception continue, faite avant la question. Seul le critère de distinctivité entre images est indépendant de la question. Ces méthodes conviennent plutôt à l'outil de réexamen d'un clip au moment de la question.",
+       "url": "https://arxiv.org/abs/2502.21271",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Sur CNRS et Artemis, environ 32 à 45 % d'appels VLM en moins si tous les candidats sont sautés, d'où des pertes par retard proches de zéro et un GPU libéré pour les questions. Effet nul sur Tears et Spring, presque nul sur Bœuf. Ces chiffres seront prédits par simulation, pas mesurés en flux.",
+     "expectedRelevanceEffect": "Risque principal : une diapositive dont seul le texte change passe sous le seuil de 0,035 des miniatures 32×18. Ce cas est fréquent en CNRS, et l'OCR serait perdue. Garde-fous : un signal de changement de texte (perc-06) et un bloc statique allégé (1 image, sortie courte) plutôt que sauté, toujours publié comme « inchangé » avec son intervalle, pour la fraîcheur des réponses « maintenant ».",
+     "testableWithoutAppChange": true,
+     "experiment": "Sans GPU. (1) Pour chacun des 142 candidats, vérifier à l'aveugle sur les images de l'oracle v2 (toutes les 2 s) et sur la transcription si un fait visuel nouveau apparaît : texte, objet, action. On obtient le taux de manqués du détecteur par vidéo et sur les fenêtres des questions. (2) Simulation à événements discrets de la voie vision (séquentielle, file bornée, éviction des plus anciens, passage de 5 à 3 images en retard), alimentée par les durées par bloc mesurées en E1. Variantes : référence, statiques sautés, statiques allégés (coût tiré de perc-02). On en tire les pertes par retard et l'âge des preuves, par vidéo. (3) Ce n'est qu'avec zéro manqué sur les fenêtres OCR et actions qu'on envisage un ticket applicatif et une confirmation E4. Un proxy renvoyant l'observation précédente serait un prototype, signalé comme tel.",
+     "risks": "Le seuil a été choisi sans validation. Une simulation reste un modèle, pas une mesure du flux. Les blocs statiques d'Artemis peuvent contenir des chiffres de télémétrie qui changent. Il y a un risque de dupliquer des observations en mémoire si l'implémentation republie au lieu de marquer « inchangé ».",
+     "priority": 3,
+     "evidenceLevel": "Données shadow GX10 mesurées (sans effet réel) + littérature de principe (modèles entraînés, non transposables directement)",
+     "gx10Cost": "0 GPU ; ≈ 1 h de CPU et d'annotation, sur Mac ou GX10",
+     "levers": "Aucun pour mesurer (analyse et simulation) ; en production, changement applicatif de la voie vision"
+    },
+    {
+     "id": "perc-06-ocr-leger-cpu",
+     "title": "OCR léger sur CPU pour le texte à l'écran, en complément du VLM et comme signal de changement",
+     "mechanism": "Gemma 3 écrase le 16:9 en 896², et son rapport signale que les formats non carrés rendent le texte illisible. Pan & Scan corrige cela (+8,2 DocVQA sur le 4B) en multipliant les passages d'encodeur, ce que la cadence de 8 s ne permet pas. Une chaîne OCR légère (PP-OCRv5 mobile, moins de 100M de paramètres, version CPU), exécutée sur les 20 cœurs ARM hors GPU sur une image par bloc, fournirait le texte exact. Ce texte entrerait dans la consigne pour un coût de préremplissage d'environ 0,26 ms par jeton. Il donnerait aussi un signal de changement de diapositive pour perc-05, et permettrait de passer à 3 images ou à la grille (perc-03) sans perdre l'OCR.",
+     "papers": [
+      {
+       "ref": "arXiv:2507.05595",
+       "title": "PaddleOCR 3.0 Technical Report",
+       "keyClaim": "PP-OCRv5 propose une version serveur et une version mobile pour CPU. Selon les auteurs, ces modèles de moins de 100M de paramètres rivalisent avec des VLM d'un milliard de paramètres. Langues de base documentées : chinois, anglais et japonais ; le français (latin, accents) est à vérifier.",
+       "url": "https://arxiv.org/abs/2507.05595",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2507.11730",
+       "title": "Seeing the Signs: A Survey of Edge-Deployable OCR Models for Billboard Visibility Analysis",
+       "keyClaim": "Face à Qwen2.5-VL-3B, InternVL3 et SmolVLM2, une chaîne CNN légère (PaddleOCRv4) reste compétitive sur le texte recadré pour une fraction du coût. Les VLM sont meilleurs en compréhension globale de scène.",
+       "url": "https://arxiv.org/abs/2507.11730",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2503.19786",
+       "title": "Gemma 3 Technical Report",
+       "keyClaim": "La résolution fixe à 896² et les formats non carrés rendent le texte illisible ; Pan & Scan améliore la lecture au prix de passages d'encodeur supplémentaires.",
+       "url": "https://arxiv.org/abs/2503.19786",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Effet direct à peu près nul : environ 0,1 à 0,3 s de CPU par image (à mesurer), en parallèle du GPU. Effet indirect : il rend sûrs les leviers perc-03 et perc-05 sur l'OCR, et donc leurs gains (−0,5 à −1,8 s par bloc, et des appels évités).",
+     "expectedRelevanceEffect": "Gain attendu sur les questions de texte à l'écran (diapositives CNRS, chiffres Artemis, minuteurs en cuisine). Risques : une OCR bruitée injecte des chaînes fausses, le texte vu à l'écran peut contenir des instructions (déjà traité comme non fiable par la consigne), et les accents français peuvent être mal reconnus.",
+     "testableWithoutAppChange": true,
+     "experiment": "Hors GPU. Installer PaddleOCR (modèle latin mobile) ou RapidOCR/ONNX dans un environnement isolé sur le GX10 ARM, avec Tesseract fra en solution de repli si le latin manque. Faire tourner sur les images de l'oracle v2 de CNRS, Artemis et Bœuf (une image toutes les 2 s). Mesurer les ms par image (p50, p95, toutes les valeurs) avec 4 threads, pour laisser des cœurs à Whisper. Mesurer aussi le rappel et la précision au caractère et au mot contre le texte annoté de l'oracle, puis comparer aux mentions OCR des sorties gemma3:4b des mêmes blocs (E1). Ne pas lancer pendant un essai chronométré où Whisper tourne sur CPU (E5).",
+     "risks": "Ajout d'un logiciel et de petits modèles téléchargés (à consigner). Concurrence pour le CPU avec Whisper s'il passe sur CPU. L'intégration demande un changement applicatif (nouveau champ dans la perception). La qualité sur du texte incrusté en vidéo compressée est incertaine.",
+     "priority": 3,
+     "evidenceLevel": "Documentaire (PaddleOCR 3.0, survey OCR embarqué, Gemma 3) ; aucune mesure GX10",
+     "gx10Cost": "0 GPU ; ≈ 30 à 45 min de CPU, en dehors des essais chronométrés",
+     "levers": "Aucun pour mesurer ; en production, un composant OCR CPU dans la préparation des blocs (changement applicatif)"
+    },
+    {
+     "id": "perc-07-elagage-jetons-visuels",
+     "title": "Élagage ou fusion de jetons visuels (FastV, VisionZip, PruMerge, ToMe) : ne pas investir cette semaine",
+     "mechanism": "Ces méthodes retirent des jetons image, après l'encodeur (VisionZip, PruMerge) ou dans les couches du LLM (FastV). Leurs gains publiés portent sur le préremplissage du LLM, pour des modèles à 576–2880 jetons par image (LLaVA-1.5, LLaVA-NeXT), mesurés sur A100. Dans TVLens, Gemma 3 réduit déjà chaque image à 256 jetons. La part LLM des jetons image est estimée à environ 0,07 s par image, alors que l'encodeur (≈ 0,48 s par image) et le décodage (56 % du temps) dominent : élaguer après l'encodeur ne touche ni l'un ni l'autre. Ollama et llama.cpp n'offrent aucun point d'insertion, et FastV exige les cartes d'attention complètes, incompatibles avec Flash Attention, activée sur le service. Pour les Qwen, réduire la résolution d'entrée produit le même effet, plus simplement (FastVLM).",
+     "papers": [
+      {
+       "ref": "arXiv:2403.06764",
+       "title": "An Image is Worth 1/2 Tokens After Layer 2 (FastV)",
+       "keyClaim": "L'attention sur les jetons visuels est très inefficace dans les couches profondes ; élaguer la moitié des jetons après la couche 2 réduit les FLOPs de LLaVA-1.5, Qwen-VL-Chat et Video-LLaVA.",
+       "url": "https://arxiv.org/abs/2403.06764",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2412.04467",
+       "title": "VisionZip: Longer is Better but Not Necessary in Vision Language Models",
+       "keyClaim": "La sélection de jetons informatifs avant le LLM accélère le préremplissage d'un facteur 8 sur LLaVA-NeXT 13B, sans réduire le coût de l'encodeur.",
+       "url": "https://arxiv.org/abs/2412.04467",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2403.15388",
+       "title": "LLaVA-PruMerge: Adaptive Token Reduction for Efficient Large Multimodal Models",
+       "keyClaim": "Compression d'environ 14× des jetons visuels de LLaVA-1.5 à performance comparable, sur la base de l'attention de la classe CLIP.",
+       "url": "https://arxiv.org/abs/2403.15388",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2502.11501",
+       "title": "Token Pruning in Multimodal Large Language Models: Are We Solving the Right Problem?",
+       "keyClaim": "Beaucoup de méthodes font moins bien qu'une sélection aléatoire. Les FLOPs ne prédisent pas la latence (SparseVLM : +2,8 % de FLOPs mais +26,8 % de latence face à FastV), et FastV, SparseVLM et MustDrop ne supportent pas Flash Attention.",
+       "url": "https://arxiv.org/abs/2502.11501",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Pour gemma3:4b, au mieux environ −0,05 s par image côté LLM (estimation) et rien sur l'encodeur ni le décodage, pour un coût d'intégration très élevé (runtime modifié). Gain négligeable dans ce pipeline.",
+     "expectedRelevanceEffect": "Risque de perte d'OCR et de petits détails (les méthodes sont évaluées sur des QA générales), pour un gain de vitesse marginal.",
+     "testableWithoutAppChange": false,
+     "experiment": "Aucun essai GPU cette semaine. Un seul contrôle : si perc-02 montre que les jetons image coûtent plus de 0,2 s par image côté LLM (par exemple Qwen en 720p), préférer la réduction de résolution (perc-04) à toute modification du runtime.",
+     "risks": "Une modification du moteur ou du modèle sort du périmètre et de la fenêtre GX10.",
+     "priority": 5,
+     "evidenceLevel": "Documentaire ; non transposable selon l'estimation de coût GX10",
+     "gx10Cost": "0",
+     "levers": "Aucun levier disponible sans modifier Ollama ou llama.cpp"
+    },
+    {
+     "id": "perc-08-vlm-streaming",
+     "title": "VLM de streaming (StreamingVLM, VideoLLM-online, Dispider, Flash-VStream) : pas de nouvel essai GPU, noter l'existant",
+     "mechanism": "Ces modèles gardent un cache KV continu ou une mémoire compressée et commentent le flux image par image. MESURE GX10 : StreamingVLM traite 372 s de Spring en 604 s, soit 0,616× le temps réel, et la génération domine (médiane 1,015 s par segment de 1 s). Les cadences publiées viennent de GPU de centre de données : 8 FPS sur H100 pour StreamingVLM, plus de 10 FPS sur A100 pour VideoLLM-online. Le GB10 dispose d'environ 273 Go/s de bande passante, soit environ 12 fois moins qu'un H100, et le décodage y est limité par la bande passante. Ces modèles produisent du commentaire libre en anglais, pas une observation structurée en français avec ses preuves, et ils demandent un runtime dédié à côté d'Ollama.",
+     "papers": [
+      {
+       "ref": "arXiv:2510.09608",
+       "title": "StreamingVLM: Real-Time Understanding for Infinite Video Streams",
+       "keyClaim": "Un cache KV compact (puits d'attention, fenêtre courte de vision, fenêtre longue de texte) tient jusqu'à 8 FPS sur un H100 et gagne 66,18 % des duels contre GPT-4o mini sur Inf-Streams-Eval.",
+       "url": "https://arxiv.org/abs/2510.09608",
+       "year": 2025
+      },
+      {
+       "ref": "arXiv:2406.11816",
+       "title": "VideoLLM-online: Online Video Large Language Model for Streaming Video",
+       "keyClaim": "Dialogue en flux sur un clip de 5 minutes à plus de 10 FPS sur un A100, grâce à l'entraînement LIVE.",
+       "url": "https://arxiv.org/abs/2406.11816",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2406.08085",
+       "title": "Flash-VStream: Memory-Based Real-Time Understanding for Long Video Streams",
+       "keyClaim": "Une mémoire inspirée de la mémoire humaine réduit la latence et la VRAM pour les longs flux. Modèle entraîné dédié.",
+       "url": "https://arxiv.org/abs/2406.08085",
+       "year": 2024
+      },
+      {
+       "ref": "arXiv:2501.03218",
+       "title": "Dispider",
+       "keyClaim": "Perception, décision et réaction découplées. C'est le principe architectural retenu dans perc-01, pas le modèle.",
+       "url": "https://arxiv.org/abs/2501.03218",
+       "year": 2025
+      }
+     ],
+     "expectedLatencyEffect": "Défavorable sur le GX10 dans l'état mesuré (sous le temps réel avant même les questions).",
+     "expectedRelevanceEffect": "Inconnu : les sorties VTT de StreamingVLM n'ont pas été notées.",
+     "testableWithoutAppChange": true,
+     "experiment": "Aucune charge GPU. Noter à l'aveugle les 372 entrées VTT existantes de Spring contre les événements de l'oracle v2, pour décider après la fenêtre GX10 si la qualité justifierait un jour une intégration. Rien n'est relancé.",
+     "risks": "Coût d'intégration élevé (second runtime, format de sortie). Les gains publiés supposent H100 ou A100.",
+     "priority": 5,
+     "evidenceLevel": "Mesuré sur GX10 (vitesse StreamingVLM) + documentaire",
+     "gx10Cost": "0 GPU ; ≈ 30 min d'annotation",
+     "levers": "Aucun"
+    }
+   ],
+   "notes": "QUESTION. Comment tenir la cadence de 8 s de la perception gemma3:4b (aujourd'hui environ 7,2 s médians par bloc dans le flux, 22 % d'appels au-delà de 8 s) sans perdre l'OCR ni les actions brèves ?\n\nMÉTHODE. J'ai lu AGENTS.md, le protocole d'évaluation, PROGRAMME.md, le contexte commun et les rapports des essais images 5/3, shadow, pause vision, Qwen Ollama/vLLM et StreamingVLM. J'ai réanalysé hors GPU, en lecture seule, les bruts déjà rapatriés : 414 appels vision réels des 8 replays de la pause vision, 96 cas de l'essai 5/3 et 25 réponses Qwen3-VL-4B. Je n'ai lancé aucune inférence, n'ai touché ni au GX10 ni au service, et n'ai rien committé. Sources primaires : arXiv (sections méthode et résultats lues), carte de modèle Gemma 4, et ctx7 pour Ollama et llama.cpp.\n\nDIAGNOSTIC MESURÉ.\n- La génération représente 56,4 % du temps fournisseur, le préremplissage 41,2 %.\n- Sur les 91 appels de plus de 8 s, 56 sont simplement trop longs (médiane 352 jetons contre 197 pour les appels ≤ 8 s) et 35 sont ralentis par une question concurrente (décodage < 45 tok/s, minimum 19).\n- Les jetons générés suivent le topicSummary cumulatif réécrit à chaque bloc (r = 0,81, contre 0,29 pour summary+visual). C'est le premier levier (perc-01).\n- Le préremplissage semble dominé par l'encodeur d'image (environ 0,48 s par image, estimation par différences) plutôt que par les jetons LLM (environ 0,07 s par image). L'élagage de jetons (perc-07) vise donc la mauvaise étape ; nombre d'images, grille et résolution sont les bons leviers, à confirmer par perc-02.\n- La lenteur de Qwen3-VL-4B venait du décodage F16 (23,9 tok/s), pas de l'image.\n- Effet système : réduire la vision libère le GPU partagé avec les questions. Le gain de la pause vision (Kennedy 18,78 → 11,21 s) laisse penser qu'une perception deux fois moins chère rapprocherait les réponses de 15 s sans perte de couverture. C'est une hypothèse à vérifier en E4.\n\nORDRE GPU PROPOSÉ (un essai à la fois, après E1, verrous et campagnes actives vérifiés) : perc-02 (≈ 20 min), puis perc-01 (≈ 25 min), perc-03 (≈ 25 min) et perc-04 dans le budget E3 (≈ 60 min), soit environ 2 h 10 dans la fenêtre du 23/10. perc-05, perc-06 et perc-08 n'utilisent pas le GPU. Les gagnants de composant ne deviennent des gains produit qu'après E4. Aucun classement ne vaut tant que l'oracle v2 et les notations ne sont pas validés.\n\nLIMITES.\n- Toutes les données réanalysées sont Kennedy/Spring, pour la seule configuration de référence.\n- Les chiffres de gain sont des estimations, et ceux des articles viennent d'autres modèles et d'autres GPU.\n- La prise en charge de maxLength par Ollama 0.40.6 et le budget de jetons de Gemma 4 sous Linux sont supposés.\n- Le premier jeton n'est jamais mesuré.\n- La pertinence n'est notée nulle part.\n\nFICHIERS (dossier /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/perception/) :\n- mesures-derivees.json : chiffres dérivés et sources.\n- sorties-scripts.txt : sorties brutes des scripts.\n- entrees.sha256 : SHA des 8 campaign.json lus.\n- scripts/vision_tokens.py, decode_contention.py, tokens_vs_summary.py, output_fields.py, ollama_raw_timings.py : scripts en lecture seule, à lancer avec python3 -I."
+  },
+  {
+   "axis": "Mémoire, rappel ancien et transcription (ASR)",
+   "notes": "Statut : analyse documentaire et relecture des archives GX10 déjà rapatriées, sans inférence ni charge GPU. Les six fiches restent readyForScoring=false : aucune pertinence chiffrée ni classement n'est déclaré. Fichiers dans /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/memoire-asr/ :\n- extraire_mesures.py (SHA-256 3c38cd8473d849d4f1b700e1ff4bf965a0740765c05976a39a6c685cfdb78bed) ;\n- mesures.json (SHA-256 cc771b32b18b512bc21853b774aaa9e8e0c933fc75b3a522a1214254037b1048) ;\n- propositions.json, version complète de cette sortie (SHA-256 e1c19b1c1ff0c3fc1534ea2ef3c42c7b747239cd6eb65669d51ac97840066e8f).\nCode lu : 2035a2f, identique à main pour core/, adapters/ et runtime/.\n\nDIAGNOSTIC (mesuré sur archives GX10, sauf mention).\n(1) Le contexte d'une question ne contient que les 6 derniers passages utilisables (core/video-tools.cjs, context(), limit=6 hors récapitulatif), soit 48 s. Chaque passage porte au plus 1200 caractères (résumé VLM + visuel + transcription). Le résumé cumulatif topicSummary n'est pas transmis. omittedCount=27 pour kennedy-06.\n(2) 150 questions archivées sur 30 campagnes : 0 appel d'outil pour 150 ; search_moments, get_transcript et inspect_clip n'ont jamais été appelés. 129 observation, 21 insufficient. Le rappel au-delà de 48 s n'a donc jamais été possible dans ces essais.\n(3) Fraîcheur : 132/150 questions ont démarré avec au moins 7,5 s de fin non analysée, aucune sous 4 s. Les poses tombent sur les frontières des blocs de 8 s, si bien que le dernier bloc n'est presque jamais dans le contexte.\n(4) Échecs nommés.\n- spring-06 : insufficient avec base, small et turbo (contexte 320–368 s). Le modèle écrit que les premiers passages ne sont « pas disponibles dans ce fil ».\n- cuisine-07 : insufficient dans les trois Whisper. La séquence bouquet garni (552 s), champignons (568 s), oignons (608 s) est dans les trois transcriptions, mais la fenêtre 608–656 s n'en contient que la fin : échec de mémoire, pas d'ASR.\n- kennedy-06 : le contexte s'arrête à 264 s pour une pose à 272 s. La transcription base s'arrête sur « space filled with [BLANK_AUDIO] » et la suite est dans le bloc manquant. small donne un rejet de validation des preuves.\n(5) Whisper, un processus par bloc : base p50 1,29–1,65 s, dont calcul 0,63–1,0 s (chargement 0,31 s) et ~0,6 s hors whisper ; turbo p50 2,43–2,73 s, dont chargement 1,02–1,13 s. Sur Spring (sans dialogue, langue auto), texte d'apparence parlée dans 16/58 passages avec turbo, 2/58 avec small et 3/58 avec base.\n(6) Question seule, sonde de nuit sans outil ni charge concurrente : 1552–2207 jetons de prompt. Préremplissage de 2,07–2,92 s au premier passage, 0,14–0,16 s au second (cache de préfixe). Décodage de 181–259 jetons en 5,99–8,91 s : la génération domine.\n(7) D'après les intervalles des fiches provisoires, utilisés seulement pour choisir les cas : la preuve commence plus de 48 s avant la pose pour 11 des 30 questions (CNRS 5/5, cuisine 5/5, spring-06).\n(8) Transcription complète du préfixe à la dernière question, en jetons ≈ caractères/4 : Spring ~0,1 k, Tears ~0,6 k, Kennedy ~1,0 k, Bœuf ~1,6 k, CNRS ~4,0 k, Artemis ~5,7 k. Le texte visuel des mêmes préfixes est 3 à 9 fois plus gros.\n\nÉTAT DES CONNAISSANCES.\n- Mesuré sur GX10 : points (1) à (6) et (8). Le point (7) vient des fiches provisoires, non validées.\n- Documentaire : chiffres des papiers (A100, bancs à choix multiples, modèles affinés), WER Whisper et Parakeet hors GB10, options whisper.cpp, code source Ollama.\n- Supposé : le blocage des outils par la grammaire du format JSON avec think=false ; la compatibilité et la vitesse de parakeet-cli et whisper-server sur GB10 ; le gain réel d'un mode résident ou CPU.\n\nORDRE PROPOSÉ. M1, puis M2 et M3 dans une seule session de rejeu hors ligne (environ 1 h de GPU). M4 ensuite, en composant puis dans E5. M5 et M6 partagent le banc ASR. M7 et M8 seulement après M2.\nAvant toute charge : vérifier les verrous et les campagnes actives (night.lock, execution.lock, followup-gpu.lock, E1). Un seul essai GPU à la fois, aucun bras CPU long pendant un essai chronométré. Chaque essai a son dossier experiments/essais/<date>-<sujet>/, son plan figé par SHA-256 et sa ligne d'index, boucle de tickets arrêtée.\n\nBiais de protocole : la grille des 8 s crée un angle mort d'environ 8 s. Avec une pose à phase aléatoire, il serait en moyenne d'environ 4 s plus la durée de l'ASR (estimation, non mesurée).\n\nSources web consultées : article Towards AI sur Ollama, format et outils (https://pub.towardsai.net/ollama-0-34-4-lets-qwen-think-before-json-then-blocks-the-tool-call-5-of-6-parsers-tested-8313c8dfb089, réponse 403, non lu) ; issue Ollama https://github.com/ollama/ollama/issues/14493 (seulement connexe).",
+   "proposals": [
+    {
+     "id": "M1",
+     "title": "Diagnostic : le format JSON imposé bloque-t-il les appels d'outils de rappel ?",
+     "priority": 1,
+     "mechanism": "OllamaQuestionAgent envoie à chaque appel /api/chat à la fois format (le schéma de réponse) et tools, avec think=false (adapters/ollama/question-agent.cjs, http-client.cjs). Dans le code source d'Ollama (llm/llama_server.go et gbnf.go, lus via context7), format devient un json_schema ou une grammaire qui contraint toute la sortie. Une sortie libre n'est permise qu'avant la balise de fin de réflexion, absente quand think=false. Le premier jeton devrait donc être « { », ce qui rendrait impossible la balise d'appel d'outil. C'est cohérent avec les 0 appels sur 150 questions archivées, et avec des réponses comme « si tu me confirmes, je peux inspecter » (spring-06). Sur la version 0.40.6 du GX10, ce blocage reste une compatibilité supposée ; le nombre d'appels, lui, est mesuré.",
+     "papers": [
+      {
+       "ref": "arXiv:2408.02442",
+       "title": "Let Me Speak Freely? A Study on the Impact of Format Restrictions on Performance of Large Language Models",
+       "year": 2024,
+       "url": "https://arxiv.org/abs/2408.02442",
+       "keyClaim": "Les contraintes de format strictes (JSON) dégradent nettement le raisonnement des LLM, d'autant plus qu'elles sont strictes : un motif pour séparer la décision de chercher du rendu JSON."
+      },
+      {
+       "ref": "arXiv:2503.00540",
+       "title": "ReKV: Streaming Video Question-Answering with In-context Video KV-Cache Retrieval",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2503.00540",
+       "keyClaim": "Tableau 2 (QaEgo4D, LLaVA-OV-7B) : 6,1 % de rappel des segments pertinents en échantillonnage uniforme donnent 53,0 d'exactitude ; 58,1 % en récupération externe, 54,2 ; l'oracle, 64,4. Le rappel des bons moments pilote l'exactitude ; sans outil, il est nul au-delà de 48 s."
+      }
+     ],
+     "expectedLatencyEffect": "Diagnostic sans effet produit. Si les outils deviennent utilisables, chaque tour d'outil ajoute un appel complet du 27B, soit environ 5–10 s d'après la sonde de nuit, ce qui compromet les 15 s. Le correctif probable est donc l'injection de M2, pas une boucle d'agent.",
+     "expectedRelevanceEffect": "Indirect : établit si le rappel ancien est aujourd'hui structurellement impossible. Cela conditionne l'interprétation des insufficient de rappel (spring-06, cuisine-07) et le bénéfice attribuable aux embeddings et à search_moments, jamais exercés.",
+     "testableWithoutAppChange": true,
+     "experiment": "Rejeu hors ligne des requêtes exactes capturées, depuis le journal du proxy E1 (rejouer_questions.py enregistre les tool_calls sans les exécuter) ou un corpus reconstruit comme answers-ollama/corpus.json.\nCas : dix questions, dont six avec une preuve qui commence plus de 100 s avant la pose (spring-06, cuisine-02, cuisine-05, cuisine-07, cnrs-04, cnrs-06) et quatre témoins « maintenant » (kennedy-01, spring-02, tears-03, kennedy-08). Les fiches servent seulement à choisir les cas ; aucune donnée de fiche n'entre dans les requêtes.\nBras, un seul champ variant : A = format et tools (produit) ; B = tools sans format ; C = format sans tools. Deux passages, A/B/C puis C/B/A, qwen3.8:27b Q4_K_M, GPU sans autre charge.\nMesures : tool_calls (nom, arguments, intervalle), validité JSON du contenu selon readAnswer strict, jetons et durées Ollama, délai client.\nCritère préenregistré : hypothèse confirmée si B appelle un outil sur au moins 2 des 6 questions anciennes et A jamais.\nArrêt : 3 erreurs consécutives ou 20 min. Budget : 60 appels de 8–12 s.",
+     "gx10Cost": "≈ 12 min de GPU (27B seul), aucun téléchargement",
+     "levers": "Rejeu hors ligne des requêtes capturées ; champ format retiré par le script de rejeu, pas par l'application",
+     "evidenceLevel": "Mesuré : 0 outil sur 150 questions et réponses insufficient citées. Documentaire : code source Ollama main. Supposé : même comportement en 0.40.6 avec think=false. Source secondaire inaccessible (403) : article Towards AI décrivant le blocage format plus tools.",
+     "risks": "Sans format, la réponse peut sortir du JSON strict et être rejetée par readAnswer ; un correctif en deux temps aurait un coût. Le modèle peut appeler un outil à chaque question. Le diagnostic ne dit rien de la qualité finale après outils. Ne pas exécuter les outils avec une réimplémentation présentée comme le produit."
+    },
+    {
+     "id": "M2",
+     "title": "Mémoire compacte horodatée et rappel conditionné par la question, injectés en un seul appel",
+     "priority": 1,
+     "mechanism": "La mémoire vue par le modèle de questions est une file FIFO de 6 passages. D'après les fiches provisoires, la preuve commence plus de 48 s avant la pose pour 11 des 30 questions. La preuve ancienne existe pourtant : pour cuisine-07, la séquence complète est dans les trois transcriptions (552, 568 et 608 s), hors de la fenêtre 608–656 s. Le texte VLM est très redondant et pèse 3 à 9 fois la transcription.\nDeux remplacements de la FIFO, sans boucle d'outil :\n- B, journal causal compact : une ligne par bloc [id, intervalle, transcription] ; une ligne visuelle seulement quand la description change (fusion des voisins similaires, comme MA-LMM ou StreamForest) ; toujours les deux premiers blocs.\n- C, rappel par la question : les k passages anciens les plus proches selon qwen3-embedding:0.6b, déjà indexé, avec leurs horodatages (Video-RAG, ReKV, VideoStreaming).\nCoût mesuré : la transcription complète du préfixe fait ~0,1–1,6 k jetons sur quatre vidéos, ~4 k sur CNRS et ~5,7 k sur Artemis. Le préremplissage sans charge coûte environ 1 ms par jeton ; la génération (6–9 s) domine.",
+     "papers": [
+      {
+       "ref": "arXiv:2509.24871",
+       "title": "StreamForest: Efficient Online Video Understanding with Persistent Event Memory",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2509.24871",
+       "keyClaim": "Tableau 3, budget égal : la mémoire FIFO, qui garde le récent, tombe à 56,7 sur MLVU contre 70,0 pour la mémoire d'événements persistante ; sans mémoire longue, 56,6. Le meilleur résultat associe une fenêtre fine sur le présent et une mémoire d'événements."
+      },
+      {
+       "ref": "arXiv:2405.16009",
+       "title": "Streaming Long Video Understanding with Large Language Models (VideoStreaming)",
+       "year": 2024,
+       "url": "https://arxiv.org/abs/2405.16009",
+       "keyClaim": "Une mémoire globale de taille fixe perd les détails des premiers segments ; il faut sélectionner les mémoires liées à la question, avec leurs horodatages. Sans indication de temps, l'exactitude au point d'arrêt tombe de 54,9 à 19,8 (tableau 10)."
+      },
+      {
+       "ref": "arXiv:2411.13093",
+       "title": "Video-RAG: Visually-aligned Retrieval-Augmented Long Video Comprehension",
+       "year": 2024,
+       "url": "https://arxiv.org/abs/2411.13093",
+       "keyClaim": "Tableau 5 (Long-LLaVA-7B, Video-MME) : ~1,9 k jetons de textes ASR/OCR/détection retrouvés font passer de 52,0 à 62,1 ; le même volume tiré au hasard donne 59,1 ; 0,8 k jetons donnent 60,6. Une seule récupération, sans boucle d'agent."
+      },
+      {
+       "ref": "arXiv:2404.05726",
+       "title": "MA-LMM: Memory-Augmented Large Multimodal Model for Long-Term Video Understanding",
+       "year": 2024,
+       "url": "https://arxiv.org/abs/2404.05726",
+       "keyClaim": "À taille égale, fusionner les éléments consécutifs les plus similaires bat la FIFO : LVU 63,0 contre 61,3 ; Breakfast 93,0 contre 88,5 ; COIN 93,2 contre 90,4."
+      },
+      {
+       "ref": "arXiv:2312.17235",
+       "title": "A Simple LLM Framework for Long-Range Video Question-Answering (LLoVi)",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2312.17235",
+       "keyClaim": "Des légendes de clips courts (0,5–8 s) agrégées par un LLM suffisent à un QA vidéo long compétitif. C'est l'architecture texte de TVLens, qui gagne à agréger tout le préfixe plutôt que 48 s."
+      },
+      {
+       "ref": "arXiv:2307.03172",
+       "title": "Lost in the Middle: How Language Models Use Long Contexts",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2307.03172",
+       "keyClaim": "L'information au milieu d'un long contexte est moins bien exploitée qu'en début ou en fin : risque pour un journal long, et argument pour la récupération ciblée."
+      }
+     ],
+     "expectedLatencyEffect": "Hypothèse, sur la base d'environ 1 ms par jeton mesurée sans charge :\n- B : +0,1 à +2 s sur Spring, Tears, Kennedy et Bœuf ; +4 à +6 s sur CNRS et Artemis sans borne, d'où un plafond de ~2,5 k jetons ou le bras C.\n- C : ~0,6–1 k jetons ajoutés et un appel d'embedding de quelques dizaines de ms, non mesuré.\nSous contention vision, le surcoût peut être plus élevé. Aucun tour d'outil supplémentaire.",
+     "expectedRelevanceEffect": "Attendu : des insufficient de rappel (spring-06, cuisine-07, réserves de rappel ancien) convertis en réponses citées. Risque de régression sur les questions « maintenant » par dilution. Aucun gain chiffré avant notation à l'aveugle contre des références validées.",
+     "testableWithoutAppChange": true,
+     "experiment": "Rejeu hors ligne avec le harnais de sonder.cjs ou rejouer_questions.py et un constructeur de corpus déposé dans le dossier d'essai.\nCausalité : contexte reconstruit depuis les journaux archivés, avec seulement les révisions publiedAtMs ≤ anchorMs et endMs ≤ anchorMs. Aucune donnée de fiche dans le contexte.\nBras : A = les 6 passages capturés ; B = A + journal compact plafonné à 2,5 k jetons ; C = A + 6 passages anciens retrouvés par qwen3-embedding:0.6b (passageText, la question comme requête). Prompt, schéma et options identiques ; les passages ajoutés comptent comme preuves pour valider les citations.\nCorpus : les 30 questions, plus les réserves de rappel ancien et d'abstention des fiches après validation par le propriétaire.\nDeux passages contrebalancés, 27B seul sur le GPU.\nMesures : jetons, préremplissage, génération, délai client, insufficient, citations valides, puis notation à l'aveugle (oracle v2) par vidéo ; tous les délais individuels publiés.\nBudget : 180 appels, ≈ 35–40 min, plus ≈ 2 min d'embeddings. Arrêt à 45 min ou après 3 erreurs consécutives.",
+     "gx10Cost": "≈ 40–45 min de GPU (27B et embedding 0,6B), aucun téléchargement",
+     "levers": "Rejeu hors ligne des requêtes capturées avec contexte reconstruit ; aucun réglage produit modifié. Un prototype par le proxy ensuite, présenté comme tel.",
+     "evidenceLevel": "Mesuré GX10 : taille et contenu du contexte, preuve de cuisine-07 hors fenêtre, coûts de préremplissage et de génération. Documentaire : FIFO contre mémoire longue et récupération, sur d'autres modèles et bancs. Supposé : transposition au 27B texte de TVLens.",
+     "risks": "Dilution et « lost in the middle ». Résumés VLM confabulés dans le journal (arXiv:2502.15457). Un embedding rate les questions temporelles (« depuis le début »), d'où les deux premiers blocs dans B. ASR française fautive. Validation des citations à adapter dans l'application. Coût plus élevé sous contention."
+    },
+    {
+     "id": "M3",
+     "title": "Fraîcheur : attendre au plus ~2,5 s la transcription du dernier bloc déjà capturé",
+     "priority": 2,
+     "mechanism": "La question est gelée à l'instant de pose, quand le bloc qui vient de finir n'a pas encore sa transcription. 132/150 questions ont démarré avec au moins 7,5 s non analysées. Exemple : kennedy-06, contexte arrêté à 264 s pour une pose à 272 s, phrase coupée. La voie audio rend un passage utilisable dès la fin de Whisper (hasUsableObservation, laneEvidence), sans attendre la vision. Whisper base mesuré : p50 1,29–1,65 s, p90 1,63–2,30 s. Une attente bornée de la seule transcription des blocs finis avant la pose ramènerait la dernière phrase entendue.",
+     "papers": [
+      {
+       "ref": "arXiv:2501.05510",
+       "title": "OVO-Bench: How Far is Your Video-LLMs from Real-World Online Video Understanding?",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2501.05510",
+       "keyClaim": "En ligne, comprendre les événements au moment de la question est une catégorie distincte du rappel en arrière, où les modèles restent loin de l'humain : les questions « maintenant » exigent les dernières secondes."
+      },
+      {
+       "ref": "arXiv:2406.08085",
+       "title": "Flash-VStream: Memory-Based Real-Time Understanding for Long Video Streams",
+       "year": 2024,
+       "url": "https://arxiv.org/abs/2406.08085",
+       "keyClaim": "Le traitement du flux est découplé des questions asynchrones : la mémoire se met à jour en continu et la question lit l'état disponible le plus récent."
+      }
+     ],
+     "expectedLatencyEffect": "+0 à +2,5 s sur le délai complet, seulement quand la transcription du dernier bloc est en cours. Avec un Whisper résident (M4), sans doute moins de ~1 s, à mesurer.",
+     "expectedRelevanceEffect": "Hypothèse : des réponses « maintenant » plus justes quand la preuve est dans les 8 dernières secondes (kennedy-06). Les questions concernées sont comptées avant toute notation.",
+     "testableWithoutAppChange": true,
+     "experiment": "Bras ajouté au harnais de M2, dans la même session GPU.\nContexte A reconstruit avec les passages endMs ≤ anchorMs dont la révision audio est publiée au plus à anchorMs+Δ, pour Δ ∈ {0 ; 2,5 s}, d'après publishedAtMs.\nÉtapes :\n1. Compter sur CPU les questions qui gagnent leur dernier bloc.\n2. Rejouer 30 questions × 2 bras × 1 passage, soit 60 appels.\n3. Facultatif : scénario Kennedy en flux réel, poses décalées de +2,5 s, déclaré comme écart de protocole.\nLe correctif produit (attente bornée dans deep-ask) relève d'un ticket.",
+     "gx10Cost": "≈ 12 min de GPU hors ligne ; +8 min pour la confirmation Kennedy facultative",
+     "levers": "Rejeu hors ligne ; à défaut, décalage des atMs dans un scénario de diagnostic",
+     "evidenceLevel": "Mesuré GX10 : délais d'analyse au départ et cas kennedy-06. Supposé : gain de pertinence. Les journaux archivés contiennent déjà publishedAtMs pour le rejeu.",
+     "risks": "Délai ajouté si Whisper ralentit sous charge. Le dernier bloc n'a que le son. La grille de 8 s du protocole surestime le problème par rapport à un usage réel, à signaler dans l'évaluation."
+    },
+    {
+     "id": "M4",
+     "title": "Whisper résident ou sur CPU : retirer le coût fixe de chaque bloc et la contention GPU",
+     "priority": 2,
+     "mechanism": "Un processus whisper-cli est lancé pour chaque bloc de 8 s (adapters/local-transcriber.cjs) : chargement et initialisation à chaque fois, et audioCtx 0, donc un encodeur sur 30 s pour 8 s de son.\nMesuré sur GX10 :\n- base : p50 1,29–1,65 s, dont calcul 0,63–1,0 s (avec 0,31 s de chargement) et ~0,6 s hors whisper (processus, CUDA, E/S) ;\n- turbo : p50 2,43–2,73 s, dont chargement 1,02–1,13 s, encodage ~0,27 s, décodage 0,17–0,50 s.\nEnviron 60–75 % du temps par bloc est fixe. Leviers sans code, par un enveloppeur whisper-cli :\n- a) relais vers un whisper-server résident (POST /inference) ;\n- b) -ng sur CPU ;\n- c) -ng avec -ac auto (~512 positions au lieu de 1500).",
+     "papers": [
+      {
+       "ref": "arXiv:2212.04356",
+       "title": "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)",
+       "year": 2022,
+       "url": "https://arxiv.org/abs/2212.04356",
+       "keyClaim": "L'encodeur traite des fenêtres fixes de 30 s : un clip de 8 s sans contexte audio réduit paie le coût de 30 s. Les options -ac, -ng et le serveur viennent de la documentation whisper.cpp (context7)."
+      },
+      {
+       "ref": "arXiv:2307.14743",
+       "title": "Turning Whisper into Real-Time Transcription System (Whisper-Streaming)",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2307.14743",
+       "keyClaim": "Un service Whisper persistant en flux atteint ~3,3 s de latence avec une bonne qualité sur de la parole longue non segmentée : le résident est la norme du temps réel."
+      }
+     ],
+     "expectedLatencyEffect": "Hypothèse : en résident sur GPU, encodage et décodage seuls, ~0,4–0,8 s par bloc, turbo compris, contre 1,3–2,7 s aujourd'hui ; cela aide M3. Sur CPU, l'effet propre est inconnu, mais le GPU est libéré pour la vision et les questions. Le gain sur les questions se mesure en E5.",
+     "expectedRelevanceEffect": "Indirect : turbo ou small, meilleurs en français (M6), au coût actuel de base, et transcription plus fraîche (M3).",
+     "testableWithoutAppChange": true,
+     "experiment": "1) Banc composant sur les WAV de 8 s figés (Kennedy 53, Spring 58, CNRS 110, Bœuf 92 blocs), appels séquentiels.\nBras, pour base, small et large-v3-turbo : processus GPU (référence relancée) ; serveur GPU résident ; processus CPU -ng (t=8 et t=10) ; -ng -ac auto ; serveur CPU résident.\nMesures : chaque délai par bloc, p50/p90/max, découpage whisper, CER du texte contre la référence, replis de température, empreintes des poids et commit whisper.cpp.\nArrêt : 30 min de GPU ou 3 échecs consécutifs.\n2) Le gagnant passe dans E5 : rejeu Kennedy A/B/B/A, processus GPU contre gagnant. Mesures : cadence vision, pertes, retard d'analyse, délai des 5 questions.",
+     "gx10Cost": "Banc ≈ 15 min de GPU et ≈ 45–60 min de CPU hors essai chronométré ; E5 ≈ 2 × 8 min de GPU",
+     "levers": "Binaire enveloppe whisper-cli (-ng, -ac, ou relais vers whisper-server) ; threads ; contexte audio",
+     "evidenceLevel": "Mesuré GX10 : découpage des temps par bloc. Documentaire : options serveur et -ng de whisper.cpp. Supposé : part de l'initialisation CUDA dans les ~0,6 s hors whisper, vitesse CPU du GB10.",
+     "risks": "-ac réduit peut dégrader le texte ou halluciner. whisper-server sérialise les requêtes. L'enveloppeur est un prototype, pas le produit. Les threads CPU concurrencent ffmpeg et Ollama."
+    },
+    {
+     "id": "M5",
+     "title": "VAD Silero et suppression du non-parlé : supprimer les paroles inventées sur musique et silence",
+     "priority": 3,
+     "mechanism": "Mesuré sur Spring (sans dialogue, langue auto) : texte d'apparence parlée dans 16/58 passages avec large-v3-turbo (« What? What? … », « I don't know. I don't know. », légendes russes de musique), 2/58 avec small (dont l'hallucination classique de générique russe) et 3/58 avec base. Replis de température : 43 (turbo), 44 (small), 11 (base). Ces textes entrent dans passageText, donc dans le contexte des questions, alors que la fiche Spring interdit d'inventer des paroles. whisper.cpp intègre un VAD Silero (--vad, --vad-model, seuils et marges), ainsi que -sns et -nth.",
+     "papers": [
+      {
+       "ref": "arXiv:2609.32560",
+       "title": "How to Reduce Whisper Hallucination",
+       "year": 2026,
+       "url": "https://arxiv.org/abs/2609.32560",
+       "keyClaim": "whisper-large-v3 émet des mots sur 61,9 % de clips de pur bruit de salle. Supprimer sans discriminer a un coût : le meilleur point de contrôle sur le non-parlé efface 58 % de la parole répétée. Il faut mesurer à la fois l'hallucination et la parole perdue."
+      },
+      {
+       "ref": "arXiv:2501.11378",
+       "title": "Investigation of Whisper ASR Hallucinations Induced by Non-Speech Audio",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2501.11378",
+       "keyClaim": "Le non-parlé induit un ensemble récurrent d'hallucinations ; un post-filtrage par « sac d'hallucinations » réduit la WER et sert de garde-fou."
+      },
+      {
+       "ref": "arXiv:2303.00747",
+       "title": "WhisperX: Time-Accurate Speech Transcription of Long-Form Audio",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2303.00747",
+       "keyClaim": "La présegmentation par VAD (cut & merge) améliore la transcription longue : moins de dérive, d'hallucinations et de répétitions."
+      }
+     ],
+     "expectedLatencyEffect": "Faible : quelques dizaines de ms de VAD, non mesurées sur GB10, et un décodage évité sur les blocs sans parole.",
+     "expectedRelevanceEffect": "Hypothèse : moins d'inventions de paroles (Spring, musique de Tears, bruit d'Artemis), au risque de perdre des répliques courtes. Effet sur les réponses mesuré par le rejeu de M2.",
+     "testableWithoutAppChange": true,
+     "experiment": "Banc composant sur WAV figés, de préférence avec le serveur résident de M4.\nMédias : Spring en entier, Tears, Artemis 0–10 min, Kennedy, Bœuf.\nBras : base et turbo × {sans VAD ; --vad seuil 0,5 ; --vad avec -sns}.\nMesures :\n- mots d'apparence parlée sur Spring, cible 0 ;\n- parole supprimée et WER/CER contre références indépendantes seulement : SRT officiel de Tears et texte officiel Kennedy, pas l'oracle turbo, circulaire ;\n- délais par bloc.\nEnsuite : rejeu des 10 questions Spring et Tears avec les transcriptions VAD, dans le harnais de M2. Langue fixée sur Spring : bras séparé, car il change le scénario.",
+     "gx10Cost": "≈ 35–50 min de GPU (≈ 350 blocs × 6 bras), moins en résident ; rejeu ≈ 5 min",
+     "levers": "Enveloppeur whisper-cli ajoutant --vad --vad-model, -sns, -nth ; langue de transcription du scénario",
+     "evidenceLevel": "Mesuré GX10 : hallucinations Spring et replis par modèle. Documentaire : VAD whisper.cpp et papiers. Supposé : efficacité sur des blocs de 8 s ; présence du modèle Silero GGML à vérifier.",
+     "risks": "Débuts et fins coupés aux bords des blocs. Parole sur musique supprimée. Seuil à régler selon le contenu. Le sac d'hallucinations doit être mesuré à part."
+    },
+    {
+     "id": "M6",
+     "title": "Qualité ASR en français et effet sur la réponse : base, small, turbo et Parakeet-TDT-0.6B-v3",
+     "priority": 3,
+     "mechanism": "base est le défaut, alors que deux vidéos sur six sont en français.\nWER du papier Whisper :\n- FR MLS : base 26,6 / small 16,2 / medium 8,9 / large-v2 7,3 ;\n- FR FLEURS : 28,5 / 15,0 / 8,7 ;\n- EN FLEURS : 8,9 / 6,1 / 4,4.\nObservé sur la preuve de cuisine-07 : base transcrit « nos petits oignons » en « nos petits de ce qu'il y a » (608 s) et « champignons » en « champs de la voie » (592 s) ; turbo est propre. Parakeet-TDT-0.6B-v3 couvre 25 langues ; un binaire parakeet-cli existe dans le build whisper.cpp du GX10 (poids GGML sur ggml-org/parakeet-GGUF).",
+     "papers": [
+      {
+       "ref": "arXiv:2212.04356",
+       "title": "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)",
+       "year": 2022,
+       "url": "https://arxiv.org/abs/2212.04356",
+       "keyClaim": "Tableaux D.2 : en français, base fait environ deux fois la WER de small et trois fois celle de medium ; l'écart est bien plus faible en anglais."
+      },
+      {
+       "ref": "arXiv:2509.14128",
+       "title": "Canary-1B-v2 & Parakeet-TDT-0.6B-v3: Efficient and High-Performance Models for Multilingual ASR and AST",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2509.14128",
+       "keyClaim": "Parakeet-TDT-0.6B-v3 : WER moyenne de 9,7 % sur 24 langues contre 9,9 % pour whisper-large-v3 ; 12,21 % à −5 dB contre 19,38 % pour Canary ; RTFx 3333 dans le banc Open ASR, hors GB10."
+      },
+      {
+       "ref": "arXiv:2605.17443",
+       "title": "Analyzing Error Propagation in Korean Spoken QA with ASR-LLM Cascades",
+       "year": 2026,
+       "url": "https://arxiv.org/abs/2605.17443",
+       "keyClaim": "La dégradation en aval suit la perte d'information de l'étage ASR, de façon similaire entre LLM, et la WER ne capte pas tout : mesurer l'effet sur les réponses. Étude en coréen, transposition limitée."
+      }
+     ],
+     "expectedLatencyEffect": "Par processus, turbo coûte ~+1,1 s par bloc par rapport à base (mesuré) ; en résident (M4), quelques centaines de ms (supposé). Parakeet sur GB10 : inconnu, aucun chiffre GB10.",
+     "expectedRelevanceEffect": "Hypothèse : meilleures réponses sur CNRS et Bœuf (noms, ingrédients, nombres) avec small, turbo ou Parakeet ; effet faible en anglais. turbo dégrade Spring sans VAD (M5).",
+     "testableWithoutAppChange": true,
+     "experiment": "1) Banc ASR sur WAV figés des six vidéos, couplé à M4 et M5 : base, small, turbo et parakeet-v3, via un enveloppeur qui produit le JSON attendu par l'application.\nTermes clés (nombres, entités, ingrédients) préenregistrés.\nWER et CER contre des références indépendantes seulement : SRT de Tears, texte Kennedy, et un extrait français de 3 min par vidéo vérifié par le propriétaire. Pas l'oracle v2, issu de turbo.\n2) Effet sur les réponses : harnais de M2, texte visuel fixe et seul le champ transcription remplacé. 30 questions × 4 bras × 1 passage = 120 appels, notation à l'aveugle par vidéo.",
+     "gx10Cost": "Banc ≈ 20–30 min de GPU (partagé avec M4/M5) ; rejeu ≈ 25 min ; poids Parakeet f16 ≈ 1,2 Go, seulement s'il est absent et si c'est autorisé",
+     "levers": "Modèle Whisper ; enveloppeur parakeet-cli ; rejeu hors ligne à transcription remplacée",
+     "evidenceLevel": "Documentaire : WER des papiers, hors GB10 et hors blocs de 8 s. Mesuré GX10 : erreurs de base sur Bœuf, délais par modèle. Supposé : parakeet-cli sur GB10 et sa détection de langue sur 8 s.",
+     "risks": "Sans forçage de langue, Parakeet peut dériver sur des blocs courts ou musicaux. La WER sur 8 s diffère des bancs. Peu de questions dépendent d'un seul mot. Les références françaises demandent une relecture humaine."
+    },
+    {
+     "id": "M7",
+     "title": "Coupures aux frontières de 8 s : invite reportée ou chevauchement audio",
+     "priority": 4,
+     "mechanism": "Les blocs fixes sans chevauchement coupent mots et phrases : « …space filled with [BLANK_AUDIO] » sur Kennedy ; « pour que l'échange | se réchauffe » et « les champs de la voie » sur Bœuf. Le décodeur n'a aucun contexte du bloc précédent (pas de --prompt). Le papier Canary/Parakeet mesure ce coût sur des tranches de 30 s : sans chevauchement, 15,61 % contre 13,93 % de WER (Earnings22) et 16,62 % contre 10,12 % (TAL). Des tranches de 8 s y sont a priori plus exposées.",
+     "papers": [
+      {
+       "ref": "arXiv:2509.14128",
+       "title": "Canary-1B-v2 & Parakeet-TDT-0.6B-v3",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2509.14128",
+       "keyClaim": "Tableau 8 : un découpage séquentiel sans chevauchement (30 s) dégrade la WER par rapport à des tranches chevauchantes fusionnées (15,61 contre 13,93 ; 16,62 contre 10,12)."
+      },
+      {
+       "ref": "arXiv:2307.14743",
+       "title": "Turning Whisper into Real-Time Transcription System",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2307.14743",
+       "keyClaim": "Le texte déjà confirmé sert d'invite et un accord local sur un tampon chevauchant stabilise les frontières."
+      }
+     ],
+     "expectedLatencyEffect": "+0,1–0,4 s par bloc pour 1,5 s de chevauchement (supposé) ; ~0 pour l'invite.",
+     "expectedRelevanceEffect": "Hypothèse : moins de mots perdus aux frontières, donc des citations, dates et chiffres plus complets ; gain sans doute modeste et ponctuel.",
+     "testableWithoutAppChange": true,
+     "experiment": "Banc composant hors ligne sur les séquences de WAV de Kennedy, CNRS et Bœuf (~250 blocs).\nBras : aucun ; --prompt avec les ~30 derniers mots du bloc précédent ; 1,5 s d'audio précédent ajoutées, dédupliquées par horodatages de mots.\nMesures : WER contre références indépendantes, erreurs dans les 0,5 s de bord, boucles et hallucinations, délai.\nUn chevauchement en produit demanderait un ticket.",
+     "gx10Cost": "≈ 10–15 min de GPU",
+     "levers": "Banc hors ligne avec whisper-cli (--prompt) et découpage audio scripté ; un enveloppeur à état peut prototyper l'invite dans le flux. Le chevauchement en produit demanderait un ticket.",
+     "evidenceLevel": "Mesuré GX10 : exemples de coupures. Documentaire : effet du chevauchement, autres modèles, tranches de 30 s. Supposé : ampleur sur des tranches de 8 s.",
+     "risks": "L'invite peut déclencher des boucles ou des hallucinations (une boucle small est déjà observée à 592 s sur Bœuf). Le chevauchement duplique ou supprime des mots. Le gain peut rester sous le bruit de mesure."
+    },
+    {
+     "id": "M8",
+     "title": "Mémoire hiérarchique stable en tête de prompt (cache de préfixe) pour les vidéos longues",
+     "priority": 4,
+     "mechanism": "Sur CNRS (~4 k jetons de transcription) et Artemis (~5,7 k), un journal complet coûte cher. Une mémoire hiérarchique le borne : résumés par minute ou par sujet pour l'ancien, lignes brutes pour les 3–5 dernières minutes. C'est la consolidation de StreamForest et MovieChat, en texte.\nCache de préfixe d'Ollama mesuré sur GX10 : même prompt de ~1,5–2,2 k jetons, 0,14–0,16 s de préremplissage au second passage contre 2,07–2,92 s au premier.\nAujourd'hui, la DEMANDE précède les données et casse le préfixe à chaque question. Avec le rôle et un journal en ajout seul placés avant la question, chaque nouvelle question ne préremplirait que les nouvelles lignes et la question.",
+     "papers": [
+      {
+       "ref": "arXiv:2307.16449",
+       "title": "MovieChat: From Dense Token to Sparse Memory for Long Video Understanding",
+       "year": 2023,
+       "url": "https://arxiv.org/abs/2307.16449",
+       "keyClaim": "Mémoire court terme et long terme ; les éléments adjacents similaires sont fusionnés pour garder des vidéos de plus de 10 k images dans un budget fixe, en mode global ou au point d'arrêt."
+      },
+      {
+       "ref": "arXiv:2509.24871",
+       "title": "StreamForest",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2509.24871",
+       "keyClaim": "La consolidation par événement (similarité, fréquence de fusion, distance temporelle) garde 96,8 % de l'exactitude moyenne sous un budget extrême de 1 024 jetons visuels."
+      },
+      {
+       "ref": "arXiv:2502.15457",
+       "title": "Memory Helps, but Confabulation Misleads: Understanding Streaming Events in Videos with MLLMs",
+       "year": 2025,
+       "url": "https://arxiv.org/abs/2502.15457",
+       "keyClaim": "Les souvenirs d'événements passés aident, mais ceux produits par le modèle contiennent des confabulations qui dégradent la compréhension : des résumés générés doivent rester attribués et vérifiables."
+      }
+     ],
+     "expectedLatencyEffect": "Hypothèse fondée sur la mesure du cache : préremplissage ramené de ~2–6 s à moins de 1 s pour les questions successives d'une vidéo, si le créneau Ollama du 27B n'est pas évincé. La génération des résumés en fond coûte du GPU face à la vision : à mesurer.",
+     "expectedRelevanceEffect": "Hypothèse : rappel ancien sur CNRS et Artemis sans faire exploser le contexte ; risque de confabulation dans les résumés.",
+     "testableWithoutAppChange": true,
+     "experiment": "Rejeu hors ligne séquentiel, dans l'ordre des questions (CNRS, Artemis, puis Kennedy en témoin), sans autre requête 27B intercalée.\nBras : A = ordre de l'application avec le contenu B de M2 ; B = même contenu, rôle et journal en tête, question à la fin ; C = B avec l'ancien résumé par minute par gemma3:4b hors ligne, depuis les passages causaux seuls, génération comptée à part.\nMesures : préremplissage et durée par question (premier appel distingué), réponses et notation à l'aveugle.\nBudget : 15 questions × 3 bras × 2 passages = 90 appels, plus ~45 résumés.",
+     "gx10Cost": "≈ 25 min de GPU",
+     "levers": "Rejeu hors ligne (ordre du prompt et contenu reconstruits) ; aucun réglage produit",
+     "evidenceLevel": "Mesuré GX10 : effet du cache sur des prompts identiques. Documentaire : consolidation et confabulation. Supposé : réutilisation partielle d'un préfixe commun en 0.40.6.",
+     "risks": "Éviction du cache (keep_alive, MAX_LOADED_MODELS). Comportement modifié par l'ordre du prompt. Résumés confabulés. Charge GPU de fond supplémentaire pendant le flux."
+    }
+   ]
+  }
+ ],
+ "synthesis": "# Synthèse des trois revues : programme GX10 des 48 h et architectures\n\nRédigée le 21 octobre 2026 vers 11:45 UTC par le sous-agent researcher (Claude). Ce document repose sur trois\nrevues indépendantes : latence des questions, coût de la perception, mémoire et transcription. S'y ajoutent des\nvérifications faites ici en lecture seule :\n- code figé `2035a2f` (git grep) ;\n- bruts déjà rapatriés (`memoire-asr/mesures.json`, `ollama-tags-after.json` de l'essai `2026-10-21-reprise-bras-qwen`) ;\n- documentation Ollama via ctx7 (`draft_num_predict`) ;\n- résumés arXiv des articles postérieurs à 2025 cités ci-dessous.\n\n**Statut.** Aucune inférence, aucune connexion au GX10, aucune charge GPU, aucun commit. Aucune piste n'est\nvalidée. Les six fiches restent `readyForScoring: false` et l'oracle v2 est automatique, sans relecture\nhumaine (limite acceptée par le propriétaire) : aucun classement de pertinence n'est possible aujourd'hui.\n\nÉtiquettes utilisées :\n- **[GX10]** : mesuré sur le GX10 (archives) ;\n- **[Code]** : lu dans `2035a2f` ;\n- **[Doc]** : documentaire, autre matériel ou autres modèles ;\n- **[Supposé]** : compatibilité ou effet non vérifié ;\n- **[Inféré]** : déduction de mesures, à confirmer.\n\n---\n\n## Résumé\n\n1. Le plafond de pertinence se situe dans la mémoire, pas dans la vitesse.\n   - Le modèle de questions ne voit que les 6 derniers passages (48 s) [Code].\n   - Il n'a appelé aucun outil sur 150 questions archivées [GX10].\n   - D'après les fiches provisoires, la preuve de 11 questions sur 30 commence plus de 48 s avant la pose.\n\n   Accélérer ne réglera pas ces cas. L'essai de mémoire injectée (G2) est le plus important pour la pertinence.\n2. Le résumé cumulatif `topicSummary` est la principale cause de la longueur des sorties de vision (r = 0,81)\n   [GX10]. Il n'est pourtant **jamais transmis au modèle de questions** : le contexte et les outils passent par\n   `passageText` (summary, visual, transcript) [Code]. Le réduire est le levier de perception le moins risqué\n   pour les réponses. Il réduit aussi la contention avec les questions.\n3. Le 27B décode à 27–32 jetons/s seul [GX10]. C'est 1,5 à 2 fois au-dessus du plafond de bande passante\n   d'un modèle dense de 17,7 Go sur ~273 Go/s. Le décodage spéculatif MTP est donc **probablement déjà actif**\n   dans le tag produit [Inféré]. À vérifier sans GPU (`ollama show`), puis par un essai court (G3), avant\n   d'interpréter le bras « dense-mtp » d'E2.\n4. Seul, le décodage domine (6–9 s, contre 2–3 s de préremplissage). Dans le flux, la contention avec la\n   vision double à peu près le temps par jeton [GX10, régression grossière n = 10].\n5. Ordre proposé :\n   - E1 → E2 → E3, déjà en file, sans les modifier ;\n   - A0 : analyse d'E1 sans GPU ;\n   - un créneau de rejeux courts : G1 (format et outils), G3 (MTP), G4 (sortie de la vision) ;\n   - G2 : mémoire injectée ;\n   - notation à l'aveugle ;\n   - E4 : une ou deux variations dans le flux.\n6. Cinq propositions d'architecture :\n   - A1 : mémoire à deux étages injectée ;\n   - A2 : ordonnanceur à priorité question ;\n   - A3 : perception allégée et consolidation découplée ;\n   - A4 : répondeur rapide à deux phases avec repli ;\n   - A5 : voie audio résidente et filtrée.\n\n   Aucune n'est validée. Chacune a un plan de validation incrémental.\n\n---\n\n## 0. Base commune : faits, mesures et suppositions\n\n| # | Constat | Nature | Source |\n| --- | --- | --- | --- |\n| F1 | Contexte des questions : 6 derniers passages utilisables, 120 pour un récapitulatif. Chaque passage = summary + visual + transcript, tronqué à 1200 caractères | [Code] | `core/video-tools.cjs` (`context`, `limit`), `core/shared/passage-text.cjs` |\n| F2 | `topicSummary` (≤ 1600 caractères) est relu par l'appel de vision suivant et par la vue mémoire, pas par le contexte des questions ni par `remember()` | [Code] | `core/perception-context.cjs`, `core/memory/memory-view.cjs`, `core/memory/topic-summary.cjs` |\n| F3 | Chaque appel du modèle de questions envoie à la fois `tools` et `format` (schéma complet), avec `stream:false`, température 0 et `think` réglable | [Code] | `adapters/ollama/http-client.cjs:50`, `adapters/ollama/question-agent.cjs:90` |\n| F4 | 0 appel d'outil sur 150 questions (30 campagnes) ; 129 `observation`, 21 `insufficient` | [GX10] | `memoire-asr/mesures.json` (`toolUse`) |\n| F5 | Sonde seule du 27B : 1552–2207 jetons de prompt ; préremplissage 2,07–2,92 s au premier passage, 0,14–0,16 s au second (prompt identique) ; 181–259 jetons générés en 5,99–8,91 s, soit **26,8–31,7 jetons/s** ; client 8,3–11,9 s | [GX10] | `memoire-asr/mesures.json` (`questionProbe`) |\n| F6 | Tag `qwen3.8:27b` : 17,74 Go, 27,3 B, Q4_K_M, famille `qwen35`, capacités `vision` et `tools`, runner llamacpp | [GX10] | `…/reprise-qwen-arm-20261021T002414Z/results/ollama-tags-after.json` |\n| F7 | Dans le flux : 10 réponses en 12,8–27,9 s, un seul appel, aucun outil ; pente ≈ 65 ms par jeton estimé, r = 0,84 | [GX10] + estimation | revue latence |\n| F8 | Vision gemma3:4b, 414 appels réels (Kennedy et Spring) : génération 56,4 % et préremplissage 41,2 % du temps fournisseur. 91 appels au-delà de 8 s : 56 sont trop longs (médiane 352 jetons contre 197), 35 ralentis par une question (< 45 jetons/s, minimum 19) | [GX10] | `perception/mesures-derivees.json` |\n| F9 | Jetons générés par la vision : corrélation 0,81 avec la longueur de `topicSummary`, 0,29 avec summary+visual | [GX10] | idem |\n| F10 | 5 → 3 images : 48/48 paires plus rapides, −1,5 s en médiane à froid. Coût estimé par image : ~0,48 s d'encodeur et ~0,07 s de jetons LLM | [GX10] + [Inféré] | idem |\n| F11 | Pause de la vision pendant une question : médiane Kennedy 18,78 → 11,21 s ; couverture visuelle Spring 91,4 % → 82,8–89,7 % | [GX10] | contexte commun |\n| F12 | Whisper, un processus par bloc : `base` p50 1,29–1,65 s (dont ~0,6 s hors whisper et ~0,31 s de chargement), turbo p50 2,43–2,73 s (chargement ~1,1 s) | [GX10] | `memoire-asr/mesures.json` (`whisper`) |\n| F13 | Spring sans dialogue : texte d'apparence parlée dans 16/58 passages avec turbo, 2/58 avec small et 3/58 avec base | [GX10] | idem (`springNonSpeech`) |\n| F14 | Fin non analysée au départ de la question : médiane 8,0 s | [GX10] | idem (`freshness`) |\n| F15 | Preuve commençant plus de 48 s avant la pose : 11/30 questions (CNRS 5/5, cuisine 5/5, spring-06) | fiches provisoires, non validées | revue mémoire |\n| F16 | Transcription du préfixe jusqu'à la dernière question : ~0,1 k jetons (Spring) à ~5,7 k (Artemis) ; le texte visuel est 3 à 9 fois plus gros | [GX10] | `memoire-asr/mesures.json` |\n| F17 | Avec Ollama, les tenseurs MTP embarqués ne servent que si `draft_num_predict` est réglé ; 0 désactive les brouillons | [Doc] | ctx7 `/ollama/ollama`, `docs/modelfile.mdx` |\n\n### Quatre constats qui changent l'ordre des essais\n\n1. **Le débit du 27B dépasse le plafond de bande passante d'un modèle dense** (F5, F6).\n   - Un modèle dense relit tous ses poids à chaque jeton. Avec 15 à 17 Go de poids texte (le tag de 17,74 Go\n     inclut probablement la tour vision), le plafond est de ~16–18 jetons/s à 273 Go/s, et de ~14–16 jetons/s\n     au débit effectif de ~238 Go/s mesuré par llama.cpp sur GB10. La mesure donne 27–32 jetons/s.\n   - Hypothèse la plus probable [Inféré] : le décodage spéculatif MTP est déjà actif par défaut dans le tag\n     produit, comme l'affirme une source secondaire citée par la revue latence.\n   - Conséquences : le bras « dense-mtp » d'E2, qui ne change que le tag, risque de ne rien montrer ; Q1 devient\n     une vérification ; l'écart attendu avec un MoE passe de « 5–7× » à environ 2–3× en génération.\n   - La revue latence avait estimé 12–14 jetons/s à partir du banc : c'est cette estimation qui ne tient pas\n     face à F5.\n2. **`topicSummary` coûte cher à la vision et n'apporte rien aux réponses** (F2, F8, F9).\n   - La revue perception craignait qu'en le retirant, on dégrade le rappel ancien. Pour le chemin des\n     questions, ce risque n'existe pas aujourd'hui : le modèle de questions ne le lit pas.\n   - Les risques réels portent sur la continuité de sujet de la perception (`perception-context`) et sur\n     l'affichage de la vue mémoire.\n   - À l'inverse, A1 pourrait faire de ce résumé une mémoire utile, à condition de le produire hors de la voie\n     vision (A3).\n3. **Le rappel ancien est structurellement impossible dans les archives** (F1, F3, F4, F15).\n   - Contexte FIFO de 48 s et aucun outil exercé : vitesse et choix du modèle ne corrigent pas ces cas.\n   - Mécanisme proposé par la revue mémoire : avec `think=false`, la grammaire de `format` contraint toute la\n     sortie dès le premier jeton et interdit la balise d'appel d'outil. C'est le code source d'Ollama `main` ;\n     sur 0.40.6, c'est [Supposé].\n4. **Le cache de préfixe fonctionne sur un prompt identique ; la réutilisation partielle reste inconnue.**\n   - La revue latence supposait un recalcul complet (modèle hybride, Marconi arXiv:2411.19379). La mesure F5\n     montre une réutilisation exacte : 0,15 s contre 2,1–2,9 s.\n   - L'ordre actuel du prompt (question et marqueur aléatoire avant les données) empêche toute réutilisation\n     d'une question à l'autre, sauf du rôle.\n   - Ce point ne compte vraiment que si A1 allonge le contexte : un journal en ajout seul placé avant la\n     question devient alors réutilisable (A1, M8).\n\n---\n\n## 1. Programme d'essais classé pour les 48 h restantes\n\n### 1.1 État et règles d'exécution\n\n- **En cours ou en file, à ne pas modifier.** E1 (référence instrumentée, échéance absolue 14:30 UTC le 21/10\n  d'après `plan-e1.json`), puis la file `file-e2-e3.sh`.\n  - E2 rejoue les 30 requêtes de premier tour sur 7 bras : 27B au début et à la fin, tag MTP, deux MoE Qwen\n    (avec et sans MTP), MoE Gemma, MoE Qwen MTP avec raisonnement.\n  - E3 rejoue 36 blocs (6 par vidéo) sur 8 bras : gemma3:4b au début et à la fin, qwen3-vl 2b, 4b (F16), 8b et\n    30b-a3b, gemma4:e4b, et gemma3:4b à 3 images.\n  - Je n'ai pas vérifié l'état réel sur le GX10 : ce constat vient des scripts du labo.\n- **Lacunes connues d'E2/E3, à combler par des essais complémentaires sans modifier la file :**\n  - aucun bras ne règle `draft_num_predict` ;\n  - un passage par bras, encadré par la référence au début et à la fin : c'est une exploration, pas une\n    confirmation ;\n  - `prompt_eval_cached_count` n'est pas relevé ;\n  - les appels d'outils sont enregistrés mais pas exécutés ;\n  - E3 ne fait varier ni la résolution ni le schéma, et garde un bras F16 dont on sait déjà qu'il est lent.\n- **Règles.**\n  - Un seul essai GPU à la fois. Les essais G1, G3 et G4 sont **distincts et séquentiels**, chacun avec son\n    dossier `experiments/essais/2026-10-2x-<sujet>/`, son plan figé par horodatage et SHA-256, et la prise des\n    verrous `night.lock`, `execution.lock` et `followup-gpu.lock`.\n  - Avant chaque charge : vérifier les campagnes actives, les verrous, la fin des téléchargements\n    (`candidats-*/pulls.txt`) et `/api/tags` (digests).\n  - Aucun `pull` pendant une campagne (incident du 19/10).\n  - Aucune charge CPU lourde sur le GX10 pendant un essai chronométré (OCR, banc Whisper sur CPU). Les mesures de\n    qualité seule (ASR, OCR) peuvent tourner sur le Mac, boucle arrêtée et sans contrôle chronométré.\n  - Une file éventuelle est explicite, bornée et sans relance automatique, comme `file-e2-e3.sh`.\n  - Aucun commit.\n- **Évaluation commune** (PROGRAMME.md) : part pertinente sous 20 s et sous 15 s par vidéo, tous les délais\n  individuels, inventions, abstentions. Avec 5 questions par vidéo, le p95 n'est que le maximum : ne rien en\n  conclure seul.\n\n### 1.2 Tableau classé\n\nLe rang combine la valeur de décision pour la pertinence sous 20 s, le coût et les dépendances. L'ordre\nd'exécution réel est au §1.4.\n\n| Rang | Essai | Hypothèse (courte) | Variation unique | GPU | Décide |\n| --- | --- | --- | --- | --- | --- |\n| 1 | **A0** Ventilation d'E1 + C0 lecture des paramètres | Génération ≥ 60 % ; cache ≈ 0 entre questions ; MTP déjà actif | aucune | 0 | ordre et conditions de G1, G3 et Q3/Q4 ; lecture d'E2 |\n| 2 | **G2** Mémoire injectée (rejeu) | Un journal causal compact ou un rappel par la question convertit les échecs de rappel ancien sans dégrader le « maintenant » | contenu du contexte (A / B journal / C rappel) | ~45 min | ticket A1, variante B ou C |\n| 3 | **G1** Format et outils (rejeu) | `format` avec `think=false` bloque les outils | présence de `format` (+ témoin sans `tools`) | ~15 min | A4 à deux phases ; explication de F4 |\n| 4 | **G4** Sortie de la vision (rejeu) | Plafonner ou retirer `topicSummary` réduit d'au moins 25 % les jetons générés sans perte d'OCR ni d'actions | schéma `format` de la vision | ~30 min | E4 avec proxy (plafond) ; ticket A3 |\n| 5 | **G3** MTP du tag produit (rejeu) | Les ~30 jetons/s viennent d'un MTP déjà actif | `options.draft_num_predict` (défaut contre 0) | ~20 min | lecture d'E2 « dense-mtp » ; levier MTP restant |\n| 6 | **E4** Confirmation dans le flux | Le gagnant d'un composant améliore la part pertinente sous 20 s sur la majorité des vidéos | une variation par passage A/B/B/A | 2 h par variation | recommandation produit |\n| 7 | **G2b** Fraîcheur (rejeu) | Attendre ≤ 2,5 s la transcription du dernier bloc améliore les questions « maintenant » | Δ ∈ {0 ; 2,5 s} | ~12 min | ticket d'attente bornée |\n| 8 | **G5** Calibration du coût par image | L'encodeur représente ≥ 70 % du coût d'une image (gemma3:4b) | nombre d'images, puis préredimensionnement | ~15 min | grille (perc-03) ou résolution |\n| 9 | **E5** Whisper résident ou sur CPU | Le coût fixe par bloc disparaît ; la contention GPU baisse | mode d'exécution de Whisper | ~15 min de banc + ~30 min de flux | A5 ; Whisper meilleur au coût actuel |\n\nHors GPU, en parallèle : notation à l'aveugle (porte de toute décision), simulation de l'ordonnanceur (A2,\nétape 1), qualité ASR et OCR sur le Mac, annotation des VTT de StreamingVLM (en dernier).\n\n### 1.3 Fiches des essais\n\n#### A0 : ventilation d'E1 et lecture des paramètres (0 GPU), dès la clôture d'E1\n\n- **Hypothèses préenregistrées.**\n  - Q : la génération représente au moins 60 % du temps fournisseur du rôle `questions`.\n  - Q : `prompt_eval_cached_count` est proche de 0 entre deux questions différentes.\n  - Q : sous chevauchement avec la vision, le débit de génération tombe sous 70 % de celui de la sonde seule (F5).\n  - V : sur les 6 vidéos, `topicSummary` pèse au moins 30 % des caractères générés par la vision.\n  - O : E1 ne contient aucun appel d'outil.\n- **Variation.** Aucune.\n- **Référence.** Journaux du proxy d'E1 et sonde seule F5.\n- **Métriques.**\n  - Questions, par appel : compteurs Ollama complets (y compris `prompt_eval_cached_count` s'il existe),\n    `load_duration`, `upstreamMs` contre `endToEndMs` (file), recouvrement avec les appels de vision, outils,\n    jetons par champ JSON (tokenizer approché, déclaré comme tel).\n  - Vision, par bloc : jetons générés, part de `topicSummary`, appels au-delà de 8 s, publications perdues.\n  - Pour toutes les questions : fraîcheur au départ.\n- **C0, en lecture seule, sans charger de modèle.**\n  - `ollama --version`.\n  - `ollama show <tag> --modelfile` et `--parameters` pour `qwen3.8:27b`, `qwen3.8:27b-mtp-q4_K_M` et\n    `qwen3.6:35b-a3b(-mtp)-q4_K_M` : `draft_num_predict` est-il réglé ? les digests de base coïncident-ils ?\n  - `/api/show` (capacités, niveaux de raisonnement).\n- **Coût.** 0 GPU. Copier E1 sur le Mac entre deux essais, ou pendant E2 avec une note : copie légère, à consigner.\n- **Arrêt.** Sans objet. Si E1 est incomplet, analyser ce qui existe, sans relance.\n- **Décisions préenregistrées.**\n  - Si E1 contient au moins un appel d'outil, l'hypothèse de G1 est réfutée : on n'exécute pas G1 et on le consigne.\n  - Si C0 montre `draft_num_predict` réglé dans le tag produit, ou si le débit seul dépasse 20 jetons/s, G3 teste\n    « défaut contre 0 » ; sinon G3 teste « 0 contre 3 » sur le tag `-mtp`.\n  - Si le préremplissage atteint au moins 25 % et que le cache est proche de 0, Q4/M8 entre dans la liste\n    conditionnelle ; sinon Q4 n'est pas lancé dans la fenêtre.\n  - Si la part de `topicSummary` atteint au moins 30 % sur au moins 4 vidéos, G4 est confirmé tel quel.\n\n#### G1 : le format JSON bloque-t-il les outils ? (rejeu, ~15 min)\n\n- **Hypothèse.** Avec `think=false`, le champ `format` empêche toute émission d'appel d'outil par le 27B.\n- **Variation unique.** Le bras B retire `format` de la requête capturée. Le bras C est un témoin qui garde\n  `format` et retire `tools`, une seule variation par bras.\n- **Référence.** Bras A : requêtes E1 renvoyées octet pour octet.\n- **Cas.**\n  - Six questions à preuve ancienne : spring-06, cuisine-02, cuisine-05, cuisine-07, cnrs-04 et cnrs-06.\n  - Quatre questions « maintenant » : kennedy-01, spring-02, tears-03 et kennedy-08.\n  - Les fiches servent uniquement à choisir les cas ; rien n'en entre dans les requêtes.\n- **Déroulement.** Ordre A B C C B A, soit 60 appels. Les outils sont enregistrés, pas exécutés.\n- **Métriques.** `tool_calls` (nom, arguments, intervalle), validité JSON stricte (équivalent de `readAnswer`),\n  jetons, durées, délai client.\n- **Arrêt.** 3 erreurs consécutives, ou 20 min.\n- **Décision préenregistrée.**\n  - Si B appelle un outil sur au moins 2 des 6 questions à preuve ancienne et A sur aucune, le blocage est\n    confirmé. A4 (deux phases) est alors justifié, et la part de JSON valide sans `format` en B fixe son\n    architecture : rendu contraint systématique ou seulement en cas d'échec.\n  - Si B n'appelle aucun outil, la cause est ailleurs (consigne ou modèle) et le rappel passe par la seule\n    injection (A1).\n\n#### G4 : sortie de la vision, `topicSummary` (rejeu, ~30 min)\n\n- **Pré-contrôle** (2 appels, ~5 min) : `maxLength` dans le schéma `format` est-il respecté par Ollama 0.40.6,\n  sans chute du débit ? Si ce n'est pas le cas, le bras V3 est abandonné et consigné.\n- **Hypothèse.** V3 (plafond) ou V2 (retrait) réduisent d'au moins 25 % la médiane des jetons générés par bloc\n  et la part des appels au-delà de 8 s à vide. L'OCR et les actions de summary et visual ne sont pas dégradées.\n- **Variation unique, par bras.**\n  - R : requête capturée.\n  - V2 : `topicSummary` retiré du schéma et de la consigne.\n  - V3 : `topicSummary` plafonné par `maxLength` ≈ 300 caractères dans le schéma seul. Ce bras garde le contrat\n    applicatif.\n- **Référence.** R, sur 48 corps de requêtes vision d'E1 : 8 par vidéo, stratifiés par longueur du\n  `topicSummary` en entrée et par fenêtres OCR et actions. Sélection figée par SHA-256 avant exécution.\n  gemma3:4b, digest vérifié.\n- **Déroulement.** Ordre R V2 V3 V3 V2 R, nonce en tête contre le cache de préfixe, froid et chaud séparés.\n- **Métriques.** `eval_count`, `eval_duration`, préremplissage, total, validité JSON, longueur de chaque champ.\n  Annotation à l'aveugle de summary et visual contre les images de l'oracle v2 : OCR, actions brèves, inventions.\n- **Arrêt.** Échec du pré-contrôle (V3 abandonné), 3 erreurs consécutives, ou 40 min.\n- **Décision.**\n  - V3 passe en E4 par le proxy si la médiane des jetons baisse d'au moins 25 % et que l'annotation n'est pas\n    inférieure à R sur la majorité des vidéos.\n  - V2 alimente le ticket A3.\n- **Limite déclarée.** Le rejeu à contexte figé ne reproduit pas la rétroaction : les contextes de vision\n  suivants raccourcissent aussi. L'effet sur le préremplissage est donc sous-estimé.\n\n#### G3 : MTP du tag produit (rejeu, ~20 min)\n\n- **Hypothèse** (si C0 indique MTP actif). Avec `draft_num_predict=0`, le débit seul tombe sous ~18 jetons/s\n  et le texte reste identique à température 0.\n- **Variation unique.** `options.draft_num_predict` : défaut du tag (P) contre 0 (P0). Variante préenregistrée\n  si C0 montre le paramètre absent : 0 contre 3 sur le tag `-mtp`.\n- **Référence.** P, sur 15 requêtes E1 de premier tour (Kennedy, CNRS et Spring, 5 chacune).\n- **Déroulement.** Ordre P P0 P0 P, chauffe exclue et consignée, GPU sans autre charge, vision et Whisper arrêtés.\n- **Métriques.** Jetons/s de génération, total, `load_duration` (pour détecter un rechargement), correspondance\n  exacte de `message.content` entre bras, validité JSON, identifiants cités.\n- **Arrêt.** 3 erreurs consécutives, rechargements répétés, ou 30 min.\n- **Décision.**\n  - Si P0 descend à 0,6 × P ou moins, MTP est déjà actif : le bras « dense-mtp » d'E2 compare le même\n    mécanisme, Q1 est clos et le levier restant est le modèle (A4).\n  - Si P0 ≈ P, MTP n'est pas actif et l'anomalie F5 reste à expliquer : consigner et ne rien conclure sur la\n    bande passante.\n  - Un balayage 1/2/4 n'est envisagé qu'ensuite, sur 5 requêtes.\n\n#### G2 : mémoire injectée (rejeu, ~45 min), et G2b : fraîcheur (~12 min)\n\n- **Préparation CPU, sur le Mac pendant E2 et E3.**\n  - Constructeur de contexte causal à partir des journaux E1 : seulement les révisions avec\n    `publishedAtMs ≤ anchorMs` et `endMs ≤ anchorMs`.\n  - Bras B : journal compact plafonné à 2,5 k jetons, une ligne par bloc (transcription), une ligne visuelle\n    seulement si elle change, les deux premiers blocs toujours gardés.\n  - Bras C : k = 6 passages anciens retrouvés par `qwen3-embedding:0.6b`, la question servant de requête.\n  - **Mesure sans modèle préenregistrée, le « rappel de preuve » :** part des questions dont l'intervalle de\n    preuve de l'oracle v2 figure dans le contexte de A, B ou C. Elle est calculée après la construction et ne\n    sert jamais à la construire.\n- **Hypothèse.** B ou C augmentent la part pertinente sur les questions à preuve ancienne, sans baisse sur les\n  questions « maintenant ». Coût : moins de 3 s de délai à vide.\n- **Variation unique.** Contenu du contexte injecté : A capturé, B ou C. Prompt, schéma et options identiques.\n- **Référence.** A.\n- **Déroulement.** 30 questions × 3 bras × 2 passages contrebalancés, soit 180 appels, 27B seul.\n- **Métriques.** Jetons de prompt, préremplissage, génération, délai client ; nombre de `insufficient` ;\n  citations hors contexte. Notation à l'aveugle par vidéo : part pertinente sous 15 et 20 s, inventions,\n  abstentions justifiées. Tous les délais publiés.\n- **Arrêt.** 45 min, ou 3 erreurs consécutives.\n- **Décision.** Ouvrir un ticket A1 (journal ou rappel, et validation des preuves élargie aux passages injectés)\n  si B ou C progresse sur les questions anciennes, majoritairement par vidéo, sans hausse des inventions ni perte\n  sur le « maintenant ». Sinon, publier la frontière sans gagnant.\n- **G2b**, essai distinct dans le même créneau.\n  - Variation : contexte A avec Δ ∈ {0 ; 2,5 s} de publication audio après la pose ; 30 × 2 = 60 appels.\n  - Comptage préalable sur CPU des questions qui récupèrent leur dernier bloc.\n  - Décision : ticket « attente bornée de la transcription du dernier bloc » si les questions concernées\n    progressent.\n\n#### E4 : confirmation dans le flux (2 h par variation)\n\n- **Candidats, dans l'ordre préenregistré.** Chacun n'entre que si sa porte est franchie.\n  1. Plafond de `topicSummary` par le proxy (V3), si G4 passe.\n  2. Changement du modèle de questions, si E2 noté à l'aveugle montre un MoE non inférieur au 27B sur la\n     majorité des vidéos, sans hausse des inventions, et plus rapide.\n  3. `draft_num_predict` injecté par le proxy, si G3 montre un gain et qu'il n'est pas déjà actif.\n- **Protocole.** Une variation par passage A/B/B/A sur Kennedy, Spring et CNRS (anglais, sans dialogue,\n  français avec texte à l'écran), avec la configuration produit et la validation des preuves.\n- **Métriques.** Celles du programme, plus la couverture visuelle, les publications perdues et la fraîcheur.\n- **Arrêt.** Règles du programme : premier échec non corrigible, plafond, échéance. Sorties partielles conservées.\n- **Décision.** Une configuration n'est recommandée que si sa part pertinente sous 20 s progresse sur la\n  majorité des vidéos sans hausse des inventions. Le prototype par proxy reste un prototype ; le produit passe\n  par un ticket.\n\n#### G5 : calibration du coût par image (optionnel, ~15 min)\n\n- **Hypothèse.** Pour gemma3:4b, au moins 70 % du coût de préremplissage d'une image vient de l'encodeur et du\n  prétraitement, pas des 256 jetons côté LLM.\n- **Variation.**\n  - 0, 1, 3 et 5 images avec `num_predict=1` ;\n  - puis JPEG 1280×720 contre 896×896 redimensionnés à l'avance ;\n  - seulement sur gemma3:4b et sur le meilleur candidat d'E3.\n- **Arrêt.** 20 min.\n- **Décision.** Investir ou non dans la grille 1 + 2×2 (perc-03) ou dans la résolution d'entrée (Qwen-VL).\n\n#### E5 : voie audio (si le temps le permet)\n\n- **Banc composant** sur les WAV figés, hors essai chronométré, ~15 min de GPU et 45–60 min de CPU :\n  processus GPU (référence), serveur résident GPU, `-ng` sur CPU, `-ac` réduit.\n- **Flux.** Le gagnant contre la référence, A/B/B/A sur Kennedy.\n- **Décision.** Suite d'A5.\n\n### 1.4 Calendrier indicatif (UTC, à ajuster selon l'état réel)\n\n| Créneau | GPU | En parallèle, sans GPU |\n| --- | --- | --- |\n| 21/10, jusqu'à 14:30 au plus tard | E1 (en cours) | préparer les plans G1, G3 et G4 (rejouer_* avec une seule modification chacun, SHA) ; constructeur causal G2 ; grille d'annotation de la perception si elle manque ; oracle v2 |\n| 21/10, ~14:30 à ~16:30 | E2 puis E3 (file existante, ~1 à 1,5 h estimées) | A0 et C0 sur le Mac (copie d'E1 consignée) ; notation à l'aveugle d'E1 |\n| 21/10, ~16:30 à ~18:30 | G1 (si A0 le justifie), G3, G4 : trois essais l'un après l'autre | notation d'E2 et annotation d'E3 |\n| nuit du 21 au 22/10 ou matin du 22/10 | G2 puis G2b (~1 h), G5 en option | rappel de preuve calculé avant G2 ; Mac éveillé, file bornée sans relance |\n| 22/10, journée | libre ou E5 (banc composant) | notation de G1, G2 et G4 ; simulation de l'ordonnanceur (A2) ; qualité ASR sur le Mac |\n| 22/10 soir au 23/10 matin | E4, variation 1 (2 h), puis variation 2 si sa porte est franchie | dépouillement |\n| 23/10 | E5 dans le flux si le temps le permet ; sinon rapatriement et synthèse | index `experiments/essais/README.md`, boucle arrêtée |\n\nNouveau GPU après E3 : environ 5 à 7,5 h, E4 compris. Ce qui limite vraiment, ce sont la notation à l'aveugle\net la préparation des rejeux, pas le GPU. Agents : quatre au plus en même temps, parent compris. Les\ninventaires volumineux (journaux d'E1) vont à `luna_worker`.\n\n### 1.5 Ce que le programme permettra ou non de décider le 23/10\n\n- **Possible.**\n  - Savoir si MTP est déjà actif.\n  - Savoir si un MoE est non inférieur à l'aveugle sur la majorité des vidéos, avec un classement provisoire\n    sous l'oracle automatique.\n  - Savoir si l'injection de mémoire convertit les échecs de rappel.\n  - Savoir si le plafond de `topicSummary` libère la vision.\n  - Avoir une à deux confirmations dans le flux.\n- **Impossible.**\n  - Un classement « validé » : l'oracle v2 vient de modèles, sans relecture humaine.\n  - Un p95 robuste : 5 questions par vidéo.\n  - Des gains produit pour A1, A2, A3 ou A5 : ils passent par des tickets.\n  - Une conclusion sur des vidéos non utilisées pour choisir.\n\n---\n\n## 2. Propositions d'architecture\n\nToutes les propositions reposent sur le même argument propre au GB10. À batch 1, la **génération est limitée par\nla bande passante** (~273 Go/s), alors que le **préremplissage est limité par le calcul**, abondant sur\nBlackwell : ~1 ms par jeton de prompt contre ~33 ms par jeton généré pour le 27B seul (F5). Sur cette machine,\nil vaut mieux :\n- ajouter du contexte que générer davantage ;\n- générer moins par appel que faire plus d'appels ;\n- ne jamais faire tourner deux générations à la fois (elles se partagent la bande passante, F8 et F11).\n\n### A1 : mémoire à deux étages injectée en un seul appel\n\n```\nbloc 8 s ─► Whisper ─► ligne de transcription [id, t0–t1, texte]          (publiée dès la fin, cf. A5)\n        └─► VLM ─────► observation courte du bloc\n                │\n   Consolidateur CPU déterministe : fusion des voisins similaires (embeddings déjà calculés),\n   deux premiers blocs gardés, plafond ~2,5 k jetons ─► JOURNAL CAUSAL (ajout seul, horodaté)\n   Index qwen3-embedding:0.6b (existant) ─► k passages anciens proches de la question\n\nPrompt = [rôle + outils : stable] [JOURNAL : préfixe croissant] [k rappels] [6 passages récents]\n         [DEMANDE + REPÈRES + marqueur]\n   ─► modèle de questions, 1 appel ─► validation des preuves (élargie aux passages injectés)\n```\n\n- **Mécanisme.**\n  - Remplace la FIFO de 48 s (F1) et les outils jamais appelés (F4) par une mémoire toujours présente,\n    horodatée et bornée.\n  - La fenêtre fine garde le « maintenant » ; le journal et le rappel couvrent l'ancien.\n  - Placer le journal avant la question rend le préfixe réutilisable d'une question à l'autre. La réutilisation\n    exacte est mesurée (F5) ; la réutilisation partielle sur ce modèle hybride reste à vérifier (Marconi).\n- **Gains attendus et pourquoi sur GB10.**\n  - Pertinence d'abord : jusqu'à 11/30 questions concernées (F15, provisoire). Les insufficient de rappel\n    (spring-06, cuisine-07) deviennent réparables.\n  - Coût à vide : +0,1 à 2 s sur Spring, Tears, Kennedy et Bœuf ; borné à environ +2,5 s sur CNRS et Artemis\n    par le plafond. Cela équivaut à 40 à 75 jetons générés : le contexte coûte peu sur GB10.\n  - Aucun tour d'outil (chaque tour coûte 5 à 10 s sur le 27B).\n- **Risques pour la pertinence.**\n  - Dilution, et information perdue au milieu d'un long contexte.\n  - Résumés VLM confabulés entrant dans la mémoire.\n  - Le rappel par embeddings rate les questions temporelles (« depuis le début ») : d'où les deux premiers\n    blocs gardés.\n  - Les erreurs de l'ASR `base` en français se propagent.\n  - Régression possible sur le « maintenant ».\n- **Papiers.**\n  - StreamForest, arXiv:2509.24871 : à budget égal, la FIFO perd face à une mémoire d'événements persistante.\n  - VideoStreaming, arXiv:2405.16009 : sélection par la question et horodatages.\n  - Video-RAG, arXiv:2411.13093 : ~1,9 k jetons ASR/OCR retrouvés, une seule récupération.\n  - MA-LMM, arXiv:2404.05726 : fusion des voisins similaires contre la FIFO.\n  - LLoVi, arXiv:2312.17235.\n  - ReKV, arXiv:2503.00540 : le rappel des bons segments pilote l'exactitude.\n  - Lost in the Middle, arXiv:2307.03172.\n  - Memory Helps, but Confabulation Misleads, arXiv:2502.15457.\n  - Marconi, arXiv:2411.19379.\n- **Validation incrémentale.**\n  1. CPU : contextes causaux et rappel de preuve (G2, préparation). Prédiction falsifiable : A plafonne autour de\n     19/30, B et C dépassent 27/30.\n  2. Rejeu G2 et notation à l'aveugle.\n  3. Pas de prototype fidèle par proxy : la validation des preuves de TVLens refuserait les citations de passages\n     injectés. Passer par un ticket, derrière un drapeau, avec tests (journal, rappel, validation élargie).\n  4. E4 A/B/B/A sur CNRS et Bœuf (rappel) plus Kennedy (témoin).\n  5. Session longue sur des vidéos non utilisées pour choisir.\n\n### A2 : ordonnanceur GPU à priorité question, perception à dette bornée\n\n```\nvoie vision (file bornée) ─┐\n                           ├─► ORDONNANCEUR ─► Ollama (un GPU, génération limitée par la bande passante)\nquestion ──────────────────┘  (priorité absolue)\n 1. question en cours ⇒ aucun nouveau départ vision (mécanisme existant de pause)\n 2. appel vision en cours dont le reste attendu dépasse X s ⇒ annulé puis remis en file (à prototyper)\n 3. après la réponse : rattrapage de la dette en mode dégradé (3 images, sortie plafonnée cf. A3),\n    le bloc le plus récent d'abord, puis les plus anciens tant que leur âge reste sous un seuil\n 4. transcription jamais suspendue (CPU ou résidente, A5) : la fraîcheur audio est garantie\n```\n\n- **Mécanisme.** Deux générations simultanées se partagent la bande passante : la vision descend à 19 jetons/s\n  pendant une question (F8), la question perd environ la moitié de son débit (F5 contre F7). Exécuter chaque\n  appel jusqu'au bout crée un blocage en tête de file. Préempter et rattraper déplace le coût de la perception\n  hors du délai des questions. La couverture est préservée par le mode dégradé plutôt que par l'abandon.\n- **Gains attendus et pourquoi sur GB10.**\n  - Délai des questions rapproché de la sonde seule (8,3–11,9 s pour le 27B).\n  - La pause seule a déjà fait passer la médiane Kennedy de 18,78 à 11,21 s (F11). La préemption retirerait\n    le reste de l'appel vision en cours, estimé à quelques secondes [Inféré].\n  - La perte de couverture (Spring 91,4 → 82,8–89,7 %) serait compensée par le rattrapage à 3 images\n    (−1,5 s médiane, F10) et à sortie courte.\n- **Risques pour la pertinence.**\n  - Fraîcheur des questions « maintenant » : le dernier bloc n'est pas vu par la vision pendant la question.\n  - OCR dégradée en mode rattrapage.\n  - Calcul perdu par les annulations.\n  - Publications hors d'ordre dans la mémoire.\n- **Papiers.**\n  - FastServe, arXiv:2305.05920 : préemption au jeton et blocage en tête de file.\n  - StreamAhead, arXiv:2610.25551 : arbitrage entre précalcul du flux et calcul au moment de la question,\n    sous contrainte de cadence ; jusqu'à 10,4× moins de TTFT, sur leur matériel.\n  - Dispider, arXiv:2501.03218.\n  - Flash-VStream, arXiv:2406.08085 : mise à jour continue de la mémoire, questions asynchrones.\n- **Validation incrémentale.**\n  1. CPU : simulation à événements discrets, alimentée par les durées par bloc et les instants de question d'E1.\n     Elle doit d'abord reproduire les pertes et délais observés en E1 avant toute lecture. Politiques\n     comparées : actuelle, pause, pause plus préemption, pause plus rattrapage dégradé ; sorties par vidéo.\n  2. Prototype par proxy, présenté comme tel : retenir au proxy les requêtes vision pendant une question et\n     réécrire les requêtes en retard (3 images, plafond). Pas d'annulation par le proxy : elle ferait perdre une\n     publication.\n  3. Dans le flux, A/B/B/A sur Kennedy et Spring : pause seule contre pause plus rattrapage dégradé.\n  4. Ticket pour la préemption dans l'application.\n\n### A3 : perception légère et consolidation découplée\n\n```\nbloc ─► [CPU] différence de miniatures (existante, shadow) + OCR léger (PP-OCRv5 mobile, optionnel)\n     ─► VLM : champs du BLOC seulement (summary, visual, uncertainty plafonnés par la grammaire)\n              + texte OCR fourni comme donnée non fiable ─► publication immédiate\n     ─► blocs « statiques » : allégés (1 image, sortie courte, marqués « inchangé »), jamais sautés en silence\n\nCONSOLIDATEUR DE SUJET (hors voie vision, quand le GPU est libre, cf. A2) :\n     à une transition de sujet ou tous les N blocs, un modèle texte (gemma3:4b sans image,\n     ou le modèle de questions inactif) réécrit topicSummary depuis les lignes publiées\n     ─► alimente la continuité de la perception, la vue mémoire et, si A1 le retient, le journal\n```\n\n- **Mécanisme.**\n  - La génération fait 56 % du coût de la vision (F8), et la longueur de sortie suit `topicSummary` (F9). Ce\n    champ est réécrit toutes les 8 s alors que le modèle de questions ne le lit pas (F2).\n  - Le consolider une fois par sujet, par un modèle texte et hors du créneau de 8 s, retire la principale cause\n    de la traîne au-delà de 8 s.\n  - L'OCR sur CPU rend sûrs les leviers qui réduisent les images (3 images, grille), et fournit un signal de\n    changement de diapositive pour l'allègement des blocs statiques.\n- **Gains attendus et pourquoi sur GB10.**\n  - Estimations (revue perception) : −1 à −2,5 s par bloc en médiane, jusqu'à −7 s sur la traîne ; appels\n    au-delà de 8 s (22 %) en forte baisse.\n  - Effet système : moins de bande passante prise aux questions.\n  - Sur GB10, les jetons générés sont la ressource chère ; l'OCR utilise les 20 cœurs ARM inoccupés.\n- **Risques pour la pertinence.**\n  - Continuité de sujet de la perception moins fraîche (`perception-context`).\n  - Vue mémoire moins à jour.\n  - Résumé consolidé confabulé, s'il entre dans A1.\n  - OCR bruitée qui injecte de fausses chaînes, ou du texte à l'écran contenant des instructions, déjà traité\n    comme non fiable.\n  - Texte de diapositive changeant sous le seuil des miniatures (CNRS).\n- **Papiers.**\n  - Dispider, arXiv:2501.03218.\n  - XGrammar, arXiv:2411.15100 : coût de la grammaire selon le moteur.\n  - Gemma 3, arXiv:2503.19786 : 896², 256 jetons, texte dégradé sur les formats non carrés.\n  - TimeChat-Online, arXiv:2504.17343 : redondance entre images consécutives.\n  - StreamMind, arXiv:2503.06220 : invocation sur événement.\n  - PaddleOCR 3.0, arXiv:2507.05595.\n  - arXiv:2507.11730 : OCR embarqué contre VLM.\n- **Validation incrémentale.**\n  1. CPU : part de `topicSummary` dans les sorties des 6 vidéos (A0). Consommateurs de `topicSummary` déjà\n     établis pour `2035a2f`.\n  2. Rejeu G4 et annotation à l'aveugle.\n  3. Prototype par proxy V3 (plafond par `maxLength`, contrat préservé) en E4 A/B/B/A.\n  4. Qualité de l'OCR sur le Mac, contre le texte annoté de l'oracle (CNRS, Artemis, Bœuf), puis latence sur le\n     GX10 hors essais chronométrés.\n  5. Ticket pour la consolidation découplée, puis E4.\n\n### A4 : répondeur rapide à deux phases, vérification et repli\n\n```\nquestion + contexte (A1)\n  ─► PHASE 1 : modèle MoE (~3–4 B actifs), SANS `format`, outils proposés, schéma compact décrit dans la consigne\n        • appel d'outil ─► exécuté par TVLens ─► retour en phase 1 (1 tour au plus)\n        • sinon JSON compact {answer, kind, citations:[id…], limitesPropres}\n  ─► si JSON invalide : PHASE 2 = rendu contraint (`format`), court\n  ─► APPLICATION : reconstruit startMs/endMs depuis les identifiants, ajoute l'avertissement générique,\n                   valide les preuves\n  ─► si refus de validation, ou insufficient sur une question de rappel, et budget restant suffisant :\n     repli sur le 27B\n```\n\n- **Mécanisme.**\n  1. Bande passante : un A3B lit environ 8 fois moins d'octets par jeton que le 27B dense.\n  2. Le conflit entre `format` et outils disparaît (G1), et un tour d'outil devient abordable : environ 2 à 3 s\n     sur un MoE contre 5 à 10 s sur le 27B.\n  3. Sortie plus courte. Estimations par tokenisation approchée : les citations font ~36 % des jetons,\n     l'avertissement générique ~13 %.\n  4. La validation des preuves de TVLens joue le rôle de vérificateur d'une cascade.\n- **Gains attendus et pourquoi sur GB10.**\n  - Banc llama.cpp DGX Spark : 61 jetons/s pour un 30B-A3B en Q8. Face aux ~30 jetons/s mesurés du 27B, déjà\n    probablement accéléré par MTP, on attend une génération ~2–3 fois plus rapide, et non 5–7 fois.\n  - Réponse estimée à 4–7 s à vide. Sensibilité moindre à la vision concurrente, puisque le MoE lit moins\n    d'octets.\n  - Le repli ajoute la traîne seulement sur les cas renvoyés.\n- **Risques pour la pertinence.**\n  - Le MoE peut être moins bon : le rapport Qwen3 place l'A3B sans raisonnement au niveau d'un 14B dense.\n  - JSON invalide sans grammaire (mesuré par G1, bras B).\n  - Traîne au-delà de 20 s en cas de repli.\n  - Quatre modèles chargés contre `MAX_LOADED_MODELS=3`, d'où des évictions. Les 121 Gio permettent de relever\n    cette limite ; c'est un changement de service à consigner.\n- **Papiers.**\n  - Qwen3 Technical Report, arXiv:2505.09388.\n  - Saxena et al., arXiv:2506.20675 : la spéculation sur un MoE peut ralentir jusqu'à 1,5×.\n  - EcoSpec, arXiv:2607.12696.\n  - Let Me Speak Freely, arXiv:2408.02442.\n  - CRANE, arXiv:2502.09061 : une grammaire augmentée préserve le raisonnement sous contrainte.\n  - JSONSchemaBench, arXiv:2501.10868.\n  - RouteLLM, arXiv:2406.18665.\n  - Language Model Cascades, arXiv:2404.10136.\n  - https://github.com/ggml-org/llama.cpp/blob/master/benches/dgx-spark/dgx-spark.md\n- **Validation incrémentale.**\n  1. E2 (en file) et notation à l'aveugle : non-infériorité du MoE par vidéo.\n  2. G1 : taux d'appels d'outils et de JSON valide sans `format`, sur le 27B ; à répliquer sur le MoE retenu.\n  3. CPU : simulation de règles de routage et de repli sur les sorties notées d'E2, descriptive et sans\n     ajustement sur les mêmes questions.\n  4. Prototype par proxy, présenté comme tel : changement de modèle, schéma compact et reconstruction des bornes\n     avant retour à l'application. Puis E4 A/B/B/A.\n  5. Ticket.\n\n### A5 : voie audio résidente et filtrée\n\n```\nbloc audio ─► VAD Silero (whisper.cpp --vad) ─► segments parlés seulement\n           ─► whisper-server RÉSIDENT (modèle chargé une fois ; GPU, ou CPU avec -ng)\n                 option : invite = ~30 derniers mots confirmés ; langue fixée si connue\n           ─► ligne de transcription publiée dès sa fin, indépendamment de la vision\n              (fraîcheur des questions « maintenant », G2b)\n```\n\n- **Mécanisme.**\n  - Le coût fixe d'un processus par bloc (chargement et initialisation) représente 60 à 75 % du temps par\n    bloc (F12).\n  - Le non-parlé produit des paroles inventées (F13).\n  - `base` est faible en français : WER MLS 26,6 contre 16,2 pour small et 7,3 pour large-v2 (papier Whisper).\n- **Gains attendus et pourquoi sur GB10.**\n  - Supposé : ~0,4–0,8 s par bloc en résident, contre 1,3–2,7 s. Cela permet small ou turbo au coût actuel de\n    `base`, et une attente bornée de moins d'1 s pour la fraîcheur.\n  - Sur CPU, avec les 20 cœurs ARM, plus aucune bande passante GPU n'est prise à la vision ni aux questions.\n- **Risques pour la pertinence.**\n  - Le VAD coupe des répliques courtes ou de la parole sur musique.\n  - turbo invente sans VAD.\n  - L'invite peut provoquer des boucles (déjà observées avec small).\n  - Contention CPU avec ffmpeg.\n  - Parakeet : détection de langue incertaine sur 8 s.\n- **Papiers.**\n  - Whisper, arXiv:2212.04356.\n  - Whisper-Streaming, arXiv:2307.14743.\n  - WhisperX, arXiv:2303.00747.\n  - How to Reduce Whisper Hallucination, arXiv:2609.32560 : mesurer à la fois l'invention et la parole perdue.\n  - arXiv:2501.11378.\n  - Canary-1B-v2 et Parakeet-TDT-0.6B-v3, arXiv:2509.14128 : effet du chevauchement des tranches.\n  - arXiv:2605.17443 : propagation des erreurs ASR vers les réponses.\n- **Validation incrémentale.**\n  1. Sur le Mac, qualité seule, boucle arrêtée : WER et CER contre des références indépendantes (SRT de Tears,\n     texte officiel Kennedy, extraits français vérifiés par le propriétaire ; jamais l'oracle v2, issu de turbo).\n     Paroles inventées sur Spring avec et sans VAD.\n  2. Banc de latence sur le GX10, hors essais chronométrés (E5).\n  3. Rejeu des questions avec seul le champ transcription remplacé (harnais G2).\n  4. E5 dans le flux, A/B/B/A sur Kennedy.\n  5. Ticket.\n\n### Interactions entre propositions\n\n- A3 et A5 réduisent la contention : ils rendent A2 moins nécessaire et améliorent tous les délais de questions.\n- A1 ajoute du préremplissage : il se combine bien avec A4 (génération plus rapide) et avec un préfixe stable\n  (journal avant la question).\n- A4 rend les outils abordables. A1 les rend moins nécessaires ; `inspect_clip` reste le seul accès aux détails\n  visuels anciens.\n- A3 peut nourrir A1 avec des résumés de sujet consolidés, avec le risque de confabulation.\n- Ordre de maturité :\n  - A3 (prototype par proxy possible dès G4) ;\n  - A4 (après E2, G1 et notation) ;\n  - A1 (après G2, ticket nécessaire) ;\n  - A2 (simulation d'abord) ;\n  - A5 (sur le Mac puis E5).\n\n---\n\n## 3. Ce qu'il ne faut PAS faire maintenant\n\n1. **Modifier, arrêter ou compléter E1, ou la file E2/E3, pour y ajouter des bras** (`draft_num_predict`,\n   schémas, résolutions). Les compléments sont des essais distincts, lancés après.\n2. **Conclure d'E2 que « MTP ne sert à rien »** : le bras dense-mtp ne règle pas `draft_num_predict`, et le\n   tag produit tourne probablement déjà en MTP (F5, F6, F17). Il faut d'abord C0 et G3.\n3. **Déclarer un classement**, un gagnant ou un « gain produit » avant l'oracle v2 et la notation à l'aveugle,\n   ou à partir d'un seul composant sans E4. Ne pas tirer de conclusion robuste d'un p95 sur 5 questions.\n4. **Retirer `format` du produit**, ou ouvrir une boucle d'agent avec outils sur le 27B, pour « réparer » F4.\n   Chaque tour coûte 5 à 10 s et le JSON sans grammaire peut être invalide. Le correctif se décide après G1\n   et G2 (A1 ou A4).\n5. **Injecter tout le préfixe sans plafond ni ordre stable** : CNRS et Artemis feraient 4 à 6 k jetons de\n   transcription, et le texte visuel est 3 à 9 fois plus gros. Ne pas utiliser non plus de compression par\n   suppression de jetons (LLMLingua-2, arXiv:2403.12968), qui détruit identifiants et nombres.\n6. **Élagage de jetons visuels** (FastV, VisionZip, PruMerge) : il vise l'étape la moins chère (~0,07 s par\n   image, F10), suppose un moteur modifié et reste incompatible avec Flash Attention pour FastV\n   (arXiv:2502.11501).\n7. **Nouveau moteur ou format dans la fenêtre.**\n   - NVFP4 sur MLX : comparaison de pile dont la prise en charge est incertaine.\n   - vLLM, Cosmos/VSS : Ollama a déjà été mesuré plus rapide sur les piles testées.\n   - StreamingVLM sur GPU : 0,616× le temps réel.\n   Ce sont des pistes après la fenêtre, pas des essais de 48 h.\n8. **Passer à Whisper turbo sans VAD** (16/58 passages inventés sur Spring), ou juger la WER contre l'oracle v2\n   issu de turbo (raisonnement circulaire).\n9. **Télécharger ou mettre à jour un modèle pendant une campagne** (incident du 19/10). Ne pas télécharger les\n   poids Parakeet sans autorisation explicite.\n10. **Charges CPU lourdes sur le GX10 pendant un essai chronométré** (OCR, banc Whisper sur CPU). **Modèle local\n    ou charge lourde sur le Mac pendant un contrôle** ou une boucle.\n11. **Changer les réglages du service Ollama** (`MAX_LOADED_MODELS`, `NUM_PARALLEL`, cache KV) pendant E1 à E3.\n    Tout changement ultérieur est consigné, comme une variation à part entière.\n12. **Laisser une donnée d'attendu entrer dans une requête** : fiches, oracle et intervalles de preuve servent\n    à choisir les cas et à mesurer, jamais à construire les contextes. **Relancer un essai instable** jusqu'à\n    un passage réussi. **Committer.**\n\n---\n\n## 4. Limites de cette synthèse\n\n- Aucune mesure nouvelle sur le GX10. E1 n'était pas clos ; ses données décideront l'ordre réel (A0).\n- Vérifiés ici :\n  - la sonde seule du 27B (F5) ;\n  - les métadonnées du tag (F6) ;\n  - les chemins de code F1 à F3 à `2035a2f` ;\n  - la documentation de `draft_num_predict` ;\n  - les résumés arXiv de StreamAhead, Don't Break the Cache, Saxena, EcoSpec, How to Reduce Whisper\n    Hallucination, StreamForest, ReKV, CRANE et FastServe.\n\n  Les autres chiffres sont repris des revues tels quels.\n- L'hypothèse « MTP déjà actif » est une inférence de bande passante. D'autres explications restent possibles,\n  notamment des poids actifs par jeton inférieurs à la taille du tag : C0 et G3 tranchent.\n- Les chiffres des articles portent sur d'autres modèles, d'autres GPU et d'autres bancs, souvent en anglais.\n- Les gains chiffrés des propositions sont des estimations.\n- F15 vient des fiches provisoires. Les rejeux à contexte figé ne reproduisent ni la rétroaction de la\n  perception ni la validation des preuves : E4 reste nécessaire.\n- L'état réel du GX10 (avancement d'E1, file E2/E3, téléchargements) n'a pas été vérifié par moi.\n\n## Fichiers\n\n- Synthèse : `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/SYNTHESE.md`\n- Revues sources :\n  - `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/questions/latence-reponse-llm.md`\n  - `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/perception/`\n  - `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/memoire-asr/`\n- File existante, non modifiée :\n  - `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/file-e2-e3.sh`\n  - `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/construire_plans.py`\n- Programme préenregistré : `/private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/PROGRAMME.md`"
+}

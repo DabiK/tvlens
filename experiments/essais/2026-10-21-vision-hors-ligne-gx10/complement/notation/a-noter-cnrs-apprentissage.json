@@ -1,0 +1,141 @@
+[
+ {
+  "blockId": "cnrs-apprentissage@120000",
+  "startS": 120.0,
+  "endS": 128.0,
+  "transcript": "des yeux, même quantité, le même nombre de pâtes, etc., etc., voilà. Alors après, il y a des formes, Il y a des choses différentes et donc, nous...",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "94765285ea",
+    "summary": "L'homme continue son explication en mentionnant des éléments communs et des différences entre les images, comme les yeux et les formes. Il semble comparer les caractéristiques visuelles des sujets présentés.",
+    "visual": "L'homme est visible, continuant de parler devant les silhouettes de chat et de lapin."
+   },
+   {
+    "textId": "5df33c7c66",
+    "summary": "L'homme présente des silhouettes d'un chat et d'un lapin, soulignant les différences de taille entre des modèles d'IA de petite et de grande envergure, et l'intuition humaine pour identifier les animaux.",
+    "visual": "Un homme est debout devant un mur blanc, présentant des silhouettes noires d'un chat et d'un lapin. Il explique la différence de taille entre les modèles d'IA."
+   },
+   {
+    "textId": "4cfa6a42e7",
+    "summary": "L'homme explique que la distinction entre un chat et un lapin est intuitive pour les humains, soulignant qu'il suffit d'un simple coup d'œil pour identifier chacun.",
+    "visual": "L'homme est debout devant deux silhouettes noires, une de chat et une de lapin, et explique cela à la caméra."
+   }
+  ]
+ },
+ {
+  "blockId": "cnrs-apprentissage@224000",
+  "startS": 224.0,
+  "endS": 232.0,
+  "transcript": "d'images, puis acheter une poignée d'images dedans, on va les donner à notre IAR qui est en apprentissage et on va lui demander de nous faire une prédiction.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "cef4bfb8c4",
+    "summary": "Le modèle effectue des prédictions sur des images de chats et de lapins, et des erreurs sont ensuite détectées. Un humain corrige ces erreurs en utilisant des données d'apprentissage pour améliorer la performance du modèle.",
+    "visual": "Le robot effectue des prédictions, des erreurs sont identifiées et corrigées par l'humain à l'aide de données d'apprentissage."
+   },
+   {
+    "textId": "1353f34af0",
+    "summary": "Le modèle effectue des prédictions sur des images de chats et de lapins, puis des erreurs sont identifiées. Un homme corrige ensuite ces erreurs en utilisant des données d'apprentissage, ce qui permet au modèle de s'améliorer progressivement.",
+    "visual": "Le robot effectue des prédictions sur des images de chats et de lapins, puis des erreurs sont identifiées. Un homme corrige ensuite ces erreurs en utilisant des données d'apprentissage."
+   },
+   {
+    "textId": "3e412fa24b",
+    "summary": "Le processus d'entraînement du modèle commence par des prédictions effectuées par un robot. Ensuite, les erreurs sont identifiées et corrigées en utilisant des données d'apprentissage, ce qui permet d'itérer et d'améliorer le modèle.",
+    "visual": "Le schéma illustre les étapes : 1. Prédictions par le robot ; 2. Identification des Erreurs ; 3. Corrections basées sur les Données d'apprentissage ; 4. Itérations pour affiner le modèle."
+   }
+  ]
+ },
+ {
+  "blockId": "cnrs-apprentissage@336000",
+  "startS": 336.0,
+  "endS": 344.0,
+  "transcript": "On va avoir que l'on avait comme ça 80% de nos images ici qui servent à l'apprentissage et puis vingt pour plus.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "c1616129e4",
+    "summary": "Un homme corrige les prédictions erronées d'un robot en utilisant des données d'apprentissage, dans le but d'améliorer la qualité de l'entraînement du modèle. Cette démarche itérative est essentielle pour ajuster progressivement l'apprentissage.",
+    "visual": "Un homme, visiblement un expert, examine attentivement les résultats d'un robot, corrigeant des erreurs en utilisant des données d'apprentissage pour affiner le modèle."
+   },
+   {
+    "textId": "9593433661",
+    "summary": "Un homme explique que l'apprentissage se fait en alternant 80% d'apprentissage et 20% d'évaluation, en corrigeant les erreurs du modèle avec de nouvelles données pour améliorer progressivement ses prédictions.",
+    "visual": "Un homme, avec un t-shirt à motifs, explique le processus d'apprentissage en alternant des phases d'apprentissage et d'évaluation, en utilisant des données pour corriger les erreurs du modèle et améliorer ses performances."
+   },
+   {
+    "textId": "40b716caa0",
+    "summary": "Le processus illustré montre une division des données en 80% pour l'apprentissage et 20% pour l'évaluation. L'apprentissage est suivi d'une évaluation via les données d'apprentissage, tandis que l'évaluation est suivie d'une évaluation via les données d'évaluation.",
+    "visual": "Diagramme illustrant le processus d'apprentissage et d'évaluation des données, avec des courbes d'apprentissage et de validation."
+   }
+  ]
+ },
+ {
+  "blockId": "cnrs-apprentissage@536000",
+  "startS": 536.0,
+  "endS": 544.0,
+  "transcript": "internet que l'on récupère. Alors à partir de ces données, ben on va faire un premier phase d'apprentissage pour faire ce que l'on appelle un modèle de fondament.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "f4606919c6",
+    "summary": "L'image illustre la spécialisation du modèle IA en lui fournissant des instructions précises et un métier spécifique, afin d'améliorer sa pertinence et son efficacité pour des tâches ciblées. Cette étape est suivie d'un affinement pour garantir une bonne conduite et une inférence réussie.",
+    "visual": "Un personnage en costume spécialisé donne des instructions à un modèle IA, symbolisé par un cerveau, pour une inférence réussie."
+   },
+   {
+    "textId": "29144b2ab0",
+    "summary": "Le passage actuel montre la transition entre la collecte de données et la création d'un modèle de fondation. Il est mentionné que l'on récupère des informations via internet pour effectuer une première phase d'apprentissage, aboutissant à un modèle de fondation.",
+    "visual": "Le passage illustre la transition entre la collecte de données (représentée par une pile de disques) et la création d'un modèle de fondation (représenté par un réseau neuronal)."
+   },
+   {
+    "textId": "dc7030c8df",
+    "summary": "L'étape actuelle consiste à spécialiser le modèle IA en lui fournissant des instructions précises et un métier spécifique, afin d'améliorer sa pertinence et son efficacité pour des tâches ciblées. Cette spécialisation est suivie d'un affinement pour assurer une bonne conduite et une inférence réussie.",
+    "visual": "Le modèle IA est représenté par un homme en costume, portant un tournevis, symbolisant la spécialisation et le travail précis."
+   }
+  ]
+ },
+ {
+  "blockId": "cnrs-apprentissage@656000",
+  "startS": 656.0,
+  "endS": 664.0,
+  "transcript": "on veut lui apprendre à répondre à des questions. On lui donne des questions et on attend une réponse et on va faire en sorte que il sache répondre à ces questions. Processus similaires, ce que l'on a vu précédent.",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "6d25271937",
+    "summary": "L'orateur explique qu'il souhaite apprendre à l'IA à répondre à des questions en lui fournissant des questions et en attendant une réponse. Il mentionne que ce processus est similaire à ce qui a été vu précédemment.",
+    "visual": "Un homme parle devant un fond neutre."
+   },
+   {
+    "textId": "708ce36892",
+    "summary": "L'image montre une étape où le modèle d'IA est entraîné à répondre à des questions, en lui fournissant des questions et en attendant des réponses. Ce processus vise à lui permettre de répondre efficacement à diverses questions.",
+    "visual": "Un personnage est représenté en train d'écrire ou de taper sur un clavier, suggérant l'interaction avec le modèle d'IA pour lui fournir des questions et observer ses réponses."
+   }
+  ]
+ },
+ {
+  "blockId": "cnrs-apprentissage@760000",
+  "startS": 760.0,
+  "endS": 768.0,
+  "transcript": "si tu ne dois pas te comporter comme ça, tu dois répondre avec bienveillance, etc., etc. Voilà, et ça, c'est super important, et ça, c'était la force, par exemple, d'openier.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "7d7d4df726",
+    "summary": "L'image illustre l'étape d'alignement d'un modèle d'IA, où des briefings, des critères éthiques et une bonne conduite sont intégrés pour préparer le modèle à l'inférence et à son utilisation pratique. Le modèle est alors prêt à être utilisé efficacement, notamment en apprenant à respecter des règles professionnelles et éthiques.",
+    "visual": "Un personnage, représenté comme un médecin, est présenté comme le résultat de l'alignement du modèle, avec l'instruction de se comporter avec bienveillance et de respecter des règles éthiques."
+   },
+   {
+    "textId": "4eaac19158",
+    "summary": "L'image illustre l'étape d'alignement d'un modèle d'IA, où des briefings, des critères éthiques et une bonne conduite sont intégrés pour préparer le modèle à l'inférence et à son utilisation pratique. Le modèle est alors prêt à être utilisé efficacement, notamment en apprenant à respecter des règles professionnelles et éthiques.",
+    "visual": "Un personnage, représenté comme un médecin, est présenté comme le résultat de l'alignement du modèle, soulignant l'importance de l'éthique et de la bonne conduite dans son utilisation."
+   },
+   {
+    "textId": "339682efe7",
+    "summary": "L'orateur insiste sur l'importance de la bienveillance dans la manière de répondre, soulignant que c'est un aspect fondamental de l'approche discutée. Il mentionne que cette qualité était une force, en prenant l'exemple d'OpenAI.",
+    "visual": "Un homme parle devant un arrière-plan neutre."
+   }
+  ]
+ }
+]

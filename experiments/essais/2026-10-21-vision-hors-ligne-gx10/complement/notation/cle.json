@@ -1,0 +1,922 @@
+{
+ "6b8f4bdac8": [
+  {
+   "block": "kennedy@64000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@64000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@64000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "52066f6512": [
+  {
+   "block": "kennedy@128000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@128000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@128000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "732ab31bfa": [
+  {
+   "block": "kennedy@184000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@184000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "93e9b61079": [
+  {
+   "block": "kennedy@240000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@240000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "8dd9707d6c": [
+  {
+   "block": "kennedy@304000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@304000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "fa4d8178e4": [
+  {
+   "block": "kennedy@368000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "kennedy@368000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "6c067004f3": [
+  {
+   "block": "spring@56000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@56000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "3933a5ff3b": [
+  {
+   "block": "spring@200000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@200000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@200000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "313fc73424": [
+  {
+   "block": "spring@264000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@264000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@264000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "5c7bbd7016": [
+  {
+   "block": "spring@320000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@320000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "aedc7e5b2a": [
+  {
+   "block": "spring@368000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@368000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "6cfae558fd": [
+  {
+   "block": "spring@416000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "spring@416000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "5df33c7c66": [
+  {
+   "block": "cnrs-apprentissage@120000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@120000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "1353f34af0": [
+  {
+   "block": "cnrs-apprentissage@224000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@224000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "9593433661": [
+  {
+   "block": "cnrs-apprentissage@336000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@336000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "f4606919c6": [
+  {
+   "block": "cnrs-apprentissage@536000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@536000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "708ce36892": [
+  {
+   "block": "cnrs-apprentissage@656000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@656000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@656000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "4eaac19158": [
+  {
+   "block": "cnrs-apprentissage@760000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "cnrs-apprentissage@760000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "3a8bbb17d4": [
+  {
+   "block": "boeuf-bourguignon@112000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@112000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "0908ed205f": [
+  {
+   "block": "boeuf-bourguignon@216000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@216000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@216000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "40d7fbaa73": [
+  {
+   "block": "boeuf-bourguignon@328000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@328000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "6194e540c3": [
+  {
+   "block": "boeuf-bourguignon@424000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@424000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "7565fbe38b": [
+  {
+   "block": "boeuf-bourguignon@528000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@528000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "1cad1b87a9": [
+  {
+   "block": "boeuf-bourguignon@632000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "boeuf-bourguignon@632000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "c8ec6ac2a8": [
+  {
+   "block": "tears-of-steel@184000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@184000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "d74c354faf": [
+  {
+   "block": "tears-of-steel@280000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@280000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "ae9a0147e1": [
+  {
+   "block": "tears-of-steel@368000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@368000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@368000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "fb091bbda3": [
+  {
+   "block": "tears-of-steel@464000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@464000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "f860d0c0d5": [
+  {
+   "block": "tears-of-steel@552000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@552000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "775f69240f": [
+  {
+   "block": "tears-of-steel@640000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "tears-of-steel@640000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "0bdbb787d5": [
+  {
+   "block": "artemis@384000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@384000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "f7348b2170": [
+  {
+   "block": "artemis@664000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@664000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "31029f3c74": [
+  {
+   "block": "artemis@952000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@952000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "6d350f20d8": [
+  {
+   "block": "artemis@1248000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@1248000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@1248000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "9e4adca0c8": [
+  {
+   "block": "artemis@1536000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@1536000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "2f5ecf255c": [
+  {
+   "block": "artemis@1816000",
+   "arm": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "block": "artemis@1816000",
+   "arm": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ],
+ "9796dd1837": [
+  {
+   "block": "kennedy@184000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "2c155be79b": [
+  {
+   "block": "kennedy@240000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "1f88cd47d8": [
+  {
+   "block": "kennedy@304000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "7eec32436f": [
+  {
+   "block": "kennedy@368000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "522d89c012": [
+  {
+   "block": "spring@56000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "8e6b49fef6": [
+  {
+   "block": "spring@320000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "6905bc9c53": [
+  {
+   "block": "spring@368000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "064fee9be0": [
+  {
+   "block": "spring@416000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "4cfa6a42e7": [
+  {
+   "block": "cnrs-apprentissage@120000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "cef4bfb8c4": [
+  {
+   "block": "cnrs-apprentissage@224000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "c1616129e4": [
+  {
+   "block": "cnrs-apprentissage@336000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "dc7030c8df": [
+  {
+   "block": "cnrs-apprentissage@536000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "7d7d4df726": [
+  {
+   "block": "cnrs-apprentissage@760000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "f83f7f2225": [
+  {
+   "block": "boeuf-bourguignon@112000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "62b6a7cda3": [
+  {
+   "block": "boeuf-bourguignon@328000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "7a67e8ffea": [
+  {
+   "block": "boeuf-bourguignon@424000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "d778088aa1": [
+  {
+   "block": "boeuf-bourguignon@528000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "b3df332a06": [
+  {
+   "block": "boeuf-bourguignon@632000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "1f8414d83c": [
+  {
+   "block": "tears-of-steel@184000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "ed30b254f4": [
+  {
+   "block": "tears-of-steel@280000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "8da1cd4ee6": [
+  {
+   "block": "tears-of-steel@464000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "cdb9b99d30": [
+  {
+   "block": "tears-of-steel@552000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "910c5faa24": [
+  {
+   "block": "tears-of-steel@640000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "d1c8f0f4b0": [
+  {
+   "block": "artemis@384000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "41d7f99b51": [
+  {
+   "block": "artemis@664000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "00b8adc708": [
+  {
+   "block": "artemis@952000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "f9c8046861": [
+  {
+   "block": "artemis@1536000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "12f2ab2979": [
+  {
+   "block": "artemis@1816000",
+   "arm": "ref-3-images",
+   "model": "gemma3:4b"
+  }
+ ],
+ "14067d3f1d": [
+  {
+   "block": "kennedy@64000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "fadddb9de6": [
+  {
+   "block": "kennedy@128000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "e87f0ecdcb": [
+  {
+   "block": "kennedy@184000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "68a2e692b9": [
+  {
+   "block": "kennedy@240000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "f512e0e9a1": [
+  {
+   "block": "kennedy@304000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "ff9f54326f": [
+  {
+   "block": "kennedy@368000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "c5e2276161": [
+  {
+   "block": "spring@56000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "78cf2a4e3a": [
+  {
+   "block": "spring@200000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "ae9c215b86": [
+  {
+   "block": "spring@264000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "4e9ffaf1fc": [
+  {
+   "block": "spring@320000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "dffcd6ce20": [
+  {
+   "block": "spring@368000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "315be942f7": [
+  {
+   "block": "spring@416000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "94765285ea": [
+  {
+   "block": "cnrs-apprentissage@120000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "3e412fa24b": [
+  {
+   "block": "cnrs-apprentissage@224000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "40b716caa0": [
+  {
+   "block": "cnrs-apprentissage@336000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "29144b2ab0": [
+  {
+   "block": "cnrs-apprentissage@536000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "6d25271937": [
+  {
+   "block": "cnrs-apprentissage@656000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "339682efe7": [
+  {
+   "block": "cnrs-apprentissage@760000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "451447fba1": [
+  {
+   "block": "boeuf-bourguignon@112000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "f2c1ee330f": [
+  {
+   "block": "boeuf-bourguignon@216000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "3e3b2f538b": [
+  {
+   "block": "boeuf-bourguignon@328000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "82e73452a4": [
+  {
+   "block": "boeuf-bourguignon@424000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "cfd65856da": [
+  {
+   "block": "boeuf-bourguignon@528000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "d7d85f2484": [
+  {
+   "block": "boeuf-bourguignon@632000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "191f22bbbd": [
+  {
+   "block": "tears-of-steel@184000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "565679e22f": [
+  {
+   "block": "tears-of-steel@280000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "154cfcff68": [
+  {
+   "block": "tears-of-steel@368000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "a6683de498": [
+  {
+   "block": "tears-of-steel@464000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "5060fc9cca": [
+  {
+   "block": "tears-of-steel@552000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "d015dbb771": [
+  {
+   "block": "tears-of-steel@640000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "2ce81ad8fa": [
+  {
+   "block": "artemis@384000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "99fef0b25e": [
+  {
+   "block": "artemis@664000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "28c9f5a894": [
+  {
+   "block": "artemis@952000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "23beffc78e": [
+  {
+   "block": "artemis@1248000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "7772601520": [
+  {
+   "block": "artemis@1536000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ],
+ "39acfef45c": [
+  {
+   "block": "artemis@1816000",
+   "arm": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M"
+  }
+ ]
+}

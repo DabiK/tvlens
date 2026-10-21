@@ -1,0 +1,277 @@
+{
+ "experiment": "g4-sortie-vision",
+ "capSeconds": 2400,
+ "cases": [
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000006.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000006.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000012.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000012.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000019.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000019.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000025.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000025.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000031.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000031.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000037.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000037.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000044.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000044.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "kennedy/vlm-000050.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000050.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000006.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000006.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000011.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000011.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000016.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000016.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000021.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000021.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000027.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000027.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000032.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000032.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000037.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000037.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "spring/vlm-000042.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000042.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000009.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000009.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000021.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000021.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000032.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000032.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000044.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000044.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000056.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000056.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000068.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000068.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000079.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000079.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "cnrs-apprentissage/vlm-000091.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000091.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000009.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000009.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000020.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000020.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000031.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000031.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000042.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000042.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000053.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000053.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000064.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000064.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000075.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000075.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "boeuf-bourguignon/vlm-000086.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000086.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000008.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000008.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000017.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000017.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000027.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000027.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000036.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000036.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000046.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000046.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000055.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000055.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000065.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000065.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "tears-of-steel/vlm-000074.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000074.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000019.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000019.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000050.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000050.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000081.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000081.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000112.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000112.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000143.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000143.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000174.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000174.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000205.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000205.json.gz"
+  },
+  {
+   "kind": "body",
+   "id": "artemis/vlm-000236.json.gz",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000236.json.gz"
+  }
+ ],
+ "arms": [
+  {
+   "label": "R"
+  },
+  {
+   "label": "V2",
+   "schemaDrop": [
+    "topicSummary"
+   ],
+   "promptCut": [
+    [
+     "Le champ distinct topicSummary",
+     "recopié dans summary, visual ou transcript."
+    ]
+   ]
+  },
+  {
+   "label": "V3",
+   "schemaMaxLength": {
+    "topicSummary": 300
+   }
+  }
+ ],
+ "order": [
+  "R",
+  "V2",
+  "V3",
+  "V3",
+  "V2",
+  "R"
+ ]
+}

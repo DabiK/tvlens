@@ -1,0 +1,83 @@
+[
+  {
+    "video": "kennedy",
+    "arm": "G",
+    "label": "kennedy-G-1",
+    "proxyStopped": true,
+    "campaignSha256": "91896159e8f5ea0db2246b00c76c21dc9a315e74332c750db2fb25061f6663ad",
+    "runId": "4002c497-cae8-48fe-b6d8-7b7fbbd839b4",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "G",
+    "label": "spring-G-1",
+    "proxyStopped": true,
+    "campaignSha256": "6e4a5820985ac8738380a875ae47a1f55855c8fccac2ba9a8b8184f8469290ab",
+    "runId": "116236fc-56aa-4c8c-bcb7-b92c7bfbd1b6",
+    "acquired": 5
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "G",
+    "label": "cnrs-apprentissage-G-1",
+    "proxyStopped": true,
+    "campaignSha256": "806f469610a2541df0ca16df9d00bc3318c719d54c33b01852d7a6dca433589a",
+    "runId": "62c00dd6-a2d1-4d9b-bd3b-2129e8b39a9b",
+    "acquired": 5
+  },
+  {
+    "video": "kennedy",
+    "arm": "GP",
+    "label": "kennedy-GP-1",
+    "proxyStopped": true,
+    "campaignSha256": "2409f1653fac74e41f7c726191f2cca1a4dd776dfb5e88e247d5293f4f32364e",
+    "runId": "aab1a72d-d6ce-40ca-af59-979a3bd2531b",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "GP",
+    "label": "spring-GP-1",
+    "proxyStopped": true,
+    "campaignSha256": "4d18c1923e896a782a19c3eb133b96bfca65a69709ca6f95e67c1a4bbd668a97",
+    "runId": "170f7265-0a12-4adc-91a6-c0e7f7a9ff5d",
+    "acquired": 5
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GP",
+    "label": "cnrs-apprentissage-GP-1",
+    "proxyStopped": true,
+    "campaignSha256": "05aeade1a4048f64132a2feedb70b5cc5d597c9e15d1fed6978704575cfd239f",
+    "runId": "73d7bbc6-4f38-455b-a3b1-2bed0153a5d0",
+    "acquired": 5
+  },
+  {
+    "video": "kennedy",
+    "arm": "GPS",
+    "label": "kennedy-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "3ded064318d57a06ce42467cfc2480bb97735a98b6ba4aff1bb7709dd963a952",
+    "runId": "eedbc485-abce-4ace-9342-ed172de95890",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "GPS",
+    "label": "spring-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "ec726e50f5cd67b7310b0c18c9b8951a854efd59247b0abe24b279cbbc5d5a59",
+    "runId": "40143fac-3286-4d49-b650-56ea23dbae89",
+    "acquired": 5
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GPS",
+    "label": "cnrs-apprentissage-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "4c101b37786c92364631111486a2d0f585f2db066c41a880218d4cedb3f177d0",
+    "runId": "4465ac5e-2be4-44de-92d6-6d1d689642ac",
+    "acquired": 5
+  }
+]

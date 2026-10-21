@@ -1,0 +1,231 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "bf46017d22",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ». Thom le dit lui-même : « You have your robotics and I just want to be awesome in space. »",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "f1f73648af",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ». Thom lui dit : « Look Celia, we have to follow our passions. You have your robotics and I just want to be awesome in space. »",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "5401c8b6a8",
+    "kind": "observation",
+    "answer": "Selon leur conversation sur le pont, Celia a la passion de la robotique et Thom veut « être génial dans l'espace » (moment-4, 24000-32000 ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "5d267827c8",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "e7affd3b38",
+    "kind": "observation",
+    "answer": "Barley dit qu'ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "e3aa6c8b82",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "84b443eac9",
+    "kind": "observation",
+    "answer": "Il lui est conseillé d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "0a6e79985f",
+    "kind": "observation",
+    "answer": "Thom est conseillé de lui parler en étant honnête et tendre, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "892cc892e5",
+    "kind": "observation",
+    "answer": "On lui dit d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "e4f828e7b8",
+    "kind": "observation",
+    "answer": "Thom est conseillé d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "81eacffb6b",
+    "kind": "observation",
+    "answer": "On lui conseille de lui parler en étant honnête et tendre, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "41c8486f73",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : le passage où Celia reproche quelque chose à Thom n’est pas encore analysé (vision en attente), et les résumés automatiques ne suffisent pas à citer un reproche précis.",
+    "citations": []
+   },
+   {
+    "textId": "4306c95e43",
+    "kind": "observation",
+    "answer": "Thom reproche à Celia de l'avoir oublié sur Terre et de lui avoir brisé le cœur, comme on l'entend dans le passage moment-49 (384000-392000 ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "43b4831fc6",
+    "kind": "observation",
+    "answer": "Thom reproche à Celia de l'avoir oublié sur Terre et de lui avoir brisé le cœur.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "433335d803",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : les passages reçus montrent surtout Thom reprochant à Celia d’avoir peur de sa main robotique, mais aucune réplique claire où Celia reproche quelque chose à Thom n’est encore disponible.",
+    "citations": []
+   },
+   {
+    "textId": "8923873b7c",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de lui avoir brisé le cœur et de l'avoir oubliée sur Terre.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "3fc1cc9dde",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le seul passage qui mentionne la mémoire est moment-68 (536000-544000), où l’on entend « Memory over right to bleed! », mais cette transcription automatique est incertaine et ne décrit pas un état annoncé de l’écriture mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "3ea94fb943",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le seul passage reçu mentionne « Memory over right to bleed! » (moment-68, 536000-544000), mais c’est une transcription automatique incertaine, pas une annonce claire de l’état de l’écriture mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "045dc27d60",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le seul passage reçu mentionne « Memory over right to bleed! » (moment-68, 536000–544000 ms), mais cette transcription automatique est incertaine et ne précise pas l’état annoncé de l’écriture mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "f78e375468",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : les passages reçus montrent des écrans évoquant une « overwriting mémoire » et des commandes « Play » et « Playback » (moment-38, 296000-304000 ; moment-39, 304000-312000), mais aucun état précis de l’écriture n’est indiqué.",
+    "citations": []
+   }
+  ]
+ }
+]

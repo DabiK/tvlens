@@ -1,0 +1,711 @@
+[
+ {
+  "questionId": "cnrs-01",
+  "atMs": 96000,
+  "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+  "answers": [
+   {
+    "textId": "5ea4940ba7",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ]
+   },
+   {
+    "textId": "da47536754",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le système est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ]
+   },
+   {
+    "textId": "500dc74b9c",
+    "kind": "observation",
+    "answer": "La vidéo oppose les petites IA, qui tournent sur un ordinateur portable avec quelques millions de paramètres, aux grandes IA comme les LLM, qui comptent environ mille milliards de paramètres, soit un facteur d'au moins 100 000. Elle ajoute que leur apprentissage et les missions attendues d'elles ne seront pas les mêmes.",
+    "citations": [
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ]
+   },
+   {
+    "textId": "202581d9b9",
+    "kind": "observation",
+    "answer": "La vidéo oppose une petite IA, qui fait de la classification de données avec quelques milliers à quelques centaines de milliers de paramètres et tourne sur un ordinateur portable, à une grande IA comme un LLM, qui atteint environ 1000 milliards de paramètres, soit un facteur d'au moins 100 000. Elle ajoute que l'apprentissage et les missions attendues ne seront pas les mêmes entre les deux.",
+    "citations": [
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ]
+   },
+   {
+    "textId": "787b690067",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres. Une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins 100 000 fois.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   },
+   {
+    "textId": "6f39256cab",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins un facteur 100 000. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "atMs": 232000,
+  "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+  "answers": [
+   {
+    "textId": "9050700e42",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données (20 %) à l'écart pour l'évaluation, afin de vérifier à la fin si l'apprentissage a bien fonctionné, comme un enseignant qui réserve des exercices pour l'interro. Les passages moment-23 à moment-25 (176000-200000 ms) montrent cette répartition 80/20 et l'analogie avec la classe.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "db89a9f0cc",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, sans les avoir utilisées pour entraîner le modèle. C'est l'analogie du professeur qui garde 5 exercices sur 20 pour l'évaluation finale, plutôt que d'en faire tous des exercices de cours.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "b0bf79f35b",
+    "kind": "observation",
+    "answer": "La vidéo explique la séparation des données d'apprentissage et d'évaluation par une analogie avec un enseignant : on garde une partie des exercices (par exemple 15 sur 20) pour travailler en cours, et on met de côté le reste (5) pour vérifier à la fin si l'apprentissage a bien fonctionné. Cette logique correspond à la répartition classique de 80 % pour l'apprentissage et 20 % pour l'évaluation, afin de mesurer la performance du modèle sur des données qu'il n'a pas vues pendant l'entraînement.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "fa89a51e36",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, comme un enseignant qui réserve quelques exercices pour un examen. Les passages moment-23 à moment-25 (176000-200000 ms) montrent cette logique : 80 % des données servent à l'apprentissage, 20 % sont conservées précieusement pour évaluer la performance du système.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "8500d77d1d",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données (20 %) de côté pour l'évaluation, comme un enseignant qui réserve des exercices pour l'interro finale, afin de vérifier si l'apprentissage est bien passé. C'est cette séparation qui permet de mesurer la performance du modèle sur des exemples qu'il n'a pas vus pendant l'apprentissage.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "cd7d78a1cf",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, comme un enseignant qui réserve des exercices pour un contrôle. Cette séparation évite de juger le modèle sur des exemples qu'il a déjà vus pendant l'entraînement.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "5fd553334d",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier à la fin si l'apprentissage s'est bien passé, comme un enseignant qui réserve des exercices pour un contrôle. C'est cette séparation qui permet de mesurer la performance du modèle sur des exemples qu'il n'a pas vus pendant l'apprentissage.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "atMs": 472000,
+  "question": "Comment le cours explique-t-il le surapprentissage ?",
+  "answers": [
+   {
+    "textId": "1e874becb7",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression initiale, la performance du modèle se dégrade parce qu'il apprend trop intensément, comme un élève qui bachote et finit par se dégrader. Il insiste sur le fait que l'art de l'apprentissage est de s'arrêter au bon moment, avant d'entrer dans cette zone de surapprentissage, en s'appuyant sur une courbe de validation pour repérer ce point.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     }
+    ]
+   },
+   {
+    "textId": "53148178bc",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression initiale, la performance se dégrade et le modèle finit par ne plus être capable de faire les choses correctement. Pour l'éviter, il recommande de réserver environ 20 % des données à l'évaluation afin de suivre la courbe d'apprentissage et de s'arrêter au bon moment, avant d'entrer dans cette zone de régression.",
+    "citations": [
+     {
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "3623cd5cb7",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase où, après une progression initiale, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. Il insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, en comparant la situation à l'apprentissage humain. Les passages moment-54 à moment-57 (424000-456000 ms) portent cette explication.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "be0d65c4e3",
+    "kind": "observation",
+    "answer": "Le cours présente le surapprentissage comme une phase qui survient après un pic de performance : le modèle progresse d'abord, puis sa qualité se dégrade s'il continue à s'entraîner sans évaluation. L'art de l'apprentissage consisterait donc à s'arrêter au bon moment, avant d'entrer dans cette zone de surapprentissage.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "69fd4d4191",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. L'expert insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, et compare le phénomène à un humain qui, en apprenant trop, finit par se dégrader.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "eb6fded468",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase qui suit le pic de progression : après une amélioration initiale, la courbe régresse et le modèle finit par ne plus être capable de faire les choses correctement. L'enseignant insiste sur l'idée qu'il faut s'arrêter au bon moment, c'est-à-dire au point où l'apprentissage cesse de progresser, avant d'entrer dans cette zone de surapprentissage, et il évoque des outils logiciels pour piloter cet arrêt.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "f1caed168e",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase où, après une progression, la performance du modèle se dégrade : il apprend trop les données d'entraînement et perd en précision et en généralisation. L'expert insiste sur le fait que « l'art de l'apprentissage, c'est de s'arrêter au bon moment », avant d'entrer dans cette zone de régression, en comparant le phénomène à ce qui se passe chez les humains. Il montre une courbe d'apprentissage qui monte puis redescend pour illustrer ce passage.",
+    "citations": [
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "atMs": 648000,
+  "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+  "answers": [
+   {
+    "textId": "da09475525",
+    "kind": "observation",
+    "answer": "Le pré-entraînement consiste à apprendre le langage : le modèle apprend à parler, à construire des phrases et à acquérir des connaissances générales à partir de grandes quantités de données. C'est une phase extrêmement coûteuse en calcul, comparée à l'apprentissage du langage chez un enfant.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   },
+   {
+    "textId": "902ee43c33",
+    "kind": "observation",
+    "answer": "Pendant le pré-entraînement, le modèle apprend à maîtriser le langage, notamment à construire et compléter des phrases, dans un processus long et très coûteux en calcul, comparé à l'apprentissage d'une langue par un enfant.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   },
+   {
+    "textId": "1dcefc2826",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à apprendre la langue : le modèle apprend à compléter des phrases avec des trous, comme un enfant qui apprend à parler et à construire des phrases. C'est une étape extrêmement coûteuse en calcul, comparée à l'acquisition du langage chez l'enfant, et elle précède la phase d'alignement. Les passages moment-76 à moment-79 (600000-632000 ms) portent cette explication.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   },
+   {
+    "textId": "024d637331",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation, un processus extrêmement coûteux en calcul, qui apprend la langue de la même façon qu'un enfant apprend à parler : construire des phrases et compléter des trous, bien plus efficacement qu'un adulte. C'est la première phase d'apprentissage, jugée extrêmement importante, avant la phase suivante.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   },
+   {
+    "textId": "1be475d64a",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation sur la complétion de phrases avec des trous, afin de lui apprendre la langue et des bases de connaissances, comme un enfant apprend à parler et à associer des mots. La vidéo souligne que cette phase est extrêmement coûteuse en calcul et constitue la première étape d'apprentissage, avant une phase suivante d'affinage.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 632000,
+      "endMs": 640000
+     }
+    ]
+   },
+   {
+    "textId": "b0c6d156bf",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici correspond à l'apprentissage de la langue : le modèle apprend à parler, à construire des phrases et à acquérir le langage, comme un enfant qui apprend à parler. C'est une phase extrêmement coûteuse en calcul, comparée à l'apprentissage du langage chez un enfant, mais les serveurs ultra-performants permettent d'apprendre de manière bien plus efficace qu'un adulte. Cette première phase d'apprentissage est décrite comme extrêmement importante, avant le fine-tuning et l'alignement.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   },
+   {
+    "textId": "5cc9a53597",
+    "kind": "observation",
+    "answer": "Le pré-entraînement consiste à entraîner un modèle de fondation, un processus décrit comme extrêmement coûteux en calcul, comparable à l'apprentissage du langage chez un enfant. Le modèle apprend alors à construire des phrases et à maîtriser la langue, de façon très efficace, avant la phase d'apprentissage suivante.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "atMs": 792000,
+  "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+  "answers": [
+   {
+    "textId": "4671d3ad67",
+    "kind": "observation",
+    "answer": "Le cours distingue les deux phases : l'alignement consiste à donner au modèle un ensemble de règles éthiques et de bonne conduite (ne pas se comporter ainsi, répondre avec bienveillance), tandis que le fine-tuning vise à développer ses capacités linguistiques et à lui apprendre à répondre à des questions spécifiques en complétant des phrases, via un modèle instructeur et des instructions claires.",
+    "citations": [
+     {
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "7b3f4c23e5",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences professionnelles (comme un médecin qui apprend son métier), à l'alignement, qui consiste à imposer un ensemble de règles éthiques et de conduite (bienveillance, interdiction de certains comportements) avant de mettre le modèle en service. L'alignement est présenté comme la phase qui garantit que le modèle respecte ces règles face à des utilisateurs qui cherchent à le pousser à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "bc5e03b055",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences métier (être prof, médecin, etc.), à l'alignement, présenté comme un savoir-être : un ensemble de règles éthiques (ne pas parler de ceci, répondre avec bienveillance) que le modèle doit respecter avant d'être mis en contact avec le public.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "b63a637a57",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui spécialise le modèle sur une tâche ou un domaine (comme un médecin qui apprend ses compétences), à l'alignement, qui lui impose un ensemble de règles éthiques et de bonne conduite (bienveillance, interdits) avant de le mettre en pratique. L'alignement est présenté comme la phase qui garantit que le modèle se comporte correctement face à des utilisateurs qui peuvent essayer de le pousser à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "8040b88c86",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences professionnelles (comme un prof ou un médecin qui acquiert son savoir-faire), à l'alignement, qui est un savoir-être : un ensemble de règles éthiques et de bienveillance à respecter avant de servir le public. Il cite l'exemple de ChatGPT, dont la force a été de réussir un alignement qui « tienne la route » face à des utilisateurs tentant de pousser le modèle à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "startMs": 768000,
+      "endMs": 776000
+     }
+    ]
+   },
+   {
+    "textId": "653a5b358b",
+    "kind": "observation",
+    "answer": "Le cours oppose le pré-entraînement, qui apprend la langue et des compétences (comme un enfant qui apprend à parler), à l'alignement, qui consiste à imposer un ensemble de règles éthiques et de bonne conduite avant que le modèle ne soit mis en pratique. Les passages moment-93 à moment-97 (736000-776000 ms) portent cette distinction.",
+    "citations": [
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "4481258c69",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences (par exemple devenir « médecin »), à l'alignement, qui consiste à apprendre un ensemble de règles éthiques et comportementales (bienveillance, ne pas se comporter de telle ou telle façon) avant de « recevoir des patients ». L'alignement est présenté comme la phase stratégique qui garantit une utilisation correcte et éthique de l'IA.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   }
+  ]
+ }
+]

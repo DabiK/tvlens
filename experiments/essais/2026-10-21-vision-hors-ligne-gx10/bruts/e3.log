@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/nvidia/tvlens-setup/labo-claude/file-e2-e3/rejouer_vision.py", line 104, in <module>
+    main()
+  File "/home/nvidia/tvlens-setup/labo-claude/file-e2-e3/rejouer_vision.py", line 96, in main
+    measure(arm, items, warmup, out)
+  File "/home/nvidia/tvlens-setup/labo-claude/file-e2-e3/rejouer_vision.py", line 62, in measure
+    status, body, wall = post("/api/chat", adapt(item["request"], model, keep))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/nvidia/tvlens-setup/labo-claude/file-e2-e3/rejouer_vision.py", line 44, in adapt
+    message["images"] = [images[i] for i in keep]
+                         ~~~~~~^^^
+IndexError: list index out of range

@@ -1,0 +1,1282 @@
+[
+ {
+  "unit": "consolidation",
+  "id": "consolidation-aveugle-graine-publique",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/annotation_aveugle.py:32-35, 81-86, 137-140 ; annotation/README.md:3-10",
+  "description": "Le mélange est déterministe. La graine sha256('annotation-aveugle-v1:' + identifiant source) est publique, et l'ordre avant mélange est fixe (chemins triés 01-A, 02-B, 03-B, 04-A ; lignes de a-annoter.json dans l'ordre des runs). Les identifiants source se reconstituent depuis des fichiers publics : confirmation-pause-vision-gx10/reference/*.json pour Q01-Q10, et inputs.json trié pour B01-B24. Un annotateur qui lit le script, placé dans le même dossier et cité par le README, retrouve donc bras et passage sans ouvrir apres-notation/. L'aveugle repose uniquement sur sa discipline.",
+  "verifierReasoning": "Les faits sont exacts. J'ai reconstitué la correspondance à part, avec mon propre script, sans lire apres-notation/ avant la comparaison finale : 40/40 pour la pause et 96/96 pour les images, bras, passage et identifiant source compris. Le problème existe donc bel et bien, mais il est mal attribué et sa sévérité est surestimée.\n\n1) Le dispositif aveugle est procédural, par conception documentée. Les correspondances apres-notation/*.json sont suivies par Git dans le même dossier (commit cd8d1c3, avec les paquets). La consigne écrite est de ne pas les ouvrir : annotation/README.md:16-17, relais:"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-aveugle-sorties-identiques",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/annotation/observations-images.json ; annotation/README.md:9-11",
+  "description": "Dans le paquet public d'images, les deux sorties du bras A (cinq images) sont identiques mot pour mot dans 24/24 blocs, alors que B1 et B2 ne le sont que dans 4/24. Dans 20 blocs, la seule paire identique visible désigne donc le bras A, sans aucun fichier annexe. Les sorties A sont aussi plus longues (médiane 748,5 contre 660 caractères ; les deux plus longues sont les deux A dans 15/24 blocs, contre environ 4 attendus au hasard). Les 96 notes ne sont pas non plus indépendantes. Le README ne mentionne ni déduplication ni ce biais.",
+  "verifierReasoning": "Le problème existe et presque tous les chiffres de l'auditeur se vérifient sur les bruts. J'ai fait mes propres scripts de recomputation (scripts check.py, raw.py et lens.py dans /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/audit/verify-consolidation-aveugle-sorties-identiques/), sans relancer annotation_aveugle.py.\n\n1) Dans le paquet public experiments/essais/2026-10-21-consolidation-gx10/annotation/observations-images.json (suivi par Git, readyForScoring=false, 24 blocs × 4 sorties), les deux sorties du bras A sont identiques mot po"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-spring-passages-melanges",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:9 ; /private/tmp/handoff-tvlens-gx10-2026-10-21.md:16",
+  "description": "« Sur Spring, elle descend d'environ 12,19 à 9,19 s » est une médiane groupée sur deux passages. La baisse vient surtout de B2 (8,19 s, second passage chaud). Apparié au premier passage, B n'est plus rapide que sur 3/5 questions : médiane B−A −0,97 s, p95 de la différence +5,43 s, p95 B1 17,25 s contre A1 13,67 s. Le BILAN ne donne pas cette lecture appariée. Elle affaiblit le signal de vitesse Spring, en plus de la baisse de couverture déjà signalée.",
+  "verifierReasoning": "Je n'ai pas pu réfuter le constat : tous les chiffres de l'auditeur se retrouvent dans les bruts. Le défaut tient à une omission de lecture, pas à un chiffre faux. D'où une sévérité ramenée à « low ».\n\nCe qui est exact :\n- Le « 12,19 → 9,19 s » de BILAN.md:9 et du relais:16 est bien la médiane groupée par bras, sur 10 valeurs A1+A2 contre 10 valeurs B1+B2. L'arrondi est correct (12 185,7 et 9 185,7 ms).\n\nCe qui est omis :\n- **Écart vient surtout du second passage.** Au premier passage, sur la paire A1(01) / B1(02), B n'est plus rapide que sur 3/5 questions. La médiane B−A vaut −0,97 s et le p9"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-qwen-n-blocs",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md:19",
+  "description": "« Sur 24 blocs Qwen identiques » : les bruts contiennent 12 blocs (caseId video-*) rejoués sur 2 passages, soit 24 cas ou paires, pas 24 blocs. Les médianes et le constat « plus rapide à chaque paire » sont exacts, mais la taille d'échantillon est doublée dans la formulation. Le README source (2026-10-20-vision-vllm-gx10/README.md:14, 52) dit bien douze blocs et deux passages.",
+  "verifierReasoning": "Je confirme l'écart, mais en sévérité basse. Dans experiments/essais/2026-10-21-consolidation-gx10/README.md:19 (fichier suivi par Git, sans modification locale), on lit « Sur 24 blocs Qwen identiques ». J'ai recompté depuis les bruts : il y a 24 result.json par moteur, mais seulement 12 caseId distincts (video-2, 10, 25, 45, 46, 47, 57, 78, 79, 80, 96, 108), chacun joué avec repeat 1 et 2. Il y a aussi 12 intervalles startMs/endMs distincts et 12 jeux de 5 images distincts. Le corpus compte donc 12 blocs sur deux passages, soit 24 cas ou 24 paires, et non 24 blocs. Le README source dit bien «"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-kennedy-effet-ordre",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:9, 31",
+  "description": "Le BILAN de consolidation présente la baisse Kennedy groupée de 18,78 à 11,21 s et la qualifie de « prometteuse ». Il ne rappelle pas que le bras A lui-même passe de 23,26 s (A1 froid) à 15,38 s (A2), un effet d'ordre de près de 8 s, comparable à la différence appariée du passage 2 (−7,06 s, B plus rapide sur 4/5 seulement). Le BILAN pause (ligne 16) le dit ; la synthèse et le relais l'omettent.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-kennedy-releve-partiel",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md:16",
+  "description": "Les chiffres Kennedy (35 appels sur 38 blocs, médiane 7,272 s, moyenne 8,280 s) viennent d'un relevé ponctuel en cours de run (vers 21:18:52 UTC), pas du run clos. Le brut local complet compte 52 appels, médiane 7,319 s, moyenne 8,101 s. Les valeurs citées ne se retrouvent qu'en tronquant aux 35 premiers appels, sur la durée finishedAtMs−startedAtMs. Le README ne le précise pas.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-selection-non-suivie",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md:9",
+  "description": "Le lien vers ../../gx10/evaluation/selection.json pointe sur un fichier non suivi : tout experiments/gx10/evaluation/ est en « ?? ». Sur origin/main, le lien est cassé et l'état readyForScoring=false n'est pas versionné à cet endroit. Les versions gelées existent en revanche dans les snapshots suivis de 2026-10-21-relecture-fiches-gx10.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-bilan-commande-non-documentee",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md, BILAN.md ; bilan.json:18 et 8 autres lignes source",
+  "description": "Le relais présente bilan.py et bilan.json comme reproductibles, mais aucun README ne donne la commande (8 --campaign, --images, --out). Il a fallu la reconstruire depuis les champs source. bilan.json contient aussi 9 chemins absolus locaux (/Users/Dabi/…) : la régénération diffère sur toute autre machine ou copie. Ce n'est pas un secret.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-matrice-terminologie",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:20, 22, 23, 26",
+  "description": "La matrice appelle « trois replays de référence Whisper » les replays Bœuf, Tears et Artemis. Ce sont ceux du corpus étendu : README.md:23 distingue les neuf replays de référence (CNRS, Kennedy, Spring) des neuf du corpus étendu. La matrice omet aussi les 3 replis shadow de Spring.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-plan-livrable-manquant",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:3, 8 contre README.md:38",
+  "description": "Le point 2 du plan demandait la part des « blocs livrés avant l'échéance suivante » et une table des cas où le gain de délai s'accompagne d'une preuve plus ancienne ou manquante. L'analyse appariée dit que la première mesure n'est pas déductible des fichiers (2026-10-21-analyse-ablation-gx10/README.md:53-56). Le BILAN affirme pourtant que les cinq chantiers ont produit des livrables vérifiés, sans signaler ce manque.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-tests-portee",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/test_bilan.py ; test_annotation_aveugle.py",
+  "description": "test_bilan.py n'utilise que des données synthétiques et ne vérifie pas que le bilan.json suivi correspond aux bruts. test_annotation_aveugle.py vérifie la reproductibilité entre deux exécutions, mais pas l'égalité avec les paquets suivis, ni l'imprévisibilité du mélange, ni les sorties en double. Les deux défauts d'aveugle ci-dessus passent donc les tests.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "consolidation",
+  "id": "consolidation-readme-sections",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md ; BILAN.md ; annotation/README.md:5-7",
+  "description": "Le dossier est une synthèse sans essai réel propre. README.md et BILAN.md n'ont pourtant pas de rubrique « configuration exacte » (commandes et versions des scripts bilan et annotation) ni « incidents », que CLAUDE.md demande pour un dossier d'essai. La commande de régénération de l'annotation écrit par défaut dans le dossier suivi (annotation_aveugle.py:160) et place le mapping à côté du paquet à annoter. Les autres consignes sont respectées : bruts et scripts présents, ligne d'index (experiments/essais/README.md:20), aucun média, secret, jeton ni adresse privée dans les fichiers suivis.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-oracle-hors-git",
+  "announced": "high",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-relecture-fiches-gx10/preparer.py:13-17,52-53 ; README.md:15,53-57",
+  "description": "Le README annonce un mélange reproductible par preparer.py, mais la reproduction échoue depuis Git. experiments/gx10/evaluation/ n'a jamais été commité, et preparer.py y lit selection.json, les fiches et les questions. selection.json n'est pas copié dans snapshots/ : seul son SHA est publié. Les instantanés suivis préservent le contenu des fiches et des questions, mais pas le moyen de rejouer le gel.",
+  "verifierReasoning": "Le constat tient sur les faits, mais la sévérité « high » est trop forte et une phrase est fausse.\n\nCe qui est confirmé :\n- `experiments/gx10/evaluation/` n'a jamais été commité. `git log --all` est vide et `git ls-files` aussi. `git status` le marque `??` et aucune règle de `.gitignore` ne le vise. Aucun document suivi ne dit que ce dossier reste hors Git par choix. Au contraire, plusieurs documents suivis pointent dessus.\n- `preparer.py` lit `selection.json`, les fiches et les questions dans ce dossier (lignes 15, 53-54, 62-63). `selection.json` n'est pas copié dans `snapshots/` ; seul son S"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-kennedy-oracle-asr-base",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/gx10/evaluation/fiches/kennedy.md:3,9-12 ; relecture README.md:16-17 ; audit-independant.md:9",
+  "description": "Les attendus Kennedy sont rédigés à partir d'une transcription produite par TVLens (copie C) avec Whisper ggml-base, la même taille de modèle que le bras « base » comparé. Le README écrit pourtant que les transcriptions des campagnes ne servent jamais à rédiger l'attendu. L'audit compte kennedy-01 et kennedy-05 comme soutenues par une « concordance ASR », ce qui est circulaire. Les candidats proposés pour kennedy-06 et kennedy-08 reposent sur cette même ASR. La notation à l'aveugle risque donc de favoriser « base » tant qu'une écoute ou une transcription indépendante manque.",
+  "verifierReasoning": "Les faits de départ sont exacts. En revanche, la conséquence annoncée (une notation qui favoriserait « base ») n'apparaît pas dans les brutes. Je maintiens donc le problème en le ramenant à « low ».\n\n1) Source de l'oracle confirmée. La fiche `experiments/gx10/evaluation/fiches/kennedy.md:3` et `kennedy.md:9-12` indique comme source des attendus la session de la campagne 002-r2-g3-kennedy-reference-6min (copie C, Mac, 19/10). Dans son `config.env`, `TVLENS_WHISPER_MODEL` pointe vers `.../ggml-base.bin` et `parametres.json` donne `whisper.model=\"base\"`. Le SHA-256 de `session.json` vaut 2c38c1b6"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-aveugle-fuites",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "README.md:29 ; priorites.json:20 ; preparer.py:32 ; consolidation-gx10/README.md:37 ; corpus-etendu-gx10/README.md:58",
+  "description": "Des textes suivis révèlent la variante de 3 alias. Le README et priorites.json donnent kennedy-06-R2 = small (« small donne insufficient »). Les deux autres README donnent tears-07-R1 = base et artemis-07-R2 = base. La correspondance et preparer.py, graine comprise, sont suivis à côté du paquet. Enfin, chaque réponse se retrouve mot pour mot dans des campaign.json suivis dont le chemin nomme la variante. L'aveugle ne repose donc que sur la discipline de l'annotateur.",
+  "verifierReasoning": "Je n'ai pas pu réfuter le problème : tous les faits se vérifient dans les fichiers bruts. Je le ramène toutefois de medium à low.\n\n1) Fuite certaine de trois alias par des textes suivis que l'annotateur est invité à lire. Dans le paquet annotation-aveugle.jsonl, chacune de ces trois questions n'a qu'une seule sortie `insufficient`. Il suffit donc de savoir quelle variante a produit l'insufficient pour démasquer l'alias.\n- kennedy-06 : seul R2 est insufficient. README.md:29 (« `small` donne `insufficient` ») et priorites.json:20 (« Small insufficient ») le désignent comme small. La correspondan"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-preuves-hors-git",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "audit-independant.md:7-12,18 ; README.md:41 ; snapshots/fiches/*.md",
+  "description": "Les preuves de l'audit (segments CNRS et Bœuf, kennedy-asr.json, SRT, JSON Artemis, 8 images Spring), la grille relecture.md et les métadonnées de récupération ne sont pas suivies par Git. Les 8 liens de l'audit et du README sont cassés dans un clone, et les affirmations de l'audit ne sont pas vérifiables depuis Git. Les 11 liens relatifs des fiches instantanées sont aussi cassés.",
+  "verifierReasoning": "Le problème principal existe. J'ai relu moi-même les fichiers de l'audit, du README et de l'arbre Git, à HEAD 9f50107. J'ai vérifié toutes les branches locales et distantes, ainsi que les 24 worktrees. Aucune réf ne suit experiments/gx10/evaluation : `git ls-tree -r` renvoie 0 fichier sur chaque réf.\n\nLes 8 liens annoncés sont bien 8 : 7 dans audit-independant.md (lignes 7, 8, 9, 10, 11, 12 et 18, cette dernière renvoyant de nouveau à kennedy-asr.json) et 1 dans README.md:41 (relecture.md). Les 8 cibles existent sur le Mac. Aucune n'est suivie et aucune n'est ignorée par .gitignore : `git stat"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-spring04-pose-candidate",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "audit-independant.md:22",
+  "description": "Le constat de l'audit est soutenu, mais pas la pose « 04:10–04:15 » proposée. Le halo orange apparaît vers 249 s, dans le bloc [248,256) qui ne se clôt qu'à 256 s (04:16). Une pose avant 04:16 précède donc la disponibilité de la preuve (README d'évaluation, étape 2 ; marges de 8 à 12 s dans les autres fiches). L'image échantillonnée à 259,2 s montre le bâton flou au sol, sans halo net : le « maintenant » de la question reste ambigu. Une reformulation en rappel est mieux soutenue.",
+  "verifierReasoning": "Le problème est réel. Je l'ai vérifié directement sur les bruts du replay et sur le média local, dont le SHA-256 c2c678f2… est identique à celui de la fiche et de preparation.json.\n\nCe qui est confirmé :\n- Le découpage est fait de blocs de 8 s à 5 images (une image toutes les 1,6 s). Chaque bloc est envoyé à sa fin : plannedAtMs = endMs pour les 58 envois.\n- Le halo orange tient tout entier dans le bloc [248,256). Ce bloc n'est envoyé qu'à 256 s (04:16).\n- La pose proposée à 04:10–04:15 (250–255 s) tombe donc avant la fin du bloc. Elle contrevient à l'étape 2 du README d'évaluation (experiment"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-readme-structure",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-relecture-fiches-gx10/README.md",
+  "description": "Le README n'a pas les sections exigées par CLAUDE.md (« Essais réels » : question, configuration exacte, résultats, lecture, limites et incidents). Les résultats ne sont pas résumés : 90/90 acquired, 13 insufficient par question. La section des limites manque : oracle hors Git, correspondance à côté du paquet, révélations de variantes, source ASR base de Kennedy. Le sceau antérieur references-gelees.json, qui renforce le gel, n'est pas cité.",
+  "verifierReasoning": "Le constat tient en partie seulement, d'où une sévérité ramenée à « low ».\n\nCe qui est surestimé :\n- CLAUDE.md (section « Essais réels ») exige un contenu (question, configuration exacte, résultats, lecture, limites et incidents), pas des titres. Aucune règle automatique ne le vérifie : `git grep` ne trouve la formule que dans CLAUDE.md:53 et docs/gx10-experiment.md:562.\n- Les README voisins du 21/10 sont aussi rédigés en prose, sous des titres libres.\n- Le dossier n'est pas un essai matériel. C'est un gel de fiches plus un paquet d'annotation, préparés hors GPU.\n- Le README contient déjà plus"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-priorites-cinq-vs-six",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "priorites.json ; manifest.json priorityIds ; README.md:23-29 ; preparer.py:28-34",
+  "description": "Le relais (ligne 14) et le BILAN de consolidation (ligne 30) listent six questions prioritaires, dont spring-04. priorites.json, le manifest et le README n'en listent que 5, sans spring-04.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-kennedy08-pose-hors-annotation",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "audit-independant.md:20 ; fiches/kennedy.md:13,24",
+  "description": "La pose candidate 06:08 tombe dans la minute non annotée (06:00–07:00), et kennedy-asr.json s'arrête à 360000 ms. Le contenu de 06:00 à 06:08 est inconnu localement : il faut l'écouter (le média est présent sur le Mac) avant de déplacer la pose.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-artemis07-fenetre",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "fiches/artemis.md:39 ; audit-independant.md:21",
+  "description": "La fenêtre 03:24:22–03:24:28 coupe « throttle / down », réparti entre la légende de 03:24:27,60 et celle de 03:24:40,68. La légende « main engine cut off… » commence à 03:24:43,32 et dure 5 s, jusqu'à environ 03:24:48 ; « environ 03:24:45 » est donc un peu court. La lecture « pas encore coupée » est soutenue : MECO est attendue vers 03:25:10–11, au-delà de l'extrait.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-spring-fiche-incoherences",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "fiches/spring.md:10,21",
+  "description": "spring.md:10 liste les secondes examinées sans la seconde 30, alors que 030s.jpg existe et que spring-06 cite 00:30. spring.md:21 parle de « nuages » à 06:00, alors que les images de 355,2 à 360 s montrent des masses blanches portées par de fines tiges verticales : la nature de ces masses reste à confirmer au visionnage.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-controle-ffmpeg-sans-brut",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "audit-independant.md:26",
+  "description": "Le contrôle réel fait sur le Mac (composite de spring.mp4) n'a laissé ni image brute ni chemin de sortie : la commande se termine par « … ». Je l'ai reproduit dans mon dossier de travail.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-audit-independance-non-etablie",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "audit-independant.md:1 ; README.md:40-41,48",
+  "description": "L'audit dit « indépendant » a été commité sous la même identité, 14 minutes après le gel (ea852c9). Il ne porte ni nom ni date de relecteur, alors que README.md:40-41 et relecture.md l'exigent.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-manifest-valeurs-codees",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "preparer.py:20-27,88",
+  "description": "Le statut draft_requires_media_review et les SHA des médias sont codés en dur au lieu d'être lus dans selection.json ou dans les identités des campagnes. Si la sélection changeait, le manifest continuerait d'afficher « draft ». Les valeurs actuelles sont exactes.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-chemin-local-suivi",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "snapshots/fiches/kennedy.md:10",
+  "description": "Un chemin absolu local (/Users/Dabi/Documents/TVLens-GX10/…) est suivi par Git. Ce n'est ni un secret ni une adresse privée.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "fiches",
+  "id": "fiches-swp-non-exclu",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/gx10/evaluation/.README.md.swp",
+  "description": "Le fichier d'échange vim est périmé (20/10 11:21), sans processus vim actif ; son texte est identique au README. Il contient l'utilisateur et l'hôte MacBook-Pro.local, et aucune règle d'exclusion ne le couvre : un `git add experiments/gx10/evaluation/` le commiterait, ainsi que les 8 JPEG. Je n'y ai pas touché.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-seuil-20s-sondage",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/BILAN.md:16 ; relais handoff l.16 ; consolidation-gx10/BILAN.md:9",
+  "description": "« B 10/10 sous 20 s contre A 5/10 » dépend du délai HTTP observé par sondage à ~1 s. Deux échecs de A2 sont à moins d'une seconde du seuil, et la mesure interne les place sous 20 s : A 7/10 et non 5/10. Ce contraste est présenté sans cette sensibilité.",
+  "verifierReasoning": "Je n'ai pas pu réfuter le problème : il est réel, mais je le classe en sévérité basse, et non moyenne.\n\n**Ce qui se confirme.** J'ai recalculé les 40 questions moi-même à partir des huit fichiers `results/*/run/campaign.json`. J'ai comparé deux champs : le délai HTTP `latency.submissionToHttpResponseMs` et le délai interne `latency.internal.endToEndMs`.\n- Les comptes HTTP sous 20 s sont bien A 5/10 (A1 2/5, A2 3/5) et B 10/10.\n- Avec le délai interne, A passe à 7/10 : A1 reste à 2/5, A2 monte à 5/5.\n- Dans `kennedy-04-A`, deux échecs de A se jouent à moins d'une seconde du seuil :\n  - `kennedy"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-spring-mediane-groupee",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "relais handoff l.16 « Spring : A ~12,19 s, B ~9,19 s » ; consolidation-gx10/BILAN.md:9 « elle descend d'environ 12,19 à 9,19 s »",
+  "description": "Le gain Spring n'est présenté que par la médiane groupée. Sur les critères visés (parts sous 15 et 20 s), A et B sont identiques. Au passage 1 apparié, B n'est plus rapide que de 0,97 s en médiane, sur 3 questions sur 5. Le p95 groupé de B n'est pas meilleur.",
+  "verifierReasoning": "J'ai recalculé tous les chiffres depuis les quatre campaign.json Spring bruts (champ questions[].latency.submissionToHttpResponseMs, appariement A1=spring-01-A et B1=spring-02-B pour le passage 1, A2=spring-04-A et B2=spring-03-B pour le passage 2, visionDuringAsk contrôlé : True pour A, False pour B). Chaque valeur de l'auditeur se retrouve à l'arrondi près.\n\nLes nombres publiés ne sont pas faux : médianes groupées A 12,186 s et B 9,186 s, donc « ~12,19 / ~9,19 » est un arrondi correct. Mais pour Spring, le relais (l.16) et consolidation-gx10/BILAN.md:9 ne donnent que cette médiane groupée. P"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-couverture-b2-attribution",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/BILAN.md:18 ; relais l.16",
+  "description": "BILAN associe la couverture plus basse de B, dont B2 à 89,66 %, à la pause, avec « davantage de pertes ». Or la seule perte de B2 en plus de A est une erreur vision sur le dernier passage (moment-58, 456–464 s), bien après la dernière question (372 s) : pas de lien plausible avec la pause. Une perte réellement liée aux questions n'apparaît qu'en B1 (moment-27 et 31–34, autour des questions à 222 et 268 s).",
+  "verifierReasoning": "J'ai repris les quatre campaign.json Spring, dont les sceaux correspondent à integrite.json (4/4). Les faits avancés par l'auditeur se confirment.\n\n1. Composition des pertes de B2. B2 compte 6 pertes, A1 et A2 en comptent 5. Le nombre de pertes backlog est le même (4 contre 4), mais ce ne sont pas les mêmes passages :\n   - B2 perd moment-13 (96–104 s), juste après Q1 ; A ne le perd pas.\n   - A perd moment-23 (176–184 s) pendant Q2 ; B2 ne le perd pas.\n   L'écart net se réduit donc à l'erreur moment-58. Sans cette erreur, B2 aurait 53 publications et 424 000/464 000 = 91,38 %, comme A.\n\n2. Déro"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-incidents-non-consignes",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/README.md (pas de section limites et incidents) ; BILAN.md",
+  "description": "Les incidents de vision ne sont pas consignés. L'appel vision de moment-9 échoue dans les 4 passages Spring, puis entraîne des pertes en backlog sur moment-10 à 12. Dans spring-03-B, l'appel vision de moment-58 reste bloqué ~90 s : le passage dure 555,6 s au lieu de ~472 s et finit avec analysisLagMs = 8000. Le README n'a pas de section « limites et incidents » comme l'exigent les consignes.",
+  "verifierReasoning": "Je n'ai pas pu réfuter le problème : les bruts le confirment, à une nuance près sur la forme du blocage.\n\n1) moment-9 : la vision échoue sur « The operation was aborted due to timeout » dans les quatre passages Spring, bras A comme bras B. L'échec ne vient donc pas de la pause. Chaque fois, l'appel de perception dure exactement 45,0 s et il est suivi de pertes en backlog sur moment-10 à 12. Les deux passages B perdent aussi moment-13.\n\n2) spring-03-B : moment-58 n'est pas un appel resté bloqué environ 90 s. Ce sont deux tentatives qui expirent chacune à 45,0 s (464 905 → 509 908, puis 509 930 "
+ },
+ {
+  "unit": "pause",
+  "id": "pause-a1-demarrage-froid",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/BILAN.md:16",
+  "description": "Le passage A1 Kennedy a démarré sans échauffement : le modèle de questions qwen3.8:27b n'était pas résident quand kennedy-01 a été soumise. Pourtant result.coldStart=false. La différence appariée du passage 1 (−12,06 s, dont −18,01 s sur kennedy-01) inclut donc ce chargement. BILAN ne mentionne qu'un effet chaud/froid général.",
+  "verifierReasoning": "Le problème existe. Je l'ai recalculé moi-même depuis les fichiers bruts, sans réutiliser les scripts de l'auteur. confirmation.py n'a aucun échauffement : les validations `--validate` durent 0,5 s et n'appellent aucun modèle. kennedy-01-A est donc le premier passage de la session.\n\nSa première question, kennedy-01, est la seule des 40 soumise alors que qwen3.8:27b n'était pas chargé. Dans les 39 autres, le modèle est résident dans /api/ps. Le chargement est en cours pendant la question : un nouveau processus llama-server apparaît et sa mémoire GPU croît de 15 511 à 18 612 MiB. La latence HTTP"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-charge-firefox",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/README.md:28 ; BILAN.md:3 ; confirmation.py:165",
+  "description": "Une charge étrangère tourne pendant toute la mesure sans être déclarée dans cet essai. README affirme que le lanceur refuse « un processus GPU étranger à Ollama », mais il ne contrôle que les applications GPU de calcul : les clients graphiques Firefox, Xorg et gnome-shell passent. La charge est stable entre bras, donc ne fausse pas la comparaison A/B, mais elle affecte les délais absolus.",
+  "verifierReasoning": "Je confirme le problème sur le fond, mais je le ramène à une sévérité basse.\n\n1) Le contrôle ne couvre que les processus de calcul. confirmation.py:165-169 interroge `nvidia-smi --query-compute-apps` et ne rejette que les lignes de calcul. Au pré-vol, results/environment.json enregistre gpuProcessesBefore.stdout = \"\" : le contrôle a donc passé. Pourtant, le premier échantillon de télémétrie (08:16:23, étape « created ») montre trois processus GPU de type G étrangers à Ollama : Xorg (95 MiB), gnome-shell (145 MiB) et firefox PID 209597 (239 MiB). La phrase de README.md:28 « Il refuse … un proce"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-verificateur-sans-trace",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/README.md:48-49 ; BILAN.md:3 ; RAPATRIEMENT.md:3 ; deployment.json:13",
+  "description": "La sortie du vérificateur de fermeture (closed:true, reprise des verrous, pgrep) n'est archivée nulle part. Seuls des textes rédigés et deployment.json (cleanupConfirmed, integritySha256) l'affirment. La condition de passage à l'essai suivant n'est donc pas rejouable localement.",
+  "verifierReasoning": "Le constat de base tient : la sortie de `verifier_fermeture.py` n'est archivée ni dans le dossier de l'essai ni dans Git. Le script n'écrit que sur stdout (verifier_fermeture.py:55), et aucun fichier du dépôt ni de /Users/Dabi/Documents/TVLens-GX10/essais/confirmation-pause-20261021T081500Z ne contient `{\"closed\": true ...}`. Les seules occurrences sont des textes rédigés : README.md:48-49, BILAN.md:3, RAPATRIEMENT.md:3 et deployment.json:13. Les journaux rapatriés `launcher.stdout.log` et `launcher.stderr.log` sont ignorés par .gitignore:13 (`*.log`) ; ils ne contiennent que les étapes du sup"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-p95-arrondi",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/BILAN.md:10 et :13",
+  "description": "Deux p95 sont mal arrondis, probablement par double arrondi : Kennedy A2 écrit 20,26 s au lieu de 20,25 s ; Spring B2 écrit 13,34 s au lieu de 13,33 s.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-hash-spring-readme",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/README.md:9",
+  "description": "L'abréviation du SHA du média Spring est fausse : « c2c678f2…4da9eaaa443a » au lieu de « c2c678f2…0d85eaaa443a ». Le code et les campagnes utilisent la bonne valeur.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-journaux-ignores",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/RAPATRIEMENT.md:5",
+  "description": "launcher.stdout.log et launcher.stderr.log, annoncés comme « copiés à côté de results/ », sont ignorés par Git (.gitignore:13 *.log). Ils n'existent que localement, absents d'un clone.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-closure-constantes",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/confirmation.py:279-280 ; README.md:32",
+  "description": "Dans closure.json, locksReleased=True et containersCreated=False sont des constantes écrites par le code, pas des observations. Le vérificateur les contrôle donc trivialement. La libération des verrous dépend de la reprise par le vérificateur, non archivée. L'absence de conteneur n'est corroborée que par la télémétrie, échantillonnée toutes les 5 s.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-poids-ollama-digest",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/README.md:9",
+  "description": "« Le pré-vol re-hache ... les poids » : seuls les poids Whisper sont re-hachés. Pour Ollama, le code ne compare que les digests renvoyés par /api/tags, sans relire les blobs.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "pause",
+  "id": "pause-test-sceau-partiel",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/tests/test_confirmation.py:62-75",
+  "description": "Le test du sceau de fermeture ne couvre qu'un cas négatif : un status modifié après scellement. Rien ne teste une closure non conforme, un fichier ajouté ou absent, ni le chemin verrous/pgrep. Mes cas négatifs supplémentaires montrent que la logique les rejette correctement.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-aveugle-doublons",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/annotation/observations-images.json ; results/a-annoter.json ; BILAN.md:18-20",
+  "description": "Avec temperature=0, les sorties A1 et A2 sont identiques octet pour octet sur les 24 blocs, alors que B1 et B2 ne le sont que sur 4. Dans le paquet d'annotation « aveugle », 20 blocs sur 24 contiennent une seule paire de sorties identiques : c'est toujours A. Le bras se lit donc sans ouvrir les correspondances. De plus, a-annoter.json, présenté comme les « 96 sorties à annoter », porte en clair les champs arm et run et le nombre d'images.",
+  "verifierReasoning": "Le problème existe. Je l'ai vérifié à partir des bruts, sans me fier aux chiffres de l'auditeur.\n\n1) Paquet aveugle `experiments/essais/2026-10-21-consolidation-gx10/annotation/observations-images.json` (suivi par Git, `readyForScoring=false`, 24 blocs de 4 sorties)\n- J'ai regroupé les sorties de chaque bloc par contenu identique (`sujet` + les 7 champs d'`observation`). Structure obtenue : `{(2,1,1): 20, (2,2): 4}`.\n- Croisement avec `apres-notation/mapping-observations-images.json` : A1==A2 sur 24/24 blocs, B1==B2 sur 4/24, aucun doublon entre A et B.\n- Dans les 20 blocs (2,1,1), la paire id"
+ },
+ {
+  "unit": "images",
+  "id": "images-cleanup-tautologique",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-images-gx10/scripts/confirm_images.py:358 ; deployment.json:9 ; RAPATRIEMENT.md:3 ; relais:17,21",
+  "description": "cleanupConfirmed=True est écrit sans condition dans le bloc finally, même si status=blocked ou si l'arrêt d'un processus enfant a échoué (TimeoutExpired après SIGKILL). Ce drapeau ne prouve donc pas le nettoyage, alors que le relais et le RAPATRIEMENT le présentent comme une preuve de fermeture.",
+  "verifierReasoning": "Le défaut de code existe bien, mais il n'a aucune conséquence sur ce passage précis.\n\n1. **Le défaut de code est confirmé.** Dans `confirm_images.py:345-359`, le bloc except écrit `status='blocked'`. Le bloc finally, lui, ferme les verrous (l. 356-357) puis écrit toujours `state['cleanupConfirmed'] = True` (l. 358), sans aucune vérification. Le scénario de l'auditeur est exact : dans `run_case`, un `child.wait(timeout=5)` après SIGKILL (l. 232) peut lever `TimeoutExpired`. L'exception remonte jusqu'à `execute`, qui écrit alors `blocked` avec `cleanupConfirmed=True`, alors qu'on ignore si l'enf"
+ },
+ {
+  "unit": "images",
+  "id": "images-cloture-sans-trace",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "README.md:54 ; BILAN.md:3 ; rapatriements/confirmation-images-20261021T082000Z/RAPATRIEMENT.md:3",
+  "description": "Le contrôle SSH de clôture n'a laissé aucune sortie brute dans le dossier : verrous relus libres, aucun replay actif, sceau recalculé à distance sur 70/70, SHA distants des journaux du lanceur. Ces affirmations reposent sur du texte seul et ne sont pas reproductibles localement, contrairement à la règle « tout essai réel laisse une trace ».",
+  "verifierReasoning": "Le problème existe : quatre affirmations de clôture n'ont aucune sortie brute dans le dépôt, ni suivie ni ignorée. Ce sont « trois verrous relus libres » (README.md:54, BILAN.md:3), « aucun replay n'est resté actif » (BILAN.md:3), « fermeture des processus » puis « sceau distant recalculé sur 70/70 » (RAPATRIEMENT.md:3), et enfin les empreintes « distantes » des journaux du lanceur (RAPATRIEMENT.md:5). La seule preuve sous preuves/ est preflight-ssh-20261021, antérieure au run. Aucun dossier de ce run n'existe sous /Users/Dabi/Documents/TVLens-GX10/essais/ ni dans /private/tmp. Le commit cd8d1"
+ },
+ {
+  "unit": "images",
+  "id": "images-gain-generation",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "BILAN.md:16",
+  "description": "Le gain du premier passage ne vient pas seulement du préremplissage : en moyenne, 0,28 à 0,45 s viennent d'une génération plus courte, car B produit 16 à 26 jetons de sortie de moins (médiane par parcours : A 178,5 contre B 152). Le BILAN ne le signale pas. Des descriptions plus courtes sont une piste directe de perte de contenu à annoter.",
+  "verifierReasoning": "J'ai essayé de réfuter le constat sans réussir : il se vérifie entièrement sur les bruts. J'ai refait le calcul moi-même à partir de mesures.json, sans relancer le script de l'auteur. Les 96 lignes sont toutes `succeeded`, avec un seul appel fournisseur chacune. J'ai apparié chaque bloc par son id, run-01-A contre run-02-B au premier passage et run-04-A contre run-03-B au second.\n\nAu premier passage, le gain se répartit ainsi :\n- **Kennedy** : le préremplissage compte pour 77,9 % du gain moyen, la génération pour 19,7 %.\n- **Spring** : le préremplissage compte pour 69,7 %, la génération pour 2"
+ },
+ {
+  "unit": "images",
+  "id": "images-48-paires-cache",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "BILAN.md:16 ; relais:17",
+  "description": "Le titre « 48/48 paires » additionne 24 paires du premier passage et 24 paires du second. Au second passage, B2 profite d'un cache de préfixe dont A2 ne bénéficie jamais. L'ordre A/B/B/A n'équilibre pas ce cache, car B1 et B2 sont adjacents. La preuve propre se limite à 24 blocs au premier passage. Le BILAN le nuance, mais pas le relais.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-gpu-residents",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "results/identity.json (gpuBefore.computeApps) ; README.md:35",
+  "description": "Au départ, trois processus llama-server d'Ollama occupent environ 25,0 Gio (3989 + 18614 + 3025 MiB). Ni le README ni le BILAN ne le mentionnent. L'exclusivité du service Ollama, exigée au README.md:35, n'est pas tracée. La stabilité A1≈A2 suggère toutefois qu'il n'y a pas eu d'interférence mesurable.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-froid-ambigu",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "relais:17 (« gain médian apparié froid ») ; README.md:50",
+  "description": "« Froid » désigne ici l'absence de cache de préfixe, pas un modèle froid. Le modèle était déjà chargé : loadMs ≤ 8 ms sur les 96 cas, coldStart=false, modelState unknown.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-deployment-libelles",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-images-gx10/deployment.json:17,19",
+  "description": "runnerScriptSha256 (7eace796…) est le SHA du superviseur confirm_images.py, alors que le README appelle « runner » replay-local-perception.cjs (c6ce9fda…). sourceRepoSha256 contient un identifiant de commit Git SHA-1 de 40 caractères, pas un SHA-256.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-p95-methode",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "BILAN.md:5-14",
+  "description": "Le p95 sur n=12 est calculé par interpolation linéaire (bilan.py:43, indiqué seulement dans bilan.json methode) sans que le BILAN le précise. En rang le plus proche, il monterait jusqu'à +0,34 s.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-arrondis",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "BILAN.md:7-16",
+  "description": "Les valeurs exactes tombent sur une demi-milliseconde et les conventions d'arrondi varient : 4262,5 donne 4,263, mais 2458,5 donne 2,458 ; −1534,5 donne −1,534, mais −3424,5 donne −3,425. L'écart reste ≤ 0,0005 s, sans conséquence sur les conclusions.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-journaux-non-rapatries",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "RAPATRIEMENT.md:3 ; .gitignore:13",
+  "description": "Les 4 stdout.log de parcours (8d2d95…, eb4295…, c5c54b…, 16372c…) sont scellés mais n'existent que sur GX10 ; les 4 stderr sont vides (e3b0…). Les journaux du lanceur cités au RAPATRIEMENT sont présents en local mais ignorés par Git (*.log) : un clone ne les a pas.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-version-ollama",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "README.md:14 ; results/identity.json",
+  "description": "La version du serveur Ollama n'est consignée nulle part. On ne trouve que le digest du modèle, le pilote NVIDIA, Node et ffmpeg. Le digest n'est vérifié qu'avant les parcours, jamais après.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-readme-structure",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-confirmation-images-gx10/README.md",
+  "description": "Le README est surtout un protocole au futur, avec un paragraphe de résultats ajouté (l.54). Il n'a pas de sections explicites « limites » ni « incidents » : ces éléments sont dispersés (l.7, 14, 30-33, 44, 50). Les résultats et la lecture se trouvent dans BILAN.md. Le fond est présent, mais la forme demandée (question, configuration, résultats, lecture, limites et incidents) n'est pas suivie.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "images",
+  "id": "images-cas-reussis",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "BILAN.md:5",
+  "description": "La colonne « Cas réussis » de la table désigne le statut technique succeeded, sans rapport avec l'exactitude. La nuance figure plus loin (BILAN.md:20), mais pas près du chiffre.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-gel-non-prouve",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:10 ; commit 13b9113",
+  "description": "Le titre « Entrées et règle figées avant mesure » n'est soutenu par aucun sceau antérieur à la mesure. Le script et ses seuils (0,12 et 0,035) entrent dans Git au même commit que les six résultats, et le README ne dit pas comment ces seuils ont été choisis.",
+  "verifierReasoning": "Pour la règle, le problème est confirmé. Il est exagéré pour les entrées, et sa portée est faible.\n\n1) Règle (script et seuils 0,12 / 0,035) : aucun sceau n'existe avant la mesure. `git log --all -S STATIC_THRESHOLD` ne renvoie que 13b9113 (2026-10-21 08:19:03Z). Ce commit ajoute ensemble shadow_selection.py, le README et les six resultats/*.json. Le dernier commit antérieur au run, 7bfad2c (07:55:51Z), décrit seulement le principe d'une mesure shadow (experiments/essais/2026-10-21-consolidation-gx10/README.md, ligne 51 du diff), sans seuil ni SHA de script. Aucun tag ne précède le run. Le SHA"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-chrono-concurrent",
+  "announced": "medium",
+  "refuted": true,
+  "severity": "none",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:55-56,58-76",
+  "description": "La fenêtre de mesure a pu chevaucher, sur la même GX10, un pré-vol de lecture qui hachait médias source, poids Whisper et fichiers de blocs Kennedy/Spring. Le README ne le signale pas, alors qu'il pose lui-même la règle de non-concurrence. Les temps par bloc et le cache disque de Kennedy/Spring ont pu en être affectés.",
+  "verifierReasoning": "Il n'y a pas eu de chevauchement : le problème vient d'une mauvaise lecture du champ observedAtUtc. Dans prevol-lecture-seule-20261021.json:2, la valeur 08:12:15Z n'est pas l'heure du hachage sur la GX10. C'est une lecture de l'horloge du Mac (`clock__curr_time`), faite par le sous-agent Codex une fois ses deux commandes SSH en lecture seule terminées. Le JSON a ensuite été écrit à la main à 08:12:36Z.\n\nLes journaux Codex locaux, hors dépôt, donnent la chronologie réelle :\n- Pré-vol 1 : hachage de 470 sources, de 424 + 464 fichiers de blocs, des médias et des manifestes, de 08:11:50,374Z à 08:"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-trace-lancement",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:35-44 ; deployment.json:8",
+  "description": "La configuration exacte de l'exécution réelle manque : pas de lanceur, pas de commandes effectives pour les six vidéos, pas de stdout/stderr ni de codes de sortie, pas de pip freeze, et Python sans correctif (« 3.12 »). Le script qui a produit le tableau p50/p95 est absent. Les sorties ne portent ni SHA du script, ni versions, ni horodatage ; seul deployment.json, déclaratif, les relie.",
+  "verifierReasoning": "Le manque de trace de lancement est bien réel. En revanche, il ne rend aucun chiffre du tableau invérifiable ni faux : je ramène donc la sévérité de medium à low.\n\nCe qui manque, constaté dans les fichiers :\n- **Aucun lanceur.** `git ls-files` du dossier ne liste que README.md, deployment.json, requirements.txt, resultats.sha256, resultats/*.json, shadow_selection.py et test_shadow_selection.py. On n'y trouve ni launch.sh, ni stdout/stderr, ni code de sortie, ni pip freeze.\n- **Commandes non consignées.** README.md:35-38 ne donne que deux commandes « Exécution prévue », avec les chemins généri"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-regle-replay-imprecise",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:14-28 ; shadow_selection.py:28-31,71-88",
+  "description": "La règle est figée par le code (SHA aa9fa3d8…, Pillow==12.1.1, policy recopiée dans chaque sortie) et déterministe, mais sa description ne suffit pas pour un replay préenregistré. Le texte omet le filtre BOX, la conversion de luminance L et l'ordre des images par suffixe. Rien ne fixe la façon dont les 3 images sont transmises au VLM (ordre, horodatages, prompt), ni l'hypothèse, les métriques ou les conditions d'arrêt. Les distances qui déclenchent un repli ne sont pas consignées, seulement les indices : recalibrer 0,12 exige les JPEG restés sur la GX10.",
+  "verifierReasoning": "Je ne peux pas réfuter le problème : son noyau factuel est exact. En revanche, une partie est exagérée ou sort du périmètre de l'essai, d'où une sévérité ramenée de medium à low.\n\nCe qui est confirmé :\n1. La prose omet le filtre BOX et la règle d'ordre des images. Le README:14-15 dit seulement « réduites à 32 × 18 en niveaux de gris ». Il ne nomme pas `Image.Resampling.BOX` (shadow_selection.py:31). Il ne dit pas non plus que les indices 0 à 4 viennent d'un tri par l'entier qui suit le dernier « - » du nom de fichier (shadow_selection.py:55-56). Le bloc `policy` recopié dans chaque sortie (sha"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-libelle-cpu",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:14,66,82 ; experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:11",
+  "description": "Le « temps CPU » ou « coût CPU » par bloc est en réalité un temps écoulé (time.perf_counter_ns) : il inclut l'attente d'entrées-sorties et la concurrence, pas seulement le CPU du processus.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-libelle-proposition-statique",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:66 ; /private/tmp/handoff-tvlens-gx10-2026-10-21.md:18",
+  "description": "La colonne « Proposition 3 images » et la formule « 616 propositions » comptent en réalité les blocs restés à 3 images après repli : les 667 blocs ont une proposition à 3. De même, « 142 blocs statiques candidats » désigne les candidats après plafond d'alternance. 244 blocs passent le seuil statique, et sur CNRS (50/96) et Artemis (83/135) le total est surtout dicté par ce plafond.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-alarmes-non-rapportees",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md:48-49,66-73",
+  "description": "Le plan de restitution demande les alarmes d'image écartée par vidéo, mais le tableau ne les donne pas. Les « 51 alarmes » du relais:27 désignent 51 blocs, qui portent 69 images signalées.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-incidents-absents",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/README.md (sections)",
+  "description": "Le README n'a pas de rubrique « incidents » ; il ne dit même pas « aucun incident », alors que CLAUDE.md exige « limites et incidents ». Les autres rubriques sont présentes : question, configuration partielle, résultats, lecture, limites.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "shadow",
+  "id": "shadow-tests-lacunaires",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-shadow-selection-gx10/test_shadow_selection.py:28-55",
+  "description": "Les 3 tests ne couvrent ni le départage à l'indice le plus petit, ni le cas « statique interne mais frontière ≥ 0,035 », ni l'alternance au-delà de 3 blocs (T,F,T), ni --max-blocks, ni le refus d'une sortie existante. Ces points font pourtant partie de la règle décrite.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-pertes-b2",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-analyse-ablation-gx10/README.md:40-42",
+  "description": "Le README attribue à B une seule publication sautée pendant la question par passage, et réserve à A les pertes par backlog et erreur. Or B2 (03-B) perd aussi 3 blocs par backlog et 1 par erreur (timeout sur moment-50, 392–424 s, loin des questions à 232 s et 472 s), en plus du saut « asking ». Deux des trois timeouts suivis de backlog (A2 moment-18 à 136 s, B2 moment-50) ne coïncident avec aucune question. La différence de nature des pertes ne vaut que pour B1.",
+  "verifierReasoning": "J'ai relu les bruts moi-même et le problème existe. README.md:39-42 dit que B perd « une publication puis cinq », puis que « les pertes ne sont toutefois pas de même nature » : B n'aurait qu'un saut pendant la question à chaque passage, A perdrait cinq blocs par backlog et un par erreur. Pour B2 (03-B), c'est faux. Ce passage perd 5 blocs : 1 saut « asking », 3 par backlog et 1 par erreur. Il connaît donc la même cascade erreur puis backlog que A, en plus du saut « asking ». Chaque morceau de la phrase est exact pris seul. Mais la conclusion d'une nature de pertes différente ne tient que pour "
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-readme-perime",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/README.md:87-93 ; experiments/essais/README.md:9",
+  "description": "Le README de nuit est figé avant la fin. Il écrit que la variation vision est « encore en cours » et que la perception n'est « pas encore interprétée ». Il ne donne aucun résultat vision ni Ollama et ne pointe ni vers rapatriements/nuit-20261020T210107Z/ (bruts finaux, RAPATRIEMENT.md) ni vers 2026-10-21-analyse-ablation-gx10. La ligne d'index décrit encore une « séquence lancée en attente de la référence », alors que le run s'est arrêté blocked à 22:35:59 UTC.",
+  "verifierReasoning": "Le constat tient pour l'essentiel, mais il est exagéré sur un point et l'effet réel est limité.\n\nCe qui est confirmé :\n1. Le README de nuit (suivi par Git) a été modifié pour la dernière fois au commit 510abbb (21/10 00:47 +0200, soit 22:47 UTC). Le rapatriement final (commit 96006ff, 02:16 +0200) et la réanalyse (7bfad2c et suivants, à partir de 09:55 +0200) sont venus ensuite sans toucher ce README.\n2. Les lignes 92-93 disent toujours que la variation vision/questions est « encore en cours » et que la perception n'est « pas encore interprétée ». Or `events.jsonl` montre `vision-verify` à 22:"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-diagnostic-instantane",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/diagnostic-vision.md:7-9,21",
+  "description": "Les chiffres Kennedy (35 appels, 38 blocs, 143 images, médiane 7,272 s, moyenne 8,280 s) viennent d'un instantané pris pendant le replay, non conservé, mais sont présentés comme « le replay Kennedy ». Le replay complet donne 52 appels, 226 images, médiane 7,319 s, moyenne 8,101 s et couverture 98,10 %. La réduction « −26,6 % d'images » devient −31 %. La moyenne de 8,280 s ne figure dans aucun brut local ; elle ne se retrouve qu'en reconstituant le préfixe de 35 appels. Les conclusions qualitatives tiennent : médiane à 91 % du créneau, moyenne au-dessus de 8 s.",
+  "verifierReasoning": "Le problème est réel. diagnostic-vision.md:7 commence par « Sur le replay Kennedy `large-v3-turbo` » et donne n=35. Or ce n est un préfixe du replay, qui compte 52 appels visuels : c'est l'état à environ 21:19 UTC, alors que la campagne s'est terminée vers 21:21 UTC. Le campaign.json complet a été versé dans le même commit que le diagnostic (793f4b8, 23:45 +0200) : les chiffres complets étaient disponibles et n'ont pas été repris.\n\nLes chiffres de l'auditeur sont confirmés au chiffre près. Deux nuances de sa part sont toutefois à corriger.\n(1) Il écrit que l'instantané n'est « pas conservé ». "
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-docker-check-ignore",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/incidents/20261020T2244/README.md:20-22",
+  "description": "La seule preuve que le nouveau socket tmux a accès à Docker (groups=…988(docker), docker_info_exit=0 docker_ps_exit=0) est dans docker-access-check/stdout.log, que .gitignore (*.log) exclut. Git ne contient que check.sh et un stderr.log vide, alors que le README affirme que « ses sorties » sont dans ce dossier.",
+  "verifierReasoning": "Le problème est réel. Je n'ai pas pu le réfuter. Dans experiments/essais/2026-10-20-nuit-gx10/incidents/20261020T2244/README.md:20-22, le README affirme que le serveur tmux sur socket indépendant « possède le groupe Docker et `docker ps` réussit » et que « son script et ses sorties sont dans `docker-access-check/` ». Git ne suit que check.sh et un stderr.log vide de 0 octet. La seule sortie qui prouve l'affirmation est stdout.log, et elle est exclue par .gitignore:13 (`*.log`). Elle existe localement en état non suivi-ignoré. Son contenu correspond au sceau : 191 octets, SHA-256 a0e47719…f7b79"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-non-suivis-media",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/paquet-nuit.tar.gz ; preuves/fixture-nuit*/",
+  "description": "Les 59 fichiers non suivis se répartissent ainsi : (a) paquet-nuit.tar.gz, 12,8 Mo, 45 fichiers dont 24 JSON d'images CNRS en base64. C'est la seule copie locale des entrées de l'ablation perception ; son intégrité est vérifiée et légitimement hors de Git, mais il n'est pas ignoré, donc un `git add .` y introduirait des médias. (b) 58 sorties synthétiques de verifier_nuit.py, dont des campaign.json nommés large-v3-turbo-kennedy, etc., qu'on peut confondre avec des runs réels. Aucun chiffre du rapport n'en dépend.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-logs-perception-ignores",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/README.md:87-91",
+  "description": "Le README annonce 46 fichiers dans preuves/rapatriement-20261020/perception/. Dans Git, les 12 *.log de ce dossier sont ignorés. Ils sont toutefois suivis à l'identique sous rapatriements/.../trial-perception/ : rien n'est perdu, mais l'inventaire ne correspond pas au contenu suivi.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-http-echantillonne",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-analyse-ablation-gx10/README.md:53",
+  "description": "submissionToHttpResponseMs est un « sondage HTTP échantillonné » (pollSeconds 0,25). Il dépasse endToEndMs de 38 à 993 ms selon les questions, ce que le README ne signale pas en parlant de « temps HTTP complets ». La conclusion 10/10 tient sur la mesure interne (−6,99 et −6,87 s).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-readme-analyse-forme",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-analyse-ablation-gx10/README.md",
+  "description": "Le README ne pose pas de question explicite. La configuration exacte manque : gemma3:4b et qwen3.8:27b via Ollama, numCtx, code 2035a2f…, Whisper base figé, version de Python. Il n'y a pas de section incidents. Le script et les bruts sont présents et la ligne d'index existe (README.md:21).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "ablation-nuit",
+  "id": "ablation-nuit-liens-absolus",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-nuit-gx10/diagnostic-vision.md:13-15",
+  "description": "Les liens pointent vers des chemins absolus locaux (/Users/Dabi/Documents/ISN/tvlens/core/memory/lanes.cjs, adapters/…) : ils sont cassés hors de ce Mac et sur la forge, et exposent le chemin utilisateur.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-longueur-sortie",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:52-54 ; /Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-consolidation-gx10/README.md:19",
+  "description": "La lecture « Ollama plus rapide sur les 24 paires » omet le facteur dominant : vLLM génère plus de tokens dans 22 paires sur 24 (7 758 contre 6 053, soit +28 %), et toute la différence se joue au décodage. vLLM préremplit beaucoup plus vite (0,55 s contre 3,10 s à froid pour Ollama). À longueur de sortie égale, l'écart médian estimé du passage 1 tombe de 4,37 s à environ 0,5 s.",
+  "verifierReasoning": "Le problème existe : l'omission est réelle. En revanche, sa portée est plus faible que « medium ».\n\nCe qui est confirmé à partir des bruts. vLLM génère 7 758 tokens et Ollama 6 053, soit +28,2 %. vLLM en produit davantage dans 22 paires sur 24. En P1, video-78 donne 308 contre 331, à l'avantage d'Ollama ; en P2, video-78 est à égalité, 308 contre 308. Le décodage est plus lent côté vLLM : 19,30 tok/s, contre 23,94 tok/s pour Ollama. Le préremplissage, lui, est plus rapide côté vLLM. Une fois les longueurs ramenées à égalité, l'écart médian de P1 tombe de 4,37 s à 0,50 s (Ollama reste plus rapi"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-sections-perimees-precision",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:5,11,21",
+  "description": "Les sections de préparation n'ont pas été mises à jour et contredisent les résultats. La ligne 5 dit qu'aucun modèle n'a été téléchargé ni appelé. La ligne 11 annonce un « Modèle commun : … BF16 ». La ligne 21 écrit que « la même précision réduisent le biais ». Or la ligne 54 et les traces établissent F16 côté Ollama contre bfloat16 côté vLLM.",
+  "verifierReasoning": "Je n'ai pas pu réfuter le problème, mais je le classe en sévérité basse. Selon `git show 9b15d20`, le commit d'archivage « Archive Qwen vision stack probes » n'a ajouté que la section « Résultats réels » (8 lignes, de 48 à 54). Les lignes 5, 11 et 21 sont restées telles que le commit de préparation 793f4b8 les avait écrites.\n\n- **Ligne 5 (périmée).** Le statut dit encore que le lanceur « attend la fin scellée » et qu'aucun modèle visuel supplémentaire n'a encore été téléchargé ni appelé. La ligne 50 rapporte pourtant 25/25 réponses HTTP 200 pour vLLM, puis pour Ollama. La phrase porte la réser"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-corpus-une-video",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:7,14",
+  "description": "Les 12 blocs proviennent tous de la vidéo CNRS 04-cnrs-entrainement-ia.mp4, ce que le README ne dit jamais. Il les juxtapose en outre à la référence Kennedy (ligne 7), ce qui laisse croire à des blocs Kennedy. La conclusion de vitesse vaut pour 12 blocs d'une seule vidéo.",
+  "verifierReasoning": "Les faits avancés par l'auditeur se confirment dans les bruts. Les 24 result.json du bras vLLM et les 25 du bras Ollama (pré-vol compris) ont tous une seule source : /srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4, sourceSha256 99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b, avec 12 caseId (video-2, 10, 25, 45, 46, 47, 57, 78, 79, 80, 96 et 108). Le README de l'essai, suivi par Git et non modifié, ne nomme jamais CNRS ni la vidéo source. La ligne 14 se contente de « douze blocs visuels déjà figés ». La ligne 7 cite la « référence Kennedy », un replay large-v3-turbo de ken"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-docker-readme-sans-resultats",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-reprise-docker-gx10/README.md:11-13,56-57 ; /Users/Dabi/Documents/ISN/tvlens/experiments/essais/README.md:13",
+  "description": "Le README principal de l'essai est resté à l'état de préparation (« Aucun résultat vLLM n'est encore revendiqué »). Il n'a ni résultats, ni lecture, ni limites finales. Les chiffres (20/20, 20,39 s) ne figurent que dans rapatriements/…/RAPATRIEMENT.md, et les deux insufficient seulement dans la consolidation. La ligne d'index ne mentionne aucun résultat. Le commit b2cb0c9 a ajouté le RAPATRIEMENT sans toucher au README.",
+  "verifierReasoning": "Je n'arrive pas à réfuter le constat : il est exact sur le fond. En revanche, je le ramène à « low » : aucune donnée ne manque et aucun chiffre n'est faux. Les résultats et l'essentiel des limites existent bien, mais dans RAPATRIEMENT.md, un fichier suivi par Git dans le même dossier d'essai, et non dans le README principal.\n\n1. Le README principal n'a été touché que par e96e3fd. `git log` sur le dossier ne montre que e96e3fd et b2cb0c9, et `git diff HEAD` est vide sur ce README et sur l'index. Le README reste à l'état de préparation. Lignes 11-13 : « Mise à jour à 22:49 UTC [...] Aucun résult"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-reference-kennedy-instantane",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:7",
+  "description": "Les chiffres « 35 appels visuels sur 38 blocs, médiane 7,272 s, moyenne 8,280 s » viennent d'un instantané pris en cours de run (21:18:52 UTC), présenté comme « la référence ». La campagne finale rapatriée donne 52 appels sur 53 passages, médiane 7,32 s, moyenne 8,10 s, une perte vision.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-24-blocs",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-consolidation-gx10/README.md:19",
+  "description": "« Sur 24 blocs Qwen identiques » : il s'agit de 12 blocs distincts sur deux passages, soit 24 cas ou paires. Le README de la sonde dit correctement « 24 cas communs ».",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-paires-passage1",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:14,52",
+  "description": "« Plus rapide sur les 24 paires » inclut une quasi-égalité : pass-1-video-78, 17,223 contre 17,166 s, écart 0,056 s. Par ailleurs, le passage 1 n'est pas entièrement froid. Le pré-vol a porté sur le même bloc video-2 juste avant ; Ollama y a un prompt_eval de 0,043 s contre 3,10 s ailleurs, et vLLM des hits mm_cache. Le minimum Ollama de 7,86 s est ce cas chaud.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-mediane-melangee",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-reprise-bras-qwen/README.md:95",
+  "description": "La médiane Ollama de 12,35 s (min 7,86 ; max 17,72) mélange le passage 1 (prompt à froid, environ 3,1 s de prompt_eval) et le passage 2 (prompt en cache, environ 0,044 s). Le chiffre est juste mais peu interprétable ; la sonde, elle, sépare les passages.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-ttft-disponible",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:52",
+  "description": "« Le premier token n'est pas mesuré » est vrai côté client. Pourtant, les métriques serveur vLLM rapatriées donnent un TTFT moyen de 0,639 s, et le prompt_eval d'Ollama sert d'approximation (3,10 s à froid). Le README pourrait le dire, en précisant que ces mesures sont serveur et agrégées.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-asymetrie-ordre-instrumentation",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:54",
+  "description": "Les deux bras ne sont pas contrebalancés : vLLM a tourné de 23:50 à 23:57 le 20/10, Ollama de 03:22 à 03:27 le 21/10, après le corpus étendu. Seul le bras Ollama avait un moniteur de ressources toutes les 5 s. Le README mentionne l'instrumentation en termes généraux, sans parler de l'ordre ni du moment.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-premier-run-non-documente",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-20-vision-vllm-gx10/README.md:25-39,50 ; deployment.json",
+  "description": "Le premier run vision-vllm-20261020T214231Z, scellé blocked NIGHT_FAILED à 22:36:06, est rapatrié sans RAPATRIEMENT.md et n'est pas mentionné. deployment.json ne décrit que lui. Le déploiement de reprise-qwen-20261020T224923Z n'est documenté que dans 2026-10-21-reprise-file-gx10, que ce README ne lie pas.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-incident-cause-test",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-incident-digest-qwen/README.md:18-21",
+  "description": "L'explication est exacte, mais elle omet pourquoi les 9 tests ne l'ont pas détecté. Le faux /api/tags du test renvoie un digest préfixé ('sha256:wrong'), reproduisant l'hypothèse du protocole au lieu du format réel d'Ollama. Aucun test ne couvre le chemin où le digest correspond.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-statuts-perimes-reprises",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-incident-digest-qwen/README.md:77-79 ; /Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-reprise-bras-qwen/README.md:5,95",
+  "description": "Deux formulations datent d'avant les résultats : l'incident dit encore « ses résultats restent à observer », et reprise-bras s'ouvre sur « déployée et en attente ». Reprise-bras n'indique pas non plus l'issue de la continuation StreamingVLM qu'il a déployée (reprise-streaming-arm-20261021T002414Z). Cette issue n'est documentée que dans 2026-10-21-incident-streaming-buildkit, non lié.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-gpu-check-reimplemente",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-reprise-docker-gx10/README.md:20-22",
+  "description": "Le README dit que le lanceur importe du paquet d'origine les fonctions du contrôle CUDA. En réalité, gpu-check, l'identité et les métriques sont recopiés dans resume_vllm.py:141-163. Le code est équivalent à vllm_stage.py:86-105, à la mise en forme près ; seuls download, start_server et probe sont importés.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "qwen-vllm",
+  "id": "qwen-vllm-lien-casse-copie",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/experiments/essais/2026-10-21-reprise-docker-gx10/rapatriements/reprise-night-20261020T224805Z/README.md:11",
+  "description": "Le lien relatif scripts/resume_vllm.py ne résout pas dans le dossier de rapatriement. C'est une copie attestée du README distant (aa3e69…), donc à signaler plutôt qu'à corriger.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-estimateurs-non-standard",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:27-31",
+  "description": "Les « médianes » sont des médianes basses et les p95 utilisent la méthode « lower » (sorted[floor(0,95·(n−1))]), sans que ce soit indiqué. Pour n pair, le chiffre publié n'est pas la médiane, et les p95 sous-estiment la queue de distribution. Les conclusions ne changent pas.",
+  "verifierReasoning": "Le problème existe. J'ai recalculé moi-même toutes les valeurs à partir des quatre fichiers timing.json, et les chiffres publiés dans BILAN.md:27-31 ne se retrouvent qu'avec deux estimateurs : la médiane basse (statistics.median_low, soit sorted[(n-1)//2]) et le p95 de type « lower » (sorted[floor(0,95·(n−1))]). Aucun des deux n'est mentionné dans le BILAN ni dans le README. Aucun script d'analyse ne les produit dans le dossier : grep sur median/p95/percentile/quantile dans les .py, .sh et .md ne renvoie que le texte du BILAN. Les autres analyses de la même nuit utilisent pourtant une autre co"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-script-bilan-absent",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/",
+  "description": "Aucun script ni JSON dérivé ne produit les statistiques du BILAN (médianes, p95, sommes, comptes « ... », identité des textes). Il faut deviner l'estimateur pour les reproduire, contrairement au consolidé, qui a bilan.py et bilan.json.",
+  "verifierReasoning": "Le problème existe : aucun script ni JSON dérivé suivi ne produit les statistiques de BILAN.md:27-34 et 44-45, et l'estimateur n'est indiqué nulle part. Je l'ai retrouvé en recalculant depuis les bruts. Les « médianes » sont des médianes basses (statistics.median_low). Les p95 valent sorted[int(0.95*(n-1))], soit la méthode « lower », qui n'est pas la convention habituelle. Avec les estimateurs usuels, plusieurs chiffres changent : médiane de la somme 0,716 s au lieu de 0,697 s (16 s) et 3,776 s au lieu de 3,710 s (recalcul) ; p95 linéaire 2,543, 3,329, 2,883 et 6,843 s au lieu de 2,534, 3,179"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-test-depend-fichiers-non-suivis",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-buildkit/tests/test_continuation.py:62-63 ; README.md:19,64",
+  "description": "Le test du manifeste complet lit evidence/base-packages.cid et evidence/telemetry.jsonl, que le README demande de ne pas pousser. Ces fichiers ne sont pas ignorés par .gitignore : ils restent en « ?? » et risquent un ajout accidentel. Sur un clone propre, la suite échoue.",
+  "verifierReasoning": "Les faits avancés par l'auditeur se confirment tous, mais la sévérité « medium » est trop forte. Je la ramène à « low ».\n\n1) Lecture de fichiers non suivis. Dans experiments/essais/2026-10-21-incident-streaming-buildkit/tests/test_continuation.py, les lignes 62-63 copient ROOT/'evidence'/{base-packages.cid, telemetry.jsonl}. git ls-files ne liste pas evidence/ et git status l'affiche « ?? ». git check-ignore -v renvoie rc=1 : le dossier n'est pas ignoré. Le .gitignore racine ne contient aucune règle qui le couvre, et il n'existe aucun .gitignore local.\n\n2) Échec sur un clone propre. J'ai fait "
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-readme-principal-perime",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-streamingvlm-gx10/README.md:7-15 ; experiments/essais/README.md:11",
+  "description": "Le README du dossier principal dit encore « préparé, non exécuté », avec un état à 22:09 UTC. Il n'a ni résultats, ni lecture, ni limites et incidents. Il ne mentionne pas le blocage du run initial ni la reprise arm, dont il héberge pourtant le rapatriement, et ne renvoie ni vers les incidents ni vers le BILAN. La ligne d'index 11 est aussi périmée (« déployé en attente »).",
+  "verifierReasoning": "Le problème est réel. Le README principal n'a pas bougé depuis dad836d (21/10 00:12 +0200, soit 22:12 UTC). Pourtant, deux rapatriements ont été déposés plus tard dans son dossier : c414770 à 05:35 et b6ef478 à 06:00, sans mise à jour du README. Il décrit toujours le protocole comme « préparé, non exécuté » (lignes 7-8) avec un état à 22:09 UTC « waiting-predecessors » (lignes 13-15). Il n'a aucune section résultats, lecture ou incidents ; seules les lignes 17-19 esquissent une limite. Il ne cite pas le blocage PREDECESSOR_FAILED, ni la reprise arm, ni les dossiers incident-streaming-*, ni BIL"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-memoire-cache-non-rapportes",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:25-37 ; streamingvlm-gx10/README.md:5-6,65",
+  "description": "La question posée porte aussi sur la mémoire, et l'étape 3 du protocole demande de relever RAM/GPU et taille du cache. Le BILAN n'en dit rien. Or les stdout bruts contiennent la longueur `past_key_values` : elle croît de 761 par seconde jusqu'à 11 869, puis continue lentement de 11 919 à 13 057 sur 372 s, car le texte n'est pas évincé (textSink et textSlidingWindow à null). La mémoire GPU n'est disponible que dans la télémétrie distante.",
+  "verifierReasoning": "Le problème existe bien. La question du pré-vol (streamingvlm-gx10/README.md:5-6) porte explicitement sur la mémoire : « sans que la durée de calcul et la mémoire augmentent continuellement sur le GPU GB10 ». L'étape 3 (README.md:65) demande de relever « RAM/GPU, taille du cache » et d'« arrêter si la mémoire manque ». Or BILAN.md (lignes 1-71) ne contient aucune mention de mémoire, de RAM, de mémoire GPU, de Gio ni de `past_key_values`. `grep -i` ne trouve que `PKV` aux lignes 27 et 31, et il s'agit du temps de maintenance du cache, pas de sa taille. La section « Portée et prochaines mesures "
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-cache-recalcul-portee",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:18-19 ; relais (« cache efficace en interne »)",
+  "description": "La comparaison cache contre recalcul porte sur 16 s, avec une fenêtre de 16 s : elle ne couvre que la phase de remplissage (PKV ≈ 0 s, aucune éviction), pas le régime glissant où le coût par segment monte vers 1,14 s. Il y a une seule exécution par bras, et le recalcul passe en dernier, sans alternance. Ces limites ne sont pas écrites.",
+  "verifierReasoning": "J'ai recalculé chaque point depuis les fichiers bruts et tous les faits avancés par l'auditeur se confirment. Je n'ai rien pu réfuter. Je ramène toutefois la sévérité de medium à low, pour trois raisons.\n\n(1) Le chiffre de 30,4 % est juste : 1 − 111,96/160,90 = 0,3042. Il est aussi borné dans le texte : BILAN.md:18 dit « Sur le même préfixe de 16 secondes », et BILAN.md:58-60 précise que la comparaison est « interne à ce protocole ». Ce qui manque, c'est la phrase qui dit que 16 s égale la fenêtre, donc qu'il n'y a ni éviction ni régime glissant. Manquent aussi la mention n=1 et celle de l'ord"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-conditions-protocole-non-appliquees",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-streamingvlm-gx10/scripts/queue.py:373-387 vs README.md:65-66",
+  "description": "Le protocole promet d'arrêter si la cadence dérive, si la mémoire manque ou si le contexte est incohérent, et de ne lancer le recalcul que « si les sorties sont fiables ». Le code enchaîne 72, 372 et recalcul sur la seule condition du temps restant. Le BILAN ne signale pas cet écart.",
+  "verifierReasoning": "Le problème existe, mais il est énoncé trop largement. Le code exécuté est bien `queue.py`. La reprise finale (`incident-streaming-queue/continuation.py:141-153`) appelle `streaming.run(args, ops)` sans redéfinir `run`. Le module chargé est vérifié par empreinte : `guards.py:25-26` attend 56f40fad…a751f5, soit exactement le SHA-256 que j'ai mesuré sur le `queue.py` local, qui est suivi par Git.\n\nCe qui est confirmé :\n1. Aucun contrôle ne porte sur la dérive de cadence ni sur la cohérence du contexte. Rien non plus dans `run_streamingvlm.py`, qui ne vérifie que le nombre de segments et la prése"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-sorties-dialogue-inventees",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:44-50",
+  "description": "La requête demande de décrire les événements visibles, et Spring est présenté « sans dialogue ». Les VTT contiennent pourtant surtout un monologue ou dialogue à la première personne (« All who enter are subject to our will… », « That's my plan. »). Le BILAN ne le signale pas. Ce n'est pas une note de pertinence, mais un signal utile avant toute relecture.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-avertissements-runtime-omis",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:7-8 ; streamingvlm-gx10/README.md:44-46",
+  "description": "La « compatibilité pratique » est affirmée sans examen de deux avertissements des pilotes : Flash Attention 2.0 utilisé sans dtype explicite, et « fps » ignoré à chaque segment. La précision effective (BF16 ou FP32) et l'usage réel des noyaux FA2, que le protocole demandait de tester explicitement, ne sont pas établis.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-heure-observation-incoherente",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-buildkit/README.md:80",
+  "description": "L'heure de l'observation initiale du statut diverge entre le README et deployment.json.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-lectures-ssh-sans-trace",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "incident-streaming-buildkit/README.md:21-22 ; incident-streaming-queue/README.md:42-45",
+  "description": "Plusieurs affirmations issues de lectures SSH n'ont pas de brut dans le dossier : versions Buildx v0.26.1 et BuildKit v0.23.2, échec de la première sonde sans tmpfs, permissions des périphériques NVIDIA. readonly-probe.json n'a ni horodatage, ni commande, ni image.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-lien-fiche-non-suivie",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-streamingvlm-gx10/README.md:25",
+  "description": "Le lien vers la fiche Spring pointe vers un fichier non suivi par Git : il est cassé sur un clone.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-formulation-phase-courte",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/BILAN.md:67-68",
+  "description": "Le BILAN compare la fin du dernier stage à la limite de phase courte, alors que ce plafond ne s'applique qu'au pilote de 16 s. Les pilotes 72, 372 et recalcul sont bornés par la fin totale (07:07:16). La phrase peut se lire comme un dépassement de budget.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "streamingvlm",
+  "id": "streamingvlm-correctif-queue-double",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-queue/continuation.py:126-138 ; README.md:20-24",
+  "description": "Le correctif du masquage de `queue` combine `-P` et un changement d'utilisateur (`--user 1000:1000`, `HOME=/tmp`) qui va au-delà de l'erreur observée. Il est justifié (lecture des sorties en 0700) et tracé, mais il fait tourner l'inférence sous un UID différent de toutes les étapes précédentes. La provenance continuation.json omet base-packages et derived-packages dans reusedStages.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-ref-readme-sans-resultats",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-reference-gx10/README.md:16-42 ; experiments/essais/README.md:8",
+  "description": "Le README de la référence n'a ni résultats ni lecture. Les 45/45 et le classement Whisper n'existent que dans la consolidation (README:23-29). README:42 promet une vérification de l'archive complète « en fin de nuit » sans suite. README:28-33 garde des consignes d'exploitation périmées, et la ligne d'index dit encore « Lot exploratoire lancé ».",
+  "verifierReasoning": "Je n'ai pas pu réfuter le constat ; je l'ai vérifié sur les fichiers eux-mêmes.\n\n(1) Le README de la référence (52 lignes, dernier changement en 793f4b8 le 20/10 à 23:45) ne contient aucun résultat chiffré ni aucune lecture. On n'y trouve ni tableau, ni médiane, ni compte d'acquisition, ni classement Whisper. Les lignes 16-18 donnent seulement un état (« neuf campagnes terminées », « exploitable pour les mesures techniques »). Le README ne renvoie pas non plus vers la consolidation. Or CLAUDE.md et AGENTS.md:49-54 exigent dans le README « résultats, lecture ».\n\n(2) Le 45/45 et le classement Wh"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-journaux-ignores",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-reference-gx10/README.md:23-25,52 ; .gitignore:13",
+  "description": "37 des 129 fichiers rapatriés et inventoriés sont des *.log ignorés par Git : systeme.log (télémétrie toutes les 5 s, seule trace des modèles résidents), sortie.log, erreurs.log, index.log, execution*.log, preparation*.log, validation*.log. Le README les présente comme conservés, mais un clone ne peut pas vérifier l'inventaire (37 fichiers manquants). Le corpus étendu a forcé l'ajout de ses journaux : pratique incohérente.",
+  "verifierReasoning": "Problème confirmé : ce n'est ni une mauvaise lecture, ni une exclusion voulue et documentée. Je ramène toutefois la sévérité à « faible », car rien n'est perdu ni faux. Les 129 fichiers sont présents dans la copie locale et leurs SHA-256 sont tous conformes. Les résultats chiffrés de la campagne sont suivis par Git (campaign.json, code-sortie.txt, modeles.json). Aucun chiffre affirmé par un README suivi ne dépend des journaux ignorés. L'écart porte sur le versionnement et la traçabilité : le README et l'index annoncent les journaux « conservés », mais un clone n'en reçoit aucun. La télémétrie "
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-readme-corpus-perime",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-21-corpus-etendu-gx10/README.md:1,23-36",
+  "description": "Le titre (« file expérimentale préparée ») et la section « État et lancement » disent la file en attente, « aucune conversion ni inférence », avec la commande du dossier corpus-etendu-20261020T221045Z. Cela contredit les résultats des lignes 38-58. L'incident est absent du README : ce premier lancement s'est bloqué à 22:36:13 UTC (PREDECESSOR_DOCKER_UNKNOWN) avant la reprise. Il n'y a pas de section limites et incidents.",
+  "verifierReasoning": "Le problème est confirmé sur les fichiers eux-mêmes. Le README suivi (inchangé par rapport à HEAD, dernière modification c03c347 « Archive extended GX10 corpus results ») a reçu la section des résultats (l.38-58), mais son titre et la section « État et lancement » n'ont pas été mis à jour.\n- Le titre (l.1) dit encore « file expérimentale préparée ».\n- La l.25 dit la file « déployée et en attente », avec « aucune conversion ni inférence ». Les l.25 et 36 disent « déjà active dans l'unique session tmux » et « Ne pas lancer une seconde instance ».\n- Pourtant, la l.40 annonce la reprise terminée à"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-garde-predecesseur",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-corpus-etendu-gx10/README.md:17 ; experiments/essais/2026-10-21-reprise-file-gx10/README.md:26 ; scripts/queue.py:68",
+  "description": "Le protocole n'autorise le corpus après un StreamingVLM `blocked` que pour un « échec de compatibilité » avec fermeture vérifiée. Or le prédécesseur reprise-streaming était bloqué par PREDECESSOR_FAILED (le Qwen a échoué sur OLLAMA_DIGEST_MISMATCH) : StreamingVLM n'a jamais tourné. queue.py accepte tout `blocked`, et le test le valide de façon générique. Les mesures ne sont pas contaminées : inactivité GPU/Ollama prouvée à 00:05:09 et aucun chevauchement. Mais l'écart n'est pas documenté.",
+  "verifierReasoning": "J'ai vérifié les faits matériels dans les fichiers bruts et ils tiennent tous.\n\n**Ce qui est confirmé**\n- Le Qwen s'est bloqué à 00:04:55 sur `OLLAMA_DIGEST_MISMATCH`.\n- StreamingVLM s'est bloqué à 00:05:02 sur `PREDECESSOR_FAILED`, avec `stages=[]` : il n'a jamais tourné.\n- La garde du corpus est passée à 00:05:09 avec `predecessorStatus=blocked`.\n- `queue.py:68` accepte tout `blocked`, quelle que soit sa cause. C'est bien le script exécuté : son SHA-256 local `e7f94c03…` est égal à `queueSha256` dans `identities.json`.\n- Le test `test_queue.py:40-51` s'appelle « blocked_compatibility », mais"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-fiches-gelees-non-suivies",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-reference-gx10/references-gelees.json ; experiments/essais/2026-10-20-preparation-gx10/README.md:172",
+  "description": "Le gel provisoire scelle 6 fiches de experiments/gx10/evaluation/fiches/ qui ne sont pas suivies par Git (`??`), dans un dossier qui contient aussi un fichier d'échange vim (.README.md.swp). Le sceau n'est donc vérifiable que sur ce Mac ; le lien du protocole FR/EN est cassé dans un clone.",
+  "verifierReasoning": "Le constat est juste dans les faits, mais sa conséquence principale est exagérée.\n\nCe qui est confirmé :\n1. `experiments/essais/2026-10-20-reference-gx10/references-gelees.json` (suivi) scelle 6 chemins `experiments/gx10/evaluation/fiches/*.md`. Ces fichiers ne sont pas suivis (`?? experiments/gx10/evaluation/`), ne sont pas ignorés (`git check-ignore` renvoie 1) et n'apparaissent dans aucun commit. `git ls-tree -r origin/main` donne 0 fichier sous `experiments/gx10/evaluation/`. Le blob du README du protocole n'existe que dans des refs locales de Codex (`refs/codex/turn-diffs/checkpoints/...`"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-arrondi-boeuf-base",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-corpus-etendu-gx10/README.md:46",
+  "description": "Médiane HTTP base/Bœuf annoncée 21,44 s ; recalcul 21,4345 s, soit 21,43 s (double arrondi probable).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-classement-kennedy-fragile",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/README.md:27-29",
+  "description": "« small le plus rapide en médiane sur Kennedy » est exact (15,097 contre 15,366 s), mais l'écart est de 0,27 s sur n=5. large-v3-turbo a une moyenne plus basse (15,785 contre 16,581 s), gagne 3/5 paires, et small-kennedy compte un insufficient contre zéro. Le classement s'inverse selon la statistique. Les réserves de l'auteur empêchent un choix, mais la phrase reste trompeuse si elle est citée seule.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-depart-froid-non-rapporte",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-reference-gx10/README.md:12 ; lancer.sh (modeles.json = /api/tags)",
+  "description": "Le README dit relever les modèles résidents avant chaque passage, mais modeles.json (suivi) vient de /api/tags, c'est-à-dire les modèles installés. Les résidents ne figurent que dans systeme.log, ignoré par Git. Ce journal montre que base-CNRS a démarré à froid : aucun modèle à 19:58:40, Qwen 27B chargé vers 20:00:27 pendant cnrs-01 (28,08 s). Les 8 autres runs ont démarré à chaud. Le classement CNRS ne change pas sans cnrs-01 (médiane base 22,42 s > large 20,21 s).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-lien-whisper-ignore",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-preparation-gx10/README.md:195",
+  "description": "Le lien [extrait Whisper](whisper-smoke-extrait.log) pointe vers un fichier ignoré par Git (*.log). C'est la seule preuve rapatriée de « CUDA0 explicitement utilisé » (README:88).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-archives-sans-empreinte",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-preparation-gx10/README.md:148-149,196-197",
+  "description": "Les archives brutes hors Git preuve-cnrs-180s.tar.gz (61 077 149 octets) et smoke-kennedy-16s.tar.gz (11 686 081 octets) sont citées sans SHA-256 : leur intégrité ne peut pas être contrôlée plus tard.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-readme-reprise-sans-issue",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-reprise-file-gx10/README.md:5-6",
+  "description": "Le README s'arrête à « Mise à jour à 22:50 UTC… déployées et en attente ». Le dénouement n'apparaît que dans PREDECESSEURS.md:12 : Qwen bloqué sur OLLAMA_DIGEST_MISMATCH, streaming bloqué, corpus terminé. Il n'y a pas de section résultats ni incidents.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-visiongaps-incomplets",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json (consultation.coverage.visionGaps)",
+  "description": "Dans base-spring, la liste visionGaps ne compte que 4 trous (32 s) alors que losses et le journal comptent 5 passages perdus (moment-12 manquant). La couverture tirée des trous donne 93,10 % au lieu de 91,38 %. Les chiffres du corpus étendu ne sont pas touchés : trous et journal concordent sur les 9 runs. Une méthode fondée sur visionGaps seul est fragile.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-jugement-qualite-informel",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-preparation-gx10/README.md:137-141",
+  "description": "Les réponses CNRS sont qualifiées par comparaison informelle aux sous-titres : la dernière « restitue » le corpus, la première « doit être revue ». Ce jugement ne passe pas par une fiche validée. Il est nuancé ensuite (lignes 142-143), mais reste une appréciation de pertinence hors protocole.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "reference-corpus",
+  "id": "reference-corpus-libelle-replays-reference",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/BILAN.md:20,22,23,26",
+  "description": "La matrice attribue « Trois replays de référence Whisper » à Bœuf, Tears et Artemis (corpus étendu), alors que le lot « référence » couvre CNRS, Kennedy et Spring. Ces trois lignes omettent leurs replays de référence. Ambigu pour le lecteur.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-logs-ignores",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/.gitignore:13 (*.log) ; experiments/essais/2026-10-20-reference-gx10/README.md:25 et :37-39 ; confirmation-images-gx10/rapatriements/confirmation-images-20261021T082000Z/RAPATRIEMENT.md:5 ; confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/RAPATRIEMENT.md:5",
+  "description": "Les bruts .log sont versionnés de façon incohérente. 121 .log ont été forcés dans Git, alors que 110 autres restent ignorés et n'existent qu'en local. Pour la référence, le README annonce « 129 fichiers … copiés dans preuves/rapatriement-20261020/ » et désigne index.log comme trace des échecs, mais 37 de ces fichiers (3 903 248 octets : index.log, execution.log, systeme.log, sortie.log, erreurs.log…) ne sont pas dans Git. Les journaux de lancement des deux confirmations, cités par SHA, ne sont pas suivis, alors que les six autres rapatriements les versionnent. Sont aussi touchés 12 .log du sceau perception de la nuit, 1 de l'incident 20261020T2244 et 36 du sceau de gx10/research/2026-10-20-execution. Un clone ne peut ni relire ces traces ni revérifier les sceaux.",
+  "verifierReasoning": "Je n'ai pas pu réfuter ce problème : tous les chiffres de l'auditeur se retrouvent dans les fichiers. La règle `*.log` (/Users/Dabi/Documents/ISN/tvlens/.gitignore:13) existe depuis le premier commit (b4aaf68, 29/09). Les 121 .log suivis ont donc été ajoutés de force. Les 110 autres restent ignorés et n'existent qu'en local.\n\nAucun document ne place ces journaux hors Git par choix :\n- La liste « restent sur le GX10 » du README de référence (:40-41) cite médias, blocs, envois, .env, archives et premier essai Spring, pas les journaux.\n- La ligne de l'index /Users/Dabi/Documents/ISN/tvlens/experi"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-media-non-ignores",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/gx10/research/2026-10-20-execution/{entrees-perception/media,entrees-source/blocks,preuves/} ; experiments/gx10/evaluation/preuves/spring/*.jpg ; experiments/essais/2026-10-20-nuit-gx10/paquet-nuit.tar.gz ; experiments/essais/2026-10-21-incident-streaming-buildkit/evidence/ (README.md:19)",
+  "description": "Des médias et archives sont rangés dans des dossiers versionnés sans être couverts par .gitignore, qui n'exclut que *.mp4, *.wav, *.webm, *.bin et *.log. En cause : des JSON contenant du WAV et du JPEG en base64 (environ 1 Mo chacun ; 18 + 10 + 116 Mo), medias-selectionnes.tar (10,6 Mo), validation-perception-v2 et v3.tar.gz (14,3 Mo chacun), paquet-nuit.tar.gz (12,8 Mo), 8 images JPEG de Spring, et une télémétrie de 6,9 Mo marquée « à ne pas pousser ». La règle « pas de média dans Git » ne tient que par discipline : un `git add experiments` ou `-A` ajouterait environ 170 Mo, médias compris. Aucune violation dans HEAD aujourd'hui.",
+  "verifierReasoning": "Le problème est réel, mais je le classe moins grave qu'annoncé : sévérité low au lieu de medium. Le constat de fond est exact. Le .gitignore racine n'exclut que *.log, *.wav, *.webm, *.mp4 (plus media/samples/*.mp4), *.bin et *.enc. Il n'y a aucun .gitignore sous experiments/ et rien dans .git/info/exclude. `git check-ignore` déclare NON ignorés les six fichiers témoins : un JSON de médias, le .tar, une archive .tar.gz de validation, paquet-nuit.tar.gz, une image JPEG de Spring et telemetry.jsonl. Aucune garde mécanique n'existe : scripts/check.mjs ne contrôle ni taille ni type de fichier, et "
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-aveugle-cassable",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-consolidation-gx10/annotation/apres-notation/*.json ; experiments/essais/2026-10-21-relecture-fiches-gx10/correspondance-apres-notation.json ; annotation/README.md:15-17",
+  "description": "Les tables de correspondance de l'aveugle sont suivies dans Git juste à côté des paquets publics, et les campaign.json bruts sont suivis aussi. Une simple recherche de texte rattache une réponse à son bras et à son passage. L'aveugle ne repose que sur la consigne « ne pas ouvrir ».",
+  "verifierReasoning": "Le problème existe bien, mais je ramène la sévérité à low. Je l'ai vérifié moi-même en lecture seule, sans rien lancer du dépôt : mes scripts sont deblind.py et arms.py, dans /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/audit/verify-hygiene-aveugle-cassable/.\n\nCe qui est confirmé :\n(1) Les trois correspondances sont suivies par Git et présentes dans HEAD (commit cd8d1c3), juste à côté des paquets publics : apres-notation/mapping-questions-pause.json, apres-notation/mapping-observations-images.json et correspondance-apres-notation.json"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-readme-incomplets",
+  "announced": "medium",
+  "refuted": false,
+  "severity": "medium",
+  "location": "experiments/essais/2026-10-20-reference-gx10/README.md:1-52 ; experiments/essais/2026-10-21-streamingvlm-gx10/README.md:3-16 ; experiments/essais/2026-10-21-reprise-docker-gx10/README.md:11-13 ; experiments/essais/2026-10-21-reprise-file-gx10/README.md:5-6 ; experiments/essais/2026-10-21-reprise-file-gx10/PREDECESSEURS.md (dernière phrase)",
+  "description": "Quatre README ne suivent pas la consigne « question, configuration, résultats, lecture, limites et incidents ». Celui de la référence n'a ni section de résultats ni lecture : il donne un état, sans aucune mesure. StreamingVLM dit encore « préparé, non exécuté » et « waiting-predecessors » (22:09 UTC), alors que le run s'est scellé « blocked » à 03:56 UTC. reprise-docker dit « Aucun résultat vLLM n'est encore revendiqué », alors que son RAPATRIEMENT.md:5 rapporte 20/20 réponses HTTP 200, en moyenne 20 393,7 ms. reprise-file et PREDECESSEURS restent « en attente ». Les résultats existent ailleurs, mais le README d'essai n'est pas à jour.",
+  "verifierReasoning": "Le problème existe. Je l'ai vérifié sur les fichiers suivis, identiques entre 0cbe363 et HEAD 9f50107 et sans modification dans l'arbre de travail.\n\n1) experiments/essais/2026-10-20-reference-gx10/README.md:1-52\n- Le README a un objectif, une configuration, un état, un rapatriement et un incident, mais aucun résultat ni aucune lecture.\n- Les seuls nombres du texte sont 464000/464170/372000 ms (lignes 47-50), qui concernent l'incident Spring, et la fréquence des journaux de 5 s (l.23).\n- Les 9 rapports bruts existent pourtant : preuves/rapatriement-20261020/*/run/campaign.json, avec la clé summ"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-index-perime",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/README.md:8, :9, :11, :13",
+  "description": "Plusieurs lignes de l'index décrivent un lancement, pas un résultat. Ligne 8 : « Lot exploratoire lancé », alors qu'il est terminé à 21:29 UTC. Ligne 9 : « Séquence de nuit lancée … arrêt à 07 h Paris », alors que le run s'est scellé « blocked » sur l'accès Docker à 22:35 UTC et que le vLLM a été repris ailleurs. Ligne 11 : « Pré-vol StreamingVLM déployé en attente », alors qu'il est bloqué depuis 03:56 UTC. Ligne 13 ne donne pas d'issue.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-index-hors-main",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/README.md:5-6",
+  "description": "Les lignes 5 et 6 (2026-10-18-copie-b-g3-mac, 2026-10-19-repetition-copie-c-mac, « voir son rapport ») pointent vers des dossiers absents de Git sur main. En local, ils ne contiennent que des .log ignorés. Leurs rapports n'existent que sur la branche refactor/maintenabilite.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-media-branche-maintenabilite",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "branche refactor/maintenabilite et origin/refactor/maintenabilite, commit 694f73f : experiments/essais/2026-10-18-panneau-tv/brut/*.jpg, 2026-10-19-recette-tv-au-dela-youtube/brut/*.jpg, 2026-10-19-panneau-autre-application/brut/*.jpg, 2026-10-19-son-netflix/brut/netflix-capture.jpg",
+  "description": "Hors périmètre de HEAD, mais dans du Git poussé : 22 captures JPEG de la télé (15 à 220 Ko) et un campaign.json de 8 Mo sont versionnés sous experiments sur une branche poussée. Cela contredit la règle « pas de média dans Git » si cette branche est fusionnée. Aucune adresse privée ni aucun secret dans ces blobs.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-test-depend-non-suivi",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-incident-streaming-buildkit/tests/test_continuation.py:62-63",
+  "description": "Le test test_attested_incident_has_only_three_stages_and_original_budget copie evidence/base-packages.cid et evidence/telemetry.jsonl. Ces deux fichiers ne sont pas suivis (le README:19 dit de ne pas les pousser), donc le test échoue avec FileNotFoundError depuis un clone.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-liens-casses",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-preparation-gx10/README.md:172,195 ; experiments/essais/2026-10-21-reprise-docker-gx10/rapatriements/reprise-night-20261020T224805Z/README.md:11 ; experiments/essais/2026-10-21-relecture-fiches-gx10/audit-independant.md:7-18, README.md:41, snapshots/fiches/*.md ; experiments/essais/2026-10-21-consolidation-gx10/README.md:9 ; experiments/essais/2026-10-21-streamingvlm-gx10/README.md:25 ; experiments/essais/2026-10-20-nuit-gx10/diagnostic-vision.md:13-15 ; experiments/gx10/research/2026-10-20-propositions/README.md:173",
+  "description": "31 liens de documents suivis pointent hors de Git ou sont faux. Les preuves de l'audit des fiches (segments ASR, SRT, JPEG Spring), selection.json et relecture.md sont dans experiments/gx10/evaluation, qui n'est pas suivi. whisper-smoke-extrait.log est ignoré. scripts/resume_vllm.py est un chemin relatif faux dans la copie du README distant. Les instantanés de fiches gardent des liens relatifs à leur emplacement d'origine (../preuves/…, ../../../../media/samples/README.md). diagnostic-vision.md contient des liens absolus /Users/Dabi/….",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-sh-160",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-20-preparation-gx10/telecharger-noyau.sh:37 (164), :48 (168) ; experiments/essais/2026-10-20-reference-gx10/lancer.sh:18 (198), :44 (211) ; experiments/essais/2026-10-20-reference-gx10/preparer.sh:13 (250) ; experiments/essais/2026-10-21-reprise-bras-qwen/launch.sh:29 (161)",
+  "description": "Six lignes de scripts shell suivis dépassent 160 caractères (docs/standards.md:10). check.mjs ne contrôle que .cjs/.mjs/.js : ni .sh ni .py. Les 82 .py/.cjs suivis respectent la limite (maximum 158).",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-check-portee-nulle",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "/Users/Dabi/Documents/ISN/tvlens/scripts/check.mjs:20,79,92 ; .prettierignore (experiments/) ; eslint.config.mjs (ignores experiments/)",
+  "description": "Le « check --changed vert » cité dans le relais et dans les README (par exemple nuit README:82, reprise-docker README:56) ne contrôle presque rien des essais. experiments/ est exclu de Prettier et d'ESLint. La règle par fichier ne vise que le JavaScript. Les tests Python de experiments/ ne sont jamais lancés : pythonTests ne découvre que tests/, et seulement en mode complet. Le vert ne doit pas être présenté comme une validation des scripts d'essai.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-swap-vim",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/gx10/evaluation/.README.md.swp",
+  "description": "Fichier d'échange vim périmé (16 Ko, 20/10 11:21), non suivi et non ignoré, à côté du README de l'oracle. Il contient l'utilisateur « Dabi », l'hôte « MacBook-Pro.local », le chemin et un fragment du texte.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ },
+ {
+  "unit": "hygiene",
+  "id": "hygiene-fichiers-lourds-suivis",
+  "announced": "low",
+  "refuted": null,
+  "severity": "low",
+  "location": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-{large-v3-turbo,small,base}-artemis/campaign.json",
+  "description": "Trois fichiers suivis dépassent 5 Mo (10 349 812, 10 342 538 et 10 300 824 octets) et 36 dépassent 1 Mo. experiments suivi pèse 163,5 Mo. Ce sont des JSON de journal et de résumé, sans média : uploads ne contient que des métadonnées et des SHA, aucun blob base64.",
+  "verifierReasoning": "non contre-vérifié (mineur)"
+ }
+]

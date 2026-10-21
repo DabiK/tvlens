@@ -1,0 +1,37 @@
+{
+  "statut": "Réanalyse hors GPU, en lecture seule, de bruts GX10 déjà rapatriés le 21/10/2026. Aucune nouvelle inférence. Pertinence non notée (readyForScoring=false).",
+  "sources": {
+    "replaysPauseVision": "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/*/run/campaign.json (SHA dans entrees.sha256)",
+    "cinqContreTrois": "experiments/essais/2026-10-21-confirmation-images-gx10/rapatriements/confirmation-images-20261021T082000Z/results/mesures.json",
+    "qwen3vl4bF16": "experiments/essais/2026-10-21-reprise-bras-qwen/rapatriements/reprise-qwen-arm-20261021T002414Z/results/ollama-full/pass-*/response.raw.txt"
+  },
+  "gemma3_4b_flux_reel_414_appels": {
+    "partTempsFournisseur": {"preremplissage": 0.412, "generation": 0.564, "reste": 0.024},
+    "jetonsGeneres": {"p50_par_replay": "188-218", "p90_par_replay": "246-362", "max": 568},
+    "debitDecodage_tok_s": {"p50": "58.8-59.8", "min": 19.0},
+    "appelsSup8s": 91,
+    "appelsSup8sDecodageNonRalenti": {"n": 56, "jetonsGeneres_p50": 352},
+    "appelsSup8sDecodageRalentiInf45tok_s": 35,
+    "appelsInf8s_jetonsGeneres_p50": 197,
+    "correlationJetonsTopicSummary": 0.81,
+    "correlationJetonsSummaryPlusVisual": 0.29,
+    "topicSummaryParClasseDeJetons_car_p50": {"<200": 217, "200-300": 313, ">=300": 927},
+    "tentativesLangue": "1 pour les 414 appels"
+  },
+  "gemma3_4b_blocs_figes_5_contre_3": {
+    "jetonsPrompt": {"5images": 1980, "3images": 1426},
+    "preremplissage_s_p50": {"5images": 2.92, "3images": 1.81, "3images_cache_chaud": 0.059},
+    "estimationParImage_s": 0.55,
+    "estimationTexte_ms_par_jeton": 0.26,
+    "estimationEncodeurEtPretraitement_s_par_image": 0.48,
+    "nature": "estimation par différences, à confirmer par la micro-sonde perc-02"
+  },
+  "qwen3vl_4b_instruct_bf16_effectif_F16": {
+    "jetonsPrompt_5images_p50": 6132,
+    "preremplissage_s_p50_sans_cache": 3.10,
+    "jetonsGeneres_p50": 251,
+    "decodage_s_p50": 10.44,
+    "debit_tok_s_p50": 23.9,
+    "lecture": "lenteur due au décodage F16 (≈8,9 Go lus par jeton), pas au préremplissage"
+  }
+}

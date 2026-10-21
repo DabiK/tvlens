@@ -1,0 +1,295 @@
+{
+ "axis": "Mémoire, rappel ancien et transcription (ASR)",
+ "notes": "Statut : analyse documentaire et relecture des archives GX10 déjà rapatriées, sans inférence ni charge GPU. Les six fiches restent readyForScoring=false : aucune pertinence chiffrée ni classement n'est déclaré. Mesures extraites par /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/recherche/memoire-asr/extraire_mesures.py (SHA-256 3c38cd84…bed) dans mesures.json (SHA-256 cc771b32…048), même dossier. Code lu : 2035a2f, identique à main pour core/, adapters/ et runtime/.\n\nDIAGNOSTIC (mesuré sur archives GX10, sauf mention). (1) Le contexte d'une question ne contient que les 6 derniers passages utilisables (core/video-tools.cjs, context(), limit=6 hors récapitulatif), soit 48 s ; chaque passage porte au plus 1200 caractères (résumé VLM + visuel + transcription) ; le résumé cumulatif topicSummary n'est pas transmis ; omittedCount=27 pour kennedy-06. (2) 150 questions archivées sur 30 campagnes : 0 appel d'outil pour 150 (search_moments, get_transcript et inspect_clip jamais appelés) ; 129 observation, 21 insufficient. Le rappel au-delà de 48 s n'a donc jamais été possible dans ces essais. (3) Fraîcheur : 132/150 questions ont démarré avec au moins 7,5 s de fin non analysée, aucune sous 4 s ; les questions tombent sur les frontières des blocs de 8 s, si bien que le dernier bloc n'est presque jamais dans le contexte. (4) Échecs nommés. spring-06 : réponses insufficient avec base, small et turbo (contexte 320–368 s) ; le modèle écrit que les premiers passages ne sont « pas disponibles dans ce fil ». cuisine-07 : insufficient dans les trois Whisper ; la séquence complète bouquet garni (552 s), champignons (568 s), oignons (608 s) est présente dans les trois transcriptions, mais la fenêtre de contexte 608–656 s ne contient que la fin : échec de mémoire, pas d'ASR. kennedy-06 : le contexte s'arrête à 264 s pour une question à 272 s ; la transcription base de 256–264 s s'arrête sur « space filled with [BLANK_AUDIO] » et la suite est dans le bloc manquant. small donne un rejet de validation des preuves. (5) Whisper, un processus par bloc : base p50 1,29–1,65 s, dont calcul whisper 0,63–1,0 s (chargement 0,31 s) et environ 0,6 s hors whisper ; turbo p50 2,43–2,73 s, dont chargement 1,02–1,13 s. Spring, sans dialogue, langue auto : texte d'apparence parlée dans 16/58 passages avec turbo, 2/58 avec small, 3/58 avec base. (6) Question seule, sonde de nuit sans outil ni charge concurrente : 1552–2207 jetons de prompt, préremplissage 2,07–2,92 s au premier passage et 0,14–0,16 s au second (cache de préfixe Ollama) ; décodage de 181–259 jetons en 5,99–8,91 s. La génération domine. (7) D'après les intervalles des fiches provisoires, utilisés seulement pour choisir les cas, la preuve commence plus de 48 s avant la pose pour 11 des 30 questions : CNRS 5/5, cuisine 5/5 et spring-06. (8) Transcription complète du préfixe à la dernière question, en jetons ≈ caractères/4 : Spring ~0,1 k, Tears ~0,6 k, Kennedy ~1,0 k, Bœuf ~1,6 k, CNRS ~4,0 k, Artemis ~5,7 k. Le texte visuel des mêmes préfixes est 3 à 9 fois plus gros.\n\nÉTAT DES CONNAISSANCES. Mesuré sur GX10 : les points (1) à (6) et (8) ; le point (7) vient des fiches provisoires, non validées. Documentaire : les chiffres des papiers (A100, bancs à choix multiples, modèles visuels affinés), WER Whisper et Parakeet hors GB10, options whisper.cpp et code source Ollama. Supposé : le blocage des appels d'outils par la grammaire du format JSON avec think=false, la compatibilité et la vitesse de parakeet-cli et de whisper-server sur GB10, et le gain réel d'un mode résident ou CPU.\n\nORDRE PROPOSÉ. M1, puis M2 et M3 dans une seule session de rejeu hors ligne (environ 1 h de GPU, file vide et verrous libres). M4 ensuite : composant d'abord, puis confirmation dans E5. M5 et M6 partagent le banc ASR. M7 et M8 seulement après M2. Avant toute charge : vérifier les verrous et campagnes actives (night.lock, execution.lock, followup-gpu.lock, E1 en cours), un seul essai GPU à la fois, pas de bras CPU long pendant un essai chronométré, chaque essai dans experiments/essais/<date>-<sujet>/ avec plan figé par SHA-256 et ligne d'index, boucle de tickets arrêtée. Biais de protocole à noter : poser les questions sur la grille des 8 s crée un angle mort systématique d'environ 8 s ; avec une pose à phase aléatoire, il serait en moyenne d'environ 4 s plus la durée de l'ASR (estimation, non mesurée).",
+ "proposals": [
+  {
+   "id": "M1",
+   "title": "Diagnostic : le format JSON imposé bloque-t-il les appels d'outils de rappel ?",
+   "priority": 1,
+   "mechanism": "OllamaQuestionAgent envoie à chaque appel /api/chat à la fois format (le schéma de réponse) et tools, avec think=false (adapters/ollama/question-agent.cjs, http-client.cjs). Dans le code source d'Ollama (llm/llama_server.go et gbnf.go, documentation lue via context7), format devient un json_schema ou une grammaire qui contraint toute la sortie ; une sortie libre n'est permise qu'avant la balise de fin de réflexion, absente quand think=false. Le premier jeton devrait donc être « { », ce qui rendrait la balise d'appel d'outil impossible. C'est cohérent avec les 0 appels d'outil sur 150 questions archivées et avec des réponses comme « si tu me confirmes, je peux inspecter » (spring-06) : le modèle semble vouloir chercher sans pouvoir le faire. Le blocage n'est encore qu'une compatibilité supposée sur la version 0.40.6 du GX10. Le nombre d'appels, lui, est mesuré.",
+   "papers": [
+    {
+     "ref": "arXiv:2408.02442",
+     "title": "Let Me Speak Freely? A Study on the Impact of Format Restrictions on Performance of Large Language Models",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2408.02442",
+     "keyClaim": "Les contraintes de format strictes (JSON) dégradent nettement le raisonnement des LLM, d'autant plus qu'elles sont strictes. Cela motive de séparer la décision de chercher du rendu JSON."
+    },
+    {
+     "ref": "arXiv:2503.00540",
+     "title": "ReKV: Streaming Video Question-Answering with In-context Video KV-Cache Retrieval",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2503.00540",
+     "keyClaim": "Table 2 (QaEgo4D, LLaVA-OV-7B) : rappel des segments pertinents de 6,1 % en échantillonnage uniforme, exactitude 53,0 ; 58,1 % en récupération externe, 54,2 ; oracle, 64,4. Le rappel des bons moments pilote l'exactitude ; sans outil, ce rappel est nul au-delà de 48 s."
+    }
+   ],
+   "expectedLatencyEffect": "Diagnostic sans effet produit. Si les outils deviennent utilisables, chaque tour d'outil ajoute un appel complet du 27B (préremplissage du résultat plus nouveau décodage, environ 5–10 s d'après la sonde de nuit). Cela compromet les 15 s : le correctif produit probable est l'injection de M2, pas une boucle d'agent.",
+   "expectedRelevanceEffect": "Indirect : établit si le rappel ancien est structurellement impossible aujourd'hui. Cela conditionne l'interprétation de tous les insufficient de rappel (spring-06, cuisine-07) et le bénéfice attribuable aux embeddings ou à search_moments, jamais exercés à ce jour.",
+   "testableWithoutAppChange": true,
+   "experiment": "Rejeu hors ligne des requêtes exactes capturées : journal du proxy E1 (rejouer_questions.py enregistre les tool_calls sans les exécuter) ou corpus reconstruit comme answers-ollama/corpus.json. Dix questions : six dont la preuve commence plus de 100 s avant la pose d'après les intervalles des fiches provisoires (spring-06, cuisine-02, cuisine-05, cuisine-07, cnrs-04, cnrs-06), plus quatre questions « maintenant » comme témoins (kennedy-01, spring-02, tears-03, kennedy-08). Les fiches servent seulement à choisir les cas ; aucune donnée de fiche n'entre dans les requêtes. Un seul champ varie entre trois bras : A = format et tools (produit) ; B = tools sans format ; C = format sans tools. Deux passages dans l'ordre A/B/C puis C/B/A, qwen3.8:27b Q4_K_M, GPU sans autre charge. Relever par requête : présence et contenu des tool_calls (nom, arguments, intervalle demandé), validité JSON du contenu (readAnswer strict), jetons et durées Ollama, délai client. Critère préenregistré : hypothèse confirmée si B produit des appels sur au moins 2 des 6 questions anciennes et A aucun. Arrêt : 3 erreurs consécutives ou 20 min. Budget GPU : 10 × 3 × 2 = 60 appels d'environ 8–12 s, soit ≈ 10–12 min.",
+   "gx10Cost": "≈ 12 min de GPU (27B seul), aucun téléchargement",
+   "levers": "Rejeu hors ligne des requêtes capturées ; champ format retiré par le script de rejeu, pas par l'application",
+   "evidenceLevel": "Mesuré : 0 outil sur 150 questions et réponses insufficient citées. Documentaire : code source Ollama main. Supposé : même comportement en 0.40.6 avec think=false. Source secondaire non vérifiée (article Towards AI, inaccessible) décrivant le blocage format plus tools.",
+   "risks": "Sans format, le contenu peut sortir du JSON strict et être rejeté par readAnswer : un correctif en deux temps aurait un coût. Le modèle peut aussi appeler un outil à chaque question, ce qui ajoute de la latence partout. Ce diagnostic ne dit rien de la qualité finale après outils. Ne pas exécuter les outils avec une réimplémentation maison présentée comme le produit."
+  },
+  {
+   "id": "M2",
+   "title": "Mémoire compacte horodatée et rappel conditionné par la question, injectés en un seul appel",
+   "priority": 1,
+   "mechanism": "Aujourd'hui la mémoire vue par le modèle de questions est une file FIFO de 6 passages. D'après les intervalles des fiches provisoires, la preuve commence plus de 48 s avant la pose pour 11 des 30 questions : CNRS 5/5, cuisine 5/5 et spring-06. La preuve ancienne existe pourtant : pour cuisine-07, la séquence complète est dans les trois transcriptions à 552, 568 et 608 s, mais hors de la fenêtre 608–656 s. Le texte VLM est très redondant (« Kennedy continue de s'adresser à la foule… ») et pèse 3 à 9 fois la transcription. Deux remplacements de la FIFO, sans boucle d'outil : (B) un journal causal compact, avec une ligne par bloc [id, intervalle, transcription], une ligne visuelle seulement quand la description change (fusion des voisins similaires, comme MA-LMM ou StreamForest) et toujours les deux premiers blocs (« depuis le début ») ; (C) les k passages anciens les plus proches de la question selon qwen3-embedding:0.6b, déjà indexé en fond, avec leurs horodatages, comme Video-RAG, ReKV ou la sélection adaptative de VideoStreaming. Coût mesuré : la transcription complète du préfixe fait ~0,1 à 1,6 k jetons sur quatre vidéos, ~4 k sur CNRS et ~5,7 k sur Artemis. Le préremplissage mesuré sans charge est d'environ 1 ms par jeton, soit 2,1–2,9 s pour ~2 k jetons. La génération (6–9 s) domine.",
+   "papers": [
+    {
+     "ref": "arXiv:2509.24871",
+     "title": "StreamForest: Efficient Online Video Understanding with Persistent Event Memory",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2509.24871",
+     "keyClaim": "Tableau 3, budget de jetons égal : la mémoire FIFO, qui garde le récent, tombe à 56,7 sur MLVU contre 70,0 pour la mémoire d'événements persistante ; sans mémoire longue, 56,6. La meilleure combinaison associe une fenêtre fine sur le présent et une mémoire d'événements consolidée."
+    },
+    {
+     "ref": "arXiv:2405.16009",
+     "title": "Streaming Long Video Understanding with Large Language Models (VideoStreaming)",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2405.16009",
+     "keyClaim": "Une mémoire globale de taille fixe perd les détails des premiers segments ; il faut sélectionner les mémoires liées à la question, avec leurs horodatages. Sans indication de temps, l'exactitude au point d'arrêt tombe de 54,9 à 19,8 (tableau 10)."
+    },
+    {
+     "ref": "arXiv:2411.13093",
+     "title": "Video-RAG: Visually-aligned Retrieval-Augmented Long Video Comprehension",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2411.13093",
+     "keyClaim": "Tableau 5 (Long-LLaVA-7B, Video-MME) : ~1,9 k jetons de textes auxiliaires (ASR, OCR, détection) retrouvés font passer de 52,0 à 62,1 ; le même volume tiré au hasard donne 59,1 ; 0,8 k jetons donnent 60,6. Une seule récupération, sans boucle d'agent, pour limiter le coût."
+    },
+    {
+     "ref": "arXiv:2404.05726",
+     "title": "MA-LMM: Memory-Augmented Large Multimodal Model for Long-Term Video Understanding",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2404.05726",
+     "keyClaim": "À taille de mémoire égale, fusionner les éléments consécutifs les plus similaires bat la FIFO : LVU 63,0 contre 61,3, Breakfast 93,0 contre 88,5, COIN 93,2 contre 90,4."
+    },
+    {
+     "ref": "arXiv:2312.17235",
+     "title": "A Simple LLM Framework for Long-Range Video Question-Answering (LLoVi)",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2312.17235",
+     "keyClaim": "Des légendes de clips courts (0,5–8 s) agrégées par un LLM suffisent à un QA vidéo long compétitif. C'est l'architecture texte de TVLens, qui gagne à agréger tout le préfixe plutôt que 48 s."
+    },
+    {
+     "ref": "arXiv:2307.03172",
+     "title": "Lost in the Middle: How Language Models Use Long Contexts",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2307.03172",
+     "keyClaim": "L'information placée au milieu d'un long contexte est moins bien exploitée qu'en début ou en fin : risque pour un journal long et argument pour la récupération ciblée."
+    }
+   ],
+   "expectedLatencyEffect": "Hypothèse, fondée sur le préremplissage mesuré sans charge à environ 1 ms par jeton : +0,1 à +2 s pour B sur Spring, Tears, Kennedy et Bœuf ; +4 à +6 s sur CNRS et Artemis si rien n'est borné, d'où un plafond à ~2,5 k jetons ou l'arm C. C ajoute ~0,6–1 k jetons et un appel d'embedding de quelques dizaines de ms (non mesuré). Sous contention vision, le surcoût peut être plus élevé ; à mesurer. Aucun tour d'outil supplémentaire.",
+   "expectedRelevanceEffect": "Attendu : conversion des insufficient de rappel (spring-06, cuisine-07 et questions de réserve sur des faits anciens) en réponses citées. Risque de régression sur les questions « maintenant » par dilution, à mesurer. Aucun gain chiffré avant notation à l'aveugle contre des références validées.",
+   "testableWithoutAppChange": true,
+   "experiment": "Rejeu hors ligne, comme la sonde de nuit (sonder.cjs) ou rejouer_questions.py, avec un constructeur de corpus déposé dans le dossier d'essai. Contexte reconstruit depuis les journaux de session archivés, uniquement avec les révisions publiedAtMs ≤ anchorMs et endMs ≤ anchorMs : refus de tout futur, comme FUTURE_CONTEXT_REFUSED. Aucune donnée de fiche dans le contexte. Bras : A = les 6 passages capturés ; B = A plus le journal compact plafonné à 2,5 k jetons ; C = A plus 6 passages anciens retrouvés par qwen3-embedding:0.6b (passageText ; la question comme requête). Même prompt, schéma et options (num_ctx 16384, temperature 0, think false) ; les passages ajoutés entrent dans les preuves pour la validation des citations. Corpus : les 30 questions, plus les questions de rappel ancien et d'abstention de réserve des fiches, seulement après validation par le propriétaire. Deux passages contrebalancés, 27B seul sur le GPU. Mesures : jetons et durées de préremplissage et de génération, délai client, insufficient, citations valides, puis notation à l'aveugle (oracle v2) par vidéo ; tous les délais individuels publiés. Budget : 30 × 3 × 2 = 180 appels ≈ 35–40 min, plus ≈ 2 min d'embeddings. Arrêt : 45 min ou 3 erreurs consécutives.",
+   "gx10Cost": "≈ 40–45 min de GPU (27B, plus l'embedding 0,6B), aucun téléchargement",
+   "levers": "Rejeu hors ligne des requêtes capturées avec un contexte reconstruit ; aucun réglage produit modifié. Un prototype via le proxy est possible ensuite, présenté comme prototype.",
+   "evidenceLevel": "Mesuré GX10 : taille et contenu du contexte, preuve de cuisine-07 présente hors fenêtre, coûts de préremplissage et de génération. Documentaire : effets FIFO contre mémoire longue et récupération, sur d'autres modèles et bancs. Supposé : transposition au 27B texte de TVLens.",
+   "risks": "Dilution et « lost in the middle » ; les résumés du VLM peuvent confabuler et polluer le journal (arXiv:2502.15457, la mémoire aide mais la confabulation égare) ; la récupération par embedding rate les questions temporelles (« depuis le début »), d'où les deux premiers blocs dans B ; transcription ASR fautive en français ; validation des citations à adapter dans l'application ; coût plus élevé sous contention."
+  },
+  {
+   "id": "M3",
+   "title": "Fraîcheur : attendre au plus ~2,5 s la transcription du dernier bloc déjà capturé",
+   "priority": 2,
+   "mechanism": "Les questions sont gelées à l'instant de pose ; le bloc qui vient de se terminer n'a pas encore sa transcription. 132/150 questions archivées ont démarré avec au moins 7,5 s de fin non analysée. kennedy-06 en est l'exemple : contexte arrêté à 264 s pour une pose à 272 s, la phrase « …space filled with » étant coupée. La voie audio rend un passage utilisable dès la fin de Whisper (hasUsableObservation, laneEvidence), sans attendre la vision. Whisper base mesuré : p50 1,29–1,65 s, p90 1,63–2,30 s. Une attente bornée de la seule transcription des blocs finis avant la pose ramènerait la dernière phrase entendue, à un coût de délai borné.",
+   "papers": [
+    {
+     "ref": "arXiv:2501.05510",
+     "title": "OVO-Bench: How Far is Your Video-LLMs from Real-World Online Video Understanding?",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2501.05510",
+     "keyClaim": "En ligne, la compréhension « temps réel » des événements au moment de la question est une catégorie distincte du rappel en arrière ; les modèles actuels y restent loin de l'humain. Les questions « maintenant » exigent les dernières secondes."
+    },
+    {
+     "ref": "arXiv:2406.08085",
+     "title": "Flash-VStream: Memory-Based Real-Time Understanding for Long Video Streams",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2406.08085",
+     "keyClaim": "Le traitement du flux est découplé des questions asynchrones pour répondre vite. La mémoire se met à jour en continu et la question lit l'état le plus récent disponible."
+    }
+   ],
+   "expectedLatencyEffect": "+0 à +2,5 s sur le délai complet, seulement quand la transcription du dernier bloc est en cours. Avec un Whisper résident (M4), l'attente pourrait tomber sous ~1 s : à mesurer.",
+   "expectedRelevanceEffect": "Hypothèse : réponses « maintenant » plus justes quand la preuve est dans les 8 dernières secondes, comme kennedy-06. Le nombre de questions concernées sera compté avant toute notation.",
+   "testableWithoutAppChange": true,
+   "experiment": "Bras ajouté au harnais hors ligne de M2, même session GPU. Le contexte A est reconstruit avec les passages endMs ≤ anchorMs dont la révision audio est publiée au plus à anchorMs+Δ, pour Δ ∈ {0 ; 2,5 s}, d'après publishedAtMs des journaux. Compter d'abord, sur CPU, les questions qui gagnent leur dernier bloc. Puis rejouer les 30 questions × 2 bras × 1 passage (60 appels ≈ 12 min). Confirmation facultative en flux réel : scénario Kennedy avec poses décalées de +2,5 s, déclaré comme écart de protocole et diagnostic seulement (≈ 8 min de GPU). Le correctif produit, une attente bornée dans deep-ask, relèverait d'un ticket.",
+   "gx10Cost": "≈ 12 min de GPU hors ligne ; plus ≈ 8 min pour la confirmation Kennedy facultative",
+   "levers": "Rejeu hors ligne ; à défaut, décalage des atMs dans un scénario de diagnostic",
+   "evidenceLevel": "Mesuré GX10 : délais d'analyse au départ et cas kennedy-06. Supposé : gain de pertinence. Le mécanisme de rejeu est déjà dans les archives (publishedAtMs).",
+   "risks": "Délai ajouté quand Whisper est lent sous charge ; le dernier bloc n'a que le son (pas de vision) ; la grille de 8 s du protocole surestime le problème par rapport à un usage à phase aléatoire (environ 4 s de moins en moyenne). À signaler dans l'évaluation."
+  },
+  {
+   "id": "M4",
+   "title": "Whisper résident ou sur CPU : retirer le coût fixe de chaque bloc et la contention GPU",
+   "priority": 2,
+   "mechanism": "Un processus whisper-cli est lancé pour chaque bloc de 8 s (adapters/local-transcriber.cjs) : chargement du modèle et initialisation à chaque fois, audioCtx 0, donc un encodeur sur une fenêtre de 30 s pour 8 s de son. Mesuré sur GX10 : base p50 1,29–1,65 s, dont calcul whisper 0,63–1,0 s incluant 0,31 s de chargement, et ~0,6 s hors whisper (processus, contexte CUDA, E/S). turbo p50 2,43–2,73 s, dont chargement 1,02–1,13 s, encodage ~0,27 s, décodage 0,17–0,50 s. Environ 60–75 % du temps par bloc est donc fixe. Leviers sans code : un enveloppeur whisper-cli qui (a) appelle un whisper-server résident (POST /inference, modèle chargé une fois) ; (b) ajoute -ng sur CPU ; (c) combine -ng et -ac auto (~512 positions au lieu de 1500).",
+   "papers": [
+    {
+     "ref": "arXiv:2212.04356",
+     "title": "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)",
+     "year": 2022,
+     "url": "https://arxiv.org/abs/2212.04356",
+     "keyClaim": "L'encodeur traite des fenêtres fixes de 30 s : un clip de 8 s sans réduction du contexte audio paie le coût de 30 s. Les options -ac et -ng et le serveur viennent de la documentation whisper.cpp (context7), pas du papier."
+    },
+    {
+     "ref": "arXiv:2307.14743",
+     "title": "Turning Whisper into Real-Time Transcription System (Whisper-Streaming)",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2307.14743",
+     "keyClaim": "Un service Whisper persistant en flux atteint ~3,3 s de latence avec une bonne qualité sur de la parole longue non segmentée : le mode résident est la norme pour le temps réel."
+    }
+   ],
+   "expectedLatencyEffect": "Hypothèse : avec le modèle résident sur GPU, ≈ encodage plus décodage seuls, soit ~0,4–0,8 s par bloc, turbo compris, contre 1,3–2,7 s aujourd'hui. Cela aide M3. Sur CPU : effet propre inconnu (cœurs ARM X925/A725), mais libère le GPU pour la vision et les questions. Le gain sur le délai des questions n'est pas établi et se mesure en E5.",
+   "expectedRelevanceEffect": "Indirect : permet turbo ou small (meilleur en français, voir M6) au coût actuel de base, et une transcription plus fraîche (M3).",
+   "testableWithoutAppChange": true,
+   "experiment": "1) Banc composant sur les WAV de 8 s figés : Kennedy 53, Spring 58, CNRS 110, Bœuf 92 blocs, appels séquentiels. Bras × {base, small, large-v3-turbo} : processus par bloc sur GPU (référence contemporaine relancée), serveur résident sur GPU, processus -ng sur CPU (t=8 et t=10), -ng avec -ac auto, serveur résident sur CPU. Mesures : chaque délai par bloc, p50, p90, max, découpage des temps whisper, CER du texte entre bras et bras de référence, replis de température. Empreintes des poids et commit whisper.cpp relevés. 2) Le gagnant entre ensuite dans E5 (contention) : rejeu Kennedy A/B/B/A, Whisper GPU par processus contre gagnant. On y mesure la cadence vision, les pertes, le retard d'analyse et le délai des 5 questions. Arrêt : plafond 30 min de GPU pour le banc, 3 échecs consécutifs.",
+   "gx10Cost": "Banc ≈ 15 min de GPU (bras GPU) et ≈ 45–60 min de CPU sans GPU, hors essai chronométré ; E5 ≈ 2 × 8 min de GPU",
+   "levers": "Binaire enveloppe whisper-cli (-ng, -ac, ou relais vers whisper-server) ; threads ; contexte audio",
+   "evidenceLevel": "Mesuré GX10 : découpage des temps par bloc. Documentaire : options du serveur et de -ng dans whisper.cpp. Supposé : coût de l'initialisation CUDA dans les ~0,6 s hors whisper, vitesse CPU sur GB10.",
+   "risks": "-ac réduit peut dégrader la transcription ou halluciner (contexte différent de l'entraînement) ; whisper-server sérialise les requêtes ; l'enveloppeur est un prototype et non le produit ; les threads CPU peuvent concurrencer ffmpeg et Ollama ; la mise en cache du transcripteur par empreinte reste en amont, sans effet."
+  },
+  {
+   "id": "M5",
+   "title": "VAD Silero et suppression du non-parlé : supprimer les paroles inventées sur musique et silence",
+   "priority": 3,
+   "mechanism": "Mesuré sur Spring, sans dialogue, langue auto : texte d'apparence parlée dans 16/58 passages avec large-v3-turbo (« What? What? … », « I don't know. I don't know. », légendes russes de musique), 2/58 avec small (dont l'hallucination classique de générique de sous-titres russes) et 3/58 avec base. Replis de température : 43 avec turbo, 44 avec small, 11 avec base. Ces textes entrent dans passageText, donc dans le contexte des questions, alors que la fiche Spring interdit d'inventer des paroles. whisper.cpp intègre un VAD Silero (--vad, --vad-model, seuils et marges) et -sns ou -nth contre le non-parlé.",
+   "papers": [
+    {
+     "ref": "arXiv:2609.32560",
+     "title": "How to Reduce Whisper Hallucination",
+     "year": 2026,
+     "url": "https://arxiv.org/abs/2609.32560",
+     "keyClaim": "whisper-large-v3 émet des mots sur 61,9 % de clips de pur bruit de salle. Supprimer sans discriminer a un coût : le meilleur point de contrôle sur le non-parlé supprime 58 % de la parole répétée. Il faut mesurer à la fois l'hallucination et la parole perdue."
+    },
+    {
+     "ref": "arXiv:2501.11378",
+     "title": "Investigation of Whisper ASR Hallucinations Induced by Non-Speech Audio",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2501.11378",
+     "keyClaim": "Le non-parlé induit un ensemble récurrent d'hallucinations. Un post-filtrage par « sac d'hallucinations » réduit la WER et sert de garde-fou."
+    },
+    {
+     "ref": "arXiv:2303.00747",
+     "title": "WhisperX: Time-Accurate Speech Transcription of Long-Form Audio",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2303.00747",
+     "keyClaim": "La présegmentation par VAD (cut & merge) améliore la transcription longue : moins de dérive, d'hallucinations et de répétitions."
+    }
+   ],
+   "expectedLatencyEffect": "Faible : quelques dizaines de ms pour le VAD (non mesuré sur GB10), et un décodage évité sur les blocs sans parole (Spring, passages musicaux).",
+   "expectedRelevanceEffect": "Hypothèse : moins d'inventions de paroles sur Spring, Tears (musique) et Artemis (bruit) ; risque de perdre des répliques courtes. Effet sur les réponses mesuré par le rejeu de M2.",
+   "testableWithoutAppChange": true,
+   "experiment": "Banc composant sur WAV figés, idéalement le serveur résident de M4. Médias : Spring en entier, Tears (dialogue et musique), Artemis 0–10 min (bruit), Kennedy, Bœuf. Modèles base et turbo × {sans VAD ; --vad seuil 0,5 ; --vad avec -sns}. Mesures : mots d'apparence parlée sur Spring (cible 0) ; parole supprimée et WER/CER contre des références indépendantes seulement, soit le SRT officiel de Tears et le texte officiel du discours Kennedy, pas l'oracle turbo, circulaire pour turbo ; délais par bloc. Ensuite, rejeu hors ligne des 10 questions Spring et Tears avec les transcriptions VAD (harnais M2). Un bras supplémentaire fixe la langue de Spring au lieu de auto ; il est noté à part car il change le scénario.",
+   "gx10Cost": "≈ 35–50 min de GPU (≈ 350 blocs × 6 bras) ou moins en résident ; rejeu ≈ 5 min",
+   "levers": "Enveloppeur whisper-cli ajoutant --vad --vad-model, -sns, -nth ; langue de transcription du scénario",
+   "evidenceLevel": "Mesuré GX10 : hallucinations Spring et replis par modèle. Documentaire : VAD whisper.cpp et papiers. Supposé : efficacité du VAD sur des blocs de 8 s. Le modèle Silero GGML doit être présent ou téléchargé (petit, à vérifier).",
+   "risks": "Débuts et fins de phrase coupés aux bords des blocs de 8 s ; parole sur musique (Artemis, Tears) supprimée ; seuil propre à chaque contenu ; faux sentiment de sécurité si le sac d'hallucinations n'est pas mesuré à part."
+  },
+  {
+   "id": "M6",
+   "title": "Qualité ASR en français et effet sur la réponse : base, small, turbo et Parakeet-TDT-0.6B-v3",
+   "priority": 3,
+   "mechanism": "base est le défaut, alors que deux vidéos sur six sont en français. Papier Whisper, WER FR sur MLS : base 26,6, small 16,2, medium 8,9, large-v2 7,3 ; sur FLEURS FR : 28,5, 15,0 et 8,7 ; en anglais sur FLEURS : 8,9, 6,1 et 4,4. Observé sur Bœuf, au cœur de la preuve de cuisine-07 : base transcrit « nos petits oignons » en « nos petits de ce qu'il y a » (608 s) et « champignons » en « champs de la voie » (592 s) ; turbo est propre. Parakeet-TDT-0.6B-v3 est multilingue sur 25 langues ; un binaire parakeet-cli existe dans le build whisper.cpp du GX10 d'après le contexte, avec poids GGML sur ggml-org/parakeet-GGUF.",
+   "papers": [
+    {
+     "ref": "arXiv:2212.04356",
+     "title": "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)",
+     "year": 2022,
+     "url": "https://arxiv.org/abs/2212.04356",
+     "keyClaim": "Tableaux D.2 : en français, base fait environ deux fois la WER de small et trois fois celle de medium (MLS 26,6 / 16,2 / 8,9 ; FLEURS 28,5 / 15,0 / 8,7). L'écart est bien plus faible en anglais."
+    },
+    {
+     "ref": "arXiv:2509.14128",
+     "title": "Canary-1B-v2 & Parakeet-TDT-0.6B-v3: Efficient and High-Performance Models for Multilingual ASR and AST",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2509.14128",
+     "keyClaim": "Parakeet-TDT-0.6B-v3 : WER moyenne de 9,7 % sur 24 langues (FLEURS, CoVoST, MLS) contre 9,9 % pour whisper-large-v3 ; robuste au bruit (12,21 % à −5 dB contre 19,38 % pour Canary) ; RTFx 3333 dans le banc Open ASR, hors GB10."
+    },
+    {
+     "ref": "arXiv:2605.17443",
+     "title": "Analyzing Error Propagation in Korean Spoken QA with ASR-LLM Cascades",
+     "year": 2026,
+     "url": "https://arxiv.org/abs/2605.17443",
+     "keyClaim": "La dégradation en aval suit la perte d'information de l'étage ASR, de façon semblable entre LLM ; la WER ne capte pas toutes les pertes sémantiques. Il faut donc mesurer l'effet sur les réponses, pas seulement la WER. Étude en coréen, transposition limitée."
+    }
+   ],
+   "expectedLatencyEffect": "En mode par processus, turbo coûte ~+1,1 s par bloc par rapport à base (mesuré) ; en résident (M4), l'écart supposé tombe à quelques centaines de ms. Parakeet sur GB10 : inconnu, à mesurer, aucun chiffre GB10 disponible.",
+   "expectedRelevanceEffect": "Hypothèse : meilleures réponses sur CNRS et Bœuf (noms, ingrédients, nombres) avec small, turbo ou Parakeet ; effet faible en anglais ; turbo dégrade Spring sans VAD (M5).",
+   "testableWithoutAppChange": true,
+   "experiment": "1) Banc ASR sur WAV figés des six vidéos, couplé à M4 et M5 : base, small, turbo et parakeet-v3 (via un enveloppeur qui produit le JSON attendu par l'application). Liste préenregistrée de termes clés (nombres, entités, ingrédients, définie avant exécution, sans fiche dans les entrées des modèles). WER et CER seulement contre des références indépendantes : SRT officiel de Tears, texte officiel Kennedy, et pour le français un extrait de 3 min par vidéo vérifié par le propriétaire. Le bras turbo n'est pas comparé à l'oracle v2, lui-même issu de turbo. 2) Effet sur les réponses : harnais hors ligne de M2, texte visuel fixe et seul le champ transcription remplacé par chaque ASR, 30 questions × 4 bras × 1 passage = 120 appels, notation à l'aveugle par vidéo.",
+   "gx10Cost": "Banc ≈ 20–30 min de GPU (partagé avec M4 et M5) ; rejeu ≈ 25 min ; poids Parakeet f16 ≈ 1,2 Go à télécharger seulement si absent et si autorisé",
+   "levers": "Modèle Whisper ; enveloppeur parakeet-cli ; rejeu hors ligne à transcription remplacée",
+   "evidenceLevel": "Documentaire : WER des papiers, hors GB10 et hors blocs de 8 s. Mesuré GX10 : erreurs base sur Bœuf, délais par modèle. Supposé : fonctionnement de parakeet-cli sur GB10 et sa langue détectée sur 8 s.",
+   "risks": "Parakeet sans forçage de langue peut dériver sur des blocs courts ou musicaux ; la WER sur blocs de 8 s diffère des bancs ; peu de questions dépendent d'un mot mal transcrit ; les références françaises demandent une relecture humaine."
+  },
+  {
+   "id": "M7",
+   "title": "Coupures aux frontières de 8 s : invite reportée ou chevauchement audio",
+   "priority": 4,
+   "mechanism": "Les blocs fixes sans chevauchement coupent mots et phrases. Exemples archivés : « …space filled with [BLANK_AUDIO] » sur Kennedy, et « pour que l'échange | se réchauffe » ou « les champs de la voie » sur Bœuf. Le décodeur n'a aucun contexte du bloc précédent : pas de --prompt. Le papier Canary et Parakeet mesure ce coût pour des tranches de 30 s : sans chevauchement 15,61 % contre 13,93 % de WER (Earnings22) et 16,62 % contre 10,12 % (TAL). Les tranches de 8 s sont a priori plus exposées.",
+   "papers": [
+    {
+     "ref": "arXiv:2509.14128",
+     "title": "Canary-1B-v2 & Parakeet-TDT-0.6B-v3",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2509.14128",
+     "keyClaim": "Tableau 8 : un découpage séquentiel sans chevauchement (30 s) dégrade la WER par rapport à des tranches chevauchantes fusionnées (15,61 contre 13,93 ; 16,62 contre 10,12)."
+    },
+    {
+     "ref": "arXiv:2307.14743",
+     "title": "Turning Whisper into Real-Time Transcription System",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2307.14743",
+     "keyClaim": "Le flux réutilise le texte déjà confirmé comme invite et une politique d'accord local sur un tampon chevauchant pour stabiliser les frontières."
+    }
+   ],
+   "expectedLatencyEffect": "+0,1–0,4 s par bloc pour 1,5 s d'audio chevauchant (supposé) ; ~0 pour l'invite.",
+   "expectedRelevanceEffect": "Hypothèse : moins de mots perdus aux frontières, donc de meilleures citations exactes et dates ou chiffres complets ; gain probablement modeste et ponctuel.",
+   "testableWithoutAppChange": true,
+   "experiment": "Banc composant hors ligne sur les séquences de WAV figées de Kennedy, CNRS et Bœuf (~250 blocs). Bras : aucun ; --prompt avec les ~30 derniers mots du bloc précédent ; 1,5 s d'audio précédent ajoutées, avec déduplication par horodatages de mots. Mesures : WER contre références indépendantes, erreurs sur les mots des 0,5 s de bord, boucles de répétition et hallucinations, délai. Un enveloppeur à état peut prototyper l'invite pour une seule session ; le chevauchement réel demande un ticket applicatif. Ce n'est donc pas un levier sans changement d'application pour le produit.",
+   "gx10Cost": "≈ 10–15 min de GPU",
+   "levers": "Banc composant hors ligne avec whisper-cli (--prompt) et découpage audio scripté ; un enveloppeur à état peut prototyper l'invite dans le flux. Le chevauchement en produit demanderait un ticket.",
+   "evidenceLevel": "Mesuré GX10 : exemples de coupures. Documentaire : effet du chevauchement, sur d'autres modèles et des tranches de 30 s. Supposé : ampleur sur des tranches de 8 s.",
+   "risks": "L'invite peut déclencher des boucles de répétition ou des hallucinations (une boucle small est déjà observée à 592 s sur Bœuf) ; le chevauchement duplique ou supprime des mots ; gain potentiellement inférieur au bruit de mesure."
+  },
+  {
+   "id": "M8",
+   "title": "Mémoire hiérarchique stable en tête de prompt (cache de préfixe) pour les vidéos longues",
+   "priority": 4,
+   "mechanism": "Sur CNRS (~4 k jetons de transcription) et Artemis (~5,7 k), un journal complet coûte cher ; une mémoire hiérarchique le borne : résumés par minute ou par sujet pour l'ancien, lignes brutes pour les 3–5 dernières minutes. C'est la consolidation d'événements de StreamForest ou MovieChat, ici en texte. Le cache de préfixe d'Ollama est mesuré sur GX10 : même prompt de ~1,5–2,2 k jetons, préremplissage de 0,14–0,16 s au second passage contre 2,07–2,92 s au premier. Aujourd'hui, la DEMANDE précède les données, ce qui casse le préfixe à chaque question. Si le rôle et le journal, en ajout seul, précèdent la question, chaque nouvelle question ne préremplit que les nouvelles lignes, les passages récents et la question.",
+   "papers": [
+    {
+     "ref": "arXiv:2307.16449",
+     "title": "MovieChat: From Dense Token to Sparse Memory for Long Video Understanding",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2307.16449",
+     "keyClaim": "Mémoire court terme et long terme : les éléments adjacents similaires sont fusionnés pour garder des vidéos de plus de 10 k images dans un budget fixe, en mode global ou au point d'arrêt."
+    },
+    {
+     "ref": "arXiv:2509.24871",
+     "title": "StreamForest",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2509.24871",
+     "keyClaim": "La consolidation au niveau de l'événement (similarité, fréquence de fusion, distance temporelle) garde 96,8 % de l'exactitude moyenne sous un budget extrême de 1 024 jetons visuels."
+    },
+    {
+     "ref": "arXiv:2502.15457",
+     "title": "Memory Helps, but Confabulation Misleads: Understanding Streaming Events in Videos with MLLMs",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2502.15457",
+     "keyClaim": "Les souvenirs d'événements passés aident, mais ceux produits par le modèle contiennent des confabulations qui dégradent la compréhension. Des résumés générés doivent rester attribués et vérifiables."
+    }
+   ],
+   "expectedLatencyEffect": "Hypothèse fondée sur la mesure du cache : préremplissage ramené de ~2–6 s à < 1 s pour les questions successives d'une même vidéo, si le créneau Ollama du 27B n'est pas évincé entre deux questions. Génération de résumés en fond : coût GPU qui concurrence la vision, à mesurer.",
+   "expectedRelevanceEffect": "Hypothèse : rappel ancien sur CNRS et Artemis sans exploser le contexte ; risque de confabulation dans les résumés.",
+   "testableWithoutAppChange": true,
+   "experiment": "Rejeu hors ligne séquentiel, dans l'ordre des questions de chaque vidéo (CNRS, Artemis, puis Kennedy comme témoin), aucune autre requête 27B intercalée. Bras : A = ordre de l'application avec le contenu B de M2 ; B = même contenu, rôle et journal en tête et question à la fin ; C = B avec l'ancien résumé par minute par gemma3:4b hors ligne, depuis les passages causaux uniquement, coût de génération compté à part. Mesures : préremplissage et durée par question, en distinguant le premier appel, réponses et notation à l'aveugle. 15 questions × 3 bras × 2 passages = 90 appels ≈ 18 min, plus ~45 appels de résumé ≈ 5 min.",
+   "gx10Cost": "≈ 25 min de GPU",
+   "levers": "Rejeu hors ligne (ordre du prompt et contenu reconstruits) ; aucun réglage produit",
+   "evidenceLevel": "Mesuré GX10 : effet du cache de préfixe sur des prompts identiques. Documentaire : consolidation mémoire et confabulation. Supposé : réutilisation partielle du préfixe entre prompts qui ne diffèrent qu'en fin, à vérifier sur Ollama 0.40.6.",
+   "risks": "Éviction du cache par keep_alive ou par MAX_LOADED_MODELS, ou par un réexamen si un jour il utilise le 27B ; changement de comportement dû à l'ordre du prompt ; résumés confabulés ; charge GPU de fond supplémentaire pendant le flux."
+  }
+ ]
+}

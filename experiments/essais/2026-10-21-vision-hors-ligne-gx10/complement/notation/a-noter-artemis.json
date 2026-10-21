@@ -1,0 +1,141 @@
+[
+ {
+  "blockId": "artemis@384000",
+  "startS": 384.0,
+  "endS": 392.0,
+  "transcript": "Well, thanks so much for joining us tonight, it's been an honor to meet you and Megan, we're going back to you.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "0bdbb787d5",
+    "summary": "L'image montre le lanceur Artemis 1 en pleine ascension, avec des flammes et de la fumée visibles. Deux personnes, Scott et Leah, sont présentes et expriment leur enthousiasme et leur gratitude pour l'événement.",
+    "visual": "Le lanceur est au centre de l'image, dominant le cadre. Des lumières illuminent la scène et des flammes s'échappent de la base du lanceur. Des personnes sont visibles en arrière-plan, probablement des spectateurs."
+   },
+   {
+    "textId": "2ce81ad8fa",
+    "summary": "La scène montre un gros plan sur une fusée de lancement, probablement lors d'une préparation ou d'un événement lié au lancement. À côté, une petite image montre deux personnes, un homme et une femme, interagissant dans une foule.",
+    "visual": "L'image principale est dominée par une fusée de lancement, éclairée par de puissants projecteurs, avec des structures de lancement visibles autour. Dans le coin supérieur gauche, une vignette montre un homme et une femme debout dans une foule, semblant participer à un événement."
+   },
+   {
+    "textId": "d1c8f0f4b0",
+    "summary": "L'image montre le lanceur de la mission Artemis 1, juste après le décollage, avec des lumières vives et un groupe de personnes observant l'événement.",
+    "visual": "On distingue clairement le lanceur, avec ses différents étages, et les lumières de l'explosion initiale. Un groupe de personnes est visible en arrière-plan, certains prenant des photos."
+   }
+  ]
+ },
+ {
+  "blockId": "artemis@664000",
+  "startS": 664.0,
+  "endS": 672.0,
+  "transcript": "When that pole starts we'll get a clearer picture.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "f7348b2170",
+    "summary": "L'image montre le lanceur Orion et le SLS sur le site de lancement, éclairés par des lumières. Des jets de gaz s'échappent de l'appareil, indiquant une activité de pressurisation ou de vérification des systèmes, notamment la configuration des valves d'oxygène liquide. Les équipes sont sur le point de lancer la mission.",
+    "visual": "Le lanceur Orion est positionné sur le site de lancement, avec des jets de gaz provenant de ses systèmes. Des valves sont en cours de configuration, suggérant des vérifications et ajustements avant le lancement."
+   },
+   {
+    "textId": "99fef0b25e",
+    "summary": "L'image montre le lanceur et sa structure de support dans l'obscurité, avec des éléments techniques visibles. Une indication numérique '917' est présente sur la structure.",
+    "visual": "Vue nocturne d'une structure de lancement complexe, montrant le corps principal du lanceur et des équipements de support en arrière-plan."
+   },
+   {
+    "textId": "41d7f99b51",
+    "summary": "L'image montre le lanceur Orion et le SLS sur le site de lancement, avec des jets de gaz provenant de l'appareil, probablement liés à des vérifications ou à la pressurisation des systèmes, notamment la configuration des valves d'oxygène liquide. L'équipe est sur le point de prendre la décision de lancement.",
+    "visual": "Le lanceur Orion est positionné sur le site de lancement, entouré de structures de support. Des jets de gaz s'échappent de l'appareil, suggérant une activité de pressurisation ou de vérification des systèmes. Le nombre '917' est visible sur le lanceur."
+   }
+  ]
+ },
+ {
+  "blockId": "artemis@952000",
+  "startS": 952.0,
+  "endS": 960.0,
+  "transcript": "Copy, launch director, and thank you. All right, we do have a couple of steps to configure, and then we will be ready to resume the clock.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "00b8adc708",
+    "summary": "Une technicienne examine un équipement avec un appareil de mesure, tandis qu'un autre technicien surveille des écrans de contrôle dans un centre de contrôle de la NASA.",
+    "visual": "Un technicien féminin, portant des lunettes et un gilet, est en train d'examiner un équipement avec un appareil de mesure. Un autre technicien est assis à une console et surveille des écrans affichant des données."
+   },
+   {
+    "textId": "31029f3c74",
+    "summary": "Une technicienne vérifie un équipement avec un appareil de mesure, tandis qu'un autre technicien surveille des écrans de contrôle dans le centre de contrôle de la NASA.",
+    "visual": "Une technicienne, portant des lunettes et un gilet, examine attentivement un équipement avec un appareil de mesure. Un autre technicien surveille des écrans de contrôle. L'environnement est un centre de contrôle de la NASA avec des écrans affichant des données et des équipements de surveillance."
+   },
+   {
+    "textId": "28c9f5a894",
+    "summary": "Une femme, portant des lunettes, est penchée sur un équipement dans un centre de contrôle, tandis qu'un homme en costume se tient à proximité. L'environnement est celui d'une salle de contrôle avec de nombreux écrans.",
+    "visual": "Plan rapproché sur une femme aux longs cheveux bruns, portant des lunettes, concentrée sur un équipement devant elle. À l'arrière-plan, un homme en costume observe la scène, et de grands écrans sont visibles à droite."
+   }
+  ]
+ },
+ {
+  "blockId": "artemis@1248000",
+  "startS": 1248.0,
+  "endS": 1256.0,
+  "transcript": "[BLANK_AUDIO]",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "23beffc78e",
+    "summary": "La fusée est visible sur la plateforme de lancement, entourée de structures de support et éclairée par de puissants projecteurs. Le compte à rebours indique un temps restant de 6 minutes et 15 secondes avant le lancement.",
+    "visual": "Gros plan sur la fusée, montrant le dessus du réservoir principal avec les inscriptions 'United States' et 'NASA/ESA'. La fusée est entourée de structures métalliques et de lumières vives, avec de la vapeur visible au sol."
+   },
+   {
+    "textId": "6d350f20d8",
+    "summary": "Sur les trois images, on observe le lanceur Artemis I, en particulier sa section supérieure, avant le lancement. Les lumières environnantes créent un halo lumineux autour du lanceur, indiquant la préparation pour le décollage.",
+    "visual": "Le lanceur Artemis I est visible, illuminé par des lumières vives. On distingue les réservoirs du lanceur et des structures de support."
+   }
+  ]
+ },
+ {
+  "blockId": "artemis@1536000",
+  "startS": 1536.0,
+  "endS": 1544.0,
+  "transcript": "GLS scope or core stage to internal power the rocket's core stage which houses the three flight computers is now on",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "f9c8046861",
+    "summary": "La pressurisation du réservoir central du lanceur Artemis I continue d'augmenter, générant une colonne de flammes de plus en plus importante.",
+    "visual": "Une vue rapprochée du lanceur Artemis I, montrant les éléments de pressurisation et la colonne de flammes qui s'en dégage. Le nombre 815 est visible sur le lanceur."
+   },
+   {
+    "textId": "9e4adca0c8",
+    "summary": "La pressurisation du lanceur Artemis I continue d'augmenter, visible par la colonne de flammes de plus en plus importante. Le système FTS est activé, préparant une éventuelle destruction du lanceur en cas de dérive.",
+    "visual": "Une vue rapprochée du lanceur Artemis I, avec ses réservoirs et ses systèmes de support, pendant la phase de pressurisation. Le système FTS est visible à côté du lanceur."
+   },
+   {
+    "textId": "7772601520",
+    "summary": "Le lanceur est visible avec une horloge indiquant T-0:01:30. On observe le lanceur et la structure de lancement dans l'obscurité.",
+    "visual": "Vue extérieure du lanceur Artemis I avec la structure de lancement en arrière-plan, sous un ciel sombre. L'horloge indique T-0:01:30."
+   }
+  ]
+ },
+ {
+  "blockId": "artemis@1816000",
+  "startS": 1816.0,
+  "endS": 1824.0,
+  "transcript": "of Artemis 1, now traveling over 4,060 miles per hour, 83 miles downrange. We just had confirmation.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "39acfef45c",
+    "summary": "Les données affichent des paramètres de surveillance constants, incluant des valeurs pour N28, W80, MSL, ainsi que des lectures des capteurs CI et CO. L'image montre un affichage de viseur avec un point lumineux, et les indicateurs de systèmes comme HDR et REC sont activés.",
+    "visual": "L'écran présente une interface de surveillance avec des données numériques en haut à gauche et à droite, un viseur au centre affichant un point lumineux, et un diagramme circulaire en bas à gauche. Les indicateurs de systèmes sont affichés comme HDR ON et REC ON."
+   },
+   {
+    "textId": "2f5ecf255c",
+    "summary": "L'image présente un écran de surveillance avec des données en temps réel, notamment la position de l'Artemis I, les paramètres du système FTS (vis-WFOV, CI, CO) et les systèmes de contrôle (HDR, REC). Les valeurs de capteurs et de systèmes sont stables.",
+    "visual": "L'écran affiche des données de surveillance détaillées, incluant des informations sur la trajectoire de l'Artemis I, les paramètres du système FTS, et les états des capteurs et des systèmes de contrôle. Les valeurs restent constantes."
+   },
+   {
+    "textId": "12f2ab2979",
+    "summary": "L'image présente des données de surveillance en temps réel du système FTS, incluant des mesures de capteurs et des paramètres de navigation, indiquant une activité continue de pressurisation contrôlée en préparation d'une éventuelle destruction du lanceur Artemis I.",
+    "visual": "L'écran affiche un tableau de bord avec des données de capteurs (CI, CO), des paramètres de navigation (N28, N28, W80), des mesures de distance (R=265.4 km), et des informations sur le système de surveillance (VIS-WFOV, REC ON)."
+   }
+  ]
+ }
+]

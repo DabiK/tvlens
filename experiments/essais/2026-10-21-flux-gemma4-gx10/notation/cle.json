@@ -1,0 +1,362 @@
+{
+ "ae7d1b1f6403": {
+  "questionId": "cnrs-01",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-G-1",
+  "wallMs": 12071.144595999998
+ },
+ "dd496baa0e41": {
+  "questionId": "cnrs-02",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-G-1",
+  "wallMs": 12174.898710999987
+ },
+ "13dcd35733d5": {
+  "questionId": "cnrs-04",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-G-1",
+  "wallMs": 12481.216664000007
+ },
+ "2fec4f651c79": {
+  "questionId": "cnrs-05",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-G-1",
+  "wallMs": 8886.182889999938
+ },
+ "c523efed2693": {
+  "questionId": "cnrs-06",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-G-1",
+  "wallMs": 12372.80501999997
+ },
+ "ca99587be722": {
+  "questionId": "cnrs-01",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GP-1",
+  "wallMs": 7053.053841000001
+ },
+ "22685501b661": {
+  "questionId": "cnrs-02",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GP-1",
+  "wallMs": 7203.296723999985
+ },
+ "15027c8ef8be": {
+  "questionId": "cnrs-04",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GP-1",
+  "wallMs": 9478.749705999973
+ },
+ "8f42b3698802": {
+  "questionId": "cnrs-05",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GP-1",
+  "wallMs": 10919.746213000035
+ },
+ "74b6b4b4456f": {
+  "questionId": "cnrs-06",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GP-1",
+  "wallMs": 6411.651150000049
+ },
+ "87ac1af9d062": {
+  "questionId": "cnrs-01",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 7049.393920000002
+ },
+ "7dfaed03d626": {
+  "questionId": "cnrs-02",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 6159.535330999992
+ },
+ "6171717e49d8": {
+  "questionId": "cnrs-04",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 14521.165891000011
+ },
+ "1d8a6a8465c5": {
+  "questionId": "cnrs-05",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 7904.422222999972
+ },
+ "45c3ace73045": {
+  "questionId": "cnrs-06",
+  "source": "E4",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 8416.765920999926
+ },
+ "a00280b29118": {
+  "questionId": "kennedy-01",
+  "source": "E4",
+  "arm": "E4-kennedy-G-1",
+  "wallMs": 20022.676561
+ },
+ "504a63acbe75": {
+  "questionId": "kennedy-03",
+  "source": "E4",
+  "arm": "E4-kennedy-G-1",
+  "wallMs": 15094.62879100001
+ },
+ "f27702a36c28": {
+  "questionId": "kennedy-05",
+  "source": "E4",
+  "arm": "E4-kennedy-G-1",
+  "wallMs": 12155.058046999999
+ },
+ "c9c73332b362": {
+  "questionId": "kennedy-06",
+  "source": "E4",
+  "arm": "E4-kennedy-G-1",
+  "wallMs": 12211.210840000014
+ },
+ "3e5aa2680ac2": {
+  "questionId": "kennedy-08",
+  "source": "E4",
+  "arm": "E4-kennedy-G-1",
+  "wallMs": 11331.109152999998
+ },
+ "9eee69f27f7b": {
+  "questionId": "kennedy-01",
+  "source": "E4",
+  "arm": "E4-kennedy-GP-1",
+  "wallMs": 4016.4153909999986
+ },
+ "4b3b7dc49ed9": {
+  "questionId": "kennedy-03",
+  "source": "E4",
+  "arm": "E4-kennedy-GP-1",
+  "wallMs": 13113.254497999995
+ },
+ "e59431505e53": {
+  "questionId": "kennedy-05",
+  "source": "E4",
+  "arm": "E4-kennedy-GP-1",
+  "wallMs": 7202.350766999996
+ },
+ "82f4a39a5621": {
+  "questionId": "kennedy-06",
+  "source": "E4",
+  "arm": "E4-kennedy-GP-1",
+  "wallMs": 9249.154624999966
+ },
+ "c2c5626574c4": {
+  "questionId": "kennedy-08",
+  "source": "E4",
+  "arm": "E4-kennedy-GP-1",
+  "wallMs": 5343.480943000002
+ },
+ "0c5def3721c6": {
+  "questionId": "kennedy-01",
+  "source": "E4",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 5011.044240000003
+ },
+ "8c67f50ad6c5": {
+  "questionId": "kennedy-03",
+  "source": "E4",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 12101.210101999997
+ },
+ "91c171276411": {
+  "questionId": "kennedy-05",
+  "source": "E4",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 11172.174317999976
+ },
+ "e37899dc3c92": {
+  "questionId": "kennedy-06",
+  "source": "E4",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 7215.40407400002
+ },
+ "a268dde89c7a": {
+  "questionId": "kennedy-08",
+  "source": "E4",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 9360.274121000024
+ },
+ "105e416cec83": {
+  "questionId": "spring-01",
+  "source": "E4",
+  "arm": "E4-spring-G-1",
+  "wallMs": 9034.435871000009
+ },
+ "270cba5840b9": {
+  "questionId": "spring-02",
+  "source": "E4",
+  "arm": "E4-spring-G-1",
+  "wallMs": 9128.105401000008
+ },
+ "ddb4ea1fed78": {
+  "questionId": "spring-03",
+  "source": "E4",
+  "arm": "E4-spring-G-1",
+  "wallMs": 9162.665561000002
+ },
+ "18bbe5193668": {
+  "questionId": "spring-04",
+  "source": "E4",
+  "arm": "E4-spring-G-1",
+  "wallMs": 6199.40555700002
+ },
+ "a9db185a77b3": {
+  "questionId": "spring-06",
+  "source": "E4",
+  "arm": "E4-spring-G-1",
+  "wallMs": 16342.216131000023
+ },
+ "baca107f4626": {
+  "questionId": "spring-01",
+  "source": "E4",
+  "arm": "E4-spring-GP-1",
+  "wallMs": 5030.151615999988
+ },
+ "444caabc88fd": {
+  "questionId": "spring-02",
+  "source": "E4",
+  "arm": "E4-spring-GP-1",
+  "wallMs": 5119.344148000004
+ },
+ "e056b60ca25e": {
+  "questionId": "spring-03",
+  "source": "E4",
+  "arm": "E4-spring-GP-1",
+  "wallMs": 5158.592819999991
+ },
+ "e7d378dfbe46": {
+  "questionId": "spring-04",
+  "source": "E4",
+  "arm": "E4-spring-GP-1",
+  "wallMs": 8196.04226300004
+ },
+ "36e136b68a08": {
+  "questionId": "spring-06",
+  "source": "E4",
+  "arm": "E4-spring-GP-1",
+  "wallMs": 13283.446651000006
+ },
+ "8b9b2169712e": {
+  "questionId": "spring-01",
+  "source": "E4",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 4033.720591000005
+ },
+ "ffa5ab2ecfb2": {
+  "questionId": "spring-02",
+  "source": "E4",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 6117.0225230000215
+ },
+ "839fef0c024d": {
+  "questionId": "spring-03",
+  "source": "E4",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 5162.183882000012
+ },
+ "989d71c845b3": {
+  "questionId": "spring-04",
+  "source": "E4",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 4192.808542000013
+ },
+ "9096b114672e": {
+  "questionId": "spring-06",
+  "source": "E4",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 6304.105909999984
+ },
+ "6bdc75de69bf": {
+  "questionId": "cnrs-01",
+  "source": "E1",
+  "arm": "E1-cnrs-apprentissage",
+  "wallMs": 26078.681685000003
+ },
+ "f511d6a91794": {
+  "questionId": "cnrs-02",
+  "source": "E1",
+  "arm": "E1-cnrs-apprentissage",
+  "wallMs": 24188.137879999995
+ },
+ "ad3055430e91": {
+  "questionId": "cnrs-04",
+  "source": "E1",
+  "arm": "E1-cnrs-apprentissage",
+  "wallMs": 21503.09028599999
+ },
+ "3e7c05203683": {
+  "questionId": "cnrs-05",
+  "source": "E1",
+  "arm": "E1-cnrs-apprentissage",
+  "wallMs": 24878.520626999903
+ },
+ "d2ae7966d00b": {
+  "questionId": "cnrs-06",
+  "source": "E1",
+  "arm": "E1-cnrs-apprentissage",
+  "wallMs": 23317.122151999967
+ },
+ "4ed6eff7f38c": {
+  "questionId": "kennedy-01",
+  "source": "E1",
+  "arm": "E1-kennedy",
+  "wallMs": 34030.896565
+ },
+ "ab1e33576de9": {
+  "questionId": "kennedy-03",
+  "source": "E1",
+  "arm": "E1-kennedy",
+  "wallMs": 15114.269940999991
+ },
+ "d3e40545fd9b": {
+  "questionId": "kennedy-05",
+  "source": "E1",
+  "arm": "E1-kennedy",
+  "wallMs": 14171.088011999993
+ },
+ "2e8c5d9a42c2": {
+  "questionId": "kennedy-06",
+  "source": "E1",
+  "arm": "E1-kennedy",
+  "wallMs": 19225.333700000017
+ },
+ "d2b6bcb00c89": {
+  "questionId": "kennedy-08",
+  "source": "E1",
+  "arm": "E1-kennedy",
+  "wallMs": 19302.082956
+ },
+ "9808ff9808aa": {
+  "questionId": "spring-01",
+  "source": "E1",
+  "arm": "E1-spring",
+  "wallMs": 14039.530906
+ },
+ "4a6af79b202e": {
+  "questionId": "spring-02",
+  "source": "E1",
+  "arm": "E1-spring",
+  "wallMs": 16157.51901400002
+ },
+ "65c8914503c1": {
+  "questionId": "spring-03",
+  "source": "E1",
+  "arm": "E1-spring",
+  "wallMs": 15169.075217999984
+ },
+ "f0f51e02143c": {
+  "questionId": "spring-04",
+  "source": "E1",
+  "arm": "E1-spring",
+  "wallMs": 14203.781713000033
+ },
+ "8bd01c29ca56": {
+  "questionId": "spring-06",
+  "source": "E1",
+  "arm": "E1-spring",
+  "wallMs": 17302.642106000043
+ }
+}

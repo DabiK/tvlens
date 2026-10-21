@@ -1,0 +1,503 @@
+[
+ {
+  "questionId": "cuisine-02",
+  "answers": [
+   {
+    "textId": "13e1c5ad5c",
+    "kind": "observation",
+    "answer": "Pour préparer la marinade, le cuisinier déverse des oignons et des carottes coupés en dés dans un bol, ajoute des herbes de Provence, puis verse du vin rouge jusqu'à ce que les légumes soient recouverts. Il mélange le tout avec une spatule avant d'indiquer qu'il faut laisser reposer la préparation au moins pendant la nuit (à température fraîche ou au frigo).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "0a2054d8c6",
+    "kind": "observation",
+    "answer": "Le cuisinier place des oignons et des carottes coupés en dés dans un bol, ajoute des herbes de Provence, puis verse du vin rouge qu'il mélange avec une spatule. Il précise ensuite qu'il faut laisser reposer ce mélange au moins pendant la nuit à température fraîche.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "0eb211ae74",
+    "kind": "observation",
+    "answer": "Le cuisinier mélange des oignons et des carottes coupés en dés avec du vin rouge et des herbes de Provence (moment-19, moment-20, moment-21). Il indique qu'il faut laisser reposer le mélange au frais pendant au moins une nuit (moment-23, moment-24).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "3a6a53124f",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur les oignons et carottes coupés en dés, puis en mélangeant avec une spatule pour bien couvrir les morceaux. Il précise qu'il faut laisser reposer au moins pour la nuit, à température froide, pas forcément au frigo mais au frais.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "9c8b556937",
+    "kind": "observation",
+    "answer": "Pour préparer la marinade, le cuisinier déverse des oignons et des carottes coupés en dés dans un bol, ajoute des herbes de Provence, puis verse du vin rouge jusqu'à recouvrir les légumes. Il indique ensuite qu'il faut laisser reposer ce mélange au moins pendant la nuit à température fraîche.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "answers": [
+   {
+    "textId": "4478b3ddc3",
+    "kind": "observation",
+    "answer": "Après la marinade, le cuisinier sépare le mélange en trois parties distinctes : la viande bien égoutée, la garniture composée des carottes et oignons (ainsi que bouquet garnis et lardons), et enfin le jus de marinade qui est le vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "820718b860",
+    "kind": "observation",
+    "answer": "Après la marinade, le cuisinier sépare le mélange en trois parties distinctes : la viande bien égoutée, la garniture (les oignons et carottes), et le jus de marinade (le vin).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "658aa58824",
+    "kind": "observation",
+    "answer": "Les trois parties séparées après la marinade sont : la viande bien égoutée, la garniture (carottes, oignons, bouquet garni et lardons), et le jus de marinade (le vin).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "3ab08fbc33",
+    "kind": "observation",
+    "answer": "Après la marinade, le cuisinier sépare les éléments en trois parties. La première est la viande bien égouttée, la deuxième est la garniture composée de carottes et d'oignons, et la troisième est le jus de marinade composé du vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "ce6e4d01c3",
+    "kind": "observation",
+    "answer": "Le cuisinier sépare sa préparation en trois parties : la viande bien égoutée, la garniture composée des carottes et oignons, et enfin le jus de marinade qui correspond au vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "answers": [
+   {
+    "textId": "93480b7300",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en grattant le fond de la casserole avec une spatule pour décoller les sucs de cuisson, puis il mouille en versant le jus de marinade (le vin) dans la casserole pour bien mélanger.",
+    "citations": [
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   },
+   {
+    "textId": "f3bd00d39f",
+    "kind": "json-invalide",
+    "answer": null,
+    "citations": []
+   },
+   {
+    "textId": "0fb6a658b7",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en grattant le fond de la casserole avec une spatule pour décoller les sucs de cuisson, puis il la mouille en versant le jus de marinade (le vin) dans la casserole.",
+    "citations": [
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   },
+   {
+    "textId": "5d91e21e46",
+    "kind": "observation",
+    "answer": "L'homme ne précise pas d'action pour épaissir la préparation, mais il explique que pour mouiller, il faut prendre le jus et le verser dans la casserole (moment-53). Il verse ensuite un liquide brun dans la casserole contenant la viande (moment-54).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   },
+   {
+    "textId": "17658abc2e",
+    "kind": "observation",
+    "answer": "Pour épaissir la préparation, il gratte le fond de la casserole avec une spatule afin de décoller les sucs caramélisés (les actions de collage) qui se sont formés pendant la cuisson de la viande. Pour mouiller, il verse ensuite le jus de la marinade (le vin) dans la casserole pour lier le tout.",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "dfad5711b5",
+    "kind": "observation",
+    "answer": "Pour épaissir la préparation, l'homme gratte le fond de la casserole avec une spatule afin de décoller les sucs de cuisson (les actions de collage) accumulés pendant la cuisson de la viande. Pour mouiller, il verse un liquide brun (le jus de marinade ou du vin) dans la casserole contenant la viande et remue vigoureusement pour mélanger le tout.",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "answers": [
+   {
+    "textId": "36f0c898fb",
+    "kind": "observation",
+    "answer": "Le mode de cuisson recommandé est une cuisson à feu moyen, avec un temps de préparation de deux à trois heures. Il faut que le mélange frémisse sans bouillir activement.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "b570b32d23",
+    "kind": "observation",
+    "answer": "Le chef recommande de cuire le plat à feu moyen pour qu'il frémisse sans bouger trop fort. Il indique une durée de cuisson de 3 heures.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ]
+   },
+   {
+    "textId": "873cf1d765",
+    "kind": "observation",
+    "answer": "Le mode de cuisson recommandé est une cuisson à feu moyen, avec un temps de préparation de deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "f8e4da9210",
+    "kind": "observation",
+    "answer": "L'homme recommande une cuisson à feu moyen pendant deux à trois heures. Il précise qu'il faut couvrir la casserole pour que la préparation puisse frémir.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "c764da07fd",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole pour laisser frémir la sauce pendant deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "5e5c0ce1a6",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant la casserole pour que la sauce frémisse sans bouillir, pendant environ deux à trois heures.",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "answers": [
+   {
+    "textId": "afd9bb9504",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent qu'il ajoute des champignons coupés dans la sauce du bourguignon et qu'il remue doucement, mais aucun d'eux ne décrit l'ordre dans lequel il termine le plat avec les garnitures. Il manque un passage montrant la fin de l'assemblage.",
+    "citations": []
+   },
+   {
+    "textId": "c9cd71467e",
+    "kind": "observation",
+    "answer": "Après avoir ajouté les champignons et laissé réchauffer le plat quelques minutes, il termine en ajoutant les petits oignons (perles d'oignon) dans la casserole.",
+    "citations": [
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   },
+   {
+    "textId": "f79e693e7f",
+    "kind": "observation",
+    "answer": "L'homme termine le plat en ajoutant les champignons coupés dans la sauce brune du bourguignon, puis il remue délicatement avec une spatule pour assurer une coloration uniforme et une répartition homogène des champignons.",
+    "citations": [
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   },
+   {
+    "textId": "8c81caba1c",
+    "kind": "observation",
+    "answer": "L'homme ajoute d'abord les champignons à la sauce pour les réchauffer (moment-76 à moment-78). Il mentionne ensuite l'ajout de petits oignons, tout en précisant qu'il faut mélanger très doucement pour ne pas les abîmer (moment-79 à moment-80).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-78",
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "id": "moment-80",
+      "startMs": 630000,
+      "endMs": 640000
+     }
+    ]
+   },
+   {
+    "textId": "70ed85b006",
+    "kind": "observation",
+    "answer": "Je vais vérifier l'ordre d'ajout des garnitures en cherchant les mentions d'oignons et en consultant la transcription autour de cette étape.",
+    "citations": []
+   }
+  ]
+ }
+]

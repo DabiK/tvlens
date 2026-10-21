@@ -1,0 +1,273 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "ad7f453810",
+    "kind": "json-invalide",
+    "answer": null,
+    "citations": []
+   },
+   {
+    "textId": "b3cd8e3e0a",
+    "kind": "observation",
+    "answer": "Selon la conversation entre Thom et Celia sur le pont (passage moment-4), les passions de chacun sont : Thom veut être \"awesome in space\" (incroyable dans l'espace) et Celia a sa passion pour la robotique (\"your robotics\").",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "abd984d205",
+    "kind": "observation",
+    "answer": "Selon la conversation entre Thom et Celia sur le pont (passage moment-4), les passions de chacun sont clairement définies. Thom déclare qu'il veut être \"awesome in space\" (formidable dans l'espace), ce qui suggère une passion pour l'astronautique ou l'exploration spatiale. De son côté, Celia a la robotique comme passion, comme l'indique Thom en disant \"You have your robotics\".",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "5d267827c8",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "48ca9269c8",
+    "kind": "observation",
+    "answer": "Selon la conversation, Celia est passionnée par la robotique. Thom, quant à lui, exprime le désir d'être exceptionnel dans le domaine de l'espace. (moment-4, 24000-32000)",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "e7affd3b38",
+    "kind": "observation",
+    "answer": "Barley dit qu'ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "fbceb652b3",
+    "kind": "observation",
+    "answer": "Barley dit qu'ils devraient avoir environ 10 (minutes).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "e1d2639cdd",
+    "kind": "observation",
+    "answer": "Barley indique qu'ils devraient en avoir environ 10 (moment-25, 192000-200000).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "e3aa6c8b82",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "a4dd22bc2a",
+    "kind": "observation",
+    "answer": "Selon la transcription du segment moment-25 (entre 192000ms et 200000ms), la phrase « We should have about 10 » est prononcée juste après l'adresse à Barley (« How's it looking, Barley? »). Le temps mentionné est donc d'environ 10.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "892cc892e5",
+    "kind": "observation",
+    "answer": "On lui dit d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "3330d81465",
+    "kind": "observation",
+    "answer": "Thom is advised to be honest and tender when speaking to her. He is also told to remind her what love is.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "2576861c71",
+    "kind": "observation",
+    "answer": "L'homme avec l'œil de remplacement conseille à Thom d'être honnête et tendre lorsqu'il s'adresse à elle, et de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "0ae6ad1a82",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être honnête et tendre avec elle, afin de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "f7b52cf04b",
+    "kind": "insufficient",
+    "answer": "Les données disponibles ne permettent pas de répondre à cette question. Les passages consultés montrent une discussion sur une main robotique, mais ne contiennent aucune mention d'un reproche de Celia envers Thom.",
+    "citations": []
+   },
+   {
+    "textId": "c08a3af77c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : les passages reçus montrent Celia reprochant à Thom de lui avoir brisé le cœur et de l’avoir oubliée sur Terre, mais je n’ai pas de passage où elle lui reproche un fait précis.",
+    "citations": []
+   },
+   {
+    "textId": "63f79bc42e",
+    "kind": "json-invalide",
+    "answer": null,
+    "citations": []
+   },
+   {
+    "textId": "8923873b7c",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de lui avoir brisé le cœur et de l'avoir oubliée sur Terre.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "9d68d1031a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le passage le plus récent (moment-68, 536000-544000 ms) mentionne « Memory over right to bleed! » mais cette transcription automatique est incertaine et ne précise pas l’état annoncé de l’écriture mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "de09053f88",
+    "kind": "observation",
+    "answer": "Le dernier état annoncé est que la mémoire \"saigne\" (bleed), comme l'indique la phrase \"Memory over right to bleed!\" entendue dans le passage de 536000 à 544000 ms.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "ffbc1706a5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le passage moment-68 (536000-544000 ms) mentionne « Memory over right to bleed! » mais cette transcription automatique est incertaine et ne précise pas l'état annoncé de la réécriture de mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "0e97119f75",
+    "kind": "observation",
+    "answer": "D'après les résumés des passages observés entre 536 000 ms et 544 000 ms, la dernière déclaration concernant la mémoire est « Memory over right to bleed! ». Cette phrase est prononcée dans un contexte musical au sein d'un laboratoire dévasté où l'homme observe un robot.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "6533006346",
+    "kind": "json-invalide",
+    "answer": null,
+    "citations": []
+   },
+   {
+    "textId": "d26a1e4d9d",
+    "kind": "observation",
+    "answer": "Les paroles entendues dans le passage moment-68 (536000-544000) mentionnent \"Memory over right to bleed!\". Je ne dispose d'aucune autre information sur l'état de l'écrasement de la mémoire.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,201 @@
+export const meta = {
+  name: 'audit-gx10-overnight',
+  description: 'Audit the GX10 overnight trial records: recompute claims from raw data, check seals, hygiene; adversarially verify every issue',
+  phases: [
+    { title: 'Audit', detail: 'one auditor per group of trial folders, recomputing claims from raw files' },
+    { title: 'Verify', detail: 'a skeptic tries to refute each reported issue' },
+  ],
+}
+
+const REPO = '/Users/Dabi/Documents/ISN/tvlens'
+const ESS = REPO + '/experiments/essais'
+const SCR = args.scratch
+
+// The Mac allows at most four subagents at once: hand slots over directly so the cap is never exceeded.
+const MAX = 4
+let active = 0
+const waiting = []
+async function limited(fn) {
+  if (active >= MAX) { await new Promise(r => waiting.push(r)) } else { active++ }
+  try { return await fn() } finally { const next = waiting.shift(); if (next) next(); else active-- }
+}
+
+const RULES = `
+Contexte : TVLens, dépôt ${REPO}, branche main à 0cbe363 (= origin/main). Une session Codex a mené cette nuit des essais sur une
+GX10 (ASUS, GB10) et a consigné les résultats dans ${ESS}/<date>-<sujet>/. Tu fais partie d'un audit indépendant de ce qui a été
+produit. Le relais de la session de nuit est /private/tmp/handoff-tvlens-gx10-2026-10-21.md (lis-le pour savoir ce qui est affirmé).
+
+Règles strictes :
+- LECTURE SEULE sur le dépôt. Ne modifie, ne crée, ne supprime aucun fichier sous ${REPO}. Aucun git add/commit/checkout/reset/clean/stash.
+  Le dépôt contient 77 modifications ou fichiers non suivis étrangers : n'y touche pas.
+- Tes scripts et sorties vont uniquement dans ton dossier de travail : ${SCR}/<ton-unité>/ (crée-le).
+- Avant de lancer un script du dépôt, lis-le : ne le lance que s'il n'écrit rien dans le dépôt (ou s'il accepte un chemin de sortie
+  que tu diriges vers ton dossier de travail). Sinon, refais le calcul indépendamment dans un script à toi. Une recomputation
+  indépendante depuis les bruts vaut mieux que la relance du script de l'auteur. Lance Python avec PYTHONDONTWRITEBYTECODE=1.
+- Pas de SSH, pas de réseau, aucun appel de modèle, aucune charge lourde (le Mac a 36 Go et d'autres agents tournent).
+- Ne déclare jamais un résultat que tu n'as pas observé. Un contrôle non lancé se dit « non vérifié ».
+- Pour chaque chiffre affirmé dans les README/BILAN de ton unité et dans le relais, retrouve le fichier brut source et recalcule-le.
+  Mentionne le chemin du brut et ta valeur recalculée. Signale tout écart, même petit (arrondi faux, n différent, médiane
+  calculée sur un autre ensemble, paire mal appariée, passage mélangé).
+- Vérifie les sceaux SHA-256 (integrite.json, package.sha256.json, manifest…) contre les fichiers locaux présents ; dis lesquels
+  ne sont que distants (non vérifiables ici).
+- Vérifie la conformité de chaque README aux consignes du projet : question, configuration exacte, résultats, lecture, limites et
+  incidents ; résultats bruts et scripts présents ; ligne dans ${ESS}/README.md ; pas de média, poids, secret, jeton, clé ni adresse
+  privée (Tailscale 100.x, LAN 192.168.x) dans les fichiers SUIVIS par Git (git ls-files). Distingue suivi / non suivi.
+- Cherche aussi les affirmations de qualité non soutenues : toute phrase qui présente une variante comme meilleure en pertinence alors
+  que les fiches sont provisoires (readyForScoring=false), ou qui confond « acquired » avec « juste ».
+- Rédige les descriptions en français, concises et précises (chemin:ligne quand c'est possible).
+`
+
+const UNITS = [
+  { key: 'consolidation', dirs: ['2026-10-21-consolidation-gx10'],
+    focus: `Recalcule bilan.json indépendamment de bilan.py (ou relance bilan.py en dirigeant sa sortie vers ton dossier) et compare.
+Lance les tests test_bilan.py et test_annotation_aveugle.py (unittest, sans bytecode, sans écrire dans le dépôt).
+Vérifie que CHAQUE chiffre de BILAN.md et README.md correspond aux dossiers sources cités (suis les liens).
+Paquet d'annotation (annotation/) : vérifie l'aveugle SANS lire le contenu sémantique des mappings au-delà de ce qu'il faut pour
+contrôler l'aveugle : les JSON publics questions-pause.json et observations-images.json ne doivent laisser fuir ni bras, ni passage,
+ni délai, ni SHA source, ni ordre qui permette de déduire le bras (ordre trié par bras, identifiants séquentiels corrélés, champs
+de longueur/temps…). Vérifie que les mappings de apres-notation/ couvrent exactement les éléments publics (40 et 96).` },
+  { key: 'fiches', dirs: ['2026-10-21-relecture-fiches-gx10'],
+    focus: `L'oracle vit dans ${REPO}/experiments/gx10/evaluation/ (fiches/*.md, questions/*.json, selection.json, preuves/, relecture.md),
+qui est entièrement NON SUIVI par Git : vérifie et mesure la conséquence (les SHA gelés dans le dossier de relecture
+correspondent-ils aux fichiers présents ? le gel est-il reproductible depuis Git seul ?). Note qu'un fichier .README.md.swp périmé
+(20/10 11:21) existe : ne le touche pas.
+Vérifie les 30 questions, readyForScoring=false partout, les 90 réponses de référence mélangées (aveugle : pas de fuite de la
+configuration source dans le paquet public), et l'audit-independant.md.
+Pour les six questions prioritaires kennedy-06, spring-04, spring-06, cuisine-07, tears-07, artemis-07 : confronte l'attendu de la
+fiche et les corrections candidates de l'audit aux preuves locales disponibles (segments ASR horodatés, SRT de Tears of Steel,
+JSON Artemis, images Spring dans preuves/spring/*.jpg — tu peux regarder les images avec l'outil Read). Pour chacune, dis : attendu
+actuel, ce que les preuves locales montrent avec horodatage, si la correction candidate est soutenue, et ce qui exige le média
+(vidéo/audio) absent du Mac. Ne déduis jamais un attendu d'une sortie de modèle TVLens.` },
+  { key: 'pause', dirs: ['2026-10-21-confirmation-pause-vision-gx10'],
+    focus: `Recalcule depuis les rapports bruts rapatriés : 8 passages A/B/B/A, 40/40 réponses acquises, médianes HTTP groupées Kennedy
+A 18,78 s / B 11,21 s, B 10/10 sous 20 s contre A 5/10, Spring A ~12,19 / B ~9,19 s, couverture vision A 91,38 %, B 82,76–89,66 %,
+pertes, et spring-04/spring-06 « insufficient » à chaque passage. Vérifie le sceau ad4f47c4…, le vérificateur verifier_fermeture.py
+et ses tests (sans écrire dans le dépôt). Vérifie que le SHA-256 de la télémétrie hors Git cité dans BILAN.md correspond au fichier
+/Users/Dabi/Documents/TVLens-GX10/essais/confirmation-pause-20261021T081500Z/telemetry.jsonl (shasum -a 256, lecture seule).
+Vérifie que la pause est bien la SEULE variable entre bras (configs, médias, poids, questions identiques).` },
+  { key: 'images', dirs: ['2026-10-21-confirmation-images-gx10'],
+    focus: `Recalcule depuis les bruts : 24 blocs (12 Kennedy, 12 Spring), 96/96 cas, ordre A/B/B/A, trois images plus rapides sur 48/48
+paires bloc/passage, gain médian apparié au premier passage 1,56 s Kennedy et 1,53 s Spring, préremplissage ~0,06 s en B2, 459,5 s
+au total. B transmet les images 0, 2, 4 : vérifie que c'est la seule différence (modèle, gabarit, ASR identiques). Vérifie le sceau
+934d12b8… sur 70 fichiers (lesquels sont présents localement : 14 copiés ?), et la cohérence « ASR source vide/unknown ».` },
+  { key: 'shadow', dirs: ['2026-10-21-shadow-selection-gx10'],
+    focus: `Recalcule : 667 blocs sur six vidéos (CNRS 110, Bœuf 92, Kennedy 53, Tears 91, Artemis 263, Spring 58), 616 propositions à
+trois images, 51 replis à cinq (Bœuf 4, Tears 26, Artemis 18 …), 142 candidats statiques, coût CPU p50 6,83–11,02 ms. Vérifie
+qu'aucun appel VLM n'a été supprimé (shadow réel) et les empreintes. Lis la règle de sélection et dis si elle est figée/décrite
+assez précisément pour un replay préenregistré.` },
+  { key: 'ablation-nuit', dirs: ['2026-10-21-analyse-ablation-gx10', '2026-10-20-nuit-gx10'],
+    focus: `Analyse A/B/B/A CNRS : pause plus rapide sur 10/10 paires de questions ; trois images plus rapides sur 11/12 blocs au premier
+passage comme au second ; médianes HTTP ~20,97/21,50 s (vision active) contre 12,06/13,53 s (pause) ; 5 contre 3 images médianes
+6,78/5,34 s puis 3,76/3,65 s ; diagnostic-vision.md : Kennedy 35 appels visuels pour 38 blocs, médiane 7,272 s, moyenne 8,280 s, un
+bloc perdu ; sondes textuelles 20/20, 9,04 s Ollama de moyenne. Recalcule depuis les rapatriements. Dans 2026-10-20-nuit-gx10, 59
+fichiers sont NON suivis (preuves/fixture-nuit*, paquet-nuit.tar.gz) : dis ce qu'ils sont et si le rapport en dépend. Vérifie l'arrêt
+« blocked » du lanceur parent sur la permission Docker et que les deux sous-campagnes sont bien scellées.` },
+  { key: 'qwen-vllm', dirs: ['2026-10-20-vision-vllm-gx10', '2026-10-21-reprise-bras-qwen', '2026-10-21-incident-digest-qwen', '2026-10-21-reprise-docker-gx10'],
+    focus: `Recalcule : 24 blocs Qwen identiques, Ollama plus rapide à chaque paire, médianes 13,81/17,62 s puis 10,58/16,58 s ; 25 réponses
+par pile ; sonde texte vLLM 20/20, 20,39 s de moyenne, deux insufficient. Vérifie F16 (Ollama) contre BF16 (vLLM) et les prétraitements
+différents. Incident digest « sha256: » : vérifie l'explication et ses preuves. Incident Docker : vérifie la chronologie et que la
+reprise n'a refait que le suffixe prévu.` },
+  { key: 'streamingvlm', dirs: ['2026-10-21-streamingvlm-gx10', '2026-10-21-incident-streaming-buildkit', '2026-10-21-incident-streaming-past', '2026-10-21-incident-streaming-queue'],
+    focus: `Recalcule : préfixe de 16 s 160,90 → 111,96 s avec cache ; 372 s de Spring en 603,94 s soit 0,616× le temps réel ; quatre pilotes
+terminés. Vérifie la chaîne d'incidents (BuildKit bridge, dépendance future/past, masquage du module queue) et que chaque correctif est
+minimal et tracé. 2 fichiers non suivis dans incident-streaming-buildkit/evidence : dis ce que c'est.` },
+  { key: 'reference-corpus', dirs: ['2026-10-20-preparation-gx10', '2026-10-20-reference-gx10', '2026-10-21-corpus-etendu-gx10', '2026-10-21-reprise-file-gx10'],
+    focus: `Recalcule : neuf replays de référence Whisper (CNRS/Kennedy/Spring × trois modèles) 45/45 acquises ; corpus étendu neuf replays
+(Bœuf, Tears, Artemis) 45/45 acquises, cinq insufficient, aucune perte audio, ~94,5 % de couverture visuelle, 74 publications visuelles
+perdues dont 63 par retard ; « small le plus rapide en médiane sur Kennedy et Spring, large-v3-turbo sur CNRS » ; cuisine-07 trois
+insufficient. Vérifie que la préparation ne contient ni adresse privée ni jeton dans les fichiers suivis (config-initiale.env !).` },
+  { key: 'hygiene', dirs: [],
+    focus: `Unité transversale sur tout ${REPO}/experiments (fichiers SUIVIS par git uniquement, plus ${REPO}/experiments/gx10 non suivi à part) :
+cherche adresses Tailscale (100.64.0.0/10), IP LAN 192.168.x, IP publiques, jetons (Bearer, token=, TVLENS_*TOKEN, clés API, hf_, sk-),
+clés privées, chemins de clés SSH, e-mails, médias (mp4/mkv/webm/wav/m4a/mp3), poids (gguf/safetensors/bin > 1 Mo), archives lourdes,
+fichiers > 5 Mo. Vérifie que chaque dossier 2026-10-20* et 2026-10-21* a sa ligne dans ${ESS}/README.md et que les lignes pointent vers
+des dossiers existants. Vérifie que les fichiers .py/.cjs/.mjs/.js suivis sous experiments/ respectent la limite de 160 caractères par
+ligne (règle du dépôt) et dis si node scripts/check.mjs --changed peut être lancé sans écrire (lis scripts/check.mjs ; ne le lance que
+s'il est en lecture seule et rapporte son résultat tel quel).` },
+]
+
+const AUDIT_SCHEMA = {
+  type: 'object',
+  properties: {
+    unit: { type: 'string' },
+    claims: { type: 'array', items: { type: 'object', properties: {
+      claim: { type: 'string' }, source: { type: 'string' }, recomputed: { type: 'string' },
+      status: { type: 'string', enum: ['confirmed', 'discrepancy', 'unverifiable'] }, evidence: { type: 'string' } },
+      required: ['claim', 'status', 'evidence'] } },
+    seals: { type: 'array', items: { type: 'object', properties: {
+      seal: { type: 'string' }, filesChecked: { type: 'number' }, ok: { type: 'boolean' }, detail: { type: 'string' } },
+      required: ['seal', 'ok', 'detail'] } },
+    tests: { type: 'array', items: { type: 'object', properties: {
+      command: { type: 'string' }, result: { type: 'string' } }, required: ['command', 'result'] } },
+    issues: { type: 'array', items: { type: 'object', properties: {
+      id: { type: 'string' }, severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+      kind: { type: 'string' }, location: { type: 'string' }, description: { type: 'string' }, evidence: { type: 'string' } },
+      required: ['id', 'severity', 'kind', 'location', 'description', 'evidence'] } },
+    priorityQuestions: { type: 'array', items: { type: 'object', properties: {
+      id: { type: 'string' }, currentExpected: { type: 'string' }, localEvidence: { type: 'string' },
+      candidateSupported: { type: 'string' }, needsMedia: { type: 'string' } }, required: ['id', 'localEvidence'] } },
+    summary: { type: 'string' },
+  },
+  required: ['unit', 'claims', 'issues', 'summary'],
+}
+
+const VERDICT_SCHEMA = {
+  type: 'object',
+  properties: {
+    refuted: { type: 'boolean' },
+    correctedSeverity: { type: 'string', enum: ['high', 'medium', 'low', 'none'] },
+    reasoning: { type: 'string' },
+    evidence: { type: 'string' },
+  },
+  required: ['refuted', 'correctedSeverity', 'reasoning', 'evidence'],
+}
+
+function auditPrompt(u) {
+  const where = u.dirs.length ? u.dirs.map(d => `${ESS}/${d}`).join('\n') : '(transversal, voir la consigne)'
+  return `${RULES}
+Ton unité : « ${u.key} ». Dossier de travail : ${SCR}/${u.key}/
+Dossiers à auditer :
+${where}
+
+Ce qu'il faut vérifier en priorité :
+${u.focus}
+
+Rends : chaque affirmation chiffrée vérifiée (claims), les sceaux contrôlés (seals), les tests lancés avec leur sortie résumée (tests),
+et les problèmes (issues) avec un id court unique préfixé par « ${u.key}- ». Sévérité high = un chiffre ou une conclusion du rapport
+est faux ou non reproductible, ou un secret/une adresse privée est suivi par Git ; medium = écart matériel, trace manquante, aveugle
+fragile ; low = forme, arrondi, lien cassé.`
+}
+
+function verifyPrompt(u, issue) {
+  return `${RULES}
+Tu es un vérificateur SCEPTIQUE. Un auditeur de l'unité « ${u.key} » affirme le problème suivant. Ton travail : essayer de le RÉFUTER
+en retournant aux fichiers bruts toi-même (ne fais pas confiance à l'auditeur). Dossier de travail : ${SCR}/verify-${issue.id}/
+
+Problème ${issue.id} (sévérité annoncée ${issue.severity}, type ${issue.kind})
+Emplacement : ${issue.location}
+Description : ${issue.description}
+Preuve donnée : ${issue.evidence}
+
+Dis refuted=true si le problème n'existe pas ou repose sur une mauvaise lecture (autre ensemble, autre passage, arrondi légitime,
+fichier explicitement hors Git par conception documentée…). Sinon refuted=false et donne la sévérité corrigée. En cas de doute réel,
+refuted=false avec la sévérité la plus basse défendable. Donne ta preuve (chemins, valeurs).`
+}
+
+phase('Audit')
+const results = await pipeline(
+  UNITS,
+  u => limited(() => agent(auditPrompt(u), { label: `audit:${u.key}`, phase: 'Audit', schema: AUDIT_SCHEMA })),
+  (audit, u) => {
+    if (!audit) return null
+    const toCheck = (audit.issues || []).filter(i => i.severity !== 'low')
+    const lows = (audit.issues || []).filter(i => i.severity === 'low')
+    if (lows.length) log(`${u.key}: ${lows.length} constat(s) mineur(s) non contre-vérifié(s)`)
+    return parallel(toCheck.map(i => () =>
+      limited(() => agent(verifyPrompt(u, i), { label: `verify:${i.id}`, phase: 'Verify', schema: VERDICT_SCHEMA }))
+        .then(v => ({ ...i, verdict: v }))))
+      .then(verified => ({ ...audit, verifiedIssues: verified.filter(Boolean), lowIssues: lows }))
+  },
+)
+return results.filter(Boolean)

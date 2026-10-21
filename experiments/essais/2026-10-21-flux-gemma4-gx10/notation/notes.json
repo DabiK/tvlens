@@ -1,0 +1,602 @@
+[
+ {
+  "video": "kennedy",
+  "arm": "GPS",
+  "q": "kennedy-01",
+  "s": 5.011044240000003,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "E1",
+  "q": "kennedy-01",
+  "s": 34.030896565000006,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "G",
+  "q": "kennedy-01",
+  "s": 20.022676561,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GP",
+  "q": "kennedy-01",
+  "s": 4.016415390999999,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GP",
+  "q": "kennedy-03",
+  "s": 13.113254497999995,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GPS",
+  "q": "kennedy-03",
+  "s": 12.101210101999998,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "E1",
+  "q": "kennedy-03",
+  "s": 15.114269940999991,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "G",
+  "q": "kennedy-03",
+  "s": 15.09462879100001,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "G",
+  "q": "kennedy-05",
+  "s": 12.155058046999999,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "E1",
+  "q": "kennedy-05",
+  "s": 14.171088011999993,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "GPS",
+  "q": "kennedy-05",
+  "s": 11.172174317999977,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GP",
+  "q": "kennedy-05",
+  "s": 7.202350766999996,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "E1",
+  "q": "kennedy-06",
+  "s": 19.225333700000018,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "kennedy",
+  "arm": "GPS",
+  "q": "kennedy-06",
+  "s": 7.21540407400002,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GP",
+  "q": "kennedy-06",
+  "s": 9.249154624999967,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "G",
+  "q": "kennedy-06",
+  "s": 12.211210840000014,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GPS",
+  "q": "kennedy-08",
+  "s": 9.360274121000025,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "G",
+  "q": "kennedy-08",
+  "s": 11.331109152999998,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "GP",
+  "q": "kennedy-08",
+  "s": 5.343480943000002,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "kennedy",
+  "arm": "E1",
+  "q": "kennedy-08",
+  "s": 19.302082956,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "spring",
+  "arm": "GPS",
+  "q": "spring-01",
+  "s": 4.033720591000005,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "E1",
+  "q": "spring-01",
+  "s": 14.039530906,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GP",
+  "q": "spring-01",
+  "s": 5.030151615999988,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "G",
+  "q": "spring-01",
+  "s": 9.034435871000008,
+  "score": 0,
+  "invention": false,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "G",
+  "q": "spring-02",
+  "s": 9.128105401000008,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "E1",
+  "q": "spring-02",
+  "s": 16.15751901400002,
+  "score": 0,
+  "invention": true,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GP",
+  "q": "spring-02",
+  "s": 5.119344148000004,
+  "score": 0,
+  "invention": true,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GPS",
+  "q": "spring-02",
+  "s": 6.1170225230000215,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "spring",
+  "arm": "G",
+  "q": "spring-03",
+  "s": 9.162665561,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "spring",
+  "arm": "E1",
+  "q": "spring-03",
+  "s": 15.169075217999984,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "spring",
+  "arm": "GPS",
+  "q": "spring-03",
+  "s": 5.162183882000012,
+  "score": 2,
+  "invention": true,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GP",
+  "q": "spring-03",
+  "s": 5.158592819999991,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GPS",
+  "q": "spring-04",
+  "s": 4.192808542000013,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GP",
+  "q": "spring-04",
+  "s": 8.19604226300004,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "G",
+  "q": "spring-04",
+  "s": 6.19940555700002,
+  "score": 0,
+  "invention": false,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "E1",
+  "q": "spring-04",
+  "s": 14.203781713000033,
+  "score": 0,
+  "invention": true,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "E1",
+  "q": "spring-06",
+  "s": 17.302642106000043,
+  "score": 0,
+  "invention": true,
+  "unjustified": true,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GPS",
+  "q": "spring-06",
+  "s": 6.304105909999984,
+  "score": 1,
+  "invention": false,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "G",
+  "q": "spring-06",
+  "s": 16.342216131000022,
+  "score": 1,
+  "invention": true,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "spring",
+  "arm": "GP",
+  "q": "spring-06",
+  "s": 13.283446651000006,
+  "score": 1,
+  "invention": true,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "GPS",
+  "q": "cnrs-01",
+  "s": 7.049393920000003,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "G",
+  "q": "cnrs-01",
+  "s": 12.071144595999998,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GP",
+  "q": "cnrs-01",
+  "s": 7.0530538410000005,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "E1",
+  "q": "cnrs-01",
+  "s": 26.078681685000003,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GPS",
+  "q": "cnrs-02",
+  "s": 6.159535330999992,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GP",
+  "q": "cnrs-02",
+  "s": 7.203296723999985,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "G",
+  "q": "cnrs-02",
+  "s": 12.174898710999987,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "E1",
+  "q": "cnrs-02",
+  "s": 24.188137879999996,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "E1",
+  "q": "cnrs-04",
+  "s": 21.503090285999992,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GPS",
+  "q": "cnrs-04",
+  "s": 14.521165891000011,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "G",
+  "q": "cnrs-04",
+  "s": 12.481216664000007,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GP",
+  "q": "cnrs-04",
+  "s": 9.478749705999974,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GPS",
+  "q": "cnrs-05",
+  "s": 7.9044222229999725,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "E1",
+  "q": "cnrs-05",
+  "s": 24.878520626999904,
+  "score": 2,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ },
+ {
+  "video": "cnrs",
+  "arm": "GP",
+  "q": "cnrs-05",
+  "s": 10.919746213000035,
+  "score": 1,
+  "invention": false,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "G",
+  "q": "cnrs-05",
+  "s": 8.886182889999938,
+  "score": 1,
+  "invention": true,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "GPS",
+  "q": "cnrs-06",
+  "s": 8.416765920999925,
+  "score": 1.5,
+  "invention": true,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "G",
+  "q": "cnrs-06",
+  "s": 12.372805019999971,
+  "score": 1,
+  "invention": false,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "GP",
+  "q": "cnrs-06",
+  "s": 6.411651150000049,
+  "score": 1,
+  "invention": false,
+  "unjustified": false,
+  "relevant": false
+ },
+ {
+  "video": "cnrs",
+  "arm": "E1",
+  "q": "cnrs-06",
+  "s": 23.317122151999968,
+  "score": 3,
+  "invention": false,
+  "unjustified": false,
+  "relevant": true
+ }
+]

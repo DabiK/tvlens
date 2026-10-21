@@ -1,0 +1,539 @@
+{
+ "source": "archives GX10 rapatriées, lecture seule",
+ "toolUse": {
+  "questions": 150,
+  "toolCallsPerQuestion": {
+   "0": 150
+  },
+  "kinds": {
+   "observation": 129,
+   "insufficient": 21
+  },
+  "campaigns": [
+   "experiments/essais/2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/01-A/run/campaign.json",
+   "experiments/essais/2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/02-B/run/campaign.json",
+   "experiments/essais/2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/03-B/run/campaign.json",
+   "experiments/essais/2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/04-A/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+   "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-01-A/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-02-B/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-03-B/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/kennedy-04-A/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-01-A/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-02-B/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-03-B/run/campaign.json",
+   "experiments/essais/2026-10-21-confirmation-pause-vision-gx10/rapatriements/confirmation-pause-20261021T081500Z/results/spring-04-A/run/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+   "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json"
+  ]
+ },
+ "freshness": {
+  "lagAtStartS_median": 8.0021249875,
+  "lagAtStartS_buckets": {
+   "8": 120,
+   "16": 1,
+   "0": 29
+  }
+ },
+ "whisper": {
+  "base-cnrs-apprentissage": {
+   "blocks": 110,
+   "elapsedMs_p50": 1651.3,
+   "elapsedMs_p90": 2299.9,
+   "elapsedMs_max": 4709.1,
+   "whisperTotalMs_p50": 997.8,
+   "loadMs_p50": 308.5,
+   "encodeMs_p50": 133.8,
+   "decodeMs_p50": 397.8,
+   "outsideWhisperMs_p50": 623.7,
+   "temperatureFallbacks": 3,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json"
+  },
+  "base-kennedy": {
+   "blocks": 53,
+   "elapsedMs_p50": 1416.6,
+   "elapsedMs_p90": 1827.4,
+   "elapsedMs_max": 2214.5,
+   "whisperTotalMs_p50": 776.9,
+   "loadMs_p50": 324.3,
+   "encodeMs_p50": 128.9,
+   "decodeMs_p50": 223.4,
+   "outsideWhisperMs_p50": 602.7,
+   "temperatureFallbacks": 3,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json"
+  },
+  "base-spring": {
+   "blocks": 58,
+   "elapsedMs_p50": 1291.8,
+   "elapsedMs_p90": 1633.8,
+   "elapsedMs_max": 1823.6,
+   "whisperTotalMs_p50": 634.4,
+   "loadMs_p50": 305.6,
+   "encodeMs_p50": 144.1,
+   "decodeMs_p50": 110.5,
+   "outsideWhisperMs_p50": 590.3,
+   "temperatureFallbacks": 11,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json"
+  },
+  "large-v3-turbo-cnrs-apprentissage": {
+   "blocks": 110,
+   "elapsedMs_p50": 2725.5,
+   "elapsedMs_p90": 3380.1,
+   "elapsedMs_max": 4136.1,
+   "whisperTotalMs_p50": 2024.5,
+   "loadMs_p50": 1126.6,
+   "encodeMs_p50": 275.4,
+   "decodeMs_p50": 504.6,
+   "outsideWhisperMs_p50": 686.1,
+   "temperatureFallbacks": 0,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json"
+  },
+  "large-v3-turbo-kennedy": {
+   "blocks": 53,
+   "elapsedMs_p50": 2425.6,
+   "elapsedMs_p90": 2982.0,
+   "elapsedMs_max": 3323.2,
+   "whisperTotalMs_p50": 1761.7,
+   "loadMs_p50": 1117.5,
+   "encodeMs_p50": 274.0,
+   "decodeMs_p50": 289.6,
+   "outsideWhisperMs_p50": 686.5,
+   "temperatureFallbacks": 0,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json"
+  },
+  "large-v3-turbo-spring": {
+   "blocks": 58,
+   "elapsedMs_p50": 2430.9,
+   "elapsedMs_p90": 3342.7,
+   "elapsedMs_max": 3810.6,
+   "whisperTotalMs_p50": 1753.6,
+   "loadMs_p50": 1019.3,
+   "encodeMs_p50": 408.3,
+   "decodeMs_p50": 170.8,
+   "outsideWhisperMs_p50": 664.4,
+   "temperatureFallbacks": 43,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json"
+  },
+  "small-cnrs-apprentissage": {
+   "blocks": 110,
+   "elapsedMs_p50": 2185.2,
+   "elapsedMs_p90": 2749.9,
+   "elapsedMs_max": 3706.6,
+   "whisperTotalMs_p50": 1501.2,
+   "loadMs_p50": 661.3,
+   "encodeMs_p50": 156.0,
+   "decodeMs_p50": 580.4,
+   "outsideWhisperMs_p50": 646.2,
+   "temperatureFallbacks": 0,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json"
+  },
+  "small-kennedy": {
+   "blocks": 53,
+   "elapsedMs_p50": 1935.9,
+   "elapsedMs_p90": 2440.1,
+   "elapsedMs_max": 3020.0,
+   "whisperTotalMs_p50": 1196.5,
+   "loadMs_p50": 658.8,
+   "encodeMs_p50": 158.1,
+   "decodeMs_p50": 284.0,
+   "outsideWhisperMs_p50": 695.3,
+   "temperatureFallbacks": 0,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json"
+  },
+  "small-spring": {
+   "blocks": 58,
+   "elapsedMs_p50": 1800.7,
+   "elapsedMs_p90": 3820.6,
+   "elapsedMs_max": 12038.1,
+   "whisperTotalMs_p50": 1179.6,
+   "loadMs_p50": 690.4,
+   "encodeMs_p50": 191.9,
+   "decodeMs_p50": 158.5,
+   "outsideWhisperMs_p50": 635.4,
+   "temperatureFallbacks": 44,
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json"
+  }
+ },
+ "springNonSpeech": {
+  "base-spring": {
+   "passages": 58,
+   "speechLike": 3,
+   "examples": [
+    {
+     "startS": 160,
+     "text": "НАПРЯЖЕННАЯ МУЗЫКА"
+    },
+    {
+     "startS": 264,
+     "text": "НАПРЯЖЁННАЯ МУЗЫКА"
+    },
+    {
+     "startS": 288,
+     "text": "НАПРЯЖЁННАЯ МУЗЫКА"
+    }
+   ],
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json"
+  },
+  "large-v3-turbo-spring": {
+   "passages": 58,
+   "speechLike": 16,
+   "examples": [
+    {
+     "startS": 40,
+     "text": "Oh. Oh. Oh. Oh. Oh. Oh. Oh. Oh."
+    },
+    {
+     "startS": 48,
+     "text": "What? What? What? What? What? What? What? What?"
+    },
+    {
+     "startS": 96,
+     "text": "I'm sorry."
+    },
+    {
+     "startS": 104,
+     "text": "I don't know. I don't know."
+    },
+    {
+     "startS": 112,
+     "text": "I don't know. I don't know."
+    },
+    {
+     "startS": 136,
+     "text": "Huh? Huh? Huh? Huh? Huh? Huh? Huh?"
+    },
+    {
+     "startS": 208,
+     "text": "What? What? What? What? What? What? What? What?"
+    },
+    {
+     "startS": 224,
+     "text": "Let's go. Let's go. Let's go. Let's go."
+    }
+   ],
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json"
+  },
+  "small-spring": {
+   "passages": 58,
+   "speechLike": 2,
+   "examples": [
+    {
+     "startS": 240,
+     "text": "Редактор субтитров А.Синецкая Корректор А.Егорова"
+    },
+    {
+     "startS": 280,
+     "text": "НАПРЯЖЕННАЯ МУЗЫКА"
+    }
+   ],
+   "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json"
+  }
+ },
+ "prefixTranscript": {
+  "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json": {
+   "lastQuestionS": 792,
+   "blocks": 99,
+   "transcriptChars": 15877,
+   "transcriptTokensApprox_chars_div_4": 3969,
+   "visionTextChars": 36580
+  },
+  "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json": {
+   "lastQuestionS": 360,
+   "blocks": 45,
+   "transcriptChars": 3825,
+   "transcriptTokensApprox_chars_div_4": 956,
+   "visionTextChars": 16962
+  },
+  "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json": {
+   "lastQuestionS": 372,
+   "blocks": 47,
+   "transcriptChars": 365,
+   "transcriptTokensApprox_chars_div_4": 91,
+   "visionTextChars": 14160
+  },
+  "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json": {
+   "lastQuestionS": 2096,
+   "blocks": 262,
+   "transcriptChars": 22827,
+   "transcriptTokensApprox_chars_div_4": 5706,
+   "visionTextChars": 91187
+  },
+  "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json": {
+   "lastQuestionS": 656,
+   "blocks": 82,
+   "transcriptChars": 6268,
+   "transcriptTokensApprox_chars_div_4": 1567,
+   "visionTextChars": 25929
+  },
+  "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json": {
+   "lastQuestionS": 552,
+   "blocks": 69,
+   "transcriptChars": 2245,
+   "transcriptTokensApprox_chars_div_4": 561,
+   "visionTextChars": 22363
+  }
+ },
+ "questionProbe": {
+  "rows": [
+   {
+    "case": "1-cnrs-01",
+    "promptTokens": 2027,
+    "prefillS": 2.69,
+    "evalTokens": 234,
+    "decodeS": 8.0,
+    "clientS": 10.92
+   },
+   {
+    "case": "1-cnrs-02",
+    "promptTokens": 2207,
+    "prefillS": 2.92,
+    "evalTokens": 183,
+    "decodeS": 6.83,
+    "clientS": 9.99
+   },
+   {
+    "case": "1-cnrs-04",
+    "promptTokens": 2067,
+    "prefillS": 2.79,
+    "evalTokens": 259,
+    "decodeS": 8.9,
+    "clientS": 11.91
+   },
+   {
+    "case": "1-cnrs-05",
+    "promptTokens": 2156,
+    "prefillS": 2.86,
+    "evalTokens": 256,
+    "decodeS": 8.8,
+    "clientS": 11.83
+   },
+   {
+    "case": "1-cnrs-06",
+    "promptTokens": 2057,
+    "prefillS": 2.81,
+    "evalTokens": 235,
+    "decodeS": 8.38,
+    "clientS": 11.43
+   },
+   {
+    "case": "1-kennedy-01",
+    "promptTokens": 1552,
+    "prefillS": 2.11,
+    "evalTokens": 189,
+    "decodeS": 6.7,
+    "clientS": 9.04
+   },
+   {
+    "case": "1-kennedy-03",
+    "promptTokens": 2082,
+    "prefillS": 2.12,
+    "evalTokens": 246,
+    "decodeS": 7.76,
+    "clientS": 10.09
+   },
+   {
+    "case": "1-kennedy-05",
+    "promptTokens": 2042,
+    "prefillS": 2.09,
+    "evalTokens": 216,
+    "decodeS": 6.89,
+    "clientS": 9.14
+   },
+   {
+    "case": "1-kennedy-06",
+    "promptTokens": 2087,
+    "prefillS": 2.16,
+    "evalTokens": 183,
+    "decodeS": 6.74,
+    "clientS": 9.14
+   },
+   {
+    "case": "1-kennedy-08",
+    "promptTokens": 2015,
+    "prefillS": 2.07,
+    "evalTokens": 181,
+    "decodeS": 5.99,
+    "clientS": 8.29
+   },
+   {
+    "case": "2-cnrs-01",
+    "promptTokens": 2027,
+    "prefillS": 0.15,
+    "evalTokens": 234,
+    "decodeS": 8.0,
+    "clientS": 8.42
+   },
+   {
+    "case": "2-cnrs-02",
+    "promptTokens": 2207,
+    "prefillS": 0.15,
+    "evalTokens": 183,
+    "decodeS": 6.99,
+    "clientS": 7.34
+   },
+   {
+    "case": "2-cnrs-04",
+    "promptTokens": 2067,
+    "prefillS": 0.16,
+    "evalTokens": 259,
+    "decodeS": 8.91,
+    "clientS": 9.3
+   },
+   {
+    "case": "2-cnrs-05",
+    "promptTokens": 2156,
+    "prefillS": 0.16,
+    "evalTokens": 256,
+    "decodeS": 8.81,
+    "clientS": 9.19
+   },
+   {
+    "case": "2-cnrs-06",
+    "promptTokens": 2057,
+    "prefillS": 0.15,
+    "evalTokens": 235,
+    "decodeS": 8.39,
+    "clientS": 8.71
+   },
+   {
+    "case": "2-kennedy-01",
+    "promptTokens": 1552,
+    "prefillS": 0.16,
+    "evalTokens": 189,
+    "decodeS": 6.7,
+    "clientS": 7.06
+   },
+   {
+    "case": "2-kennedy-03",
+    "promptTokens": 2082,
+    "prefillS": 0.16,
+    "evalTokens": 246,
+    "decodeS": 7.78,
+    "clientS": 8.13
+   },
+   {
+    "case": "2-kennedy-05",
+    "promptTokens": 2042,
+    "prefillS": 0.14,
+    "evalTokens": 216,
+    "decodeS": 6.9,
+    "clientS": 7.25
+   },
+   {
+    "case": "2-kennedy-06",
+    "promptTokens": 2087,
+    "prefillS": 0.16,
+    "evalTokens": 183,
+    "decodeS": 6.75,
+    "clientS": 7.17
+   },
+   {
+    "case": "2-kennedy-08",
+    "promptTokens": 2015,
+    "prefillS": 0.16,
+    "evalTokens": 181,
+    "decodeS": 5.99,
+    "clientS": 6.42
+   }
+  ],
+  "source": "experiments/essais/2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/answers-ollama"
+ },
+ "failedQuestions": [
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+   "id": "kennedy-06",
+   "e2eMs": 15366,
+   "tools": 0,
+   "contextThroughMs": 264000,
+   "kind": "observation",
+   "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'on y participe et le mène, et il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes."
+  },
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+   "id": "spring-06",
+   "e2eMs": 16869,
+   "tools": 0,
+   "contextThroughMs": 368000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent que la fin de la vidéo (moment-41 à moment-46, 320000-368000), et les passages du début n'ont pas été analysés. Je peux dé"
+  },
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+   "id": "kennedy-06",
+   "e2eMs": 13930,
+   "tools": 0,
+   "contextThroughMs": 264000,
+   "kind": "observation",
+   "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et il rejette qu'il soit dominé par un drapeau hostile de conquête ou rempli d'armes."
+  },
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+   "id": "spring-06",
+   "e2eMs": 16425,
+   "tools": 0,
+   "contextThroughMs": 368000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages récents (moment-45, 352000–360000 ms et moment-46, 360000–368000 ms) n'ont qu'une observation partielle, sans image analysée, et je n'ai pas encore rée"
+  },
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+   "id": "kennedy-06",
+   "e2eMs": 17704,
+   "tools": 0,
+   "contextThroughMs": 264000,
+   "kind": "insufficient",
+   "answer": "Je n’ai pas pu relier cette réponse aux passages consultés."
+  },
+  {
+   "run": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+   "id": "spring-06",
+   "e2eMs": 14304,
+   "tools": 0,
+   "contextThroughMs": 368000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas comparer l'aspect du paysage au début avec celui d'après : les passages reçus ne couvrent que la fin de la séquence (320 s à 368 s), et les premiers segments ne sont pas disponibles dans ce fil. Je peux décrire ce qui est vis"
+  },
+  {
+   "run": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+   "id": "cuisine-07",
+   "e2eMs": 23264,
+   "tools": 0,
+   "contextThroughMs": 648000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent le cuisinier goûter la viande puis mélanger doucement les champignons et petits oignons dans la marmite, mais aucun d'eux ne décrit "
+  },
+  {
+   "run": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+   "id": "cuisine-07",
+   "e2eMs": 25405,
+   "tools": 0,
+   "contextThroughMs": 648000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent qu'il incorpore la sauce brune, les champignons et les petits oignons, mais aucun passage ne décrit l'ordre exact de fin du plat ave"
+  },
+  {
+   "run": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+   "id": "cuisine-07",
+   "e2eMs": 23398,
+   "tools": 0,
+   "contextThroughMs": 648000,
+   "kind": "insufficient",
+   "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent qu'il ajoute les champignons puis les petits oignons et qu'il laisse réchauffer, mais aucun passage ne décrit l'ordre exact de la fi"
+  }
+ ]
+}

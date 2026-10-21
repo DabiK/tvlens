@@ -1,0 +1,2636 @@
+[
+ {
+  "questionId": "artemis-01",
+  "atMs": 968000,
+  "question": "What decision has the launch team just announced?",
+  "answers": [
+   {
+    "answerId": "74da04588750",
+    "kind": "observation",
+    "answer": "The launch team has just given the go to resume the count and launch Artemis I.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ec115e3f3c7b",
+    "kind": "observation",
+    "answer": "Le directeur de lancement a annoncé un « go » pour reprendre le compte à rebours et lancer Artemis 1, après avoir salué le travail de toute l'équipe. L'équipe de mission a confirmé la consigne et indiqué qu'il restait quelques étapes de configuration avant de relancer l'horloge.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     },
+     {
+      "startMs": 952000,
+      "endMs": 960000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ccbabc57e207",
+    "kind": "observation",
+    "answer": "The launch team has just announced a go to resume the count and launch Artemis I.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "atMs": 1248000,
+  "question": "Why will water flood the mobile launcher?",
+  "answers": [
+   {
+    "answerId": "c3345b3fc9c8",
+    "kind": "observation",
+    "answer": "The water is part of the ignition overpressure and sound suppression system: it floods the mobile launcher to reduce the power of the pressure and sound from the rocket's ignition, which could otherwise damage the rocket. The sequence starts at T-minus 17 seconds.",
+    "citations": [
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     },
+     {
+      "startMs": 1216000,
+      "endMs": 1224000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "192d50b4ae98",
+    "kind": "observation",
+    "answer": "The water is part of the ignition overpressure and sound suppression system: it floods the mobile launcher to reduce the pressure and thunderous sound from the rocket's ignition, which could otherwise damage the rocket.",
+    "citations": [
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "66d3724cb554",
+    "kind": "observation",
+    "answer": "La vidéo explique que le système de suppression de pression et de son (overpressure and sound suppression) inonde le lanceur mobile d'eau pour réduire la puissance de la pression et du bruit générés par l'allumage des moteurs, afin d'éviter d'endommager la fusée. Cette séquence commence à T-moins 17 secondes. (moment-153, 1216000-1224000 ; moment-154, 1224000-1232000)",
+    "citations": [
+     {
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "atMs": 1664000,
+  "question": "Has liftoff happened, and which engines are propelling the vehicle?",
+  "answers": [
+   {
+    "answerId": "d5604e170d21",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the count reaches zero and the vehicle rises (moment-204, 1624000–1632000 ms). The vehicle is propelled by all four RS-25 engines on the core stage plus two solid rocket boosters (moment-206, 1640000–1648000 ms).",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "bf971c9d5dcb",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred. The countdown reaches zero and the vehicle rises, with the narration explicitly stating \"liftoff of Artemis 1\" (moment-204, 1624000-1632000). The vehicle is propelled by all four RS25 engines on the core stage plus two solid rocket boosters (moment-206, 1640000-1648000).",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "446bde03dad6",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the count reaches zero and the vehicle rises in a large plume of flame and steam. The vehicle is being propelled by all four RS-25 engines on the core stage plus two solid rocket boosters.",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1632000,
+      "endMs": 1640000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "atMs": 1792000,
+  "question": "Which propulsion elements have just separated, and what continues to power the flight?",
+  "answers": [
+   {
+    "answerId": "d6cc3bc43569",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated (moment-221, 1760000–1768000 ms). The core stage continues to power the flight of Orion with all four RS-25 engines (moment-222, 1768000–1776000 ms).",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f82001e58814",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated (SRB jettison), and the core stage continues to power the flight with all four RS-25 engines.",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "aeb83d1798b5",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated, as confirmed by the mission control narration. The core stage, powered by its four RS-25 engines, continues to propel the Orion spacecraft.",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "atMs": 2096000,
+  "question": "What major engine event are the commentators preparing for now?",
+  "answers": [
+   {
+    "answerId": "1d57088c4495",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "5d69d6da6353",
+    "kind": "observation",
+    "answer": "The commentators are preparing for the core stage main engine cutoff (MECO), when the four RS-25 engines shut down. They note the engines are throttling down and count down the seconds to cutoff (moment-258 to moment-261, 2056000–2088000 ms).",
+    "citations": [
+     {
+      "startMs": 2056000,
+      "endMs": 2064000
+     },
+     {
+      "startMs": 2064000,
+      "endMs": 2072000
+     },
+     {
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "d3d1419260b8",
+    "kind": "observation",
+    "answer": "The commentators are preparing for the core stage main engine cut-off (MECO), with the four RS-25 engines throttling down and a 30-second countdown to that event. This is the major engine event they are now anticipating.",
+    "citations": [
+     {
+      "startMs": 2080000,
+      "endMs": 2088000
+     },
+     {
+      "startMs": 2064000,
+      "endMs": 2072000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-01",
+  "atMs": 96000,
+  "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+  "answers": [
+   {
+    "answerId": "d0b91fef381a",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "4880e0d5d434",
+    "kind": "observation",
+    "answer": "La vidéo oppose les petites IA, qui tournent sur un ordinateur portable avec quelques millions de paramètres, aux grandes IA comme les LLM, qui comptent environ mille milliards de paramètres, soit un facteur d'au moins 100 000. Elle ajoute que leur apprentissage et les missions attendues d'elles ne seront pas les mêmes.",
+    "citations": [
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "9a1f8cc7cfe9",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins un facteur 100 000. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "a7544cdb9da2",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le système est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "fda122d67868",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres : une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA atteint des milliers de milliards, soit un écart d'au moins 100 000 fois. Cette différence de taille implique aussi que l'apprentissage ne se fait pas de la même manière selon que le modèle est petit ou grand.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "4ebdf8c39f86",
+    "kind": "observation",
+    "answer": "Selon la vidéo, la distinction repose sur la taille du modèle, c'est-à-dire le nombre de paramètres. Une petite IA en compte quelques milliers à quelques millions, tandis qu'une grande IA en compte des milliers de milliards, soit un écart d'au moins 100 000 fois.",
+    "citations": [
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "49e665afd87a",
+    "kind": "observation",
+    "answer": "La vidéo oppose une petite IA, qui fait de la classification de données avec quelques milliers à quelques centaines de milliers de paramètres et tourne sur un ordinateur portable, à une grande IA comme un LLM, qui atteint environ 1000 milliards de paramètres, soit un facteur d'au moins 100 000. Elle ajoute que l'apprentissage et les missions attendues ne seront pas les mêmes entre les deux.",
+    "citations": [
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "atMs": 232000,
+  "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+  "answers": [
+   {
+    "answerId": "1bfa7925b2f5",
+    "kind": "observation",
+    "answer": "La vidéo explique la séparation des données d'apprentissage et d'évaluation par une analogie avec un enseignant : on garde une partie des exercices (par exemple 15 sur 20) pour travailler en cours, et on met de côté le reste (5) pour vérifier à la fin si l'apprentissage a bien fonctionné. Cette logique correspond à la répartition classique de 80 % pour l'apprentissage et 20 % pour l'évaluation, afin de mesurer la performance du modèle sur des données qu'il n'a pas vues pendant l'entraînement.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "a1603c499f69",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, comme un enseignant qui réserve quelques exercices pour un examen. Les passages moment-23 à moment-25 (176000-200000 ms) montrent cette logique : 80 % des données servent à l'apprentissage, 20 % sont conservées précieusement pour évaluer la performance du système.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "d233f6ae63e9",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données (20 %) à l'écart pour l'évaluation, afin de vérifier à la fin si l'apprentissage a bien fonctionné, comme un enseignant qui réserve des exercices pour l'interro. Les passages moment-23 à moment-25 (176000-200000 ms) montrent cette répartition 80/20 et l'analogie avec la classe.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "9c37a955f7cf",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier à la fin si l'apprentissage s'est bien passé, comme un enseignant qui réserve des exercices pour un contrôle. C'est cette séparation qui permet de mesurer la performance du modèle sur des exemples qu'il n'a pas vus pendant l'apprentissage.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "bba2b2cbcff5",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, comme un enseignant qui réserve des exercices pour un contrôle. Cette séparation évite de juger le modèle sur des exemples qu'il a déjà vus pendant l'entraînement.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "d81569ec34a8",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données de côté pour l'évaluation afin de vérifier, à la fin, si l'apprentissage s'est bien passé, sans les avoir utilisées pour entraîner le modèle. C'est l'analogie du professeur qui garde 5 exercices sur 20 pour l'évaluation finale, plutôt que d'en faire tous des exercices de cours.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "925ecef786ed",
+    "kind": "observation",
+    "answer": "La vidéo explique qu'on garde une partie des données (20 %) de côté pour l'évaluation, comme un enseignant qui réserve des exercices pour l'interro finale, afin de vérifier si l'apprentissage est bien passé. C'est cette séparation qui permet de mesurer la performance du modèle sur des exemples qu'il n'a pas vus pendant l'apprentissage.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "atMs": 472000,
+  "question": "Comment le cours explique-t-il le surapprentissage ?",
+  "answers": [
+   {
+    "answerId": "cb48afe80f55",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. L'expert insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, et compare le phénomène à un humain qui, en apprenant trop, finit par se dégrader.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "db89f4ddecee",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase où, après une progression initiale, la performance du modèle se dégrade : la courbe d'apprentissage monte jusqu'à un maximum puis régresse. Il insiste sur l'importance de s'arrêter au bon moment, avant d'entrer dans cette zone, en comparant la situation à l'apprentissage humain. Les passages moment-54 à moment-57 (424000-456000 ms) portent cette explication.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "243bec1d2076",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase qui suit le pic de progression : après une amélioration initiale, la courbe régresse et le modèle finit par ne plus être capable de faire les choses correctement. L'enseignant insiste sur l'idée qu'il faut s'arrêter au bon moment, c'est-à-dire au point où l'apprentissage cesse de progresser, avant d'entrer dans cette zone de surapprentissage, et il évoque des outils logiciels pour piloter cet arrêt.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "768fdbca60a1",
+    "kind": "observation",
+    "answer": "Le cours présente le surapprentissage comme une phase qui survient après un pic de performance : le modèle progresse d'abord, puis sa qualité se dégrade s'il continue à s'entraîner sans évaluation. L'art de l'apprentissage consisterait donc à s'arrêter au bon moment, avant d'entrer dans cette zone de surapprentissage.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "32ae265b6e57",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme la phase où, après une progression, la performance du modèle se dégrade : il apprend trop les données d'entraînement et perd en précision et en généralisation. L'expert insiste sur le fait que « l'art de l'apprentissage, c'est de s'arrêter au bon moment », avant d'entrer dans cette zone de régression, en comparant le phénomène à ce qui se passe chez les humains. Il montre une courbe d'apprentissage qui monte puis redescend pour illustrer ce passage.",
+    "citations": [
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c753a7498620",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression initiale, la performance se dégrade et le modèle finit par ne plus être capable de faire les choses correctement. Pour l'éviter, il recommande de réserver environ 20 % des données à l'évaluation afin de suivre la courbe d'apprentissage et de s'arrêter au bon moment, avant d'entrer dans cette zone de régression.",
+    "citations": [
+     {
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     },
+     {
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8ba15f7b7aa0",
+    "kind": "observation",
+    "answer": "Le cours décrit le surapprentissage comme une phase où, après une progression initiale, la performance du modèle se dégrade parce qu'il apprend trop intensément, comme un élève qui bachote et finit par se dégrader. Il insiste sur le fait que l'art de l'apprentissage est de s'arrêter au bon moment, avant d'entrer dans cette zone de surapprentissage, en s'appuyant sur une courbe de validation pour repérer ce point.",
+    "citations": [
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 440000,
+      "endMs": 448000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "atMs": 648000,
+  "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+  "answers": [
+   {
+    "answerId": "1d697d045986",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à apprendre la langue : le modèle apprend à compléter des phrases avec des trous, comme un enfant qui apprend à parler et à construire des phrases. C'est une étape extrêmement coûteuse en calcul, comparée à l'acquisition du langage chez l'enfant, et elle précède la phase d'alignement. Les passages moment-76 à moment-79 (600000-632000 ms) portent cette explication.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "77f4cac25f9d",
+    "kind": "observation",
+    "answer": "Le pré-entraînement consiste à apprendre le langage : le modèle apprend à parler, à construire des phrases et à acquérir des connaissances générales à partir de grandes quantités de données. C'est une phase extrêmement coûteuse en calcul, comparée à l'apprentissage du langage chez un enfant.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "5cd941ad8039",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation, un processus extrêmement coûteux en calcul, qui apprend la langue de la même façon qu'un enfant apprend à parler : construire des phrases et compléter des trous, bien plus efficacement qu'un adulte. C'est la première phase d'apprentissage, jugée extrêmement importante, avant la phase suivante.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "9988a33a6e8f",
+    "kind": "observation",
+    "answer": "Le pré-entraînement consiste à entraîner un modèle de fondation, un processus décrit comme extrêmement coûteux en calcul, comparable à l'apprentissage du langage chez un enfant. Le modèle apprend alors à construire des phrases et à maîtriser la langue, de façon très efficace, avant la phase d'apprentissage suivante.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c3564df60226",
+    "kind": "observation",
+    "answer": "Pendant le pré-entraînement, le modèle apprend à maîtriser le langage, notamment à construire et compléter des phrases, dans un processus long et très coûteux en calcul, comparé à l'apprentissage d'une langue par un enfant.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "76eeb93a32e7",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici consiste à entraîner un modèle de fondation sur la complétion de phrases avec des trous, afin de lui apprendre la langue et des bases de connaissances, comme un enfant apprend à parler et à associer des mots. La vidéo souligne que cette phase est extrêmement coûteuse en calcul et constitue la première étape d'apprentissage, avant une phase suivante d'affinage.",
+    "citations": [
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 632000,
+      "endMs": 640000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8ca4d9d12407",
+    "kind": "observation",
+    "answer": "Le pré-entraînement décrit ici correspond à l'apprentissage de la langue : le modèle apprend à parler, à construire des phrases et à acquérir le langage, comme un enfant qui apprend à parler. C'est une phase extrêmement coûteuse en calcul, comparée à l'apprentissage du langage chez un enfant, mais les serveurs ultra-performants permettent d'apprendre de manière bien plus efficace qu'un adulte. Cette première phase d'apprentissage est décrite comme extrêmement importante, avant le fine-tuning et l'alignement.",
+    "citations": [
+     {
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "atMs": 792000,
+  "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+  "answers": [
+   {
+    "answerId": "b20ccb31da28",
+    "kind": "observation",
+    "answer": "Le cours distingue les deux phases : l'alignement consiste à donner au modèle un ensemble de règles éthiques et de bonne conduite (ne pas se comporter ainsi, répondre avec bienveillance), tandis que le fine-tuning vise à développer ses capacités linguistiques et à lui apprendre à répondre à des questions spécifiques en complétant des phrases, via un modèle instructeur et des instructions claires.",
+    "citations": [
+     {
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c7b1842b2925",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences professionnelles (comme un prof ou un médecin qui acquiert son savoir-faire), à l'alignement, qui est un savoir-être : un ensemble de règles éthiques et de bienveillance à respecter avant de servir le public. Il cite l'exemple de ChatGPT, dont la force a été de réussir un alignement qui « tienne la route » face à des utilisateurs tentant de pousser le modèle à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "startMs": 768000,
+      "endMs": 776000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8338dd38b8da",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui spécialise le modèle sur une tâche ou un domaine (comme un médecin qui apprend ses compétences), à l'alignement, qui lui impose un ensemble de règles éthiques et de bonne conduite (bienveillance, interdits) avant de le mettre en pratique. L'alignement est présenté comme la phase qui garantit que le modèle se comporte correctement face à des utilisateurs qui peuvent essayer de le pousser à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "324478dde634",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences métier (être prof, médecin, etc.), à l'alignement, présenté comme un savoir-être : un ensemble de règles éthiques (ne pas parler de ceci, répondre avec bienveillance) que le modèle doit respecter avant d'être mis en contact avec le public.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ccda17d2b204",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences (par exemple devenir « médecin »), à l'alignement, qui consiste à apprendre un ensemble de règles éthiques et comportementales (bienveillance, ne pas se comporter de telle ou telle façon) avant de « recevoir des patients ». L'alignement est présenté comme la phase stratégique qui garantit une utilisation correcte et éthique de l'IA.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "447be747ff12",
+    "kind": "observation",
+    "answer": "Le cours oppose le fine-tuning, qui consiste à apprendre des compétences professionnelles (comme un médecin qui apprend son métier), à l'alignement, qui consiste à imposer un ensemble de règles éthiques et de conduite (bienveillance, interdiction de certains comportements) avant de mettre le modèle en service. L'alignement est présenté comme la phase qui garantit que le modèle respecte ces règles face à des utilisateurs qui cherchent à le pousser à l'erreur.",
+    "citations": [
+     {
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "599ae8f7f2ea",
+    "kind": "observation",
+    "answer": "Le cours oppose le pré-entraînement, qui apprend la langue et des compétences (comme un enfant qui apprend à parler), à l'alignement, qui consiste à imposer un ensemble de règles éthiques et de bonne conduite avant que le modèle ne soit mis en pratique. Les passages moment-93 à moment-97 (736000-776000 ms) portent cette distinction.",
+    "citations": [
+     {
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-02",
+  "atMs": 200000,
+  "question": "Comment prépare-t-il la marinade et combien de temps la laisse-t-il reposer ?",
+  "answers": [
+   {
+    "answerId": "3644bb376396",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en ajoutant des oignons grelots, des carottes et des champignons au bœuf, puis en versant du vin rouge jusqu'à recouvrir les morceaux, le tout salé et poivré. Il précise qu'il faut laisser reposer au moins une nuit, à température froide mais pas forcément au frigo.",
+    "citations": [
+     {
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "02db41b15571",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en versant du vin rouge sur des oignons et des carottes coupés en dés, puis en mélangeant le tout avec une spatule. Il précise qu'il faut laisser reposer au moins pour la nuit, à température froide (pas forcément au frigo, mais frais).",
+    "citations": [
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f32b80d59dd6",
+    "kind": "observation",
+    "answer": "Il prépare la marinade en ajoutant des oignons et des carottes coupés en dés, du sel, du poivre, des lardons et un bouquet garni dans un bol, puis il verse du vin rouge jusqu'à recouvrir le tout et mélange avec une spatule. Il laisse ensuite reposer la marinade au moins une nuit, à température froide mais pas forcément au frigo.",
+    "citations": [
+     {
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "atMs": 248000,
+  "question": "Quelles sont les trois parties séparées après la marinade ?",
+  "answers": [
+   {
+    "answerId": "f3098cc759e4",
+    "kind": "observation",
+    "answer": "Les trois parties séparées sont : la viande bien égouttée, la garniture (carottes, oignons, bouquet garni et lardons), et le jus de marinade (le vin).",
+    "citations": [
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "78eadbb50b49",
+    "kind": "observation",
+    "answer": "Les trois parties séparées après la marinade sont : la viande bien égouttée, la garniture (carottes, bouquet garni et petits lardons), et le jus de marinade, à savoir le vin.",
+    "citations": [
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f0c662e34441",
+    "kind": "observation",
+    "answer": "Les trois parties séparées après la marinade sont : la viande bien égoutée, la garniture (carottes, bouquet garni et petits lardons), et le jus de marinade (le vin).",
+    "citations": [
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "atMs": 456000,
+  "question": "Que fait-il pour épaissir puis mouiller la préparation ?",
+  "answers": [
+   {
+    "answerId": "5871927d70d7",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en la faisant réduire et en grattant le fond du pot pour récupérer les sucs, puis il mouille en versant le jus de marinade (le vin) dedans. Il remue bien pour mélanger.",
+    "citations": [
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f709dc733e26",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en incorporant de la farine dans le liquide avec une spatule, puis il la mouille en versant le jus de marinade (le vin) dans le pot contenant la viande, ce qui déglace le tout.",
+    "citations": [
+     {
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "0ada6c6ec4fe",
+    "kind": "observation",
+    "answer": "Il épaissit la préparation en ajoutant de l'huile dans la casserole à l'aide d'un entonnoir, puis il la mouille en versant le jus de marinade (le vin) dedans, ce qui déglace le fond. Il remue et gratte le fond pour bien mélanger et récupérer les sucs de cuisson.",
+    "citations": [
+     {
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "atMs": 548000,
+  "question": "Quel mode de cuisson vient-il de recommander ?",
+  "answers": [
+   {
+    "answerId": "f285c5d2c320",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant, pendant trois heures, en veillant à ce que la sauce frémisse sans bouillir.",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "9ecb9f8348fb",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant, en veillant à ce que le liquide frémisse sans bouillir, pour environ trois heures.",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ed2cd003f4ec",
+    "kind": "observation",
+    "answer": "Il recommande de cuire à feu moyen, en couvrant, pour environ deux à trois heures, en veillant à ce que le liquide frémisse sans bouillir.",
+    "citations": [
+     {
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "atMs": 656000,
+  "question": "Dans quel ordre finit-il le plat avec les garnitures ?",
+  "answers": [
+   {
+    "answerId": "70e679a37e46",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent le cuisinier goûter la viande puis mélanger doucement les champignons et petits oignons dans la marmite, mais aucun d'eux ne décrit l'ordre dans lequel il termine le plat avec les garnitures. Le passage suivant (648000 à 656000 ms) n'est pas encore analysé (unanalyzedTailMs≈8000 ms).",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "4d407cecad87",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent qu'il incorpore la sauce brune, les champignons et les petits oignons, mais aucun passage ne décrit l'ordre exact de fin du plat avec les garnitures. Le passage moment-81 (640000-648000 ms) est partiel et en cours d'analyse, et il existe un trou de couverture de 648000 à 656003 ms. Pourriez-vous préciser le moment exact où il termine le plat, ou attendre que l'analyse du passage en cours soit terminée ?",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "91133a04159b",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore répondre : les passages observés (moment-76 à moment-81, 600000 à 648000 ms) montrent qu'il ajoute les champignons puis les petits oignons et qu'il laisse réchauffer, mais aucun passage ne décrit l'ordre exact de la fin du plat avec les garnitures. Le segment 648000 à 656002 ms est une lacune de couverture et moment-81 est encore en analyse. Pourriez-vous préciser le moment où il termine le plat, ou attendre que l'analyse de moment-81 soit terminée ?",
+    "citations": [],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-01",
+  "atMs": 32000,
+  "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+  "answers": [
+   {
+    "answerId": "9aaff8d2e7a1",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "b4571b9f08d3",
+    "kind": "observation",
+    "answer": "Kennedy situe l'histoire humaine enregistrée à 50 000 ans, puis la ramasse en une demi-année (une « half a century ») pour montrer la brièveté de la période récente.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f82dd90b117a",
+    "kind": "observation",
+    "answer": "Kennedy situe l’histoire humaine enregistrée à 50 000 ans, puis la ramène à un demi-siècle, soit un ordre de grandeur de l’ordre de 10^5 ans.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "4ef435e14338",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "12f18b4dc1a7",
+    "kind": "observation",
+    "answer": "Kennedy compare 50 000 ans d’histoire humaine enregistrée à une demi-seule centaine d’années, soit un ordre de grandeur de l’ordre de 50 000 ans.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "a453a575ab41",
+    "kind": "observation",
+    "answer": "Kennedy condense 50 000 ans d'histoire humaine en un demi-siècle, puis note qu'on sait peu des 40 premières années.",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "13721206fafe",
+    "kind": "observation",
+    "answer": "Kennedy raisonne en dizaines de milliers d’années : il évoque « 50,000 years of man's recorded history » puis « the first 40 years » de cette période, soit un ordre de grandeur de l’ordre de 50 000 ans (moment-2, 8000–16000 ms ; moment-3, 16000–24000 ms).",
+    "citations": [
+     {
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "atMs": 128000,
+  "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+  "answers": [
+   {
+    "answerId": "c255d7bbb86b",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ecc551291edb",
+    "kind": "observation",
+    "answer": "L'accélération produit de nouveaux maux, une nouvelle ignorance, de nouveaux problèmes et de nouveaux dangers, tout en dissipant les anciens. L'ouverture de l'espace promet de hauts coûts et de hauts risques, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "6a183fa443c3",
+    "kind": "observation",
+    "answer": "L'accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "71370123d148",
+    "kind": "observation",
+    "answer": "L'accélération produit, selon Kennedy, de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers. L'ouverture de l'espace promet de hauts coûts et de hauts risques, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "3a27a6d9b22b",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "77fdac2bef2c",
+    "kind": "observation",
+    "answer": "L'accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f295e96f7857",
+    "kind": "observation",
+    "answer": "Cette accélération produit, selon Kennedy, de nouveaux maux, de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, tout en dissipant les anciens. L'ouverture de l'espace promet à la fois de hauts coûts et des dangers, mais aussi une haute récompense.",
+    "citations": [
+     {
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "atMs": 216000,
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "answers": [
+   {
+    "answerId": "cd55e28b29c7",
+    "kind": "observation",
+    "answer": "Il affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme l'une des grandes aventures de tous les temps, et la quête de connaissance comme une détermination que rien ne peut arrêter.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "11fdfd5d2966",
+    "kind": "observation",
+    "answer": "Il présente l'exploration spatiale comme une grande aventure inévitable : « the exploration of science, space will go ahead, whether we join in it or not » (moment-23, 176000–184000 ms ; moment-24, 184000–192000 ms). Sur le rôle des États-Unis, il affirme qu'aucune nation qui prétend mener les autres ne peut rester en retrait : « no nation, which expects to be the leader of other nations, can expect to stay behind in this race for space » (moment-25, 192000–200000 ms ; moment-26, 200000–208000 ms).",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "97ae25567248",
+    "kind": "observation",
+    "answer": "Il dit que l'exploration de l'espace avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme une grande aventure et un défi que les Américains doivent relever.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "78c82c6bbb06",
+    "kind": "observation",
+    "answer": "Il dit que l'exploration spatiale avancera « que nous y participions ou non » et qu'elle est « l'une des grandes aventures de tous les temps » (moment-24, 184000-192000). Pour les États-Unis, il affirme qu'« aucune nation qui prétend mener les autres ne peut espérer rester en retrait » dans cette course (moment-25, 192000-200000), et que ceux qui les ont précédés ont assuré que le pays « tenait la tête » (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c5eed7960c9c",
+    "kind": "observation",
+    "answer": "Il présente l'exploration spatiale comme une grande aventure inévitable, qui avancera « que nous y participions ou non », et affirme qu'aucune nation voulant mener les autres ne peut rester en retrait dans cette course.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c3b18732a92e",
+    "kind": "observation",
+    "answer": "Kennedy dit que l'exploration de la science et de l'espace avancera « que nous y participions ou non » et qu'elle est « l'une des grandes aventures de tous les temps ». Il ajoute qu'aucune nation qui prétend mener les autres ne peut se permettre de rester en retrait dans cette course spatiale.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "203adfcc6090",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. Il présente l'espace comme l'une des grandes aventures de tous les temps, que l'humanité ne peut ni ne doit refuser.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "atMs": 272000,
+  "question": "What does Kennedy want space to represent, and what does he reject?",
+  "answers": [
+   {
+    "answerId": "94a0834111e1",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une grande aventure partagée, tandis qu'il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "bc3d5fba6f84",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "2a11bd06260c",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il ne soit pas rempli d'armes ou de menaces ; il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il devienne un champ de rivalité armée.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "55a611e01ed5",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « une bannière de liberté et de paix » et qu'il soit partagé, non qu'il soit rempli d'armes ou dominé par une « bannière de conquête hostile ». Il rejette donc la conquête et la militarisation de l'espace.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "2b69cedd7c6d",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par une bannière de liberté et de paix, et il rejette qu'il soit dominé par un drapeau hostile de conquête ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ad94e6717146",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'il soit une part de l'effort humain que les États-Unis entendent mener (« We mean to be a part of it. We mean to lead it. »). Il rejette qu'il soit dominé par « a hostile flag of conquest » et qu'il soit rempli d'armes ou de menaces.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     },
+     {
+      "startMs": 224000,
+      "endMs": 232000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "9c4e4255947b",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit gouverné par « a banner of freedom and peace » et qu'on y participe et le mène, et il rejette qu'il soit dominé par « a hostile flag of conquest » ou rempli d'armes.",
+    "citations": [
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "startMs": 256000,
+      "endMs": 264000
+     },
+     {
+      "startMs": 224000,
+      "endMs": 232000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "atMs": 360000,
+  "question": "Who determines whether technology serves good or war?",
+  "answers": [
+   {
+    "answerId": "4a9f1142fb8f",
+    "kind": "observation",
+    "answer": "Kennedy répond que c'est l'homme qui décide : la science et la technologie n'ont « pas de conscience propre », et leur usage comme force pour le bien ou pour le mal dépend de l'humanité. Il ajoute que c'est à la position de prééminence des États-Unis de permettre de décider si cet « océan nouveau » sera un espace de liberté ou de guerre.",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "1132003070e6",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. »",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "ff242c8c184a",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « Science, like nuclear science and all technology, has no conscience of its own. Whether it will be a force for good or ill depends on man. »",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8f79ab470879",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « Science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or ill depends on man » (moment-42, 328000-336000).",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "b32e58e90afd",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, where they it will become a force for good or real depends on man » (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms).",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "fcff1d92ffa8",
+    "kind": "observation",
+    "answer": "Kennedy répond que la technologie n'a pas de conscience propre et que c'est l'homme qui décide si elle sert le bien ou la guerre.",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8ecf870c8e9e",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. »",
+    "citations": [
+     {
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "spring-01",
+  "atMs": 72000,
+  "question": "Qui accompagne la jeune fille au début ?",
+  "answers": [
+   {
+    "answerId": "8e3b031d3fb0",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un terrier, qui court dans la neige en tenant un morceau de bois dans sa gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f91d7a3c2eee",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "d6816b7a3823",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "285dcc256235",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c0b8d4aae791",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un terrier, qui tient un morceau de bois dans sa gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "2ff09f15cb8e",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "bfaffe46ea51",
+    "kind": "insufficient",
+    "answer": "Les passages reçus ne montrent qu'un enfant et un petit chien dans un paysage enneigé, sans préciser qui accompagne la jeune fille au début.",
+    "citations": [
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "atMs": 192000,
+  "question": "Quel objet tient-elle dans la forêt ?",
+  "answers": [
+   {
+    "answerId": "9238f04df735",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt brumeuse.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "74cea190e40b",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8f1647b5cfc9",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "326b1158de61",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "cdb6d7901c0f",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c9f8c5202c13",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f6ec3fdf23f4",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt, selon les passages moment-18 (136000-144000) et moment-20 (152000-160000).",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "atMs": 222000,
+  "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?",
+  "answers": [
+   {
+    "answerId": "66ce8aa6350b",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide flottant dans l'obscurité.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "cda47772c375",
+    "kind": "observation",
+    "answer": "La grande forme flottante près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide aux reflets lumineux dans l'obscurité.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "f776f5fe6e2f",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est enveloppée d'une lumière bleue, selon les passages moment-24 à moment-26 (184000-208000).",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "4ac44691f359",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière bleue, décrite comme bleue et sombre dans les passages consultés.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "39c0658fa59a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas trancher la couleur dominante de la lumière de la grande forme : les résumés la décrivent seulement comme « lumineuse » ou « indistincte », sans préciser la teinte, et je n’ai pas encore réexaminé l’image. Si tu me confirmes, je peux inspecter le passage concerné (par exemple moment-22, 168000–176000 ms) pour voir la couleur réelle.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "a9c11ca2ee45",
+    "kind": "observation",
+    "answer": "La grande forme flottante près d'elle est décrite comme un organisme bleu translucide, donc la lumière qui domine est bleue.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "6d3a272d8e36",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est enveloppée d'une lumière bleu-vert, visible au centre de l'image avec des reflets et des particules qui s'en échappent.",
+    "citations": [
+     {
+      "startMs": 168000,
+      "endMs": 176000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "atMs": 268000,
+  "question": "Comment apparaît maintenant le haut du bâton ?",
+  "answers": [
+   {
+    "answerId": "f55c3d710497",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les passages observés le montrent seulement tenu pour se stabiliser, sans détail de son extrémité, et le dernier segment analysé (moment-32) est encore en attente d'analyse visuelle.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "b7eee7167d35",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "e0e1252b279b",
+    "kind": "observation",
+    "answer": "Le haut du bâton est décrit comme portant une flamme, et il émet une lumière dorée qui éclaire la scène.",
+    "citations": [
+     {
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "b52f41e5f746",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les résumés consultés ne le précisent pas et le passage le plus récent (moment-32, 248000-256000) n’a pas encore d’analyse visuelle exploitable. Je peux réexaminer ce passage pour voir si le haut du bâton y est visible.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "8edeed177c26",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : le passage le plus récent analysé (moment-30, 232000-240000) ne mentionne qu'une lumière dorée émanant du bâton, sans détail sur son extrémité, et le segment suivant (moment-32, 248000-256000) est encore en cours d'analyse.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "d7f747469609",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : le dernier passage analysé (moment-32, 248000-256000) ne détaille que la lumière vive qu'il émet, sans préciser son extrémité, et le passage suivant n'est pas encore disponible.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "004d66a2fe8d",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les passages récents (moment-31 à moment-33, 240000–264000 ms) n’ont qu’une observation partielle, sans image analysée, et je n’ai pas encore réexaminé l’image. Si tu me confirmes, je peux inspecter le passage le plus récent disponible (moment-33, 256000–264000 ms) pour voir comment apparaît le haut du bâton.",
+    "citations": [],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "atMs": 372000,
+  "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?",
+  "answers": [
+   {
+    "answerId": "4d1a412c3d1a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages observés ne montrent que des scènes récentes (forêt, créatures marines, lac brumeux, prairie montagneuse), sans image du début pour établir un avant/après. Je peux décrire l'évolution visible dans les passages récents si tu veux.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "87c649e2f578",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages reçus ne couvrent que la fin de la séquence (320000-368000), et les segments du début sont en attente d'analyse ou absents du contexte. Je peux décrire ce qui est visible actuellement — brume, montagnes enneigées, forêts, étendue d'eau et vaisseau flottant — mais pas ce qui a changé depuis le départ.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "b07622123325",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent que la fin de la vidéo (moment-41 à moment-46, 320000-368000), et les passages du début n'ont pas été analysés. Je peux décrire ce que je vois dans les passages récents si tu veux.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "c0872b56d389",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent pas le début de la vidéo, et les résumés automatiques ne suffisent pas à décrire précisément les changements visuels. Je peux réexaminer un passage récent pour voir l'état actuel du paysage, mais il me faudrait aussi un passage du début pour faire la comparaison.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "c76491622c14",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas comparer l'aspect du paysage au début avec celui d'après : les passages reçus ne couvrent que la fin de la séquence (320 s à 368 s), et les premiers segments ne sont pas disponibles dans ce fil. Je peux décrire ce qui est visible en fin de séquence, mais pas établir un changement depuis le début.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "3f4762fcb9bb",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "aa8a7a648bc0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages récents (moment-45, 352000–360000 ms et moment-46, 360000–368000 ms) n'ont qu'une observation partielle, sans image analysée, et je n'ai pas encore réexaminé l'image. Si tu me confirmes, je peux inspecter le passage le plus récent disponible (moment-45, 352000–360000 ms) pour voir comment le paysage apparaît maintenant.",
+    "citations": [],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "tears-01",
+  "atMs": 48000,
+  "question": "What passions do Thom and Celia have, according to their conversation?",
+  "answers": [
+   {
+    "answerId": "2522d3238f8c",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "cfc204f95ce0",
+    "kind": "observation",
+    "answer": "Selon leur échange, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "b35574baf24d",
+    "kind": "observation",
+    "answer": "According to their conversation, Celia is passionate about robotics, and Thom wants to be awesome in space.",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "atMs": 216000,
+  "question": "How much time does Barley say they should have?",
+  "answers": [
+   {
+    "answerId": "3a52acbe4094",
+    "kind": "observation",
+    "answer": "Barley says they have about two minutes, calling it perfect.",
+    "citations": [
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "a6739867a152",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "c7b6b13f30c2",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ dix minutes.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "atMs": 264000,
+  "question": "What advice is Thom given about how to speak to her?",
+  "answers": [
+   {
+    "answerId": "d4ed6228150d",
+    "kind": "observation",
+    "answer": "He is told to be tender to her, be honest to her, and remind her what love is.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "89cdf0bc5835",
+    "kind": "observation",
+    "answer": "Thom est conseillé d’être tendre et honnête avec elle, et de lui rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "4076644a8086",
+    "kind": "observation",
+    "answer": "On lui dit d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "atMs": 408000,
+  "question": "What does Celia reproach Thom for?",
+  "answers": [
+   {
+    "answerId": "3edcdda8f053",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom for breaking her heart and for forgetting her on Earth.",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "8c82dbfc9f6d",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre, lui disant qu'il lui a brisé le cœur.",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "814607549fcc",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre, en lui disant « You forgot me on earth ».",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "atMs": 552000,
+  "question": "What is the latest announced state of the memory overwrite?",
+  "answers": [
+   {
+    "answerId": "b746e787058c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre : la question exige une source web, mais le mode local n’en permet pas.",
+    "citations": [],
+    "acquired": true
+   },
+   {
+    "answerId": "f7b293603af2",
+    "kind": "observation",
+    "answer": "The latest announced state is that the memory override is complete, as stated in the passage at 536000-544000 ms.",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ],
+    "acquired": true
+   },
+   {
+    "answerId": "7aadaf5c1d09",
+    "kind": "observation",
+    "answer": "L’état le plus récent annoncé est « Memory override complete! » (moment-68, 536000–544000 ms), après « Memory overrated 90%! Captain, we have to abort! » (moment-64, 504000–512000 ms).",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "startMs": 504000,
+      "endMs": 512000
+     }
+    ],
+    "acquired": true
+   }
+  ]
+ }
+]

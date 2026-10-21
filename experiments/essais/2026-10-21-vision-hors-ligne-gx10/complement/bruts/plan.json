@@ -1,0 +1,174 @@
+{
+ "experiment": "vision-hors-ligne-complement",
+ "warmupBody": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000001.json.gz",
+ "blocks": [
+  {
+   "id": "kennedy@64000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000009.json.gz"
+  },
+  {
+   "id": "kennedy@128000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000017.json.gz"
+  },
+  {
+   "id": "kennedy@184000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000024.json.gz"
+  },
+  {
+   "id": "kennedy@240000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000031.json.gz"
+  },
+  {
+   "id": "kennedy@304000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000038.json.gz"
+  },
+  {
+   "id": "kennedy@368000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1-bodies/vlm-000046.json.gz"
+  },
+  {
+   "id": "spring@56000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000008.json.gz"
+  },
+  {
+   "id": "spring@200000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000014.json.gz"
+  },
+  {
+   "id": "spring@264000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000020.json.gz"
+  },
+  {
+   "id": "spring@320000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000027.json.gz"
+  },
+  {
+   "id": "spring@368000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000033.json.gz"
+  },
+  {
+   "id": "spring@416000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1-bodies/vlm-000039.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@120000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000016.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@224000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000029.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@336000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000043.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@536000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000056.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@656000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000070.json.gz"
+  },
+  {
+   "id": "cnrs-apprentissage@760000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1-bodies/vlm-000083.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@112000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000015.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@216000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000028.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@328000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000041.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@424000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000053.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@528000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000066.json.gz"
+  },
+  {
+   "id": "boeuf-bourguignon@632000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1-bodies/vlm-000079.json.gz"
+  },
+  {
+   "id": "tears-of-steel@184000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000013.json.gz"
+  },
+  {
+   "id": "tears-of-steel@280000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000024.json.gz"
+  },
+  {
+   "id": "tears-of-steel@368000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000035.json.gz"
+  },
+  {
+   "id": "tears-of-steel@464000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000046.json.gz"
+  },
+  {
+   "id": "tears-of-steel@552000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000057.json.gz"
+  },
+  {
+   "id": "tears-of-steel@640000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1-bodies/vlm-000068.json.gz"
+  },
+  {
+   "id": "artemis@384000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000038.json.gz"
+  },
+  {
+   "id": "artemis@664000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000073.json.gz"
+  },
+  {
+   "id": "artemis@952000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000109.json.gz"
+  },
+  {
+   "id": "artemis@1248000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000145.json.gz"
+  },
+  {
+   "id": "artemis@1536000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000181.json.gz"
+  },
+  {
+   "id": "artemis@1816000",
+   "body": "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1-bodies/vlm-000216.json.gz"
+  }
+ ],
+ "arms": [
+  {
+   "label": "ref-debut",
+   "model": "gemma3:4b"
+  },
+  {
+   "label": "ref-3-images",
+   "model": "gemma3:4b",
+   "keepImages": [
+    0,
+    2,
+    4
+   ]
+  },
+  {
+   "label": "gemma4-e4b-sans-raisonnement",
+   "model": "gemma4:e4b-it-q4_K_M",
+   "think": false
+  },
+  {
+   "label": "ref-fin",
+   "model": "gemma3:4b"
+  }
+ ]
+}

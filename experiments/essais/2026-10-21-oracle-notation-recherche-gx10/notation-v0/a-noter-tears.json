@@ -1,0 +1,201 @@
+[
+ {
+  "questionId": "tears-01",
+  "atMs": 48000,
+  "question": "What passions do Thom and Celia have, according to their conversation?",
+  "answers": [
+   {
+    "textId": "a1825241b2",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "f323ace9e6",
+    "kind": "observation",
+    "answer": "According to their conversation, Celia is passionate about robotics, and Thom wants to be awesome in space.",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "b6e6de6910",
+    "kind": "observation",
+    "answer": "Selon leur échange, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "atMs": 216000,
+  "question": "How much time does Barley say they should have?",
+  "answers": [
+   {
+    "textId": "94d02491dc",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ dix minutes.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "e51d3578c0",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "af38857d4d",
+    "kind": "observation",
+    "answer": "Barley says they have about two minutes, calling it perfect.",
+    "citations": [
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "atMs": 264000,
+  "question": "What advice is Thom given about how to speak to her?",
+  "answers": [
+   {
+    "textId": "804d927ed5",
+    "kind": "observation",
+    "answer": "On lui dit d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "3e9f55ee2e",
+    "kind": "observation",
+    "answer": "He is told to be tender to her, be honest to her, and remind her what love is.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "177216b942",
+    "kind": "observation",
+    "answer": "Thom est conseillé d’être tendre et honnête avec elle, et de lui rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "atMs": 408000,
+  "question": "What does Celia reproach Thom for?",
+  "answers": [
+   {
+    "textId": "fc2579dfde",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom for breaking her heart and for forgetting her on Earth.",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "95f7e1cbaf",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre, lui disant qu'il lui a brisé le cœur.",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "1774eecff0",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre, en lui disant « You forgot me on earth ».",
+    "citations": [
+     {
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "atMs": 552000,
+  "question": "What is the latest announced state of the memory overwrite?",
+  "answers": [
+   {
+    "textId": "421fb37eb0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre : la question exige une source web, mais le mode local n’en permet pas.",
+    "citations": []
+   },
+   {
+    "textId": "e6d962d193",
+    "kind": "observation",
+    "answer": "L’état le plus récent annoncé est « Memory override complete! » (moment-68, 536000–544000 ms), après « Memory overrated 90%! Captain, we have to abort! » (moment-64, 504000–512000 ms).",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "startMs": 504000,
+      "endMs": 512000
+     }
+    ]
+   },
+   {
+    "textId": "98ee532569",
+    "kind": "observation",
+    "answer": "The latest announced state is that the memory override is complete, as stated in the passage at 536000-544000 ms.",
+    "citations": [
+     {
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,336 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "answers": [
+   {
+    "textId": "6bfdb25340",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle. Il en déduit qu'on ne sait presque rien des 40 premières années, sauf à leur terme.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "eb686ef6cc",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l’échelle de 50 000 ans d’histoire humaine enregistrée, condensée en une demi-ère d’environ un demi-siècle.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "b7d221d468",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle, et note qu'on ne sait presque rien des 40 premières années. C'est l'ordre de grandeur qu'il mobilise dans ce passage.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "c0565dabe9",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l’échelle de 50 000 ans d’histoire humaine enregistrée, condensée en une demi-ère d’environ un demi-siècle, et note qu’on ne sait presque rien des 40 premières années. C’est l’ordre de grandeur qu’il emploie dans ce passage.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "7bbedeb9c4",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l’échelle de 50 000 ans d’histoire humaine enregistrée, condensée en une demi-ère d’environ un demi-siècle, et note qu’on ne sait presque rien des 40 premières années. C’est l’ordre de grandeur qu’il emploie dans le passage observé (moment-2, 8000–16000 ms).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "3b61dee995",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l'échelle de 50 000 ans d'histoire humaine enregistrée, condensée en une demi-époque d'environ un demi-siècle. Il précise qu'on ne sait presque rien des 40 premières années, sauf à leur terme.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "answers": [
+   {
+    "textId": "ae694fe507",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l’ouverture de l’espace promet de hauts coûts et de hauts risques ainsi qu’une haute récompense. (moment-13, 96000–104000 ms ; moment-14, 104000–112000 ms ; moment-15, 112000–120000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "2b2e58ecde",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses. (moment-13, 96000–104000 ms ; moment-14, 104000–112000 ms ; moment-15, 112000–120000 ms)",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "a4a202669a",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances et de nouveaux dangers, et l’ouverture de l’espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses. (moment-13, 96000–104000 ms ; moment-14, 104000–112000 ms ; moment-15, 112000–120000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "ec10c2dd96",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l’ouverture de l’espace promet de hauts coûts et de hauts risques ainsi que de hautes récompenses. (moment-13, 96000–104000 ms ; moment-14, 104000–112000 ms ; moment-15, 112000–120000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "4f78909a8f",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouvelles ignorances, de nouveaux problèmes et de nouveaux dangers, et l'ouverture de l'espace promet de hauts coûts et de hauts risques ainsi qu'une haute récompense. (moment-13, 96000–104000 ms ; moment-14, 104000–112000 ms ; moment-15, 112000–120000 ms)",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "answers": [
+   {
+    "textId": "f92e7d03d2",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. (moment-24, 184000–192000 ms ; moment-25, 192000–200000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "3861c110a0",
+    "kind": "observation",
+    "answer": "Kennedy dit que l'exploration spatiale avancera « whether we join in it or not » et qu'aucune nation qui prétend mener les autres ne peut rester en retrait dans cette course. (moment-24, 184000–192000 ms ; moment-25, 192000–200000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "2b92a0ccc5",
+    "kind": "observation",
+    "answer": "Il dit que l'exploration spatiale avancera « que nous y participions ou non » et qu'elle est « l'une des grandes aventures de tous les temps » (moment-24, 184000–192000 ms). Pour les États-Unis, il affirme qu'« aucune nation qui prétend diriger les autres ne peut espérer rester en retrait » dans cette course spatiale (moment-25, 192000–200000 ms).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "0fe14aa146",
+    "kind": "observation",
+    "answer": "Kennedy dit que l'exploration spatiale est une grande aventure qui avancera « que nous y participions ou non », et qu'aucune nation qui prétend mener les autres ne peut rester en retrait. (moment-24, 184000–192000 ms ; moment-25, 192000–200000 ms)",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "answers": [
+   {
+    "textId": "d9406060e3",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit gouverné par « a banner of freedom and peace » et que les États-Unis y « lead », et il rejette qu’il soit dominé par « a hostile flag of conquest » ou rempli d’armes. (moment-29, 224000–232000 ms ; moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "8e99c0eab9",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit un lieu de liberté et de paix, où les États-Unis avancent et mènent, et il rejette qu’il soit gouverné par une bannière de conquête hostile ou rempli d’armes. (moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "b4de935370",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit gouverné par « a banner of freedom and peace » et que les États-Unis y participent et y mènent, et il rejette qu’il soit dominé par « a hostile flag of conquest » ou rempli d’armes. (moment-29, 224000–232000 ms ; moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "7aa033fdce",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit gouverné par « a banner of freedom and peace » et que les États-Unis y soient une part active, voire un leader (« We mean to be a part of it. We mean to lead it. »). Il rejette qu’il soit dominé par « a hostile flag of conquest » et qu’il soit « filled with » des armes ou des menaces. (moment-29, 224000–232000 ms ; moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "9e0c8102da",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit un lieu de liberté et de paix, où les nations regardent la Lune et les planètes, et que les États-Unis y soient leaders. Il rejette l’idée de rester en arrière, d’attendre, et surtout que l’espace soit gouverné par un drapeau hostile de conquête ou rempli d’armes. (moment-25, 192000–200000 ms ; moment-29, 224000–232000 ms ; moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "833b70ed8a",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit un lieu de liberté et de paix, où l’humanité avance, et il rejette qu’il soit gouverné par un drapeau de conquête hostile ou rempli d’armes. (moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms)",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "answers": [
+   {
+    "textId": "656d8717fe",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own, whether it will become a force for good or real depends on man. » (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "cab4de6e85",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide si la technologie sert le bien ou la guerre : la science spatiale, comme la science nucléaire et toute technologie, n'a pas de conscience propre, et sa force pour le bien ou le mal dépend de l'homme. (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "a1c070cc3b",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : « science, like nuclear science and all technology, has no conscience of its own… whether it will become a force for good or real depends on man. » (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "ee299e43fe",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : la science spatiale, comme la science nucléaire et toute technologie, n'a pas de conscience propre, et elle ne sera une force pour le bien ou pour le mal que selon l'homme. (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms)",
+    "citations": []
+   },
+   {
+    "textId": "ce6095863c",
+    "kind": "observation",
+    "answer": "Kennedy répond que la science et la technologie n'ont pas de conscience propre : c'est l'homme qui décide si elles deviennent une force pour le bien ou pour la guerre, et que c'est aux États-Unis, par leur prééminence, d'aider à trancher ce choix. (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms ; moment-44, 344000–352000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,249 @@
+[
+ {
+  "questionId": "artemis-01",
+  "atMs": 968000,
+  "question": "What decision has the launch team just announced?",
+  "answers": [
+   {
+    "textId": "2e1b2caa8e",
+    "kind": "observation",
+    "answer": "Le directeur de lancement a annoncé un « go » pour reprendre le compte à rebours et lancer Artemis 1, après avoir salué le travail de toute l'équipe. L'équipe de mission a confirmé la consigne et indiqué qu'il restait quelques étapes de configuration avant de relancer l'horloge.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     },
+     {
+      "startMs": 952000,
+      "endMs": 960000
+     }
+    ]
+   },
+   {
+    "textId": "9dd7088796",
+    "kind": "observation",
+    "answer": "The launch team has just given the go to resume the count and launch Artemis I.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "332079db6d",
+    "kind": "observation",
+    "answer": "The launch team has just announced a go to resume the count and launch Artemis I.",
+    "citations": [
+     {
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "atMs": 1248000,
+  "question": "Why will water flood the mobile launcher?",
+  "answers": [
+   {
+    "textId": "b609b7567b",
+    "kind": "observation",
+    "answer": "The water is part of the ignition overpressure and sound suppression system: it floods the mobile launcher to reduce the pressure and thunderous sound from the rocket's ignition, which could otherwise damage the rocket.",
+    "citations": [
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "261bef9d5d",
+    "kind": "observation",
+    "answer": "La vidéo explique que le système de suppression de pression et de son (overpressure and sound suppression) inonde le lanceur mobile d'eau pour réduire la puissance de la pression et du bruit générés par l'allumage des moteurs, afin d'éviter d'endommager la fusée. Cette séquence commence à T-moins 17 secondes. (moment-153, 1216000-1224000 ; moment-154, 1224000-1232000)",
+    "citations": [
+     {
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "f62c82a877",
+    "kind": "observation",
+    "answer": "The water is part of the ignition overpressure and sound suppression system: it floods the mobile launcher to reduce the power of the pressure and sound from the rocket's ignition, which could otherwise damage the rocket. The sequence starts at T-minus 17 seconds.",
+    "citations": [
+     {
+      "startMs": 1224000,
+      "endMs": 1232000
+     },
+     {
+      "startMs": 1216000,
+      "endMs": 1224000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "atMs": 1664000,
+  "question": "Has liftoff happened, and which engines are propelling the vehicle?",
+  "answers": [
+   {
+    "textId": "c8ed014699",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the count reaches zero and the vehicle rises in a large plume of flame and steam. The vehicle is being propelled by all four RS-25 engines on the core stage plus two solid rocket boosters.",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1632000,
+      "endMs": 1640000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "fe56567347",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred. The countdown reaches zero and the vehicle rises, with the narration explicitly stating \"liftoff of Artemis 1\" (moment-204, 1624000-1632000). The vehicle is propelled by all four RS25 engines on the core stage plus two solid rocket boosters (moment-206, 1640000-1648000).",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "6c2dfb23c3",
+    "kind": "observation",
+    "answer": "Yes, liftoff has occurred: the count reaches zero and the vehicle rises (moment-204, 1624000–1632000 ms). The vehicle is propelled by all four RS-25 engines on the core stage plus two solid rocket boosters (moment-206, 1640000–1648000 ms).",
+    "citations": [
+     {
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "atMs": 1792000,
+  "question": "Which propulsion elements have just separated, and what continues to power the flight?",
+  "answers": [
+   {
+    "textId": "828112e40a",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated, as confirmed by the mission control narration. The core stage, powered by its four RS-25 engines, continues to propel the Orion spacecraft.",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "34e1ae2bd8",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated (moment-221, 1760000–1768000 ms). The core stage continues to power the flight of Orion with all four RS-25 engines (moment-222, 1768000–1776000 ms).",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "5d6339c5d5",
+    "kind": "observation",
+    "answer": "The two solid rocket boosters have just separated (SRB jettison), and the core stage continues to power the flight with all four RS-25 engines.",
+    "citations": [
+     {
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "atMs": 2096000,
+  "question": "What major engine event are the commentators preparing for now?",
+  "answers": [
+   {
+    "textId": "eaaa408e9f",
+    "kind": "observation",
+    "answer": "The commentators are preparing for the core stage main engine cutoff (MECO), when the four RS-25 engines shut down. They note the engines are throttling down and count down the seconds to cutoff (moment-258 to moment-261, 2056000–2088000 ms).",
+    "citations": [
+     {
+      "startMs": 2056000,
+      "endMs": 2064000
+     },
+     {
+      "startMs": 2064000,
+      "endMs": 2072000
+     },
+     {
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "9d9256f1df",
+    "kind": "observation",
+    "answer": "The commentators are preparing for the core stage main engine cut-off (MECO), with the four RS-25 engines throttling down and a 30-second countdown to that event. This is the major engine event they are now anticipating.",
+    "citations": [
+     {
+      "startMs": 2080000,
+      "endMs": 2088000
+     },
+     {
+      "startMs": 2064000,
+      "endMs": 2072000
+     }
+    ]
+   },
+   {
+    "textId": "b5824f2613",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   }
+  ]
+ }
+]

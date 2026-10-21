@@ -1,0 +1,227 @@
+{
+  "id": "067f7c68f440409c96d67e87d6f54ec7",
+  "startedAtUtc": "2026-10-21T10:56:39.064206+00:00",
+  "deadlineUtc": "2026-10-21T13:56:39.064073+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/kennedy/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/kennedy-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T10:56:45.191982+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T10:56:45.694595+00:00",
+      "durationSeconds": 0.5005570820067078
+    },
+    {
+      "name": "kennedy-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/kennedy/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/kennedy-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T10:56:45.695072+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:04:02.219996+00:00",
+      "durationSeconds": 436.5233268469892
+    },
+    {
+      "name": "spring-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/spring/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/spring-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T11:04:02.760234+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:04:03.265951+00:00",
+      "durationSeconds": 0.5007353130058618
+    },
+    {
+      "name": "spring-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/spring/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/spring-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T11:04:03.266892+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:11:54.827936+00:00",
+      "durationSeconds": 471.5564125870005
+    },
+    {
+      "name": "cnrs-apprentissage-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/cnrs-apprentissage/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/cnrs-apprentissage-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T11:11:55.366081+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:11:56.372455+00:00",
+      "durationSeconds": 1.0011545599991223
+    },
+    {
+      "name": "cnrs-apprentissage-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/cnrs-apprentissage/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/cnrs-apprentissage-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T11:11:56.373257+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:26:50.421209+00:00",
+      "durationSeconds": 894.0435404430027
+    },
+    {
+      "name": "boeuf-bourguignon-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/boeuf-bourguignon/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/boeuf-bourguignon-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T11:26:50.977742+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:26:51.983775+00:00",
+      "durationSeconds": 1.0009665370016592
+    },
+    {
+      "name": "boeuf-bourguignon-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/boeuf-bourguignon/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/boeuf-bourguignon-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T11:26:51.984271+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:39:17.245998+00:00",
+      "durationSeconds": 745.2568805089977
+    },
+    {
+      "name": "tears-of-steel-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/tears-of-steel/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/tears-of-steel-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T11:39:17.788615+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:39:18.794610+00:00",
+      "durationSeconds": 1.000797379994765
+    },
+    {
+      "name": "tears-of-steel-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/tears-of-steel/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/tears-of-steel-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T11:39:18.795197+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:51:36.150125+00:00",
+      "durationSeconds": 737.3499041800096
+    },
+    {
+      "name": "artemis-A-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/artemis/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/artemis-A-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T11:51:36.692713+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T11:51:38.199391+00:00",
+      "durationSeconds": 1.5011987750040134
+    },
+    {
+      "name": "artemis-A-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/artemis/scenario-A.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/config-A.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/artemis-A-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T11:51:38.199976+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T12:27:00.918701+00:00",
+      "durationSeconds": 2122.7138049939967
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T12:27:01.015180+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

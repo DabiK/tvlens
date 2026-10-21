@@ -1,0 +1,141 @@
+[
+ {
+  "blockId": "boeuf-bourguignon@112000",
+  "startS": 112.0,
+  "endS": 120.0,
+  "transcript": "viande les oliveaux carottes. Certains les laissent en",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "3a8bbb17d4",
+    "summary": "Patrick Dujancourt coupe des oignons et des carottes en dés, les ajoutant dans un bol pour préparer la base de son boeuf bourguignon. Il dispose également des herbes de Provence à côté des légumes coupés.",
+    "visual": "Patrick Dujancourt ajoute des oignons et des carottes coupés en dés dans un bol, préparant ainsi les ingrédients pour sa recette de boeuf bourguignon. Il dispose également des herbes de Provence à côté des légumes."
+   },
+   {
+    "textId": "451447fba1",
+    "summary": "La personne verse des morceaux de viande dans un grand bol contenant des oignons hachés. Les ingrédients préparés, incluant des carottes et des herbes, sont disposés sur la planche à découper à côté de la cuisinière.",
+    "visual": "Une personne verse des morceaux de viande dans un grand bol contenant des oignons hachés. Des bols contenant des carottes coupées, des oignons hachés, des herbes et des bouteilles d'huile sont visibles sur une planche à découper à côté d'une cuisinière."
+   },
+   {
+    "textId": "f83f7f2225",
+    "summary": "Patrick Dujancourt ajoute des oignons et des carottes coupés en dés dans un bol, préparant ainsi les ingrédients pour sa recette de boeuf bourguignon.",
+    "visual": "Il coupe des oignons et des carottes en dés et les ajoute dans un bol."
+   }
+  ]
+ },
+ {
+  "blockId": "boeuf-bourguignon@216000",
+  "startS": 216.0,
+  "endS": 224.0,
+  "transcript": "Action, on met de l'huile, surtout pas du houle de l'huile de tourne-sol, de l'huile de tourne-sol.",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "f2c1ee330f",
+    "summary": "L'on ajoute de l'huile, spécifiquement de l'huile de tournesol, dans la préparation. L'action se déroule sur une planche à découper.",
+    "visual": "Une main verse de l'huile dans un récipient sur une planche à découper, avec divers ingrédients et ustensiles autour."
+   },
+   {
+    "textId": "0908ed205f",
+    "summary": "Patrick Dujancourt filtre des oignons et des carottes coupés en dés dans une passoire, préparant ainsi la garniture de son boeuf bourguignon.",
+    "visual": "Il verse du vin rouge dans une passoire à mailles fines, filtrant les oignons et carottes coupés en dés."
+   }
+  ]
+ },
+ {
+  "blockId": "boeuf-bourguignon@328000",
+  "startS": 328.0,
+  "endS": 336.0,
+  "transcript": "pour que tout transpire. Voilà.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "40d7fbaa73",
+    "summary": "L'homme ajoute délicatement des morceaux de viande hachée dans la casserole, en remuant constamment avec une spatule pour assurer une cuisson uniforme et créer de la vapeur.",
+    "visual": "Un homme utilise une spatule pour incorporer de la viande hachée dans un liquide bouillant à l'intérieur d'une grande casserole."
+   },
+   {
+    "textId": "62b6a7cda3",
+    "summary": "L'homme ajoute délicatement de la viande hachée dans la casserole, en remuant constamment avec une spatule pour l'incorporer au liquide et créer de la vapeur.",
+    "visual": "On voit l'homme ajouter de la viande hachée à la casserole, et il utilise une spatule pour remuer le mélange, créant ainsi de la vapeur."
+   },
+   {
+    "textId": "3e3b2f538b",
+    "summary": "La personne continue de remuer le contenu de la casserole avec une spatule, assurant que tout transpire. Elle semble expliquer une étape de la préparation culinaire.",
+    "visual": "Une personne remue le contenu d'une grande casserole sur une cuisinière, tandis qu'à gauche, un bol contient des morceaux de viande dans un panier métallique."
+   }
+  ]
+ },
+ {
+  "blockId": "boeuf-bourguignon@424000",
+  "startS": 424.0,
+  "endS": 432.0,
+  "transcript": "S'adéclasse-tu ?",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "7a67e8ffea",
+    "summary": "L'homme continue de cuire les morceaux de viande dans la casserole, en remuant constamment avec une spatule pour obtenir une couleur brune.",
+    "visual": "On observe l'homme qui continue de cuire les morceaux de viande dans une grande casserole, en remuant vigoureusement avec une spatule."
+   },
+   {
+    "textId": "82e73452a4",
+    "summary": "L'homme verse un liquide rouge foncé depuis un pichet dans une grande casserole posée sur une plaque de cuisson. Il tient le pichet avec sa main droite et regarde le contenu de la casserole.",
+    "visual": "Un homme, portant un tablier rouge, verse un liquide rouge foncé d'un pichet dans une grande casserole en métal sur une plaque de cuisson. Devant lui, il y a une assiette contenant des morceaux de viande."
+   },
+   {
+    "textId": "6194e540c3",
+    "summary": "L'homme verse délicatement un liquide brun dans la casserole contenant les morceaux de viande, en continuant de remuer avec une spatule.",
+    "visual": "Un homme, portant un tablier, verse un liquide brun dans une grande casserole à fond brun. Il utilise une spatule pour remuer les morceaux de viande qui cuisent dans le liquide."
+   }
+  ]
+ },
+ {
+  "blockId": "boeuf-bourguignon@528000",
+  "startS": 528.0,
+  "endS": 536.0,
+  "transcript": "On couvre et c'est parti pour deux heures de cuisson, il ne faut pas que ça bouge, pour que ça frémisse.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "cfd65856da",
+    "summary": "La personne couvre la casserole et indique que le plat doit cuire pendant deux heures sans bouger, juste en frémissement.",
+    "visual": "Une personne couvre une grande casserole contenant un liquide brun foncé, et la casserole est posée sur une plaque de cuisson."
+   },
+   {
+    "textId": "d778088aa1",
+    "summary": "L'homme continue de remuer la sauce dans la casserole avec une cuillère en bois, assurant une cuisson uniforme des morceaux de viande.",
+    "visual": "Il continue de manipuler la sauce, en veillant à ce que les morceaux de viande soient bien en contact avec le liquide."
+   },
+   {
+    "textId": "7565fbe38b",
+    "summary": "L'homme continue de remuer la sauce dans la grande casserole avec une cuillère en bois, assurant une répartition uniforme des ingrédients.",
+    "visual": "Il est vu en train de remuer activement la sauce, avec une expression concentrée."
+   }
+  ]
+ },
+ {
+  "blockId": "boeuf-bourguignon@632000",
+  "startS": 632.0,
+  "endS": 640.0,
+  "transcript": "Et puis les petits oignons, ils pourraient se casser, se défaire et ça va vraiment s'atturer le plat. ça ne serait pas trop.",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "b3df332a06",
+    "summary": "L'homme continue de remuer délicatement les champignons ajoutés à la sauce dans la casserole avec une spatule en silicone, afin d'assurer une cuisson uniforme et une coloration homogène.",
+    "visual": "Il utilise une spatule pour remuer les champignons dans la sauce, en veillant à ce que la couleur se répartisse uniformément."
+   },
+   {
+    "textId": "d7d85f2484",
+    "summary": "L'homme utilise une spatule pour remuer délicatement le contenu de la casserole, en insistant sur le fait que le mélange doit être fait très doucement pour ne pas abîmer les ingrédients.",
+    "visual": "Un homme, portant un t-shirt rouge, remue une sauce brune dans une grande casserole en métal à l'aide d'une spatule en silicone. Des ingrédients, notamment des morceaux de champignons, sont visibles dans la sauce."
+   },
+   {
+    "textId": "1cad1b87a9",
+    "summary": "L'homme utilise une spatule pour incorporer délicatement des champignons coupés dans la sauce brune, assurant une répartition uniforme et une coloration homogène.",
+    "visual": "Un homme, vêtu d'une salopette et d'un t-shirt \"Learn With A Chef\", utilise une spatule en silicone pour remuer des champignons coupés dans une casserole remplie d'une sauce épaisse."
+   }
+  ]
+ }
+]

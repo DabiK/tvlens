@@ -1,0 +1,71 @@
+export const meta = {
+  name: 'notation-vision-e3b',
+  description: 'Blind scoring of vision descriptions (reference, 3 images, gemma4:e4b without reasoning) against reference frames',
+  phases: [{ title: 'Notation vision', detail: 'two blind judges per video, a third on disagreements' }],
+}
+
+const A = args
+const MAX = 4
+let active = 0
+const waiting = []
+async function limited(fn) {
+  if (active >= MAX) { await new Promise(r => waiting.push(r)) } else { active++ }
+  try { return await fn() } finally { const next = waiting.shift(); if (next) next(); else active-- }
+}
+
+const VIDEOS = [
+  { packet: 'kennedy', frames: 'kennedy' }, { packet: 'spring', frames: 'spring' },
+  { packet: 'cnrs-apprentissage', frames: 'cnrs' }, { packet: 'boeuf-bourguignon', frames: 'cuisine' },
+  { packet: 'tears-of-steel', frames: 'tears' }, { packet: 'artemis', frames: 'artemis' },
+]
+const SCHEMA = {
+  type: 'object',
+  properties: {
+    video: { type: 'string' },
+    scores: { type: 'array', items: { type: 'object', properties: {
+      textId: { type: 'string' }, blockId: { type: 'string' },
+      accuracy: { type: 'number', enum: [0, 1, 2, 3] }, coverage: { type: 'number', enum: [0, 1, 2, 3] },
+      invention: { type: 'boolean' }, ocrOk: { type: 'string', enum: ['yes', 'no', 'na'] }, rationale: { type: 'string' } },
+      required: ['textId', 'blockId', 'accuracy', 'coverage', 'invention', 'rationale'] } },
+  },
+  required: ['video', 'scores'],
+}
+
+function prompt(v, which, subset) {
+  const scope = subset ? `Ne note QUE ces textId : ${JSON.stringify(subset)}.` : 'Note toutes les descriptions du paquet.'
+  return `Tu es le juge ${which}, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « ${v.packet} ». À l'aveugle.
+Paquet : ${A.packets}/a-noter-${v.packet}.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au
+modèle (imprécise) et plusieurs descriptions anonymes (summary + visual). ${scope}
+Vérité de terrain : les images de référence du bloc, toutes les 2 s : python3 -I ${A.lab}/planche.py --frames
+${A.media}/frames/${v.frames} --from <startS> --to <endS> --out <ton dossier>/b.jpg puis ouvre l'image avec Read (regarde aussi
+2 s avant et après si besoin). La transcription complète large-v3-turbo est dans ${A.lab}/oracle/transcriptions/${v.frames}.transcript.txt
+(absente pour spring).
+INTERDIT : ouvrir cle.json, calls.jsonl, inputs.json ou chercher le modèle d'origine. Dossier : ${A.packets}/travail/${v.packet}-juge${which}/.
+Pour chaque description : accuracy 0–3 (3 = tout ce qui est affirmé est vrai sur les images/la parole du bloc ; 0 = largement
+faux) ; coverage 0–3 (3 = les éléments saillants du bloc sont là : personnes, actions, objets, texte à l'écran ; 0 = rien
+d'utile) ; invention=true si un élément visuel, une action, un texte à l'écran ou une identité est affirmé sans être visible ;
+ocrOk : le texte à l'écran rapporté est-il exact (na s'il n'y en a pas). Juge le passage ACTUEL seulement. Sois constant
+entre les descriptions d'un même bloc.`
+}
+
+const results = await pipeline(
+  VIDEOS,
+  async v => {
+    const [j1, j2] = await parallel([1, 2].map(n => () =>
+      limited(() => agent(prompt(v, n, null), { label: `vision:${v.packet}:${n}`, phase: 'Notation vision', schema: SCHEMA }))))
+    let j3 = null
+    if (j1 && j2) {
+      const s2 = new Map(j2.scores.map(s => [s.textId, s]))
+      const disputed = j1.scores.filter(s => {
+        const o = s2.get(s.textId)
+        return !o || Math.abs(o.accuracy - s.accuracy) >= 2 || Math.abs(o.coverage - s.coverage) >= 2 || o.invention !== s.invention
+      }).map(s => s.textId)
+      if (disputed.length) {
+        log(`${v.packet}: ${disputed.length} désaccord(s) tranché(s) par un troisième juge`)
+        j3 = await limited(() => agent(prompt(v, 3, disputed), { label: `vision:${v.packet}:3`, phase: 'Notation vision', schema: SCHEMA }))
+      }
+    }
+    return { video: v.packet, judges: [j1, j2, j3] }
+  },
+)
+return results.filter(Boolean)

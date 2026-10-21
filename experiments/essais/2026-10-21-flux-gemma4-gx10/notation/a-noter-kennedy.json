@@ -1,0 +1,349 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "answers": [
+   {
+    "textId": "6b0aefb3d7",
+    "kind": "observation",
+    "answer": "Kennedy évoque 50 000 ans d'histoire humaine condensés en un demi-siècle. Il précise que, formulés ainsi, nous ne connaissons que très peu de choses sur les 40 premières années.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "8084927c98",
+    "kind": "observation",
+    "answer": "Kennedy raisonne à l’échelle de 50 000 ans d’histoire humaine enregistrée, condensée en une demi-époque d’environ un demi-siècle, et note qu’on ne sait presque rien des 40 premières années. (moment-2, 8000–16000 ms ; moment-3, 16000–24000 ms)",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "abd9b39ae2",
+    "kind": "observation",
+    "answer": "Kennedy évoque une période d'environ un demi-siècle (moment-2, 8000-16000ms) au sein de l'histoire humaine enregistrée qui s'étend sur 50 000 ans (moment-2, 8000-16000ms). Il mentionne également que l'on sait très peu de choses sur les 40 premières années de cette période (moment-3, 16000-24000ms).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "3fbd93a3b4",
+    "kind": "observation",
+    "answer": "Kennedy évoque une période d'environ un demi-siècle (moment-2, 8000-16000ms). Il place ce laps de temps dans le contexte de 50 000 ans d'histoire humaine enregistrée (moment-2, 8000-16000ms).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "answers": [
+   {
+    "textId": "4c5fc866c6",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouveaux dangers et de nouveaux problèmes en dissipant les anciennes ignorances (moment-13, 96000-104000ms). L'ouverture de l'espace promet des coûts et des risques élevés, mais aussi des récompenses importantes (moment-14, 104000-112000ms; moment-15, 112000-120000ms).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "ddc423eebe",
+    "kind": "observation",
+    "answer": "Cette accélération des inventions produit de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes en dissipant les anciens (moment-13, 96000-104000). L'ouverture des perspectives de l'espace promet des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, 104000-112000 ; moment-15, 112000-120000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "8adb272e16",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "b4031ceb1e",
+    "kind": "observation",
+    "answer": "Cette accélération ne peut pas aider autrement qu'à créer de nouveaux défis, car elle dissipe les anciennes ignorances tout en engendrant de nouveaux problèmes et de nouveaux dangers (moment-13, 96000-104000ms). L'ouverture des perspectives de l'espace promet des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, 104000-112000ms ; moment-15, 112000-120000ms).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "answers": [
+   {
+    "textId": "1080a66e3b",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps et qu'elle se poursuivra avec ou sans nous (moment-24, 184000-192000ms). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, 192000-200000ms).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "95409472f2",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "b0ab97607f",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps et qu'elle se poursuivra avec ou sans nous (moment-24, 184000-192000). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, 192000-200000), ajoutant que les prédécesseurs ont fait en sorte que le pays soit en première ligne (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "e0661ef8e4",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps et qu'elle se poursuivra quoi qu'il en soit (moment-24, 184000-192000ms). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, 192000-200000ms).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "answers": [
+   {
+    "textId": "54bc071f6d",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "6c2cd29d5a",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit régi par un emblème de liberté et de paix (moment-33, 256000-264000). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "2d7725642d",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit régi par une bannière de liberté et de paix (moment-32, 248000-256000ms; moment-33, 256000-264000ms). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000ms).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "dea1f12d68",
+    "kind": "observation",
+    "answer": "Kennedy souhaite que l'espace soit régi par une bannière de liberté et de paix (moment-33, 256000-264000ms). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000ms).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "answers": [
+   {
+    "textId": "5aed408541",
+    "kind": "observation",
+    "answer": "Kennedy affirme que la science et la technologie n'ont pas de conscience propre. Il précise que leur utilisation comme force pour le bien ou pour le mal dépend de l'homme (moment-42, 328000-344000).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "21d3bcc978",
+    "kind": "observation",
+    "answer": "Kennedy affirme que la science et la technologie n'ont pas de conscience propre. Selon lui, c'est l'homme qui détermine si elles seront une force pour le bien ou pour la guerre (moment-42, 328000-336000ms ; moment-43, 336000-344000ms).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "967aa28531",
+    "kind": "observation",
+    "answer": "Le président Kennedy affirme que la science et la technologie n'ont pas de conscience propre. Selon lui, c'est l'homme qui détermine si elles seront utilisées comme une force pour le bien ou pour la guerre (moment-42, 328000-336000ms; moment-43, 336000-344000ms).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "1c67ca9ea3",
+    "kind": "observation",
+    "answer": "C'est l'homme qui décide : la science, comme la science nucléaire et toute technologie, n'a pas de conscience propre, et sa force sera pour le bien ou pour le mal selon l'homme. (moment-42, 328000–336000 ms ; moment-43, 336000–344000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   }
+  ]
+ }
+]

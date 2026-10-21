@@ -1,0 +1,57 @@
+{
+ "experiment": "questions-hors-ligne",
+ "seed": "e2-2026-10-21",
+ "journals": [
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1.jsonl"
+ ],
+ "scenarios": [
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/kennedy/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/spring/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/cnrs-apprentissage/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/boeuf-bourguignon/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/tears-of-steel/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/artemis/scenario.json"
+ ],
+ "arms": [
+  {
+   "label": "ref-debut",
+   "model": "qwen3.8:27b",
+   "think": false
+  },
+  {
+   "label": "dense-mtp",
+   "model": "qwen3.8:27b-mtp-q4_K_M",
+   "think": false
+  },
+  {
+   "label": "moe-qwen",
+   "model": "qwen3.6:35b-a3b-q4_K_M",
+   "think": false
+  },
+  {
+   "label": "moe-qwen-mtp",
+   "model": "qwen3.6:35b-a3b-mtp-q4_K_M",
+   "think": false
+  },
+  {
+   "label": "moe-gemma",
+   "model": "gemma4:26b-a4b-it-q4_K_M",
+   "think": false
+  },
+  {
+   "label": "moe-qwen-mtp-raisonnement",
+   "model": "qwen3.6:35b-a3b-mtp-q4_K_M",
+   "think": true
+  },
+  {
+   "label": "ref-fin",
+   "model": "qwen3.8:27b",
+   "think": false
+  }
+ ]
+}

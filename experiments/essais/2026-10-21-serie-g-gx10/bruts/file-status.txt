@@ -1,0 +1,12 @@
+g1 exit 1 14:18:40
+g3 exit 1 14:18:40
+g4 exit 1 14:18:40
+g2-preparation exit 0 14:19:06
+g2 exit 1 14:19:06
+done
+reprise 16:05:28
+g1 exit 0 16:15:00
+g3 exit 0 16:30:27
+g4 exit 0 17:00:32
+g2 exit 0 17:36:56
+done-reprise

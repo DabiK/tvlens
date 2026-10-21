@@ -1,0 +1,26 @@
+| Vidéo | Configuration | n | Note moy. | Pertinentes | < 20 s | < 15 s | Inventions | p50 (s) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| artemis | corpus-etendu-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 2.40 | 4 | 2 | 0 | 0 | 19.1 |
+| artemis | corpus-etendu-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 3.00 | 5 | 4 | 1 | 0 | 17.2 |
+| artemis | corpus-etendu-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 3.00 | 5 | 4 | 0 | 0 | 18.3 |
+| cnrs | nuit-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 10 | 2.20 | 8 | 2 | 0 | 2 | 21.2 |
+| cnrs | nuit-gx10 | whisper=base | pause=True | q=qwen3.8:27b | 10 | 2.30 | 9 | 9 | 7 | 1 | 12.8 |
+| cnrs | reference-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 2.40 | 4 | 0 | 0 | 1 | 23.4 |
+| cnrs | reference-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 2.40 | 5 | 1 | 0 | 0 | 20.2 |
+| cnrs | reference-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 2.40 | 4 | 0 | 0 | 1 | 22.2 |
+| cuisine | corpus-etendu-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 1.60 | 2 | 1 | 0 | 3 | 21.4 |
+| cuisine | corpus-etendu-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 1.40 | 1 | 1 | 0 | 4 | 23.2 |
+| cuisine | corpus-etendu-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 1.80 | 1 | 1 | 0 | 3 | 18.7 |
+| kennedy | confirmation-pause-vision-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 10 | 2.50 | 8 | 5 | 1 | 2 | 18.8 |
+| kennedy | confirmation-pause-vision-gx10 | whisper=base | pause=True | q=qwen3.8:27b | 10 | 2.60 | 7 | 7 | 5 | 3 | 11.2 |
+| kennedy | reference-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 2.20 | 4 | 3 | 1 | 1 | 16.2 |
+| kennedy | reference-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 2.40 | 5 | 5 | 2 | 0 | 15.4 |
+| kennedy | reference-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 2.20 | 4 | 3 | 2 | 0 | 15.1 |
+| spring | confirmation-pause-vision-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 10 | 1.60 | 6 | 6 | 6 | 0 | 12.2 |
+| spring | confirmation-pause-vision-gx10 | whisper=base | pause=True | q=qwen3.8:27b | 10 | 1.60 | 6 | 6 | 6 | 2 | 9.2 |
+| spring | reference-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 1.20 | 2 | 2 | 2 | 0 | 15.0 |
+| spring | reference-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 1.20 | 2 | 2 | 2 | 0 | 17.2 |
+| spring | reference-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 2.40 | 4 | 4 | 4 | 0 | 12.2 |
+| tears | corpus-etendu-gx10 | whisper=base | pause=False | q=qwen3.8:27b | 5 | 2.00 | 4 | 4 | 4 | 0 | 12.2 |
+| tears | corpus-etendu-gx10 | whisper=large-v3-turbo | pause=False | q=qwen3.8:27b | 5 | 2.80 | 5 | 5 | 4 | 0 | 11.4 |
+| tears | corpus-etendu-gx10 | whisper=small | pause=False | q=qwen3.8:27b | 5 | 2.40 | 4 | 4 | 4 | 1 | 11.4 |

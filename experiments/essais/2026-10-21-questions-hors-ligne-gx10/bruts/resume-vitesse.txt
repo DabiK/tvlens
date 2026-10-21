@@ -1,0 +1,7 @@
+ref-debut                    30/30 | total méd 9.2 s | génération 24 jet/s | sortie méd 144 jet | JSON invalide 0 | citations 21 | outils 0
+dense-mtp                    30/30 | total méd 9.3 s | génération 24 jet/s | sortie méd 144 jet | JSON invalide 0 | citations 21 | outils 0
+moe-qwen                     30/30 | total méd 3.5 s | génération 64 jet/s | sortie méd 161 jet | JSON invalide 0 | citations 28 | outils 0
+moe-qwen-mtp                 30/30 | total méd 3.1 s | génération 80 jet/s | sortie méd 164 jet | JSON invalide 0 | citations 28 | outils 0
+moe-gemma                    30/30 | total méd 4.6 s | génération 54 jet/s | sortie méd 203 jet | JSON invalide 0 | citations 28 | outils 0
+moe-qwen-mtp-raisonnement    30/30 | total méd 17.7 s | génération 83 jet/s | sortie méd 1453 jet | JSON invalide 8 | citations 10 | outils 0
+ref-fin                      30/30 | total méd 9.3 s | génération 24 jet/s | sortie méd 144 jet | JSON invalide 0 | citations 21 | outils 0

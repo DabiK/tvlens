@@ -1,0 +1,335 @@
+[
+ {
+  "questionId": "spring-01",
+  "atMs": 72000,
+  "question": "Qui accompagne la jeune fille au début ?",
+  "answers": [
+   {
+    "textId": "5016184ed9",
+    "kind": "insufficient",
+    "answer": "Les passages reçus ne montrent qu'un enfant et un petit chien dans un paysage enneigé, sans préciser qui accompagne la jeune fille au début.",
+    "citations": [
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "6e530e925b",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un terrier, qui tient un morceau de bois dans sa gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "dce9054591",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un terrier, qui court dans la neige en tenant un morceau de bois dans sa gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "4cd0ebded5",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "atMs": 192000,
+  "question": "Quel objet tient-elle dans la forêt ?",
+  "answers": [
+   {
+    "textId": "7f6cfeee46",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt, selon les passages moment-18 (136000-144000) et moment-20 (152000-160000).",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "b3ae68c7f5",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt brumeuse.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ]
+   },
+   {
+    "textId": "b26cf8d96f",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "atMs": 222000,
+  "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?",
+  "answers": [
+   {
+    "textId": "313e03a6ab",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas trancher la couleur dominante de la lumière de la grande forme : les résumés la décrivent seulement comme « lumineuse » ou « indistincte », sans préciser la teinte, et je n’ai pas encore réexaminé l’image. Si tu me confirmes, je peux inspecter le passage concerné (par exemple moment-22, 168000–176000 ms) pour voir la couleur réelle.",
+    "citations": []
+   },
+   {
+    "textId": "65ec06bb4c",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est enveloppée d'une lumière bleu-vert, visible au centre de l'image avec des reflets et des particules qui s'en échappent.",
+    "citations": [
+     {
+      "startMs": 168000,
+      "endMs": 176000
+     }
+    ]
+   },
+   {
+    "textId": "016e749050",
+    "kind": "observation",
+    "answer": "La grande forme flottante près d'elle est décrite comme un organisme bleu translucide, donc la lumière qui domine est bleue.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "966199de7f",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est enveloppée d'une lumière bleue, selon les passages moment-24 à moment-26 (184000-208000).",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "b304705294",
+    "kind": "observation",
+    "answer": "La grande forme flottante près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide aux reflets lumineux dans l'obscurité.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "6b30dbcab9",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière bleue, décrite comme bleue et sombre dans les passages consultés.",
+    "citations": [
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "fd5a6f1c80",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est baignée d'une lumière turquoise, décrite comme une masse d'eau translucide flottant dans l'obscurité.",
+    "citations": [
+     {
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "atMs": 268000,
+  "question": "Comment apparaît maintenant le haut du bâton ?",
+  "answers": [
+   {
+    "textId": "6780f1e470",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : le dernier passage analysé (moment-32, 248000-256000) ne détaille que la lumière vive qu'il émet, sans préciser son extrémité, et le passage suivant n'est pas encore disponible.",
+    "citations": []
+   },
+   {
+    "textId": "33c0b77844",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+    "citations": []
+   },
+   {
+    "textId": "9b64ee389f",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : le passage le plus récent analysé (moment-30, 232000-240000) ne mentionne qu'une lumière dorée émanant du bâton, sans détail sur son extrémité, et le segment suivant (moment-32, 248000-256000) est encore en cours d'analyse.",
+    "citations": []
+   },
+   {
+    "textId": "ef54a6394b",
+    "kind": "observation",
+    "answer": "Le haut du bâton est décrit comme portant une flamme, et il émet une lumière dorée qui éclaire la scène.",
+    "citations": [
+     {
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "3f3ecd0055",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les passages observés le montrent seulement tenu pour se stabiliser, sans détail de son extrémité, et le dernier segment analysé (moment-32) est encore en attente d'analyse visuelle.",
+    "citations": []
+   },
+   {
+    "textId": "08e63718ce",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les résumés consultés ne le précisent pas et le passage le plus récent (moment-32, 248000-256000) n’a pas encore d’analyse visuelle exploitable. Je peux réexaminer ce passage pour voir si le haut du bâton y est visible.",
+    "citations": []
+   },
+   {
+    "textId": "c63ae4a237",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore décrire le haut du bâton : les passages récents (moment-31 à moment-33, 240000–264000 ms) n’ont qu’une observation partielle, sans image analysée, et je n’ai pas encore réexaminé l’image. Si tu me confirmes, je peux inspecter le passage le plus récent disponible (moment-33, 256000–264000 ms) pour voir comment apparaît le haut du bâton.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "atMs": 372000,
+  "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?",
+  "answers": [
+   {
+    "textId": "2bbf53da7c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages observés ne montrent que des scènes récentes (forêt, créatures marines, lac brumeux, prairie montagneuse), sans image du début pour établir un avant/après. Je peux décrire l'évolution visible dans les passages récents si tu veux.",
+    "citations": []
+   },
+   {
+    "textId": "45270e61e6",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas comparer l'aspect du paysage au début avec celui d'après : les passages reçus ne couvrent que la fin de la séquence (320 s à 368 s), et les premiers segments ne sont pas disponibles dans ce fil. Je peux décrire ce qui est visible en fin de séquence, mais pas établir un changement depuis le début.",
+    "citations": []
+   },
+   {
+    "textId": "8d321c517b",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore d'image analysée du passage le plus récent (après 256 s) pour décrire précisément le haut du bâton ; les résumés automatiques ne suffisent pas à trancher.",
+    "citations": []
+   },
+   {
+    "textId": "1ca4f80993",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent que la fin de la vidéo (moment-41 à moment-46, 320000-368000), et les passages du début n'ont pas été analysés. Je peux décrire ce que je vois dans les passages récents si tu veux.",
+    "citations": []
+   },
+   {
+    "textId": "e70df86be2",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début avec celui d'aujourd'hui : les passages reçus ne couvrent pas le début de la vidéo, et les résumés automatiques ne suffisent pas à décrire précisément les changements visuels. Je peux réexaminer un passage récent pour voir l'état actuel du paysage, mais il me faudrait aussi un passage du début pour faire la comparaison.",
+    "citations": []
+   },
+   {
+    "textId": "7a01c9b0dc",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages récents (moment-45, 352000–360000 ms et moment-46, 360000–368000 ms) n'ont qu'une observation partielle, sans image analysée, et je n'ai pas encore réexaminé l'image. Si tu me confirmes, je peux inspecter le passage le plus récent disponible (moment-45, 352000–360000 ms) pour voir comment le paysage apparaît maintenant.",
+    "citations": []
+   },
+   {
+    "textId": "3c167c3d51",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas encore comparer l'aspect du paysage au début et maintenant : les passages reçus ne couvrent que la fin de la séquence (320000-368000), et les segments du début sont en attente d'analyse ou absents du contexte. Je peux décrire ce qui est visible actuellement — brume, montagnes enneigées, forêts, étendue d'eau et vaisseau flottant — mais pas ce qui a changé depuis le départ.",
+    "citations": []
+   }
+  ]
+ }
+]

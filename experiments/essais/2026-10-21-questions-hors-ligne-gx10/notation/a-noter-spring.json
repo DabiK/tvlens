@@ -1,0 +1,376 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "761d902b1c",
+    "kind": "observation",
+    "answer": "Au début de la vidéo (entre 48 et 64 secondes), c'est un enfant qui accompagne le chien. Les résumés visuels indiquent qu'un enfant s'approche du chien, puis se tient à ses côtés en tenant un biscuit.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "d830d2c362",
+    "kind": "observation",
+    "answer": "Au début, la jeune fille est accompagnée d'un petit chien, probablement un Jack Russell, qui court sur un chemin enneigé avec un morceau de bois dans la gueule.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "a718e28d3f",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : on y voit un paysage alpin, un petit chien et un enfant qui s'approche du chien. Dis-moi à quel moment tu vois la jeune fille, ou je peux vérifier le début de la vidéo.",
+    "citations": []
+   },
+   {
+    "textId": "f0c3ea81d7",
+    "kind": "observation",
+    "answer": "Je vais vérifier le début de la vidéo et la scène avec l'enfant pour identifier qui accompagne la jeune fille.",
+    "citations": []
+   },
+   {
+    "textId": "dee0773e51",
+    "kind": "observation",
+    "answer": "Au début de la vidéo (entre 48 et 64 secondes), c'est un enfant qui accompagne le chien. Les résumés indiquent qu'un enfant s'approche du chien, puis se tient face à lui sur un terrain rocheux enneigé.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "204f25071c",
+    "kind": "observation",
+    "answer": "Les passages disponibles montrent un enfant qui s'approche d'un petit chien dans un paysage enneigé. Cependant, la vidéo ne montre personne d'autre accompagnant l'enfant au début de la séquence observée.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "9dd0640d0a",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas d'objet précis dans les passages reçus : la scène de forêt (moment-19, 144000–152000 ms) décrit une jeune fille terrifiée en fuite, bras tendus, dans un environnement sombre et brumeux, mais aucun objet tenu n'y est mentionné. Je peux réexaminer ce passage pour vérifier s'il tient quelque chose.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "728be734ed",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre car les images de la scène en forêt ne sont pas disponibles dans les données reçues. Les passages visuels pertinents ont été sautés ou non analysés, et je n'ai accès qu'à des résumés audio ou à des descriptions textuelles imprécises.",
+    "citations": []
+   },
+   {
+    "textId": "8f02f61069",
+    "kind": "observation",
+    "answer": "Je vais chercher les passages où une jeune fille est dans la forêt pour vérifier si elle tient un objet.",
+    "citations": []
+   },
+   {
+    "textId": "4e356383e7",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car je n'ai pas encore vu de scène se déroulant dans une forêt dans les passages analysés. Les extraits reçus montrent une jeune fille terrifiée dans un environnement sombre et brumeux, mais aucun objet tenu par elle n'est mentionné.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "b9f489ab13",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas encore d'objet précis dans la forêt : le seul passage qui la montre (moment-19, 144000–152000) décrit une jeune fille terrifiée en fuite, bras tendus, dans un environnement sombre et brumeux, mais sans mention d'objet qu'elle tiendrait. Je peux réexaminer ce passage pour voir s'il y a un objet dans ses mains.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "6752f34012",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre car les images de la forêt ne sont pas disponibles dans les passages analysés. Les données visuelles reçues montrent un paysage alpin et un chien, mais aucune scène en forêt où une personne tiendrait un objet n'a été inspectée.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "49b28ab774",
+    "kind": "observation",
+    "answer": "La grande forme lumineuse près d'elle est décrite comme baignée dans une lumière bleutée et sombre, dans plusieurs passages consécutifs (moments 23 à 25).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b6068a8ffb",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est décrite comme baignée dans une lumière bleutée et sombre, dans plusieurs passages consécutifs (moments 23 à 25).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "c8a4c9ed71",
+    "kind": "observation",
+    "answer": "La lumière de la grande structure squelettique est bleue. Cette couleur domine la scène dans les passages observés.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "2c4390c8a3",
+    "kind": "observation",
+    "answer": "La lumière émise par la grande forme squelettique est bleue.",
+    "citations": [
+     {
+      "id": "clip-184000-192000",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "b3b95580aa",
+    "kind": "observation",
+    "answer": "La lumière qui domine la grande forme squelettique près de la jeune fille est bleue.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "d164195ab2",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre car les images de la vidéo sont indisponibles dans cette section. Les données indiquent que le passage est en attente d'analyse ou qu'il s'agit d'un son seul, ce qui empêche toute observation visuelle du bâton.",
+    "citations": []
+   },
+   {
+    "textId": "469e2f06b0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre car les images du début de la vidéo n'ont pas été capturées (la couverture s'arrête à 264000 ms, alors que le début est à 0 ms). Je n'ai donc aucune preuve visuelle pour décrire le haut du bâton.",
+    "citations": []
+   },
+   {
+    "textId": "9fc979bfbb",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : la jeune fille y tient une torche (moments 29 à 31), mais aucun objet n'est décrit comme un bâton. Dis-moi à quel moment tu vois ce bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   },
+   {
+    "textId": "26159f89ca",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo reçus ne montrent pas de bâton. Les dernières images analysées se concentrent sur une jeune femme dans une forêt brumeuse et une créature lumineuse.",
+    "citations": []
+   },
+   {
+    "textId": "2a5f860f3a",
+    "kind": "observation",
+    "answer": "Je ne peux pas voir le haut du bâton à ce moment précis (268s) car la vidéo n'est pas encore capturée jusqu'à cette date (la mémoire s'arrête à 264s).",
+    "citations": []
+   },
+   {
+    "textId": "bda0778ac1",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : les scènes récentes montrent une jeune femme tenant une torche (moments 29 à 31), mais aucun bâton n'y est décrit. Dis-moi à quel moment tu vois le bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "a135794b31",
+    "kind": "observation",
+    "answer": "Je ne vois pas les passages du début de la vidéo dans les données fournies, qui commencent vers 5 minutes 20 secondes. Je vais rechercher ce qu'il se passe au tout début pour comparer.",
+    "citations": []
+   },
+   {
+    "textId": "47900d83cf",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore de passage du tout début de la vidéo dans ce fil : les passages reçus couvrent la forêt sombre, la scène sous-marine, puis les sommets enneigés et brumeux. Pour comparer l'aspect du paysage depuis le début, dis-moi à quel moment tu vois le premier paysage, ou je peux chercher les premiers passages.",
+    "citations": []
+   },
+   {
+    "textId": "3ef6e6ec6a",
+    "kind": "observation",
+    "answer": "Le paysage a considérablement changé : on est passé d'une forêt sombre et brumeuse (vers 320s) à un environnement sous-marin mystérieux (vers 328s), puis à des montagnes enneigées et brumeuses (vers 336s-352s).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "0b6913c7a6",
+    "kind": "observation",
+    "answer": "Le paysage passe d'une forêt sombre et brumeuse avec des roches (moment-41, 320000-328000 ms) à un environnement sous-marin mystérieux (moment-42, 328000-336000 ms). Il évolue ensuite vers des montagnes enneigées et brumeuses (moment-43, 336000-344000 ms) pour finir sur une colline montagneuse sous un ciel clair (moment-45, 352000-360000 ms).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "4781c0e69f",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore de passage du tout début de la vidéo dans ce fil : les passages reçus couvrent la forêt sombre, la scène sous-marine, puis les montagnes enneigées et brumeuses. Pour comparer l'aspect du paysage depuis le début, dis-moi à quel moment tu vois le paysage initial, ou je peux chercher un passage plus ancien.",
+    "citations": []
+   },
+   {
+    "textId": "30f819e4da",
+    "kind": "observation",
+    "answer": "Le paysage a considérablement changé : on est passé d'une forêt sombre et brumeuse (vers 320s) à un environnement sous-marin mystérieux (vers 328s), puis à des montagnes enneigées et brumeuses (à partir de 336s).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,136 @@
+[
+ {
+  "blockId": "spring@56000",
+  "startS": 56.0,
+  "endS": 64.0,
+  "transcript": "(crying)",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "c5e2276161",
+    "summary": "Un plan rapproché montre une personne tenant un morceau de bois, tandis qu'un petit chien regarde attentivement la scène. L'arrière-plan est un paysage montagneux brumeux.",
+    "visual": "Gros plan sur une personne tenant un morceau de bois, avec un petit chien au premier plan dans un environnement montagneux et brumeux."
+   },
+   {
+    "textId": "6c067004f3",
+    "summary": "L'enfant s'avance vers le chien qui se tient à mêmeau, l'observant attentivement.",
+    "visual": "Un enfant est vu de profil, tenant un biscuit, et regarde un petit chien marron qui se tient à ses pieds sur un terrain rocheux. Le chien est en position assise, le regardant avec attention."
+   },
+   {
+    "textId": "522d89c012",
+    "summary": "La jeune fille tend des biscuits à un chien qui court vers elle, dans un paysage montagneux enneigé.",
+    "visual": "On voit une jeune fille, vêtue d'un pull rouge, qui offre des biscuits à un chien. Le chien est en mouvement, courant vers elle, et le paysage est dominé par des montagnes enneigées et des nuages bas."
+   }
+  ]
+ },
+ {
+  "blockId": "spring@200000",
+  "startS": 200.0,
+  "endS": 208.0,
+  "transcript": "(upbeat music)",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "3933a5ff3b",
+    "summary": "La jeune fille, tenant un bâton, observe attentivement une immense structure squelettique lumineuse flottant au-dessus d'elle dans un environnement sous-marin sombre et aqueux.",
+    "visual": "Une jeune fille se tient dans l'eau, observant une grande structure squelettique lumineuse et translucide qui se trouve au-dessus d'elle. L'eau est sombre et la scène est baignée d'une lumière bleue."
+   },
+   {
+    "textId": "78cf2a4e3a",
+    "summary": "La scène montre une jeune fille dans un environnement sombre et aquatique, tenant un bâton. Elle observe une immense structure squelettique lumineuse qui flotte au-dessus d'elle.",
+    "visual": "Une jeune fille est visible dans un environnement sombre et aquatique, tenant un bâton. Au-dessus d'elle, une grande structure squelettique lumineuse est visible dans la brume."
+   }
+  ]
+ },
+ {
+  "blockId": "spring@264000",
+  "startS": 264.0,
+  "endS": 272.0,
+  "transcript": "НАПРЯЖЁННАЯ МУЗЫКА",
+  "images": 3,
+  "descriptions": [
+   {
+    "textId": "313fc73424",
+    "summary": "La scène montre un personnage, probablement une jeune fille, dans un environnement sous-marin sombre et rocheux. On distingue une créature marine massive et inquiétante, partiellement visible dans l'eau, créant une atmosphère de tension et de menace.",
+    "visual": "Un personnage est visible dans un environnement aquatique sombre, avec une grande créature marine indistincte en arrière-plan."
+   },
+   {
+    "textId": "ae9c215b86",
+    "summary": "La scène montre une créature massive et sombre dans un environnement aquatique, avec des lumières intermittentes visibles dans l'obscurité. L'ambiance est très sombre et menaçante.",
+    "visual": "Plan sous-marin très sombre, dominé par une silhouette gigantesque et indistincte. Des points lumineux flottent dans l'eau, créant une atmosphère inquiétante."
+   }
+  ]
+ },
+ {
+  "blockId": "spring@320000",
+  "startS": 320.0,
+  "endS": 328.0,
+  "transcript": "(dog barking)",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "8e6b49fef6",
+    "summary": "Un petit chien, visiblement effrayé, se tient près d'une grosse pierre dans un environnement sombre et brumeux.",
+    "visual": "Un chien miniature, de couleur rousse, est accroupi près d'une roche sombre et imposante. L'éclairage est faible et crée une ambiance sombre et inquiétante."
+   },
+   {
+    "textId": "5c7bbd7016",
+    "summary": "La jeune fille, vêtue d'une robe rouge, tient son bâton lumineux et observe attentivement le petit chien, qui semble perdu et inquiet dans la forêt sombre.",
+    "visual": "La jeune fille est debout, souriante, avec son bâton lumineux. Un petit chien, de couleur brune, est à ses pieds, regardant vers le bas avec une expression de peur. L'environnement est sombre et brumeux, avec des roches et des arbres."
+   },
+   {
+    "textId": "4e9ffaf1fc",
+    "summary": "Un petit animal brun, ressemblant à un chien, se trouve au premier plan, près d'un gros tronc d'arbre. L'environnement est sombre et brumeux, avec un sol terreux.",
+    "visual": "Un petit chien brun est visible au premier plan, près d'un gros tronc d'arbre sombre. Le décor est une zone extérieure, sombre et brumeuse, avec un sol de terre."
+   }
+  ]
+ },
+ {
+  "blockId": "spring@368000",
+  "startS": 368.0,
+  "endS": 376.0,
+  "transcript": "",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "dffcd6ce20",
+    "summary": "L'image présente des formations de glace pendantes dans un environnement brumeux et baigné de lumière chaude. Ces stalactites de glace sont le point focal de la scène, entourées d'une ambiance douce et diffuse.",
+    "visual": "Gros plan sur plusieurs stalactites de glace translucides, suspendues dans un environnement très flou et lumineux, avec des tons dorés et bruns dominants."
+   },
+   {
+    "textId": "6905bc9c53",
+    "summary": "L'image montre un paysage rocheux et verdoyant, avec des rochers et de l'herbe, et des stalactites de glace suspendues aux parois.",
+    "visual": "On observe un terrain accidenté couvert d'herbe et de petits arbustes. Des rochers de différentes tailles sont disséminés, et des stalactites de glace pendent des parois rocheuses."
+   },
+   {
+    "textId": "aedc7e5b2a",
+    "summary": "L'image montre un paysage rocheux et verdoyant, avec des rochers et de la végétation, éclairé par un soleil doré. On distingue des formations rocheuses importantes et des herbes et des fleurs à l'avant-plan.",
+    "visual": "Un paysage montagneux avec des rochers, des herbes et des fleurs. Le soleil illumine la scène."
+   }
+  ]
+ },
+ {
+  "blockId": "spring@416000",
+  "startS": 416.0,
+  "endS": 424.0,
+  "transcript": "",
+  "images": 5,
+  "descriptions": [
+   {
+    "textId": "064fee9be0",
+    "summary": "L'image présente le logo de 'Spring' stylisé avec des branches et des feuilles, entouré d'une bordure en bois, sur un fond sombre.",
+    "visual": "Le logo 'Spring' est centré et dominant, avec un design organique et chaleureux. La typographie est détaillée et semble faite de bois."
+   },
+   {
+    "textId": "315be942f7",
+    "summary": "Le passage montre un paysage montagneux imposant baigné par un fort soleil levant, avec des formations rocheuses et de la végétation sèche. Des rayons de lumière traversent l'atmosphère, créant une ambiance dramatique.",
+    "visual": "Vue panoramique d'une montagne rocheuse et escarpée au lever du soleil. La lumière est intense et crée des halos lumineux autour des pics. De la végétation basse et sèche est visible sur les pentes."
+   },
+   {
+    "textId": "6cfae558fd",
+    "summary": "L'image montre le logo du jeu vidéo \"Spring\", composé de la lettre \"SPRING\" dans une police de caractères stylisée et organique, avec un anneau de bois autour.",
+    "visual": "Le logo est en couleurs brun et bleu foncé, avec un effet de bois sculpté. Le texte est bien visible et l'ensemble a un aspect ludique et fantaisiste."
+   }
+  ]
+ }
+]

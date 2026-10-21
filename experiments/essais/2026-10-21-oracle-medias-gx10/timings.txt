@@ -1,0 +1,5 @@
+kennedy asr wall=183.10 s
+cnrs asr wall=431.11 s
+cuisine asr wall=345.58 s
+tears asr wall=359.72 s
+artemis asr wall=1168.48 s

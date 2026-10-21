@@ -1,0 +1,99 @@
+{
+ "experiment": "g3-mtp",
+ "journals": [
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/kennedy-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/spring-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/cnrs-apprentissage-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/boeuf-bourguignon-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/tears-of-steel-A-1.jsonl",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/proxy/artemis-A-1.jsonl"
+ ],
+ "scenarios": [
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/kennedy/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/spring/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/cnrs-apprentissage/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/boeuf-bourguignon/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/tears-of-steel/scenario.json",
+  "/home/nvidia/tvlens-setup/labo-claude/e1-reference-instrumentee-results/inputs/artemis/scenario.json"
+ ],
+ "capSeconds": 1800,
+ "cases": [
+  {
+   "kind": "question",
+   "id": "kennedy-01"
+  },
+  {
+   "kind": "question",
+   "id": "kennedy-03"
+  },
+  {
+   "kind": "question",
+   "id": "kennedy-05"
+  },
+  {
+   "kind": "question",
+   "id": "kennedy-06"
+  },
+  {
+   "kind": "question",
+   "id": "kennedy-08"
+  },
+  {
+   "kind": "question",
+   "id": "cnrs-01"
+  },
+  {
+   "kind": "question",
+   "id": "cnrs-02"
+  },
+  {
+   "kind": "question",
+   "id": "cnrs-04"
+  },
+  {
+   "kind": "question",
+   "id": "cnrs-05"
+  },
+  {
+   "kind": "question",
+   "id": "cnrs-06"
+  },
+  {
+   "kind": "question",
+   "id": "spring-01"
+  },
+  {
+   "kind": "question",
+   "id": "spring-02"
+  },
+  {
+   "kind": "question",
+   "id": "spring-03"
+  },
+  {
+   "kind": "question",
+   "id": "spring-04"
+  },
+  {
+   "kind": "question",
+   "id": "spring-06"
+  }
+ ],
+ "arms": [
+  {
+   "label": "P"
+  },
+  {
+   "label": "P0",
+   "options": {
+    "draft_num_predict": 0
+   }
+  }
+ ],
+ "order": [
+  "P",
+  "P0",
+  "P0",
+  "P"
+ ]
+}

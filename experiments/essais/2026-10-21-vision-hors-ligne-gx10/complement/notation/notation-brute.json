@@ -1,0 +1,2402 @@
+{
+  "summary": "Blind scoring of vision descriptions (reference, 3 images, gemma4:e4b without reasoning) against reference frames",
+  "agentCount": 17,
+  "logs": [
+    "spring: 1 désaccord(s) tranché(s) par un troisième juge",
+    "cnrs-apprentissage: 2 désaccord(s) tranché(s) par un troisième juge",
+    "boeuf-bourguignon: 1 désaccord(s) tranché(s) par un troisième juge",
+    "artemis: 3 désaccord(s) tranché(s) par un troisième juge",
+    "tears-of-steel: 3 désaccord(s) tranché(s) par un troisième juge"
+  ],
+  "result": [
+    {
+      "video": "kennedy",
+      "judges": [
+        {
+          "video": "kennedy",
+          "scores": [
+            {
+              "textId": "14067d3f1d",
+              "blockId": "kennedy@64000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Tout est vrai : pupitre au sceau présidentiel (dit « sceau des États-Unis », approximation acceptable), drapeau à côté, foule dans un stade, parole (lumière électrique, téléphones, automobiles). Seuls manquent les dignitaires assis à droite."
+            },
+            {
+              "textId": "6b8f4bdac8",
+              "blockId": "kennedy@64000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Kennedy ne tient pas le drapeau et celui-ci n'est pas posé sur le pupitre : il est sur une hampe à gauche. L'action principale est donc fausse, dans les deux champs. Le pupitre, la foule et le stade sont justes, mais le sceau et le contenu du discours manquent."
+            },
+            {
+              "textId": "52066f6512",
+              "blockId": "kennedy@128000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le contenu attribué (dangers et coûts de l'espace) vient d'un passage antérieur (1:46–1:54), pas du bloc, où il dit que le pays n'a pas été bâti par ceux qui attendaient. Le champ visuel ne décrit rien de visible au-delà de « devant une foule » : ni pupitre, ni sceau, ni drapeau, ni dignitaires."
+            },
+            {
+              "textId": "fadddb9de6",
+              "blockId": "kennedy@128000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole exacte (pays non bâti par ceux qui attendaient). Pupitre au sceau, foule assise dans le stade et dignitaires assis à côté : tout est juste. « Devant un drapeau » est une petite imprécision, le drapeau étant à gauche au premier plan."
+            },
+            {
+              "textId": "9796dd1837",
+              "blockId": "kennedy@184000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "La citation « overcome with answerable courage » vient de 2:44–2:50, pas du bloc, où il dit que l'exploration spatiale avancera et que c'est une grande aventure. Le drapeau et le sceau sont au premier plan, pas « en arrière-plan ». Le pupitre et la foule sont justes."
+            },
+            {
+              "textId": "732ab31bfa",
+              "blockId": "kennedy@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "La parole attribuée (quête de connaissance, « overcome with answerable courage ») vient de passages antérieurs. Les « mains jointes » ne sont pas visibles : il gesticule de la main droite, puis regarde ses notes. Ni drapeau ni sceau. Seuls le pupitre et la foule sont justes."
+            },
+            {
+              "textId": "e87f0ecdcb",
+              "blockId": "kennedy@184000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : sceau présidentiel, costume sombre, foule dans un grand stade, drapeau à gauche ; parole fidèle (l'exploration spatiale avancera, avec ou sans nous, grande aventure). Seuls les dignitaires assis ne sont pas mentionnés."
+            },
+            {
+              "textId": "2c155be79b",
+              "blockId": "kennedy@240000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "« Tenant un drapeau américain » est faux : le drapeau est sur une hampe à gauche. La foule « principalement d'hommes noirs et blancs » est douteuse : elle est surtout blanche, avec quelques hommes noirs. La parole est vague (« encourage l'innovation ») au lieu de la lune et des planètes. Le pupitre orné d'insignes est juste."
+            },
+            {
+              "textId": "93e9b61079",
+              "blockId": "kennedy@240000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Deux erreurs visuelles : il ne tient pas le drapeau, et il porte une cravate, pas un nœud papillon. Les micros, la foule dense et le pupitre sont justes. La parole est vague et il ne lit pas ses notes."
+            },
+            {
+              "textId": "68a2e692b9",
+              "blockId": "kennedy@240000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole fidèle (regarder vers la lune et les planètes). Le pupitre, le drapeau, la foule dense et les hommes en costume autour sont justes. Imprécisions mineures : « devant » le drapeau, qui est à côté, et « amphithéâtre » pour le stade. Le sceau n'est pas cité."
+            },
+            {
+              "textId": "f512e0e9a1",
+              "blockId": "kennedy@304000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : pupitre au sceau, grande foule assise, drapeau à gauche ; parole fidèle (résoudre ces mystères pour le bien de tous, nation leader de l'espace). Les dignitaires assis ne sont pas mentionnés."
+            },
+            {
+              "textId": "1f88cd47d8",
+              "blockId": "kennedy@304000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le contenu (science, industrie, paix et sécurité) correspond au début de la phrase (4:40–4:59), pas à la partie dite dans le bloc (mystères, nation leader de l'espace). Le visuel est juste mais pauvre : pupitre, personnes autour, foule ; ni drapeau ni sceau."
+            },
+            {
+              "textId": "8dd9707d6c",
+              "blockId": "kennedy@304000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Même résumé que 1f88cd47d8 : le contenu vient du début de la phrase, avant le bloc. Le visuel est juste (JFK au pupitre, foule, groupe de personnes) mais pauvre : ni drapeau ni sceau."
+            },
+            {
+              "textId": "ff9f54326f",
+              "blockId": "kennedy@368000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole fidèle au bloc (l'espace peut être exploré et maîtrisé, usage hostile de la terre ou de la mer). « Contrairement à » est une lecture un peu libre mais défendable. Le sceau, la foule assise et le drapeau à gauche sont justes."
+            },
+            {
+              "textId": "7eec32436f",
+              "blockId": "kennedy@368000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le résumé met l'accent sur la protection contre les menaces spatiales et sur la paix, en périphérie du bloc, et omet son cœur (l'espace peut être exploré et maîtrisé). « Appuyé sur le micro » est approximatif : il se penche sur le pupitre pour lire. Les officiels autour sont bien visibles. Ni drapeau ni sceau."
+            },
+            {
+              "textId": "fa4d8178e4",
+              "blockId": "kennedy@368000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "« Porte un badge présidentiel » est inventé : le sceau est sur le pupitre, pas sur lui. Le résumé (protection contre l'usage hostile de l'espace, paix et sécurité) n'est qu'en partie le bloc et omet « explored and mastered ». Le pupitre, le micro et la foule dense sont justes ; ni drapeau ni sceau."
+            }
+          ]
+        },
+        {
+          "video": "kennedy",
+          "scores": [
+            {
+              "textId": "14067d3f1d",
+              "blockId": "kennedy@64000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Tout est vrai : pupitre au sceau (présidentiel, dit « des États-Unis », approximation tolérée), drapeau à côté, grande foule de stade, parole correcte (lumière électrique, téléphones, automobiles). Manquent Newton/gravité et les dignitaires assis."
+            },
+            {
+              "textId": "6b8f4bdac8",
+              "blockId": "kennedy@64000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Kennedy au pupitre devant une foule de stade : vrai. Mais il ne tient pas le drapeau et le drapeau n'est pas posé sur le pupitre : il est sur une hampe à gauche (erreur répétée). Rien sur la parole, pas de sceau ni de micros."
+            },
+            {
+              "textId": "52066f6512",
+              "blockId": "kennedy@128000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Les dangers et les coûts de l'espace viennent du passage précédent (1:34–1:54), pas de ce bloc (pays qui n'a pas été bâti par ceux qui attendent). Le champ visuel ne fait que répéter cette parole ; seuls Kennedy et la foule sont exacts."
+            },
+            {
+              "textId": "fadddb9de6",
+              "blockId": "kennedy@128000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole exacte (pays non bâti par ceux qui attendent et regardent en arrière). Stade, pupitre au sceau, drapeau, dignitaires assis à côté : tout se voit. « Devant un drapeau » reste approximatif mais acceptable."
+            },
+            {
+              "textId": "9796dd1837",
+              "blockId": "kennedy@184000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le visuel est juste (pupitre, foule dense, drapeau, sceau ; le sceau est sur le pupitre, pas en arrière-plan). La citation « overcome with answerable courage » appartient au passage précédent (2:44–2:50), pas à ce bloc (l'espace avancera, qu'on y participe ou non). La parole du bloc manque."
+            },
+            {
+              "textId": "732ab31bfa",
+              "blockId": "kennedy@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Les « mains jointes » ne se voient pas : les mains sont cachées par le pupitre, une main est levée à 3:04. La citation « answerable courage » vient du passage précédent et se trouve, à tort, dans le champ visuel. La détermination dans la quête de connaissance est dite juste avant le bloc. Visuel générique."
+            },
+            {
+              "textId": "e87f0ecdcb",
+              "blockId": "kennedy@184000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole exacte (l'exploration avancera, qu'on y participe ou non ; grande aventure). Le pupitre au sceau présidentiel, le costume sombre, le grand stade et le drapeau à gauche sont tous corrects."
+            },
+            {
+              "textId": "2c155be79b",
+              "blockId": "kennedy@240000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Kennedy ne tient pas de drapeau (inventé). Pupitre orné d'insignes, drapeau et foule (chapeaux, tenues claires dans les gradins, quelques hommes noirs) : plausible ou vrai. La parole reste vague (thème spatial, « encourage l'innovation ») : ni lune, ni planètes."
+            },
+            {
+              "textId": "93e9b61079",
+              "blockId": "kennedy@240000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Deux inventions visuelles : il tient un drapeau (faux, répété) et porte un nœud papillon (faux, c'est une cravate). Les micros et la foule dense sont vrais. Parole vague (thème spatial seulement)."
+            },
+            {
+              "textId": "68a2e692b9",
+              "blockId": "kennedy@240000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole juste (regard tourné vers l'espace, la lune et les planètes au-delà), avec une paraphrase légère sur « invitant ». Le pupitre, le grand drapeau, la foule dense et les hommes en costume autour sont exacts. Pas de sceau mentionné."
+            },
+            {
+              "textId": "f512e0e9a1",
+              "blockId": "kennedy@304000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole exacte : résoudre ces mystères pour le bien de tous, devenir la première nation spatiale. Pupitre au sceau, foule assise, drapeau à gauche : tout est conforme."
+            },
+            {
+              "textId": "1f88cd47d8",
+              "blockId": "kennedy@304000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Science, industrie, paix et sécurité sont le début de la phrase, avant le bloc (4:40–4:59). Le bloc dit : résoudre ces mystères, devenir la première nation spatiale ; seul « leaders » s'en approche. Visuel vrai mais générique (pupitre, personnes autour, foule), sans drapeau ni sceau."
+            },
+            {
+              "textId": "8dd9707d6c",
+              "blockId": "kennedy@304000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Même résumé décalé que la description voisine : science, industrie, paix et sécurité précèdent le bloc. Visuel vrai mais très générique (Kennedy au pupitre devant une foule et un groupe de personnes)."
+            },
+            {
+              "textId": "ff9f54326f",
+              "blockId": "kennedy@368000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Parole juste : l'espace peut être exploré et maîtrisé, avec l'usage hostile de la terre ou de la mer. Le lien logique « contrairement à » est un peu forcé. Pupitre au sceau, foule assise, drapeau à gauche : exacts."
+            },
+            {
+              "textId": "7eec32436f",
+              "blockId": "kennedy@368000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le thème est en partie juste : protection contre l'usage hostile, paix et pas de guerre, dans la phrase à cheval sur le bloc. Mais il manque « l'espace peut être exploré et maîtrisé ». « Appuyé sur le micro » est inexact : il se penche sur le pupitre (limite, non compté comme invention). Personnes autour visibles."
+            },
+            {
+              "textId": "fa4d8178e4",
+              "blockId": "kennedy@368000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Aucun badge présidentiel ne se voit sur lui : le sceau est sur le pupitre (inventé). Le pupitre, le micro et la foule dense sont vrais. La parole est en partie juste (usage hostile, paix) ; « sécurité » est hors passage et « exploré et maîtrisé » manque. L'ambiance décrite est subjective."
+            }
+          ]
+        },
+        null
+      ]
+    },
+    {
+      "video": "spring",
+      "judges": [
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "c5e2276161",
+              "blockId": "spring@56000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Tout ce qui est dit est vrai : la fille tient un bâton de bois sculpté à 64 s, le chien regarde la vallée à 60-62 s, le décor est montagneux et brumeux. Mais la description reste vague (« une personne ») et manque l'action principale : la fille tend des friandises au chien, qui bondit vers elle."
+            },
+            {
+              "textId": "6c067004f3",
+              "blockId": "spring@56000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Vrai : l'enfant tient une friandise (56 s), le chien brun est près d'elle, le sol est rocheux. Faux : l'enfant ne s'avance pas vers le chien, c'est le chien qui bondit vers elle (58 s). La position assise du chien n'est jamais visible. Le résumé est corrompu (« à mêmeau »). Manquent le bâton, la vallée et les montagnes."
+            },
+            {
+              "textId": "522d89c012",
+              "blockId": "spring@56000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : la fille en rouge offre des friandises au chien, qui court ou bondit vers elle (56-58 s), devant des sommets enneigés et une vallée de brume ou de nuages bas (60-62 s). Il ne manque que le dernier plan, où la fille, inquiète, tient son bâton."
+            },
+            {
+              "textId": "3933a5ff3b",
+              "blockId": "spring@200000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le cœur est juste : la fille tient son bâton et lève les yeux vers une immense cage thoracique pâle suspendue dans une brume bleue (200-208 s). Le décor est faux : c'est une gorge brumeuse avec des fougères, des feuilles et un sol sec, pas un fond sous-marin. « Se tient dans l'eau » et « l'eau est sombre » sont inventés."
+            },
+            {
+              "textId": "78cf2a4e3a",
+              "blockId": "spring@200000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "La fille au bâton et le grand squelette lumineux au-dessus d'elle, dans la brume, sont justes. Le décor est qualifié deux fois d'« aquatique » alors que c'est du brouillard sur la terre ferme. Les éléments saillants sont couverts."
+            },
+            {
+              "textId": "313fc73424",
+              "blockId": "spring@264000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le passage se déroule dans une forêt sombre (arbres, feuilles mortes), pas sous l'eau. « Créature marine » et « dans l'eau » sont inventés. Justes : une créature massive (pattes géantes à 266 s) et la fille (accroupie à 270 s). Manquent le chien au collier rouge (268 et 272 s) et l'esprit lumineux cyan."
+            },
+            {
+              "textId": "ae9c215b86",
+              "blockId": "spring@264000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "« Plan sous-marin » et « flottent dans l'eau » sont faux : c'est une forêt de nuit. Seules la silhouette massive (pattes de la créature) et les lueurs bleues (264 et 272 s) sont justes. La fille et le chien, pourtant présents, sont absents de la description."
+            },
+            {
+              "textId": "8e6b49fef6",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : le petit chien roux, tapi puis aboyant près d'un gros rocher sombre, dans une lumière faible (320-322 s). « Visiblement effrayé » n'est pas soutenu : il aboie, queue dressée. La fille souriante au bâton lumineux, présente dans 3 images sur 5, manque."
+            },
+            {
+              "textId": "5c7bbd7016",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Bonne couverture et vraie dans l'ensemble : fille en rouge, debout, souriante, bâton lumineux (324-328 s) ; petit chien brun (320-322 s) ; décor sombre avec rochers et arbres. Mais la peur ou l'inquiétude du chien est interprétée : il renifle puis aboie. La fille et le chien n'apparaissent jamais ensemble dans le bloc."
+            },
+            {
+              "textId": "4e9ffaf1fc",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le petit chien brun dans un décor sombre et brumeux sur sol de terre est juste. Le « gros tronc d'arbre » est en réalité un rocher. Ne décrit que les deux premières images : manque la fille au bâton lumineux."
+            },
+            {
+              "textId": "dffcd6ce20",
+              "blockId": "spring@368000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : gros plan sur des stalactites de glace translucides, fond flou doré (368-370 s). Ne couvre que 2 images sur 5 : manquent le sol rocheux qui reverdit (372-374 s) et la fleur de digitale violette (376 s)."
+            },
+            {
+              "textId": "6905bc9c53",
+              "blockId": "spring@368000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : stalactites de glace, terrain rocheux avec herbe et petites plantes. L'accroche des stalactites aux parois rocheuses ne se vérifie pas, mais rien ne la contredit. Manquent la fleur violette et le passage du sol nu à l'herbe."
+            },
+            {
+              "textId": "aedc7e5b2a",
+              "blockId": "spring@368000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : sol rocheux qui verdit, rochers, herbes, petites fleurs et fleur au premier plan, lumière dorée du soleil (372-376 s). « Montagneux » est un peu forcé. Manquent les stalactites de glace (368-370 s)."
+            },
+            {
+              "textId": "064fee9be0",
+              "blockId": "spring@416000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Le logo SPRING, centré sur fond sombre, en lettres d'aspect bois avec une feuille : exact (418-424 s). Il n'y a aucune bordure en bois autour : c'est inventé. Le texte « Spring » est bien lu. Manque seulement le plan de la montagne au soleil (416 s)."
+            },
+            {
+              "textId": "315be942f7",
+              "blockId": "spring@416000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "La montagne rocheuse couverte de végétation dorée, au soleil, est exacte, mais ne correspond qu'à la première image (416 s). Le titre SPRING, à l'écran de 418 à 424 s, est absent : aucun texte n'est rapporté."
+            },
+            {
+              "textId": "6cfae558fd",
+              "blockId": "spring@416000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Exact : le texte SPRING en lettres organiques façon bois sculpté, brun sur bleu foncé, bien lisible. Deux inventions : un « anneau de bois » qui n'existe pas, et l'identité « jeu vidéo », que rien à l'image ne soutient. Le texte est bien lu."
+            }
+          ]
+        },
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "c5e2276161",
+              "blockId": "spring@56000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Vrai mais très vague : une personne (la fillette) tient un objet en bois (le bâton à 64 s), un petit chien regarde la mer de nuages, montagnes brumeuses. Manquent le biscuit tendu en souriant, le chien qui bondit, la tenue rouge et le visage inquiet de la fin."
+            },
+            {
+              "textId": "6c067004f3",
+              "blockId": "spring@56000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Enfant tenant un biscuit, petit chien brun près d'elle sur un terrain rocheux : vrai. « L'enfant s'avance vers le chien » n'est pas visible, et le chien assis qui la regarde n'apparaît pas clairement. Résumé en partie incohérent. Manquent le bond du chien, le bâton et l'expression inquiète."
+            },
+            {
+              "textId": "522d89c012",
+              "blockId": "spring@56000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Fillette en rouge, biscuit cassé à la main face au chien, chien en plein bond (58 s), montagnes et nuages bas (60 s) : conforme. « Enneigé » est un peu forcé mais des sommets clairs sont visibles. Manque la fin du bloc : le bâton et le visage inquiet."
+            },
+            {
+              "textId": "3933a5ff3b",
+              "blockId": "spring@200000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "La fillette tient un bâton et lève les yeux vers un immense squelette (côtes, colonne) baigné de lumière bleue : juste. En revanche la scène se passe dans un gouffre brumeux et non sous l'eau, et elle se tient sur des rochers, pas « dans l'eau »."
+            },
+            {
+              "textId": "78cf2a4e3a",
+              "blockId": "spring@200000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Fillette avec bâton observant un immense squelette lumineux dans la brume : juste. Le cadre est dit « aquatique » alors qu'aucune eau n'est visible (gouffre brumeux). Même erreur de cadre que l'autre description, en moins marqué."
+            },
+            {
+              "textId": "313fc73424",
+              "blockId": "spring@264000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Fillette (cachée derrière un tronc à 270 s) et pattes d'une créature géante partiellement visibles : juste, menace plausible. Mais il s'agit d'une forêt sombre : aucun décor sous-marin, ni créature marine dans l'eau. Le chien (deux plans), la forêt et le feu follet bleu manquent."
+            },
+            {
+              "textId": "ae9c215b86",
+              "blockId": "spring@264000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Silhouette gigantesque indistincte et points lumineux (feu follet bleu) : juste. Le « plan sous-marin » et « dans l'eau » sont faux : c'est une forêt. La fillette, le chien et les arbres ne sont pas mentionnés."
+            },
+            {
+              "textId": "8e6b49fef6",
+              "blockId": "spring@320000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Petit chien roux, bas sur pattes près d'un gros rocher sombre, éclairage faible : conforme (« effrayé » est une interprétation plausible). Rien sur la fillette souriante au bâton lumineux, pourtant présente sur 3 des 5 images."
+            },
+            {
+              "textId": "5c7bbd7016",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Fillette en rouge, souriante, bâton lumineux, chien brun, décor sombre avec rochers et arbres : couvre bien le bloc. Mais le chien n'est jamais « à ses pieds » ni dans le même plan qu'elle : cette composition est inventée à partir de plans séparés."
+            },
+            {
+              "textId": "4e9ffaf1fc",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Petit chien brun au premier plan, sol de terre, décor sombre : juste. Le gros rocher est pris pour un tronc d'arbre. La fillette et son bâton lumineux sont absents."
+            },
+            {
+              "textId": "dffcd6ce20",
+              "blockId": "spring@368000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Gros plan sur des stalactites de glace translucides, fond flou aux tons dorés : exact pour 368–370 s. Rien sur le sol rocheux qui reverdit ni sur la fleur violette (digitale) de 376 s."
+            },
+            {
+              "textId": "6905bc9c53",
+              "blockId": "spring@368000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Stalactites de glace et terrain rocheux avec herbe et petites plantes : juste. Mais la description fusionne des plans distincts : les stalactites ne sont pas montrées pendant des parois rocheuses. La fleur et la transformation printanière manquent."
+            },
+            {
+              "textId": "aedc7e5b2a",
+              "blockId": "spring@368000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Rochers, herbe et fleurs (la digitale) sous une lumière dorée : conforme ; « montagneux » est un peu large mais le terrain est rocheux. Il manque les stalactites qui fondent sur les deux premières images."
+            },
+            {
+              "textId": "064fee9be0",
+              "blockId": "spring@416000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Titre « SPRING » en lettres de bois sur fond sombre, avec une pousse verte : juste et le texte est exact. Aucune bordure en bois n'entoure le titre (invention), et il n'y a qu'une feuille, pas des branches. Le plan de montagne ensoleillée de 416 s n'est pas mentionné."
+            },
+            {
+              "textId": "315be942f7",
+              "blockId": "spring@416000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "no",
+              "rationale": "La montagne rocheuse au soleil, avec des rangées de végétation dorée et des halos de lumière, est bien décrite, mais c'est la seule image (416 s). Le titre « SPRING » occupe les images 418–422 et n'est pas rapporté, donc le texte à l'écran est manqué."
+            },
+            {
+              "textId": "6cfae558fd",
+              "blockId": "spring@416000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Titre « SPRING » stylisé, effet bois sculpté, brun sur bleu foncé : juste et le texte est exact. Pas d'anneau de bois autour (invention), et « jeu vidéo » est une identité non montrée (c'est un court métrage). Le plan de montagne manque."
+            }
+          ]
+        },
+        {
+          "video": "spring",
+          "scores": [
+            {
+              "textId": "5c7bbd7016",
+              "blockId": "spring@320000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Bloc en deux plans. De 320 à 323 s environ, un petit animal brun-roux, de type chien, renifle au pied d'un gros rocher sombre, dans une forêt sombre et brumeuse. Ensuite, la fille en tunique rouge sourit en tenant son bâton lumineux, puis l'abaisse et regarde vers le bas, un rocher gris au premier plan. Ce qui est juste : la fille en rouge, le sourire, le bâton lumineux, le petit chien brun, le décor sombre et brumeux avec des rochers et des arbres. Le regard de la fille vers le chien est une lecture plausible du champ-contrechamp. Ce qui est faux : le chien n'est jamais « à ses pieds », les deux personnages apparaissent dans des plans séparés, donc la composition est inventée. L'« expression de peur » et le chien « perdu et inquiet » ne sont pas visibles : il renifle simplement le rocher. Les éléments saillants des deux plans sont présents, mais l'action du chien (renifler le rocher) est remplacée par une interprétation. Pas de texte à l'écran."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "cnrs-apprentissage",
+      "judges": [
+        {
+          "video": "cnrs-apprentissage",
+          "scores": [
+            {
+              "textId": "94765285ea",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Images 2:00-2:08 : homme chauve en t-shirt sombre à droite, silhouettes noires de chat et de lapin sur fond blanc. Parole : points communs (yeux, pattes) puis formes différentes. Tout est exact et l'essentiel est couvert."
+            },
+            {
+              "textId": "5df33c7c66",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Visuel exact (homme, mur blanc, silhouettes). Mais le résumé et le visuel affirment qu'il explique la différence de taille entre petits et grands modèles d'IA : sujet du début de la vidéo, faux pour ce passage, qui porte sur les points communs et les différences chat/lapin."
+            },
+            {
+              "textId": "4cfa6a42e7",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Visuel exact. Le résumé reprend la phrase précédente (« d'un coup d'œil », vers 1:52-1:56) et non le contenu actuel (oreilles, yeux, pattes en commun, formes différentes) : léger décalage, contenu parlé du bloc manquant."
+            },
+            {
+              "textId": "cef4bfb8c4",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Diapositive « On va ensuite entraîner notre modèle » 2/3 : cycle Préditions (robot) → Erreurs ? / Résultat attendu → Corrections (robot à engrenages) → Itérations / Données d'apprentissage, avec des images de chats et de lapins. Prédictions et erreurs sont justes, mais « corrigées par l'humain » est inventé : l'étape Corrections montre un robot. Titre absent."
+            },
+            {
+              "textId": "1353f34af0",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Mêmes points justes (prédictions sur des images de chats et de lapins, erreurs, données d'apprentissage, amélioration progressive). Même invention : « un homme corrige ces erreurs », alors que les corrections sont figurées par un robot. Titre et résultat attendu absents."
+            },
+            {
+              "textId": "3e412fa24b",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Les quatre étapes numérotées et le robot sont rendus fidèlement. Petit écart de mise en relation : Données d'apprentissage est rattaché à Itérations, pas à Corrections. La diapositive écrit « Préditions », normalisé ici. Manquent le titre et les grilles chat/lapin, mais l'essentiel est là."
+            },
+            {
+              "textId": "c1616129e4",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Diapositive « ...tout en suivant son apprentissage » 3/3 : données réparties en Apprentissage (80 %) et Évaluation (20 %), courbes d'apprentissage et de validation, surapprentissage ; l'homme parle en bas à droite. La description reprend la diapositive précédente : il n'y a ici ni robot ni correction, et « examine les résultats d'un robot » est inventé. Seule la présence d'un homme est juste."
+            },
+            {
+              "textId": "9593433661",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Le 80 % / 20 % entre apprentissage et évaluation est juste, l'homme au t-shirt imprimé aussi. Mais « en alternant » déforme le propos (c'est une partition des données), et la correction avec de nouvelles données est douteuse. Le diagramme, les courbes et le titre manquent."
+            },
+            {
+              "textId": "40b716caa0",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Fidèle au diagramme : 80/20, évaluation via les données d'apprentissage et via les données d'évaluation, courbes d'apprentissage et de validation. Il omet l'orateur visible à droite, le titre et la mention Surapprentissage."
+            },
+            {
+              "textId": "f4606919c6",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Diapositive « L'éducation d'une « grande IA » » ; la parole et la vignette de l'orateur portent sur Données → pré-entraînement → modèle de fondation. La description se centre sur la spécialisation, qui n'est pas le passage actuel, et place l'« affinement » après la spécialisation, ce qui est faux. La scène « un personnage en costume donne des instructions à un modèle IA symbolisé par un cerveau » n'existe pas : le personnage donne des instructions à un autre personnage. Les mots repris existent à l'écran."
+            },
+            {
+              "textId": "29144b2ab0",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Exact : collecte de données sur internet, première phase d'apprentissage menant au modèle de fondation, icônes pile de disques et réseau en forme de cerveau. Manquent le titre de la diapositive, le reste de la chaîne et la vignette de l'orateur."
+            },
+            {
+              "textId": "dc7030c8df",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Affirme que l'étape actuelle est la spécialisation, ce qui est faux : la parole porte sur le modèle de fondation. Il invente un homme en costume portant un tournevis, absent : le personnage de la spécialisation est devant un ordinateur portable et aucun outil n'est visible. Seuls les libellés Spécialisation, bonne conduite et inférence existent sur la diapositive."
+            },
+            {
+              "textId": "6d25271937",
+              "blockId": "cnrs-apprentissage@656000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le résumé rend fidèlement la parole (apprendre à répondre à des questions, processus similaire). Le visuel « un homme parle devant un fond neutre » trompe : l'écran est la diapositive « L'éducation d'une grande IA », avec une petite vignette de l'orateur entre Modèle de fondation et Instruct model, sur la flèche Fine-tuning. La diapositive n'est pas décrite."
+            },
+            {
+              "textId": "708ce36892",
+              "blockId": "cnrs-apprentissage@656000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le résumé suit la parole et l'étape de fine-tuning. Le personnage tapant sur un clavier existe (illustration Spécialisation et métier, devant un portable), mais l'interprétation « lui fournir des questions » est spéculative. Manquent le titre, la chaîne des étapes et la vignette de l'orateur."
+            },
+            {
+              "textId": "7d7d4df726",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "L'étape d'alignement est juste : la vignette de l'orateur est incrustée sur la figure « Briefing, éthique et bonne conduite ! », avec inférence ensuite. Le personnage « médecin » est une interprétation plausible (document au cœur sur la figure Au boulot), mais incertaine ; c'est le résultat de l'inférence plutôt que de l'alignement. L'incrustation de l'orateur et la mention d'OpenAI manquent."
+            },
+            {
+              "textId": "4eaac19158",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Quasi identique à la description précédente : alignement, briefing, éthique et bonne conduite justes ; « médecin » interprétatif. Ne mentionne ni l'orateur incrusté sur la figure du briefing, ni la bienveillance, ni OpenAI."
+            },
+            {
+              "textId": "339682efe7",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le résumé rend bien la parole (bienveillance, force d'OpenAI). Le visuel « un homme parle devant un arrière-plan neutre » trompe : l'orateur est incrusté dans une figure de la diapositive « L'éducation d'une grande IA ». La diapositive et ses libellés ne sont pas décrits."
+            }
+          ]
+        },
+        {
+          "video": "cnrs-apprentissage",
+          "scores": [
+            {
+              "textId": "94765285ea",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Images : homme en t-shirt sombre avec télécommande, à droite de silhouettes noires de chat et de lapin sur fond blanc. Parole : points communs (yeux, pattes) puis formes différentes. Tout est juste et l'essentiel y est."
+            },
+            {
+              "textId": "5df33c7c66",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le visuel est juste (homme, fond blanc, silhouettes de chat et de lapin). En revanche, « différence de taille entre modèles d'IA petits et grands » vient d'un passage antérieur (~0:30-1:20). Le propos actuel, les points communs et les différences, manque."
+            },
+            {
+              "textId": "4cfa6a42e7",
+              "blockId": "cnrs-apprentissage@120000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Visuel exact. L'idée « un coup d'œil suffit » est dite juste avant le bloc (1:52-1:56) ; dans le bloc, l'orateur parle des points communs (yeux, pattes) et des formes différentes, ce qui n'est pas rendu."
+            },
+            {
+              "textId": "cef4bfb8c4",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Diapo « On va ensuite entraîner notre modèle : » 2/3, en boucle : Prédictions, Erreurs ?, Corrections, Itérations, Données d'apprentissage, images de chats et de lapins. Les corrections sont faites par un robot à engrenages : « corrigées par l'humain » n'est pas visible. Ni le titre ni le résultat attendu ne sont cités."
+            },
+            {
+              "textId": "1353f34af0",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Même boucle bien décrite (robot, prédictions sur chats et lapins, erreurs). Mais « un homme corrige ces erreurs » est faux : sur la diapo, c'est un robot qui corrige. Le titre de la diapo manque."
+            },
+            {
+              "textId": "3e412fa24b",
+              "blockId": "cnrs-apprentissage@224000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Les 4 étapes numérotées sont fidèles aux libellés (Prédictions/robot, Erreurs, Corrections, Itérations, Données d'apprentissage) et le thème de l'entraînement est rendu. Lien corrections/données un peu approximatif ; images de chats et de lapins et résultat attendu absents."
+            },
+            {
+              "textId": "c1616129e4",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le bloc montre la diapo « ...tout en suivant son apprentissage » 3/3 : Données réparties en Apprentissage (80 %) et Évaluation (20 %), courbes d'apprentissage et de validation, homme en incrustation. On ne voit aucun robot ni aucun expert en train d'examiner des résultats : c'est repris de la diapo précédente. Seule la présence de l'homme est juste."
+            },
+            {
+              "textId": "9593433661",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "La répartition 80 % apprentissage / 20 % évaluation est juste, l'homme est présent. Mais « en alternant » est faux : c'est une séparation des données. La correction d'erreurs avec de nouvelles données ne correspond pas au bloc. Rien sur le schéma ni sur les courbes."
+            },
+            {
+              "textId": "40b716caa0",
+              "blockId": "cnrs-apprentissage@336000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Le schéma est fidèle : 80/20, évaluation via les données d'apprentissage et d'évaluation, courbes d'apprentissage et de validation. L'homme incrusté et les cercles jaunes de surlignage ne sont pas mentionnés."
+            },
+            {
+              "textId": "f4606919c6",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Diapo « L'éducation d'une « grande IA » », petite incrustation de l'orateur près de Pre-training. La parole porte sur les données d'internet et le modèle de fondation. La description parle de l'étape de spécialisation, met l'affinement après elle (ordre faux) et invente un personnage qui donne des instructions à un cerveau."
+            },
+            {
+              "textId": "29144b2ab0",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Juste : passage des Données (icône de base de données) au Modèle de fondation (réseau), données d'internet, première phase d'apprentissage. Le titre de la diapo, le reste de la chaîne et l'incrustation de l'orateur ne sont pas cités."
+            },
+            {
+              "textId": "dc7030c8df",
+              "blockId": "cnrs-apprentissage@536000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Elle affirme à tort que l'étape actuelle est la spécialisation : on parle du pré-entraînement et du modèle de fondation. L'« homme en costume portant un tournevis » est inventé : le personnage de Spécialisation est à un ordinateur portable, sans tournevis."
+            },
+            {
+              "textId": "6d25271937",
+              "blockId": "cnrs-apprentissage@656000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le résumé de la parole (fine-tuning, répondre à des questions, processus similaire) est exact. Mais le visuel « homme devant un fond neutre » ignore la diapo « L'éducation d'une « grande IA » » qui occupe l'écran, l'homme n'y étant qu'une petite incrustation."
+            },
+            {
+              "textId": "708ce36892",
+              "blockId": "cnrs-apprentissage@656000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Résumé correct sur l'apprentissage par questions-réponses. Le personnage à l'ordinateur portable existe bien sur la diapo (Spécialisation et métier), mais l'idée qu'il fournit des questions au modèle est une sur-interprétation. Le titre, la chaîne de modèles et l'orateur manquent."
+            },
+            {
+              "textId": "7d7d4df726",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "L'étape d'alignement est bien identifiée : Briefing, éthique et bonne conduite, puis l'inférence ; la bienveillance est citée. Mais aucun médecin n'est visible : les personnages sont à lunettes de soleil avec un carnet et à lunettes avec un dossier. L'incrustation de l'orateur à côté de Briefing et la mention d'OpenAI manquent."
+            },
+            {
+              "textId": "4eaac19158",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Même résumé que la précédente, et même identité de médecin non visible. Ni la bienveillance ni OpenAI ne sont repris ; l'orateur incrusté est absent."
+            },
+            {
+              "textId": "339682efe7",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "La parole est rendue avec exactitude : la bienveillance, une force d'OpenAI. Mais « homme devant un arrière-plan neutre » ignore la diapo de la chaîne d'éducation de l'IA, où l'homme n'est qu'une incrustation au niveau de Briefing, éthique et bonne conduite."
+            }
+          ]
+        },
+        {
+          "video": "cnrs-apprentissage",
+          "scores": [
+            {
+              "textId": "7d7d4df726",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Les images de 12:40 à 12:48 montrent la diapositive « L'éducation d'une « grande IA » » : chaîne Données → Modèle de fondation → Instruct model → Modèle aligné → Au boulot !, et en dessous l'étape Alignement « Brieffing, éthique et bonne conduite ! » → To inference → « Au boulot ! ». L'orateur, chauve en t-shirt gris, apparaît en incrustation détourée dans l'illustration du briefing et fait des gestes. Le résumé rend bien l'étape d'alignement, ses libellés paraphrasés sans erreur et le passage à l'inférence. La « bienveillance » vient bien de la parole du bloc. En revanche, affirmer que le personnage est « représenté comme un médecin » n'est pas étayé par l'image : la figure finale porte des lunettes et un pull et tient une carte marquée d'un cœur rouge, sans blouse ni stéthoscope. « Médecin » n'est prononcé qu'avant le bloc (12:18), d'où invention=true. La description omet aussi le titre, la chaîne complète, l'orateur incrusté et la mention d'OpenAI dans la parole."
+            },
+            {
+              "textId": "4eaac19158",
+              "blockId": "cnrs-apprentissage@760000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Le résumé est identique à celui de la description précédente et il est juste : étape d'alignement, « briefing, éthique et bonne conduite », préparation à l'inférence, mise au travail. Le visuel affirme lui aussi un personnage « représenté comme un médecin », ce qui ne se voit pas : la figure « Au boulot ! » porte lunettes et pull et tient une carte au cœur rouge, sans attribut médical. C'est une identité inventée, inspirée par la parole antérieure au bloc. La description reprend la thématique éthique et bonne conduite de la diapositive, mais pas la bienveillance dite dans le bloc. Elle omet aussi le titre « L'éducation d'une « grande IA » », la chaîne des cinq étapes, l'orateur incrusté qui gesticule et la mention d'OpenAI. Sa couverture est un peu en deçà de la précédente, sans changer de palier."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "boeuf-bourguignon",
+      "judges": [
+        {
+          "video": "boeuf-bourguignon",
+          "scores": [
+            {
+              "textId": "3a8bbb17d4",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Images : vue de dessus, les oignons viennent d'être versés sur la viande dans un grand saladier en verre, puis gros plan sur le tablier « Learn With A Chef » : il verse les carottes en dés. L'ajout d'oignons et de carottes dans un bol est juste. En revanche, il ne coupe rien (légumes déjà en dés, aucun couteau) et ne dispose pas d'« herbes de Provence ». Le nom « Patrick Dujancourt » n'est ni affiché ni prononcé. La viande dans le saladier est omise."
+            },
+            {
+              "textId": "451447fba1",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le décor est juste : saladier avec viande et oignons hachés, carottes en dés, brin d'herbes, planche et plaque à induction. Le transfert est inversé : ce sont les oignons, puis les carottes, qui sont versés sur la viande, et non la viande sur les oignons. Les bouteilles ressemblent à du vin (capsules orange), pas à de l'huile. Le versement des carottes, action principale du gros plan, manque. C'est une mauvaise lecture d'un versement réel, pas une invention pure."
+            },
+            {
+              "textId": "f83f7f2225",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le résumé est juste : il ajoute oignons et carottes en dés dans un bol. Le champ visual affirme qu'il les coupe, ce qui n'est pas visible (déjà taillés, aucun couteau). Le nom propre est inventé, car absent des images et de la parole. La viande dans le saladier et le reste du plan de travail ne sont pas mentionnés."
+            },
+            {
+              "textId": "f2c1ee330f",
+              "blockId": "boeuf-bourguignon@216000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Images : l'homme parle, saisit la bouteille d'huile (bouchon jaune) et la verse dans une grande marmite inox sur la plaque, puis vue de dessus avec la viande et la garniture égouttées. Huile de tournesol versée par une main dans un récipient sur le plan en bois : juste, conforme à la parole. Petites imprécisions : la marmite est vide, et elle est posée sur la plaque à induction. L'homme, la marmite et les passoires de viande et de garniture ne sont pas décrits."
+            },
+            {
+              "textId": "0908ed205f",
+              "blockId": "boeuf-bourguignon@216000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Aucun filtrage ni versement de vin rouge dans ce bloc : la garniture est déjà égouttée dans une passoire, et l'action est le versement d'huile dans la marmite. Seuls la passoire et les dés de légumes sont réels. Le nom propre est inventé, et l'huile, cœur du bloc (image et parole), est absente."
+            },
+            {
+              "textId": "40d7fbaa73",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Images : vue de dessus, il remue à la cuillère en bois des dés de carottes et d'oignons fumants, la viande saisie attendant à côté sous une écumoire. Puis il pose le couvercle et parle face caméra. Le remuage et la vapeur sont justes. Il n'y a pas de viande hachée ni de liquide bouillant dans la marmite, et aucun ajout n'est visible. La pose du couvercle et la parole manquent."
+            },
+            {
+              "textId": "62b6a7cda3",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Mêmes erreurs que la description voisine : ajout de viande hachée inexistant, alors que la marmite contient des légumes en dés. Seuls le remuage et la vapeur sont justes. Le couvercle posé et l'explication face caméra sont omis."
+            },
+            {
+              "textId": "3e3b2f538b",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : il remue le contenu de la marmite sur la plaque et explique (« pour que tout transpire »). À gauche, un bol de viande avec une écumoire métallique posée dessus (« dans un panier » est une légère approximation). Manquent la pose du couvercle et la nature du contenu (légumes en dés)."
+            },
+            {
+              "textId": "7a67e8ffea",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Images : il verse le jus de marinade (vin rouge foncé) d'un saladier en verre dans la marmite fumante (« ça déglace tout »). La viande saisie reste dans le bol bleu à côté. Ni cuisson de la viande dans la marmite, ni remuage à la spatule dans ce bloc : le remuage commence après 432 s. Le versement, action principale, est absent."
+            },
+            {
+              "textId": "82e73452a4",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : homme en tablier rouge, liquide rouge foncé versé dans une grande marmite métallique sur la plaque, viande en morceaux dans un plat devant lui. « Pichet » pour un saladier en verre et « main droite » sont des approximations mineures. L'essentiel du bloc est couvert, seul le texte du tablier n'est pas rapporté."
+            },
+            {
+              "textId": "6194e540c3",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le versement d'un liquide dans la marmite par l'homme en tablier est juste, mais le liquide est rouge-violet, pas brun. La viande n'est pas dans la marmite : elle est dans le bol bleu à côté. Il ne remue pas à la spatule pendant le bloc, ce qui est donc non visible."
+            },
+            {
+              "textId": "cfd65856da",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Images : bouquet garni dans la sauce sombre, cuillère reposée, puis il prend le couvercle et couvre la marmite sur la plaque en annonçant deux heures de cuisson à frémissement. Tout est juste. « Sans bouger » reprend la transcription imprécise (« il ne faut pas que ça bout »), mais le sens de frémissement est conservé. Le bouquet garni n'est pas mentionné."
+            },
+            {
+              "textId": "d778088aa1",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Pendant le bloc, il ne remue pas : la cuillère en bois est déjà reposée dans le bol (le remuage se voit 2 s avant). L'action du bloc est la pose du couvercle, avec l'annonce des deux heures de cuisson, toutes deux absentes. Seuls la marmite, la sauce et la cuillère en bois sont réels, et les morceaux de viande ne sont pas visibles (immergés)."
+            },
+            {
+              "textId": "7565fbe38b",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Même erreur : « remue activement la sauce » n'est pas visible dans le bloc, où il couvre la marmite. Le couvercle, la cuisson de deux heures et le bouquet garni manquent. Seuls la marmite, la sauce et la cuillère en bois existent."
+            },
+            {
+              "textId": "b3df332a06",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Images : il remue doucement le ragoût (petits oignons, champignons, carottes) à la spatule en silicone bleue ; le bouquet garni retiré est sur une assiette, le beurrier à côté. Ce qui est décrit est juste : remuage délicat, champignons, spatule en silicone. Le but « coloration homogène » est une glose, pas une erreur visible. Manquent les petits oignons et la mise en garde orale (ils pourraient se défaire)."
+            },
+            {
+              "textId": "d7d85f2484",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : remuage très doux à la spatule en silicone dans une grande marmite, sauce brune avec des champignons visibles. La consigne orale (mélanger doucement pour ne pas abîmer les ingrédients) est bien rendue. Seule imprécision : « t-shirt rouge » au lieu du tablier rouge sur une chemise grise. Les petits oignons ne sont pas nommés."
+            },
+            {
+              "textId": "1cad1b87a9",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Juste : spatule en silicone, champignons remués délicatement dans une sauce épaisse. Le texte « Learn With A Chef » est exact ; il figure sur le tablier, pas sur le t-shirt, et « salopette » est une approximation de vêtement. Manquent les petits oignons et la mise en garde orale."
+            }
+          ]
+        },
+        {
+          "video": "boeuf-bourguignon",
+          "scores": [
+            {
+              "textId": "3a8bbb17d4",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Sur les images, les oignons puis les carottes déjà taillés sont versés sur la viande, dans un grand saladier en verre. Personne ne coupe quoi que ce soit, et personne ne dispose les herbes (le bouquet de thym est déjà posé sur un plat). Le nom « Patrick Dujancourt » n'apparaît ni à l'écran ni dans la parole du bloc. L'ajout des oignons et des carottes est juste."
+            },
+            {
+              "textId": "451447fba1",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "L'action principale est inversée : ce sont les oignons qui sont versés sur la viande, pas l'inverse. Le décor de la vue de dessus est juste (carottes, lardons, herbes, bouteilles, planche, plaque à induction). Il manque le versement des carottes par l'homme au tablier rouge, visible sur 4 images sur 5."
+            },
+            {
+              "textId": "f83f7f2225",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le résumé est juste : oignons et carottes en dés ajoutés dans un saladier. Le visuel affirme pourtant « il coupe », ce qui est faux. Le nom propre n'est attesté ni à l'écran ni dans la parole. La viande, le tablier et les lardons ne sont pas mentionnés."
+            },
+            {
+              "textId": "f2c1ee330f",
+              "blockId": "boeuf-bourguignon@216000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "L'huile de tournesol versée est correcte : bouteille en plastique, parole « pas d'huile d'olive, de l'huile de tournesol ». En revanche, l'huile tombe dans le faitout vide posé sur la plaque, pas « dans la préparation » ni sur une planche. Il manque l'homme qui parle face caméra, le faitout et la mise en garde contre l'huile d'olive."
+            },
+            {
+              "textId": "0908ed205f",
+              "blockId": "boeuf-bourguignon@216000",
+              "accuracy": 0,
+              "coverage": 0,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le filtrage du vin et de la garniture dans une passoire n'a pas lieu pendant ce bloc : il se voit vers 03:34, avant. Dans le bloc, l'homme prend la bouteille d'huile et en verse dans le faitout. Le nom propre n'est pas attesté. L'action est hors bloc et l'essentiel est absent."
+            },
+            {
+              "textId": "40d7fbaa73",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Aucune viande hachée n'est ajoutée : le faitout contient la garniture (carottes, oignons, lardons) que l'homme remue à la cuillère en bois, avec de la vapeur, et il n'y a pas de liquide bouillant. Le couvercle posé à moitié et l'homme qui parle face caméra (« pour que tout transpire ») ne sont pas mentionnés."
+            },
+            {
+              "textId": "62b6a7cda3",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Même erreur que la description voisine : la viande hachée ajoutée au faitout est inventée, seuls la garniture remuée et la vapeur sont vrais. Il manque le couvercle posé et l'explication face caméra."
+            },
+            {
+              "textId": "3e3b2f538b",
+              "blockId": "boeuf-bourguignon@328000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Tout est vérifiable : on remue le contenu du faitout sur la plaque, les morceaux de viande saisis sont à gauche sous un panier métallique, la personne explique face caméra, et « que tout transpire » est conforme à la parole. Il manque le couvercle posé pour couvrir légèrement, ainsi que le tablier « Learn With A Chef »."
+            },
+            {
+              "textId": "7a67e8ffea",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Dans ce bloc, la viande attend sur l'assiette bleue et personne ne remue. L'homme verse le vin de la marinade d'un saladier en verre dans le faitout (« ça déglace tout »). La cuisson de la viande en remuant est fausse et le versement du vin manque."
+            },
+            {
+              "textId": "82e73452a4",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Les éléments essentiels sont justes : homme au tablier rouge, liquide rouge foncé versé dans un grand faitout en métal sur la plaque, assiette de morceaux de viande devant lui. Le récipient est un saladier en verre et non un pichet, et le détail de la main droite reste incertain."
+            },
+            {
+              "textId": "6194e540c3",
+              "blockId": "boeuf-bourguignon@424000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le versement d'un liquide dans le faitout par l'homme en tablier est juste. Le reste est faux : le faitout ne contient pas la viande, qui est sur l'assiette, et il ne remue pas à la spatule pendant qu'il verse. Le liquide est rouge violacé plutôt que brun."
+            },
+            {
+              "textId": "cfd65856da",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le couvercle posé sur le faitout de liquide brun foncé, sur la plaque, et les deux heures de cuisson en frémissement sont exacts. En revanche, « sans bouger » reprend une erreur de transcription : la parole dit « il ne faut pas que ça boue », c'est-à-dire bouillir."
+            },
+            {
+              "textId": "d778088aa1",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le brassage à la cuillère en bois se voit à 08:46, avant le bloc. Dans le bloc, la cuillère est posée sur l'assiette et l'homme couvre le faitout en parlant. Le contact de la viande avec le liquide n'est pas visible. Le couvercle et les deux heures de cuisson manquent."
+            },
+            {
+              "textId": "7565fbe38b",
+              "blockId": "boeuf-bourguignon@528000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Même défaut que la description voisine : il n'y a pas de brassage pendant le bloc, où l'homme pose le couvercle et parle face caméra plutôt que de remuer « avec une expression concentrée ». Seuls le faitout et la sauce sont justes. L'action principale (couvrir, deux heures de cuisson) manque."
+            },
+            {
+              "textId": "b3df332a06",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Il remue bien délicatement avec une spatule en silicone, et des champignons sont plausiblement visibles parmi les petits oignons et la viande. Mais le but annoncé (cuisson et coloration homogènes) ne correspond pas à la parole, qui veut éviter de casser les petits oignons. L'homme et les petits oignons ne sont pas mentionnés."
+            },
+            {
+              "textId": "d7d85f2484",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le brassage très doux à la spatule en silicone dans un grand faitout de sauce brune, avec la raison donnée (ne pas abîmer les ingrédients), et les morceaux de champignons sont justes. Le rouge est un tablier porté sur un polo gris, pas un t-shirt rouge."
+            },
+            {
+              "textId": "1cad1b87a9",
+              "blockId": "boeuf-bourguignon@632000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "La spatule en silicone, les champignons dans une sauce épaisse et le texte « Learn With A Chef » sont exacts. Mais c'est un tablier et non une salopette, le texte est sur le tablier et non sur un t-shirt, et le but annoncé ne correspond pas à la parole sur les petits oignons."
+            }
+          ]
+        },
+        {
+          "video": "boeuf-bourguignon",
+          "scores": [
+            {
+              "textId": "451447fba1",
+              "blockId": "boeuf-bourguignon@112000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Images 112-120 s : à 112 s (plan du dessus), la personne renverse le petit bol d'oignons hachés sur la viande déjà dans le grand saladier en verre. De 114 à 120 s (plan de côté, tablier « Learn With A Chef »), elle prend le bol de carottes en dés et le verse dans le saladier. La description inverse l'action principale : elle dit qu'on verse la viande dans un bol d'oignons. Elle oublie le versement des carottes, qui occupe la majeure partie du bloc. Elle prend les bouteilles de vin (750 ml, étiquettes de vin, cohérentes avec la marinade) pour des « bouteilles d'huile », ce qui est faux. Sont exacts : les bols de carottes, d'oignons et d'herbes (bouquet garni), le plan de travail en bois et la plaque de cuisson (plaque à induction) à côté. Les lardons ne sont pas mentionnés. Aucun texte à l'écran n'est rapporté (le texte du tablier est ignoré)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "tears-of-steel",
+      "judges": [
+        {
+          "video": "tears-of-steel",
+          "scores": [
+            {
+              "textId": "191f22bbbd",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact pour 3:04-3:08 : vieil homme en long manteau sombre au centre d'une pièce en ruine envahie de lierre, briques, lampes, une personne assise au bureau derrière. Manque la seconde moitié : de dos face au robot géant dans la rue, l'homme en blouson rouge qui l'enlace."
+            },
+            {
+              "textId": "1f8414d83c",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Vieil homme vêtu de sombre dans un intérieur délabré éclairé par des lampes : juste. Le regard posé sur la jeune femme est une déduction du contrechamp (elle apparaît à 3:02, floue au premier plan à 3:12), pas montrée. Description pauvre : pas de végétation, ni robot, ni homme en rouge."
+            },
+            {
+              "textId": "c8ec6ac2a8",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Vieil homme en sombre, intérieur humide envahi de végétation : juste. Jeune femme « à ses côtés » : seulement floue au premier plan à 3:12 (nette à 3:14, après le bloc). Le regard porté sur elle est déduit. Manque les lampes, le robot géant et l'homme en blouson rouge."
+            },
+            {
+              "textId": "d74c354faf",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Jeune homme en veste à motif animal (lion jaune) sur un pont, maisons et canaux d'Amsterdam : tout est juste. Il omet le grand robot qui entre dans le champ à 4:44 et occupe la moitié de l'image à 4:46-4:48."
+            },
+            {
+              "textId": "ed30b254f4",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Jeune homme en veste à motifs sur un pont, face à un robot imposant couvert de marques de peinture violettes, décor néerlandais : juste. Les éléments saillants y sont, y compris le robot. Peu de détails (canal, voitures)."
+            },
+            {
+              "textId": "565679e22f",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Très précis : profil, lion jaune et noir, regard vers la droite, balustrade noire, voiture rouge qui passe. Petite erreur : on voit des vélos garés, pas de cyclistes. Omet le robot géant, présent sur 3 des 5 images."
+            },
+            {
+              "textId": "154cfcff68",
+              "blockId": "tears-of-steel@368000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Seul point juste : un homme en extérieur sur fond urbain flou (6:10). C'est un gros plan, pas un plan moyen. La réplique « Good one! » vient de la transcription locale ; la parole réelle est « Abort! / Whoa! ». Omet la main robotique, le texte rose « Celia, I love your robot hand », le cyborg et la femme, le savant terrifié et le bouton PLAYBACK."
+            },
+            {
+              "textId": "ae9a0147e1",
+              "blockId": "tears-of-steel@368000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Il y a bien une main robotique contre le visage du jeune homme (6:08-6:10). Mais il ne la tient pas, et la femme visible au bord du cadre sourit. Il n'y a pas de jeune femme terrifiée en extérieur : la terreur est celle du savant à lunettes à 6:14, dans un autre plan. Plans confondus, relation inventée. Omet le texte à l'écran, le cyborg et PLAYBACK."
+            },
+            {
+              "textId": "8da1cd4ee6",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Robots, débris et hommes en blanc sont bien présents. Mais c'est une bataille : les robots chargent, un jeune homme vise avec une grosse arme blanche, il y a des explosions. Aucun robot en panne posé au sol, aucun technicien qui inspecte : l'action est inventée."
+            },
+            {
+              "textId": "a6683de498",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Le vaste lieu en ruine, la lumière filtrée et la musique dramatique sont justes. Les personnes au sol appartiennent au plan juste avant le bloc (7:42), et elles sont à genoux, armes pointées, sans rien examiner. Omet totalement les robots et le combat qui remplissent le bloc."
+            },
+            {
+              "textId": "fb091bbda3",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Un homme avec une arme complexe (canon) est bien visible à 7:48. Mais il vise, il ne répare pas : aucun dysfonctionnement ni frustration n'est visible. Omet les robots géants, les explosions et le combat."
+            },
+            {
+              "textId": "5060fc9cca",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact pour 9:12-9:14 : vieil homme aux cheveux gris, en gros plan, qui fixe une structure mécanique (manteau à carreaux visible à 9:10). Manque l'homme au monocle cybernétique rouge et au blouson orange qui parle en gesticulant, présent sur 3 images sur 5."
+            },
+            {
+              "textId": "cdb9b99d30",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Vieil homme en tissu type tweed, concentré sur une pièce de robot : juste. Les mains autour du dispositif ne se voient qu'à 9:10, avant le bloc. Le « laboratoire » est une interprétation. Omet le cyborg qui parle, sur 3 images sur 5."
+            },
+            {
+              "textId": "f860d0c0d5",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Homme en tweed, concentré et inquiet devant un robot : juste. Aucun canon à distance n'est visible : objet inventé, sans doute repris d'un autre passage. Omet le cyborg au monocle rouge, sur la majorité des images."
+            },
+            {
+              "textId": "910c5faa24",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Bien vu : générique de fin, outils de rendu (JustaCluster, Dell Lab), développeurs Blender, projets open source, remerciements à toute l'équipe blender.org. Décors, son et équipement défilent juste avant le bloc (10:36-10:38). Le casting n'apparaît pas. Les graphismes d'interface et les hologrammes de robots sont pris pour des icônes d'outils."
+            },
+            {
+              "textId": "d015dbb771",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Libellés exacts : Smoke simulation, Motion tracking, Collisions and fracture, Node editing tools, remerciements généraux et open source. Le fond d'interface façon circuits est bien vu. « Diapositives » pour un générique qui défile n'est qu'une nuance. Omet les sponsors et les hologrammes de robots."
+            },
+            {
+              "textId": "775f69240f",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Générique, mention de Blender, « Green screen studio / Amsterdam Studios » exact, remerciements aux développeurs Blender, schémas d'interface : juste. L'hologramme de robot orange et bleu est appelé « canon à distance robotique ». Aucune équipe n'est montrée au travail : élément inventé."
+            }
+          ]
+        },
+        {
+          "video": "tears-of-steel",
+          "scores": [
+            {
+              "textId": "191f22bbbd",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact pour 03:04-03:08 : vieil homme en long manteau sombre dans une pièce ouverte, briques, lierre, lampes, bureau en bois, une personne en arrière-plan derrière le bureau. Manque le plan de dos à 03:10-03:12 : l'homme regarde le robot géant dans la rue, un homme en veste rouge lui pose la main sur l'épaule."
+            },
+            {
+              "textId": "1f8414d83c",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le vieil homme en sombre, le lieu délabré et les lampes sont justes. L'action centrale est fausse : il n'observe pas une jeune femme, il marche vers la caméra puis regarde le robot dans la rue. Le robot et les compagnons qui le touchent à l'épaule manquent."
+            },
+            {
+              "textId": "c8ec6ac2a8",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Le vieil homme, le lieu sombre et la végétation sont justes, et une jeune femme est floue près de lui à 03:12. Mais il ne la regarde pas : il fixe le robot géant dehors. Action inventée, robot et homme en rouge absents."
+            },
+            {
+              "textId": "d74c354faf",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : jeune homme sur un pont au-dessus d'un canal, maisons d'Amsterdam reconnaissables, veste à motif animal jaune. Le robot géant qui apparaît à côté de lui à 04:44-04:48, élément le plus saillant, est absent."
+            },
+            {
+              "textId": "ed30b254f4",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Jeune homme en veste à motifs sur un pont d'Amsterdam, robot imposant juste à sa droite qu'il regarde (04:44-04:48) : correct. « peint » est approximatif (robot métallique à marquages violets), sans gravité. Les éléments saillants sont présents."
+            },
+            {
+              "textId": "565679e22f",
+              "blockId": "tears-of-steel@280000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Détails exacts : lion jaune et noir sur la veste, balustrade sombre, regard vers la droite, voiture rouge qui passe, vélos et bâtiments. Des vélos sont garés ; aucun cycliste en mouvement n'est sûr, détail mineur. Le robot géant des trois dernières images manque."
+            },
+            {
+              "textId": "154cfcff68",
+              "blockId": "tears-of-steel@368000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Un homme dehors sur fond urbain flou : vrai à 06:08-06:10, mais en gros plan, pas en plan moyen. Le locuteur de « Good one! » est invérifiable. Manquent : main robotique, texte rose « CELIA, I LOVE YOUR ROBOT HAND », homme à l'œil cybernétique et femme, homme à lunettes qui crie, console PLAYBACK."
+            },
+            {
+              "textId": "ae9a0147e1",
+              "blockId": "tears-of-steel@368000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "La main robotique existe, mais la scène est recomposée : l'homme ne la tient pas, elle touche la bouche du jeune homme. La femme (06:12) est à l'intérieur, surprise mais pas terrifiée ; celui qui crie est l'homme à lunettes. Texte à l'écran et console PLAYBACK ignorés."
+            },
+            {
+              "textId": "8da1cd4ee6",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Robots, débris et hommes en combinaison blanche sont bien là, mais la scène est un combat : les robots chargent, un homme vise avec une grosse arme blanche (07:48), explosions. Le robot en panne examiné par des techniciens est inventé."
+            },
+            {
+              "textId": "a6683de498",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Grand espace en ruine, débris, lumière filtrée et musique dramatique : vrai. Le groupe au sol se voit surtout juste avant et après le bloc, et il vise, il n'examine pas d'équipement. Les robots et l'assaut, centraux, sont absents."
+            },
+            {
+              "textId": "fb091bbda3",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Un homme tient bien une grande arme mécanique (07:48). Mais il vise pendant un combat, il ne répare rien et n'a pas l'air frustré : l'action est inventée. Robots en charge, débris et explosions absents."
+            },
+            {
+              "textId": "5060fc9cca",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 3,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste pour 09:12-09:14 : vieil homme aux cheveux gris, barbu, concentré devant une structure métallique dans un intérieur sombre (manteau à carreaux visible à 09:10). Manque l'homme à l'œil cybernétique rouge qui parle en gesticulant, présent sur trois images sur cinq (09:16-09:20)."
+            },
+            {
+              "textId": "cdb9b99d30",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Vieil homme penché sur un robot complexe dans un lieu sombre : correct. « laboratoire dévasté » et le but de réparation sont spéculatifs, et ses mains ne se voient sur le robot qu'avant le bloc. L'homme à l'œil cybernétique, majoritaire dans le bloc, est absent."
+            },
+            {
+              "textId": "f860d0c0d5",
+              "blockId": "tears-of-steel@552000",
+              "accuracy": 2,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Vieil homme concentré et inquiet devant le robot : juste. Le « canon à distance » n'est pas visible : objet inventé. L'homme ne manipule rien de façon visible dans le bloc. L'homme cybernétique qui parle (09:16-09:20) manque."
+            },
+            {
+              "textId": "910c5faa24",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Générique de fin juste : remerciements aux développeurs Blender, projets open source, render farm, remerciements à toute l'équipe blender.org. Conception, équipement et son relèvent du générique précédent (10:34-10:38) ; le casting n'apparaît pas. Les « icônes d'outils » sont en fait des graphismes d'interface et des robots filaires."
+            },
+            {
+              "textId": "d015dbb771",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Rubriques exactes : Smoke simulation, Motion tracking, Collisions and fracture, Node editing tools, General Development, open source. Le fond d'interface futuriste, décrit comme des circuits électroniques, est une approximation acceptable. Manquent green screen studio, régie, sponsors et robots filaires."
+            },
+            {
+              "textId": "775f69240f",
+              "blockId": "tears-of-steel@640000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Crédits techniques, Blender, « Green screen studio » et « Amsterdam Studios » exacts, illustrations bleu et orange présentes. En revanche, le « canon à distance robotique » est un robot filaire mal identifié, et l'équipe au travail est inventée : aucune personne n'est visible."
+            }
+          ]
+        },
+        {
+          "video": "tears-of-steel",
+          "scores": [
+            {
+              "textId": "1f8414d83c",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Vrai : de 3:04 à 3:08, un homme âgé en long manteau sombre (écossais, chemise noire) avance debout dans un intérieur délabré envahi de lierre et éclairé par des lampes. Faux : il ne regarde jamais une jeune femme. Elle n'apparaît pas dans le bloc, sauf peut-être comme une tête floue au premier plan à 3:12, et à 3:10-3:12 le groupe regarde par la fenêtre. Manquent : la personne assise au bureau, la vue sur la rue en ruine avec le robot géant, l'homme en veste rouge qui pose la main sur une épaule."
+            },
+            {
+              "textId": "c8ec6ac2a8",
+              "blockId": "tears-of-steel@184000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Même schéma que l'autre description du bloc. Vrai : l'homme âgé en tenue sombre, debout dans un intérieur sombre et délabré envahi de végétation (lierre, briques). Faux : « observe attentivement la jeune femme à ses côtés ». Aucune jeune femme n'est nettement visible à côté de lui, et il ne regarde personne : il avance face caméra, puis le groupe regarde dehors. « Entrée » est approximatif. Manquent : le robot géant vu par la fenêtre, l'homme en veste rouge, la personne au bureau."
+            },
+            {
+              "textId": "a6683de498",
+              "blockId": "tears-of-steel@464000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Décrit l'image d'avant le bloc (7:42), où un groupe est accroupi au sol dans le grand hall en ruine. Le bloc lui-même (7:44 à 7:52) est une scène de combat : explosion de débris, robots géants qui arrivent et chargent en flou de mouvement, gros plan d'un jeune homme en combinaison blanche qui épaule une grosse arme futuriste, un autre homme derrière lui. « Assis au sol, examinant des équipements » n'apparaît pas dans le bloc. Seuls le décor (vaste, délabré, débris, structures métalliques, lumière filtrée) et la musique dramatique sont justes. Robots, arme et combat sont absents."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "video": "artemis",
+      "judges": [
+        {
+          "video": "artemis",
+          "scores": [
+            {
+              "textId": "0bdbb787d5",
+              "blockId": "artemis@384000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Images 06:24-06:32 : écran partagé (vignette avec un homme et une femme interviewés, fusée au pas de tir de nuit sous les projecteurs), transition logo Artemis, puis foule à Space Center Houston. La fusée n'est pas en ascension et on ne voit aucune flamme. Les noms « Scott et Leah » sont inventés (la parole cite Megan). Seuls la fusée, les lumières et les deux personnes sont vrais."
+            },
+            {
+              "textId": "2ce81ad8fa",
+              "blockId": "artemis@384000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Correct : fusée éclairée par de puissants projecteurs avec ses structures, vignette montrant un homme et une femme devant une foule. La vignette est à gauche plutôt que dans le coin supérieur gauche, imprécision mineure. Manquent la transition Artemis et la foule de Space Center Houston avec son bandeau en fin de bloc."
+            },
+            {
+              "textId": "d1c8f0f4b0",
+              "blockId": "artemis@384000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "« Juste après le décollage » et « lumières de l'explosion initiale » sont faux : la fusée est au sol sous les projecteurs. La foule avec des téléphones à la fin du bloc est réelle. Le duo interviewé de la vignette et le bandeau SPACE CENTER HOUSTON manquent."
+            },
+            {
+              "textId": "f7348b2170",
+              "blockId": "artemis@664000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Plan fixe de nuit sur l'étage central orange et la section blanche supérieure du SLS, tour à gauche, un peu de vapeur en bas. Orion n'est pas dans le cadre. La « configuration des valves d'oxygène liquide » est affirmée comme visible alors que rien ne la montre et que la parole ne la cite pas. L'imminence du lancement n'est pas étayée. Le repère 917 est absent."
+            },
+            {
+              "textId": "99fef0b25e",
+              "blockId": "artemis@664000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Exact : lanceur et structure de support de nuit, « 917 » bien lu. C'est une incrustation de caméra plutôt qu'un marquage de la structure, imprécision mineure. Manquent l'échappement de vapeur et les couleurs des étages."
+            },
+            {
+              "textId": "41d7f99b51",
+              "blockId": "artemis@664000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Lanceur, structures de support, jets de gaz et 917 sont justes. Mêmes erreurs que la description voisine (« lanceur Orion », valves d'oxygène liquide, décision de lancement imminente), mais formulées avec plus de précautions. Couverture complète pour ce plan statique."
+            },
+            {
+              "textId": "00b8adc708",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Femme à lunettes penchée sur une tablette, fondu vers le plan large de la salle de tir avec un homme assis à une console à écrans : globalement juste. L'« appareil de mesure » est une mauvaise identification de la tablette et elle porte une veste sombre. Manquent le plan large (grandes baies inclinées, cadreur) et l'homme en costume du plan rapproché."
+            },
+            {
+              "textId": "31029f3c74",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Même contenu que 00b8adc708 : « appareil de mesure » mal identifié, gilet douteux. Le centre de contrôle NASA avec ses écrans est juste. Manquent le plan large, les baies vitrées et le cadreur."
+            },
+            {
+              "textId": "28c9f5a894",
+              "blockId": "artemis@952000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : femme aux longs cheveux bruns et à lunettes penchée sur un équipement, homme en costume derrière, grand écran à droite, salle de contrôle. La description porte surtout sur le plan rapproché en fondu au début du bloc. Le plan large qui domine ensuite (salle de tir, console, cadreur) est peu décrit."
+            },
+            {
+              "textId": "23beffc78e",
+              "blockId": "artemis@1248000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Exact : gros plan en contre-plongée sur le haut de la fusée, projecteurs, structures, vapeur, logos NASA/ESA, drapeau « United States », compte à rebours T-0:06:15 (affiché à 20:50). Erreur : la partie montrée est le carénage Orion / module de service, pas « le dessus du réservoir principal »."
+            },
+            {
+              "textId": "6d350f20d8",
+              "blockId": "artemis@1248000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Exact : section supérieure du lanceur Artemis I avant lancement (le bandeau ARTEMIS I LAUNCH appuie l'identification), halo des projecteurs, réservoirs et structures. Manquent le compte à rebours, les logos et la vapeur."
+            },
+            {
+              "textId": "f9c8046861",
+              "blockId": "artemis@1536000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Aucune colonne de flammes : plan plongeant le long de l'étage central entre les deux boosters (caméra 815), précédé d'un plan large au pas de tir (caméra 907). La pressurisation croissante n'est ni visible ni dite : la parole parle du passage de l'étage central sur alimentation interne. « 815 » est bien lu. Manquent le plan large et le compte à rebours."
+            },
+            {
+              "textId": "9e4adca0c8",
+              "blockId": "artemis@1536000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Résumé faux : flammes inexistantes, pressurisation non montrée, FTS sans rapport avec ce passage. « Le système FTS est visible à côté du lanceur » est une invention visuelle. Seule la vue rapprochée des réservoirs est juste."
+            },
+            {
+              "textId": "7772601520",
+              "blockId": "artemis@1536000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Exact : lanceur et tour de nuit, horloge à T-0:01:30 (T-0:01:29 sur l'image à 1536 s, écart d'une seconde accepté). Ne décrit que le plan large du début. Le plan plongeant 815 sur l'étage central et les boosters, qui occupe l'essentiel du bloc, manque."
+            },
+            {
+              "textId": "39acfef45c",
+              "blockId": "artemis@1816000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Écran de poursuite bien décrit : N28, W80, MSL, CI et CO, cadre central avec point lumineux, diagramme circulaire en bas à gauche, HDR ON, REC ON. Erreur : les valeurs ne sont pas constantes, elles évoluent. Manquent le contexte (poursuite de la fusée en vol, frise de mission) et la parole (4 060 mph, séparation du carénage)."
+            },
+            {
+              "textId": "2f5ecf255c",
+              "blockId": "artemis@1816000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Libellés justes : VIS-WFOV, CI, CO, HDR, REC. L'écran est une caméra de poursuite, pas le système FTS : cette attribution est inventée. Les valeurs ne sont pas stables. Position et trajectoire d'Artemis I restent plausibles."
+            },
+            {
+              "textId": "12f2ab2979",
+              "blockId": "artemis@1816000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Partie visuelle exacte : CI, CO, N28, W80, R=265.4 km, VIS-WFOV, REC ON. Résumé faux : FTS, pressurisation contrôlée et préparation d'une destruction n'ont aucun rapport avec cet écran de poursuite ni avec la parole (vitesse, séparation du carénage)."
+            }
+          ]
+        },
+        {
+          "video": "artemis",
+          "scores": [
+            {
+              "textId": "0bdbb787d5",
+              "blockId": "artemis@384000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "La fusée est sur le pas de tir, de nuit, sous les projecteurs, avec un léger dégazage : elle n'est pas « en pleine ascension » et on ne voit aucune flamme à la base. Les deux personnes sont dans une vignette à gauche, pas à l'arrière-plan. Les prénoms Scott et Leah sont justes d'après la diffusion (03:37 et 04:17), mais absents du bloc. Il manque le logo ARTEMIS et la foule de Space Center Houston avec son bandeau."
+            },
+            {
+              "textId": "2ce81ad8fa",
+              "blockId": "artemis@384000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste : écran partagé avec la fusée éclairée par de puissants projecteurs, la tour de lancement, et une vignette d'un homme et d'une femme dans une foule. La vignette est à gauche, à mi-hauteur plutôt qu'en coin supérieur, ce qui reste un écart mineur. Il manque la transition par le logo ARTEMIS (390 s) et la foule sous le bandeau SPACE CENTER HOUSTON (392 s)."
+            },
+            {
+              "textId": "d1c8f0f4b0",
+              "blockId": "artemis@384000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "« Juste après le décollage » et « lumières de l'explosion initiale » sont faux : la fusée est au sol et les lumières sont celles des projecteurs. Le groupe de personnes correspond à peu près à la foule de 392 s (un homme tient un téléphone). Il manque l'écran partagé avec l'interview, le logo et le bandeau Space Center Houston."
+            },
+            {
+              "textId": "f7348b2170",
+              "blockId": "artemis@664000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Juste : plan de nuit sur l'étage supérieur du SLS contre la tour, avec un peu de vapeur. La partie visible est l'adaptateur et l'étage supérieur, pas Orion. Le visuel affirme que « des valves sont en cours de configuration », ce qui ne se voit pas et n'est pas dit dans le bloc ; « sur le point de lancer » est une extrapolation. L'étiquette 917 n'est pas relevée."
+            },
+            {
+              "textId": "99fef0b25e",
+              "blockId": "artemis@664000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Juste : vue nocturne du lanceur et de sa structure de support, avec « 917 » bien lu (c'est une incrustation à droite de la fusée plutôt qu'une inscription sur la structure, écart mineur). La description reste générique : la vapeur et les teintes orange et blanche de l'étage ne sont pas mentionnées."
+            },
+            {
+              "textId": "41d7f99b51",
+              "blockId": "artemis@664000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Les éléments saillants y sont : lanceur contre ses structures de support, vapeur et 917. En revanche, la partie visible est appelée « Orion » à tort, la vapeur devient des « jets », la configuration des valves d'oxygène liquide est avancée sans support (mais avec « probablement ») et la « décision de lancement » ne vient ni des images ni de la parole. Le 917 est donné « sur le lanceur » alors que c'est une incrustation."
+            },
+            {
+              "textId": "00b8adc708",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Juste : femme à lunettes penchée sur une console, homme assis devant des écrans dans la salle de lancement NASA. Faux : on ne voit aucun « appareil de mesure » ; elle travaille à son poste sur une tablette ou des papiers. Il manque le plan large de la salle avec ses grandes baies inclinées, le cadreur et l'homme en costume du premier plan."
+            },
+            {
+              "textId": "31029f3c74",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Même contenu que la description précédente : l'appareil de mesure est inventé. La femme à lunettes, l'homme devant ses écrans et la salle de contrôle avec ses données sont justes. Il manque le plan large (baies vitrées, cadreur) et l'homme en costume."
+            },
+            {
+              "textId": "28c9f5a894",
+              "blockId": "artemis@952000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste pour le plan rapproché de 952 s : femme aux longs cheveux bruns, à lunettes, penchée sur son poste, et homme en costume debout derrière elle dans une salle de contrôle. Il manque le plan large (954 à 960 s) : salle de lancement aux grandes baies inclinées, opérateur assis devant ses écrans, cadreur qui passe."
+            },
+            {
+              "textId": "23beffc78e",
+              "blockId": "artemis@1248000",
+              "accuracy": 3,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Haut de la fusée vu en contre-plongée, projecteurs, tour et vapeur : c'est juste. Le compte à rebours T-0:06:15 apparaît bien à 1250 s, et « United States » ainsi que les logos NASA et ESA sont visibles. Deux imprécisions mineures : ces inscriptions sont sur le carénage d'Orion, pas sur le « réservoir principal », et la vapeur n'est pas « au sol ». Le bandeau ARTEMIS I LAUNCH n'est pas relevé."
+            },
+            {
+              "textId": "6d350f20d8",
+              "blockId": "artemis@1248000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "na",
+              "rationale": "Juste mais générique : section supérieure du lanceur Artemis I avant le décollage, halo des projecteurs, réservoirs et structures. Il manque le compte à rebours T-0:06:17 à 6:09, la vapeur et les logos NASA, ESA et le drapeau."
+            },
+            {
+              "textId": "f9c8046861",
+              "blockId": "artemis@1536000",
+              "accuracy": 1,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Il n'y a aucune colonne de flammes : ce sont des plans fixes du lanceur au repos à T-1:29 puis 1:21. La « pressurisation qui augmente » n'est pas dans la parole, qui parle du passage de l'étage central sur alimentation interne. Le 815 et le gros plan sont justes. Il manque le compte à rebours, le plan large du pas de tir (907) et les propulseurs d'appoint."
+            },
+            {
+              "textId": "9e4adca0c8",
+              "blockId": "artemis@1536000",
+              "accuracy": 0,
+              "coverage": 1,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Largement faux : on ne voit ni flammes ni pressurisation. Le système FTS n'est ni « activé » ni « visible à côté du lanceur », et la parole n'en dit rien. Seuls la vue rapprochée et les réservoirs avec leurs supports sont justes. Il manque le compte à rebours, les deux propulseurs blancs bien nets, le plan large et le passage sur alimentation interne."
+            },
+            {
+              "textId": "7772601520",
+              "blockId": "artemis@1536000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Juste pour le premier plan : le lanceur et sa tour dans l'obscurité, avec un compte à rebours d'environ T-0:01:30. Le cadre de 1536 s affiche 1:29, l'écart d'une seconde vient de l'échantillonnage. En revanche, le plan dominant du bloc (1538 à 1544 s) manque : contre-plongée le long de l'étage central entre les deux propulseurs, étiquette 815, puis T-1:27 à 1:21. La parole sur l'alimentation interne manque aussi."
+            },
+            {
+              "textId": "39acfef45c",
+              "blockId": "artemis@1816000",
+              "accuracy": 3,
+              "coverage": 2,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "L'écran de poursuite est bien décrit : N28, W80 et MSL en haut à gauche, CI et CO, HDR ON, REC ON, viseur central avec un point lumineux, cercle en bas à gauche. Ces textes sont exacts. Les paramètres ne sont pas tout à fait « constants » (R passe de 261 à 282 km). Il manque l'idée qu'il s'agit de la fusée en vol, la frise de mission et la parole (4 060 mph, 83 miles en aval)."
+            },
+            {
+              "textId": "2f5ecf255c",
+              "blockId": "artemis@1816000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Écran de suivi en temps réel avec position et trajectoire d'Artemis I : c'est plausible et juste. En revanche, VIS-WFOV, CI et CO sont présentés comme des « paramètres du système FTS », alors que rien à l'écran ni dans la parole ne parle de FTS. Les textes VIS-WFOV, CI, CO, HDR et REC sont exacts. « Valeurs constantes » n'est qu'à peu près vrai. Il manque le point lumineux suivi, la frise de mission et la vitesse ou distance dite."
+            },
+            {
+              "textId": "12f2ab2979",
+              "blockId": "artemis@1816000",
+              "accuracy": 1,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "yes",
+              "rationale": "Le résumé est faux : il n'y a ni système FTS, ni « pressurisation contrôlée en préparation d'une éventuelle destruction » ; c'est une caméra de poursuite de la fusée en vol après la séparation des boosters. Le visuel est exact : CI et CO, N28 (cité deux fois par erreur), W80, R=265.4 km bien lu, VIS-WFOV, REC ON. Il manque le point lumineux suivi, la frise de mission et la parole sur la vitesse et la distance."
+            }
+          ]
+        },
+        {
+          "video": "artemis",
+          "scores": [
+            {
+              "textId": "41d7f99b51",
+              "blockId": "artemis@664000",
+              "accuracy": 2,
+              "coverage": 3,
+              "invention": false,
+              "ocrOk": "yes",
+              "rationale": "Plan fixe de nuit, serré sur le SLS : haut de l'étage central orange et étage supérieur blanc, tour de lancement avec bras ombilicaux à gauche, légers dégagements de vapeur près de l'ombilical et nuage blanc en bas à gauche, incrustation « 917 » et logo NASA. Ce qui est juste : lanceur sur le pas de tir, structures de support, jets de gaz, « 917 » bien lu. Ce qui est faux : on parle du « lanceur Orion » alors que la capsule Orion n'est pas dans le cadre ; c'est une erreur de nom, pas un objet ajouté. Le « 917 » est une incrustation posée sur le fond noir, pas un marquage du lanceur. Les vannes d'oxygène liquide viennent du commentaire précédent (vers 628 s) et ne se voient pas, mais la description les présente comme probables. La décision de lancement imminente colle à peu près au « poll » annoncé. Les éléments saillants d'un plan aussi simple sont tous là."
+            },
+            {
+              "textId": "00b8adc708",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "De 952 à 954 s, plan rapproché dans la salle de tir : une femme aux longs cheveux roux, avec lunettes, casque et veste sombre, se penche sur un pupitre et manipule une tablette ou des papiers ; derrière elle, un homme en costume avec casque porte une tasse à sa bouche. De 954 à 960 s, plan large vu d'en haut : elle s'affaire au pupitre, un homme assis à une console avec des écrans (dont un montre la fusée), un caméraman qui filme à gauche, de grandes baies vitrées inclinées. Ce qui est juste : femme à lunettes penchée sur du matériel, homme assis devant des écrans, centre de contrôle de la NASA. Ce qui est inventé : l'« appareil de mesure », qui n'apparaît nulle part. Ce qui manque : le changement de plan, le caméraman, l'homme en costume du premier plan, les baies vitrées."
+            },
+            {
+              "textId": "31029f3c74",
+              "blockId": "artemis@952000",
+              "accuracy": 2,
+              "coverage": 2,
+              "invention": true,
+              "ocrOk": "na",
+              "rationale": "Presque identique à la description précédente du même bloc, je la note donc de la même façon. Ce qui est juste : technicienne à lunettes penchée sur du matériel au pupitre, autre homme devant des écrans de contrôle, centre de contrôle de la NASA rempli d'écrans. Ce qui est inventé : l'« appareil de mesure » avec lequel elle examinerait l'équipement ; en réalité, elle manipule une tablette ou des papiers. Le « gilet » est en fait une veste sombre, approximation sans gravité. Ce qui manque : le passage au plan large vu d'en haut, le caméraman, l'homme en costume avec casque qui boit à l'arrière-plan et les grandes baies vitrées."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Notation vision"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "vision:kennedy:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "a7a84be573c8eb278",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598788645,
+      "queuedAt": 1792598788635,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "kennedy",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « kennedy ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-kennedy.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes…",
+      "promptFramed": true,
+      "lastProgressAt": 1792598957189,
+      "tokens": 90806,
+      "toolCalls": 16,
+      "durationMs": 168544,
+      "resultPreview": "{\"video\":\"kennedy\",\"scores\":[{\"textId\":\"14067d3f1d\",\"blockId\":\"kennedy@64000\",\"accuracy\":3,\"coverage\":3,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Tout est vrai : pupitre au sceau présidentiel (dit « sceau des États-Unis », approximation acceptable), drapeau à côté, foule dans un stade, parole (lumière électrique, téléphones, automobiles). Seuls manquent les dignitaires assis à droite.\"},{\"textId…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "vision:kennedy:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "ae95d32a70b7547fd",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598788645,
+      "queuedAt": 1792598788635,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "kennedy",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « kennedy ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-kennedy.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes…",
+      "promptFramed": true,
+      "lastProgressAt": 1792598982435,
+      "tokens": 90922,
+      "toolCalls": 20,
+      "durationMs": 192647,
+      "resultPreview": "{\"video\":\"kennedy\",\"scores\":[{\"textId\":\"14067d3f1d\",\"blockId\":\"kennedy@64000\",\"accuracy\":3,\"coverage\":3,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Tout est vrai : pupitre au sceau (présidentiel, dit « des États-Unis », approximation tolérée), drapeau à côté, grande foule de stade, parole correcte (lumière électrique, téléphones, automobiles). Manquent Newton/gravité et les dignitaires assis.\"},{\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "vision:spring:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "afecd4cec98ef195b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598788654,
+      "queuedAt": 1792598788652,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « spring ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-spring.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes (…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599007750,
+      "tokens": 101040,
+      "toolCalls": 20,
+      "durationMs": 217961,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"c5e2276161\",\"blockId\":\"spring@56000\",\"accuracy\":3,\"coverage\":2,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Tout ce qui est dit est vrai : la fille tient un bâton de bois sculpté à 64 s, le chien regarde la vallée à 60-62 s, le décor est montagneux et brumeux. Mais la description reste vague (« une personne ») et manque l'action principale : la fille tend des …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "vision:spring:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "a5f4605897b0e9156",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598788654,
+      "queuedAt": 1792598788652,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « spring ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-spring.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes (…",
+      "promptFramed": true,
+      "lastProgressAt": 1792598987178,
+      "tokens": 97107,
+      "toolCalls": 36,
+      "durationMs": 197389,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"c5e2276161\",\"blockId\":\"spring@56000\",\"accuracy\":3,\"coverage\":1,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Vrai mais très vague : une personne (la fillette) tient un objet en bois (le bâton à 64 s), un petit chien regarde la mer de nuages, montagnes brumeuses. Manquent le biscuit tendu en souriant, le chien qui bondit, la tenue rouge et le visage inquiet de l…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "vision:cnrs-apprentissage:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "adeefa6c5bf22d05e",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598957191,
+      "queuedAt": 1792598957190,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs-apprentissage",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « cnrs-apprentissage ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-cnrs-apprentissage.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599149429,
+      "tokens": 99333,
+      "toolCalls": 22,
+      "durationMs": 192237,
+      "resultPreview": "{\"video\":\"cnrs-apprentissage\",\"scores\":[{\"textId\":\"94765285ea\",\"blockId\":\"cnrs-apprentissage@120000\",\"accuracy\":3,\"coverage\":3,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Images 2:00-2:08 : homme chauve en t-shirt sombre à droite, silhouettes noires de chat et de lapin sur fond blanc. Parole : points communs (yeux, pattes) puis formes différentes. Tout est exact et l'essentiel est couvert.\"},{\"tex…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "vision:cnrs-apprentissage:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "a821c55cb1072fe55",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598982442,
+      "queuedAt": 1792598982440,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs-apprentissage",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « cnrs-apprentissage ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-cnrs-apprentissage.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599137377,
+      "tokens": 96865,
+      "toolCalls": 21,
+      "durationMs": 154935,
+      "resultPreview": "{\"video\":\"cnrs-apprentissage\",\"scores\":[{\"textId\":\"94765285ea\",\"blockId\":\"cnrs-apprentissage@120000\",\"accuracy\":3,\"coverage\":3,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Images : homme en t-shirt sombre avec télécommande, à droite de silhouettes noires de chat et de lapin sur fond blanc. Parole : points communs (yeux, pattes) puis formes différentes. Tout est juste et l'essentiel y est.\"},{\"textI…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "vision:boeuf-bourguignon:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "ab30d5065253d2fd2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792598987184,
+      "queuedAt": 1792598987183,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "boeuf-bourguignon",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « boeuf-bourguignon ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-boeuf-bourguignon.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs d…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599215861,
+      "tokens": 100288,
+      "toolCalls": 22,
+      "durationMs": 228676,
+      "resultPreview": "{\"video\":\"boeuf-bourguignon\",\"scores\":[{\"textId\":\"3a8bbb17d4\",\"blockId\":\"boeuf-bourguignon@112000\",\"accuracy\":1,\"coverage\":2,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Images : vue de dessus, les oignons viennent d'être versés sur la viande dans un grand saladier en verre, puis gros plan sur le tablier « Learn With A Chef » : il verse les carottes en dés. L'ajout d'oignons et de carottes dans un b…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "vision:boeuf-bourguignon:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "ac5f7cc9fd4f75338",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599007760,
+      "queuedAt": 1792599007758,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "boeuf-bourguignon",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « boeuf-bourguignon ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-boeuf-bourguignon.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs d…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599159072,
+      "tokens": 88150,
+      "toolCalls": 15,
+      "durationMs": 151312,
+      "resultPreview": "{\"video\":\"boeuf-bourguignon\",\"scores\":[{\"textId\":\"3a8bbb17d4\",\"blockId\":\"boeuf-bourguignon@112000\",\"accuracy\":1,\"coverage\":2,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Sur les images, les oignons puis les carottes déjà taillés sont versés sur la viande, dans un grand saladier en verre. Personne ne coupe quoi que ce soit, et personne ne dispose les herbes (le bouquet de thym est déjà posé sur un pl…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "vision:tears-of-steel:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "aaf03d3f66d31e85b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599137383,
+      "queuedAt": 1792599137382,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "tears-of-steel",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « tears-of-steel ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-tears-of-steel.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descrip…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599430873,
+      "tokens": 109810,
+      "toolCalls": 52,
+      "durationMs": 293490,
+      "resultPreview": "{\"video\":\"tears-of-steel\",\"scores\":[{\"textId\":\"191f22bbbd\",\"blockId\":\"tears-of-steel@184000\",\"accuracy\":3,\"coverage\":2,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Exact pour 3:04-3:08 : vieil homme en long manteau sombre au centre d'une pièce en ruine envahie de lierre, briques, lampes, une personne assise au bureau derrière. Manque la seconde moitié : de dos face au robot géant dans la rue, l'hom…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "vision:tears-of-steel:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "adba484196c4cc7f2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599149432,
+      "queuedAt": 1792599149430,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "tears-of-steel",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « tears-of-steel ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-tears-of-steel.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descrip…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599439676,
+      "tokens": 110126,
+      "toolCalls": 30,
+      "durationMs": 290244,
+      "resultPreview": "{\"video\":\"tears-of-steel\",\"scores\":[{\"textId\":\"191f22bbbd\",\"blockId\":\"tears-of-steel@184000\",\"accuracy\":3,\"coverage\":2,\"invention\":false,\"ocrOk\":\"na\",\"rationale\":\"Exact pour 03:04-03:08 : vieil homme en long manteau sombre dans une pièce ouverte, briques, lierre, lampes, bureau en bois, une personne en arrière-plan derrière le bureau. Manque le plan de dos à 03:10-03:12 : l'homme regarde le robot …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "vision:artemis:1",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "afbce7a7b7658ce9c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599159074,
+      "queuedAt": 1792599159073,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "artemis",
+      "promptPreview": "Tu es le juge 1, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « artemis ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-artemis.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599380727,
+      "tokens": 101276,
+      "toolCalls": 23,
+      "durationMs": 221653,
+      "resultPreview": "{\"video\":\"artemis\",\"scores\":[{\"textId\":\"0bdbb787d5\",\"blockId\":\"artemis@384000\",\"accuracy\":0,\"coverage\":1,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Images 06:24-06:32 : écran partagé (vignette avec un homme et une femme interviewés, fusée au pas de tir de nuit sous les projecteurs), transition logo Artemis, puis foule à Space Center Houston. La fusée n'est pas en ascension et on ne voit aucune fla…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "vision:artemis:2",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "aef48fc9f45ff912f",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599215866,
+      "queuedAt": 1792599215865,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "artemis",
+      "promptPreview": "Tu es le juge 2, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « artemis ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-artemis.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599437585,
+      "tokens": 107349,
+      "toolCalls": 31,
+      "durationMs": 221719,
+      "resultPreview": "{\"video\":\"artemis\",\"scores\":[{\"textId\":\"0bdbb787d5\",\"blockId\":\"artemis@384000\",\"accuracy\":1,\"coverage\":1,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"La fusée est sur le pas de tir, de nuit, sous les projecteurs, avec un léger dégazage : elle n'est pas « en pleine ascension » et on ne voit aucune flamme à la base. Les deux personnes sont dans une vignette à gauche, pas à l'arrière-plan. Les prénoms …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "vision:spring:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "aa7ed8857bebf3d82",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599380730,
+      "queuedAt": 1792599380729,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "spring",
+      "promptPreview": "Tu es le juge 3, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « spring ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-spring.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes (…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599416239,
+      "tokens": 69801,
+      "toolCalls": 8,
+      "durationMs": 35509,
+      "resultPreview": "{\"video\":\"spring\",\"scores\":[{\"textId\":\"5c7bbd7016\",\"blockId\":\"spring@320000\",\"accuracy\":2,\"coverage\":3,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Bloc en deux plans. De 320 à 323 s environ, un petit animal brun-roux, de type chien, renifle au pied d'un gros rocher sombre, dans une forêt sombre et brumeuse. Ensuite, la fille en tunique rouge sourit en tenant son bâton lumineux, puis l'abaisse et re…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "vision:cnrs-apprentissage:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "a6fbbbc563c84edaf",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599416243,
+      "queuedAt": 1792599416242,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "cnrs-apprentissage",
+      "promptPreview": "Tu es le juge 3, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « cnrs-apprentissage ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-cnrs-apprentissage.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599472189,
+      "tokens": 75293,
+      "toolCalls": 11,
+      "durationMs": 55946,
+      "resultPreview": "{\"video\":\"cnrs-apprentissage\",\"scores\":[{\"textId\":\"7d7d4df726\",\"blockId\":\"cnrs-apprentissage@760000\",\"accuracy\":2,\"coverage\":2,\"invention\":true,\"ocrOk\":\"yes\",\"rationale\":\"Les images de 12:40 à 12:48 montrent la diapositive « L'éducation d'une « grande IA » » : chaîne Données → Modèle de fondation → Instruct model → Modèle aligné → Au boulot !, et en dessous l'étape Alignement « Brieffing, éthique …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "vision:boeuf-bourguignon:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "aff5b2849f3042b86",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599430875,
+      "queuedAt": 1792599430874,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "boeuf-bourguignon",
+      "promptPreview": "Tu es le juge 3, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « boeuf-bourguignon ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-boeuf-bourguignon.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs d…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599465421,
+      "tokens": 74735,
+      "toolCalls": 10,
+      "durationMs": 34546,
+      "resultPreview": "{\"video\":\"boeuf-bourguignon\",\"scores\":[{\"textId\":\"451447fba1\",\"blockId\":\"boeuf-bourguignon@112000\",\"accuracy\":1,\"coverage\":1,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Images 112-120 s : à 112 s (plan du dessus), la personne renverse le petit bol d'oignons hachés sur la viande déjà dans le grand saladier en verre. De 114 à 120 s (plan de côté, tablier « Learn With A Chef »), elle prend le bol de c…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 16,
+      "label": "vision:artemis:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "afc923cbb152cf676",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599437591,
+      "queuedAt": 1792599437590,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "artemis",
+      "promptPreview": "Tu es le juge 3, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « artemis ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-artemis.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descriptions anonymes…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599526307,
+      "tokens": 86813,
+      "toolCalls": 14,
+      "durationMs": 88716,
+      "resultPreview": "{\"video\":\"artemis\",\"scores\":[{\"textId\":\"41d7f99b51\",\"blockId\":\"artemis@664000\",\"accuracy\":2,\"coverage\":3,\"invention\":false,\"ocrOk\":\"yes\",\"rationale\":\"Plan fixe de nuit, serré sur le SLS : haut de l'étage central orange et étage supérieur blanc, tour de lancement avec bras ombilicaux à gauche, légers dégagements de vapeur près de l'ombilical et nuage blanc en bas à gauche, incrustation « 917 » et l…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 17,
+      "label": "vision:tears-of-steel:3",
+      "phaseIndex": 1,
+      "phaseTitle": "Notation vision",
+      "agentId": "a9a643321e43604b8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792599439677,
+      "queuedAt": 1792599439676,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "tears-of-steel",
+      "promptPreview": "Tu es le juge 3, indépendant, de descriptions automatiques de blocs vidéo de 8 s, vidéo « tears-of-steel ». À l'aveugle.\nPaquet : /private/tmp/claude-501/-Users-Dabi-Documents-ISN-tvlens/10f8a5c3-4f60-484e-82eb-5180ae7c9ba0/scratchpad/labo/notation-vision/a-noter-tears-of-steel.json : pour chaque bloc, intervalle (startS–endS), transcription locale donnée au\nmodèle (imprécise) et plusieurs descrip…",
+      "promptFramed": true,
+      "lastProgressAt": 1792599537992,
+      "tokens": 82365,
+      "toolCalls": 23,
+      "durationMs": 98315,
+      "resultPreview": "{\"video\":\"tears-of-steel\",\"scores\":[{\"textId\":\"1f8414d83c\",\"blockId\":\"tears-of-steel@184000\",\"accuracy\":1,\"coverage\":1,\"invention\":true,\"ocrOk\":\"na\",\"rationale\":\"Vrai : de 3:04 à 3:08, un homme âgé en long manteau sombre (écossais, chemise noire) avance debout dans un intérieur délabré envahi de lierre et éclairé par des lampes. Faux : il ne regarde jamais une jeune femme. Elle n'apparaît pas dans…"
+    }
+  ],
+  "totalTokens": 1582079,
+  "totalToolCalls": 374
+}
