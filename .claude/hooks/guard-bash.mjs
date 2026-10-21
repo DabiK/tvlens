@@ -3,8 +3,13 @@
 // relève de l'intégration (commit, push, branches). C'est un garde-fou sur le texte de la commande,
 // pas un bac à sable : il rattrape l'erreur, pas la malveillance.
 import { decide, loopMode, readInput, refuseOrAsk } from "./lib.mjs";
+import { REMOTE_ACCESS, onlyTrustedHosts } from "./remote-access.mjs";
 
 const command = String(readInput().tool_input?.command || "");
+
+// Machines que le propriétaire a ouvertes sans confirmation en session interactive : la GX10 et la TV LG,
+// alias de ~/.ssh/config. Une session de ticket n'y accède toujours pas.
+const TRUSTED_HOSTS = new Set(["gx10-tvlens", "tv-lg"]);
 
 // Toujours contrôlées : refusées en boucle, soumises à confirmation en interactif.
 const RISKY = [
@@ -17,7 +22,7 @@ const RISKY = [
   [/\bgit\s+stash\s+(drop|clear)\b/, "suppression d'un stash"],
   [/\bgit\s+(checkout|restore)\s+(--\s+)?\.(\s|$)/, "abandon de toutes les modifications locales"],
   [/\bsudo\b/, "sudo"],
-  [/(^|[;&|]\s*)(ssh|scp|rsync)\s/, "accès à une machine distante"],
+  [REMOTE_ACCESS, "accès à une machine distante"],
   [/\bnpm\s+publish\b/, "publication npm"],
   [/\b(curl|wget)\b.*\|\s*(ba|z)?sh\b/, "exécution d'un script téléchargé"],
 ];
@@ -46,7 +51,8 @@ function dangerousRemove(text) {
 }
 
 if (dangerousRemove(command)) refuseOrAsk("Commande à risque : suppression récursive d'un dossier racine.");
-for (const [pattern, why] of RISKY) if (pattern.test(command)) refuseOrAsk(`Commande à risque : ${why}.`);
+const trustedRemote = (pattern) => pattern === REMOTE_ACCESS && !loopMode && onlyTrustedHosts(command, TRUSTED_HOSTS);
+for (const [pattern, why] of RISKY) if (pattern.test(command) && !trustedRemote(pattern)) refuseOrAsk(`Commande à risque : ${why}.`);
 if (loopMode) {
   for (const [pattern, why] of LOOP_ONLY) if (pattern.test(command)) decide("deny", `Refusé pendant un ticket : ${why}.`);
   if (INSTALL.test(command) && process.env.TVLENS_ALLOW_INSTALL !== "1")

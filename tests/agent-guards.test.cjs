@@ -81,6 +81,43 @@ test("in an interactive session, a destructive command is asked rather than deni
   assert.equal(decision(bash(repo, "git commit -m done", INTERACTIVE)), "none");
 });
 
+test("in an interactive session, remote access to the GX10 or the TV passes, and any other or redirected target is asked", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const command of [
+    "ssh -o BatchMode=yes -o ConnectTimeout=15 -o ControlMaster=no -o ControlPath=none gx10-tvlens 'cat results/status.json'",
+    "ssh root@tv-lg 'uptime; cat /proc/loadavg | head -1'",
+    "git status --short; ssh tv-lg uptime && scp -P 22 notes.txt tv-lg:/tmp/",
+    "scp gx10-tvlens:/tmp/run.tar.gz gx10-tvlens:/tmp/run.tar.gz.sha256 ./out/",
+    "tar -cf - kit | ssh gx10-tvlens 'tar -xf -'",
+    "rsync -a -e 'ssh -o BatchMode=yes' ./kit/ gx10-tvlens:kit/",
+  ]) {
+    assert.equal(decision(bash(repo, command, INTERACTIVE)), "none", command);
+  }
+  for (const command of [
+    "ssh other-host uptime",
+    "ssh tv-lg uptime; ssh other-host uptime",
+    'ssh "$HOST" uptime',
+    "ssh -o HostName=10.0.0.9 tv-lg uptime",
+    "ssh -J jump gx10-tvlens uptime",
+    "scp notes.txt other-host:/tmp/",
+    "scp -S ./other-program notes.txt tv-lg:/tmp/",
+    "rsync -a ./ backup:/srv/",
+    "rsync -a -e 'ssh -o ProxyCommand=nc' ./ tv-lg:/tmp/",
+    "ssh gx10-tvlens uptime && sudo reboot",
+  ]) {
+    assert.equal(decision(bash(repo, command, INTERACTIVE)), "ask", command);
+  }
+});
+
+test("in a ticket session, remote access is denied even to the GX10 or the TV", (t) => {
+  const repo = harnessRepo();
+  t.after(repo.cleanup);
+  for (const command of ["ssh gx10-tvlens uptime", "scp notes.txt tv-lg:/tmp/"]) {
+    assert.equal(decision(bash(repo, command, LOOP)), "deny", command);
+  }
+});
+
 test("the harness cannot be edited from a ticket session unless the ticket allows it", (t) => {
   const repo = harnessRepo();
   t.after(repo.cleanup);
