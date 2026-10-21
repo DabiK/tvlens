@@ -1,0 +1,79 @@
+/opt/pytorch/ao/torchao/quantization/quant_api.py:1542: SyntaxWarning: invalid escape sequence '\.'
+  """Configuration class for applying different quantization configs to modules or parameters based on their fully qualified names (FQNs).
+W1021 04:51:36.767000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+livecc_utils.video_process_patch: FORCE_QWENVL_VIDEO_READER=None, FPS_MAX_FRAMES=480, VIDEO_MIN_PIXELS=78400, VIDEO_TOTAL_PIXELS=90316800
+You are attempting to use Flash Attention 2.0 without specifying a torch dtype. This might lead to unexpected behaviour
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:28<01:25, 28.45s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:55<00:54, 27.34s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:21<00:27, 27.09s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:29<00:00, 19.58s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:29<00:00, 22.47s/it]
+You have video processor config saved in `preprocessor.json` file which is deprecated. Video processor configs should be saved in their own `video_preprocessor.json` file. You can rename the file or load and save the processor back which renames it automatically. Loading from `preprocessor.json` will be removed in v5.0.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.
+Unused or unrecognized kwargs: fps, return_tensors.

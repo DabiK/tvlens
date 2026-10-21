@@ -16,4 +16,4 @@
 | [2026-10-21-reprise-bras-qwen](2026-10-21-reprise-bras-qwen/) | Suffixe Ollama Qwen terminé avec 25 réponses et traces vérifiées. |
 | [2026-10-21-incident-streaming-buildkit](2026-10-21-incident-streaming-buildkit/) | Refus du réseau `bridge` par BuildKit ; reprise bornée de StreamingVLM dans un dossier neuf, avec image et inventaire déjà scellés. |
 | [2026-10-21-incident-streaming-past](2026-10-21-incident-streaming-past/) | Dépendance Python transitive manquante après le build ; couche `future` figée et reprise de la sonde StreamingVLM sous les échéances initiales. |
-| [2026-10-21-incident-streaming-queue](2026-10-21-incident-streaming-queue/) | Masquage du module Python `queue` par le dossier du lanceur ; reprise limitée des pilotes StreamingVLM avec image et checkpoint vérifiés. |
+| [2026-10-21-incident-streaming-queue](2026-10-21-incident-streaming-queue/) | Masquage du module Python `queue` corrigé ; quatre pilotes StreamingVLM terminés, traces vérifiées et bilan de vitesse sans note de pertinence. |

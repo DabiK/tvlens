@@ -1,0 +1,19 @@
+{
+  "startedAtUtc": "2026-10-21T04:54:53.372392+00:00",
+  "source": "/source",
+  "upstreamCommit": "a940d8cbfa14eefe651b7f4adeb81825c28cc6c6",
+  "model": "/cache/models--mit-han-lab--StreamingVLM/snapshots/7ac1cef46d20432053a9814838760318cb26b348",
+  "checkpointRevision": "7ac1cef46d20432053a9814838760318cb26b348",
+  "video": "/video.mp4",
+  "videoSha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+  "durationSeconds": 372,
+  "chunkDurationSeconds": 1,
+  "windowSizeSeconds": 16,
+  "recompute": false,
+  "query": "Describe visible events accurately and avoid unsupported details.",
+  "seed": 42,
+  "temperature": 0.9,
+  "textRound": 16,
+  "textSink": null,
+  "textSlidingWindow": null
+}

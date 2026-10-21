@@ -47,5 +47,9 @@ L'inférence sous UID nvidia et la compatibilité effective du modèle restent �
 
 L'orchestrateur a lancé une seule fois `launch.sh` à 04:49:31 UTC, après contrôle du SHA-256 des deux
 sources sur le GX10. À 04:49:41 UTC, le run était au stade `pilot-16`, sans erreur enregistrée.
-Voir `deployment.json` pour les chemins, les empreintes et les échéances. La réussite du pilote et la
-compatibilité du modèle ne sont pas encore établies.
+Les quatre pilotes ont ensuite fini avec un code de sortie nul : 16 s, 72 s, 372 s et 16 s avec
+recalcul. Le run est scellé `finished` à 05:07:43 UTC, avec `cleanupConfirmed=true`. Les
+78 fichiers de son manifeste ont été vérifiés sur le GX10 ; la copie locale vérifiée et ses exclusions
+sont détaillées dans [RAPATRIEMENT.md](rapatriements/reprise-streaming-queue-20261021T044930Z/RAPATRIEMENT.md).
+Les mesures et leur portée sont dans [BILAN.md](BILAN.md). Le modèle s'exécute sur le GX10, mais le
+passage de 372 s n'atteint pas le temps réel et aucune pertinence n'est encore notée.

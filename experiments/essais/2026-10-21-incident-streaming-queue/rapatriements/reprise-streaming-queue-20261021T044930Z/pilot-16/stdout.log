@@ -1,0 +1,56 @@
+os.getenv('DATASET_PATH',   )
+os.path.join(os.getenv('DATASET_PATH', ), video_path) /video.mp4
+resized_height: 476, resized_width: 1176
+Subtitles will be written to: /results/result-pilot-16/segments.vtt
+num_chunks: 16
+Time=00:00:00-00:00:01: [1m[34m ...[0m past_key_values: 761
+{"type": "segment", "start": 0.0, "end": 1.0, "text": ""}
+[Loop 0] total=2.534s | PKV=0.000s | CHECK=0.000s | VIDEO=0.018s | INPUT=0.015s | GEN=2.499s | POST=0.001s
+Time=00:00:01-00:00:02: [1m[34m ...[0m past_key_values: 1498
+{"type": "segment", "start": 1.0, "end": 2.0, "text": ""}
+[Loop 1] total=0.514s | PKV=0.000s | CHECK=0.000s | VIDEO=0.019s | INPUT=0.018s | GEN=0.475s | POST=0.001s
+Time=00:00:02-00:00:03: [1m[34m ...[0m past_key_values: 2235
+{"type": "segment", "start": 2.0, "end": 3.0, "text": ""}
+[Loop 2] total=0.540s | PKV=0.000s | CHECK=0.000s | VIDEO=0.013s | INPUT=0.031s | GEN=0.496s | POST=0.001s
+Time=00:00:03-00:00:04: [1m[34m All who enter are subject to our will in some form or fashion. ...[0m past_key_values: 2986
+{"type": "segment", "start": 3.0, "end": 4.0, "text": " All who enter are subject to our will in some form or fashion."}
+[Loop 3] total=2.242s | PKV=0.000s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.010s | GEN=2.223s | POST=0.001s
+Time=00:00:04-00:00:05: [1m[34m ...[0m past_key_values: 3723
+{"type": "segment", "start": 4.0, "end": 5.0, "text": ""}
+[Loop 4] total=0.672s | PKV=0.000s | CHECK=0.000s | VIDEO=0.093s | INPUT=0.053s | GEN=0.525s | POST=0.001s
+Time=00:00:05-00:00:06: [1m[34m ...[0m past_key_values: 4460
+{"type": "segment", "start": 5.0, "end": 6.0, "text": ""}
+[Loop 5] total=0.592s | PKV=0.000s | CHECK=0.000s | VIDEO=0.032s | INPUT=0.030s | GEN=0.529s | POST=0.001s
+Time=00:00:06-00:00:07: [1m[34m ...[0m past_key_values: 5197
+{"type": "segment", "start": 6.0, "end": 7.0, "text": ""}
+[Loop 6] total=0.933s | PKV=0.000s | CHECK=0.000s | VIDEO=0.318s | INPUT=0.042s | GEN=0.572s | POST=0.001s
+Time=00:00:07-00:00:08: [1m[34m It is our right to punish those who disobey us. ...[0m past_key_values: 5946
+{"type": "segment", "start": 7.0, "end": 8.0, "text": " It is our right to punish those who disobey us."}
+[Loop 7] total=2.431s | PKV=0.000s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.022s | GEN=2.398s | POST=0.001s
+Time=00:00:08-00:00:09: [1m[34m ...[0m past_key_values: 6683
+{"type": "segment", "start": 8.0, "end": 9.0, "text": ""}
+[Loop 8] total=0.588s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.567s | POST=0.002s
+Time=00:00:09-00:00:10: [1m[34m ...[0m past_key_values: 7421
+{"type": "segment", "start": 9.0, "end": 10.0, "text": ""}
+[Loop 9] total=0.605s | PKV=0.000s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.583s | POST=0.001s
+Time=00:00:10-00:00:11: [1m[34m ...[0m past_key_values: 8160
+{"type": "segment", "start": 10.0, "end": 11.0, "text": ""}
+[Loop 10] total=0.734s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.714s | POST=0.001s
+Time=00:00:11-00:00:12: [1m[34m ...[0m past_key_values: 8899
+{"type": "segment", "start": 11.0, "end": 12.0, "text": ""}
+[Loop 11] total=0.697s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.023s | GEN=0.664s | POST=0.001s
+Time=00:00:12-00:00:13: [1m[34m ...[0m past_key_values: 9638
+{"type": "segment", "start": 12.0, "end": 13.0, "text": ""}
+[Loop 12] total=0.631s | PKV=0.000s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.016s | GEN=0.605s | POST=0.001s
+Time=00:00:13-00:00:14: [1m[34m On this island, ...[0m past_key_values: 10381
+{"type": "segment", "start": 13.0, "end": 14.0, "text": " On this island,"}
+[Loop 13] total=1.353s | PKV=0.000s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.035s | GEN=1.308s | POST=0.001s
+Time=00:00:14-00:00:15: [1m[34m ...[0m past_key_values: 11120
+{"type": "segment", "start": 14.0, "end": 15.0, "text": ""}
+[Loop 14] total=0.763s | PKV=0.000s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.130s | GEN=0.621s | POST=0.001s
+Time=00:00:15-00:00:16: [1m[34m The only law is the one that I impose. ...[0m past_key_values: 11869
+{"type": "segment", "start": 15.0, "end": 16.0, "text": " The only law is the one that I impose."}
+[Loop 15] total=2.569s | PKV=0.000s | CHECK=0.000s | VIDEO=0.050s | INPUT=0.015s | GEN=2.503s | POST=0.001s
+
+✅ Subtitles saved to: /results/result-pilot-16/segments.vtt
+

@@ -1,0 +1,11 @@
+{
+  "atUtc": "2026-10-21T04:54:53.090829+00:00",
+  "status": {
+    "status": "finished",
+    "startedAtUtc": "2026-10-21T04:51:34.130944+00:00",
+    "segmentCount": 72,
+    "finishedAtUtc": "2026-10-21T04:54:50.252010+00:00",
+    "wallSeconds": 196.12108048200025
+  },
+  "integritySha256": "3b551bfdc94e850a85f385779590a55c41ffc01c9f94df3830e50f815450e0de"
+}

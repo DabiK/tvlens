@@ -1,0 +1,1124 @@
+os.getenv('DATASET_PATH',   )
+os.path.join(os.getenv('DATASET_PATH', ), video_path) /video.mp4
+resized_height: 476, resized_width: 1176
+Subtitles will be written to: /results/result-pilot-372/segments.vtt
+num_chunks: 372
+Time=00:00:00-00:00:01: [1m[34m ...[0m past_key_values: 761
+{"type": "segment", "start": 0.0, "end": 1.0, "text": ""}
+[Loop 0] total=2.622s | PKV=0.000s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.015s | GEN=2.585s | POST=0.001s
+Time=00:00:01-00:00:02: [1m[34m ...[0m past_key_values: 1498
+{"type": "segment", "start": 1.0, "end": 2.0, "text": ""}
+[Loop 1] total=0.497s | PKV=0.000s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=0.473s | POST=0.001s
+Time=00:00:02-00:00:03: [1m[34m ...[0m past_key_values: 2235
+{"type": "segment", "start": 2.0, "end": 3.0, "text": ""}
+[Loop 2] total=0.529s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.012s | GEN=0.509s | POST=0.001s
+Time=00:00:03-00:00:04: [1m[34m All who enter are subject to our will in some form or fashion. ...[0m past_key_values: 2986
+{"type": "segment", "start": 3.0, "end": 4.0, "text": " All who enter are subject to our will in some form or fashion."}
+[Loop 3] total=2.179s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=2.159s | POST=0.001s
+Time=00:00:04-00:00:05: [1m[34m ...[0m past_key_values: 3723
+{"type": "segment", "start": 4.0, "end": 5.0, "text": ""}
+[Loop 4] total=0.538s | PKV=0.000s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.517s | POST=0.001s
+Time=00:00:05-00:00:06: [1m[34m ...[0m past_key_values: 4460
+{"type": "segment", "start": 5.0, "end": 6.0, "text": ""}
+[Loop 5] total=0.539s | PKV=0.000s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.516s | POST=0.001s
+Time=00:00:06-00:00:07: [1m[34m ...[0m past_key_values: 5197
+{"type": "segment", "start": 6.0, "end": 7.0, "text": ""}
+[Loop 6] total=0.553s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.013s | GEN=0.531s | POST=0.001s
+Time=00:00:07-00:00:08: [1m[34m It is our right to punish those who disobey us. ...[0m past_key_values: 5946
+{"type": "segment", "start": 7.0, "end": 8.0, "text": " It is our right to punish those who disobey us."}
+[Loop 7] total=2.180s | PKV=0.000s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.014s | GEN=2.156s | POST=0.001s
+Time=00:00:08-00:00:09: [1m[34m ...[0m past_key_values: 6683
+{"type": "segment", "start": 8.0, "end": 9.0, "text": ""}
+[Loop 8] total=0.580s | PKV=0.000s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=0.555s | POST=0.001s
+Time=00:00:09-00:00:10: [1m[34m ...[0m past_key_values: 7421
+{"type": "segment", "start": 9.0, "end": 10.0, "text": ""}
+[Loop 9] total=0.597s | PKV=0.000s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.014s | GEN=0.573s | POST=0.002s
+Time=00:00:10-00:00:11: [1m[34m ...[0m past_key_values: 8160
+{"type": "segment", "start": 10.0, "end": 11.0, "text": ""}
+[Loop 10] total=0.601s | PKV=0.000s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.010s | GEN=0.583s | POST=0.001s
+Time=00:00:11-00:00:12: [1m[34m ...[0m past_key_values: 8899
+{"type": "segment", "start": 11.0, "end": 12.0, "text": ""}
+[Loop 11] total=0.621s | PKV=0.000s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.013s | GEN=0.597s | POST=0.001s
+Time=00:00:12-00:00:13: [1m[34m ...[0m past_key_values: 9638
+{"type": "segment", "start": 12.0, "end": 13.0, "text": ""}
+[Loop 12] total=0.619s | PKV=0.000s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.010s | GEN=0.600s | POST=0.001s
+Time=00:00:13-00:00:14: [1m[34m On this island, ...[0m past_key_values: 10381
+{"type": "segment", "start": 13.0, "end": 14.0, "text": " On this island,"}
+[Loop 13] total=1.304s | PKV=0.000s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=1.280s | POST=0.001s
+Time=00:00:14-00:00:15: [1m[34m ...[0m past_key_values: 11120
+{"type": "segment", "start": 14.0, "end": 15.0, "text": ""}
+[Loop 14] total=0.651s | PKV=0.000s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.014s | GEN=0.628s | POST=0.001s
+Time=00:00:15-00:00:16: [1m[34m The only law is the one that I impose. ...[0m past_key_values: 11869
+{"type": "segment", "start": 15.0, "end": 16.0, "text": " The only law is the one that I impose."}
+[Loop 15] total=2.492s | PKV=0.000s | CHECK=0.000s | VIDEO=0.026s | INPUT=0.013s | GEN=2.452s | POST=0.001s
+Time=00:00:16-00:00:17: [1m[34m ...[0m past_key_values: 11862
+{"type": "segment", "start": 16.0, "end": 17.0, "text": ""}
+[Loop 16] total=0.755s | PKV=0.087s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.646s | POST=0.001s
+Time=00:00:17-00:00:18: [1m[34m ...[0m past_key_values: 11864
+{"type": "segment", "start": 17.0, "end": 18.0, "text": ""}
+[Loop 17] total=0.745s | PKV=0.085s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.638s | POST=0.001s
+Time=00:00:18-00:00:19: [1m[34m ...[0m past_key_values: 11866
+{"type": "segment", "start": 18.0, "end": 19.0, "text": ""}
+[Loop 18] total=0.757s | PKV=0.079s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.656s | POST=0.001s
+Time=00:00:19-00:00:20: [1m[34m ...[0m past_key_values: 11868
+{"type": "segment", "start": 19.0, "end": 20.0, "text": ""}
+[Loop 19] total=0.758s | PKV=0.097s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.639s | POST=0.001s
+Time=00:00:20-00:00:21: [1m[34m ...[0m past_key_values: 11870
+{"type": "segment", "start": 20.0, "end": 21.0, "text": ""}
+[Loop 20] total=0.777s | PKV=0.123s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.011s | GEN=0.634s | POST=0.001s
+Time=00:00:21-00:00:22: [1m[34m ...[0m past_key_values: 11872
+{"type": "segment", "start": 21.0, "end": 22.0, "text": ""}
+[Loop 21] total=0.757s | PKV=0.082s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.652s | POST=0.001s
+Time=00:00:22-00:00:23: [1m[34m You see that? I mean... it's going to keep on getting worse. ...[0m past_key_values: 11890
+{"type": "segment", "start": 22.0, "end": 23.0, "text": " You see that? I mean... it's going to keep on getting worse."}
+[Loop 22] total=3.595s | PKV=0.088s | CHECK=0.000s | VIDEO=0.022s | INPUT=0.011s | GEN=3.474s | POST=0.001s
+Time=00:00:23-00:00:24: [1m[34m ...[0m past_key_values: 11892
+{"type": "segment", "start": 23.0, "end": 24.0, "text": ""}
+[Loop 23] total=0.760s | PKV=0.087s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.652s | POST=0.001s
+Time=00:00:24-00:00:25: [1m[34m ...[0m past_key_values: 11894
+{"type": "segment", "start": 24.0, "end": 25.0, "text": ""}
+[Loop 24] total=0.769s | PKV=0.087s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=0.658s | POST=0.001s
+Time=00:00:25-00:00:26: [1m[34m Everything is getting more expensive. ...[0m past_key_values: 11901
+{"type": "segment", "start": 25.0, "end": 26.0, "text": " Everything is getting more expensive."}
+[Loop 25] total=1.789s | PKV=0.083s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.012s | GEN=1.681s | POST=0.002s
+Time=00:00:26-00:00:27: [1m[34m ...[0m past_key_values: 11901
+{"type": "segment", "start": 26.0, "end": 27.0, "text": ""}
+[Loop 26] total=0.762s | PKV=0.096s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.644s | POST=0.001s
+Time=00:00:27-00:00:28: [1m[34m They're making a profit out of your life experience. ...[0m past_key_values: 11912
+{"type": "segment", "start": 27.0, "end": 28.0, "text": " They're making a profit out of your life experience."}
+[Loop 27] total=2.711s | PKV=0.090s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=2.599s | POST=0.001s
+Time=00:00:28-00:00:29: [1m[34m ...[0m past_key_values: 11912
+{"type": "segment", "start": 28.0, "end": 29.0, "text": ""}
+[Loop 28] total=0.799s | PKV=0.121s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.657s | POST=0.001s
+Time=00:00:29-00:00:30: [1m[34m ...[0m past_key_values: 11912
+{"type": "segment", "start": 29.0, "end": 30.0, "text": ""}
+[Loop 29] total=0.804s | PKV=0.118s | CHECK=0.000s | VIDEO=0.025s | INPUT=0.010s | GEN=0.649s | POST=0.001s
+Time=00:00:30-00:00:31: [1m[34m ...[0m past_key_values: 11912
+{"type": "segment", "start": 30.0, "end": 31.0, "text": ""}
+[Loop 30] total=0.765s | PKV=0.091s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.010s | GEN=0.652s | POST=0.001s
+Time=00:00:31-00:00:32: [1m[34m Now they have all the rules. ...[0m past_key_values: 11919
+{"type": "segment", "start": 31.0, "end": 32.0, "text": " Now they have all the rules."}
+[Loop 31] total=2.156s | PKV=0.125s | CHECK=0.000s | VIDEO=0.074s | INPUT=0.013s | GEN=1.942s | POST=0.001s
+Time=00:00:32-00:00:33: [1m[34m ...[0m past_key_values: 11919
+{"type": "segment", "start": 32.0, "end": 33.0, "text": ""}
+[Loop 32] total=0.795s | PKV=0.117s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.009s | GEN=0.659s | POST=0.001s
+Time=00:00:33-00:00:34: [1m[34m The money is what keeps it all together. ...[0m past_key_values: 11928
+{"type": "segment", "start": 33.0, "end": 34.0, "text": " The money is what keeps it all together."}
+[Loop 33] total=2.405s | PKV=0.090s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=2.295s | POST=0.001s
+Time=00:00:34-00:00:35: [1m[34m ...[0m past_key_values: 11928
+{"type": "segment", "start": 34.0, "end": 35.0, "text": ""}
+[Loop 34] total=0.754s | PKV=0.087s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.646s | POST=0.001s
+Time=00:00:35-00:00:36: [1m[34m Right? But we do have a few options. ...[0m past_key_values: 11938
+{"type": "segment", "start": 35.0, "end": 36.0, "text": " Right? But we do have a few options."}
+[Loop 35] total=2.626s | PKV=0.079s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=2.523s | POST=0.001s
+Time=00:00:36-00:00:37: [1m[34m ...[0m past_key_values: 11938
+{"type": "segment", "start": 36.0, "end": 37.0, "text": ""}
+[Loop 36] total=0.783s | PKV=0.095s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.665s | POST=0.001s
+Time=00:00:37-00:00:38: [1m[34m ...[0m past_key_values: 11938
+{"type": "segment", "start": 37.0, "end": 38.0, "text": ""}
+[Loop 37] total=0.754s | PKV=0.085s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.648s | POST=0.001s
+Time=00:00:38-00:00:39: [1m[34m We can either try and live within their rules and get what we can off them while we can.[0m past_key_values: 11956
+{"type": "segment", "start": 38.0, "end": 39.0, "text": " We can either try and live within their rules and get what we can off them while we "}
+[Loop 38] total=3.996s | PKV=0.095s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=3.879s | POST=0.002s
+Time=00:00:39-00:00:40: [1m[34m ...[0m past_key_values: 11957
+{"type": "segment", "start": 39.0, "end": 40.0, "text": ""}
+[Loop 39] total=0.888s | PKV=0.128s | CHECK=0.000s | VIDEO=0.064s | INPUT=0.040s | GEN=0.654s | POST=0.001s
+Time=00:00:40-00:00:41: [1m[34m ...[0m past_key_values: 11957
+{"type": "segment", "start": 40.0, "end": 41.0, "text": ""}
+[Loop 40] total=0.898s | PKV=0.125s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.012s | GEN=0.724s | POST=0.001s
+Time=00:00:41-00:00:42: [1m[34m ...[0m past_key_values: 11957
+{"type": "segment", "start": 41.0, "end": 42.0, "text": ""}
+[Loop 41] total=0.756s | PKV=0.086s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.649s | POST=0.001s
+Time=00:00:42-00:00:43: [1m[34m We could try and change the rules entirely. ...[0m past_key_values: 11966
+{"type": "segment", "start": 42.0, "end": 43.0, "text": " We could try and change the rules entirely."}
+[Loop 42] total=2.384s | PKV=0.085s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=2.278s | POST=0.001s
+Time=00:00:43-00:00:44: [1m[34m ...[0m past_key_values: 11966
+{"type": "segment", "start": 43.0, "end": 44.0, "text": ""}
+[Loop 43] total=0.819s | PKV=0.129s | CHECK=0.000s | VIDEO=0.037s | INPUT=0.012s | GEN=0.641s | POST=0.001s
+Time=00:00:44-00:00:45: [1m[34m Or if things go wrong, ...[0m past_key_values: 11972
+{"type": "segment", "start": 44.0, "end": 45.0, "text": " Or if things go wrong,"}
+[Loop 44] total=1.842s | PKV=0.084s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.738s | POST=0.001s
+Time=00:00:45-00:00:46: [1m[34m ...[0m past_key_values: 11972
+{"type": "segment", "start": 45.0, "end": 46.0, "text": ""}
+[Loop 45] total=0.765s | PKV=0.084s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.660s | POST=0.001s
+Time=00:00:46-00:00:47: [1m[34m ...[0m past_key_values: 11972
+{"type": "segment", "start": 46.0, "end": 47.0, "text": ""}
+[Loop 46] total=0.742s | PKV=0.085s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.637s | POST=0.001s
+Time=00:00:47-00:00:48: [1m[34m we could run. And where we would end up could be any place, ...[0m past_key_values: 11987
+{"type": "segment", "start": 47.0, "end": 48.0, "text": " we could run. And where we would end up could be any place,"}
+[Loop 47] total=3.423s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=3.308s | POST=0.001s
+Time=00:00:48-00:00:49: [1m[34m ...[0m past_key_values: 11987
+{"type": "segment", "start": 48.0, "end": 49.0, "text": ""}
+[Loop 48] total=0.788s | PKV=0.082s | CHECK=0.000s | VIDEO=0.033s | INPUT=0.010s | GEN=0.662s | POST=0.001s
+Time=00:00:49-00:00:50: [1m[34m ...[0m past_key_values: 11987
+{"type": "segment", "start": 49.0, "end": 50.0, "text": ""}
+[Loop 49] total=0.775s | PKV=0.091s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.662s | POST=0.001s
+Time=00:00:50-00:00:51: [1m[34m but it would be somewhere fresh. ...[0m past_key_values: 11994
+{"type": "segment", "start": 50.0, "end": 51.0, "text": " but it would be somewhere fresh."}
+[Loop 50] total=2.078s | PKV=0.096s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.962s | POST=0.001s
+Time=00:00:51-00:00:52: [1m[34m It would be somewhere new, ...[0m past_key_values: 12000
+{"type": "segment", "start": 51.0, "end": 52.0, "text": " It would be somewhere new,"}
+[Loop 51] total=1.850s | PKV=0.090s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.739s | POST=0.001s
+Time=00:00:52-00:00:53: [1m[34m ...[0m past_key_values: 12000
+{"type": "segment", "start": 52.0, "end": 53.0, "text": ""}
+[Loop 52] total=0.794s | PKV=0.088s | CHECK=0.000s | VIDEO=0.026s | INPUT=0.011s | GEN=0.668s | POST=0.001s
+Time=00:00:53-00:00:54: [1m[34m and it would be somewhere that's not ruled by money. ...[0m past_key_values: 12012
+{"type": "segment", "start": 53.0, "end": 54.0, "text": " and it would be somewhere that's not ruled by money."}
+[Loop 53] total=2.930s | PKV=0.082s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=2.826s | POST=0.001s
+Time=00:00:54-00:00:55: [1m[34m That's my plan. ...[0m past_key_values: 12017
+{"type": "segment", "start": 54.0, "end": 55.0, "text": " That's my plan."}
+[Loop 54] total=1.676s | PKV=0.095s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.561s | POST=0.001s
+Time=00:00:55-00:00:56: [1m[34m What about yours? Well, ...[0m past_key_values: 12023
+{"type": "segment", "start": 55.0, "end": 56.0, "text": " What about yours? Well,"}
+[Loop 55] total=1.836s | PKV=0.085s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.730s | POST=0.001s
+Time=00:00:56-00:00:57: [1m[34m for me, ...[0m past_key_values: 12026
+{"type": "segment", "start": 56.0, "end": 57.0, "text": " for me,"}
+[Loop 56] total=1.330s | PKV=0.124s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.185s | POST=0.001s
+Time=00:00:57-00:00:58: [1m[34m there's no difference. ...[0m past_key_values: 12031
+{"type": "segment", "start": 57.0, "end": 58.0, "text": " there's no difference."}
+[Loop 57] total=1.702s | PKV=0.095s | CHECK=0.000s | VIDEO=0.034s | INPUT=0.010s | GEN=1.562s | POST=0.001s
+Time=00:00:58-00:00:59: [1m[34m Wherever you go, mate, ...[0m past_key_values: 12038
+{"type": "segment", "start": 58.0, "end": 59.0, "text": " Wherever you go, mate,"}
+[Loop 58] total=2.034s | PKV=0.095s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.919s | POST=0.001s
+Time=00:00:59-00:01:00: [1m[34m ...[0m past_key_values: 12038
+{"type": "segment", "start": 59.0, "end": 60.0, "text": ""}
+[Loop 59] total=0.761s | PKV=0.090s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.651s | POST=0.001s
+Time=00:01:00-00:01:01: [1m[34m you'll probably find the same old story waiting for you. So let's take care of that one[0m past_key_values: 12056
+{"type": "segment", "start": 60.0, "end": 61.0, "text": " you'll probably find the same old story waiting for you. So let's take care of that"}
+[Loop 60] total=4.102s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=3.988s | POST=0.001s
+Time=00:01:01-00:01:02: [1m[34m first. ...[0m past_key_values: 12059
+{"type": "segment", "start": 61.0, "end": 62.0, "text": " first."}
+[Loop 61] total=1.168s | PKV=0.093s | CHECK=0.000s | VIDEO=0.015s | INPUT=0.011s | GEN=1.049s | POST=0.001s
+Time=00:01:02-00:01:03: [1m[34m ...[0m past_key_values: 12059
+{"type": "segment", "start": 62.0, "end": 63.0, "text": ""}
+[Loop 62] total=0.806s | PKV=0.106s | CHECK=0.000s | VIDEO=0.017s | INPUT=0.010s | GEN=0.666s | POST=0.007s
+Time=00:01:03-00:01:04: [1m[34m ...[0m past_key_values: 12059
+{"type": "segment", "start": 63.0, "end": 64.0, "text": ""}
+[Loop 63] total=0.818s | PKV=0.106s | CHECK=0.000s | VIDEO=0.035s | INPUT=0.012s | GEN=0.665s | POST=0.001s
+Time=00:01:04-00:01:05: [1m[34m Let's stop talking so much and head over to the cave. ...[0m past_key_values: 12072
+{"type": "segment", "start": 64.0, "end": 65.0, "text": " Let's stop talking so much and head over to the cave."}
+[Loop 64] total=3.266s | PKV=0.106s | CHECK=0.000s | VIDEO=0.030s | INPUT=0.016s | GEN=3.112s | POST=0.002s
+Time=00:01:05-00:01:06: [1m[34m ...[0m past_key_values: 12072
+{"type": "segment", "start": 65.0, "end": 66.0, "text": ""}
+[Loop 65] total=0.823s | PKV=0.110s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.023s | GEN=0.679s | POST=0.001s
+Time=00:01:06-00:01:07: [1m[34m ...[0m past_key_values: 12072
+{"type": "segment", "start": 66.0, "end": 67.0, "text": ""}
+[Loop 66] total=0.832s | PKV=0.131s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.015s | GEN=0.672s | POST=0.003s
+Time=00:01:07-00:01:08: [1m[34m A few hours ago I said you were free. ...[0m past_key_values: 12082
+{"type": "segment", "start": 67.0, "end": 68.0, "text": " A few hours ago I said you were free."}
+[Loop 67] total=2.667s | PKV=0.104s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=2.539s | POST=0.001s
+Time=00:01:08-00:01:09: [1m[34m ...[0m past_key_values: 12082
+{"type": "segment", "start": 68.0, "end": 69.0, "text": ""}
+[Loop 68] total=0.783s | PKV=0.100s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.664s | POST=0.001s
+Time=00:01:09-00:01:10: [1m[34m This time I mean it. And now, ...[0m past_key_values: 12091
+{"type": "segment", "start": 69.0, "end": 70.0, "text": " This time I mean it. And now,"}
+[Loop 69] total=2.497s | PKV=0.120s | CHECK=0.000s | VIDEO=0.013s | INPUT=0.009s | GEN=2.353s | POST=0.001s
+Time=00:01:10-00:01:11: [1m[34m ...[0m past_key_values: 12091
+{"type": "segment", "start": 70.0, "end": 71.0, "text": ""}
+[Loop 70] total=0.793s | PKV=0.097s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.675s | POST=0.001s
+Time=00:01:11-00:01:12: [1m[34m Go! But not too fast. ...[0m past_key_values: 12098
+{"type": "segment", "start": 71.0, "end": 72.0, "text": " Go! But not too fast."}
+[Loop 71] total=2.088s | PKV=0.120s | CHECK=0.000s | VIDEO=0.048s | INPUT=0.012s | GEN=1.909s | POST=0.001s
+Time=00:01:12-00:01:13: [1m[34m ...[0m past_key_values: 12098
+{"type": "segment", "start": 72.0, "end": 73.0, "text": ""}
+[Loop 72] total=0.810s | PKV=0.128s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.661s | POST=0.001s
+Time=00:01:13-00:01:14: [1m[34m You don't want to get caught with the mountain people. ...[0m past_key_values: 12110
+{"type": "segment", "start": 73.0, "end": 74.0, "text": " You don't want to get caught with the mountain people."}
+[Loop 73] total=3.004s | PKV=0.134s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=2.848s | POST=0.001s
+Time=00:01:14-00:01:15: [1m[34m You don't, ...[0m past_key_values: 12114
+{"type": "segment", "start": 74.0, "end": 75.0, "text": " You don't,"}
+[Loop 74] total=1.583s | PKV=0.131s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.429s | POST=0.001s
+Time=00:01:15-00:01:16: [1m[34m I know. ...[0m past_key_values: 12117
+{"type": "segment", "start": 75.0, "end": 76.0, "text": " I know."}
+[Loop 75] total=1.327s | PKV=0.087s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.016s | GEN=1.213s | POST=0.001s
+Time=00:01:16-00:01:17: [1m[34m ...[0m past_key_values: 12117
+{"type": "segment", "start": 76.0, "end": 77.0, "text": ""}
+[Loop 76] total=0.766s | PKV=0.101s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.642s | POST=0.001s
+Time=00:01:17-00:01:18: [1m[34m Let's go, mate. ...[0m past_key_values: 12123
+{"type": "segment", "start": 77.0, "end": 78.0, "text": " Let's go, mate."}
+[Loop 77] total=1.844s | PKV=0.098s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.011s | GEN=1.727s | POST=0.001s
+Time=00:01:18-00:01:19: [1m[34m ...[0m past_key_values: 12123
+{"type": "segment", "start": 78.0, "end": 79.0, "text": ""}
+[Loop 78] total=0.769s | PKV=0.093s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.657s | POST=0.000s
+Time=00:01:19-00:01:20: [1m[34m I'm tired. ...[0m past_key_values: 12127
+{"type": "segment", "start": 79.0, "end": 80.0, "text": " I'm tired."}
+[Loop 79] total=1.523s | PKV=0.083s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.418s | POST=0.001s
+Time=00:01:20-00:01:21: [1m[34m ...[0m past_key_values: 12127
+{"type": "segment", "start": 80.0, "end": 81.0, "text": ""}
+[Loop 80] total=0.756s | PKV=0.097s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.637s | POST=0.001s
+Time=00:01:21-00:01:22: [1m[34m ...[0m past_key_values: 12127
+{"type": "segment", "start": 81.0, "end": 82.0, "text": ""}
+[Loop 81] total=0.778s | PKV=0.090s | CHECK=0.000s | VIDEO=0.030s | INPUT=0.010s | GEN=0.646s | POST=0.001s
+Time=00:01:22-00:01:23: [1m[34m ...[0m past_key_values: 12127
+{"type": "segment", "start": 82.0, "end": 83.0, "text": ""}
+[Loop 82] total=0.795s | PKV=0.118s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.657s | POST=0.001s
+Time=00:01:23-00:01:24: [1m[34m ...[0m past_key_values: 12127
+{"type": "segment", "start": 83.0, "end": 84.0, "text": ""}
+[Loop 83] total=0.808s | PKV=0.119s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.667s | POST=0.002s
+Time=00:01:24-00:01:25: [1m[34m ...[0m past_key_values: 12127
+{"type": "segment", "start": 84.0, "end": 85.0, "text": ""}
+[Loop 84] total=0.771s | PKV=0.093s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=0.654s | POST=0.001s
+Time=00:01:25-00:01:26: [1m[34m The cave is dark, ...[0m past_key_values: 12132
+{"type": "segment", "start": 85.0, "end": 86.0, "text": " The cave is dark,"}
+[Loop 85] total=1.678s | PKV=0.103s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.554s | POST=0.001s
+Time=00:01:26-00:01:27: [1m[34m damp, and cold. ...[0m past_key_values: 12137
+{"type": "segment", "start": 86.0, "end": 87.0, "text": " damp, and cold."}
+[Loop 86] total=1.674s | PKV=0.086s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.565s | POST=0.001s
+Time=00:01:27-00:01:28: [1m[34m ...[0m past_key_values: 12137
+{"type": "segment", "start": 87.0, "end": 88.0, "text": ""}
+[Loop 87] total=0.757s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.638s | POST=0.001s
+Time=00:01:28-00:01:29: [1m[34m In ...[0m past_key_values: 12138
+{"type": "segment", "start": 88.0, "end": 89.0, "text": " In"}
+[Loop 88] total=0.957s | PKV=0.098s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.838s | POST=0.001s
+Time=00:01:29-00:01:30: [1m[34m this ...[0m past_key_values: 12139
+{"type": "segment", "start": 89.0, "end": 90.0, "text": " this"}
+[Loop 89] total=0.933s | PKV=0.098s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.010s | GEN=0.813s | POST=0.001s
+Time=00:01:30-00:01:31: [1m[34m hidden ...[0m past_key_values: 12140
+{"type": "segment", "start": 90.0, "end": 91.0, "text": " hidden"}
+[Loop 90] total=0.934s | PKV=0.103s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.808s | POST=0.001s
+Time=00:01:31-00:01:32: [1m[34m chamber, ...[0m past_key_values: 12142
+{"type": "segment", "start": 91.0, "end": 92.0, "text": " chamber,"}
+[Loop 91] total=1.128s | PKV=0.098s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.010s | POST=0.001s
+Time=00:01:32-00:01:33: [1m[34m ...[0m past_key_values: 12142
+{"type": "segment", "start": 92.0, "end": 93.0, "text": ""}
+[Loop 92] total=0.755s | PKV=0.094s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=0.642s | POST=0.001s
+Time=00:01:33-00:01:34: [1m[34m deep ...[0m past_key_values: 12143
+{"type": "segment", "start": 93.0, "end": 94.0, "text": " deep"}
+[Loop 93] total=0.956s | PKV=0.097s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.836s | POST=0.002s
+Time=00:01:34-00:01:35: [1m[34m within ...[0m past_key_values: 12144
+{"type": "segment", "start": 94.0, "end": 95.0, "text": " within"}
+[Loop 94] total=0.959s | PKV=0.108s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=0.828s | POST=0.001s
+Time=00:01:35-00:01:36: [1m[34m a ...[0m past_key_values: 12145
+{"type": "segment", "start": 95.0, "end": 96.0, "text": " a"}
+[Loop 95] total=0.952s | PKV=0.103s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.829s | POST=0.001s
+Time=00:01:36-00:01:37: [1m[34m ruined ...[0m past_key_values: 12146
+{"type": "segment", "start": 96.0, "end": 97.0, "text": " ruined"}
+[Loop 96] total=0.946s | PKV=0.095s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=0.833s | POST=0.001s
+Time=00:01:37-00:01:38: [1m[34m ...[0m past_key_values: 12146
+{"type": "segment", "start": 97.0, "end": 98.0, "text": ""}
+[Loop 97] total=0.740s | PKV=0.081s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.636s | POST=0.001s
+Time=00:01:38-00:01:39: [1m[34m fort, ...[0m past_key_values: 12148
+{"type": "segment", "start": 98.0, "end": 99.0, "text": " fort,"}
+[Loop 98] total=1.156s | PKV=0.091s | CHECK=0.000s | VIDEO=0.031s | INPUT=0.011s | GEN=1.023s | POST=0.001s
+Time=00:01:39-00:01:40: [1m[34m she ...[0m past_key_values: 12150
+{"type": "segment", "start": 99.0, "end": 100.0, "text": " she"}
+[Loop 99] total=0.946s | PKV=0.087s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.839s | POST=0.001s
+Time=00:01:40-00:01:41: [1m[34m has ...[0m past_key_values: 12153
+{"type": "segment", "start": 100.0, "end": 101.0, "text": " has"}
+[Loop 100] total=0.953s | PKV=0.095s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.837s | POST=0.001s
+Time=00:01:41-00:01:42: [1m[34m ...[0m past_key_values: 12155
+{"type": "segment", "start": 101.0, "end": 102.0, "text": ""}
+[Loop 101] total=0.755s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.635s | POST=0.001s
+Time=00:01:42-00:01:43: [1m[34m found ...[0m past_key_values: 12158
+{"type": "segment", "start": 102.0, "end": 103.0, "text": " found"}
+[Loop 102] total=0.950s | PKV=0.098s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.832s | POST=0.001s
+Time=00:01:43-00:01:44: [1m[34m the ...[0m past_key_values: 12161
+{"type": "segment", "start": 103.0, "end": 104.0, "text": " the"}
+[Loop 103] total=0.969s | PKV=0.082s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.011s | GEN=0.853s | POST=0.001s
+Time=00:01:44-00:01:45: [1m[34m key, ...[0m past_key_values: 12165
+{"type": "segment", "start": 104.0, "end": 105.0, "text": " key,"}
+[Loop 104] total=1.143s | PKV=0.096s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.023s | POST=0.001s
+Time=00:01:45-00:01:46: [1m[34m ...[0m past_key_values: 12167
+{"type": "segment", "start": 105.0, "end": 106.0, "text": ""}
+[Loop 105] total=0.775s | PKV=0.103s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.650s | POST=0.001s
+Time=00:01:46-00:01:47: [1m[34m which ...[0m past_key_values: 12170
+{"type": "segment", "start": 106.0, "end": 107.0, "text": " which"}
+[Loop 106] total=0.974s | PKV=0.103s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.851s | POST=0.001s
+Time=00:01:47-00:01:48: [1m[34m brings ...[0m past_key_values: 12173
+{"type": "segment", "start": 107.0, "end": 108.0, "text": " brings"}
+[Loop 107] total=0.986s | PKV=0.094s | CHECK=0.000s | VIDEO=0.019s | INPUT=0.011s | GEN=0.861s | POST=0.001s
+Time=00:01:48-00:01:49: [1m[34m the ...[0m past_key_values: 12176
+{"type": "segment", "start": 108.0, "end": 109.0, "text": " the"}
+[Loop 108] total=0.970s | PKV=0.090s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.859s | POST=0.001s
+Time=00:01:49-00:01:50: [1m[34m ...[0m past_key_values: 12178
+{"type": "segment", "start": 109.0, "end": 110.0, "text": ""}
+[Loop 109] total=0.785s | PKV=0.103s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.660s | POST=0.001s
+Time=00:01:50-00:01:51: [1m[34m mountain ...[0m past_key_values: 12181
+{"type": "segment", "start": 110.0, "end": 111.0, "text": " mountain"}
+[Loop 110] total=0.969s | PKV=0.093s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=0.854s | POST=0.001s
+Time=00:01:51-00:01:52: [1m[34m spirit ...[0m past_key_values: 12184
+{"type": "segment", "start": 111.0, "end": 112.0, "text": " spirit"}
+[Loop 111] total=0.962s | PKV=0.100s | CHECK=0.000s | VIDEO=0.025s | INPUT=0.010s | GEN=0.826s | POST=0.001s
+Time=00:01:52-00:01:53: [1m[34m to ...[0m past_key_values: 12187
+{"type": "segment", "start": 112.0, "end": 113.0, "text": " to"}
+[Loop 112] total=0.970s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.853s | POST=0.001s
+Time=00:01:53-00:01:54: [1m[34m the ...[0m past_key_values: 12190
+{"type": "segment", "start": 113.0, "end": 114.0, "text": " the"}
+[Loop 113] total=0.947s | PKV=0.104s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.823s | POST=0.001s
+Time=00:01:54-00:01:55: [1m[34m ...[0m past_key_values: 12192
+{"type": "segment", "start": 114.0, "end": 115.0, "text": ""}
+[Loop 114] total=0.788s | PKV=0.103s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.664s | POST=0.001s
+Time=00:01:55-00:01:56: [1m[34m surface. ...[0m past_key_values: 12195
+{"type": "segment", "start": 115.0, "end": 116.0, "text": " surface."}
+[Loop 115] total=1.141s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.024s | POST=0.001s
+Time=00:01:56-00:01:57: [1m[34m Oh, ...[0m past_key_values: 12197
+{"type": "segment", "start": 116.0, "end": 117.0, "text": " Oh,"}
+[Loop 116] total=1.135s | PKV=0.097s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.017s | POST=0.001s
+Time=00:01:57-00:01:58: [1m[34m no, ...[0m past_key_values: 12199
+{"type": "segment", "start": 117.0, "end": 118.0, "text": " no,"}
+[Loop 117] total=1.113s | PKV=0.085s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.007s | POST=0.001s
+Time=00:01:58-00:01:59: [1m[34m mate. ...[0m past_key_values: 12201
+{"type": "segment", "start": 118.0, "end": 119.0, "text": " mate."}
+[Loop 118] total=1.134s | PKV=0.098s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.014s | POST=0.001s
+Time=00:01:59-00:02:00: [1m[34m It's very ...[0m past_key_values: 12204
+{"type": "segment", "start": 119.0, "end": 120.0, "text": " It's very"}
+[Loop 119] total=1.301s | PKV=0.120s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.159s | POST=0.001s
+Time=00:02:00-00:02:01: [1m[34m nice. But ...[0m past_key_values: 12207
+{"type": "segment", "start": 120.0, "end": 121.0, "text": " nice. But"}
+[Loop 120] total=1.312s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.192s | POST=0.001s
+Time=00:02:01-00:02:02: [1m[34m you don't understand. ...[0m past_key_values: 12212
+{"type": "segment", "start": 121.0, "end": 122.0, "text": " you don't understand."}
+[Loop 121] total=1.722s | PKV=0.087s | CHECK=0.000s | VIDEO=0.038s | INPUT=0.011s | GEN=1.585s | POST=0.001s
+Time=00:02:02-00:02:03: [1m[34m No, don't you? She ...[0m past_key_values: 12219
+{"type": "segment", "start": 122.0, "end": 123.0, "text": " No, don't you? She"}
+[Loop 122] total=2.061s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.940s | POST=0.001s
+Time=00:02:03-00:02:04: [1m[34m didn't think about ...[0m past_key_values: 12223
+{"type": "segment", "start": 123.0, "end": 124.0, "text": " didn't think about"}
+[Loop 123] total=1.485s | PKV=0.093s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.371s | POST=0.001s
+Time=00:02:04-00:02:05: [1m[34m what else might be ...[0m past_key_values: 12227
+{"type": "segment", "start": 124.0, "end": 125.0, "text": " what else might be"}
+[Loop 124] total=1.511s | PKV=0.101s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.389s | POST=0.001s
+Time=00:02:05-00:02:06: [1m[34m here. There really isn't. ...[0m past_key_values: 12234
+{"type": "segment", "start": 125.0, "end": 126.0, "text": " here. There really isn't."}
+[Loop 125] total=2.103s | PKV=0.124s | CHECK=0.000s | VIDEO=0.046s | INPUT=0.011s | GEN=1.922s | POST=0.001s
+Time=00:02:06-00:02:07: [1m[34m Oh, ...[0m past_key_values: 12236
+{"type": "segment", "start": 126.0, "end": 127.0, "text": " Oh,"}
+[Loop 126] total=1.124s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.002s | POST=0.000s
+Time=00:02:07-00:02:08: [1m[34m ...[0m past_key_values: 12236
+{"type": "segment", "start": 127.0, "end": 128.0, "text": ""}
+[Loop 127] total=0.768s | PKV=0.092s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.654s | POST=0.001s
+Time=00:02:08-00:02:09: [1m[34m ...[0m past_key_values: 12236
+{"type": "segment", "start": 128.0, "end": 129.0, "text": ""}
+[Loop 128] total=0.784s | PKV=0.100s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.662s | POST=0.001s
+Time=00:02:09-00:02:10: [1m[34m ...[0m past_key_values: 12236
+{"type": "segment", "start": 129.0, "end": 130.0, "text": ""}
+[Loop 129] total=0.766s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.651s | POST=0.001s
+Time=00:02:10-00:02:11: [1m[34m You know, ...[0m past_key_values: 12239
+{"type": "segment", "start": 130.0, "end": 131.0, "text": " You know,"}
+[Loop 130] total=1.319s | PKV=0.089s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.208s | POST=0.001s
+Time=00:02:11-00:02:12: [1m[34m ...[0m past_key_values: 12239
+{"type": "segment", "start": 131.0, "end": 132.0, "text": ""}
+[Loop 131] total=0.792s | PKV=0.090s | CHECK=0.000s | VIDEO=0.028s | INPUT=0.011s | GEN=0.662s | POST=0.001s
+Time=00:02:12-00:02:13: [1m[34m she was such a brave girl. But she's been through quite enough ...[0m past_key_values: 12253
+{"type": "segment", "start": 132.0, "end": 133.0, "text": " she was such a brave girl. But she's been through quite enough"}
+[Loop 132] total=3.341s | PKV=0.098s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=3.223s | POST=0.001s
+Time=00:02:13-00:02:14: [1m[34m already, ...[0m past_key_values: 12255
+{"type": "segment", "start": 133.0, "end": 134.0, "text": " already,"}
+[Loop 133] total=1.165s | PKV=0.099s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.010s | GEN=1.025s | POST=0.001s
+Time=00:02:14-00:02:15: [1m[34m ...[0m past_key_values: 12255
+{"type": "segment", "start": 134.0, "end": 135.0, "text": ""}
+[Loop 134] total=0.784s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.665s | POST=0.001s
+Time=00:02:15-00:02:16: [1m[34m ...[0m past_key_values: 12255
+{"type": "segment", "start": 135.0, "end": 136.0, "text": ""}
+[Loop 135] total=0.767s | PKV=0.103s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.642s | POST=0.000s
+Time=00:02:16-00:02:17: [1m[34m ...[0m past_key_values: 12255
+{"type": "segment", "start": 136.0, "end": 137.0, "text": ""}
+[Loop 136] total=0.768s | PKV=0.097s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.010s | GEN=0.650s | POST=0.001s
+Time=00:02:17-00:02:18: [1m[34m just to give up her own country and her home. ...[0m past_key_values: 12266
+{"type": "segment", "start": 137.0, "end": 138.0, "text": " just to give up her own country and her home."}
+[Loop 137] total=2.802s | PKV=0.091s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=2.691s | POST=0.001s
+Time=00:02:18-00:02:19: [1m[34m I don't blame you. She's probably scared. ...[0m past_key_values: 12277
+{"type": "segment", "start": 138.0, "end": 139.0, "text": " I don't blame you. She's probably scared."}
+[Loop 138] total=2.765s | PKV=0.102s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=2.640s | POST=0.001s
+Time=00:02:19-00:02:20: [1m[34m What have ...[0m past_key_values: 12279
+{"type": "segment", "start": 139.0, "end": 140.0, "text": " What have"}
+[Loop 139] total=1.129s | PKV=0.118s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.989s | POST=0.001s
+Time=00:02:20-00:02:21: [1m[34m you got in your bag? Just a little bit of food. Okay. ...[0m past_key_values: 12294
+{"type": "segment", "start": 140.0, "end": 141.0, "text": " you got in your bag? Just a little bit of food. Okay."}
+[Loop 140] total=3.502s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=3.381s | POST=0.000s
+Time=00:02:21-00:02:22: [1m[34m ...[0m past_key_values: 12294
+{"type": "segment", "start": 141.0, "end": 142.0, "text": ""}
+[Loop 141] total=0.778s | PKV=0.104s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.652s | POST=0.001s
+Time=00:02:22-00:02:23: [1m[34m No, ...[0m past_key_values: 12296
+{"type": "segment", "start": 142.0, "end": 143.0, "text": " No,"}
+[Loop 142] total=1.119s | PKV=0.092s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.007s | POST=0.001s
+Time=00:02:23-00:02:24: [1m[34m that was a mistake. ...[0m past_key_values: 12301
+{"type": "segment", "start": 143.0, "end": 144.0, "text": " that was a mistake."}
+[Loop 143] total=1.668s | PKV=0.098s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.550s | POST=0.001s
+Time=00:02:24-00:02:25: [1m[34m ...[0m past_key_values: 12301
+{"type": "segment", "start": 144.0, "end": 145.0, "text": ""}
+[Loop 144] total=0.808s | PKV=0.095s | CHECK=0.000s | VIDEO=0.051s | INPUT=0.012s | GEN=0.648s | POST=0.001s
+Time=00:02:25-00:02:26: [1m[34m I'll be a good guest. ...[0m past_key_values: 12308
+{"type": "segment", "start": 145.0, "end": 146.0, "text": " I'll be a good guest."}
+[Loop 145] total=2.042s | PKV=0.082s | CHECK=0.000s | VIDEO=0.039s | INPUT=0.010s | GEN=1.910s | POST=0.001s
+Time=00:02:26-00:02:27: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 146.0, "end": 147.0, "text": ""}
+[Loop 146] total=0.764s | PKV=0.095s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.012s | GEN=0.649s | POST=0.000s
+Time=00:02:27-00:02:28: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 147.0, "end": 148.0, "text": ""}
+[Loop 147] total=0.781s | PKV=0.086s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.675s | POST=0.001s
+Time=00:02:28-00:02:29: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 148.0, "end": 149.0, "text": ""}
+[Loop 148] total=0.808s | PKV=0.103s | CHECK=0.000s | VIDEO=0.031s | INPUT=0.011s | GEN=0.663s | POST=0.001s
+Time=00:02:29-00:02:30: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 149.0, "end": 150.0, "text": ""}
+[Loop 149] total=0.811s | PKV=0.134s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.657s | POST=0.001s
+Time=00:02:30-00:02:31: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 150.0, "end": 151.0, "text": ""}
+[Loop 150] total=0.796s | PKV=0.106s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.668s | POST=0.001s
+Time=00:02:31-00:02:32: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 151.0, "end": 152.0, "text": ""}
+[Loop 151] total=0.794s | PKV=0.087s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.010s | GEN=0.660s | POST=0.001s
+Time=00:02:32-00:02:33: [1m[34m ...[0m past_key_values: 12308
+{"type": "segment", "start": 152.0, "end": 153.0, "text": ""}
+[Loop 152] total=0.760s | PKV=0.089s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.009s | GEN=0.654s | POST=0.001s
+Time=00:02:33-00:02:34: [1m[34m Are you ...[0m past_key_values: 12310
+{"type": "segment", "start": 153.0, "end": 154.0, "text": " Are you"}
+[Loop 153] total=1.124s | PKV=0.097s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.009s | POST=0.001s
+Time=00:02:34-00:02:35: [1m[34m okay? Yeah, ...[0m past_key_values: 12314
+{"type": "segment", "start": 154.0, "end": 155.0, "text": " okay? Yeah,"}
+[Loop 154] total=1.509s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.389s | POST=0.001s
+Time=00:02:35-00:02:36: [1m[34m I'll be fine. ...[0m past_key_values: 12319
+{"type": "segment", "start": 155.0, "end": 156.0, "text": " I'll be fine."}
+[Loop 155] total=1.703s | PKV=0.123s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.011s | GEN=1.561s | POST=0.001s
+Time=00:02:36-00:02:37: [1m[34m Don't run away, Will. ...[0m past_key_values: 12326
+{"type": "segment", "start": 156.0, "end": 157.0, "text": " Don't run away, Will."}
+[Loop 156] total=2.053s | PKV=0.090s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.941s | POST=0.001s
+Time=00:02:37-00:02:38: [1m[34m Oh, we could both ...[0m past_key_values: 12331
+{"type": "segment", "start": 157.0, "end": 158.0, "text": " Oh, we could both"}
+[Loop 157] total=1.670s | PKV=0.086s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.563s | POST=0.001s
+Time=00:02:38-00:02:39: [1m[34m do with getting back to ...[0m past_key_values: 12336
+{"type": "segment", "start": 158.0, "end": 159.0, "text": " do with getting back to"}
+[Loop 158] total=1.727s | PKV=0.110s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.595s | POST=0.001s
+Time=00:02:39-00:02:40: [1m[34m normality. Yes, we should ...[0m past_key_values: 12343
+{"type": "segment", "start": 159.0, "end": 160.0, "text": " normality. Yes, we should"}
+[Loop 159] total=2.103s | PKV=0.134s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.013s | GEN=1.946s | POST=0.001s
+Time=00:02:40-00:02:41: [1m[34m find someone to help us. ...[0m past_key_values: 12349
+{"type": "segment", "start": 160.0, "end": 161.0, "text": " find someone to help us."}
+[Loop 160] total=1.851s | PKV=0.089s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.742s | POST=0.001s
+Time=00:02:41-00:02:42: [1m[34m But this is my ...[0m past_key_values: 12353
+{"type": "segment", "start": 161.0, "end": 162.0, "text": " But this is my"}
+[Loop 161] total=1.501s | PKV=0.098s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.382s | POST=0.002s
+Time=00:02:42-00:02:43: [1m[34m island. ...[0m past_key_values: 12355
+{"type": "segment", "start": 162.0, "end": 163.0, "text": " island."}
+[Loop 162] total=1.170s | PKV=0.093s | CHECK=0.000s | VIDEO=0.025s | INPUT=0.011s | GEN=1.040s | POST=0.001s
+Time=00:02:43-00:02:44: [1m[34m ...[0m past_key_values: 12355
+{"type": "segment", "start": 163.0, "end": 164.0, "text": ""}
+[Loop 163] total=0.781s | PKV=0.090s | CHECK=0.000s | VIDEO=0.017s | INPUT=0.012s | GEN=0.662s | POST=0.001s
+Time=00:02:44-00:02:45: [1m[34m ...[0m past_key_values: 12355
+{"type": "segment", "start": 164.0, "end": 165.0, "text": ""}
+[Loop 164] total=0.763s | PKV=0.086s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.656s | POST=0.001s
+Time=00:02:45-00:02:46: [1m[34m And this is my path. ...[0m past_key_values: 12361
+{"type": "segment", "start": 165.0, "end": 166.0, "text": " And this is my path."}
+[Loop 165] total=1.832s | PKV=0.087s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.723s | POST=0.001s
+Time=00:02:46-00:02:47: [1m[34m And ...[0m past_key_values: 12362
+{"type": "segment", "start": 166.0, "end": 167.0, "text": " And"}
+[Loop 166] total=0.954s | PKV=0.082s | CHECK=0.000s | VIDEO=0.028s | INPUT=0.010s | GEN=0.833s | POST=0.001s
+Time=00:02:47-00:02:48: [1m[34m it doesn't matter. He's trying to keep ...[0m past_key_values: 12372
+{"type": "segment", "start": 167.0, "end": 168.0, "text": " it doesn't matter. He's trying to keep"}
+[Loop 167] total=2.592s | PKV=0.082s | CHECK=0.000s | VIDEO=0.035s | INPUT=0.010s | GEN=2.464s | POST=0.001s
+Time=00:02:48-00:02:49: [1m[34m the calm for them. ...[0m past_key_values: 12377
+{"type": "segment", "start": 168.0, "end": 169.0, "text": " the calm for them."}
+[Loop 168] total=1.702s | PKV=0.096s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.585s | POST=0.001s
+Time=00:02:49-00:02:50: [1m[34m ...[0m past_key_values: 12377
+{"type": "segment", "start": 169.0, "end": 170.0, "text": ""}
+[Loop 169] total=0.814s | PKV=0.135s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.011s | GEN=0.645s | POST=0.001s
+Time=00:02:50-00:02:51: [1m[34m ...[0m past_key_values: 12377
+{"type": "segment", "start": 170.0, "end": 171.0, "text": ""}
+[Loop 170] total=0.775s | PKV=0.090s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.663s | POST=0.001s
+Time=00:02:51-00:02:52: [1m[34m He's saying that they're still under control. No, ...[0m past_key_values: 12389
+{"type": "segment", "start": 171.0, "end": 172.0, "text": " He's saying that they're still under control. No,"}
+[Loop 171] total=2.977s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=2.855s | POST=0.001s
+Time=00:02:52-00:02:53: [1m[34m ...[0m past_key_values: 12389
+{"type": "segment", "start": 172.0, "end": 173.0, "text": ""}
+[Loop 172] total=0.816s | PKV=0.129s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.664s | POST=0.001s
+Time=00:02:53-00:02:54: [1m[34m ...[0m past_key_values: 12389
+{"type": "segment", "start": 173.0, "end": 174.0, "text": ""}
+[Loop 173] total=0.784s | PKV=0.116s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.646s | POST=0.001s
+Time=00:02:54-00:02:55: [1m[34m he hasn't gone insane. ...[0m past_key_values: 12395
+{"type": "segment", "start": 174.0, "end": 175.0, "text": " he hasn't gone insane."}
+[Loop 174] total=1.818s | PKV=0.091s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.707s | POST=0.001s
+Time=00:02:55-00:02:56: [1m[34m ...[0m past_key_values: 12395
+{"type": "segment", "start": 175.0, "end": 176.0, "text": ""}
+[Loop 175] total=0.812s | PKV=0.137s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.653s | POST=0.001s
+Time=00:02:56-00:02:57: [1m[34m He's seen something. ...[0m past_key_values: 12400
+{"type": "segment", "start": 176.0, "end": 177.0, "text": " He's seen something."}
+[Loop 176] total=1.738s | PKV=0.107s | CHECK=0.000s | VIDEO=0.031s | INPUT=0.011s | GEN=1.588s | POST=0.001s
+Time=00:02:57-00:02:58: [1m[34m ...[0m past_key_values: 12400
+{"type": "segment", "start": 177.0, "end": 178.0, "text": ""}
+[Loop 177] total=0.780s | PKV=0.093s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.665s | POST=0.001s
+Time=00:02:58-00:02:59: [1m[34m Something ...[0m past_key_values: 12401
+{"type": "segment", "start": 178.0, "end": 179.0, "text": " Something"}
+[Loop 178] total=0.982s | PKV=0.094s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.010s | GEN=0.848s | POST=0.001s
+Time=00:02:59-00:03:00: [1m[34m truly unique. ...[0m past_key_values: 12404
+{"type": "segment", "start": 179.0, "end": 180.0, "text": " truly unique."}
+[Loop 179] total=1.308s | PKV=0.086s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.202s | POST=0.001s
+Time=00:03:00-00:03:01: [1m[34m ...[0m past_key_values: 12404
+{"type": "segment", "start": 180.0, "end": 181.0, "text": ""}
+[Loop 180] total=0.767s | PKV=0.083s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.013s | GEN=0.661s | POST=0.001s
+Time=00:03:01-00:03:02: [1m[34m ...[0m past_key_values: 12404
+{"type": "segment", "start": 181.0, "end": 182.0, "text": ""}
+[Loop 181] total=0.792s | PKV=0.096s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.011s | GEN=0.663s | POST=0.001s
+Time=00:03:02-00:03:03: [1m[34m ...[0m past_key_values: 12404
+{"type": "segment", "start": 182.0, "end": 183.0, "text": ""}
+[Loop 182] total=0.764s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.645s | POST=0.001s
+Time=00:03:03-00:03:04: [1m[34m ...[0m past_key_values: 12404
+{"type": "segment", "start": 183.0, "end": 184.0, "text": ""}
+[Loop 183] total=0.776s | PKV=0.094s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.661s | POST=0.001s
+Time=00:03:04-00:03:05: [1m[34m That's why ...[0m past_key_values: 12407
+{"type": "segment", "start": 184.0, "end": 185.0, "text": " That's why"}
+[Loop 184] total=1.337s | PKV=0.105s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.212s | POST=0.001s
+Time=00:03:05-00:03:06: [1m[34m we don't see the world around us and notice its true form. ...[0m past_key_values: 12421
+{"type": "segment", "start": 185.0, "end": 186.0, "text": " we don't see the world around us and notice its true form."}
+[Loop 185] total=3.390s | PKV=0.126s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=3.243s | POST=0.001s
+Time=00:03:06-00:03:07: [1m[34m ...[0m past_key_values: 12421
+{"type": "segment", "start": 186.0, "end": 187.0, "text": ""}
+[Loop 186] total=0.771s | PKV=0.092s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.657s | POST=0.001s
+Time=00:03:07-00:03:08: [1m[34m ...[0m past_key_values: 12421
+{"type": "segment", "start": 187.0, "end": 188.0, "text": ""}
+[Loop 187] total=0.768s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.652s | POST=0.001s
+Time=00:03:08-00:03:09: [1m[34m ...[0m past_key_values: 12421
+{"type": "segment", "start": 188.0, "end": 189.0, "text": ""}
+[Loop 188] total=0.774s | PKV=0.094s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.658s | POST=0.001s
+Time=00:03:09-00:03:10: [1m[34m ...[0m past_key_values: 12421
+{"type": "segment", "start": 189.0, "end": 190.0, "text": ""}
+[Loop 189] total=0.776s | PKV=0.083s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.011s | GEN=0.660s | POST=0.001s
+Time=00:03:10-00:03:11: [1m[34m Sometimes we need something to open our eyes. ...[0m past_key_values: 12430
+{"type": "segment", "start": 190.0, "end": 191.0, "text": " Sometimes we need something to open our eyes."}
+[Loop 190] total=2.449s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=2.322s | POST=0.001s
+Time=00:03:11-00:03:12: [1m[34m ...[0m past_key_values: 12430
+{"type": "segment", "start": 191.0, "end": 192.0, "text": ""}
+[Loop 191] total=0.791s | PKV=0.121s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.647s | POST=0.001s
+Time=00:03:12-00:03:13: [1m[34m This will. ...[0m past_key_values: 12433
+{"type": "segment", "start": 192.0, "end": 193.0, "text": " This will."}
+[Loop 192] total=1.349s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.231s | POST=0.001s
+Time=00:03:13-00:03:14: [1m[34m But you're not like that, ...[0m past_key_values: 12440
+{"type": "segment", "start": 193.0, "end": 194.0, "text": " But you're not like that,"}
+[Loop 193] total=2.039s | PKV=0.095s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=1.922s | POST=0.001s
+Time=00:03:14-00:03:15: [1m[34m I promise. No, not at all. ...[0m past_key_values: 12449
+{"type": "segment", "start": 194.0, "end": 195.0, "text": " I promise. No, not at all."}
+[Loop 194] total=2.486s | PKV=0.131s | CHECK=0.000s | VIDEO=0.024s | INPUT=0.011s | GEN=2.320s | POST=0.001s
+Time=00:03:15-00:03:16: [1m[34m I've got eyes. ...[0m past_key_values: 12454
+{"type": "segment", "start": 195.0, "end": 196.0, "text": " I've got eyes."}
+[Loop 195] total=1.706s | PKV=0.094s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.593s | POST=0.001s
+Time=00:03:16-00:03:17: [1m[34m And I tell you, ...[0m past_key_values: 12459
+{"type": "segment", "start": 196.0, "end": 197.0, "text": " And I tell you,"}
+[Loop 196] total=1.659s | PKV=0.089s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.548s | POST=0.001s
+Time=00:03:17-00:03:18: [1m[34m ...[0m past_key_values: 12459
+{"type": "segment", "start": 197.0, "end": 198.0, "text": ""}
+[Loop 197] total=0.786s | PKV=0.090s | CHECK=0.000s | VIDEO=0.040s | INPUT=0.010s | GEN=0.646s | POST=0.001s
+Time=00:03:18-00:03:19: [1m[34m ...[0m past_key_values: 12459
+{"type": "segment", "start": 198.0, "end": 199.0, "text": ""}
+[Loop 198] total=0.809s | PKV=0.121s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.666s | POST=0.002s
+Time=00:03:19-00:03:20: [1m[34m they're wide open. ...[0m past_key_values: 12464
+{"type": "segment", "start": 199.0, "end": 200.0, "text": " they're wide open."}
+[Loop 199] total=1.728s | PKV=0.118s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.589s | POST=0.001s
+Time=00:03:20-00:03:21: [1m[34m ...[0m past_key_values: 12464
+{"type": "segment", "start": 200.0, "end": 201.0, "text": ""}
+[Loop 200] total=0.803s | PKV=0.127s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=0.652s | POST=0.001s
+Time=00:03:21-00:03:22: [1m[34m ...[0m past_key_values: 12464
+{"type": "segment", "start": 201.0, "end": 202.0, "text": ""}
+[Loop 201] total=0.840s | PKV=0.125s | CHECK=0.000s | VIDEO=0.034s | INPUT=0.011s | GEN=0.669s | POST=0.001s
+Time=00:03:22-00:03:23: [1m[34m And they see ...[0m past_key_values: 12467
+{"type": "segment", "start": 202.0, "end": 203.0, "text": " And they see"}
+[Loop 202] total=1.352s | PKV=0.099s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.231s | POST=0.001s
+Time=00:03:23-00:03:24: [1m[34m how the world really ...[0m past_key_values: 12471
+{"type": "segment", "start": 203.0, "end": 204.0, "text": " how the world really"}
+[Loop 203] total=1.549s | PKV=0.104s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.422s | POST=0.000s
+Time=00:03:24-00:03:25: [1m[34m is. ...[0m past_key_values: 12473
+{"type": "segment", "start": 204.0, "end": 205.0, "text": " is."}
+[Loop 204] total=1.149s | PKV=0.088s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.039s | POST=0.001s
+Time=00:03:25-00:03:26: [1m[34m ...[0m past_key_values: 12473
+{"type": "segment", "start": 205.0, "end": 206.0, "text": ""}
+[Loop 205] total=0.792s | PKV=0.094s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.010s | GEN=0.656s | POST=0.001s
+Time=00:03:26-00:03:27: [1m[34m I thought ...[0m past_key_values: 12475
+{"type": "segment", "start": 206.0, "end": 207.0, "text": " I thought"}
+[Loop 206] total=1.179s | PKV=0.130s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.012s | GEN=1.028s | POST=0.001s
+Time=00:03:27-00:03:28: [1m[34m you'd never ...[0m past_key_values: 12478
+{"type": "segment", "start": 207.0, "end": 208.0, "text": " you'd never"}
+[Loop 207] total=1.330s | PKV=0.095s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.214s | POST=0.001s
+Time=00:03:28-00:03:29: [1m[34m notice before, ...[0m past_key_values: 12481
+{"type": "segment", "start": 208.0, "end": 209.0, "text": " notice before,"}
+[Loop 208] total=1.388s | PKV=0.140s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.010s | GEN=1.201s | POST=0.001s
+Time=00:03:29-00:03:30: [1m[34m but apparently ...[0m past_key_values: 12483
+{"type": "segment", "start": 209.0, "end": 210.0, "text": " but apparently"}
+[Loop 209] total=1.139s | PKV=0.102s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.015s | POST=0.001s
+Time=00:03:30-00:03:31: [1m[34m the time has ...[0m past_key_values: 12486
+{"type": "segment", "start": 210.0, "end": 211.0, "text": " the time has"}
+[Loop 210] total=1.393s | PKV=0.141s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.230s | POST=0.001s
+Time=00:03:31-00:03:32: [1m[34m come. Let's ...[0m past_key_values: 12490
+{"type": "segment", "start": 211.0, "end": 212.0, "text": " come. Let's"}
+[Loop 211] total=1.559s | PKV=0.099s | CHECK=0.000s | VIDEO=0.040s | INPUT=0.014s | GEN=1.406s | POST=0.001s
+Time=00:03:32-00:03:33: [1m[34m go. I ...[0m past_key_values: 12493
+{"type": "segment", "start": 212.0, "end": 213.0, "text": " go. I"}
+[Loop 212] total=1.368s | PKV=0.130s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.218s | POST=0.001s
+Time=00:03:33-00:03:34: [1m[34m promise there's ...[0m past_key_values: 12496
+{"type": "segment", "start": 213.0, "end": 214.0, "text": " promise there's"}
+[Loop 213] total=1.296s | PKV=0.086s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.191s | POST=0.001s
+Time=00:03:34-00:03:35: [1m[34m going to be ...[0m past_key_values: 12499
+{"type": "segment", "start": 214.0, "end": 215.0, "text": " going to be"}
+[Loop 214] total=1.320s | PKV=0.095s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.204s | POST=0.001s
+Time=00:03:35-00:03:36: [1m[34m a lot ...[0m past_key_values: 12501
+{"type": "segment", "start": 215.0, "end": 216.0, "text": " a lot"}
+[Loop 215] total=1.161s | PKV=0.101s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.011s | GEN=1.024s | POST=0.001s
+Time=00:03:36-00:03:37: [1m[34m of people ...[0m past_key_values: 12503
+{"type": "segment", "start": 216.0, "end": 217.0, "text": " of people"}
+[Loop 216] total=1.154s | PKV=0.092s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.040s | POST=0.001s
+Time=00:03:37-00:03:38: [1m[34m to run into. ...[0m past_key_values: 12507
+{"type": "segment", "start": 217.0, "end": 218.0, "text": " to run into."}
+[Loop 217] total=1.493s | PKV=0.082s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.390s | POST=0.001s
+Time=00:03:38-00:03:39: [1m[34m He can't ...[0m past_key_values: 12510
+{"type": "segment", "start": 218.0, "end": 219.0, "text": " He can't"}
+[Loop 218] total=1.350s | PKV=0.107s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.223s | POST=0.001s
+Time=00:03:39-00:03:40: [1m[34m look directly ...[0m past_key_values: 12512
+{"type": "segment", "start": 219.0, "end": 220.0, "text": " look directly"}
+[Loop 219] total=1.190s | PKV=0.108s | CHECK=0.000s | VIDEO=0.051s | INPUT=0.009s | GEN=1.021s | POST=0.001s
+Time=00:03:40-00:03:41: [1m[34m at the ...[0m past_key_values: 12514
+{"type": "segment", "start": 220.0, "end": 221.0, "text": " at the"}
+[Loop 220] total=1.140s | PKV=0.096s | CHECK=0.000s | VIDEO=0.020s | INPUT=0.012s | GEN=1.011s | POST=0.001s
+Time=00:03:41-00:03:42: [1m[34m people and he ...[0m past_key_values: 12517
+{"type": "segment", "start": 221.0, "end": 222.0, "text": " people and he"}
+[Loop 221] total=1.336s | PKV=0.089s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.224s | POST=0.001s
+Time=00:03:42-00:03:43: [1m[34m can't tell ...[0m past_key_values: 12520
+{"type": "segment", "start": 222.0, "end": 223.0, "text": " can't tell"}
+[Loop 222] total=1.321s | PKV=0.091s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.208s | POST=0.001s
+Time=00:03:43-00:03:44: [1m[34m where they ...[0m past_key_values: 12522
+{"type": "segment", "start": 223.0, "end": 224.0, "text": " where they"}
+[Loop 223] total=1.159s | PKV=0.095s | CHECK=0.000s | VIDEO=0.037s | INPUT=0.011s | GEN=1.015s | POST=0.001s
+Time=00:03:44-00:03:45: [1m[34m are. He ...[0m past_key_values: 12525
+{"type": "segment", "start": 224.0, "end": 225.0, "text": " are. He"}
+[Loop 224] total=1.351s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.228s | POST=0.001s
+Time=00:03:45-00:03:46: [1m[34m is able to ...[0m past_key_values: 12528
+{"type": "segment", "start": 225.0, "end": 226.0, "text": " is able to"}
+[Loop 225] total=1.407s | PKV=0.141s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.246s | POST=0.001s
+Time=00:03:46-00:03:47: [1m[34m see clearly ...[0m past_key_values: 12530
+{"type": "segment", "start": 226.0, "end": 227.0, "text": " see clearly"}
+[Loop 226] total=1.143s | PKV=0.097s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.026s | POST=0.001s
+Time=00:03:47-00:03:48: [1m[34m again. How ...[0m past_key_values: 12533
+{"type": "segment", "start": 227.0, "end": 228.0, "text": " again. How"}
+[Loop 227] total=1.335s | PKV=0.099s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.215s | POST=0.001s
+Time=00:03:48-00:03:49: [1m[34m did you do ...[0m past_key_values: 12536
+{"type": "segment", "start": 228.0, "end": 229.0, "text": " did you do"}
+[Loop 228] total=1.357s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.237s | POST=0.001s
+Time=00:03:49-00:03:50: [1m[34m that? I ...[0m past_key_values: 12539
+{"type": "segment", "start": 229.0, "end": 230.0, "text": " that? I"}
+[Loop 229] total=1.325s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.210s | POST=0.001s
+Time=00:03:50-00:03:51: [1m[34m told you. Do ...[0m past_key_values: 12543
+{"type": "segment", "start": 230.0, "end": 231.0, "text": " told you. Do"}
+[Loop 230] total=1.491s | PKV=0.109s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=1.359s | POST=0.001s
+Time=00:03:51-00:03:52: [1m[34m you really ...[0m past_key_values: 12545
+{"type": "segment", "start": 231.0, "end": 232.0, "text": " you really"}
+[Loop 231] total=1.144s | PKV=0.101s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=1.020s | POST=0.001s
+Time=00:03:52-00:03:53: [1m[34m want to go ...[0m past_key_values: 12548
+{"type": "segment", "start": 232.0, "end": 233.0, "text": " want to go"}
+[Loop 232] total=1.315s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.189s | POST=0.001s
+Time=00:03:53-00:03:54: [1m[34m down there? ...[0m past_key_values: 12551
+{"type": "segment", "start": 233.0, "end": 234.0, "text": " down there?"}
+[Loop 233] total=1.372s | PKV=0.108s | CHECK=0.000s | VIDEO=0.026s | INPUT=0.011s | GEN=1.225s | POST=0.001s
+Time=00:03:54-00:03:55: [1m[34m I don't think ...[0m past_key_values: 12555
+{"type": "segment", "start": 234.0, "end": 235.0, "text": " I don't think"}
+[Loop 234] total=1.507s | PKV=0.094s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.393s | POST=0.001s
+Time=00:03:55-00:03:56: [1m[34m I'm ready ...[0m past_key_values: 12558
+{"type": "segment", "start": 235.0, "end": 236.0, "text": " I'm ready"}
+[Loop 235] total=1.356s | PKV=0.105s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.012s | GEN=1.217s | POST=0.001s
+Time=00:03:56-00:03:57: [1m[34m to face it. ...[0m past_key_values: 12562
+{"type": "segment", "start": 236.0, "end": 237.0, "text": " to face it."}
+[Loop 236] total=1.530s | PKV=0.098s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.412s | POST=0.001s
+Time=00:03:57-00:03:58: [1m[34m It's getting ...[0m past_key_values: 12565
+{"type": "segment", "start": 237.0, "end": 238.0, "text": " It's getting"}
+[Loop 237] total=1.330s | PKV=0.132s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.177s | POST=0.001s
+Time=00:03:58-00:03:59: [1m[34m darker. They're all ...[0m past_key_values: 12570
+{"type": "segment", "start": 238.0, "end": 239.0, "text": " darker. They're all"}
+[Loop 238] total=1.719s | PKV=0.109s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.010s | GEN=1.578s | POST=0.001s
+Time=00:03:59-00:04:00: [1m[34m coming for ...[0m past_key_values: 12572
+{"type": "segment", "start": 239.0, "end": 240.0, "text": " coming for"}
+[Loop 239] total=1.146s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.026s | POST=0.001s
+Time=00:04:00-00:04:01: [1m[34m us. Run! Oh, ...[0m past_key_values: 12578
+{"type": "segment", "start": 240.0, "end": 241.0, "text": " us. Run! Oh,"}
+[Loop 240] total=1.956s | PKV=0.137s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.798s | POST=0.001s
+Time=00:04:01-00:04:02: [1m[34m there you go. ...[0m past_key_values: 12582
+{"type": "segment", "start": 241.0, "end": 242.0, "text": " there you go."}
+[Loop 241] total=1.526s | PKV=0.101s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.403s | POST=0.001s
+Time=00:04:02-00:04:03: [1m[34m Yeah, now ...[0m past_key_values: 12585
+{"type": "segment", "start": 242.0, "end": 243.0, "text": " Yeah, now"}
+[Loop 242] total=1.366s | PKV=0.118s | CHECK=0.000s | VIDEO=0.028s | INPUT=0.011s | GEN=1.208s | POST=0.000s
+Time=00:04:03-00:04:04: [1m[34m we're going to ...[0m past_key_values: 12589
+{"type": "segment", "start": 243.0, "end": 244.0, "text": " we're going to"}
+[Loop 243] total=1.520s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.405s | POST=0.001s
+Time=00:04:04-00:04:05: [1m[34m have to ...[0m past_key_values: 12591
+{"type": "segment", "start": 244.0, "end": 245.0, "text": " have to"}
+[Loop 244] total=1.189s | PKV=0.130s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.037s | POST=0.001s
+Time=00:04:05-00:04:06: [1m[34m head for the ...[0m past_key_values: 12594
+{"type": "segment", "start": 245.0, "end": 246.0, "text": " head for the"}
+[Loop 245] total=1.359s | PKV=0.104s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.010s | GEN=1.214s | POST=0.001s
+Time=00:04:06-00:04:07: [1m[34m cave. Here ...[0m past_key_values: 12597
+{"type": "segment", "start": 246.0, "end": 247.0, "text": " cave. Here"}
+[Loop 246] total=1.323s | PKV=0.093s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.013s | GEN=1.206s | POST=0.001s
+Time=00:04:07-00:04:08: [1m[34m comes the snow. ...[0m past_key_values: 12601
+{"type": "segment", "start": 247.0, "end": 248.0, "text": " comes the snow."}
+[Loop 247] total=1.562s | PKV=0.113s | CHECK=0.000s | VIDEO=0.032s | INPUT=0.010s | GEN=1.407s | POST=0.001s
+Time=00:04:08-00:04:09: [1m[34m What do you ...[0m past_key_values: 12604
+{"type": "segment", "start": 248.0, "end": 249.0, "text": " What do you"}
+[Loop 248] total=1.334s | PKV=0.095s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.011s | GEN=1.197s | POST=0.001s
+Time=00:04:09-00:04:10: [1m[34m think will happen ...[0m past_key_values: 12607
+{"type": "segment", "start": 249.0, "end": 250.0, "text": " think will happen"}
+[Loop 249] total=1.340s | PKV=0.090s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.230s | POST=0.001s
+Time=00:04:10-00:04:11: [1m[34m if we ...[0m past_key_values: 12609
+{"type": "segment", "start": 250.0, "end": 251.0, "text": " if we"}
+[Loop 250] total=1.180s | PKV=0.102s | CHECK=0.000s | VIDEO=0.026s | INPUT=0.011s | GEN=1.040s | POST=0.001s
+Time=00:04:11-00:04:12: [1m[34m don't go back ...[0m past_key_values: 12613
+{"type": "segment", "start": 251.0, "end": 252.0, "text": " don't go back"}
+[Loop 251] total=1.522s | PKV=0.092s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.407s | POST=0.001s
+Time=00:04:12-00:04:13: [1m[34m to the ...[0m past_key_values: 12615
+{"type": "segment", "start": 252.0, "end": 253.0, "text": " to the"}
+[Loop 252] total=1.173s | PKV=0.110s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=1.042s | POST=0.001s
+Time=00:04:13-00:04:14: [1m[34m cave? ...[0m past_key_values: 12617
+{"type": "segment", "start": 253.0, "end": 254.0, "text": " cave?"}
+[Loop 253] total=1.165s | PKV=0.101s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.042s | POST=0.001s
+Time=00:04:14-00:04:15: [1m[34m They will hurt ...[0m past_key_values: 12620
+{"type": "segment", "start": 254.0, "end": 255.0, "text": " They will hurt"}
+[Loop 254] total=1.359s | PKV=0.101s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.239s | POST=0.001s
+Time=00:04:15-00:04:16: [1m[34m us. ...[0m past_key_values: 12622
+{"type": "segment", "start": 255.0, "end": 256.0, "text": " us."}
+[Loop 255] total=1.171s | PKV=0.095s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.011s | GEN=1.040s | POST=0.001s
+Time=00:04:16-00:04:17: [1m[34m ...[0m past_key_values: 12622
+{"type": "segment", "start": 256.0, "end": 257.0, "text": ""}
+[Loop 256] total=0.812s | PKV=0.139s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.654s | POST=0.001s
+Time=00:04:17-00:04:18: [1m[34m ...[0m past_key_values: 12622
+{"type": "segment", "start": 257.0, "end": 258.0, "text": ""}
+[Loop 257] total=0.831s | PKV=0.132s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.677s | POST=0.001s
+Time=00:04:18-00:04:19: [1m[34m But do you think ...[0m past_key_values: 12626
+{"type": "segment", "start": 258.0, "end": 259.0, "text": " But do you think"}
+[Loop 258] total=1.600s | PKV=0.115s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.011s | GEN=1.436s | POST=0.001s
+Time=00:04:19-00:04:20: [1m[34m they're happy now? No, ...[0m past_key_values: 12633
+{"type": "segment", "start": 259.0, "end": 260.0, "text": " they're happy now? No,"}
+[Loop 259] total=2.130s | PKV=0.112s | CHECK=0.000s | VIDEO=0.041s | INPUT=0.011s | GEN=1.966s | POST=0.001s
+Time=00:04:20-00:04:21: [1m[34m You're probably wondering why ...[0m past_key_values: 12638
+{"type": "segment", "start": 260.0, "end": 261.0, "text": " You're probably wondering why"}
+[Loop 260] total=1.712s | PKV=0.107s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.010s | GEN=1.572s | POST=0.001s
+Time=00:04:21-00:04:22: [1m[34m she even comes. ...[0m past_key_values: 12642
+{"type": "segment", "start": 261.0, "end": 262.0, "text": " she even comes."}
+[Loop 261] total=1.574s | PKV=0.106s | CHECK=0.000s | VIDEO=0.022s | INPUT=0.010s | GEN=1.435s | POST=0.001s
+Time=00:04:22-00:04:23: [1m[34m ...[0m past_key_values: 12642
+{"type": "segment", "start": 262.0, "end": 263.0, "text": ""}
+[Loop 262] total=0.792s | PKV=0.098s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.673s | POST=0.001s
+Time=00:04:23-00:04:24: [1m[34m ...[0m past_key_values: 12642
+{"type": "segment", "start": 263.0, "end": 264.0, "text": ""}
+[Loop 263] total=0.833s | PKV=0.129s | CHECK=0.000s | VIDEO=0.035s | INPUT=0.011s | GEN=0.658s | POST=0.001s
+Time=00:04:24-00:04:25: [1m[34m I think because, well, ...[0m past_key_values: 12648
+{"type": "segment", "start": 264.0, "end": 265.0, "text": " I think because, well,"}
+[Loop 264] total=1.892s | PKV=0.105s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=1.765s | POST=0.001s
+Time=00:04:25-00:04:26: [1m[34m ...[0m past_key_values: 12648
+{"type": "segment", "start": 265.0, "end": 266.0, "text": ""}
+[Loop 265] total=0.809s | PKV=0.110s | CHECK=0.000s | VIDEO=0.032s | INPUT=0.011s | GEN=0.655s | POST=0.001s
+Time=00:04:26-00:04:27: [1m[34m when the world's under his command, ...[0m past_key_values: 12656
+{"type": "segment", "start": 266.0, "end": 267.0, "text": " when the world's under his command,"}
+[Loop 266] total=2.289s | PKV=0.104s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=2.163s | POST=0.001s
+Time=00:04:27-00:04:28: [1m[34m ...[0m past_key_values: 12656
+{"type": "segment", "start": 267.0, "end": 268.0, "text": ""}
+[Loop 267] total=0.813s | PKV=0.094s | CHECK=0.000s | VIDEO=0.050s | INPUT=0.011s | GEN=0.657s | POST=0.001s
+Time=00:04:28-00:04:29: [1m[34m ...[0m past_key_values: 12656
+{"type": "segment", "start": 268.0, "end": 269.0, "text": ""}
+[Loop 268] total=0.794s | PKV=0.107s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.665s | POST=0.001s
+Time=00:04:29-00:04:30: [1m[34m She sees the possibility as being there for everyone. ...[0m past_key_values: 12666
+{"type": "segment", "start": 269.0, "end": 270.0, "text": " She sees the possibility as being there for everyone."}
+[Loop 269] total=2.674s | PKV=0.118s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=2.532s | POST=0.001s
+Time=00:04:30-00:04:31: [1m[34m ...[0m past_key_values: 12666
+{"type": "segment", "start": 270.0, "end": 271.0, "text": ""}
+[Loop 270] total=0.777s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.660s | POST=0.001s
+Time=00:04:31-00:04:32: [1m[34m ...[0m past_key_values: 12666
+{"type": "segment", "start": 271.0, "end": 272.0, "text": ""}
+[Loop 271] total=0.788s | PKV=0.104s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=0.664s | POST=0.001s
+Time=00:04:32-00:04:33: [1m[34m ...[0m past_key_values: 12666
+{"type": "segment", "start": 272.0, "end": 273.0, "text": ""}
+[Loop 272] total=0.773s | PKV=0.092s | CHECK=0.000s | VIDEO=0.024s | INPUT=0.010s | GEN=0.647s | POST=0.001s
+Time=00:04:33-00:04:34: [1m[34m Even if she does need ...[0m past_key_values: 12671
+{"type": "segment", "start": 273.0, "end": 274.0, "text": " Even if she does need"}
+[Loop 273] total=1.696s | PKV=0.090s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=1.583s | POST=0.001s
+Time=00:04:34-00:04:35: [1m[34m to fight him at the same time. ...[0m past_key_values: 12679
+{"type": "segment", "start": 274.0, "end": 275.0, "text": " to fight him at the same time."}
+[Loop 274] total=2.266s | PKV=0.090s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=2.154s | POST=0.001s
+Time=00:04:35-00:04:36: [1m[34m ...[0m past_key_values: 12679
+{"type": "segment", "start": 275.0, "end": 276.0, "text": ""}
+[Loop 275] total=0.789s | PKV=0.093s | CHECK=0.000s | VIDEO=0.020s | INPUT=0.010s | GEN=0.665s | POST=0.001s
+Time=00:04:36-00:04:37: [1m[34m ...[0m past_key_values: 12679
+{"type": "segment", "start": 276.0, "end": 277.0, "text": ""}
+[Loop 276] total=0.797s | PKV=0.108s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=0.665s | POST=0.001s
+Time=00:04:37-00:04:38: [1m[34m ...[0m past_key_values: 12679
+{"type": "segment", "start": 277.0, "end": 278.0, "text": ""}
+[Loop 277] total=0.787s | PKV=0.099s | CHECK=0.000s | VIDEO=0.021s | INPUT=0.011s | GEN=0.653s | POST=0.001s
+Time=00:04:38-00:04:39: [1m[34m Now they're following us everywhere. Here, jump. ...[0m past_key_values: 12690
+{"type": "segment", "start": 278.0, "end": 279.0, "text": " Now they're following us everywhere. Here, jump."}
+[Loop 278] total=2.809s | PKV=0.090s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=2.698s | POST=0.001s
+Time=00:04:39-00:04:40: [1m[34m ...[0m past_key_values: 12690
+{"type": "segment", "start": 279.0, "end": 280.0, "text": ""}
+[Loop 279] total=0.803s | PKV=0.090s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.011s | GEN=0.664s | POST=0.001s
+Time=00:04:40-00:04:41: [1m[34m ...[0m past_key_values: 12690
+{"type": "segment", "start": 280.0, "end": 281.0, "text": ""}
+[Loop 280] total=0.798s | PKV=0.104s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.674s | POST=0.001s
+Time=00:04:41-00:04:42: [1m[34m ...[0m past_key_values: 12690
+{"type": "segment", "start": 281.0, "end": 282.0, "text": ""}
+[Loop 281] total=0.829s | PKV=0.092s | CHECK=0.000s | VIDEO=0.056s | INPUT=0.013s | GEN=0.667s | POST=0.001s
+Time=00:04:42-00:04:43: [1m[34m Why? What? What's wrong with you? Well, ...[0m past_key_values: 12702
+{"type": "segment", "start": 282.0, "end": 283.0, "text": " Why? What? What's wrong with you? Well,"}
+[Loop 282] total=3.086s | PKV=0.131s | CHECK=0.000s | VIDEO=0.030s | INPUT=0.011s | GEN=2.913s | POST=0.001s
+Time=00:04:43-00:04:44: [1m[34m ...[0m past_key_values: 12702
+{"type": "segment", "start": 283.0, "end": 284.0, "text": ""}
+[Loop 283] total=0.817s | PKV=0.122s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.675s | POST=0.001s
+Time=00:04:44-00:04:45: [1m[34m ...[0m past_key_values: 12702
+{"type": "segment", "start": 284.0, "end": 285.0, "text": ""}
+[Loop 284] total=0.776s | PKV=0.092s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.664s | POST=0.001s
+Time=00:04:45-00:04:46: [1m[34m we saw what happened to her last time. ...[0m past_key_values: 12711
+{"type": "segment", "start": 285.0, "end": 286.0, "text": " we saw what happened to her last time."}
+[Loop 285] total=2.577s | PKV=0.137s | CHECK=0.000s | VIDEO=0.046s | INPUT=0.011s | GEN=2.382s | POST=0.001s
+Time=00:04:46-00:04:47: [1m[34m I don't want any of that happening again. No, ...[0m past_key_values: 12723
+{"type": "segment", "start": 286.0, "end": 287.0, "text": " I don't want any of that happening again. No,"}
+[Loop 286] total=3.016s | PKV=0.101s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=2.893s | POST=0.001s
+Time=00:04:47-00:04:48: [1m[34m no, no, no. ...[0m past_key_values: 12729
+{"type": "segment", "start": 287.0, "end": 288.0, "text": " no, no, no."}
+[Loop 287] total=1.902s | PKV=0.090s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.010s | GEN=1.778s | POST=0.001s
+Time=00:04:48-00:04:49: [1m[34m They're chasing after us. ...[0m past_key_values: 12735
+{"type": "segment", "start": 288.0, "end": 289.0, "text": " They're chasing after us."}
+[Loop 288] total=1.854s | PKV=0.081s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=1.754s | POST=0.001s
+Time=00:04:49-00:04:50: [1m[34m ...[0m past_key_values: 12735
+{"type": "segment", "start": 289.0, "end": 290.0, "text": ""}
+[Loop 289] total=0.792s | PKV=0.096s | CHECK=0.000s | VIDEO=0.025s | INPUT=0.011s | GEN=0.659s | POST=0.001s
+Time=00:04:50-00:04:51: [1m[34m ...[0m past_key_values: 12735
+{"type": "segment", "start": 290.0, "end": 291.0, "text": ""}
+[Loop 290] total=0.792s | PKV=0.099s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.012s | GEN=0.669s | POST=0.001s
+Time=00:04:51-00:04:52: [1m[34m Why are you running like that? You're going too fast. Oh, ...[0m past_key_values: 12750
+{"type": "segment", "start": 291.0, "end": 292.0, "text": " Why are you running like that? You're going too fast. Oh,"}
+[Loop 291] total=3.612s | PKV=0.097s | CHECK=0.000s | VIDEO=0.007s | INPUT=0.011s | GEN=3.496s | POST=0.001s
+Time=00:04:52-00:04:53: [1m[34m ...[0m past_key_values: 12750
+{"type": "segment", "start": 292.0, "end": 293.0, "text": ""}
+[Loop 292] total=0.785s | PKV=0.092s | CHECK=0.000s | VIDEO=0.024s | INPUT=0.010s | GEN=0.658s | POST=0.001s
+Time=00:04:53-00:04:54: [1m[34m it's very slippery down here. ...[0m past_key_values: 12757
+{"type": "segment", "start": 293.0, "end": 294.0, "text": " it's very slippery down here."}
+[Loop 293] total=2.073s | PKV=0.094s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.957s | POST=0.001s
+Time=00:04:54-00:04:55: [1m[34m Yeah. ...[0m past_key_values: 12759
+{"type": "segment", "start": 294.0, "end": 295.0, "text": " Yeah."}
+[Loop 294] total=1.161s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.042s | POST=0.001s
+Time=00:04:55-00:04:56: [1m[34m It feels like we've been running forever, ...[0m past_key_values: 12768
+{"type": "segment", "start": 295.0, "end": 296.0, "text": " It feels like we've been running forever,"}
+[Loop 295] total=2.478s | PKV=0.091s | CHECK=0.000s | VIDEO=0.038s | INPUT=0.010s | GEN=2.337s | POST=0.001s
+Time=00:04:56-00:04:57: [1m[34m ...[0m past_key_values: 12768
+{"type": "segment", "start": 296.0, "end": 297.0, "text": ""}
+[Loop 296] total=0.849s | PKV=0.132s | CHECK=0.000s | VIDEO=0.031s | INPUT=0.010s | GEN=0.674s | POST=0.001s
+Time=00:04:57-00:04:58: [1m[34m and everything is starting to look grey and misty. ...[0m past_key_values: 12779
+{"type": "segment", "start": 297.0, "end": 298.0, "text": " and everything is starting to look grey and misty."}
+[Loop 297] total=2.823s | PKV=0.106s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=2.695s | POST=0.001s
+Time=00:04:58-00:04:59: [1m[34m ...[0m past_key_values: 12779
+{"type": "segment", "start": 298.0, "end": 299.0, "text": ""}
+[Loop 298] total=0.795s | PKV=0.100s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.675s | POST=0.001s
+Time=00:04:59-00:05:00: [1m[34m ...[0m past_key_values: 12779
+{"type": "segment", "start": 299.0, "end": 300.0, "text": ""}
+[Loop 299] total=0.795s | PKV=0.086s | CHECK=0.000s | VIDEO=0.033s | INPUT=0.009s | GEN=0.666s | POST=0.001s
+Time=00:05:00-00:05:01: [1m[34m ...[0m past_key_values: 12779
+{"type": "segment", "start": 300.0, "end": 301.0, "text": ""}
+[Loop 300] total=0.791s | PKV=0.096s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.674s | POST=0.001s
+Time=00:05:01-00:05:02: [1m[34m Where... Oh, gosh. ...[0m past_key_values: 12786
+{"type": "segment", "start": 301.0, "end": 302.0, "text": " Where... Oh, gosh."}
+[Loop 301] total=2.133s | PKV=0.095s | CHECK=0.000s | VIDEO=0.043s | INPUT=0.011s | GEN=1.983s | POST=0.001s
+Time=00:05:02-00:05:03: [1m[34m ...[0m past_key_values: 12786
+{"type": "segment", "start": 302.0, "end": 303.0, "text": ""}
+[Loop 302] total=0.793s | PKV=0.096s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=0.677s | POST=0.001s
+Time=00:05:03-00:05:04: [1m[34m ...[0m past_key_values: 12786
+{"type": "segment", "start": 303.0, "end": 304.0, "text": ""}
+[Loop 303] total=0.795s | PKV=0.102s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.671s | POST=0.001s
+Time=00:05:04-00:05:05: [1m[34m My hand is stuck to the rock. ...[0m past_key_values: 12794
+{"type": "segment", "start": 304.0, "end": 305.0, "text": " My hand is stuck to the rock."}
+[Loop 304] total=2.333s | PKV=0.098s | CHECK=0.000s | VIDEO=0.020s | INPUT=0.011s | GEN=2.203s | POST=0.001s
+Time=00:05:05-00:05:06: [1m[34m It's stuck ...[0m past_key_values: 12797
+{"type": "segment", "start": 305.0, "end": 306.0, "text": " It's stuck"}
+[Loop 305] total=1.356s | PKV=0.091s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=1.244s | POST=0.001s
+Time=00:05:06-00:05:07: [1m[34m in there. ...[0m past_key_values: 12800
+{"type": "segment", "start": 306.0, "end": 307.0, "text": " in there."}
+[Loop 306] total=1.319s | PKV=0.103s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.010s | GEN=1.197s | POST=0.001s
+Time=00:05:07-00:05:08: [1m[34m ...[0m past_key_values: 12800
+{"type": "segment", "start": 307.0, "end": 308.0, "text": ""}
+[Loop 307] total=0.828s | PKV=0.134s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.672s | POST=0.001s
+Time=00:05:08-00:05:09: [1m[34m Okay, so, oh, ...[0m past_key_values: 12806
+{"type": "segment", "start": 308.0, "end": 309.0, "text": " Okay, so, oh,"}
+[Loop 308] total=1.880s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.753s | POST=0.001s
+Time=00:05:09-00:05:10: [1m[34m hang on. The cave. ...[0m past_key_values: 12812
+{"type": "segment", "start": 309.0, "end": 310.0, "text": " hang on. The cave."}
+[Loop 309] total=1.952s | PKV=0.101s | CHECK=0.000s | VIDEO=0.030s | INPUT=0.011s | GEN=1.809s | POST=0.001s
+Time=00:05:10-00:05:11: [1m[34m ...[0m past_key_values: 12812
+{"type": "segment", "start": 310.0, "end": 311.0, "text": ""}
+[Loop 310] total=0.799s | PKV=0.112s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.666s | POST=0.001s
+Time=00:05:11-00:05:12: [1m[34m ...[0m past_key_values: 12812
+{"type": "segment", "start": 311.0, "end": 312.0, "text": ""}
+[Loop 311] total=0.789s | PKV=0.099s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.667s | POST=0.001s
+Time=00:05:12-00:05:13: [1m[34m The cave. It's down ...[0m past_key_values: 12818
+{"type": "segment", "start": 312.0, "end": 313.0, "text": " The cave. It's down"}
+[Loop 312] total=1.991s | PKV=0.099s | CHECK=0.000s | VIDEO=0.046s | INPUT=0.012s | GEN=1.834s | POST=0.001s
+Time=00:05:13-00:05:14: [1m[34m there. Oh, ...[0m past_key_values: 12822
+{"type": "segment", "start": 313.0, "end": 314.0, "text": " there. Oh,"}
+[Loop 313] total=1.526s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.398s | POST=0.001s
+Time=00:05:14-00:05:15: [1m[34m that's where ...[0m past_key_values: 12825
+{"type": "segment", "start": 314.0, "end": 315.0, "text": " that's where"}
+[Loop 314] total=1.411s | PKV=0.129s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.261s | POST=0.001s
+Time=00:05:15-00:05:16: [1m[34m we came from. ...[0m past_key_values: 12829
+{"type": "segment", "start": 315.0, "end": 316.0, "text": " we came from."}
+[Loop 315] total=1.558s | PKV=0.105s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.430s | POST=0.001s
+Time=00:05:16-00:05:17: [1m[34m But that ...[0m past_key_values: 12831
+{"type": "segment", "start": 316.0, "end": 317.0, "text": " But that"}
+[Loop 316] total=1.177s | PKV=0.105s | CHECK=0.000s | VIDEO=0.037s | INPUT=0.011s | GEN=1.024s | POST=0.001s
+Time=00:05:17-00:05:18: [1m[34m way. Yeah. ...[0m past_key_values: 12835
+{"type": "segment", "start": 317.0, "end": 318.0, "text": " way. Yeah."}
+[Loop 317] total=1.517s | PKV=0.098s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=1.398s | POST=0.001s
+Time=00:05:18-00:05:19: [1m[34m ...[0m past_key_values: 12835
+{"type": "segment", "start": 318.0, "end": 319.0, "text": ""}
+[Loop 318] total=0.801s | PKV=0.093s | CHECK=0.000s | VIDEO=0.022s | INPUT=0.011s | GEN=0.675s | POST=0.001s
+Time=00:05:19-00:05:20: [1m[34m I'm going ...[0m past_key_values: 12838
+{"type": "segment", "start": 319.0, "end": 320.0, "text": " I'm going"}
+[Loop 319] total=1.334s | PKV=0.082s | CHECK=0.000s | VIDEO=0.022s | INPUT=0.010s | GEN=1.219s | POST=0.001s
+Time=00:05:20-00:05:21: [1m[34m to go down the other way instead. ...[0m past_key_values: 12846
+{"type": "segment", "start": 320.0, "end": 321.0, "text": " to go down the other way instead."}
+[Loop 320] total=2.290s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=2.170s | POST=0.001s
+Time=00:05:21-00:05:22: [1m[34m Why? Don't say it. ...[0m past_key_values: 12853
+{"type": "segment", "start": 321.0, "end": 322.0, "text": " Why? Don't say it."}
+[Loop 321] total=2.124s | PKV=0.129s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.011s | GEN=1.972s | POST=0.001s
+Time=00:05:22-00:05:23: [1m[34m But I think you've lost your mind. ...[0m past_key_values: 12862
+{"type": "segment", "start": 322.0, "end": 323.0, "text": " But I think you've lost your mind."}
+[Loop 322] total=2.426s | PKV=0.099s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=2.305s | POST=0.001s
+Time=00:05:23-00:05:24: [1m[34m ...[0m past_key_values: 12862
+{"type": "segment", "start": 323.0, "end": 324.0, "text": ""}
+[Loop 323] total=0.804s | PKV=0.115s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.667s | POST=0.001s
+Time=00:05:24-00:05:25: [1m[34m ...[0m past_key_values: 12862
+{"type": "segment", "start": 324.0, "end": 325.0, "text": ""}
+[Loop 324] total=0.802s | PKV=0.104s | CHECK=0.000s | VIDEO=0.027s | INPUT=0.011s | GEN=0.661s | POST=0.000s
+Time=00:05:25-00:05:26: [1m[34m ...[0m past_key_values: 12862
+{"type": "segment", "start": 325.0, "end": 326.0, "text": ""}
+[Loop 325] total=0.778s | PKV=0.103s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.009s | GEN=0.655s | POST=0.001s
+Time=00:05:26-00:05:27: [1m[34m That's what they're looking for. To see if we'll do anything stupid. ...[0m past_key_values: 12879
+{"type": "segment", "start": 326.0, "end": 327.0, "text": " That's what they're looking for. To see if we'll do anything stupid."}
+[Loop 326] total=3.917s | PKV=0.085s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=3.811s | POST=0.001s
+Time=00:05:27-00:05:28: [1m[34m ...[0m past_key_values: 12879
+{"type": "segment", "start": 327.0, "end": 328.0, "text": ""}
+[Loop 327] total=0.800s | PKV=0.130s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.648s | POST=0.001s
+Time=00:05:28-00:05:29: [1m[34m Is that? Yeah. Great. ...[0m past_key_values: 12886
+{"type": "segment", "start": 328.0, "end": 329.0, "text": " Is that? Yeah. Great."}
+[Loop 328] total=2.118s | PKV=0.113s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.010s | GEN=1.983s | POST=0.001s
+Time=00:05:29-00:05:30: [1m[34m ...[0m past_key_values: 12886
+{"type": "segment", "start": 329.0, "end": 330.0, "text": ""}
+[Loop 329] total=0.805s | PKV=0.114s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.668s | POST=0.001s
+Time=00:05:30-00:05:31: [1m[34m We're walking straight into a trap. ...[0m past_key_values: 12894
+{"type": "segment", "start": 330.0, "end": 331.0, "text": " We're walking straight into a trap."}
+[Loop 330] total=2.318s | PKV=0.121s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.011s | GEN=2.172s | POST=0.001s
+Time=00:05:31-00:05:32: [1m[34m Oh, it's so quiet down here. ...[0m past_key_values: 12903
+{"type": "segment", "start": 331.0, "end": 332.0, "text": " Oh, it's so quiet down here."}
+[Loop 331] total=2.461s | PKV=0.110s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.010s | GEN=2.329s | POST=0.001s
+Time=00:05:32-00:05:33: [1m[34m Oh, it's so cold in here. ...[0m past_key_values: 12912
+{"type": "segment", "start": 332.0, "end": 333.0, "text": " Oh, it's so cold in here."}
+[Loop 332] total=2.433s | PKV=0.104s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=2.308s | POST=0.001s
+Time=00:05:33-00:05:34: [1m[34m ...[0m past_key_values: 12912
+{"type": "segment", "start": 333.0, "end": 334.0, "text": ""}
+[Loop 333] total=0.875s | PKV=0.138s | CHECK=0.000s | VIDEO=0.038s | INPUT=0.011s | GEN=0.687s | POST=0.001s
+Time=00:05:34-00:05:35: [1m[34m ...[0m past_key_values: 12912
+{"type": "segment", "start": 334.0, "end": 335.0, "text": ""}
+[Loop 334] total=0.783s | PKV=0.095s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.010s | GEN=0.664s | POST=0.001s
+Time=00:05:35-00:05:36: [1m[34m This could be ...[0m past_key_values: 12915
+{"type": "segment", "start": 335.0, "end": 336.0, "text": " This could be"}
+[Loop 335] total=1.384s | PKV=0.134s | CHECK=0.000s | VIDEO=0.023s | INPUT=0.010s | GEN=1.215s | POST=0.001s
+Time=00:05:36-00:05:37: [1m[34m it. I feel ...[0m past_key_values: 12919
+{"type": "segment", "start": 336.0, "end": 337.0, "text": " it. I feel"}
+[Loop 336] total=1.535s | PKV=0.097s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.416s | POST=0.001s
+Time=00:05:37-00:05:38: [1m[34m them. ...[0m past_key_values: 12921
+{"type": "segment", "start": 337.0, "end": 338.0, "text": " them."}
+[Loop 337] total=1.200s | PKV=0.111s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=1.066s | POST=0.001s
+Time=00:05:38-00:05:39: [1m[34m ...[0m past_key_values: 12921
+{"type": "segment", "start": 338.0, "end": 339.0, "text": ""}
+[Loop 338] total=0.812s | PKV=0.106s | CHECK=0.000s | VIDEO=0.036s | INPUT=0.011s | GEN=0.658s | POST=0.001s
+Time=00:05:39-00:05:40: [1m[34m And then you hear the crackle of the fire and it's coming closer. Yeah. ...[0m past_key_values: 12939
+{"type": "segment", "start": 339.0, "end": 340.0, "text": " And then you hear the crackle of the fire and it's coming closer. Yeah."}
+[Loop 339] total=4.155s | PKV=0.118s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=4.017s | POST=0.001s
+Time=00:05:40-00:05:41: [1m[34m ...[0m past_key_values: 12939
+{"type": "segment", "start": 340.0, "end": 341.0, "text": ""}
+[Loop 340] total=0.773s | PKV=0.090s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.012s | GEN=0.660s | POST=0.001s
+Time=00:05:41-00:05:42: [1m[34m I'm so scared. You're scaring me. ...[0m past_key_values: 12950
+{"type": "segment", "start": 341.0, "end": 342.0, "text": " I'm so scared. You're scaring me."}
+[Loop 341] total=2.809s | PKV=0.094s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=2.692s | POST=0.001s
+Time=00:05:42-00:05:43: [1m[34m ...[0m past_key_values: 12950
+{"type": "segment", "start": 342.0, "end": 343.0, "text": ""}
+[Loop 342] total=0.816s | PKV=0.100s | CHECK=0.000s | VIDEO=0.029s | INPUT=0.011s | GEN=0.677s | POST=0.001s
+Time=00:05:43-00:05:44: [1m[34m ...[0m past_key_values: 12950
+{"type": "segment", "start": 343.0, "end": 344.0, "text": ""}
+[Loop 343] total=0.790s | PKV=0.091s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.678s | POST=0.001s
+Time=00:05:44-00:05:45: [1m[34m ...[0m past_key_values: 12950
+{"type": "segment", "start": 344.0, "end": 345.0, "text": ""}
+[Loop 344] total=0.802s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=0.675s | POST=0.001s
+Time=00:05:45-00:05:46: [1m[34m ...[0m past_key_values: 12950
+{"type": "segment", "start": 345.0, "end": 346.0, "text": ""}
+[Loop 345] total=0.783s | PKV=0.095s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=0.669s | POST=0.001s
+Time=00:05:46-00:05:47: [1m[34m ...[0m past_key_values: 12950
+{"type": "segment", "start": 346.0, "end": 347.0, "text": ""}
+[Loop 346] total=0.821s | PKV=0.103s | CHECK=0.000s | VIDEO=0.026s | INPUT=0.010s | GEN=0.681s | POST=0.001s
+Time=00:05:47-00:05:48: [1m[34m The mountain people will wake anyone who ventures beyond their own borders. ...[0m past_key_values: 12963
+{"type": "segment", "start": 347.0, "end": 348.0, "text": " The mountain people will wake anyone who ventures beyond their own borders."}
+[Loop 347] total=3.287s | PKV=0.103s | CHECK=0.000s | VIDEO=0.012s | INPUT=0.011s | GEN=3.159s | POST=0.002s
+Time=00:05:48-00:05:49: [1m[34m ...[0m past_key_values: 12963
+{"type": "segment", "start": 348.0, "end": 349.0, "text": ""}
+[Loop 348] total=0.783s | PKV=0.114s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.647s | POST=0.001s
+Time=00:05:49-00:05:50: [1m[34m ...[0m past_key_values: 12963
+{"type": "segment", "start": 349.0, "end": 350.0, "text": ""}
+[Loop 349] total=0.821s | PKV=0.092s | CHECK=0.000s | VIDEO=0.039s | INPUT=0.010s | GEN=0.679s | POST=0.001s
+Time=00:05:50-00:05:51: [1m[34m ...[0m past_key_values: 12963
+{"type": "segment", "start": 350.0, "end": 351.0, "text": ""}
+[Loop 350] total=0.780s | PKV=0.094s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.665s | POST=0.001s
+Time=00:05:51-00:05:52: [1m[34m ...[0m past_key_values: 12963
+{"type": "segment", "start": 351.0, "end": 352.0, "text": ""}
+[Loop 351] total=0.793s | PKV=0.110s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.009s | GEN=0.664s | POST=0.001s
+Time=00:05:52-00:05:53: [1m[34m There is something wrong with the world I created. ...[0m past_key_values: 12973
+{"type": "segment", "start": 352.0, "end": 353.0, "text": " There is something wrong with the world I created."}
+[Loop 352] total=2.633s | PKV=0.099s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=2.512s | POST=0.001s
+Time=00:05:53-00:05:54: [1m[34m ...[0m past_key_values: 12973
+{"type": "segment", "start": 353.0, "end": 354.0, "text": ""}
+[Loop 353] total=0.815s | PKV=0.139s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=0.654s | POST=0.001s
+Time=00:05:54-00:05:55: [1m[34m If there's a problem, then we have to solve it. ...[0m past_key_values: 12986
+{"type": "segment", "start": 354.0, "end": 355.0, "text": " If there's a problem, then we have to solve it."}
+[Loop 354] total=3.227s | PKV=0.084s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=3.120s | POST=0.001s
+Time=00:05:55-00:05:56: [1m[34m ...[0m past_key_values: 12986
+{"type": "segment", "start": 355.0, "end": 356.0, "text": ""}
+[Loop 355] total=0.810s | PKV=0.104s | CHECK=0.000s | VIDEO=0.044s | INPUT=0.011s | GEN=0.650s | POST=0.001s
+Time=00:05:56-00:05:57: [1m[34m ...[0m past_key_values: 12986
+{"type": "segment", "start": 356.0, "end": 357.0, "text": ""}
+[Loop 356] total=0.775s | PKV=0.083s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=0.674s | POST=0.000s
+Time=00:05:57-00:05:58: [1m[34m ...[0m past_key_values: 12986
+{"type": "segment", "start": 357.0, "end": 358.0, "text": ""}
+[Loop 357] total=0.793s | PKV=0.099s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.010s | GEN=0.672s | POST=0.001s
+Time=00:05:58-00:05:59: [1m[34m What are you doing? Will? Will. ...[0m past_key_values: 12995
+{"type": "segment", "start": 358.0, "end": 359.0, "text": " What are you doing? Will? Will."}
+[Loop 358] total=2.486s | PKV=0.095s | CHECK=0.000s | VIDEO=0.027s | INPUT=0.011s | GEN=2.351s | POST=0.001s
+Time=00:05:59-00:06:00: [1m[34m ...[0m past_key_values: 12995
+{"type": "segment", "start": 359.0, "end": 360.0, "text": ""}
+[Loop 359] total=0.790s | PKV=0.104s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.012s | GEN=0.666s | POST=0.001s
+Time=00:06:00-00:06:01: [1m[34m You'll have to solve it yourself. ...[0m past_key_values: 13003
+{"type": "segment", "start": 360.0, "end": 361.0, "text": " You'll have to solve it yourself."}
+[Loop 360] total=2.263s | PKV=0.102s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=2.139s | POST=0.001s
+Time=00:06:01-00:06:02: [1m[34m ...[0m past_key_values: 13003
+{"type": "segment", "start": 361.0, "end": 362.0, "text": ""}
+[Loop 361] total=0.782s | PKV=0.089s | CHECK=0.000s | VIDEO=0.019s | INPUT=0.011s | GEN=0.662s | POST=0.001s
+Time=00:06:02-00:06:03: [1m[34m I'm so sad about this. ...[0m past_key_values: 13010
+{"type": "segment", "start": 362.0, "end": 363.0, "text": " I'm so sad about this."}
+[Loop 362] total=2.082s | PKV=0.087s | CHECK=0.000s | VIDEO=0.010s | INPUT=0.011s | GEN=1.973s | POST=0.001s
+Time=00:06:03-00:06:04: [1m[34m ...[0m past_key_values: 13010
+{"type": "segment", "start": 363.0, "end": 364.0, "text": ""}
+[Loop 363] total=0.826s | PKV=0.138s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.667s | POST=0.001s
+Time=00:06:04-00:06:05: [1m[34m I wouldn't have expected that from you, mate. ...[0m past_key_values: 13021
+{"type": "segment", "start": 364.0, "end": 365.0, "text": " I wouldn't have expected that from you, mate."}
+[Loop 364] total=2.844s | PKV=0.084s | CHECK=0.000s | VIDEO=0.028s | INPUT=0.011s | GEN=2.720s | POST=0.001s
+Time=00:06:05-00:06:06: [1m[34m ...[0m past_key_values: 13021
+{"type": "segment", "start": 365.0, "end": 366.0, "text": ""}
+[Loop 365] total=0.798s | PKV=0.102s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.011s | GEN=0.676s | POST=0.001s
+Time=00:06:06-00:06:07: [1m[34m It's always the case with you, mate. ...[0m past_key_values: 13031
+{"type": "segment", "start": 366.0, "end": 367.0, "text": " It's always the case with you, mate."}
+[Loop 366] total=2.656s | PKV=0.097s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=2.539s | POST=0.001s
+Time=00:06:07-00:06:08: [1m[34m Let's not make any silly mistakes. ...[0m past_key_values: 13039
+{"type": "segment", "start": 367.0, "end": 368.0, "text": " Let's not make any silly mistakes."}
+[Loop 367] total=2.258s | PKV=0.089s | CHECK=0.000s | VIDEO=0.008s | INPUT=0.010s | GEN=2.151s | POST=0.001s
+Time=00:06:08-00:06:09: [1m[34m ...[0m past_key_values: 13039
+{"type": "segment", "start": 368.0, "end": 369.0, "text": ""}
+[Loop 368] total=0.824s | PKV=0.113s | CHECK=0.000s | VIDEO=0.037s | INPUT=0.013s | GEN=0.660s | POST=0.001s
+Time=00:06:09-00:06:10: [1m[34m ...[0m past_key_values: 13039
+{"type": "segment", "start": 369.0, "end": 370.0, "text": ""}
+[Loop 369] total=0.778s | PKV=0.088s | CHECK=0.000s | VIDEO=0.011s | INPUT=0.011s | GEN=0.667s | POST=0.001s
+Time=00:06:10-00:06:11: [1m[34m ...[0m past_key_values: 13039
+{"type": "segment", "start": 370.0, "end": 371.0, "text": ""}
+[Loop 370] total=0.796s | PKV=0.106s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.012s | GEN=0.668s | POST=0.001s
+Time=00:06:11-00:06:12: [1m[34m But you've probably got a feeling you're going to need it later on. Alright, come on[0m past_key_values: 13057
+{"type": "segment", "start": 371.0, "end": 372.0, "text": " But you've probably got a feeling you're going to need it later on. Alright, com"}
+[Loop 371] total=4.135s | PKV=0.093s | CHECK=0.000s | VIDEO=0.009s | INPUT=0.011s | GEN=4.021s | POST=0.001s
+
+✅ Subtitles saved to: /results/result-pilot-372/segments.vtt
+

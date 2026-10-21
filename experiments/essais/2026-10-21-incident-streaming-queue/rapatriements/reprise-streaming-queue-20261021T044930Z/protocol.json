@@ -1,0 +1,17 @@
+{
+  "deadlineUtc": "2026-10-21T12:00:00+00:00",
+  "wallBudgetSeconds": 12600,
+  "shortPhaseSeconds": 5400,
+  "image": "nvcr.io/nvidia/pytorch:26.09-py3@sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e",
+  "upstreamCommit": "a940d8cbfa14eefe651b7f4adeb81825c28cc6c6",
+  "model": "mit-han-lab/StreamingVLM",
+  "revision": "7ac1cef46d20432053a9814838760318cb26b348",
+  "videoSha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+  "durations": [
+    16,
+    72,
+    372
+  ],
+  "recomputeOnlyAtSeconds": 16,
+  "readyForScoring": false
+}

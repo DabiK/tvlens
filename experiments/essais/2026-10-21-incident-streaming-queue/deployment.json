@@ -19,5 +19,13 @@
   "shortPhaseDeadlineUtc": "2026-10-21T05:07:16.052779Z",
   "totalBudgetDeadlineUtc": "2026-10-21T07:07:16.052779Z",
   "globalDeadlineUtc": "2026-10-21T12:00:00Z",
-  "initialModelInferenceCompleted": false
+  "initialModelInferenceCompleted": false,
+  "finalObservedAtUtc": "2026-10-21T05:07:43Z",
+  "finalStatus": "finished",
+  "finalCleanupConfirmed": true,
+  "completedPilots": ["pilot-16", "pilot-72", "pilot-372", "pilot-16-recompute"],
+  "remoteManifestSha256": "8d8f8ff53932012592102f3699c39010376e94f0157af69fd2524476bd20269d",
+  "remoteFilesVerified": 78,
+  "localManifestFilesVerified": 73,
+  "finalReport": "BILAN.md"
 }
