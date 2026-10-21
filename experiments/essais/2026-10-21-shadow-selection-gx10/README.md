@@ -63,14 +63,17 @@ Les six [sorties brutes](resultats/) ont été rapatriées et comparées aux
 [empreintes distantes](resultats.sha256). Aucun appel VLM n'a été supprimé. Le dossier de
 déploiement et les versions sont consignés dans [deployment.json](deployment.json).
 
-| Vidéo | Blocs | Proposition 3 images | Repli 5 images | Appels évitables présumés | CPU médian par bloc |
+| Vidéo | Blocs | Proposition 3 images | Repli 5 images | Appels évitables présumés | CPU p50 / p95 par bloc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| CNRS | 110 | 110 | 0 | 50 | 8,84 ms |
-| Bœuf | 92 | 88 | 4 | 2 | 11,02 ms |
-| Kennedy | 53 | 53 | 0 | 7 | 9,45 ms |
-| Tears | 91 | 65 | 26 | 0 | 8,90 ms |
-| Artemis | 263 | 245 | 18 | 83 | 9,69 ms |
-| Spring | 58 | 55 | 3 | 0 | 6,83 ms |
+| CNRS | 110 | 110 | 0 | 50 | 8,84 / 9,31 ms |
+| Bœuf | 92 | 88 | 4 | 2 | 11,02 / 12,11 ms |
+| Kennedy | 53 | 53 | 0 | 7 | 9,45 / 9,87 ms |
+| Tears | 91 | 65 | 26 | 0 | 8,90 / 11,96 ms |
+| Artemis | 263 | 245 | 18 | 83 | 9,69 / 12,53 ms |
+| Spring | 58 | 55 | 3 | 0 | 6,83 / 8,61 ms |
+
+Les quantiles CPU utilisent une interpolation linéaire au rang `(n−1)×p` sur les
+`cpuNs` individuels de chaque sortie brute, sans moyenne entre vidéos.
 
 Le grand nombre de candidats statiques sur CNRS et Artemis est **une hypothèse de filtre**,
 pas autant d'appels réellement économisables. Un changement de texte sur une diapositive ou une
