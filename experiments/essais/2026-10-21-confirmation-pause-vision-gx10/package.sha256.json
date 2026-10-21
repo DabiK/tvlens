@@ -1,0 +1,10 @@
+{
+  "registeredAtUtc": "2026-10-21T08:14:03Z",
+  "inferencePerformed": false,
+  "files": {
+    "confirmation.py": "e7ae37f978385dcf0f1139e3b5e76e82a06a18b6906b31fa054b92c8a9e82987",
+    "verifier_fermeture.py": "a7ec4138c4354c48f337af91388506ce40ff01bab709e07a5aaad601f5226f8f",
+    "reference/kennedy.json": "8046399d943bde5f2e94306bb3c12eaf9a4350a3e2021e48863b8de076c68db1",
+    "reference/spring.json": "61c4ee15a8ce58d7f1d13e8e89a5b5437a734f2b25664cce85ebfad424c3387f"
+  }
+}

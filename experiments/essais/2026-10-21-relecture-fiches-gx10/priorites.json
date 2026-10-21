@@ -1,0 +1,22 @@
+[
+  {
+    "questionId": "cuisine-07",
+    "controle": "Trois sorties insufficient : écouter et voir 09:00–10:56 ; vérifier ordre et disponibilité dans le contexte."
+  },
+  {
+    "questionId": "tears-07",
+    "controle": "Vérifier alignement du SRT officiel : 90 % à 08:24, terminé à 08:58, question à 09:12."
+  },
+  {
+    "questionId": "artemis-07",
+    "controle": "Vérifier la pose à 34:56 et la coupure attendue après le préfixe ; l'ASR à 03:24:40 annonce encore 30 s avant MECO."
+  },
+  {
+    "questionId": "spring-06",
+    "controle": "Trois sorties insufficient : revoir preuve visuelle ancienne et disponibilité dans les images échantillonnées."
+  },
+  {
+    "questionId": "kennedy-06",
+    "controle": "Small insufficient : écouter 04:00–04:32, contrôler l'alignement de l'intervalle indiqué."
+  }
+]

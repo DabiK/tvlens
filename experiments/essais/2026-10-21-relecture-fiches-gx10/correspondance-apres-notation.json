@@ -1,0 +1,722 @@
+[
+  {
+    "alias": "artemis-01-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+    "sourceSha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+    "latencyHttpMs": 21420.313284000033,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-01-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+    "sourceSha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+    "latencyHttpMs": 28119.645537000033,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-01-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+    "sourceSha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+    "latencyHttpMs": 22744.256061999942,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-02-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+    "sourceSha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+    "latencyHttpMs": 16054.947230000049,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-02-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+    "sourceSha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+    "latencyHttpMs": 21999.887601000024,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-02-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+    "sourceSha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+    "latencyHttpMs": 13471.117954999907,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-04-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+    "sourceSha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+    "latencyHttpMs": 19112.955884000054,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-04-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+    "sourceSha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+    "latencyHttpMs": 19568.2833029998,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-04-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+    "sourceSha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+    "latencyHttpMs": 18320.868170999922,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-05-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+    "sourceSha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+    "latencyHttpMs": 16028.618674000027,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-05-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+    "sourceSha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+    "latencyHttpMs": 16955.435137999943,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-05-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+    "sourceSha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+    "latencyHttpMs": 16855.099097999977,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-07-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-artemis/campaign.json",
+    "sourceSha256": "9167e99272fcc209ac54a36bea65ca08baf1c770e1b14115cdd513246a296d67",
+    "latencyHttpMs": 17152.136514999904,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-07-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-artemis/campaign.json",
+    "sourceSha256": "11d5cef66a5402d915d97d53ee8f1a59959b05dc725f9737ad4a136a91655d91",
+    "latencyHttpMs": 15899.343199000228,
+    "status": "done"
+  },
+  {
+    "alias": "artemis-07-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-artemis/campaign.json",
+    "sourceSha256": "3bc7fd9012053b682fc6c5c6c4f7fd8bc6e34b0256f74f33d68ad05afacaa1e7",
+    "latencyHttpMs": 19725.25454400014,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-02-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+    "latencyHttpMs": 30182.21960499999,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-02-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+    "latencyHttpMs": 23210.005535000004,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-02-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+    "latencyHttpMs": 24158.24730800002,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-03-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+    "latencyHttpMs": 15220.62011800002,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-03-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+    "latencyHttpMs": 15202.431522000028,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-03-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+    "latencyHttpMs": 16249.041284000035,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-05-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+    "latencyHttpMs": 17483.08644699998,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-05-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+    "latencyHttpMs": 21434.525101999985,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-05-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+    "latencyHttpMs": 24609.773766,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-06-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+    "latencyHttpMs": 18656.51373399992,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-06-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+    "latencyHttpMs": 18759.688366000075,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-06-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+    "latencyHttpMs": 19650.480787000037,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-07-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "8a9b1439ebe54bd450227f8795c600abae0cf1a83621b81b7cc3bb40968284a6",
+    "latencyHttpMs": 23912.87359199999,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-07-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "42f8025ca1d3190f13c93cedbf84fd41ac1be709a27e6879b680028381df4c3f",
+    "latencyHttpMs": 26107.029528000043,
+    "status": "done"
+  },
+  {
+    "alias": "cuisine-07-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-boeuf-bourguignon/campaign.json",
+    "sourceSha256": "9d7278f817a8a715fc4fb70437baedd7700f6eddabe4d53c39507e44ab9308d3",
+    "latencyHttpMs": 23946.940426000045,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-01-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+    "latencyHttpMs": 28083.379895000005,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-01-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663",
+    "latencyHttpMs": 22068.304569,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-01-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576",
+    "latencyHttpMs": 21094.435969,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-02-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576",
+    "latencyHttpMs": 20206.218811,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-02-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663",
+    "latencyHttpMs": 22196.509756999993,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-02-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+    "latencyHttpMs": 20187.067658999993,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-04-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663",
+    "latencyHttpMs": 22533.139995000034,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-04-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576",
+    "latencyHttpMs": 22572.07944100001,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-04-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+    "latencyHttpMs": 21484.593192,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-05-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576",
+    "latencyHttpMs": 20074.99731399992,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-05-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663",
+    "latencyHttpMs": 18974.751191999996,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-05-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+    "latencyHttpMs": 26868.440815000096,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-06-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "d7d7e42b492636d5d77ac9a40ea040f889aca29b6e43a893e68a281c16a3a663",
+    "latencyHttpMs": 24495.285716000013,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-06-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "866a924703dacbc0083efdfbe2ab8c889f32fe8998054e5c047a1efe47826576",
+    "latencyHttpMs": 19612.68621700001,
+    "status": "done"
+  },
+  {
+    "alias": "cnrs-06-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-cnrs-apprentissage/run/campaign.json",
+    "sourceSha256": "fc8b9d23dda0dd4bc3773b72dd235669bd147f2f0ec81c27eb9190bde6af16ea",
+    "latencyHttpMs": 23355.628333,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-01-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+    "sourceSha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de",
+    "latencyHttpMs": 16022.7729,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-01-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+    "sourceSha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092",
+    "latencyHttpMs": 14015.721678999998,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-01-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+    "sourceSha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977",
+    "latencyHttpMs": 14029.484282000005,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-03-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+    "sourceSha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de",
+    "latencyHttpMs": 19105.604515,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-03-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+    "sourceSha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977",
+    "latencyHttpMs": 15096.897968999998,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-03-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+    "sourceSha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092",
+    "latencyHttpMs": 18110.055202000003,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-05-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+    "sourceSha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977",
+    "latencyHttpMs": 21193.538776,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-05-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+    "sourceSha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de",
+    "latencyHttpMs": 20179.013011000003,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-05-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+    "sourceSha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092",
+    "latencyHttpMs": 17192.02553100002,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-06-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+    "sourceSha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de",
+    "latencyHttpMs": 16205.927042000054,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-06-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+    "sourceSha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977",
+    "latencyHttpMs": 18240.57782299997,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-06-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+    "sourceSha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092",
+    "latencyHttpMs": 14243.671529999992,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-08-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-kennedy/run/campaign.json",
+    "sourceSha256": "7282b4d49b4236ad585e55f58bda7cae1c71e957c47db0c38754444b41068092",
+    "latencyHttpMs": 15365.997543999983,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-08-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-kennedy/run/campaign.json",
+    "sourceSha256": "4c47c0870abeafcc0923cd46768dd4b7e5b1cce52103ce4e23390e95ada32977",
+    "latencyHttpMs": 14342.551141000004,
+    "status": "done"
+  },
+  {
+    "alias": "kennedy-08-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-kennedy/run/campaign.json",
+    "sourceSha256": "1586b6cf4cdb438a9cee6cab90c4314f6a2c66fd47e5eef939d2890805d185de",
+    "latencyHttpMs": 13296.394786000019,
+    "status": "done"
+  },
+  {
+    "alias": "spring-01-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+    "sourceSha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386",
+    "latencyHttpMs": 14044.562093999994,
+    "status": "done"
+  },
+  {
+    "alias": "spring-01-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+    "sourceSha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac",
+    "latencyHttpMs": 13042.55674,
+    "status": "done"
+  },
+  {
+    "alias": "spring-01-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+    "sourceSha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3",
+    "latencyHttpMs": 15048.625102000005,
+    "status": "done"
+  },
+  {
+    "alias": "spring-02-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+    "sourceSha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3",
+    "latencyHttpMs": 12134.608689999994,
+    "status": "done"
+  },
+  {
+    "alias": "spring-02-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+    "sourceSha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac",
+    "latencyHttpMs": 10148.233555000013,
+    "status": "done"
+  },
+  {
+    "alias": "spring-02-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+    "sourceSha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386",
+    "latencyHttpMs": 13137.89315800002,
+    "status": "done"
+  },
+  {
+    "alias": "spring-03-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+    "sourceSha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3",
+    "latencyHttpMs": 14181.487504999997,
+    "status": "done"
+  },
+  {
+    "alias": "spring-03-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+    "sourceSha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac",
+    "latencyHttpMs": 10178.729660000012,
+    "status": "done"
+  },
+  {
+    "alias": "spring-03-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+    "sourceSha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386",
+    "latencyHttpMs": 17183.32618199999,
+    "status": "done"
+  },
+  {
+    "alias": "spring-04-R1",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+    "sourceSha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386",
+    "latencyHttpMs": 18217.239500999975,
+    "status": "done"
+  },
+  {
+    "alias": "spring-04-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+    "sourceSha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac",
+    "latencyHttpMs": 12218.960579000006,
+    "status": "done"
+  },
+  {
+    "alias": "spring-04-R3",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+    "sourceSha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3",
+    "latencyHttpMs": 18230.74769400002,
+    "status": "done"
+  },
+  {
+    "alias": "spring-06-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/small-spring/run/campaign.json",
+    "sourceSha256": "92154c55706fd915a236d58e760b8fd2e902f0be5b6e9982bfee1c19cbb04aac",
+    "latencyHttpMs": 14346.241205000028,
+    "status": "done"
+  },
+  {
+    "alias": "spring-06-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/base-spring/run/campaign.json",
+    "sourceSha256": "fa239831ae85588ba97532a313b9da311669d48ca969cf1d7977c2607f820ba3",
+    "latencyHttpMs": 17357.753764000023,
+    "status": "done"
+  },
+  {
+    "alias": "spring-06-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-20-reference-gx10/preuves/rapatriement-20261020/large-v3-turbo-spring/run/campaign.json",
+    "sourceSha256": "8b8c3db1052487bc9efb650690fc7978ceea9fd52a202117f8a7f6eef15be386",
+    "latencyHttpMs": 17359.42975499999,
+    "status": "done"
+  },
+  {
+    "alias": "tears-01-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+    "sourceSha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+    "latencyHttpMs": 14039.803814000006,
+    "status": "done"
+  },
+  {
+    "alias": "tears-01-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json",
+    "sourceSha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+    "latencyHttpMs": 13031.534605,
+    "status": "done"
+  },
+  {
+    "alias": "tears-01-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+    "sourceSha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+    "latencyHttpMs": 16031.738635999995,
+    "status": "done"
+  },
+  {
+    "alias": "tears-03-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json",
+    "sourceSha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+    "latencyHttpMs": 11179.63085799999,
+    "status": "done"
+  },
+  {
+    "alias": "tears-03-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+    "sourceSha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+    "latencyHttpMs": 11174.080136000004,
+    "status": "done"
+  },
+  {
+    "alias": "tears-03-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+    "sourceSha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+    "latencyHttpMs": 10209.76996200002,
+    "status": "done"
+  },
+  {
+    "alias": "tears-04-R1",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json",
+    "sourceSha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+    "latencyHttpMs": 11230.678698999982,
+    "status": "done"
+  },
+  {
+    "alias": "tears-04-R2",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+    "sourceSha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+    "latencyHttpMs": 12226.368258000002,
+    "status": "done"
+  },
+  {
+    "alias": "tears-04-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+    "sourceSha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+    "latencyHttpMs": 10263.957825000049,
+    "status": "done"
+  },
+  {
+    "alias": "tears-06-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+    "sourceSha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+    "latencyHttpMs": 12390.831175,
+    "status": "done"
+  },
+  {
+    "alias": "tears-06-R2",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+    "sourceSha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+    "latencyHttpMs": 11414.199635000026,
+    "status": "done"
+  },
+  {
+    "alias": "tears-06-R3",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json",
+    "sourceSha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+    "latencyHttpMs": 11368.40475300001,
+    "status": "done"
+  },
+  {
+    "alias": "tears-07-R1",
+    "whisper": "base",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-base-tears-of-steel/campaign.json",
+    "sourceSha256": "54962ae7e0b3e41c6d5b1fd1cff2da66b3c644f038489be4a5f0abfcee6b4516",
+    "latencyHttpMs": 10705.754087000038,
+    "status": "done"
+  },
+  {
+    "alias": "tears-07-R2",
+    "whisper": "small",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-small-tears-of-steel/campaign.json",
+    "sourceSha256": "384f101d633cc461965c1b706a0dc0825fad381e6ecb7d3a4247331b107629f4",
+    "latencyHttpMs": 11693.089565000031,
+    "status": "done"
+  },
+  {
+    "alias": "tears-07-R3",
+    "whisper": "large-v3-turbo",
+    "source": "experiments/essais/2026-10-21-corpus-etendu-gx10/rapatriements/reprise-corpus-20261020T224923Z/results/run-large-v3-turbo-tears-of-steel/campaign.json",
+    "sourceSha256": "db454b36d6bdc1d6a127fe16036f6499b88c573848047e315205cc28dd30a783",
+    "latencyHttpMs": 14683.474851000006,
+    "status": "done"
+  }
+]

@@ -1,0 +1,57 @@
+{
+  "observedAtUtc": "2026-10-21T08:12:15Z",
+  "hostAlias": "gx10-tvlens",
+  "mode": "SSH et Python en lecture seule ; aucun verrou, transfert, replay ou appel d'inférence",
+  "referenceBatchClosed": true,
+  "checkedHashes": {
+    "config": true,
+    "frozenPlan": true,
+    "nightCommon": true,
+    "replayRunner": true,
+    "whisperBinary": true,
+    "whisperBaseWeights": true,
+    "kennedyScenario": true,
+    "springScenario": true,
+    "kennedyPreparation": true,
+    "kennedyBlocksIndex": true,
+    "kennedyManifest": true,
+    "kennedySourceMedia": true,
+    "springPreparation": true,
+    "springBlocksIndex": true,
+    "springManifest": true,
+    "springSourceMedia": true
+  },
+  "code": {
+    "head": "2035a2faad499659bcdf940c6104e50e311a9cd6",
+    "sourcesChecked": 470,
+    "mismatches": 0
+  },
+  "kennedy": {
+    "complete": true,
+    "plannedDurationMs": 420000,
+    "blocks": 53,
+    "manifestCases": 53,
+    "questions": 5,
+    "visionDuringAsk": true,
+    "blockOutputFilesChecked": 424,
+    "mismatches": 0
+  },
+  "spring": {
+    "complete": true,
+    "plannedDurationMs": 464000,
+    "blocks": 58,
+    "manifestCases": 58,
+    "questions": 5,
+    "visionDuringAsk": true,
+    "blockOutputFilesChecked": 464,
+    "mismatches": 0
+  },
+  "ollamaDigestsMatched": {
+    "qwen3-embedding:0.6b": true,
+    "qwen3.8:27b": true,
+    "gemma3:4b": true
+  },
+  "gpuProcessQueryExitCode": 0,
+  "gpuProcessesObserved": [],
+  "limitations": "Instantané en lecture seule : ne réserve pas le GPU et ne prédit pas l'état au lancement."
+}

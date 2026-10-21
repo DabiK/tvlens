@@ -1,0 +1,2873 @@
+{
+  "version": 1,
+  "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel",
+  "blocksIndexSha256": "622bdde2702ed486bfcc4fe19541fdb6c5194f6ce46469fbe658d3ce603fd895",
+  "policy": {
+    "thumbnailSize": [
+      32,
+      18
+    ],
+    "sceneThreshold": 0.12,
+    "staticThreshold": 0.035,
+    "maxConsecutiveSkipCandidates": 1,
+    "framesPerBlock": 5
+  },
+  "blocks": [
+    {
+      "sequence": 0,
+      "startMs": 0,
+      "endMs": 8000,
+      "sourceSha256": [
+        "042781b5a01cace36725b5d979bcd3331e88981249fb520d289a086b883bbf9b",
+        "73c6ec2b660c24443d4ba02a1d1eb5a9b971cf2b8b9724d90084d054066bb3ba",
+        "bccfff88bafa953093338f3f6d436e1b85cb37c872e08864e3745672ce5e75d2",
+        "042781b5a01cace36725b5d979bcd3331e88981249fb520d289a086b883bbf9b",
+        "aaaa263779558b3b687aeee8f741de16ea9bc111bef20b5354bea7640987165b"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.006032,
+      "boundaryDifference": null,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 11113191
+    },
+    {
+      "sequence": 1,
+      "startMs": 8000,
+      "endMs": 16000,
+      "sourceSha256": [
+        "042781b5a01cace36725b5d979bcd3331e88981249fb520d289a086b883bbf9b",
+        "23a1ffefb5925349c74da10f2331f696edb5b1caa50df18f5f7a26ca8af65e09",
+        "a8e9ee64b3ba8521b4c70c4f3e4319e275c9081659dca89aba780d577757267f",
+        "31020a3963112f4e806a7845f0e63626d6f45a1c69d13ca9d3320af0ead8ea2d",
+        "11bc87bdeee8ae5e60df00b0547731f50c825f764aa75c6bd0e0d0f6e6755ee9"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.77483,
+      "boundaryDifference": 0.006032,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 7964695
+    },
+    {
+      "sequence": 2,
+      "startMs": 16000,
+      "endMs": 24000,
+      "sourceSha256": [
+        "17fac43bcc30d124cc151c33dbe2b87f1da2cd35ba2cbeff178b90f8d42bb087",
+        "b25f9e608af134ec4cd3c6b625f87c3171cc1d900563578d020b09a6f04aed13",
+        "0d1be305688a3d9fdfd95e7dc43c3ba02057ceade30d495ca25624861de7c0dc",
+        "1fc5f2c2295df2b30e90d00f61b1b321b09219d116c271fd604643dbfc86d1b2",
+        "4ef0682dbb311f6beafa970028b43dba5cef58252cc116c6acf2777039b42f82"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.43592,
+      "boundaryDifference": 0.180692,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8231081
+    },
+    {
+      "sequence": 3,
+      "startMs": 24000,
+      "endMs": 32000,
+      "sourceSha256": [
+        "bfb09b3ab2facf617008c964189f9e7d288bc3e682bf430581ab3c7350593a45",
+        "b0e30c5216eafad9f9df6dd280084895fdc90bf3ac4b86d996c029d06414479a",
+        "018438bf3f9ecf204616ebadbfe0fe505c79037b5365d1de00eb832a9e1f2689",
+        "ca8f3465542a4480c1285f3087c1298f3fd57b90040e7cea2d2bf5b6147e44d3",
+        "2a7e3410a1f86a8ad64345d4635c6a2b1c64e56e6c94b8a6a1839521d8727298"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.232564,
+      "boundaryDifference": 0.039039,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8905163
+    },
+    {
+      "sequence": 4,
+      "startMs": 32000,
+      "endMs": 40000,
+      "sourceSha256": [
+        "1190061536ee404131b720d5264ca85a9486e5f019bad541799a95e17e26f3cf",
+        "6c2aeb270dc561068e456e5dde5490b6daa36aac2104c8100271a84f2e5dacb0",
+        "26cc4389ea450f5afd2d18e527d40580d928f3c604ea19956eed59f94d9c4492",
+        "976dd1805c22357e75886c7c3635c99ae80cde294ac665cac33b20e7d764f57a",
+        "e410e5288c85d8302dfdc0a1bf6fac21c6ad82dcbd1a71264911fb92cf193e33"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.069894,
+      "boundaryDifference": 0.033987,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9244766
+    },
+    {
+      "sequence": 5,
+      "startMs": 40000,
+      "endMs": 48000,
+      "sourceSha256": [
+        "347fb958cb4581867c69ed6ee062366af600999e0f02012ad886fcc8ea908e15",
+        "a9a1d0ac09a01592a0e81a40aaab9778585c0ac2b1b921b3a9e6babab9eefb53",
+        "ba54f5a46f9dd55c891137cc0625199b59d01f4d27f72087b62ca99d379f74a8",
+        "4f6b04967d8f510725961ca578c8fda7c1b1a4d2fef0ebb25c52f4c4e3d9fd9e",
+        "96198ea8b50072cc79005376d095f5de45ae2f2e8746a5b31736d4db97d910a0"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.3186,
+      "boundaryDifference": 0.051437,
+      "unselectedChangeProxyIndices": [
+        1
+      ],
+      "cpuNs": 10219986
+    },
+    {
+      "sequence": 6,
+      "startMs": 48000,
+      "endMs": 56000,
+      "sourceSha256": [
+        "a68e41bc86266318e5bd9d0c7c113c6bbcc82d7397f18c811dcd9f410c0fb6cf",
+        "4f3078beaa353bb3f553aa680f1b6fc44250510310f3c595e15226af93da94c1",
+        "a8b62669fa9d42a7486cd09ce946cfd0e8c8c9c09092dc33651e8136bfcd27a7",
+        "f1a11f226942304f9cfbb58553ac698208651fbdcbf3eb05f17bd43654507c02",
+        "26e940e063da25e6598dffaf0e38b1f8e02e915de84a1b472a0f2750b9e8ad14"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.297283,
+      "boundaryDifference": 0.171024,
+      "unselectedChangeProxyIndices": [
+        1
+      ],
+      "cpuNs": 9264174
+    },
+    {
+      "sequence": 7,
+      "startMs": 56000,
+      "endMs": 64000,
+      "sourceSha256": [
+        "dcc599b0099f601e2b8f104123e7cb669cefdcdcd6718222173627950cb5c99a",
+        "5a967b6c5ca43f5cbaa67fed23b6d3ea244ecb342797d46b9ab8481b6aa00ccb",
+        "4ee36c53f3dce1e29432487e311c0ca18586b37658b3142868832585692ba615",
+        "3ccf027a231e78469fce4c8079dc6a296ac05668e35b37ea6ccbe93886c3b46c",
+        "cd3e70cee895320e4b3c308bec84ef2fd5dd8821138c300195d762048f3566de"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.293593,
+      "boundaryDifference": 0.055896,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 8470025
+    },
+    {
+      "sequence": 8,
+      "startMs": 64000,
+      "endMs": 72000,
+      "sourceSha256": [
+        "cdb87782d1f0e4cf7c1a9dbf6675e504cdc1720c1d7b217c617dc005067a17dc",
+        "8488c4cbcad692e0dcd90f35525b0d2f6c2c3fc0332bfe1ee65953689f593675",
+        "4a775d0e17512ce75545d39a99d2eab2aab23ef64c2d352f533043f50b729c44",
+        "2c83dfc7a73f6d2fec0baf702b55a758d2cbd048e48e4355132dd506e723ed52",
+        "b10d9780256c64cdf7d8f042b641b8d70a8d197e7fdf864c3bd1c93d9e6513d3"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.316959,
+      "boundaryDifference": 0.014059,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 6804130
+    },
+    {
+      "sequence": 9,
+      "startMs": 72000,
+      "endMs": 80000,
+      "sourceSha256": [
+        "ad7afbe9319ff42081767f4e762d806aa29d6bc203593fac1125e9ef022dfb7e",
+        "9c21bf4601b50416916fe225205c411f7bbdeabaac64a7315380fb5a8173f440",
+        "40bc047a6ddc25d7b42068cf6ce03e72810317e7e2251d169154c1c5b36c5a9c",
+        "c677635d03b45238d835e26d460fe46475fc335f7ed77b14ba92c84b20f9220a",
+        "f4cf8dbedf5378e4ff5ec53dcc8676845876ff9feca7443c06e7384a6e041314"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.235199,
+      "boundaryDifference": 0.021895,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8265689
+    },
+    {
+      "sequence": 10,
+      "startMs": 80000,
+      "endMs": 88000,
+      "sourceSha256": [
+        "0db328e5953a54fd6f701e1f6c395a11d12453c486fd451b966ab5803debc6fb",
+        "81c5ba3cd3846312f8415756131bd4dc47487de1400ce3a227658c4dbab7b1a8",
+        "48d9b64b54c16d0ac97b9b9e684f032765296d13734715af59a7a3a8e5e0860e",
+        "98b4b0fb6b80f9158171b308d5c5ec15dc5f2209c04f9abb8c0f528f5866d00c",
+        "dcee11899a8f07dd50dade9ef0d617c5b3984b8bd471c17183493a6ec2f804da"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.242865,
+      "boundaryDifference": 0.191721,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8642570
+    },
+    {
+      "sequence": 11,
+      "startMs": 88000,
+      "endMs": 96000,
+      "sourceSha256": [
+        "2a3b0b471fed72dc95d6a55c21a4ecc4fd58056b1163bb959a2ba72e9511f1ed",
+        "c964ba9190129ae734134c9f46d3c0dbff23b818c20116c2c30e349e3ad6b8f0",
+        "5056e7f498b67bb86d3f4bb60251d85069d213b6832a482fbf5a5e57f19c6f7d",
+        "cca8131700cb5a47cc5530ce639f222ed51c768fa657ec4f42b2f1bd17367186",
+        "6266483943524d4de19aff7fc8b8bfedea74e7f23dde28e7d0095c7a69e70663"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.13765,
+      "boundaryDifference": 0.071004,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7812263
+    },
+    {
+      "sequence": 12,
+      "startMs": 96000,
+      "endMs": 104000,
+      "sourceSha256": [
+        "3f89652bf4aed6c64d7c9e77f6bbebd351da12155fac8b4eb57af74c35ef22fe",
+        "58dac54f6ace62f83a75004b6cfc95fc2a4f5be2e3cd1dca469954c36ebdf009",
+        "1fd5d2fddabc839a4604c78afd73645d79b47f5ba9e2bc83d4fa31fb4e7a3908",
+        "c6d8989d3c6ca5670f11fd0ef5f3f19cd4c22657464e97763f3e18ebbef7c778",
+        "3b5a46a033490884cf865b349a58bf881deb501ecff1767d1a41e5c1efce22fe"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.142545,
+      "boundaryDifference": 0.143151,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8299960
+    },
+    {
+      "sequence": 13,
+      "startMs": 104000,
+      "endMs": 112000,
+      "sourceSha256": [
+        "1b12120642f352875d68a624a94454abec10f09feaec1a98a3bf4fec7159d767",
+        "2f57b8c833a10b044f8bc64e49cc7989f564b7f33850359b1f8391aa0570a23b",
+        "d769fb36341322f48b31a58432579ddc305b9f1b7602d266a3122b67053f2383",
+        "e713de5c1aa33b3ff6381f351e65fff4a024fa243205b40e1b3c7bb2b406377e",
+        "dd4da2a0ab56cd37184c2026b903623873238f8ea4fe9a28be24269bf12889df"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.048992,
+      "boundaryDifference": 0.023679,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7314980
+    },
+    {
+      "sequence": 14,
+      "startMs": 112000,
+      "endMs": 120000,
+      "sourceSha256": [
+        "cd1edc84dbc4a4edf1f190c8b639c7b253ccd6e10861e6b1e9f63e5c1fef27de",
+        "99e21c0504cfab907189e3a31480e121babbae3d8b00ae0b46033fea00319449",
+        "8ffa8832d85cefeaafbbb97b11aab3556fc07cba4e4784f2596917fa92fde693",
+        "662d0b3e7b9d348049df324f3461f3285fad4a3993f8f8877aad2520ac1c348a",
+        "62cd11452a99fb8afdc03ba8c3aa7c4381de6b3c4b8af3e374dddfac33d17e44"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.229602,
+      "boundaryDifference": 0.040605,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7024867
+    },
+    {
+      "sequence": 15,
+      "startMs": 120000,
+      "endMs": 128000,
+      "sourceSha256": [
+        "b5da77a22bf44f3690857c547d3a2cea18365f63467ce14d6ea9a327b42bb511",
+        "582797e3a92189ae8ac2796f2b605a4156bb727a0b84290dcb29a29b6175e3b6",
+        "cb7bf8e742724e26a46bc999749ca89452f4dfc2b5c1c0d6f02caf171ed6d05b",
+        "b77688c1a82e18ebb3acb060d9c1de747b0a0182c498ff00945b728a1907dbf3",
+        "e22a4191c35d04bd5925dd02d7fe4d93eb42aeb7f8789d2259e0046fa578ac4a"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.164352,
+      "boundaryDifference": 0.195602,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7546373
+    },
+    {
+      "sequence": 16,
+      "startMs": 128000,
+      "endMs": 136000,
+      "sourceSha256": [
+        "5a529fae7b6a6b3c3542a2f2c2bd0cdcddb1b39d9dd7a809c4439bf471aabfef",
+        "6f6489d4a850aaba03c7271f1aca1f3bbeaad41857bc7a58affc228a098f5618",
+        "a99fc4ba05b018a452d2682454bb2c2068c55cc9c76b25c2d6e84d396e657ade",
+        "8c2dbed9e382aef5cfde9fb2784c21097d3a5fbd508dc0af5ad27b971e5cae2d",
+        "bb5c5b4332bd7eb063ff0438fe4d2440e0889925b62ab5f763d7423f89252def"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.06203,
+      "boundaryDifference": 0.119941,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7667638
+    },
+    {
+      "sequence": 17,
+      "startMs": 136000,
+      "endMs": 144000,
+      "sourceSha256": [
+        "b8133ae0ef5db04b9eab26a858509db7f31fc015ab1f6ca57f083879dc356040",
+        "b6ccb72fe44f8eb401ce6779241ac4dd2d1e08677a9cf48ad2b9cd2d7dd417ff",
+        "5cafe904177741b7649156efbc5b9a6e20579b6fa4783c9d1767b7cad85cfab6",
+        "9d0bf3b68ff35c648ec486dc32f0f59ed75ce15f5b50d61e526742d439b86688",
+        "d626ecc8f3b9687c1eed58288dcb1ed7c0c1c89e85027ce27d23bf3e44dd673d"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.21378,
+      "boundaryDifference": 0.151055,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7346532
+    },
+    {
+      "sequence": 18,
+      "startMs": 144000,
+      "endMs": 152000,
+      "sourceSha256": [
+        "68615f210c6499e1c7cd74846fe4cdb960bb9950cf1ef690efaa9777f92c01ef",
+        "b41e0cb27fc492c79d5b154255a116a905af48b3062b61f670fbdd484d13dbe8",
+        "d3a3b0e22131e8253d7ea69e2eab3f8f8978dbc50ad58ccc1422d1f70ed27f8f",
+        "a45a7ac81c0a1f05b91828aeb9cfaa65ea6102bfc8d8a94f25288e95ace636bc",
+        "5a032195b193e07a9b4bf7ccbbce58084c5897831f10d880e7530a022856ccb3"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.17293,
+      "boundaryDifference": 0.217028,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7041331
+    },
+    {
+      "sequence": 19,
+      "startMs": 152000,
+      "endMs": 160000,
+      "sourceSha256": [
+        "7796afbdc33ed5876e13be6e9e1b19b90385d507981472c4a323174d5c6968e1",
+        "4c8cee0fd4a5a5f09e7e2c97c43357274c1a75ffa8e5bb373a3eb1a96e0a8c68",
+        "b592798f2283d0aeddaa56577e19a2ae1d96c650563ae190e473171c80cc07ba",
+        "5c8c2b67a690220736b66af587ab46accb163ff70acf106e161846ce93424cf5",
+        "b1c526a95e7102e6b196798a29a5ecb2721843650726c39da89836afc65e4bd0"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.123788,
+      "boundaryDifference": 0.0279,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8875915
+    },
+    {
+      "sequence": 20,
+      "startMs": 160000,
+      "endMs": 168000,
+      "sourceSha256": [
+        "fb82a22741a5f4d72d473394db53cc1bdaa8f62d454acee9790dc43aa390f7a8",
+        "b76a4553e37155d2a83af06bdcaeef1bf1d002864ef1846ca3f96a6e96f6ca52",
+        "62105b48fcb565fc5bd44acdc1649ce7a463d34590c6ecca050717778739296b",
+        "15fa0484c6329ef9fc7fb770dc52e798923ec648a953cb47cf1b33ac7a527561",
+        "5122fe2c3146ea18cee53680010a523577ea888da77e0d36293e0fdaa251eb04"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.174414,
+      "boundaryDifference": 0.182448,
+      "unselectedChangeProxyIndices": [
+        2,
+        3
+      ],
+      "cpuNs": 7624342
+    },
+    {
+      "sequence": 21,
+      "startMs": 168000,
+      "endMs": 176000,
+      "sourceSha256": [
+        "700c7cedf7c28c4275791dfc3f5a9f8aa6859ea0757d8599526dccfd949f814d",
+        "15d1fa364d2eb608a16456a5b368f3e5dbb90dc95774964eb326bd3f19cef4c9",
+        "92b07376bb593050b276519dbe2cb68f84622bd493508f21a228bd3a58e1d7cc",
+        "c4e9dd7041ec6c6b45e48b53971b15dad031aa9d0ffb364a2d653f0cf828f787",
+        "e55b0102ae04356ab60ecd75b7120b463072cb197c6fe30f4dfb8588c746a9e4"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.200967,
+      "boundaryDifference": 0.119935,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9782144
+    },
+    {
+      "sequence": 22,
+      "startMs": 176000,
+      "endMs": 184000,
+      "sourceSha256": [
+        "fb024178d5d9677b8477fb29a2c865cc2665b40cd800c1b13bdba0c7679a8e39",
+        "d6328bec4ac6c5d5a634a17f072d780112c8d5812f23d83c4aee316ec0e25158",
+        "3b6354d170517fc1359f3d3301de3a416382e9249cadd23bbef41bb7d84987ef",
+        "f91e8f12bcc22d0cc46b7581e2ea7d7d9ef108085fda2abd251363546b2ad783",
+        "589a1f82f87c6e45e922e410acf6b37e221e85cc94f4379d158f8ef9173eb287"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.178663,
+      "boundaryDifference": 0.204493,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9059468
+    },
+    {
+      "sequence": 23,
+      "startMs": 184000,
+      "endMs": 192000,
+      "sourceSha256": [
+        "c1db780f6cb1a2400247e825dc6b8f778639066628855df652525b7d6a041d14",
+        "d38c955f5365ec39a376324943b90061ad14a0ad7b92c402b144f7b5201a7e4e",
+        "9e25cc127a3952853875817cf9c47f5d4ebe6bbf7c5058292b1d1c34a42be16d",
+        "9b0074b93afa8ddc7ef3d163a7883e0ace42d0fca1891aeade14a34a3bafd1e3",
+        "7bb8f70cba6e04c824832d004be7311c4b9854210f2b334595ef8b6e24215eb7"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.153642,
+      "boundaryDifference": 0.162691,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 11298008
+    },
+    {
+      "sequence": 24,
+      "startMs": 192000,
+      "endMs": 200000,
+      "sourceSha256": [
+        "59851990f9f7cc207f95196b52f413962c19975a838ee325509cf66703fd7a8c",
+        "5c21f7a469bbe2a98486421e0fda93932450cfb226367e59b743490d1bb261d2",
+        "fcc19f47f57975ce764e5cf933f86e485779710e9db969dcd8969d3e73bcb1bf",
+        "594e0094bdf978ee21154a90f582c808bc99374c0a49d1e6f0e0328cf89ef755",
+        "654826374b5d917dc322064c55b41a5218f5cf9673697c750acc7ab15ebdd3bb"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.172699,
+      "boundaryDifference": 0.058987,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8507930
+    },
+    {
+      "sequence": 25,
+      "startMs": 200000,
+      "endMs": 208000,
+      "sourceSha256": [
+        "eba38fd5e2838d289c7531155ec0be3489db695db0871f83f36f0a83d6fdb06f",
+        "d29c2429e8e1854a4f63b17fea352a0340075cf68e594715f3a523c109fee645",
+        "1d0a5947cabf87e38358b106674d82251a1c78d25706d1077a4333054bd3487f",
+        "2160511e2665ccf79d51521897537447bbc34c69229dcf325d8654dcdfbc1197",
+        "73d7b806974ccf4b4161dfb0b63be94d5caea0fc8bd6927cc5e0b6711c6d21ca"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.252022,
+      "boundaryDifference": 0.213004,
+      "unselectedChangeProxyIndices": [
+        3
+      ],
+      "cpuNs": 8851531
+    },
+    {
+      "sequence": 26,
+      "startMs": 208000,
+      "endMs": 216000,
+      "sourceSha256": [
+        "fe31d944406a8539ce7b0deb7dddcc03deeb276ea98b68a9b9e6ef6b49841f19",
+        "0686bdc9e087d9ecce8018f09faff4de48afe330f78279bf6194084bdee68d88",
+        "bd3f357e76c6217ad509eeed59e83f7cd752b0cdac39d4f2eba86021168e1942",
+        "2e5f4d9a051a62aa0e7a4f7f7716f30f6572f35d587f0f5f2e98648166a40a10",
+        "89d060fab8cc1ef6f8a16b7b558f664e3a3d9b9f4dcd4a507a9f87d3393bf97b"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.226593,
+      "boundaryDifference": 0.165605,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 9551855
+    },
+    {
+      "sequence": 27,
+      "startMs": 216000,
+      "endMs": 224000,
+      "sourceSha256": [
+        "7655e9c3cc471d5ebe389e3ad92fa08ee20e285215b4725630420da35194b065",
+        "cbdf5ae05373ee4cf363ec4d7a1a7eaa522ad45c79dd78753d77fa6bfb9ce659",
+        "e5368f5a32ffdf523f9d4304cb78bf598a444102f52ab6b146bb304dafac0010",
+        "d5a20ee4e9aa7c771a8542bdcf828752a71efd1e4704ac85a7b2cd483e7c4ebf",
+        "987560d6bef916622d85043f54022dc3320a7b71eabbd09f023043cfc2f3aadf"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.300994,
+      "boundaryDifference": 0.440761,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 10048274
+    },
+    {
+      "sequence": 28,
+      "startMs": 224000,
+      "endMs": 232000,
+      "sourceSha256": [
+        "f4e172fd80bef5a22b9e974e7894cfb61c5378bf35aff85ede7a4019bdff8695",
+        "14bead56497e18349e79596a6eadeb1cbb650938f2bfd098c76be3128fa8a2ed",
+        "7446902a003eebf2f3975eb84f2bb6f5c09aca951294cf96e785899c43e1a290",
+        "07f49647ecf1696619d516f5102d0e9b8b3a64fcac5d8c343db95bd0b7dd845b",
+        "da496c066641ff54c9e0216bb271a6060280f56f1a8a293b1dbe52faa66b20a5"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.209443,
+      "boundaryDifference": 0.161785,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9397326
+    },
+    {
+      "sequence": 29,
+      "startMs": 232000,
+      "endMs": 240000,
+      "sourceSha256": [
+        "3008e72ba364de7e1140cf8d3067ab1efe2f5687ddbce27e19597838d580ab2d",
+        "30884d4a5b78db21d372ff1225fbc6d0165006cd13348d92d2a6a3ef7afe323c",
+        "67da36d18ec010f4d149fb8179ee2f82c38638b4b056c240341bb2489bbd64e8",
+        "f46317dfd5868d48c94c73ae3be8a869c1c6eb6beab074d9c720531ac827ce77",
+        "cefac2589530a8bba9dbeaba344b365bf125d7c7da68a82d0574a4a1f260e8b4"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.219758,
+      "boundaryDifference": 0.084661,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10429715
+    },
+    {
+      "sequence": 30,
+      "startMs": 240000,
+      "endMs": 248000,
+      "sourceSha256": [
+        "74b7cec9520e976fc2fef401a193ba63da90e57309fedc8cc38cefdae9a64592",
+        "3a2d04d2c416af21f72c974e0ec64f0d692037616670e6c4b6a53812dbd20f4d",
+        "949305f60bf286b76063e14cf844377127ec3b40e6a6051bc648c981e8782c6c",
+        "423bca395af0baf8032de50b1cbb64d290650979d594eeb1dd0bf68486d7baaf",
+        "c22ea19280e794f56dfa89cf0594475ac4a54557ec5a8ed4b48e919f263780c1"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.06156,
+      "boundaryDifference": 0.195016,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9843201
+    },
+    {
+      "sequence": 31,
+      "startMs": 248000,
+      "endMs": 256000,
+      "sourceSha256": [
+        "58e5fc926c1d8b2cc600f187ec07cc72085a386fc03e62d4fc455313119eb9f3",
+        "da4b992e3fb95d51dc547013293b27192c0d5bd661643ed83accb7db7b5e1f57",
+        "5f0385b48dd218e7bbf0da932a1062d259b7cc8f457f9b94e28bea9a0e88e23b",
+        "12a0f52ce3f2528a3f3f3e7894c13d8e2117de84b52781bf4fbda781d609e5ff",
+        "1857ab8dd4eac398882cd6d412783b3ead25d8ba5003102e58d021fd958b281c"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.254269,
+      "boundaryDifference": 0.023005,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8984092
+    },
+    {
+      "sequence": 32,
+      "startMs": 256000,
+      "endMs": 264000,
+      "sourceSha256": [
+        "460146ae94f025d43c4e6b3319408e8710e75dada269490bdbe891cce15e1352",
+        "91ed271fe98e720589296a465d5ea8fc2125c37484cffcba892f8ac44c523f59",
+        "e1baddec2d52ec71635aad7767b4b67ffc19186409d96ce010cca8c8aea1315a",
+        "0a1f15769c9e4b798c549c54bc71f548efe94f2da6f636a2fe38faed1163bcad",
+        "b3b3c1cead2fc97e863c0c3c67771763646b9a7c765f036383aa6617856dfed5"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.230106,
+      "boundaryDifference": 0.080712,
+      "unselectedChangeProxyIndices": [
+        3
+      ],
+      "cpuNs": 10038834
+    },
+    {
+      "sequence": 33,
+      "startMs": 264000,
+      "endMs": 272000,
+      "sourceSha256": [
+        "0b4275c26ad7e2acf1a9423a071c03e8c8cc23b4d0e4ea0c7d78802cd9935f12",
+        "4a94e7530bab7b93de66dfb4cf1751bdfc5184e01bfd59056742f7ed5e13510e",
+        "2ef750e1e58669ddad312b69f32b5a6e0ac3783bfa941ad44fd9e74e2623bd1b",
+        "2c66cd5876aa8444fbac608a7a7822a8ff58738cf2ef1a37b5e984aa4bc8c07d",
+        "23ce5134863d75dac4a7021180c4f225f7dbdddf61c87d03a60f5c2a038d44a8"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.150483,
+      "boundaryDifference": 0.096786,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10696612
+    },
+    {
+      "sequence": 34,
+      "startMs": 272000,
+      "endMs": 280000,
+      "sourceSha256": [
+        "46861f480b3f776e3335262e78a6d7d3f7ff57b48d6b1d855d7f2e17b340ecec",
+        "5aeb8e32ffff4a65bc55c7c52d7ac37e1192026d2c350e1d5020188775fa28b0",
+        "1e4492b7f1336ecccedf36c67b62bfdb617125cffb9c3930a9d38a65992052c6",
+        "d2444be62d453944d4af70029e0edb3d1c9c61fb30b165740176ccd66ec8f9d1",
+        "2215f37082ee613d88e2b3f6b384a79310fcafc5eea527b7d394d01f6bfa0a8e"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.197141,
+      "boundaryDifference": 0.154208,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 9160237
+    },
+    {
+      "sequence": 35,
+      "startMs": 280000,
+      "endMs": 288000,
+      "sourceSha256": [
+        "d0efdd9ded60d5d84ebb5faf8135325b9c091b1f3ce3fa36e00aaeaf67a9a978",
+        "2b5d379eb3a21fa30d88c080968e8db031e9ca0aa6f0ae1945ed331532dbadf5",
+        "3345961f18df188da78d1b46e9c6fd6c717d46befad9e81de85168a1983088da",
+        "2e5c546728e55a0ed0df81c9102a96854cf7b2e0e63b62abdfa22203b9877539",
+        "f32ae6151a99d0a6ea924e1e0665e2113ce8964a95bad8971f381c82ef26be0d"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.188746,
+      "boundaryDifference": 0.176804,
+      "unselectedChangeProxyIndices": [
+        1,
+        3
+      ],
+      "cpuNs": 9238046
+    },
+    {
+      "sequence": 36,
+      "startMs": 288000,
+      "endMs": 296000,
+      "sourceSha256": [
+        "5ee66d6bd6a67ba5062739162a573ea2fcd4dcb159e448e9fea0519a258d2da3",
+        "44217d8083e35bd7ee6147439ca43c103b6420784d24a3af7f4339963a52d651",
+        "54b2ccc83dc565b31cecdeac6ebf01ac9a2c2b3e47be1dbd60eb527bda5b5e1b",
+        "8be3d5522fbc5566455cc09fa8f6fe02a301d6a5c0d5b14bcb26ba12abc7b689",
+        "705450ed4d946fd8158978e00f972abbb60f76fd45645a79c69ec22dab438c91"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.185852,
+      "boundaryDifference": 0.130154,
+      "unselectedChangeProxyIndices": [
+        1,
+        3
+      ],
+      "cpuNs": 8848651
+    },
+    {
+      "sequence": 37,
+      "startMs": 296000,
+      "endMs": 304000,
+      "sourceSha256": [
+        "c9d8ecde2381fc3c4e254be345787bb3ccf7e7a5718272f65841d622c4ffb993",
+        "c79b6f37fa8c020413e75e55f65e2cf52fe9b61f214e49a5bd9e08d659605b1f",
+        "2d4529d10feebb1396f647baf17e7bf1301eee36fa16d4458db6fd2db8aa33e5",
+        "8fd6acf26cb646c3ed49889ae7773778a3090ce39579693ff63d9d9985ce92e1",
+        "643c8d30320a978317cc95753daf735c0355d1cbf4c7d0cf0ebb589abf786161"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.203336,
+      "boundaryDifference": 0.210471,
+      "unselectedChangeProxyIndices": [
+        1
+      ],
+      "cpuNs": 9491919
+    },
+    {
+      "sequence": 38,
+      "startMs": 304000,
+      "endMs": 312000,
+      "sourceSha256": [
+        "5f5b51fdcbbfe7006e5b26850ec8c9cd74381d8c4c61320803a13aa4cbc26bd2",
+        "bf7fe333cf07eb98263ec2f03c852dcd6508881a0a997fe1d1869258bb22d309",
+        "482a29d9615f22b3dbe09359e5134d8d911788e3f95acae6e38ba6fbdabf3086",
+        "d5ccbf19c190f38d46b94d87472c68b70278a1c8aadd5d5a6c972442f6eb3244",
+        "04a83c5bd3aff523600216996bf4515212afb39cf4498ce3ab369e9f16ed7fd3"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.238453,
+      "boundaryDifference": 0.185914,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8334329
+    },
+    {
+      "sequence": 39,
+      "startMs": 312000,
+      "endMs": 320000,
+      "sourceSha256": [
+        "83f21e5611902cd3a978f4c9412900e8bf10d253e3d8a0d9a8cc850098b6871f",
+        "7a4f30959674a3c8d52e6ed3e39505d64a01a383ff31954af4fa177587c2a4fe",
+        "00217d51bf41fd432eab2bf3584ebf4fea5d037ad5b87f763485d907c7c85b99",
+        "b3e7d23134c561b5888ab9e8c841f16f90e26dac40fd51f9801e03f88e66b504",
+        "1fe596b43afa78769417ee26eb64f6f41f4c282dc0f965a3ca796f80e438c9bc"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.209273,
+      "boundaryDifference": 0.159579,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8800683
+    },
+    {
+      "sequence": 40,
+      "startMs": 320000,
+      "endMs": 328000,
+      "sourceSha256": [
+        "9f91c85929c3070c6aeecdd925e058a00c8fc1e78bd0c2be746c3e7c0a3844b8",
+        "ef63f37d80969f3085ce67fe38bb14460bfcee668b7916a47cc4f48214f20ed8",
+        "b7c78a7e358fa54d1c7a18cc37a4adc7f5e5bef2537727c7ee7a3f8a5b4323f6",
+        "d421a0ad8cdc5a63ad0c31c4dfe4aa86ee53d6331b43830e9b048bc149289fad",
+        "c33875c8305ee0c23bf1fcc4baa35c37ae52c8bb3a2fcfcf760a318278c7bf60"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.181965,
+      "boundaryDifference": 0.184736,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8263593
+    },
+    {
+      "sequence": 41,
+      "startMs": 328000,
+      "endMs": 336000,
+      "sourceSha256": [
+        "63179ed8574532f12717f57729f171d26f519574fdadc3c716e8533eede562ef",
+        "8c03872049f3356919456741a766fce23c340b6dd09495020a42458d946e84df",
+        "7d54f313c2d9876827d3f2e24b4756b980fd3fdc3f12f82aedcbb113e22d5d0c",
+        "bb9d132d9b59408be47aa4dae99b0c613edc221c3a808769669d1234b920dde1",
+        "70eb4a66a559f2f2e3c52c911d281f30b22c67999fd9592a36b27a682f630c4f"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.357823,
+      "boundaryDifference": 0.045323,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7950615
+    },
+    {
+      "sequence": 42,
+      "startMs": 336000,
+      "endMs": 344000,
+      "sourceSha256": [
+        "9e529c9577bbf6f67a425686a7ff749b4f96a8f7ee912d526e25f17d01c66088",
+        "8e4041c1526d56214446f8c29d467eecd058134cf639c17ec250be487b51788a",
+        "c94a186f6a8a7c9701974f3ef8be5f4253e338961735eb8439362ab091fa5066",
+        "3a8478bf658a9586e09a999ebf544371fc3c7b80159954887161cb9797402ed6",
+        "d601622f1440d9e5f4f63afb2cb2c9f1cf768862c1f7455f4d053206b336e914"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.32229,
+      "boundaryDifference": 0.047651,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7156147
+    },
+    {
+      "sequence": 43,
+      "startMs": 344000,
+      "endMs": 352000,
+      "sourceSha256": [
+        "3c68b400f7007918ea815ed6b38d6d92bea4ec9dbb5389a51da3fc379dd92633",
+        "8c5bb6a27a5f3e64c075c0f26c1b4688d16a43eacf2d0db9c75230725ed07d61",
+        "f74275dbaafcfe0e901e6f38be569ade16a0c29edd190c00beb858a127c34715",
+        "2cbcda965b31c475df3ba14e41ca7a4dee6feccac24d7192e04e051ff791f502",
+        "69f87afc9734cfbd093c39a263f32369d4c7bd2418e3161ce411211cb635fff2"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.205501,
+      "boundaryDifference": 0.149905,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 8452730
+    },
+    {
+      "sequence": 44,
+      "startMs": 352000,
+      "endMs": 360000,
+      "sourceSha256": [
+        "539d642a298148f64405c37b4cbf65687e5fccf3f06fb97ef40e089ccc0f92b0",
+        "9c80f682b6d021addd7bc9673a6db617d67401ede8f025672e0833a97c0a7cf4",
+        "ad22af2a60366f9c087e814e675a9ac5a3cae15c1818ee9ee2be88716a7eb596",
+        "b69ba81bbc4bb007062e979b679a4039f1473c2fdd43fdc1b4e46cacfa06b817",
+        "8e7869491c808d1d061f23c7830f96623eb9961bd2bfb9f71db87a93866278c4"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.22101,
+      "boundaryDifference": 0.034675,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8590234
+    },
+    {
+      "sequence": 45,
+      "startMs": 360000,
+      "endMs": 368000,
+      "sourceSha256": [
+        "d9c58d8414f7e59a0e57f772cbe733623bea00ee66ebe6790a567ca572a82d0a",
+        "9c798d9c33d408f4364dfe9f614d8fc2dc0234dfef5ed308aabdf9d501c277be",
+        "d423c1beb9782e5b6086344f3acdefa2bb30e4ebd8ef5de2855bd0fc01ac00b5",
+        "6b1641406d30e33e0d9c1c347a691ceb8ad2e05ba15125ff0754a8b239a50efb",
+        "a38294352973b5fcd9553f2c6a9deab1303ac808b836aa4a94aa8eecc358af4d"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.181093,
+      "boundaryDifference": 0.026144,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8983676
+    },
+    {
+      "sequence": 46,
+      "startMs": 368000,
+      "endMs": 376000,
+      "sourceSha256": [
+        "57dcb5c1c58ee894bb1f6b64d6424c4dab9ac3bf27909786b1494a76758205f0",
+        "00e99e84f7d7efe71aabe0bc5113dfa188194003f70e4026fed8715a44b75d82",
+        "281dbd13a43cd21f012f00349a7299295006e006950fe56a0e76c7f411980f0c",
+        "175261bb67e0ae3d4068a8bc4a044906aea354e69077f900cf04e64aefbc55e1",
+        "3a1fde4cc5b70e9cd23af0aaee073b03f298c5fe3f6fc85e02fc66f81e86e60f"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.308789,
+      "boundaryDifference": 0.21011,
+      "unselectedChangeProxyIndices": [
+        3
+      ],
+      "cpuNs": 9073165
+    },
+    {
+      "sequence": 47,
+      "startMs": 376000,
+      "endMs": 384000,
+      "sourceSha256": [
+        "266d8eaa75f1d1d8b36e6c22648c09d7dcba675730b67b475cbc569b3ce23c19",
+        "f5753c1187239c9799db3c38254e597daa8a1009843172f7156894064d49070d",
+        "b646dd88af7a6e8fd07f6838e9e9108e11e2bb2fd73b59114f8d0a1c164bdbe3",
+        "d3f4a2bea7cbaae63c8a2a9fe7b2fc18bec03e938fd55e9bc2b291cc756c6be7",
+        "bd52e0643985f21715a4c2f88468c2b66f94a37ea7d3d51a6a0cb0b0b89591f1"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.230637,
+      "boundaryDifference": 0.170227,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 8426025
+    },
+    {
+      "sequence": 48,
+      "startMs": 384000,
+      "endMs": 392000,
+      "sourceSha256": [
+        "ba7e8d8b0b78853f64e10ba197f077452e4812be710a8d43410811ea43289748",
+        "4889249962bd2b5466d6152b4d74240915b67b0504a5cc2f819540619c9f0b00",
+        "bf5cd9adc63323e17578e600d6e61f7f1656f68cc6ff6250978b519b20cf19a6",
+        "d3f577efc3a7b89bdc908a4e6b1aaf55e826939864ca5ca065bcab42a6481775",
+        "96e3cca4093e3a9e6a1de72e3cc30bea0c4a0539efcfd11ec7a8dc5ceff1ff9f"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.216183,
+      "boundaryDifference": 0.256665,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7190724
+    },
+    {
+      "sequence": 49,
+      "startMs": 392000,
+      "endMs": 400000,
+      "sourceSha256": [
+        "42bca9adea8871fe52ec911bbc778ae13195b136a04048d506b7f56b154d2f68",
+        "47d715b0a2de69c3f4c173184f6420e155d83d4680e5c0f57c68599b7daadb79",
+        "089297d24c447e44f43a69df07c452e70547a01546b990c8dd1ca4d0b8d6bea7",
+        "8f38d63cb1af9aa9a022fd76ff59b98aa8181d73484de6524c66c2883d74347e",
+        "7366f65c4599fbca108cc6dae3eb3a9e483a8e2a842bdab50ff52a774a3cd750"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.222379,
+      "boundaryDifference": 0.067586,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7267091
+    },
+    {
+      "sequence": 50,
+      "startMs": 400000,
+      "endMs": 408000,
+      "sourceSha256": [
+        "84d5b102f07371ea8f0eae56a9dbddf5df16aaadac0ab65b8251ffbe83423137",
+        "4bd4a3dc94f532ff299377fd35692806a98b142c4537d6b51aac7bac0769539e",
+        "2a12c68d1dbe896d9861eb9b0e05b5a4d5aef9628a372fa0211de02f8552d6ef",
+        "9e7d598f782eb431c9b9c06f4ef9f6597fab9e53be4a8d3182fa8f545dfa2a51",
+        "f51a823ace1293a1b4d674139ca57dc27a73c1b61e9d17caf23b8efd229f0055"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.283524,
+      "boundaryDifference": 0.249122,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 7625397
+    },
+    {
+      "sequence": 51,
+      "startMs": 408000,
+      "endMs": 416000,
+      "sourceSha256": [
+        "d723fe7cde40a628a03ad015f179841ed79b2b9e381c99dbb954988e27822ac7",
+        "316846b5e0cb289cf246164302c61c95eac0b117536382c1518c1a6179d510e8",
+        "138e3bd47db59d47d4c205d27f5617c42986239fffc385d33224fb99930a13fe",
+        "5ec33995af794c817c2fc918baa85715a32b8b50008c5e8d57e3f9b2aeb94247",
+        "791961183ec9b1649485e1266717f1365bf80a6f7cfd4096c64d87cf927cbcb2"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.222066,
+      "boundaryDifference": 0.042593,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7368740
+    },
+    {
+      "sequence": 52,
+      "startMs": 416000,
+      "endMs": 424000,
+      "sourceSha256": [
+        "23a81beaebe63d92cdc8ed60c9c2baf17b1c3f568a2c7ac54256fefa778ebb1e",
+        "c7686b0ca14737a9ff7eb85fa7f6c5fdeb05f02f584454211514615b37cafb6a",
+        "b336b3a47c7c1a51c9f4293d313715b6c99ee0b3c77dcda9ba30815c23a2c629",
+        "02fff07aca3e6c8f34eb46bf540e8f3550a973746997006bd0df533a68ce6613",
+        "4287e4f53f48a9269b1888f010eef9cafff2c5eb744f8d519d0b782835ba85e4"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.230202,
+      "boundaryDifference": 0.204895,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9017149
+    },
+    {
+      "sequence": 53,
+      "startMs": 424000,
+      "endMs": 432000,
+      "sourceSha256": [
+        "6ee6f954c4a53b3af145d7b198b34eb932034eb4a5037c78212bc24faa6ba948",
+        "32b7ad568de56ed8c5bd65601a302ace9d5fe7398c5c2448b0148d0d2a9b5110",
+        "2ab3e67dbfe7263595fc7118848b51ba6bc92f2e3d0e2c95bae0c6b2f5ad68ae",
+        "88275d9f08e9f40ba6c253acc27c1d88bd45b60210e479899b74823e04094df0",
+        "c6466296195f85fa230580ff6c1ad68806cb3d81922e841fc315f9d3461add33"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.233858,
+      "boundaryDifference": 0.115039,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7665973
+    },
+    {
+      "sequence": 54,
+      "startMs": 432000,
+      "endMs": 440000,
+      "sourceSha256": [
+        "7097c0f671c66b5d1c9c92539621cb357769e71e7be31b6f7d17e453c2f41991",
+        "05c0c9d1d0764fbc7bd96662c2b828e5b19c471149887b8f0ab174cbbf7fdafd",
+        "8fcd67c43da667756b59df9338a010a986373148b8c66f192eed48de36fe91bb",
+        "71ddd72f9d13635c30c1c9e7bb2ec738494d9672da02384a9086b812542231e8",
+        "4f4fbdde3c89cfb7256306c314c575d1b4e822a90610122e55ff24eb39468f37"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.265891,
+      "boundaryDifference": 0.26796,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8869116
+    },
+    {
+      "sequence": 55,
+      "startMs": 440000,
+      "endMs": 448000,
+      "sourceSha256": [
+        "a21c9d362f199704fb467a7dd8882c2b39f90cbc6a4cd537caca06e22e2fbc03",
+        "d633574718fdafb674dd5dfc19e643f24b1983754917232da032a455d78ac4fa",
+        "ff518eb775e70aa7eb23ce5bf37af059910fe2f1ea4e91489a08b6eea85c4995",
+        "1ca8db64a681326c3ba8ddd162d8f4ca52ae922e9a5423cb2c320eb13d909507",
+        "88c01d9a006b8149e97440e8e1e830ab163298dfb7dfb8edfb52a730145750da"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.437779,
+      "boundaryDifference": 0.310893,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 8025608
+    },
+    {
+      "sequence": 56,
+      "startMs": 448000,
+      "endMs": 456000,
+      "sourceSha256": [
+        "d34a676ef43f5ecea78f0b0a089d2ee0c34ccad398d48ee67d81976e1a75a761",
+        "d005f70ce89c8667def8c2177dd668ce756935610d976c7c54851a25bde51309",
+        "c29671403730ee54177ce73cd0c056042827aae5b1d42dd3ada28bce18dd6e67",
+        "3859ee62ba3f34f4ca55facafb45be2ca5082b1eb6153bc66a9a0ecd0b044261",
+        "ae820d0a9fd2e65dc2f666f78e819e525ada10ecfea386dc423cce6f81805087"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.210995,
+      "boundaryDifference": 0.088133,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7861046
+    },
+    {
+      "sequence": 57,
+      "startMs": 456000,
+      "endMs": 464000,
+      "sourceSha256": [
+        "57a8aa713ecc94d80f7279bbdc04db904578198b414f08cac4d54143707f36e1",
+        "d332d92896c6176012250edf30c8bc586c1cebac6dc47b923d92add7e0ce8797",
+        "71ec85efc4513536dbf31185e21cbfc8939bf9a191850b03134d2f67c773f688",
+        "937e7d292fea664675cd10caf77385bef5838b0b2c4dc0212b89769d9eea71ad",
+        "cd73e55f028d31c86f62e8a2450991284f5cb40111b946644d16c98c1f472a10"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.280944,
+      "boundaryDifference": 0.128751,
+      "unselectedChangeProxyIndices": [
+        1,
+        3
+      ],
+      "cpuNs": 8601082
+    },
+    {
+      "sequence": 58,
+      "startMs": 464000,
+      "endMs": 472000,
+      "sourceSha256": [
+        "c94aaba5110192f9093a624a850bcdefb7ad35780c6d31ff31cc74c139365ffd",
+        "ad026f193ec2b78d6cbea44a7482200ddc357e1155137b78b3779c0a5d5f76da",
+        "5ec66ee7e65ffd4238960504370da60e6c14e23a1af691ca580b518136f3d4f1",
+        "1fd33640ae6437de581566fee387f5421d521546ce0197475ec824f87e518053",
+        "82955567db780f708e61a95122f9fe4f18d2c41b7e542bd8ab887d04056e9f8f"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.270615,
+      "boundaryDifference": 0.02709,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 9214990
+    },
+    {
+      "sequence": 59,
+      "startMs": 472000,
+      "endMs": 480000,
+      "sourceSha256": [
+        "e31ddbaef2b11420560edb97948d4e3c89472e0556bd2c9212d0a02e3b7ab192",
+        "e62ccbb962a1ef67f42f808ed2aeedc62e499709c5d69f697907638f81d465be",
+        "d3f7c301a864b54f4228151c666de20beeeaf12d8e16ff133ea1901d4f55f4fc",
+        "58c07611a47533b5345fce6573210b9d8239cf6498caf1ece6a521d0365d4001",
+        "7a3549df9dca70f56a421b6c888c471b672a85068bc4b10104c2a155d60a0a2e"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.243873,
+      "boundaryDifference": 0.245132,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10335267
+    },
+    {
+      "sequence": 60,
+      "startMs": 480000,
+      "endMs": 488000,
+      "sourceSha256": [
+        "d50d7d3deb24eb67cbd04f004775736b5d0d23e1e6c4cbe19d92df6f1a48bc95",
+        "f7c968a97723932e9f2eb26521d7e5e71fa99e811f0e79477793a5bf21a81390",
+        "d355fdf4a78970195f93dad1a73388d420350b45c848f95fd4522f365bfdab5d",
+        "3d1715d36ed91864f446673d09836e8f2cbf9c1b590d8ada12be8b2391d6edb7",
+        "718bf280150aebaf6717db5062d721f3dde192a81a257875cc1fadff39810535"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.379636,
+      "boundaryDifference": 0.291095,
+      "unselectedChangeProxyIndices": [
+        3
+      ],
+      "cpuNs": 8376777
+    },
+    {
+      "sequence": 61,
+      "startMs": 488000,
+      "endMs": 496000,
+      "sourceSha256": [
+        "e00a21ff8f69838eb2d6c46169508454560cf123d5e212f23736d90a7bd24976",
+        "b610a4839d926f03a84e7b1d2a0835a409d16386b7bf5d8dcdf963f67bc85f9e",
+        "e835ef63a4600105df6838346c6d5a2914d5bd2a0323cd4899b005ba18aff943",
+        "3aed4f301ae49c6a1cc47ed67c93deff0ce0c2ea1249fe0a9673c0fac5b867f5",
+        "92be47ff4f225d6a886119f53023b253a3d814cab132568ff469a957187d9326"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.334504,
+      "boundaryDifference": 0.020377,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 8572362
+    },
+    {
+      "sequence": 62,
+      "startMs": 496000,
+      "endMs": 504000,
+      "sourceSha256": [
+        "5298e035bff3060263b9af3da51a28ca9ea3d01fe8e58caf85607c65359e92a9",
+        "accba45010f1738ad1a27f7149c6ca3b1b8df14444470cb17b3cfa3247766109",
+        "aee5937044ea14a8ea5325bbff176b3e933f5a1672e7521dadc8cbdcff6de75d",
+        "cbb9dcb5ac773a9def43658c8eb6400298fbfdb6f641190b7167dce967ad5189",
+        "febe03f4a3220c09f65cf3b86572dbdaf81393945cc71570627124a83a593730"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.273012,
+      "boundaryDifference": 0.25514,
+      "unselectedChangeProxyIndices": [
+        3
+      ],
+      "cpuNs": 8402969
+    },
+    {
+      "sequence": 63,
+      "startMs": 504000,
+      "endMs": 512000,
+      "sourceSha256": [
+        "ab238d7049870d72a59ae5dfc0ded4153d1a19ec2d000fc32fbeca93fd2b3ffe",
+        "2750669ec85dd339cd6a9852b339412666dd6f8a2235fdbc62a63238bafbd513",
+        "92464c6df79ecd396b698475647abdafd6bc691c9d508714775d4d3d57af0b1a",
+        "765765df42093129f706487aca6944c4a0db4944736e3decb87d7d3fc3c8f4f9",
+        "e679ea6e703f257e5e8ffa4f5597d2122ffb689c8dccd1b26af35dd035483d8f"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.232074,
+      "boundaryDifference": 0.21905,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9935057
+    },
+    {
+      "sequence": 64,
+      "startMs": 512000,
+      "endMs": 520000,
+      "sourceSha256": [
+        "2575b10cdf00eb85876bc3acfb854d127fd11212506cc49faae5823e7b5a10ef",
+        "b167a52b665abf3d2b23d7c077690220341d38d3012f0185b79171a936ad09d9",
+        "503206f58b78f41d6b052db9ec55d72a40105343f1e1564bb3de2fb3da3b6088",
+        "e749d07408ea213507e5c147ea5f90003d8e196895085027eaa7f164efb72c4a",
+        "2932ac88355b6947e9ca42648f49ebbeaab8b9ebbcd4dbffaf2c32c896f13718"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.178867,
+      "boundaryDifference": 0.063256,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10892678
+    },
+    {
+      "sequence": 65,
+      "startMs": 520000,
+      "endMs": 528000,
+      "sourceSha256": [
+        "a575df612eabe7da37536ba8998509eb293186e5410ad26cee607dd11bc54916",
+        "38b1238c84808c9141ced074eeb50476cb139b98fead3d4e9e564d55eb63f7ed",
+        "a8cb9fd16bae02239896eb86c59bdae2c567931f9c9b24bbe4931ff931f746b2",
+        "33741416d38dcb08206818c3463537a8701a32f7ea4e04ce163376ea03df63c9",
+        "0171a2f858e1b42a64edf0ccefa465ed266593361fea932c997ed4efcc06f8c2"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.189815,
+      "boundaryDifference": 0.071099,
+      "unselectedChangeProxyIndices": [
+        1,
+        2
+      ],
+      "cpuNs": 9135821
+    },
+    {
+      "sequence": 66,
+      "startMs": 528000,
+      "endMs": 536000,
+      "sourceSha256": [
+        "61d56a3643432f0524ab3e1242ae7863bd79da176e66b85157829387701c598f",
+        "eb7aae3e056a2832008a45d79e277e0e339590d4c9b43348eb75e0fe890ce5a3",
+        "d719f7bff554e2534e9370b26dc251c075e4a10fc6be16676ffe5c076657d519",
+        "16d076c5d3139ed973926d57de4820073356227a1ac1530fd838d5bf10043456",
+        "d83a3b97e9957e6abbe9976303f8b3c7c363bcd523ab05d8ba6561ad46470eb6"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.191449,
+      "boundaryDifference": 0.347113,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 7369844
+    },
+    {
+      "sequence": 67,
+      "startMs": 536000,
+      "endMs": 544000,
+      "sourceSha256": [
+        "c3ebd04720ebce646b623f0e228122d814e475af2ef11baa78297a5179f4c287",
+        "ec63f06a3cb2adda9d48d2eaa824c31969cba4c06b4f9cca376de893f378faac",
+        "94bd7fcbb999704067ca2d29438135626acb420d47bc7fb634d2232b9b1ea3da",
+        "de02d4688b0ba0942689d58638276defe9f296108b4f52294eb7d31f25ff39c0",
+        "852ff087e6b74c8dadc86915d966efc073f4d1472a9a6f1f8e98679546921734"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.245139,
+      "boundaryDifference": 0.079296,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9144125
+    },
+    {
+      "sequence": 68,
+      "startMs": 544000,
+      "endMs": 552000,
+      "sourceSha256": [
+        "6f78548c0859f8e00ed39dd0da80b48f33a72d7c2e8ba7bd1b0763aef502acfe",
+        "b381c901ef513ecf57329d9bb79f50d6f22807950594e02a8532a69de42ca06b",
+        "8b3dd13c9e9df0adc9694696a4bfbdcc60c80c8358a0309cbceb9d27ad80b12b",
+        "d5c8579846473fe7a8b451e81ecbede0ab00b7115f16179713600b1133ceb703",
+        "0751849cc759952070a1090ae20cd133dbd82320cc7838694e59f89d4766e10a"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.098849,
+      "boundaryDifference": 0.25017,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9708624
+    },
+    {
+      "sequence": 69,
+      "startMs": 552000,
+      "endMs": 560000,
+      "sourceSha256": [
+        "29ca88dc6d998694af1575d5160db2d06bf640b6ee1db05446bc68ee460d514a",
+        "fe35442eab3860889830171fcdf6865a4a672db42ac2dddb58301daf79d79b26",
+        "9975c9f78b8443a137daa269b7ecde226d0351b0e3ab95197ea6b97a250555bf",
+        "2213868929a6ad11b3b16fdc4a91584c599d9e1b5b03713be97fe075232ab20b",
+        "e80baf805c67846a6c53df81b6141a8305c40ffe7c3b1141f83c753dbaee71c9"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.192368,
+      "boundaryDifference": 0.040421,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8306649
+    },
+    {
+      "sequence": 70,
+      "startMs": 560000,
+      "endMs": 568000,
+      "sourceSha256": [
+        "581ce9d4e6b0be610b76beb652f7c8e0a53479341ce5d150c2ec38dc89258999",
+        "55658407ce47ca848ac94865b04343021431610e4603bc6a7456fc6d7044f15a",
+        "d5f11da11e92f429e0a8a15579b9c0d681074cf39d180a28f8ba9df83f6f2f63",
+        "9aab742761d9294515e9428750bd594e595e082755db92bd709dbf7c412f3ee2",
+        "7d4f96270472e0ae7cfec00613aad3118444834c0638b474f0c03a68f44950cc"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.197352,
+      "boundaryDifference": 0.1144,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8896492
+    },
+    {
+      "sequence": 71,
+      "startMs": 568000,
+      "endMs": 576000,
+      "sourceSha256": [
+        "8bde7f137c258fee51b06dbb658c5cf3efacd897a4998dccc09198f26bf39de1",
+        "4ae1cd32a0da0c737e8fbea8d6bcef7bf81b59f7e6ab602db38d1a3baf737199",
+        "3af54863371ba1e015a1c5c7d02f2d4f134a0ca6ae4a596ea5b90cd3bcade762",
+        "aa378aa695e361fba3b4dcc311efc5f53afe289e3c8f27ea24a06ca71fbb57bd",
+        "440b9ed1d5e09efd28c1414b96d67724aa69685cbb293eefc3e22e6d833b6b8d"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.231379,
+      "boundaryDifference": 0.070064,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8467321
+    },
+    {
+      "sequence": 72,
+      "startMs": 576000,
+      "endMs": 584000,
+      "sourceSha256": [
+        "6442b50e04ab5a2eb3fd5b60982debc1020bc0cdd9ca8283d8c5fcc6a2d14532",
+        "8635d43910e0962d5320ef7293a9e7332e120b7b4433901be3eca1e7cdb4ab26",
+        "833a47fb1174772ad9428ef19d232973f6101cebde6b96e244c307735f63a24e",
+        "512a2adb87f8ff5abe958a0a130d2c9384a947273cdffbc896a717c335c8dd8c",
+        "4990acb8ccda1d9a8497af435e3041ce55223c93b4d771244fb2a602a2cfaa5f"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.08349,
+      "boundaryDifference": 0.08108,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10370819
+    },
+    {
+      "sequence": 73,
+      "startMs": 584000,
+      "endMs": 592000,
+      "sourceSha256": [
+        "016f01f055974d1332d918813d9d0b67e3f00e83c764ed1400f7a3003480b7c1",
+        "e4f865920b982cf503aa14857537f6567726a968b80a18c0b5e1f9246eb759b5",
+        "2f8b6ef9e4fd93046903b669f5cd1f6e818638434a637c1e136b382a457ef5a0",
+        "042781b5a01cace36725b5d979bcd3331e88981249fb520d289a086b883bbf9b",
+        "0f339e697c472e572a903a581004a0a68cb74c522d4c5f2325a5e876daf1efd8"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.272426,
+      "boundaryDifference": 0.074455,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10070482
+    },
+    {
+      "sequence": 74,
+      "startMs": 592000,
+      "endMs": 600000,
+      "sourceSha256": [
+        "dc41b281ba2812a79a6eed43c88626f0666ed19cef61d78840d3352041b5d2f8",
+        "4fed56f4ad01595706b6e9259f475bf62c4b8b9b8c1d6521e2a9cbbc6048c7c6",
+        "a5ba9df3b5d4c979b82608a0b4d091983c5f53ad2f55b5d272ff3b5999e80550",
+        "9e4684ce53b092cf490501bf4999ffcd9e3b4cf2cbf6982c451b603e1ca0d862",
+        "e03d6934b3d1a14168bc312e5c0dadea88f2b9aeaeb2c107d5ee1498677efe06"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.257251,
+      "boundaryDifference": 0.018342,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10655300
+    },
+    {
+      "sequence": 75,
+      "startMs": 600000,
+      "endMs": 608000,
+      "sourceSha256": [
+        "51e7afc30d18df39919169705f7a5452a3028ece7171878b8acd10703e82d184",
+        "a48365598128a380110e2f5498cd40fd6ce9f4b1700bfd21f15aee3be2156e1a",
+        "38e5adf330d985d0501e26210750e689904a7de9030dc4c0613f8708c23288af",
+        "5a6d20639e2e6582fc92c93b14d3208b4c773a87d0e01f80df493168a555353f",
+        "b7e61910e29c6b7df208440e607107ee0d88bd20535f2437d5a2705c6b6bfe76"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.253336,
+      "boundaryDifference": 0.070527,
+      "unselectedChangeProxyIndices": [
+        2,
+        3
+      ],
+      "cpuNs": 10229091
+    },
+    {
+      "sequence": 76,
+      "startMs": 608000,
+      "endMs": 616000,
+      "sourceSha256": [
+        "f7a4e76bff1b135241044ec0da321ed76d71ef456d36c5046fa4e00d249ba79d",
+        "d1f6241cce4421ce1aba69ae2e3c05234d5202ab18a486a6b21801d77dbab8b8",
+        "e2c27f68b5f6ec2d20972c9a48def000798236d55e4a193d74fc15b720958489",
+        "1cda9c1e4e5f512b6a84ae221c48b8ba75804e5d799246286db4b810a0089def",
+        "9c6ea896a81dec11c73a3818fc546b729199762820b8d09d39a7780131a22a94"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.158755,
+      "boundaryDifference": 0.049319,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 11528552
+    },
+    {
+      "sequence": 77,
+      "startMs": 616000,
+      "endMs": 624000,
+      "sourceSha256": [
+        "f50857eae932dd0b9cf2b9b78d8c0e2151c12a1aa66491bee6e4cf393377dce6",
+        "59c48aeceb9fe8321ec716da54a2f74086348bf98073b6b7a392bf093e0f0ec4",
+        "99f49b7a6a0d16071268c7211f8e7c9deb5c7f69079693bf197952fa679e8fea",
+        "6eec4539de1399d4b3c88dd6d5c64d70f9e9f536363af5177d210e4c3111f477",
+        "2686cfe8630b0931b9b5ebb6e8461c4241532a1905dd02ce2f1dbd7bd9895903"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 1.0,
+      "fallbackReason": "unselected-change-proxy",
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.258007,
+      "boundaryDifference": 0.04021,
+      "unselectedChangeProxyIndices": [
+        2
+      ],
+      "cpuNs": 9768464
+    },
+    {
+      "sequence": 78,
+      "startMs": 624000,
+      "endMs": 632000,
+      "sourceSha256": [
+        "8dc92571f41a31691289652e15ca54e3d4eb33de7310a497421bc8289c68bd42",
+        "a6d0e73a71433bb32f47e88d53294def82a7424e5cc6f4a567251e78fc894a62",
+        "cb843e078fb1a5e291c685d56f81aa76e7306978fe26efc1f8dbfa15db180fef",
+        "b4f3668d750fdb4416795765d6473cc55d914e9f6fde47fddfd2199c959bcc86",
+        "335ed72298f1ecb152cc08fc4e5d437dadfad3cb953d246ca39a0c60db00c6da"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.120432,
+      "boundaryDifference": 0.086737,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8313721
+    },
+    {
+      "sequence": 79,
+      "startMs": 632000,
+      "endMs": 640000,
+      "sourceSha256": [
+        "7e7bc5bb627d18546b2ba03543f60af70778d983d5ae1cb29ca783acd0a9b2ed",
+        "f4f6756bf9b32ff6f85ee04148e93bec15e61a08106968114f552cb68eb32a0b",
+        "effbbb8947d0c6900242c2f30da3af3384053205c9895fdf3a96c4ee063a2c50",
+        "eb89f8a407fe9f567410a98c60c82c665d9c255b753c103f4097bc19224be44d",
+        "c3aba9f314d5c42f5a121834925920af4b012d7f064537adb28bc8305b6d31e4"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.069363,
+      "boundaryDifference": 0.034967,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8919500
+    },
+    {
+      "sequence": 80,
+      "startMs": 640000,
+      "endMs": 648000,
+      "sourceSha256": [
+        "3f7a338828743330dc4b4b292631b505557b0ffd16a494d1877e7ea084144515",
+        "21fb97e86721eb811ec57bbb20a459ba1ea491f28e1e9311e1a2958728eb7c25",
+        "7f76a0a8ee5d4c663874e8d2d004ff7d952926c686f5c43cdcfe94c9df543e09",
+        "ee522b9167e63602e79b76d17c4f54da2a7e159bcc39c615cb604b90849b02fa",
+        "77e471fd329c85008d3f9b210664642cfce8c25201bf0ec6de6c30ac8c8e63c9"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.096786,
+      "boundaryDifference": 0.060628,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 10104002
+    },
+    {
+      "sequence": 81,
+      "startMs": 648000,
+      "endMs": 656000,
+      "sourceSha256": [
+        "1234145d7373e0a49876f1ada900c8453d376e394b7afd3e02dea3113197b12d",
+        "714d0cf3b937a73bde80c6d058b7a65e6da6bd411660f311495a0012fa6d7789",
+        "d12f4a19c02379b83b81cdf5ce1f4737e1352f59a18c9692606c0e23a36b78b4",
+        "90f3d7a521ba023d81845830984c01b89efe9d51dcfbbb0485fe301778a3440e",
+        "8fe1e0bd32467d893bc583200b9744ed697cd97764718c5a7c4077a1d89e142d"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.098727,
+      "boundaryDifference": 0.084511,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9931569
+    },
+    {
+      "sequence": 82,
+      "startMs": 656000,
+      "endMs": 664000,
+      "sourceSha256": [
+        "6f6c49ef6bd6966611754b72e69ebbed6290dedf055d9756e590785088849748",
+        "e088bba522d87343332c295b2c503f3e5799c762dc375567b41b9f53f5b79b30",
+        "c109ed30baac8c0084f733d99222b1181805bfc81ed1f53c6ec14d4283101036",
+        "2f77b031fda82f58dc5131428555d947536b757d7b6d3cb0fbd8d8b7e8923965",
+        "fba72811966e76c8045fc7e1c5ad8fffaaf2fc1ca694a0e069e13cd49c3e0c0a"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.069833,
+      "boundaryDifference": 0.073632,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 12720398
+    },
+    {
+      "sequence": 83,
+      "startMs": 664000,
+      "endMs": 672000,
+      "sourceSha256": [
+        "5e53b2f1714dff621b72e88e8c187a4e4d1e72bf96d9b5d0b7936ca05e351edf",
+        "fffb2285cd239d97d83cfbc2ba36f1a0afe6ded6e746882080e054e4acccb32c",
+        "ab9c7b2012621bbede50ae1eb7d40a8caa70353805213228ed58cb76e9a664f8",
+        "6ac246cb35a6a045c5964c8e968e837a1d5128377bdf587e6237e369df5ec284",
+        "f8d2a7bb23f04dc77b538df181cffe0fcf27ded86ceade665cb988c13b9e511d"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.066088,
+      "boundaryDifference": 0.054214,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 12391101
+    },
+    {
+      "sequence": 84,
+      "startMs": 672000,
+      "endMs": 680000,
+      "sourceSha256": [
+        "163eb90753f3cc978885cb60e2eb6694b975ceedfe613e7ddfb7de7650ce4c68",
+        "2e27f7d450aad6a85143d58d2b6242a7360b60f404f1bcb6abf6fffb594302dd",
+        "93eb5756ef3dd694b694f73accc1c3d7d825b8ac638e9c56f1fa10385c5c12cb",
+        "bdde0ba0025e3668eb377d4fa4557ec2ed4d87a43d6884816e819bf753b0abab",
+        "f954157c8550fd91f91cf4bf047f14e278c0648350efe3c97bef0d8479d191f3"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.060607,
+      "boundaryDifference": 0.045922,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 12693519
+    },
+    {
+      "sequence": 85,
+      "startMs": 680000,
+      "endMs": 688000,
+      "sourceSha256": [
+        "4443616bfe3b49ee5003dc1fdfe2bac5624570c2f7c7d2fb3d3841b60cf87a61",
+        "b78338dacaadb88a58c4115d748844215dc77bf03b2c7b27f632e3c2773cc434",
+        "4f366cf03508efc351038ceff13ad61df3bf7359b92c1e6cbd127f4e199f13c5",
+        "d44dccf3f595dff6f3e18c0ed43734d370dbd1409bea385e5ca3bd91a7ac844e",
+        "59668c53a713fecd4f8f0390599f9e7193ac618fd2074c34a3aaa8ec75391a3a"
+      ],
+      "proposedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        2,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.070418,
+      "boundaryDifference": 0.037827,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 12493661
+    },
+    {
+      "sequence": 86,
+      "startMs": 688000,
+      "endMs": 696000,
+      "sourceSha256": [
+        "dcd7cf4ff3f1943c5ee8a90e7708e5391f04a6c4cc664bdb7735b96ad7698706",
+        "ef5db0713e5824c352617d7ce9e9daa074ceada061036241eaf420e3839bd38a",
+        "1315292a8920099a3083f6dd323fee275275ec07e879233d2ddc5cfa43b1dc6f",
+        "1dfa58302aa0ca4c6561ef4513fd8559d211208ac9a1b15cae269786bf151c9e",
+        "49323e38c87d4ef25863a578839ecfac5ab60d1d4d4f0f311bd011b89b7632c0"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.081767,
+      "boundaryDifference": 0.066755,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 13301282
+    },
+    {
+      "sequence": 87,
+      "startMs": 696000,
+      "endMs": 704000,
+      "sourceSha256": [
+        "3dc87ef3e015f991c4429efe54894e5e73f13a2a2f68bd44e924f179ddc44c72",
+        "5b6b8e2184716cf054502338cb9ab593328920462d1bb0d86f86b114ee0c3525",
+        "6e237dbfa09b34b885a696e491a17bc9dcb7f60ff79a9b9854d6bc48408ff856",
+        "6bdb1e7e0660b6e62420c5570265c68f7cfe51d925c1144df3859d2c90d40532",
+        "72857460c7ca6236f8dbe5fd6a48bf66dd77b206b540928bdc557bcb65dc2e04"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.109375,
+      "boundaryDifference": 0.080086,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 8686186
+    },
+    {
+      "sequence": 88,
+      "startMs": 704000,
+      "endMs": 712000,
+      "sourceSha256": [
+        "4ce7b5c8f350ed0d6d4ed970a58458708c6f3a492e893cc92783df787aa16dad",
+        "c901bcdd4250b2b0c718039dae489819b5316690e2e1ce1ad1c4074350bdf887",
+        "ff1b77b20ce6d9a0c08e7261bea063e3e5fa0dce4187f8a494396b56f6d547c2",
+        "042781b5a01cace36725b5d979bcd3331e88981249fb520d289a086b883bbf9b",
+        "a9ac3386c6b04497100bab42cfffc8212aa07ec01622f95c46651a39e0d8f401"
+      ],
+      "proposedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        3,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.183088,
+      "boundaryDifference": 0.035907,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 6232719
+    },
+    {
+      "sequence": 89,
+      "startMs": 712000,
+      "endMs": 720000,
+      "sourceSha256": [
+        "4857b890cd45e380d2354cdba6625c79b71a452e53e97c19ee3ac9c2edf55597",
+        "4373aced275238929b4914187a120f8f61d3e027b498312b20194cc29a10273f",
+        "04c6a5e7cfd46388d226614840b7333de9027f44ae58f3aac49a7f632984378e",
+        "d22982ca735dbf796d28ec7ac43be4b5e6844987a436253c30f4b0ab0f9377f4",
+        "c626c2612e552f57ffecd37af17a8c40432076ea0479db8529abd1a7d05a0b37"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.111138,
+      "boundaryDifference": 0.090305,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9554015
+    },
+    {
+      "sequence": 90,
+      "startMs": 720000,
+      "endMs": 728000,
+      "sourceSha256": [
+        "3106411cbf0763be30fbc417ca84c64de945fa03aafcfd9ef62c86b49f1fe724",
+        "3436b9fb5a1462b05e1f5a08a8f681f931c06e19b972b08a53df53c2208a0706",
+        "d153fb8e2b67f17c2627567500a9affa7762272ebda61c1338630d53192e4dd8",
+        "ce6d163987fa9faa4ff7c407efe029a27abbc7264ec2b2d81bce39a68f32b2fc",
+        "bdb57b1ffd98f647516e9eb1b6b1249334d130758db070e6333174506cd46e6a"
+      ],
+      "proposedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedIndices": [
+        0,
+        1,
+        4
+      ],
+      "selectedFrameFraction": 0.6,
+      "fallbackReason": null,
+      "shadowSkipCandidate": false,
+      "actualVlmCallRemoved": false,
+      "maxIntraDifference": 0.111472,
+      "boundaryDifference": 0.070792,
+      "unselectedChangeProxyIndices": [],
+      "cpuNs": 9906545
+    }
+  ],
+  "summary": {
+    "blockCount": 91,
+    "threeFrameBlocks": 65,
+    "fiveFrameFallbackBlocks": 26,
+    "selectedFrameFraction": 0.7142857142857143,
+    "proposedSkipCandidates": 0,
+    "blocksWithUnselectedChangeProxy": 26,
+    "actualVlmCallsRemoved": 0,
+    "cpuNs": 825060539
+  }
+}

@@ -1,0 +1,1447 @@
+{
+  "readyForScoring": false,
+  "sources": {
+    "trial-perception/01-A": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-perception/01-A/run/campaign.json",
+      "sha256": "d6c20b137d48531a994884e469c2af4ed6108652bf69d19f6ef02aa20c79c238"
+    },
+    "trial-perception/02-B": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-perception/02-B/run/campaign.json",
+      "sha256": "b8313fa14b0cf4131e7e82d37e2fbab3cd5d33bd33b7a543bc8788ad4783cdaf"
+    },
+    "trial-perception/03-B": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-perception/03-B/run/campaign.json",
+      "sha256": "838fecb2837f40bc423b923614924ae395cbeacc8528668a0f97543aeeb27627"
+    },
+    "trial-perception/04-A": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-perception/04-A/run/campaign.json",
+      "sha256": "d6e65445cab5f8ffa993a28ef0318548d3915a88d3101dc03692813efd881cb7"
+    },
+    "trial-vision/01-A": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/01-A/run/campaign.json",
+      "sha256": "3c40d61379233ee1d6a6b480f2666c6347756f692051e749be4e0818c228d431"
+    },
+    "trial-vision/02-B": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/02-B/run/campaign.json",
+      "sha256": "dae4991e8b80a816c7aa8f84d287ba50d0aaf05a05143b52a9b38a4a1eb2663e"
+    },
+    "trial-vision/03-B": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/03-B/run/campaign.json",
+      "sha256": "82226bbcf16df2dd96b6b9c1a61ebff68038ad5de83bcb6a8c1f5c233578b36d"
+    },
+    "trial-vision/04-A": {
+      "path": "2026-10-20-nuit-gx10/rapatriements/nuit-20261020T210107Z/results/trial-vision/04-A/run/campaign.json",
+      "sha256": "9b62c06b06edfe31aa312955b1a060f1d431bdc43d8e9b2cfdbefba731fea553"
+    }
+  },
+  "perception": {
+    "01-A": {
+      "cases": {
+        "video-2": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "framesSent": 5,
+          "elapsedMs": 5745,
+          "providerTotalMs": 5723,
+          "promptEvalMs": 2915,
+          "generationMs": 2605,
+          "promptTokens": 2009,
+          "generatedTokens": 165
+        },
+        "video-10": {
+          "startMs": 80000,
+          "endMs": 88000,
+          "framesSent": 5,
+          "elapsedMs": 6770,
+          "providerTotalMs": 6760,
+          "promptEvalMs": 2908,
+          "generationMs": 3688,
+          "promptTokens": 2019,
+          "generatedTokens": 229
+        },
+        "video-25": {
+          "startMs": 200000,
+          "endMs": 208000,
+          "framesSent": 5,
+          "elapsedMs": 6562,
+          "providerTotalMs": 6549,
+          "promptEvalMs": 2901,
+          "generationMs": 3496,
+          "promptTokens": 2020,
+          "generatedTokens": 217
+        },
+        "video-45": {
+          "startMs": 360000,
+          "endMs": 368000,
+          "framesSent": 5,
+          "elapsedMs": 6797,
+          "providerTotalMs": 6787,
+          "promptEvalMs": 2903,
+          "generationMs": 3762,
+          "promptTokens": 2012,
+          "generatedTokens": 237
+        },
+        "video-46": {
+          "startMs": 368000,
+          "endMs": 376000,
+          "framesSent": 5,
+          "elapsedMs": 7488,
+          "providerTotalMs": 7479,
+          "promptEvalMs": 2892,
+          "generationMs": 4427,
+          "promptTokens": 2017,
+          "generatedTokens": 276
+        },
+        "video-47": {
+          "startMs": 376000,
+          "endMs": 384000,
+          "framesSent": 5,
+          "elapsedMs": 7258,
+          "providerTotalMs": 7249,
+          "promptEvalMs": 2903,
+          "generationMs": 4182,
+          "promptTokens": 2001,
+          "generatedTokens": 265
+        },
+        "video-57": {
+          "startMs": 456000,
+          "endMs": 464000,
+          "framesSent": 5,
+          "elapsedMs": 6611,
+          "providerTotalMs": 6600,
+          "promptEvalMs": 2895,
+          "generationMs": 3557,
+          "promptTokens": 2015,
+          "generatedTokens": 223
+        },
+        "video-78": {
+          "startMs": 624000,
+          "endMs": 632000,
+          "framesSent": 5,
+          "elapsedMs": 6739,
+          "providerTotalMs": 6727,
+          "promptEvalMs": 2900,
+          "generationMs": 3666,
+          "promptTokens": 2021,
+          "generatedTokens": 232
+        },
+        "video-79": {
+          "startMs": 632000,
+          "endMs": 640000,
+          "framesSent": 5,
+          "elapsedMs": 7465,
+          "providerTotalMs": 7454,
+          "promptEvalMs": 2891,
+          "generationMs": 4386,
+          "promptTokens": 2020,
+          "generatedTokens": 272
+        },
+        "video-80": {
+          "startMs": 640000,
+          "endMs": 648000,
+          "framesSent": 5,
+          "elapsedMs": 7303,
+          "providerTotalMs": 7289,
+          "promptEvalMs": 2888,
+          "generationMs": 4267,
+          "promptTokens": 2015,
+          "generatedTokens": 273
+        },
+        "video-96": {
+          "startMs": 768000,
+          "endMs": 776000,
+          "framesSent": 5,
+          "elapsedMs": 7521,
+          "providerTotalMs": 7507,
+          "promptEvalMs": 2899,
+          "generationMs": 4422,
+          "promptTokens": 2018,
+          "generatedTokens": 277
+        },
+        "video-108": {
+          "startMs": 864000,
+          "endMs": 872000,
+          "framesSent": 5,
+          "elapsedMs": 5107,
+          "providerTotalMs": 5095,
+          "promptEvalMs": 2884,
+          "generationMs": 2052,
+          "promptTokens": 2012,
+          "generatedTokens": 131
+        }
+      },
+      "elapsedMs": {
+        "count": 12,
+        "median": 6783.5,
+        "p95": 7502.85,
+        "mean": 6780.5,
+        "minimum": 5107,
+        "maximum": 7521
+      },
+      "providerTotalMs": {
+        "count": 12,
+        "median": 6773.5,
+        "p95": 7491.6,
+        "mean": 6768.25,
+        "minimum": 5095,
+        "maximum": 7507
+      },
+      "promptEvalMs": {
+        "count": 12,
+        "median": 2899.5,
+        "p95": 2911.15,
+        "mean": 2898.25,
+        "minimum": 2884,
+        "maximum": 2915
+      },
+      "generationMs": {
+        "count": 12,
+        "median": 3725.0,
+        "p95": 4424.25,
+        "mean": 3709.1666666666665,
+        "minimum": 2052,
+        "maximum": 4427
+      },
+      "promptTokens": {
+        "count": 12,
+        "median": 2016.0,
+        "p95": 2020.45,
+        "mean": 2014.9166666666667,
+        "minimum": 2001,
+        "maximum": 2021
+      },
+      "generatedTokens": {
+        "count": 12,
+        "median": 234.5,
+        "p95": 276.45,
+        "mean": 233.08333333333334,
+        "minimum": 131,
+        "maximum": 277
+      }
+    },
+    "02-B": {
+      "cases": {
+        "video-2": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "framesSent": 3,
+          "elapsedMs": 4036,
+          "providerTotalMs": 4020,
+          "promptEvalMs": 1796,
+          "generationMs": 2114,
+          "promptTokens": 1457,
+          "generatedTokens": 131
+        },
+        "video-10": {
+          "startMs": 80000,
+          "endMs": 88000,
+          "framesSent": 3,
+          "elapsedMs": 4713,
+          "providerTotalMs": 4707,
+          "promptEvalMs": 1806,
+          "generationMs": 2794,
+          "promptTokens": 1467,
+          "generatedTokens": 178
+        },
+        "video-25": {
+          "startMs": 200000,
+          "endMs": 208000,
+          "framesSent": 3,
+          "elapsedMs": 5087,
+          "providerTotalMs": 5077,
+          "promptEvalMs": 1803,
+          "generationMs": 3161,
+          "promptTokens": 1466,
+          "generatedTokens": 200
+        },
+        "video-45": {
+          "startMs": 360000,
+          "endMs": 368000,
+          "framesSent": 3,
+          "elapsedMs": 5327,
+          "providerTotalMs": 5318,
+          "promptEvalMs": 1799,
+          "generationMs": 3376,
+          "promptTokens": 1458,
+          "generatedTokens": 215
+        },
+        "video-46": {
+          "startMs": 368000,
+          "endMs": 376000,
+          "framesSent": 3,
+          "elapsedMs": 5466,
+          "providerTotalMs": 5460,
+          "promptEvalMs": 1798,
+          "generationMs": 3530,
+          "promptTokens": 1463,
+          "generatedTokens": 225
+        },
+        "video-47": {
+          "startMs": 376000,
+          "endMs": 384000,
+          "framesSent": 3,
+          "elapsedMs": 4841,
+          "providerTotalMs": 4833,
+          "promptEvalMs": 1792,
+          "generationMs": 2926,
+          "promptTokens": 1447,
+          "generatedTokens": 184
+        },
+        "video-57": {
+          "startMs": 456000,
+          "endMs": 464000,
+          "framesSent": 3,
+          "elapsedMs": 5535,
+          "providerTotalMs": 5528,
+          "promptEvalMs": 1796,
+          "generationMs": 3604,
+          "promptTokens": 1461,
+          "generatedTokens": 231
+        },
+        "video-78": {
+          "startMs": 624000,
+          "endMs": 632000,
+          "framesSent": 3,
+          "elapsedMs": 5989,
+          "providerTotalMs": 5982,
+          "promptEvalMs": 1805,
+          "generationMs": 4024,
+          "promptTokens": 1467,
+          "generatedTokens": 254
+        },
+        "video-79": {
+          "startMs": 632000,
+          "endMs": 640000,
+          "framesSent": 3,
+          "elapsedMs": 5132,
+          "providerTotalMs": 5125,
+          "promptEvalMs": 1803,
+          "generationMs": 3212,
+          "promptTokens": 1466,
+          "generatedTokens": 197
+        },
+        "video-80": {
+          "startMs": 640000,
+          "endMs": 648000,
+          "framesSent": 3,
+          "elapsedMs": 5396,
+          "providerTotalMs": 5387,
+          "promptEvalMs": 1813,
+          "generationMs": 3426,
+          "promptTokens": 1461,
+          "generatedTokens": 217
+        },
+        "video-96": {
+          "startMs": 768000,
+          "endMs": 776000,
+          "framesSent": 3,
+          "elapsedMs": 6084,
+          "providerTotalMs": 6074,
+          "promptEvalMs": 1798,
+          "generationMs": 4176,
+          "promptTokens": 1464,
+          "generatedTokens": 264
+        },
+        "video-108": {
+          "startMs": 864000,
+          "endMs": 872000,
+          "framesSent": 3,
+          "elapsedMs": 5360,
+          "providerTotalMs": 5353,
+          "promptEvalMs": 1808,
+          "generationMs": 3453,
+          "promptTokens": 1458,
+          "generatedTokens": 222
+        }
+      },
+      "elapsedMs": {
+        "count": 12,
+        "median": 5343.5,
+        "p95": 6031.75,
+        "mean": 5247.166666666667,
+        "minimum": 4036,
+        "maximum": 6084
+      },
+      "providerTotalMs": {
+        "count": 12,
+        "median": 5335.5,
+        "p95": 6023.4,
+        "mean": 5238.666666666667,
+        "minimum": 4020,
+        "maximum": 6074
+      },
+      "promptEvalMs": {
+        "count": 12,
+        "median": 1801.0,
+        "p95": 1810.25,
+        "mean": 1801.4166666666667,
+        "minimum": 1792,
+        "maximum": 1813
+      },
+      "generationMs": {
+        "count": 12,
+        "median": 3401.0,
+        "p95": 4092.4,
+        "mean": 3316.3333333333335,
+        "minimum": 2114,
+        "maximum": 4176
+      },
+      "promptTokens": {
+        "count": 12,
+        "median": 1462.0,
+        "p95": 1467.0,
+        "mean": 1461.25,
+        "minimum": 1447,
+        "maximum": 1467
+      },
+      "generatedTokens": {
+        "count": 12,
+        "median": 216.0,
+        "p95": 258.5,
+        "mean": 209.83333333333334,
+        "minimum": 131,
+        "maximum": 264
+      }
+    },
+    "03-B": {
+      "cases": {
+        "video-2": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "framesSent": 3,
+          "elapsedMs": 2410,
+          "providerTotalMs": 2391,
+          "promptEvalMs": 89,
+          "generationMs": 2193,
+          "promptTokens": 1457,
+          "generatedTokens": 136
+        },
+        "video-10": {
+          "startMs": 80000,
+          "endMs": 88000,
+          "framesSent": 3,
+          "elapsedMs": 2917,
+          "providerTotalMs": 2909,
+          "promptEvalMs": 84,
+          "generationMs": 2704,
+          "promptTokens": 1467,
+          "generatedTokens": 174
+        },
+        "video-25": {
+          "startMs": 200000,
+          "endMs": 208000,
+          "framesSent": 3,
+          "elapsedMs": 3630,
+          "providerTotalMs": 3622,
+          "promptEvalMs": 74,
+          "generationMs": 3445,
+          "promptTokens": 1466,
+          "generatedTokens": 219
+        },
+        "video-45": {
+          "startMs": 360000,
+          "endMs": 368000,
+          "framesSent": 3,
+          "elapsedMs": 3671,
+          "providerTotalMs": 3664,
+          "promptEvalMs": 89,
+          "generationMs": 3425,
+          "promptTokens": 1458,
+          "generatedTokens": 220
+        },
+        "video-46": {
+          "startMs": 368000,
+          "endMs": 376000,
+          "framesSent": 3,
+          "elapsedMs": 4264,
+          "providerTotalMs": 4257,
+          "promptEvalMs": 74,
+          "generationMs": 4036,
+          "promptTokens": 1463,
+          "generatedTokens": 257
+        },
+        "video-47": {
+          "startMs": 376000,
+          "endMs": 384000,
+          "framesSent": 3,
+          "elapsedMs": 3111,
+          "providerTotalMs": 3103,
+          "promptEvalMs": 83,
+          "generationMs": 2891,
+          "promptTokens": 1447,
+          "generatedTokens": 184
+        },
+        "video-57": {
+          "startMs": 456000,
+          "endMs": 464000,
+          "framesSent": 3,
+          "elapsedMs": 3665,
+          "providerTotalMs": 3655,
+          "promptEvalMs": 91,
+          "generationMs": 3448,
+          "promptTokens": 1461,
+          "generatedTokens": 223
+        },
+        "video-78": {
+          "startMs": 624000,
+          "endMs": 632000,
+          "framesSent": 3,
+          "elapsedMs": 4205,
+          "providerTotalMs": 4196,
+          "promptEvalMs": 89,
+          "generationMs": 3938,
+          "promptTokens": 1467,
+          "generatedTokens": 248
+        },
+        "video-79": {
+          "startMs": 632000,
+          "endMs": 640000,
+          "framesSent": 3,
+          "elapsedMs": 3793,
+          "providerTotalMs": 3784,
+          "promptEvalMs": 85,
+          "generationMs": 3552,
+          "promptTokens": 1466,
+          "generatedTokens": 223
+        },
+        "video-80": {
+          "startMs": 640000,
+          "endMs": 648000,
+          "framesSent": 3,
+          "elapsedMs": 2870,
+          "providerTotalMs": 2858,
+          "promptEvalMs": 83,
+          "generationMs": 2641,
+          "promptTokens": 1461,
+          "generatedTokens": 165
+        },
+        "video-96": {
+          "startMs": 768000,
+          "endMs": 776000,
+          "framesSent": 3,
+          "elapsedMs": 3723,
+          "providerTotalMs": 3715,
+          "promptEvalMs": 88,
+          "generationMs": 3448,
+          "promptTokens": 1464,
+          "generatedTokens": 216
+        },
+        "video-108": {
+          "startMs": 864000,
+          "endMs": 872000,
+          "framesSent": 3,
+          "elapsedMs": 3367,
+          "providerTotalMs": 3359,
+          "promptEvalMs": 73,
+          "generationMs": 3127,
+          "promptTokens": 1458,
+          "generatedTokens": 203
+        }
+      },
+      "elapsedMs": {
+        "count": 12,
+        "median": 3647.5,
+        "p95": 4231.55,
+        "mean": 3468.8333333333335,
+        "minimum": 2410,
+        "maximum": 4264
+      },
+      "providerTotalMs": {
+        "count": 12,
+        "median": 3638.5,
+        "p95": 4223.45,
+        "mean": 3459.4166666666665,
+        "minimum": 2391,
+        "maximum": 4257
+      },
+      "promptEvalMs": {
+        "count": 12,
+        "median": 84.5,
+        "p95": 89.9,
+        "mean": 83.5,
+        "minimum": 73,
+        "maximum": 91
+      },
+      "generationMs": {
+        "count": 12,
+        "median": 3435.0,
+        "p95": 3982.1,
+        "mean": 3237.3333333333335,
+        "minimum": 2193,
+        "maximum": 4036
+      },
+      "promptTokens": {
+        "count": 12,
+        "median": 1462.0,
+        "p95": 1467.0,
+        "mean": 1461.25,
+        "minimum": 1447,
+        "maximum": 1467
+      },
+      "generatedTokens": {
+        "count": 12,
+        "median": 217.5,
+        "p95": 252.04999999999998,
+        "mean": 205.66666666666666,
+        "minimum": 136,
+        "maximum": 257
+      }
+    },
+    "04-A": {
+      "cases": {
+        "video-2": {
+          "startMs": 16000,
+          "endMs": 24000,
+          "framesSent": 5,
+          "elapsedMs": 2591,
+          "providerTotalMs": 2569,
+          "promptEvalMs": 87,
+          "generationMs": 2300,
+          "promptTokens": 2009,
+          "generatedTokens": 145
+        },
+        "video-10": {
+          "startMs": 80000,
+          "endMs": 88000,
+          "framesSent": 5,
+          "elapsedMs": 3803,
+          "providerTotalMs": 3794,
+          "promptEvalMs": 87,
+          "generationMs": 3531,
+          "promptTokens": 2019,
+          "generatedTokens": 224
+        },
+        "video-25": {
+          "startMs": 200000,
+          "endMs": 208000,
+          "framesSent": 5,
+          "elapsedMs": 3640,
+          "providerTotalMs": 3629,
+          "promptEvalMs": 86,
+          "generationMs": 3335,
+          "promptTokens": 2020,
+          "generatedTokens": 211
+        },
+        "video-45": {
+          "startMs": 360000,
+          "endMs": 368000,
+          "framesSent": 5,
+          "elapsedMs": 3719,
+          "providerTotalMs": 3711,
+          "promptEvalMs": 88,
+          "generationMs": 3444,
+          "promptTokens": 2012,
+          "generatedTokens": 216
+        },
+        "video-46": {
+          "startMs": 368000,
+          "endMs": 376000,
+          "framesSent": 5,
+          "elapsedMs": 4505,
+          "providerTotalMs": 4496,
+          "promptEvalMs": 84,
+          "generationMs": 4213,
+          "promptTokens": 2017,
+          "generatedTokens": 264
+        },
+        "video-47": {
+          "startMs": 376000,
+          "endMs": 384000,
+          "framesSent": 5,
+          "elapsedMs": 3674,
+          "providerTotalMs": 3663,
+          "promptEvalMs": 72,
+          "generationMs": 3386,
+          "promptTokens": 2001,
+          "generatedTokens": 215
+        },
+        "video-57": {
+          "startMs": 456000,
+          "endMs": 464000,
+          "framesSent": 5,
+          "elapsedMs": 3828,
+          "providerTotalMs": 3819,
+          "promptEvalMs": 90,
+          "generationMs": 3547,
+          "promptTokens": 2015,
+          "generatedTokens": 229
+        },
+        "video-78": {
+          "startMs": 624000,
+          "endMs": 632000,
+          "framesSent": 5,
+          "elapsedMs": 4624,
+          "providerTotalMs": 4614,
+          "promptEvalMs": 89,
+          "generationMs": 4366,
+          "promptTokens": 2021,
+          "generatedTokens": 279
+        },
+        "video-79": {
+          "startMs": 632000,
+          "endMs": 640000,
+          "framesSent": 5,
+          "elapsedMs": 4612,
+          "providerTotalMs": 4597,
+          "promptEvalMs": 82,
+          "generationMs": 4306,
+          "promptTokens": 2020,
+          "generatedTokens": 272
+        },
+        "video-80": {
+          "startMs": 640000,
+          "endMs": 648000,
+          "framesSent": 5,
+          "elapsedMs": 2880,
+          "providerTotalMs": 2869,
+          "promptEvalMs": 85,
+          "generationMs": 2651,
+          "promptTokens": 2015,
+          "generatedTokens": 158
+        },
+        "video-96": {
+          "startMs": 768000,
+          "endMs": 776000,
+          "framesSent": 5,
+          "elapsedMs": 4721,
+          "providerTotalMs": 4708,
+          "promptEvalMs": 74,
+          "generationMs": 4500,
+          "promptTokens": 2018,
+          "generatedTokens": 288
+        },
+        "video-108": {
+          "startMs": 864000,
+          "endMs": 872000,
+          "framesSent": 5,
+          "elapsedMs": 2337,
+          "providerTotalMs": 2326,
+          "promptEvalMs": 84,
+          "generationMs": 2110,
+          "promptTokens": 2012,
+          "generatedTokens": 138
+        }
+      },
+      "elapsedMs": {
+        "count": 12,
+        "median": 3761.0,
+        "p95": 4667.65,
+        "mean": 3744.5,
+        "minimum": 2337,
+        "maximum": 4721
+      },
+      "providerTotalMs": {
+        "count": 12,
+        "median": 3752.5,
+        "p95": 4656.3,
+        "mean": 3732.9166666666665,
+        "minimum": 2326,
+        "maximum": 4708
+      },
+      "promptEvalMs": {
+        "count": 12,
+        "median": 85.5,
+        "p95": 89.45,
+        "mean": 84.0,
+        "minimum": 72,
+        "maximum": 90
+      },
+      "generationMs": {
+        "count": 12,
+        "median": 3487.5,
+        "p95": 4426.3,
+        "mean": 3474.0833333333335,
+        "minimum": 2110,
+        "maximum": 4500
+      },
+      "promptTokens": {
+        "count": 12,
+        "median": 2016.0,
+        "p95": 2020.45,
+        "mean": 2014.9166666666667,
+        "minimum": 2001,
+        "maximum": 2021
+      },
+      "generatedTokens": {
+        "count": 12,
+        "median": 220.0,
+        "p95": 283.05,
+        "mean": 219.91666666666666,
+        "minimum": 138,
+        "maximum": 288
+      }
+    }
+  },
+  "vision": {
+    "01-A": {
+      "questions": {
+        "cnrs-01": {
+          "atMs": 96000,
+          "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+          "httpMs": 18056.33286299999,
+          "evidenceAgeMs": 16001.740408000012,
+          "contextLagMs": 8001.740408000012,
+          "unanalyzedTailMs": 16001.740408000012
+        },
+        "cnrs-02": {
+          "atMs": 232000,
+          "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+          "httpMs": 18178.472855,
+          "evidenceAgeMs": 16002.785724000016,
+          "contextLagMs": 8002.785724000016,
+          "unanalyzedTailMs": 16002.785724000016
+        },
+        "cnrs-04": {
+          "atMs": 472000,
+          "question": "Comment le cours explique-t-il le surapprentissage ?",
+          "httpMs": 22446.118590999977,
+          "evidenceAgeMs": 8001.605717999977,
+          "contextLagMs": 8001.605717999977,
+          "unanalyzedTailMs": 8001.605717999977
+        },
+        "cnrs-05": {
+          "atMs": 648000,
+          "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+          "httpMs": 20967.11467599997,
+          "evidenceAgeMs": 16003.299848000053,
+          "contextLagMs": 8003.299848000053,
+          "unanalyzedTailMs": 16003.299848000053
+        },
+        "cnrs-06": {
+          "atMs": 792000,
+          "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+          "httpMs": 21436.58539199992,
+          "evidenceAgeMs": 16017.502090000082,
+          "contextLagMs": 8017.502090000082,
+          "unanalyzedTailMs": 16017.502090000082
+        }
+      },
+      "httpMs": {
+        "count": 5,
+        "median": 20967.11467599997,
+        "p95": 22244.211951199966,
+        "mean": 20216.92487539997,
+        "minimum": 18056.33286299999,
+        "maximum": 22446.118590999977
+      },
+      "evidenceAgeMs": {
+        "count": 5,
+        "median": 16002.785724000016,
+        "p95": 16014.661641600076,
+        "mean": 14405.386757600028,
+        "minimum": 8001.605717999977,
+        "maximum": 16017.502090000082
+      },
+      "contextLagMs": {
+        "count": 5,
+        "median": 8002.785724000016,
+        "p95": 8014.661641600076,
+        "mean": 8005.386757600028,
+        "minimum": 8001.605717999977,
+        "maximum": 8017.502090000082
+      },
+      "under15s": 0,
+      "under20s": 2,
+      "visionPublications": 104,
+      "visionCoveragePercent": 94.54520660030002,
+      "visionLossCounts": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 5,
+        "visionSkippedAsking": 0,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 1
+      }
+    },
+    "02-B": {
+      "questions": {
+        "cnrs-01": {
+          "atMs": 96000,
+          "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+          "httpMs": 12060.476342000009,
+          "evidenceAgeMs": 16004.147777999999,
+          "contextLagMs": 8004.147777999999,
+          "unanalyzedTailMs": 16004.147777999999
+        },
+        "cnrs-02": {
+          "atMs": 232000,
+          "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+          "httpMs": 11190.838811000023,
+          "evidenceAgeMs": 16004.210268999974,
+          "contextLagMs": 8004.210268999974,
+          "unanalyzedTailMs": 16004.210268999974
+        },
+        "cnrs-04": {
+          "atMs": 472000,
+          "question": "Comment le cours explique-t-il le surapprentissage ?",
+          "httpMs": 15544.953142000013,
+          "evidenceAgeMs": 24003.73114399996,
+          "contextLagMs": 8003.731143999961,
+          "unanalyzedTailMs": 24003.73114399996
+        },
+        "cnrs-05": {
+          "atMs": 648000,
+          "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+          "httpMs": 15020.392499999958,
+          "evidenceAgeMs": 16022.226495000068,
+          "contextLagMs": 8022.226495000068,
+          "unanalyzedTailMs": 16022.226495000068
+        },
+        "cnrs-06": {
+          "atMs": 792000,
+          "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+          "httpMs": 11487.450203999993,
+          "evidenceAgeMs": 16004.071337000001,
+          "contextLagMs": 8004.071337000001,
+          "unanalyzedTailMs": 16004.071337000001
+        }
+      },
+      "httpMs": {
+        "count": 5,
+        "median": 12060.476342000009,
+        "p95": 15440.041013600003,
+        "mean": 13060.822199799999,
+        "minimum": 11190.838811000023,
+        "maximum": 15544.953142000013
+      },
+      "evidenceAgeMs": {
+        "count": 5,
+        "median": 16004.210268999974,
+        "p95": 22407.43021419998,
+        "mean": 17607.6774046,
+        "minimum": 16004.071337000001,
+        "maximum": 24003.73114399996
+      },
+      "contextLagMs": {
+        "count": 5,
+        "median": 8004.147777999999,
+        "p95": 8018.623249800049,
+        "mean": 8007.677404600001,
+        "minimum": 8003.731143999961,
+        "maximum": 8022.226495000068
+      },
+      "under15s": 3,
+      "under20s": 5,
+      "visionPublications": 109,
+      "visionCoveragePercent": 99.09086776671667,
+      "visionLossCounts": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 0,
+        "visionSkippedAsking": 1,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 0
+      }
+    },
+    "03-B": {
+      "questions": {
+        "cnrs-01": {
+          "atMs": 96000,
+          "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+          "httpMs": 12067.045039000004,
+          "evidenceAgeMs": 16002.300172000003,
+          "contextLagMs": 8002.300172000003,
+          "unanalyzedTailMs": 16002.300172000003
+        },
+        "cnrs-02": {
+          "atMs": 232000,
+          "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+          "httpMs": 11194.00759199998,
+          "evidenceAgeMs": 8002.248878000013,
+          "contextLagMs": 8002.248878000013,
+          "unanalyzedTailMs": 8002.248878000013
+        },
+        "cnrs-04": {
+          "atMs": 472000,
+          "question": "Comment le cours explique-t-il le surapprentissage ?",
+          "httpMs": 14492.396960999991,
+          "evidenceAgeMs": 24002.49217099999,
+          "contextLagMs": 8002.492170999991,
+          "unanalyzedTailMs": 24002.49217099999
+        },
+        "cnrs-05": {
+          "atMs": 648000,
+          "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+          "httpMs": 13959.64439400006,
+          "evidenceAgeMs": 16001.742535999976,
+          "contextLagMs": 8001.742535999976,
+          "unanalyzedTailMs": 16001.742535999976
+        },
+        "cnrs-06": {
+          "atMs": 792000,
+          "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+          "httpMs": 13525.781545000034,
+          "evidenceAgeMs": 16002.037504000007,
+          "contextLagMs": 8002.037504000007,
+          "unanalyzedTailMs": 16002.037504000007
+        }
+      },
+      "httpMs": {
+        "count": 5,
+        "median": 13525.781545000034,
+        "p95": 14385.846447600004,
+        "mean": 13047.775106200013,
+        "minimum": 11194.00759199998,
+        "maximum": 14492.396960999991
+      },
+      "evidenceAgeMs": {
+        "count": 5,
+        "median": 16002.037504000007,
+        "p95": 22402.45377119999,
+        "mean": 16002.164252199998,
+        "minimum": 8002.248878000013,
+        "maximum": 24002.49217099999
+      },
+      "contextLagMs": {
+        "count": 5,
+        "median": 8002.248878000013,
+        "p95": 8002.453771199993,
+        "mean": 8002.164252199998,
+        "minimum": 8001.742535999976,
+        "maximum": 8002.492170999991
+      },
+      "under15s": 5,
+      "under20s": 5,
+      "visionPublications": 105,
+      "visionCoveragePercent": 95.45433883358334,
+      "visionLossCounts": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 3,
+        "visionSkippedAsking": 1,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 1
+      }
+    },
+    "04-A": {
+      "questions": {
+        "cnrs-01": {
+          "atMs": 96000,
+          "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?",
+          "httpMs": 24070.90868800001,
+          "evidenceAgeMs": 16004.136378999989,
+          "contextLagMs": 8004.136378999989,
+          "unanalyzedTailMs": 16004.136378999989
+        },
+        "cnrs-02": {
+          "atMs": 232000,
+          "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?",
+          "httpMs": 22205.855829000007,
+          "evidenceAgeMs": 16003.374626999983,
+          "contextLagMs": 8003.374626999983,
+          "unanalyzedTailMs": 16003.374626999983
+        },
+        "cnrs-04": {
+          "atMs": 472000,
+          "question": "Comment le cours explique-t-il le surapprentissage ?",
+          "httpMs": 21500.40675100003,
+          "evidenceAgeMs": 16002.361262999999,
+          "contextLagMs": 8002.361262999999,
+          "unanalyzedTailMs": 16002.361262999999
+        },
+        "cnrs-05": {
+          "atMs": 648000,
+          "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?",
+          "httpMs": 19047.942345999996,
+          "evidenceAgeMs": 16011.531650000019,
+          "contextLagMs": 8011.531650000019,
+          "unanalyzedTailMs": 16011.531650000019
+        },
+        "cnrs-06": {
+          "atMs": 792000,
+          "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?",
+          "httpMs": 18578.205814999994,
+          "evidenceAgeMs": 24002.65749100002,
+          "contextLagMs": 8002.65749100002,
+          "unanalyzedTailMs": 24002.65749100002
+        }
+      },
+      "httpMs": {
+        "count": 5,
+        "median": 21500.40675100003,
+        "p95": 23697.89811620001,
+        "mean": 21080.663885800008,
+        "minimum": 18578.205814999994,
+        "maximum": 24070.90868800001
+      },
+      "evidenceAgeMs": {
+        "count": 5,
+        "median": 16004.136378999989,
+        "p95": 22404.432322800018,
+        "mean": 17604.812282000003,
+        "minimum": 16002.361262999999,
+        "maximum": 24002.65749100002
+      },
+      "contextLagMs": {
+        "count": 5,
+        "median": 8003.374626999983,
+        "p95": 8010.052595800013,
+        "mean": 8004.812282000002,
+        "minimum": 8002.361262999999,
+        "maximum": 8011.531650000019
+      },
+      "under15s": 0,
+      "under20s": 2,
+      "visionPublications": 104,
+      "visionCoveragePercent": 94.54520660030002,
+      "visionLossCounts": {
+        "audioSkipped": 0,
+        "audioExpired": 0,
+        "visionSkippedBacklog": 5,
+        "visionSkippedAsking": 0,
+        "visionExpired": 0,
+        "audioError": 0,
+        "visionError": 1
+      }
+    }
+  },
+  "perceptionPairs": {
+    "firstPass_B_minus_A": {
+      "pairs": [
+        {
+          "id": "video-10",
+          "left": 6770,
+          "right": 4713,
+          "rightMinusLeft": -2057
+        },
+        {
+          "id": "video-108",
+          "left": 5107,
+          "right": 5360,
+          "rightMinusLeft": 253
+        },
+        {
+          "id": "video-2",
+          "left": 5745,
+          "right": 4036,
+          "rightMinusLeft": -1709
+        },
+        {
+          "id": "video-25",
+          "left": 6562,
+          "right": 5087,
+          "rightMinusLeft": -1475
+        },
+        {
+          "id": "video-45",
+          "left": 6797,
+          "right": 5327,
+          "rightMinusLeft": -1470
+        },
+        {
+          "id": "video-46",
+          "left": 7488,
+          "right": 5466,
+          "rightMinusLeft": -2022
+        },
+        {
+          "id": "video-47",
+          "left": 7258,
+          "right": 4841,
+          "rightMinusLeft": -2417
+        },
+        {
+          "id": "video-57",
+          "left": 6611,
+          "right": 5535,
+          "rightMinusLeft": -1076
+        },
+        {
+          "id": "video-78",
+          "left": 6739,
+          "right": 5989,
+          "rightMinusLeft": -750
+        },
+        {
+          "id": "video-79",
+          "left": 7465,
+          "right": 5132,
+          "rightMinusLeft": -2333
+        },
+        {
+          "id": "video-80",
+          "left": 7303,
+          "right": 5396,
+          "rightMinusLeft": -1907
+        },
+        {
+          "id": "video-96",
+          "left": 7521,
+          "right": 6084,
+          "rightMinusLeft": -1437
+        }
+      ],
+      "delta": {
+        "count": 12,
+        "median": -1592.0,
+        "p95": -298.6500000000007,
+        "mean": -1533.3333333333333,
+        "minimum": -2417,
+        "maximum": 253
+      },
+      "rightLowerCount": 11
+    },
+    "secondPass_B_minus_A": {
+      "pairs": [
+        {
+          "id": "video-10",
+          "left": 3803,
+          "right": 2917,
+          "rightMinusLeft": -886
+        },
+        {
+          "id": "video-108",
+          "left": 2337,
+          "right": 3367,
+          "rightMinusLeft": 1030
+        },
+        {
+          "id": "video-2",
+          "left": 2591,
+          "right": 2410,
+          "rightMinusLeft": -181
+        },
+        {
+          "id": "video-25",
+          "left": 3640,
+          "right": 3630,
+          "rightMinusLeft": -10
+        },
+        {
+          "id": "video-45",
+          "left": 3719,
+          "right": 3671,
+          "rightMinusLeft": -48
+        },
+        {
+          "id": "video-46",
+          "left": 4505,
+          "right": 4264,
+          "rightMinusLeft": -241
+        },
+        {
+          "id": "video-47",
+          "left": 3674,
+          "right": 3111,
+          "rightMinusLeft": -563
+        },
+        {
+          "id": "video-57",
+          "left": 3828,
+          "right": 3665,
+          "rightMinusLeft": -163
+        },
+        {
+          "id": "video-78",
+          "left": 4624,
+          "right": 4205,
+          "rightMinusLeft": -419
+        },
+        {
+          "id": "video-79",
+          "left": 4612,
+          "right": 3793,
+          "rightMinusLeft": -819
+        },
+        {
+          "id": "video-80",
+          "left": 2880,
+          "right": 2870,
+          "rightMinusLeft": -10
+        },
+        {
+          "id": "video-96",
+          "left": 4721,
+          "right": 3723,
+          "rightMinusLeft": -998
+        }
+      ],
+      "delta": {
+        "count": 12,
+        "median": -211.0,
+        "p95": 457.99999999999926,
+        "mean": -275.6666666666667,
+        "minimum": -998,
+        "maximum": 1030
+      },
+      "rightLowerCount": 11
+    }
+  },
+  "visionPairs": {
+    "firstPass_B_minus_A": {
+      "pairs": [
+        {
+          "id": "cnrs-01",
+          "left": 18056.33286299999,
+          "right": 12060.476342000009,
+          "rightMinusLeft": -5995.85652099998
+        },
+        {
+          "id": "cnrs-02",
+          "left": 18178.472855,
+          "right": 11190.838811000023,
+          "rightMinusLeft": -6987.634043999977
+        },
+        {
+          "id": "cnrs-04",
+          "left": 22446.118590999977,
+          "right": 15544.953142000013,
+          "rightMinusLeft": -6901.165448999964
+        },
+        {
+          "id": "cnrs-05",
+          "left": 20967.11467599997,
+          "right": 15020.392499999958,
+          "rightMinusLeft": -5946.72217600001
+        },
+        {
+          "id": "cnrs-06",
+          "left": 21436.58539199992,
+          "right": 11487.450203999993,
+          "rightMinusLeft": -9949.135187999927
+        }
+      ],
+      "delta": {
+        "count": 5,
+        "median": -6901.165448999964,
+        "p95": -5956.549045000004,
+        "mean": -7156.102675599972,
+        "minimum": -9949.135187999927,
+        "maximum": -5946.72217600001
+      },
+      "rightLowerCount": 5
+    },
+    "secondPass_B_minus_A": {
+      "pairs": [
+        {
+          "id": "cnrs-01",
+          "left": 24070.90868800001,
+          "right": 12067.045039000004,
+          "rightMinusLeft": -12003.863649000006
+        },
+        {
+          "id": "cnrs-02",
+          "left": 22205.855829000007,
+          "right": 11194.00759199998,
+          "rightMinusLeft": -11011.848237000027
+        },
+        {
+          "id": "cnrs-04",
+          "left": 21500.40675100003,
+          "right": 14492.396960999991,
+          "rightMinusLeft": -7008.00979000004
+        },
+        {
+          "id": "cnrs-05",
+          "left": 19047.942345999996,
+          "right": 13959.64439400006,
+          "rightMinusLeft": -5088.297951999935
+        },
+        {
+          "id": "cnrs-06",
+          "left": 18578.205814999994,
+          "right": 13525.781545000034,
+          "rightMinusLeft": -5052.4242699999595
+        }
+      ],
+      "delta": {
+        "count": 5,
+        "median": -7008.00979000004,
+        "p95": -5059.599006399954,
+        "mean": -8032.8887795999935,
+        "minimum": -12003.863649000006,
+        "maximum": -5052.4242699999595
+      },
+      "rightLowerCount": 5
+    },
+    "firstPassEvidenceAge_B_minus_A": {
+      "pairs": [
+        {
+          "id": "cnrs-01",
+          "left": 16001.740408000012,
+          "right": 16004.147777999999,
+          "rightMinusLeft": 2.4073699999862583
+        },
+        {
+          "id": "cnrs-02",
+          "left": 16002.785724000016,
+          "right": 16004.210268999974,
+          "rightMinusLeft": 1.424544999958016
+        },
+        {
+          "id": "cnrs-04",
+          "left": 8001.605717999977,
+          "right": 24003.73114399996,
+          "rightMinusLeft": 16002.125425999984
+        },
+        {
+          "id": "cnrs-05",
+          "left": 16003.299848000053,
+          "right": 16022.226495000068,
+          "rightMinusLeft": 18.926647000014782
+        },
+        {
+          "id": "cnrs-06",
+          "left": 16017.502090000082,
+          "right": 16004.071337000001,
+          "rightMinusLeft": -13.430753000080585
+        }
+      ],
+      "delta": {
+        "count": 5,
+        "median": 2.4073699999862583,
+        "p95": 12805.485670199987,
+        "mean": 3202.2906469999725,
+        "minimum": -13.430753000080585,
+        "maximum": 16002.125425999984
+      },
+      "rightLowerCount": 1
+    },
+    "secondPassEvidenceAge_B_minus_A": {
+      "pairs": [
+        {
+          "id": "cnrs-01",
+          "left": 16004.136378999989,
+          "right": 16002.300172000003,
+          "rightMinusLeft": -1.836206999985734
+        },
+        {
+          "id": "cnrs-02",
+          "left": 16003.374626999983,
+          "right": 8002.248878000013,
+          "rightMinusLeft": -8001.12574899997
+        },
+        {
+          "id": "cnrs-04",
+          "left": 16002.361262999999,
+          "right": 24002.49217099999,
+          "rightMinusLeft": 8000.130907999992
+        },
+        {
+          "id": "cnrs-05",
+          "left": 16011.531650000019,
+          "right": 16001.742535999976,
+          "rightMinusLeft": -9.7891140000429
+        },
+        {
+          "id": "cnrs-06",
+          "left": 24002.65749100002,
+          "right": 16002.037504000007,
+          "rightMinusLeft": -8000.619987000013
+        }
+      ],
+      "delta": {
+        "count": 5,
+        "median": -9.7891140000429,
+        "p95": 6399.737484999995,
+        "mean": -1602.6480298000038,
+        "minimum": -8001.12574899997,
+        "maximum": 8000.130907999992
+      },
+      "rightLowerCount": 4
+    }
+  }
+}

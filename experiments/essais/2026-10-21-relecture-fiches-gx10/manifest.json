@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "readyForScoring": false,
+  "selectionSha256": "fd537ffc762da46f8b7d8de0eaebe66bfed8ab9a251eb7758d770074bb7e782a",
+  "videos": [
+    {
+      "video": "artemis",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/09-artemis-lancement.mp4",
+      "mediaSha256": "6ac25c124375fdac03a2a3e2bd599ea3516a75e9fd03bb193de18d6575297710",
+      "fiche": "experiments/gx10/evaluation/fiches/artemis.md",
+      "ficheSha256": "183a50777a945210688621510b9e06e0bb9cdc34f5abca919608dc9b7abdf167",
+      "ficheSnapshotSha256": "183a50777a945210688621510b9e06e0bb9cdc34f5abca919608dc9b7abdf167",
+      "questions": "experiments/gx10/evaluation/questions/artemis.json",
+      "questionsSha256": "59c962065e54cbcb7d7cdece833b637898ab4f0c31b30e429f354665c8f60655",
+      "questionsSnapshotSha256": "59c962065e54cbcb7d7cdece833b637898ab4f0c31b30e429f354665c8f60655",
+      "status": "draft_requires_media_review",
+      "priorityIds": [
+        "artemis-07"
+      ]
+    },
+    {
+      "video": "boeuf-bourguignon",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/05-boeuf-bourguignon.mp4",
+      "mediaSha256": "ec9d70f64ea55dc13a6e5c162a22ce88a383b65d97c442326e6a5045d7c478fd",
+      "fiche": "experiments/gx10/evaluation/fiches/boeuf-bourguignon.md",
+      "ficheSha256": "7f53925676d7f6289a88d37ba77160577b9c3712f54ee9cc11f67720881320cb",
+      "ficheSnapshotSha256": "7f53925676d7f6289a88d37ba77160577b9c3712f54ee9cc11f67720881320cb",
+      "questions": "experiments/gx10/evaluation/questions/boeuf-bourguignon.json",
+      "questionsSha256": "a1ffd0e1afc30e222e38fcf9e71793946ed2e350a0193d40e2d3182209497639",
+      "questionsSnapshotSha256": "a1ffd0e1afc30e222e38fcf9e71793946ed2e350a0193d40e2d3182209497639",
+      "status": "draft_requires_media_review",
+      "priorityIds": [
+        "cuisine-07"
+      ]
+    },
+    {
+      "video": "cnrs-apprentissage",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/04-cnrs-entrainement-ia.mp4",
+      "mediaSha256": "99f25322dd4268556589e1c454c460020da8971d4b163d0ec840c3cc7a0b0d4b",
+      "fiche": "experiments/gx10/evaluation/fiches/cnrs-apprentissage.md",
+      "ficheSha256": "6075db476e5657ce2723e999c11da31b78ba3d50a59494cba69f6b11f3b3f80f",
+      "ficheSnapshotSha256": "6075db476e5657ce2723e999c11da31b78ba3d50a59494cba69f6b11f3b3f80f",
+      "questions": "experiments/gx10/evaluation/questions/cnrs-apprentissage.json",
+      "questionsSha256": "afc8bbdbaf281dc0804d07cc0ac90e4f52e51a15eb22ae7e6805ac282bdee0f1",
+      "questionsSnapshotSha256": "afc8bbdbaf281dc0804d07cc0ac90e4f52e51a15eb22ae7e6805ac282bdee0f1",
+      "status": "draft_requires_media_review",
+      "priorityIds": []
+    },
+    {
+      "video": "kennedy",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/kennedy-rice-7min.mp4",
+      "mediaSha256": "f542af18fda70d00bef6d4c167a9af4aa239a7a064fd306c6f1aa45035b2c611",
+      "fiche": "experiments/gx10/evaluation/fiches/kennedy.md",
+      "ficheSha256": "7f0bbd19383d5ae0fc9771f361a6b70f2ac6c516e49787e8994e2f10f7246f85",
+      "ficheSnapshotSha256": "7f0bbd19383d5ae0fc9771f361a6b70f2ac6c516e49787e8994e2f10f7246f85",
+      "questions": "experiments/gx10/evaluation/questions/kennedy.json",
+      "questionsSha256": "15996a2c589cd4f42c0f1916365d1959c995d86a5572f3883a78d433c7928d81",
+      "questionsSnapshotSha256": "15996a2c589cd4f42c0f1916365d1959c995d86a5572f3883a78d433c7928d81",
+      "status": "draft_requires_media_review",
+      "priorityIds": [
+        "kennedy-06"
+      ]
+    },
+    {
+      "video": "spring",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/spring.mp4",
+      "mediaSha256": "c2c678f2a70338c060b33608bc34d0a1050cd284e249814b3dac0d85eaaa443a",
+      "fiche": "experiments/gx10/evaluation/fiches/spring.md",
+      "ficheSha256": "43cd6050922a7b9bad69e3afd43fb15ed325ddb48fabe8d205c0e085ce841a07",
+      "ficheSnapshotSha256": "43cd6050922a7b9bad69e3afd43fb15ed325ddb48fabe8d205c0e085ce841a07",
+      "questions": "experiments/gx10/evaluation/questions/spring.json",
+      "questionsSha256": "eef6e7ca02024ba2643481ded4da9e880494adf96e0ec066a2b99f17f8dede1a",
+      "questionsSnapshotSha256": "eef6e7ca02024ba2643481ded4da9e880494adf96e0ec066a2b99f17f8dede1a",
+      "status": "draft_requires_media_review",
+      "priorityIds": [
+        "spring-06"
+      ]
+    },
+    {
+      "video": "tears-of-steel",
+      "mediaOnGx10": "/srv/tvlens-gx10/videos/08-tears-of-steel.mov",
+      "mediaSha256": "efa9062d9cdb7a338e40ad530dfdf234806743f29ae6a1a136b97ece4e588e8f",
+      "fiche": "experiments/gx10/evaluation/fiches/tears-of-steel.md",
+      "ficheSha256": "adb269747a79db35786034910925198fb1a2c387b2e67e86ce4e2ed368da60ad",
+      "ficheSnapshotSha256": "adb269747a79db35786034910925198fb1a2c387b2e67e86ce4e2ed368da60ad",
+      "questions": "experiments/gx10/evaluation/questions/tears-of-steel.json",
+      "questionsSha256": "4f57f2aeb6d042d626a6ed0bcb2d58b6b3a59988a3e1aba4cf760c3838e6b98e",
+      "questionsSnapshotSha256": "4f57f2aeb6d042d626a6ed0bcb2d58b6b3a59988a3e1aba4cf760c3838e6b98e",
+      "status": "draft_requires_media_review",
+      "priorityIds": [
+        "tears-07"
+      ]
+    }
+  ]
+}

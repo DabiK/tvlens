@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "host": "gx10-tvlens",
+  "remoteRoot": "/home/nvidia/tvlens-setup/shadow-selection-20261021T081205Z",
+  "observedCompletionUtc": "2026-10-21T08:13:05Z",
+  "gpuInferencePerformed": false,
+  "actualVlmCallsRemoved": 0,
+  "python": "3.12",
+  "pillow": "12.1.1",
+  "scriptSha256": "aa9fa3d8fe0d3c0068102fa6061373ccf8bb1e2b6bf68a883e0c9006b07c0311",
+  "requirementsSha256": "afef94cb54188a888fb6b5b25f2997dc269414d0f5523f00b734ed9b0e3020ad",
+  "resultsSha256": {
+    "artemis.json": "9d19e88479981d0b1619473e30e147501c8763fb8890084dcb684afea26a24f5",
+    "boeuf-bourguignon.json": "c68063ef5d5df53dc1e64442520268c5bba8572fc623a8442d1f054591ab73a1",
+    "cnrs-apprentissage.json": "17f5561a042505f7e10ebeba1b626c1aaded247501e88d7f6670a6b0122851d9",
+    "kennedy.json": "16a98c5c1acc28ee323c8c6a81dabae3e07f52f0e8032f798e0a6b7d2fed1335",
+    "spring.json": "d2c7ae761dc710029f62ad57c719419526defd87075bdc0790488780b8a32173",
+    "tears-of-steel.json": "c681ecdee563295f74d5e1867abf73056a518f87f93ad64564aa9fd77ce20b23"
+  },
+  "remoteShaListSha256": "1139eb072ee6d02134dd7a2ac8032d7a3615564d85ffc3806d9787fbdcb6f8dd",
+  "integrity": "six result SHA-256 values match remote results.sha256; originals preserved on GX10"
+}
