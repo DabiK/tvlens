@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T11:05:00Z",
+  "updatedAtUtc": "2026-10-22T12:35:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -985,5 +985,41 @@
     },
     "choix": "B pour J3",
     "abstentionsSansJournal": "1/60"
+  },
+  "meilleureConfiguration": {
+    "nom": "N2",
+    "questions": "gemma4:26b-a4b-it-q4_K_M",
+    "pauseVision": true,
+    "whisper": "small",
+    "vision": "gemma3:4b sans topicSummary",
+    "passages": [
+      {
+        "essai": "N2",
+        "pertinentes": 21,
+        "sur": 30,
+        "delaiMedianS": 5.7,
+        "sous15s": 30,
+        "blocsPerdus": 0
+      },
+      {
+        "essai": "N6",
+        "pertinentes": 22,
+        "sur": 30,
+        "delaiMedianS": 5.2,
+        "sous15s": 30,
+        "blocsPerdus": 0
+      }
+    ],
+    "reserveProduit": "topicSummary alimente le résumé cumulatif des cartes de la frise TV : le calculer hors du chemin critique, pas le supprimer"
+  },
+  "j2Gps60Questions": {
+    "source": "2026-10-21-variantes-gx10 (registre, ligne J2)",
+    "configuration": "N2 sur les 60 questions de l'oracle v3, sans journal",
+    "questions": 60,
+    "delaiMedianS": 5.0,
+    "sous15s": 60,
+    "blocsPerdus": 0,
+    "pertinence": "à noter avec J3",
+    "incident": "premier départ bloqué à 10:50 UTC (OTHER_GPU_PROCESS_ACTIVE), relancé à 10:51 UTC"
   }
 }

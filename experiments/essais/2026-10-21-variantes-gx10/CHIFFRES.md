@@ -4,6 +4,17 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 [`chiffres.json`](chiffres.json). Pertinence : oracle v2 et juges automatiques (modèles), sans relecture humaine.
 « Gardée » : réponse pertinente (≥ 2/3, sans invention) que TVLens accepte aussi (citations remplies).
 
+> **Meilleure configuration à ce jour : N2**
+>
+> - Questions `gemma4:26b-a4b`, pause de la vision pendant les questions, Whisper `small`, vision `gemma3:4b` sans
+>   `topicSummary`.
+> - Deux passages identiques (N2 puis N6) : 21/30 puis 22/30 réponses pertinentes, médiane 5,7 puis 5,2 s, 30/30
+>   réponses sous 15 s, aucun bloc de vision perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
+> - Sur les 60 questions de l'oracle v3 (J2) : médiane 5,0 s, 60/60 sous 15 s, aucun bloc perdu ; pertinence notée
+>   avec J3.
+> - Réserve produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV. Il ne peut pas être
+>   supprimé ; il faut le calculer hors du chemin critique (essai J4).
+
 ## Matériel et configuration de référence
 
 | Chiffre | Valeur | Source |
@@ -83,6 +94,15 @@ N1 à N4 sont notés dans un premier paquet ; N5 et N6 dans un second, avec GPS 
 
 Source : [nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/). Un passage par variante : en dessous de 4 à
 5 réponses, un écart de pertinence n'est pas un signal.
+
+## Sur 60 questions (oracle v3)
+
+| Essai | Configuration | Délai médian | Réponses sous 15 s | Blocs vision perdus | Pertinence |
+| --- | --- | ---: | ---: | --- | --- |
+| J2 | N2 sur les 60 questions, sans journal | 5,0 s | 60/60 | 0 | à noter avec J3 |
+
+Source : registre (J2, 22/10, 10:51–12:21 UTC). Premier départ bloqué à 10:50 UTC par le garde-fou GPU, relancé une minute
+plus tard.
 
 ## Journal mémoire hors ligne (G5, 30 questions de N2 × 2 passages)
 
